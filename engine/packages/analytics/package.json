@@ -1,0 +1,17 @@
+{
+  "name": "@engine/analytics",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Analytics: the event taxonomy (@contract C11, ARC's), the first-party beacon, consent and the GA4/Meta hand-off (SEO).",
+  "type": "module",
+  "exports": {
+    "./events": "./src/events.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@engine/config": "workspace:*",
+    "@engine/domain": "workspace:*"
+  }
+}
