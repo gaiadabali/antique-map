@@ -17,7 +17,7 @@ import type { ModuleKey } from './schema/modules'
 type SurfaceRoute = {
   /** The app route under `src/app/(site)/[locale]/`; `''` the locale root, `null` no address. */
   internal: string | null
-  /** The bare segment is also a page: the surface's index (a `DirectoryVM`, C2). */
+  /** The bare segment is a page too: an index (C2 `DirectoryVM`; for `account`, the overview). */
   index?: true
   /** The module that switches the surface on — its routes 404 when off. Absent: always on. */
   module?: ModuleKey
