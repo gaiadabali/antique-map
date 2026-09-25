@@ -1,0 +1,16 @@
+{
+  "name": "@engine/domain",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The commerce domain: money, pricing, reservations, the state machines, checkout, orders and applyPaymentEvent(). Contract files (@contract C5, C6, C8) are ARC's; everything else is DOM's (PARALLEL-TRACKS.md §1, §4).",
+  "type": "module",
+  "exports": {
+    "./money": "./src/money/contract.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@engine/config": "workspace:*"
+  }
+}
