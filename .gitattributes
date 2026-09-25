@@ -1,0 +1,43 @@
+# Every text file is stored and checked out with LF, on every OS.
+# CRLF breaks the deploy scripts that run on Helios (a bash shebang ending in
+# \r is "command not found"), so this is not left to core.autocrlf.
+* text=auto eol=lf
+
+# Scripts and sources: LF even if text detection ever guesses wrong.
+*.sh text eol=lf
+*.bash text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.sql text eol=lf
+
+# Binary assets: never diffed, never normalised.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.tif binary
+*.tiff binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.zip binary
+*.gz binary
+*.tgz binary
+
+# The lockfile is generated and never hand-merged (PARALLEL-TRACKS.md §2):
+# merge=binary makes git stop on any concurrent change, so the fix is always
+# re-running `pnpm install` on the merged package.json files.
+pnpm-lock.yaml merge=binary linguist-generated=true

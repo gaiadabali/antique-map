@@ -1,0 +1,10 @@
+{
+  "name": "@engine/tooling",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Repository tooling: gates, database scripts, brand scaffolding and the shared tsconfig template. Each tool lives in its own folder with a cli.mjs entry the root package.json calls.",
+  "type": "module",
+  "exports": {
+    "./tsconfig/package.tsconfig.json": "./tsconfig/package.tsconfig.json"
+  }
+}

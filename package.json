@@ -1,0 +1,49 @@
+{
+  "name": "indies-platform",
+  "version": "0.0.0",
+  "private": true,
+  "description": "One engine serving two sister storefronts. Brands are configuration, data and assets; engine/ is code.",
+  "type": "module",
+  "packageManager": "pnpm@11.3.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test",
+    "format": "prettier --write --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\" \"!scripts/progress.mjs\"",
+    "format:check": "prettier --check --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\" \"!scripts/progress.mjs\"",
+    "lint": "eslint --max-warnings=0 .",
+    "lint:fix": "eslint --fix .",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "vitest run --passWithNoTests --exclude \"**/.claude/**\"",
+    "dev": "node engine/tooling/dev/cli.mjs",
+    "build": "pnpm --filter \"./engine/apps/*\" run build",
+    "test:e2e": "playwright test",
+    "lhci": "lhci autorun",
+    "db:fresh": "node engine/tooling/db/cli.mjs fresh",
+    "db:drop": "node engine/tooling/db/cli.mjs drop",
+    "db:list": "node engine/tooling/db/cli.mjs list",
+    "brand:create": "node engine/tooling/brand-create/cli.mjs",
+    "check:filesize": "node engine/tooling/check-file-size/cli.mjs",
+    "lint:brand-literals": "node engine/tooling/lint-brand-literals/cli.mjs",
+    "schema-hash": "node engine/tooling/schema-hash/cli.mjs",
+    "check:routes": "node engine/tooling/route-parity/cli.mjs",
+    "check:generated": "node engine/tooling/config-drift/cli.mjs",
+    "tasks:lint": "node engine/tooling/tasks-lint/cli.mjs",
+    "worktree": "node engine/tooling/worktree/cli.mjs",
+    "worktree:env": "node engine/tooling/worktree/cli.mjs env"
+  },
+  "devDependencies": {
+    "@eslint/compat": "2.1.1",
+    "@eslint/js": "9.39.5",
+    "@eslint/json": "2.1.0",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.12.0",
+    "prettier": "3.9.9",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.1",
+    "vite": "8.3.0",
+    "vitest": "5.0.1"
+  }
+}

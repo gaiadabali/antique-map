@@ -1,0 +1,20 @@
+# The Indies Platform workspace. Owned by HAR (PARALLEL-TRACKS.md §1-2).
+# A directory matched here without a package.json is skipped, so the app
+# folders may hold planning files before 0.8 scaffolds them.
+packages:
+  - engine/apps/*
+  - engine/packages/*
+  - engine/tooling
+
+# `pnpm add` writes exact versions: the stack is pinned (ARCHITECTURE.md §3).
+savePrefix: ''
+
+# Native build approvals. pnpm 11 refuses to run a dependency's install
+# scripts unless it is listed here (strictDepBuilds is on by default), so a
+# lane adding such a dependency asks HAR for an entry rather than debugging a
+# failed install (PARALLEL-TRACKS.md §2). `false` records a deliberate refusal.
+allowBuilds:
+  sharp: true
+  esbuild: true
+  '@tailwindcss/oxide': true
+  unrs-resolver: true
