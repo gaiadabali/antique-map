@@ -2,10 +2,17 @@
   "name": "@engine/domain",
   "version": "0.0.0",
   "private": true,
-  "description": "The commerce domain: money, pricing, reservations, the state machines, checkout, orders and applyPaymentEvent(). Contract files (@contract C5, C6, C8) are ARC's; everything else is DOM's (PARALLEL-TRACKS.md §1, §4).",
+  "description": "The commerce domain: money, pricing, reservations, the state machines, checkout, orders and applyPaymentEvent(). Contract files (@contract C5, C6, C8 and the payment vocabulary of C7) are ARC's; everything else is DOM's (PARALLEL-TRACKS.md §1, §4).",
   "type": "module",
   "exports": {
-    "./money": "./src/money/contract.ts"
+    "./money": "./src/money/contract.ts",
+    "./machines/order": "./src/order/machine.ts",
+    "./machines/payment": "./src/payment/machine.ts",
+    "./machines/reservation": "./src/reservations/machine.ts",
+    "./machines/availability": "./src/availability/machine.ts",
+    "./machines/offer": "./src/offer/machine.ts",
+    "./reservations": "./src/reservations/contract.ts",
+    "./events": "./src/contracts/domain-events.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

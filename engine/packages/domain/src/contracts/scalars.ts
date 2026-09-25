@@ -24,6 +24,10 @@ export type DecimalString = `${number}`
  */
 export type ExactRatio = `${bigint}/${bigint}`
 
+/** A JSON-safe value: what an outbox row or a webhook body may carry. */
+export type JsonValue =
+  string | number | boolean | null | readonly JsonValue[] | { readonly [key: string]: JsonValue }
+
 /**
  * A length of time with its unit in its name. Providers disagree (Stripe seconds, Midtrans
  * minutes, Date milliseconds); a bare number here is how a 15-minute lock becomes 15 seconds.
