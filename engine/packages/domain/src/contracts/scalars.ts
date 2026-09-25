@@ -24,9 +24,27 @@ export type DecimalString = `${number}`
  */
 export type ExactRatio = `${bigint}/${bigint}`
 
+/** The JSON form of an in-process type: every `Date` becomes an `IsoInstant`, nothing else moves. */
+export type Wire<T> = T extends Date
+  ? IsoInstant
+  : T extends readonly (infer E)[]
+    ? readonly Wire<E>[]
+    : T extends object
+      ? { readonly [K in keyof T]: Wire<T[K]> }
+      : T
+
 /** A JSON-safe value: what an outbox row or a webhook body may carry. */
 export type JsonValue =
   string | number | boolean | null | readonly JsonValue[] | { readonly [key: string]: JsonValue }
+
+/**
+ * A provider's webhook as it arrived. Signatures are verified on `rawBody` exactly as received —
+ * never on re-serialised JSON. `headers` is structurally what the Fetch `Headers` class offers.
+ */
+export type RawWebhook = {
+  readonly headers: { get(name: string): string | null }
+  readonly rawBody: string
+}
 
 /**
  * A length of time with its unit in its name. Providers disagree (Stripe seconds, Midtrans

@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     "./money": "./src/money/contract.ts",
+    "./api": "./src/contracts/api.ts",
     "./machines/order": "./src/order/machine.ts",
     "./machines/payment": "./src/payment/machine.ts",
     "./machines/reservation": "./src/reservations/machine.ts",

@@ -109,6 +109,10 @@ export type Problem =
     }
   /** A lock, link, quote or counter-offer ran out; the buyer starts again from `restartAt`. */
   | { readonly code: 'expired'; readonly restartAt: 'cart' | 'item' | 'link' }
+  /** The viewing slot went to someone else between listing and booking. */
+  | { readonly code: 'slot-unavailable' }
+  /** Lines outside the seller's return policy, as counsel words it; the rest may proceed. */
+  | { readonly code: 'not-returnable'; readonly lineIds: readonly string[] }
   /** Field-level validation: every failing field at once, in plain language. */
   | { readonly code: 'invalid'; readonly fields: readonly FieldError[] }
   /** Unknown, or not the caller's: the same answer either way, so nothing can be enumerated. */
