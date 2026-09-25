@@ -48,6 +48,12 @@ importers:
         specifier: 4.6.5
         version: 4.6.5
 
+  engine/packages/http:
+    dependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+
   engine/tooling: {}
 
 packages:

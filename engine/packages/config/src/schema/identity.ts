@@ -9,7 +9,8 @@
  */
 import { z } from 'zod'
 
-import { localisedTextSchema, routeTargetSchema } from '../routes'
+import { routeTargetSchema } from '../routes'
+import { localisedTextSchema } from './locales'
 import { idSchema } from './primitives'
 
 export const domainsSchema = z.strictObject({

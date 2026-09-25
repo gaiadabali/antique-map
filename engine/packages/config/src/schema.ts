@@ -3,7 +3,8 @@
  *
  * The entry of `@engine/config/schema`: the shape of `<brand>/site/brand.config.json`
  * (BRANDS.md §3), composed from `./schema/*` — primitives (the money base C5 builds on),
- * money and markets, sellers, commerce, modules, the look and identity. A difference
+ * locales, facet keys, money and markets, sellers, commerce, modules, the look and
+ * identity — and the route map (C10, `./routes`). A difference
  * between brands is a field here, a module flag or a property of the data — never a branch
  * on a brand (CONVENTIONS.md §1). Structural settings need a deploy; editorial ones are
  * floors that CMS globals override.
@@ -17,13 +18,14 @@
  */
 import { z } from 'zod'
 
-import { localeCodeSchema, routeMapSchema } from './routes'
+import { routeMapSchema } from './routes'
 import {
   commerceConfigSchema,
   fulfilmentConfigSchema,
   shippingConfigSchema,
 } from './schema/commerce'
 import { domainsSchema, identitySchema, sisterSchema } from './schema/identity'
+import { localeCodeSchema } from './schema/locales'
 import { assetsSchema, STOREFRONTS, tokenOverridesSchema } from './schema/look'
 import { moneyConfigSchema } from './schema/money'
 import { modulesSchema } from './schema/modules'
@@ -31,14 +33,14 @@ import { idSchema } from './schema/primitives'
 import { sellerSchema } from './schema/sellers'
 
 export * from './schema/commerce'
+export * from './schema/facets'
 export * from './schema/identity'
+export * from './schema/locales'
 export * from './schema/look'
 export * from './schema/money'
 export * from './schema/modules'
 export * from './schema/primitives'
 export * from './schema/sellers'
-export { LOCALE_CODES, localeCodeSchema, type LocaleCode } from './routes'
-export { localisedTextSchema, type LocalisedText } from './routes'
 
 export const brandConfigSchema = z
   .strictObject({
