@@ -1,0 +1,16 @@
+{
+  "name": "@engine/ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Headless, token-driven primitives, the zoom viewer and the configurator engine. Unstyled: each app owns its look. The token contract (C3) is the CSS custom properties every app defines.",
+  "type": "module",
+  "exports": {
+    "./tokens/contract": "./src/tokens/contract.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@engine/config": "workspace:*"
+  }
+}

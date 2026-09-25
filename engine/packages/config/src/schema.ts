@@ -55,6 +55,10 @@ export const brandConfigSchema = z
     identity: identitySchema,
     assets: assetsSchema,
     tokens: tokenOverridesSchema.default({}),
+    /** Public deep-zoom tiles stop at this long edge; the full pyramid stays private (C9). */
+    media: z
+      .strictObject({ publicZoomMaxPx: z.int().min(1024).max(32768).default(4096) })
+      .prefault({}),
     /** The default is served unprefixed; the database always holds en, id and nl. */
     locales: z.strictObject({
       default: localeCodeSchema,

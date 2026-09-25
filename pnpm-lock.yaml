@@ -54,6 +54,14 @@ importers:
         specifier: workspace:*
         version: link:../config
 
+  engine/packages/media: {}
+
+  engine/packages/ui:
+    dependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+
   engine/tooling: {}
 
 packages:
