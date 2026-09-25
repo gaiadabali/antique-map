@@ -1,0 +1,17 @@
+{
+  "name": "@engine/fulfilment",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Fulfilment: the FulfilmentProvider contract and route rungs (@contract C7, ARC's), routing and print-on-demand adapters (LOG).",
+  "type": "module",
+  "exports": {
+    "./contract": "./src/contract.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@engine/config": "workspace:*",
+    "@engine/domain": "workspace:*"
+  }
+}
