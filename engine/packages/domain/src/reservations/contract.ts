@@ -134,7 +134,10 @@ export type ReservationService<Tx> = {
    * `stock_levels.reserved`), then inserts — in the same transaction, so an expired-but-unswept
    * lock never blocks a buyer. The partial unique index turns a second live or sold reservation of
    * an exclusive target into `{ ok: false }`; counted stock reserves with the guarded UPDATE
-   * (`on_hand - reserved >= quantity`, the row count is the answer).
+   * (`on_hand - reserved >= quantity`, the row count is the answer). Because this runs inside the
+   * caller's transaction, a unique violation must never be raised: insert with `ON CONFLICT … DO
+   * NOTHING` against the partial index's predicate (or inside a savepoint), and read the absent
+   * row as the conflict — an aborted transaction would take the caller's payment and order with it.
    */
   reserve(tx: Tx, input: ReserveInput): Promise<ReserveResult>
   /** active → active, only forward, capped at the kind's maximum. A lapsed row: `expired`. */
