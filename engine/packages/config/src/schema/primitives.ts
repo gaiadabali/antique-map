@@ -1,0 +1,33 @@
+/**
+ * @contract C1 — brand config: primitives · owner: ARC · entry: `@engine/config/schema`
+ *
+ * The leaf of the schema: ids, countries, destinations, currencies and money. C5
+ * (`@engine/domain/money`) builds `Money` and `PriceSet` on `CurrencyCode` and
+ * `CURRENCY_EXPONENT` from here; the domain never redeclares them.
+ */
+import { z } from 'zod'
+
+/** A kebab-case id: sellers, markets, stock locations, sisters. */
+export const idSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'a kebab-case id')
+
+/** Minor-unit exponent per ISO 4217 currency the engine prices in. Never hard-code 100. */
+export const CURRENCY_EXPONENT = { IDR: 0, USD: 2, SGD: 2, EUR: 2, AUD: 2, GBP: 2 } as const
+export type CurrencyCode = keyof typeof CURRENCY_EXPONENT
+/** Adding a currency is an additive contract change: an exponent here, then rounding rules. */
+export const CURRENCY_CODES = Object.keys(CURRENCY_EXPONENT) as [CurrencyCode, ...CurrencyCode[]]
+export const currencyCodeSchema = z.enum(CURRENCY_CODES)
+
+/** ISO 3166-1 alpha-2, upper case. */
+export const countryCodeSchema = z.string().regex(/^[A-Z]{2}$/, 'an ISO 3166-1 alpha-2 code')
+export type CountryCode = z.infer<typeof countryCodeSchema>
+
+/** A country, or `*` for the rest of the world. */
+export const destinationSchema = z.union([countryCodeSchema, z.literal('*')])
+export type Destination = z.infer<typeof destinationSchema>
+
+/**
+ * Money in integer minor units, inferring exactly C5's `{ amount: number; currency }`.
+ * `z.int()` accepts safe integers only, so a float or an amount past 2^53 never parses.
+ */
+export const moneySchema = z.strictObject({ amount: z.int(), currency: currencyCodeSchema })
+export const positiveMoneySchema = moneySchema.refine((m) => m.amount > 0, 'a positive amount')

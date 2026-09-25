@@ -11,7 +11,7 @@
  */
 import { z } from 'zod'
 
-import type { ModuleKey } from './schema'
+import type { ModuleKey } from './schema/modules'
 
 /** The superset every database holds (ARCHITECTURE.md §2); a brand serves a subset. */
 export const LOCALE_CODES = ['en', 'id', 'nl'] as const
