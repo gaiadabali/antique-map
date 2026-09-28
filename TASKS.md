@@ -226,9 +226,13 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D39** | **The shop's want list is an email alert, no account:** a shopper saves a search with an email (double opt-in); alerts arrive by email with an unsubscribe link. Needs an additive contract change (C6 subscribe intent, C2 VM, C1 module variant) — a minor version per CONTRACTS.md, landed with the want-list task. | 2026-09-29 |
+| **D40** | **"Forgot password" resends the approval link to an approved partner who has not set a password yet;** applicants never get a link, and a first password only comes from an approval link. | 2026-09-29 |
+| **D37** | **Only the owner role moves a partner to another trade tier** (`change-tier`, audited), as D33 for the tiers themselves; approval assigning the default tier needs no such right. | 2026-09-29 |
+| **D38** | **Consent rule for all tracking stays as ANALYTICS.md §1:** the first-party cookieless beacon counts events (no personal data, no cross-site ids) before consent; GA4 and Meta fire only after consent. D35's wishlist events follow it. | 2026-09-29 |
 | **D33** | **Trade tiers** default from the brand config; only an **owner-role** CMS user may override them, every change audited; editors never can. | 2026-09-28 |
 | **D34** | **An ended partnership deactivates the retailer's account** — it can no longer sign in; its orders and history stay with the owner (the products are the owner's; partners help sell them). No former-partner area. | 2026-09-28 |
-| **D35** | **The shop's wishlist lives on the guest's device** (no account), and every wishlist action is tracked for marketing — within the consent rules of COMPLIANCE.md (the analytics beacons fire only with consent). | 2026-09-28 |
+| **D35** | **The shop's wishlist lives on the guest's device** (no account), and every wishlist action is tracked for marketing — within the consent rules of ANALYTICS.md §1 (see D38). | 2026-09-28 |
 | **D36** | **One Partnership programme for every business buyer** — retail shops, hotels, villas, cafés and companies alike apply as partners; there is no separate "For Business" path or header item on the shop. | 2026-09-28 |
 | **D30** | **The gallery keeps online sales** (reserve, checkout, offers and pay links as planned). The design project note of 11 Sept 2026 recorded "no transactions, enquiry by email form only"; the owner confirmed that note is superseded. | 2026-09-28 |
 | **D31** | **Old East Indies: shoppers buy as guests; accounts are for retailers only**, through a Partnership page (a highlight in the home hero and a **Partnership** header item; sign-up or sign-in at the page's last section). The client's decision of 11 Sept 2026, confirmed. Changes 28.1, 28.2, 29.3; adds 28.5 and 1.2.l. | 2026-09-28 |
