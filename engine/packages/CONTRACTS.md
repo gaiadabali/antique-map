@@ -87,8 +87,9 @@ so it is breaking and also needs a redirect.
   `PricingToken`, never a figure (`commerce-check.ts`). A `Streamed` part never rejects —
   a failed read resolves to its designed fallback — and a cached read returns a
   `CachedPart`, never a streamed part. A new surface needs a C10 row, a loader and a
-  fixture, or the build fails. Only an `approved` retailer's view model carries trade terms,
-  and a pending or declined one's opens no priced section (`commerce-check.ts`, D31).
+  fixture, or the build fails. Only an `approved` retailer's view model carries trade terms
+  or a reorder, a signed-in retailer who is not approved opens no priced section, and the
+  Partnership page holds no term or price in any state (`retailer-check.ts`, D31, D32).
 - **C3.** A new token needs a value in both apps (`AppTokens` is total) and its contrast
   pairings. The contract is a floor: an app's own tokens are named `--app-…`, and the shared
   primitives read contract tokens only. The overridable subset lives in C1 and grows only
@@ -122,9 +123,13 @@ so it is breaking and also needs a redirect.
   reviews of both halves (`.claude/specs/indies-platform/reviews/1.2-*.md`) were applied.
   ARC-P froze C1–C4, C9, C10 and C13; ARC-D froze C5–C8, C11 and C12. Nothing breaks:
   nothing consumes them yet.
-- **2026-09-28**: C1, C2 and C10 gain the shop's Partnership surface and retailer accounts
-  (TASKS.md 1.2.l, D31, D32) before the freeze closes: the `accounts.buyers` and
-  `accounts.retailers` modules and `RETAILER_STATUSES` (C1), the `partnership` surface and the
-  `quotes` and `terms` account sections (C10), and `PartnershipVM`, the retailer's standing,
-  trade terms and quotes, the header's account entry and the hero's highlight (C2). No lane
-  consumes them yet.
+- **2026-09-28**: C1, C2, C10 and C13 gain the shop's Partnership surface and retailer
+  accounts (TASKS.md 1.2.l, D31, D32) before the freeze closes, beside ARC-D's C5 trade tier,
+  C6 `retailer.apply`, C8 retailer machine and C11 events: the `accounts.buyers` and
+  `accounts.retailers` modules, `RETAILER_STATUSES` and `commerce.trade` (C1); the
+  `partnership` surface and the `quotes` and `terms` account sections (C10); the `retailers`
+  area, `retailer.apply`'s address and `APPLICATION_ACCESS` (C13); and `PartnershipVM`, the
+  retailer's standing, trade terms, quotes and reorder, a quote's trade terms, hidden form
+  fields, the header's account entry and the hero's highlight (C2). An order row now says
+  whether it may offer a reorder (`OrderSummaryVM<null>` everywhere but an approved
+  retailer's area). No lane consumes them yet.
