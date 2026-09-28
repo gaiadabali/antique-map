@@ -87,7 +87,7 @@ export type PaymentPorts = {
  *      `target_key` order and check each is live (`expires_at > statement_timestamp()`) BEFORE
  *      `ports.capture()`; then convert them all, move the order to `paid`, write the outbox.
  *    - The late path — a reservation lapsed, or the order is `abandoned` or `cancelled`:
- *      reserveAll() again for this buyer, superseding what lapsed; if it holds, sell
+ *      reserveAll() again for this buyer (its lazy expiry retires what lapsed); if it holds, sell
  *      (`payment-paid` or `late-payment-kept`); if not, `late-payment-refused`, and the money goes
  *      back — `ports.cancel()` for an authorisation, else `ports.refund()` keyed `late:{attemptId}`.
  *    - A duplicate — the order is already `paid`, `fulfilling` or `completed` through another

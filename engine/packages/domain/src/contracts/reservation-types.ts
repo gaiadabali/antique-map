@@ -80,10 +80,10 @@ type ReserveInputOf<K extends ReservationKind> = {
   readonly ttl: Duration
   /**
    * The same buyer's live reservation of this target that this one replaces — a hold or an offer
-   * hold paid through checkout, a lapsed lock re-taken on the late path. reserve() releases it as
-   * `superseded` and inserts the new row in the same call; it is ignored unless it names a live
-   * reservation of the same target. That it is the same buyer's is the caller's to prove (the
-   * session, the pay-link token): reserve() cannot tell a guest's hold from a stranger's.
+   * hold paid through checkout. reserve() releases it as `superseded` and inserts the new row in
+   * the same call; it is ignored unless it names a live reservation of the same target (a lapsed
+   * one is retired by reserve()'s own lazy expiry). That it is the same buyer's is the caller's to
+   * prove (the session, the pay-link token): reserve() cannot tell a guest's hold from a stranger's.
    */
   readonly supersedes: number | null
 } & TargetAndQuantity

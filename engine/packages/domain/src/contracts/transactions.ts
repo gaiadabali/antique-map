@@ -61,8 +61,9 @@ export const DOMAIN_TX_TIMEOUTS = {
  * exclusive reservation). A plain insert of a fresh row waits on nothing and may come anywhere; a
  * plain read takes no lock.
  *
- * - `dedupe` — `idempotency_keys` (a C6 request) or `payment_events` (a provider event): the first
- *   statement that can wait, so a transaction blocked there holds nothing.
+ * - `dedupe` — `idempotency_keys` (a C6 request), `payment_events` or `payment_events_unmatched`
+ *   (a provider event): the first statement that can wait, so a transaction blocked there holds
+ *   nothing.
  * - `request` — the record an action answers: a checkout or cart, an offer, a hold request, a
  *   quote — by id.
  * - `orders` — by id. The order is the mutex of one sale: what belongs to it comes after it.

@@ -184,13 +184,16 @@ export type OrderedLineView = {
   readonly total: Money
 }
 
-/** Opens `/pay/{token}`. The token is the credential; an unknown one answers `not-found`. */
+/**
+ * Opens `/pay/{token}`. The token is the credential — an unknown one answers `not-found` — and it
+ * is already the page's own address (C10 `pay/[token]`), so reading it by GET exposes nothing new.
+ */
 export type PayLinkGetRequest = { readonly token: string }
 
 /**
  * A staff-sent payment link, read: who sells, what for, how much, until when, and how it may be
- * paid. The order behind it is already priced — an accepted offer at its stored AgreedPrice, a
- * quote or proforma at its issued lines — and `pricing.token` is what `payLink.start` sends back.
+ * paid. Its lines are priced already — an accepted offer at its stored AgreedPrice, a quote or a
+ * proforma at its issued lines — and `pricing.token` is what `payLink.start` sends back.
  */
 export type PayLinkView = {
   readonly token: string
