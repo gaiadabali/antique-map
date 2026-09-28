@@ -42,25 +42,91 @@ importers:
         specifier: 5.0.1
         version: 5.0.1(vite@8.3.0)
 
+  engine/packages/analytics:
+    devDependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+      '@engine/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   engine/packages/config:
     dependencies:
       zod:
         specifier: 4.6.5
         version: 4.6.5
 
+  engine/packages/domain:
+    devDependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+
+  engine/packages/fulfilment:
+    devDependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+      '@engine/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   engine/packages/http:
     dependencies:
       '@engine/config':
         specifier: workspace:*
         version: link:../config
+      '@engine/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   engine/packages/media: {}
+
+  engine/packages/payments:
+    devDependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+      '@engine/domain':
+        specifier: workspace:*
+        version: link:../domain
+
+  engine/packages/shipping:
+    devDependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+      '@engine/domain':
+        specifier: workspace:*
+        version: link:../domain
+
+  engine/packages/sister:
+    devDependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+      '@engine/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   engine/packages/ui:
     dependencies:
       '@engine/config':
         specifier: workspace:*
         version: link:../config
+
+  engine/packages/view-models:
+    devDependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+      '@engine/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@engine/media':
+        specifier: workspace:*
+        version: link:../media
 
   engine/tooling: {}
 
