@@ -101,6 +101,7 @@ export type CommerceApi = {
     Checkout.PaymentStatusView,
     'not-found'
   >
+  readonly 'payLink.get': Op<Checkout.PayLinkGetRequest, Checkout.PayLinkView, 'not-found'>
   readonly 'payLink.start': Op<
     Checkout.PayLinkStartRequest,
     Checkout.PaymentStarted,
@@ -179,4 +180,12 @@ type _BareTotalRejected = Assert<
 type _BidOnlyWhereDeclared = Assert<
   // @ts-expect-error — the bid is allowed only on the operations that declare it
   IsServerPriced<Leads.OfferSubmitRequest>
+>
+type _BidOnlyAtTheTop = Assert<
+  // @ts-expect-error — the bid's name is exempt at the request's top level, never below it
+  IsServerPriced<{ readonly offer: { readonly proposal: Money } }, 'proposal'>
+>
+type _NewFigureNamesCaught = Assert<
+  // @ts-expect-error — a deposit is a figure only the server computes
+  IsServerPriced<Leads.HoldRequest & { readonly deposit: number }>
 >

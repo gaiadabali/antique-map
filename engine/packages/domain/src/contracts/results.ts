@@ -18,6 +18,12 @@ import type { IsoInstant } from './scalars'
  * again and proceeds only if its own figures produce the same token — otherwise `price-changed`.
  * It carries no figure: the server never reads a price from a request, it only notices that the
  * buyer saw a different one.
+ *
+ * Anything the totals are made of — a line, a code (`cart.applyCode`, `cart.removeCode`), the
+ * ship-to, the shipping choice, a price list, the day's FX rate — yields a new token, so a change
+ * to the bag during a checkout makes that checkout's next committing step answer `price-changed`
+ * with the new totals. There is no `checkout.applyCode`: the checkout's voucher field calls
+ * `cart.applyCode` and reads the checkout again.
  */
 export type PricingToken = string & { readonly __pricingToken: 'opaque, server-issued' }
 

@@ -28,17 +28,21 @@ export type OfferSubmitRequest = {
   readonly idempotencyKey: IdempotencyKey
 }
 
-/** The buyer's answer, addressed by the opaque token in the counter email or the account. */
+/** The buyer's answer: take the counter, bid again, or withdraw. */
 export type OfferResponse =
   | { readonly action: 'accept' }
   | { readonly action: 'revise'; readonly proposal: Money; readonly message: string | null }
   | { readonly action: 'withdraw' }
 
+/**
+ * Addressed by the opaque token in the counter email or the account. The answer sits at the top
+ * level, so a revised bid is the request's own `proposal` — the one place a client amount is let
+ * through — and nothing nested can borrow that exemption.
+ */
 export type OfferRespondRequest = {
   readonly offerToken: string
-  readonly response: OfferResponse
   readonly idempotencyKey: IdempotencyKey
-}
+} & OfferResponse
 
 export type OfferView = {
   readonly offerToken: string
@@ -48,7 +52,11 @@ export type OfferView = {
   /** Staff's counter while `countered`, open until `expiresAt` (the configured 72 h). */
   readonly counter: Money | null
   readonly expiresAt: IsoInstant | null
-  /** Once accepted: the private payment link and when the offer hold ends. */
+  /**
+   * Once accepted: the private payment link and when the offer hold ends. The link charges the
+   * agreed figure — the proposal or the counter — as stored at acceptance, converted once into
+   * the charge currency (C5 `AgreedPrice`); nothing the buyer sends later changes it.
+   */
   readonly payment: { readonly payLinkToken: string; readonly holdExpiresAt: IsoInstant } | null
 }
 

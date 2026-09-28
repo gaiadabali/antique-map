@@ -18,6 +18,7 @@ import type { Accepts, Assert, IsReadonly, MutuallyAssignable } from '../contrac
 
 export type { DecimalString, ExactRatio } from '../contracts/scalars'
 export type {
+  AgreedPrice,
   LineFiguresAdded,
   OrderFiguresAdded,
   PipelineLine,
@@ -26,6 +27,7 @@ export type {
   PipelineStage,
   PipelineState,
   PipelineTotals,
+  PriceAgreementRef,
   PricingContext,
   PricingStep,
   StageBefore,
@@ -40,7 +42,9 @@ export type {
  *
  * - `amount` is a SAFE integer: `Number.isSafeInteger(amount)` is asserted at every boundary —
  *   request parsing, Postgres `bigint` reads (through a guard, never as a string), provider
- *   payloads. Never a float, never a string, never a BigInt across the wire.
+ *   payloads. Never a float, never a string, never a BigInt across the wire. Stored as `bigint`
+ *   with `CHECK (amount BETWEEN 0 AND MONEY_AMOUNT_MAX)` and read with drizzle's
+ *   `bigint({ mode: 'number' })` (../contracts/storage.ts, for SCH).
  * - Minor units follow ISO 4217: IDR has exponent 0 (Rp 95.000 is `95000`); USD, SGD, EUR, AUD
  *   and GBP have 2 (USD 10.00 is `1000`). Read `CURRENCY_EXPONENT`; never assume 100.
  * - `amount` is never negative. A deduction — a discount, a refund, a gift-card application — is

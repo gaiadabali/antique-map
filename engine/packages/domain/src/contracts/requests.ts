@@ -92,6 +92,11 @@ export type ServerComputedKey =
   | 'estimate'
   | 'fx'
   | 'rate'
+  | 'value'
+  | 'cost'
+  | 'fee'
+  | 'balance'
+  | 'deposit'
 
 type MoneyShaped = { readonly amount: unknown; readonly currency: unknown }
 type AllTrue<R> = false extends R[keyof R] ? false : true
@@ -99,14 +104,16 @@ type AllTrue<R> = false extends R[keyof R] ? false : true
 /**
  * `true` when no property of `T`, at any depth, is Money-shaped or named for a server-computed
  * figure — except the keys in `Allowed`, each justified where an operation declares it (the one
- * today: an offer's `proposal`, a buyer's bid that the private floor and staff judge).
+ * today: an offer's `proposal`, a buyer's bid that the private floor and staff judge). `Allowed`
+ * exempts a key at the request's TOP level only: the same name one level down is still caught,
+ * so declaring the bid cannot open a hole anywhere else in the request.
  */
 export type IsServerPriced<T, Allowed extends PropertyKey = never> = T extends readonly (infer E)[]
-  ? IsServerPriced<E, Allowed>
+  ? IsServerPriced<E>
   : T extends MoneyShaped
     ? false
     : T extends object
       ? [Extract<Exclude<keyof T, Allowed>, ServerComputedKey>] extends [never]
-        ? AllTrue<{ [K in Exclude<keyof T, Allowed>]-?: IsServerPriced<T[K], Allowed> }>
+        ? AllTrue<{ [K in Exclude<keyof T, Allowed>]-?: IsServerPriced<T[K]> }>
         : false
       : true

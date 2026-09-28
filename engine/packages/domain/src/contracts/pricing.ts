@@ -12,8 +12,8 @@
  */
 import type { CountryCode, CurrencyCode, MarketConfig, SellerConfig } from '@engine/config/schema'
 
-import type { FxSnapshot, Money, RoundingRecord } from '../money/contract'
-import type { DecimalString, ExactRatio } from './scalars'
+import type { FxSnapshot, Money, RoundingRecord, RoundingRecordAt } from '../money/contract'
+import type { DecimalString, ExactRatio, IsoInstant } from './scalars'
 import type { Accepts, Assert, Equals } from './type-assertions'
 
 /** The stages, in the order they run. */
@@ -29,12 +29,44 @@ export type PipelineOrder = readonly [
 ]
 export type PipelineStage = PipelineOrder[number]
 
-/** Where a line's unit price came from (COMMERCE.md §3, market price lists) — stored with it. */
-export type UnitPriceSource = 'explicit' | 'product-type-table' | 'derived'
+/**
+ * Where a line's unit price came from (COMMERCE.md §3, market price lists) — stored with it. The
+ * market lists price a bag; `offer` and `quote` price what was agreed: an accepted offer's figure,
+ * or an issued quote's or proforma's line, looked up on the server by the agreement the line names.
+ */
+export type UnitPriceSource = 'explicit' | 'product-type-table' | 'derived' | 'offer' | 'quote'
+
+/**
+ * Which agreement prices a line. The server sets it from the pay link or quote a buyer holds —
+ * never from a request — and the unit-price stage then reads the stored AgreedPrice, not a list.
+ */
+export type PriceAgreementRef =
+  | { readonly kind: 'offer'; readonly offerId: number }
+  | { readonly kind: 'quote'; readonly quoteId: number; readonly quoteLineId: string }
+
+/**
+ * An agreed unit price, stored server-side when the offer is accepted or the quote issued. A bid
+ * or a counter arrives in the buyer's market currency, so the figure is converted ONCE, then, into
+ * the charge currency at the `fx-conversion` point, with the snapshot and the rounding it used;
+ * the pay link or the proforma charges exactly `unitPrice` however the rate moves afterwards. It
+ * reads like a price on the market's list: tax-inclusive where that list is.
+ */
+export type AgreedPrice = {
+  readonly ref: PriceAgreementRef
+  /** In the charge currency: what the pipeline's unit-price stage uses. */
+  readonly unitPrice: Money
+  /** The figure as agreed — the proposal, the counter or the quote line — in its own currency. */
+  readonly agreed: Money
+  /** Null when the agreed currency is the charge currency and nothing was converted. */
+  readonly fx: FxSnapshot | null
+  readonly rounding: RoundingRecordAt<'fx-conversion'> | null
+  readonly agreedAt: IsoInstant
+}
 
 /**
  * A line before any stage has run: what is bought and how many — never a price. The unit-price
- * stage prices it from server-side price lists; nothing a client sent is ever a figure here.
+ * stage prices it from server-side price lists, or from the stored AgreedPrice its `agreement`
+ * names; nothing a client sent is ever a figure here.
  */
 export type PipelineLineInput = {
   readonly lineId: string
@@ -43,6 +75,8 @@ export type PipelineLineInput = {
   readonly variantId: number | null
   /** A positive safe integer; always 1 for a unique item. */
   readonly quantity: number
+  /** Set by the server for a line paid through a pay link or a quote; null for a bag's line. */
+  readonly agreement: PriceAgreementRef | null
 }
 
 type NoFigures = Record<never, never>
@@ -50,7 +84,10 @@ type NoFigures = Record<never, never>
 /** The per-line figures each stage adds. Every one is stored on the order line. */
 export type LineFiguresAdded = {
   readonly 'unit-price': {
-    /** From the market list; rounded at `market-unit-price` only when `derived`. */
+    /**
+     * From the market list — rounded at `market-unit-price` only when `derived` — or, for `offer`
+     * and `quote`, the stored AgreedPrice as it is, rounded nowhere again.
+     */
     readonly unitPrice: Money
     readonly unitPriceSource: UnitPriceSource
     /** `unitPrice × quantity` — integer times integer, nothing to round. */
@@ -197,6 +234,15 @@ type _StartLinesCarryNoFigure = Assert<
 >
 // @ts-expect-error — a line entering the pipeline has no price to read: the server prices it
 type _PriceBeforeUnitPrice = PipelineLine<'start'>['unitPrice']
+// An agreement names the offer or quote; the figure is looked up, so none can ride along.
+type AgreementKeys = PriceAgreementRef extends infer R
+  ? R extends unknown
+    ? keyof R
+    : never
+  : never
+type _AgreementCarriesNoFigure = Assert<
+  Equals<Extract<AgreementKeys, 'unitPrice' | 'agreed' | 'amount' | 'price'>, never>
+>
 type _TotalsKeepEveryFigure = Assert<
   Equals<
     Exclude<keyof PipelineTotals, 'stage' | 'currency' | 'lines' | 'roundings'>,

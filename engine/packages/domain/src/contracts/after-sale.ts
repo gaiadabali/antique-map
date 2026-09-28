@@ -9,7 +9,7 @@
 import type { Money } from '../money/contract'
 import type { OrderStatus } from '../order/machine'
 import type { PaymentStatus } from '../payment/machine'
-import type { SellerIdentity } from './checkout'
+import type { OrderedLineView, SellerIdentity } from './checkout'
 import type {
   ContactInput,
   InstitutionInput,
@@ -52,21 +52,14 @@ export type ShipmentView = {
   readonly pickupCode: string | null
 }
 
-/** A line as the order snapshotted it: title, image and price as sold, whatever changed since. */
-export type OrderLineView = {
-  readonly lineId: string
-  readonly title: string
-  readonly imageUrl: string | null
-  readonly quantity: number
-  readonly unitPrice: Money
-  readonly total: Money
-  readonly returnable: boolean
-}
+/** An ordered line (as snapshotted), and whether a return can be asked for it. */
+export type OrderLineView = OrderedLineView & { readonly returnable: boolean }
 
 export type OrderSummaryView = {
   readonly number: string
   readonly placedAt: IsoInstant
   readonly status: OrderStatus
+  /** The attempt that paid the order; before one has, the latest attempt's status. */
   readonly payment: PaymentStatus
   readonly seller: SellerIdentity
   readonly lines: readonly OrderLineView[]

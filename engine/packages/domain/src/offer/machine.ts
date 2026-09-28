@@ -3,9 +3,15 @@
  *
  * `submitted → countered ⇄ submitted → accepted | declined | expired | withdrawn` (COMMERCE.md §6,
  * §7; design.md "Offer → accepted → paid"). Offers are non-binding at launch (D22). Acceptance is
- * one transaction with reserve({ kind: 'offer' }) and the payment link: if reserve() conflicts
+ * one transaction with reserve({ kind: 'offer' }), the stored agreed price and the payment link:
+ * the agreed figure (the proposal, or the counter the buyer took) is converted once into the
+ * charge currency and stored as C5's `AgreedPrice`, which the link charges. If reserve() conflicts
  * (the item sold meanwhile) the acceptance fails and the offer does not move. After `accepted`,
  * the offer hold and the payment carry the story; the offer itself is done.
+ *
+ * An open offer never outlives its item: when the item sells or is withdrawn, the consumer of
+ * `availability.changed` closes every `submitted` or `countered` offer on it (`item-unavailable`),
+ * and the buyer is told it is no longer available — not that their offer was turned down.
  */
 import type {
   EmittedBy,
@@ -64,6 +70,14 @@ export const OFFER_TRANSITIONS = [
     emits: 'offer.expired',
     by: ['system'],
   },
+  // The item sold or was withdrawn under an open offer: closed, with its own message.
+  {
+    from: ['submitted', 'countered'],
+    event: 'item-unavailable',
+    to: 'declined',
+    emits: 'offer.closedUnavailable',
+    by: ['system', 'staff'],
+  },
 ] as const satisfies readonly TransitionRow<OfferStatus>[]
 
 type Table = typeof OFFER_TRANSITIONS
@@ -93,7 +107,12 @@ type _BuyerOnACounter = Assert<
   Equals<OfferEventFromBy<'countered', 'buyer'>, 'accept' | 'revise' | 'withdraw'>
 >
 type _BuyerCannotAcceptOwnOffer = Assert<Equals<OfferEventFromBy<'submitted', 'buyer'>, 'withdraw'>>
+type _ClosedWhenTheItemGoes = Assert<
+  Equals<OfferStatusAfter<'countered', 'item-unavailable'>, 'declined'>
+>
 // @ts-expect-error — a declined offer cannot be accepted later; the buyer makes a new offer
 type _AcceptDeclined = OfferStatusAfter<'declined', 'accept'>
+// @ts-expect-error — an accepted offer's hold and payment carry on; only open offers close
+type _CloseAccepted = OfferStatusAfter<'accepted', 'item-unavailable'>
 // @ts-expect-error — an accepted offer is not re-countered; its hold and payment link carry on
 type _CounterAccepted = OfferStatusAfter<'accepted', 'counter'>

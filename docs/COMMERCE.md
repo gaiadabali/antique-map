@@ -252,7 +252,11 @@ from reservations and product status, and every change emits an event that
 revalidates the pages showing it.
 
 **Offer** — `submitted → countered ⇄ submitted → accepted | declined | expired |
-withdrawn`; `accepted` creates an `offer` reservation and a payment link.
+withdrawn`; `accepted` creates an `offer` reservation, stores the agreed figure —
+the proposal or the counter, converted once into the charge currency with its FX
+snapshot — and a payment link that charges exactly that. An open offer closes as
+`declined` when its item sells or is withdrawn, and the buyer is told the item is
+no longer available rather than that the offer was turned down.
 
 Nothing else may change a status field, and every change is written as a
 compare-and-set (`WHERE id = $1 AND status = $from`, exactly one row). Every

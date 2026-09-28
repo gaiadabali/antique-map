@@ -155,15 +155,57 @@ export type CheckoutContinueRequest = {
 }
 
 /**
- * A method chosen. Extends the lock to the method's session lifetime plus a margin, prices again,
- * and creates the attempt; the same `idempotencyKey` replays the stored session. Choosing another
- * method after a failure keeps the bag and cancels the previous session.
+ * A method chosen. Two transactions around one provider call, so no reservation row is held while
+ * a gateway thinks:
+ * 1. prices again, extends the order's locks to the method's `sessionTtl` plus a margin, closes
+ *    any open attempt of the order, and COMMITS the new attempt with our reference — so an event
+ *    can never arrive for an attempt the domain does not yet know;
+ * 2. `createSession()`, outside any transaction;
+ * 3. stores the SessionResult on the attempt and as the answer to `idempotencyKey`.
+ * The same key replays the stored session. If the session was never stored (a crash between 2
+ * and 3), the retry voids that attempt and creates another — a provider reference is never used
+ * twice. Choosing another method keeps the bag and cancels the previous session.
  */
 export type PaymentStartRequest = {
   readonly checkoutId: string
   readonly method: PaymentMethodId
   readonly acceptedPricing: PricingToken
   readonly idempotencyKey: IdempotencyKey
+}
+
+/** A line as the order snapshotted it: title, image and price as sold, whatever changed since. */
+export type OrderedLineView = {
+  readonly lineId: string
+  readonly title: string
+  readonly imageUrl: string | null
+  readonly quantity: number
+  readonly unitPrice: Money
+  readonly total: Money
+}
+
+/** Opens `/pay/{token}`. The token is the credential; an unknown one answers `not-found`. */
+export type PayLinkGetRequest = { readonly token: string }
+
+/**
+ * A staff-sent payment link, read: who sells, what for, how much, until when, and how it may be
+ * paid. The order behind it is already priced — an accepted offer at its stored AgreedPrice, a
+ * quote or proforma at its issued lines — and `pricing.token` is what `payLink.start` sends back.
+ */
+export type PayLinkView = {
+  readonly token: string
+  /** An accepted offer, a staff hold, an institution's proforma, or a sale agreed on WhatsApp. */
+  readonly purpose: 'offer' | 'hold' | 'invoice' | 'sale'
+  readonly status: 'open' | 'paid' | 'expired' | 'cancelled'
+  readonly seller: SellerIdentity
+  readonly lines: readonly OrderedLineView[]
+  readonly pricing: PricedTotals
+  /** Empty unless `open`. */
+  readonly paymentOptions: readonly PaymentOptionView[]
+  /** When the link stops taking payment. */
+  readonly expiresAt: IsoInstant
+  /** When the hold behind it ends; each method's session is sized to finish before it. */
+  readonly holdExpiresAt: IsoInstant | null
+  readonly order: { readonly number: string; readonly status: OrderStatus }
 }
 
 /** A staff-sent payment link (accepted offer, hold, WhatsApp sale, proforma): `/pay/{token}`. */
@@ -184,8 +226,18 @@ export type PaymentStarted = {
   readonly lockExpiresAt: IsoInstant | null
 }
 
-/** Polled by the payment-pending page, which switches to "Paid" by itself. */
-export type PaymentStatusRequest = { readonly attemptId: string }
+/**
+ * Polled by the payment-pending page, which switches to "Paid" by itself. Scoped to the checkout
+ * or the pay link the attempt belongs to: an attempt id travels in gateway return URLs, so on its
+ * own it is never a credential — an attempt outside the scope answers `not-found`, exactly like
+ * an unknown one.
+ */
+export type PaymentStatusRequest = {
+  readonly attemptId: string
+  readonly scope:
+    | { readonly kind: 'checkout'; readonly checkoutId: string }
+    | { readonly kind: 'pay-link'; readonly token: string }
+}
 export type PaymentStatusView = {
   readonly attemptId: string
   readonly payment: PaymentStatus
