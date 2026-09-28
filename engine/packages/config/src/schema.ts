@@ -24,7 +24,9 @@
  *   `checkoutLockMaxHours`;
  * - `documentPrefix` unique across sellers, and no provider listed twice in one seller;
  * - `retention.wishlist` only with an account module (`accounts.buyers` or
- *   `accounts.retailers`): a saved item belongs to a customer.
+ *   `accounts.retailers`): a saved item belongs to a customer;
+ * - `accounts.retailers` only with `commerce.trade` set, since approval assigns its
+ *   `defaultTier` — whose tiers the schema itself checks: ids unique, `defaultTier` one of them.
  * Secrets and environment are `bootCheck()`'s: every configured provider's, per seller for
  * payments, and the sister's when one is set.
  *

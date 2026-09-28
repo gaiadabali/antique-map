@@ -202,8 +202,9 @@ city's masthead into the shared image).
       { "upTo": 500000, "primary": "buy", "secondary": ["enquire", "whatsapp"] },
       { "upTo": 2500000, "primary": "buy", "secondary": ["reserve", "offer", "enquire"] },
       { "upTo": null, "primary": "requestPrice", "secondary": ["viewing", "proforma"] }
-    ]
-  },
+    ],
+    "trade": null                                      // retail partners (the shop, D32): { "tiers":
+  },                                                   //   [{ "id", "discountBps", "minimum" }], "defaultTier" }
   "analytics": { "ga4Id": null, "metaPixelId": null },  // runtime values — never NEXT_PUBLIC_*
   "shipping": { "providers": ["dhl-express", "biteship", "quote", "collect"] },
   "fulfilment": { "providers": ["own-stock"] },
@@ -264,7 +265,7 @@ blocks, select options or locales exist (ARCHITECTURE.md §2).
 | `content.linkInBio` | the `/ig` link-in-bio page: CMS-curated posts and the products each shows | — | ✅ |
 | `services.consignment` | "sell to us" submissions with photos | ✅ | — |
 | `services.appointments` | book a gallery / showroom visit | ✅ | ✅ |
-| `services.wholesale` | trade / hotel / corporate gifting enquiries and tiers | — | ✅ |
+| `services.wholesale` | trade / hotel / corporate gifting enquiries (a retail partner's tiers are `commerce.trade`, under `accounts.retailers`) | — | ✅ |
 | `accounts.buyers` | open buyer sign-up and sign-in, the claim flow, the account area | ✅ | — |
 | `accounts.retailers` | retailer accounts by application only: the Partnership page, staff approval, trade terms, orders by quote (D31, D32) — shoppers buy as guests | — | ✅ |
 | `retention.wishlist` · `.wantList` · `.newsletter` | saved items · saved-search alerts · digest | ✅ | ✅ |
