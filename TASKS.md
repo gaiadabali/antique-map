@@ -17,7 +17,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Repository, contracts and agent workspace | Foundation | — | 🔄 in progress | 2/3 | 19/23 | 0 | `████████░░`  83% |
+| **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 23/24 | 0 | `██████████`  96% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | · not started | 0/3 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **2/159** | **19/706** | **46** | `░░░░░░░░░░`   3% |
+| **All** | 44 phases | | | **3/159** | **23/707** | **46** | `░░░░░░░░░░`   3% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -157,7 +157,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 1·W2 | 1.3 Agent workspace | junior | own worktree (isolation) | 2026-09-28 | worktree helper + impeccable skill copied from kingdom-of-indonesia |
 
 ## Decisions for the owner
 
@@ -308,14 +307,15 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 1.2.l The shop's Partnership surface and retailer accounts (D31, 2026-09-28): a `partnership` route in C10, `PartnershipVM` and the retailer account VM in C2, the retailer application intent in C6, and `retailer` pricing as a tier C5/C6 can carry — routed to ARC-P and ARC-D before phase 1 closes
   - [ ] 1.2.m **Check:** every contract compiles, is marked `@contract` with an owner, every fixture type-checks against its view model, and a senior-be and a senior-fe reviewer have signed off in the report.
 
-- [ ] **1.3 Agent workspace** · needs: 1.1 — 🔄 1·W2
+- [x] **1.3 Agent workspace** · needs: 1.1 — ✅ 2026-09-28 6b30621
   - **Lane** HAR · **Agent** junior · **Wave** W2
   - **Owns** `engine/tooling/worktree/**`, `.claude/skills/**`, `.claude/agents/impeccable-*`
   - **Read** PARALLEL-TRACKS.md §3
   - _Requirements: 19.7_
-  - [ ] 1.3.a worktree helper script (`worktree` and `worktree:env`)
-  - [ ] 1.3.b copy the impeccable skill and its agents from Kingdom of Indonesia into `.claude/` (the design workflow the Design stage uses)
-  - [ ] 1.3.c **Check:** `pnpm worktree <phase> <lane>` creates a worktree + branch + `.env.local` with a unique `PORT` and database suffix, `pnpm worktree:env <phase> <lane>` does the `.env.local` part inside a worktree that already exists (agents dispatched with `isolation: "worktree"`), and an agent in either can `db:fresh` and `dev` without touching another worktree.
+  - [x] 1.3.a worktree helper script (`worktree` and `worktree:env`)
+  - [x] 1.3.b copy the impeccable skill and its agents from Kingdom of Indonesia into `.claude/` (the design workflow the Design stage uses)
+  - [x] 1.3.d `.claude/**` ignored by ESLint (as by Prettier); the skill's engine binary gitignored (the launcher downloads and verifies it); the five browser scripts committed unchanged
+  - [x] 1.3.c **Check:** `pnpm worktree <phase> <lane>` creates a worktree + branch + `.env.local` with a unique `PORT` and database suffix, `pnpm worktree:env <phase> <lane>` does the `.env.local` part inside a worktree that already exists (agents dispatched with `isolation: "worktree"`), and an agent in either can `db:fresh` and `dev` without touching another worktree. — worktree, branch, unique `PORT`/`DB_SUFFIX` (`p<phase>_<lane>`) and `worktree:env` proven (10 Vitest tests, throwaway-repo runs); the `db:fresh`/`dev` clause moved to 2.1.b/2.1.d, which build those commands
 
 ---
 
@@ -331,9 +331,9 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Read** DEPLOYMENT.md §1, §8
   - _Requirements: 1.1, 19.7_
   - [ ] 2.1.a compose: `postgres:18` with an init script enabling `unaccent`, `pg_trgm`; Mailpit; MinIO with bootstrap buckets `ig-media`, `oei-media`, `test-media`, `archive-masters`
-  - [ ] 2.1.b `db:fresh --brand <slug> [--suffix <lane>]`, `db:drop`, `db:list` (create, migrate, seed — seed hook no-op until 10.2)
+  - [ ] 2.1.b `db:fresh --brand <slug> [--suffix <lane>]` (`--suffix` and the port default to `DB_SUFFIX`/`PORT` in `.env.local`, written by 1.3's `pnpm worktree:env`; add both to `.env.example`), `db:drop`, `db:list` (create, migrate, seed — seed hook no-op until 10.2)
   - [ ] 2.1.c `.env.example` documenting every variable in DEPLOYMENT.md §8, grouped, with safe local defaults
-  - [ ] 2.1.d **Check:** `docker compose -f docker-compose.dev.yml up -d` then `pnpm db:fresh --brand test --suffix smoke` creates a database with `unaccent` and `pg_trgm` on Windows (Docker Desktop) and in CI.
+  - [ ] 2.1.d **Check:** `docker compose -f docker-compose.dev.yml up -d` then `pnpm db:fresh --brand test --suffix smoke` creates a database with `unaccent` and `pg_trgm` on Windows (Docker Desktop) and in CI; and two worktrees made by `pnpm worktree` each run `db:fresh` against their own suffix without touching the other (1.3.c's deferred clause).
 
 - [ ] **2.2 Quality-gate tooling** · needs: 1.1
   - **Lane** HAR · **Agent** devops · **Wave** W1
@@ -2337,6 +2337,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-28 — ✅ 1.3 — `pnpm worktree`/`worktree:env` give each agent its own branch, `PORT` and `DB_SUFFIX` (10 tests); the impeccable skill and agents copied from Kingdom of Indonesia; ESLint ignores `.claude/` (1.3.d). The `db:fresh`/`dev` clause of its Check moved to 2.1. Found: PARALLEL-TRACKS §3.1, CONVENTIONS §9 and DISPATCH disagree on the branch name and suffix form — the helper uses `feat/p<phase>-<lane>` and `p<phase>_<lane>`; ARC to settle.
 - 2026-09-28 — ✅ 1.2 — contracts C1–C13 frozen (b0fa092): ARC-P and ARC-D, signed off by senior-be, senior-fe and senior-db (reviews and follow-ups in `.claude/specs/indies-platform/reviews/`); `pnpm verify` green on main, 11 packages. Follow-ups for later lanes are listed in the four fix/review reports (PLT `validateBrandConfigs()` rules, SCH DDL in `@engine/domain/storage`, DOM concurrency tests, doc updates). 1·W2 opened: 1.3.
 - 2026-09-28 — 1.2 merged to main (b316e25): C1–C13 from ARC-P and ARC-D after senior-be, senior-fe and senior-db reviews and two fix passes each; lockfile regenerated; `pnpm verify` green (11 packages). Open: senior-db's step-0 guard/margin notes on `applyPaymentEvent()` (ARC-D), then 1.2.l. Owner to confirm the default `commerce.ttl.checkoutLockMaxHours` = 3.
 - 2026-09-28 — **The owner's first design draft received** (a Claude Design export, `docs/design/input/claude-design-2026-09/`) with the client's decisions of 11 Sept 2026. Confirmed with the owner: D30 (the gallery keeps online sales), D31 (shop accounts for retailers only — new task 28.5, contract item 1.2.l), D9's shape (one shared base, distinct accents — phases 12–14 reworded). Kingdoms of Indonesia, a third site for the same client, is out of this platform's scope.
