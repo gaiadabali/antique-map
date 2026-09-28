@@ -22,7 +22,9 @@
  *   most a tenth of its lower bound (the previous band's `upTo`; the first band's, of its own);
  * - `holdNoticeHours` < `holdDefaultHours` ≤ `holdMaxHours`, and `checkoutLockMinutes` within
  *   `checkoutLockMaxHours`;
- * - `documentPrefix` unique across sellers, and no provider listed twice in one seller.
+ * - `documentPrefix` unique across sellers, and no provider listed twice in one seller;
+ * - `retention.wishlist` only with an account module (`accounts.buyers` or
+ *   `accounts.retailers`): a saved item belongs to a customer.
  * Secrets and environment are `bootCheck()`'s: every configured provider's, per seller for
  * payments, and the sister's when one is set.
  *
@@ -44,6 +46,7 @@ import { modulesSchema } from './schema/modules'
 import { idSchema } from './schema/primitives'
 import { sellerSchema } from './schema/sellers'
 
+export * from './schema/accounts'
 export * from './schema/catalogue'
 export * from './schema/commerce'
 export * from './schema/facets'

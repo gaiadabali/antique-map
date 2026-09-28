@@ -265,6 +265,8 @@ blocks, select options or locales exist (ARCHITECTURE.md §2).
 | `services.consignment` | "sell to us" submissions with photos | ✅ | — |
 | `services.appointments` | book a gallery / showroom visit | ✅ | ✅ |
 | `services.wholesale` | trade / hotel / corporate gifting enquiries and tiers | — | ✅ |
+| `accounts.buyers` | open buyer sign-up and sign-in, the claim flow, the account area | ✅ | — |
+| `accounts.retailers` | retailer accounts by application only: the Partnership page, staff approval, trade terms, orders by quote (D31, D32) — shoppers buy as guests | — | ✅ |
 | `retention.wishlist` · `.wantList` · `.newsletter` | saved items · saved-search alerts · digest | ✅ | ✅ |
 | `retention.reviews` · `.backInStock` · `.abandonedCart` | product reviews · restock alerts · recovery email | — | ✅ |
 | `commerce.giftCards` · `.giftWrap` · `.discounts` · `.bundles` | | — / — / ✅ / — | ✅ |

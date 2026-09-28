@@ -30,6 +30,9 @@ export const MODULES = {
   'services.consignment': '"Sell to us" submissions with photos',
   'services.appointments': 'Book a visit to a gallery or showroom',
   'services.wholesale': 'Trade, hotel and corporate-gifting enquiries and tiers',
+  'accounts.buyers': 'Buyer accounts: open sign-up and sign-in, the claim flow, the account area',
+  'accounts.retailers':
+    'Retailer accounts by application only: the Partnership page, staff approval, trade terms, orders by quote (D31)',
   'retention.wishlist': 'Saved items',
   'retention.wantList': 'Saved searches and "tell me when another example arrives"',
   'retention.newsletter': 'Newsletter signup, digest and the issue archive',
@@ -63,7 +66,10 @@ export function hasModule(config: { readonly modules: ModuleFlags }, key: Module
 /**
  * What a storefront app declares it can render (its `supports` file, TASKS.md 4.1.c).
  * `validateBrandConfigs()` rejects a brand whose modules are not a subset, so a missing
- * surface fails CI instead of rendering as a blank section (BRANDS.md §6).
+ * surface fails CI instead of rendering as a blank section (BRANDS.md §6). It is also how a
+ * difference of archetype stays a flag rather than a brand check: the emporium's list omits
+ * `accounts.buyers` — shoppers there buy as guests, so no shop can open shopper sign-up — and
+ * the gallery's omits `accounts.retailers`, so the Partnership surface is the emporium's (D31).
  */
 export type AppSupports = {
   readonly storefront: Storefront
