@@ -38,6 +38,10 @@ export type IdempotencyKey = string
 export type PricedTotals = {
   readonly token: PricingToken
   readonly currency: CurrencyCode
+  /**
+   * At the prices this buyer pays, before discounts (C5 `buyerSubtotal`): the market list's — or,
+   * on an approved retailer's quote, its trade tier's (D32).
+   */
   readonly subtotal: Money
   readonly lineDiscount: Money
   readonly orderDiscount: Money

@@ -6,7 +6,7 @@
  * order line (UU 8/1999 allows no "all sales final", COMPLIANCE.md §6); institutions turn a bag
  * into a proforma and businesses ask for quotes (COMMERCE.md §7; EXPERIENCE-SHOP.md §9).
  */
-import type { Money } from '../money/contract'
+import type { Money, TradeMinimum } from '../money/contract'
 import type { OrderStatus } from '../order/machine'
 import type { PaymentStatus } from '../payment/machine'
 import type { OrderedLineView, SellerIdentity } from './checkout'
@@ -127,13 +127,18 @@ export type ProformaRequest = {
   readonly idempotencyKey: IdempotencyKey
 }
 
-/** A business quote (For Business, "Turn this into a quote"): prepared by staff, then issued. */
+/**
+ * A business quote (For Business, "Turn this into a quote"; a company's or a hotel's Partnership
+ * answer), or a signed-in retailer's order — its one-click reorder included (D32): prepared by
+ * staff, priced when they issue it (a retailer's at its trade tier), then sent.
+ */
 export type QuoteRequest = {
   readonly lines: readonly LineInput[]
   readonly message: string | null
   readonly neededBy: IsoDate | null
   readonly institution: InstitutionInput | null
-  readonly contact: LeadContactInput
+  /** Null only for a signed-in customer, a retailer reordering: the session is the contact. */
+  readonly contact: LeadContactInput | null
   readonly idempotencyKey: IdempotencyKey
 }
 
@@ -144,10 +149,25 @@ export type QuoteLineView = {
   readonly variantId: VariantId | null
   readonly quantity: number
   readonly options: { readonly [axis: string]: string } | null
+  /** What the buyer pays per piece: on a retailer's quote, the trade price (C5 `buyerUnitPrice`). */
   readonly unitPrice: Money
+  /** The market list's price the trade tier started from, for reference; null without a tier. */
+  readonly retailUnitPrice: Money | null
   readonly total: Money
   /** A unique line's `invoice` hold, when the quote is a proforma. */
   readonly heldUntil: IsoInstant | null
+}
+
+/**
+ * The trade terms a retailer's quote was issued at (D32) — kept as issued, whatever changes to the
+ * retailer's tier later; paying the quote applies exactly these (C5 `AgreedPrice.trade`).
+ */
+export type QuoteTradeView = {
+  readonly tierId: string
+  readonly discountBps: number
+  readonly minimum: TradeMinimum
+  /** Staff waived the minimum for this one quote, within their role's limit (recorded). */
+  readonly minimumWaived: boolean
 }
 
 export type QuoteView = {
@@ -168,6 +188,8 @@ export type QuoteView = {
   readonly pdfUrl: string | null
   /** Once accepted: the payment link, whose methods routing allows. */
   readonly payLinkToken: string | null
+  /** An approved retailer's quote: the terms it was issued at. Null for every other quote. */
+  readonly trade: QuoteTradeView | null
 }
 
 /** Accept an issued quote as priced — a different figure than the token names is `price-changed`. */

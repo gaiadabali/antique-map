@@ -25,6 +25,14 @@ import type {
 export type { DecimalString, ExactRatio } from '../contracts/scalars'
 export type {
   AgreedPrice,
+  AgreedTradeTier,
+  PriceAgreementRef,
+  TradeMinimum,
+  TradeMinimumShortfall,
+  TradeTerms,
+  UnitPriceSource,
+} from '../contracts/price-sources'
+export type {
   LineFiguresAdded,
   OrderFiguresAdded,
   PipelineLine,
@@ -33,12 +41,10 @@ export type {
   PipelineStage,
   PipelineState,
   PipelineTotals,
-  PriceAgreementRef,
   PricingContext,
   PricingStep,
   StageBefore,
   TaxLine,
-  UnitPriceSource,
 } from '../contracts/pricing'
 
 // ─── Money ───────────────────────────────────────────────────────────────────────────────────
@@ -125,6 +131,9 @@ export type FxSnapshot = {
  *   (Rp 95.000, Rp 1.450.000; USD 10 for originals). The ladder is brand config — C1
  *   `money.rounding[currency]`, bands of `{ upTo, step }`: a price up to `upTo` rounds UP to a
  *   multiple of `step`, never down, so a converted price never undercuts its base.
+ * - `trade-unit-price` — an approved retailer's trade price, `unitPrice` less the tier's
+ *   `discountBps`, half-even to the minor unit, once per line (D32); a trade line is that unit
+ *   price times its quantity, and a quote paid later applies the tier it recorded, not a new one.
  * - `line-discount` — half-even to the minor unit.
  * - `order-discount-allocation` — largest remainder, so the lines sum to the order figure exactly.
  * - `tax-per-line` — half-even on the line's tax base; an order's tax is the sum of its lines.
@@ -134,6 +143,7 @@ export type FxSnapshot = {
  */
 export type RoundingMethodAt = {
   readonly 'market-unit-price': 'up-to-price-point'
+  readonly 'trade-unit-price': 'half-even'
   readonly 'line-discount': 'half-even'
   readonly 'order-discount-allocation': 'largest-remainder'
   readonly 'tax-per-line': 'half-even'
