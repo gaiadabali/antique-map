@@ -226,6 +226,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D39** | **The shop's want list is an email alert, no account:** a shopper saves a search with an email (double opt-in); alerts arrive by email with an unsubscribe link. Needs an additive contract change (C6 subscribe intent, C2 VM, C1 module variant) — a minor version per CONTRACTS.md, landed with the want-list task. | 2026-09-29 |
+| **D40** | **"Forgot password" resends the approval link to an approved partner who has not set a password yet;** applicants never get a link, and a first password only comes from an approval link. | 2026-09-29 |
 | **D37** | **Only the owner role moves a partner to another trade tier** (`change-tier`, audited), as D33 for the tiers themselves; approval assigning the default tier needs no such right. | 2026-09-29 |
 | **D38** | **Consent rule for all tracking stays as ANALYTICS.md §1:** the first-party cookieless beacon counts events (no personal data, no cross-site ids) before consent; GA4 and Meta fire only after consent. D35's wishlist events follow it. | 2026-09-29 |
 | **D33** | **Trade tiers** default from the brand config; only an **owner-role** CMS user may override them, every change audited; editors never can. | 2026-09-28 |
