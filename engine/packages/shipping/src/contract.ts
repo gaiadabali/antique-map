@@ -5,16 +5,18 @@
  * stateless translators, like payments': they quote, book and normalise tracking; the domain
  * prices (the pipeline's shipping stage takes the chosen rate as its input) and stores shipments.
  * A courier's price arrives in the courier's currency and the domain converts it at the
- * `fx-conversion` rounding point — an adapter never converts or rounds money.
+ * `fx-conversion` rounding point — an adapter never converts or rounds money. Delivery promises
+ * are the domain's too: an adapter reports the courier's own estimate, and the domain moves it
+ * past the holiday calendar's closures (Nyepi, Lebaran) and keeps only what arrives before a
+ * visitor's deliver-before date — one calendar, applied the same way to every courier.
  */
-import type { CountryCode, SellerConfig } from '@engine/config/schema'
-import type { AddressInput, RawWebhook, ShipmentStatus } from '@engine/domain/api'
+import type { CountryCode, ShippingProviderId, SellerConfig } from '@engine/config/schema'
+import type { AddressInput, EventIdRule, RawWebhook, ShipmentStatus } from '@engine/domain/api'
 import type { Money } from '@engine/domain/money'
 
 export type { ShipmentStatus } from '@engine/domain/api'
-
-/** The rate sources a brand's config selects (BRANDS.md §3 `shipping.providers`). */
-export type ShippingProviderId = 'flat-table' | 'biteship' | 'dhl-express' | 'quote' | 'collect'
+/** The rate sources a brand's config selects — C1's (`shipping.providers`), never redeclared. */
+export type { ShippingProviderId } from '@engine/config/schema'
 
 /**
  * How a product travels (COMMERCE.md §8). A const list, so the CMS select and the type are one:
@@ -55,9 +57,7 @@ export type RateRequest = {
     readonly city: string | null
   }
   readonly parcels: readonly Parcel[]
-  /** A visitor's departure date: only services that arrive before it. */
-  readonly deliverBefore: Date | null
-  /** The instant promises are judged at — the holiday calendar (Nyepi, Lebaran) is read against it. */
+  /** The instant the rates are asked for, for their validity. */
   readonly at: Date
 }
 
@@ -69,11 +69,12 @@ export type RateQuote = {
   readonly service: string
   /** In the courier's currency; converted by the domain at the `fx-conversion` point. */
   readonly price: Money
+  /** The courier's own estimate, in days from dispatch; closures are the domain's to add. */
   readonly eta: { readonly minDays: number; readonly maxDays: number } | null
   readonly sameDay: boolean
   /** What the courier covers, if anything: couriers cap art (FedEx USD 1,000 declared). */
   readonly coverLimit: Money | null
-  /** The flat-table fallback during a courier outage — labelled as an estimate at checkout. */
+  /** The seller's `flat` table standing in during a courier outage — labelled as an estimate. */
   readonly isEstimate: boolean
   readonly validUntil: Date | null
 }
@@ -133,9 +134,32 @@ export type ParsedShippingWebhook =
 export type ShippingProvider = {
   readonly id: ShippingProviderId
   rates(request: RateRequest): Promise<RatesResult>
-  /** Absent for `flat-table`, `quote` and `collect`: staff book those by hand. */
+  /** Absent for `flat`, `quote` and `collect`: staff book those by hand. */
   book?(input: ShipmentInput): Promise<ShipmentBooked>
+  /** Polled where a courier pushes nothing; its events dedupe by the same rule as a webhook's. */
   track?(shipmentRef: string): Promise<readonly ShipmentEvent[]>
   parseWebhook?(request: RawWebhook): Promise<ParsedShippingWebhook>
   cancel?(shipmentRef: string): Promise<void>
 }
+
+// ─── The providerEventId rule, per adapter ───────────────────────────────────────────────────
+
+/** A tracking notification's fields, named for what they mean; each adapter maps its own paths. */
+export type ShipmentHashField = 'shipment-id' | 'status' | 'occurred-at' | 'location'
+
+/**
+ * How each adapter derives `ShipmentEvent.providerEventId` (C5–C8 `EventIdRule`). Couriers rarely
+ * send an event id, so the state hash is the default — always safe: a repeated delivery or a
+ * re-polled event gives the same key, a new scan a new one. LOG confirms against recorded sandbox
+ * fixtures whether Biteship sends a native id; a courier added later declares its rule here.
+ */
+export const SHIPPING_EVENT_ID_RULES = {
+  biteship: { kind: 'state-hash', fields: ['shipment-id', 'status', 'occurred-at'] },
+  'dhl-express': {
+    kind: 'state-hash',
+    fields: ['shipment-id', 'status', 'occurred-at', 'location'],
+  },
+  flat: { kind: 'staff-entry' },
+  quote: { kind: 'staff-entry' },
+  collect: { kind: 'staff-entry' },
+} as const satisfies { readonly [P in ShippingProviderId]: EventIdRule<ShipmentHashField> }
