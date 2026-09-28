@@ -377,18 +377,29 @@ vocabularies, so `/antique-maps/java/batavia` resolves to a browse with object
 type and place selected — and it never touches the database (Next's proxy runs
 apart from render code and cannot call `revalidateTag`). Internal paths
 (`/en/item/…`) are never served directly: the proxy answers 404 for them, so no
-page exists at two addresses. Legacy patterns (`/category/…`, `/storage/…`)
-rewrite to an engine handler, `/api/x/legacy/…`, which reads the `redirects`
-collection under `'use cache'` + `cacheTag` and answers 301 or 404. Product URLs
-never need it: the item route resolves `/product/{id}-{slug}` **by public id** and
-calls `permanentRedirect()` when the slug part has changed. Each app's
-`src/proxy.ts` re-exports the engine's proxy handler but declares its `matcher`
-literally, because Next analyses it statically.
+page exists at two addresses. The mapping is C10's `parsePublicPath()`, the
+inverse of `href()`, and the internal route's query carries a listing's whole
+canonical state. Legacy patterns (`/category/…`, `/storage/…`) rewrite to an
+engine handler, `/api/x/legacy/…`, which reads the `redirects` collection under
+`'use cache'` + `cacheTag` and answers 301, 404 or 410. Product URLs never need
+it: the item route resolves `/product/{id}-{slug}` **by public id** and calls
+`permanentRedirect()` when the slug part has changed. Besides rewriting, the
+proxy sets headers and nothing else: `x-public-path` and `x-locale` on the
+request it passes on (C13 `PROXY_REQUEST_HEADERS`, overwriting any a client
+sent), so a page with no params — the designed 404 — knows what was asked; and
+`Referrer-Policy: no-referrer` with `X-Robots-Tag: noindex` on the order,
+payment-link and quote pages (C10 `sensitive`). Each app's `src/proxy.ts`
+re-exports the engine's proxy handler but declares its `matcher` literally,
+because Next analyses it statically.
 
 **Engine routes live under `/api/x/`**, so no engine handler can shadow Payload's
 REST API (`/api/media/file/…` and the admin's lookups); the route-parity check
 fails if an engine route's first segment equals a collection slug, `payload-jobs`
-or `graphql`.
+or `graphql`. A write that a cookie authenticates — the cart, the customer
+session, order access, each `HttpOnly`, `Secure` and `SameSite=Lax` — is refused
+unless it comes from the site itself (`Origin` or `Sec-Fetch-Site`; C13
+`sameOrigin`), and a credential never travels in a query string, except in the
+one-hop links an email carries (order access, one-click unsubscribe).
 
 ## 12. Identity
 
