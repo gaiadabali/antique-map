@@ -10,21 +10,19 @@
  * for an email, a phone number, a name or an address.
  */
 import type { Surface } from '@engine/config/routes'
-import type { InventoryModel, LocaleCode } from '@engine/config/schema'
+import type { InventoryModel, LocaleCode, ProductKind } from '@engine/config/schema'
 import type { CheckoutStepId, EnquiryTopic, IsoInstant } from '@engine/domain/api'
 import type { DomainEventName } from '@engine/domain/events'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
 import type { PaymentFailureClass, PaymentMethodId } from '@engine/domain/machines/payment'
 import type { Money } from '@engine/domain/money'
 
-export type { InventoryModel } from '@engine/config/schema'
+/** C1's catalogue vocabularies, imported: each list has one home (`schema/catalogue`). */
+export type { InventoryModel, ProductKind } from '@engine/config/schema'
 
 /** The surfaces of DESIGN-SYSTEM.md §2 — C10's route-map keys, imported, never repeated. */
 export type SurfaceName = Surface
 
-/** CONTENT-MODEL.md §1 `products.kind`. */
-export type ProductKind =
-  'original' | 'edition' | 'reproduction' | 'merchandise' | 'book' | 'service' | 'gift-card'
 export type DeviceClass = 'mobile' | 'tablet' | 'desktop'
 
 /**

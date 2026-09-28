@@ -112,7 +112,7 @@ export type LockStep = (typeof LOCK_ORDER)[number]
 export type SweepResult = { readonly processed: number; readonly more: boolean }
 
 /**
- * The domain's housekeeping, run by DOM's cron route (C13 `/api/x/cron/reservations`), each call
+ * The domain's housekeeping, run by DOM's cron route (C13 `/api/x/cron/sweeps`), each call
  * in its own transaction, at most `limit` rows at a time. Correctness never waits for a sweep —
  * reserve() expires what lapsed before it inserts, applyPaymentEvent() handles money that comes
  * late — but sweeps keep what people and pages see honest. The payment reconciler is PAY's

@@ -74,14 +74,24 @@ export type OrderLookupRequest = { readonly orderNumber: string } & (
 )
 
 export type OrderLookupView = {
-  /** Short-lived and scoped to this order: a return request uses it instead of re-sending the email. */
+  /**
+   * Short-lived and scoped to this order. The handler also stores it in C13's `order_access`
+   * cookie (HttpOnly), so a browser's later requests for this order say only `lookup-cookie`.
+   */
   readonly lookupToken: string
   readonly order: OrderSummaryView
 }
 
-/** How a caller proves the order is theirs: the customer session, or a fresh lookup. */
+/**
+ * How a caller proves the order is theirs: the customer session, or a lookup token. In a browser the
+ * token lives in C13's `order_access` cookie — HttpOnly, set by `orderLookup.find`, by a checkout's
+ * or pay link's confirmation, or by the one-hop link a message carries — and the request says only
+ * `lookup-cookie`: the handler reads the cookie, so the token never enters a URL, a page's HTML or
+ * its scripts. `lookup` carries the token in the body, for a caller with no cookie to send.
+ */
 export type OrderAccess =
   | { readonly kind: 'account'; readonly orderNumber: string }
+  | { readonly kind: 'lookup-cookie' }
   | { readonly kind: 'lookup'; readonly lookupToken: string }
 
 export type ReturnReason = 'damaged' | 'not-as-described' | 'wrong-item' | 'changed-mind' | 'other'

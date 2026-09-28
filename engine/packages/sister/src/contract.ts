@@ -16,7 +16,7 @@
  * URL; the sister reads the master through its own scoped credentials (C9's master access,
  * every read logged) and writes only under `print-files/`.
  */
-import type { CountryCode, LocaleCode } from '@engine/config/schema'
+import type { CountryCode, LocaleCode, ObjectType } from '@engine/config/schema'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
 import type { IsoDate, IsoInstant } from '@engine/domain/api'
 import type { Money } from '@engine/domain/money'
@@ -24,23 +24,8 @@ import type { Money } from '@engine/domain/money'
 /** Text per locale, as the origin published it. */
 export type Localised = { readonly [L in LocaleCode]?: string }
 
-/**
- * CONTENT-MODEL.md §1 `works.objectType`, the CMS's controlled select (SCH). The same list as C2's
- * `ObjectType`; one of the two should import the other once a shared vocabulary module exists.
- */
-export type WorkObjectType =
-  | 'map'
-  | 'sea-chart'
-  | 'city-plan'
-  | 'view'
-  | 'print'
-  | 'photograph'
-  | 'book'
-  | 'atlas'
-  | 'poster'
-  | 'document'
-  | 'ethnographic'
-  | 'other'
+/** `works.objectType`: C1's catalogue vocabulary (`schema/catalogue`), imported, never repeated. */
+export type { ObjectType } from '@engine/config/schema'
 
 /** A master's key in the private masters bucket: exactly what C9's `masterKey()` returns. */
 export type MasterKey = `masters/${string}/${string}.${string}`
@@ -109,7 +94,7 @@ export type WorkSnapshot = {
   readonly stockNumber: string | null
   readonly title: Localised
   readonly originalTitle: string | null
-  readonly objectType: WorkObjectType
+  readonly objectType: ObjectType
   readonly makers: readonly SnapshotMaker[]
   readonly date: FuzzyDate
   readonly publication: {
