@@ -203,8 +203,10 @@ city's masthead into the shared image).
       { "upTo": 2500000, "primary": "buy", "secondary": ["reserve", "offer", "enquire"] },
       { "upTo": null, "primary": "requestPrice", "secondary": ["viewing", "proforma"] }
     ],
-    "trade": null                                      // retail partners (the shop, D32): { "tiers":
-  },                                                   //   [{ "id", "discountBps", "minimum" }], "defaultTier" }
+    "trade": null                                      // retail partners (the shop, D32): { "tiers": [{ "id",
+  },                                                   //   "discountBps", "minimum" }], "defaultTier", "maxDiscountBps",
+                                                       //   "waiver" }; only an owner-role CMS user may override
+                                                       //   the tiers, every change audited (D33)
   "analytics": { "ga4Id": null, "metaPixelId": null },  // runtime values — never NEXT_PUBLIC_*
   "shipping": { "providers": ["dhl-express", "biteship", "quote", "collect"] },
   "fulfilment": { "providers": ["own-stock"] },
@@ -265,10 +267,11 @@ blocks, select options or locales exist (ARCHITECTURE.md §2).
 | `content.linkInBio` | the `/ig` link-in-bio page: CMS-curated posts and the products each shows | — | ✅ |
 | `services.consignment` | "sell to us" submissions with photos | ✅ | — |
 | `services.appointments` | book a gallery / showroom visit | ✅ | ✅ |
-| `services.wholesale` | trade / hotel / corporate gifting enquiries (a retail partner's tiers are `commerce.trade`, under `accounts.retailers`) | — | ✅ |
 | `accounts.buyers` | open buyer sign-up and sign-in, the claim flow, the account area | ✅ | — |
-| `accounts.retailers` | retailer accounts by application only: the Partnership page, staff approval, trade terms, orders by quote (D31, D32) — shoppers buy as guests | — | ✅ |
-| `retention.wishlist` · `.wantList` · `.newsletter` | saved items · saved-search alerts · digest | ✅ | ✅ |
+| `accounts.retailers` | partner accounts by application only, for every business buyer — shops, hotels, villas, cafés, companies: the Partnership page, staff approval, trade terms, orders by quote (D31, D32, D36) — shoppers buy as guests, and there is no separate trade enquiry | — | ✅ |
+| `retention.wishlist` | saved items in the buyer's account (needs `accounts.buyers`); a viewing's pull list | ✅ | — |
+| `retention.deviceWishlist` | saved items on the guest's device, with no account; each save tracked for marketing, with consent (D35) | — | ✅ |
+| `retention.wantList` · `.newsletter` | saved-search alerts · digest | ✅ | ✅ |
 | `retention.reviews` · `.backInStock` · `.abandonedCart` | product reviews · restock alerts · recovery email | — | ✅ |
 | `commerce.giftCards` · `.giftWrap` · `.discounts` · `.bundles` | | — / — / ✅ / — | ✅ |
 | `fulfilment.pod` · `.clickAndCollect` | print-on-demand routing · pickup at the gallery / showroom | — / ✅ | ✅ / ✅ |

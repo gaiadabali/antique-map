@@ -12,7 +12,8 @@
  * Rules needing the app or the whole config are `validateBrandConfigs()`'s (PLT, TASKS.md
  * 3.1), each failing CI with the field it names:
  * - modules ⊆ the app's `supports` (`AppSupports`);
- * - a segment map and default-locale text for every supported locale;
+ * - a segment map and default-locale text for every supported locale, the map holding a
+ *   segment for every surface and form kind whose module is on (and none needed otherwise);
  * - `--font-display` declared in `assets.fonts`;
  * - market destinations disjoint, at most one market with `*`, sellers covering every market;
  * - the rupiah rule (COMMERCE.md §3, COMPLIANCE.md §1): when a seller serves `ID` or `*`, a
@@ -23,10 +24,13 @@
  * - `holdNoticeHours` < `holdDefaultHours` ≤ `holdMaxHours`, and `checkoutLockMinutes` within
  *   `checkoutLockMaxHours`;
  * - `documentPrefix` unique across sellers, and no provider listed twice in one seller;
- * - `retention.wishlist` only with an account module (`accounts.buyers` or
- *   `accounts.retailers`): a saved item belongs to a customer;
+ * - `retention.wishlist` only with `accounts.buyers` (its saved items are a buyer's account's),
+ *   and never beside `retention.deviceWishlist` (a guest's, on the device — D35);
  * - `accounts.retailers` only with `commerce.trade` set, since approval assigns its
- *   `defaultTier` — whose tiers the schema itself checks: ids unique, `defaultTier` one of them.
+ *   `defaultTier` (the schema itself checks the tiers: ids unique, `defaultTier` one of them,
+ *   none past `maxDiscountBps`);
+ * - an `amount` minimum in `commerce.trade` in a currency every seller lists in `charge`: the
+ *   seller that quotes a retailer is the one serving its destination, which may be any of them.
  * Secrets and environment are `bootCheck()`'s: every configured provider's, per seller for
  * payments, and the sister's when one is set.
  *
@@ -59,6 +63,7 @@ export * from './schema/money'
 export * from './schema/modules'
 export * from './schema/primitives'
 export * from './schema/sellers'
+export * from './schema/trade'
 
 export const brandConfigSchema = z
   .strictObject({

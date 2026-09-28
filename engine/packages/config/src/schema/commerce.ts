@@ -9,7 +9,8 @@
  */
 import { z } from 'zod'
 
-import { idSchema, isLadder, LADDER_MESSAGE, positiveMoneySchema } from './primitives'
+import { isLadder, LADDER_MESSAGE } from './primitives'
+import { tradeConfigSchema } from './trade'
 
 export const INVENTORY_MODELS = [
   'unique',
@@ -73,54 +74,12 @@ export const purchaseTierSchema = z.strictObject({
 })
 export type PurchaseTier = z.infer<typeof purchaseTierSchema>
 
-/**
- * A trade tier's minimum order (D32), as C5's `TradeMinimum` holds it: goods worth `amount` at
- * the prices paid, in the currency the seller quotes its retailers in — or `pieces` of each
- * design, its sizes and formats counted together when `mixedSizes`.
- */
-export const tradeMinimumSchema = z.discriminatedUnion('kind', [
-  z.strictObject({ kind: z.literal('amount'), amount: positiveMoneySchema }),
-  z.strictObject({
-    kind: z.literal('piecesPerDesign'),
-    pieces: z.int().positive(),
-    mixedSizes: z.boolean(),
-  }),
-])
-
-/** A trade price tier (C5 `TradeTerms`): basis points off the market list, 4000 being 40 % off. */
-export const tradeTierSchema = z.strictObject({
-  id: idSchema,
-  discountBps: z.int().min(0).max(9999),
-  minimum: tradeMinimumSchema,
-})
-export type TradeTierConfig = z.infer<typeof tradeTierSchema>
-
-/**
- * The retail partners' programme (D31, D32): the tiers, and the one approval assigns. Staff
- * move an approved retailer to another tier; only the server resolves a retailer's tier, and
- * only for its own quotes. A CMS global may override the tiers (BRANDS.md §3) — as an owner's
- * setting, audited, never an editor's, since it moves money. Tier ids are unique and
- * `defaultTier` is one of them.
- */
-export const tradeConfigSchema = z
-  .strictObject({ tiers: z.array(tradeTierSchema).min(1), defaultTier: idSchema })
-  .superRefine((trade, ctx) => {
-    const ids = trade.tiers.map((tier) => tier.id)
-    if (new Set(ids).size !== ids.length) {
-      ctx.addIssue({ code: 'custom', path: ['tiers'], message: 'tier ids must be unique' })
-    }
-    if (!ids.includes(trade.defaultTier)) {
-      ctx.addIssue({ code: 'custom', path: ['defaultTier'], message: 'not one of the tiers' })
-    }
-  })
-export type TradeConfig = z.infer<typeof tradeConfigSchema>
-
 export const commerceConfigSchema = z.strictObject({
   inventoryModels: z.array(z.enum(INVENTORY_MODELS)).min(1),
   ttl: ttlSchema.prefault({}),
   /** Empty: every priced unique item leads with `buy`. */
   purchaseTiers: z.array(purchaseTierSchema).default([]).refine(isLadder, LADDER_MESSAGE),
-  /** The trade tiers of `accounts.retailers` (D32); `null` for a brand without retail partners. */
+  /** The trade terms of `accounts.retailers` (`./trade`); `null` for a brand without partners. */
   trade: tradeConfigSchema.nullable().default(null),
 })
 export type CommerceConfig = z.infer<typeof commerceConfigSchema>
