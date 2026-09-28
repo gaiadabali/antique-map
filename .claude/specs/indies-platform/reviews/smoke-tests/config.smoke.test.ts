@@ -85,7 +85,7 @@ const config: BrandConfigInput = {
       EUR: [{ upTo: null, step: 1000 }],
       USD: [{ upTo: null, step: 1000 }],
     },
-    fx: { source: 'ecb-reference', bufferPct: { IDR: 3, EUR: 3 } },
+    fx: { source: 'ecb-reference', bufferPct: { IDR: '3', EUR: '3.5' } },
   },
   sellers: [
     {
@@ -135,6 +135,25 @@ describe('C1 brand config', () => {
     family.sellers[0]!.methodOrder = ['va-bca']
     expect(brandConfigSchema.safeParse(family).success).toBe(false)
   })
+  it('C1 fixes from the review', () => {
+    const parsed = brandConfigSchema.parse(config)
+    expect(parsed.commerce.ttl.checkoutLockMaxHours).toBe(3)
+    expect(parsed.commerce.ttl.holdNoticeHours).toBe(12)
+    expect(parsed.routes.defaultSort).toEqual({ browse: 'newest', search: 'relevance' })
+    const negative = structuredClone(config)
+    negative.sellers[0]!.cardCeiling = { amount: -5, currency: 'USD' }
+    expect(brandConfigSchema.safeParse(negative).success).toBe(false)
+    for (const bad of ['3.555', '-1', '21', '03', 'three']) {
+      const buffer = structuredClone(config) as unknown as { money: { fx: { bufferPct: Record<string, string> } } }
+      buffer.money.fx.bufferPct.IDR = bad
+      expect(brandConfigSchema.safeParse(buffer).success, bad).toBe(false)
+    }
+    const twoSisters = { ...config, sisters: [
+      { slug: 'a', name: 'A', role: 'merch-outlet' as const, baseUrl: 'https://a.example.test' },
+      { slug: 'b', name: 'B', role: 'merch-outlet' as const, baseUrl: 'https://b.example.test' },
+    ] }
+    expect(brandConfigSchema.safeParse(twoSisters).success).toBe(false)
+  })
   it('rejects a root segment used twice', () => {
     const clash = { ...config.routes, en: { ...enSegments, search: 'browse' } }
     expect(routeMapSchema.safeParse(clash).success).toBe(false)
@@ -158,9 +177,6 @@ describe('C10 href()', () => {
     expect(href('search', { q: 'celebes', page: 1 }, 'en')).toBe('/search?q=celebes')
     expect(href('form', { kind: 'offer', item: 1706 }, 'en')).toBe('/make-an-offer?item=1706')
     expect(href('account', { section: 'wantLists' }, 'en')).toBe('/account/want-lists')
-    expect(href('order', { number: 'SG-000123', lookupToken: 'tok' }, 'en')).toBe(
-      '/orders/SG-000123?lookupToken=tok',
-    )
     expect(href('order', { number: 'SG-000123' }, 'en')).toBe('/orders/SG-000123')
     expect(href('place', { path: ['java', 'batavia'] }, 'en')).toBe('/places/java/batavia')
     expect(href('pay', { token: 'abc' }, 'id')).toBe('/id/pay/abc')

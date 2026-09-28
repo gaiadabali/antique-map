@@ -27,7 +27,15 @@ describe('C13 manifest', () => {
     }
     expect(commerceUrl('cart.addLines')).toBe('/api/x/commerce/cart/lines')
     expect(commerceUrl('shipTo.set')).toBe('/api/x/commerce/destination')
-    expect(handlerOf('/api/x/webhooks/payments/[provider]')).toBe('@engine/http/webhooks/payments')
+    expect(handlerOf('/api/x/webhooks/payments/[provider]/[seller]')).toBe('@engine/http/webhooks/payments')
+    expect(commerceUrl('payment.status')).toBe('/api/x/commerce/payments/status')
+    expect(COMMERCE_OPERATIONS['payment.status'].method).toBe('POST')
+    expect(COMMERCE_OPERATIONS['payLink.get']).toEqual({ area: 'pay', method: 'GET', path: '' })
+    const writesByCookie = ENGINE_ROUTES.filter((r) => r.methods.some((m) => m !== 'GET') && r.auth.some((a) => ['public', 'customer', 'token'].includes(a)))
+    expect(writesByCookie.every((r) => r.sameOrigin)).toBe(true)
+    expect(ENGINE_ROUTES.filter((r) => r.auth.includes('signature')).every((r) => !r.sameOrigin)).toBe(true)
+    // no GET operation takes a credential in its query
+    for (const [op, a] of Object.entries(COMMERCE_OPERATIONS)) if (a.method === 'GET') expect(['cart.get', 'payLink.get', 'appointment.slots', 'quote.get'], op).toContain(op)
     // every area method is used by an operation, except orders (document downloads)
     for (const [area, spec] of Object.entries(COMMERCE_AREAS)) {
       for (const m of spec.methods) {
