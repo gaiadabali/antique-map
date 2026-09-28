@@ -5,7 +5,7 @@
  * Every domain write — reserve() and its operations, applyPaymentEvent(), the checkout steps that
  * commit, the sweeps — runs in a transaction shaped by this file, so a reservation, a payment and
  * an order commit together or not at all, and no two writers deadlock or abort one another by
- * accident (senior-db review of 0.5, tested on PostgreSQL 18.6). DOM implements the rules; SCH
+ * accident (senior-db review of 1.2, tested on PostgreSQL 18.6). DOM implements the rules; SCH
  * declares the tables and indexes they stand on (./storage.ts).
  */
 import type { Duration } from './scalars'

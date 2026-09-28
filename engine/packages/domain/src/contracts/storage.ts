@@ -2,7 +2,7 @@
  * @contract C5–C8 shared — what the database must enforce · owner: ARC · for SCH (Phase 2) and DOM
  * Entry `@engine/domain/storage`.
  *
- * The constraints and indexes the domain's guarantees stand on (senior-db review of 0.5), for the
+ * The constraints and indexes the domain's guarantees stand on (senior-db review of 1.2), for the
  * SCH lead to declare through the Postgres adapter's `afterSchemaInit` / `extendTable`, so that
  * migrations AND a dev push carry them — a raw-SQL index would be dropped by a push and let the
  * concurrency tests pass without it (ARCHITECTURE.md §6). This file is not DDL: SCH writes that, in
