@@ -12,9 +12,10 @@
  * NTF turns the events into email after commit — never the request itself (C6 `retailer.apply`).
  *
  * Signing in (28.1, C13's auth routes): only `approved` signs in or sets a password. The first
- * password comes only from approval's set-password link; a reset link goes only to an approved
- * retailer that already has a password, and the reset form answers every address alike.
- * `applied`, `declined` and `ended` cannot sign in: sign-in answers them as an unknown email.
+ * password comes only from an approval link — approving an `ended` partner sends a new one. The
+ * reset form answers every address alike and sends a link only to an approved retailer: a reset
+ * link if it has a password, approval's link again if it has none yet. `applied`, `declined` and
+ * `ended` never get a link, and sign-in answers them as it answers an unknown email.
  *
  * Ending a partnership (D34) deactivates the account. The `end` transaction clears the password;
  * `retailer.partnershipEnded` then drives the sign-out — its consumer (DOM, idempotent) revokes
