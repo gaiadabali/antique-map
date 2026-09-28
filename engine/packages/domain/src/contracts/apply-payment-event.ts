@@ -67,13 +67,21 @@ export type PaymentPorts = {
 /**
  * Applies one event in ONE transaction of its own (a DomainTx: READ COMMITTED, the lock order) —
  * preceded, for a capture only, by a short one that secures the hold:
- * 0. An `authorised` event on an attempt that must be captured, whose order is `pending_payment`
- *    or `abandoned`: first SECURE THE HOLD, in a transaction of its own that commits (the order,
- *    then its reservations): every reservation the capture relies on must be live beyond the call,
- *    `expires_at > statement_timestamp() + DOMAIN_TX_TIMEOUTS.port`. A row that falls short is
- *    extended (within `maxLifetime`); one that cannot reach it, or has lapsed, is re-taken for this
- *    buyer (reserveAll(), superseding it); if the item is gone, nothing is taken and step 5 takes
- *    the late path. It commits BEFORE the applying transaction because, tested on PostgreSQL 18.6,
+ * 0. SECURE THE HOLD — for an `authorised` event whose order is `pending_payment` or `abandoned`,
+ *    in a transaction of its own that commits. It locks the order, then the attempt, and goes on
+ *    only if the payment machine allows a move to `authorised` from the attempt's status AND the
+ *    event's amount and currency equal the attempt's charge; otherwise it stops, and steps 4–5
+ *    classify the event as usual. So a stale (an attempt already `voided`), misquoted or redelivered
+ *    authorisation never extends or re-takes a hold that nothing will capture. Then every
+ *    reservation the capture relies on — the order's, one per line — is made to outlast the whole
+ *    applying transaction, `expires_at > statement_timestamp() + DOMAIN_TX_TIMEOUTS.transaction`,
+ *    since steps 1–4 may spend lock waits and statements before step 5 checks again. A row that
+ *    falls short is extended (within `maxLifetime`); one that cannot reach that, or has lapsed or
+ *    gone, is re-taken for this buyer (reserveAll(), superseding it), and the new row carries the
+ *    order's `order_id`. A re-take starts a fresh `created_at` and so a fresh `maxLifetime` — which
+ *    is acceptable only because each re-take needs a genuine, correctly charged authorisation of
+ *    this very attempt (the guard above), never a buyer's click. If the item is gone, nothing is
+ *    taken. It commits BEFORE the applying transaction because, tested on PostgreSQL 18.6,
  *    an extension made inside it is invisible to the other buyer until commit — their reserve()
  *    still sees the row lapse mid-call and waits on its lock — and a row it wrote makes their
  *    insert wait for its commit even while the row is plainly live: either wait outlasts
@@ -99,17 +107,23 @@ export type PaymentPorts = {
  *    never passes through `authorised` — only through `paid` (and `disputed` after it), money the
  *    provider already holds.
  * 5. Apply, every status write a compare-and-set:
- *    - Money in: lock the order's reservations in `target_key` order (`FOR UPDATE`, nothing
- *      written yet). An authorisation is captured only if each is live beyond the call — the
- *      margin step 0 secured, checked again here — then `ports.capture()`; a settlement (`paid`)
- *      needs each live. Then convert them all, move the order to `paid`, write the outbox.
- *    - The late path — a reservation lapsed, or the order is `abandoned` or `cancelled`. A
- *      settlement (`paid`) re-reserves for this buyer (reserveAll(); its lazy expiry retires what
- *      lapsed) and, if that holds, sells (`payment-paid` or `late-payment-kept`). An authorisation
- *      is re-taken only in step 0 — no capture ever follows a row this transaction wrote — so one
- *      that reaches this path could not be secured. Not kept: `late-payment-refused`, and the money
- *      goes back — `ports.cancel()` for an authorisation, else `ports.refund()` keyed
- *      `late:{attemptId}`, after any reservation work has been rolled back to its savepoint.
+ *    - Money in: lock the order's reservations — `order_id = $o AND status = 'active'`, in
+ *      `target_key` order, `FOR UPDATE`, nothing written yet; every reservation an attempt pays for
+ *      carries its order's id (a checkout lock, or the row step 0 re-took). An authorisation is
+ *      captured only if each is live beyond the call, `expires_at > statement_timestamp() +
+ *      DOMAIN_TX_TIMEOUTS.port`; a settlement (`paid`) needs each live. Then `ports.capture()`
+ *      for an authorisation, convert them all, move the order to `paid` (`payment-paid`, or
+ *      `late-payment-kept` from `abandoned`) and write the outbox.
+ *    - An authorisation whose rows are still `active` and this order's but short of that margin
+ *      THROWS (5xx: the provider retries, and step 0 secures the hold again) — never a reason to
+ *      void. Step 0 alone extends or re-takes: no capture ever follows a row this transaction
+ *      wrote.
+ *    - A settlement whose reservation lapsed or went re-reserves for this buyer (reserveAll(); its
+ *      lazy expiry retires what lapsed) and, if that holds, sells as above.
+ *    - Not kept — the item is gone (another buyer holds or bought it) or the order is `cancelled`:
+ *      `late-payment-refused`, and the money goes back — `ports.cancel()` for an authorisation,
+ *      else `ports.refund()` keyed `late:{attemptId}` — after any reservation work has been rolled
+ *      back to its savepoint.
  *    - A duplicate — the order is already `paid`, `fulfilling` or `completed` through another
  *      attempt (a VA and a QRIS both settled): this attempt moves to `paid` (the money is real),
  *      the order records `duplicate-payment-refused`, and the money goes back keyed

@@ -158,9 +158,11 @@ export type CheckoutContinueRequest = {
 /**
  * A method chosen. Two transactions around one provider call, so no reservation row is held while
  * a gateway thinks:
- * 1. prices again, extends the order's locks to the method's `sessionTtl` plus a margin, closes
- *    any open attempt of the order, and COMMITS the new attempt with our reference — so an event
- *    can never arrive for an attempt the domain does not yet know;
+ * 1. prices again, extends the order's checkout locks to the method's `sessionTtl` plus a margin
+ *    — a hold or an offer hold on a line is superseded by the order's lock, lasting at least as
+ *    long as that hold would have — closes any open attempt of the order, and COMMITS the new
+ *    attempt with our reference, so an event can never arrive for an attempt the domain does not
+ *    yet know. From here every reservation the attempt pays for carries the order's `order_id`;
  * 2. `createSession()`, outside any transaction;
  * 3. stores the SessionResult on the attempt and as the answer to `idempotencyKey`.
  * The same key replays the stored session. If the session was never stored (a crash between 2
@@ -217,7 +219,12 @@ export type PayLinkView = {
   readonly order: { readonly number: string; readonly status: OrderStatus } | null
 }
 
-/** A staff-sent payment link (accepted offer, hold, WhatsApp sale, proforma): `/pay/{token}`. */
+/**
+ * A staff-sent payment link (accepted offer, hold, WhatsApp sale, proforma): `/pay/{token}`. Paid
+ * like `payment.start` — two transactions around `createSession()` — and its first supersedes the
+ * link's hold, offer hold or invoice hold with the order's checkout lock, lasting at least as long
+ * as the hold would have, so a failed card never costs an institution its proforma's hold.
+ */
 export type PayLinkStartRequest = {
   readonly token: string
   readonly method: PaymentMethodId
