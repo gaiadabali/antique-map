@@ -4,9 +4,14 @@
  * After the order: guests track by order number plus the email or WhatsApp number they used
  * (the pair is the credential — a number alone never is); a return can be requested on every
  * order line (UU 8/1999 allows no "all sales final", COMPLIANCE.md §6); institutions turn a bag
- * into a proforma and businesses ask for quotes (COMMERCE.md §7; EXPERIENCE-SHOP.md §9).
+ * into a proforma, and a business asks for quotes — on the shop, as an approved partner (D36).
  */
-import type { Money } from '../money/contract'
+import type {
+  Money,
+  TradeMinimum,
+  TradeMinimumShortfall,
+  TradeMinimumWaiver,
+} from '../money/contract'
 import type { OrderStatus } from '../order/machine'
 import type { PaymentStatus } from '../payment/machine'
 import type { OrderedLineView, SellerIdentity } from './checkout'
@@ -21,6 +26,7 @@ import type {
 } from './requests'
 import type { IdempotencyKey, PricedTotals, PricingToken } from './results'
 import type { IsoDate, IsoInstant } from './scalars'
+import type { Accepts, Assert, Equals } from './type-assertions'
 
 /** A stored order's figures as the buyer reads them: no token, because nothing is committed. */
 export type OrderTotalsView = Omit<PricedTotals, 'token'>
@@ -127,13 +133,35 @@ export type ProformaRequest = {
   readonly idempotencyKey: IdempotencyKey
 }
 
-/** A business quote (For Business, "Turn this into a quote"): prepared by staff, then issued. */
-export type QuoteRequest = {
-  readonly lines: readonly LineInput[]
-  readonly message: string | null
+/**
+ * What a quote request asks to have quoted: lines to price — a configured product ("Turn this into
+ * a quote") — or, with no lines yet, a BRIEF in `message`: a partner's new order in its own words
+ * ("40 framed prints for the lobby, by March"), whose lines staff build in the order builder
+ * before issuing it (24.5). A form post with no `lines` is read as the empty list, so a brief
+ * always has its message. A reorder is not a request with lines: it names its order
+ * (`quote.reorder`), and the server copies the lines.
+ */
+type QuoteRequestSubject =
+  | { readonly lines: readonly [LineInput, ...LineInput[]]; readonly message: string | null }
+  | { readonly lines: readonly []; readonly message: string }
+
+/**
+ * A quote to prepare — a signed-in partner's order (D32, D36) or, where a brand's app offers one,
+ * a guest's business quote — which staff price when they issue it (a partner's at its trade
+ * tier), then send.
+ */
+export type QuoteRequest = QuoteRequestSubject & {
   readonly neededBy: IsoDate | null
+  /**
+   * A partner's form prefills it from its record — the business name, and the NPWP (or tax
+   * number) as `taxId`, for the tax-invoice export; null from a partner takes the record's as is.
+   */
   readonly institution: InstitutionInput | null
-  readonly contact: LeadContactInput
+  /**
+   * Null only for a signed-in, approved partner: the session is the contact. From anyone else a
+   * null contact is `invalid`.
+   */
+  readonly contact: LeadContactInput | null
   readonly idempotencyKey: IdempotencyKey
 }
 
@@ -144,11 +172,30 @@ export type QuoteLineView = {
   readonly variantId: VariantId | null
   readonly quantity: number
   readonly options: { readonly [axis: string]: string } | null
+  /** What the buyer pays per piece: on a retailer's quote, the trade price (C5 `buyerUnitPrice`). */
   readonly unitPrice: Money
+  /** The market list's price the trade tier started from, for reference; null without a tier. */
+  readonly retailUnitPrice: Money | null
   readonly total: Money
   /** A unique line's `invoice` hold, when the quote is a proforma. */
   readonly heldUntil: IsoInstant | null
 }
+
+/**
+ * The trade terms a retailer's quote was issued at (D32) — kept as issued, whatever changes to the
+ * retailer's tier later; paying the quote applies exactly these (C5 `AgreedPrice.trade`).
+ */
+export type QuoteTradeView = {
+  readonly tierId: string
+  readonly discountBps: number
+  readonly minimum: TradeMinimum
+  /**
+   * Staff issued the quote below its minimum (C5 `TradeMinimumWaiver`): when, and by how much it
+   * fell short. Who waived it and why stay in the admin. Null when the quote met its minimum.
+   */
+  readonly minimumWaiver: QuoteWaiverView | null
+}
+export type QuoteWaiverView = Pick<TradeMinimumWaiver, 'at' | 'shortfall'>
 
 export type QuoteView = {
   readonly token: string
@@ -168,6 +215,8 @@ export type QuoteView = {
   readonly pdfUrl: string | null
   /** Once accepted: the payment link, whose methods routing allows. */
   readonly payLinkToken: string | null
+  /** An approved retailer's quote: the terms it was issued at. Null for every other quote. */
+  readonly trade: QuoteTradeView | null
 }
 
 /** Accept an issued quote as priced — a different figure than the token names is `price-changed`. */
@@ -176,3 +225,18 @@ export type QuoteAcceptRequest = {
   readonly acceptedPricing: PricingToken
   readonly idempotencyKey: IdempotencyKey
 }
+
+// ─── Type-level tests ────────────────────────────────────────────────────────────────────────
+
+// A brief with no lines says what it needs; a request with lines may leave the message out.
+type _BriefWithoutMessage = Accepts<
+  QuoteRequestSubject,
+  // @ts-expect-error — no lines and no message leaves staff nothing to quote
+  { lines: []; message: null }
+>
+type _LinesWithoutMessage = Accepts<QuoteRequestSubject, { lines: [LineInput]; message: null }>
+// The partner reads that its minimum was waived, and by how much — never who waived it, or why.
+type _WaiverViewNamesNoStaff = Assert<
+  Equals<Extract<keyof QuoteWaiverView, 'by' | 'reason'>, never>
+>
+type _WaiverViewShortfall = Assert<Equals<QuoteWaiverView['shortfall'], TradeMinimumShortfall>>

@@ -12,14 +12,15 @@
  */
 import type { CountryCode, CurrencyCode, MarketConfig, SellerConfig } from '@engine/config/schema'
 
-import type { FxSnapshot, Money, RoundingRecord, RoundingRecordAt } from '../money/contract'
-import type { DecimalString, ExactRatio, IsoInstant } from './scalars'
+import type { FxSnapshot, Money, RoundingRecord } from '../money/contract'
+import type { PriceAgreementRef, TradeTerms, UnitPriceSource } from './price-sources'
+import type { DecimalString, ExactRatio } from './scalars'
 import type { Accepts, Assert, Equals } from './type-assertions'
 
 /** The stages, in the order they run. */
 export type PipelineOrder = readonly [
   'unit-price', //          market list: explicit | product-type table × multiplier | derived
-  'customer-price-list', // trade and wholesale tiers (v2); the identity in v1
+  'customer-price-list', // an approved retailer's trade tier on its quote (D32); else the list
   'line-discounts', //      bundles, multi-buy ("3 for 2")
   'order-discounts', //     codes, first-order offer, automatic rules (the free-shipping threshold)
   'shipping', //            the chosen rate or quote (COMMERCE.md §8)
@@ -28,40 +29,6 @@ export type PipelineOrder = readonly [
   'grand-total', //         what is charged
 ]
 export type PipelineStage = PipelineOrder[number]
-
-/**
- * Where a line's unit price came from (COMMERCE.md §3, market price lists) — stored with it. The
- * market lists price a bag; `offer` and `quote` price what was agreed: an accepted offer's figure,
- * or an issued quote's or proforma's line, looked up on the server by the agreement the line names.
- */
-export type UnitPriceSource = 'explicit' | 'product-type-table' | 'derived' | 'offer' | 'quote'
-
-/**
- * Which agreement prices a line. The server sets it from the pay link or quote a buyer holds —
- * never from a request — and the unit-price stage then reads the stored AgreedPrice, not a list.
- */
-export type PriceAgreementRef =
-  | { readonly kind: 'offer'; readonly offerId: number }
-  | { readonly kind: 'quote'; readonly quoteId: number; readonly quoteLineId: string }
-
-/**
- * An agreed unit price, stored server-side when the offer is accepted or the quote issued. A bid
- * or a counter arrives in the buyer's market currency, so the figure is converted ONCE, then, into
- * the charge currency at the `fx-conversion` point, with the snapshot and the rounding it used;
- * the pay link or the proforma charges exactly `unitPrice` however the rate moves afterwards. It
- * reads like a price on the market's list: tax-inclusive where that list is.
- */
-export type AgreedPrice = {
-  readonly ref: PriceAgreementRef
-  /** In the charge currency: what the pipeline's unit-price stage uses. */
-  readonly unitPrice: Money
-  /** The figure as agreed — the proposal, the counter or the quote line — in its own currency. */
-  readonly agreed: Money
-  /** Null when the agreed currency is the charge currency and nothing was converted. */
-  readonly fx: FxSnapshot | null
-  readonly rounding: RoundingRecordAt<'fx-conversion'> | null
-  readonly agreedAt: IsoInstant
-}
 
 /**
  * A line before any stage has run: what is bought and how many — never a price. The unit-price
@@ -93,9 +60,20 @@ export type LineFiguresAdded = {
     /** `unitPrice × quantity` — integer times integer, nothing to round. */
     readonly subtotal: Money
   }
-  readonly 'customer-price-list': { readonly priceListId: string | null }
+  /**
+   * The price this buyer pays before discounts. Everyone pays the list (`unitPrice`) except an
+   * approved retailer on its quote, who pays its trade tier's: `unitPrice` less `discountBps`,
+   * rounded half-even once at `trade-unit-price`. A line an agreement prices takes the tier the
+   * agreement recorded; any other line takes `PricingContext.trade`.
+   */
+  readonly 'customer-price-list': {
+    readonly tradeTierId: string | null
+    readonly buyerUnitPrice: Money
+    /** `buyerUnitPrice × quantity` — integer times integer, nothing to round. */
+    readonly buyerSubtotal: Money
+  }
   readonly 'line-discounts': {
-    /** Rounded half-even at `line-discount`; never more than `subtotal`. */
+    /** Rounded half-even at `line-discount`; never more than `buyerSubtotal`. */
     readonly lineDiscount: Money
     readonly lineDiscountIds: readonly string[]
   }
@@ -111,7 +89,8 @@ export type LineFiguresAdded = {
 /** The order-level figures each stage adds. Every one is stored on the order. */
 export type OrderFiguresAdded = {
   readonly 'unit-price': { readonly subtotal: Money }
-  readonly 'customer-price-list': NoFigures
+  /** The lines' sum: what C6's `PricedTotals.subtotal` shows the buyer. */
+  readonly 'customer-price-list': { readonly buyerSubtotal: Money }
   readonly 'line-discounts': { readonly lineDiscount: Money }
   readonly 'order-discounts': {
     readonly orderDiscount: Money
@@ -189,12 +168,7 @@ export type PipelineState<S extends Reached> = {
   readonly roundings: readonly RoundingRecord[]
 } & (S extends PipelineStage ? FiguresThrough<OrderFiguresAdded, S> : unknown)
 
-/**
- * Everything a stage may read besides its own input — loaded before the run, never fetched
- * during it. `at` is the pricing instant (discount windows, effective-dated tax rules), passed in
- * so a stage never reads a clock.
- */
-export type PricingContext = {
+type PricingContextBase = {
   readonly seller: SellerConfig
   readonly market: MarketConfig
   readonly destination: CountryCode
@@ -205,6 +179,21 @@ export type PricingContext = {
   readonly fx: FxSnapshot | null
   readonly at: Date
 }
+
+/**
+ * Everything a stage may read besides its own input — loaded before the run, never fetched
+ * during it. `at` is the pricing instant (discount windows, effective-dated tax rules), passed in
+ * so a stage never reads a clock. `channel` says who is being priced:
+ * - `bag` — a cart and its checkout: lines no agreement prices, and never trade terms (D31:
+ *   shoppers buy as guests, and a retailer has no wholesale cart);
+ * - `quote` — the order builder pricing a quote or an order for a named customer, or the payment of
+ *   an agreement (a pay link, an accepted quote): `trade` only when that customer is an approved
+ *   retailer, resolved on the server (`TradeTermsResolution` `terms`; any other answer is null);
+ *   a line an agreement prices keeps the tier it recorded.
+ */
+export type PricingContext =
+  | (PricingContextBase & { readonly channel: 'bag'; readonly trade: null })
+  | (PricingContextBase & { readonly channel: 'quote'; readonly trade: TradeTerms | null })
 
 /**
  * The signature of stage `S`: the state the previous stage produced, the stage's own input (its
@@ -234,19 +223,21 @@ type _StartLinesCarryNoFigure = Assert<
 >
 // @ts-expect-error — a line entering the pipeline has no price to read: the server prices it
 type _PriceBeforeUnitPrice = PipelineLine<'start'>['unitPrice']
-// An agreement names the offer or quote; the figure is looked up, so none can ride along.
-type AgreementKeys = PriceAgreementRef extends infer R
-  ? R extends unknown
-    ? keyof R
-    : never
-  : never
-type _AgreementCarriesNoFigure = Assert<
-  Equals<Extract<AgreementKeys, 'unitPrice' | 'agreed' | 'amount' | 'price'>, never>
+type Base = Omit<PricingContext, 'channel' | 'trade'>
+type _RetailersQuoteAtTrade = Accepts<
+  PricingContext,
+  Base & { channel: 'quote'; trade: TradeTerms }
+>
+type _BagAtTrade = Accepts<
+  PricingContext,
+  // @ts-expect-error — a bag is never priced at a trade tier: shoppers buy as guests (D31)
+  Base & { channel: 'bag'; trade: TradeTerms }
 >
 type _TotalsKeepEveryFigure = Assert<
   Equals<
     Exclude<keyof PipelineTotals, 'stage' | 'currency' | 'lines' | 'roundings'>,
     | 'subtotal'
+    | 'buyerSubtotal'
     | 'lineDiscount'
     | 'orderDiscount'
     | 'discountIds'

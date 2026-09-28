@@ -105,6 +105,11 @@ export type ServerComputedKey =
   | 'fee'
   | 'balance'
   | 'deposit'
+  | 'trade'
+  | 'tradeTierId'
+  | 'discountBps'
+  | 'buyerUnitPrice'
+  | 'buyerSubtotal'
 
 type MoneyShaped = { readonly amount: unknown; readonly currency: unknown }
 type AllTrue<R> = false extends R[keyof R] ? false : true

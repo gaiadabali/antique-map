@@ -7,12 +7,12 @@
  * - domain events, forwarded only by the outbox dispatcher after commit, so revenue that rolled
  *   back never reaches a dashboard or an ad platform (ANALYTICS.md §1).
  * No PII in any event — ids and categories only; the foot of this file proves no prop is named
- * for an email, a phone number, a name or an address.
+ * for an email, a phone number, a name, an address or a tax number.
  */
 import type { Surface } from '@engine/config/routes'
 import type { InventoryModel, LocaleCode, ProductKind } from '@engine/config/schema'
-import type { CheckoutStepId, EnquiryTopic, IsoInstant } from '@engine/domain/api'
-import type { DomainEventName } from '@engine/domain/events'
+import type { CheckoutStepId, EnquiryTopic, IsoInstant, RetailerShopType } from '@engine/domain/api'
+import type { DomainEventName, IsPiiFree } from '@engine/domain/events'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
 import type { PaymentFailureClass, PaymentMethodId } from '@engine/domain/machines/payment'
 import type { Money } from '@engine/domain/money'
@@ -39,6 +39,8 @@ export type PriceBand = `tier-${number}` | 'on-request' | 'none'
 type NoProps = Record<never, never>
 /** A product by its public id — the number in its URL. */
 type OnItem = { readonly productId: number }
+/** Which item, which form of it, and how many the list holds after the change. */
+type WishlistChange = OnItem & { readonly variantId: number | null; readonly listSize: number }
 
 export type BeaconEventProps = {
   // Discovery
@@ -73,7 +75,14 @@ export type BeaconEventProps = {
   readonly 'item.shared': OnItem & {
     readonly channel: 'whatsapp' | 'email' | 'copy-link' | 'native' | 'facebook' | 'pinterest'
   }
-  readonly 'item.saved': OnItem
+  /**
+   * The wishlist (D35). On the shop it lives on the guest's device — no account, no C6 operation
+   * — so these are the only record the server keeps of it, and only as consent allows
+   * (ANALYTICS.md §1: cookieless before analytics consent; GA4 and Meta after marketing consent).
+   * The surface it happened on is the context's; the list itself is never sent as an event.
+   */
+  readonly 'item.saved': WishlistChange
+  readonly 'item.unsaved': WishlistChange
   readonly 'alert.created': {
     readonly kind: 'want-list' | 'item-alert'
     readonly surface: SurfaceName
@@ -92,6 +101,8 @@ export type BeaconEventProps = {
   readonly 'viewing.booked': { readonly locationId: string }
   readonly 'consignment.submitted': NoProps
   readonly 'whatsapp.clicked': { readonly context: 'item' | 'checkout' | 'footer' | 'business' }
+  /** The Partnership form's shop branch sent (D31): the kind of shop, never who it is. */
+  readonly 'retailerApplication.submitted': { readonly shopType: RetailerShopType }
   // Purchase
   /** `value` is the price the page displayed, for GA4's add_to_cart — commerce never reads it. */
   readonly 'cart.added': OnItem & {
@@ -166,8 +177,22 @@ export const DOMAIN_ANALYTICS_EVENTS = [
   'hold.granted',
   'hold.expired',
   'reservation.conflicted',
+  // The shop's partner funnel (D31): applications — first and again, the Leads dashboard's count
+  // (never the beacon) — and staff's decisions, with how long they took.
+  'retailer.applied',
+  'retailer.reapplied',
+  'retailer.approved',
+  'retailer.declined',
 ] as const satisfies readonly DomainEventName[]
 export type DomainAnalyticsEvent = (typeof DOMAIN_ANALYTICS_EVENTS)[number]
+
+type RetailerApplication = { readonly retailerId: number; readonly shopType: RetailerShopType }
+/** Staff's answer to an application, with the hours it took — the Leads dashboard's reply time. */
+type RetailerDecision = {
+  readonly retailerId: number
+  readonly shopType: RetailerShopType
+  readonly decisionHours: number
+}
 
 /** Values in the charge currency, with the order's FX snapshot kept server-side (never recomputed). */
 export type DomainAnalyticsProps = {
@@ -182,6 +207,11 @@ export type DomainAnalyticsProps = {
   readonly 'hold.granted': OnItem
   readonly 'hold.expired': OnItem
   readonly 'reservation.conflicted': OnItem & { readonly state: 'held' | 'sold' }
+  /** A retail partner by its customer id and kind of shop — never its name, NPWP or contact. */
+  readonly 'retailer.applied': RetailerApplication
+  readonly 'retailer.reapplied': RetailerApplication
+  readonly 'retailer.approved': RetailerDecision
+  readonly 'retailer.declined': RetailerDecision
 }
 
 export type AnalyticsEventName = BeaconEventName | DomainAnalyticsEvent
@@ -191,6 +221,8 @@ export const GA4_EVENTS = {
   'listing.viewed': 'view_item_list',
   'item.viewed': 'view_item',
   'item.saved': 'add_to_wishlist',
+  // GA4 recommends no event for a removal: a custom one, so an audience can drop the item (D35).
+  'item.unsaved': 'remove_from_wishlist',
   'cart.added': 'add_to_cart',
   'cart.removed': 'remove_from_cart',
   'checkout.started': 'begin_checkout',
@@ -201,6 +233,7 @@ export const GA4_EVENTS = {
   'offer.submitted': 'generate_lead',
   'enquiry.submitted': 'generate_lead',
   'viewing.booked': 'generate_lead',
+  'retailerApplication.submitted': 'generate_lead',
   'search.submitted': 'search',
   'newsletter.confirmed': 'sign_up',
 } as const satisfies { readonly [N in AnalyticsEventName]?: string }
@@ -220,6 +253,7 @@ export const META_EVENTS = {
   'offer.submitted': 'Lead',
   'enquiry.submitted': 'Lead',
   'viewing.booked': 'Lead',
+  'retailerApplication.submitted': 'Lead',
   'search.submitted': 'Search',
   'newsletter.confirmed': 'Subscribe',
 } as const satisfies { readonly [N in AnalyticsEventName]?: string }
@@ -232,15 +266,7 @@ export const META_CHECKOUT_STEPS = {
 type Assert<T extends true> = T
 type Equals<A, B> =
   (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false
-type PiiKey = 'email' | 'phone' | 'whatsapp' | 'name' | 'fullName' | 'address' | 'ip'
-type AllTrue<R> = false extends R[keyof R] ? false : true
-type IsPiiFree<T> = T extends readonly (infer E)[]
-  ? IsPiiFree<E>
-  : T extends object
-    ? [Extract<keyof T, PiiKey>] extends [never]
-      ? AllTrue<{ [K in keyof T]-?: IsPiiFree<T[K]> }>
-      : false
-    : true
+// `IsPiiFree` is the outbox's (C8 `PiiKey`): one list of names no event may carry.
 
 // One fact is never counted twice: no beacon event shares a name with a domain event.
 type _BeaconAndDomainDisjoint = Assert<Equals<Extract<BeaconEventName, DomainEventName>, never>>
@@ -252,4 +278,8 @@ type _DomainPropsArePiiFree = Assert<IsPiiFree<DomainAnalyticsProps>>
 type _EmailRejected = Assert<
   // @ts-expect-error — an email address never enters the events table
   IsPiiFree<BeaconEventProps['cart.viewed'] & { readonly email: string }>
+>
+// D35: a wishlist change names one item and a count — the list's contents never leave the device.
+type _WishlistNamesOneItem = Assert<
+  Equals<keyof BeaconEventProps['item.unsaved'], 'productId' | 'variantId' | 'listSize'>
 >
