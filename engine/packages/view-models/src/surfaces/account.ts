@@ -38,7 +38,7 @@ export type AttentionVM = {
 /** A saved search or "tell me when another example arrives" (EXPERIENCE-GALLERY.md §8). */
 export type WantListVM = {
   id: string
-  /** "Maps of Bali under US$2,000" — the query in words. */
+  /** "Maps of Bali" — the query in words; the app adds the budget, formatted from `budget`. */
   label: string
   /** The browse page the list watches. */
   href: string

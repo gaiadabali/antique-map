@@ -11,8 +11,8 @@ import type { CurrencyCode } from '@engine/config/schema'
 import type { BlockVM } from '../blocks'
 import type { ImageVM, IsoDate, LineIntent, LinkVM, Money, PriceVM, SeoVM } from '../common'
 
+/** An amount the buyer can choose; the app formats it from `price`, never from a label. */
 export type GiftCardAmountVM = {
-  label: string
   price: PriceVM
   /** The component adds `giftCard` — C6 `GiftCardDelivery` from the recipient form. */
   line: Omit<LineIntent, 'giftCard'>

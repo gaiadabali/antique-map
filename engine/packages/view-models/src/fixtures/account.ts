@@ -88,7 +88,7 @@ export const accountWantLists: AccountVM = signedIn({
   lists: [
     {
       id: 'wl-1',
-      label: 'Maps of Pulau Contoh under US$2,000',
+      label: 'Maps of Pulau Contoh',
       href: '/antique-maps/contoh?price=0-200000',
       budget: money(200000, 'USD'),
       frequency: 'instant',

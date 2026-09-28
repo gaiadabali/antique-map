@@ -7,8 +7,7 @@
 import type { GiftCardVM } from '../surfaces/gift-card'
 import { image, money, price, seo } from './_shared'
 
-const amount = (label: string, idr: number, variantId: number) => ({
-  label,
+const amount = (idr: number, variantId: number) => ({
   price: price(money(idr, 'IDR')),
   line: { productId: 9500, variantId, quantity: 1, options: null },
 })
@@ -19,11 +18,7 @@ export const giftCard: GiftCardVM = {
   intro: [],
   image: image('gift-card', 1600, 1000, 'A gift card printed with an archive map of the harbour'),
   currency: 'IDR',
-  amounts: [
-    amount('Rp 250.000', 250000, 95001),
-    amount('Rp 500.000', 500000, 95002),
-    amount('Rp 1.000.000', 1000000, 95003),
-  ],
+  amounts: [amount(250000, 95001), amount(500000, 95002), amount(1000000, 95003)],
   delivery: {
     channels: ['email', 'whatsapp'],
     earliest: '2026-09-25',
