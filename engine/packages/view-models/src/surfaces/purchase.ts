@@ -6,33 +6,39 @@
  * panel renders a designed state for every combination — a `domestic-only` item seen from
  * abroad reads "Available for delivery within Indonesia · View it in Jakarta", never a
  * disabled Buy button. It is resolved at request time and streamed; the panel reserves its
- * height and shows no purchase control until it resolves. Loaders apply the tier, the
+ * height and shows no purchase control until it resolves, and a read that fails resolves to
+ * `enquiryOnly` / `unverified`, never to an error (`Streamed`). Loaders apply the tier, the
  * status and the modules, so a component never decides which actions exist.
  */
 import type { CountryCode, PurchaseAction } from '@engine/config/schema'
 
 import type { CardVM } from '../cards'
-import type { ImageVM, IsoDateTime, LineIntent, LinkVM, Money, PriceVM } from '../common'
+import type { IsoDateTime, LineIntent, LinkVM, Money, PriceVM } from '../common'
 import type { VariantsPurchaseVM } from './purchase-variants'
+import type { SisterLinkVM } from './sister'
 
 export type * from './purchase-variants'
+export type * from './sister'
 
 export type PurchaseVM = UniquePurchaseVM | VariantsPurchaseVM | EnquiryOnlyPurchaseVM
 
 /**
  * An action the panel offers. `buy` posts its line to `cart.addLines` (C6) — ids and a
- * quantity of 1, never the price beside it; `whatsapp` opens a chat prefilled with the
- * stock number and title in the page's language; the others open their dialog, whose
- * no-JavaScript path is `href` (a Form surface, C10).
+ * quantity of 1, never the price beside it; `pay` opens the payment link of what is held for
+ * this viewer; `whatsapp` opens a chat prefilled with the stock number and title in the
+ * page's language; the others open their dialog, whose no-JavaScript path is `href` (C10).
  */
 export type PurchaseActionVM =
   | { action: 'buy'; line: LineIntent }
+  | { action: 'pay'; href: string }
   | { action: 'whatsapp'; href: string }
   | { action: Exclude<PurchaseAction, 'buy' | 'whatsapp'>; href: string }
+/** Every action but Buy: what a panel offers when the item cannot go in the bag now. */
+export type NoBuyActionVM = Exclude<PurchaseActionVM, { action: 'buy' }>
 
-export type PurchaseActionsVM = {
-  primary: PurchaseActionVM | null
-  secondary: readonly PurchaseActionVM[]
+export type PurchaseActionsVM<P extends PurchaseActionVM = PurchaseActionVM> = {
+  primary: P | null
+  secondary: readonly P[]
 }
 
 /** Whether the item can reach the ship-to destination (COMMERCE.md §2, COMPLIANCE.md §1). */
@@ -51,44 +57,96 @@ export type UniquePriceVM =
   | { kind: 'revealed'; price: PriceVM }
   /** A sensitive item: "A specialist will reply within {hours}". */
   | { kind: 'queued'; replyHours: number }
+  /** No asking price (`pricing.mode: offer-only`): the panel invites an offer. */
+  | { kind: 'offerOnly' }
   /** Sold: no price. */
   | { kind: 'hidden' }
+type Price<K extends UniquePriceVM['kind']> = Extract<UniquePriceVM, { kind: K }>
 
-/** The item's status as this viewer meets it. */
+/** "On hold until Friday 14:00" — someone else's lock, hold, offer or invoice. */
+export type HeldByOtherVM = { kind: 'heldByOther'; until: IsoDateTime | null }
+/** A staff hold, an accepted offer or a proforma for this viewer: `pay` leads, Buy never shows. */
+export type HeldForMeVM = {
+  kind: 'heldForMe'
+  reason: 'hold' | 'offer' | 'invoice'
+  until: IsoDateTime
+}
+/** Already in this viewer's bag (a bag never reserves, so it can still sell): "View your bag". */
+export type InMyBagVM = { kind: 'inMyBag'; cartHref: string }
+/** This viewer's checkout lock: the countdown is true, so it is shown. */
+export type InMyCheckoutVM = { kind: 'inMyCheckout'; until: IsoDateTime; checkoutHref: string }
+/**
+ * This viewer's open offer, submitted or countered (the counter open until `counterExpiresAt`).
+ * A declined, expired or withdrawn offer is history on the account (`AccountOfferVM`): the
+ * panel shows the item's own state again, and a new offer may be made.
+ */
+export type MyOfferVM = {
+  kind: 'myOffer'
+  status: 'submitted' | 'countered'
+  amount: Money
+  counter: Money | null
+  counterExpiresAt: IsoDateTime | null
+  href: string
+}
+/**
+ * Sold, and still published: no price (a price realised only for a signed-in buyer), the
+ * available example of the same edition, and a print from the sister where one exists.
+ */
+export type SoldVM = {
+  kind: 'sold'
+  priceRealised: PriceVM | null
+  alternative: CardVM | null
+  print: SisterLinkVM | null
+}
 export type UniqueStateVM =
   | { kind: 'available' }
-  /** "On hold until Friday 14:00" — someone else's lock, hold, offer or invoice. */
-  | { kind: 'heldByOther'; until: IsoDateTime | null }
-  /** A staff hold, an accepted offer or a proforma for this viewer, with its payment link. */
-  | { kind: 'heldForMe'; reason: 'hold' | 'offer' | 'invoice'; until: IsoDateTime; payHref: string }
-  /** This viewer's checkout lock: the countdown is true, so it is shown. */
-  | { kind: 'inMyCheckout'; until: IsoDateTime; checkoutHref: string }
-  /** This viewer's offer is pending, or countered (valid until `counterExpiresAt`). */
-  | {
-      kind: 'myOffer'
-      status: 'submitted' | 'countered'
-      amount: Money
-      counter: Money | null
-      counterExpiresAt: IsoDateTime | null
-      href: string
-    }
-  /**
-   * Sold, and still published: no price (a price realised only for a signed-in buyer), the
-   * available example of the same edition, and a print from the sister where one exists.
-   */
-  | {
-      kind: 'sold'
-      priceRealised: PriceVM | null
-      alternative: CardVM | null
-      print: SisterLinkVM | null
-    }
+  | HeldByOtherVM
+  | HeldForMeVM
+  | InMyBagVM
+  | InMyCheckoutVM
+  | MyOfferVM
+  | SoldVM
 
-export type UniquePurchaseVM = {
+/**
+ * Each state with the prices and actions it can show. An impossible panel — a sold item with a
+ * price, someone else's hold with a price revealed to this viewer, Buy beside the viewer's own
+ * hold, bag or offer — does not compile (`commerce-check.ts`).
+ */
+export type UniquePanelVM =
+  | {
+      state: { kind: 'available' }
+      price: Price<'fixed' | 'onRequest' | 'revealed' | 'queued' | 'offerOnly'>
+      actions: PurchaseActionsVM
+    }
+  | {
+      state: HeldByOtherVM
+      price: Price<'fixed' | 'onRequest' | 'offerOnly'>
+      actions: PurchaseActionsVM<NoBuyActionVM>
+    }
+  | {
+      state: HeldForMeVM
+      price: Price<'fixed' | 'revealed'>
+      actions: {
+        primary: Extract<PurchaseActionVM, { action: 'pay' }>
+        secondary: readonly NoBuyActionVM[]
+      }
+    }
+  | {
+      state: InMyBagVM | InMyCheckoutVM
+      price: Price<'fixed' | 'revealed'>
+      actions: PurchaseActionsVM<NoBuyActionVM>
+    }
+  | {
+      state: MyOfferVM
+      price: Price<'fixed' | 'onRequest' | 'revealed' | 'offerOnly'>
+      actions: PurchaseActionsVM<NoBuyActionVM>
+    }
+  | { state: SoldVM; price: Price<'hidden'>; actions: PurchaseActionsVM<NoBuyActionVM> }
+
+/** What every unique panel carries whatever its state. */
+export type UniqueBaseVM = {
   kind: 'unique'
-  price: UniquePriceVM
-  state: UniqueStateVM
   delivery: DeliveryGateVM
-  actions: PurchaseActionsVM
   /** A numbered edition unit; `null` for a one-of-one, which may say so because it is true. */
   edition: { number: number; of: number } | null
   /** Where it ships from — the public city of its stock location, never the location record. */
@@ -100,38 +158,16 @@ export type UniquePurchaseVM = {
   /** "Tell me when another example arrives"; `null` when `retention.wantList` is off. */
   alert: { href: string } | null
 }
+export type UniquePurchaseVM = UniqueBaseVM & UniquePanelVM
 
-/** No purchase online: routable nowhere (no recorded location or export status), or not for sale. */
+/**
+ * No purchase online: routable nowhere (no recorded location or export status), not for
+ * sale, or `unverified` — availability could not be read just now, so the panel offers an
+ * enquiry rather than guessing, and the next request tries again.
+ */
 export type EnquiryOnlyPurchaseVM = {
   kind: 'enquiryOnly'
-  reason: 'unroutable' | 'notForSale'
+  reason: 'unroutable' | 'notForSale' | 'unverified'
   price: PriceVM | null
-  actions: PurchaseActionsVM
+  actions: PurchaseActionsVM<NoBuyActionVM>
 }
-
-export type SisterVM = {
-  name: string
-  /** The sister's home page — a separate shop with its own account, and the link says so. */
-  href: string
-  /** When the copy was last synced: the link never claims more certainty than that. */
-  syncedAt: IsoDateTime
-}
-
-/** Cross-links between the sisters (BRANDS.md §5), obeying this page's destination rules. */
-export type SisterLinkVM =
-  /** On an original: the exact products the sister makes from its work. */
-  | { kind: 'prints'; sister: SisterVM; products: readonly CardVM[] }
-  /** On a reproduction: the original, priced in this visitor's market currency. */
-  | {
-      kind: 'original'
-      sister: SisterVM
-      original: {
-        title: string
-        href: string
-        image: ImageVM | null
-        status: 'available' | 'onHold' | 'sold' | 'enquire'
-        price: PriceVM | null
-        /** False for a `domestic-only` original seen from abroad: no buy route is offered. */
-        canBuy: boolean
-      }
-    }

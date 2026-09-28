@@ -6,14 +6,14 @@
  */
 import type { LinkVM } from '../common'
 import type { ItemVM } from '../surfaces/item'
-import type { PurchaseActionVM, PurchaseVM, UniquePurchaseVM } from '../surfaces/purchase'
+import type { NoBuyActionVM, PurchaseVM, UniqueBaseVM } from '../surfaces/purchase'
 import { card, date, image, MAKER, ORIGIN, pending, seo, streamed } from './_shared'
 
-export const whatsapp: PurchaseActionVM = {
+export const whatsapp: NoBuyActionVM = {
   action: 'whatsapp',
   href: 'https://wa.me/6281200000000?text=M.0001%20The%20Isle%20of%20Contoh',
 }
-export const enquire: PurchaseActionVM = { action: 'enquire', href: '/enquire?item=1001' }
+export const enquire: NoBuyActionVM = { action: 'enquire', href: '/enquire?item=1001' }
 export const reassurance: readonly LinkVM[] = [
   { label: 'Lifetime authenticity guarantee', href: '/guarantee' },
   { label: 'The certificate', href: '/certificate' },
@@ -21,8 +21,8 @@ export const reassurance: readonly LinkVM[] = [
   { label: 'Shipping and insurance', href: '/shipping' },
 ]
 
-/** Shared by the unique fixtures; each overrides `price`, `state` and `actions`. */
-export const uniqueBase: Omit<UniquePurchaseVM, 'price' | 'state' | 'actions'> = {
+/** Shared by the unique fixtures; each adds its `state` with the `price` and `actions` it allows. */
+export const uniqueBase: UniqueBaseVM = {
   kind: 'unique',
   delivery: { kind: 'deliverable' },
   edition: null,

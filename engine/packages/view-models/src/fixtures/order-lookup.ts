@@ -1,8 +1,8 @@
 /**
  * @contract C2 — fixtures `order-lookup` (empty, found, not found, rate-limited) · owner: ARC
  *
- * Guest tracking with the courier timeline. The found order links to its page with the
- * lookupToken the lookup issued; a miss never says whether the number or the contact was wrong.
+ * Guest tracking with the courier timeline. A found order's link is its clean page: the lookup
+ * set the order-access cookie it opens with. A miss never says which of the two was wrong.
  */
 import type { OrderLookupVM } from '../surfaces/order'
 import { PRINT, TOTE } from './_commerce'
@@ -29,7 +29,7 @@ export const orderLookupFound: OrderLookupVM = {
       payment: 'paid',
       total: money(1640000, 'IDR'),
       items: [PRINT, TOTE],
-      href: '/orders/ID-000456?lookupToken=lk_fixture_000456',
+      href: '/orders/ID-000456',
     },
     shipments: [
       {

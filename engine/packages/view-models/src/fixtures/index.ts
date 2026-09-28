@@ -1,11 +1,11 @@
 /**
  * @contract C2 — the fixture registry, entry `@engine/view-models/fixtures` · owner: ARC
- * Consumers: WEB (the fixture loader source, TASKS.md 3.6), UXG, UXE (style guides, 3.8).
+ * Consumers: WEB (the fixture loader source, TASKS.md 11.3), UXG, UXE (style guides, 11.4).
  *
  * Every fixture by name. Each is typed against its view model where it is declared, and this
  * map is checked again against `SurfaceVM`, so a fixture that drifts from its VM fails to
  * compile twice. Development, style guides and component tests only: the boot check refuses
- * `LOADERS_SOURCE=fixtures` in production. The per-surface state matrix (TASKS.md 3.8) adds
+ * `LOADERS_SOURCE=fixtures` in production. The per-surface state matrix (TASKS.md 11.4) adds
  * `./states/**` beside these.
  */
 import type { Surface } from '@engine/config/routes'
@@ -29,6 +29,7 @@ import * as editorial from './editorial'
 import * as form from './form'
 import { giftCard, giftCardBalance } from './gift-card'
 import { homeGallery, homeShop } from './home'
+import { itemAvailabilityUnverified } from './item-availability-unverified'
 import { itemEnquiryOnly } from './item-enquiry-only'
 import { itemLongContent, itemWithoutHookTitle } from './item-long-content'
 import { itemOnHold } from './item-on-hold'
@@ -39,15 +40,15 @@ import { itemVariants, itemVariantsSelected } from './item-variants'
 import { listing, listingEmpty, search } from './listing'
 import * as order from './order'
 import * as lookup from './order-lookup'
-import { pay, payPaid, quoteProforma, quoteRequested } from './pay'
+import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested } from './pay'
 import { purchaseStates } from './purchase-states'
 import { shell } from './shell'
 import { gone, notFoundLegacy, serverError } from './status'
 
 export const SHELL_FIXTURES = { shell } as const satisfies Readonly<Record<string, ShellVM>>
 
-/** The purchase panel's state matrix: panels, not pages (TASKS.md 6.4). */
-export const PURCHASE_STATES: Readonly<Record<string, PurchaseVM>> = purchaseStates
+/** The purchase panel's state matrix: panels, not pages (TASKS.md 34.1). */
+export const PURCHASE_STATES = purchaseStates satisfies Readonly<Record<string, PurchaseVM>>
 
 export const FIXTURES = {
   'home-gallery': homeGallery,
@@ -63,6 +64,7 @@ export const FIXTURES = {
   'item-price-on-request': itemPriceOnRequest,
   'item-price-revealed': itemPriceRevealed,
   'item-enquiry-only': itemEnquiryOnly,
+  'item-availability-unverified': itemAvailabilityUnverified,
   'item-variants': itemVariants,
   'item-variants-selected': itemVariantsSelected,
   'item-long-content': itemLongContent,
@@ -103,6 +105,7 @@ export const FIXTURES = {
   'order-lookup-rate-limited': lookup.orderLookupRateLimited,
   pay,
   'pay-paid': payPaid,
+  'pay-transfer-pending': payTransferPending,
   'quote-proforma': quoteProforma,
   'quote-requested': quoteRequested,
   'account-signed-out': account.accountSignedOut,

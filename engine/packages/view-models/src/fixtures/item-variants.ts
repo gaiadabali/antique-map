@@ -56,7 +56,7 @@ const purchase: VariantsPurchaseVM = {
     duties: null,
     holiday: null,
   },
-  giftWrap: { line: line(9001), price: idr(45000) },
+  giftWrap: { line: { ...line(9001), wraps: 'order' }, price: idr(45000) },
   actions: {
     addToBag: true,
     whatsapp: 'https://wa.me/6281200000001?text=A-0042',

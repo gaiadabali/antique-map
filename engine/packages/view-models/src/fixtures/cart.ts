@@ -92,7 +92,7 @@ export const cart: CartVM = {
   giftOptions: {
     note: 'Selamat ulang tahun!',
     hidePrices: true,
-    wrap: { line: line(9001), price: idr(45000) },
+    wrap: { line: { ...line(9001), wraps: 'order' }, price: idr(45000) },
   },
   freeShipping: {
     threshold: money(2000000, 'IDR'),

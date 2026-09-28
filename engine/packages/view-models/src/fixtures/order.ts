@@ -129,7 +129,10 @@ export const orderPendingVa: OrderVM = {
     },
     expiresAt: '2026-09-26T10:40:00+08:00',
     dailyCapWarning: false,
-    poll: { attemptId: 'att_fixture_va' },
+    poll: {
+      attemptId: 'att_fixture_va',
+      scope: { kind: 'order', access: { kind: 'lookup', lookupToken: 'lk_fixture_000456' } },
+    },
   },
   documents: [],
   nextSteps: [{ code: 'payWithinCountdown' }, { code: 'whatsappWhenPaid' }],
@@ -153,7 +156,10 @@ export const orderPendingQris: OrderVM = {
     },
     expiresAt: '2026-09-25T10:55:00+08:00',
     dailyCapWarning: false,
-    poll: { attemptId: 'att_fixture_qris' },
+    poll: {
+      attemptId: 'att_fixture_qris',
+      scope: { kind: 'order', access: { kind: 'lookup', lookupToken: 'lk_fixture_000456' } },
+    },
   },
 }
 

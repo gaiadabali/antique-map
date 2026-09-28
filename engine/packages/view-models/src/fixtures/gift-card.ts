@@ -9,7 +9,7 @@ import { image, money, price, seo } from './_shared'
 
 const amount = (idr: number, variantId: number) => ({
   price: price(money(idr, 'IDR')),
-  line: { productId: 9500, variantId, quantity: 1, options: null },
+  line: { productId: 9500, variantId, quantity: 1, options: null, wraps: null },
 })
 
 export const giftCard: GiftCardVM = {

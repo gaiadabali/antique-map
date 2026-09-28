@@ -1,7 +1,7 @@
 /**
  * @contract C2 — fixture `purchase-states` · owner: ARC
  *
- * The purchase panel's state matrix (DESIGN-SYSTEM.md §3, TASKS.md 6.4.a): the item's
+ * The purchase panel's state matrix (DESIGN-SYSTEM.md §3, TASKS.md 34.1.a): the item's
  * status × the viewer's relation × export status × ship-to. The style guide's state
  * switcher renders each; every one is a designed state, never a disabled Buy button.
  */
@@ -27,16 +27,19 @@ export const purchaseStates = {
     state: { kind: 'heldByOther', until: '2026-09-26T14:00:00+08:00' },
     actions: { primary: null, secondary: [enquire] },
   },
+  /** Held for this viewer: Pay leads — never Buy beside their own hold. */
   heldForMe: {
     ...uniqueBase,
     price: fixed,
-    state: {
-      kind: 'heldForMe',
-      reason: 'hold',
-      until: '2026-09-27T09:00:00+08:00',
-      payHref: '/pay/tok_hold_fixture',
-    },
-    actions: { primary: buy, secondary: [whatsapp] },
+    state: { kind: 'heldForMe', reason: 'hold', until: '2026-09-27T09:00:00+08:00' },
+    actions: { primary: { action: 'pay', href: '/pay/tok_hold_fixture' }, secondary: [whatsapp] },
+  },
+  /** Already in this viewer's bag: the panel says so and links to it. */
+  inMyBag: {
+    ...uniqueBase,
+    price: fixed,
+    state: { kind: 'inMyBag', cartHref: '/bag' },
+    actions: { primary: null, secondary: [enquire] },
   },
   inMyCheckout: {
     ...uniqueBase,
@@ -120,6 +123,13 @@ export const purchaseStates = {
     edition: { number: 12, of: 100 },
     actions: { primary: { action: 'buy', line: line(1004) }, secondary: [enquire] },
   },
+  /** No asking price: the panel invites an offer. */
+  offerOnly: {
+    ...uniqueBase,
+    price: { kind: 'offerOnly' },
+    state: { kind: 'available' },
+    actions: { primary: offer, secondary: [enquire, whatsapp] },
+  },
   /** Queued for a human: the item is marked sensitive. */
   priceQueued: {
     ...uniqueBase,
@@ -132,5 +142,12 @@ export const purchaseStates = {
     reason: 'notForSale',
     price: null,
     actions: { primary: enquire, secondary: [] },
+  },
+  /** Availability could not be read just now: an enquiry, never an error or a guess. */
+  unverified: {
+    kind: 'enquiryOnly',
+    reason: 'unverified',
+    price: null,
+    actions: { primary: enquire, secondary: [whatsapp] },
   },
 } satisfies Record<string, PurchaseVM>

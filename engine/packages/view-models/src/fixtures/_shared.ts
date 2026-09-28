@@ -90,7 +90,7 @@ export function line(
   options: Readonly<Record<string, string>> | null = null,
   quantity = 1,
 ): LineIntent {
-  return { productId, variantId, quantity, options, giftCard: null }
+  return { productId, variantId, quantity, options, giftCard: null, wraps: null }
 }
 
 export function date(

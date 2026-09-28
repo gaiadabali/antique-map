@@ -2,10 +2,10 @@
  * @contract C2 — view models: the order and guest order lookup · owner: ARC · consumers: WEB, UXG, UXE, NTF
  *
  * One `OrderVM` for the confirmation and the account's order detail (DESIGN-SYSTEM.md §2).
- * An order number is never a credential (C6): the page opens only for the signed-in buyer
- * or with the `lookupToken` a lookup or the confirmation link carries (C10 `order`), and
- * `access` says which — the number alone reveals nothing, and a wrong token answers like a
- * missing order. Lines are the order's snapshots: title, image and price as sold, whatever
+ * An order number is never a credential (C6): the page opens only for the signed-in buyer or
+ * with the order-access cookie a lookup, the confirmation or an emailed access link sets (C13
+ * `ORDER_ACCESS`) — never with a token in its URL (C10 `order` is `sensitive`) — and `access`
+ * says which; the number alone reveals nothing, and a wrong token answers like no order. Lines are the order's snapshots: title, image and price as sold, whatever
  * changed since. The payment-pending state is the most important page in an Indonesian
  * checkout: the exact amount, the VA number to copy, per-bank steps (the app's message keys
  * for the method), the true countdown, the daily-cap warning, where the "paid" news will
@@ -60,7 +60,11 @@ export type OrderPaymentVM =
       expiresAt: IsoDateTime | null
       /** A large VA transfer can exceed the buyer's own bank's daily cap: say so before it fails. */
       dailyCapWarning: boolean
-      /** Polled until the page switches to Paid. */
+      /**
+       * Polled (a POST) until the page switches to Paid, scoped to how the page was opened: the
+       * checkout it came from, or the order by the session or this browser's order-access
+       * cookie — a lookupToken here came from that cookie, never from a URL.
+       */
       poll: PaymentStatusRequest
     }
   | { state: 'paid'; method: PaymentMethodId; amount: Money; paidAt: IsoDateTime }

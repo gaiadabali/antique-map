@@ -13,7 +13,7 @@ import { money, SELLER_ID, SELLER_SG, seo } from './_shared'
 export const pay: PayVM = {
   surface: 'pay',
   reason: 'offer',
-  state: 'open',
+  status: 'open',
   seller: SELLER_SG,
   lines: [
     {
@@ -25,7 +25,8 @@ export const pay: PayVM = {
     },
   ],
   totals: totals({ currency: 'USD', subtotal: 450000, shipping: 12000, taxRegime: 'SG-GST' }),
-  expiresAt: '2026-09-27T14:00:00+08:00',
+  expiresAt: '2026-09-27T12:00:00+08:00',
+  holdExpiresAt: '2026-09-27T14:00:00+08:00',
   note: 'As agreed, the map is held for you until Sunday.',
   terms: [
     { label: 'Terms of your accepted offer', href: '/offers/terms' },
@@ -40,19 +41,48 @@ export const pay: PayVM = {
       refunds: 'manual',
     },
   ],
-  session: null,
+  payment: null,
   order: null,
   intents: {
     start: { token: 'tok_pay_fixture', acceptedPricing: token('tok_pay_fixture_pricing') },
+    poll: null,
   },
   seo: { ...seo('Your payment link', '/pay/tok_pay_fixture'), noindex: true },
 }
 
 export const payPaid: PayVM = {
   ...pay,
-  state: 'paid',
-  order: { number: 'SG-000125', href: '/orders/SG-000125?lookupToken=lk_fixture_000125' },
+  status: 'paid',
+  order: { number: 'SG-000125', href: '/orders/SG-000125' },
   intents: null,
+}
+
+/** A bank transfer started from the link: the instructions replayed, the poll on this link. */
+export const payTransferPending: PayVM = {
+  ...pay,
+  payment: {
+    attemptId: 'att_fixture_pay',
+    session: {
+      kind: 'instructions',
+      reference: 'SG-000125-1',
+      virtualAccount: null,
+      bank: {
+        bankName: 'Example Bank',
+        accountName: 'Fixture Atlas Pte. Ltd.',
+        accountNumber: '000-000000-0',
+        swift: 'EXAMSGSG',
+        iban: null,
+      },
+      expiresAt: '2026-09-27T04:00:00.000Z',
+    },
+    expiresAt: '2026-09-27T04:00:00.000Z',
+    lockExpiresAt: '2026-09-27T06:00:00.000Z',
+  },
+  order: { number: 'SG-000125', href: '/orders/SG-000125' },
+  intents: {
+    start: { token: 'tok_pay_fixture', acceptedPricing: token('tok_pay_fixture_pricing') },
+    poll: { attemptId: 'att_fixture_pay', scope: { kind: 'pay-link', token: 'tok_pay_fixture' } },
+  },
 }
 
 export const quoteProforma: QuoteVM = {

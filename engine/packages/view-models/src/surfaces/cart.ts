@@ -14,6 +14,7 @@ import type {
   CartUpdateLineRequest,
   CheckoutStartRequest,
   GiftCardDelivery,
+  GiftWrapTarget,
   LineProblem,
   Notice,
   ProblemOf,
@@ -35,7 +36,7 @@ import type { AppliedCodeVM, ItemRefVM, MarketVM, OptionLabelVM, TotalsVM } from
 /** What a line is: a product, a gift wrap (for the order or one line — and it says which), a gift card. */
 export type CartLineRoleVM =
   | { kind: 'product' }
-  | { kind: 'giftWrap'; wraps: 'order' | { lineId: string } }
+  | { kind: 'giftWrap'; wraps: GiftWrapTarget }
   | { kind: 'giftCard'; delivery: GiftCardDelivery }
 
 /** The designed way out of a line's problem. */

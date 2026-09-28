@@ -86,10 +86,19 @@ export type VariantsPurchaseVM = {
   priceTable: readonly { options: Selection; price: PriceVM }[]
   rules: readonly ConfiguratorRuleVM[]
   delivery: DeliveryPromiseVM
-  /** `null` when `commerce.giftWrap` is off; wrap is a priced line of its own. */
+  /**
+   * `null` when `commerce.giftWrap` is off. Wrap is a priced line of its own; from the item
+   * page it wraps the order (the product's bag line does not exist yet) — per-line wrapping is
+   * chosen in the bag (C6 `GiftWrapTarget`).
+   */
   giftWrap: { line: LineIntent; price: PriceVM } | null
   actions: {
-    addToBag: boolean
+    /**
+     * `true`: Add to bag, once `selected` is set. Otherwise the reason it cannot be added here —
+     * a selection that cannot ship to this destination, sold out with no restock — shown in
+     * words where the button would be: never a disabled button without a reason.
+     */
+    addToBag: true | { unavailable: MessageVM }
     /** "Ask on WhatsApp" with the product and chosen options prefilled. */
     whatsapp: string | null
     /** "Turn this into a quote" — the Quote surface, for business buyers. */

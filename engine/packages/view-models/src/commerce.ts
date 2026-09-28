@@ -105,6 +105,6 @@ export type OrderSummaryVM = {
   payment: PaymentStatus
   total: Money
   items: readonly ItemRefVM[]
-  /** `href('order', …)`: the account's link, or a lookup's with its `lookupToken`. */
+  /** `href('order', { number })`: it opens with the session or the order-access cookie. */
   href: string
 }

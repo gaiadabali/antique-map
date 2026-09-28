@@ -4,16 +4,18 @@
  * `Pay` is the landing page of a staff-sent payment link — an accepted offer, a hold, a
  * proforma, a sale agreed on WhatsApp (PAYMENTS.md §5): the item, the terms, the expiry, the
  * seller's identity and the methods routing allows, never a bare gateway screen; the hold it
- * pays for outlasts the method the buyer picks. `Quote` is a business or institutional
+ * pays for outlasts the method the buyer picks. It is C6's `PayLinkView` (`payLink.get`) as
+ * the page reads it. `Quote` is a business or institutional
  * quote or proforma (COMMERCE.md §7, EXPERIENCE-SHOP.md §9): lines, validity, the PDF (the
  * only place wire details appear), accept → the payment link. The token in each URL is the
  * capability; the figures are display, and each intent sends back only the token naming them.
  */
 import type {
   PayLinkStartRequest,
+  PaymentStarted,
+  PaymentStatusRequest,
   QuoteAcceptRequest,
   QuoteView,
-  WireSessionResult,
 } from '@engine/domain/api'
 
 import type { IsoDateTime, LinkVM, MessageVM, Money, SellerIdentityVM, SeoVM } from '../common'
@@ -32,21 +34,30 @@ export type PayVM = {
   surface: 'pay'
   /** Why the link exists: it frames the page and decides its terms. */
   reason: 'offer' | 'hold' | 'invoice' | 'sale'
-  state: 'open' | 'paid' | 'expired' | 'cancelled'
+  status: 'open' | 'paid' | 'expired' | 'cancelled'
   seller: SellerIdentityVM
   lines: readonly IssuedLineVM[]
   totals: TotalsVM
-  /** When the hold this link pays for ends; a session is never made to outlive it. */
+  /** When the link stops taking payment — at the latest when the hold behind it ends. */
   expiresAt: IsoDateTime
+  /** When the hold behind it ends; each method's session is sized to finish before it. */
+  holdExpiresAt: IsoDateTime | null
   /** The staff member's note ("As agreed on WhatsApp…"), in their words. */
   note: string | null
   /** What the buyer accepts by paying: the offer's terms, returns, the guarantee. */
   terms: readonly LinkVM[]
   methods: readonly PaymentOptionVM[]
-  session: WireSessionResult | null
+  /** A payment already under way: its stored session, replayed so the page picks it up again. */
+  payment: PaymentStarted | null
+  /** The order the link pays, once there is one; its page opens with the order-access cookie. */
   order: { number: string; href: string } | null
-  /** `null` unless the link is open. The component adds the method and an idempotency key. */
-  intents: { start: Omit<PayLinkStartRequest, 'method' | 'idempotencyKey'> } | null
+  /** `null` unless the link is open. */
+  intents: {
+    /** The component adds the method and an idempotency key. */
+    start: Omit<PayLinkStartRequest, 'method' | 'idempotencyKey'>
+    /** Once a payment is under way, polled until it settles; scoped to this link. */
+    poll: PaymentStatusRequest | null
+  } | null
   seo: SeoVM
 }
 
