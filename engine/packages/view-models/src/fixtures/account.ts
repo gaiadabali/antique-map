@@ -3,10 +3,12 @@
  *
  * A gallery collector's account with every conversation module on: a countered offer with
  * its true countdown, a hold about to end, a confirmed viewing with its pull list, a
- * consignment under review — and the signed-out state, which offers the claim flow.
+ * consignment under review — and the signed-out state after a failed sign-in (one answer
+ * for any email), which offers the claim flow.
  */
 import type { AccountNavVM, AccountVM, BuyerSectionVM } from '../surfaces/account'
 import { ISLE, SHOWROOM, STRAITS } from './_commerce'
+import { signInForm } from './_forms'
 import { card, image, money, price, seo, streamed } from './_shared'
 
 const page = { ...seo('Your account', '/account'), noindex: true }
@@ -48,9 +50,10 @@ export const accountSignedOut: AccountVM = {
   session: {
     kind: 'signedOut',
     returnTo: 'offers',
+    signIn: signInForm('/account/offers'),
+    failed: { email: 'anna@example.test', error: { kind: 'invalid' } },
     signUp: [{ audience: 'buyer' }],
     claim: true,
-    email: 'anna@example.test',
   },
   seo: page,
 }

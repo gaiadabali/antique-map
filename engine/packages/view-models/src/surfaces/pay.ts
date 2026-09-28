@@ -64,15 +64,26 @@ export type PayVM = {
 }
 
 /**
- * The terms a retailer's quote was issued at (C6 `QuoteTradeView`), kept as issued whatever
- * the retailer's tier becomes: paying the quote applies exactly these.
+ * The terms a partner's quote was issued at (C6 `QuoteTradeView`), kept as issued whatever the
+ * partner's tier becomes: paying the quote applies exactly these.
  */
 export type QuoteTradeVM = {
   tier: TradeTierVM
   minimum: MinimumOrderVM
-  /** Staff waived the minimum for this one quote, within their role's limit. */
-  minimumWaived: boolean
+  /**
+   * Issued below its minimum, for this one quote (C1 `commerce.trade.waiver`): when, and by
+   * how much it fell short — never who waived it, or why. `null` when it met its minimum.
+   */
+  minimumWaiver: { at: IsoDateTime; shortfall: MinimumShortfallVM } | null
 }
+
+/** How far a quote fell short of its minimum (C5 `TradeMinimumShortfall`), kind for kind. */
+export type MinimumShortfallVM =
+  | { kind: 'amount'; total: Money; required: Money }
+  | {
+      kind: 'piecesPerDesign'
+      short: readonly { design: ItemRefVM; pieces: number; required: number }[]
+    }
 
 export type QuoteVM = {
   surface: 'quote'

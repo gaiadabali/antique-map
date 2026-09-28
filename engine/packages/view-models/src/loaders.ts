@@ -61,6 +61,7 @@ import type { OrderLookupVM, OrderVM } from './surfaces/order'
 import type { PartnershipVM } from './surfaces/partnership'
 import type { PayVM, QuoteVM } from './surfaces/pay'
 import type { ErrorVM, GoneVM, NotFoundVM } from './surfaces/status'
+import type { WishlistVM } from './surfaces/wishlist'
 import type { CachedPart } from './common'
 
 export type Found<VM> = { vm: VM } | { redirectTo: string } | null
@@ -100,6 +101,8 @@ export type Loaders = {
   orderLookup: (p: At) => Promise<OrderLookupVM>
   /** `null` where `accounts.retailers` is off: the page 404s. */
   partnership: (p: At) => Promise<PartnershipVM | null>
+  /** `null` where `retention.deviceWishlist` is off: the page 404s. */
+  wishlist: (p: At) => Promise<WishlistVM | null>
   /**
    * For `not-found.tsx`, which gets no params: `path` and `locale` come from the proxy's
    * request headers (C13 `PROXY_REQUEST_HEADERS`). A removed item's path answers `GoneVM` —

@@ -17,7 +17,6 @@ import type {
   OrderTotalsView,
   PaymentOptionView,
   PricingToken,
-  QuoteRequest,
   ShipmentView,
   ShippingOptionView,
 } from '@engine/domain/api'
@@ -100,8 +99,12 @@ export type DocumentKind =
   | 'trade-terms'
 export type DocumentVM = { kind: DocumentKind; href: string }
 
-/** An order in a list — the account, a lookup — with enough to recognise it. */
-export type OrderSummaryVM<Reorder extends ReorderIntentVM | null = ReorderIntentVM | null> = {
+/**
+ * An order in a list — the account, a lookup — with enough to recognise it. `Reorder` is what
+ * its row may offer, and every use says which: `null` for a buyer's or a guest's, and
+ * `ReorderIntentVM | null` for an approved partner's (an order it cannot reorder has `null`).
+ */
+export type OrderSummaryVM<Reorder extends ReorderIntentVM | null> = {
   number: string
   placedAt: IsoDateTime
   status: OrderStatus
@@ -110,13 +113,14 @@ export type OrderSummaryVM<Reorder extends ReorderIntentVM | null = ReorderInten
   items: readonly ItemRefVM[]
   /** `href('order', { number })`: it opens with the session or the order-access cookie. */
   href: string
-  /** An approved retailer's one-click reorder; `null` for anyone else (`OrderSummaryVM<null>`). */
   reorder: Reorder
 }
 
 /**
- * "Reorder, one click from your order history" (D32): the order's lines as a `quote.request`
- * body, the session its contact — the component adds the idempotency key. Never a cart, and
- * never a price: staff price the quote when they issue it, at the retailer's tier.
+ * "Reorder, one click from your order history" (D32): the order, by its number, posted as C6
+ * `quote.reorder` `{ fromOrder }` — a hidden field without JavaScript, the page minting the
+ * idempotency key beside it. The server copies the lines from the partner's own order, so
+ * nothing can be added or tampered with, and the session is the contact. Never a cart and
+ * never a price: staff price the quote when they issue it, at the partner's tier.
  */
-export type ReorderIntentVM = Omit<QuoteRequest, 'idempotencyKey'> & { readonly contact: null }
+export type ReorderIntentVM = { fromOrder: string }

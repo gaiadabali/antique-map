@@ -2,7 +2,8 @@
  * @contract C2 — fixtures `shell` and `shell-shop` · owner: ARC
  * The root layout for a fictional gallery brand: runtime identity, assets, validated token
  * overrides, analytics ids (loaded only after consent), the ship-to selector, the sister strip.
- * And the shop's: shoppers buy as guests, so no account entry — Partnership is the way in (D31).
+ * And the shop's: shoppers buy as guests, so no account entry — Partnership is the way in (D31,
+ * D36) — and their saved items live on the device, behind the header's heart (D35).
  */
 import type { ShellVM } from '../shell'
 import { ORIGIN, SELLER_ID, SELLER_SG, SISTER_ORIGIN, streamed } from './_shared'
@@ -73,6 +74,7 @@ export const shell: ShellVM = {
     ],
   }),
   cart: streamed({ count: 1 }),
+  wishlist: streamed({ count: 2, href: '/account/wishlist' }),
   account: streamed({ audience: 'buyer', signedIn: false, firstName: null, href: '/account' }),
   consent: streamed({ policyVersion: '2026-09', choice: null }),
   languageSuggestion: streamed({ locale: 'id' }),
@@ -81,7 +83,13 @@ export const shell: ShellVM = {
 export const shellShop: ShellVM = {
   ...shell,
   brand: { name: 'Sample Emporium', storefront: 'emporium', origin: SISTER_ORIGIN },
-  modules: ['accounts.retailers', 'catalogue.variants', 'catalogue.productTypes', 'sister.links'],
+  modules: [
+    'accounts.retailers',
+    'retention.deviceWishlist',
+    'catalogue.variants',
+    'catalogue.productTypes',
+    'sister.links',
+  ],
   nav: {
     header: [
       { label: 'Shop', href: '/shop', children: [], feature: null },
@@ -96,5 +104,6 @@ export const shellShop: ShellVM = {
     currency: 'IDR',
     options: [{ country: 'ID', currency: 'IDR' }],
   }),
+  wishlist: streamed({ count: 2, href: '/wishlist' }),
   account: streamed(null),
 }

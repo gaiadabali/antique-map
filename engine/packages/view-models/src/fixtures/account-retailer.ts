@@ -1,31 +1,20 @@
 /**
- * @contract C2 — fixtures `account-retailer` (signed out, approved, terms, quotes, applied, declined) · owner: ARC
+ * @contract C2 — fixtures `account-retailer` (signed out, approved, terms, quotes) · owner: ARC
  *
- * The shop's account, where retailers are the only accounts (D31): signed out, it offers
- * partner sign-in and the way to apply, never a shopper sign-up; an approved retailer sees the
- * trade terms (D32) and their quotes, and reorders an order as a quote request. The password
- * comes with approval, so the other signed-in states are a former partner's: applied again,
- * or declined when the partnership ended — its orders kept, no reorder, nothing priced anew.
+ * The shop's account, where partners are the only accounts (D31): signed out, it offers
+ * partner sign-in and the way to apply, never a shopper sign-up. Signed in, it is always an
+ * approved partner's (D34): the trade terms (D32), its quotes and a brief for a new one, and a
+ * reorder that names the order — the server rebuilds its lines.
  */
-import type { OrderSummaryVM } from '../commerce'
 import type { AccountNavVM, AccountVM } from '../surfaces/account'
 import type { ApprovedRetailerVM } from '../surfaces/account-retailer'
 import { PRINT, TOTE } from './_commerce'
-import { line, money, seo } from './_shared'
+import { entry, hidden, optional, signInForm } from './_forms'
+import { money, seo } from './_shared'
 
 const page = { ...seo('Your partner area', '/account'), noindex: true }
 const customer = { fullName: 'Made Contoh', email: 'made@shop.example.test' }
-const nav = (
-  selected: AccountNavVM['section'],
-  sections: readonly AccountNavVM['section'][],
-): readonly AccountNavVM[] =>
-  sections.map((section) => ({
-    section,
-    href: section === 'overview' ? '/account' : `/account/${section}`,
-    count: null,
-    selected: section === selected,
-  }))
-const approvedSections = [
+const sections = [
   'overview',
   'orders',
   'quotes',
@@ -34,7 +23,13 @@ const approvedSections = [
   'profile',
   'privacy',
 ] as const
-const standingSections = ['overview', 'orders', 'addresses', 'profile', 'privacy'] as const
+const nav = (selected: AccountNavVM['section']): readonly AccountNavVM[] =>
+  sections.map((section) => ({
+    section,
+    href: section === 'overview' ? '/account' : `/account/${section}`,
+    count: null,
+    selected: section === selected,
+  }))
 
 const approved: ApprovedRetailerVM = {
   status: 'approved',
@@ -47,25 +42,24 @@ const approved: ApprovedRetailerVM = {
     document: { kind: 'trade-terms', href: '/api/x/commerce/orders/documents/trade-terms' },
   },
 }
-const order = {
-  number: 'ID-000501',
-  placedAt: '2026-10-20T09:00:00+08:00',
-  status: 'completed',
-  payment: 'paid',
-  total: money(9600000, 'IDR'),
-  items: [PRINT, TOTE],
-  href: '/orders/ID-000501',
-  reorder: null,
-} as const satisfies OrderSummaryVM<null>
+const partner = (selected: AccountNavVM['section']) =>
+  ({
+    kind: 'signedIn',
+    audience: 'retailer',
+    customer,
+    retailer: approved,
+    nav: nav(selected),
+  }) as const
 
 export const accountRetailerSignedOut: AccountVM = {
   surface: 'account',
   session: {
     kind: 'signedOut',
     returnTo: 'overview',
+    signIn: signInForm('/account'),
+    failed: null,
     signUp: [{ audience: 'retailer', apply: { label: 'Become a partner', href: '/partnership' } }],
     claim: false,
-    email: null,
   },
   seo: page,
 }
@@ -73,24 +67,20 @@ export const accountRetailerSignedOut: AccountVM = {
 export const accountRetailerApproved: AccountVM = {
   surface: 'account',
   session: {
-    kind: 'signedIn',
-    audience: 'retailer',
-    customer,
-    retailer: approved,
-    nav: nav('overview', approvedSections),
+    ...partner('overview'),
     view: {
       section: 'overview',
       attention: [],
       recentOrders: [
         {
-          ...order,
-          reorder: {
-            lines: [line(7001, 70011, null, 20), line(7002, 70021, null, 40)],
-            message: null,
-            neededBy: null,
-            institution: null,
-            contact: null,
-          },
+          number: 'ID-000501',
+          placedAt: '2026-10-20T09:00:00+08:00',
+          status: 'completed',
+          payment: 'paid',
+          total: money(9600000, 'IDR'),
+          items: [PRINT, TOTE],
+          href: '/orders/ID-000501',
+          reorder: { fromOrder: 'ID-000501' },
         },
       ],
     },
@@ -100,24 +90,13 @@ export const accountRetailerApproved: AccountVM = {
 
 export const accountRetailerTerms: AccountVM = {
   ...accountRetailerApproved,
-  session: {
-    kind: 'signedIn',
-    audience: 'retailer',
-    customer,
-    retailer: approved,
-    nav: nav('terms', approvedSections),
-    view: { section: 'terms' },
-  },
+  session: { ...partner('terms'), view: { section: 'terms' } },
 }
 
 export const accountRetailerQuotes: AccountVM = {
   ...accountRetailerApproved,
   session: {
-    kind: 'signedIn',
-    audience: 'retailer',
-    customer,
-    retailer: approved,
-    nav: nav('quotes', approvedSections),
+    ...partner('quotes'),
     view: {
       section: 'quotes',
       quotes: [
@@ -138,43 +117,14 @@ export const accountRetailerQuotes: AccountVM = {
           href: '/quote/tok_trade_request',
         },
       ],
-      request: { href: '/account/quotes#new' },
+      request: {
+        fields: [
+          entry('message', 'textarea'),
+          optional('neededBy', 'date'),
+          hidden('returnTo', '/account/quotes'),
+        ],
+        action: '/api/x/commerce/quotes',
+      },
     },
-  },
-}
-
-/** A former partner who has applied again: waiting on staff, its orders kept. */
-export const accountRetailerApplied: AccountVM = {
-  surface: 'account',
-  session: {
-    kind: 'signedIn',
-    audience: 'retailer',
-    customer,
-    retailer: {
-      status: 'applied',
-      appliedAt: '2026-12-01T10:00:00+08:00',
-      reply: { code: 'applicationReplyDays', params: { days: 2 } },
-    },
-    nav: nav('overview', standingSections),
-    view: { section: 'overview', attention: [], recentOrders: [order] },
-  },
-  seo: page,
-}
-
-/** The partnership ended: said plainly, a person to talk to, the orders kept without a reorder. */
-export const accountRetailerDeclined: AccountVM = {
-  ...accountRetailerApplied,
-  session: {
-    kind: 'signedIn',
-    audience: 'retailer',
-    customer,
-    retailer: {
-      status: 'declined',
-      decidedAt: '2026-11-15T09:00:00+08:00',
-      note: null,
-      contact: { label: 'Talk to us on WhatsApp', href: 'https://wa.me/6281200000001' },
-    },
-    nav: nav('orders', standingSections),
-    view: { section: 'orders', orders: [order], pagination: null },
   },
 }

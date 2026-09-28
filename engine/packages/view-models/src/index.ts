@@ -26,5 +26,6 @@ export type * from './surfaces/partnership'
 export type * from './surfaces/pay'
 export type * from './surfaces/purchase'
 export type * from './surfaces/status'
+export type * from './surfaces/wishlist'
 
 export { BLOCK_TYPES } from './blocks'

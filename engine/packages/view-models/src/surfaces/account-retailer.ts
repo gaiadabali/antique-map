@@ -1,19 +1,21 @@
 /**
  * @contract C2 — view models: the retailer's account · owner: ARC · consumers: WEB, UXE, DOM
  *
- * Where retailers are the only accounts (D31, `accounts.retailers`): an application staff
- * approve, then a retailer area with the trade terms as data (D32) — a trade price tier and
- * a minimum order — and orders by quote through the order builder, paid by bank transfer or
- * a pay link. There is no wholesale cart. A retailer's standing is C1's `RetailerStatus`, and
- * only `approved` carries terms: a pending or declined applicant's view model has no field a
- * trade price could sit in (`retailer-check.ts`), and its loader reads retail prices alone.
- * The password comes with approval, so a signed-in retailer who is not approved is a former
- * partner — its partnership ended (`declined`), or it has applied again (`applied`).
+ * Where partners are the only accounts (D31, D36, `accounts.retailers`): an application staff
+ * approve, then a partner area with the trade terms as data (D32) — a trade price tier and a
+ * minimum order — and orders by quote, built in the order builder and paid by bank transfer
+ * or a pay link. There is no wholesale cart. A retailer's standing is C1's `RetailerStatus`,
+ * and only `approved` signs in: an applicant has no password yet, a declined one never gets
+ * one, and an ended partnership is deactivated, its orders staying with the owner (D34). So
+ * the area is always an approved partner's; an applicant's standing shows only on the
+ * Partnership page, with no field a trade price could sit in, and `ended` shows nowhere
+ * (`retailer-check.ts`).
  */
 import type { QuoteView } from '@engine/domain/api'
 
 import type { IsoDateTime, LinkVM, MessageVM, Money } from '../common'
 import type { DocumentVM } from '../commerce'
+import type { FormPostVM } from './form-fields'
 
 /** The smallest order a tier accepts — C5's `TradeMinimum`, as the programme states it. */
 export type MinimumOrderVM =
@@ -41,11 +43,16 @@ export type TradeTermsVM = {
   document: DocumentVM | null
 }
 
-/** A retailer's standing (C1 `RETAILER_STATUSES`); only `approved` carries terms. */
+/**
+ * A retailer's standing, as a page shows it (C1 `RETAILER_STATUSES` but `ended`, which no page
+ * shows: the partner can no longer sign in, and a new application starts again at `applied`).
+ * `approved` is a signed-in partner's, with its terms; the others show on the Partnership page
+ * and carry none.
+ */
 export type RetailerStandingVM =
   /** Waiting on staff: "Most applications are answered within two working days". */
   | { status: 'applied'; appliedAt: IsoDateTime; reply: MessageVM | null }
-  /** Refused, or the partnership ended: said plainly, with a way to talk to someone. */
+  /** Refused: said plainly, with a way to talk to someone. */
   | { status: 'declined'; decidedAt: IsoDateTime; note: string | null; contact: LinkVM | null }
   | { status: 'approved'; approvedAt: IsoDateTime; terms: TradeTermsVM }
 export type ApprovedRetailerVM = Extract<RetailerStandingVM, { status: 'approved' }>
@@ -63,7 +70,15 @@ export type QuoteSummaryVM = {
   href: string
 }
 
-/** The sections only an approved retailer has (C10 `ACCOUNT_SECTIONS` `quotes`, `terms`). */
+/**
+ * A partner's new quote request: a brief — `message` (what it needs, in its words, required)
+ * and `neededBy` — posted as C6 `quote.request` with no lines and `contact: null`, its session
+ * the contact. Staff build the lines in the order builder (TASKS.md 24.5) and issue the quote
+ * at the partner's tier.
+ */
+export type QuoteBriefVM = FormPostVM
+
+/** The sections only an approved partner has (C10 `ACCOUNT_SECTIONS` `quotes`, `terms`). */
 export type RetailerSectionVM =
   | { section: 'terms' }
-  | { section: 'quotes'; quotes: readonly QuoteSummaryVM[]; request: { href: string } }
+  | { section: 'quotes'; quotes: readonly QuoteSummaryVM[]; request: QuoteBriefVM }

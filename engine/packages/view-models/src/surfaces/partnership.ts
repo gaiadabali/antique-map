@@ -1,89 +1,63 @@
 /**
  * @contract C2 — view models: the Partnership page · owner: ARC · consumers: WEB, UXE, DOM
  *
- * The retailer programme (D31, module `accounts.retailers`), reached from a highlight in the
- * home hero and a **Partnership** header item. It says what a partner gets — the programme's
- * published terms, never a trade price — and its last section opens sign-up or sign-in,
- * inline or as a dialog. Retailers are the only accounts where this page exists: an
- * application staff approve (approval emails a set-password link), then sign-in. The page may
- * also carry the brand's other trade programmes (company gifting, hotels), which lead to a
- * quote rather than an account. The content is cached; the last section is this visitor's
- * (`Streamed`), from the session or the status link's cookie (C13 `APPLICATION_ACCESS`) —
- * never a token in the page's URL, and no term or price before an approved retailer signs in.
+ * The one programme for every business buyer (D31, D36; module `accounts.retailers`): shops,
+ * hotels, villas, cafés and companies all apply as partners, and the shop has no other trade
+ * path. It is reached from a highlight in the home hero and a **Partnership** header item. It
+ * says what a partner gets, as published content and never a trade price, and its last
+ * section holds the application and partner sign-in, inline or as a dialog. Staff approve an
+ * application, approval emails a set-password link (C13 `PASSWORD_LINK`), and the partner
+ * signs in; a partner who is not approved cannot (D34).
+ *
+ * It works without JavaScript. The application and sign-in are cached (`visitor`) and are the
+ * fallback `access` streams into. `access` holds only what this visitor has: a post's result
+ * (C13 `FORM_RESULT`), an application's standing (the session, or C13 `APPLICATION_ACCESS`),
+ * or a signed-in partner. There is never a token in the page's URL, and no term before sign-in.
  */
 import type { BlockVM } from '../blocks'
-import type { IsoDateTime, LinkVM, MessageVM, SeoVM, Streamed } from '../common'
+import type { LinkVM, MessageVM, SeoVM, Streamed } from '../common'
+import type { SignInErrorVM, SignInFormVM } from './account-entry'
 import type { PendingRetailerVM } from './account-retailer'
-import type { FormFieldVM, FormVM } from './form'
+import type { FormPostVM, FormResultVM } from './form-fields'
 
-/** Who is applying: a shop gets a retailer account; a company or a hotel gets a quote. */
-export type PartnershipAudience = 'shop' | 'company' | 'hospitality'
-
-export type PartnershipProgrammeVM = {
-  audience: PartnershipAudience
-  /** "Stock our prints in your shop." */
+/** What a partner gets, for one kind of business ("For hotels and villas"). */
+export type PartnershipBenefitVM = {
   title: string
   body: readonly BlockVM[]
-  /** "Pricing · Wholesale tiers, visible once you sign in": published terms, as content. */
-  terms: readonly { label: string; value: string }[]
-  cta: LinkVM
-}
-
-/** One of the application's paths: each asks only what matters for it. */
-export type PartnershipPathVM = {
-  audience: PartnershipAudience
-  label: string
-  /** A shop's application makes a retailer account (C6 `retailer.apply`); the others, a quote. */
-  outcome: 'account' | 'quote'
   /**
-   * Named by their C6 request paths, which differ by path (`business.npwp`,
-   * `consent.marketingEmail` for a shop; `institution.organisation`,
-   * `contact.consents.marketingEmail` for a quote). Each marketing ask is its own checkbox,
-   * unticked: "We will only write back about this application". A hidden field carries what
-   * the visitor is not asked (`contact.locale`, the page's).
+   * "Pricing · Trade tiers, visible once you sign in": published content an editor writes.
+   * It is never read from `commerce.trade`; a tier, a discount or a minimum appears only in an
+   * approved partner's own area.
    */
-  fields: readonly FormFieldVM[]
-  /** The C13 route the path posts to (`commerceUrl`). */
-  action: string
+  terms: readonly { label: string; value: string }[]
 }
 
-/** The application — "What are you buying for?" — as it opens, or after a failed post. */
-export type PartnershipApplyVM = {
-  paths: readonly PartnershipPathVM[]
-  selected: PartnershipAudience | null
+/**
+ * The application, the same for every kind of business (D36): C6 `RetailerApplyRequest`'s
+ * fields in their fieldsets (`business`, `contact`, `consent`) — each marketing ask a separate
+ * box, unticked — plus the hidden `returnTo` and `contact.locale`; it posts `retailer.apply`.
+ */
+export type PartnershipApplyVM = FormPostVM & {
   /** "Most applications are answered within two working days". */
   reply: MessageVM | null
-  /** A post without JavaScript: every failing field at once, the entries kept. */
-  result: Extract<FormVM['result'], { kind: 'invalid' }> | null
-}
-
-export type PartnershipSignInVM = {
-  email: string | null
-  action: string
-  reset: { href: string }
-  /** One answer for a wrong email and a wrong password; a lockout says when to try again. */
-  error: { kind: 'invalid' } | { kind: 'locked'; retryAfterMinutes: number } | null
 }
 
 type Applied = Extract<PendingRetailerVM, { status: 'applied' }>
 type Declined = Extract<PendingRetailerVM, { status: 'declined' }>
 
-/** The last section, as this visitor meets it. */
+/** What this visitor has, streamed over the cached forms; `null` for none. */
 export type PartnershipAccessVM =
-  /** Anyone without an application here: the application and partner sign-in. */
-  | { kind: 'visitor'; apply: PartnershipApplyVM; signIn: PartnershipSignInVM }
-  /** Just applied, or back through the status link: waiting on staff. */
-  | { kind: 'applicant'; standing: Applied; apply: null }
-  /** Declined, or a partnership that ended: said plainly — and the way to apply again (C8). */
-  | { kind: 'applicant'; standing: Declined; apply: PartnershipApplyVM }
-  /** Approved, not signed in: the password from the approval email (sent again on request). */
-  | {
-      kind: 'approved'
-      approvedAt: IsoDateTime
-      next: 'set-password' | 'sign-in'
-      signIn: PartnershipSignInVM
-    }
-  /** A signed-in, approved retailer: the way to their area. */
+  /** Sent: one answer whoever applied — a new business, one waiting, a partner. */
+  | { kind: 'received'; reply: MessageVM | null }
+  /** Sent back: every failing field at once and every entry kept, or the rate limit. */
+  | { kind: 'applyFailed'; result: Exclude<FormResultVM, { kind: 'received' }> }
+  /** Sign-in came back, its email kept. */
+  | { kind: 'signInFailed'; email: string | null; error: SignInErrorVM }
+  /** Waiting on staff: shown in place of the application. */
+  | { kind: 'applied'; standing: Applied }
+  /** Declined: said plainly, beside the application to apply again. */
+  | { kind: 'declined'; standing: Declined }
+  /** A signed-in partner: the way to its area, in place of the forms. */
   | { kind: 'retailer'; firstName: string | null; area: LinkVM }
 
 export type PartnershipVM = {
@@ -92,9 +66,14 @@ export type PartnershipVM = {
   intro: readonly BlockVM[]
   /** "100+ shops supplied" · "Printed in our own workshop": the programme's proof, as content. */
   highlights: readonly string[]
-  programmes: readonly PartnershipProgrammeVM[]
+  benefits: readonly PartnershipBenefitVM[]
+  /**
+   * The forms as anyone meets them, cached so they show without JavaScript; sign-in is the
+   * account's own (`auth.signIn`).
+   */
+  visitor: { apply: PartnershipApplyVM; signIn: SignInFormVM }
   /** This visitor's, at request time, inside the page's `<Suspense>`. */
-  access: Streamed<PartnershipAccessVM>
+  access: Streamed<PartnershipAccessVM | null>
   /** "Prefer to talk first?" */
   whatsapp: { href: string; display: string } | null
   seo: SeoVM

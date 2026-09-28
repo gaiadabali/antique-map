@@ -193,7 +193,7 @@ export const quoteTrade: QuoteVM = {
   trade: {
     tier: { id: 'trade-2', label: 'Partner — tier 2', discountBps: 4000 },
     minimum: { kind: 'piecesPerDesign', pieces: 20, mixedSizes: true },
-    minimumWaived: false,
+    minimumWaiver: null,
   },
   intents: {
     accept: { token: 'tok_trade_quote', acceptedPricing: token('tok_trade_quote_pricing') },

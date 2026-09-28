@@ -70,12 +70,13 @@ inside `<Suspense>`.
 | `Cart` | `CartVM` | page and drawer share one VM |
 | `Checkout` | `CheckoutVM` | steps are data (COMMERCE.md §5), not separate surfaces |
 | `Order` | `OrderVM` | confirmation, and the account's order detail |
-| `Account` | `AccountVM` | overview · orders · wishlist · want-lists · addresses · profile — and, for the gallery, **my offers** (with counter countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), consignments (status timeline). Where retailers are the only accounts (the shop, D31): the retailer's standing and, once approved, the trade terms (D32) and quotes — and no shopper sign-up anywhere |
-| `Form` | `FormVM` | enquiry · offer · consignment · appointment · wholesale — one engine, config-driven fields |
+| `Account` | `AccountVM` | overview · orders · wishlist · want-lists · addresses · profile — and, for the gallery, **my offers** (with counter countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), consignments (status timeline). Where partners are the only accounts (the shop, D31): an approved partner's trade terms (D32), its quotes with a brief for a new one, and a reorder on each order — the only partner who signs in (D34) — and no shopper sign-up anywhere. Signed out: sign-in (one answer for every email), setting a password from an emailed link, and asking for one |
+| `Form` | `FormVM` | enquiry · offer · consignment · appointment — one engine, config-driven fields; a post without JavaScript comes back to its page (C13 `FORM_RESULT`) |
 | `Pay` | `PayVM` | the landing page of a staff-sent payment link (accepted offer, hold, WhatsApp sale): the item, the terms, the expiry, the seller's identity, the routed methods |
 | `Quote` | `QuoteVM` | a business or institutional quote / proforma, or an approved retailer's order at its trade tier (D32: the tier and minimum it was issued at, each trade price beside its list price): lines, validity, PDF, accept → pay |
 | `OrderLookup` | `OrderLookupVM` | guest order tracking by order number + email or WhatsApp number, with the courier timeline |
-| `Partnership` | `PartnershipVM` | the shop's retailer programme (D31, module `accounts.retailers`), reached from the home hero's highlight and the header: what a partner gets, and a last section that holds the application — a shop applies for an account, a company or a hotel asks for a quote — and partner sign-in. Its last section is this visitor's: the application, an application waiting on staff, a declined one (with the way to apply again), an approved one before its password is set, or the way into a signed-in retailer's area. It never shows a trade price |
+| `Partnership` | `PartnershipVM` | the shop's one programme for every business buyer — shops, hotels, villas, cafés, companies (D31, D36; module `accounts.retailers`) — reached from the home hero's highlight and the header: what a partner gets, and a last section with the one application and partner sign-in, cached so both work without JavaScript. Over them streams what this visitor has: a sent application (one answer for all), a post sent back, an application waiting on staff, a declined one (with the form to apply again), or the way into a signed-in partner's area. It never shows a trade price |
+| `Wishlist` | `WishlistVM` | the shop's saved items, kept on the guest's device with no account (D35, module `retention.deviceWishlist`): the list streams, each card's heart removes its item, and the page says where the list lives |
 | `NotFound` · `Gone` · `Error` | `NotFoundVM` · `GoneVM` · `ErrorVM` | designed, not defaulted: a legacy `/product/{id}-{slug}` miss turns the slug into a prefilled search with similar works; an item removed from inventory renders the Gone design with a 404, noindex, and leaves the sitemap — a page cannot answer 410, so a real `410` comes only from the legacy handler (`/api/x/legacy/…`) for a rule that says so (sold items are **not** gone — they stay live); a 500 page with WhatsApp contact. The not-found loader tells a removed item from a miss by the public path the proxy passes on (C13) |
 
 `Order` includes the **payment-pending** state, the most important page in an
@@ -91,7 +92,7 @@ method **without losing the bag**.
 surfaces at full fidelity; every other surface gets an impeccable **surface
 brief** (`shape`) with its mode — the item page is *Experience*; browse, checkout
 and the admin are *Operate*; stories and trust pages are *Read*; the shop's home
-and For Business are *Persuade* — before an agent writes its route (TASKS.md 22.3).
+and Partnership are *Persuade* — before an agent writes its route (TASKS.md 22.3).
 
 The **shell** (header, navigation, footer, announcement bar, consent banner,
 the locale switcher, the **ship-to selector** — which decides the currency; there

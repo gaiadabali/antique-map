@@ -14,6 +14,7 @@ import type { SurfaceVM } from '../loaders'
 import type { ShellVM } from '../shell'
 import type { PurchaseVM } from '../surfaces/purchase'
 import * as account from './account'
+import * as entry from './account-entry'
 import * as retailer from './account-retailer'
 import * as cart from './cart'
 import {
@@ -46,6 +47,7 @@ import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested, quoteT
 import { purchaseStates } from './purchase-states'
 import { shell, shellShop } from './shell'
 import { gone, notFoundLegacy, serverError } from './status'
+import { wishlist, wishlistEmpty } from './wishlist'
 
 export const SHELL_FIXTURES = { shell, 'shell-shop': shellShop } as const satisfies Readonly<
   Record<string, ShellVM>
@@ -121,22 +123,27 @@ export const FIXTURES = {
   'account-price-requests': account.accountPriceRequests,
   'account-viewings': account.accountViewings,
   'account-consignments': account.accountConsignments,
+  'account-set-password': entry.accountSetPassword,
+  'account-set-password-expired': entry.accountSetPasswordExpired,
+  'account-reset': entry.accountReset,
+  'account-reset-sent': entry.accountResetSent,
   'account-retailer-signed-out': retailer.accountRetailerSignedOut,
-  'account-retailer-applied': retailer.accountRetailerApplied,
   'account-retailer-approved': retailer.accountRetailerApproved,
   'account-retailer-terms': retailer.accountRetailerTerms,
   'account-retailer-quotes': retailer.accountRetailerQuotes,
-  'account-retailer-declined': retailer.accountRetailerDeclined,
   partnership: partnership.partnership,
+  'partnership-received': partnership.partnershipReceived,
+  'partnership-apply-failed': partnership.partnershipApplyFailed,
+  'partnership-sign-in-failed': partnership.partnershipSignInFailed,
   'partnership-applied': partnership.partnershipApplied,
   'partnership-declined': partnership.partnershipDeclined,
-  'partnership-approved': partnership.partnershipApproved,
   'partnership-retailer': partnership.partnershipRetailer,
+  wishlist,
+  'wishlist-empty': wishlistEmpty,
   'form-enquiry': form.formEnquiry,
   'form-offer': form.formOffer,
   'form-consignment': form.formConsignment,
   'form-appointment': form.formAppointment,
-  'form-wholesale': form.formWholesale,
   'form-invalid': form.formInvalid,
   'not-found-legacy': notFoundLegacy,
   gone,

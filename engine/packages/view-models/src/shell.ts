@@ -59,6 +59,12 @@ export type ShellVM = {
   shipTo: Streamed<ShipToVM>
   cart: Streamed<{ count: number }>
   /**
+   * The header's saved items: the device's count and the Wishlist page with
+   * `retention.deviceWishlist` (D35), the account's wishlist with `retention.wishlist`; `null`
+   * with neither.
+   */
+  wishlist: Streamed<{ count: number; href: string } | null>
+  /**
    * The header's account entry — `null` where this visitor has none to see: a shop whose only
    * accounts are retailers', to anyone not signed in as one (the Partnership item is the way
    * in, D31).
