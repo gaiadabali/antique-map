@@ -13,8 +13,9 @@ export type IsoInstant = string
 export type IsoDate = string
 
 /**
- * An exact decimal as text, e.g. `'16234.5'` or `'0.035'`: FX rates, tax rates and percentages
- * that must reproduce exactly on a document. Never parsed into a float for money arithmetic.
+ * An exact decimal as text — FX rates, tax rates and percentages that must reproduce exactly on a
+ * document: `'16234.5'` (a rate), `'3.5'` (a percentage; the field names its unit, as `bufferPct`
+ * does). Never parsed into a float for money arithmetic.
  */
 export type DecimalString = `${number}`
 

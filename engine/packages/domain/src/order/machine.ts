@@ -5,7 +5,7 @@
  * fulfilment, its payments carry the money, so "paid, partially refunded, then shipped" needs no
  * combined status. Nothing but a row of this table may change `orders.status`, each change is a
  * compare-and-set under the order's lock, and each writes its domain event to the outbox in the
- * same transaction. DOM implements the runtime (TASKS.md 5.17) against this data; its property
+ * same transaction. DOM implements the runtime (TASKS.md 18.2) against this data; its property
  * tests iterate `ORDER_TRANSITIONS`.
  *
  * Money no transition may keep has rows of its own, so it is never kept in silence: a late payment

@@ -160,6 +160,11 @@ export type ParsedWebhook =
 
 type GatewayCore<AuthCapture extends boolean> = {
   readonly id: PaymentProviderId
+  /**
+   * One instance per seller account: the registry builds a gateway per (seller, provider) with
+   * that seller's secrets (PAYMENTS.md §8), and every event it normalises carries this seller.
+   */
+  readonly sellerId: string
   readonly authCapture: AuthCapture
   /**
    * Where the provider advises it (Midtrans), a notification is confirmed with `retrieve()` before
@@ -174,9 +179,9 @@ type GatewayCore<AuthCapture extends boolean> = {
   /** By the provider's id once it has named the payment, by our reference before (a Snap token). */
   retrieve(lookup: PaymentLookup): Promise<ProviderState>
   /**
-   * Verifies the signature on the raw body, then normalises each event (see the id rules). A
-   * provider serving several sellers is verified with the secret of the seller whose attempt the
-   * echoed reference names.
+   * Verifies the signature on the raw body with this instance's seller's secret — the handler picks
+   * the instance by the route's `[provider]` and `[seller]` (C13) — then normalises each event,
+   * stamped with `sellerId` (see the id rules).
    */
   parseWebhook(request: RawWebhook): Promise<ParsedWebhook>
   /** Idempotent by `idempotencyKey`: a retried refund refunds once. */
@@ -213,9 +218,9 @@ export type StateHashField =
   | 'refund-id'
 
 /**
- * How an adapter derives a webhook's `providerEventId`, the dedupe key unique per provider in
- * `engine.payment_events` (PAYMENTS.md §2). Events the reconciler builds and staff entries carry
- * their own prefixes (`retrieve:`, `staff:`), so no rule below can collide with them.
+ * How an adapter derives a webhook's `providerEventId` — with the provider and the seller, the
+ * dedupe key unique in `engine.payment_events` (PAYMENTS.md §2). Events the reconciler builds and
+ * staff entries carry their own prefixes (`retrieve:`, `staff:`), so no rule below can collide.
  */
 export type ProviderEventIdRule = EventIdRule<StateHashField>
 

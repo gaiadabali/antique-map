@@ -63,17 +63,20 @@ export const RESERVATION_ARBITER = {
 // ─── payment_attempts ────────────────────────────────────────────────────────────────────────
 //
 // UNIQUE `attempt_ref` — our reference, sent to the provider and echoed back, committed before the
-// provider hears of it; UNIQUE `(provider, provider_ref)`, null until the provider names it;
+// provider hears of it; `seller_id NOT NULL`; UNIQUE `(provider, seller_id, provider_ref)`, the
+// ref null until the provider names it;
 // INDEX on `order_id`; INDEX on `(status, expected_by)` WHERE `status IN ('created', 'pending',
 // 'requires_action', 'authorised')` — the reconciler's and the stale-attempt sweep's.
 
 // ─── payment_events, payment_events_unmatched, refunds ───────────────────────────────────────
 //
-// `payment_events` (engine table): UNIQUE `(provider, provider_event_id)`; `attempt_id`, `source`,
-// `outcome` (ApplyPaymentEventOutcome), a hash of the redacted payload.
+// `payment_events` (engine table): UNIQUE `(provider, seller_id, provider_event_id)` — secrets, and
+// so webhook routes, are per seller (C13 `/api/x/webhooks/payments/[provider]/[seller]`), and two
+// sellers on one provider never share a key space; `attempt_id`, `source`, `outcome`
+// (ApplyPaymentEventOutcome), a hash of the redacted payload.
 // `payment_events_unmatched` (engine table): events for no known attempt, kept apart so they never
-// consume a dedupe key — UNIQUE `(provider, provider_event_id)`, the payload hash, first and last
-// seen, a count, `resolved_at`.
+// consume a dedupe key — UNIQUE `(provider, seller_id, provider_event_id)`, the payload hash, first
+// and last seen, a count, `resolved_at`.
 // `refunds` (collection): UNIQUE `(attempt_id, refund_ref)` — the provider's refund id, or
 // `retrieve:<cumulative>` for one learnt from retrieve(); UNIQUE `idempotency_key`
 // (RefundIdempotencyKey) for a refund the domain owes; its status (`requested` · `pending` ·

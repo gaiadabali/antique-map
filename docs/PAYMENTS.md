@@ -48,6 +48,7 @@ type ProviderId = 'manual' | 'bank-transfer' | 'stripe' | 'midtrans' | 'xendit' 
 
 type PaymentGateway = {
   readonly id: ProviderId
+  readonly sellerId: string                      // one instance per seller account: secrets are per seller (§8)
   readonly authCapture: boolean                  // true → capture() and cancel() are required
   readonly confirmWebhooksByRetrieve: boolean    // Midtrans: confirm a notification before applying it
 
@@ -99,8 +100,9 @@ type SessionResult =
 
 type NormalizedPaymentEvent = {
   provider: ProviderId
+  sellerId: string               // the account it came from: a webhook arrives on its seller's route
   source: 'webhook' | 'retrieve' | 'staff'
-  providerEventId: string        // the dedup key — unique in payment_events; DERIVED PER ADAPTER:
+  providerEventId: string        // with provider + sellerId, the dedup key in payment_events; DERIVED PER ADAPTER:
                                  //   Stripe / PayPal: their event id;
                                  //   Midtrans (no event id in its notifications): a hash of
                                  //   transaction_id | transaction_status | fraud_status | status_code

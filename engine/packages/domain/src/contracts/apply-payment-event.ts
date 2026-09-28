@@ -5,7 +5,7 @@
  * webhook handler verifies the signature on the raw body, calls `retrieve()` where the adapter
  * says so, and hands each normalised event here; the reconciler does the same with what
  * `retrieve()` reports, and a staff entry for a manual method arrives the same way. DOM implements
- * it (TASKS.md 5.9, 5.17) under the transaction rules of ./transactions.ts.
+ * it (TASKS.md 19.4, on 18.2's machine runner) under the transaction rules of ./transactions.ts.
  */
 import type { Money } from '../money/contract'
 import type {
@@ -66,13 +66,14 @@ export type PaymentPorts = {
 
 /**
  * Applies one event in ONE transaction of its own (a DomainTx: READ COMMITTED, the lock order):
- * 1. Find the attempt by `attemptRef`, else by `(provider, providerRef)` — a plain read. None: the
- *    event is recorded in `payment_events_unmatched` and alerted → `unknown-attempt`, and the
- *    dedupe key is NOT consumed, so the event still applies if its attempt turns up. An attempt
- *    row always exists before its provider hears of it: payment.start commits it before it calls
- *    `createSession()`.
- * 2. `INSERT … payment_events (provider, provider_event_id, attempt_id) ON CONFLICT DO NOTHING
- *    RETURNING id` — no row: `duplicate`, and the no-op commits.
+ * 1. Find the attempt by `attemptRef`, else by `(provider, sellerId, providerRef)` — a plain read.
+ *    None — or one of another seller than the event's, since a misrouted event is never applied to
+ *    the wrong account: the event is recorded in `payment_events_unmatched` and alerted →
+ *    `unknown-attempt`, and the dedupe key is NOT consumed, so the event still applies if its
+ *    attempt turns up. An attempt row always exists before its provider hears of it:
+ *    payment.start commits it before it calls `createSession()`.
+ * 2. `INSERT … payment_events (provider, seller_id, provider_event_id, attempt_id) ON CONFLICT DO
+ *    NOTHING RETURNING id` — no row: `duplicate`, and the no-op commits.
  * 3. Lock the attempt's order, then the attempt (`FOR UPDATE`), and read the attempt's status
  *    under that lock. The attempt's order never changes, so step 1 could read it unlocked.
  * 4. Classify. `paid` or `authorised` for another amount or currency than the attempt's charge:

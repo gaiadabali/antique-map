@@ -75,7 +75,7 @@ export type RouteFulfilmentContext = {
   }[]
 }
 
-/** Pure over its input and context; DOM implements it (TASKS.md 5.12). */
+/** Pure over its input and context; LOG implements it (TASKS.md 26.3). */
 export type RouteFulfilment = (
   input: RouteFulfilmentInput,
   context: RouteFulfilmentContext,

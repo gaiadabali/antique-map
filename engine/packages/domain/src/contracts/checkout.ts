@@ -237,6 +237,8 @@ export type PaymentStarted = {
  * attempt belongs to — its checkout, its pay link, or its order opened by the session or a lookup
  * (`OrderAccess`): an attempt id travels in gateway return URLs, so on its own it is never a
  * credential, and an attempt outside the scope answers `not-found`, exactly like an unknown one.
+ * The scope IS a credential (a pay-link token, a lookup token), so this request never rides in a
+ * URL's query string, where logs and referrers keep it: C13 serves it as a POST.
  */
 export type PaymentStatusRequest = {
   readonly attemptId: string

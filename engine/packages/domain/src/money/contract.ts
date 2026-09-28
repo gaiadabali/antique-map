@@ -4,7 +4,7 @@
  * `Money`, `PriceSet`, the FX snapshot and the named rounding points (COMMERCE.md §3,
  * CONVENTIONS.md §3), plus the pricing pipeline's step signature and stored figures, re-exported
  * from `../contracts/pricing`. DOM implements the arithmetic, guards and rounding functions
- * against these types (TASKS.md 5.2); PAY, WEB, the view models and the apps consume them.
+ * against these types (TASKS.md 17.2); PAY, WEB, the view models and the apps consume them.
  * Changing this file is a versioned change announced to every consuming lane (CONTRACTS.md).
  *
  * Type-level only. view-models imports this module with `import type` and declares no runtime
@@ -94,8 +94,9 @@ export type PriceSet =
 /**
  * The rate an order, a derived price or an estimate used. Every order stores the one it used
  * (COMMERCE.md §3) so a document reproduces to the minor unit. One major unit of `from` is `rate`
- * major units of `to`, exactly as the source published it; `bufferPct` is the market's FX buffer
- * folded into derived prices (3–5 %), `'0'` where none applies (an estimate, a refund).
+ * major units of `to`, exactly as the source published it. `bufferPct` is the market's FX buffer
+ * folded into derived prices, in PERCENT as C1's `money.fx.bufferPct` states it — `'3.5'` is 3.5 %,
+ * never a fraction and never a float — and `'0'` where none applies (an estimate, a refund).
  */
 export type FxSnapshot = {
   readonly from: CurrencyCode

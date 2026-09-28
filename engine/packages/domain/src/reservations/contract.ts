@@ -5,7 +5,7 @@
  * Every channel — web checkout, accepted offer, staff hold, institutional invoice, a manual
  * showroom sale — reserves through this one service, and nothing else writes a reservation
  * (ARCHITECTURE.md §6; COMMERCE.md §4): not an admin form, not a hook, not a sweep of its own. DOM
- * implements it in `reservations/reserve.ts` (5.4) under the transaction rules of
+ * implements it in `reservations/reserve.ts` (TASKS.md 18.1) under the transaction rules of
  * ../contracts/transactions.ts; SCH declares the table, its partial unique index and its checks
  * (../contracts/storage.ts).
  */

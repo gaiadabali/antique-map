@@ -143,11 +143,19 @@ type EventSource =
 
 /**
  * A provider's news, normalised (PAYMENTS.md §2, §4) — the only input to applyPaymentEvent().
- * `providerEventId` is the dedupe key, unique per provider in `engine.payment_events`.
+ * The dedupe key is `(provider, sellerId, providerEventId)`, unique in `engine.payment_events`,
+ * so two sellers on one provider can never swallow each other's events.
  */
 export type NormalizedPaymentEvent = PaymentEventBody &
   EventSource & {
     readonly provider: PaymentProviderId
+    /**
+     * The seller whose provider account it came from. Secrets are per seller and provider
+     * (PAYMENTS.md §8), so a webhook arrives on its seller's own route
+     * (`/api/x/webhooks/payments/[provider]/[seller]`, C13) and is verified by that seller's
+     * gateway; a `retrieve` event takes the due attempt's seller, a `staff` entry its order's.
+     */
+    readonly sellerId: string
     /**
      * Our attempt reference as the provider echoes it back (Midtrans `order_id`, Stripe
      * `client_reference_id`, Xendit `external_id`, PayPal `custom_id`). The domain finds the
