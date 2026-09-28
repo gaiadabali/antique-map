@@ -122,3 +122,23 @@ export const itemVariants: ItemVM = {
   utilities: { ...base.utilities, consign: null, framingQuote: null },
   seo: seo('Harbour of Contoh — Giclée print', '/product/7001-harbour-of-contoh-giclee'),
 }
+
+/**
+ * Every axis chosen (from the URL of the GET form): the live price, the stock state and the
+ * line Add to bag posts — the variant and its options, never the price shown beside it.
+ */
+const selection = { format: 'framed', size: '45', frame: 'natural-teak', glazing: 'acrylic' }
+export const itemVariantsSelected: ItemVM = {
+  ...itemVariants,
+  purchase: streamed({
+    ...purchase,
+    selection,
+    selected: {
+      variantId: 70011,
+      sku: 'A0042-FRM-45-NTK-ACR',
+      price: idr(1250000),
+      stock: { kind: 'madeToOrder', leadDays: { min: 3, max: 5 } },
+      line: line(7001, 70011, selection),
+    },
+  }),
+}

@@ -35,7 +35,7 @@ import { itemOnHold } from './item-on-hold'
 import { itemPriceOnRequest, itemPriceRevealed } from './item-price-on-request'
 import { itemSoldPriceRealised, itemSoldWithAlternative } from './item-sold-with-alternative'
 import { itemUnique, itemUniqueStreaming } from './item-unique'
-import { itemVariants } from './item-variants'
+import { itemVariants, itemVariantsSelected } from './item-variants'
 import { listing, listingEmpty, search } from './listing'
 import * as order from './order'
 import * as lookup from './order-lookup'
@@ -64,6 +64,7 @@ export const FIXTURES = {
   'item-price-revealed': itemPriceRevealed,
   'item-enquiry-only': itemEnquiryOnly,
   'item-variants': itemVariants,
+  'item-variants-selected': itemVariantsSelected,
   'item-long-content': itemLongContent,
   'item-without-hook-title': itemWithoutHookTitle,
   design,
