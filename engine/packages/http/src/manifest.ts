@@ -12,10 +12,13 @@
  * answers 404, so parity never depends on config. Every C6 operation has its address in
  * `COMMERCE_OPERATIONS`.
  *
- * Handlers log a request's path without its query string, and a credential never travels in
- * a query string at all, except in the one-hop links an email carries (`ORDER_ACCESS.link`,
- * one-click unsubscribe). Tooling reads this file through Node's type stripping, so it holds
- * type imports only and erasable syntax.
+ * Handlers log a request's path without its query string. A lookupToken or a payment's scope
+ * never travels in a URL (`ORDER_ACCESS`; `payment.status` is a POST). A pay-link or quote
+ * token is the capability its page's own URL already carries (C10 `sensitive`), so
+ * `payLink.get` and `quote.get` read it from the query; the one-hop links an email carries
+ * (`ORDER_ACCESS.link`, one-click unsubscribe) are the only other credential in a URL.
+ * Tooling reads this file through Node's type stripping, so it holds type imports only and
+ * erasable syntax.
  */
 import type { ModuleKey } from '@engine/config/schema'
 import type { CommerceOperation } from '@engine/domain/api'
@@ -130,9 +133,9 @@ type OperationAddress = {
 }[CommerceArea]
 
 /**
- * Every C6 operation's address. A GET reads its request from the query string — so no GET
- * operation takes a credential — the others from the body: JSON, or a form post when
- * JavaScript is off. `satisfies` makes the map total over `CommerceOperation`, and each
+ * Every C6 operation's address. A GET reads its request from the query string — where only
+ * a page's own capability (a pay-link or quote token) may ride — the others from the body:
+ * JSON, or a form post when JavaScript is off. `satisfies` makes the map total over `CommerceOperation`, and each
  * method one its area's route exports.
  */
 export const COMMERCE_OPERATIONS = {

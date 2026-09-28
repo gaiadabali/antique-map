@@ -398,8 +398,9 @@ fails if an engine route's first segment equals a collection slug, `payload-jobs
 or `graphql`. A write that a cookie authenticates — the cart, the customer
 session, order access, each `HttpOnly`, `Secure` and `SameSite=Lax` — is refused
 unless it comes from the site itself (`Origin` or `Sec-Fetch-Site`; C13
-`sameOrigin`), and a credential never travels in a query string, except in the
-one-hop links an email carries (order access, one-click unsubscribe).
+`sameOrigin`), and no credential travels in a URL beyond a page's own capability
+(a payment link's or a quote's token) and the one-hop links an email carries
+(order access, one-click unsubscribe).
 
 ## 12. Identity
 

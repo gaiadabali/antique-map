@@ -107,9 +107,10 @@ so it is breaking and also needs a redirect.
   never leave the origin brand.
 - **C13.** Every app mounts every route. A new route needs a mount file in both apps
   (route parity), and a new C6 operation needs an address in `COMMERCE_OPERATIONS`. A write
-  a cookie can authenticate is refused from another origin (`sameOrigin`); a credential
-  never rides in a query string outside a one-hop email link; a provider webhook route names
-  the seller whose secret verifies it. The proxy rewrites, and sets only
+  a cookie can authenticate is refused from another origin (`sameOrigin`); a lookupToken or a
+  payment's scope never rides in a URL — only a page's own capability (a pay-link or quote
+  token) and a one-hop email link do; a provider webhook route names the seller whose secret
+  verifies it. The proxy rewrites, and sets only
   `PROXY_REQUEST_HEADERS` and C10's `sensitive` answer headers.
 
 ## Changelog
