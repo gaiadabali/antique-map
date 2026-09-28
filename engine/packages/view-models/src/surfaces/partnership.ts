@@ -9,10 +9,11 @@
  * application, approval emails a set-password link (C13 `PASSWORD_LINK`), and the partner
  * signs in; a partner who is not approved cannot (D34).
  *
- * It works without JavaScript. The application and sign-in are cached (`visitor`) and are the
- * fallback `access` streams into. `access` holds only what this visitor has: a post's result
- * (C13 `FORM_RESULT`), an application's standing (the session, or C13 `APPLICATION_ACCESS`),
- * or a signed-in partner. There is never a token in the page's URL, and no term before sign-in.
+ * It works without JavaScript. The application and sign-in are cached (`visitor`), and a post
+ * sent without JavaScript comes back as `result` — resolved, and rendered in the page's own
+ * body (C13 `FORM_RESULT`). `access` streams only an application's standing (the session, or
+ * C13 `APPLICATION_ACCESS`) or a signed-in partner, over the cached forms. There is never a
+ * token in the page's URL, and no term before sign-in.
  */
 import type { BlockVM } from '../blocks'
 import type { LinkVM, MessageVM, SeoVM, Streamed } from '../common'
@@ -45,14 +46,16 @@ export type PartnershipApplyVM = FormPostVM & {
 type Applied = Extract<PendingRetailerVM, { status: 'applied' }>
 type Declined = Extract<PendingRetailerVM, { status: 'declined' }>
 
-/** What this visitor has, streamed over the cached forms; `null` for none. */
+/**
+ * A post's outcome on this page, resolved: the application's (`received` — one answer whoever
+ * applied, a new business, one waiting or a partner — or its failure, every entry kept), or a
+ * sign-in that came back, its email kept.
+ */
+export type PartnershipResultVM =
+  FormResultVM | { kind: 'signInFailed'; email: string | null; error: SignInErrorVM }
+
+/** What this visitor is, streamed over the cached forms; `null` for anyone else. */
 export type PartnershipAccessVM =
-  /** Sent: one answer whoever applied — a new business, one waiting, a partner. */
-  | { kind: 'received'; reply: MessageVM | null }
-  /** Sent back: every failing field at once and every entry kept, or the rate limit. */
-  | { kind: 'applyFailed'; result: Exclude<FormResultVM, { kind: 'received' }> }
-  /** Sign-in came back, its email kept. */
-  | { kind: 'signInFailed'; email: string | null; error: SignInErrorVM }
   /** Waiting on staff: shown in place of the application. */
   | { kind: 'applied'; standing: Applied }
   /** Declined: said plainly, beside the application to apply again. */
@@ -72,7 +75,9 @@ export type PartnershipVM = {
    * account's own (`auth.signIn`).
    */
   visitor: { apply: PartnershipApplyVM; signIn: SignInFormVM }
-  /** This visitor's, at request time, inside the page's `<Suspense>`. */
+  /** This visitor's last post here, resolved at request time; `null` for none. */
+  result: PartnershipResultVM | null
+  /** This visitor's standing, at request time, inside the page's `<Suspense>`. */
   access: Streamed<PartnershipAccessVM | null>
   /** "Prefer to talk first?" */
   whatsapp: { href: string; display: string } | null

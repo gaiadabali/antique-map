@@ -23,7 +23,11 @@ import type {
   RetailerStandingVM,
   SignedInVM,
 } from './surfaces/account'
-import type { PartnershipAccessVM, PartnershipVM } from './surfaces/partnership'
+import type {
+  PartnershipAccessVM,
+  PartnershipResultVM,
+  PartnershipVM,
+} from './surfaces/partnership'
 import type { QuoteTradeVM } from './surfaces/pay'
 
 type Equals<A, B> =
@@ -108,6 +112,7 @@ type TermKeys = 'terms' | 'tier' | 'discountBps' | 'minimum' | 'trade' | 'price'
 type AccessKeys =
   | KeysOf<PartnershipAccessVM>
   | KeysOf<Extract<PartnershipAccessVM, { standing: unknown }>['standing']>
+  | KeysOf<PartnershipResultVM>
 type _PartnershipShowsNoTerms = Assert<Equals<Extract<AccessKeys, TermKeys>, never>>
 type Visitor = PartnershipVM['visitor']
 type VisitorKeys = keyof Visitor['apply'] | keyof Visitor['signIn']
@@ -115,11 +120,11 @@ type _FormsAreEveryones = Assert<
   Equals<Extract<VisitorKeys, 'standing' | 'result' | 'failed' | 'error' | 'email'>, never>
 >
 type _OneKindPerState = Assert<
-  Equals<
-    PartnershipAccessVM['kind'],
-    'received' | 'applyFailed' | 'signInFailed' | 'applied' | 'declined' | 'retailer'
-  >
+  Equals<PartnershipAccessVM['kind'], 'applied' | 'declined' | 'retailer'>
+>
+type _OneKindPerResult = Assert<
+  Equals<PartnershipResultVM['kind'], 'received' | 'invalid' | 'rateLimited' | 'signInFailed'>
 >
 type _ReceivedNamesNoOne = Assert<
-  Equals<keyof Extract<PartnershipAccessVM, { kind: 'received' }>, 'kind' | 'reply'>
+  Equals<keyof Extract<PartnershipResultVM, { kind: 'received' }>, 'kind' | 'reply'>
 >

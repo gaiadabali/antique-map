@@ -12,12 +12,14 @@ import type { SubRoute } from './types'
  * text/html` — answers 303 See Other to its `returnTo`: a hidden field holding the page's
  * public path, taken only if it parses as one of this site's pages (C10 `parsePublicPath`),
  * else the home page. The outcome waits on the server as a form result — the answer, and for a
- * failed post every entry kept — for at most `maxAgeSeconds` and until first read, named by an
- * opaque id in `cookie` (HttpOnly, Secure, SameSite=Lax, Path=/). The cookie holds that id
- * alone: never an entry, an NPWP or any other personal data. The page's loader reads it back
- * at request time. `received` is the same for everyone who posts that form, so it names no one
- * and admits nothing about an account. A tick box posts `'true'` when ticked and nothing when
- * not; the handler's decoder reads the absence as `false`.
+ * failed post every entry kept — named by an opaque id in `cookie` (HttpOnly, Secure,
+ * SameSite=Lax, Path=/). The cookie holds that id alone: never an entry, an NPWP or any other
+ * personal data. The page's loader awaits it at request time and the page renders it in its
+ * own body (C2 `FormResultVM`). It is deleted once the response showing it has been sent, or
+ * after `maxAgeSeconds` — never on first read, so a second render or a prefetch in the same
+ * request finds it still there. `received` is the same for everyone who posts that form, so it
+ * names no one and admits nothing about an account. A tick box posts `'true'` when ticked and
+ * nothing when not; the handler's decoder reads the absence as `false`.
  */
 export const FORM_RESULT = { cookie: 'form_result', maxAgeSeconds: 600 } as const
 
@@ -40,7 +42,8 @@ export function formsUrl(operation: FormOperation): string {
  * first, at most `maxItems` (the oldest drops out), in an HttpOnly, Secure, SameSite=Lax
  * cookie only `wishlist.set` writes — set by the guest's own first save, holding no identifier
  * and no personal data, and nothing of it kept on the server. Loaders read it at request time,
- * so a heart's state and the Wishlist page stream. Each save and removal is tracked for
- * marketing only with consent (C11, COMPLIANCE.md §7).
+ * so a heart's state and the Wishlist page stream. Each save and removal is tracked under
+ * ANALYTICS.md §1's consent rule (C11, D38): counted by the cookieless beacon, and sent to GA4
+ * and Meta only after consent.
  */
 export const DEVICE_WISHLIST = { cookie: 'wishlist', maxItems: 100, maxAgeDays: 365 } as const

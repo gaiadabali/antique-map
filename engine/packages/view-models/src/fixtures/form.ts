@@ -35,7 +35,7 @@ export const formEnquiry: FormVM = {
   offer: null,
   appointment: null,
   uploads: null,
-  result: streamed(null),
+  result: null,
   seo: { ...seo('Enquire', '/enquire'), noindex: true },
 }
 
@@ -102,12 +102,12 @@ export const formAppointment: FormVM = {
 
 export const formInvalid: FormVM = {
   ...formEnquiry,
-  result: streamed({
+  result: {
     kind: 'invalid',
     fields: [
       { path: 'contact.email', reason: 'format' },
       { path: 'message', reason: 'required' },
     ],
     values: { 'contact.fullName': 'Anna Voorbeeld', 'contact.email': 'anna@example' },
-  }),
+  },
 }

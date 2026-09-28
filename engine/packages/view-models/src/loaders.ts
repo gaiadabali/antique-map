@@ -14,9 +14,13 @@
  * §9): phase one is a `'use cache'` + `cacheTag` read returning `CachedPart<VM>` (`../common`)
  * — published-only, projected, the same for every visitor; phase two creates each `Streamed`
  * part at request time, inside the route's `<Suspense>`, and the loader returns the two
- * together. A cached read never awaits a streamed part. There is no cookie-free fixed shell to
- * prerender: the `(site)` layout awaits `connection()`, so every page is rendered per request
- * and caching is per read, by tag.
+ * together. A cached read never awaits a streamed part. The one request-time part that is
+ * awaited instead is a post's `result` (C13 `FORM_RESULT`): only a visitor without JavaScript
+ * ever gets one, and a streamed part stays hidden from them, so the loader resolves it and the
+ * page renders it in its own body, never inside a nested `<Suspense>` — which costs no caching,
+ * since the route renders at request time and only the content read is `'use cache'`. There is
+ * no cookie-free fixed shell to prerender: the `(site)` layout awaits `connection()`, so every
+ * page is rendered per request and caching is per read, by tag.
  *
  * `Found<VM>`: `null` is a 404 (`notFound()`); `redirectTo` is permanent on a content page —
  * the slug changed, and the item page resolves by public id, so a product URL is never lost

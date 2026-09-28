@@ -19,7 +19,7 @@ import type { IsServerPriced } from '@engine/domain/api'
 import type { FxSnapshot } from '@engine/domain/money'
 
 import type { CardVM } from './cards'
-import type { CachedPart, LineIntent, Money, PriceVM } from './common'
+import type { CachedPart, LineIntent, Money, PriceVM, Streamed } from './common'
 import type { AppliedCodeVM, ReorderIntentVM, TotalsVM } from './commerce'
 import type {
   AccountOfferVM,
@@ -91,15 +91,19 @@ type _HiddenIsNeverAsked = Assert<
 >
 type _TickPostsTrue = Assert<Equals<CheckboxFieldVM['value'], 'true'>>
 
-// A request-time part never enters a cached read: a post's result, what the Partnership page
-// knows of its visitor, the device's wishlist. The forms everyone needs stay in the cached part.
+// A streamed part never enters a cached read: what the Partnership page knows of its visitor,
+// the device's wishlist. The forms everyone needs stay in the cached part.
 type _RequestTimeStreams = Assert<
   Equals<
-    | Extract<keyof CachedPart<FormVM>, 'result'>
     | Extract<keyof CachedPart<PartnershipVM>, 'access'>
     | Extract<keyof CachedPart<WishlistVM>, 'items'>,
     never
   >
+>
+// A post's result is resolved, never streamed: only a visitor without JavaScript gets one, and
+// a streamed part stays hidden from them.
+type _ResultIsNotStreamed = Assert<
+  Equals<Extract<FormVM['result'] | PartnershipVM['result'], Streamed<unknown>>, never>
 >
 type _FormsAreCached = Assert<
   Equals<Extract<keyof CachedPart<PartnershipVM>, 'visitor'>, 'visitor'>

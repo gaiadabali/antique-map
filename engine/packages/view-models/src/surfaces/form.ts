@@ -53,7 +53,7 @@ export type FormVM = {
     maxMegabytes: number
     roles: readonly ConsignmentPhoto['role'][]
   } | null
-  /** This visitor's last post of this form, read back at request time; `null` for none. */
-  result: Streamed<FormResultVM | null>
+  /** This visitor's last post of this form, resolved at request time; `null` for none. */
+  result: FormResultVM | null
   seo: SeoVM
 }

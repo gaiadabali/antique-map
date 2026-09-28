@@ -35,7 +35,7 @@ export const MODULES = {
   'retention.wishlist':
     "Saved items in the buyer's account (with `accounts.buyers`): a viewing's pull list",
   'retention.deviceWishlist':
-    "Saved items on the guest's device, with no account (D35): each save tracked for marketing, with consent",
+    "Saved items on the guest's device, with no account (D35): each save tracked under ANALYTICS.md §1's consent rule (D38)",
   'retention.wantList': 'Saved searches and "tell me when another example arrives"',
   'retention.newsletter': 'Newsletter signup, digest and the issue archive',
   'retention.reviews': 'Product reviews from verified orders',

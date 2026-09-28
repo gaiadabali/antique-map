@@ -76,10 +76,11 @@ export type FormPostVM = { fields: readonly FormFieldVM[]; action: string }
 
 /**
  * What a post answers: as JSON to a script, or, sent without JavaScript, through C13's
- * `FORM_RESULT` on the page it returns to — read back at request time, so a `Streamed` part (the
- * Cache Components spike, TASKS.md 4.1, proves a page shows it with JavaScript off). `received`
- * is the same for everyone who posts that form. A failure names every failing field at once and
- * keeps every entry.
+ * `FORM_RESULT` on the page it returns to. There it is resolved, never `Streamed`: the loader
+ * awaits it and the page renders it in its own body, outside any nested `<Suspense>`, because
+ * the only visitor who gets one has no JavaScript to reveal a streamed part (`./loaders`).
+ * `received` is the same for everyone who posts that form. A failure names every failing field
+ * at once and keeps every entry.
  */
 export type FormResultVM =
   | { kind: 'received'; reply: MessageVM | null }

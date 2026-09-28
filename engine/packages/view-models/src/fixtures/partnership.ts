@@ -3,16 +3,18 @@
  *
  * A fictional shop's one programme for every business buyer (D36): what a partner gets, for
  * shops, hotels and villas, cafés and companies, then the application and partner sign-in —
- * cached, so they work without JavaScript. Then the same page as each visitor meets it: just
- * applied (the same answer for everyone), an application or a sign-in sent back without
- * JavaScript, an application waiting on staff, a declined one (with the form to apply again),
- * and a signed-in partner. No state shows a trade price: the published terms are words.
+ * cached, so they work without JavaScript. Then the same page after a post sent without
+ * JavaScript — just applied (the same answer for everyone), an application or a sign-in sent
+ * back — each a resolved `result`; and as a known visitor meets it, streamed: an application
+ * waiting on staff, a declined one (with the form to apply again), a signed-in partner. No
+ * state shows a trade price: the published terms are words.
  */
 import type { RetailerShopType } from '@engine/domain/api'
 
 import type {
   PartnershipAccessVM,
   PartnershipApplyVM,
+  PartnershipResultVM,
   PartnershipVM,
 } from '../surfaces/partnership'
 import { contactFields, entry, hidden, optional, signInForm, tick } from './_forms'
@@ -82,7 +84,10 @@ const trade = (title: string, value: string) => ({
   ],
 })
 
-const page = (access: PartnershipAccessVM | null): PartnershipVM => ({
+const page = (
+  access: PartnershipAccessVM | null,
+  result: PartnershipResultVM | null = null,
+): PartnershipVM => ({
   surface: 'partnership',
   title: 'Partner with us',
   intro: [],
@@ -94,6 +99,7 @@ const page = (access: PartnershipAccessVM | null): PartnershipVM => ({
     trade('For companies', 'Gifts in quantity, from 25 pieces'),
   ],
   visitor: { apply, signIn: signInForm('/partnership') },
+  result,
   access: streamed(access),
   whatsapp: { href: WHATSAPP, display: '+62 812 0000 0001' },
   seo: seo('Partnership', '/partnership'),
@@ -102,26 +108,23 @@ const page = (access: PartnershipAccessVM | null): PartnershipVM => ({
 export const partnership = page(null)
 
 /** Sent: the same answer whoever applied — nothing about an account. */
-export const partnershipReceived = page({
+export const partnershipReceived = page(null, {
   kind: 'received',
   reply: { code: 'applicationReplyDays', params: { days: 2 } },
 })
 
 /** Sent back without JavaScript: every failing field at once, every entry kept. */
-export const partnershipApplyFailed = page({
-  kind: 'applyFailed',
-  result: {
-    kind: 'invalid',
-    fields: [
-      { path: 'business.npwp', reason: 'required' },
-      { path: 'consent.application', reason: 'required' },
-    ],
-    values: { 'business.name': 'Toko Contoh', 'business.country': 'ID' },
-  },
+export const partnershipApplyFailed = page(null, {
+  kind: 'invalid',
+  fields: [
+    { path: 'business.npwp', reason: 'required' },
+    { path: 'consent.application', reason: 'required' },
+  ],
+  values: { 'business.name': 'Toko Contoh', 'business.country': 'ID' },
 })
 
 /** One answer for an unknown email, a wrong password and a partner who is not approved (D34). */
-export const partnershipSignInFailed = page({
+export const partnershipSignInFailed = page(null, {
   kind: 'signInFailed',
   email: 'made@shop.example.test',
   error: { kind: 'invalid' },

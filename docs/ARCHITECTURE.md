@@ -405,10 +405,12 @@ verification, one-click unsubscribe), each of which but the unsubscribe moves it
 token into a cookie and answers 303 to a clean page. **A form works without
 JavaScript** (C13 `FORM_RESULT`): a script's post gets JSON; an HTML form post
 answers 303 See Other to its page (a `returnTo` the handler checks against C10),
-and its outcome waits on the server — at most ten minutes, read once — under an
-`HttpOnly` cookie holding an opaque id and never an entry or any personal data,
-for the page's loader to read back at request time. What a visitor must see
-without JavaScript — a form, above all — is never only a streamed part.
+and its outcome waits on the server under an `HttpOnly` cookie holding an opaque
+id and never an entry or any personal data — deleted once the response showing it
+has been sent, or after ten minutes. The page's loader awaits it at request time,
+and the page renders it in its own body, never inside a nested `<Suspense>`: what
+a visitor must see without JavaScript — a form and its result — is never a
+streamed part.
 
 ## 12. Identity
 

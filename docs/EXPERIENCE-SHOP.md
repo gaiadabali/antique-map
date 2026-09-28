@@ -51,7 +51,8 @@ Showroom. There is no separate For Business item (D36).
 **Utility bar:** ship-to/currency · language · WhatsApp · saved items (the heart,
 kept on this device — D35) · bag — no shopper account: shoppers buy as guests and
 track orders by number (D31, TASKS.md 28.5). Saving an item needs no account, and
-each save is tracked for marketing only with consent.
+each save is tracked under ANALYTICS.md §1's consent rule (D38): counted by the
+cookieless beacon, and sent to GA4 and Meta only after consent.
 
 **Shop** mega-menu, three columns plus a feature tile (the hero line):
 - **Wall Art** — Posters · Giclée · Framed · Canvas · Murals · Print from the

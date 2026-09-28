@@ -7,8 +7,9 @@
  * `STAFF_ROLES`) may override the tiers, every change audited, and an editor never can (D33).
  * An override that removes a tier some retailer still holds is refused, unless the same
  * audited change moves those retailers to another tier; no tier, in the file or an override,
- * passes `maxDiscountBps`. Staff assign each approved retailer a tier — `defaultTier` at
- * approval — and only the server resolves it, for that retailer's own quotes.
+ * passes `maxDiscountBps`. Approval assigns `defaultTier`; only an owner-role user moves a
+ * partner to another tier, audited (C8 `change-tier`, D37); and only the server resolves a
+ * partner's tier, for its own quotes.
  */
 import { z } from 'zod'
 

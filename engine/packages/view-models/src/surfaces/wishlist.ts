@@ -5,8 +5,8 @@
  * `retention.deviceWishlist`): the page lists what this device saved, newest first, each card
  * with its heart to remove it and its own way to the bag. The list is C13's `DEVICE_WISHLIST`
  * cookie, read at request time, so it streams; an item no longer published drops out. Nothing
- * here is shared with an account or another device, and each save and removal is tracked for
- * marketing only with consent (C11).
+ * here is shared with an account or another device, and each save and removal is tracked under
+ * ANALYTICS.md §1's consent rule (C11, D38).
  */
 import type { CardVM } from '../cards'
 import type { LinkVM, MessageVM, SeoVM, Streamed } from '../common'
