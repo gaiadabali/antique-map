@@ -114,6 +114,10 @@ export default defineConfig([
     'generated files (regenerated, never edited: PARALLEL-TRACKS.md §2)',
   ),
   globalIgnores(['docs/design/input/**'], 'design input from the owner, kept as delivered'),
+  globalIgnores(
+    ['.claude/**'],
+    'agent skills and settings, vendored as delivered (Prettier skips them too)',
+  ),
 
   {
     name: 'code: recommended',
