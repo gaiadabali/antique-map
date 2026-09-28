@@ -74,10 +74,12 @@ so it is breaking and also needs a redirect.
 - **C1.** A new field or module goes into BRANDS.md (§3 or §4) in the same change, and
   every committed brand config still validates. A module flag never changes the schema,
   only visibility and access (ARCHITECTURE.md §2). Provider ids, payment-method families and
-  the catalogue and listing vocabularies (`OBJECT_TYPES`, `PRODUCT_KINDS`, `FACET_KEYS`,
-  `SORT_KEYS`) are declared here once, because config is the leaf and validates them; C2,
+  the catalogue, listing and accounts vocabularies (`OBJECT_TYPES`, `PRODUCT_KINDS`,
+  `FACET_KEYS`, `SORT_KEYS`, `RETAILER_STATUSES`) are declared here once, because config is the leaf and validates them; C2,
   C7, C11 and C12 import them and never redeclare them. A rule that needs the app or the whole
-  config goes into `validateBrandConfigs()`'s list in the schema's header.
+  config goes into `validateBrandConfigs()`'s list in the schema's header. Who may hold an
+  account is modules, never a brand: `accounts.buyers` and `accounts.retailers` (D31), each
+  app's `supports` saying which it can render.
 - **C2.** Change the view model first, the fixture second and the loader third
   (DESIGN-SYSTEM.md §3). Money is C5's `Money`, a safe integer of minor units plus a
   currency code, and a price is C5's `PriceSet`: never a float, never a preformatted
@@ -85,7 +87,8 @@ so it is breaking and also needs a redirect.
   `PricingToken`, never a figure (`commerce-check.ts`). A `Streamed` part never rejects —
   a failed read resolves to its designed fallback — and a cached read returns a
   `CachedPart`, never a streamed part. A new surface needs a C10 row, a loader and a
-  fixture, or the build fails.
+  fixture, or the build fails. Only an `approved` retailer's view model carries trade terms,
+  and a pending or declined one's opens no priced section (`commerce-check.ts`, D31).
 - **C3.** A new token needs a value in both apps (`AppTokens` is total) and its contrast
   pairings. The contract is a floor: an app's own tokens are named `--app-…`, and the shared
   primitives read contract tokens only. The overridable subset lives in C1 and grows only
@@ -119,3 +122,9 @@ so it is breaking and also needs a redirect.
   reviews of both halves (`.claude/specs/indies-platform/reviews/1.2-*.md`) were applied.
   ARC-P froze C1–C4, C9, C10 and C13; ARC-D froze C5–C8, C11 and C12. Nothing breaks:
   nothing consumes them yet.
+- **2026-09-28**: C1, C2 and C10 gain the shop's Partnership surface and retailer accounts
+  (TASKS.md 1.2.l, D31, D32) before the freeze closes: the `accounts.buyers` and
+  `accounts.retailers` modules and `RETAILER_STATUSES` (C1), the `partnership` surface and the
+  `quotes` and `terms` account sections (C10), and `PartnershipVM`, the retailer's standing,
+  trade terms and quotes, the header's account entry and the hero's highlight (C2). No lane
+  consumes them yet.

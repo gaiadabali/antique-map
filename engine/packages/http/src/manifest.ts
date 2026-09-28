@@ -204,7 +204,8 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
   route('/api/x/legacy/[...path]', 'WEB', 'public', GET), // legacy URLs: 301 · 404 · 410
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // invalidate(tags) from outside a request
-  route('/api/x/auth/[...path]', 'WEB', ['public', 'customer'], GET_POST), // customer accounts
+  // customer accounts: sign-in, set-password and reset links, an application's status link
+  route('/api/x/auth/[...path]', 'WEB', ['public', 'customer'], GET_POST),
   route('/api/x/privacy/[...path]', 'WEB', ['customer', 'token'], GET_POST), // export · erase
   // uploads (C6 photos), newsletter (double opt-in, one-click unsubscribe), alerts, saved items
   route('/api/x/forms/[...path]', 'WEB', ['public', 'customer', 'token'], GET_POST),
