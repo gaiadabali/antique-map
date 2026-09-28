@@ -17,6 +17,7 @@ import type { OrderDomainEvent } from '../order/machine'
 import type { PaymentDomainEvent } from '../payment/machine'
 import type { EXPIRING_NOTICE_EVENTS, ReservationDomainEvent } from '../reservations/machine'
 import type { RetailerDomainEvent } from '../retailers/machine'
+import type { RetailerShopType } from './retailers'
 import type { JsonValue } from './scalars'
 import type { Assert, Equals } from './type-assertions'
 
@@ -52,6 +53,15 @@ export type NoticeDomainEvent =
   | 'returnRequest.received'
   | 'quote.requested'
   | 'proforma.issued'
+  /** Staff issued a retailer's quote below its minimum (C5 `TradeMinimumWaiver`): the audit. */
+  | 'quote.minimumWaived'
+  /**
+   * An application from an address whose standing it does not change — waiting on staff, or
+   * already a partner (C6 `RetailerApplicationReceipt`): NTF reads the standing at dispatch and
+   * sends the status link again, a sign-in reminder, or a partner's unused set-password link
+   * anew — within `RETAILER_APPLICATION_EMAIL_LIMIT`.
+   */
+  | 'retailer.applicationRepeated'
 
 export type DomainEventName =
   | OrderDomainEvent
@@ -88,16 +98,69 @@ export type DomainEventRefs = {
   readonly customerId?: number
 }
 
-/** One outbox row. Consumers dedupe on `id`: dispatch is at least once. */
-export type DomainEvent<N extends DomainEventName = DomainEventName> = {
-  readonly id: string
-  readonly name: N
-  readonly occurredAt: Date
-  readonly aggregate: { readonly type: AggregateType; readonly id: number }
-  readonly refs: DomainEventRefs
-  /** Event-specific facts. Ids and categories only — no email, phone or address (no PII). */
-  readonly data: { readonly [key: string]: JsonValue }
+type OfShopType = { readonly shopType: RetailerShopType }
+
+/**
+ * The facts a `retailer.*` row carries, typed: the kind of business, the tiers, how long staff
+ * took — never the application's answers (its name, NPWP, address or contact), which stay on the
+ * customer record for a consumer to load by `aggregate.id` (NTF, to write the email).
+ */
+export type RetailerEventData = {
+  readonly 'retailer.applied': OfShopType
+  readonly 'retailer.reapplied': OfShopType
+  readonly 'retailer.applicationRepeated': Record<never, never>
+  readonly 'retailer.approved': OfShopType & {
+    readonly tierId: string
+    readonly decisionHours: number
+  }
+  readonly 'retailer.declined': OfShopType & { readonly decisionHours: number }
+  readonly 'retailer.tierChanged': { readonly fromTierId: string; readonly toTierId: string }
+  readonly 'retailer.partnershipEnded': OfShopType
 }
+
+/** Event-specific facts. Ids and categories only — no email, phone or address (no PII). */
+type EventData<N extends DomainEventName> = N extends keyof RetailerEventData
+  ? RetailerEventData[N]
+  : { readonly [key: string]: JsonValue }
+
+/** One outbox row, one per name. Consumers dedupe on `id`: dispatch is at least once. */
+export type DomainEvent<N extends DomainEventName = DomainEventName> = N extends unknown
+  ? {
+      readonly id: string
+      readonly name: N
+      readonly occurredAt: Date
+      readonly aggregate: { readonly type: AggregateType; readonly id: number }
+      readonly refs: DomainEventRefs
+      readonly data: EventData<N>
+    }
+  : never
+
+/**
+ * The names no event may carry, in the outbox or in C11's beacons: a person's contact, their
+ * name, a business's name, or a tax number (a sole trader's NPWP can be their NIK).
+ */
+export type PiiKey =
+  | 'email'
+  | 'phone'
+  | 'whatsapp'
+  | 'name'
+  | 'fullName'
+  | 'businessName'
+  | 'address'
+  | 'ip'
+  | 'npwp'
+  | 'nik'
+  | 'taxNumber'
+  | 'taxId'
+type AllTrue<R> = false extends R[keyof R] ? false : true
+/** `true` when no key of `T`, at any depth, is a `PiiKey`. */
+export type IsPiiFree<T> = T extends readonly (infer E)[]
+  ? IsPiiFree<E>
+  : T extends object
+    ? [Extract<keyof T, PiiKey>] extends [never]
+      ? AllTrue<{ [K in keyof T]-?: IsPiiFree<T[K]> }>
+      : false
+    : true
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────
 
@@ -112,3 +175,16 @@ type FromTheDomain =
 type _AnalyticsNamesExist = Assert<Equals<Exclude<FromTheDomain, DomainEventName>, never>>
 type ExpiringNotice = (typeof EXPIRING_NOTICE_EVENTS)[keyof typeof EXPIRING_NOTICE_EVENTS]
 type _ExpiringNoticesAreNamed = Assert<Equals<Exclude<ExpiringNotice, DomainEventName>, never>>
+// Every `retailer.*` event has its typed facts, and they name no one.
+type _RetailerDataCoversTheEvents = Assert<
+  Equals<keyof RetailerEventData, Extract<DomainEventName, `retailer.${string}`>>
+>
+type _RetailerDataIsPiiFree = Assert<IsPiiFree<RetailerEventData>>
+type _NpwpRejected = Assert<
+  // @ts-expect-error — a tax number is personal data: it never enters the outbox
+  IsPiiFree<RetailerEventData['retailer.applied'] & { readonly npwp: string }>
+>
+// A row's facts follow its name.
+type _DataFollowsTheName = Assert<
+  Equals<DomainEvent<'retailer.tierChanged'>['data'], RetailerEventData['retailer.tierChanged']>
+>
