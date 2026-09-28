@@ -75,7 +75,7 @@ inside `<Suspense>`.
 | `Pay` | `PayVM` | the landing page of a staff-sent payment link (accepted offer, hold, WhatsApp sale): the item, the terms, the expiry, the seller's identity, the routed methods |
 | `Quote` | `QuoteVM` | a business or institutional quote / proforma: lines, validity, PDF, accept → pay |
 | `OrderLookup` | `OrderLookupVM` | guest order tracking by order number + email or WhatsApp number, with the courier timeline |
-| `NotFound` · `Gone` · `Error` | — | designed, not defaulted: a legacy `/product/{id}-{slug}` miss turns the slug into a prefilled search with similar works; `410 Gone` for an item removed from inventory (sold items are **not** gone — they stay live); a 500 page with WhatsApp contact |
+| `NotFound` · `Gone` · `Error` | `NotFoundVM` · `GoneVM` · `ErrorVM` | designed, not defaulted: a legacy `/product/{id}-{slug}` miss turns the slug into a prefilled search with similar works; an item removed from inventory renders the Gone design with a 404, noindex, and leaves the sitemap — a page cannot answer 410, so a real `410` comes only from the legacy handler (`/api/x/legacy/…`) for a rule that says so (sold items are **not** gone — they stay live); a 500 page with WhatsApp contact. The not-found loader tells a removed item from a miss by the public path the proxy passes on (C13) |
 
 `Order` includes the **payment-pending** state, the most important page in an
 Indonesian checkout: the exact amount, the VA number with a copy button,

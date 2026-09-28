@@ -1,0 +1,17 @@
+{
+  "name": "@engine/config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The brand config spine: the BrandConfig schema and module registry (C1) and the route map with href() (C10). The leaf package: it imports no other engine package.",
+  "type": "module",
+  "exports": {
+    "./schema": "./src/schema.ts",
+    "./routes": "./src/routes.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "4.6.5"
+  }
+}

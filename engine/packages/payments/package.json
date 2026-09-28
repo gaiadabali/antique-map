@@ -1,0 +1,17 @@
+{
+  "name": "@engine/payments",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Payment gateways: the PaymentGateway contract (@contract C7, ARC's), the registry, routing and caps, reconciliation, payment links and stateless adapters (PAY). All payment state lives in @engine/domain.",
+  "type": "module",
+  "exports": {
+    "./contract": "./src/contract.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@engine/config": "workspace:*",
+    "@engine/domain": "workspace:*"
+  }
+}
