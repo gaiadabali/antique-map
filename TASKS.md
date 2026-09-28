@@ -17,7 +17,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Repository, contracts and agent workspace | Foundation | — | 🔄 in progress | 2/3 | 22/24 | 0 | `█████████░`  92% |
+| **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | · not started | 0/3 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **2/159** | **22/707** | **46** | `░░░░░░░░░░`   3% |
+| **All** | 44 phases | | | **3/159** | **24/707** | **46** | `░░░░░░░░░░`   3% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -157,7 +157,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 1·W1 | 1.2.l Partnership + retailer contracts (D31) | architect ×2 (ARC-P, ARC-D) | worktree-agent-a1e288423b050020e, worktree-agent-a5abd4af956ac043a | 2026-09-28 | reopened: 1.2 was closed with 1.2.l wrongly ticked (the orchestrator took it for the Check); a–k are merged (b0fa092) |
 
 ## Decisions for the owner
 
@@ -297,7 +296,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 1.1.f 👤 owner creates the GitHub repository under the organisation and grants the deploy account write access; first push
   - [x] 1.1.g **Check:** a fresh clone on Windows and Linux runs `pnpm install && pnpm verify` green with the empty workspace.
 
-- [ ] **1.2 Freeze the contracts C1–C13** · needs: — — 🔄 1·W1 (reopened for 1.2.l, D31)
+- [x] **1.2 Freeze the contracts C1–C13** · needs: — — ✅ 2026-09-29 4f105b7
   - **Lane** ARC · **Agent** architect ×2, types and docs only — **ARC-P** (platform and UI: 1.2.a–1.2.d, 1.2.h, 1.2.i) and **ARC-D** (domain: 1.2.e–1.2.g, 1.2.j); ARC-P writes 1.2.k · **Wave** W1
   - **Owns** ARC-P: `engine/packages/config/src/{schema,routes}.ts`, `engine/packages/view-models/**`, `engine/packages/ui/src/tokens/contract.ts`, `engine/packages/media/src/contract.ts`, `engine/packages/http/src/manifest.ts`, `engine/packages/CONTRACTS.md` · ARC-D: `engine/packages/domain/src/{money/contract.ts,contracts/**,*/machine.ts,reservations/contract.ts}`, `engine/packages/{payments,shipping,fulfilment,analytics,sister}/src/contract.ts` · each: the `package.json` skeletons and `tsconfig.json` (extending the 1.1 template) of the packages it touches
   - **Read** PARALLEL-TRACKS.md §4, BRANDS.md, CONTENT-MODEL.md, COMMERCE.md, PAYMENTS.md §2–4, ARCHITECTURE.md §6, §9, §11, DESIGN-SYSTEM.md §2–5
@@ -313,8 +312,8 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 1.2.i C10 route map — per-locale segments, facet vocabularies, legacy prefixes, `href(surface, params, locale)`; C13 HTTP handler manifest — every `/api/x/*` route and the literal proxy `matcher`
   - [x] 1.2.j C11 analytics event names (ANALYTICS.md §2); C12 sister work snapshot (published fields only) + webhook events
   - [x] 1.2.k `engine/packages/CONTRACTS.md`: how a contract changes (versioned, announced to consuming lanes, ARC approval)
-  - [ ] 1.2.l The shop's Partnership surface and retailer accounts (D31, 2026-09-28): a `partnership` route in C10, `PartnershipVM` and the retailer account VM in C2, the retailer application intent in C6, and `retailer` pricing as a tier C5/C6 can carry — routed to ARC-P and ARC-D before phase 1 closes
-  - [ ] 1.2.m **Check:** every contract compiles, is marked `@contract` with an owner, every fixture type-checks against its view model, and a senior-be and a senior-fe reviewer have signed off in the report.
+  - [x] 1.2.l The shop's Partnership surface and retailer accounts (D31, 2026-09-28): a `partnership` route in C10, `PartnershipVM` and the retailer account VM in C2, the retailer application intent in C6, and `retailer` pricing as a tier C5/C6 can carry — routed to ARC-P and ARC-D before phase 1 closes
+  - [x] 1.2.m **Check:** every contract compiles, is marked `@contract` with an owner, every fixture type-checks against its view model, and a senior-be and a senior-fe reviewer have signed off in the report.
 
 - [x] **1.3 Agent workspace** · needs: 1.1 — ✅ 2026-09-28 6b30621
   - **Lane** HAR · **Agent** junior · **Wave** W2
@@ -417,7 +416,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 4.1.b `/api/health` in `@engine/http` (calls `getPayload()`) + mounted in both apps; the `/api/x/cron/jobs` route (runs the queue with a per-run limit, `CRON_SECRET`, 503 when unset); manifest entries
   - [ ] 4.1.c an app `supports` declaration file per app (modules it can render)
   - [ ] 4.1.d placeholder `PRODUCT.md` stays as drafted in planning (do not overwrite); `DESIGN.md` absent until 14.1
-  - [ ] 4.1.e **the Cache Components spike** (ARCHITECTURE.md §9): a fixture item route resolved by public id with `permanentRedirect()` on a slug mismatch; a `'use cache'` + `cacheTag` record; a `<Suspense>` purchase panel reading the `shipTo` cookie and a fake availability source; `revalidateTag(tag, 'max')` for the record and `{ expire: 0 }` for availability, proven by a test that flips availability and never sees it stale; `next build` with the admin mounted and **no database, brand or secrets**; one gallery build serving `test` and Indies Gallery with different mastheads. Written up in `docs/spikes/cache-components.md`
+  - [ ] 4.1.e **the Cache Components spike** (ARCHITECTURE.md §9): a fixture item route resolved by public id with `permanentRedirect()` on a slug mismatch; a `'use cache'` + `cacheTag` record; a `<Suspense>` purchase panel reading the `shipTo` cookie and a fake availability source; `revalidateTag(tag, 'max')` for the record and `{ expire: 0 }` for availability, proven by a test that flips availability and never sees it stale; `next build` with the admin mounted and **no database, brand or secrets**; one gallery build serving `test` and Indies Gallery with different mastheads. Written up in `docs/spikes/cache-components.md` The spike also proves a **JavaScript-off** request gets the page body and every form in the first flush, not only a root fallback (senior-fe, 1.2.l): a streamed part never carries a form or a post result.
   - [ ] 4.1.f `/brand-assets/[...path]` in `@engine/http`: serves logo, favicon, OG fallback and fonts from `BRAND_ROOT` with immutable caching; the legacy handler stub at `/api/x/legacy/[...path]` (404 until 36.4)
   - [ ] 4.1.g **Check:** both apps run for their brand and for `test`, render the brand name and logo from config with placeholder tokens in EN and ID, mount Payload at `/admin`, serve `/api/health` (app, DB, storage — and it initialises Payload), serve brand files at `/brand-assets/…`, and route parity passes; **the spike's verdict is recorded** in ARCHITECTURE.md §9 — Cache Components confirmed, or the fallback adopted whole.
 
@@ -2346,6 +2345,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-29 — ✅ 1.2 (again, 4f105b7) — 1.2.l's D31 Partnership and retailer contracts (and D33–D40) merged from ARC-P and ARC-D after senior-be and senior-fe reviews; `pnpm verify` green on main (11 packages). Reviews: `.claude/specs/indies-platform/reviews/1.2l-*.md`. Follow-ups carried: D39's want-list contract (minor version, with its task); doc sync for "For Business"/wholesale remnants (TASKS 22.3.d, 31.1, COMMERCE §3, CONTENT-MODEL, PLAN, C6 `EnquiryTopic`), ANALYTICS §2 (`item.unsaved`), COMPLIANCE §7 (365-day application retention — counsel to confirm); C6 `api.ts` "read once" wording (ARC-D); `engine/apps/*/PRODUCT.md` brand names vs the brand-literal lint (4.1.d); the JS-off proof added to 4.1.e.
 - 2026-09-28 — **Correction:** 1.2 was closed at b0fa092 with 1.2.l (D31 Partnership and retailer contracts) ticked by mistake — the orchestrator took the new 1.2.l for the old Check. 1.2 and phase 1 are reopened; 1.2.l is dispatched to ARC-P and ARC-D; 1.2.m (the Check) follows their reviews.
 - 2026-09-28 — ✅ 1.3 — `pnpm worktree`/`worktree:env` give each agent its own branch, `PORT` and `DB_SUFFIX` (10 tests); the impeccable skill and agents copied from Kingdom of Indonesia; ESLint ignores `.claude/` (1.3.d). The `db:fresh`/`dev` clause of its Check moved to 2.1. Found: PARALLEL-TRACKS §3.1, CONVENTIONS §9 and DISPATCH disagree on the branch name and suffix form — the helper uses `feat/p<phase>-<lane>` and `p<phase>_<lane>`; ARC to settle.
 - 2026-09-28 — ✅ 1.2 — contracts C1–C13 frozen (b0fa092): ARC-P and ARC-D, signed off by senior-be, senior-fe and senior-db (reviews and follow-ups in `.claude/specs/indies-platform/reviews/`); `pnpm verify` green on main, 11 packages. Follow-ups for later lanes are listed in the four fix/review reports (PLT `validateBrandConfigs()` rules, SCH DDL in `@engine/domain/storage`, DOM concurrency tests, doc updates). 1·W2 opened: 1.3.
