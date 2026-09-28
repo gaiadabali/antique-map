@@ -16,7 +16,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 <!-- progress:start -->
 | Phase | Waves | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- |
-| **Phase 0** Foundation and frozen contracts | W1–W6 | · not started | 0/11 | 0/67 | 2 | `░░░░░░░░░░`   0% |
+| **Phase 0** Foundation and frozen contracts | W1–W6 | 🔄 in progress | 1/11 | 7/67 | 1 | `█░░░░░░░░░`  10% |
 | **Phase 1** Brand directions | W6–W12 | · not started | 0/11 | 0/48 | 8 | `░░░░░░░░░░`   0% |
 | **Phase 2** Content model and CMS core | W6–W10 | · not started | 0/11 | 0/57 | 0 | `░░░░░░░░░░`   0% |
 | **Phase 3** Design systems and app shells | W7–W14 | · not started | 0/10 | 0/50 | 1 | `░░░░░░░░░░`   0% |
@@ -30,7 +30,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **Phase 11** Migration and legacy URLs | W3–W22 | · not started | 0/11 | 0/43 | 8 | `░░░░░░░░░░`   0% |
 | **Phase 12** SEO, analytics and feeds | W20–W22 | · not started | 0/8 | 0/31 | 1 | `░░░░░░░░░░`   0% |
 | **Phase 13** Hardening, launch readiness and cutover | W21–W26 | · not started | 0/12 | 0/47 | 12 | `░░░░░░░░░░`   0% |
-| **All** | W1–W26 | | **0/151** | **0/693** | **47** | `░░░░░░░░░░`   0% |
+| **All** | W1–W26 | | **1/151** | **7/693** | **46** | `░░░░░░░░░░`   1% |
 <!-- progress:end -->
 
 ## Running order — when each phase starts
@@ -97,7 +97,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| — | — | — | — | — | Nothing dispatched yet. Next: **W1** — 0.1 and the two 0.5 architects. |
+| W1 | 0.5 Contracts — platform and UI (ARC-P) | architect | worktree-agent-a1e288423b050020e | 2026-09-28 | 6 commits (C1, C3, C4, C9, C10, C13, most of C2); second run stalled; 2026-09-28 relaunch stopped at once on the weekly Opus limit — still to do: the commerce VMs (cart, checkout, pay, quote, order lookup, gift card), their fixtures and CONTRACTS.md |
+| W1 | 0.5 Contracts — domain (ARC-D) | architect | own worktree (isolation) | 2026-09-25 | C5–C8, C11, C12 — **reported done** (branch worktree-agent-a5abd4af956ac043a, 6 commits to 0591e73); merges together with ARC-P (install needs `@engine/config`); senior-db: sign-off with fixes (3 blockers, reviews/0.5-arc-d-senior-db.md); senior-be review not yet run (Opus limit); 14 doc findings to route to ARC |
 
 ## Decisions for the owner
 
@@ -141,7 +142,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Action | Needed by |
 | --- | --- | --- |
-| **OA1** | Create the GitHub repository under the organisation and give the deploy account write access | 0.1.f |
+| **OA1** | ✅ 2026-09-28 — `gaiadabali/antique-map` (private, internal), deploy account `web-gaiada` (admin); `main` pushed | 0.1.f |
 | **OA2** | The owner interview — at most 15 questions per brand | 1.1.b |
 | **OA3** | Book a photographer and the pilot shoot (D19) | 1.2.b |
 | **OA4** | A native Indonesian copywriter for the lexicon and the launch copy (D20) | 1.3.c, 13.10 |
@@ -215,18 +216,18 @@ logs in on both; `test` runs on both apps; the Cache Components spike's verdict
 is recorded; every gate fails on a planted violation; both staging hostnames serve a CI-built release.
 **Phase letters:** A 0.1, 0.5 (two architects) · B 0.2, 0.3, 0.6, 0.10 · C 0.4, 0.7 · D 0.8 · E 0.9 👤 · gate 0.11
 
-- [ ] **0.1 Initialise the repository and pnpm workspace** · needs: —
+- [x] **0.1 Initialise the repository and pnpm workspace** · needs: — — ✅ 2026-09-28 f7e32c1
   - **Lane** HAR · **Agent** devops · **Wave** W1 · 0A
   - **Owns** `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `eslint.config.mjs`, `.prettierrc.json`, `.gitignore`, `.gitattributes`, `.editorconfig`
   - **Read** ARCHITECTURE.md §3–4, CONVENTIONS.md §9
   - _Requirements: 1.2, 19.3_
-  - [ ] 0.1.a `git init`; `.gitignore` (node_modules, `.next`, `.env*` except `.env.example`, `*/db/`, `*/content/legacy/raw/**` — the old site's raw extracts live in `LEGACY_DATA_DIR`, never in git, while mapping files and URL inventories under `content/legacy/` **are** committed — `test-results/`, `TASKS.md.lock`); `.gitattributes` forcing LF (CRLF breaks deploy scripts — GDA memory); the first commit holds the planning docs, `TASKS.md` and `scripts/progress.mjs` as they stand
-  - [ ] 0.1.b `pnpm-workspace.yaml` listing `engine/apps/*`, `engine/packages/*`, `engine/tooling`; `allowBuilds` for sharp, esbuild, @tailwindcss/oxide, unrs-resolver
-  - [ ] 0.1.c root `package.json`: `packageManager` pnpm 11 pinned, `engines.node >=22`, scripts `verify`, `dev`, `build`, `test`, `test:e2e`, `lhci`, `db:*`, `brand:create` (delegating to tooling)
-  - [ ] 0.1.d `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`, `@engine/*` paths) and a per-package tsconfig template
-  - [ ] 0.1.e ESLint 9 flat config + typescript-eslint + Prettier; import-boundary rules: apps may not import `payload` outside `(payload)`, packages may not import apps, `view-models` has no runtime dependencies
-  - [ ] 0.1.f 👤 owner creates the GitHub repository under the organisation and grants the deploy account write access; first push
-  - [ ] 0.1.g **Check:** a fresh clone on Windows and Linux runs `pnpm install && pnpm verify` green with the empty workspace.
+  - [x] 0.1.a `git init`; `.gitignore` (node_modules, `.next`, `.env*` except `.env.example`, `*/db/`, `*/content/legacy/raw/**` — the old site's raw extracts live in `LEGACY_DATA_DIR`, never in git, while mapping files and URL inventories under `content/legacy/` **are** committed — `test-results/`, `TASKS.md.lock`); `.gitattributes` forcing LF (CRLF breaks deploy scripts — GDA memory); the first commit holds the planning docs, `TASKS.md` and `scripts/progress.mjs` as they stand
+  - [x] 0.1.b `pnpm-workspace.yaml` listing `engine/apps/*`, `engine/packages/*`, `engine/tooling`; `allowBuilds` for sharp, esbuild, @tailwindcss/oxide, unrs-resolver
+  - [x] 0.1.c root `package.json`: `packageManager` pnpm 11 pinned, `engines.node >=22`, scripts `verify`, `dev`, `build`, `test`, `test:e2e`, `lhci`, `db:*`, `brand:create` (delegating to tooling)
+  - [x] 0.1.d `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`, `@engine/*` paths) and a per-package tsconfig template
+  - [x] 0.1.e ESLint 9 flat config + typescript-eslint + Prettier; import-boundary rules: apps may not import `payload` outside `(payload)`, packages may not import apps, `view-models` has no runtime dependencies
+  - [x] 0.1.f 👤 owner creates the GitHub repository under the organisation and grants the deploy account write access; first push
+  - [x] 0.1.g **Check:** a fresh clone on Windows and Linux runs `pnpm install && pnpm verify` green with the empty workspace.
 
 - [ ] **0.2 Local infrastructure and database scripts** · needs: 0.1
   - **Lane** HAR · **Agent** devops · **Wave** W2 · 0B
@@ -240,7 +241,7 @@ is recorded; every gate fails on a planted violation; both staging hostnames ser
 
 - [ ] **0.3 Quality-gate tooling** · needs: 0.1
   - **Lane** HAR · **Agent** devops · **Wave** W2 · 0B
-  - **Owns** `engine/tooling/{check-file-size,lint-brand-literals,schema-hash,route-parity,tasks-lint,config-drift,brand-create}/**`, `vitest.workspace.ts`, `playwright.config.ts`, `lighthouserc*.json`
+  - **Owns** `engine/tooling/{check-file-size,lint-brand-literals,schema-hash,route-parity,tasks-lint,config-drift,brand-create}/**`, `vitest.config.ts` (Vitest 5 has no workspace file — `test.projects`; found in 0.1), `playwright.config.ts`, `lighthouserc*.json`, root `package.json` (scripts and devDependencies for its gates only; the only W2 task touching it)
   - **Read** CONVENTIONS.md §1–2, BRANDS.md §6–7, ARCHITECTURE.md §2, §11, DESIGN-SYSTEM.md §7, PARALLEL-TRACKS.md §2, §5
   - _Requirements: 1.3, 1.5, 1.6, 1.7, 1.8, 19.1, 19.3_
   - [ ] 0.3.a `check-file-size` (port KOI's `scripts/check-file-size.mjs`; 300 lines over `*.ts`, `*.tsx`, `*.js`, `*.mjs`, `*.css` in `engine/` and `scripts/`; generated files, migrations and fixtures excluded — CONVENTIONS.md §2)
@@ -263,9 +264,9 @@ is recorded; every gate fails on a planted violation; both staging hostnames ser
   - [ ] 0.4.c `.gaiadeploy.yml` with the two Helios targets and `subdir` (DEPLOYMENT.md §3); a CI check that fails on the string `TBD`
   - [ ] 0.4.d **Check:** a push to `main` runs static checks, unit and e2e jobs green; a push to `production` publishes a `deploy/production-*` release whose tarball holds `indies-gallery/` and `old-east-indies/` standalone builds with their brand `site/` folders and a `.sha256`.
 
-- [ ] **0.5 Freeze the contracts C1–C13** · needs: —
+- [ ] **0.5 Freeze the contracts C1–C13** · needs: — — 🔄 W1
   - **Lane** ARC · **Agent** architect ×2, types and docs only — **ARC-P** (platform and UI: 0.5.a–0.5.d, 0.5.h, 0.5.i) and **ARC-D** (domain: 0.5.e–0.5.g, 0.5.j); ARC-P writes 0.5.k · **Wave** W1 · 0A
-  - **Owns** ARC-P: `engine/packages/config/src/{schema,routes}.ts`, `engine/packages/view-models/**`, `engine/packages/ui/src/tokens/contract.ts`, `engine/packages/media/src/contract.ts`, `engine/packages/http/src/manifest.ts`, `engine/packages/CONTRACTS.md` · ARC-D: `engine/packages/domain/src/{money/contract.ts,contracts/**,*/machine.ts,reservations/contract.ts}`, `engine/packages/{payments,shipping,fulfilment,analytics,sister}/src/contract.ts` · each: the `package.json` skeletons of the packages it touches
+  - **Owns** ARC-P: `engine/packages/config/src/{schema,routes}.ts`, `engine/packages/view-models/**`, `engine/packages/ui/src/tokens/contract.ts`, `engine/packages/media/src/contract.ts`, `engine/packages/http/src/manifest.ts`, `engine/packages/CONTRACTS.md` · ARC-D: `engine/packages/domain/src/{money/contract.ts,contracts/**,*/machine.ts,reservations/contract.ts}`, `engine/packages/{payments,shipping,fulfilment,analytics,sister}/src/contract.ts` · each: the `package.json` skeletons and `tsconfig.json` (extending the 0.1 template) of the packages it touches
   - **Read** PARALLEL-TRACKS.md §4, BRANDS.md, CONTENT-MODEL.md, COMMERCE.md, PAYMENTS.md §2–4, ARCHITECTURE.md §6, §9, §11, DESIGN-SYSTEM.md §2–5
   - _Requirements: 1.2, 2.7, 3.1, 8.4, 9.1, 10.4, 11.1_
   - [ ] 0.5.a C1 `BrandConfig` zod schema: identity, domains, storefront, tokens, locales, routes, ids, money/markets and rounding, sellers (serves, tax, charge currencies, payments, method order, card ceiling, insured threshold, document prefix), commerce (inventory models, named TTLs, purchase tiers), shipping, fulfilment, analytics ids (runtime), modules (a typed registry with descriptions — `hasModule()` keys), sisters
@@ -2072,4 +2073,6 @@ launch needs; green is the two launches.
 
 Newest first. One line per finished task (`✅ id — what it proved`) and per event that changed the plan.
 
+- 2026-09-28 — ✅ 0.1 — workspace, strict TS, ESLint boundaries and `pnpm verify` green on Windows + Linux; `main` pushed to `gaiadabali/antique-map` as `web-gaiada` (OA1).
+- 2026-09-28 — senior-db review of ARC-D (C5–C8): **sign-off with fixes**, 3 blockers (multi-target deadlock order, isolation pinned to READ COMMITTED, applyPaymentEvent row locking) — recorded in `.claude/specs/indies-platform/reviews/0.5-arc-d-senior-db.md`, to route to ARC-D. ARC-P relaunch and senior-be review stopped on the weekly Opus limit (resets 2026-09-30 08:00 WITA).
 - 2026-09-25 — `TASKS.md` created at the repo root as the progress board, from the reviewed spec: every task broken into subtasks ending in a **Check**, the dispatch plan W1–W26, the owner's decisions moved here from PLAN.md, the progress table generated by `scripts/progress.mjs`. The current live sites are out of scope: nothing in this plan touches them.
