@@ -16,6 +16,7 @@ import type { OfferDomainEvent } from '../offer/machine'
 import type { OrderDomainEvent } from '../order/machine'
 import type { PaymentDomainEvent } from '../payment/machine'
 import type { EXPIRING_NOTICE_EVENTS, ReservationDomainEvent } from '../reservations/machine'
+import type { RetailerDomainEvent } from '../retailers/machine'
 import type { JsonValue } from './scalars'
 import type { Assert, Equals } from './type-assertions'
 
@@ -58,6 +59,7 @@ export type DomainEventName =
   | ReservationDomainEvent
   | OfferDomainEvent
   | AvailabilityDomainEvent
+  | RetailerDomainEvent
   | NoticeDomainEvent
 
 export type AggregateType =
@@ -73,6 +75,8 @@ export type AggregateType =
   | 'appointment'
   | 'return'
   | 'quote'
+  /** A retail partner: its customer record (D31). */
+  | 'retailer'
 
 /** The records an event is about, by database id; a consumer loads what it needs. */
 export type DomainEventRefs = {

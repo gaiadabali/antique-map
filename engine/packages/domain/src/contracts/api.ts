@@ -24,6 +24,7 @@ import type * as Checkout from './checkout'
 import type * as Leads from './leads'
 import type { IsServerPriced, LineInput } from './requests'
 import type { ApiResult, ProblemCode, ProblemOf } from './results'
+import type * as Retailers from './retailers'
 import type * as Services from './services'
 import type { Assert, Equals } from './type-assertions'
 
@@ -33,6 +34,7 @@ export type * from './checkout'
 export type * from './leads'
 export type * from './requests'
 export type * from './results'
+export type * from './retailers'
 export type * from './services'
 /** The wire vocabulary other contracts share (C7, C12): instants, durations, raw webhooks. */
 export type * from './scalars'
@@ -127,6 +129,10 @@ export type CommerceApi = {
   readonly 'priceRequest.submit': Op<Leads.PriceRequest, Leads.PriceRequestResult, 'not-found'>
   readonly 'enquiry.submit': Op<Services.EnquiryRequest, Services.EnquiryReceipt, 'not-found'>
   readonly 'consignment.submit': Op<Services.ConsignmentRequest, Services.ConsignmentReceipt>
+  readonly 'retailer.apply': Op<
+    Retailers.RetailerApplyRequest,
+    Retailers.RetailerApplicationReceipt
+  >
   readonly 'appointment.slots': Op<
     Services.AppointmentSlotsRequest,
     Services.AppointmentSlotsView,
@@ -188,4 +194,8 @@ type _BidOnlyAtTheTop = Assert<
 type _NewFigureNamesCaught = Assert<
   // @ts-expect-error — a deposit is a figure only the server computes
   IsServerPriced<Leads.HoldRequest & { readonly deposit: number }>
+>
+type _NoTierFromARequest = Assert<
+  // @ts-expect-error — a trade tier is the server's to resolve for an approved retailer (D32)
+  IsServerPriced<Cart.CartAddLinesRequest & { readonly tradeTierId: string }>
 >

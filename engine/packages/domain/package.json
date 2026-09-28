@@ -12,7 +12,9 @@
     "./machines/reservation": "./src/reservations/machine.ts",
     "./machines/availability": "./src/availability/machine.ts",
     "./machines/offer": "./src/offer/machine.ts",
+    "./machines/retailer": "./src/retailers/machine.ts",
     "./reservations": "./src/reservations/contract.ts",
+    "./retailers": "./src/contracts/retailers.ts",
     "./transactions": "./src/contracts/transactions.ts",
     "./storage": "./src/contracts/storage.ts",
     "./events": "./src/contracts/domain-events.ts"
