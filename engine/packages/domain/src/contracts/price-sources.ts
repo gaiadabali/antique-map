@@ -61,8 +61,8 @@ export type AgreedPrice = {
  * config spine, BRANDS.md §3), and staff assign each approved retailer a tier — the default, at
  * approval. The server resolves them for an APPROVED retailer only, and only to price that
  * retailer's quote in the order builder (TASKS.md 24.5): a bag never carries them (`PricingContext`
- * `channel: 'bag'`), an applicant who is pending, declined or revoked never gets them, and nothing
- * a client sends ever names a tier.
+ * `channel: 'bag'`), a pending or declined applicant never gets them — an ended partnership is
+ * `declined` too (C1 `RETAILER_STATUSES`) — and nothing a client sends ever names a tier.
  */
 export type TradeTerms = {
   readonly tierId: string

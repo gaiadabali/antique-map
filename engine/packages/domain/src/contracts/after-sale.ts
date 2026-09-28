@@ -21,6 +21,7 @@ import type {
 } from './requests'
 import type { IdempotencyKey, PricedTotals, PricingToken } from './results'
 import type { IsoDate, IsoInstant } from './scalars'
+import type { Accepts } from './type-assertions'
 
 /** A stored order's figures as the buyer reads them: no token, because nothing is committed. */
 export type OrderTotalsView = Omit<PricedTotals, 'token'>
@@ -128,13 +129,22 @@ export type ProformaRequest = {
 }
 
 /**
+ * What a quote request asks to have quoted: lines to price — a configured product ("Turn this into
+ * a quote"), a retailer's reorder — or, with no lines yet, a BRIEF in `message`: a company's
+ * gifting or a hotel's rooms from the Partnership page, whose lines staff build in the order
+ * builder before issuing it (EXPERIENCE-SHOP.md §9). A form post with no `lines` is read as the
+ * empty list, so a brief always has its message.
+ */
+type QuoteRequestSubject =
+  | { readonly lines: readonly [LineInput, ...LineInput[]]; readonly message: string | null }
+  | { readonly lines: readonly []; readonly message: string }
+
+/**
  * A business quote (For Business, "Turn this into a quote"; a company's or a hotel's Partnership
  * answer), or a signed-in retailer's order — its one-click reorder included (D32): prepared by
  * staff, priced when they issue it (a retailer's at its trade tier), then sent.
  */
-export type QuoteRequest = {
-  readonly lines: readonly LineInput[]
-  readonly message: string | null
+export type QuoteRequest = QuoteRequestSubject & {
   readonly neededBy: IsoDate | null
   readonly institution: InstitutionInput | null
   /** Null only for a signed-in customer, a retailer reordering: the session is the contact. */
@@ -198,3 +208,13 @@ export type QuoteAcceptRequest = {
   readonly acceptedPricing: PricingToken
   readonly idempotencyKey: IdempotencyKey
 }
+
+// ─── Type-level tests ────────────────────────────────────────────────────────────────────────
+
+// A brief with no lines says what it needs; a request with lines may leave the message out.
+type _BriefWithoutMessage = Accepts<
+  QuoteRequestSubject,
+  // @ts-expect-error — no lines and no message leaves staff nothing to quote
+  { lines: []; message: null }
+>
+type _LinesWithoutMessage = Accepts<QuoteRequestSubject, { lines: [LineInput]; message: null }>
