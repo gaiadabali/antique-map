@@ -44,8 +44,16 @@ export const ttlSchema = z.strictObject({
   checkoutLockMinutes: z.int().positive().default(15),
   /** How long a lock outlives the chosen method's `sessionTtl` (PAYMENTS.md §1 rule 4). */
   lockMarginMinutes: z.int().nonnegative().default(10),
+  /**
+   * The furthest `extend()` may push a unique item's checkout lock. A method whose
+   * `sessionTtl` plus `lockMarginMinutes` would pass it is not offered for a unique item, so a
+   * virtual account can never hold a one-of-one for a day. Owner to confirm the default.
+   */
+  checkoutLockMaxHours: z.int().positive().default(3),
   holdDefaultHours: z.int().positive().default(48),
   holdMaxHours: z.int().positive().default(72),
+  /** How long before a hold ends the buyer is told: `hold.expiring`, C8 `noticeExpiring`'s lead. */
+  holdNoticeHours: z.int().positive().default(12),
   offerHoldHours: z.int().positive().default(48),
   offerCounterHours: z.int().positive().default(72),
   invoiceHoldDays: z.int().positive().default(7),

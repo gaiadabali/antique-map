@@ -45,7 +45,9 @@ export type IdentityConfig = z.infer<typeof identitySchema>
 /**
  * A sister brand (BRANDS.md §5): copy with provenance through its signed archive API,
  * never a cross-database join. `name` is what cross-links display — identity arrives from
- * config, so no brand name sits in engine code.
+ * config, so no brand name sits in engine code. Its secrets are `SISTER_API_KEY` and
+ * `SISTER_WEBHOOK_SECRET` (DEPLOYMENT.md §8), which `bootCheck()` requires whenever a sister
+ * is configured; one sister per brand, so a second is a contract change that keys them by slug.
  */
 export const sisterSchema = z.strictObject({
   slug: idSchema,

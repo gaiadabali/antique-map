@@ -27,12 +27,21 @@ export const marketSchema = z.strictObject({
 export type MarketConfig = z.infer<typeof marketSchema>
 
 /**
- * One band of a currency's price-point ladder: a derived price up to `upTo` rounds UP to a
- * multiple of `step` — always up (C5 `up-to-price-point`), so a converted price never
- * undercuts the base. Minor units: IDR `{ upTo: 100000, step: 5000 }` gives Rp 95.000 and a
- * next band `{ upTo: null, step: 50000 }` gives Rp 1.450.000 (COMMERCE.md §3); USD
- * `{ upTo: null, step: 1000 }` is USD 10.00.
+ * One band of a currency's price-point ladder. Ladders apply to DERIVED prices only — base
+ * price → daily FX → buffer → round (COMMERCE.md §3); an explicit or product-type-table
+ * price is entered at its price point and never rounded. A derived price up to `upTo` rounds
+ * UP to a multiple of `step` — always up (C5 `up-to-price-point`), so it never undercuts the
+ * base. Minor units, with bands close enough that a step never adds more than a tenth
+ * (`validateBrandConfigs()` bounds it): IDR `[{ upTo: 100000, step: 5000 }, { upTo: 1000000,
+ * step: 10000 }, { upTo: 10000000, step: 50000 }, { upTo: null, step: 100000 }]` gives
+ * Rp 95.000 and Rp 1.450.000; USD `[{ upTo: null, step: 1000 }]` is USD 10.00.
  */
+const PERCENT = /^(?:0|[1-9]\d?)(?:\.\d{1,2})?$/
+/** `"0"`–`"20"`, at most two decimals — C5's `DecimalString`. */
+const percentSchema = z
+  .templateLiteral([z.number()])
+  .refine((v) => PERCENT.test(v) && Number(v) <= 20, 'a percentage from "0" to "20", e.g. "3.5"')
+
 export const priceBandSchema = z.strictObject({
   upTo: z.int().positive().nullable(),
   step: z.int().positive(),
@@ -49,8 +58,12 @@ export const moneyConfigSchema = z.strictObject({
   rounding: z.partialRecord(currencyCodeSchema, priceLadderSchema),
   fx: z.strictObject({
     source: z.enum(['ecb-reference', 'manual']),
-    /** Added to the daily rate before rounding, per target currency (3–5%). */
-    bufferPct: z.partialRecord(currencyCodeSchema, z.number().min(0).max(20)),
+    /**
+     * Added to the daily rate before rounding, per target currency: a PERCENT as an exact
+     * decimal string (`"3"`, `"3.5"`), never a float — C5's `FxSnapshot.bufferPct` records it
+     * as given, so a document reproduces to the minor unit.
+     */
+    bufferPct: z.partialRecord(currencyCodeSchema, percentSchema),
   }),
 })
 export type MoneyConfig = z.infer<typeof moneyConfigSchema>

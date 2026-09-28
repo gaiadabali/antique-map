@@ -27,9 +27,13 @@ export type Destination = z.infer<typeof destinationSchema>
 
 /**
  * Money in integer minor units, inferring exactly C5's `{ amount: number; currency }`.
- * `z.int()` accepts safe integers only, so a float or an amount past 2^53 never parses.
+ * `z.int()` accepts safe integers only, so a float or an amount past 2^53 never parses, and
+ * an amount is never negative (C5: a deduction is a non-negative figure named for itself).
  */
-export const moneySchema = z.strictObject({ amount: z.int(), currency: currencyCodeSchema })
+export const moneySchema = z.strictObject({
+  amount: z.int().nonnegative(),
+  currency: currencyCodeSchema,
+})
 export const positiveMoneySchema = moneySchema.refine((m) => m.amount > 0, 'a positive amount')
 
 /**

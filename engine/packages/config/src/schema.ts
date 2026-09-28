@@ -3,16 +3,28 @@
  *
  * The entry of `@engine/config/schema`: the shape of `<brand>/site/brand.config.json`
  * (BRANDS.md §3), composed from `./schema/*` — primitives (the money base C5 builds on),
- * locales, facet keys, money and markets, sellers, commerce, modules, the look and
- * identity — and the route map (C10, `./routes`). A difference
+ * locales, the catalogue and listing vocabularies, money and markets, sellers, commerce,
+ * modules, the look and identity — and the route map (C10, `./routes`). A difference
  * between brands is a field here, a module flag or a property of the data — never a branch
  * on a brand (CONVENTIONS.md §1). Structural settings need a deploy; editorial ones are
  * floors that CMS globals override.
  *
- * Rules needing the app or the whole config — modules ⊆ the app's `supports`, a rounding
- * rule per market currency, sellers covering every market, a segment map and default-locale
- * text per supported locale, `--font-display` declared in `assets.fonts` — are
- * `validateBrandConfigs()`'s; secrets and environment are `bootCheck()`'s (PLT, 0.6).
+ * Rules needing the app or the whole config are `validateBrandConfigs()`'s (PLT, TASKS.md
+ * 3.1), each failing CI with the field it names:
+ * - modules ⊆ the app's `supports` (`AppSupports`);
+ * - a segment map and default-locale text for every supported locale;
+ * - `--font-display` declared in `assets.fonts`;
+ * - market destinations disjoint, at most one market with `*`, sellers covering every market;
+ * - the rupiah rule (COMMERCE.md §3, COMPLIANCE.md §1): when a seller serves `ID` or `*`, a
+ *   market lists `ID` explicitly and is priced in IDR, and a seller serving `ID` lists IDR in
+ *   `charge`;
+ * - a price ladder for every market currency whose prices are derived, each band's `step` at
+ *   most a tenth of its lower bound (the previous band's `upTo`; the first band's, of its own);
+ * - `holdNoticeHours` < `holdDefaultHours` ≤ `holdMaxHours`, and `checkoutLockMinutes` within
+ *   `checkoutLockMaxHours`;
+ * - `documentPrefix` unique across sellers, and no provider listed twice in one seller.
+ * Secrets and environment are `bootCheck()`'s: every configured provider's, per seller for
+ * payments, and the sister's when one is set.
  *
  * `@engine/config` imports no other engine package: config ← domain ← view-models.
  */
@@ -32,6 +44,7 @@ import { modulesSchema } from './schema/modules'
 import { idSchema } from './schema/primitives'
 import { sellerSchema } from './schema/sellers'
 
+export * from './schema/catalogue'
 export * from './schema/commerce'
 export * from './schema/facets'
 export * from './schema/identity'
@@ -88,7 +101,7 @@ export const brandConfigSchema = z
         .nullable(),
     }),
     modules: modulesSchema,
-    sisters: z.array(sisterSchema).default([]),
+    sisters: z.array(sisterSchema).max(1).default([]),
   })
   .superRefine((config, ctx) => {
     if (!config.locales.supported.includes(config.locales.default)) {
