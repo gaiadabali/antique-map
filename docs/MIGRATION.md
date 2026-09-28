@@ -173,7 +173,7 @@ by construction.
   liability, not a convenience). Each is created with a random, unusable password
   (Payload requires one); the first sign-in sends a "claim your account" link that
   sets a real one. Accounts that never claim are purged after 12 months by the
-  retention job (TASKS.md 10.8).
+  retention job (TASKS.md 28.4).
 - **Newsletter subscribers** import with their recorded consent and source
   `legacy`. Where consent cannot be shown, they get one re-permission email and
   nothing else (UU PDP / PDPA; COMPLIANCE.md).
@@ -282,6 +282,6 @@ So the emporium launch carries its own redirect map: every old Squarespace path
 product or collection. The old gallery's "Buy Reproduction" buttons all point at
 one home page, so there is nothing to map one-to-one: instead, **the new gallery
 item pages link to the exact products made from each work** (sister links, TASKS.md
-9.7), and the old home-page URL redirects like any other. The product list is
+27.1), and the old home-page URL redirects like any other. The product list is
 imported through the generic `csv-products` source adapter rather than typed in
 by hand.

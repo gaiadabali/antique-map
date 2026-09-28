@@ -5,7 +5,7 @@
 This file covers what both brands share: the platform and **the admin**. Each
 storefront has its own brief — `engine/apps/gallery/PRODUCT.md` (Indies Gallery)
 and `engine/apps/emporium/PRODUCT.md` (Old East Indies). Drafted from research on
-2026-09-25; facts marked **(to confirm)** await the owner (Phase 1, task 1.1).
+2026-09-25; facts marked **(to confirm)** await the owner (the Design stage, task 6.1).
 
 ## Platform
 
@@ -85,7 +85,7 @@ primary channel in Indonesia.
 - **Absences that must not be invented:** the selling entities and their tax
   registrations; real prices for merchandise; the grading scale's wording; the
   returns policy; Hofker rights; photography of the showroom; the owner's
-  answers to the Phase 1 interview.
+  answers to the owner interview (task 6.1).
 
 ## Product Principles
 

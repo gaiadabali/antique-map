@@ -19,8 +19,8 @@ the fields its view model needs (ARCHITECTURE.md §12).
 ### The frozen slug list
 
 Collections relate to each other across tasks that run in parallel, so every
-slug exists from Phase 0 as a **stub** in a registry the SCH lead owns (TASKS.md
-0.7.e); tasks fill in fields, never invent slugs. Slugs are kebab-case:
+slug exists from the Foundation stage as a **stub** in a registry the SCH lead owns (TASKS.md
+3.2.e); tasks fill in fields, never invent slugs. Slugs are kebab-case:
 
 `users` · `customers` · `addresses` · `saved-items` · `want-lists` ·
 `subscribers` · `reviews` · `makers` · `places` · `terms` · `sources` ·
@@ -115,7 +115,7 @@ a crop ("Batavia harbour" from a larger plan), cleaned and colour-managed.
 `work` (→ works) · `title` · `crop` `{ x, y, w, h, rotation }` · `printFile` (→
 masters: a colour-managed file under the `print-files/` prefix) · `aspect` ·
 `printCeiling` (derived from the print file's pixels at the product types'
-minimum ppi; enforced in Phase 4, TASKS.md 4.4) · `story` (short, localised — the
+minimum ppi; enforced in phase 15, TASKS.md 15.4) · `story` (short, localised — the
 100–150-word PDP story) · `archiveNumber` (shown on every product, the provenance
 tag) · `status`.
 
@@ -134,7 +134,7 @@ template) · `shippingProfile` · `hsCode` · `materials` (localised copy) ·
 `mockupScenes` (→ media, for the room view).
 
 Generating variants from a design and a product type is an **admin tool**
-(PLAN.md Phase 8), not a manual process.
+(PLAN.md, the Admin stage), not a manual process.
 
 ### Variants
 

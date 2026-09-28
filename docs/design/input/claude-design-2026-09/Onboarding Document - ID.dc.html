@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+html,body{margin:0;padding:0;background:#111;overflow:hidden}
+a{color:#2F5D57}
+a:hover{color:#593D21}
+</style>
+</helmet>
+<x-import component-from-global-scope="deck-stage" from="./deck-stage.js" width="1920" height="1080" hint-size="100%,100%">
+
+<section data-label="Cover" data-screen-label="01" data-speaker-notes="Deck ini dibangun dari dua hal saja: form onboarding Anda, dan dua belas situs referensi yang Anda kirim. Slide tiga memuat dua kemungkinan struktur — kami butuh Anda memilih satu hari ini." style="background:#fff url(assets/cover-bg.jpg) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/old-east-indies-logo.jpg" alt="Old East Indies" style="position:absolute;left:1020px;top:352px;width:200px;height:200px;border:1px solid #E0D6C4" />
+<h1 style="position:absolute;left:1020px;top:606px;margin:0;width:800px;font-size:60px;font-weight:700;line-height:1.14;letter-spacing:-0.5px">Panduan Desain Website<br />UX &amp; UI</h1>
+</section>
+
+<section data-label="Dari Referensi Anda" data-screen-label="02" data-speaker-notes="Kami membaca dua belas situs yang Anda kirim. Daripada mendaftar semua yang mereka lakukan, kami simpan hanya yang menjawab sesuatu yang benar-benar Anda tulis di form. Kolom kiri kata Anda. Tengah yang kami ambil. Kanan situs mana yang melakukannya dengan baik. Sisanya kami tinggalkan." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Yang Kami Ambil dari 12 Referensi Anda</h2>
+<p style="position:absolute;left:132px;top:268px;margin:0;width:1656px;font-size:28px;line-height:1.4;color:#333">Hanya hal yang menjawab sesuatu yang Anda tulis di form.</p>
+<div style="position:absolute;left:132px;top:348px;width:1656px">
+<div style="display:flex;gap:36px;border-bottom:4px solid #000;padding-bottom:14px">
+<div style="width:420px;flex:none;font-size:25px;font-weight:700;letter-spacing:0.04em">KATA ANDA</div>
+<div style="flex:1;font-size:25px;font-weight:700;letter-spacing:0.04em">YANG KAMI BANGUN</div>
+<div style="width:300px;flex:none;font-size:25px;font-weight:700;letter-spacing:0.04em">DARI</div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Browse our products”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Filter dengan angka — pulau, abad, pembuat</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://litomasters.com/collections/all" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">litomasters.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“See how we make these”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Halaman proses, dan kertas serta tinta ditulis terbuka</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://oldmap.co.uk/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">oldmap.co.uk</a><a href="https://victorianmaps.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">victorianmaps.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Look credible”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Kurator dan sertifikat di bagian atas, bukan di footer</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://historicprints.com/pages/our-history" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">historicprints.com</a><a href="https://wallango.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">wallango.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Read our articles”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Artikel panduan yang menjual — bukan berita perusahaan</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://victorianmaps.com/blogs/guides/how-to-identify-an-authentic-antique-map-vs-modern-reprints" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">victorianmaps.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Sell online”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Satu produk, banyak ukuran — harga naik dari “mulai dari”</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://everartprints.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">everartprints.com</a></div>
+</div>
+<div style="display:flex;gap:36px;background:#FED756;padding:20px 22px;margin-top:2px;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Save us admin time”<br />“Keep customers coming back”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Area grosir untuk 100+ toko Anda — login, harga khusus mereka, pesan ulang sekali klik</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://www.etalage.co.uk/trade-membership" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">etalage.co.uk</a><a href="https://www.1000museums.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">1000museums.com</a></div>
+</div>
+</div>
+</section>
+
+<section data-label="Dua Asumsi" data-screen-label="03" data-speaker-notes="Form menjelaskan satu bisnis dan menjawab current site none, tetapi Anda menyebut tiga website. Jadi kami gambarkan kedua struktur, bukan menebak. Perhatikan area grosir berada di tempat yang sama pada kedua pilihan — jadi keputusan ini tidak memengaruhi penghematan admin. Sisa deck menampilkan keduanya." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Dua Asumsi</h2>
+<p style="position:absolute;left:132px;top:262px;margin:0;width:1656px;font-size:28px;line-height:1.4;color:#333">Dua cara membangunnya — <span style="font-weight:700;color:#000">mohon pilih satu hari ini.</span></p>
+
+<div style="position:absolute;left:132px;top:316px;width:806px">
+<div style="display:flex;align-items:center;gap:14px;padding-bottom:18px">
+<span style="font-size:32px;font-weight:700;line-height:1.3">Asumsi A</span>
+<span style="background:#FED756;font-size:24px;font-weight:700;padding:5px 12px;line-height:1.2">2 WEBSITE</span>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 0;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Satu merek</div>
+<div style="position:relative;height:34px">
+<div style="position:absolute;left:50%;top:0;width:3px;height:16px;background:#000;transform:translateX(-1.5px)"></div>
+<div style="position:absolute;left:191px;top:16px;width:424px;height:3px;background:#000"></div>
+<div style="position:absolute;left:190px;top:16px;width:3px;height:18px;background:#000"></div>
+<div style="position:absolute;left:613px;top:16px;width:3px;height:18px;background:#000"></div>
+</div>
+<div style="display:flex;gap:40px;align-items:stretch">
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Barang Asli</div>
+</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Souvenir</div>
+<div style="border:2px dashed #000;background:#FED756;padding:12px 14px;margin-top:auto;font-size:24px;font-weight:700;line-height:1.3">Area Grosir</div>
+</div>
+</div>
+</div>
+
+<div style="position:absolute;left:982px;top:316px;width:806px">
+<div style="display:flex;align-items:center;gap:14px;padding-bottom:18px">
+<span style="font-size:32px;font-weight:700;line-height:1.3">Asumsi B</span>
+<span style="border:2px solid #000;font-size:24px;font-weight:700;padding:3px 12px;line-height:1.2">3 WEBSITE</span>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 0;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Satu merek</div>
+<div style="display:flex;justify-content:center"><div style="width:3px;height:20px;background:#000"></div></div>
+<div style="border:2px solid #000;background:#fff;padding:14px;text-align:center;font-size:27px;font-weight:700;line-height:1.3">Landing Page</div>
+<div style="position:relative;height:34px">
+<div style="position:absolute;left:50%;top:0;width:3px;height:16px;background:#000;transform:translateX(-1.5px)"></div>
+<div style="position:absolute;left:191px;top:16px;width:424px;height:3px;background:#000"></div>
+<div style="position:absolute;left:190px;top:16px;width:3px;height:18px;background:#000"></div>
+<div style="position:absolute;left:613px;top:16px;width:3px;height:18px;background:#000"></div>
+</div>
+<div style="display:flex;gap:40px;align-items:stretch">
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Barang Asli</div>
+</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Souvenir</div>
+<div style="border:2px dashed #000;background:#FED756;padding:12px 14px;margin-top:auto;font-size:24px;font-weight:700;line-height:1.3">Area Grosir</div>
+</div>
+</div>
+</div>
+
+<div style="position:absolute;left:132px;top:730px;width:806px">
+<div style="border-top:4px solid #000;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Kelebihan</div>
+<div style="font-size:25px;line-height:1.45;color:#333">Jalur tercepat ke penjualan · satu katalog dirawat</div>
+</div>
+<div style="border-top:1px solid #cfcfcf;margin-top:20px;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Kekurangan</div>
+<div style="font-size:25px;line-height:1.45;color:#333">Cerita merek berbagi rumah dengan toko</div>
+</div>
+</div>
+
+<div style="position:absolute;left:982px;top:730px;width:806px">
+<div style="border-top:4px solid #000;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Kelebihan</div>
+<div style="font-size:25px;line-height:1.45;color:#333">Cerita dan kurator punya rumah sendiri</div>
+</div>
+<div style="border-top:1px solid #cfcfcf;margin-top:20px;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Kekurangan</div>
+<div style="font-size:25px;line-height:1.45;color:#333">Satu langkah lebih · tiga alamat · biaya lebih besar</div>
+</div>
+</div>
+</section>
+
+<section data-label="Alur Utama" data-screen-label="04" data-speaker-notes="Pembeli yang sama dilewatkan kedua struktur, dengan poin dari slide dua ditempatkan sesuai posisinya. Di A pengunjung mendarat di toko dan bisa membeli lebih cepat. Di B ia bertemu cerita dulu, lalu memilih toko. Baris bawah adalah alur grosir — sama di keduanya, dan itulah bagian yang menghemat waktu admin Anda." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Alur Utama</h2>
+
+<div style="position:absolute;left:132px;top:276px;width:1656px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:30px;font-weight:700;line-height:1.3">Asumsi A — pembeli yang berbelanja</div>
+<div style="padding-top:24px;display:flex;align-items:center;gap:16px">
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:20px 12px;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Home toko</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Filter per pulau,<br />abad, pembuat</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Produk —<br />pilih ukuran</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Keranjang</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Bayar</div>
+</div>
+</div>
+
+<div style="position:absolute;left:132px;top:518px;width:1656px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:30px;font-weight:700;line-height:1.3">Asumsi B — pembeli yang berbelanja</div>
+<div style="padding-top:24px;display:flex;align-items:center;gap:16px">
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:20px 12px;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Landing Page —<br />ceritanya</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Pilih toko</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Filter per pulau,<br />abad, pembuat</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Produk —<br />pilih ukuran</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Keranjang</div>
+</div>
+</div>
+
+<div style="position:absolute;left:132px;top:760px;width:1656px;border:3px dashed #000;background:#FED756;padding:26px 30px;box-sizing:border-box">
+<div style="font-size:30px;font-weight:700;line-height:1.3;padding-bottom:22px">Sama di keduanya — salah satu dari 100+ toko Anda pesan ulang</div>
+<div style="display:flex;align-items:center;gap:16px">
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Login grosir</div>
+<div style="font-size:32px;color:#000">→</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;line-height:1.3">Pesanan terakhir,<br />harga khusus</div>
+<div style="font-size:32px;color:#000">→</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;line-height:1.3">Pesan ulang<br />sekali klik</div>
+<div style="font-size:32px;color:#000">→</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;line-height:1.3">Selesai — tanpa<br />input manual</div>
+</div>
+</div>
+</section>
+
+<section data-label="Wireframe A" data-screen-label="05" data-speaker-notes="Asumsi A punya dua halaman depan, satu per website. Keduanya diawali pencarian di bagian atas, karena form meminta orang bisa menjelajah produk. Home souvenir membawa halaman proses dan login grosir. Setiap baris diberi label supaya jelas isinya." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Wireframe — Asumsi A</h2>
+<p style="position:absolute;left:132px;top:268px;margin:0;width:1656px;font-size:27px;line-height:1.4;color:#333">Dua website, jadi dua halaman depan.</p>
+
+<div style="position:absolute;left:132px;top:316px;width:806px">
+<div style="background:#000;color:#fff;padding:14px 22px;font-size:27px;font-weight:700;line-height:1.3">Home — Barang Asli</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:22px;display:flex;flex-direction:column;gap:11px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">Logo · menu</div>
+<div style="border:2px solid #999;background:#fff;padding:18px;display:flex;gap:18px;align-items:center">
+<div style="width:140px;height:78px;background:#E7DECE;flex:none"></div>
+<div style="flex:1;font-size:25px;font-weight:700;line-height:1.35">Satu peta dan ceritanya</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:14px 16px">
+<div style="background:#fff;border:1px solid #999;padding:10px 14px;font-size:25px;line-height:1.3;color:#555">Cari</div>
+<div style="display:flex;gap:10px;padding-top:11px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Pulau</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Abad</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Pembuat</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:14px 16px;display:flex;gap:11px"><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">Kurator · sertifikat</div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:13px 16px;font-size:25px;line-height:1.3">Footer</div>
+</div>
+</div>
+
+<div style="position:absolute;left:982px;top:316px;width:806px">
+<div style="background:#000;color:#fff;padding:14px 22px;font-size:27px;font-weight:700;line-height:1.3">Home — Souvenir</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:22px;display:flex;flex-direction:column;gap:11px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">Logo · menu · keranjang</div>
+<div style="border:2px solid #999;background:#fff;padding:18px;display:flex;gap:18px;align-items:center">
+<div style="width:140px;height:78px;background:#E7DECE;flex:none"></div>
+<div style="flex:1;font-size:25px;font-weight:700;line-height:1.35">Satu peta dan harganya</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:14px 16px">
+<div style="background:#fff;border:1px solid #999;padding:10px 14px;font-size:25px;line-height:1.3;color:#555">Cari</div>
+<div style="display:flex;gap:10px;padding-top:11px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Pulau</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Abad</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Pembuat</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:14px 16px;display:flex;gap:11px"><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">Cara kami membuatnya</div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:13px 16px;font-size:25px;line-height:1.3">Footer · login grosir</div>
+</div>
+</div>
+</section>
+
+<section data-label="Wireframe B" data-screen-label="06" data-speaker-notes="Asumsi B punya tiga halaman depan. Landing page membawa cerita merek dan dua pintu ke toko. Karena cerita dan sertifikat kini ada di sana, dua home toko jadi lebih ringkas dibanding Asumsi A — halaman jualannya tetap sama, yang pindah hanya bagian ceritanya." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Wireframe — Asumsi B</h2>
+<p style="position:absolute;left:132px;top:268px;margin:0;width:1656px;font-size:27px;line-height:1.4;color:#333">Tiga website, jadi tiga halaman depan. Cerita dan sertifikat pindah ke landing page, jadi home toko lebih ringkas.</p>
+
+<div style="position:absolute;left:132px;top:346px;width:524px">
+<div style="background:#000;color:#fff;padding:14px 20px;font-size:26px;font-weight:700;line-height:1.3">Landing Page</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Logo · menu</div>
+<div style="border:2px solid #999;background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="height:74px;background:#E7DECE"></div>
+<div style="font-size:24px;font-weight:700;line-height:1.35">Cerita merek</div>
+</div>
+<div style="display:flex;gap:12px">
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:18px 8px;text-align:center;font-size:24px;font-weight:700;line-height:1.3">Barang Asli</div>
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:18px 8px;text-align:center;font-size:24px;font-weight:700;line-height:1.3">Souvenir</div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:12px 14px;font-size:24px;line-height:1.3">Cara kami membuatnya</div>
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Kurator · sertifikat</div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:12px 14px;font-size:24px;line-height:1.3">Footer</div>
+</div>
+</div>
+
+<div style="position:absolute;left:698px;top:346px;width:524px">
+<div style="background:#000;color:#fff;padding:14px 20px;font-size:26px;font-weight:700;line-height:1.3">Home — Barang Asli</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Logo · menu</div>
+<div style="border:2px solid #999;background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="height:74px;background:#E7DECE"></div>
+<div style="font-size:24px;font-weight:700;line-height:1.35">Satu peta dan ceritanya</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 14px">
+<div style="background:#fff;border:1px solid #999;padding:9px 12px;font-size:24px;line-height:1.3;color:#555">Cari</div>
+<div style="display:flex;gap:8px;padding-top:10px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Pulau</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Abad</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:12px 14px;display:flex;gap:10px"><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:12px 14px;font-size:24px;line-height:1.3">Footer</div>
+</div>
+</div>
+
+<div style="position:absolute;left:1264px;top:346px;width:524px">
+<div style="background:#000;color:#fff;padding:14px 20px;font-size:26px;font-weight:700;line-height:1.3">Home — Souvenir</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Logo · menu · keranjang</div>
+<div style="border:2px solid #999;background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="height:74px;background:#E7DECE"></div>
+<div style="font-size:24px;font-weight:700;line-height:1.35">Satu peta dan harganya</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 14px">
+<div style="background:#fff;border:1px solid #999;padding:9px 12px;font-size:24px;line-height:1.3;color:#555">Cari</div>
+<div style="display:flex;gap:8px;padding-top:10px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Pulau</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Abad</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:12px 14px;display:flex;gap:10px"><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:12px 14px;font-size:24px;line-height:1.3">Footer · login grosir</div>
+</div>
+</div>
+</section>
+
+<section data-label="Look &amp; Feel" data-screen-label="07" data-speaker-notes="Yang paling penting adalah yang pertama. Peta Anda sudah penuh ornamen — cartouche, monster laut, warna tangan — jadi antarmuka yang ikut berhias akan bersaing dengan barang yang Anda jual. Mayfair Gallery boleh memakai menu berhias empat tingkat karena mereka menjual mebel dan ormolu. Warnanya diukur dari file logo Anda, bukan dikira-kira." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Gaya, Warna &amp; Huruf</h2>
+<p style="position:absolute;left:132px;top:266px;margin:0;width:1656px;font-size:28px;line-height:1.4;color:#333">Tiga rekomendasi, beserta alasan di balik masing-masing.</p>
+<div style="position:absolute;left:132px;top:346px;width:1656px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px">
+
+<div style="display:flex;flex-direction:column;min-height:492px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:26px;font-weight:700;letter-spacing:0.04em">GAYA</div>
+<div style="font-size:31px;font-weight:700;line-height:1.3;padding-top:22px">Klasik — tapi tenang, bukan berhias</div>
+<div style="border:1px solid #B8A992;background:#fff;padding:34px;margin-top:24px">
+<div style="height:120px;background:#E7DECE"></div>
+</div>
+<div style="font-size:25px;line-height:1.5;color:#444;margin-top:auto;padding-top:24px">Peta Anda sudah penuh hiasan — antarmuka yang ikut berhias akan bersaing dengannya. Mayfair boleh berhias: mereka menjual mebel dan ormolu, bukan kertas.</div>
+</div>
+
+<div style="display:flex;flex-direction:column;min-height:492px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:26px;font-weight:700;letter-spacing:0.04em">WARNA</div>
+<div style="font-size:31px;font-weight:700;line-height:1.3;padding-top:22px">Warna kertas hangat — bukan putih, bukan gelap</div>
+<div style="margin-top:24px">
+<div style="display:flex;height:120px">
+<div style="flex:1;background:#F1E5D3"></div>
+<div style="flex:1;background:#593D21"></div>
+<div style="flex:1;background:#2F5D57"></div>
+<div style="flex:1;background:#7A5D1B"></div>
+</div>
+<div style="display:flex;padding-top:12px">
+<div style="flex:1;font-size:24px;line-height:1.3">Krem</div>
+<div style="flex:1;font-size:24px;line-height:1.3">Cokelat</div>
+<div style="flex:1;font-size:24px;line-height:1.3">Hijau</div>
+<div style="flex:1;font-size:24px;line-height:1.3">Emas</div>
+</div>
+</div>
+<div style="font-size:25px;line-height:1.5;color:#444;margin-top:auto;padding-top:24px">Krem dan cokelat diambil langsung dari logo Anda. Warna hangat membuat kertas tua tampil lebih baik daripada latar putih terang. Hijau menandai link, emas menandai harga.</div>
+</div>
+
+<div style="display:flex;flex-direction:column;min-height:492px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:26px;font-weight:700;letter-spacing:0.04em">HURUF</div>
+<div style="font-size:31px;font-weight:700;line-height:1.3;padding-top:22px">Klasik berkait + sans sederhana</div>
+<div style="border:1px solid #B8A992;background:#fff;padding:28px;margin-top:24px">
+<div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:46px;font-weight:600;line-height:1.15">Spice Islands</div>
+<div style="font-family:Karla,Arial,sans-serif;font-size:25px;line-height:1.5;color:#333;padding-top:14px">Teks bacaan tetap sederhana dan jelas, bahkan di ponsel.</div>
+</div>
+<div style="font-size:25px;line-height:1.5;color:#444;margin-top:auto;padding-top:24px">Huruf klasik untuk judul, sans sederhana untuk teks bacaan. Kami pilih turunan Garamond karena sekeluarga dengan huruf yang tercetak di peta Anda.</div>
+</div>
+
+</div>
+</section>
+<section data-label="Poin Dipastikan" data-screen-label="08" data-speaker-notes="Seluruh isi deck ini berpijak pada asumsi, karena ada hal yang masih terbuka di form. Enam jawaban ini mengubahnya jadi rencana kerja. Nomor satu adalah pilihan dari slide tiga — ia memblokir semua yang lain. Kalau ini selesai hari ini, kami bisa mulai langsung setelah meeting." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Enam Poin yang Harus Dipastikan</h2>
+<div style="position:absolute;left:132px;top:290px;width:1656px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:30px;align-items:flex-start;background:#FED756;padding:22px 28px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">1</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Asumsi A atau B?</span>
+<span style="font-size:26px;line-height:1.4">Dua website, atau tiga yang terpisah?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">2</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Apa itu “more after sales”?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Jual langsung, pesanan ulang toko, atau layanan?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">3</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Bagaimana 100 toko memesan?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">WhatsApp, email, PDF? Berapa per bulan?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">4</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Siapa yang mencetak souvenirnya?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Workshop sendiri, atau pihak ketiga?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">5</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Satu merek atau dua?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Souvenir murah dan barang asli mahal di bawah satu nama?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;padding:0 28px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">6</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Toko-tokonya di mana?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Menentukan bahasa dan mata uang saat launch</span>
+</div>
+</div>
+</section>
+
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1920,&quot;height&quot;:1080}}"></script>
+</body>
+</html>

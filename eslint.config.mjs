@@ -113,6 +113,7 @@ export default defineConfig([
     ],
     'generated files (regenerated, never edited: PARALLEL-TRACKS.md §2)',
   ),
+  globalIgnores(['docs/design/input/**'], 'design input from the owner, kept as delivered'),
 
   {
     name: 'code: recommended',

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/colors.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/typography.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/spacing.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/components/components.css" />
+<script src="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/_ds_bundle.js"></script>
+<script src="image-slot.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#F4F1EA}
+html:root{
+--font-display:"Cormorant Garamond",Georgia,serif;--font-body:"Karla",Arial,sans-serif;
+--h1-size:clamp(40px,5.2vw,80px);--h1-line:clamp(44px,5.2vw,80px);--h2-size:38px;--h2-line:44px;--h3-size:24px;--h3-line:30px;
+--body-lg-size:17px;--body-lg-line:28px;--body-md-size:15px;--body-md-line:25px;--body-sm-size:14px;--body-sm-line:22px;--caption-size:12px;--caption-line:17px;
+--brand-color-primary:#2F3E31;--brand-color-secondary:#6E5418;--brand-color-bg:#F4F1EA;--brand-color-text-dark:#1C201C;--surface-card:#FBF9F5;
+}
+a{color:#1C201C}
+a:hover{color:#6E5418}
+.oei-name{color:#1C201C}
+.oei-mark{display:block;flex:none;background-color:#1C201C;-webkit-mask:url(assets/old-east-indies-stroke.png) center/contain no-repeat;mask:url(assets/old-east-indies-stroke.png) center/contain no-repeat}
+
+/* nav: horizontal from 960px up — brand left, nav right, shop utilities kept */
+@media (min-width:960px) and (max-width:1239px){
+@media (min-width:1240px){
+.luxury-header__inner{grid-template-columns:auto minmax(0,1fr) auto;column-gap:var(--space-60)}
+.luxury-header__nav{display:flex;justify-content:flex-end;width:100%;column-gap:var(--space-30)}
+}
+.luxury-header__burger{display:none}
+.luxury-header__actions{display:flex}
+.luxury-header__link{font-size:13px}
+}
+@media (max-width:959px){.luxury-header__nav,.luxury-header__actions{display:none}.luxury-header__burger{display:inline-flex}}
+
+/* editorial primitives — identical to Indies Gallery, so the two read as siblings */
+/* nav + CTA form one right-hand group: 60px between the last link and the
+   button, 30px between the links themselves */
+@media (min-width:1240px){
+.luxury-header__inner{grid-template-columns:auto minmax(0,1fr) auto;column-gap:var(--space-60)}
+.luxury-header__nav{display:flex;justify-content:flex-end;width:100%;column-gap:var(--space-30)}
+}
+.band{padding-inline:var(--layout-gutter)}
+.wrap{max-width:1340px;margin:0 auto}
+.num{font-family:'Cormorant Garamond',Georgia,serif;font-size:40px;font-weight:400;line-height:1;color:#8A8071;display:block}
+.ttl{font-family:'Cormorant Garamond',Georgia,serif;font-size:25px;font-weight:500;line-height:1.2;color:#1C201C;margin:0}
+.mut{font-family:Karla,Arial,sans-serif;font-size:14px;line-height:23px;color:#6B6455;margin:0}
+.lead{font-family:Karla,Arial,sans-serif;font-size:14px;font-weight:700;line-height:23px;color:#1C201C;margin:0}
+.price{font-family:Karla,Arial,sans-serif;font-size:15px;font-weight:700;line-height:22px;color:#6E5418;margin:0}
+.plate{background:#E4DDCE;display:block;width:100%}
+.on-dark .luxury-btn--ghost{color:var(--brand-color-bg);border-color:var(--brand-color-bg)}
+.on-dark .luxury-btn--ghost:hover{background:var(--brand-color-bg);color:var(--brand-color-text-dark)}
+.prod{text-decoration:none;display:block}
+.prod .ttl{transition:color 280ms cubic-bezier(0.22,0.61,0.36,1)}
+.prod:hover .ttl{color:#6E5418}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.78fr) minmax(0,0.55fr);gap:44px;align-items:start}
+.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px}
+.rail{display:grid;grid-template-columns:90px minmax(0,1fr);gap:40px;align-items:start}
+.head{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:flex-end;margin-bottom:40px}
+@media (max-width:1100px){
+.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,0.8fr);gap:36px}
+.hero-third{display:none}
+.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+.rail{grid-template-columns:minmax(0,1fr);gap:20px}
+.rail-col{display:flex;gap:30px;align-items:center}
+}
+@media (max-width:768px){
+.hero-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+.three{grid-template-columns:minmax(0,1fr);gap:36px}
+}
+</style>
+</helmet>
+
+<div style="font-family:Karla,Arial,sans-serif;color:#1C201C;background:#F4F1EA">
+
+<div style="background:#2F3E31;color:#F4F1EA;padding:11px var(--layout-gutter);text-align:center">
+<span style="font-family:Karla,Arial,sans-serif;font-size:13px;letter-spacing:0.05em">Printed in our own workshop from antique originals we hold · Free shipping in Indonesia over Rp 500.000</span>
+</div>
+
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Header" brand="{{ headerMark }}" links="{{ navLinks }}" actions="{{ headerActions }}" sticky="{{ yes }}" hint-size="100%,80px"></x-import>
+
+<section class="band" style="padding-block:60px 50px">
+<div class="wrap">
+<div class="hero-grid">
+
+<div style="padding-top:40px">
+<span class="type-eyebrow" style="display:block;color:#6B6455">Art souvenirs of the East Indies</span>
+<h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h1-size);line-height:var(--h1-line);font-weight:400;letter-spacing:-0.015em;margin:24px 0 0;color:#1C201C;max-width:13ch;text-wrap:balance">Old maps, new walls.</h1>
+<p class="lead" style="margin-top:24px;max-width:340px">Museum-grade prints of antique maps and engravings, made from originals in our own collection. 300gsm cotton, archival inks, from Rp 185.000.</p>
+<div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:34px">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="solid" size="md" as="a" href="#shop" hint-size="auto,40px">Shop prints</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#process" hint-size="auto,40px">How we make them</x-import>
+</div>
+</div>
+
+<div>
+<div class="plate" style="aspect-ratio:4/5"><image-slot id="oei-hero-a" shape="rect" fit="cover" placeholder="Best seller — the lead print" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:14px">The Spice Islands · after Blaeu, 1640</p>
+</div>
+
+<div class="hero-third" style="padding-top:90px">
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-hero-b" shape="rect" fit="cover" placeholder="A print on a wall" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:14px">Framed, in a Seminyak villa</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section class="band" style="padding-block:40px">
+<div class="wrap">
+<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+<span class="type-eyebrow" style="color:#6B6455;margin-right:10px">By island</span>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Java · 38</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Sumatra · 35</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Moluccas · 34</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Borneo · 18</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Bali &amp; Lombok · 12</x-import>
+<span class="type-eyebrow" style="color:#6B6455;margin-left:24px;margin-right:10px">By room</span>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Living room</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Study</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Badge" variant="outline" hint-size="auto,28px">Gifts</x-import>
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section id="shop" class="band" style="padding-block:60px">
+<div class="wrap">
+<div class="rail">
+<div class="rail-col">
+<span class="type-eyebrow" style="display:block;color:#6B6455">Best sellers</span>
+<span class="mut" style="margin-top:14px;display:block">Four of<br />420 prints</span>
+</div>
+<div>
+<div class="four">
+
+<a class="prod" href="#">
+<div class="plate" style="aspect-ratio:4/5"><image-slot id="oei-p1" shape="rect" fit="contain" placeholder="Drop print" style="display:block;width:100%;height:100%"></image-slot></div>
+<span class="num" style="margin-top:18px">01/</span>
+<h3 class="ttl" style="margin-top:10px">The Spice Islands</h3>
+<p class="mut" style="margin-top:6px">After Blaeu · 1640</p>
+<p class="price" style="margin-top:8px">from Rp 185.000</p>
+<p class="mut" style="margin-top:4px">A4 · A3 · A2 · framed</p>
+</a>
+
+<a class="prod" href="#">
+<div class="plate" style="aspect-ratio:4/5"><image-slot id="oei-p2" shape="rect" fit="contain" placeholder="Drop print" style="display:block;width:100%;height:100%"></image-slot></div>
+<span class="num" style="margin-top:18px">02/</span>
+<h3 class="ttl" style="margin-top:10px">Java, from the sea</h3>
+<p class="mut" style="margin-top:6px">After Bellin · 1750</p>
+<p class="price" style="margin-top:8px">from Rp 185.000</p>
+<p class="mut" style="margin-top:4px">A4 · A3 · A2 · framed</p>
+</a>
+
+<a class="prod" href="#">
+<div class="plate" style="aspect-ratio:4/5"><image-slot id="oei-p3" shape="rect" fit="contain" placeholder="Drop print" style="display:block;width:100%;height:100%"></image-slot></div>
+<span class="num" style="margin-top:18px">03/</span>
+<h3 class="ttl" style="margin-top:10px">Batavia harbour</h3>
+<p class="mut" style="margin-top:6px">After Van Ryne · 1754</p>
+<p class="price" style="margin-top:8px">from Rp 215.000</p>
+<p class="mut" style="margin-top:4px">A3 · A2 · framed</p>
+</a>
+
+<a class="prod" href="#">
+<div class="plate" style="aspect-ratio:4/5"><image-slot id="oei-p4" shape="rect" fit="contain" placeholder="Drop print" style="display:block;width:100%;height:100%"></image-slot></div>
+<span class="num" style="margin-top:18px">04/</span>
+<h3 class="ttl" style="margin-top:10px">Nutmeg</h3>
+<p class="mut" style="margin-top:6px">Botanical engraving · c. 1780</p>
+<p class="price" style="margin-top:8px">from Rp 165.000</p>
+<p class="mut" style="margin-top:4px">A4 · A3 · framed</p>
+</a>
+
+</div>
+<div style="margin-top:40px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#" hint-size="auto,40px">Shop all prints</x-import></div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section class="band" style="padding-block:60px">
+<div class="wrap">
+<div class="head">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6B6455">Get inspired</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:18px 0 0">Sets that hang together</h2>
+</div>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#" hint-size="auto,40px">All gallery walls</x-import>
+</div>
+<div class="three">
+<a class="prod" href="#">
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-s1a" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4;margin-top:18px"><image-slot id="oei-s1b" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-s1c" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+</div>
+<h3 class="ttl" style="margin-top:22px">The Archipelago</h3>
+<p class="mut" style="margin-top:6px">Set of six · Java to Papua</p>
+<p class="price" style="margin-top:8px">from Rp 890.000</p>
+</a>
+<a class="prod" href="#">
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-s2a" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4;margin-top:18px"><image-slot id="oei-s2b" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-s2c" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+</div>
+<h3 class="ttl" style="margin-top:22px">Spice &amp; flora</h3>
+<p class="mut" style="margin-top:6px">Set of four · nutmeg, clove, pepper, cinnamon</p>
+<p class="price" style="margin-top:8px">from Rp 640.000</p>
+</a>
+<a class="prod" href="#">
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-s3a" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4;margin-top:18px"><image-slot id="oei-s3b" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-s3c" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+</div>
+<h3 class="ttl" style="margin-top:22px">Old Batavia</h3>
+<p class="mut" style="margin-top:6px">Set of three · harbour, castle, canal</p>
+<p class="price" style="margin-top:8px">from Rp 495.000</p>
+</a>
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section id="process" class="band" style="padding-block:60px">
+<div class="wrap">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:56px;align-items:center">
+<div class="plate" style="aspect-ratio:5/4"><image-slot id="oei-process" shape="rect" fit="cover" placeholder="The workshop — press, paper, inks" style="display:block;width:100%;height:100%"></image-slot></div>
+<div>
+<span class="type-eyebrow" style="display:block;color:#6B6455">How we make them</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:20px 0 0;text-wrap:pretty">From an original in our hands to a print on your wall</h2>
+<div style="margin-top:30px;display:flex;flex-direction:column;gap:22px">
+<div>
+<span class="num" style="font-size:30px">01/</span>
+<p class="lead" style="margin-top:8px">It starts with an original</p>
+<p class="mut" style="margin-top:6px">Not a file from the internet — an antique map or engraving we physically hold, the same ones our curator certifies.</p>
+</div>
+<div>
+<span class="num" style="font-size:30px">02/</span>
+<p class="lead" style="margin-top:8px">Restored by hand, scars kept</p>
+<p class="mut" style="margin-top:6px">We correct foxing, tears and fading. The marks that give a map its character stay — they are part of its story.</p>
+</div>
+<div>
+<span class="num" style="font-size:30px">03/</span>
+<p class="lead" style="margin-top:8px">Printed in our own workshop</p>
+<p class="mut" style="margin-top:6px">300gsm cotton and archival pigment inks, printed in Bali. Not outsourced, not print-on-demand.</p>
+</div>
+</div>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#" hint-size="auto,40px">Watch how it's made</x-import></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="band on-dark" style="padding-block:70px;background:#2F3E31">
+<div class="wrap">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center">
+<div>
+<span class="type-eyebrow" style="display:block;color:#D4B24A">Trade &amp; gifting</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:20px 0 0;color:#F4F1EA;text-wrap:pretty">For shops, hotels and companies</h2>
+<p style="font-family:Karla,Arial,sans-serif;font-size:15px;line-height:25px;color:#C0C8BC;margin:20px 0 0;max-width:440px;text-wrap:pretty">More than 100 shops across Indonesia already stock Old East Indies. We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.</p>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="Old East Indies/Partnership.dc.html" hint-size="auto,40px">See partnership options</x-import></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end">
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-t1" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4;margin-bottom:32px"><image-slot id="oei-t2" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="oei-t3" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="band" style="padding-block:70px;background:#EDE8DE">
+<div class="wrap">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6B6455">The originals</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:20px 0 0;text-wrap:pretty">Every print begins with a map we hold</h2>
+<p class="mut" style="margin-top:20px;max-width:440px">Those originals are examined and certified by our curator, and offered to collectors at Antique Maps Indonesia — our sister gallery.</p>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="Home - Antique Maps Indonesia.dc.html" hint-size="auto,40px">See the originals</x-import></div>
+</div>
+<div class="plate" style="aspect-ratio:5/4"><image-slot id="oei-originals" shape="rect" fit="contain" placeholder="An original, beside its print" style="display:block;width:100%;height:100%"></image-slot></div>
+</div>
+</div>
+</section>
+
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Footer" brand="{{ footerMark }}" address="{{ footerAddress }}" columns="{{ footerColumns }}" social="{{ footerSocial }}" copyright="© 2026 Old East Indies. All rights reserved." hint-size="100%,420px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  componentDidMount() {
+    if (!window.KALMRDesignSystem_c156e5) {
+      this._t = setInterval(() => { if (window.KALMRDesignSystem_c156e5) { clearInterval(this._t); this.forceUpdate(); } }, 80);
+    }
+  }
+  componentWillUnmount() { clearInterval(this._t); }
+  renderVals() {
+    const h = React.createElement;
+    const svg = (...kids) => h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }, ...kids);
+    const search = svg(h('circle', { key: 1, cx: 11, cy: 11, r: 8 }), h('path', { key: 2, d: 'm21 21-4.3-4.3' }));
+    const bag = svg(h('path', { key: 1, d: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z' }), h('path', { key: 2, d: 'M3 6h18' }), h('path', { key: 3, d: 'M16 10a4 4 0 0 1-8 0' }));
+    const instagram = svg(h('rect', { key: 1, width: 20, height: 20, x: 2, y: 2, rx: 5, ry: 5 }), h('path', { key: 2, d: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z' }), h('line', { key: 3, x1: 17.5, x2: 17.51, y1: 6.5, y2: 6.5 }));
+    const facebook = svg(h('path', { key: 1, d: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z' }));
+    const iconBtn = (label, icon, href) => h('a', { className: 'luxury-icon-btn', href, 'aria-label': label, style: { display: 'inline-flex' } }, h('span', { className: 'luxury-icon' }, icon));
+    const lockup = (mark, name, tag, gap) => h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: gap + 'px' } },
+      mark ? h('span', { className: 'oei-mark', 'aria-hidden': 'true', style: { height: mark + 'px', width: Math.round(mark * 1.011) + 'px' } }) : null,
+      h('span', { style: { display: 'flex', flexDirection: 'column', gap: '3px' } },
+        h('span', { className: 'oei-name', style: { fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: name + 'px', lineHeight: 1.05, letterSpacing: '0.04em', whiteSpace: 'nowrap' } }, 'Old East Indies'),
+        tag ? h('span', { className: 'oei-tagline', style: { fontFamily: 'Karla, Arial, sans-serif', fontWeight: 500, fontSize: tag + 'px', lineHeight: 1.2, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' } }, tag) : null
+      )
+    );
+    return {
+      yes: true,
+      headerMark: lockup(0, 23, 0, 0),
+      footerMark: lockup(64, 30, 0, 16),
+      navLinks: [
+        { label: 'Shop', href: '#shop' },
+        { label: 'Gallery Walls', href: '#' },
+        { label: 'How We Make Them', href: '#process' },
+        { label: 'Journal', href: '#' },
+        { label: 'Partnership', href: 'Old East Indies/Partnership.dc.html' }
+      ],
+      headerActions: h('div', { style: { display: 'flex', gap: '20px', alignItems: 'center' } }, iconBtn('Search', search, '#'), iconBtn('Basket', bag, '#')),
+      footerAddress: [
+        'Bali · Indonesia',
+        { label: 'WhatsApp +62 813 1900 4269', href: 'https://api.whatsapp.com/send?phone=6281319004269' }
+      ],
+      footerColumns: [
+        { title: 'Shop', links: [{ label: 'Prints', href: '#shop' }, { label: 'Gallery walls' }, { label: 'Homeware & gifts' }, { label: 'Gift cards' }] },
+        { title: 'Company', links: [{ label: 'How we make them', href: '#process' }, { label: 'Journal' }, { label: 'Shipping & returns' }, { label: 'Antique Maps Indonesia — the originals', href: 'Home - Antique Maps Indonesia.dc.html' }] },
+        { title: 'For business', links: [{ label: 'Become a reseller', href: 'Old East Indies/Partnership.dc.html' }, { label: 'Company gifting', href: 'Old East Indies/Partnership.dc.html' }, { label: 'Hotel gifting', href: 'Old East Indies/Partnership.dc.html' }, { label: 'Partner sign in', href: 'Old East Indies/Partnership.dc.html' }] }
+      ],
+      footerSocial: [
+        { label: 'Instagram', href: '#', icon: instagram },
+        { label: 'Facebook', href: '#', icon: facebook }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

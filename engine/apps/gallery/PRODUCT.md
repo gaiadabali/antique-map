@@ -3,7 +3,7 @@
 <!-- impeccable:product-schema 1 -->
 
 Drafted from research on 2026-09-25 (docs/RESEARCH.md §1–2, docs/MIGRATION.md
-§1). Facts marked **(to confirm)** await the owner interview in Phase 1 (task 1.1).
+§1). Facts marked **(to confirm)** await the owner interview in the Design stage (task 6.1).
 This app is named for its archetype — a catalogue of one-of-one objects — and
 serves Indies Gallery through configuration.
 
@@ -71,7 +71,7 @@ continuously.
 - Honest status: "Sold", "On hold until…", "Price on request" — never invented
   urgency.
 - Stock numbers (`M.`, `P.`, `F.`) are part of the identity and shown in a mono face.
-- **The visual direction is open until Phase 1's direction round** (TASKS.md 1.4).
+- **The visual direction is open until the direction round** (TASKS.md 12.1).
   The research's "Print Room" (Newsreader / Inter Tight / IBM Plex Mono) is
   evidence and may enter as one candidate; it is also the category default that
   the round exists to test against. Nothing here pins a font or a colour.

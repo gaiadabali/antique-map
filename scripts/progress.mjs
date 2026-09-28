@@ -9,11 +9,11 @@
 //   node scripts/progress.mjs --print    print the table, change nothing
 //
 // Line shapes it understands (see "How to update this file" in TASKS.md):
-//   ## Phase 5 — Commerce core · W8–W16 · ~12d
-//   - [ ] **5.4 The reservation service** · needs: 5.1 — 🔄 W12      task, in flight
-//   - [x] **5.4 The reservation service** · needs: 5.1 — ✅ 2026-10-20 1a2b3c4
-//     - [ ] 5.4.a `reserve()` writing the scalar `targetKey` …        subtask
-//     - [ ] 5.10.a 👤 The owner opens a Midtrans sandbox account …     subtask waiting on the owner
+//   ## Phase 18 — Reservations, state machines and the cart · Commerce · needs 17 · ~2d
+//   - [ ] **18.1 The reservation service** · needs: 17.1 — 🔄 18·W1      task, in flight
+//   - [x] **18.1 The reservation service** · needs: 17.1 — ✅ 2026-10-20 1a2b3c4
+//     - [ ] 18.1.a `reserve()` writing the scalar `targetKey` …          subtask
+//     - [ ] 19.3.a 👤 The owner opens a Midtrans sandbox account …        subtask waiting on the owner
 // A task line containing ⛔ counts as blocked; one containing ✂️ (cut) is not
 // counted at all, and neither are its subtasks. Sections that are not a
 // "## Phase N" heading (the backlog, the log) are not counted.
@@ -75,12 +75,13 @@ const phases = [];
 let current = null;
 let cut = false; // subtasks under a task marked ✂️ are not counted either
 for (const line of lines) {
-  const heading = line.match(/^## (Phase [0-9]+) — (.+?)(?: · (W[0-9]+(?:–W[0-9]+)?))?(?: · (~[^·]+?))?\s*$/);
+  const heading = line.match(/^## Phase ([0-9]+) — (.+?) · ([^·]+?) · needs ([^·]+?) · (~[^·]+?)\s*$/);
   if (heading) {
     current = {
       id: heading[1],
       title: heading[2].trim(),
-      waves: heading[3] ?? "",
+      stage: heading[3].trim(),
+      needs: heading[4].trim(),
       tasks: 0,
       tasksDone: 0,
       doing: 0,
@@ -141,13 +142,13 @@ const total = phases.reduce(
 );
 
 const rows = [
-  "| Phase | Waves | Status | Tasks | Subtasks | 👤 open | Progress |",
-  "| --- | --- | --- | --- | --- | --- | --- |",
+  "| Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |",
+  "| --- | --- | --- | --- | --- | --- | --- | --- |",
   ...phases.map(
     (p) =>
-      `| **${p.id}** ${p.title} | ${p.waves || "—"} | ${status(p)} | ${p.tasksDone}/${p.tasks} | ${p.subsDone}/${p.subs} | ${p.owner} | ${bar(p.subsDone, p.subs)} |`,
+      `| **${p.id}** ${p.title} | ${p.stage} | ${p.needs} | ${status(p)} | ${p.tasksDone}/${p.tasks} | ${p.subsDone}/${p.subs} | ${p.owner} | ${bar(p.subsDone, p.subs)} |`,
   ),
-  `| **All** | W1–W26 | | **${total.tasksDone}/${total.tasks}** | **${total.subsDone}/${total.subs}** | **${total.owner}** | ${bar(total.subsDone, total.subs)} |`,
+  `| **All** | ${phases.length} phases | | | **${total.tasksDone}/${total.tasks}** | **${total.subsDone}/${total.subs}** | **${total.owner}** | ${bar(total.subsDone, total.subs)} |`,
 ];
 const table = rows.join("\n");
 

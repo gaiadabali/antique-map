@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="../support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/colors.css" />
+<link rel="stylesheet" href="../_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/typography.css" />
+<link rel="stylesheet" href="../_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/spacing.css" />
+<link rel="stylesheet" href="../_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/components/components.css" />
+<script src="../_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/_ds_bundle.js"></script>
+<script src="../image-slot.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#F4F1EA}
+html:root{
+--font-display:"Cormorant Garamond",Georgia,serif;--font-body:"Karla",Arial,sans-serif;
+--h1-size:64px;--h1-line:70px;--h2-size:44px;--h2-line:50px;--h3-size:32px;--h3-line:40px;
+--body-lg-size:20px;--body-lg-line:32px;--body-md-size:17px;--body-md-line:28px;--body-sm-size:15px;--body-sm-line:24px;--caption-size:13px;--caption-line:18px;
+--brand-color-primary:#2F3E31;--brand-color-secondary:#6E5418;--brand-color-bg:#F4F1EA;--brand-color-text-dark:#1C201C;--surface-card:#FBF9F5;
+}
+@media (max-width:768px){html:root{--h1-size:40px;--h1-line:46px;--h2-size:32px;--h2-line:38px;--h3-size:22px;--h3-line:30px;--body-lg-size:18px;--body-lg-line:28px}}
+a{color:#6E5418}
+a:hover{color:#2F3E31}
+.luxury-header__logo-img{height:54px}
+.luxury-footer__logo-img{height:80px;width:auto;align-self:flex-start;object-fit:contain}
+.seg-chip{display:inline-flex;align-items:center;justify-content:center;height:var(--button-height-md);padding-inline:var(--space-20);font-family:Karla,Arial,sans-serif;font-size:15px;font-weight:400;border:1px solid #B8A992;background-color:transparent;color:#3A403A;border-radius:0;cursor:pointer}
+.seg-chip:hover:not([aria-pressed="true"]){border-color:#2F3E31}
+.seg-chip[aria-pressed="true"]{font-weight:700;background-color:#2F3E31;border-color:#2F3E31;color:#F4F1EA}
+.seg-chip:focus-visible{outline:1px solid #6E5418;outline-offset:3px}
+/* nav + CTA form one right-hand group: 60px between the last link and the
+   button, 30px between the links themselves */
+@media (min-width:1400px){
+.luxury-header__inner{grid-template-columns:auto minmax(0,1fr) auto;column-gap:var(--space-60)}
+.luxury-header__nav{display:flex;justify-content:flex-end;width:100%;column-gap:var(--space-30)}
+}
+
+/* Horizontal nav instead of the hamburger from 960px up: brand left, nav right,
+   search + basket kept (they are the shop's primary utilities). */
+@media (min-width:960px) and (max-width:1399px){
+@media (min-width:1400px){
+.luxury-header__inner{grid-template-columns:auto minmax(0,1fr) auto;column-gap:var(--space-60)}
+.luxury-header__nav{display:flex;justify-content:flex-end;width:100%;column-gap:var(--space-30)}
+}
+.luxury-header__burger{display:none}
+.luxury-header__actions{display:flex}
+.luxury-header__link{font-size:13px}
+}
+</style>
+</helmet>
+
+<div style="font-family:Karla,Arial,sans-serif;color:#1C201C;background:#F4F1EA">
+
+<div style="background:#2F3E31;color:#F4F1EA;padding:10px var(--layout-gutter);display:flex;flex-wrap:wrap;gap:10px 40px;justify-content:space-between;align-items:center">
+<span class="type-caption" style="color:#F4F1EA;letter-spacing:0.06em">Trade &amp; gifting · Old East Indies</span>
+<a href="#signin" style="color:#D4B24A;font-size:13px;letter-spacing:0.06em;text-decoration:none">Already a partner? Sign in</a>
+</div>
+
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Header" brand="Old East Indies" logo-src="../assets/old-east-indies-mark.png" links="{{ navLinks }}" actions="{{ headerActions }}" sticky="{{ true }}" hint-size="100%,80px"></x-import>
+
+<section class="Section section-tone--paper" style="padding-block:60px">
+<div style="max-width:1340px;margin:0 auto">
+<div style="max-width:760px">
+<span class="type-eyebrow" style="display:block;color:#6E5418;margin-bottom:20px">Partnership</span>
+<h1 class="type-h1" style="margin:0;text-wrap:pretty">Buying for a shop, a hotel, or a company.</h1>
+<p class="type-body-lg" style="margin:30px 0 0;color:#3A403A;text-wrap:pretty">More than 100 shops across Indonesia already stock Old East Indies. Whatever you are buying for, every piece is printed in our own workshop from antique originals we hold.</p>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:20px;margin-top:40px">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="solid" size="md" as="a" href="#apply" hint-size="auto,40px">Start an application</x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#signin" hint-size="auto,40px">Partner sign in</x-import>
+</div>
+</div>
+</section>
+
+<div style="padding-inline:var(--layout-gutter)">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import>
+<div style="display:flex;flex-wrap:wrap;gap:20px 60px;justify-content:space-between;align-items:center;padding:30px 0;max-width:1340px;margin:0 auto">
+<span class="type-eyebrow" style="color:#3A403A">100+ shops supplied</span>
+<span class="type-eyebrow" style="color:#3A403A">Printed in our own workshop</span>
+<span class="type-eyebrow" style="color:#3A403A">300gsm cotton · archival inks</span>
+<span class="type-eyebrow" style="color:#3A403A">Shipping across Indonesia &amp; worldwide</span>
+</div>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import>
+</div>
+
+<section id="reseller" class="Section section-tone--paper" style="padding-block:60px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:60px;align-items:center;max-width:1340px;margin:0 auto">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6E5418;margin-bottom:20px">01 · Resellers</span>
+<h2 class="type-h2" style="margin:0;text-wrap:pretty">Stock Old East Indies in your shop.</h2>
+<p class="type-body-md" style="margin:20px 0 0;color:#3A403A;max-width:520px;text-wrap:pretty">For galleries, gift shops, bookshops and hotel boutiques. Once your application is approved you get a partner account with your own pricing — and reordering takes one click from your last order.</p>
+<div style="display:flex;flex-direction:column;gap:15px;margin-top:30px;max-width:520px">
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">PRICING</span><span class="type-body-md" style="color:#3A403A">Wholesale tiers, visible once you sign in</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">MINIMUM</span><span class="type-body-md" style="color:#3A403A">20 pieces per design, mixed sizes allowed</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">REORDER</span><span class="type-body-md" style="color:#3A403A">One click from your order history</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">DISPLAY</span><span class="type-body-md" style="color:#3A403A">Counter stands and signage, on request</span></div>
+</div>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#apply" hint-size="auto,40px">Apply as a reseller</x-import></div>
+</div>
+<div style="background:#1C201C;padding:4px"><div style="background:#E8E1D4;padding:30px"><div style="aspect-ratio:4/3;width:100%"><image-slot id="prt-reseller" shape="rect" placeholder="Shop display — drop a photo" style="display:block;width:100%;height:100%"></image-slot></div></div></div>
+</div>
+</section>
+
+<section id="company" class="Section section-tone--tint" style="padding-block:60px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:60px;align-items:center;max-width:1340px;margin:0 auto">
+<div style="background:#B8952B;padding:4px;order:2"><div style="background:#E8E1D4;padding:30px"><div style="aspect-ratio:4/3;width:100%"><image-slot id="prt-company" shape="rect" placeholder="Corporate gift set — drop a photo" style="display:block;width:100%;height:100%"></image-slot></div></div></div>
+<div style="order:1">
+<span class="type-eyebrow" style="display:block;color:#6E5418;margin-bottom:20px">02 · Company gifting</span>
+<h2 class="type-h2" style="margin:0;text-wrap:pretty">A gift that carries a story, not a logo.</h2>
+<p class="type-body-md" style="margin:20px 0 0;color:#3A403A;max-width:520px;text-wrap:pretty">For client gifts, anniversaries and conference welcome packs. We can print a map of the city your office sits in, add a discreet mark, and finish each piece in your own packaging.</p>
+<div style="display:flex;flex-direction:column;gap:15px;margin-top:30px;max-width:520px">
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #C9C2B2;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">CUSTOM</span><span class="type-body-md" style="color:#3A403A">Choose the map, the size, the frame and the box</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #C9C2B2;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">BRANDING</span><span class="type-body-md" style="color:#3A403A">Embossed card or engraved plate, never printed over the artwork</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #C9C2B2;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">QUANTITY</span><span class="type-body-md" style="color:#3A403A">From 25 pieces</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #C9C2B2;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">LEAD TIME</span><span class="type-body-md" style="color:#3A403A">Three to four weeks, including a sample</span></div>
+</div>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#apply" hint-size="auto,40px">Request a gifting quote</x-import></div>
+</div>
+</div>
+</section>
+
+<section id="hotel" class="Section section-tone--paper" style="padding-block:60px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:60px;align-items:center;max-width:1340px;margin:0 auto">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6E5418;margin-bottom:20px">03 · Hotels &amp; villas</span>
+<h2 class="type-h2" style="margin:0;text-wrap:pretty">Bali on the wall, not a postcard of it.</h2>
+<p class="type-body-md" style="margin:20px 0 0;color:#3A403A;max-width:520px;text-wrap:pretty">For hotels, villas and restaurants that want art with a reason to be there. Antique charts of Bali, botanical studies of local spice, and views of the islands as travellers first saw them — sized for corridors, suites and lobbies.</p>
+<div style="display:flex;flex-direction:column;gap:15px;margin-top:30px;max-width:520px">
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">THEMED</span><span class="type-body-md" style="color:#3A403A">Curated to your island, your period, your palette</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">SIZES</span><span class="type-body-md" style="color:#3A403A">Up to 120 cm, framed and ready to hang</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">REPEAT</span><span class="type-body-md" style="color:#3A403A">We hold your specification for future rooms</span></div>
+<div style="display:flex;gap:15px;align-items:baseline;border-top:1px solid #D8D2C4;padding-top:15px"><span class="type-caption" style="color:#6E5418;width:90px;flex:none;letter-spacing:0.08em">SAMPLE</span><span class="type-body-md" style="color:#3A403A">One piece sent before you commit</span></div>
+</div>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#apply" hint-size="auto,40px">Request hotel samples</x-import></div>
+</div>
+<div style="background:#2F3E31;padding:4px"><div style="background:#E8E1D4;padding:30px"><div style="aspect-ratio:4/3;width:100%"><image-slot id="prt-hotel" shape="rect" placeholder="Hotel interior — drop a photo" style="display:block;width:100%;height:100%"></image-slot></div></div></div>
+</div>
+</section>
+
+<section id="apply" class="Section section-tone--dark" style="padding-block:100px;background:#2F3E31">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:60px;align-items:start;max-width:1340px;margin:0 auto">
+<div>
+<span class="type-eyebrow" style="display:block;color:#D4B24A;margin-bottom:20px">Apply</span>
+<h2 class="type-h2" style="margin:0;color:#F4F1EA;text-wrap:pretty">One form, whichever you are.</h2>
+<p class="type-body-md" style="margin:20px 0 0;color:#C0C8BC;max-width:520px;text-wrap:pretty">Tell us what you are buying for and we will only ask what matters for that. Most applications are answered within two working days.</p>
+<div style="margin-top:40px;padding-top:30px;border-top:1px solid #4E6048">
+<p class="type-body-md" style="margin:0;color:#C0C8BC">Prefer to talk first?<br /><a href="https://api.whatsapp.com/send?phone=6281319004269" style="color:#D4B24A">WhatsApp +62 813 1900 4269</a></p>
+</div>
+</div>
+
+<div style="background:#F4F1EA;padding:40px;max-width:620px">
+<span class="type-eyebrow" style="display:block;color:#6E5418;margin-bottom:20px">What are you buying for?</span>
+<div style="display:flex;flex-wrap:wrap;gap:10px" role="group" aria-label="What are you buying for?">
+<button type="button" class="seg-chip" aria-pressed="{{ onReseller }}" onClick="{{ pickReseller }}">A shop</button>
+<button type="button" class="seg-chip" aria-pressed="{{ onCompany }}" onClick="{{ pickCompany }}">A company</button>
+<button type="button" class="seg-chip" aria-pressed="{{ onHotel }}" onClick="{{ pickHotel }}">A hotel or villa</button>
+</div>
+
+<div style="margin-top:30px;display:flex;flex-direction:column;gap:10px">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Your name" hint-size="100%,72px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Email address" type="email" hint-size="100%,72px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="{{ fieldOrgLabel }}" hint-size="100%,72px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="{{ fieldScaleLabel }}" hint-size="100%,72px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="{{ fieldContextLabel }}" hint-size="100%,72px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Anything else? (optional)" hint-size="100%,72px"></x-import>
+</div>
+
+<div style="margin-top:30px;display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="solid" size="md" hint-size="auto,40px">{{ submitLabel }}</x-import>
+<span class="type-caption" style="color:#5C6659">{{ replyNote }}</span>
+</div>
+<p class="type-caption" style="margin:20px 0 0;color:#6E5418">We will only write back about this application — never anything more.</p>
+</div>
+</div>
+</section>
+
+<section id="signin" class="Section section-tone--paper" style="padding-block:60px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:60px;align-items:center;max-width:1340px;margin:0 auto">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6E5418;margin-bottom:20px">Already a partner</span>
+<h2 class="type-h2" style="margin:0;text-wrap:pretty">Sign in to your prices.</h2>
+<p class="type-body-md" style="margin:20px 0 0;color:#3A403A;max-width:520px;text-wrap:pretty">Your wholesale pricing, order history and one-click reorder live behind this door. Only approved reseller accounts have one.</p>
+</div>
+<div style="border:1px solid #C9C2B2;background:#FBF9F5;padding:40px;max-width:520px">
+<div style="display:flex;flex-direction:column;gap:10px">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Email address" type="email" hint-size="100%,72px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Password" type="password" hint-size="100%,72px"></x-import>
+</div>
+<div style="margin-top:30px;display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="solid" size="md" hint-size="auto,40px">Sign in</x-import>
+<a href="#" class="type-body-sm">Forgotten your password?</a>
+</div>
+</div>
+</div>
+</section>
+
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Footer" brand="Old East Indies" logo-src="../assets/old-east-indies-mark.png" address="{{ footerAddress }}" columns="{{ footerColumns }}" social="{{ footerSocial }}" hint-size="100%,420px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { segment: 'reseller' };
+  componentDidMount() {
+    if (!window.KALMRDesignSystem_c156e5) {
+      this._t = setInterval(() => { if (window.KALMRDesignSystem_c156e5) { clearInterval(this._t); this.forceUpdate(); } }, 80);
+    }
+  }
+  componentWillUnmount() { clearInterval(this._t); }
+  renderVals() {
+    const h = React.createElement;
+    const seg = this.state.segment;
+    const copy = {
+      reseller: {
+        org: 'Shop name',
+        scale: 'How many outlets?',
+        context: 'What do your customers buy most?',
+        submit: 'Apply as a reseller',
+        reply: 'Approved in about two working days'
+      },
+      company: {
+        org: 'Company name',
+        scale: 'How many pieces? (from 25)',
+        context: 'What is the occasion, and when do you need them?',
+        submit: 'Request a quote',
+        reply: 'Quote and sample within two working days'
+      },
+      hotel: {
+        org: 'Hotel or villa name',
+        scale: 'How many rooms or walls?',
+        context: 'Which island or theme suits the property?',
+        submit: 'Request samples',
+        reply: 'A sample piece sent before you commit'
+      }
+    }[seg];
+    const svg = (...kids) => h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }, ...kids);
+    const search = svg(h('circle', { key: 1, cx: 11, cy: 11, r: 8 }), h('path', { key: 2, d: 'm21 21-4.3-4.3' }));
+    const bag = svg(h('path', { key: 1, d: 'M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z' }), h('path', { key: 2, d: 'M3 6h18' }), h('path', { key: 3, d: 'M16 10a4 4 0 0 1-8 0' }));
+    const instagram = svg(h('rect', { key: 1, width: 20, height: 20, x: 2, y: 2, rx: 5, ry: 5 }), h('path', { key: 2, d: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z' }), h('line', { key: 3, x1: 17.5, x2: 17.51, y1: 6.5, y2: 6.5 }));
+    const facebook = svg(h('path', { key: 1, d: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z' }));
+    const iconBtn = (label, icon, href) => h('a', { className: 'luxury-icon-btn', href, 'aria-label': label, style: { display: 'inline-flex' } }, h('span', { className: 'luxury-icon' }, icon));
+    return {
+      pickReseller: () => this.setState({ segment: 'reseller' }),
+      pickCompany: () => this.setState({ segment: 'company' }),
+      pickHotel: () => this.setState({ segment: 'hotel' }),
+      onReseller: seg === 'reseller' ? 'true' : 'false',
+      onCompany: seg === 'company' ? 'true' : 'false',
+      onHotel: seg === 'hotel' ? 'true' : 'false',
+      fieldOrgLabel: copy.org,
+      fieldScaleLabel: copy.scale,
+      fieldContextLabel: copy.context,
+      submitLabel: copy.submit,
+      replyNote: copy.reply,
+      navLinks: [
+        { label: 'Shop', href: '../Home - Old East Indies.dc.html#shop' },
+        { label: 'Gallery Walls', href: '../Home - Old East Indies.dc.html' },
+        { label: 'How We Make Them', href: '../Home - Old East Indies.dc.html#process' },
+        { label: 'Journal', href: '#' },
+        { label: 'Partnership', href: '#', current: true }
+      ],
+      headerActions: h('div', { style: { display: 'flex', gap: '20px', alignItems: 'center' } }, iconBtn('Search', search, '#'), iconBtn('Basket', bag, '#')),
+      footerAddress: [
+        'Bali · Indonesia',
+        { label: 'WhatsApp +62 813 1900 4269', href: 'https://api.whatsapp.com/send?phone=6281319004269' }
+      ],
+      footerColumns: [
+        { title: 'Shop', links: [{ label: 'Prints', href: '../Home - Old East Indies.dc.html#shop' }, { label: 'Gallery walls' }, { label: 'Homeware & gifts' }, { label: 'Gift cards' }] },
+        { title: 'Company', links: [{ label: 'How we make them', href: '../Home - Old East Indies.dc.html#process' }, { label: 'Journal' }, { label: 'Shipping & returns' }, { label: 'Antique Maps Indonesia — the originals', href: '../Home - Antique Maps Indonesia.dc.html' }] },
+        { title: 'For business', links: [{ label: 'Become a reseller', href: '#reseller' }, { label: 'Company gifting', href: '#company' }, { label: 'Hotel gifting', href: '#hotel' }, { label: 'Partner sign in', href: '#signin' }] }
+      ],
+      footerSocial: [
+        { label: 'Instagram', href: '#', icon: instagram },
+        { label: 'Facebook', href: '#', icon: facebook }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

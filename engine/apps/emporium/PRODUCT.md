@@ -3,7 +3,7 @@
 <!-- impeccable:product-schema 1 -->
 
 Drafted from research on 2026-09-25 (docs/RESEARCH.md §3). Facts marked
-**(to confirm)** await the owner interview in Phase 1 (task 1.1). This app is
+**(to confirm)** await the owner interview in the Design stage (task 6.1). This app is
 named for its archetype — a shop of variant merchandise — and serves Old East
 Indies through configuration.
 
@@ -65,7 +65,7 @@ created in bursts from archive works in the admin.
 - Celebrate cartography and the archipelago — **not the VOC**; no VOC logo, no
   colonial nostalgia as a voice.
 - Warm, sunlit, giftable; WhatsApp is always one tap away.
-- **The visual direction is open until Phase 1's direction round** (TASKS.md 1.5),
+- **The visual direction is open until the direction round** (TASKS.md 12.2),
   which includes a cultural review by Indonesian designers and buyers. The
   research's "Hotel Bali 1928" (Limelight / Jost) is evidence and may enter as one
   candidate — it is also the stock look of vintage-poster print shops and sits

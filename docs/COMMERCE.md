@@ -310,7 +310,7 @@ zero-rated), `SG-GST` (9% when registered; exports zero-rated with evidence),
 or `none`. Price lists declare whether they include tax; the tax step produces
 tax lines and the order stores rate, base and amount per line. Tax invoices
 (e-Faktur/Coretax) are **exported for the accountant in v1**, not filed by the
-engine (the tax export is TASKS.md 5.16). Tax rules are data with an effective
+engine (the tax export is TASKS.md 20.5). Tax rules are data with an effective
 date, because they change.
 
 ## 10. Discounts, gift cards, bundles, gift wrap
@@ -335,7 +335,7 @@ date, because they change.
 Policy text per seller comes from counsel — Indonesian law does not allow "all
 sales final" (COMPLIANCE.md §6). The gallery's research default: 14-day returns,
 a lifetime authenticity guarantee, and the Parry certificate. The engine
-supports — as a domain of its own (TASKS.md 5.15), not only admin screens — a
+supports — as a domain of its own (TASKS.md 20.4), not only admin screens — a
 buyer's return request per order line with reason and photos (from the account or
 the order lookup), staff approval, return shipping instructions, inspection,
 restock (location) or write-off, the reservation's `converted → reversed` for a

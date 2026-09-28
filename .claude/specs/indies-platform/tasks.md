@@ -2,7 +2,8 @@
 
 The task list lives in one place: **[`TASKS.md`](../../../TASKS.md)** at the repo
 root. It is the progress board — every phase, task and subtask (each task ending
-in a **Check**), the dispatch plan W1–W26, what is in flight now, the owner's
+in a **Check**), the stages and the running order of the phases (each with its own
+waves), what is in flight now, the owner's
 decisions, and a log — with a progress table rebuilt from its checkboxes by
 `node scripts/progress.mjs`.
 

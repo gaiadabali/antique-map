@@ -3,7 +3,7 @@
 How two storefronts that must feel nothing alike share one engine without
 sharing a look. This is the **mechanism**. Each look's aesthetic brief lives with
 its storefront app — `engine/apps/gallery/DESIGN.md` and
-`engine/apps/emporium/DESIGN.md`, written in Phase 1 after the owner picks a
+`engine/apps/emporium/DESIGN.md`, written in the Design stage after the owner picks a
 direction — and the behaviour of each site is in EXPERIENCE-GALLERY.md and
 EXPERIENCE-SHOP.md.
 
@@ -86,11 +86,11 @@ scanned by the same phone, so the page offers **save QR to gallery** and e-walle
 deep links. Failed, expired and cancelled-redirect payments retry with another
 method **without losing the bag**.
 
-**Every surface is designed before it is built.** Phase 1 comps the two signature
+**Every surface is designed before it is built.** The Design stage comps the two signature
 surfaces at full fidelity; every other surface gets an impeccable **surface
 brief** (`shape`) with its mode — the item page is *Experience*; browse, checkout
 and the admin are *Operate*; stories and trust pages are *Read*; the shop's home
-and For Business are *Persuade* — before an agent writes its route (TASKS.md 3.9).
+and For Business are *Persuade* — before an agent writes its route (TASKS.md 22.3).
 
 The **shell** (header, navigation, footer, announcement bar, consent banner,
 the locale switcher, the **ship-to selector** — which decides the currency; there
@@ -142,7 +142,7 @@ null), error, JavaScript off, long content (Dutch titles, a 300-character Latin
 transcription, text expanded 30% for the future Dutch locale), extreme values
 (`Rp 1.250.000.000` in a price line), and a phone-width image at aspects 0.3, 1
 and 3.5 (tall costume prints to coastal profiles). The `/style-guide` has a
-state switcher (TASKS.md 3.8).
+state switcher (TASKS.md 11.4).
 
 **`ItemVM.purchase` is viewer-relative.** Besides the item's own status it carries
 the viewer's relation to it — *held for me*, *in my checkout*, *my offer is
@@ -196,7 +196,7 @@ product; a dark theme would misrepresent every sheet's tone. No agent adds
 `prefers-color-scheme` styles to either storefront. Two exceptions: the viewer's
 full-screen lightbox is a dark surface rung (so the sheet reads against it), and
 the admin either tokenises Payload's dark theme to AA or disables its toggle —
-decided in Phase 1 (TASKS.md 1.10). Emails are designed to survive dark-mode mail
+decided in the Design stage (TASKS.md 13.3). Emails are designed to survive dark-mode mail
 clients that invert colours.
 
 ## 5. Content blocks (C4) — the frozen list
@@ -236,7 +236,7 @@ Each app serves `/style-guide` (noindex, deployed, because design review happens
 on real phones — not `/_gallery`: an underscore folder is private in the App
 Router and would not route): every component, every surface, every block and
 every state, rendered from fixtures, with a picker for brand token overrides, a
-toggle for each module and a state switcher. It is where Phase 3 is reviewed and
+toggle for each module and a state switcher. It is where the Design systems stage is reviewed and
 where visual tests take their snapshots.
 
 ## 7. Budgets — enforced in CI
@@ -251,7 +251,7 @@ where visual tests take their snapshots.
 **Reference devices, named:** a Samsung Galaxy A15 or Redmi Note-class Android
 for the phone budgets, Lighthouse's mobile throttling for CI, and a real-device
 check on Telkomsel 4G in Bali before each storefront phase closes — not only in
-Phase 13.
+the Launch stage.
 
 **The configurator is content, not an enhancement.** On the shop's product page
 the options *are* the page: they are server-rendered as real radio groups inside
@@ -346,7 +346,7 @@ touch), `lang` set per locale. Specific to commerce:
 Photography decides perceived quality more than any component. Each app's
 DESIGN.md carries its **image treatment** — box behaviour for extreme aspects
 (contain on a mat, never crop a sheet), mat tone against toned paper, the contact
-shadow, black-and-white and albumen photographs — and Phase 1 produces **capture
+shadow, black-and-white and albumen photographs — and the Design stage produces **capture
 standards** per brand: lighting and colour temperature, a colour target in every
 frame, the raking-light angle, minimum ppi, backgrounds, and the split between the
 brands (the gallery: studio, object, raking light, no people; the shop: sun,

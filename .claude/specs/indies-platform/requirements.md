@@ -220,7 +220,7 @@ while their data and identities stay apart.
 #### Acceptance Criteria
 
 1. Customers SHALL be a separate authentication collection from staff users.
-2. Customers SHALL manage orders with their documents, wishlist, want-lists, addresses, profile and consents, AND request data export or deletion.
+2. Gallery customers SHALL manage orders with their documents, wishlist, want-lists, addresses, profile and consents, AND request data export or deletion. Old East Indies SHALL offer shoppers guest checkout only, with accounts for approved retailers alone — applied for from a Partnership page, approved by staff, holding orders, quotes, documents and the trade terms (D31, 2026-09-28).
 3. WHEN a newly published item matches a want-list THEN the system SHALL notify its owner within 15 minutes or in a daily digest, per their choice.
 4. Newsletter sign-ups SHALL use double opt-in AND the gallery's digest SHALL be generated from inventory published since the previous issue.
 5. The system SHALL send transactional email and WhatsApp deep links for every order, offer, hold and enquiry event.

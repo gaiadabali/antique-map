@@ -219,7 +219,7 @@ rules you may remember:
   editorial tags use `revalidateTag(tag, 'max')` (stale-while-revalidate);
   **availability and price tags expire immediately** (`{ expire: 0 }`), because a
   sold map must never be served as available from cache.
-- If the Phase 0 spike (TASKS.md 0.8) fails, the documented fallback in
+- If the Cache Components spike (TASKS.md 4.1) fails, the documented fallback in
   ARCHITECTURE.md §9 replaces this list — not a mixture of both.
 
 ## 13. Secrets

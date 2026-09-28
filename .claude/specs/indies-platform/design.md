@@ -47,12 +47,12 @@ disagree, the doc wins and this digest is corrected.**
 8. Postgres search with a gazetteer — historical names are the discovery edge.
 9. The default locale unprefixed — the gallery's product URLs stay byte-identical.
 10. Nothing is designed by default in code — two signature surfaces are comped in
-    Phase 1, every other surface gets a brief before it is built, every surface has
+    the Design stage, every other surface gets a brief before it is built, every surface has
     state fixtures, and every UI phase closes with a design gate and real buyers.
 11. No dark mode on the storefronts — paper on a warm mat is the product.
 12. Webhooks are deduplicated **inside** the transaction that applies them —
     because a dedupe row committed before a crash would swallow the retry.
-13. Next 16 Cache Components, proven by a Phase 0 spike with one documented
+13. Next 16 Cache Components, proven by a spike in phase 4 with one documented
     fallback — content cached by tag, availability and the ship-to market
     streamed at request time, availability tags expired immediately.
 14. Public reads are published-only and projected (`overrideAccess: false`,
@@ -434,7 +434,7 @@ flowchart LR
 | **Access** | a draft and a private field (`physical`, acquisition cost, consignor) requested through every loader and the sister API come back as neither | e2e + `verify-*` scripts |
 | **Component** | primitives, viewer, configurator: interaction states, keyboard paths, reduced motion, price/preview agreement | package tests |
 | **E2E (Playwright)** | per brand and for `test`, desktop + mobile, on a **production build**: browse → item → buy; offer → accept → pay; hold → expire; CMS publish → live; legacy URL → 301 | `tests/e2e/**` |
-| **Accessibility** | axe on every surface; manual screen reader and 200% zoom on checkout in Phase 13 | e2e + audit |
+| **Accessibility** | axe on every surface; manual screen reader and 200% zoom on checkout in the Launch stage | e2e + audit |
 | **Performance** | Lighthouse CI budgets per surface; field Web Vitals in the dashboard | CI + analytics |
 | **Visual** | each app's `/style-guide` at three breakpoints | CI snapshots |
 | **Migration** | a fixture per dirty-data case; every legacy URL requested against the new site on staging | `tests/migration/**` |

@@ -74,7 +74,7 @@ admin branding, and `admin.hidden` / access by module flag. Locales are the
 **superset** (`en`, `id`, `nl`) in every database, with each brand's own locales
 enforced by routing; the S3 storage plugin runs with `alwaysInsertFields: true`.
 CI regenerates the migration snapshot and the import map **with `BRAND` unset**
-and fails on any diff (TASKS.md 0.3.g).
+and fails on any diff (TASKS.md 2.2.g).
 
 ## 3. Stack — and why these pins
 
@@ -231,7 +231,7 @@ a manual showroom sale — reserves through **one service**,
 Concurrency tests — fifty parallel checkouts on one item → exactly one order; a
 sold item → conflict; an expired-unswept lock → the next buyer succeeds; one
 webhook delivered twice → one payment; the index survives a dev push — are part
-of Phase 5's "Done when".
+of the Commerce stage's gate (TASKS.md 21.2).
 
 ## 7. Media, deep zoom and print files
 
@@ -319,12 +319,12 @@ its rules require — checked against the 16.3 docs:
   one `invalidate(tags)` helper, which posts to an internal revalidate route
   (`REVALIDATE_SECRET`).
 - **The admin lives under the same flag** — Payload's Cache Components support is
-  still "initial" (≥ 3.81) — so **Phase 0 proves it** (TASKS.md 0.8): a production
+  still "initial" (≥ 3.81) — so **phase 4 proves it** (TASKS.md 4.1): a production
   build with the admin mounted and no database, brand or secrets, then one
   gallery build serving the `test` brand and Indies Gallery with different
   mastheads. **Fallback if the spike fails:** Cache Components off, request-time
   rendering throughout (KOI's model), with content caching through
-  `unstable_cache`-style tagged helpers — decided once, in Phase 0, never mixed.
+  `unstable_cache`-style tagged helpers — decided once, in phase 4, never mixed.
 - **Currency follows the ship-to destination, never the IP or the language.** One
   `shipTo` cookie (defaulted from Cloudflare's `CF-IPCountry`, changed by the
   ship-to selector) plus the routed seller decide the market; a display currency

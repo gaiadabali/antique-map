@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/fonts.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/colors.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/typography.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/spacing.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/components/components.css" />
+<script src="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/_ds_bundle.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#F4F1EA}
+a{color:#6E5A43}
+a:hover{color:#1A1916}
+</style>
+</helmet>
+
+<div style="font-family:Inter,system-ui,sans-serif;color:#1A1916;background:#F4F1EA;min-height:100vh;display:flex;flex-direction:column">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Header" brand="Kingdoms of Indonesia" links="{{ navLinks }}" hint-size="100%,80px"></x-import>
+<section class="Section section-tone--paper" style="flex:1;display:flex;align-items:center">
+<div style="max-width:720px;margin:0 auto">
+<span class="type-eyebrow" style="display:block;color:#6E5A43;margin-bottom:30px">Status · 11 September 2026</span>
+<h1 class="type-h1" style="margin:0;text-wrap:pretty">Awaiting the brief.</h1>
+<p class="type-body-lg" style="margin:30px 0 0;color:#3A3835;text-wrap:pretty">Kingdoms of Indonesia is planned as a digital encyclopedia. It is not a sibling of Antique Maps Indonesia or Old East Indies — no shared look and feel, no cross-links. Only the client is the same.</p>
+<p class="type-body-md" style="margin:20px 0 0;color:#3A3835;text-wrap:pretty">This page is a placeholder. It carries the design system's defaults untouched, and will be replaced once the brief arrives.</p>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  renderVals() {
+    return { navLinks: [{ label: 'Home', href: '#', current: true }] };
+  }
+}
+</script>
+</body>
+</html>

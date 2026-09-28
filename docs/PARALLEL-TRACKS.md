@@ -49,12 +49,12 @@ reason to reach for it. **SCH asks; it does not edit.**
 
 ### A directory can hold several agents' work — ownership follows the subdirectory
 
-Phases 6 and 7 put three or four agents inside one app at once. Ownership is by
+The Shop and Gallery stages put three or four agents inside one app at once. Ownership is by
 **subdirectory**, declared in the task before the agent starts:
 
 ```
 engine/apps/gallery/
-  src/styles/  src/components/  src/app/(site)/[locale]/layout.tsx  ← app lead (Phase 3); later: ask the lead
+  src/styles/  src/components/  src/app/(site)/[locale]/layout.tsx  ← app lead (phase 22); later: ask the lead
   src/surfaces/{home,browse,search}/        + their route folders   ← browse agent
   src/surfaces/{item,maker,place}/          + their route folders   ← item agent
   src/surfaces/{story,collection,catalogue,page,form}/ + routes     ← editorial agent
@@ -151,7 +151,7 @@ in its task; SCH writes it.
 
 ## 4. The contracts to freeze before any parallel work
 
-Half a day of agreement in Phase 0; weeks of rework avoided. Each is **one module**
+Half a day of agreement in phase 1; weeks of rework avoided. Each is **one module**
 (it may span files, re-exported from one entry point), marked `@contract` at the
 top of each file, owned by ARC. Changing one after freeze is a versioned change
 announced to every lane that consumes it.
@@ -179,24 +179,26 @@ app component changes (KOI DESIGN-SYSTEM.md §3, proven on a whole site).
 
 ## 5. Dispatch and report
 
-The orchestrator (the main session) runs the plan as **waves**: every task in a
-wave has its dependencies done and owns disjoint paths. Inside a phase, tasks
-carry letters (A, B, C…) ordered by dependency — a task never shares a letter
-with a task it depends on — and the **dispatch plan** at the top of `TASKS.md`
-(W1–W26) is the schedule across phases, verified the same way. Before
-dispatching a wave the orchestrator runs `pnpm tasks:lint` (TASKS.md 0.3.f),
-which fails on a duplicate id, a dependency that is not done, or two tasks in
-the wave whose **Owns** paths overlap.
+The orchestrator (the main session) runs the plan as **phases**, and each phase
+as **waves**. A phase opens when every phase its heading needs is done, with at
+most three open at once (§6). Its waves — W1, W2, at most W3 — are local to it
+and run in order: every task in a wave has its dependencies done and owns paths
+no other task in that wave owns, and a task never shares a wave with a task it
+depends on. There is no wave calendar across phases; outside its phase a wave is
+written `17·W2`. Before dispatching a wave the orchestrator runs
+`pnpm tasks:lint --phase <n> --wave <k>` (TASKS.md 2.2.f), which fails on a
+duplicate id, a dependency that is not done, a phase opened before its needs, or
+two tasks in the wave whose **Owns** paths overlap.
 
 Each agent receives: the task id, its lane and owned paths, the docs to read
 (always `design.md`, `CONVENTIONS.md`, this file, plus the task's references),
 its subtasks and its **Check**. Each agent returns **one report**:
 
 ```
-Task:        6.3 The item page
+Task:        33.3 The item page
 Status:      done | blocked | partial
-Subtasks:    ✅ 6.3.a — evidence (test name / command / screenshot path)
-             ❌ 6.3.c — what is missing and why
+Subtasks:    ✅ 33.3.a — evidence (test name / command / screenshot path)
+             ❌ 33.3.c — what is missing and why
 Check:       ✅ clause 1 — evidence
              ❌ clause 2 — what is missing and why
 Files:       every path changed
@@ -220,9 +222,9 @@ floor and the money rules quietly stop being observed (KOI). So:
 - Every wave has a named reviewer per lane family: senior-be reviews DOM/PAY/LOG,
   senior-fe reviews WEB and both apps, senior-uiux reviews the apps and ADM for
   craft, senior-db reviews every migration.
-- If review capacity is one person, run **three lanes, not six**. The plan's
-  waves are ceilings, not quotas.
-- QA's gate is per wave, not per project. A defect found a phase later costs
+- If review capacity is one person, run **three lanes, not six**, and one or two
+  phases open rather than three. The plan's waves are ceilings, not quotas.
+- QA's gate is per wave and per phase, not per project. A defect found a phase later costs
   the phase it was found in.
 
 ## 7. Gates that need a human
@@ -232,18 +234,19 @@ letting them block silently. They are marked **👤 owner** in `TASKS.md`:
 
 - booking the photographer and the pilot shoot, the native Indonesian copywriter,
   the Indonesian designers for the cultural review, and the buyers for the
-  prototype test and usability runs (Phases 1, 6, 7),
-- picking a design direction per brand, as a pair (Phase 1), and signing off the
-  screenshot set at every design gate (Phases 3, 6, 7, 8, 13),
-- being observed at work for the admin's contextual inquiry (Phase 8),
-- the curator's category → facet mapping review (Phase 11),
+  prototype test and usability runs (the Design, Gallery and Shop stages),
+- picking the shared base and each brand's accents (phase 13), and signing off the
+  screenshot set at every design gate (the Design, Design systems, Gallery, Shop,
+  Admin and Launch stages),
+- being observed at work for the admin's contextual inquiry (23.1),
+- the curator's category → facet mapping review (36.1),
 - the **item register** — stock location and export status for every original,
-  which the old site does not hold (Phase 11; MIGRATION.md §4), and the go-ahead
-  for the gallery's dark production import before the shop launches (Phase 11),
+  which the old site does not hold (36.3; MIGRATION.md §4), and the go-ahead
+  for the gallery's dark production import before the shop launches (42.7),
 - legal entity, tax registration, gateway merchant accounts and sandbox keys
-  (Phase 5/9),
-- domains, DNS and Helios writes (Phase 0/13) — **Helios changes need the
+  (the Commerce and Integrations stages),
+- domains, DNS and Helios writes (phases 5, 41–43) — **Helios changes need the
   owner's explicit go-ahead every time** (KOI memory),
-- the timed cataloguing test with a real cataloguer (Phase 8),
+- the timed cataloguing test with a real cataloguer (38.2),
 - the breach-response contacts and the data-protection officer decision
-  (Phase 13).
+  (42.3).

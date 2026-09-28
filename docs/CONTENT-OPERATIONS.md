@@ -51,7 +51,7 @@ A cataloguer works from the object in hand, one drawer at a time.
 Batches of files named by stock number (`M.1044-recto.tif`, `M.1044-verso.tif`)
 are dropped onto the bulk uploader, matched to works, tagged by role, captioned
 inline, and queued for derivatives and IIIF tiles with visible status. The
-capture standards (Phase 1, TASKS.md 1.2) say what to shoot for which object
+capture standards (the Design stage, TASKS.md 6.2) say what to shoot for which object
 type, and how.
 
 ### Making merchandise from a work
@@ -61,7 +61,7 @@ design with the **print ceiling** shown, picks product types (giclée, poster,
 postcard set, tote), previews the generated variants — only those the scan's
 resolution and the product type's constraints allow — sees prices from the
 tables, and creates drafts with room mockups. Target: **a twelve-variant print
-product in under five minutes** (Phase 8's done-criterion).
+product in under five minutes** (the Admin stage's done-criterion, TASKS.md 38.2).
 
 ### Answering buyers
 
@@ -113,7 +113,7 @@ is allowed and shown as `machine` until an editor marks it `reviewed`
 
 ## 6. What the owner's team is trained on
 
-Phase 13 ends with a training session and two manuals written for
+The Launch stage ends with a training session and two manuals written for
 non-developers: `manual/cms-guide.md` (cataloguing, uploading, the merch wizard,
 the desk, orders, offers, holds, refunds, returns, newsletters) and
 `manual/user-guide.md` (what buyers see, for staff answering them). The

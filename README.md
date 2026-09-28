@@ -29,7 +29,7 @@ cities", applied to commerce; the build discipline is Kingdom of Indonesia's.
 | -------- | --- |
 | [docs/PLAN.md](docs/PLAN.md) | The build plan — phases, milestones, what ships when, open decisions |
 | [docs/PARALLEL-TRACKS.md](docs/PARALLEL-TRACKS.md) | Lanes, file ownership, frozen contracts, rules for running agents in parallel |
-| [TASKS.md](TASKS.md) | **The progress board and the task list** — a progress table rebuilt from its checkboxes (`node scripts/progress.mjs`), the running order, the 26-wave dispatch plan, the owner's decisions, then phases → tasks → subtasks, each task ending in a Check |
+| [TASKS.md](TASKS.md) | **The progress board and the task list** — a progress table rebuilt from its checkboxes (`node scripts/progress.mjs`), the stages and the running order of 44 small phases (each with its own waves), the owner's decisions, then phases → tasks → subtasks, each task ending in a Check |
 | [.claude/specs/indies-platform/requirements.md](.claude/specs/indies-platform/requirements.md) | Numbered requirements every task traces to |
 | [.claude/specs/indies-platform/design.md](.claude/specs/indies-platform/design.md) | The design summary the implementation agents read first |
 | [.claude/specs/indies-platform/DISPATCH.md](.claude/specs/indies-platform/DISPATCH.md) | The orchestrator's per-wave checklist and the prompt each agent receives |
@@ -49,7 +49,7 @@ cities", applied to commerce; the build discipline is Kingdom of Indonesia's.
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Environments, releases, migrations, backups |
 | [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Code standards, the two brand rules, file-size rule, git worktrees |
 
-## Quick start _(after Phase 0 lands)_
+## Quick start _(after the Foundation stage, phases 1–5, lands)_
 
 ```bash
 pnpm install

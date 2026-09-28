@@ -2,7 +2,7 @@
 
 How the gallery site behaves. Written so a designer and a developer read the
 same thing (KOI). The research behind every decision is in RESEARCH.md §1–2;
-the visual world is chosen in Phase 1 and recorded in
+the visual world is chosen in the Design stage and recorded in
 `engine/apps/gallery/DESIGN.md`.
 
 **Feeling to aim for:** a Dutch Golden Age print room re-hung as a modern museum
@@ -15,10 +15,12 @@ Room" (Newsreader or DTL Elzevir, Inter Tight, IBM Plex Mono; paper `#F4EFE6`,
 laid `#E9E1D3`, ink `#1E1B16`, iron-gall `#4A3F35`, verdigris `#3F6B63`, madder
 `#8E3B2E`, gilt `#B08D57`), "Spice Route" (Fraunces + Manrope) and "Chart Table"
 (Spectral + IBM Plex). Those are also what a premium dealer site already looks
-like — the category default. Phase 1 therefore runs impeccable's full direction
+like — the category default. The Design stage therefore runs impeccable's full direction
 round (seven candidates from the collectors' own world, a concept-seed roll,
-challengers, a pick and a canon card — TASKS.md 1.4), in which **each research
+challengers, a pick and a canon card — TASKS.md 12.1), in which **each research
 direction may enter as at most one candidate**. Nothing above binds the outcome.
+
+**Decided 2026-09-28 (D9's shape, TASKS.md):** both sites share **one base system** — layout, components, buttons and type, **Cormorant Garamond + Karla** (the client asked to keep them) — and differ only in **accents**: palette and signature details, inside the token contract's overridable subset. The references are Etalage and Everart, mixed, not copied; the owner's draft (`docs/design/input/claude-design-2026-09/`) is the lead candidate. The research directions below are background, not candidates.
 
 ---
 
@@ -124,7 +126,7 @@ a desktop (media left, the record and the purchase panel right, sticky).
   map of the island"). Under it the **original title** in italic transcription.
   Most migrated items will not have a hook title on day one, so the **fallback is
   designed**, not accidental: the original title becomes the H1 and the maker line
-  is promoted. A content sprint writes hook titles for the top 500 (TASKS.md 11.10).
+  is promoted. A content sprint writes hook titles for the top 500 (TASKS.md 43.7).
 - Maker line: `VALENTIJN, François (1666–1727)` with the engraver and publisher
   roles; certainty shown ("attributed to", "after").
 - Stock number in the mono face (`M.0500`) — also the WhatsApp reference.
@@ -151,7 +153,7 @@ Parry numbers first) · provenance · stock number.
 to the item** (DESIGN-SYSTEM.md §3): a state matrix of tier × status (available ·
 held by someone else · held for me · in my checkout · my offer pending · sold ·
 sold with price realised) × export status × ship-to × signed in, designed before
-it is built (TASKS.md 6.4.a). It reserves its height and reads "Checking
+it is built (TASKS.md 34.1.a). It reserves its height and reads "Checking
 availability…" until availability resolves — no purchase control before then.
 Request price answers **in place**: after an email or WhatsApp field, the price
 appears on the page and the lead is logged; items marked sensitive say "A

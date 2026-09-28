@@ -1,18 +1,18 @@
 # Build plan
 
-Fourteen phases to launch, one backlog phase after it. Each phase ends in
-something you can open and judge — no phase is purely internal (KOI). Durations
-are focused-developer days, as sequencing guidance, not a contract; with lanes
+Fourteen stages to launch — forty-four small phases — and a v2 backlog after
+them. Each phase ends in something you can open and judge — no phase is purely
+internal (KOI) — and each stage ends in a gate. Durations are focused-developer days, as sequencing guidance, not a contract; with lanes
 running in parallel the calendar is roughly **12 weeks to the shop's launch and
 14–15 weeks to the gallery's cutover**, provided the owner decisions, the pilot
 photo shoot, the item register and the buyer sessions below arrive on time. (An
 earlier estimate said 10–12 weeks to both; the architecture review added the
 money-safety work — the outbox, the in-transaction webhook pipeline, returns,
-the tax export — the Phase 0 spike and the gallery's dark import, and the
+the tax export — the Cache Components spike and the gallery's dark import, and the
 schedule was re-derived from real dependencies.)
 
-The executable version of this plan — every task, subtask, lane, agent type and
-dependency — is **[`TASKS.md`](../TASKS.md)** — the progress board at the repo root.
+The executable version of this plan — every phase, task, subtask, lane, agent
+type and dependency — is **[`TASKS.md`](../TASKS.md)** — the progress board at the repo root.
 How lanes run side by side without colliding is
 **[PARALLEL-TRACKS.md](PARALLEL-TRACKS.md)** — read it before dispatching a
 second agent.
@@ -24,7 +24,7 @@ Payload, no ecommerce plugin at runtime · sellers of record as data · the ship
 destination decides the currency, and Indonesian delivery shows rupiah alone ·
 one `reserve()` service guarded by a partial unique index · webhooks deduped
 inside the transaction that applies them · Next 16 Cache Components, proven by a
-Phase 0 spike with a documented fallback · static IIIF tiles on object storage ·
+spike in phase 4 with a documented fallback · static IIIF tiles on object storage ·
 Postgres search with a gazetteer · Helios via the GDA pull pipeline, one artifact
 with a subdir per brand · English + Indonesian, the default locale unprefixed ·
 the existing gallery product URLs preserved byte-for-byte · no dark mode on the
@@ -34,14 +34,14 @@ storefronts · a design gate on every UI phase.
 
 ## Milestones
 
-| | Milestone | After phase |
+| | Milestone | Closed by phase |
 | - | --------- | ----------- |
-| **M0** | Both brand shells live on staging (`ig.gaiada.com`, `oei.gaiada.com`), admin logs in on both | 0 |
-| **M1** | A direction picked per brand; both style guides on staging | 1 + 3 |
-| **M2** | Catalogue, deep zoom, search and commerce core working on staging with sandbox payments | 2 + 4 + 5 |
-| **M3** | **Old East Indies live** on `oldeastindies.com` | 7 + 8 + 9 + 10 + 12 + 13 (OEI half), with the gallery's dark import (11.11) done |
-| **M4** | **Indies Gallery cut over** on `antiquemapsindonesia.com` | 6 + 8 + 9 + 10 + 11 + 12 + 13 (IG half) |
-| **M5** | v2 underway | 14 |
+| **M0** | Both brand shells live on staging (`ig.gaiada.com`, `oei.gaiada.com`), admin logs in on both | 5 |
+| **M1** | A direction picked per brand; both style guides on staging | 22 (after the Design stage, 14) |
+| **M2** | Catalogue, deep zoom, search and commerce core working on staging with sandbox payments | 21 (with 10 and 16) |
+| **M3** | **Old East Indies live** on `oldeastindies.com` | 42 — after the Shop, Admin, Integrations, Accounts, SEO and Migration gates, with the gallery's dark import (42.7) done |
+| **M4** | **Indies Gallery cut over** on `antiquemapsindonesia.com` | 43 — after the Gallery gate and phase 42 |
+| **M5** | The 30-day iteration done; v2 underway | 44, then the v2 backlog |
 
 **Launch order — Old East Indies first (default, owner may reverse).** It has no
 store today, so every week without one is lost sales; its tickets are small, so
@@ -55,26 +55,31 @@ gallery's works and its "own the original" blocks show the originals' status and
 price, all from the gallery's archive API. So before the shop launches, the
 gallery's **production** database is provisioned and imported **dark** — no DNS,
 no public traffic, only the archive API the shop's sister sync reads (TASKS.md
-11.11, MIGRATION.md §8 step 0, D25). Its public cutover follows later on the same
+42.7, MIGRATION.md §8 step 0, D25). Its public cutover follows later on the same
 database, with a final delta import.
 
 ## Running phases in parallel
 
-After Phase 0, four streams run side by side: **design** (1 → 3 → 6/7 UI),
-**schema and data** (2 → 4 → 11), **commerce** (5 → 9), **admin** (8, from the
-end of 2). The **dispatch plan** at the top of TASKS.md turns this into 26 waves
-(W1–W26) of up to eight file-disjoint agents each, every one checked so that no
-task runs beside something it depends on. The ceilings assume one senior
-reviewer per lane family (PARALLEL-TRACKS.md §6): halve them if review is one
-person, which stretches the calendar rather than skipping review.
+Each phase is small — at most eight tasks in at most three waves — and names the
+phases it needs in its heading. A phase opens when those are ✅, lowest number
+first, with **at most three open at once**; inside it, its waves run in order and
+each wave's tasks run in parallel on file-disjoint paths. Waves belong to their
+phase (`17·W2` is the second wave of phase 17): there is no calendar of waves
+across phases, so "which phase are we in" always has an answer. The cap of three
+assumes one senior reviewer per lane family (PARALLEL-TRACKS.md §6); with one
+reviewer, run one or two.
 
-The critical path runs through the owner as much as the code: the direction
-pick and the buyer test (W9–W10), the Midtrans sandbox (W11), the item register
-(before W12's load), and the launch go-aheads (W22–W24).
+The Design and Migration stages wait mostly on the owner, so they run beside the
+build line: the Foundation opens them, and they join it where a later phase needs
+them (the app foundations need the picked directions; the migration load needs
+the catalogue and the tiling). The critical path runs through the owner as much
+as the code: the direction pick and the buyer test (phase 13), the Midtrans
+sandbox (19.3), the item register (before the load, 36.3), and the launch
+go-aheads (phases 42 and 43).
 
 ---
 
-## Phase 0 — Foundation and frozen contracts _(≈5 days)_
+## Foundation — phases 1–5 _(≈5 days)_
 
 Monorepo (pnpm 11, TS strict, ESLint 9, Prettier, Vitest, Playwright + axe,
 Lighthouse CI), the **gates** — 300-line rule, brand-literal lint, schema-hash
@@ -93,35 +98,37 @@ databases, `/admin` logs in on both, the `test` brand runs on both apps, the
 spike's verdict is recorded in ARCHITECTURE.md §9, every gate fails on a planted
 violation, and both staging hostnames serve a CI-built release.
 
-## Phase 1 — Brand directions _(≈10–12 days, owner reviews, a pilot shoot and buyer tests included)_
+## Design — phases 6, 12–14 _(≈10–12 days, owner reviews, a pilot shoot and buyer tests included)_
 
 The impeccable workflow KOI uses, run in full, because a research recommendation
 is only the category default. Product briefs and **journeys** (the WhatsApp,
 payment-link and showroom-QR handoffs included); **capture standards and a pilot
 photo shoot** — photography decides perceived quality more than any component;
 a **voice and EN/ID lexicon** per brand reviewed by a native Indonesian writer;
-then a real **direction round** per brand (seven candidates, a concept-seed roll,
-challengers, a pick, a canon card — each research direction at most one
-candidate), comping the signature surface at full fidelity (the gallery's item
-page, the shop's product page with its configurator) on the pilot photography,
-with a cultural review of the shop's candidates. The **sister system** is drawn in
-both worlds; the owner picks the directions **as a pair**, on their own phone; a
+then one **direction round for the shared base** both sites use — layout,
+components, buttons, type (Cormorant Garamond + Karla, kept at the client's
+request), with the owner's draft as the lead candidate and Etalage and Everart as
+references — and **each brand's accents** on top (palette and signature details),
+comping the signature surfaces at full fidelity (the gallery's item page, the
+shop's product page with its configurator) on the pilot photography, with a
+cultural review of the shop's accents. The **sister system** is drawn in the
+shared base; the owner picks the base and the accents on their own phone; a
 **prototype is tested with real buyers**; and only then are `DESIGN.md` (motion,
 iconography, image treatment, font budget, the no-dark-mode decision) and the
 token files written.
 
-**Done when:** the owner has approved a direction per brand, judged as a pair on
+**Done when:** the owner has approved the shared base and each brand's accents on
 their own phone and a desktop, after a prototype test with real buyers; both
 `DESIGN.md` files and token files are committed; each brand has a native-reviewed
-voice and lexicon; the sister system exists in both worlds.
+voice and lexicon; the sister system exists in the shared base.
 
-## Phase 2 — Content model and CMS core _(≈8 days, parallel with 1)_
+## Catalogue — phases 8–10 _(≈8 days, parallel with Design)_
 
 Every collection in CONTENT-MODEL.md — works, products, makers, the gazetteer,
 sources, designs, product types, variants, stock, curations, stories, pages,
 customers, media and masters — with validation, localisation, drafts, roles,
 publish guards, admin grouping in plain language, and real-shaped seeds. The
-commerce collections follow in Phase 5.
+commerce collections follow in the Commerce stage.
 
 **Done when:** a non-developer, in the gallery's admin, creates a maker, a place
 with a historical name, a work with a circa date and a verso image, and a unique
@@ -130,13 +137,13 @@ variants; sees them through the API; and an incomplete work is refused on publis
 with a reason they understand. Schema hashes are identical across all three
 databases.
 
-## Phase 3 — Design systems and app shells _(≈8 days, after the Phase 1 pick)_
+## Design systems — phases 11 and 22 _(≈8 days; phase 22 after the owner's pick)_
 
 The headless primitives in `@engine/ui`, the token pipeline with runtime brand
 overrides and the contrast gate, each app's shell (header, mega navigation,
 footer with seller identity and the sister strip, consent banner, the ship-to
 selector that decides the currency, the bottom-edge stacking policy), every block
-renderer, **a surface brief for every surface Phase 1 did not comp** (so nothing
+renderer, **a surface brief for every surface the Design stage did not comp** (so nothing
 is designed by default in code), **state fixtures** for every surface (loading,
 empty, partial, error, no-JS, long content, extreme values, every purchase
 state), every surface's skeleton, and each app's `/style-guide` with a state
@@ -147,7 +154,7 @@ no code change and a failing palette is rejected; every surface has an approved
 brief; both style guides render every component, block and state at 360, 768 and
 1440 px with axe clean and the budgets met; the design gate passes.
 
-## Phase 4 — Media, deep zoom and search _(≈7 days)_
+## Media and search — phases 15 and 16 _(≈7 days)_
 
 The derivative ladder, the IIIF tiling job, IIIF manifests, private masters and
 the print-size ceiling, the zoom viewer (on intent, keyboard-complete), the
@@ -158,7 +165,7 @@ the all-but-this-facet count rule.
 smoothly on a mid-range Android without moving the item page's JavaScript budget;
 "Celebes" and "Sulawesi" return the same works; facet counts are provably right.
 
-## Phase 5 — Commerce core _(≈12 days — the phase that decides whether money is safe)_
+## Commerce — phases 17–21 _(≈12 days — the stage that decides whether money is safe)_
 
 Commerce collections, money and market price lists with FX, seller routing with
 export-status gating, the rupiah rule, the reservation service with its
@@ -178,7 +185,7 @@ path; a multi-line shop cart to a Bali address prices in IDR only, never offers
 QRIS above IDR 10 m, pays by virtual account in the Midtrans sandbox, and its
 emails arrive; and every order reproduces its own total from its stored figures.
 
-## Phase 6 — The Indies Gallery storefront _(≈12 days)_
+## Gallery — phases 33–35 _(≈12 days)_
 
 Loaders for every gallery surface; home, browse, search; the item page with its
 collation, condition, references, deep zoom and purchase panel; request price,
@@ -186,7 +193,7 @@ offer, reserve, proforma, viewing and WhatsApp flows; sold and hold states;
 maker, place, source, curation and story pages; every trust page; consignment and
 appointments; cart, checkout and order pages.
 
-**Done when:** the Phase 1 journeys pass on a phone — a visitor lands on a place
+**Done when:** the Design stage's journeys (6.1.c) pass on a phone — a visitor lands on a place
 page, filters Java maps under USD 2,000, zooms into an item's verso, requests the
 price, reserves or buys it in the sandbox and receives the confirmation; an
 institution turns a cart into a proforma; a sold item shows its available
@@ -194,7 +201,7 @@ alternative and "own a print of this map" and takes an alert — budgets pass on
 home, browse and item; axe is clean; five real buyers have run the journeys; the
 design gate passes against the approved comp.
 
-## Phase 7 — The Old East Indies storefront _(≈12 days, parallel with 6)_
+## Shop — phases 30–32 _(≈12 days, parallel with Gallery)_
 
 Loaders for every shop surface; home, the Shop menu, collections, places and eras,
 gifts, search and filters; the product page and **the configurator** (constraints
@@ -202,7 +209,7 @@ with reasons, live price, flat / on the wall / to scale, state in the URL); desi
 pages; stories with shop-the-story; For Business; the `/ig` page; the showroom
 page; gift cards; the bag drawer and both checkout flows (Indonesian and export).
 
-**Done when:** the Phase 1 journeys pass on a phone **inside the Instagram in-app
+**Done when:** the Design stage's journeys (6.1.c) pass on a phone **inside the Instagram in-app
 browser** — a visitor opens a collection, configures the largest giclée the
 seed scan allows (≈ 37 cm on the long edge at 240 ppi from today's 3543 px
 images, D26) with a teak frame and a mount, sees it to scale, adds gift wrap and
@@ -212,7 +219,7 @@ tracks the order as a guest; switching ship-to to the Netherlands shows euro
 prices and a duties estimate; a showroom QR opens the in-showroom mode; budgets
 pass; axe is clean; five real buyers have run the journeys; the design gate passes.
 
-## Phase 8 — Admin tooling _(≈10 days — "the admin is half the product")_
+## Admin — phases 23, 24 and 38 _(≈10 days — "the admin is half the product")_
 
 It starts by **watching the work** — a cataloguer at the drawer, the shop manager
 on WhatsApp and in the showroom — and writing an *Operate*-mode brief for each
@@ -236,7 +243,7 @@ giclée product with mockups in under five minutes; an accepted offer reaches th
 buyer as a working payment link; and every custom admin view has been **opened**
 and has the Payload sidebar.
 
-## Phase 9 — Integrations _(≈10 days)_
+## Integrations — phases 25–27 _(≈10 days)_
 
 Stripe (Singapore seller) and PayPal, and Xendit or DOKU only if chosen;
 Biteship and DHL Express; **sister sync** (the gallery's archive API and
@@ -253,7 +260,7 @@ order ships from Bali by DHL Express with a duties estimate; publishing a work i
 the gallery updates its copy in the shop within a minute, and the shop's "own the
 original" block reads "sold" after the gallery sells it.
 
-## Phase 10 — Accounts, retention and consent _(≈6 days)_
+## Accounts — phases 28 and 29 _(≈6 days)_
 
 Customer accounts (with the legacy claim flow), both account areas, want-list
 matching and alerts, the newsletter generated from inventory, the shop's welcome
@@ -267,7 +274,7 @@ generated digest; a consented abandoned bag sends one email and a non-consented
 one sends none; and a customer's erasure request removes their personal data
 while their orders stay reproducible for the accountant.
 
-## Phase 11 — Migration and legacy URLs _(≈8 days; the extract starts right after Phase 0)_
+## Migration — phases 7, 36 and 37, plus 42.7 and 43.7 _(≈8 days; the extract starts right after phase 2)_
 
 The owner's export of the old catalogue (with, only if it never arrives and
 only with the owner's OK, a read-only look at the public pages — the old site
@@ -287,7 +294,7 @@ from the export and the URL inventory, resolves on the new site with 200 or one
 301 to 200; the curator has
 signed the mapping; and the dark production import serves the shop's sister sync.
 
-## Phase 12 — SEO, analytics and feeds _(≈5 days)_
+## SEO and analytics — phases 39 and 40 _(≈5 days)_
 
 Titles, canonicals, `hreflang`, OG images, JSON-LD (`Product` + `VisualArtwork`
 with honest availability), sitemaps including sold items, the Google Merchant and
@@ -299,7 +306,7 @@ a location; sitemaps validate and include sold items; the Merchant feed validate
 a purchase funnel and a lead funnel from real staging sessions are **visible in
 the dashboard**; and rejecting consent provably stops every non-essential tag.
 
-## Phase 13 — Hardening, launch readiness and cutover _(≈8 days)_
+## Launch — phases 41–44 _(≈8 days)_
 
 Performance on a real mid-range Android; a WCAG 2.2 AA audit with screen readers
 and 200% zoom; security (a CSP built per request from brand config, headers, rate
@@ -319,7 +326,7 @@ and copy meet their gates, the design gate passes on the live sites, and someone
 who has never seen the project can catalogue a work and fulfil an order using
 only the CMS guide.
 
-## Phase 14 — v2 _(backlog, sequenced after launch)_
+## v2 _(backlog, sequenced after launch)_
 
 Binding offers, deposits and instalments · catalogues as printable PDFs ·
 print-on-demand abroad (Prodigi, Gelato) · AR and in-room views · map-based
@@ -345,12 +352,12 @@ Answers are recorded there with the date, and in the doc each one changes.
 
 | Risk | Mitigation |
 | ---- | ---------- |
-| **A one-of-one map sold twice** | One `reserve()` writing a scalar `targetKey`; a partial unique index over active **and converted** reservations, so a sold item cannot be reserved again; the lock outlives the payment method's window; capture only while the reservation is live; one transaction for payment + sale; concurrency tests in Phase 5's done-criterion; IG never on marketplaces (ARCHITECTURE.md §6). |
+| **A one-of-one map sold twice** | One `reserve()` writing a scalar `targetKey`; a partial unique index over active **and converted** reservations, so a sold item cannot be reserved again; the lock outlives the payment method's window; capture only while the reservation is live; one transaction for payment + sale; concurrency tests in the Commerce gate (21.2); IG never on marketplaces (ARCHITECTURE.md §6). |
 | **A webhook applied twice, or lost** | Dedupe row inserted inside the transaction that applies the event, so a crash rolls both back and the provider's retry applies it once; Midtrans events re-fetched before applying; reconciliation every 10 minutes (PAYMENTS.md §4). |
 | **Exporting a cultural object illegally** | Location + export status on every unique item, from the owner's item register and never defaulted; a blank location sells nowhere online; international checkout blocked for uncleared Indonesian stock; D5 defaults to `domestic-only`. |
 | **Showing prices the law forbids** | Currency by destination; IDR only for Indonesian delivery, enforced in the VM layer and tested e2e. |
 | **SEO loss at the gallery's migration** | Product URLs unchanged; redirects verified by count; domain unchanged in the same release; sold pages kept and indexed. |
-| **The sites never fill up** | Phase 8 is a product phase measured with real users; the migration brings ~2,090 items on day one; the merch wizard turns one work into dozens of products. |
+| **The sites never fill up** | The Admin stage is product work measured with real users; the migration brings ~2,090 items on day one; the merch wizard turns one work into dozens of products. |
 | **Hofker is in copyright** | D6 gates publication; the shop's design must not depend on one artist. |
 | **Money code written by agents** | Pure modules with property-based tests, contract suites, idempotency everywhere, mandatory senior review on `domain` and `payments`. |
 | **Parallel agents collide** | Worktree per agent, subdirectory ownership, single-threaded migrations, orchestrator-only task ticking (PARALLEL-TRACKS.md). |
@@ -359,6 +366,6 @@ Answers are recorded there with the date, and in the doc each one changes.
 | **Gateway fee or policy changes** | Providers are adapters behind one contract; method caps and fees are dated data (Xendit's Oct-2026 repricing is why Midtrans is the default). |
 | **Helios disk and shared host** | Media on object storage; alerts at 80%; one process per brand with memory limits; Helios writes only with the owner's go-ahead. |
 | **Payload 4 churn** | Pin 3.90.x exactly; no deprecated APIs; upgrade only after 4 is stable with a migration guide. |
-| **Cache Components is young** | A Phase 0 spike proves the item page (cached record, runtime purchase panel, immediate tag expiry for availability, a build with no database) before anything is built on it; the fallback is documented and chosen as a whole (ARCHITECTURE.md §9). |
+| **Cache Components is young** | A spike in phase 4 proves the item page (cached record, runtime purchase panel, immediate tag expiry for availability, a build with no database) before anything is built on it; the fallback is documented and chosen as a whole (ARCHITECTURE.md §9). |
 | **Drafts or private fields leak** | Public loaders and the sister API read with `overrideAccess: false`, published only, and a field `select`; an e2e test requests a draft and a private field and must get neither (ARCHITECTURE.md §12). |
 | **The item register arrives late** | Items without a row publish enquiry-only, so legacy URLs still resolve at cutover and nothing sells without a known location (D24). |

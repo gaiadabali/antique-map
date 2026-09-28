@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&amp;family=Karla:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/colors.css">
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/typography.css">
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/components/components.css">
+<script src="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/_ds_bundle.js"></script>
+<script src="image-slot.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#F4F1EA}
+html:root{
+--font-display:"Cormorant Garamond",Georgia,serif;--font-body:"Karla",Arial,sans-serif;
+--h1-size:clamp(44px,6vw,92px);--h1-line:clamp(46px,5.8vw,88px);--h2-size:38px;--h2-line:44px;--h3-size:24px;--h3-line:30px;
+--body-lg-size:17px;--body-lg-line:28px;--body-md-size:15px;--body-md-line:25px;--body-sm-size:14px;--body-sm-line:22px;--caption-size:12px;--caption-line:17px;
+--brand-color-primary:#2F3E31;--brand-color-secondary:#6E5418;--brand-color-bg:#F4F1EA;--brand-color-text-dark:#1C201C;--surface-card:#FBF9F5;
+}
+a{color:#1C201C}
+a:hover{color:#6E5418}
+@media (min-width:960px) and (max-width:1159px){
+.luxury-header__inner{grid-template-columns:auto minmax(0,1fr);column-gap:var(--space-60)}
+.luxury-header__nav{display:flex;justify-content:flex-end;width:100%;column-gap:var(--space-30)}
+.luxury-header__burger,.luxury-header__actions{display:none}
+.luxury-header__link{font-size:13px}
+.luxury-header .ig-tagline{display:none}
+}
+@media (max-width:640px){.luxury-header .ig-tagline{display:none}}
+.ig-name{color:#1C201C}
+.ig-tagline{color:#6B6455}
+.ig-globe{display:block;flex:none;background-color:#1C201C;-webkit-mask:url(assets/indies-gallery-mark.png) center/contain no-repeat;mask:url(assets/indies-gallery-mark.png) center/contain no-repeat}
+.ig-name,.ig-tagline{transition:color 300ms ease-in-out}
+.ig-globe{transition:background-color 300ms ease-in-out}
+.luxury-header--overlay:not(.is-scrolled) .ig-name{color:#F4F1EA}
+.luxury-header--overlay:not(.is-scrolled) .ig-tagline{color:#D9D2C2}
+.luxury-header--overlay:not(.is-scrolled) .ig-globe{background-color:#F4F1EA}
+.luxury-header--overlay:not(.is-scrolled) .luxury-header__link[aria-current="page"]{color:#D4B24A}
+@media (max-width:959px){.luxury-header__nav,.luxury-header__actions{display:none}.luxury-header__burger{display:inline-flex}}
+
+/* --- editorial primitives --------------------------------------------- */
+/* nav + CTA form one right-hand group: 60px between the last link and the
+   button, 30px between the links themselves */
+@media (min-width:1160px){
+.luxury-header__inner{grid-template-columns:auto minmax(0,1fr) auto;column-gap:var(--space-60)}
+.luxury-header__nav{display:flex;justify-content:flex-end;width:100%;column-gap:var(--space-30)}
+}
+.band{padding-inline:var(--layout-gutter)}
+.wrap{max-width:1340px;margin:0 auto}
+.rule{border:0;border-top:0.5px solid rgba(28,32,28,0.18);margin:0}
+.num{font-family:'Cormorant Garamond',Georgia,serif;font-size:46px;font-weight:400;line-height:1;color:#8A8071;display:block}
+.ttl{font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:500;line-height:1.2;color:#1C201C;margin:0}
+.mut{font-family:Karla,Arial,sans-serif;font-size:14px;line-height:23px;color:#6B6455;margin:0}
+.lead{font-family:Karla,Arial,sans-serif;font-size:14px;font-weight:700;line-height:23px;color:#1C201C;margin:0}
+.plate{background:#E4DDCE;display:block;width:100%}
+.hero{position:relative;margin-top:calc(-1 * var(--header-height));min-height:min(780px,100vh);display:flex;align-items:flex-end;overflow:hidden;background:#28352A}
+.hero__layer{position:absolute;inset:0}
+.hero__layer video{width:100%;height:100%;object-fit:cover;display:block}
+.hero__scrim{position:absolute;inset:0;background:rgba(28,32,28,0.58);pointer-events:none}
+.hero__layer{pointer-events:none}
+.hero__layer image-slot{pointer-events:auto;color:#E4DDCE}
+.hero__inner{pointer-events:none}
+.hero__inner a,.hero__inner button{pointer-events:auto}
+.hero__inner{position:relative;width:100%;padding-block:70px}
+.hero-copy{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:50px;align-items:end}
+.trust{display:flex;gap:16px}
+.tcard{display:flex;flex-direction:column;gap:10px;width:204px;padding:var(--space-20);box-sizing:border-box;background:rgba(244,241,234,0.13);-webkit-backdrop-filter:blur(var(--blur-glass));backdrop-filter:blur(var(--blur-glass));border:0}
+.tico{display:block;width:22px;height:22px;flex:none;overflow:visible}
+.tico *{stroke:#D4B24A;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.tttl{font-family:Karla,Arial,sans-serif;font-size:13px;font-weight:700;line-height:19px;color:#F4F1EA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsub{font-family:Karla,Arial,sans-serif;font-size:12px;line-height:17px;color:#D9D2C2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+@media (max-width:1100px){.hero-copy{grid-template-columns:minmax(0,1fr);gap:34px}}
+@media (max-width:760px){.trust{flex-wrap:wrap}.tcard{width:calc(50% - 8px)}}
+@media (max-width:440px){.tcard{width:100%}}
+@media (prefers-reduced-motion:reduce){.hero__layer video{display:none}}
+.about{position:relative;overflow:hidden}
+.about__map{position:absolute;inset:0;background:url(assets/about-map.jpeg) left center/cover no-repeat;opacity:0.5;-webkit-mask-image:linear-gradient(to left,#000 0%,rgba(0,0,0,0.62) 20%,rgba(0,0,0,0.16) 42%,transparent 58%),linear-gradient(to top,transparent 0%,rgba(0,0,0,0.28) 13%,rgba(0,0,0,0.78) 28%,#000 42%);mask-image:linear-gradient(to left,#000 0%,rgba(0,0,0,0.62) 20%,rgba(0,0,0,0.16) 42%,transparent 58%),linear-gradient(to top,transparent 0%,rgba(0,0,0,0.28) 13%,rgba(0,0,0,0.78) 28%,#000 42%);-webkit-mask-composite:source-in;mask-composite:intersect;pointer-events:none}
+.about__reveal{position:absolute;inset:0;background:url(assets/about-map.jpeg) left center/cover no-repeat;opacity:0;transition:opacity 420ms cubic-bezier(0.22,0.61,0.36,1);-webkit-mask-image:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),#000 0%,rgba(0,0,0,0.60) 48%,transparent 80%),linear-gradient(to top,transparent 0%,rgba(0,0,0,0.28) 13%,rgba(0,0,0,0.78) 28%,#000 42%);mask-image:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),#000 0%,rgba(0,0,0,0.60) 48%,transparent 80%),linear-gradient(to top,transparent 0%,rgba(0,0,0,0.28) 13%,rgba(0,0,0,0.78) 28%,#000 42%);-webkit-mask-composite:source-in;mask-composite:intersect;pointer-events:none}
+.about:hover .about__reveal{opacity:0.5}
+@media (hover:none),(prefers-reduced-motion:reduce){.about__reveal{display:none}}
+@media (max-width:1300px){.about__map{opacity:0.14}}
+.about__body{position:relative}
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-items:start;max-width:860px}
+.about-grid p{max-width:620px}
+.about .mut,.about .sg-note{color:#241B14}
+.about .sg-label{color:#241B14}
+.signals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:44px;max-width:860px;margin-top:50px}
+.signal{position:relative;padding:0}
+.signal + .signal::before{content:"";position:absolute;left:-22px;top:0;bottom:0;border-left:0.5px solid rgba(28,32,28,0.18)}
+.sg-label{display:block;font-family:Karla,Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#6B6455}
+.sg-note{display:block;font-family:Karla,Arial,sans-serif;font-size:15px;line-height:24px;color:#6B6455;margin-top:12px}
+.sg-note strong{font-weight:700;color:#1C201C}
+@media (max-width:1024px){.signals{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:28px;max-width:none}.signal + .signal::before{display:none}}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+.rail{display:grid;grid-template-columns:90px minmax(0,1fr);gap:40px;align-items:start}
+@media (max-width:1024px){
+.hero{min-height:min(620px,100vh)}
+.rail{grid-template-columns:minmax(0,1fr);gap:20px}
+.rail-col{display:flex;gap:30px;align-items:center}
+}
+@media (max-width:768px){
+.hero{min-height:520px}
+.three{grid-template-columns:minmax(0,1fr);gap:40px}
+}
+</style>
+</helmet>
+
+<div style="font-family:Karla,Arial,sans-serif;color:#1C201C;background:#F4F1EA">
+
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Header" brand="{{ headerBrand }}" links="{{ navLinks }}" actions="{{ headerActions }}" sticky="{{ yes }}" overlay="{{ yes }}" hint-size="100%,80px"></x-import>
+
+<section class="hero">
+<div class="hero__layer"><image-slot id="ig-hero-poster" shape="rect" fit="cover" placeholder="Poster frame — the still shown before the film loads" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="hero__layer"><video ref="{{ videoRef }}" src="assets/hero-film.mp4" autoPlay="{{ yes }}" muted="{{ yes }}" loop="{{ yes }}" playsInline="{{ yes }}" preload="metadata" aria-hidden="true"></video></div>
+<div class="hero__scrim"></div>
+<div class="hero__inner band">
+<div class="wrap">
+<div class="hero-copy">
+<div>
+<span class="type-eyebrow" style="display:block;color:#D9D2C2">Est. 2001 · Singapore</span>
+<h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h1-size);line-height:var(--h1-line);font-weight:400;letter-spacing:-0.015em;margin:24px 0 0;color:#F4F1EA;max-width:15ch;text-wrap:balance">The islands, first drawn.</h1>
+<p style="font-family:Karla,Arial,sans-serif;font-size:16px;line-height:26px;color:#E4DDCE;margin:24px 0 0;max-width:46ch">Original maps and engravings of the East Indies, 1550–1900. Held in our collection, examined by our curator, offered with his certificate.</p>
+</div>
+<div class="trust">
+<div class="tcard">
+<svg class="tico" viewBox="2.75 1.25 18.5 18.5" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="6"></circle><path d="m8.21 13.89-1.2 5.11 5-3 5 3-1.2-5.12"></path></svg>
+<span class="tttl">Curator-certified</span>
+<span class="tsub">Every piece signed by<br>Dr. David E. Parry</span>
+</div>
+<div class="tcard">
+<svg class="tico" viewBox="1.25 1.75 21.5 21.5" fill="none" aria-hidden="true"><path d="M6 3h12l4 6-10 13L2 9Z"></path><path d="M11 3 8 9l4 13 4-13-3-6"></path><path d="M2 9h20"></path></svg>
+<span class="tttl">Originals only</span>
+<span class="tsub">Not one reproduction in<br>the gallery</span>
+</div>
+<div class="tcard">
+<svg class="tico" viewBox="1.25 1.25 21.5 21.5" fill="none" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22"></line><line x1="6" x2="6" y1="18" y2="11"></line><line x1="10" x2="10" y1="18" y2="11"></line><line x1="14" x2="14" y1="18" y2="11"></line><line x1="18" x2="18" y1="18" y2="11"></line><polygon points="12 2 20 7 4 7"></polygon></svg>
+<span class="tttl">Museum-collected</span>
+<span class="tsub">Singapore, Leiden and Louvre Abu Dhabi</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section class="band about" ref="{{ aboutRef }}" onMouseMove="{{ onAboutMove }}" style="padding-block:70px">
+<div class="about__map" aria-hidden="true"></div>
+<div class="about__reveal" aria-hidden="true"></div>
+<div class="wrap about__body">
+<div class="about-grid">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;letter-spacing:0.02em;margin:0;color:#1C201C">About</h2>
+<p class="lead">Indies Gallery has bought and sold antique maps, prints, books and photographs of the East Indies for over twenty-five years. Our inventory runs past 9,500 authentic pieces, from the fifteenth century to the twentieth; 2,090 of them are listed online at any time.</p>
+<p class="mut">Every object is offered with a certificate of authenticity from our curator, Dr David E. Parry, author of <em>The Cartography of The East Indian Islands</em>. Our clients include the National Museum of Singapore, the National Library of Australia, the Louvre Abu Dhabi and the University of Leiden — alongside collectors buying their first map.</p>
+</div>
+<div class="signals">
+<div class="signal">
+<span class="sg-label">In the trade since</span>
+<span class="sg-note"><strong>25 years</strong></span>
+</div>
+<div class="signal">
+<span class="sg-label">Objects handled</span>
+<span class="sg-note"><strong>9,500 authentic pieces</strong></span>
+</div>
+<div class="signal">
+<span class="sg-label">Held by</span>
+<span class="sg-note"><strong>4 national collections</strong></span>
+</div>
+</div>
+</div>
+</section>
+
+<section id="collection" class="band" style="padding-block:70px">
+<div class="wrap">
+<div class="rail">
+<div class="rail-col">
+<span class="type-eyebrow" style="display:block;color:#6B6455">The collection</span>
+<span class="mut" style="margin-top:14px;display:block">Three of<br>2,090 shown online</span>
+</div>
+<div>
+<div class="three">
+
+<article>
+<span class="num">01/</span>
+<h3 class="ttl" style="margin-top:14px">Pre-1750 Maps</h3>
+<div style="margin-top:16px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div>
+<div class="plate" style="aspect-ratio:4/5;margin-top:22px"><image-slot id="ig-c1" shape="rect" fit="cover" placeholder="De Bry, 1598" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:18px">De Bry · Blaeu · Ortelius — the earliest European sight of Java, Sumatra and Borneo.</p>
+<div style="margin-top:20px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="sm" as="a" href="#enquire" hint-size="auto,35px">Explore</x-import></div>
+</article>
+
+<article>
+<span class="num">02/</span>
+<h3 class="ttl" style="margin-top:14px">Spice Islands</h3>
+<div style="margin-top:16px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div>
+<div class="plate" style="aspect-ratio:4/5;margin-top:22px"><image-slot id="ig-c2" shape="rect" fit="cover" placeholder="Moluccas chart" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:18px">Thirty-four charts of the Moluccas, drawn when nutmeg was worth more than gold.</p>
+<div style="margin-top:20px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="sm" as="a" href="#enquire" hint-size="auto,35px">Explore</x-import></div>
+</article>
+
+<article>
+<span class="num">03/</span>
+<h3 class="ttl" style="margin-top:14px">Botanical Prints</h3>
+<div style="margin-top:16px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div>
+<div class="plate" style="aspect-ratio:4/5;margin-top:22px"><image-slot id="ig-c3" shape="rect" fit="cover" placeholder="Botanical engraving" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:18px">Hand-coloured studies of the plants the Dutch came for — clove, nutmeg, pepper.</p>
+<div style="margin-top:20px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="sm" as="a" href="#enquire" hint-size="auto,35px">Explore</x-import></div>
+</article>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section id="curator" class="band" style="padding-block:70px">
+<div class="wrap">
+<div style="display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:60px;align-items:center">
+<div class="plate" style="aspect-ratio:5/4"><image-slot id="ig-curator" shape="rect" fit="cover" placeholder="The curator at work" style="display:block;width:100%;height:100%"></image-slot></div>
+<div>
+<span class="type-eyebrow" style="display:block;color:#6B6455">The curator</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:22px 0 0;color:#1C201C;text-wrap:pretty">Dr David E. Parry</h2>
+<p class="mut" style="margin-top:22px;max-width:440px">He wrote the reference work on East Indies cartography. Every piece we sell passes his desk first — the plate identified, the state established, the condition recorded in plain words rather than a code.</p>
+<p class="mut" style="margin-top:16px;max-width:440px">His signed certificate travels with the object, and stays with it through every owner that follows.</p>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="#enquire" hint-size="auto,40px">Read his note</x-import></div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section id="archive" class="band" style="padding-block:70px">
+<div class="wrap">
+<div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:baseline">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6B6455">Archive</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:18px 0 0;color:#1C201C">Recently placed</h2>
+</div>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" hint-size="auto,40px">View the archive</x-import>
+</div>
+<div class="three" style="margin-top:44px">
+<article>
+<div class="plate" style="aspect-ratio:5/4"><image-slot id="ig-a1" shape="rect" fit="cover" placeholder="Bellin, 1750" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:16px"><span style="color:#6B6455">Sold · Private collection, Singapore</span><br>Carte des Isles Moluques · Bellin, 1750</p>
+</article>
+<article>
+<div class="plate" style="aspect-ratio:5/4"><image-slot id="ig-a2" shape="rect" fit="cover" placeholder="Hondius, 1606" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:16px"><span style="color:#6B6455">Sold · Institutional collection</span><br>Insulae Indiae Orientalis · Hondius, 1606</p>
+</article>
+<article>
+<div class="plate" style="aspect-ratio:5/4"><image-slot id="ig-a3" shape="rect" fit="cover" placeholder="Ottens, c. 1740" style="display:block;width:100%;height:100%"></image-slot></div>
+<p class="mut" style="margin-top:16px"><span style="color:#6B6455">Sold · Private collection, Jakarta</span><br>Insulae Iavae · Ottens, c. 1740</p>
+</article>
+</div>
+</div>
+</section>
+
+<div class="band"><div class="wrap"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Separator" hint-size="100%,1px"></x-import></div></div>
+
+<section class="band" style="padding-block:70px">
+<div class="wrap">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:60px;align-items:center">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6B6455">Printed editions</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:22px 0 0;color:#1C201C;text-wrap:pretty">Live with the collection</h2>
+<p class="mut" style="margin-top:22px;max-width:420px">Selected maps held here are printed as editions by Old East Indies, our sister atelier — on archival cotton, from the originals themselves.</p>
+<div style="margin-top:30px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="ghost" size="md" as="a" href="Home - Old East Indies.dc.html" hint-size="auto,40px">Visit Old East Indies</x-import></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:end">
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="ig-e1" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4;margin-bottom:40px"><image-slot id="ig-e2" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+<div class="plate" style="aspect-ratio:3/4"><image-slot id="ig-e3" shape="rect" fit="cover" placeholder="" style="display:block;width:100%;height:100%"></image-slot></div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="enquire" class="band" style="padding-block:70px;background:#EDE8DE">
+<div class="wrap">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:60px;align-items:start">
+<div>
+<span class="type-eyebrow" style="display:block;color:#6B6455">Enquire</span>
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:var(--h2-size);line-height:var(--h2-line);font-weight:400;margin:22px 0 0;color:#1C201C;text-wrap:pretty">Nothing here is sold online</h2>
+<p class="mut" style="margin-top:22px;max-width:420px">Tell us which map interests you. We reply within two working days with its condition report, provenance and price — and, if you wish, arrange a private viewing.</p>
+<p class="mut" style="margin-top:16px"><a href="mailto:info@antiquemapsindonesia.com">info@antiquemapsindonesia.com</a><br>+62 813 1900 4269</p>
+</div>
+<div>
+<sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{ onEnquire }}" style="display:flex;flex-direction:column;gap:16px;max-width:460px">
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Your name" required="{{ yes }}" hint-size="100%,64px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Email address" type="email" required="{{ yes }}" hint-size="100%,64px"></x-import>
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.FloatingInput" label="Which map, and what would you like to know?" hint-size="100%,64px"></x-import>
+<div style="margin-top:14px"><x-import component-from-global-scope="KALMRDesignSystem_c156e5.Button" variant="solid" size="md" type="submit" hint-size="auto,40px">Send enquiry</x-import></div>
+<span class="mut" style="font-size:12px;color:#6B6455">We only write back about this enquiry — never anything more.</span>
+</form>
+</sc-if>
+<sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:460px;border-top:0.5px solid rgba(28,32,28,0.18);padding-top:26px">
+<span class="type-eyebrow" style="display:block;color:#6B6455">Enquiry received</span>
+<p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;line-height:34px;font-weight:400;margin:16px 0 0;color:#1C201C">Thank you — your note is with the curator.</p>
+<p class="mut" style="margin-top:14px">We reply within two working days, usually sooner, with the condition report, provenance and price.</p>
+</div>
+</sc-if>
+</div>
+</div>
+</div>
+</section>
+
+<x-import component-from-global-scope="KALMRDesignSystem_c156e5.Footer" brand="{{ footerBrand }}" address="{{ footerAddress }}" columns="{{ footerColumns }}" social="{{ footerSocial }}" copyright="© 2026 Antique Maps Indonesia. All rights reserved." hint-size="100%,420px"></x-import>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  _video = React.createRef();
+  _about = React.createRef();
+  state = { sent: false };
+  componentDidMount() {
+    const v = this._video.current;
+    if (v) {
+      v.muted = true; v.loop = true; v.playsInline = true;
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    }
+    if (!window.KALMRDesignSystem_c156e5) {
+      this._t = setInterval(() => { if (window.KALMRDesignSystem_c156e5) { clearInterval(this._t); this.forceUpdate(); } }, 80);
+    }
+  }
+  componentWillUnmount() {
+    clearInterval(this._t);
+  }
+  renderVals() {
+    const DS = window.KALMRDesignSystem_c156e5;
+    const h = React.createElement;
+    const lockup = (globe, name, tag, gap) => h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: gap + 'px' } },
+      h('span', { className: 'ig-globe', 'aria-hidden': 'true', style: { height: globe + 'px', width: Math.round(globe * 1.031) + 'px' } }),
+      h('span', { style: { display: 'flex', flexDirection: 'column', gap: '3px' } },
+        h('span', { className: 'ig-name', style: { fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: name + 'px', lineHeight: 1.05, letterSpacing: '0.04em', whiteSpace: 'nowrap' } }, 'Indies Gallery'),
+        h('span', { className: 'ig-tagline', style: { fontFamily: 'Karla, Arial, sans-serif', fontWeight: 500, fontSize: tag + 'px', lineHeight: 1.2, letterSpacing: '0.14em', textTransform: 'uppercase', whiteSpace: 'nowrap' } }, 'Antique Maps & Prints of Indonesia')
+      )
+    );
+    const svg = (...kids) => h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }, ...kids);
+    const instagram = svg(h('rect', { key: 1, width: 20, height: 20, x: 2, y: 2, rx: 5, ry: 5 }), h('path', { key: 2, d: 'M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z' }), h('line', { key: 3, x1: 17.5, x2: 17.51, y1: 6.5, y2: 6.5 }));
+    const facebook = svg(h('path', { key: 1, d: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z' }));
+    const mail = svg(h('rect', { key: 1, width: 20, height: 16, x: 2, y: 4 }), h('path', { key: 2, d: 'm22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7' }));
+    return {
+      yes: true,
+      aboutRef: this._about,
+      onAboutMove: (e) => {
+        const el = this._about.current; if (!el) return;
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      },
+      sent: this.state.sent,
+      notSent: !this.state.sent,
+      onEnquire: (e) => { e.preventDefault(); this.setState({ sent: true }); },
+      videoRef: this._video,
+      headerBrand: lockup(38, 23, 10, 12),
+      footerBrand: lockup(56, 32, 12, 18),
+      navLinks: [
+        { label: 'Collection', href: '#' },
+        { label: 'Recent Acquisitions', href: '#collection' },
+        { label: 'The Curator', href: '#curator' },
+        { label: 'Journal', href: '#' },
+        { label: 'Sell to Us', href: '#' }
+      ],
+      headerActions: DS ? h(DS.Button, { variant: 'ghost', size: 'sm', as: 'a', href: '#enquire' }, 'Enquire') : null,
+      footerAddress: [
+        'Singapore · Viewings by appointment',
+        { label: 'info@antiquemapsindonesia.com', href: 'mailto:info@antiquemapsindonesia.com' },
+        { label: 'WhatsApp +62 813 1900 4269', href: 'https://api.whatsapp.com/send?phone=6281319004269' }
+      ],
+      footerColumns: [
+        { title: 'Collection', links: [{ label: 'Antique maps' }, { label: 'Antique prints' }, { label: 'Books & photographs' }, { label: 'Gifts under $350' }, { label: 'Archive', href: '#archive' }] },
+        { title: 'The gallery', links: [{ label: 'The curator', href: '#curator' }, { label: 'Curator-certified' }, { label: 'Journal & catalogues' }, { label: 'Sell to us' }, { label: 'Visit by appointment' }] },
+        { title: 'Sister atelier', links: [{ label: 'Old East Indies — printed editions', href: 'Home - Old East Indies.dc.html' }, { label: 'Enquire', href: '#enquire' }] }
+      ],
+      footerSocial: [
+        { label: 'Instagram', href: 'https://www.instagram.com/indiesgalleryantiques/', icon: instagram },
+        { label: 'Facebook', href: 'https://www.facebook.com/IndiesGallery/', icon: facebook },
+        { label: 'Email', href: 'mailto:info@antiquemapsindonesia.com', icon: mail }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -42,7 +42,7 @@ indies-gallery/                  old-east-indies/            test/
     brand.config.json   ← validated in CI (schema) and at boot (secrets) — §3
     assets/             ← logo.svg, marks, favicons, OG base, fonts licensed to the brand
     copy/               ← the brand's voice: the EN/ID values for every message key the
-                          app defines (the lexicon, TASKS.md 1.3), legal page seeds
+                          app defines (the lexicon, TASKS.md 6.3), legal page seeds
   content/
     seed/               ← fixture + starter content (committed)
     legacy/             ← mappings and the item register (committed once signed);
@@ -263,10 +263,10 @@ never join across databases on a request path.**
   later, consented feature, not a default — so every cross-link says so ("Old
   East Indies is our sister shop — a separate store with its own account") rather
   than surprising a buyer at sign-in.
-- **The sister system is designed once, as pairs** (TASKS.md 1.6): a shared
+- **The sister system is designed once, in the shared base** (TASKS.md 12.3): a shared
   lockup ("From the Indies Gallery archive" / "An Indies Gallery company"), the
   shared Archive No. / stock-number tag, and each cross-link component — sister
-  strip, "own the original", "get a print" — drawn in both brands' worlds.
+  strip, "own the original", "get a print" — drawn once and shown in both brands' accents.
 - Sister links obey the destination rules on the page they appear on: an
   original's price shown in the shop follows the visitor's market currency (IDR
   for Indonesian delivery) and its export status (no buy route abroad for a
@@ -291,7 +291,7 @@ The rule is only real if it is enforced mechanically:
   storefront and the apps support different modules. If anything is implicitly
   shaped like one real brand, it fails there first.
 - **No config drift**: CI regenerates the Payload migration snapshot and each
-  app's import map with `BRAND` unset and fails on any diff (TASKS.md 0.3.g).
+  app's import map with `BRAND` unset and fails on any diff (TASKS.md 2.2.g).
 - **Apps declare `supports`**; config validation rejects a module the chosen app
   cannot render, at build time rather than as a blank section in production.
 - **Route parity**: every handler `@engine/http` exports is mounted by every app,

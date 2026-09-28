@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+html,body{margin:0;padding:0;background:#111;overflow:hidden}
+a{color:#2F5D57}
+a:hover{color:#593D21}
+</style>
+</helmet>
+<x-import component-from-global-scope="deck-stage" from="./deck-stage.js" width="1920" height="1080" hint-size="100%,100%">
+
+<section data-label="Cover" data-screen-label="01" data-speaker-notes="This deck is built on two things only: your onboarding form, and the twelve reference sites you sent. Slide three holds two possible structures — we need you to pick one today." style="background:#fff url(assets/cover-bg.jpg) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/old-east-indies-logo.jpg" alt="Old East Indies" style="position:absolute;left:1020px;top:352px;width:200px;height:200px;border:1px solid #E0D6C4" />
+<h1 style="position:absolute;left:1020px;top:606px;margin:0;width:800px;font-size:60px;font-weight:700;line-height:1.14;letter-spacing:-0.5px">Website Design Guide<br />UX &amp; UI</h1>
+</section>
+
+<section data-label="From Your References" data-screen-label="02" data-speaker-notes="We read all twelve sites you sent. Rather than list everything they do, we kept only what answers something you actually wrote on the form. Left column is your words. Middle is what we take. Right is which site does it well. Everything else from those twelve, we left out." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">What We Take From Your 12 References</h2>
+<p style="position:absolute;left:132px;top:268px;margin:0;width:1656px;font-size:28px;line-height:1.4;color:#333">Only the things that answer something you wrote on the form.</p>
+<div style="position:absolute;left:132px;top:348px;width:1656px">
+<div style="display:flex;gap:36px;border-bottom:4px solid #000;padding-bottom:14px">
+<div style="width:420px;flex:none;font-size:25px;font-weight:700;letter-spacing:0.04em">YOUR WORDS</div>
+<div style="flex:1;font-size:25px;font-weight:700;letter-spacing:0.04em">WHAT WE BUILD</div>
+<div style="width:300px;flex:none;font-size:25px;font-weight:700;letter-spacing:0.04em">FROM</div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Browse our products”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Filters that carry numbers — island, century, maker</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://litomasters.com/collections/all" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">litomasters.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“See how we make these”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">A process page, and the paper and ink written openly</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://oldmap.co.uk/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">oldmap.co.uk</a><a href="https://victorianmaps.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">victorianmaps.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Look credible”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Your curator and certificate near the top, not the footer</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://historicprints.com/pages/our-history" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">historicprints.com</a><a href="https://wallango.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">wallango.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Read our articles”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">Guides that sell — not company news</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://victorianmaps.com/blogs/guides/how-to-identify-an-authentic-antique-map-vs-modern-reprints" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">victorianmaps.com</a></div>
+</div>
+<div style="display:flex;gap:36px;border-bottom:1px solid #cfcfcf;padding:20px 0;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Sell online”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">One product, many sizes — price rising from a “from”</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://everartprints.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">everartprints.com</a></div>
+</div>
+<div style="display:flex;gap:36px;background:#FED756;padding:20px 22px;margin-top:2px;align-items:flex-start">
+<div style="width:420px;flex:none;font-size:26px;font-weight:700;line-height:1.35">“Save us admin time”<br />“Keep customers coming back”</div>
+<div style="flex:1;font-size:26px;line-height:1.4">A trade area for your 100+ shops — login, their own prices, reorder in one click</div>
+<div style="width:300px;flex:none;display:flex;flex-direction:column;gap:8px"><a href="https://www.etalage.co.uk/trade-membership" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">etalage.co.uk</a><a href="https://www.1000museums.com/" style="font-size:24px;line-height:1.3;color:#2F5D57;text-decoration:underline;text-underline-offset:3px">1000museums.com</a></div>
+</div>
+</div>
+</section>
+
+<section data-label="Two Assumptions" data-screen-label="03" data-speaker-notes="The form described one business and answered current site none, but you mentioned three websites. So we drew both structures instead of guessing. Notice the trade area sits in the same place either way — so this choice does not affect the admin saving. The rest of the deck shows both." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Two Assumptions</h2>
+<p style="position:absolute;left:132px;top:262px;margin:0;width:1656px;font-size:28px;line-height:1.4;color:#333">Two ways to build it — <span style="font-weight:700;color:#000">please pick one today.</span></p>
+
+<div style="position:absolute;left:132px;top:316px;width:806px">
+<div style="display:flex;align-items:center;gap:14px;padding-bottom:18px">
+<span style="font-size:32px;font-weight:700;line-height:1.3">Assumption A</span>
+<span style="background:#FED756;font-size:24px;font-weight:700;padding:5px 12px;line-height:1.2">2 WEBSITES</span>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 0;text-align:center;font-size:25px;font-weight:700;line-height:1.3">One brand</div>
+<div style="position:relative;height:34px">
+<div style="position:absolute;left:50%;top:0;width:3px;height:16px;background:#000;transform:translateX(-1.5px)"></div>
+<div style="position:absolute;left:191px;top:16px;width:424px;height:3px;background:#000"></div>
+<div style="position:absolute;left:190px;top:16px;width:3px;height:18px;background:#000"></div>
+<div style="position:absolute;left:613px;top:16px;width:3px;height:18px;background:#000"></div>
+</div>
+<div style="display:flex;gap:40px;align-items:stretch">
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Originals</div>
+</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Souvenirs</div>
+<div style="border:2px dashed #000;background:#FED756;padding:12px 14px;margin-top:auto;font-size:24px;font-weight:700;line-height:1.3">Trade area</div>
+</div>
+</div>
+</div>
+
+<div style="position:absolute;left:982px;top:316px;width:806px">
+<div style="display:flex;align-items:center;gap:14px;padding-bottom:18px">
+<span style="font-size:32px;font-weight:700;line-height:1.3">Assumption B</span>
+<span style="border:2px solid #000;font-size:24px;font-weight:700;padding:3px 12px;line-height:1.2">3 WEBSITES</span>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 0;text-align:center;font-size:25px;font-weight:700;line-height:1.3">One brand</div>
+<div style="display:flex;justify-content:center"><div style="width:3px;height:20px;background:#000"></div></div>
+<div style="border:2px solid #000;background:#fff;padding:14px;text-align:center;font-size:27px;font-weight:700;line-height:1.3">Landing page</div>
+<div style="position:relative;height:34px">
+<div style="position:absolute;left:50%;top:0;width:3px;height:16px;background:#000;transform:translateX(-1.5px)"></div>
+<div style="position:absolute;left:191px;top:16px;width:424px;height:3px;background:#000"></div>
+<div style="position:absolute;left:190px;top:16px;width:3px;height:18px;background:#000"></div>
+<div style="position:absolute;left:613px;top:16px;width:3px;height:18px;background:#000"></div>
+</div>
+<div style="display:flex;gap:40px;align-items:stretch">
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Originals</div>
+</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:20px;display:flex;flex-direction:column;min-height:104px">
+<div style="font-size:27px;font-weight:700;line-height:1.3">Souvenirs</div>
+<div style="border:2px dashed #000;background:#FED756;padding:12px 14px;margin-top:auto;font-size:24px;font-weight:700;line-height:1.3">Trade area</div>
+</div>
+</div>
+</div>
+
+<div style="position:absolute;left:132px;top:730px;width:806px">
+<div style="border-top:4px solid #000;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Good</div>
+<div style="font-size:25px;line-height:1.45;color:#333">Fastest route to a sale · one catalogue to maintain</div>
+</div>
+<div style="border-top:1px solid #cfcfcf;margin-top:20px;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Less good</div>
+<div style="font-size:25px;line-height:1.45;color:#333">The brand story shares a home with the shop</div>
+</div>
+</div>
+
+<div style="position:absolute;left:982px;top:730px;width:806px">
+<div style="border-top:4px solid #000;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Good</div>
+<div style="font-size:25px;line-height:1.45;color:#333">The story and the curator get their own home</div>
+</div>
+<div style="border-top:1px solid #cfcfcf;margin-top:20px;padding-top:18px">
+<div style="font-size:26px;font-weight:700;line-height:1.3;padding-bottom:12px">Less good</div>
+<div style="font-size:25px;line-height:1.45;color:#333">One step longer · three addresses · costs more</div>
+</div>
+</div>
+</section>
+
+<section data-label="Main Flows" data-screen-label="04" data-speaker-notes="The same customer walked through both structures, with the points from slide two placed where they belong. In A the visitor lands in the shop and can buy sooner. In B they meet the story first, then choose a shop. The bottom row is the trade flow — identical in both, and the part that saves your admin time." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Main Flows</h2>
+
+<div style="position:absolute;left:132px;top:276px;width:1656px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:30px;font-weight:700;line-height:1.3">Assumption A — a customer buying</div>
+<div style="padding-top:24px;display:flex;align-items:center;gap:16px">
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:20px 12px;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Shop home</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Filter by island,<br />century, maker</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Product —<br />pick a size</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Basket</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Pay</div>
+</div>
+</div>
+
+<div style="position:absolute;left:132px;top:518px;width:1656px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:30px;font-weight:700;line-height:1.3">Assumption B — a customer buying</div>
+<div style="padding-top:24px;display:flex;align-items:center;gap:16px">
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:20px 12px;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Landing page —<br />the story</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Pick a shop</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Filter by island,<br />century, maker</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Product —<br />pick a size</div>
+<div style="font-size:32px;color:#666">→</div>
+<div style="flex:1;border:2px solid #999;padding:20px 12px;text-align:center;font-size:25px;line-height:1.3">Basket</div>
+</div>
+</div>
+
+<div style="position:absolute;left:132px;top:760px;width:1656px;border:3px dashed #000;background:#FED756;padding:26px 30px;box-sizing:border-box">
+<div style="font-size:30px;font-weight:700;line-height:1.3;padding-bottom:22px">Identical in both — one of your 100+ shops reordering</div>
+<div style="display:flex;align-items:center;gap:16px">
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;font-weight:700;line-height:1.3">Trade login</div>
+<div style="font-size:32px;color:#000">→</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;line-height:1.3">Last order, their<br />own prices</div>
+<div style="font-size:32px;color:#000">→</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;line-height:1.3">Reorder in<br />one click</div>
+<div style="font-size:32px;color:#000">→</div>
+<div style="flex:1;border:2px solid #000;background:#fff;padding:18px 12px;text-align:center;font-size:25px;line-height:1.3">Done — nobody<br />types anything</div>
+</div>
+</div>
+</section>
+
+<section data-label="Wireframes A" data-screen-label="05" data-speaker-notes="Assumption A has two front pages, one per website. Both start with search near the top, because the form asked for people to browse the products. The souvenir home carries the process page and the trade login. Every band is labelled so you can see what goes where." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Wireframes — Assumption A</h2>
+<p style="position:absolute;left:132px;top:268px;margin:0;width:1656px;font-size:27px;line-height:1.4;color:#333">Two websites, so two front pages.</p>
+
+<div style="position:absolute;left:132px;top:316px;width:806px">
+<div style="background:#000;color:#fff;padding:14px 22px;font-size:27px;font-weight:700;line-height:1.3">Home — Originals</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:22px;display:flex;flex-direction:column;gap:11px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">Logo · menu</div>
+<div style="border:2px solid #999;background:#fff;padding:18px;display:flex;gap:18px;align-items:center">
+<div style="width:140px;height:78px;background:#E7DECE;flex:none"></div>
+<div style="flex:1;font-size:25px;font-weight:700;line-height:1.35">One map and its story</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:14px 16px">
+<div style="background:#fff;border:1px solid #999;padding:10px 14px;font-size:25px;line-height:1.3;color:#555">Search</div>
+<div style="display:flex;gap:10px;padding-top:11px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Island</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Century</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Maker</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:14px 16px;display:flex;gap:11px"><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">The curator · certificate</div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:13px 16px;font-size:25px;line-height:1.3">Footer</div>
+</div>
+</div>
+
+<div style="position:absolute;left:982px;top:316px;width:806px">
+<div style="background:#000;color:#fff;padding:14px 22px;font-size:27px;font-weight:700;line-height:1.3">Home — Souvenirs</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:22px;display:flex;flex-direction:column;gap:11px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">Logo · menu · basket</div>
+<div style="border:2px solid #999;background:#fff;padding:18px;display:flex;gap:18px;align-items:center">
+<div style="width:140px;height:78px;background:#E7DECE;flex:none"></div>
+<div style="flex:1;font-size:25px;font-weight:700;line-height:1.35">One map and its price</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:14px 16px">
+<div style="background:#fff;border:1px solid #999;padding:10px 14px;font-size:25px;line-height:1.3;color:#555">Search</div>
+<div style="display:flex;gap:10px;padding-top:11px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Island</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Century</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:5px 14px">Maker</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:14px 16px;display:flex;gap:11px"><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div><div style="flex:1;height:56px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#f2f2f2;padding:13px 16px;font-size:25px;line-height:1.3">How we make them</div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:13px 16px;font-size:25px;line-height:1.3">Footer · trade login</div>
+</div>
+</div>
+</section>
+
+<section data-label="Wireframes B" data-screen-label="06" data-speaker-notes="Assumption B has three front pages. The landing page carries the brand story and two doors into the shops. Because the story and the certificate now live there, the two shop homes get leaner than in Assumption A — the selling pages stay the same, only the storytelling moves." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Wireframes — Assumption B</h2>
+<p style="position:absolute;left:132px;top:268px;margin:0;width:1656px;font-size:27px;line-height:1.4;color:#333">Three websites, so three front pages. The story and certificate move to the landing page, so the shop homes get leaner.</p>
+
+<div style="position:absolute;left:132px;top:346px;width:524px">
+<div style="background:#000;color:#fff;padding:14px 20px;font-size:26px;font-weight:700;line-height:1.3">Landing page</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Logo · menu</div>
+<div style="border:2px solid #999;background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="height:74px;background:#E7DECE"></div>
+<div style="font-size:24px;font-weight:700;line-height:1.35">The brand story</div>
+</div>
+<div style="display:flex;gap:12px">
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:18px 8px;text-align:center;font-size:24px;font-weight:700;line-height:1.3">Originals</div>
+<div style="flex:1;border:2px solid #000;background:#FED756;padding:18px 8px;text-align:center;font-size:24px;font-weight:700;line-height:1.3">Souvenirs</div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:12px 14px;font-size:24px;line-height:1.3">How we make them</div>
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Curator · certificate</div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:12px 14px;font-size:24px;line-height:1.3">Footer</div>
+</div>
+</div>
+
+<div style="position:absolute;left:698px;top:346px;width:524px">
+<div style="background:#000;color:#fff;padding:14px 20px;font-size:26px;font-weight:700;line-height:1.3">Home — Originals</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Logo · menu</div>
+<div style="border:2px solid #999;background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="height:74px;background:#E7DECE"></div>
+<div style="font-size:24px;font-weight:700;line-height:1.35">One map and its story</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 14px">
+<div style="background:#fff;border:1px solid #999;padding:9px 12px;font-size:24px;line-height:1.3;color:#555">Search</div>
+<div style="display:flex;gap:8px;padding-top:10px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Island</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Century</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:12px 14px;display:flex;gap:10px"><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:12px 14px;font-size:24px;line-height:1.3">Footer</div>
+</div>
+</div>
+
+<div style="position:absolute;left:1264px;top:346px;width:524px">
+<div style="background:#000;color:#fff;padding:14px 20px;font-size:26px;font-weight:700;line-height:1.3">Home — Souvenirs</div>
+<div style="border:3px solid #000;border-top:none;background:#fff;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="border:1px solid #999;background:#f2f2f2;padding:12px 14px;font-size:24px;line-height:1.3">Logo · menu · basket</div>
+<div style="border:2px solid #999;background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="height:74px;background:#E7DECE"></div>
+<div style="font-size:24px;font-weight:700;line-height:1.35">One map and its price</div>
+</div>
+<div style="border:2px solid #000;background:#FED756;padding:12px 14px">
+<div style="background:#fff;border:1px solid #999;padding:9px 12px;font-size:24px;line-height:1.3;color:#555">Search</div>
+<div style="display:flex;gap:8px;padding-top:10px"><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Island</div><div style="background:#fff;border:1px solid #999;font-size:24px;padding:4px 10px">Century</div></div>
+</div>
+<div style="border:1px solid #999;background:#fff;padding:12px 14px;display:flex;gap:10px"><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div><div style="flex:1;height:50px;background:#E7DECE"></div></div>
+<div style="border:1px solid #999;background:#e8e8e8;padding:12px 14px;font-size:24px;line-height:1.3">Footer · trade login</div>
+</div>
+</div>
+</section>
+
+<section data-label="Look &amp; Feel" data-screen-label="07" data-speaker-notes="The important one is the first. Your maps are already ornate — cartouches, sea monsters, hand colouring — so a decorated interface competes with the thing you are selling. Mayfair Gallery can afford its four-level decorated menu because it sells furniture and ormolu. The colours are measured from your logo file, not chosen by eye." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Look, Colour &amp; Lettering</h2>
+<p style="position:absolute;left:132px;top:266px;margin:0;width:1656px;font-size:28px;line-height:1.4;color:#333">Three recommendations, and the reason behind each.</p>
+<div style="position:absolute;left:132px;top:346px;width:1656px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px">
+
+<div style="display:flex;flex-direction:column;min-height:492px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:26px;font-weight:700;letter-spacing:0.04em">STYLE</div>
+<div style="font-size:31px;font-weight:700;line-height:1.3;padding-top:22px">Classic — but quiet, not ornate</div>
+<div style="border:1px solid #B8A992;background:#fff;padding:34px;margin-top:24px">
+<div style="height:120px;background:#E7DECE"></div>
+</div>
+<div style="font-size:25px;line-height:1.5;color:#444;margin-top:auto;padding-top:24px">Your maps are already decorated — a decorated interface competes with them. Mayfair can afford one: it sells furniture and ormolu, not paper.</div>
+</div>
+
+<div style="display:flex;flex-direction:column;min-height:492px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:26px;font-weight:700;letter-spacing:0.04em">COLOUR</div>
+<div style="font-size:31px;font-weight:700;line-height:1.3;padding-top:22px">Warm paper — not white, not dark</div>
+<div style="margin-top:24px">
+<div style="display:flex;height:120px">
+<div style="flex:1;background:#F1E5D3"></div>
+<div style="flex:1;background:#593D21"></div>
+<div style="flex:1;background:#2F5D57"></div>
+<div style="flex:1;background:#7A5D1B"></div>
+</div>
+<div style="display:flex;padding-top:12px">
+<div style="flex:1;font-size:24px;line-height:1.3">Cream</div>
+<div style="flex:1;font-size:24px;line-height:1.3">Brown</div>
+<div style="flex:1;font-size:24px;line-height:1.3">Green</div>
+<div style="flex:1;font-size:24px;line-height:1.3">Gold</div>
+</div>
+</div>
+<div style="font-size:25px;line-height:1.5;color:#444;margin-top:auto;padding-top:24px">Cream and brown are sampled straight from your logo. Warm grounds flatter aged paper better than bright white. Green marks links, gold marks prices.</div>
+</div>
+
+<div style="display:flex;flex-direction:column;min-height:492px">
+<div style="border-bottom:4px solid #000;padding-bottom:14px;font-size:26px;font-weight:700;letter-spacing:0.04em">LETTERING</div>
+<div style="font-size:31px;font-weight:700;line-height:1.3;padding-top:22px">Classic serif + plain sans</div>
+<div style="border:1px solid #B8A992;background:#fff;padding:28px;margin-top:24px">
+<div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:46px;font-weight:600;line-height:1.15">Spice Islands</div>
+<div style="font-family:Karla,Arial,sans-serif;font-size:25px;line-height:1.5;color:#333;padding-top:14px">Reading text stays plain and clear, even on a phone.</div>
+</div>
+<div style="font-size:25px;line-height:1.5;color:#444;margin-top:auto;padding-top:24px">Classic serif for headings, plain sans for reading. We pick a Garamond descendant because it is the same lineage as the type printed on your maps.</div>
+</div>
+
+</div>
+</section>
+<section data-label="Points to Confirm" data-screen-label="08" data-speaker-notes="Everything in this deck rests on assumptions, because the form left some things open. These six answers turn it into a plan. Number one is the choice from slide three — it blocks all the others. If we settle these today, we can start immediately after this meeting." style="background:#fff url(assets/content-bg.png) center/cover no-repeat;font-family:Arial,Helvetica,sans-serif;color:#000">
+<img src="assets/gaia-logo.png" alt="Gaia Digital Agency" style="position:absolute;left:73px;top:16px;width:178px;height:196px" />
+<h2 style="position:absolute;left:300px;top:84px;margin:0;width:1480px;font-size:54px;font-weight:700;line-height:1.1;letter-spacing:-0.5px">Please Confirm These Six</h2>
+<div style="position:absolute;left:132px;top:290px;width:1656px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:30px;align-items:flex-start;background:#FED756;padding:22px 28px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">1</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Assumption A or B?</span>
+<span style="font-size:26px;line-height:1.4">Two websites, or three separate ones?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">2</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">What is “more after sales”?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Direct sales, shop reorders, or service?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">3</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">How do the 100 shops order?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">WhatsApp, email, PDF? How many a month?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">4</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Who prints the souvenirs?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Your own workshop, or a third party?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;border-bottom:1px solid #cfcfcf;padding:0 28px 20px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">5</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">One brand or two?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Cheap souvenirs and costly originals under one name?</span>
+</div>
+<div style="display:flex;gap:30px;align-items:flex-start;padding:0 28px">
+<span style="font-size:36px;font-weight:700;width:50px;flex:none;line-height:1.2">6</span>
+<span style="font-size:31px;font-weight:700;width:540px;flex:none;line-height:1.3">Where are the shops?</span>
+<span style="font-size:26px;line-height:1.4;color:#444">Sets languages and currencies at launch</span>
+</div>
+</div>
+</section>
+
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1920,&quot;height&quot;:1080}}"></script>
+</body>
+</html>

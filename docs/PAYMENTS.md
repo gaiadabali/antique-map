@@ -193,9 +193,9 @@ default.
 
 ## 7. Build order
 
-Phase 5 ships the contract, `manual` and `bank-transfer`, the routing, the
+The Commerce stage ships the contract, `manual` and `bank-transfer`, the routing, the
 webhook pipeline, reconciliation and **one real adapter in sandbox** (Midtrans,
-because OEI launches on it). Phase 9 adds Stripe, PayPal and, only if chosen,
+because OEI launches on it). The Integrations stage adds Stripe, PayPal and, only if chosen,
 Xendit or DOKU. Every adapter passes the **shared contract suite**
 (`tests/contract/payments/*`) against recorded sandbox fixtures, including
 signature failure, duplicate delivery, out-of-order delivery and refund

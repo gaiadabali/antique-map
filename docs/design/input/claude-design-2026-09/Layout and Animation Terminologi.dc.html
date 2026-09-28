@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/colors.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/typography.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/tokens/spacing.css" />
+<link rel="stylesheet" href="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/components/components.css" />
+<script src="_ds/luxury-minimalist-design-system-c156e5b1-7edc-4777-82f1-e102cdc8a274/_ds_bundle.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#28352A}
+a{color:#6E5418}
+a:hover{color:#2F3E31}
+.trm{font-family:Karla,Arial,sans-serif;font-weight:700;font-size:16px;line-height:22px;color:#1C201C}
+.def{font-family:Karla,Arial,sans-serif;font-size:15px;line-height:24px;color:#3A403A}
+.say{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;line-height:26px;color:#2F3E31;font-style:italic}
+.row{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr);gap:10px 30px;padding:18px 0;border-top:1px solid #DCD5C6}
+@media (max-width:700px){.row{grid-template-columns:minmax(0,1fr);gap:6px}}
+</style>
+</helmet>
+
+<div style="font-family:Karla,Arial,sans-serif;color:#1C201C;background:#F4F1EA">
+
+<header style="background:#2F3E31;color:#F4F1EA;padding:60px var(--layout-gutter) 50px">
+<div style="max-width:1040px;margin:0 auto">
+<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:baseline;border-bottom:1px solid #4E6048;padding-bottom:18px">
+<span style="font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#D4B24A">Referensi Kerja · Gaia Digital Agency</span>
+<span style="font-size:13px;color:#B4BDB0">14 September 2026</span>
+</div>
+<h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(36px,6vw,68px);font-weight:600;line-height:1.05;letter-spacing:-0.02em;margin:26px 0 0">Kamus Istilah<br />UI &amp; Front-End</h1>
+<p style="font-size:clamp(16px,2vw,19px);line-height:1.6;color:#C0C8BC;max-width:660px;margin:22px 0 0;text-wrap:pretty">Istilah yang dipakai designer dan front-end developer, disusun menurut <em style="color:#F4F1EA">seberapa sering Anda akan membutuhkannya</em>. Setiap istilah disertai contoh kalimat siap pakai — bisa langsung disalin ke prompt.</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:26px">
+<span style="font-size:13px;letter-spacing:0.06em;color:#D4B24A;border:1px solid #4E6048;padding:6px 14px">1 · Layout</span>
+<span style="font-size:13px;letter-spacing:0.06em;color:#D4B24A;border:1px solid #4E6048;padding:6px 14px">2 · Animasi</span>
+<span style="font-size:13px;letter-spacing:0.06em;color:#D4B24A;border:1px solid #4E6048;padding:6px 14px">3 · Komponen</span>
+<span style="font-size:13px;letter-spacing:0.06em;color:#D4B24A;border:1px solid #4E6048;padding:6px 14px">4 · State</span>
+<span style="font-size:13px;letter-spacing:0.06em;color:#D4B24A;border:1px solid #4E6048;padding:6px 14px">5 · Gambar &amp; teks</span>
+<span style="font-size:13px;letter-spacing:0.06em;color:#D4B24A;border:1px solid #4E6048;padding:6px 14px">6 · Hierarki</span>
+</div>
+</div>
+</header>
+
+<div style="padding:0 var(--layout-gutter) 80px"><div style="max-width:1040px;margin:0 auto">
+
+<section style="padding:50px 0 0">
+<div style="background:#FBF9F5;border-left:4px solid #6E5418;padding:26px 28px">
+<p style="font-size:16px;line-height:26px;margin:0 0 12px;color:#3A403A"><strong>Cara pakai yang paling efektif:</strong> jangan hafalkan semuanya. Baca sekali, lalu buka lagi saat ada konsep spesifik yang ingin Anda sebutkan. Istilah paling berguna sudah saya tandai <strong style="color:#6E5418">◆</strong> — itu yang membuka paling banyak konsep sekaligus.</p>
+<p style="font-size:16px;line-height:26px;margin:0;color:#3A403A"><strong>Kalau waktu Anda terbatas:</strong> Bagian 3 dan 4 yang paling sering terpakai sehari-hari — menyebut nama komponen dan menyebut state muncul di hampir setiap permintaan desain. Bagian 1 dan 2 lebih jarang, tapi paling sulit dijelaskan tanpa istilah.</p>
+</div>
+</section>
+
+<section style="padding:70px 0 0">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;margin:0;padding-bottom:14px;border-bottom:3px solid #2F3E31">Bagian 1 — Layout</h2>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:44px 0 4px">Struktur &amp; grid</h3>
+<div class="row">
+<div><span class="trm">Kolom / track</span></div>
+<div><p class="def" style="margin:0">Pembagian vertikal halaman. "Track" dipakai kalau lebarnya tidak seragam. Standar web: 12 kolom.</p><p class="say" style="margin:8px 0 0">"Buat grid 12 kolom" · "Track kanannya lebih lebar dari kiri"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Gutter <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Jarak dari tepi layar ke awal konten. Berbeda dari <em>gap</em>, yang jaraknya antar elemen.</p><p class="say" style="margin:8px 0 0">"Gutter-nya terlalu sempit di tablet" · "Gap antar kartu perbesar"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Contained vs full-bleed <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0"><em>Contained</em> = konten terkunci di lebar maksimum (di proyek ini 1340px). <em>Full-bleed</em> = mencapai tepi layar, biasanya untuk latar warna atau gambar besar.</p><p class="say" style="margin:8px 0 0">"Warna latarnya full-bleed, tapi teksnya tetap contained"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Asymmetric split</span></div>
+<div><p class="def" style="margin:0">Dua kolom dengan lebar tidak sama. Sebut perbandingannya — 60/40, 70/30 — lebih presisi daripada "yang kiri lebih kecil".</p><p class="say" style="margin:8px 0 0">"Hero-nya split 40/60, gambar di sisi lebar"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Span</span></div>
+<div><p class="def" style="margin:0">Berapa kolom yang ditempati satu elemen.</p><p class="say" style="margin:8px 0 0">"Judulnya span 8 kolom saja, jangan penuh"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Ukuran</h3>
+<div class="row">
+<div><span class="trm">Fixed vs fluid <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0"><em>Fixed</em> = ukuran tetap dalam piksel, tidak berubah. <em>Fluid</em> = ikut menyesuaikan lebar layar. Deck dan dokumen cetak fixed; halaman web hampir selalu fluid.</p><p class="say" style="margin:8px 0 0">"Kartunya fluid saja, jangan dikunci lebarnya"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Clamp <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Ukuran dengan tiga batas: minimum, ideal, maksimum. Ini yang membuat judul mengecil di ponsel tanpa perlu aturan terpisah per ukuran layar.</p><p class="say" style="margin:8px 0 0">"Judulnya clamp — jangan pernah di bawah 36px, jangan lewat 72px"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Aspect ratio</span></div>
+<div><p class="def" style="margin:0">Perbandingan lebar banding tinggi yang dipertahankan apa pun ukurannya. 4:5 potret, 3:2 lanskap, 1:1 persegi.</p><p class="say" style="margin:8px 0 0">"Semua foto produk aspect ratio 4:5 supaya rapi sebaris"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Min / max width</span></div>
+<div><p class="def" style="margin:0">Batas bawah dan batas atas. <code style="font-size:14px;background:#E9E3D6;padding:1px 5px">max-width</code> paling sering dipakai supaya teks tidak jadi terlalu panjang di layar lebar.</p><p class="say" style="margin:8px 0 0">"Paragrafnya kasih max-width, sekarang kepanjangan"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Perilaku responsif</h3>
+<div class="row">
+<div><span class="trm">Reflow <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Layout menyusun ulang dirinya saat layar menyempit. Ini kata kunci paling berguna untuk melaporkan masalah di ponsel.</p><p class="say" style="margin:8px 0 0">"Bagian ini nggak reflow dengan baik di layar sempit"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Wrap</span></div>
+<div><p class="def" style="margin:0">Elemen yang tidak muat turun ke baris berikutnya, bukan terpotong atau memaksa halaman melebar.</p><p class="say" style="margin:8px 0 0">"Deretan filter itu harus bisa wrap"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Stack</span></div>
+<div><p class="def" style="margin:0">Dari berdampingan jadi bertumpuk vertikal. Yang perlu Anda tentukan: <strong>mana yang di atas</strong> setelah menumpuk.</p><p class="say" style="margin:8px 0 0">"Di ponsel, stack — gambar dulu, baru teks"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Breakpoint</span></div>
+<div><p class="def" style="margin:0">Lebar layar tempat layout berubah aturan. Di proyek ini: 768 dan 1024.</p><p class="say" style="margin:8px 0 0">"Di breakpoint tablet, empat kolom jadi dua"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Jarak &amp; ritme</h3>
+<div class="row">
+<div><span class="trm">Padding vs margin <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0"><em>Padding</em> = jarak di dalam kotak, antara tepinya dan isinya. <em>Margin</em> = jarak di luar, ke elemen tetangga. "Terasa sempit di dalam kartu" itu padding; "kartunya terlalu rapat satu sama lain" itu gap atau margin.</p><p class="say" style="margin:8px 0 0">"Padding kartunya tambah, isinya terlalu nempel ke tepi"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Vertical rhythm</span></div>
+<div><p class="def" style="margin:0">Jarak antar blok yang konsisten sepanjang halaman, sehingga terasa teratur meski isinya berbeda-beda.</p><p class="say" style="margin:8px 0 0">"Vertical rhythm-nya pecah di bagian tengah"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Density <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Kepadatan — berapa banyak yang muat dalam satu layar. Inilah pembeda utama dua website di proyek ini: galeri berkepadatan rendah, toko souvenir tinggi.</p><p class="say" style="margin:8px 0 0">"Density-nya naikkan, sekarang terasa terlalu kosong"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Optical alignment</span></div>
+<div><p class="def" style="margin:0">Sejajar menurut mata, bukan menurut angka. Kadang angka yang sama justru terlihat tidak sejajar.</p><p class="say" style="margin:8px 0 0">"Angkanya secara optis terlihat turun, padahal ukurannya sama"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Posisi &amp; lapisan</h3>
+<div class="row">
+<div><span class="trm">Sticky vs fixed</span></div>
+<div><p class="def" style="margin:0"><em>Sticky</em> = ikut ter-scroll dulu, lalu menempel saat mencapai posisi tertentu. <em>Fixed</em> = selalu di tempat yang sama, tidak pernah bergerak.</p><p class="say" style="margin:8px 0 0">"Header-nya sticky, tapi filter-nya fixed di sisi kiri"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Overlap / bleed</span></div>
+<div><p class="def" style="margin:0">Elemen yang sengaja menembus batas elemen lain. Gestur editorial yang kuat — tapi kalau tidak sengaja, itu bug (seperti logo yang menimpa menu).</p><p class="say" style="margin:8px 0 0">"Gambarnya bleed ke bagian gelap di bawahnya"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Offset</span></div>
+<div><p class="def" style="margin:0">Digeser dari posisi normalnya, biasanya untuk memberi ketegangan visual.</p><p class="say" style="margin:8px 0 0">"Kolom kanan offset ke bawah sedikit, jangan sejajar"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Z-index / layering</span></div>
+<div><p class="def" style="margin:0">Urutan tumpukan — siapa di depan, siapa di belakang.</p><p class="say" style="margin:8px 0 0">"Menunya harus di layer paling atas"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Istilah editorial</h3>
+<div class="row">
+<div><span class="trm">Eyebrow / kicker</span></div>
+<div><p class="def" style="margin:0">Label kecil di atas judul. Di proyek ini: "Recent acquisitions", "The curator".</p><p class="say" style="margin:8px 0 0">"Tambahkan eyebrow di atas judul section ini"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Measure <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Panjang satu baris teks. Ideal 45–75 karakter; lebih dari itu mata kehilangan jejak saat pindah baris. Ini nama teknis dari "paragrafnya kepanjangan".</p><p class="say" style="margin:8px 0 0">"Measure-nya terlalu lebar, susah dibaca"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Leading / tracking</span></div>
+<div><p class="def" style="margin:0"><em>Leading</em> = jarak antar baris (istilah kodenya <code style="font-size:14px;background:#E9E3D6;padding:1px 5px">line-height</code>). <em>Tracking</em> = jarak antar huruf (<code style="font-size:14px;background:#E9E3D6;padding:1px 5px">letter-spacing</code>).</p><p class="say" style="margin:8px 0 0">"Leading-nya longgarkan" · "Tracking label kapital itu tambah"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Rule / hairline</span></div>
+<div><p class="def" style="margin:0">Garis pemisah. <em>Hairline</em> khusus untuk yang sangat tipis — di design system ini 0,5px.</p><p class="say" style="margin:8px 0 0">"Pisahkan dengan hairline, jangan pakai kotak"</p></div>
+</div>
+</section>
+
+<section style="padding:80px 0 0">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;margin:0;padding-bottom:14px;border-bottom:3px solid #2F3E31">Bagian 2 — Animasi</h2>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:20px 0 0;text-wrap:pretty">Animasi lebih mudah dijelaskan kalau dipecah jadi empat pertanyaan: <strong>apa yang memicunya</strong>, <strong>berapa lama</strong>, <strong>bagaimana rasa gerakannya</strong>, dan <strong>properti apa yang bergerak</strong>. Kalau keempatnya Anda sebut, saya tidak perlu menebak.</p>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:44px 0 4px">1 · Pemicu</h3>
+<div class="row">
+<div><span class="trm">On load / on hover / on click</span></div>
+<div><p class="def" style="margin:0">Saat halaman dibuka · saat kursor menyentuh · saat diklik. Untuk ponsel, "on tap".</p><p class="say" style="margin:8px 0 0">"On hover, gambarnya sedikit menggelap"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Scroll-triggered <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Animasi jalan <strong>sekali</strong> saat elemen masuk ke layar, lalu selesai. Ini yang dipakai untuk "muncul perlahan saat di-scroll".</p><p class="say" style="margin:8px 0 0">"Kartunya scroll-triggered, fade in saat masuk layar"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Scroll-linked / scrubbed <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Berbeda jauh dari yang di atas: progres animasi <strong>terikat</strong> posisi scroll. Scroll balik ke atas, animasinya juga mundur. Ini mekanisme di balik parallax dan section yang "bercerita" saat di-scroll.</p><p class="say" style="margin:8px 0 0">"Gambarnya scroll-linked, membesar mengikuti scroll"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">2 · Waktu</h3>
+<div class="row">
+<div><span class="trm">Duration</span></div>
+<div><p class="def" style="margin:0">Lama animasi. Patokan: 150–250ms untuk hover, 300–500ms untuk elemen masuk, di atas 600ms mulai terasa lambat.</p><p class="say" style="margin:8px 0 0">"Duration-nya terlalu lama, potong jadi setengah"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Stagger <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Elemen sejenis mulai bergantian dengan jeda kecil, bukan serentak. Inilah yang membuat deretan kartu terasa "mengalir" — dan hampir selalu jadi kata yang dicari orang saat menggambarkan animasi grid.</p><p class="say" style="margin:8px 0 0">"Kartunya fade in dengan stagger 80ms"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Delay</span></div>
+<div><p class="def" style="margin:0">Jeda sebelum animasi mulai.</p><p class="say" style="margin:8px 0 0">"Judulnya dulu, teksnya delay sedikit"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">3 · Easing — rasa gerakan</h3>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:0 0 10px">Ini bagian yang paling sering ada di kepala tapi paling sulit dinamai. Easing menentukan animasi terasa <em>mahal</em> atau <em>murah</em>, jauh lebih menentukan daripada durasi.</p>
+<div class="row">
+<div><span class="trm">Ease-out <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Mulai cepat lalu melambat di akhir. <strong>Untuk elemen yang MASUK.</strong> Ini pilihan paling aman dan paling sering benar — terasa seperti benda nyata yang datang lalu berhenti.</p><p class="say" style="margin:8px 0 0">"Fade in-nya pakai ease-out"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Ease-in</span></div>
+<div><p class="def" style="margin:0">Mulai lambat lalu cepat. <strong>Untuk elemen yang KELUAR.</strong> Dipakai untuk masuk akan terasa berat dan lambat.</p><p class="say" style="margin:8px 0 0">"Saat ditutup, ease-in biar cepat hilang"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Ease-in-out</span></div>
+<div><p class="def" style="margin:0">Pelan di kedua ujung. Untuk perpindahan posisi, atau elemen yang bergerak dari A ke B.</p><p class="say" style="margin:8px 0 0">"Perpindahan slide-nya ease-in-out"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Linear</span></div>
+<div><p class="def" style="margin:0">Kecepatan rata dari awal sampai akhir. Terasa mekanis — hanya cocok untuk yang memang mesin: loading bar, teks berjalan, rotasi.</p><p class="say" style="margin:8px 0 0">"Marquee-nya linear, biar tidak tersendat"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Spring / bounce</span></div>
+<div><p class="def" style="margin:0">Memantul sedikit melewati tujuan lalu kembali. Terasa hidup dan main-main — <strong>dilarang di design system proyek ini</strong>, karena melawan nada luxury.</p><p class="say" style="margin:8px 0 0">"Jangan pakai bounce, terasa murah"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">4 · Properti yang bergerak</h3>
+<div class="row">
+<div><span class="trm">Fade</span></div>
+<div><p class="def" style="margin:0">Opasitas — dari transparan ke terlihat. Paling halus, paling aman.</p><p class="say" style="margin:8px 0 0">"Cukup fade saja, tanpa gerak"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Translate / slide <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Bergeser posisi. Paling sering dipasangkan dengan fade — istilahnya <strong>"fade up"</strong>: muncul sambil naik sedikit. Sebut jaraknya kalau ada di kepala Anda: 20px terasa halus, 60px terasa dramatis.</p><p class="say" style="margin:8px 0 0">"Fade up 24px, ease-out, stagger"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Scale</span></div>
+<div><p class="def" style="margin:0">Membesar atau mengecil. Untuk gambar, <em>scale</em> pelan di belakang frame yang diam menghasilkan efek sinematik.</p><p class="say" style="margin:8px 0 0">"On hover, gambarnya scale 1,03 — sangat sedikit saja"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Reveal / mask / clip <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Muncul seperti tersingkap dari balik tirai, bukan memudar. Sangat cocok untuk konteks galeri karena mengingatkan pada kain penutup lukisan yang dibuka.</p><p class="say" style="margin:8px 0 0">"Judulnya reveal dari bawah, di-mask"</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Cross-fade</span></div>
+<div><p class="def" style="margin:0">Satu memudar sementara yang lain muncul, bertumpuk di tempat yang sama. Ini yang saya sarankan untuk hero bergambar, bukan carousel.</p><p class="say" style="margin:8px 0 0">"Hero-nya cross-fade tiap 5 detik"</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">5 · Pola yang sudah punya nama</h3>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:0 0 10px">Kalau yang ada di kepala Anda salah satu dari ini, cukup sebut namanya — tidak perlu dijelaskan.</p>
+<div class="row">
+<div><span class="trm">Parallax</span></div>
+<div><p class="def" style="margin:0">Lapisan bergerak dengan kecepatan berbeda saat di-scroll, menciptakan ilusi kedalaman.</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Pin / sticky scroll</span></div>
+<div><p class="def" style="margin:0">Satu elemen tertahan di tempat sementara konten lain terus bergerak melewatinya.</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Curtain / stack reveal</span></div>
+<div><p class="def" style="margin:0">Section berikutnya meluncur naik menutupi section sebelumnya. Ini yang dipakai design system proyek ini pada hero.</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Marquee / ticker</span></div>
+<div><p class="def" style="margin:0">Berjalan terus-menerus horizontal, tanpa henti.</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Skeleton</span></div>
+<div><p class="def" style="margin:0">Kotak kosong berbentuk konten yang muncul selama data dimuat.</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Reduced motion <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Sebagian pengguna mematikan animasi di setelan perangkatnya, biasanya karena vertigo atau migrain. Halaman harus tetap berfungsi tanpa animasi. Cukup sebut sekali, saya urus otomatis.</p></div>
+</div>
+</section>
+
+<section style="padding:80px 0 0">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;margin:0;padding-bottom:14px;border-bottom:3px solid #2F3E31">Bagian 3 — Komponen</h2>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:20px 0 34px;text-wrap:pretty">Ini bagian yang paling sering terpakai. Menyebut nama komponen yang tepat menghilangkan hampir seluruh salah paham — karena setiap nama membawa aturan perilakunya sendiri.</p>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:44px 0 4px">Yang muncul di atas halaman</h3>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:0 0 10px">Lima hal berbeda yang sering disebut “pop up”. Pembedanya bukan bentuk, tapi <strong>seberapa memaksa</strong>.</p>
+<div class="row">
+<div><span class="trm">Modal / dialog <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Menutupi halaman, dan pengguna <strong>tidak bisa berbuat apa-apa</strong> sampai menutupnya. Pakai hanya untuk keputusan penting — konfirmasi hapus, checkout, form pendaftaran.</p><p class="say" style="margin:8px 0 0">“Form sign up-nya jadi modal, bukan halaman terpisah”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Drawer / sheet</span></div>
+<div><p class="def" style="margin:0">Meluncur masuk dari tepi layar. Di desktop biasanya dari kanan; di ponsel dari bawah — itu disebut <em>bottom sheet</em>. Cocok untuk filter dan keranjang.</p><p class="say" style="margin:8px 0 0">“Filternya jadi drawer dari kanan”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Popover</span></div>
+<div><p class="def" style="margin:0">Kotak kecil yang <strong>menempel pada elemen yang diklik</strong> dan tidak memblokir apa pun. Untuk pilihan singkat, bukan form panjang.</p><p class="say" style="margin:8px 0 0">“Pilihan ukurannya pakai popover di sebelah tombol”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Tooltip</span></div>
+<div><p class="def" style="margin:0">Teks pendek saat kursor menyentuh. <strong>Tidak bisa diklik, dan tidak ada di ponsel</strong> — jadi jangan menaruh informasi penting di sini.</p><p class="say" style="margin:8px 0 0">“Kode kondisinya kasih tooltip penjelasan”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Toast / snackbar</span></div>
+<div><p class="def" style="margin:0">Pemberitahuan sementara yang hilang sendiri setelah beberapa detik. Untuk mengabari, bukan bertanya.</p><p class="say" style="margin:8px 0 0">“Setelah masuk keranjang, munculkan toast”</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Menyembunyikan &amp; membuka isi</h3>
+<div class="row">
+<div><span class="trm">Accordion</span></div>
+<div><p class="def" style="margin:0">Buka-tutup di tempat; isinya <strong>mendorong</strong> konten di bawahnya. Untuk FAQ, detail produk, spesifikasi.</p><p class="say" style="margin:8px 0 0">“Detail bahan dan pengiriman jadi accordion”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Tab</span></div>
+<div><p class="def" style="margin:0">Berganti isi <strong>tanpa mengubah tinggi halaman</strong>. Untuk isi yang setara dan saling menggantikan.</p><p class="say" style="margin:8px 0 0">“By Island, By Theme, By Product jadi tiga tab”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Dropdown / select</span></div>
+<div><p class="def" style="margin:0">Pilih satu dari daftar. Kalau pilihannya cuma dua atau tiga dan pendek, lebih baik pakai chip — dropdown menyembunyikan pilihan.</p><p class="say" style="margin:8px 0 0">“Urutannya pakai dropdown, pilihannya terlalu banyak buat chip”</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Menelusuri &amp; menyaring</h3>
+<div class="row">
+<div><span class="trm">Filter vs sort vs facet <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0"><em>Filter</em> = membuang yang tidak sesuai. <em>Sort</em> = mengubah urutan, jumlahnya tetap. <em>Facet</em> = filter yang membawa angka jumlahnya (“Jawa (38)”). Website lama klien punya sort tapi tidak punya filter — dua hal yang berbeda.</p><p class="say" style="margin:8px 0 0">“Tambahkan facet per pulau dan per abad”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Pagination vs load more vs infinite scroll <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Tiga cara memuat isi berikutnya, dengan akibat berbeda. <em>Pagination</em> = tautannya bisa dibagikan dan pengguna tahu posisinya. <em>Load more</em> = tombol, pengguna yang memilih. <em>Infinite scroll</em> = otomatis, tapi <strong>footer jadi tidak pernah bisa diraih</strong>.</p><p class="say" style="margin:8px 0 0">“Pakai load more, jangan infinite scroll — footer-nya penting”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Breadcrumb</span></div>
+<div><p class="def" style="margin:0">Jejak “Anda di sini” di atas judul halaman. Penting kalau pengunjung sering mendarat langsung dari Google.</p><p class="say" style="margin:8px 0 0">“Halaman produk perlu breadcrumb”</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Elemen kecil</h3>
+<div class="row">
+<div><span class="trm">Chip / pill / tag</span></div>
+<div><p class="def" style="margin:0">Kotak kecil yang <strong>bisa diklik</strong> — untuk memilih, atau menghapus filter yang sedang aktif.</p><p class="say" style="margin:8px 0 0">“Filter yang aktif tampil sebagai chip yang bisa dihapus”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Badge</span></div>
+<div><p class="def" style="margin:0">Penanda status yang <strong>tidak bisa diklik</strong> — “Sold”, “Reproduksi”, “Baru”. Sering tertukar dengan chip; bedanya cuma itu.</p><p class="say" style="margin:8px 0 0">“Kasih badge Sold di sudut gambar”</p></div>
+</div>
+</section>
+
+<section style="padding:80px 0 0">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;margin:0;padding-bottom:14px;border-bottom:3px solid #2F3E31">Bagian 4 — State</h2>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:20px 0 34px;text-wrap:pretty">State adalah <strong>kondisi berbeda dari elemen yang sama</strong>. Ini yang paling sering terlupakan saat mendesain — dan paling sering jadi masalah saat dipakai pengguna asli.</p>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:44px 0 4px">Pada elemen yang bisa disentuh</h3>
+<div class="row">
+<div><span class="trm">Default / rest</span></div>
+<div><p class="def" style="margin:0">Kondisi diam, belum disentuh apa pun.</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Hover · focus · active <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0"><em>Hover</em> = kursor di atasnya (tidak ada di ponsel). <em>Focus</em> = terpilih lewat tombol Tab di keyboard — wajib terlihat, ini syarat aksesibilitas. <em>Active</em> = sedang ditekan.</p><p class="say" style="margin:8px 0 0">“Focus state-nya belum kelihatan”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Selected / current <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Kondisi <strong>menetap</strong> — chip yang sedang dipilih, menu halaman yang sedang dibuka. Berbeda dari hover yang hilang begitu kursor pergi.</p><p class="say" style="margin:8px 0 0">“Chip terpilih harus jelas bedanya dari yang cuma di-hover”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Disabled</span></div>
+<div><p class="def" style="margin:0">Tidak bisa diklik. Aturan pentingnya: <strong>selalu jelaskan kenapa</strong> — tombol mati tanpa alasan adalah jalan buntu.</p><p class="say" style="margin:8px 0 0">“Kalau ukuran belum dipilih, tombolnya disabled plus kasih keterangan”</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Pada halaman &amp; data</h3>
+<div class="row">
+<div><span class="trm">Empty state <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Saat tidak ada isi — keranjang kosong, pencarian tanpa hasil. <strong>State yang paling sering dilupakan, padahal paling sering dilihat pengguna baru.</strong> Jangan cuma tulis “Tidak ada hasil”; tawarkan jalan keluar.</p><p class="say" style="margin:8px 0 0">“Empty state pencarian: sarankan melonggarkan filter”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Loading <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Saat data sedang diambil. <em>Skeleton</em> — kotak abu berbentuk konten — terasa lebih cepat daripada spinner, karena mata sudah tahu apa yang akan datang.</p><p class="say" style="margin:8px 0 0">“Pakai skeleton, jangan spinner”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Error state</span></div>
+<div><p class="def" style="margin:0">Saat ada yang gagal. Sebutkan <strong>apa yang salah dan apa yang harus dilakukan</strong>, bukan kode galat.</p><p class="say" style="margin:8px 0 0">“Error-nya harus menyebut cara memperbaikinya”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Success / confirmation</span></div>
+<div><p class="def" style="margin:0">Setelah berhasil. Konfirmasi yang baik <strong>menyebut objeknya</strong>, bukan cuma “Berhasil”.</p><p class="say" style="margin:8px 0 0">“Konfirmasinya sebut nama petanya”</p></div>
+</div>
+
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:27px;font-weight:600;margin:50px 0 4px">Tiga teks di sekitar kolom isian</h3>
+<div class="row">
+<div><span class="trm">Label vs placeholder vs helper text <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0"><em>Label</em> = nama kolomnya, <strong>harus selalu ada</strong>. <em>Placeholder</em> = contoh isian di dalam kolom, dan <strong>hilang begitu diketik</strong> — jadi tidak boleh dipakai sebagai pengganti label. <em>Helper text</em> = keterangan di bawah kolom, tetap terlihat.</p><p class="say" style="margin:8px 0 0">“Placeholder-nya jangan dijadikan label”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Inline validation</span></div>
+<div><p class="def" style="margin:0">Memberi tahu kesalahan <strong>saat itu juga</strong> di sebelah kolomnya, bukan setelah tombol kirim ditekan.</p><p class="say" style="margin:8px 0 0">“Email-nya pakai inline validation”</p></div>
+</div>
+</section>
+
+<section style="padding:80px 0 0">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;margin:0;padding-bottom:14px;border-bottom:3px solid #2F3E31">Bagian 5 — Gambar &amp; teks yang tidak muat</h2>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:20px 0 34px;text-wrap:pretty">Sumber masalah paling sering di katalog produk: gambar dengan ukuran asli berbeda-beda, dan judul yang panjangnya tidak seragam.</p>
+<div class="row">
+<div><span class="trm">Cover vs contain <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Dua cara gambar mengisi kotaknya. <em>Cover</em> = memenuhi kotak, <strong>sisi yang berlebih terpotong</strong> — untuk foto suasana. <em>Contain</em> = seluruh gambar terlihat utuh, <strong>ada ruang kosong tersisa</strong> — wajib untuk peta dan produk, karena tepi karyanya tidak boleh hilang.</p><p class="say" style="margin:8px 0 0">“Foto produk pakai contain, jangan cover — petanya kepotong”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Focal point</span></div>
+<div><p class="def" style="margin:0">Titik yang dipertahankan saat gambar terpotong. Tanpa ini, bagian penting sering hilang di ponsel.</p><p class="say" style="margin:8px 0 0">“Focal point-nya di tengah atas”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Truncate / line clamp <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Memotong teks yang terlalu panjang dan menggantinya dengan “…”. <em>Line clamp</em> = memotong setelah sekian baris. Inilah cara membuat kartu produk sama tinggi meski judulnya beda-beda.</p><p class="say" style="margin:8px 0 0">“Judul kartunya line clamp 2 baris”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Overflow</span></div>
+<div><p class="def" style="margin:0">Isi yang melebihi wadahnya. Kalau keluar ke samping sampai halaman bisa digeser kanan-kiri, itu <em>horizontal overflow</em> — bug yang paling sering muncul di ponsel.</p><p class="say" style="margin:8px 0 0">“Ada horizontal overflow di ponsel”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Lazy load</span></div>
+<div><p class="def" style="margin:0">Gambar baru dimuat saat hampir terlihat. Penting untuk katalog panjang dan kuota data.</p><p class="say" style="margin:8px 0 0">“Gambar di bawah pakai lazy load”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">2x / retina</span></div>
+<div><p class="def" style="margin:0">Layar modern butuh gambar dua kali lipat ukuran tampilnya supaya tidak pecah. Logo yang tampil 200px perlu file 400px.</p><p class="say" style="margin:8px 0 0">“Logo-nya pecah, perlu versi 2x”</p></div>
+</div>
+</section>
+
+<section style="padding:80px 0 0">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,4vw,42px);font-weight:600;line-height:1.1;margin:0;padding-bottom:14px;border-bottom:3px solid #2F3E31">Bagian 6 — Hierarki &amp; keterpakaian</h2>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:20px 0 34px;text-wrap:pretty">Empat istilah untuk menamai perasaan “ini kelihatan ramai” atau “saya nggak tahu harus klik apa”.</p>
+<div class="row">
+<div><span class="trm">Primary / secondary / tertiary <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Tingkatan aksi dalam satu layar. Aturannya: <strong>satu primary saja per layar.</strong> Website lama klien punya enam tombol setara — artinya tidak ada primary sama sekali.</p><p class="say" style="margin:8px 0 0">“Terlalu banyak primary di sini — sisanya turunkan jadi secondary”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Affordance <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Petunjuk visual bahwa sesuatu bisa dipakai — tombol terlihat bisa ditekan, tautan terlihat bisa diklik. Ini nama teknis dari “saya nggak ngeh itu bisa diklik”.</p><p class="say" style="margin:8px 0 0">“Affordance kartunya kurang — nggak kelihatan bisa diklik”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Hit area / touch target <span style="color:#6E5418">◆</span></span></div>
+<div><p class="def" style="margin:0">Area yang benar-benar merespons sentuhan — boleh lebih besar dari yang terlihat. <strong>Minimal 44×44px di ponsel</strong>, kalau tidak jempol akan sering meleset.</p><p class="say" style="margin:8px 0 0">“Hit area ikonnya terlalu kecil buat jempol”</p></div>
+</div>
+<div class="row">
+<div><span class="trm">Visual weight</span></div>
+<div><p class="def" style="margin:0">Seberapa kuat sebuah elemen menarik mata — dari ukuran, ketebalan, warna, atau ruang di sekitarnya. Kalau semua kuat, tidak ada yang menonjol.</p><p class="say" style="margin:8px 0 0">“Visual weight harganya kurang, kalah sama kategori”</p></div>
+</div>
+</section>
+
+<section style="padding:80px 0 0">
+<h2 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(26px,3.6vw,38px);font-weight:600;line-height:1.1;margin:0;padding-bottom:14px;border-bottom:3px solid #2F3E31">Kalimat template</h2>
+<p style="font-size:16px;line-height:26px;color:#3A403A;max-width:680px;margin:20px 0 30px">Rangka yang bisa diisi. Bukan untuk dihafal — untuk disalin saat sedang buntu.</p>
+
+<div style="display:flex;flex-direction:column;gap:2px;background:#DCD5C6">
+<div style="background:#FBF9F5;padding:24px 26px">
+<span style="font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6E5418">Untuk layout</span>
+<p class="say" style="margin:12px 0 0;font-size:19px">"[Elemen] di [halaman] — buat [struktur], di breakpoint [ukuran] jadi [perilaku]. [Yang jangan diubah]."</p>
+<p class="def" style="margin:12px 0 0;color:#5C6659">Contoh: "Grid produk di halaman Shop — buat 4 kolom, di tablet jadi 2 dan di ponsel 1. Aspect ratio gambar jangan diubah."</p>
+</div>
+<div style="background:#FBF9F5;padding:24px 26px">
+<span style="font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6E5418">Untuk animasi</span>
+<p class="say" style="margin:12px 0 0;font-size:19px">"[Elemen] — [pemicu], [properti yang bergerak], [easing], [durasi atau stagger]."</p>
+<p class="def" style="margin:12px 0 0;color:#5C6659">Contoh: "Kartu produk — scroll-triggered, fade up 24px, ease-out, stagger 80ms."</p>
+</div>
+<div style="background:#FBF9F5;padding:24px 26px">
+<span style="font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6E5418">Untuk komponen &amp; state</span>
+<p class="say" style="margin:12px 0 0;font-size:19px">"[Komponen] di [halaman] — kalau [kondisi], [yang terjadi]. Jangan lupa state [x] dan [y]."</p>
+<p class="def" style="margin:12px 0 0;color:#5C6659">Contoh: "Grid produk di halaman Shop — kalau filter tidak menemukan apa pun, tampilkan empty state yang menyarankan melonggarkan filter. Jangan lupa loading pakai skeleton."</p>
+</div>
+<div style="background:#FBF9F5;padding:24px 26px">
+<span style="font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#6E5418">Kalau istilahnya belum ketemu</span>
+<p class="say" style="margin:12px 0 0;font-size:19px">"[Apa yang saya lihat] terasa [masalahnya]. Saya ingin [hasilnya]. Ukur dulu penyebabnya."</p>
+<p class="def" style="margin:12px 0 0;color:#5C6659">Ini tetap prompt yang kuat. Tiga kata terakhir mencegah saya menebak — saya diminta mendiagnosis dulu, bukan langsung mengubah.</p>
+</div>
+</div>
+</section>
+
+<section style="padding:60px 0 0">
+<div style="background:#2F3E31;color:#F4F1EA;padding:36px 34px">
+<h3 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:600;margin:0 0 14px;line-height:1.25">Satu hal yang tidak akan Anda temukan di kamus mana pun</h3>
+<p style="font-size:16px;line-height:26px;margin:0 0 12px;color:#E6E9E2">Menyebut istilah teknis dengan tepat <strong style="color:#F4F1EA">tidak</strong> membuat hasilnya lebih baik dengan sendirinya. Yang membuat hasilnya baik adalah Anda menyebut <strong style="color:#F4F1EA">tujuan</strong>-nya, bukan solusinya.</p>
+<p style="font-size:16px;line-height:26px;margin:0;color:#C0C8BC">"Density-nya naikkan" itu tujuan — saya bebas mencari cara terbaiknya. "Gap-nya jadikan 12px" itu solusi — kalau tebakan Anda kurang tepat, saya hanya mengeksekusi tebakan itu. Pakai kamus ini untuk menyebut <em>apa</em> dan <em>di mana</em> dengan presisi. Biarkan <em>berapa</em>-nya jadi tugas saya.</p>
+</div>
+</section>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}"></script>
+</body>
+</html>

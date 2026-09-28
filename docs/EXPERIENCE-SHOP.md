@@ -1,7 +1,7 @@
 # Experience — Old East Indies
 
 How the merch shop behaves. The research is in RESEARCH.md §3; the visual world
-is chosen in Phase 1 and recorded in `engine/apps/emporium/DESIGN.md`.
+is chosen in the Design stage and recorded in `engine/apps/emporium/DESIGN.md`.
 
 **Feeling to aim for:** the optimism of a 1930s steamship-line brochure, retold
 for today's Bali café crowd — warm, sunlit, giftable, a little playful — with the
@@ -16,12 +16,14 @@ Cream `#F4E7CC`, Frangipani Coral `#E4704F`, Sun Ochre `#E8A93A`, Palm Green
 "Nusantara Pop" (Bricolage Grotesque + Instrument Serif, batik-derived tiles with
 a credited batik artist). The Deco travel poster is also the stock look of every
 vintage-poster print-on-demand shop — and a 1930s steamship brochure is colonial
-tourism promotion, in tension with this brand's own commitment below. Phase 1
-therefore runs impeccable's full direction round (TASKS.md 1.5) with **each
+tourism promotion, in tension with this brand's own commitment below. The Design stage
+therefore runs impeccable's full direction round (TASKS.md 12.2) with **each
 research direction entering as at most one candidate**, a **cultural review by
 Indonesian designers and buyers**, and a written position on what the chosen
 world celebrates (the archipelago, the craft of printmaking) and what it avoids
-(the colonial gaze). Nothing above binds the outcome; the typewriter-style Archive
+(the colonial gaze). Nothing above binds the outcome — and since 2026-09-28 the
+shop shares the gallery's base system and differs in its accents (D9's shape,
+see EXPERIENCE-GALLERY.md); the cultural review applies to those accents; the typewriter-style Archive
 No. tag shared with the gallery is the one sister element already agreed.
 
 **Two cautions carried into the design:**
@@ -44,8 +46,9 @@ arrive from Instagram on a phone.
 ## 2. Information architecture
 
 **Top navigation:** Shop · Collections · Places & Eras · Gifts · Stories · For
-Business · Visit the Showroom. **Utility bar:** ship-to/currency · language ·
-WhatsApp · account · bag.
+Business · **Partnership** (the retailer programme) · Visit the Showroom.
+**Utility bar:** ship-to/currency · language · WhatsApp · bag — no shopper account: shoppers buy as guests and track
+orders by number (D31, TASKS.md 28.5).
 
 **Shop** mega-menu, three columns plus a feature tile (the hero line):
 - **Wall Art** — Posters · Giclée · Framed · Canvas · Murals · Print from the
@@ -248,6 +251,13 @@ may collect. A print that arrives damaged is replaced on a photo claim.
   identity — never a bare gateway screen.
 
 ## 9. For Business
+
+**Retail partners are separate from For Business** (D31). The shop already
+supplies 100+ shops, so a **Partnership** page — reached from a highlight in the
+home hero and from the header — explains the programme and ends in the sign-up /
+sign-in section. Retailers are the **only** accounts on this site: an
+application approved by staff, then a retailer area with the trade terms (D32)
+and orders by quote (TASKS.md 28.5).
 
 Hotels, villas, cafés, embassies and companies: an enquiry flow (quantities,
 sizes, framing, deadlines) that becomes a **quote page** (lines, validity, PDF,
