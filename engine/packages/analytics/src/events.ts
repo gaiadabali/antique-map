@@ -11,7 +11,7 @@
  */
 import type { Surface } from '@engine/config/routes'
 import type { InventoryModel, LocaleCode, ProductKind } from '@engine/config/schema'
-import type { CheckoutStepId, EnquiryTopic, IsoInstant } from '@engine/domain/api'
+import type { CheckoutStepId, EnquiryTopic, IsoInstant, RetailerShopType } from '@engine/domain/api'
 import type { DomainEventName } from '@engine/domain/events'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
 import type { PaymentFailureClass, PaymentMethodId } from '@engine/domain/machines/payment'
@@ -92,6 +92,8 @@ export type BeaconEventProps = {
   readonly 'viewing.booked': { readonly locationId: string }
   readonly 'consignment.submitted': NoProps
   readonly 'whatsapp.clicked': { readonly context: 'item' | 'checkout' | 'footer' | 'business' }
+  /** The Partnership form's shop branch sent (D31): the kind of shop, never who it is. */
+  readonly 'retailerApplication.submitted': { readonly shopType: RetailerShopType }
   // Purchase
   /** `value` is the price the page displayed, for GA4's add_to_cart — commerce never reads it. */
   readonly 'cart.added': OnItem & {
@@ -166,8 +168,19 @@ export const DOMAIN_ANALYTICS_EVENTS = [
   'hold.granted',
   'hold.expired',
   'reservation.conflicted',
+  // The shop's partner funnel (D31): applications, and staff's decisions with how long they took.
+  'retailer.applied',
+  'retailer.approved',
+  'retailer.declined',
 ] as const satisfies readonly DomainEventName[]
 export type DomainAnalyticsEvent = (typeof DOMAIN_ANALYTICS_EVENTS)[number]
+
+/** Staff's answer to an application, with the hours it took — the Leads dashboard's reply time. */
+type RetailerDecision = {
+  readonly retailerId: number
+  readonly shopType: RetailerShopType
+  readonly decisionHours: number
+}
 
 /** Values in the charge currency, with the order's FX snapshot kept server-side (never recomputed). */
 export type DomainAnalyticsProps = {
@@ -182,6 +195,10 @@ export type DomainAnalyticsProps = {
   readonly 'hold.granted': OnItem
   readonly 'hold.expired': OnItem
   readonly 'reservation.conflicted': OnItem & { readonly state: 'held' | 'sold' }
+  /** A retail partner by its customer id and kind of shop — never its name, NPWP or contact. */
+  readonly 'retailer.applied': { readonly retailerId: number; readonly shopType: RetailerShopType }
+  readonly 'retailer.approved': RetailerDecision
+  readonly 'retailer.declined': RetailerDecision
 }
 
 export type AnalyticsEventName = BeaconEventName | DomainAnalyticsEvent
@@ -201,6 +218,7 @@ export const GA4_EVENTS = {
   'offer.submitted': 'generate_lead',
   'enquiry.submitted': 'generate_lead',
   'viewing.booked': 'generate_lead',
+  'retailerApplication.submitted': 'generate_lead',
   'search.submitted': 'search',
   'newsletter.confirmed': 'sign_up',
 } as const satisfies { readonly [N in AnalyticsEventName]?: string }
@@ -220,6 +238,7 @@ export const META_EVENTS = {
   'offer.submitted': 'Lead',
   'enquiry.submitted': 'Lead',
   'viewing.booked': 'Lead',
+  'retailerApplication.submitted': 'Lead',
   'search.submitted': 'Search',
   'newsletter.confirmed': 'Subscribe',
 } as const satisfies { readonly [N in AnalyticsEventName]?: string }
