@@ -17,7 +17,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Repository, contracts and agent workspace | Foundation | — | 🔄 in progress | 1/3 | 18/23 | 0 | `████████░░`  78% |
+| **1** Repository, contracts and agent workspace | Foundation | — | 🔄 in progress | 2/3 | 19/23 | 0 | `████████░░`  83% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | · not started | 0/3 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **1/159** | **18/706** | **46** | `░░░░░░░░░░`   3% |
+| **All** | 44 phases | | | **2/159** | **19/706** | **46** | `░░░░░░░░░░`   3% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -157,7 +157,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 1·W1 | 1.2 Contracts C1–C13 (ARC-P + ARC-D) | architect ×2 | merged to main b316e25 | 2026-09-28 | a–k evidenced; reviews signed off (senior-be, senior-fe, senior-db) — [reviews](.claude/specs/indies-platform/reviews/); `pnpm verify` green on main. 1.2.l waits on ARC-D's step-0 follow-up (senior-db should-fix: guard + margin), then 1.3 |
+| 1·W2 | 1.3 Agent workspace | junior | own worktree (isolation) | 2026-09-28 | worktree helper + impeccable skill copied from kingdom-of-indonesia |
 
 ## Decisions for the owner
 
@@ -289,7 +289,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 1.1.f 👤 owner creates the GitHub repository under the organisation and grants the deploy account write access; first push
   - [x] 1.1.g **Check:** a fresh clone on Windows and Linux runs `pnpm install && pnpm verify` green with the empty workspace.
 
-- [ ] **1.2 Freeze the contracts C1–C13** · needs: — — 🔄 1·W1
+- [x] **1.2 Freeze the contracts C1–C13** · needs: — — ✅ 2026-09-28 b0fa092
   - **Lane** ARC · **Agent** architect ×2, types and docs only — **ARC-P** (platform and UI: 1.2.a–1.2.d, 1.2.h, 1.2.i) and **ARC-D** (domain: 1.2.e–1.2.g, 1.2.j); ARC-P writes 1.2.k · **Wave** W1
   - **Owns** ARC-P: `engine/packages/config/src/{schema,routes}.ts`, `engine/packages/view-models/**`, `engine/packages/ui/src/tokens/contract.ts`, `engine/packages/media/src/contract.ts`, `engine/packages/http/src/manifest.ts`, `engine/packages/CONTRACTS.md` · ARC-D: `engine/packages/domain/src/{money/contract.ts,contracts/**,*/machine.ts,reservations/contract.ts}`, `engine/packages/{payments,shipping,fulfilment,analytics,sister}/src/contract.ts` · each: the `package.json` skeletons and `tsconfig.json` (extending the 1.1 template) of the packages it touches
   - **Read** PARALLEL-TRACKS.md §4, BRANDS.md, CONTENT-MODEL.md, COMMERCE.md, PAYMENTS.md §2–4, ARCHITECTURE.md §6, §9, §11, DESIGN-SYSTEM.md §2–5
@@ -305,10 +305,10 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 1.2.i C10 route map — per-locale segments, facet vocabularies, legacy prefixes, `href(surface, params, locale)`; C13 HTTP handler manifest — every `/api/x/*` route and the literal proxy `matcher`
   - [x] 1.2.j C11 analytics event names (ANALYTICS.md §2); C12 sister work snapshot (published fields only) + webhook events
   - [x] 1.2.k `engine/packages/CONTRACTS.md`: how a contract changes (versioned, announced to consuming lanes, ARC approval)
-  - [ ] 1.2.l The shop's Partnership surface and retailer accounts (D31, 2026-09-28): a `partnership` route in C10, `PartnershipVM` and the retailer account VM in C2, the retailer application intent in C6, and `retailer` pricing as a tier C5/C6 can carry — routed to ARC-P and ARC-D before phase 1 closes
+  - [x] 1.2.l The shop's Partnership surface and retailer accounts (D31, 2026-09-28): a `partnership` route in C10, `PartnershipVM` and the retailer account VM in C2, the retailer application intent in C6, and `retailer` pricing as a tier C5/C6 can carry — routed to ARC-P and ARC-D before phase 1 closes
   - [ ] 1.2.m **Check:** every contract compiles, is marked `@contract` with an owner, every fixture type-checks against its view model, and a senior-be and a senior-fe reviewer have signed off in the report.
 
-- [ ] **1.3 Agent workspace** · needs: 1.1
+- [ ] **1.3 Agent workspace** · needs: 1.1 — 🔄 1·W2
   - **Lane** HAR · **Agent** junior · **Wave** W2
   - **Owns** `engine/tooling/worktree/**`, `.claude/skills/**`, `.claude/agents/impeccable-*`
   - **Read** PARALLEL-TRACKS.md §3
@@ -2337,6 +2337,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-28 — ✅ 1.2 — contracts C1–C13 frozen (b0fa092): ARC-P and ARC-D, signed off by senior-be, senior-fe and senior-db (reviews and follow-ups in `.claude/specs/indies-platform/reviews/`); `pnpm verify` green on main, 11 packages. Follow-ups for later lanes are listed in the four fix/review reports (PLT `validateBrandConfigs()` rules, SCH DDL in `@engine/domain/storage`, DOM concurrency tests, doc updates). 1·W2 opened: 1.3.
 - 2026-09-28 — 1.2 merged to main (b316e25): C1–C13 from ARC-P and ARC-D after senior-be, senior-fe and senior-db reviews and two fix passes each; lockfile regenerated; `pnpm verify` green (11 packages). Open: senior-db's step-0 guard/margin notes on `applyPaymentEvent()` (ARC-D), then 1.2.l. Owner to confirm the default `commerce.ttl.checkoutLockMaxHours` = 3.
 - 2026-09-28 — **The owner's first design draft received** (a Claude Design export, `docs/design/input/claude-design-2026-09/`) with the client's decisions of 11 Sept 2026. Confirmed with the owner: D30 (the gallery keeps online sales), D31 (shop accounts for retailers only — new task 28.5, contract item 1.2.l), D9's shape (one shared base, distinct accents — phases 12–14 reworded). Kingdoms of Indonesia, a third site for the same client, is out of this platform's scope.
 - 2026-09-28 — **Replanned: 14 phases → 44.** The old phases held ~50 subtasks each (Commerce 89) and ran across a global W1–W26 wave calendar in which one wave mixed up to five phases. Now each phase is ≤ 8 tasks and ≤ 3 waves, waves are local to their phase (`N·Wk`), a phase opens on its needs with at most three open, and stages group the phases and keep the old gates. The six launch-readiness tasks were split into the shop's half and the gallery's half, and the shop's legacy import (old 11.7) into discovery and import. No subtask or Check was dropped. Old → new:
