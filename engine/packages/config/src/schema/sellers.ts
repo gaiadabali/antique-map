@@ -3,8 +3,9 @@
  *
  * Sellers are data (COMMERCE.md §2, BRANDS.md §3): one per checkout, chosen from the stock
  * location and the destination, and everything the buyer sees — currency, tax, methods,
- * legal identity — follows from it. The provider and method ids are declared here because
- * config is the leaf; C7 (`@engine/payments/contract`) imports them and never redeclares.
+ * legal identity — follows from it. The provider ids and method families are declared here
+ * because config is the leaf and validates them; C7 (`@engine/payments/contract`) imports
+ * them rather than redeclaring, and maps each granular method onto a family.
  */
 import { z } from 'zod'
 
@@ -29,11 +30,13 @@ export const PAYMENT_PROVIDERS = [
 export type PaymentProviderId = (typeof PAYMENT_PROVIDERS)[number]
 
 /**
- * Method families a buyer chooses between — what `methodOrder` sorts and what routing
- * filters by amount caps (PAYMENTS.md §3). `express-wallet` is Apple Pay / Google Pay;
- * `ewallet` is GoPay, OVO, DANA, ShopeePay; `retail` is cash at a convenience store.
+ * The method families a seller's `methodOrder` sorts (PAYMENTS.md §3). A buyer picks a
+ * granular C7 method (`va-bca`, `gopay`, `apple-pay`); each belongs to exactly one family —
+ * `express-wallet` is Apple Pay / Google Pay, `ewallet` GoPay, OVO, DANA, ShopeePay, `va`
+ * every bank's virtual account, `retail` cash at a convenience store, `paylater` Kredivo and
+ * Akulaku — and C7 declares that mapping against this list (CONTRACTS.md, C1 ⇄ C7).
  */
-export const PAYMENT_METHODS = [
+export const PAYMENT_METHOD_FAMILIES = [
   'card',
   'express-wallet',
   'paynow',
@@ -48,7 +51,7 @@ export const PAYMENT_METHODS = [
   'paypal',
   'manual',
 ] as const
-export type PaymentMethodId = (typeof PAYMENT_METHODS)[number]
+export type PaymentMethodFamily = (typeof PAYMENT_METHOD_FAMILIES)[number]
 
 /** COMMERCE.md §9. */
 export const TAX_REGIMES = ['ID-PPN', 'SG-GST', 'none'] as const
@@ -74,7 +77,8 @@ export const sellerSchema = z.strictObject({
   /** The currencies this entity may charge — an Indonesian PT: IDR only. */
   charge: z.array(currencyCodeSchema).min(1),
   payments: z.array(z.enum(PAYMENT_PROVIDERS)).min(1),
-  methodOrder: z.array(z.enum(PAYMENT_METHODS)).default([]),
+  /** Families first to last; a family left out sorts after those listed. */
+  methodOrder: z.array(z.enum(PAYMENT_METHOD_FAMILIES)).default([]),
   /** Cards above this route to bank transfer or invoice (PAYMENTS.md §3 risk policy). */
   cardCeiling: positiveMoneySchema.nullable().default(null),
   /** Originals above this ship on a quote with fine-art transit cover (COMMERCE.md §8). */

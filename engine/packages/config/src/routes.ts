@@ -44,6 +44,7 @@ export const SURFACE_ROUTES = {
   page: { internal: 'page/[slug]' },
   cart: { internal: 'cart' },
   checkout: { internal: 'checkout' },
+  // The customer session or a `lookupToken` (C6 `OrderAccess`), never the order number alone.
   order: { internal: 'order/[number]' },
   account: { internal: 'account/[section]', index: true },
   form: { internal: 'form/[kind]' },
@@ -201,7 +202,8 @@ export type HrefParams = {
   page: { slug: string }
   cart: NoParams
   checkout: NoParams
-  order: { number: string; token?: string }
+  /** Without `lookupToken`, only the signed-in buyer's session opens it (C6 `OrderAccess`). */
+  order: { number: string; lookupToken?: string }
   account: { section?: AccountSection }
   form: { kind: FormKind; item?: number; topic?: string }
   pay: { token: string }
@@ -258,7 +260,7 @@ function partsOf(context: Context, surface: LinkSurface): [string[], Query] {
     case 'place':
       return [[segments.place, ...(p.path ?? [])], {}]
     case 'order':
-      return [[segments.order, p.number ?? ''], { token: p.token }]
+      return [[segments.order, p.number ?? ''], { lookupToken: p.lookupToken }]
     case 'account': {
       const section = ACCOUNT_SECTIONS[p.section ?? 'overview'].segment
       return [[segments.account, ...(section ? [section] : [])], {}]

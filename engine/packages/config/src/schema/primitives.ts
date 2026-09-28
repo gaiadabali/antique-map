@@ -31,3 +31,16 @@ export type Destination = z.infer<typeof destinationSchema>
  */
 export const moneySchema = z.strictObject({ amount: z.int(), currency: currencyCodeSchema })
 export const positiveMoneySchema = moneySchema.refine((m) => m.amount > 0, 'a positive amount')
+
+/**
+ * Bands that ascend by `upTo` (minor units of the base or the band's currency), only the last
+ * open-ended (`upTo: null`) — the shape of the purchase tiers and the price-point ladder.
+ */
+export function isLadder(bands: readonly { readonly upTo: number | null }[]): boolean {
+  return bands.every((band, i) => {
+    const next = bands[i + 1]
+    if (!next) return band.upTo === null
+    return band.upTo !== null && (next.upTo === null || next.upTo > band.upTo)
+  })
+}
+export const LADDER_MESSAGE = 'bands ascend by upTo and only the last has upTo: null'

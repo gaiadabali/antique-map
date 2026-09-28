@@ -8,6 +8,8 @@
  */
 import { z } from 'zod'
 
+import { isLadder, LADDER_MESSAGE } from './primitives'
+
 export const INVENTORY_MODELS = [
   'unique',
   'edition',
@@ -65,18 +67,8 @@ export type PurchaseTier = z.infer<typeof purchaseTierSchema>
 export const commerceConfigSchema = z.strictObject({
   inventoryModels: z.array(z.enum(INVENTORY_MODELS)).min(1),
   ttl: ttlSchema.prefault({}),
-  purchaseTiers: z
-    .array(purchaseTierSchema)
-    .default([])
-    .refine(
-      (tiers) =>
-        tiers.every((tier, i) => {
-          const next = tiers[i + 1]
-          if (!next) return tier.upTo === null
-          return tier.upTo !== null && (next.upTo === null || next.upTo > tier.upTo)
-        }),
-      'tiers ascend by upTo and only the last has upTo: null',
-    ),
+  /** Empty: every priced unique item leads with `buy`. */
+  purchaseTiers: z.array(purchaseTierSchema).default([]).refine(isLadder, LADDER_MESSAGE),
 })
 export type CommerceConfig = z.infer<typeof commerceConfigSchema>
 

@@ -8,6 +8,8 @@
  */
 import { z } from 'zod'
 
+import type { Storefront } from './look'
+
 export const MODULES = {
   'catalogue.unique': 'One-of-one items: checkout lock, sold archive, "notify me of similar"',
   'catalogue.variants': 'Variant axes, SKUs and stock',
@@ -56,4 +58,14 @@ export type ModuleFlags = z.infer<typeof modulesSchema>
 /** The only way code asks what a brand can do (CONVENTIONS.md §1). */
 export function hasModule(config: { readonly modules: ModuleFlags }, key: ModuleKey): boolean {
   return config.modules[key] === true
+}
+
+/**
+ * What a storefront app declares it can render (its `supports` file, TASKS.md 0.8.c).
+ * `validateBrandConfigs()` rejects a brand whose modules are not a subset, so a missing
+ * surface fails CI instead of rendering as a blank section (BRANDS.md §6).
+ */
+export type AppSupports = {
+  readonly storefront: Storefront
+  readonly modules: readonly ModuleKey[]
 }
