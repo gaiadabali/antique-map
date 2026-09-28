@@ -29,7 +29,9 @@ export type {
   PriceAgreementRef,
   TradeMinimum,
   TradeMinimumShortfall,
+  TradeMinimumWaiver,
   TradeTerms,
+  TradeTermsResolution,
   UnitPriceSource,
 } from '../contracts/price-sources'
 export type {

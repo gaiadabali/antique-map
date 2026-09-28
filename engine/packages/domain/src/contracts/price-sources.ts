@@ -53,16 +53,17 @@ export type AgreedPrice = {
   readonly agreedAt: IsoInstant
 }
 
-// ─── Trade terms (D31, D32) ──────────────────────────────────────────────────────────────────
+// ─── Trade terms (D31, D32, D33) ──────────────────────────────────────────────────────────────
 
 /**
  * A retail partner's trade terms: a price tier and a minimum order, as data. Brand config's
- * `commerce.trade` (C1) declares the tiers and the default one, a CMS global may override them (the
- * config spine, BRANDS.md §3), and staff assign each approved retailer a tier — the default, at
- * approval. The server resolves them for an APPROVED retailer only, and only to price that
+ * `commerce.trade` (C1) declares the tiers and the default one; only an owner-role CMS user may
+ * override them, every change audited, and an editor never can (D33). Staff assign each approved
+ * retailer a tier — the default, at approval — held in `customers.tradeTierId` (SCH; C8
+ * `change-tier`). The server resolves them for an APPROVED retailer only, and only to price that
  * retailer's quote in the order builder (TASKS.md 24.5): a bag never carries them (`PricingContext`
- * `channel: 'bag'`), a pending or declined applicant never gets them — an ended partnership is
- * `declined` too (C1 `RETAILER_STATUSES`) — and nothing a client sends ever names a tier.
+ * `channel: 'bag'`), an applicant, a declined one or an ended partnership never gets them (C8), and
+ * nothing a client sends ever names a tier.
  */
 export type TradeTerms = {
   readonly tierId: string
@@ -76,12 +77,23 @@ export type TradeTerms = {
 }
 
 /**
+ * What resolving a retailer's terms answers (DOM), failing closed: terms only for an approved
+ * retailer whose tier is in force. A tier that is not — gone from the config and its override —
+ * is `unknown-tier`: no trade price, staff alerted, and the order builder issues nothing at trade
+ * until staff assign a tier in force; never the default tier, never a nearby one.
+ */
+export type TradeTermsResolution =
+  | { readonly kind: 'terms'; readonly terms: TradeTerms }
+  /** Not an approved retailer (C8 `TradeEligibleStatus`): the market list. */
+  | { readonly kind: 'not-a-partner' }
+  | { readonly kind: 'unknown-tier'; readonly tierId: string }
+
+/**
  * The least a retailer's quote must come to — one rule per tier, as the programme states it (C2's
  * `MinimumOrderVM` shows the same two kinds). Checked when the quote is ISSUED: the order builder
- * issues it only if it meets the minimum of the terms in force at that moment, or if staff waive
- * the minimum for that one quote within their role's limit, the waiver recorded on it. Acceptance
- * does not check again: the retailer accepts the quote as issued, its lines cannot change, and it
- * keeps the terms it was issued under.
+ * issues it only if it meets the minimum of the terms in force at that moment, or with a
+ * `TradeMinimumWaiver` for that one quote. Acceptance does not check again: the retailer accepts
+ * the quote as issued, its lines cannot change, and it keeps the terms it was issued under.
  */
 export type TradeMinimum =
   /**
@@ -108,6 +120,23 @@ export type TradeMinimumShortfall =
       }[]
     }
 
+/**
+ * Staff issuing a retailer's quote below its minimum, for that one quote — only as C1's
+ * `commerce.trade.waiver` allows (its roles, up to `maxShortfallBps`; no one when it is null).
+ * `maxShortfallBps` measures the shortfall in basis points of what was required: for an amount,
+ * (required − total) / required; for pieces, the widest gap of any design or variant over its
+ * required count. Stored on the quote as issued (SCH), with `quote.minimumWaived` in the outbox
+ * as the audit; the retailer sees only when, and the shortfall (C6 `QuoteWaiverView`).
+ */
+export type TradeMinimumWaiver = {
+  /** The staff user who waived it (Payload `users` id). */
+  readonly by: number
+  readonly at: IsoInstant
+  /** Staff's reason, for the audit — never shown to the retailer. */
+  readonly reason: string
+  readonly shortfall: TradeMinimumShortfall
+}
+
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────
 
 // An agreement names the offer or quote; the figure is looked up, so none can ride along.
@@ -121,6 +150,9 @@ type _AgreementCarriesNoFigure = Assert<
 >
 // A shortfall answers the minimum it failed, kind for kind.
 type _ShortfallPerMinimum = Assert<Equals<TradeMinimumShortfall['kind'], TradeMinimum['kind']>>
+// Failing closed: only a resolved tier carries terms — nothing else holds one to fall back on.
+type NoTerms = Exclude<TradeTermsResolution, { readonly kind: 'terms' }>
+type _FailsClosed = Assert<Equals<Extract<NoTerms, { readonly terms: unknown }>, never>>
 type _OneRulePerTier = Accepts<
   TradeMinimum,
   // @ts-expect-error — a pieces minimum names its count; it is not an amount

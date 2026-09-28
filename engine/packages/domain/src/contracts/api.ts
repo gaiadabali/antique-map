@@ -6,6 +6,12 @@
  * them, and C13 maps each operation to its `/api/x/*` route. `CommerceApi` names every operation
  * with its request, its answer and the problems it may return — and the foot of this file proves,
  * at compile time, that no request can carry a price.
+ *
+ * Without JavaScript (C13): an HTML form post answers 303 back to its page, and the answer waits
+ * on the server, briefly, under a cookie that holds only an opaque id. Every answer here is plain
+ * JSON (proved below), so any can wait that way. One that carries a token — an order lookup's, a
+ * quote's, a pay link's, a return's, an enquiry's — waits like a secret: short-lived, read once,
+ * bound to the browser that posted, never logged. `retailer.apply`'s is the same for everyone.
  */
 import type { Money } from '../money/contract'
 import type {
@@ -25,6 +31,7 @@ import type * as Leads from './leads'
 import type { IsServerPriced, LineInput } from './requests'
 import type { ApiResult, ProblemCode, ProblemOf } from './results'
 import type * as Retailers from './retailers'
+import type { JsonValue } from './scalars'
 import type * as Services from './services'
 import type { Assert, Equals } from './type-assertions'
 
@@ -156,6 +163,7 @@ export type CommerceApi = {
   >
   readonly 'quote.proforma': Op<ProformaRequest, QuoteView, 'not-found' | Priced>
   readonly 'quote.request': Op<QuoteRequest, QuoteView, 'not-found' | 'line-not-routable'>
+  readonly 'quote.reorder': Op<Retailers.QuoteReorderRequest, QuoteView, 'not-found'>
   readonly 'quote.get': Op<QuoteGetRequest, QuoteView, 'not-found'>
   readonly 'quote.accept': Op<QuoteAcceptRequest, QuoteView, 'not-found' | Priced>
 }
@@ -198,4 +206,15 @@ type _NewFigureNamesCaught = Assert<
 type _NoTierFromARequest = Assert<
   // @ts-expect-error — a trade tier is the server's to resolve for an approved retailer (D32)
   IsServerPriced<Cart.CartAddLinesRequest & { readonly tradeTierId: string }>
+>
+
+// ─── Type-level tests: every answer can wait on the server for a page without JavaScript ─────
+
+type EveryAnswerIsJson = {
+  [O in CommerceOperation]: [ResponseOf<O>] extends [JsonValue] ? true : false
+}
+type _EveryAnswerIsJson = Assert<Equals<EveryAnswerIsJson[CommerceOperation], true>>
+type _NoDateInAnAnswer = Assert<
+  // @ts-expect-error — a Date object is not JSON: an instant crosses the wire as `IsoInstant`
+  [ApiResult<{ readonly at: Date }>] extends [JsonValue] ? true : false
 >

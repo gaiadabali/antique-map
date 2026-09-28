@@ -188,7 +188,8 @@ type PricingContextBase = {
  *   shoppers buy as guests, and a retailer has no wholesale cart);
  * - `quote` — the order builder pricing a quote or an order for a named customer, or the payment of
  *   an agreement (a pay link, an accepted quote): `trade` only when that customer is an approved
- *   retailer, resolved on the server; a line an agreement prices keeps the tier it recorded.
+ *   retailer, resolved on the server (`TradeTermsResolution` `terms`; any other answer is null);
+ *   a line an agreement prices keeps the tier it recorded.
  */
 export type PricingContext =
   | (PricingContextBase & { readonly channel: 'bag'; readonly trade: null })
