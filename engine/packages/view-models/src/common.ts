@@ -37,10 +37,31 @@ export type IsoDateTime = string
 /**
  * A part resolved at request time — availability, the ship-to market, the viewer — and
  * streamed into a `<Suspense>` boundary (ARCHITECTURE.md §9). Never produced inside a
- * cached read. A fixture passes `Promise.resolve(…)`, or a promise that never settles to
- * show the reserved-height "Checking availability…" state.
+ * cached read, and it NEVER rejects: a failed read resolves to its designed fallback — `null`
+ * or an empty list (the band is omitted), `enquiryOnly` / `unverified` for a purchase panel,
+ * the shell's defaults for the ship-to, the bag and consent — so no error boundary ever
+ * stands in for a panel. A fixture passes `Promise.resolve(…)`, or `pending()` for the
+ * reserved-height "Checking availability…" state.
  */
 export type Streamed<T> = Promise<T>
+
+/**
+ * A view model without its request-time parts: what a loader's `'use cache'` + `cacheTag`
+ * read may return (phase one, `./loaders`). Every property that holds a `Streamed` part, at
+ * any depth — a home band's rail, an item's purchase panel — is left out; phase two adds them.
+ */
+export type CachedPart<T> =
+  T extends Streamed<unknown>
+    ? never
+    : T extends readonly (infer E)[]
+      ? readonly CachedPart<E>[]
+      : T extends object
+        ? {
+            [
+              K in keyof T as [Extract<T[K], Streamed<unknown>>] extends [never] ? K : never
+            ]: CachedPart<T[K]>
+          }
+        : T
 
 /** A resolved link: `href` comes from C10's `href()` (or is absolute, for a sister). */
 export type LinkVM = { label: string; href: string }

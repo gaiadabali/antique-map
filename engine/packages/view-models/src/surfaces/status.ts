@@ -3,9 +3,11 @@
  *
  * Designed, not defaulted (DESIGN-SYSTEM.md §2). A legacy `/product/{id}-{slug}` that no
  * longer resolves turns its slug into a prefilled search with similar works; an item removed
- * from inventory is Gone — a sold item never is, it stays live as sold; a server error offers
- * WhatsApp (the shell's contact) and a reference to quote, never a stack trace. The shell
- * renders around each, so contact details come from `ShellVM`.
+ * from inventory shows the Gone design — at 404, noindex, out of the sitemap, because a page
+ * cannot answer 410 (a real 410 is only the legacy handler's) — and a sold item is never gone,
+ * it stays live as sold; a server error offers WhatsApp (the shell's contact) and a reference
+ * to quote, never a stack trace. The not-found loader chooses between the first two from the
+ * public path (C13 `PROXY_REQUEST_HEADERS`). The shell renders around each.
  */
 import type { CardVM } from '../cards'
 import type { Streamed } from '../common'
