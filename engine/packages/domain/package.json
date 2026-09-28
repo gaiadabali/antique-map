@@ -13,6 +13,8 @@
     "./machines/availability": "./src/availability/machine.ts",
     "./machines/offer": "./src/offer/machine.ts",
     "./reservations": "./src/reservations/contract.ts",
+    "./transactions": "./src/contracts/transactions.ts",
+    "./storage": "./src/contracts/storage.ts",
     "./events": "./src/contracts/domain-events.ts"
   },
   "scripts": {

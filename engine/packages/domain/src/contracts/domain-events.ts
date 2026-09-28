@@ -15,7 +15,7 @@ import type { AvailabilityDomainEvent } from '../availability/machine'
 import type { OfferDomainEvent } from '../offer/machine'
 import type { OrderDomainEvent } from '../order/machine'
 import type { PaymentDomainEvent } from '../payment/machine'
-import type { ReservationDomainEvent } from '../reservations/machine'
+import type { EXPIRING_NOTICE_EVENTS, ReservationDomainEvent } from '../reservations/machine'
 import type { JsonValue } from './scalars'
 import type { Assert, Equals } from './type-assertions'
 
@@ -23,7 +23,10 @@ import type { Assert, Equals } from './type-assertions'
 export type NoticeDomainEvent =
   /** reserve() returned a conflict: someone else was first (ANALYTICS.md §2). */
   | 'reservation.conflicted'
-  /** From the sweeper, ahead of the end (COMMERCE.md §6). */
+  /**
+   * Ahead of the end, once per reservation or counter (COMMERCE.md §6): `hold.expiring` from
+   * ReservationService.noticeExpiring(), `offer.counterExpiring` from the offer sweep.
+   */
   | 'hold.expiring'
   | 'offer.counterExpiring'
   /** C6 records, stored — never merely forwarded — and put on the staff desk. */
@@ -92,3 +95,5 @@ type FromTheDomain =
   | 'hold.expired'
   | 'reservation.conflicted'
 type _AnalyticsNamesExist = Assert<Equals<Exclude<FromTheDomain, DomainEventName>, never>>
+type ExpiringNotice = (typeof EXPIRING_NOTICE_EVENTS)[keyof typeof EXPIRING_NOTICE_EVENTS]
+type _ExpiringNoticesAreNamed = Assert<Equals<Exclude<ExpiringNotice, DomainEventName>, never>>

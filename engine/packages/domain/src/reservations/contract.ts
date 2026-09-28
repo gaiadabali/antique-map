@@ -4,188 +4,128 @@
  *
  * Every channel — web checkout, accepted offer, staff hold, institutional invoice, a manual
  * showroom sale — reserves through this one service, and nothing else writes a reservation
- * (ARCHITECTURE.md §6; COMMERCE.md §4). DOM implements it in `reservations/reserve.ts` (5.4);
- * SCH declares the table and its partial unique index (PARALLEL-TRACKS.md §1).
+ * (ARCHITECTURE.md §6; COMMERCE.md §4): not an admin form, not a hook, not a sweep of its own. DOM
+ * implements it in `reservations/reserve.ts` (5.4) under the transaction rules of
+ * ../contracts/transactions.ts; SCH declares the table, its partial unique index and its checks
+ * (../contracts/storage.ts).
  */
+import type {
+  ConvertResult,
+  ExtendResult,
+  PerReservation,
+  ReleaseOutcome,
+  ReleaseReason,
+  ReservationIds,
+  ReserveAllResult,
+  ReserveInput,
+  ReserveResult,
+  ReverseOutcome,
+  ReverseReason,
+} from '../contracts/reservation-types'
 import type { Duration } from '../contracts/scalars'
-import type { Accepts, Assert, Equals } from '../contracts/type-assertions'
-import type { ReservationKind, ReservationStatus } from './machine'
+import type { DomainTx, SweepResult } from '../contracts/transactions'
 
 export type * from './machine'
+export type * from '../contracts/reservation-types'
+export type * from '../contracts/transactions'
 
-// ─── Targets and the scalar key ──────────────────────────────────────────────────────────────
-
-/** A unique item: its product's database id (not its public id). */
-export type ProductTarget = { readonly kind: 'product'; readonly productId: number }
-/** One numbered unit of an edition (#12/100), reserved exactly like a unique item. */
-export type UnitTarget = { readonly kind: 'unit'; readonly unitId: number }
-/** Counted stock: a variant at a stock location (on hand − reserved). */
-export type StockTarget = {
-  readonly kind: 'stock'
-  readonly variantId: number
-  readonly locationId: number
-}
-
-/** Targets that sell once: the partial unique index guards them. */
-export type ExclusiveTarget = ProductTarget | UnitTarget
-export type ReservationTarget = ExclusiveTarget | StockTarget
-
-export type ExclusiveTargetKey = `product:${number}` | `unit:${number}`
-export type CountedTargetKey = `stock:${number}@${number}`
+/** How often reserve() inserts again when the row that blocked it vanished before it was read. */
+export const RESERVE_CONFLICT_RETRIES = 3
 
 /**
- * The scalar `target_key` reserve() writes on every row — and nothing else writes it. Payload
- * keeps polymorphic relations in a `_rels` table with no column to index, so the key is what the
- * partial unique index (`status IN ('active','converted')`, exclusive keys only) is built on.
+ * The operations. `tx` is the caller's open transaction (DomainTx): no method opens or commits one
+ * of its own, so a reservation, a payment and an order commit together or not at all. Expiry is
+ * judged by the database clock, `statement_timestamp()` — never an app server's, and never
+ * `now()`, which is the transaction's start and goes stale inside a long one.
  */
-export type TargetKey = ExclusiveTargetKey | CountedTargetKey
-
-export type TargetKeyOf<T extends ReservationTarget> = T extends ProductTarget
-  ? `product:${number}`
-  : T extends UnitTarget
-    ? `unit:${number}`
-    : CountedTargetKey
-
-// ─── Owners, inputs, records ─────────────────────────────────────────────────────────────────
-
-/** Who a reservation belongs to, per kind. Ids are database ids. */
-export type ReservationOwnerByKind = {
-  /** `cartId` null for a staff-made order (a showroom sale); `orderId` once the order exists. */
-  readonly 'checkout-lock': {
-    readonly cartId: number | null
-    readonly orderId: number | null
-    readonly customerId: number | null
-  }
-  /** Granted by staff (`grantedBy`) on a buyer's hold request, for an account or a guest. */
-  readonly hold: {
-    readonly holdRequestId: number | null
-    readonly customerId: number | null
-    readonly grantedBy: number
-  }
-  readonly offer: { readonly offerId: number; readonly customerId: number | null }
-  readonly invoice: { readonly invoiceId: number; readonly customerId: number | null }
-}
-
-/** An exclusive target is reserved one at a time; counted stock by any positive quantity. */
-type TargetAndQuantity =
-  | { readonly target: ExclusiveTarget; readonly quantity: 1 }
-  | { readonly target: StockTarget; readonly quantity: number }
-
-type ReserveInputOf<K extends ReservationKind> = {
-  readonly kind: K
-  readonly owner: ReservationOwnerByKind[K]
-  /** The kind's TTL from brand config (`commerce.ttl`), never beyond its maximum. */
-  readonly ttl: Duration
-} & TargetAndQuantity
-
-export type ReserveInput = { [K in ReservationKind]: ReserveInputOf<K> }[ReservationKind]
-
-type ReservationOf<K extends ReservationKind> = {
-  readonly id: number
-  readonly kind: K
-  readonly owner: ReservationOwnerByKind[K]
-  readonly target: ReservationTarget
-  readonly targetKey: TargetKey
-  readonly quantity: number
-  readonly status: ReservationStatus
-  readonly expiresAt: Date
-  readonly createdAt: Date
-}
-
-export type Reservation = { [K in ReservationKind]: ReservationOf<K> }[ReservationKind]
-
-/**
- * Someone else was first (a typed value — never a database error at a buyer). Carries no owner:
- * the buyer is told the item is held or sold, never by whom.
- */
-export type ReservationConflict = {
-  readonly targetKey: TargetKey
-  readonly reason: 'held' | 'sold' | 'insufficient-stock'
-  /** For `held`: when the blocking reservation lapses ("check back in 15 minutes"). */
-  readonly heldUntil: Date | null
-  /** For `insufficient-stock`: how many are left. */
-  readonly available: number | null
-}
-
-export type ReserveResult =
-  | { readonly ok: true; readonly reservation: Reservation }
-  | { readonly ok: false; readonly conflict: ReservationConflict }
-
-export type ReleaseReason =
-  | 'buyer-cancelled'
-  | 'staff-released'
-  | 'payment-failed'
-  | 'checkout-abandoned'
-  | 'offer-withdrawn'
-  | 'superseded'
-
-export type ReverseReason = 'refunded' | 'return-accepted' | 'order-cancelled'
-
-// ─── The service ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * The five operations. `Tx` is the caller's open transaction (DOM picks its concrete type): no
- * method opens or commits one of its own, so a reservation, a payment and an order commit together
- * or not at all. Expiry is judged by the database clock (`now()`), never an app server's.
- */
-export type ReservationService<Tx> = {
+export type ReservationService<Tx extends DomainTx = DomainTx> = {
   /**
-   * First moves lapsed `active` rows for the same target to `expired` (returning their quantity to
-   * `stock_levels.reserved`), then inserts — in the same transaction, so an expired-but-unswept
-   * lock never blocks a buyer. The partial unique index turns a second live or sold reservation of
-   * an exclusive target into `{ ok: false }`; counted stock reserves with the guarded UPDATE
-   * (`on_hand - reserved >= quantity`, the row count is the answer). Because this runs inside the
-   * caller's transaction, a unique violation must never be raised: insert with `ON CONFLICT … DO
-   * NOTHING` against the partial index's predicate (or inside a savepoint), and read the absent
-   * row as the conflict — an aborted transaction would take the caller's payment and order with it.
+   * One target. First moves the target's lapsed `active` rows to `expired`, returning their counted
+   * quantity to `stock_levels.reserved` and emitting what the sweep would (`*.expired`,
+   * `availability.changed`) — so an expired-but-unswept lock never blocks a buyer. Then:
+   * - `supersedes`, when it names a live reservation of this target: released as `superseded`.
+   * - the same owner already holding the target with the same kind: that row, `reused: true`.
+   * - an exclusive target: `INSERT … ON CONFLICT (target_key) WHERE <RESERVATION_ARBITER.where>
+   *   DO NOTHING RETURNING id`. No row: read the blocker to say why (held until, or sold); if it
+   *   is gone by then, insert again, up to RESERVE_CONFLICT_RETRIES times, then answer `held`
+   *   with `heldUntil: null`.
+   * - counted stock: `UPDATE stock_levels SET reserved = reserved + $q WHERE variant_id = $v AND
+   *   location_id = $l AND on_hand - reserved >= $q` — the row count is the answer — then the row.
+   * Never raises a unique violation, a serialization failure or a deadlock into the caller's
+   * transaction (READ COMMITTED and the lock order make sure): an aborted transaction would take
+   * the caller's payment and order with it. A transaction reserves in ONE call — one target
+   * through reserve(), several through reserveAll() — never two, whose order would be the
+   * caller's to get wrong.
    */
   reserve(tx: Tx, input: ReserveInput): Promise<ReserveResult>
-  /** active → active, only forward, capped at the kind's maximum. A lapsed row: `expired`. */
+  /**
+   * Several targets, all or nothing: a bag at "Continue to payment", a proforma's lines, a late
+   * payment re-reserving its order. Takes rows in the lock order whatever the input order — every
+   * reservation row by `target_key`, then every stock row by `(variant_id, location_id)` — so two
+   * bags holding the same items in opposite orders cannot deadlock. Runs under a savepoint: on any
+   * conflict, `ROLLBACK TO SAVEPOINT` undoes what it took and releases those locks, the caller's
+   * transaction stays open, and every conflict is returned. Two inputs for one exclusive target
+   * are a programming error (it throws before writing); inputs for one counted target are summed.
+   */
+  reserveAll(tx: Tx, inputs: readonly [ReserveInput, ...ReserveInput[]]): Promise<ReserveAllResult>
+  /**
+   * `active → active`, all or nothing: an order's checkout locks stretched to the chosen method's
+   * `sessionTtl` plus `lockMarginMinutes`, a hold within `holdMaxHours`. Only ever later: an
+   * `until` at or before a row's current end leaves that row as it is. Capped at the row's
+   * `created_at` plus `maxLifetime` — measured from creation, so switching method after method
+   * cannot keep an item locked for ever. A lapsed row is moved to `expired` (and emits), never
+   * brought back: the late path re-reserves instead.
+   */
   extend(
     tx: Tx,
-    reservationId: number,
-    until: Date,
-  ): Promise<
-    | { readonly ok: true; readonly reservation: Reservation }
-    | { readonly ok: false; readonly reason: 'not-active' | 'expired' }
-  >
-  /** active → released; returns counted quantity to stock. */
-  release(tx: Tx, reservationId: number, reason: ReleaseReason): Promise<'released' | 'not-active'>
+    input: {
+      readonly reservationIds: ReservationIds
+      readonly until: Date
+      readonly maxLifetime: Duration
+    },
+  ): Promise<ExtendResult>
+  /** `active → released`, counted quantity back to stock, rows taken in the lock order. */
+  release(
+    tx: Tx,
+    input: { readonly reservationIds: ReservationIds; readonly reason: ReleaseReason },
+  ): Promise<PerReservation<ReleaseOutcome>>
   /**
-   * active → converted, only while unexpired — the payment-in-time check. A lapsed lock is the
-   * late path: reserve() again for the same buyer, or refund.
+   * `active → converted`, all or nothing, and only while every row is live — the payment-in-time
+   * check, made under the rows' locks before any capture (applyPaymentEvent()). Counted stock
+   * leaves the building here: `on_hand` and `reserved` both drop by the quantity in one guarded
+   * UPDATE (`reserved >= $q AND on_hand >= $q`, exactly one row). A lapsed row means nothing
+   * converts, and the caller takes the late path for the whole order: re-reserve and sell, or give
+   * the money back — never half an order.
    */
   convert(
     tx: Tx,
-    reservationId: number,
-    orderId: number,
-  ): Promise<
-    { readonly ok: true } | { readonly ok: false; readonly reason: 'not-active' | 'expired' }
-  >
-  /** converted → reversed on a refund or an accepted return: the item is available again. */
+    input: { readonly orderId: number; readonly reservationIds: ReservationIds },
+  ): Promise<ConvertResult>
+  /**
+   * `converted → reversed`: an order cancelled after payment, or an accepted return — the item is
+   * for sale again. Exclusive targets only, and never for a refund alone (ReverseReason). Counted
+   * stock answers `counted-stock`: a returned postcard is a stock adjustment (restock or
+   * write-off, an `inventory_movements` row), not a reservation brought back to life.
+   */
   reverse(
     tx: Tx,
-    reservationId: number,
-    reason: ReverseReason,
-  ): Promise<'reversed' | 'not-converted'>
+    input: { readonly reservationIds: ReservationIds; readonly reason: ReverseReason },
+  ): Promise<PerReservation<ReverseOutcome>>
+  /**
+   * The sweep: up to `limit` `active` rows past their end, taken `FOR UPDATE SKIP LOCKED` in
+   * `target_key` order, → `expired`; counted quantities back to stock in `(variant_id,
+   * location_id)` order; emits exactly what reserve()'s lazy expiry emits. Housekeeping, not
+   * correctness: the next reserve() of a target would expire the row anyway.
+   */
+  expireDue(tx: Tx, limit: number): Promise<SweepResult>
+  /**
+   * Live reservations whose end is within `lead` → their kind's notice (`EXPIRING_NOTICE_EVENTS`:
+   * `hold.expiring`), once each: `expiring_notified_at` is set in the same statement (`WHERE
+   * expiring_notified_at IS NULL`), so a rerun sends nothing twice. Kinds with no notice are
+   * skipped; the checkout lock's countdown is on the buyer's screen.
+   */
+  noticeExpiring(
+    tx: Tx,
+    input: { readonly lead: Duration; readonly limit: number },
+  ): Promise<SweepResult>
 }
-
-// ─── Type-level tests ────────────────────────────────────────────────────────────────────────
-
-type HoldOwner = ReservationOwnerByKind['hold']
-type Unique = { kind: 'product'; productId: 1 }
-type _HoldOnAUniqueItem = Accepts<
-  ReserveInput,
-  { kind: 'hold'; owner: HoldOwner; ttl: Duration; target: Unique; quantity: 1 }
->
-type _UniqueKeyShape = Assert<Equals<TargetKeyOf<ProductTarget>, `product:${number}`>>
-type _TwoOfAUniqueItem = Accepts<
-  ReserveInput,
-  // @ts-expect-error — a one-of-one item is reserved one at a time: it sells once
-  { kind: 'hold'; owner: HoldOwner; ttl: Duration; target: Unique; quantity: 2 }
->
-type _OfferWithoutOffer = Accepts<
-  ReserveInput,
-  // @ts-expect-error — an offer reservation belongs to an offer
-  { kind: 'offer'; owner: { customerId: 1 }; ttl: Duration; target: Unique; quantity: 1 }
->

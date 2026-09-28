@@ -9,6 +9,12 @@
  * "Where TypeScript allows": a status read from the database is the whole union, and from the
  * whole union almost no event is legal — so the types force the caller to narrow the status
  * first (`if (status === 'paid') …`), which is exactly the check a runtime would otherwise skip.
+ *
+ * What the types cannot see, the write enforces: every status change is a compare-and-set —
+ * `UPDATE … SET status = $to WHERE id = $1 AND status = $from` — and must touch exactly one row,
+ * made under the row's lock taken in the lock order (./transactions.ts). No row means another
+ * writer moved it first: re-read under the lock and decide again, or throw and roll back — never
+ * write the status blind.
  */
 
 /** Who may fire an event: a buyer through C6, staff in the admin, the system, or a provider. */

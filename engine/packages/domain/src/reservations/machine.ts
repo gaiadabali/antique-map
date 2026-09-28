@@ -2,9 +2,10 @@
  * @contract C8 State machines — reservation · owner: ARC · entry `@engine/domain/machines/reservation`
  *
  * `active → converted | released | expired`, `active → active` on extend, `converted → reversed`
- * on a refund or an accepted return, which releases the item again (COMMERCE.md §6). Only
- * reserve()'s five operations (./contract.ts) move a row; nothing else writes a reservation.
- * Lives beside the service contract, in the folder DOM's `reserve.ts` will join (design.md).
+ * when an order is cancelled after payment or a return is accepted, which puts the item on sale
+ * again — never on a refund alone (COMMERCE.md §6). Only the service's operations (./contract.ts)
+ * move a row; nothing else writes a reservation. Lives beside the service contract, in the folder
+ * DOM's `reserve.ts` will join (design.md).
  */
 import type {
   EmittedBy,
@@ -64,6 +65,7 @@ export const RESERVATION_TRANSITIONS = [
     },
     by: ['buyer', 'staff', 'system'],
   },
+  // Cancelled, abandoned, withdrawn — or `superseded` by the same buyer's next reservation.
   {
     from: ['active'],
     event: 'release',
@@ -77,8 +79,10 @@ export const RESERVATION_TRANSITIONS = [
     by: ['buyer', 'staff', 'system'],
   },
   {
-    // By the sweeper, or by the next reserve() of the same target in its own transaction; an
-    // expired-but-unswept row already reads as released everywhere.
+    // By the sweep (expireDue), by the next reserve() of the same target in its own transaction,
+    // or by extend() / release() / convert() meeting a lapsed row — each emits the same event and,
+    // for an exclusive target, `availability.changed`. An expired-but-unswept row already reads
+    // as released everywhere.
     from: ['active'],
     event: 'expire',
     to: 'expired',
@@ -91,7 +95,8 @@ export const RESERVATION_TRANSITIONS = [
     by: ['system'],
   },
   {
-    // Sold: in the same transaction as the payment and the order.
+    // Sold: in the same transaction as the payment and the order. Counted stock leaves the
+    // building: `on_hand` and `reserved` both drop by the quantity.
     from: ['active'],
     event: 'convert',
     to: 'converted',
@@ -103,7 +108,8 @@ export const RESERVATION_TRANSITIONS = [
     },
     by: ['system', 'staff'],
   },
-  // A refund or an accepted return: the item is available again.
+  // An order cancelled after payment, or an accepted return: the item is available again.
+  // Exclusive targets only; a returned counted item is a stock adjustment instead.
   {
     from: ['converted'],
     event: 'reverse',
@@ -114,6 +120,15 @@ export const RESERVATION_TRANSITIONS = [
 ] as const satisfies readonly TransitionRow<ReservationStatus>[]
 
 type Table = typeof RESERVATION_TRANSITIONS
+
+/**
+ * The notice a kind's live reservation sends ahead of its end, once (ReservationService
+ * .noticeExpiring). Only holds today; an offer hold or an invoice hold gains one by an entry here
+ * and a name in NoticeDomainEvent — an additive change.
+ */
+export const EXPIRING_NOTICE_EVENTS = {
+  hold: 'hold.expiring',
+} as const satisfies { readonly [K in ReservationKind]?: string }
 
 export type ReservationEvent = Table[number]['event']
 export type ReservationEventFrom<F extends ReservationStatus | null> = EventsFrom<Table, F>
