@@ -47,6 +47,9 @@ TASKS.md.lock
 .claude/worktrees/
 .claude/settings.local.json
 
+# The impeccable skill's engine binary: its launcher downloads and verifies it.
+.claude/skills/impeccable/scripts/bin/
+
 # Editors and operating systems
 .DS_Store
 Thumbs.db
