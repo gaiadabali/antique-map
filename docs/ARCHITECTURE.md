@@ -400,7 +400,8 @@ session, order access, each `HttpOnly`, `Secure` and `SameSite=Lax` — is refus
 unless it comes from the site itself (`Origin` or `Sec-Fetch-Site`; C13
 `sameOrigin`), and no credential travels in a URL beyond a page's own capability
 (a payment link's or a quote's token) and the one-hop links an email carries
-(order access, one-click unsubscribe).
+(order access, an application's status, set-password and reset, one-click
+unsubscribe).
 
 ## 12. Identity
 

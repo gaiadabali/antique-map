@@ -16,7 +16,8 @@
  * never travels in a URL (`ORDER_ACCESS`; `payment.status` is a POST). A pay-link or quote
  * token is the capability its page's own URL already carries (C10 `sensitive`), so
  * `payLink.get` and `quote.get` read it from the query; the one-hop links an email carries
- * (`ORDER_ACCESS.link`, one-click unsubscribe) are the only other credential in a URL.
+ * (`ORDER_ACCESS.link`, `APPLICATION_ACCESS.link`, the auth routes' set-password and reset
+ * links, one-click unsubscribe) are the only other credentials in a URL.
  * Tooling reads this file through Node's type stripping, so it holds type imports only and
  * erasable syntax.
  */
@@ -120,6 +121,8 @@ export const COMMERCE_AREAS = {
   returns: { auth: ['customer', 'token'], methods: POST },
   'order-lookup': { auth: ['public'], methods: POST }, // number + email or WhatsApp; sets the cookie
   quotes: { auth: ['public', 'token'], methods: GET_POST, module: 'purchase.invoices' },
+  // A shop's application (D31): the same receipt whoever applies, so it admits no one.
+  retailers: { auth: ['public'], methods: POST, module: 'accounts.retailers' },
 } as const satisfies Record<string, CommerceRoute>
 export type CommerceArea = keyof typeof COMMERCE_AREAS
 
@@ -172,6 +175,7 @@ export const COMMERCE_OPERATIONS = {
   'quote.request': { area: 'quotes', method: 'POST', path: '' },
   'quote.get': { area: 'quotes', method: 'GET', path: '' },
   'quote.accept': { area: 'quotes', method: 'POST', path: 'accept' },
+  'retailer.apply': { area: 'retailers', method: 'POST', path: 'applications' },
 } as const satisfies { readonly [O in CommerceOperation]: OperationAddress }
 
 /** The URL an app's client calls for a C6 operation. */
@@ -193,6 +197,18 @@ export const ORDER_ACCESS = {
   link: '/api/x/commerce/orders/access',
 } as const
 
+/**
+ * An applicant's view of its application without a password (D31; C2 `PartnershipAccessVM`).
+ * The acknowledgement email carries `link?token=…`, which stores the token in `cookie` the way
+ * `ORDER_ACCESS.link` does and answers 303 to the clean Partnership page, whose loader reads
+ * the standing there — never a term or a price. It answers 404 without `accounts.retailers`.
+ * Approval's set-password link is the auth routes' own, and it signs the retailer in.
+ */
+export const APPLICATION_ACCESS = {
+  cookie: 'application_access',
+  link: '/api/x/auth/application',
+} as const
+
 const commerceRoutes = Object.entries(COMMERCE_AREAS).map(([area, spec]: [string, CommerceRoute]) =>
   route(`/api/x/commerce/${area}/[[...path]]`, 'DOM', spec.auth, spec.methods, spec.module),
 )
@@ -204,8 +220,8 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
   route('/api/x/legacy/[...path]', 'WEB', 'public', GET), // legacy URLs: 301 · 404 · 410
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // invalidate(tags) from outside a request
-  // customer accounts: sign-in, set-password and reset links, an application's status link
-  route('/api/x/auth/[...path]', 'WEB', ['public', 'customer'], GET_POST),
+  // customer accounts: sign-in, set-password and reset links, `APPLICATION_ACCESS.link`
+  route('/api/x/auth/[...path]', 'WEB', ['public', 'customer', 'token'], GET_POST),
   route('/api/x/privacy/[...path]', 'WEB', ['customer', 'token'], GET_POST), // export · erase
   // uploads (C6 photos), newsletter (double opt-in, one-click unsubscribe), alerts, saved items
   route('/api/x/forms/[...path]', 'WEB', ['public', 'customer', 'token'], GET_POST),
