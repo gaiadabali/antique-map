@@ -42,7 +42,7 @@ import { listing, listingEmpty, search } from './listing'
 import * as order from './order'
 import * as lookup from './order-lookup'
 import * as partnership from './partnership'
-import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested } from './pay'
+import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested, quoteTrade } from './pay'
 import { purchaseStates } from './purchase-states'
 import { shell, shellShop } from './shell'
 import { gone, notFoundLegacy, serverError } from './status'
@@ -112,6 +112,7 @@ export const FIXTURES = {
   'pay-transfer-pending': payTransferPending,
   'quote-proforma': quoteProforma,
   'quote-requested': quoteRequested,
+  'quote-trade': quoteTrade,
   'account-signed-out': account.accountSignedOut,
   'account-overview': account.accountOverview,
   'account-wishlist': account.accountWishlist,
@@ -129,6 +130,7 @@ export const FIXTURES = {
   partnership: partnership.partnership,
   'partnership-applied': partnership.partnershipApplied,
   'partnership-declined': partnership.partnershipDeclined,
+  'partnership-approved': partnership.partnershipApproved,
   'partnership-retailer': partnership.partnershipRetailer,
   'form-enquiry': form.formEnquiry,
   'form-offer': form.formOffer,

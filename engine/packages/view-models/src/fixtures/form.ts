@@ -22,6 +22,7 @@ const field = (name: string, input: FormFieldVM['input'], required = true): Form
   autocomplete: AUTOCOMPLETE[name] ?? null,
   options: [],
   maxLength: input === 'textarea' ? 2000 : null,
+  value: null,
 })
 const contact = [
   field('contact.fullName', 'text', false),

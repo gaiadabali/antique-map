@@ -8,9 +8,8 @@
  * carries a Money, or a field named for a figure only the server computes (C6
  * `IsServerPriced`, the same guard every C6 request passes); the totals a page shows never
  * carry the token that commits them. The purchase panel cannot pair a state with a price or
- * an action it rules out. The account's sections are exactly C10's, a retailer who is not
- * approved can hold no trade terms nor open a priced section (D31), and C1's FX buffer is
- * C5's to the character.
+ * an action it rules out. The account's sections are exactly C10's, and C1's FX buffer is
+ * C5's to the character. The retailer rules (D31, D32) are `retailer-check.ts`'s.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { CurrencyCode, MoneyConfig } from '@engine/config/schema'
@@ -20,13 +19,7 @@ import type { FxSnapshot } from '@engine/domain/money'
 import type { CardVM } from './cards'
 import type { LineIntent, Money, PriceVM } from './common'
 import type { AppliedCodeVM, OrderSummaryVM, TotalsVM } from './commerce'
-import type {
-  AccountOfferVM,
-  AccountSectionVM,
-  AccountViewingVM,
-  PendingRetailerVM,
-  SignedInVM,
-} from './surfaces/account'
+import type { AccountOfferVM, AccountSectionVM, AccountViewingVM } from './surfaces/account'
 import type { CartCheckoutVM, CartLineVM } from './surfaces/cart'
 import type { CheckoutVM } from './surfaces/checkout'
 import type { GiftCardAmountVM } from './surfaces/gift-card'
@@ -113,44 +106,4 @@ type _BuyBesideMyHold = Accepts<
   UniquePanelVM,
   // @ts-expect-error — Buy never sits beside the viewer's own hold: Pay leads
   { state: HeldForMeVM; price: Fixed; actions: { primary: Buy; secondary: readonly [] } }
->
-
-// D31: a retailer who is not approved holds no trade terms and opens no priced section; a
-// buyer never opens a retailer's.
-type _PendingHoldsNoTerms = Assert<Equals<Extract<PendingRetailerVM, { terms: unknown }>, never>>
-type Customer = { fullName: string; email: string }
-type Applied = { status: 'applied'; appliedAt: string; reply: null }
-type _PendingSeesItsStanding = Accepts<
-  SignedInVM,
-  {
-    kind: 'signedIn'
-    audience: 'retailer'
-    customer: Customer
-    nav: readonly []
-    retailer: Applied
-    view: { section: 'profile'; profile: never }
-  }
->
-type _PendingOpensQuotes = Accepts<
-  SignedInVM,
-  // @ts-expect-error — a pending retailer's view is never a priced section
-  {
-    kind: 'signedIn'
-    audience: 'retailer'
-    customer: Customer
-    nav: readonly []
-    retailer: Applied
-    view: { section: 'quotes'; quotes: readonly []; request: { href: string } }
-  }
->
-type _BuyerOpensTerms = Accepts<
-  SignedInVM,
-  // @ts-expect-error — a buyer's area has no retailer sections
-  {
-    kind: 'signedIn'
-    audience: 'buyer'
-    customer: Customer
-    nav: readonly []
-    view: { section: 'terms' }
-  }
 >

@@ -6,27 +6,33 @@
  * a minimum order — and orders by quote through the order builder, paid by bank transfer or
  * a pay link. There is no wholesale cart. A retailer's standing is C1's `RetailerStatus`, and
  * only `approved` carries terms: a pending or declined applicant's view model has no field a
- * trade price could sit in (`commerce-check.ts`), and its loader reads retail prices alone.
+ * trade price could sit in (`retailer-check.ts`), and its loader reads retail prices alone.
+ * The password comes with approval, so a signed-in retailer who is not approved is a former
+ * partner — its partnership ended (`declined`), or it has applied again (`applied`).
  */
 import type { QuoteView } from '@engine/domain/api'
 
 import type { IsoDateTime, LinkVM, MessageVM, Money } from '../common'
 import type { DocumentVM } from '../commerce'
 
-/** The smallest order the terms accept, as the programme states it (D32). */
+/** The smallest order a tier accepts — C5's `TradeMinimum`, as the programme states it. */
 export type MinimumOrderVM =
+  /** Goods at the prices paid, before shipping and tax, in the currency quoted to retailers. */
   | { kind: 'amount'; amount: Money }
   /** "20 pieces per design, mixed sizes allowed". */
   | { kind: 'piecesPerDesign'; pieces: number; mixedSizes: boolean }
 
-/** The terms an approved retailer works to, set by staff at approval: data, never copy. */
+/**
+ * A trade price tier (C1 `commerce.trade`, C5 `TradeTerms`): `id` is its `tierId`, `label`
+ * what the page calls it, `discountBps` the discount off the market list (4000 is 40 %), which
+ * the page formats as a percentage. The prices themselves are on the quotes.
+ */
+export type TradeTierVM = { id: string; label: string; discountBps: number }
+
+/** The terms an approved retailer works to, assigned by staff: data, never copy. */
 export type TradeTermsVM = {
-  /**
-   * The trade price tier: its id is the price list C5's `customer-price-list` stage reads for
-   * this retailer, its label what the page calls it. The prices themselves are on the quotes.
-   */
-  tier: { id: string; label: string }
-  minimumOrder: MinimumOrderVM
+  tier: TradeTierVM
+  minimum: MinimumOrderVM
   /** Orders are quote requests (C6 `quote.request`), paid by transfer or a staff-sent pay link. */
   ordering: { request: { href: string }; payment: readonly ('bankTransfer' | 'payLink')[] }
   /** "Counter stands and signage, on request" — the programme's extras, as content. */

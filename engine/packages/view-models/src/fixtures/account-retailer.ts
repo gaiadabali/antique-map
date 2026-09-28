@@ -1,11 +1,13 @@
 /**
- * @contract C2 — fixtures `account-retailer` (signed out, applied, approved, terms, quotes, declined) · owner: ARC
+ * @contract C2 — fixtures `account-retailer` (signed out, approved, terms, quotes, applied, declined) · owner: ARC
  *
  * The shop's account, where retailers are the only accounts (D31): signed out, it offers
  * partner sign-in and the way to apply, never a shopper sign-up; an approved retailer sees the
- * trade terms (D32) and their quotes, and reorders an order as a quote request; an applied or
- * declined retailer sees their standing and nothing priced.
+ * trade terms (D32) and their quotes, and reorders an order as a quote request. The password
+ * comes with approval, so the other signed-in states are a former partner's: applied again,
+ * or declined when the partnership ended — its orders kept, no reorder, nothing priced anew.
  */
+import type { OrderSummaryVM } from '../commerce'
 import type { AccountNavVM, AccountVM } from '../surfaces/account'
 import type { ApprovedRetailerVM } from '../surfaces/account-retailer'
 import { PRINT, TOTE } from './_commerce'
@@ -32,19 +34,29 @@ const approvedSections = [
   'profile',
   'privacy',
 ] as const
-const standingSections = ['overview', 'profile', 'privacy'] as const
+const standingSections = ['overview', 'orders', 'addresses', 'profile', 'privacy'] as const
 
 const approved: ApprovedRetailerVM = {
   status: 'approved',
   approvedAt: '2026-10-01T11:00:00+08:00',
   terms: {
-    tier: { id: 'trade-2', label: 'Partner — tier 2' },
-    minimumOrder: { kind: 'piecesPerDesign', pieces: 20, mixedSizes: true },
+    tier: { id: 'trade-2', label: 'Partner — tier 2', discountBps: 4000 },
+    minimum: { kind: 'piecesPerDesign', pieces: 20, mixedSizes: true },
     ordering: { request: { href: '/account/quotes#new' }, payment: ['bankTransfer', 'payLink'] },
     extras: [{ label: 'Display', value: 'Counter stands and signage, on request' }],
     document: { kind: 'trade-terms', href: '/api/x/commerce/orders/documents/trade-terms' },
   },
 }
+const order = {
+  number: 'ID-000501',
+  placedAt: '2026-10-20T09:00:00+08:00',
+  status: 'completed',
+  payment: 'paid',
+  total: money(9600000, 'IDR'),
+  items: [PRINT, TOTE],
+  href: '/orders/ID-000501',
+  reorder: null,
+} as const satisfies OrderSummaryVM<null>
 
 export const accountRetailerSignedOut: AccountVM = {
   surface: 'account',
@@ -71,14 +83,14 @@ export const accountRetailerApproved: AccountVM = {
       attention: [],
       recentOrders: [
         {
-          number: 'ID-000501',
-          placedAt: '2026-10-20T09:00:00+08:00',
-          status: 'completed',
-          payment: 'paid',
-          total: money(9600000, 'IDR'),
-          items: [PRINT, TOTE],
-          href: '/orders/ID-000501',
-          reorder: { lines: [line(7001, 70011, null, 20), line(7002, 70021, null, 40)] },
+          ...order,
+          reorder: {
+            lines: [line(7001, 70011, null, 20), line(7002, 70021, null, 40)],
+            message: null,
+            neededBy: null,
+            institution: null,
+            contact: null,
+          },
         },
       ],
     },
@@ -131,7 +143,7 @@ export const accountRetailerQuotes: AccountVM = {
   },
 }
 
-/** Waiting on staff: the standing, and only unpriced sections. */
+/** A former partner who has applied again: waiting on staff, its orders kept. */
 export const accountRetailerApplied: AccountVM = {
   surface: 'account',
   session: {
@@ -140,15 +152,16 @@ export const accountRetailerApplied: AccountVM = {
     customer,
     retailer: {
       status: 'applied',
-      appliedAt: '2026-09-28T10:00:00+08:00',
+      appliedAt: '2026-12-01T10:00:00+08:00',
       reply: { code: 'applicationReplyDays', params: { days: 2 } },
     },
     nav: nav('overview', standingSections),
-    view: { section: 'overview', attention: [], recentOrders: [] },
+    view: { section: 'overview', attention: [], recentOrders: [order] },
   },
   seo: page,
 }
 
+/** The partnership ended: said plainly, a person to talk to, the orders kept without a reorder. */
 export const accountRetailerDeclined: AccountVM = {
   ...accountRetailerApplied,
   session: {
@@ -157,11 +170,11 @@ export const accountRetailerDeclined: AccountVM = {
     customer,
     retailer: {
       status: 'declined',
-      decidedAt: '2026-09-30T09:00:00+08:00',
+      decidedAt: '2026-11-15T09:00:00+08:00',
       note: null,
       contact: { label: 'Talk to us on WhatsApp', href: 'https://wa.me/6281200000001' },
     },
-    nav: nav('overview', standingSections),
-    view: { section: 'overview', attention: [], recentOrders: [] },
+    nav: nav('orders', standingSections),
+    view: { section: 'orders', orders: [order], pagination: null },
   },
 }

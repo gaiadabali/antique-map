@@ -14,7 +14,7 @@ import type { LocaleCode } from '@engine/config/schema'
 
 import type { CardVM } from '../cards'
 import type { IsoDateTime, LinkVM, Money, SeoVM, Streamed } from '../common'
-import type { AddressVM, ItemRefVM, MarketVM, OrderSummaryVM } from '../commerce'
+import type { AddressVM, ItemRefVM, MarketVM, OrderSummaryVM, ReorderIntentVM } from '../commerce'
 import type { ConversationSectionVM } from './account-conversations'
 import type { ApprovedRetailerVM, PendingRetailerVM, RetailerSectionVM } from './account-retailer'
 import type { PaginationVM } from './listing'
@@ -73,13 +73,21 @@ export type ConsentVM = {
   policyVersion: string | null
 }
 
-export type AccountSectionVM =
+/**
+ * The sections. `Reorder` is what an order row may offer: an approved retailer's one-click
+ * reorder, or `null` for everyone else (`BuyerSectionVM`, `StandingSectionVM`).
+ */
+export type AccountSectionVM<Reorder extends ReorderIntentVM | null = ReorderIntentVM | null> =
   | {
       section: 'overview'
       attention: readonly AttentionVM[]
-      recentOrders: readonly OrderSummaryVM[]
+      recentOrders: readonly OrderSummaryVM<Reorder>[]
     }
-  | { section: 'orders'; orders: readonly OrderSummaryVM[]; pagination: PaginationVM | null }
+  | {
+      section: 'orders'
+      orders: readonly OrderSummaryVM<Reorder>[]
+      pagination: PaginationVM | null
+    }
   /** Booking a viewing sends the wishlist ahead as the pull list. */
   | { section: 'wishlist'; items: Streamed<readonly CardVM[]>; pullList: { href: string } | null }
   | { section: 'wantLists'; lists: readonly WantListVM[] }
@@ -95,12 +103,15 @@ export type AccountSectionVM =
   | ConversationSectionVM
   | RetailerSectionVM
 
-/** A buyer's sections: everything but a retailer's terms and quotes. */
-export type BuyerSectionVM = Exclude<AccountSectionVM, RetailerSectionVM>
-/** What a pending or declined retailer may open: the standing, their details, their data. */
+/** A buyer's sections: everything but a retailer's terms and quotes, and no reorder. */
+export type BuyerSectionVM = Exclude<AccountSectionVM<null>, RetailerSectionVM>
+/**
+ * What a signed-in retailer who is not approved may open — a former partner, since the
+ * password comes with approval: its standing, its own orders (no reorder), its details, its data.
+ */
 export type StandingSectionVM = Extract<
-  AccountSectionVM,
-  { section: 'overview' | 'addresses' | 'profile' | 'privacy' }
+  AccountSectionVM<null>,
+  { section: 'overview' | 'orders' | 'addresses' | 'profile' | 'privacy' }
 >
 
 export type SignedOutVM = {
@@ -125,8 +136,8 @@ type SignedIn = {
 }
 
 /**
- * A buyer's area; an approved retailer's, with the terms and quotes; or a pending or declined
- * retailer's, whose view can only be an unpriced section beside its standing (D31).
+ * A buyer's area; an approved retailer's, with the terms, the quotes and the reorder; or a
+ * former partner's, applied again or declined, whose view is never a priced section (D31).
  */
 export type SignedInVM =
   | (SignedIn & { audience: 'buyer'; view: BuyerSectionVM })

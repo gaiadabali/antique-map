@@ -17,13 +17,14 @@ import type {
   OrderTotalsView,
   PaymentOptionView,
   PricingToken,
+  QuoteRequest,
   ShipmentView,
   ShippingOptionView,
 } from '@engine/domain/api'
 import type { OrderStatus } from '@engine/domain/machines/order'
 import type { PaymentStatus } from '@engine/domain/machines/payment'
 
-import type { ImageVM, IsoDateTime, LineIntent, Money } from './common'
+import type { ImageVM, IsoDateTime, Money } from './common'
 import type { LocationSummaryVM } from './surfaces/editorial'
 import type { AxisKey } from './surfaces/purchase-variants'
 
@@ -100,7 +101,7 @@ export type DocumentKind =
 export type DocumentVM = { kind: DocumentKind; href: string }
 
 /** An order in a list — the account, a lookup — with enough to recognise it. */
-export type OrderSummaryVM = {
+export type OrderSummaryVM<Reorder extends ReorderIntentVM | null = ReorderIntentVM | null> = {
   number: string
   placedAt: IsoDateTime
   status: OrderStatus
@@ -109,13 +110,13 @@ export type OrderSummaryVM = {
   items: readonly ItemRefVM[]
   /** `href('order', { number })`: it opens with the session or the order-access cookie. */
   href: string
-  /** An approved retailer's one-click reorder (`ReorderIntentVM`); `null` for everyone else. */
-  reorder: ReorderIntentVM | null
+  /** An approved retailer's one-click reorder; `null` for anyone else (`OrderSummaryVM<null>`). */
+  reorder: Reorder
 }
 
 /**
- * "Reorder, one click from your order history" (D32): the order's lines as a new quote
- * request (C6 `quote.request`) — the component adds the idempotency key and the session is the
- * contact. Never a cart, and never a price: the quote is priced when staff issue it.
+ * "Reorder, one click from your order history" (D32): the order's lines as a `quote.request`
+ * body, the session its contact — the component adds the idempotency key. Never a cart, and
+ * never a price: staff price the quote when they issue it, at the retailer's tier.
  */
-export type ReorderIntentVM = { lines: readonly LineIntent[] }
+export type ReorderIntentVM = Omit<QuoteRequest, 'idempotencyKey'> & { readonly contact: null }

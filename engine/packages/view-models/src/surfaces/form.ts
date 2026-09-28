@@ -36,11 +36,18 @@ export type FormFieldVM = {
     | 'date'
     | 'money'
     | 'file'
+    /** Sent, never shown: what the visitor is not asked (`contact.locale`, the page's own). */
+    | 'hidden'
   required: boolean
   /** The HTML `autocomplete` token (`name`, `email`, `tel`). */
   autocomplete: string | null
   options: readonly { value: string; label: string }[]
   maxLength: number | null
+  /**
+   * What the field starts with: a hidden field's value, or a prefill — which, after a failed
+   * post, the entry kept in `result.values` replaces.
+   */
+  value: string | null
 }
 
 export type FormVM = {

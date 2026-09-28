@@ -6,9 +6,10 @@
  * seller's identity and the methods routing allows, never a bare gateway screen; the hold it
  * pays for outlasts the method the buyer picks. It is C6's `PayLinkView` (`payLink.get`) as
  * the page reads it. `Quote` is a business or institutional
- * quote or proforma (COMMERCE.md §7, EXPERIENCE-SHOP.md §9): lines, validity, the PDF (the
- * only place wire details appear), accept → the payment link. The token in each URL is the
- * capability; the figures are display, and each intent sends back only the token naming them.
+ * quote or proforma (COMMERCE.md §7, EXPERIENCE-SHOP.md §9), or an approved retailer's order
+ * at its trade tier (D32): lines, validity, the PDF (the only place wire details appear),
+ * accept → the payment link. The token in each URL is the capability; the figures are
+ * display, and each intent sends back only the token naming them.
  */
 import type {
   PayLinkStartRequest,
@@ -20,6 +21,7 @@ import type {
 
 import type { IsoDateTime, LinkVM, MessageVM, Money, SellerIdentityVM, SeoVM } from '../common'
 import type { ItemRefVM, OptionLabelVM, PaymentOptionVM, TotalsVM } from '../commerce'
+import type { MinimumOrderVM, TradeTierVM } from './account-retailer'
 
 /** A line of a link or a quote as issued — a requested quote's at list price until staff issue it. */
 export type IssuedLineVM = {
@@ -61,6 +63,17 @@ export type PayVM = {
   seo: SeoVM
 }
 
+/**
+ * The terms a retailer's quote was issued at (C6 `QuoteTradeView`), kept as issued whatever
+ * the retailer's tier becomes: paying the quote applies exactly these.
+ */
+export type QuoteTradeVM = {
+  tier: TradeTierVM
+  minimum: MinimumOrderVM
+  /** Staff waived the minimum for this one quote, within their role's limit. */
+  minimumWaived: boolean
+}
+
 export type QuoteVM = {
   surface: 'quote'
   kind: 'proforma' | 'quote'
@@ -74,14 +87,22 @@ export type QuoteVM = {
     taxId: string | null
     poNumber: string | null
   }
-  /** A unique line of a proforma is held (`invoice`) until `heldUntil`. */
-  lines: readonly (IssuedLineVM & { heldUntil: IsoDateTime | null })[]
+  /**
+   * A unique line of a proforma is held (`invoice`) until `heldUntil`. On a retailer's quote
+   * `unitPrice` is the trade price, beside the list price it started from (`retailUnitPrice`).
+   */
+  lines: readonly (IssuedLineVM & {
+    heldUntil: IsoDateTime | null
+    retailUnitPrice: Money | null
+  })[]
   /** `null` while staff prepare a requested quote. */
   totals: TotalsVM | null
   validUntil: IsoDateTime | null
   pdf: string | null
   /** "Payment must be received and confirmed before an order is considered complete." */
   terms: readonly MessageVM[]
+  /** An approved retailer's quote: the tier and minimum it was issued at; `null` otherwise. */
+  trade: QuoteTradeVM | null
   /** Accepted: the payment link's page. */
   pay: { href: string } | null
   /** `null` unless issued and valid. The component adds an idempotency key. */

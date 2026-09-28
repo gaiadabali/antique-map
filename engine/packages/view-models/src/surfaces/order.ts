@@ -103,13 +103,14 @@ export type OrderVM = {
  * Guest tracking by order number plus the email or WhatsApp number the buyer used — the pair
  * is the credential, and it is rate-limited. The form is prefilled after an attempt so
  * nothing is typed twice. A wrong number and a wrong contact answer the same `notFound`
- * (C6), so nothing can be enumerated; a found order links to its page with its lookupToken.
+ * (C6), so nothing can be enumerated; a found order links to its page, which the order-access
+ * cookie `orderLookup.find` set opens (C13 `ORDER_ACCESS`). A guest never reorders.
  */
 export type OrderLookupVM = {
   surface: 'orderLookup'
   form: { orderNumber: string | null; channel: 'email' | 'whatsapp'; contact: string | null }
   result:
-    | { kind: 'found'; order: OrderSummaryVM; shipments: readonly ShipmentVM[] }
+    | { kind: 'found'; order: OrderSummaryVM<null>; shipments: readonly ShipmentVM[] }
     | { kind: 'notFound' }
     | { kind: 'rateLimited'; retryAfterSeconds: number }
     | null
