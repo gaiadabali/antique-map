@@ -1,0 +1,18 @@
+{
+  "name": "@engine/http",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Engine route handlers the apps mount as one-line re-exports: everything under /api/x/, plus /api/health and /brand-assets/. The manifest (C13) lists every route and the literal proxy matcher; a handler at @engine/http/<area> lives in src/<area>/route.ts.",
+  "type": "module",
+  "exports": {
+    "./manifest": "./src/manifest.ts",
+    "./*": "./src/*/route.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@engine/config": "workspace:*",
+    "@engine/domain": "workspace:*"
+  }
+}

@@ -126,25 +126,38 @@ city's masthead into the shared image).
   "domains": { "production": "antiquemapsindonesia.com", "staging": "ig.gaiada.com",
                "aliases": ["indiesgallery.com"] },
   "storefront": "gallery",                             // engine/apps/gallery
+  "identity": {                                        // the floors the CMS globals override (below)
+    "contact": { "email": "…", "whatsapp": "+62…" },
+    "social": { "instagram": "https://…" },
+    "navigation": { "header": [{ "surface": "browse", "label": { "en": "Maps & Charts" } }],
+                    "footer": [] }
+  },
+  "assets": { "logo": "logo.svg", "favicon": "favicon.ico", "ogImage": "og.png",   // <brand>/site/assets,
+              "fonts": [{ "family": "…", "src": "fonts/….woff2" }] },               // served at /brand-assets/…
   "tokens": { "--c-accent": "#8a5a1f" },               // optional, validated overrides of the app's defaults
+  "media": { "publicZoomMaxPx": 4096 },                // public deep-zoom tiles stop at this long edge (C9)
   "locales": { "default": "en", "supported": ["en", "id"] },  // default served unprefixed; the
                                                                // database always holds en, id, nl
-  "routes": {                                          // C10: surface → public segment, per locale
-    "en": { "item": "product", "browse": "browse", "maker": "makers", "place": "places",
-            "source": "sources", "story": "stories", "design": "designs", "pay": "pay",
-            "quote": "quote", "orderLookup": "track", "showroom": "visit", "ig": "ig" },
-    "id": { "item": "produk", "browse": "jelajah", "maker": "pembuat", "place": "tempat",
-            "source": "sumber", "story": "cerita", "design": "desain", "pay": "bayar",
-            "quote": "penawaran", "orderLookup": "lacak", "showroom": "kunjungi", "ig": "ig" },
+  "routes": {                                          // C10: every surface's segment, per locale
+    "en": { "item": "product", "browse": "browse", "search": "search", "maker": "makers",
+            "place": "places", "source": "sources", "story": "stories", "location": "visit",
+            "pay": "pay", "quote": "quote", "orderLookup": "track", "ig": "ig", "…": "…",
+            "forms": { "enquiry": "enquire", "offer": "make-an-offer", "…": "…" } },
+    "id": { "item": "produk", "browse": "jelajah", "search": "cari", "maker": "pembuat",
+            "place": "tempat", "source": "sumber", "story": "cerita", "location": "kunjungi",
+            "pay": "bayar", "quote": "penawaran", "orderLookup": "lacak", "ig": "ig", "…": "…",
+            "forms": { "enquiry": "tanya", "…": "…" } },
     "facets": {                                        // named facet URLs: /antique-maps/java/batavia
-      "objectType": { "en": { "map": "antique-maps", "print": "antique-prints", "photograph": "photographs" },
-                      "id": { "map": "peta-antik", "print": "cetakan-antik", "photograph": "foto" } },
-      "place": "gazetteer-slugs"                       // place paths come from the gazetteer's slugs
+      "path": ["objectType", "place"],                 // place segments are the gazetteer's slugs
+      "vocabularies": {
+        "objectType": { "en": { "map": "antique-maps", "print": "antique-prints", "photograph": "photographs" },
+                        "id": { "map": "peta-antik", "print": "cetakan-antik", "photograph": "foto" } } }
     },
-    "legacyPrefixes": ["/category/", "/storage/products/"]   // rewritten to /api/x/legacy/…
+    "defaultSort": { "browse": "newest", "search": "relevance" },   // never written into a URL
+    "legacyPrefixes": ["/category/", "/storage/products/"]  // → /api/x/legacy/…; never a live segment
   },
   "ids": { "workUidPrefix": "…", "stockNumberPattern": "^[MPF]\\.[A-Za-z0-9]+$" },
-  "money": {
+  "money": {                                           // every amount: integer minor units
     "base": "USD",
     "markets": [                                       // a market = destination group + currency
       { "id": "id", "destinations": ["ID"], "currency": "IDR" },
@@ -153,47 +166,65 @@ city's masthead into the shared image).
       { "id": "au", "destinations": ["AU"], "currency": "AUD" },
       { "id": "row", "destinations": ["*"], "currency": "USD" }
     ],
-    "rounding": { "IDR": 50000, "USD": 10, "SGD": 10, "EUR": 10, "AUD": 10 },
-    "fx": { "source": "ecb-reference", "bufferPct": { "IDR": 3, "EUR": 3, "SGD": 3, "AUD": 3 } }
+    "rounding": {                                      // price-point ladders, for DERIVED prices only
+      "IDR": [{ "upTo": 100000, "step": 5000 }, { "upTo": 1000000, "step": 10000 },
+              { "upTo": 10000000, "step": 50000 }, { "upTo": null, "step": 100000 }],
+      "SGD": [{ "upTo": null, "step": 1000 }], "EUR": [{ "upTo": null, "step": 1000 }],
+      "AUD": [{ "upTo": null, "step": 1000 }]
+    },
+    "fx": { "source": "ecb-reference",                 // percent, as exact decimal strings
+            "bufferPct": { "IDR": "3", "EUR": "3", "SGD": "3", "AUD": "3.5" } }
   },
   "sellers": [                                         // merchant of record, chosen per order (COMMERCE.md §2)
     { "id": "sg", "entity": { "name": "…", "country": "SG", "registration": "UEN …" },
       "serves": { "stockLocations": ["singapore"], "destinations": ["*"] },
       "tax": { "regime": "SG-GST", "registered": false },
       "charge": ["USD", "EUR", "SGD", "AUD", "IDR"],
-      "payments": ["stripe", "bank-transfer"], "methodOrder": ["card", "paynow", "bank-transfer"],
-      "cardCeiling": { "amount": 1000000, "currency": "USD" },           // minor units: USD 10,000
+      "payments": ["stripe", "bank-transfer"],
+      "methodOrder": ["card", "paynow", "bank-transfer"],             // method families, first to last
+      "cardCeiling": { "amount": 1000000, "currency": "USD" },           // USD 10,000.00
       "insuredThreshold": { "amount": 100000, "currency": "USD" },       // above → quote + fine-art cover
-      "documentPrefix": "…" },
+      "documentPrefix": "SG" },
     { "id": "id", "entity": { "name": "PT …", "country": "ID", "registration": "NIB …" },
       "serves": { "stockLocations": ["jakarta"], "destinations": ["ID"] },
       "tax": { "regime": "ID-PPN", "registered": false },               // D4: off until confirmed
       "charge": ["IDR"],
       "payments": ["midtrans", "bank-transfer"], "methodOrder": ["va", "card", "bank-transfer"],
       "insuredThreshold": { "amount": 15000000, "currency": "IDR" },
-      "documentPrefix": "…" }
+      "documentPrefix": "ID" }
   ],
   "commerce": {
     "inventoryModels": ["unique"],
-    "ttl": { "checkoutLockMinutes": 15, "holdDefaultHours": 48, "holdMaxHours": 72,
+    "ttl": { "checkoutLockMinutes": 15, "lockMarginMinutes": 10, "checkoutLockMaxHours": 3,
+             "holdDefaultHours": 48, "holdMaxHours": 72, "holdNoticeHours": 12,
              "offerHoldHours": 48, "offerCounterHours": 72, "invoiceHoldDays": 7 },
-    "purchaseTiers": [                                 // in the base currency, minor units
+    "purchaseTiers": [                                 // in the base currency, minor units, ascending
       { "upTo": 500000, "primary": "buy", "secondary": ["enquire", "whatsapp"] },
       { "upTo": 2500000, "primary": "buy", "secondary": ["reserve", "offer", "enquire"] },
-      { "above": 2500000, "primary": "requestPrice", "secondary": ["viewing", "proforma"] }
+      { "upTo": null, "primary": "requestPrice", "secondary": ["viewing", "proforma"] }
     ]
   },
   "analytics": { "ga4Id": null, "metaPixelId": null },  // runtime values — never NEXT_PUBLIC_*
   "shipping": { "providers": ["dhl-express", "biteship", "quote", "collect"] },
   "fulfilment": { "providers": ["own-stock"] },
-  "modules": { "…": "§4" },
-  "sisters": [{ "slug": "old-east-indies", "role": "merch-outlet", "baseUrl": "…" }]
+  "modules": { "catalogue.unique": true, "purchase.offers": true, "…": "§4" },
+  "sisters": [{ "slug": "old-east-indies", "name": "Old East Indies",   // at most one
+                "role": "merch-outlet", "baseUrl": "…" }]
 }
 ```
 
-Values above are illustrative. The legal entities, domains, tax registrations
-and payment providers are **open decisions** (PLAN.md § Open decisions) — the
-schema accepts every answer, so nothing waits on them except the config rows.
+Values above are illustrative; the schema is `@engine/config/schema` (C1), and
+anything it cannot check alone — the rupiah rule, disjoint markets, a ladder per
+derived currency, modules the app supports — `validateBrandConfigs()` checks in
+CI (above). Every amount is integer minor units (IDR has none, USD two), so
+`"cardCeiling": 1000000` is USD 10,000.00. A price-point ladder rounds a
+**derived** price up to a multiple of the band's step — explicit and
+product-type-table prices are entered at their price point and never rounded —
+with bands close enough that rounding never adds more than a tenth.
+
+The legal entities, domains, tax registrations and payment providers are **open
+decisions** (PLAN.md § Open decisions) — the schema accepts every answer, so
+nothing waits on them except the config rows.
 
 **Sellers are why a brand can use more than one gateway.** Research (COMPLIANCE.md)
 found that an Indonesian PT can only charge in rupiah and cannot self-serve
@@ -230,6 +261,7 @@ blocks, select options or locales exist (ARCHITECTURE.md §2).
 | `content.catalogues` | curated digital catalogues + printable PDF | ✅ | — |
 | `content.journal` | stories / articles | ✅ | ✅ |
 | `content.exhibitions` | fairs, exhibitions, events calendar | ✅ | ✅ |
+| `content.linkInBio` | the `/ig` link-in-bio page: CMS-curated posts and the products each shows | — | ✅ |
 | `services.consignment` | "sell to us" submissions with photos | ✅ | — |
 | `services.appointments` | book a gallery / showroom visit | ✅ | ✅ |
 | `services.wholesale` | trade / hotel / corporate gifting enquiries and tiers | — | ✅ |

@@ -273,8 +273,10 @@ own short flow; institutions can turn a **cart of several items into a proforma*
   countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), and
   consignments with their status timeline.
 - A legacy `/product/{id}-{slug}` that no longer resolves turns its slug into a
-  prefilled search with similar works; an item removed from inventory answers
-  `410 Gone`; a sold item is never gone.
+  prefilled search with similar works; an item removed from inventory shows
+  the designed Gone page — a 404, noindex and out of the sitemap, since a page
+  cannot answer 410 (a real `410` comes only from the legacy handler, for an old URL
+  the redirects collection marks gone); a sold item is never gone.
 - The newsletter is **generated from inventory** (new arrivals since the last
   issue, curated order, one story), sent fortnightly and archived as HTML; a
   WhatsApp broadcast opt-in sits beside it.
