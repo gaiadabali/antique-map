@@ -1,32 +1,20 @@
 /**
- * @contract C2 — fixtures `form` (enquiry, offer, consignment, appointment, wholesale, invalid) · owner: ARC
+ * @contract C2 — fixtures `form` (enquiry, offer, consignment, appointment, invalid) · owner: ARC
  *
- * One engine, five kinds: fields are data named by their C6 request paths. The offer states
+ * One engine, four kinds: fields are data named by their C6 request paths. The offer states
  * that it is non-binding and bids in the ship-to market's currency; the consignment takes
  * photos straight from the phone; the viewing shows each location's time zone and the pull
- * list; an invalid post keeps every entry and names every failing field at once.
+ * list; an invalid post — sent without JavaScript and read back (C13 `FORM_RESULT`) — keeps
+ * every entry and names every failing field at once.
  */
-import type { FormFieldVM, FormVM } from '../surfaces/form'
+import type { FormVM } from '../surfaces/form'
 import { ISLE, SHOWROOM } from './_commerce'
+import { contactFields, entry, hidden, optional } from './_forms'
 import { money, price, seo, streamed } from './_shared'
 
-const AUTOCOMPLETE: Readonly<Record<string, string>> = {
-  'contact.fullName': 'name',
-  'contact.email': 'email',
-  'contact.whatsapp': 'tel',
-}
-const field = (name: string, input: FormFieldVM['input'], required = true): FormFieldVM => ({
-  name,
-  input,
-  required,
-  autocomplete: AUTOCOMPLETE[name] ?? null,
-  options: [],
-  maxLength: input === 'textarea' ? 2000 : null,
-})
-const contact = [
-  field('contact.fullName', 'text', false),
-  field('contact.email', 'email', false),
-  field('contact.whatsapp', 'tel', false),
+const contact = (returnTo: string) => [
+  ...contactFields().map((each) => (each.input === 'hidden' ? each : { ...each, required: false })),
+  hidden('returnTo', returnTo),
 ]
 
 export const formEnquiry: FormVM = {
@@ -39,7 +27,7 @@ export const formEnquiry: FormVM = {
     selected: 'framing',
     offered: ['general', 'condition', 'shipping-quote', 'framing', 'export'],
   },
-  fields: [...contact, field('message', 'textarea')],
+  fields: [...contact('/enquire'), entry('message', 'textarea')],
   consents: ['marketingEmail', 'marketingWhatsapp'],
   action: '/api/x/commerce/enquiries',
   reply: { code: 'replyWithinHours', params: { hours: 24 } },
@@ -56,7 +44,11 @@ export const formOffer: FormVM = {
   kind: 'offer',
   title: 'Make an offer',
   topic: null,
-  fields: [...contact, field('proposal', 'money'), field('message', 'textarea', false)],
+  fields: [
+    ...contact('/make-an-offer'),
+    entry('proposal', 'money', { inputMode: 'decimal' }),
+    optional('message', 'textarea'),
+  ],
   action: '/api/x/commerce/offers',
   offer: { currency: 'USD', asking: price(money(480000, 'USD')), binding: false },
   seo: { ...seo('Make an offer', '/make-an-offer'), noindex: true },
@@ -69,10 +61,10 @@ export const formConsignment: FormVM = {
   subject: null,
   topic: null,
   fields: [
-    ...contact,
-    field('description', 'textarea'),
-    field('conditionNotes', 'textarea', false),
-    field('photos', 'file'),
+    ...contact('/sell-to-us'),
+    entry('description', 'textarea'),
+    optional('conditionNotes', 'textarea'),
+    entry('photos', 'file'),
   ],
   action: '/api/x/commerce/consignments',
   reply: { code: 'replyWithinDays', params: { days: 3 } },
@@ -91,7 +83,7 @@ export const formAppointment: FormVM = {
   kind: 'appointment',
   title: 'Book a viewing',
   topic: null,
-  fields: [...contact, field('locationId', 'radio'), field('slotStart', 'radio')],
+  fields: [...contact('/book-a-visit'), entry('locationId', 'radio'), entry('slotStart', 'radio')],
   action: '/api/x/commerce/appointments',
   reply: null,
   appointment: {
@@ -106,16 +98,6 @@ export const formAppointment: FormVM = {
     pullList: [ISLE],
   },
   seo: { ...seo('Book a viewing', '/book-a-visit'), noindex: false },
-}
-
-export const formWholesale: FormVM = {
-  ...formEnquiry,
-  kind: 'wholesale',
-  title: 'For business',
-  subject: null,
-  topic: { selected: 'wholesale', offered: ['wholesale'] },
-  fields: [...contact, field('institution.organisation', 'text'), field('message', 'textarea')],
-  seo: { ...seo('For business', '/trade'), noindex: false },
 }
 
 export const formInvalid: FormVM = {

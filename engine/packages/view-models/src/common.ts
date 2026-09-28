@@ -49,6 +49,8 @@ export type Streamed<T> = Promise<T>
  * A view model without its request-time parts: what a loader's `'use cache'` + `cacheTag`
  * read may return (phase one, `./loaders`). Every property that holds a `Streamed` part, at
  * any depth — a home band's rail, an item's purchase panel — is left out; phase two adds them.
+ * A post's `result` is request-time too but resolved, never streamed (`FormResultVM`): the
+ * cached read returns it `null`, and phase two awaits the real one before the page renders.
  */
 export type CachedPart<T> =
   T extends Streamed<unknown>

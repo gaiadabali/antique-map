@@ -8,8 +8,10 @@
  * carries a Money, or a field named for a figure only the server computes (C6
  * `IsServerPriced`, the same guard every C6 request passes); the totals a page shows never
  * carry the token that commits them. The purchase panel cannot pair a state with a price or
- * an action it rules out. The account's sections are exactly C10's, and C1's FX buffer is
- * C5's to the character.
+ * an action it rules out. The account's pages are exactly C10's sections, and C1's FX buffer
+ * is C5's to the character. A hidden field is never asked for, a tick box posts `'true'`, and
+ * a request-time part never enters a cached read. The partner rules (D31–D36) are
+ * `retailer-check.ts`'s.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { CurrencyCode, MoneyConfig } from '@engine/config/schema'
@@ -17,14 +19,21 @@ import type { IsServerPriced } from '@engine/domain/api'
 import type { FxSnapshot } from '@engine/domain/money'
 
 import type { CardVM } from './cards'
-import type { LineIntent, Money, PriceVM } from './common'
-import type { AppliedCodeVM, TotalsVM } from './commerce'
-import type { AccountOfferVM, AccountSectionVM, AccountViewingVM } from './surfaces/account'
+import type { CachedPart, LineIntent, Money, PriceVM, Streamed } from './common'
+import type { AppliedCodeVM, ReorderIntentVM, TotalsVM } from './commerce'
+import type {
+  AccountOfferVM,
+  AccountSectionVM,
+  AccountViewingVM,
+  AccountVM,
+} from './surfaces/account'
 import type { CartCheckoutVM, CartLineVM } from './surfaces/cart'
 import type { CheckoutVM } from './surfaces/checkout'
+import type { CheckboxFieldVM, FormVM, HiddenFieldVM } from './surfaces/form'
 import type { GiftCardAmountVM } from './surfaces/gift-card'
 import type { OrderPaymentVM } from './surfaces/order'
 import type { PayVM, QuoteVM } from './surfaces/pay'
+import type { PartnershipVM } from './surfaces/partnership'
 import type {
   HeldByOtherVM,
   HeldForMeVM,
@@ -32,6 +41,7 @@ import type {
   SoldVM,
   UniquePanelVM,
 } from './surfaces/purchase'
+import type { WishlistVM } from './surfaces/wishlist'
 
 type Equals<A, B> =
   (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false
@@ -53,6 +63,7 @@ type Intents =
   | Extract<OrderPaymentVM, { state: 'pending' }>['poll']
   | NonNullable<AccountOfferVM['respond']>
   | NonNullable<AccountViewingVM['cancel']>
+  | ReorderIntentVM
 
 // No intent carries a price a client could send back as authoritative.
 type _NoIntentCarriesAPrice = Assert<Equals<IsServerPriced<Intents>, true>>
@@ -67,8 +78,36 @@ type _FigureInAnIntent = Assert<
 // The figures a page shows never carry the token that commits them; the token is in `intents`.
 type _TotalsCarryNoToken = Assert<Equals<Extract<keyof TotalsVM, 'token'>, never>>
 
-// The account's sections are exactly C10's `ACCOUNT_SECTIONS`.
-type _AccountSectionsAreC10s = Assert<Equals<AccountSectionVM['section'], AccountSection>>
+// The account's pages are exactly C10's `ACCOUNT_SECTIONS`: its signed-in sections, and the
+// signed-out pages an emailed link or a forgotten password lands on.
+type SignedOutPage = Exclude<AccountVM['session']['kind'], 'signedOut' | 'signedIn'>
+type _AccountSectionsAreC10s = Assert<
+  Equals<AccountSectionVM<null>['section'] | SignedOutPage, AccountSection>
+>
+
+// A hidden field is sent, never asked for; a tick box posts `'true'` or nothing (C13).
+type _HiddenIsNeverAsked = Assert<
+  Equals<Extract<keyof HiddenFieldVM, 'required' | 'autocomplete' | 'group' | 'options'>, never>
+>
+type _TickPostsTrue = Assert<Equals<CheckboxFieldVM['value'], 'true'>>
+
+// A streamed part never enters a cached read: what the Partnership page knows of its visitor,
+// the device's wishlist. The forms everyone needs stay in the cached part.
+type _RequestTimeStreams = Assert<
+  Equals<
+    | Extract<keyof CachedPart<PartnershipVM>, 'access'>
+    | Extract<keyof CachedPart<WishlistVM>, 'items'>,
+    never
+  >
+>
+// A post's result is resolved, never streamed: only a visitor without JavaScript gets one, and
+// a streamed part stays hidden from them.
+type _ResultIsNotStreamed = Assert<
+  Equals<Extract<FormVM['result'] | PartnershipVM['result'], Streamed<unknown>>, never>
+>
+type _FormsAreCached = Assert<
+  Equals<Extract<keyof CachedPart<PartnershipVM>, 'visitor'>, 'visitor'>
+>
 
 // C1 ⇄ C5: a brand's FX buffer is what an order's FxSnapshot records — a percent, as a decimal string.
 type ConfigBuffer = NonNullable<MoneyConfig['fx']['bufferPct'][CurrencyCode]>

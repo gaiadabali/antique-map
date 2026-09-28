@@ -45,10 +45,14 @@ arrive from Instagram on a phone.
 
 ## 2. Information architecture
 
-**Top navigation:** Shop · Collections · Places & Eras · Gifts · Stories · For
-Business · **Partnership** (the retailer programme) · Visit the Showroom.
-**Utility bar:** ship-to/currency · language · WhatsApp · bag — no shopper account: shoppers buy as guests and track
-orders by number (D31, TASKS.md 28.5).
+**Top navigation:** Shop · Collections · Places & Eras · Gifts · Stories ·
+**Partnership** (the one programme for every business buyer, §9) · Visit the
+Showroom. There is no separate For Business item (D36).
+**Utility bar:** ship-to/currency · language · WhatsApp · saved items (the heart,
+kept on this device — D35) · bag — no shopper account: shoppers buy as guests and
+track orders by number (D31, TASKS.md 28.5). Saving an item needs no account, and
+each save is tracked under ANALYTICS.md §1's consent rule (D38): counted by the
+cookieless beacon, and sent to GA4 and Meta only after consent.
 
 **Shop** mega-menu, three columns plus a feature tile (the hero line):
 - **Wall Art** — Posters · Giclée · Framed · Canvas · Murals · Print from the
@@ -250,23 +254,29 @@ may collect. A print that arrives damaged is replaced on a photo claim.
   WhatsApp opens a designed `Pay` page — item, terms, expiry, the seller's
   identity — never a bare gateway screen.
 
-## 9. For Business
+## 9. Partnership
 
-**Retail partners are separate from For Business** (D31). The shop already
-supplies 100+ shops, so a **Partnership** page — reached from a highlight in the
-home hero and from the header — explains the programme and ends in the sign-up /
-sign-in section. Retailers are the **only** accounts on this site: an
-application approved by staff, then a retailer area with the trade terms (D32)
-and orders by quote (TASKS.md 28.5).
+**One programme for every business buyer** (D31, D36). Retail shops, hotels,
+villas, cafés, embassies and companies all apply as partners; there is no
+separate For Business path. The shop already supplies 100+ shops, so the
+**Partnership** page — reached from a highlight in the home hero and from the
+header — says what a partner gets, for each kind of business, and ends in the one
+application and partner sign-in, which work without JavaScript. Partners are the
+**only** accounts on this site: an application approved by staff, then a partner
+area with the trade terms as data — a price tier and a minimum order (D32) —
+where orders are quotes, built by staff in the order builder, and every past
+order reorders in one click (TASKS.md 28.5). An ended partnership deactivates the
+account: its orders stay with the owner (D34).
 
-Hotels, villas, cafés, embassies and companies: an enquiry flow (quantities,
-sizes, framing, deadlines) that becomes a **quote page** (lines, validity, PDF,
-accept → payment link — the `Quote` surface), reachable too from any configured
-product ("Turn this into a quote"); corporate
-gift sets; custom sizes and murals by quote. v2: a trade portal with price tiers,
-quotes and invoices. The research's standout opportunity: the Bali Hotel in the
-posters still operates as Inna Bali in central Denpasar — a co-branded
-collection, a lobby corner, room art with QR story cards.
+A partner's order is a brief in its own words — quantities, sizes, framing,
+deadlines — that becomes a **quote page** (lines at its tier beside the list
+prices, validity, PDF, accept → payment link — the `Quote` surface); a partner
+can also turn any configured product into a quote ("Turn this into a quote").
+Corporate gift sets, custom sizes and murals are quoted the same way. v2: a trade
+portal with self-serve ordering and invoices. The research's standout
+opportunity: the Bali Hotel in the posters still operates as Inna Bali in central
+Denpasar — a co-branded collection, a lobby corner, room art with QR story
+cards.
 
 ## 10. Retention
 

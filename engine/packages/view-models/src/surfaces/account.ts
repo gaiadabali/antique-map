@@ -3,21 +3,28 @@
  *
  * One surface with sections (C10 `ACCOUNT_SECTIONS`): overview · orders · wishlist ·
  * want-lists · addresses · profile · privacy — and, where their modules are on, the
- * gallery's conversations in one place (`./account-conversations`). Customers are never
- * staff (ARCHITECTURE.md §12): their session has its own cookie, and a signed-out visitor
- * meets sign-in, account creation and the claim flow for migrated accounts on this surface.
- * Private, per request and never cached; the section list shows only what the modules allow.
+ * gallery's conversations in one place (`./account-conversations`) and a partner's terms and
+ * quotes (`./account-retailer`); signed out, sign-in and the password pages
+ * (`./account-entry`). Customers are never staff (ARCHITECTURE.md §12): their session has its
+ * own cookie. Who may hold an account is the brand's modules (C1): buyers (`accounts.buyers`)
+ * and partners by application (`accounts.retailers`); a shop with only the second offers no
+ * shopper sign-up anywhere (D31), and only its approved partners sign in (D34). Private, per
+ * request, never cached.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { LocaleCode } from '@engine/config/schema'
 
 import type { CardVM } from '../cards'
 import type { IsoDateTime, Money, SeoVM, Streamed } from '../common'
-import type { AddressVM, ItemRefVM, MarketVM, OrderSummaryVM } from '../commerce'
+import type { AddressVM, ItemRefVM, MarketVM, OrderSummaryVM, ReorderIntentVM } from '../commerce'
 import type { ConversationSectionVM } from './account-conversations'
+import type { ResetRequestVM, SetPasswordVM, SignedOutVM } from './account-entry'
+import type { ApprovedRetailerVM, RetailerSectionVM } from './account-retailer'
 import type { PaginationVM } from './listing'
 
 export type * from './account-conversations'
+export type * from './account-entry'
+export type * from './account-retailer'
 
 export type AccountNavVM = {
   section: AccountSection
@@ -70,13 +77,21 @@ export type ConsentVM = {
   policyVersion: string | null
 }
 
-export type AccountSectionVM =
+/**
+ * The signed-in sections. `Reorder` is what an order row may offer, and every use says which:
+ * `null` for a buyer (`BuyerSectionVM`), an approved partner's reorder (`PartnerSectionVM`).
+ */
+export type AccountSectionVM<Reorder extends ReorderIntentVM | null> =
   | {
       section: 'overview'
       attention: readonly AttentionVM[]
-      recentOrders: readonly OrderSummaryVM[]
+      recentOrders: readonly OrderSummaryVM<Reorder>[]
     }
-  | { section: 'orders'; orders: readonly OrderSummaryVM[]; pagination: PaginationVM | null }
+  | {
+      section: 'orders'
+      orders: readonly OrderSummaryVM<Reorder>[]
+      pagination: PaginationVM | null
+    }
   /** Booking a viewing sends the wishlist ahead as the pull list. */
   | { section: 'wishlist'; items: Streamed<readonly CardVM[]>; pullList: { href: string } | null }
   | { section: 'wantLists'; lists: readonly WantListVM[] }
@@ -90,25 +105,30 @@ export type AccountSectionVM =
       erase: { href: string }
     }
   | ConversationSectionVM
+  | RetailerSectionVM
 
-export type SignedOutVM = {
-  kind: 'signedOut'
-  /** Where sign-in returns to. */
-  returnTo: AccountSection
-  /** A migrated customer sets a password through a claim link (MIGRATION.md §5). */
-  claim: boolean
-  email: string | null
-}
+/** A buyer's sections: everything but a partner's terms and quotes, and no reorder. */
+export type BuyerSectionVM = Exclude<AccountSectionVM<null>, RetailerSectionVM>
+/** An approved partner's sections: its terms and quotes, and a reorder on the orders it may. */
+export type PartnerSectionVM = AccountSectionVM<ReorderIntentVM | null>
 
-export type SignedInVM = {
+type SignedIn = {
   kind: 'signedIn'
   customer: { fullName: string; email: string }
   nav: readonly AccountNavVM[]
-  view: AccountSectionVM
 }
+
+/**
+ * A buyer's area, or an approved partner's with its terms, quotes and reorders. A partner who
+ * is not approved never signs in (D34), so there is no other area.
+ */
+export type SignedInVM =
+  | (SignedIn & { audience: 'buyer'; view: BuyerSectionVM })
+  | (SignedIn & { audience: 'retailer'; retailer: ApprovedRetailerVM; view: PartnerSectionVM })
 
 export type AccountVM = {
   surface: 'account'
-  session: SignedOutVM | SignedInVM
+  /** Who is here — or, signed out, which page: sign-in, setting a password, asking for a link. */
+  session: SignedOutVM | SetPasswordVM | ResetRequestVM | SignedInVM
   seo: SeoVM
 }

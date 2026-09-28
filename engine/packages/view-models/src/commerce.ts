@@ -95,10 +95,16 @@ export type DocumentKind =
   | 'commercial-invoice'
   | 'packing-slip'
   | 'return-authorisation'
+  /** An approved retailer's terms or price list (D32), to them alone. */
+  | 'trade-terms'
 export type DocumentVM = { kind: DocumentKind; href: string }
 
-/** An order in a list — the account, a lookup — with enough to recognise it. */
-export type OrderSummaryVM = {
+/**
+ * An order in a list — the account, a lookup — with enough to recognise it. `Reorder` is what
+ * its row may offer, and every use says which: `null` for a buyer's or a guest's, and
+ * `ReorderIntentVM | null` for an approved partner's (an order it cannot reorder has `null`).
+ */
+export type OrderSummaryVM<Reorder extends ReorderIntentVM | null> = {
   number: string
   placedAt: IsoDateTime
   status: OrderStatus
@@ -107,4 +113,14 @@ export type OrderSummaryVM = {
   items: readonly ItemRefVM[]
   /** `href('order', { number })`: it opens with the session or the order-access cookie. */
   href: string
+  reorder: Reorder
 }
+
+/**
+ * "Reorder, one click from your order history" (D32): the order, by its number, posted as C6
+ * `quote.reorder` `{ fromOrder }` — a hidden field without JavaScript, the page minting the
+ * idempotency key beside it. The server copies the lines from the partner's own order, so
+ * nothing can be added or tampered with, and the session is the contact. Never a cart and
+ * never a price: staff price the quote when they issue it, at the partner's tier.
+ */
+export type ReorderIntentVM = { fromOrder: string }

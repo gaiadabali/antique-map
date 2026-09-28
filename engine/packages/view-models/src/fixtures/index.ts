@@ -14,6 +14,8 @@ import type { SurfaceVM } from '../loaders'
 import type { ShellVM } from '../shell'
 import type { PurchaseVM } from '../surfaces/purchase'
 import * as account from './account'
+import * as entry from './account-entry'
+import * as retailer from './account-retailer'
 import * as cart from './cart'
 import {
   checkoutExport,
@@ -40,12 +42,16 @@ import { itemVariants, itemVariantsSelected } from './item-variants'
 import { listing, listingEmpty, search } from './listing'
 import * as order from './order'
 import * as lookup from './order-lookup'
-import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested } from './pay'
+import * as partnership from './partnership'
+import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested, quoteTrade } from './pay'
 import { purchaseStates } from './purchase-states'
-import { shell } from './shell'
+import { shell, shellShop } from './shell'
 import { gone, notFoundLegacy, serverError } from './status'
+import { wishlist, wishlistEmpty } from './wishlist'
 
-export const SHELL_FIXTURES = { shell } as const satisfies Readonly<Record<string, ShellVM>>
+export const SHELL_FIXTURES = { shell, 'shell-shop': shellShop } as const satisfies Readonly<
+  Record<string, ShellVM>
+>
 
 /** The purchase panel's state matrix: panels, not pages (TASKS.md 34.1). */
 export const PURCHASE_STATES = purchaseStates satisfies Readonly<Record<string, PurchaseVM>>
@@ -108,6 +114,7 @@ export const FIXTURES = {
   'pay-transfer-pending': payTransferPending,
   'quote-proforma': quoteProforma,
   'quote-requested': quoteRequested,
+  'quote-trade': quoteTrade,
   'account-signed-out': account.accountSignedOut,
   'account-overview': account.accountOverview,
   'account-wishlist': account.accountWishlist,
@@ -116,11 +123,27 @@ export const FIXTURES = {
   'account-price-requests': account.accountPriceRequests,
   'account-viewings': account.accountViewings,
   'account-consignments': account.accountConsignments,
+  'account-set-password': entry.accountSetPassword,
+  'account-set-password-expired': entry.accountSetPasswordExpired,
+  'account-reset': entry.accountReset,
+  'account-reset-sent': entry.accountResetSent,
+  'account-retailer-signed-out': retailer.accountRetailerSignedOut,
+  'account-retailer-approved': retailer.accountRetailerApproved,
+  'account-retailer-terms': retailer.accountRetailerTerms,
+  'account-retailer-quotes': retailer.accountRetailerQuotes,
+  partnership: partnership.partnership,
+  'partnership-received': partnership.partnershipReceived,
+  'partnership-apply-failed': partnership.partnershipApplyFailed,
+  'partnership-sign-in-failed': partnership.partnershipSignInFailed,
+  'partnership-applied': partnership.partnershipApplied,
+  'partnership-declined': partnership.partnershipDeclined,
+  'partnership-retailer': partnership.partnershipRetailer,
+  wishlist,
+  'wishlist-empty': wishlistEmpty,
   'form-enquiry': form.formEnquiry,
   'form-offer': form.formOffer,
   'form-consignment': form.formConsignment,
   'form-appointment': form.formAppointment,
-  'form-wholesale': form.formWholesale,
   'form-invalid': form.formInvalid,
   'not-found-legacy': notFoundLegacy,
   gone,

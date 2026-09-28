@@ -29,8 +29,13 @@ export const MODULES = {
   'content.linkInBio': 'The link-in-bio page: CMS-curated posts and the products each shows',
   'services.consignment': '"Sell to us" submissions with photos',
   'services.appointments': 'Book a visit to a gallery or showroom',
-  'services.wholesale': 'Trade, hotel and corporate-gifting enquiries and tiers',
-  'retention.wishlist': 'Saved items',
+  'accounts.buyers': 'Buyer accounts: open sign-up and sign-in, the claim flow, the account area',
+  'accounts.retailers':
+    'Partner accounts by application only, for every business buyer — shops, hotels, villas, cafés, companies (D31, D36): the Partnership page, staff approval, trade terms, orders by quote',
+  'retention.wishlist':
+    "Saved items in the buyer's account (with `accounts.buyers`): a viewing's pull list",
+  'retention.deviceWishlist':
+    "Saved items on the guest's device, with no account (D35): each save tracked under ANALYTICS.md §1's consent rule (D38)",
   'retention.wantList': 'Saved searches and "tell me when another example arrives"',
   'retention.newsletter': 'Newsletter signup, digest and the issue archive',
   'retention.reviews': 'Product reviews from verified orders',
@@ -63,7 +68,12 @@ export function hasModule(config: { readonly modules: ModuleFlags }, key: Module
 /**
  * What a storefront app declares it can render (its `supports` file, TASKS.md 4.1.c).
  * `validateBrandConfigs()` rejects a brand whose modules are not a subset, so a missing
- * surface fails CI instead of rendering as a blank section (BRANDS.md §6).
+ * surface fails CI instead of rendering as a blank section (BRANDS.md §6). It is also how a
+ * difference of archetype stays a flag rather than a brand check: the emporium's list omits
+ * `accounts.buyers` and `retention.wishlist` — shoppers there buy as guests and save items on
+ * their device, so no shop can open shopper sign-up or an account wishlist (D31, D35) — and
+ * the gallery's omits `accounts.retailers`, so the Partnership surface is the emporium's.
+ * There is no separate trade enquiry: every business buyer applies as a partner (D36).
  */
 export type AppSupports = {
   readonly storefront: Storefront

@@ -1,47 +1,24 @@
 /**
  * @contract C2 — view models: forms · owner: ARC · consumers: WEB, UXG, UXE
  *
- * One engine for enquiry · offer · consignment · appointment · wholesale (C10 `FORM_KINDS`,
+ * One engine for enquiry · offer · consignment · appointment (C10 `FORM_KINDS`,
  * DESIGN-SYSTEM.md §2): the fields are data the loader builds from the kind, the brand's
- * modules and the item, so an app renders a list rather than hard-coding a form. A field's
- * `name` is its dotted path in the C6 request (`contact.whatsapp`, `message`) and the key its
- * label and hint are looked up by. The form posts to its C13 route with JavaScript or
- * without; what is sent is stored and put on the staff desk, and the page says when a person
- * will reply (EXPERIENCE-GALLERY.md §9). Errors explain and instruct and never clear what was
- * typed. The offer's bid is the one amount a client ever sends (C6), and it is not a price.
+ * modules and the item (`./form-fields`), so an app renders a list rather than hard-coding a
+ * form. The form posts to its C13 route with JavaScript or without; what is sent is stored and
+ * put on the staff desk, and the page says when a person will reply (EXPERIENCE-GALLERY.md
+ * §9). Errors explain and instruct and never clear what was typed. The offer's bid is the one
+ * amount a client ever sends (C6), and it is not a price.
  */
 import type { FormKind } from '@engine/config/routes'
 import type { CurrencyCode } from '@engine/config/schema'
-import type {
-  AppointmentSlotsView,
-  ConsignmentPhoto,
-  EnquiryTopic,
-  FieldError,
-} from '@engine/domain/api'
+import type { AppointmentSlotsView, ConsignmentPhoto, EnquiryTopic } from '@engine/domain/api'
 
 import type { BlockVM } from '../blocks'
 import type { MessageVM, PriceVM, SeoVM, Streamed } from '../common'
 import type { ItemRefVM } from '../commerce'
+import type { FormFieldVM, FormResultVM } from './form-fields'
 
-export type FormFieldVM = {
-  name: string
-  input:
-    | 'text'
-    | 'email'
-    | 'tel'
-    | 'textarea'
-    | 'select'
-    | 'radio'
-    | 'checkbox'
-    | 'date'
-    | 'money'
-    | 'file'
-  required: boolean
-  /** The HTML `autocomplete` token (`name`, `email`, `tel`). */
-  autocomplete: string | null
-  options: readonly { value: string; label: string }[]
-  maxLength: number | null
-}
+export type * from './form-fields'
 
 export type FormVM = {
   surface: 'form'
@@ -76,10 +53,7 @@ export type FormVM = {
     maxMegabytes: number
     roles: readonly ConsignmentPhoto['role'][]
   } | null
-  /** After a post: received, or every failing field at once with the entries kept. */
-  result:
-    | { kind: 'received'; reply: MessageVM | null }
-    | { kind: 'invalid'; fields: readonly FieldError[]; values: Readonly<Record<string, string>> }
-    | null
+  /** This visitor's last post of this form, resolved at request time; `null` for none. */
+  result: FormResultVM | null
   seo: SeoVM
 }

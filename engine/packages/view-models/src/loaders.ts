@@ -14,9 +14,13 @@
  * §9): phase one is a `'use cache'` + `cacheTag` read returning `CachedPart<VM>` (`../common`)
  * — published-only, projected, the same for every visitor; phase two creates each `Streamed`
  * part at request time, inside the route's `<Suspense>`, and the loader returns the two
- * together. A cached read never awaits a streamed part. There is no cookie-free fixed shell to
- * prerender: the `(site)` layout awaits `connection()`, so every page is rendered per request
- * and caching is per read, by tag.
+ * together. A cached read never awaits a streamed part. The one request-time part that is
+ * awaited instead is a post's `result` (C13 `FORM_RESULT`): only a visitor without JavaScript
+ * ever gets one, and a streamed part stays hidden from them, so the loader resolves it and the
+ * page renders it in its own body, never inside a nested `<Suspense>` — which costs no caching,
+ * since the route renders at request time and only the content read is `'use cache'`. There is
+ * no cookie-free fixed shell to prerender: the `(site)` layout awaits `connection()`, so every
+ * page is rendered per request and caching is per read, by tag.
  *
  * `Found<VM>`: `null` is a 404 (`notFound()`); `redirectTo` is permanent on a content page —
  * the slug changed, and the item page resolves by public id, so a product URL is never lost
@@ -58,8 +62,10 @@ import type { GiftCardVM } from './surfaces/gift-card'
 import type { ItemVM } from './surfaces/item'
 import type { DirectoryVM, ListingVM, SearchVM } from './surfaces/listing'
 import type { OrderLookupVM, OrderVM } from './surfaces/order'
+import type { PartnershipVM } from './surfaces/partnership'
 import type { PayVM, QuoteVM } from './surfaces/pay'
 import type { ErrorVM, GoneVM, NotFoundVM } from './surfaces/status'
+import type { WishlistVM } from './surfaces/wishlist'
 import type { CachedPart } from './common'
 
 export type Found<VM> = { vm: VM } | { redirectTo: string } | null
@@ -97,6 +103,10 @@ export type Loaders = {
   pay: (p: At & { token: string }) => Promise<Found<PayVM>>
   quote: (p: At & { token: string }) => Promise<Found<QuoteVM>>
   orderLookup: (p: At) => Promise<OrderLookupVM>
+  /** `null` where `accounts.retailers` is off: the page 404s. */
+  partnership: (p: At) => Promise<PartnershipVM | null>
+  /** `null` where `retention.deviceWishlist` is off: the page 404s. */
+  wishlist: (p: At) => Promise<WishlistVM | null>
   /**
    * For `not-found.tsx`, which gets no params: `path` and `locale` come from the proxy's
    * request headers (C13 `PROXY_REQUEST_HEADERS`). A removed item's path answers `GoneVM` —

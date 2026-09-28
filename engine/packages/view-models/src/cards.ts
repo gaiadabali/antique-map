@@ -52,7 +52,11 @@ export type CardVM = {
   swatches: readonly { label: string; colour: string }[]
   /** For a product without options: the line the card adds to the bag. */
   quickAdd: LineIntent | null
-  /** `null` when `retention.wishlist` is off. */
+  /**
+   * The heart: `null` with neither wishlist module on. `saved` is this visitor's — the buyer
+   * account's (`retention.wishlist`) or the device's (`retention.deviceWishlist`, D35; C13
+   * `DEVICE_WISHLIST`) — and a toggle posts `{ productId, saved }` to C13 `wishlist.set`.
+   */
   wishlist: { productId: ProductPublicId; saved: boolean } | null
   /** Set when the card belongs to the sister brand: the link leaves this shop and says so. */
   sister: { name: string } | null

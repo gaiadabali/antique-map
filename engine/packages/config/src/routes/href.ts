@@ -10,7 +10,13 @@
 import { FACET_KEYS, type FacetKey, type SortKey } from '../schema/facets'
 import type { LocaleCode } from '../schema/locales'
 import type { LocaleSegments, RouteMap } from '../routes'
-import { ACCOUNT_SECTIONS, type AccountSection, type FormKind, type LinkSurface } from './surfaces'
+import {
+  ACCOUNT_SECTIONS,
+  type AccountSection,
+  type FormKind,
+  type LinkSurface,
+  type SegmentSurface,
+} from './surfaces'
 
 /** A listing's state in the URL. A place value is its gazetteer path: `java/batavia`. */
 export type ListingQuery = {
@@ -53,6 +59,8 @@ export type HrefParams = {
   pay: { token: string }
   quote: { token: string }
   orderLookup: NoParams
+  partnership: NoParams
+  wishlist: NoParams
 }
 /** What `href()` reads from a brand config. */
 export type HrefConfig = { routes: RouteMap; locales: { default: LocaleCode } }
@@ -102,8 +110,9 @@ export function listingSearch(state: ListingState, omit: readonly FacetKey[] = [
 
 /**
  * `const href = createHref(brand)`, then `href(surface, params, locale)` → a root-relative
- * path. A locale without a segment map throws: `validateBrandConfigs()` guarantees one per
- * supported locale, so that is a bug.
+ * path. A locale without a segment map throws, and so does a surface or form kind without a
+ * segment — its module is off, so nothing may link there: `validateBrandConfigs()` guarantees
+ * both wherever they are needed, so either is a bug.
  */
 export function createHref(config: HrefConfig): Href {
   return (surface, params, locale) => {
@@ -120,17 +129,21 @@ export function createHref(config: HrefConfig): Href {
 function partsOf(context: Context, surface: LinkSurface): [string[], string] {
   const { segments, p } = context
   const slug = p.slug ? [p.slug] : []
+  const at = (s: SegmentSurface) => present(segments[s], s, context.locale)
   switch (surface) {
     case 'home':
       return [[], '']
     case 'page':
       return [slug, '']
-    case 'form':
-      return [[segments.forms[p.kind ?? 'enquiry']], searchOf({ item: p.item, topic: p.topic })]
+    case 'form': {
+      const kind = p.kind ?? 'enquiry'
+      const segment = present(segments.forms[kind], `form ${kind}`, context.locale)
+      return [[segment], searchOf({ item: p.item, topic: p.topic })]
+    }
     case 'item':
       return [[segments.item, p.slug ? `${p.publicId}-${p.slug}` : `${p.publicId}`], '']
     case 'place':
-      return [[segments.place, ...(p.path ?? [])], '']
+      return [[at('place'), ...(p.path ?? [])], '']
     case 'order':
       return [[segments.order, p.number ?? ''], '']
     case 'account': {
@@ -139,13 +152,18 @@ function partsOf(context: Context, surface: LinkSurface): [string[], string] {
     }
     case 'pay':
     case 'quote':
-      return [[segments[surface], p.token ?? ''], '']
+      return [[at(surface), p.token ?? ''], '']
     case 'browse':
     case 'search':
       return listing(context, surface)
     default:
-      return [[segments[surface], ...slug], '']
+      return [[at(surface), ...slug], '']
   }
+}
+
+function present(segment: string | undefined, what: string, locale: LocaleCode): string {
+  if (segment === undefined) throw new Error(`no segment for ${what} in "${locale}": module off`)
+  return segment
 }
 
 /** `/{base}?state…`, or for browse a named facet path when the state allows one. */

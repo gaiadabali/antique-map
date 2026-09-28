@@ -51,6 +51,10 @@ export const SURFACE_ROUTES = {
   pay: { internal: 'pay/[token]', sensitive: true },
   quote: { internal: 'quote/[token]', module: 'purchase.invoices', sensitive: true },
   orderLookup: { internal: 'order-lookup' },
+  // The partner programme and its sign-up/sign-in (D31, D36): every business buyer applies here.
+  partnership: { internal: 'partnership', module: 'accounts.retailers' },
+  // A guest's saved items, kept on the device (D35): the shop's wishlist, with no account.
+  wishlist: { internal: 'wishlist', module: 'retention.deviceWishlist' },
   notFound: { internal: null },
   gone: { internal: null },
   error: { internal: null },
@@ -72,13 +76,14 @@ export const FORM_KINDS = {
   offer: { module: 'purchase.offers' },
   consignment: { module: 'services.consignment' },
   appointment: { module: 'services.appointments' },
-  wholesale: { module: 'services.wholesale' },
 } as const satisfies Record<string, { module?: ModuleKey }>
 export type FormKind = keyof typeof FORM_KINDS
 
 /**
  * Account sections (DESIGN-SYSTEM.md §2 `Account`). Their segments are not localised:
- * the pages are private and never shared, so a translated URL buys nothing.
+ * the pages are private and never shared, so a translated URL buys nothing. `setPassword`
+ * and `reset` are reached signed out: the page an emailed password link lands on (C13
+ * `PASSWORD_LINK`), and the request for one.
  */
 export const ACCOUNT_SECTIONS = {
   overview: { segment: null },
@@ -93,6 +98,10 @@ export const ACCOUNT_SECTIONS = {
   priceRequests: { segment: 'price-requests', module: 'purchase.requestPrice' },
   viewings: { segment: 'viewings', module: 'services.appointments' },
   consignments: { segment: 'consignments', module: 'services.consignment' },
+  quotes: { segment: 'quotes', module: 'accounts.retailers' },
+  terms: { segment: 'terms', module: 'accounts.retailers' },
+  setPassword: { segment: 'set-password' },
+  reset: { segment: 'reset' },
 } as const satisfies Record<string, { segment: string | null; module?: ModuleKey }>
 export type AccountSection = keyof typeof ACCOUNT_SECTIONS
 

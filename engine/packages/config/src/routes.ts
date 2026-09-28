@@ -14,10 +14,12 @@ import { z } from 'zod'
 
 import { facetKeySchema, sortKeySchema } from './schema/facets'
 import { LOCALE_CODES, localeCodeSchema } from './schema/locales'
+import type { ModuleKey } from './schema/modules'
 import {
   FORM_KINDS,
   RESERVED_SEGMENTS,
   SEGMENT_SURFACES,
+  SURFACE_ROUTES,
   type FormKind,
   type SegmentSurface,
 } from './routes/surfaces'
@@ -26,18 +28,32 @@ export * from './routes/href'
 export * from './routes/parse'
 export * from './routes/surfaces'
 
-const formKindSchema = z.enum(Object.keys(FORM_KINDS) as [FormKind, ...FormKind[]])
-
 const segmentSchema = z
   .string()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'a lower-case ASCII kebab-case path segment')
+type Segment = typeof segmentSchema
 
-const surfaceSegments = Object.fromEntries(SEGMENT_SURFACES.map((s) => [s, segmentSchema]))
+/** The rows a module switches on: their segment may be left out while it is off. */
+type Gated<T> = { [K in keyof T]: T[K] extends { module: ModuleKey } ? K : never }[keyof T]
+type Segments<K extends string, G> = {
+  [Key in K]: Key extends G ? z.ZodOptional<Segment> : Segment
+}
+const segmentFor = (row: object) => ('module' in row ? segmentSchema.optional() : segmentSchema)
+const surfaceSegments = Object.fromEntries(
+  SEGMENT_SURFACES.map((s) => [s, segmentFor(SURFACE_ROUTES[s])]),
+) as Segments<SegmentSurface, Gated<typeof SURFACE_ROUTES>>
+const formSegments = Object.fromEntries(
+  (Object.keys(FORM_KINDS) as FormKind[]).map((kind) => [kind, segmentFor(FORM_KINDS[kind])]),
+) as Segments<FormKind, Gated<typeof FORM_KINDS>>
 
-/** One locale's segments: every segment surface, and every form kind. */
+/**
+ * One locale's segments: every surface and form kind that is always on, and each one a module
+ * switches on — which may be left out while the module is off (`validateBrandConfigs()`
+ * requires it once the module is on).
+ */
 export const localeSegmentsSchema = z.strictObject({
-  ...(surfaceSegments as Record<SegmentSurface, typeof segmentSchema>),
-  forms: z.record(formKindSchema, segmentSchema),
+  ...surfaceSegments,
+  forms: z.strictObject(formSegments),
 })
 export type LocaleSegments = z.infer<typeof localeSegmentsSchema>
 
@@ -87,7 +103,8 @@ export const routeMapSchema = z
       const facet = routes.facets.path[0]
       const vocabulary = facet ? (routes.facets.vocabularies[facet]?.[locale] ?? {}) : {}
       const seen = new Set<string>(RESERVED_SEGMENTS)
-      for (const segment of [surfaces, forms, vocabulary].flatMap((m) => Object.values(m))) {
+      const all = [surfaces, forms, vocabulary].flatMap((m) => Object.values<string | undefined>(m))
+      for (const segment of all.filter((each) => each !== undefined)) {
         if (seen.has(segment)) {
           const message = `"${segment}" is reserved or used twice at the root of "${locale}"`
           ctx.addIssue({ code: 'custom', path: [locale], message })

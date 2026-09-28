@@ -3,12 +3,14 @@
  *
  * What a brand sells and how long a reservation lasts (COMMERCE.md §4, §7, §8). The TTLs
  * are the ones `reserve()` (C8) is called with; the purchase tiers decide which actions a
- * unique item's panel leads with. Provider ids are declared here because config is the
- * leaf; C7 (`@engine/{shipping,fulfilment}/contract`) imports them.
+ * unique item's panel leads with; the trade tiers price an approved retailer's quotes (D32).
+ * Provider ids are declared here because config is the leaf; C7
+ * (`@engine/{shipping,fulfilment}/contract`) imports them.
  */
 import { z } from 'zod'
 
 import { isLadder, LADDER_MESSAGE } from './primitives'
+import { tradeConfigSchema } from './trade'
 
 export const INVENTORY_MODELS = [
   'unique',
@@ -77,6 +79,8 @@ export const commerceConfigSchema = z.strictObject({
   ttl: ttlSchema.prefault({}),
   /** Empty: every priced unique item leads with `buy`. */
   purchaseTiers: z.array(purchaseTierSchema).default([]).refine(isLadder, LADDER_MESSAGE),
+  /** The trade terms of `accounts.retailers` (`./trade`); `null` for a brand without partners. */
+  trade: tradeConfigSchema.nullable().default(null),
 })
 export type CommerceConfig = z.infer<typeof commerceConfigSchema>
 
