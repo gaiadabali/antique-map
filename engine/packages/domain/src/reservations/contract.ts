@@ -62,7 +62,11 @@ export type ReservationService<Tx extends DomainTx = DomainTx> = {
    * Several targets, all or nothing: a bag at "Continue to payment", a proforma's lines, a late
    * payment re-reserving its order. Takes rows in the lock order whatever the input order — every
    * reservation row by `target_key`, then every stock row by `(variant_id, location_id)` — so two
-   * bags holding the same items in opposite orders cannot deadlock. Runs under a savepoint: on any
+   * bags holding the same items in opposite orders cannot deadlock. The quantity a counted target's
+   * lazy expiry gives back is NOT written to `stock_levels` as its rows expire: it waits until every
+   * reservation row is done and is netted into that target's one guarded UPDATE (`reserved =
+   * reserved - $returned + $q`), so no stock row is taken before the last reservation row. Runs
+   * under a savepoint: on any
    * conflict, `ROLLBACK TO SAVEPOINT` undoes what it took and releases those locks, the caller's
    * transaction stays open, and every conflict is returned. Two inputs for one exclusive target
    * are a programming error (it throws before writing); inputs for one counted target are summed.
@@ -112,16 +116,20 @@ export type ReservationService<Tx extends DomainTx = DomainTx> = {
     input: { readonly reservationIds: ReservationIds; readonly reason: ReverseReason },
   ): Promise<PerReservation<ReverseOutcome>>
   /**
-   * The sweep: up to `limit` `active` rows past their end, taken `FOR UPDATE SKIP LOCKED` in
-   * `target_key` order, → `expired`; counted quantities back to stock in `(variant_id,
-   * location_id)` order; emits exactly what reserve()'s lazy expiry emits. Housekeeping, not
-   * correctness: the next reserve() of a target would expire the row anyway.
+   * The sweep: a CTE takes up to `limit` `active` rows past their end — `SELECT … ORDER BY
+   * target_key, id LIMIT $limit FOR UPDATE SKIP LOCKED` — and `UPDATE … FROM` it moves them to
+   * `expired`; counted quantities go back to stock afterwards, in `(variant_id, location_id)` order;
+   * it emits exactly what reserve()'s lazy expiry emits. Housekeeping, not correctness: the next
+   * reserve() of a target would expire the row anyway.
    */
   expireDue(tx: Tx, limit: number): Promise<SweepResult>
   /**
    * Live reservations whose end is within `lead` → their kind's notice (`EXPIRING_NOTICE_EVENTS`:
-   * `hold.expiring`), once each: `expiring_notified_at` is set in the same statement (`WHERE
-   * expiring_notified_at IS NULL`), so a rerun sends nothing twice. Kinds with no notice are
+   * `hold.expiring`), once each, taken the way the sweep takes rows: a CTE of `SELECT … WHERE
+   * status = 'active' AND expiring_notified_at IS NULL AND expires_at > statement_timestamp() AND
+   * expires_at <= statement_timestamp() + $lead ORDER BY target_key, id LIMIT $limit FOR UPDATE
+   * SKIP LOCKED`, then `UPDATE … SET expiring_notified_at = statement_timestamp() FROM` it. A rerun
+   * sends nothing twice, and a row a buyer holds waits for the next run. Kinds with no notice are
    * skipped; the checkout lock's countdown is on the buyer's screen.
    */
   noticeExpiring(

@@ -158,14 +158,18 @@ complete inside any reasonable hold.
 **One transaction, one lock order.** Every domain write runs in one READ
 COMMITTED transaction — never REPEATABLE READ or SERIALIZABLE, where a second
 buyer's `reserve()` aborts instead of waiting — and takes rows in one order: the
-dedupe row, the request being answered, the order, its payment attempts,
-reservations by target key, stock levels by variant and location, then counters
-(discount usage, gift-card balances, the document sequence last). A bag reserves
-all its lines in one call, whatever order they sit in, so two bags holding the
-same items cannot deadlock; sweeps skip rows a buyer holds. The rules, the
-timeouts and what "never aborts" cannot promise (a timeout, a lost connection)
-are C8 (`domain/contracts/transactions.ts`); the indexes and checks they stand on
-are listed for SCH in `domain/contracts/storage.ts`.
+dedupe row, the request being answered, the order, its payment attempts, their
+refunds, reservations by target key, stock levels by variant and location, then
+counters (discount usage, gift-card balances, the document sequence last). A bag
+reserves all its lines in one call, whatever order they sit in, so two bags
+holding the same items cannot deadlock; sweeps skip rows a buyer holds. No
+transaction calls a payment provider while it holds a reservation it has written:
+before a capture, the buyer's hold is secured — extended or re-taken to outlast
+the call — and committed on its own, so another buyer of the same item is never
+kept waiting on a slow gateway. The rules, the timeouts and what "never aborts"
+cannot promise (a timeout, a lost connection) are C8
+(`domain/contracts/transactions.ts`); the indexes, checks and triggers they stand
+on are listed for SCH in `domain/contracts/storage.ts`.
 
 The checkout lock shows the buyer a countdown — *"We're holding this for you for
 14:52"* — because it is true. Marketing urgency is not allowed (DESIGN-SYSTEM.md §10).

@@ -10,6 +10,7 @@
  * declares and the `ON CONFLICT` DOM writes cannot drift apart.
  */
 import type { INDEXED_RESERVATION_STATUSES } from '../reservations/machine'
+import type { NormalizedPaymentEvent } from './payment-vocabulary'
 import type { Assert, Equals } from './type-assertions'
 
 // ─── Money, everywhere ───────────────────────────────────────────────────────────────────────
@@ -67,6 +68,29 @@ export const RESERVATION_ARBITER = {
 // ref null until the provider names it;
 // INDEX on `order_id`; INDEX on `(status, expected_by)` WHERE `status IN ('created', 'pending',
 // 'requires_action', 'authorised')` — the reconciler's and the stale-attempt sweep's.
+// Immutable once inserted: ATTEMPT_IMMUTABLE_COLUMNS, and `provider_ref` is written once (null →
+// a value, never changed after). applyPaymentEvent() reads an attempt's order and seller WITHOUT a
+// lock and takes the lock order from them, which is sound only because they cannot change.
+// Enforced twice: no update access to those fields in the collection, and a `BEFORE UPDATE`
+// trigger that raises on any change to them. The trigger is raw SQL in the wave's migration —
+// drizzle's schema cannot declare one — so a dev-pushed database lacks it, and the invariant's test
+// runs against a migrated database.
+
+/**
+ * The `payment_attempts` columns no UPDATE may change — the trigger's list and its test's. SCH
+ * keeps it in step with the collection's column names.
+ */
+export const ATTEMPT_IMMUTABLE_COLUMNS = [
+  'order_id',
+  'seller_id',
+  'provider',
+  'attempt_ref',
+  'charge_amount',
+  'charge_currency',
+] as const
+
+/** Written once: null until the provider names the payment, never changed after. */
+export const ATTEMPT_WRITE_ONCE_COLUMNS = ['provider_ref'] as const
 
 // ─── payment_events, payment_events_unmatched, refunds ───────────────────────────────────────
 //
@@ -75,8 +99,10 @@ export const RESERVATION_ARBITER = {
 // sellers on one provider never share a key space; `attempt_id`, `source`, `outcome`
 // (ApplyPaymentEventOutcome), a hash of the redacted payload.
 // `payment_events_unmatched` (engine table): events for no known attempt, kept apart so they never
-// consume a dedupe key — UNIQUE `(provider, seller_id, provider_event_id)`, the payload hash, first
-// and last seen, a count, `resolved_at`.
+// consume a dedupe key — UNIQUE `(provider, seller_id, provider_event_id)`; the normalised event
+// itself (`jsonb`, a NormalizedPaymentEvent: ids, states and amounts, no PII — the type test below
+// holds it to that), so once its attempt is known it can be re-driven through applyPaymentEvent();
+// the raw payload's hash, first and last seen, a count, `resolved_at` (set when it applies).
 // `refunds` (collection): UNIQUE `(attempt_id, refund_ref)` — the provider's refund id, or
 // `retrieve:<cumulative>` for one learnt from retrieve(); UNIQUE `idempotency_key`
 // (RefundIdempotencyKey) for a refund the domain owes; its status (`requested` · `pending` ·
@@ -100,6 +126,13 @@ type Quoted<T extends readonly string[]> = T extends readonly [
     ? `'${Head}'`
     : `'${Head}', ${Quoted<Rest>}`
   : never
+
+// A stored unmatched event carries no one's email, phone, name or address.
+type KeysOf<T> = T extends unknown ? keyof T : never
+type PiiKey = 'email' | 'phone' | 'whatsapp' | 'name' | 'fullName' | 'address' | 'customer'
+type _UnmatchedEventsHoldNoPii = Assert<
+  Equals<Extract<KeysOf<NormalizedPaymentEvent>, PiiKey>, never>
+>
 
 // The index covers exactly the statuses the machine says a sold-once target is taken in.
 type _ArbiterCoversTheIndexedStatuses = Assert<

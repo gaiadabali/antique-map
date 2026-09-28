@@ -65,7 +65,20 @@ export type PaymentPorts = {
 }
 
 /**
- * Applies one event in ONE transaction of its own (a DomainTx: READ COMMITTED, the lock order):
+ * Applies one event in ONE transaction of its own (a DomainTx: READ COMMITTED, the lock order) —
+ * preceded, for a capture only, by a short one that secures the hold:
+ * 0. An `authorised` event on an attempt that must be captured, whose order is `pending_payment`
+ *    or `abandoned`: first SECURE THE HOLD, in a transaction of its own that commits (the order,
+ *    then its reservations): every reservation the capture relies on must be live beyond the call,
+ *    `expires_at > statement_timestamp() + DOMAIN_TX_TIMEOUTS.port`. A row that falls short is
+ *    extended (within `maxLifetime`); one that cannot reach it, or has lapsed, is re-taken for this
+ *    buyer (reserveAll(), superseding it); if the item is gone, nothing is taken and step 5 takes
+ *    the late path. It commits BEFORE the applying transaction because, tested on PostgreSQL 18.6,
+ *    an extension made inside it is invisible to the other buyer until commit — their reserve()
+ *    still sees the row lapse mid-call and waits on its lock — and a row it wrote makes their
+ *    insert wait for its commit even while the row is plainly live: either wait outlasts
+ *    `lock_timeout` whenever the capture does, and aborts their transaction. Securing it lengthens
+ *    or re-takes only this buyer's own hold, so committing it alone is safe.
  * 1. Find the attempt by `attemptRef`, else by `(provider, sellerId, providerRef)` — a plain read.
  *    None — or one of another seller than the event's, since a misrouted event is never applied to
  *    the wrong account: the event is recorded in `payment_events_unmatched` and alerted →
@@ -75,21 +88,28 @@ export type PaymentPorts = {
  * 2. `INSERT … payment_events (provider, seller_id, provider_event_id, attempt_id) ON CONFLICT DO
  *    NOTHING RETURNING id` — no row: `duplicate`, and the no-op commits.
  * 3. Lock the attempt's order, then the attempt (`FOR UPDATE`), and read the attempt's status
- *    under that lock. The attempt's order never changes, so step 1 could read it unlocked.
+ *    under that lock. Step 1 could read the attempt's order and seller unlocked only because the
+ *    database refuses to change them (./storage.ts `ATTEMPT_IMMUTABLE_COLUMNS`).
  * 4. Classify. `paid` or `authorised` for another amount or currency than the attempt's charge:
  *    `flagged`. A move the table has: apply it (5). No move, and the event ranks at or below the
  *    attempt (`PAYMENT_STATUS_RANK`): `ignored-stale`. No move, and it ranks above: EARLY —
  *    `ports.retrieve()`, apply the provider's state along the table (through `CATCH_UP_VIA`),
  *    then the event if a move now exists: `caught-up`. Early is never ignored: a refund reported
- *    before the payment it refunds would otherwise vanish.
+ *    before the payment it refunds would otherwise vanish. A catch-up never captures: CATCH_UP_VIA
+ *    never passes through `authorised` — only through `paid` (and `disputed` after it), money the
+ *    provider already holds.
  * 5. Apply, every status write a compare-and-set:
- *    - Money in (`paid`, or `authorised` and then captured by us): lock the order's reservations in
- *      `target_key` order and check each is live (`expires_at > statement_timestamp()`) BEFORE
- *      `ports.capture()`; then convert them all, move the order to `paid`, write the outbox.
- *    - The late path — a reservation lapsed, or the order is `abandoned` or `cancelled`:
- *      reserveAll() again for this buyer (its lazy expiry retires what lapsed); if it holds, sell
- *      (`payment-paid` or `late-payment-kept`); if not, `late-payment-refused`, and the money goes
- *      back — `ports.cancel()` for an authorisation, else `ports.refund()` keyed `late:{attemptId}`.
+ *    - Money in: lock the order's reservations in `target_key` order (`FOR UPDATE`, nothing
+ *      written yet). An authorisation is captured only if each is live beyond the call — the
+ *      margin step 0 secured, checked again here — then `ports.capture()`; a settlement (`paid`)
+ *      needs each live. Then convert them all, move the order to `paid`, write the outbox.
+ *    - The late path — a reservation lapsed, or the order is `abandoned` or `cancelled`. A
+ *      settlement (`paid`) re-reserves for this buyer (reserveAll(); its lazy expiry retires what
+ *      lapsed) and, if that holds, sells (`payment-paid` or `late-payment-kept`). An authorisation
+ *      is re-taken only in step 0 — no capture ever follows a row this transaction wrote — so one
+ *      that reaches this path could not be secured. Not kept: `late-payment-refused`, and the money
+ *      goes back — `ports.cancel()` for an authorisation, else `ports.refund()` keyed
+ *      `late:{attemptId}`, after any reservation work has been rolled back to its savepoint.
  *    - A duplicate — the order is already `paid`, `fulfilling` or `completed` through another
  *      attempt (a VA and a QRIS both settled): this attempt moves to `paid` (the money is real),
  *      the order records `duplicate-payment-refused`, and the money goes back keyed
@@ -137,8 +157,9 @@ export type DueAttempt = {
  * calls providers OUTSIDE any transaction — holding no row while it waits — and hands back what it
  * learnt: `retrieve()` for each due attempt, applied through applyPaymentEvent() as a `retrieve`
  * event keyed `retrieve:…`; `refund()` or `cancel()` again, under the stored key, for each owed
- * refund, recorded through `recordOwed()`. `manual-required` opens the manual refund task
- * (PAYMENTS.md §5); an owed refund still unconfirmed after a day is alerted to the manager.
+ * refund, recorded through `recordOwed()`, which takes the refund's order, its attempt and the
+ * refund in the lock order. `manual-required` opens the manual refund task (PAYMENTS.md §5); an
+ * owed refund still unconfirmed after a day is alerted to the manager.
  */
 export type Reconciliation = {
   readonly dueAttempts: (limit: number) => Promise<readonly DueAttempt[]>

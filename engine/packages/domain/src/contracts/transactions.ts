@@ -9,6 +9,7 @@
  * declares the tables and indexes they stand on (./storage.ts).
  */
 import type { Duration } from './scalars'
+import type { Assert } from './type-assertions'
 
 /**
  * The caller's open transaction, in the two forms one Payload transaction has. `req` is Payload's
@@ -36,13 +37,24 @@ export type DomainTx<Req = unknown, Db = unknown> = {
 export const DOMAIN_TX_ISOLATION = 'read committed'
 
 /**
- * Set with `SET LOCAL` as a domain transaction begins. `lock` bounds a wait on a row another
- * writer holds, `statement` any one statement; `port` bounds each provider call made inside a
- * transaction (applyPaymentEvent()'s ports), so a slow gateway cannot sit on a sale's rows.
+ * Set with `SET LOCAL` as a domain transaction begins, so the domain's own limits govern it and no
+ * server default can (every one is user-settable; tested on PostgreSQL 18.6):
+ * - `lock` — `lock_timeout`, a wait on a row another writer holds; `statement` — `statement_timeout`.
+ * - `port` — each provider call made inside a transaction (applyPaymentEvent()'s ports). A port is
+ *   called only while every reservation row the transaction holds is one it has NOT written and
+ *   that stays live beyond the call: a row it wrote makes another buyer's reserve() of that target
+ *   wait for its commit, and a row lapsing mid-call makes their lazy expiry wait on its lock — a
+ *   wait that outlasts `lock` whenever the call does, and aborts THEIR transaction. What a call
+ *   needs is secured first, in a transaction of its own (applyPaymentEvent(), step 0).
+ * - `idleInTransaction` — `idle_in_transaction_session_timeout`. During a provider call the session
+ *   sits idle in its transaction, so this outlasts `port` with a margin; a lower server default
+ *   would terminate the connection in the middle of every capture.
+ * - `transaction` — `transaction_timeout` (PostgreSQL 17+), the whole transaction, ports included.
+ *   Like the idle limit it terminates the connection, which the pool replaces.
  *
  * What "reserve() never aborts the caller's transaction" means, exactly: no unique violation, no
  * serialization failure and — the lock order kept — no deadlock is ever raised into it; a conflict
- * is a value. What no code can promise: one of these timeouts firing, a lost connection, a server
+ * is a value. What no code can promise: one of these limits firing, a lost connection, a server
  * restart. Those abort the whole transaction like any infrastructure failure — a webhook answers
  * 5xx and the provider retries; a C6 request answers 503 with `Retry-After`, and its idempotency
  * key, rolled back with the rest, makes the retry safe.
@@ -51,6 +63,8 @@ export const DOMAIN_TX_TIMEOUTS = {
   lock: { seconds: 5 },
   statement: { seconds: 15 },
   port: { seconds: 10 },
+  idleInTransaction: { seconds: 15 },
+  transaction: { seconds: 45 },
 } as const satisfies { readonly [limit: string]: Duration }
 
 /**
@@ -67,8 +81,11 @@ export const DOMAIN_TX_TIMEOUTS = {
  * - `request` — the record an action answers: a checkout or cart, an offer, a hold request, a
  *   quote — by id.
  * - `orders` — by id. The order is the mutex of one sale: what belongs to it comes after it.
- * - `payment_attempts` — by id. An attempt's order never changes, so applyPaymentEvent() reads it
- *   without a lock, locks the order, then the attempt.
+ * - `payment_attempts` — by id. An attempt's order and seller cannot change (./storage.ts makes
+ *   them immutable in the database), so applyPaymentEvent() reads them without a lock, locks the
+ *   order, then the attempt.
+ * - `refunds` — by id: money an attempt owes back, written only under its attempt's lock —
+ *   applyPaymentEvent(), a staff refund, the reconciler's recordOwed().
  * - `reservations` — by `target_key`, then id. The column is `COLLATE "C"`, so the database's
  *   order is byte order — the order JavaScript's default comparison gives these ASCII keys.
  * - `stock_levels` — by `(variant_id, location_id)`.
@@ -82,6 +99,7 @@ export const LOCK_ORDER = [
   'request',
   'orders',
   'payment_attempts',
+  'refunds',
   'reservations',
   'stock_levels',
   'counters',
@@ -107,8 +125,10 @@ export type DomainSweeps<Tx extends DomainTx = DomainTx> = {
   readonly holdNotices: (tx: Tx, limit: number) => Promise<SweepResult>
   /**
    * Attempts no provider will ever close — `manual` and `bank-transfer`, past `expected_by` with no
-   * staff entry — → `expired` (system). A gateway's attempts close on what the reconciler's
-   * `retrieve()` reports, never on our clock alone.
+   * staff entry — → `expired` (system). It locks attempts only (`FOR UPDATE SKIP LOCKED`), never an
+   * attempt's order: that would take the lock order backwards. Whatever the order needs follows in
+   * `abandonedOrders`. A gateway's attempts close on what the reconciler's `retrieve()` reports,
+   * never on our clock alone.
    */
   readonly staleAttempts: (tx: Tx, limit: number) => Promise<SweepResult>
   /**
@@ -119,3 +139,29 @@ export type DomainSweeps<Tx extends DomainTx = DomainTx> = {
   /** Open offers past `expiresAt` → `expired`; a counter near its end → `offer.counterExpiring`, once. */
   readonly offers: (tx: Tx, limit: number) => Promise<SweepResult>
 }
+
+// ─── Type-level tests ────────────────────────────────────────────────────────────────────────
+
+type Tuple<N extends number, T extends unknown[] = []> = T['length'] extends N
+  ? T
+  : Tuple<N, [...T, unknown]>
+type Seconds<D extends Duration> = Tuple<D['seconds']>
+type Limits = typeof DOMAIN_TX_TIMEOUTS
+// The session must survive the longest provider call it waits on, with a margin.
+type _IdleOutlastsThePort = Assert<
+  Seconds<Limits['idleInTransaction']> extends [...Seconds<Limits['port']>, unknown, ...unknown[]]
+    ? true
+    : false
+>
+// The whole transaction outlasts a lock wait, a statement and a provider call together.
+type _TransactionOutlastsItsParts = Assert<
+  Seconds<Limits['transaction']> extends [
+    ...Seconds<Limits['lock']>,
+    ...Seconds<Limits['statement']>,
+    ...Seconds<Limits['port']>,
+    unknown,
+    ...unknown[],
+  ]
+    ? true
+    : false
+>
