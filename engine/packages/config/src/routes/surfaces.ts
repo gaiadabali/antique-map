@@ -15,6 +15,12 @@ type SurfaceRoute = {
   index?: true
   /** The module that switches the surface on — its routes 404 when off. Absent: always on. */
   module?: ModuleKey
+  /**
+   * The URL names something private — an order, a payment link, a quote. The proxy answers it
+   * with `Referrer-Policy: no-referrer` and `X-Robots-Tag: noindex`, so no path or token leaks
+   * to a script or a link the page loads once analytics consent is given.
+   */
+  sensitive?: true
 }
 
 /** Every surface the engine guarantees (DESIGN-SYSTEM.md §2), one row each. */
@@ -38,12 +44,12 @@ export const SURFACE_ROUTES = {
   page: { internal: 'page/[slug]' },
   cart: { internal: 'cart' },
   checkout: { internal: 'checkout' },
-  // The customer session or a `lookupToken` (C6 `OrderAccess`), never the order number alone.
-  order: { internal: 'order/[number]' },
+  // The session or the order-access cookie (C13 `ORDER_ACCESS`), never the number alone.
+  order: { internal: 'order/[number]', sensitive: true },
   account: { internal: 'account/[section]', index: true },
   form: { internal: 'form/[kind]' },
-  pay: { internal: 'pay/[token]' },
-  quote: { internal: 'quote/[token]', module: 'purchase.invoices' },
+  pay: { internal: 'pay/[token]', sensitive: true },
+  quote: { internal: 'quote/[token]', module: 'purchase.invoices', sensitive: true },
   orderLookup: { internal: 'order-lookup' },
   notFound: { internal: null },
   gone: { internal: null },
