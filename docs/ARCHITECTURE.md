@@ -400,8 +400,15 @@ session, order access, each `HttpOnly`, `Secure` and `SameSite=Lax` — is refus
 unless it comes from the site itself (`Origin` or `Sec-Fetch-Site`; C13
 `sameOrigin`), and no credential travels in a URL beyond a page's own capability
 (a payment link's or a quote's token) and the one-hop links an email carries
-(order access, an application's status, set-password and reset, one-click
-unsubscribe).
+(order access, an application's status, set-password and reset, email
+verification, one-click unsubscribe), each of which but the unsubscribe moves its
+token into a cookie and answers 303 to a clean page. **A form works without
+JavaScript** (C13 `FORM_RESULT`): a script's post gets JSON; an HTML form post
+answers 303 See Other to its page (a `returnTo` the handler checks against C10),
+and its outcome waits on the server — at most ten minutes, read once — under an
+`HttpOnly` cookie holding an opaque id and never an entry or any personal data,
+for the page's loader to read back at request time. What a visitor must see
+without JavaScript — a form, above all — is never only a streamed part.
 
 ## 12. Identity
 
