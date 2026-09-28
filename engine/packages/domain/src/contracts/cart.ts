@@ -9,7 +9,13 @@
 import type { CountryCode, CurrencyCode } from '@engine/config/schema'
 
 import type { Money, PriceSet } from '../money/contract'
-import type { GiftCardDelivery, LineInput, ProductPublicId, VariantId } from './requests'
+import type {
+  GiftCardDelivery,
+  GiftWrapTarget,
+  LineInput,
+  ProductPublicId,
+  VariantId,
+} from './requests'
 import type { LineProblem, PricedTotals } from './results'
 import type { IsoDate } from './scalars'
 
@@ -30,6 +36,8 @@ export type CartLineView = {
   readonly quantity: number
   readonly options: { readonly [axis: string]: string } | null
   readonly giftCard: GiftCardDelivery | null
+  /** A gift-wrap line: the order or the line it wraps (EXPERIENCE-SHOP.md §7). Else null. */
+  readonly wraps: GiftWrapTarget | null
   /** Null when the line cannot be priced for this market; `problems` says why. */
   readonly unitPrice: PriceSet | null
   /** `unitPrice × quantity`, before discounts, in the charge currency. */

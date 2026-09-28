@@ -144,6 +144,11 @@ export type QuoteView = {
   readonly token: string
   readonly kind: 'proforma' | 'quote'
   readonly status: 'requested' | 'issued' | 'accepted' | 'paid' | 'expired' | 'cancelled'
+  /**
+   * The document number from the seller's gapless sequence, with its prefix (COMMERCE.md §12) —
+   * a proforma's the moment it is issued; null while staff prepare a requested quote.
+   */
+  readonly number: string | null
   readonly seller: SellerIdentity
   readonly lines: readonly QuoteLineView[]
   /** Null while staff prepare a requested quote. */

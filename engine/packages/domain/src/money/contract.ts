@@ -115,7 +115,9 @@ export type FxSnapshot = {
  * is a reconciliation bug.
  *
  * - `market-unit-price` — a derived market price, up to the market's clean price point
- *   (Rp 95.000, Rp 1.450.000; USD 10 for originals). The ladder is brand config.
+ *   (Rp 95.000, Rp 1.450.000; USD 10 for originals). The ladder is brand config — C1
+ *   `money.rounding[currency]`, bands of `{ upTo, step }`: a price up to `upTo` rounds UP to a
+ *   multiple of `step`, never down, so a converted price never undercuts its base.
  * - `line-discount` — half-even to the minor unit.
  * - `order-discount-allocation` — largest remainder, so the lines sum to the order figure exactly.
  * - `tax-per-line` — half-even on the line's tax base; an order's tax is the sum of its lines.

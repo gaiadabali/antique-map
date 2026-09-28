@@ -14,6 +14,7 @@ import type { CountryCode } from '@engine/config/schema'
 import type { Money } from '../money/contract'
 import type { OrderStatus } from '../order/machine'
 import type { PaymentStatus } from '../payment/machine'
+import type { OrderAccess } from './after-sale'
 import type { CartLineView, MarketView } from './cart'
 import type { PaymentMethodId, PaymentProviderId, SessionResult } from './payment-vocabulary'
 import type { ContactInput, InstitutionInput } from './requests'
@@ -193,19 +194,24 @@ export type PayLinkGetRequest = { readonly token: string }
  */
 export type PayLinkView = {
   readonly token: string
-  /** An accepted offer, a staff hold, an institution's proforma, or a sale agreed on WhatsApp. */
-  readonly purpose: 'offer' | 'hold' | 'invoice' | 'sale'
+  /** Why the link exists: an accepted offer, a staff hold, a proforma, a sale agreed on WhatsApp. */
+  readonly reason: 'offer' | 'hold' | 'invoice' | 'sale'
   readonly status: 'open' | 'paid' | 'expired' | 'cancelled'
   readonly seller: SellerIdentity
   readonly lines: readonly OrderedLineView[]
   readonly pricing: PricedTotals
+  /** The note staff wrote when sending it ("As agreed on WhatsApp…"), in their words. */
+  readonly note: string | null
   /** Empty unless `open`. */
   readonly paymentOptions: readonly PaymentOptionView[]
-  /** When the link stops taking payment. */
+  /** A payment already under way — the stored session, replayed so the page picks it up again. */
+  readonly payment: PaymentStarted | null
+  /** When the link stops taking payment — at the latest when the hold behind it ends. */
   readonly expiresAt: IsoInstant
   /** When the hold behind it ends; each method's session is sized to finish before it. */
   readonly holdExpiresAt: IsoInstant | null
-  readonly order: { readonly number: string; readonly status: OrderStatus }
+  /** The order the link pays, once there is one (at the latest when a payment starts). */
+  readonly order: { readonly number: string; readonly status: OrderStatus } | null
 }
 
 /** A staff-sent payment link (accepted offer, hold, WhatsApp sale, proforma): `/pay/{token}`. */
@@ -227,16 +233,17 @@ export type PaymentStarted = {
 }
 
 /**
- * Polled by the payment-pending page, which switches to "Paid" by itself. Scoped to the checkout
- * or the pay link the attempt belongs to: an attempt id travels in gateway return URLs, so on its
- * own it is never a credential — an attempt outside the scope answers `not-found`, exactly like
- * an unknown one.
+ * Polled by the payment-pending page, which switches to "Paid" by itself. Scoped to what the
+ * attempt belongs to — its checkout, its pay link, or its order opened by the session or a lookup
+ * (`OrderAccess`): an attempt id travels in gateway return URLs, so on its own it is never a
+ * credential, and an attempt outside the scope answers `not-found`, exactly like an unknown one.
  */
 export type PaymentStatusRequest = {
   readonly attemptId: string
   readonly scope:
     | { readonly kind: 'checkout'; readonly checkoutId: string }
     | { readonly kind: 'pay-link'; readonly token: string }
+    | { readonly kind: 'order'; readonly access: OrderAccess }
 }
 export type PaymentStatusView = {
   readonly attemptId: string

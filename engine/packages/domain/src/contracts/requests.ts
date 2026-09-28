@@ -27,7 +27,15 @@ export type LineInput = {
   readonly options: { readonly [axis: string]: string } | null
   /** A gift card line: who receives it and when. Its value is its variant's server price. */
   readonly giftCard: GiftCardDelivery | null
+  /**
+   * A gift-wrap line (a `service` product, priced like any other — COMMERCE.md §10): what it
+   * wraps, the whole order or one line of the bag. Null on every other line.
+   */
+  readonly wraps: GiftWrapTarget | null
 }
+
+/** What a gift wrap wraps: the order, or one of the bag's lines by its id. */
+export type GiftWrapTarget = 'order' | { readonly lineId: string }
 
 export type GiftCardDelivery = {
   readonly recipientName: string
