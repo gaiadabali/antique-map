@@ -4,13 +4,13 @@
  */
 import type { ItemVM } from '../surfaces/item'
 import { enquire, originalItem, uniqueBase, whatsapp } from './_item'
-import { money, price } from './_shared'
+import { line, money, price } from './_shared'
 
 export const itemUnique: ItemVM = originalItem({
   ...uniqueBase,
   price: { kind: 'fixed', price: price(money(480000, 'USD')) },
   state: { kind: 'available' },
-  actions: { primary: { action: 'buy', productId: 'prod-1001' }, secondary: [enquire, whatsapp] },
+  actions: { primary: { action: 'buy', line: line(1001) }, secondary: [enquire, whatsapp] },
   insuredShipping: { kind: 'estimate', price: price(money(9500, 'USD')) },
 })
 

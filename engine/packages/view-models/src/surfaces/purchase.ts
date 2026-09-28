@@ -12,7 +12,7 @@
 import type { CountryCode, PurchaseAction } from '@engine/config/schema'
 
 import type { CardVM } from '../cards'
-import type { Id, ImageVM, IsoDateTime, LinkVM, Money, PriceVM } from '../common'
+import type { ImageVM, IsoDateTime, LineIntent, LinkVM, Money, PriceVM } from '../common'
 import type { VariantsPurchaseVM } from './purchase-variants'
 
 export type * from './purchase-variants'
@@ -20,12 +20,13 @@ export type * from './purchase-variants'
 export type PurchaseVM = UniquePurchaseVM | VariantsPurchaseVM | EnquiryOnlyPurchaseVM
 
 /**
- * An action the panel offers. `buy` posts to the cart API (C6); `whatsapp` opens a chat
- * prefilled with the stock number and title in the page's language; the others open their
- * dialog, whose no-JavaScript path is `href` (a Form surface, C10).
+ * An action the panel offers. `buy` posts its line to `cart.addLines` (C6) — ids and a
+ * quantity of 1, never the price beside it; `whatsapp` opens a chat prefilled with the
+ * stock number and title in the page's language; the others open their dialog, whose
+ * no-JavaScript path is `href` (a Form surface, C10).
  */
 export type PurchaseActionVM =
-  | { action: 'buy'; productId: Id }
+  | { action: 'buy'; line: LineIntent }
   | { action: 'whatsapp'; href: string }
   | { action: Exclude<PurchaseAction, 'buy' | 'whatsapp'>; href: string }
 

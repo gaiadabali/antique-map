@@ -2,20 +2,26 @@
  * @contract C2 — view models: shared building blocks · owner: ARC · consumers: WEB, UXG, UXE, SEO
  *
  * View models are resolved and honest (DESIGN-SYSTEM.md §3): relationships arrive
- * populated, uploads flattened to the media contract (C9), money as C5's `Money` formatted
- * by `@engine/i18n` — a component never does arithmetic on a price — imprecise facts with
+ * populated, uploads flattened to the media contract (C9), money as C5's `Money` — a safe
+ * integer of minor units and a currency code, formatted by `@engine/i18n`, never a float or
+ * a preformatted string, and a component never does arithmetic on it — imprecise facts with
  * their precision, and absent data as `null`, so a band with nothing real to show is
  * omitted. Every string here is content in the page's locale; interface wording is the
  * app's message keys, whose values the brand supplies, so VMs carry codes, not UI copy.
  * Types only: `import type` from other packages, never a value.
  */
 import type { CountryCode, CurrencyCode, LocaleCode } from '@engine/config/schema'
-import type { Money } from '@engine/domain/money'
+import type { LineInput, ProductPublicId, VariantId } from '@engine/domain/api'
+import type { Money, PriceSet } from '@engine/domain/money'
 import type { AssetId, ImageRole } from '@engine/media/contract'
 
-export type { Money }
+export type { Money, PriceSet, ProductPublicId, VariantId }
 
-/** An opaque record id, stringified by the loader; the commerce API (C6) takes the same. */
+/**
+ * An opaque record id, stringified by the loader: a React key, an anchor. Never what a
+ * control posts — the commerce API (C6) takes a product's public id and a variant's id,
+ * which reach it only inside an intent.
+ */
 export type Id = string
 /** `2026-09-25` */
 export type IsoDate = string
@@ -84,11 +90,22 @@ export type ImageVM = {
 }
 
 /**
- * A price for this visitor's destination: `charge` is what the seller charges; `estimate`
- * a converted display amount ("≈ €1,020 — charged in USD 1,100"), only for export
- * destinations — always `null` for Indonesia, where the rupiah rule allows IDR alone.
+ * A price as this visitor's market sees it: C5's `PriceSet`. `charge` is what the seller
+ * charges; `estimate` a converted display amount ("≈ €1,020 — charged in USD 1,100") only
+ * when `basis` is `converted` — under the rupiah rule (`sole-currency`, every Indonesian
+ * destination) there is no field to put a foreign amount in. Display only: nothing a
+ * component posts back ever carries it, and the server prices again.
  */
-export type PriceVM = { charge: Money; estimate: Money | null }
+export type PriceVM = PriceSet
+
+/**
+ * What a control posts back to the commerce API (C6): ids, choices and the opaque pricing
+ * token, never a figure — a view model carries no price a client could send back as
+ * authoritative. An intent is the C6 request less the fields the visitor supplies, so a
+ * component adds only what was typed or chosen; `commerce-check.ts` proves every intent is
+ * server-priced. This one is a line for `cart.addLines`.
+ */
+export type LineIntent = LineInput
 
 export type ShipToVM = {
   country: CountryCode
@@ -101,7 +118,7 @@ export type ShipToVM = {
 export type SellerIdentityVM = {
   name: string
   country: CountryCode
-  registration: string
+  registration: string | null
   address: readonly string[]
 }
 

@@ -7,7 +7,7 @@
  * intent. The destination's price table ships with the page so the price updates on the
  * client — display only: the bag re-prices on the server and shows any difference.
  */
-import type { Id, ImageVM, MessageVM, PriceVM } from '../common'
+import type { ImageVM, LineIntent, MessageVM, PriceVM, VariantId } from '../common'
 
 /** Product-type axes (CONTENT-MODEL.md §2). */
 export type AxisKey =
@@ -43,10 +43,12 @@ export type VariantStockVM =
   | { kind: 'soldOut'; backInStock: { href: string } | null }
 
 export type SelectedVariantVM = {
-  variantId: Id
+  variantId: VariantId
   sku: string
   price: PriceVM
   stock: VariantStockVM
+  /** What Add to bag posts for this selection: the variant and its options, no price. */
+  line: LineIntent
 }
 
 /** The promise for this ship-to destination, read against the holiday calendar. */
@@ -85,7 +87,7 @@ export type VariantsPurchaseVM = {
   rules: readonly ConfiguratorRuleVM[]
   delivery: DeliveryPromiseVM
   /** `null` when `commerce.giftWrap` is off; wrap is a priced line of its own. */
-  giftWrap: { productId: Id; price: PriceVM } | null
+  giftWrap: { line: LineIntent; price: PriceVM } | null
   actions: {
     addToBag: boolean
     /** "Ask on WhatsApp" with the product and chosen options prefilled. */

@@ -12,8 +12,10 @@ import type {
   Id,
   ImageVM,
   IsoDateTime,
+  LineIntent,
   LinkVM,
   PriceVM,
+  ProductPublicId,
   SizeVM,
 } from './common'
 
@@ -48,10 +50,10 @@ export type CardVM = {
   archiveNumber: string | null
   /** Frame swatches, each named (DESIGN-SYSTEM.md §9). */
   swatches: readonly { label: string; colour: string }[]
-  /** For a product without options: add to the bag from the card. */
-  quickAdd: { productId: Id; variantId: Id | null } | null
+  /** For a product without options: the line the card adds to the bag. */
+  quickAdd: LineIntent | null
   /** `null` when `retention.wishlist` is off. */
-  wishlist: { productId: Id; saved: boolean } | null
+  wishlist: { productId: ProductPublicId; saved: boolean } | null
   /** Set when the card belongs to the sister brand: the link leaves this shop and says so. */
   sister: { name: string } | null
 }

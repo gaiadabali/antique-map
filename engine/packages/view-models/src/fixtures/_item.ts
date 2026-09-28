@@ -148,7 +148,7 @@ export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {
       {
         kind: 'sameMaker',
         title: 'More by Voorbeeld',
-        items: [card('1002', 'Chart of the Straits')],
+        items: [card(1002, 'Chart of the Straits')],
         more: null,
       },
     ]),

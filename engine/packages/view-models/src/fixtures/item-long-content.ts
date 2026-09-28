@@ -6,7 +6,7 @@
  */
 import type { ItemVM } from '../surfaces/item'
 import { originalItem, uniqueBase } from './_item'
-import { image, money, price } from './_shared'
+import { image, line, money, price } from './_shared'
 
 const latin =
   'Tabula nova et accuratissima Insulae Exempli cum omnibus suis portubus, sinubus, ' +
@@ -18,7 +18,7 @@ const base = originalItem({
   ...uniqueBase,
   price: { kind: 'fixed', price: price(money(1250000000, 'IDR')) },
   state: { kind: 'available' },
-  actions: { primary: { action: 'buy', productId: 'prod-1005' }, secondary: [] },
+  actions: { primary: { action: 'buy', line: line(1005) }, secondary: [] },
   shipsFrom: 'Jakarta',
 })
 

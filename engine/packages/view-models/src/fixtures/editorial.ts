@@ -48,7 +48,7 @@ export const story: StoryVM = {
     {
       kind: 'originals',
       title: 'Originals in this story',
-      items: [card('1001', 'The Isle of Contoh')],
+      items: [card(1001, 'The Isle of Contoh')],
       more: null,
     },
   ]),
@@ -116,7 +116,7 @@ export const location: LocationVM = {
   body: [],
   booking: { href: '/book-a-visit' },
   pickup: true,
-  inStock: streamed([card('7002', 'Harbour of Contoh — Tote', { badge: 'in-showroom' })]),
+  inStock: streamed([card(7002, 'Harbour of Contoh — Tote', { badge: 'in-showroom' })]),
   seo: seo('The Showroom', '/visit/showroom'),
   breadcrumbs: [{ label: 'Visit', href: '/visit' }],
 }
@@ -129,7 +129,7 @@ export const ig: IgVM = {
       image: image('ig-post-1', 1080, 1350, 'The tote on a café table'),
       caption: 'New in the showroom.',
       postedAt: '2026-09-20',
-      products: streamed([card('7002', 'Harbour of Contoh — Tote')]),
+      products: streamed([card(7002, 'Harbour of Contoh — Tote')]),
     },
   ],
   seo: seo('Sample Emporium on Instagram', '/ig'),

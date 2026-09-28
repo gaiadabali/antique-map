@@ -4,7 +4,7 @@
  * at the sister gallery in the visitor's market currency (here rupiah, for Indonesia).
  */
 import type { DesignVM } from '../surfaces/discovery'
-import { card, image, money, NOW, price, seo, streamed } from './_shared'
+import { card, image, line, money, NOW, price, seo, streamed } from './_shared'
 
 const idr = (amount: number) => price(money(amount, 'IDR'))
 
@@ -27,17 +27,17 @@ export const design: DesignVM = {
     },
   }),
   products: streamed([
-    card('7001', 'Harbour of Contoh — Giclée print', {
+    card(7001, 'Harbour of Contoh — Giclée print', {
       status: { kind: 'from', price: idr(450000) },
       isReproduction: true,
       archiveNumber: 'A-0042',
       makerLine: 'Voorbeeld, 1718',
     }),
-    card('7002', 'Harbour of Contoh — Tote', {
+    card(7002, 'Harbour of Contoh — Tote', {
       status: { kind: 'price', price: idr(185000) },
       isReproduction: true,
       archiveNumber: 'A-0042',
-      quickAdd: { productId: '7002', variantId: null },
+      quickAdd: line(7002),
     }),
   ]),
   printFromArchive: { href: '/designs/harbour-of-contoh?format=giclee' },

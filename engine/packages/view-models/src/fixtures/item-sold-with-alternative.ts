@@ -13,14 +13,14 @@ export const itemSoldWithAlternative: ItemVM = originalItem({
   state: {
     kind: 'sold',
     priceRealised: null,
-    alternative: card('1003', 'The Isle of Contoh (another example)', {
+    alternative: card(1003, 'The Isle of Contoh (another example)', {
       status: { kind: 'price', price: price(money(520000, 'USD')) },
     }),
     print: {
       kind: 'prints',
       sister: { name: 'Sample Emporium', href: SISTER_ORIGIN, syncedAt: NOW },
       products: [
-        card('7001', 'Isle of Contoh — Giclée print', {
+        card(7001, 'Isle of Contoh — Giclée print', {
           href: `${SISTER_ORIGIN}/product/7001-isle-of-contoh-giclee`,
           image: image('print-7001', 1200, 960, 'Giclée print of the Isle of Contoh, framed'),
           status: { kind: 'from', price: price(money(9500, 'USD')) },

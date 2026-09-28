@@ -7,10 +7,10 @@
  */
 import type { PurchaseVM } from '../surfaces/purchase'
 import { enquire, uniqueBase, whatsapp } from './_item'
-import { card, money, price } from './_shared'
+import { card, line, money, price } from './_shared'
 
 const fixed = { kind: 'fixed', price: price(money(480000, 'USD')) } as const
-const buy = { action: 'buy', productId: 'prod-1001' } as const
+const buy = { action: 'buy', line: line(1001) } as const
 const offer = { action: 'offer', href: '/make-an-offer?item=1001' } as const
 const reserve = { action: 'reserve', href: '/enquire?item=1001&topic=hold' } as const
 
@@ -36,7 +36,7 @@ export const purchaseStates = {
       until: '2026-09-27T09:00:00+08:00',
       payHref: '/pay/tok_hold_fixture',
     },
-    actions: { primary: { action: 'buy', productId: 'prod-1001' }, secondary: [whatsapp] },
+    actions: { primary: buy, secondary: [whatsapp] },
   },
   inMyCheckout: {
     ...uniqueBase,
@@ -80,7 +80,7 @@ export const purchaseStates = {
     state: {
       kind: 'sold',
       priceRealised: null,
-      alternative: card('1003', 'Another example'),
+      alternative: card(1003, 'Another example'),
       print: null,
     },
     actions: { primary: null, secondary: [] },
@@ -103,7 +103,7 @@ export const purchaseStates = {
     price: { kind: 'fixed', price: price(money(78000000, 'IDR')) },
     state: { kind: 'available' },
     shipsFrom: 'Jakarta',
-    actions: { primary: { action: 'buy', productId: 'prod-1001' }, secondary: [enquire, whatsapp] },
+    actions: { primary: buy, secondary: [enquire, whatsapp] },
   },
   exportPending: {
     ...uniqueBase,
@@ -118,7 +118,7 @@ export const purchaseStates = {
     price: { kind: 'fixed', price: price(money(65000, 'USD')) },
     state: { kind: 'available' },
     edition: { number: 12, of: 100 },
-    actions: { primary: { action: 'buy', productId: 'prod-1004' }, secondary: [enquire] },
+    actions: { primary: { action: 'buy', line: line(1004) }, secondary: [enquire] },
   },
   /** Queued for a human: the item is marked sensitive. */
   priceQueued: {

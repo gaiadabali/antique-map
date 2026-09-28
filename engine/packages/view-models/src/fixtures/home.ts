@@ -21,7 +21,7 @@ export const homeGallery: HomeVM = {
       rail: streamed({
         kind: 'newArrivals',
         title: 'New arrivals',
-        items: [card('1008', 'View of the Harbour', { badge: 'new' })],
+        items: [card(1008, 'View of the Harbour', { badge: 'new' })],
         more: { label: 'All new arrivals', href: '/browse?availability=new30' },
       }),
     },

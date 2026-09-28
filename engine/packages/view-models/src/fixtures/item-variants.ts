@@ -7,7 +7,7 @@
 import type { ItemVM } from '../surfaces/item'
 import type { VariantsPurchaseVM } from '../surfaces/purchase'
 import { originalItem } from './_item'
-import { image, money, NOW, price, seo, streamed } from './_shared'
+import { image, line, money, NOW, price, seo, streamed } from './_shared'
 
 const idr = (amount: number) => price(money(amount, 'IDR'))
 
@@ -56,7 +56,7 @@ const purchase: VariantsPurchaseVM = {
     duties: null,
     holiday: null,
   },
-  giftWrap: { productId: 'prod-wrap', price: idr(45000) },
+  giftWrap: { line: line(9001), price: idr(45000) },
   actions: {
     addToBag: true,
     whatsapp: 'https://wa.me/6281200000001?text=A-0042',

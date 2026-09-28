@@ -14,12 +14,12 @@ export const listing: ListingVM = {
   title: 'Antique maps of Pulau Contoh',
   query: { facets: { objectType: 'map', place: 'contoh' }, sort: 'newest', page: 1 },
   results: [
-    card('1001', 'The Isle of Contoh', { status: { kind: 'price', price: idr(78000000) } }),
-    card('1003', 'The Isle of Contoh (another example)', {
+    card(1001, 'The Isle of Contoh', { status: { kind: 'price', price: idr(78000000) } }),
+    card(1003, 'The Isle of Contoh (another example)', {
       status: { kind: 'onHold', until: '2026-09-26T14:00:00+08:00' },
     }),
-    card('1006', 'Chart of the Contoh Straits', { status: { kind: 'priceOnRequest' } }),
-    card('1007', 'Plan of the Harbour', { status: { kind: 'sold' } }),
+    card(1006, 'Chart of the Contoh Straits', { status: { kind: 'priceOnRequest' } }),
+    card(1007, 'Plan of the Harbour', { status: { kind: 'sold' } }),
   ],
   total: 4,
   facets: [

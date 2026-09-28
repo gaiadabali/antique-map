@@ -7,8 +7,8 @@ import type { CatalogueVM, CollectionVM, MakerVM, PlaceVM, SourceVM } from '../s
 import { card, date, image, money, price, seo, streamed } from './_shared'
 
 const works: WorksVM = {
-  available: [card('1001', 'The Isle of Contoh')],
-  sold: [card('1007', 'Plan of the Harbour', { status: { kind: 'sold' } })],
+  available: [card(1001, 'The Isle of Contoh')],
+  sold: [card(1007, 'Plan of the Harbour', { status: { kind: 'sold' } })],
   totals: { available: 18, sold: 42 },
   more: { label: 'All 18 available works', href: '/browse?maker=voorbeeld' },
 }
@@ -80,7 +80,7 @@ export const collection: CollectionVM = {
   hero: null,
   dates: null,
   threshold: streamed(price(money(500000, 'IDR'))),
-  members: streamed({ items: [card('7002', 'Harbour of Contoh — Tote')], total: 1, more: null }),
+  members: streamed({ items: [card(7002, 'Harbour of Contoh — Tote')], total: 1, more: null }),
   seo: seo('Gifts', '/collections/gifts'),
   breadcrumbs: [{ label: 'Collections', href: '/collections' }],
 }
@@ -92,7 +92,7 @@ export const catalogue: CatalogueVM = {
   hero: image('catalogue-cover', 1600, 2000, 'Cover of the Autumn Catalogue'),
   dates: { from: '2026-10-01', to: '2026-12-31' },
   sections: [
-    { title: 'Charts', body: [], entries: streamed([card('1006', 'Chart of the Straits')]) },
+    { title: 'Charts', body: [], entries: streamed([card(1006, 'Chart of the Straits')]) },
   ],
   pdf: null,
   seo: seo('The Autumn Catalogue', '/catalogues/autumn'),
