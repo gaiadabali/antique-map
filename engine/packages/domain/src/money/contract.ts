@@ -11,10 +11,16 @@
  * dependency, so nothing exported here may become a value. Runtime money facts live in config:
  * the currency exponents are `CURRENCY_EXPONENT` in `@engine/config/schema`, never repeated here.
  */
-import type { CurrencyCode, moneySchema } from '@engine/config/schema'
+import type { CurrencyCode, MoneyConfig, moneySchema } from '@engine/config/schema'
 
 import type { DecimalString, ExactRatio, IsoInstant } from '../contracts/scalars'
-import type { Accepts, Assert, IsReadonly, MutuallyAssignable } from '../contracts/type-assertions'
+import type {
+  Accepts,
+  Assert,
+  Equals,
+  IsReadonly,
+  MutuallyAssignable,
+} from '../contracts/type-assertions'
 
 export type { DecimalString, ExactRatio } from '../contracts/scalars'
 export type {
@@ -167,6 +173,9 @@ type SchemaOutput<S> = S extends { readonly _zod: { readonly output: infer O } }
 
 // C1 ⇄ C5: config's `moneySchema` parses exactly a Money, in both directions.
 type _MoneyMatchesConfigSchema = Assert<MutuallyAssignable<Money, SchemaOutput<typeof moneySchema>>>
+// C1 ⇄ C5: the FX buffer a snapshot records is exactly the type C1 validates — a percent as text.
+type ConfigBuffer = NonNullable<MoneyConfig['fx']['bufferPct'][CurrencyCode]>
+type _BufferMatchesConfig = Assert<Equals<FxSnapshot['bufferPct'], ConfigBuffer>>
 type _MoneyIsReadonly = Assert<IsReadonly<Money, 'amount'>>
 type _AllocationPoints = Assert<
   MutuallyAssignable<AllocationPoint, 'order-discount-allocation' | 'partial-refund-allocation'>
