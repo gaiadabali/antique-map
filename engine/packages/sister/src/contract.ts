@@ -7,15 +7,43 @@
  * holds PUBLISHED, PUBLIC fields only: it is built by a published-only, projected read
  * (`overrideAccess: false`, `_status: 'published'`, `select`) and never carries `physical`
  * (location, export status, acquisition cost, consignor), draft or cataloguing-internal data —
- * the foot of this file proves the shape has no such field. SIS implements (TASKS.md 9.7).
+ * the foot of this file proves the shape has no such field. SIS implements (TASKS.md 27.1).
+ *
+ * Master scans are the one asset the sisters share (ARCHITECTURE.md §7, BRANDS.md §5): stored
+ * once, by the origin, in the private masters bucket, under C9's `masterKey(workUid, checksum,
+ * extension)`. A snapshot carries that key — the only name for a master both databases can
+ * resolve, where an origin record id would mean nothing to the sister — and never a presigned
+ * URL; the sister reads the master through its own scoped credentials (C9's master access,
+ * every read logged) and writes only under `print-files/`.
  */
-import type { LocaleCode } from '@engine/config/schema'
+import type { CountryCode, LocaleCode } from '@engine/config/schema'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
 import type { IsoDate, IsoInstant } from '@engine/domain/api'
 import type { Money } from '@engine/domain/money'
 
 /** Text per locale, as the origin published it. */
 export type Localised = { readonly [L in LocaleCode]?: string }
+
+/**
+ * CONTENT-MODEL.md §1 `works.objectType`, the CMS's controlled select (SCH). The same list as C2's
+ * `ObjectType`; one of the two should import the other once a shared vocabulary module exists.
+ */
+export type WorkObjectType =
+  | 'map'
+  | 'sea-chart'
+  | 'city-plan'
+  | 'view'
+  | 'print'
+  | 'photograph'
+  | 'book'
+  | 'atlas'
+  | 'poster'
+  | 'document'
+  | 'ethnographic'
+  | 'other'
+
+/** A master's key in the private masters bucket: exactly what C9's `masterKey()` returns. */
+export type MasterKey = `masters/${string}/${string}.${string}`
 
 export type SnapshotMaker = {
   readonly name: string
@@ -66,7 +94,7 @@ export type OriginalListing = {
   readonly sellsTo:
     | { readonly kind: 'anywhere' }
     /** Deliverable only within `country` ("… can only be delivered within Indonesia"). */
-    | { readonly kind: 'domestic-only'; readonly country: string }
+    | { readonly kind: 'domestic-only'; readonly country: CountryCode }
     /** No recorded location or export status: the link offers an enquiry, never a buy route. */
     | { readonly kind: 'enquiry-only' }
   /** How fresh this is: a link never claims more certainty than its copy has. */
@@ -81,7 +109,7 @@ export type WorkSnapshot = {
   readonly stockNumber: string | null
   readonly title: Localised
   readonly originalTitle: string | null
-  readonly objectType: string
+  readonly objectType: WorkObjectType
   readonly makers: readonly SnapshotMaker[]
   readonly date: FuzzyDate
   readonly publication: {
@@ -109,8 +137,7 @@ export type WorkSnapshot = {
   } | null
   /**
    * What a reproduction needs to know. `printAllowed` false blocks publishing a reproduction
-   * (COMPLIANCE.md §8). The master scan itself is reached through C9's master access by
-   * `masterId`, never by a storage key in a snapshot.
+   * (COMPLIANCE.md §8).
    */
   readonly rights: {
     readonly status: string
@@ -119,8 +146,14 @@ export type WorkSnapshot = {
     readonly territories: readonly string[]
     readonly expires: IsoDate | null
   }
+  /**
+   * The master scan by its C9 key in the shared private bucket — never a presigned URL — with the
+   * checksum the key embeds (the copy verifies what it fetched) and the pixels the print-size
+   * ceiling is computed from (ARCHITECTURE.md §7).
+   */
   readonly master: {
-    readonly masterId: string
+    readonly key: MasterKey
+    readonly checksum: string
     readonly widthPx: number
     readonly heightPx: number
   } | null
@@ -165,9 +198,13 @@ export type SisterWebhook = SisterWebhookEvent & {
 
 // ─── The archive API: the nightly reconcile pulls ────────────────────────────────────────────
 
+/** The most works one archive page returns; a larger `limit` is answered with this many. */
+export const ARCHIVE_LIST_MAX_LIMIT = 100
+
 export type ArchiveListRequest = {
   readonly updatedSince: IsoInstant | null
   readonly cursor: string | null
+  /** A positive integer, at most ARCHIVE_LIST_MAX_LIMIT. */
   readonly limit: number
 }
 
@@ -193,8 +230,10 @@ type PrivateKey =
   | 'cataloguing'
   | 'aiDraft'
   | 'legacy'
-  | 'storageKey'
+  | 'presignedUrl'
+  | 'signedUrl'
 type Assert<T extends true> = T
+type Accepts<T, U extends T> = U
 type AllTrue<R> = false extends R[keyof R] ? false : true
 type IsPublicShape<T> = T extends readonly (infer E)[]
   ? IsPublicShape<E>
@@ -210,7 +249,12 @@ type _AcquisitionCostRejected = Assert<
   // @ts-expect-error — acquisition cost and consignor never leave the origin
   IsPublicShape<WorkSnapshot & { readonly physical: { readonly acquisition: { cost: Money } } }>
 >
-type _StorageKeyRejected = Assert<
-  // @ts-expect-error — a master travels by C9's master access, never as a storage key in a snapshot
-  IsPublicShape<{ readonly master: { readonly storageKey: string } }>
+type _PresignedUrlRejected = Assert<
+  // @ts-expect-error — a master travels by its key; a presigned URL never enters a snapshot
+  IsPublicShape<{ readonly master: { readonly key: MasterKey; readonly presignedUrl: string } }>
+>
+type _MasterByKey = Accepts<
+  NonNullable<WorkSnapshot['master']>['key'],
+  // @ts-expect-error — an origin record id is not a key the sister's database can resolve
+  'master-123'
 >

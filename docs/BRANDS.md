@@ -250,7 +250,8 @@ never join across databases on a request path.**
 
 - Indies Gallery is the **origin** of works. It exposes a signed, read-only
   archive API and emits `work.published`, `work.updated`, `work.availability`
-  webhooks.
+  and `work.unpublished` webhooks — the last so a copy stops linking to an
+  original the origin took down without waiting for the nightly reconcile.
 - Old East Indies stores a **provenance copy** of each work it uses
   (`works.origin = { brand, id, syncedAt }`). Edits flow origin → copy; the copy
   is read-only in the OEI admin except for OEI-only fields (crop, design notes).
@@ -272,8 +273,10 @@ never join across databases on a request path.**
   for Indonesian delivery) and its export status (no buy route abroad for a
   `domestic-only` original).
 - Master scans are the one shared asset: stored once in the private masters
-  bucket, referenced by both (ARCHITECTURE.md §7), licensed from IG to OEI —
-  the licence is a business matter recorded on the work, not a technical one.
+  bucket, referenced by both by their storage key (C9 `masterKey()`, carried in
+  the C12 snapshot — never a presigned URL; ARCHITECTURE.md §7), licensed from
+  IG to OEI — the licence is a business matter recorded on the work, not a
+  technical one.
 
 ## 6. Keeping them identical — enforcement
 

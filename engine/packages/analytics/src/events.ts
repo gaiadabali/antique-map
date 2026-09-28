@@ -9,49 +9,31 @@
  * No PII in any event — ids and categories only; the foot of this file proves no prop is named
  * for an email, a phone number, a name or an address.
  */
-import type { LocaleCode } from '@engine/config/schema'
+import type { Surface } from '@engine/config/routes'
+import type { InventoryModel, LocaleCode } from '@engine/config/schema'
 import type { CheckoutStepId, EnquiryTopic, IsoInstant } from '@engine/domain/api'
 import type { DomainEventName } from '@engine/domain/events'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
-import type { PaymentMethodId } from '@engine/domain/machines/payment'
+import type { PaymentFailureClass, PaymentMethodId } from '@engine/domain/machines/payment'
 import type { Money } from '@engine/domain/money'
 
-/** The surfaces of DESIGN-SYSTEM.md §2, keyed as C10's route map keys them. */
-export type SurfaceName =
-  | 'home'
-  | 'browse'
-  | 'search'
-  | 'item'
-  | 'design'
-  | 'maker'
-  | 'place'
-  | 'collection'
-  | 'source'
-  | 'exhibition'
-  | 'location'
-  | 'ig'
-  | 'giftCard'
-  | 'newsletterArchive'
-  | 'story'
-  | 'catalogue'
-  | 'page'
-  | 'cart'
-  | 'checkout'
-  | 'order'
-  | 'account'
-  | 'form'
-  | 'pay'
-  | 'quote'
-  | 'orderLookup'
-  | 'notFound'
-  | 'gone'
-  | 'error'
+export type { InventoryModel } from '@engine/config/schema'
 
-/** CONTENT-MODEL.md §1 `products.kind` and `products.inventoryModel`. */
+/** The surfaces of DESIGN-SYSTEM.md §2 — C10's route-map keys, imported, never repeated. */
+export type SurfaceName = Surface
+
+/** CONTENT-MODEL.md §1 `products.kind`. */
 export type ProductKind =
   'original' | 'edition' | 'reproduction' | 'merchandise' | 'book' | 'service' | 'gift-card'
-export type InventoryModel = 'unique' | 'edition' | 'stocked' | 'made-to-order' | 'pod' | 'service'
 export type DeviceClass = 'mobile' | 'tablet' | 'desktop'
+
+/**
+ * `search.submitted.query` is the one free-text prop, and a visitor may type an email address or
+ * a phone number into a search box. `/api/x/collect` redacts it before it is stored — email- and
+ * phone-shaped runs become `[email]` / `[phone]` — and cuts it to this many characters; the
+ * browser's copy is never trusted to have done so.
+ */
+export const SEARCH_QUERY_MAX_CHARS = 100
 
 /** A purchase tier of the brand's config (`commerce.purchaseTiers`, by position) — never an amount. */
 export type PriceBand = `tier-${number}` | 'on-request' | 'none'
@@ -65,6 +47,7 @@ export type BeaconEventProps = {
   readonly 'listing.viewed': { readonly facets: readonly string[]; readonly resultCount: number }
   readonly 'facet.applied': { readonly facet: string; readonly value: string }
   readonly 'search.submitted': {
+    /** Redacted and capped server-side (SEARCH_QUERY_MAX_CHARS) before it is stored. */
     readonly query: string
     readonly resultCount: number
     readonly zeroResults: boolean
@@ -128,7 +111,8 @@ export type BeaconEventProps = {
   readonly 'payment.attempted': { readonly method: PaymentMethodId }
   readonly 'payment.failed': {
     readonly method: PaymentMethodId
-    readonly reasonClass: 'declined' | 'expired' | 'cancelled' | 'unavailable' | 'error'
+    /** The same classes a provider's `failed` event carries (C7). */
+    readonly reasonClass: PaymentFailureClass
   }
   // People and performance
   readonly 'newsletter.subscribed': { readonly surface: SurfaceName }
@@ -170,11 +154,15 @@ export type BeaconEvent = {
 export type CollectRequest = { readonly events: readonly BeaconEvent[] }
 export const COLLECT_MAX_EVENTS_PER_REQUEST = 50
 
-/** The domain events analytics consumes, from the outbox only (ANALYTICS.md §2, "from the domain"). */
+/**
+ * The domain events analytics consumes, from the outbox only (ANALYTICS.md §2, "from the domain").
+ * `order.refunded` and `order.partiallyRefunded` come only for the attempt that paid the order: a
+ * late or duplicate payment given back reverses no revenue, so it never reaches a dashboard.
+ */
 export const DOMAIN_ANALYTICS_EVENTS = [
   'order.paid',
   'order.refunded',
-  // An addition to ANALYTICS.md §2: GA4's refund takes a partial value too.
+  // GA4's refund takes a partial value too.
   'order.partiallyRefunded',
   'offer.accepted',
   'hold.granted',
@@ -258,6 +246,8 @@ type IsPiiFree<T> = T extends readonly (infer E)[]
 
 // One fact is never counted twice: no beacon event shares a name with a domain event.
 type _BeaconAndDomainDisjoint = Assert<Equals<Extract<BeaconEventName, DomainEventName>, never>>
+// Every domain event analytics consumes has its props, and nothing else has.
+type _DomainPropsCoverTheList = Assert<Equals<keyof DomainAnalyticsProps, DomainAnalyticsEvent>>
 type _BeaconPropsArePiiFree = Assert<IsPiiFree<BeaconEventProps>>
 type _BeaconContextIsPiiFree = Assert<IsPiiFree<BeaconContext>>
 type _DomainPropsArePiiFree = Assert<IsPiiFree<DomainAnalyticsProps>>
