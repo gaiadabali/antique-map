@@ -61,7 +61,7 @@ export function hasModule(config: { readonly modules: ModuleFlags }, key: Module
 }
 
 /**
- * What a storefront app declares it can render (its `supports` file, TASKS.md 0.8.c).
+ * What a storefront app declares it can render (its `supports` file, TASKS.md 4.1.c).
  * `validateBrandConfigs()` rejects a brand whose modules are not a subset, so a missing
  * surface fails CI instead of rendering as a blank section (BRANDS.md §6).
  */
