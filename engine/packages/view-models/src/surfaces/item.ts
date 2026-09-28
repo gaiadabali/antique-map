@@ -41,7 +41,8 @@ export type RecordVM = {
     sourceWork: string | null
     edition: string | null
     state: string | null
-    textLanguage: string | null
+    /** The language of the printed text: its name for the page, and its BCP-47 tag. */
+    textLanguage: { label: string; lang: string } | null
     /** "Verso: blank". */
     verso: string | null
   }
@@ -100,8 +101,8 @@ export type ItemVM = {
   title: string
   /** `false`: the title is the fallback, so the maker line is promoted. */
   hasHookTitle: boolean
-  /** The diplomatic transcription, set in italic. */
-  originalTitle: string | null
+  /** The diplomatic transcription, set in italic, in its own language (`nl`, `la`). */
+  originalTitle: { text: string; lang: string | null } | null
   /** `M.0500`, in the mono face — also the WhatsApp reference. */
   stockNumber: string | null
   /** The design's Archive No., on every reproduction and merchandise product. */

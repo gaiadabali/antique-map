@@ -27,7 +27,7 @@ export const itemLongContent: ItemVM = {
   title:
     'Nieuwe en zeer nauwkeurige kaart van het Eiland Contoh met alle zijne havens, ' +
     'baaien en rivieren — de eerste volledige opmeting door Hendrik Voorbeeld',
-  originalTitle: latin,
+  originalTitle: { text: latin, lang: 'la' },
   media: {
     ...base.media,
     primary: image('tall-1005', 900, 3000, 'A costume print, very tall and narrow (0.3 : 1)'),

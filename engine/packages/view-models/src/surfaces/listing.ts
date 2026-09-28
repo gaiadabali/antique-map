@@ -7,7 +7,7 @@
  * built with C10's `href()` from the listing's own `ListingQuery`, so a canonical URL is
  * just `href()` of the state. Counts follow the all-but-this-facet rule.
  */
-import type { CurrencyCode, FacetKey } from '@engine/config/schema'
+import type { CurrencyCode, FacetKey, SortKey } from '@engine/config/schema'
 import type { ListingQuery } from '@engine/config/routes'
 
 import type { BlockVM } from '../blocks'
@@ -69,7 +69,7 @@ type ListingBase = {
   /** Applied-filter chips, each with the href that removes it. */
   applied: readonly LinkVM[]
   clearAll: string | null
-  sort: readonly { key: string; href: string; selected: boolean }[]
+  sort: readonly { key: SortKey; href: string; selected: boolean }[]
   pagination: PaginationVM
   empty: EmptyResultsVM | null
   /** "Alert me about new maps of Bali under US$2,000"; `null` when the module is off. */
@@ -110,8 +110,8 @@ export type DirectoryEntryVM = {
   title: string
   href: string
   image: ImageVM | null
-  /** "1666–1727" · "18 available" · "12–15 March" — content, already formatted. */
-  meta: string | null
+  /** Life dates, "18 available", "12–15 March": codes and values the app words and formats. */
+  meta: readonly MessageVM[]
   children: readonly DirectoryEntryVM[]
 }
 

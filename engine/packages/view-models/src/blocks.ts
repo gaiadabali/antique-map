@@ -8,8 +8,6 @@
  * SCH writes one Payload block per member; each app writes one renderer per member, typed
  * `BlockRenderers<…>`, so a new block without a renderer in both apps fails to compile.
  */
-import type { ListingQuery } from '@engine/config/routes'
-
 import type { CardVM } from './cards'
 import type { DatePrecision, Id, ImageVM, LinkVM, Streamed } from './common'
 
@@ -70,7 +68,8 @@ export type FigureBlock = Block<
 
 /**
  * A region of a work ("see the cartouche"): the crop is rendered as an image, and opens the
- * viewer at that region. `region` is in the full image's pixels (IIIF `x,y,w,h`).
+ * viewer at that region. `region` is in fractions of the whole image, 0–1 like the
+ * hotspots, so it means the same on the public capped pyramid and the full one (IIIF `pct:`).
  */
 export type ZoomFigureBlock = Block<
   'zoomFigure',
@@ -119,20 +118,22 @@ export type GalleryBlock = Block<
 
 export type PullQuoteBlock = Block<
   'pullQuote',
-  { quote: string; attribution: string | null; citation: CitationVM | null }
+  {
+    quote: string
+    /** BCP-47, when the quotation is in another language than the page's. */
+    lang: string | null
+    attribution: string | null
+    citation: CitationVM | null
+  }
 >
 
-/** Hand-picked products or a saved query; `more` opens the query as a browse page. */
+/**
+ * Hand-picked products or a saved query, resolved: the renderer gets the cards and, for a
+ * query, `more` — the query as a browse page. How the rail was chosen is the CMS's business.
+ */
 export type ProductRailBlock = Block<
   'productRail',
-  {
-    title: string | null
-    source: 'manual' | 'query'
-    query: ListingQuery | null
-    limit: number
-    items: Streamed<readonly CardVM[]>
-    more: LinkVM | null
-  }
+  { title: string | null; items: Streamed<readonly CardVM[]>; more: LinkVM | null }
 >
 
 export type TimelineBlock = Block<
@@ -168,6 +169,13 @@ export type EmbedBlock = Block<
       src: string
       title: string
       poster: ImageVM | null
+      /** A `file` video's captions and subtitles (WCAG 1.2.2); providers carry their own. */
+      tracks: readonly {
+        kind: 'captions' | 'subtitles'
+        src: string
+        srclang: string
+        label: string
+      }[]
     }
   /** The full deep-zoom viewer of a work. */
   | { kind: 'viewer'; work: { title: string; href: string }; manifest: string }

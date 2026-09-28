@@ -27,7 +27,7 @@ export const story: StoryVM = {
       id: 'z1',
       image: cartouche,
       caption: 'See the cartouche: the surveyor signs his own invention.',
-      region: { x: 120, y: 80, w: 900, h: 600 },
+      region: { x: 0.05, y: 0.04, w: 0.375, h: 0.33 },
       work: {
         title: 'The Isle of Contoh, 1718',
         href: '/product/1001-isle-of-contoh-voorbeeld-1718',

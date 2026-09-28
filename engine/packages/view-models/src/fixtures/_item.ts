@@ -21,6 +21,14 @@ export const reassurance: readonly LinkVM[] = [
   { label: 'Shipping and insurance', href: '/shipping' },
 ]
 
+/** What a pending panel resolves to, an hour on: the honest fallback. */
+const unverified: PurchaseVM = {
+  kind: 'enquiryOnly',
+  reason: 'unverified',
+  price: null,
+  actions: { primary: enquire, secondary: [] },
+}
+
 /** Shared by the unique fixtures; each adds its `state` with the `price` and `actions` it allows. */
 export const uniqueBase: UniqueBaseVM = {
   kind: 'unique',
@@ -44,7 +52,7 @@ export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {
     objectType: 'map',
     title: 'The Isle of Contoh by Hendrik Voorbeeld, 1718 — an imagined survey',
     hasHookTitle: true,
-    originalTitle: 'Nieuwe Kaart van het Eyland Contoh',
+    originalTitle: { text: 'Nieuwe Kaart van het Eyland Contoh', lang: 'nl' },
     stockNumber: 'M.0001',
     archiveNumber: null,
     isReproduction: false,
@@ -69,7 +77,7 @@ export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {
         sourceWork: 'Beschryving der Voorbeeld-Eilanden, 1716–18',
         edition: 'First edition',
         state: 'Second state, with the compass rose',
-        textLanguage: 'Dutch',
+        textLanguage: { label: 'Dutch', lang: 'nl' },
         verso: 'Verso: blank',
       },
       firstEdition: date(1716),
@@ -142,7 +150,7 @@ export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {
       available: streamed(18),
     },
     specifications: [],
-    purchase: purchase === 'pending' ? pending() : streamed(purchase),
+    purchase: purchase === 'pending' ? pending(unverified) : streamed(purchase),
     sister: streamed(null),
     related: streamed([
       {

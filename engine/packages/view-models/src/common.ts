@@ -10,12 +10,18 @@
  * app's message keys, whose values the brand supplies, so VMs carry codes, not UI copy.
  * Types only: `import type` from other packages, never a value.
  */
-import type { CountryCode, CurrencyCode, LocaleCode } from '@engine/config/schema'
+import type {
+  CountryCode,
+  CurrencyCode,
+  LocaleCode,
+  ObjectType,
+  ProductKind,
+} from '@engine/config/schema'
 import type { LineInput, ProductPublicId, VariantId } from '@engine/domain/api'
 import type { Money, PriceSet } from '@engine/domain/money'
 import type { AssetId, ImageRole } from '@engine/media/contract'
 
-export type { Money, PriceSet, ProductPublicId, VariantId }
+export type { Money, ObjectType, PriceSet, ProductKind, ProductPublicId, VariantId }
 
 /**
  * An opaque record id, stringified by the loader: a React key, an anchor. Never what a
@@ -83,6 +89,11 @@ export type ImageVM = {
   role: ImageRole | null
   caption: string | null
   credit: string | null
+  /**
+   * The BCP-47 language of `alt` and `caption` when it is not the page's — a Dutch caption, or
+   * a fallback from another locale — so a screen reader switches voice (WCAG 3.1.2).
+   */
+  lang: string | null
   /** The public IIIF `info.json` when tiles exist; `null` → the plain image, never an error. */
   iiif: string | null
   /** A synthetic mockup or an AI-generated image, labelled as such in the UI. */
@@ -122,13 +133,19 @@ export type SellerIdentityVM = {
   address: readonly string[]
 }
 
-/** Per page (ARCHITECTURE.md §11): one canonical, reciprocal `hreflang` alternates. */
+/**
+ * Per page (ARCHITECTURE.md §11): one canonical, reciprocal `hreflang` alternates and an
+ * `x-default` (the default locale's URL). `contentLocale` is the locale the main content is
+ * really in: when a page falls back to another locale's text it says so — the content carries
+ * `lang` — and that locale's URL leaves `alternates`, since it is no translation (WCAG 3.1.2).
+ */
 export type SeoVM = {
   title: string
   description: string | null
   /** Absolute. */
   canonical: string
-  alternates: readonly { locale: LocaleCode; href: string }[]
+  contentLocale: LocaleCode
+  alternates: readonly { locale: LocaleCode | 'x-default'; href: string }[]
   /** A request-time Open Graph image (C13 `/api/x/og/…`). */
   image: string | null
   noindex: boolean
@@ -170,21 +187,6 @@ export type PlaceRefVM = {
 /** A controlled vocabulary value: its key for logic, its label for the page. */
 export type TermVM<Key extends string = string> = { key: Key; label: string }
 
-export type ObjectType =
-  | 'map'
-  | 'sea-chart'
-  | 'city-plan'
-  | 'view'
-  | 'print'
-  | 'photograph'
-  | 'book'
-  | 'atlas'
-  | 'poster'
-  | 'document'
-  | 'ethnographic'
-  | 'other'
 export type Colouring =
   'publishers' | 'original-hand' | 'old-hand' | 'later' | 'printed' | 'uncoloured'
-export type ProductKind =
-  'original' | 'edition' | 'reproduction' | 'merchandise' | 'book' | 'service' | 'gift-card'
 export type Badge = 'hero' | 'printed-in-bali' | 'limited-edition' | 'new' | 'in-showroom'

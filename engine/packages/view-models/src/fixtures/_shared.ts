@@ -65,6 +65,7 @@ export function image(
     role,
     caption: null,
     credit: null,
+    lang: null,
     iiif: role === null ? null : `${MEDIA}/iiif/${assetId}/info.json`,
     synthetic: false,
   }
@@ -105,10 +106,19 @@ export function streamed<T>(value: T): Streamed<T> {
   return Promise.resolve(value)
 }
 
-/** Never settles: renders the reserved-height "Checking availability…" state. */
-export function pending<T>(): Streamed<T> {
-  return new Promise<T>(() => undefined)
+/**
+ * Resolves only after an hour: the reserved-height "Checking availability…" state, for as long
+ * as anyone looks at it. The timer never holds a Node process open, so a test run still ends.
+ */
+export function pending<T>(value: T, ms = 60 * 60 * 1000): Streamed<T> {
+  return new Promise<T>((resolve) => {
+    const timer = setTimeout(() => resolve(value), ms)
+    if (typeof timer === 'object') timer.unref?.()
+  })
 }
+
+/** The timer global of Node and browsers, typed here: this package's lib is ES2023 alone. */
+declare const setTimeout: (callback: () => void, ms: number) => number | { unref?: () => void }
 
 export function seo(title: string, path: string, locales: readonly LocaleCode[] = ['en', 'id']) {
   const href = (locale: LocaleCode) => `${ORIGIN}${locale === 'en' ? '' : `/${locale}`}${path}`
@@ -116,7 +126,11 @@ export function seo(title: string, path: string, locales: readonly LocaleCode[] 
     title,
     description: null,
     canonical: href('en'),
-    alternates: locales.map((locale) => ({ locale, href: href(locale) })),
+    contentLocale: 'en',
+    alternates: [
+      ...locales.map((locale) => ({ locale, href: href(locale) })),
+      { locale: 'x-default', href: href('en') },
+    ],
     image: `${ORIGIN}/api/x/og${path}`,
     noindex: false,
   }
