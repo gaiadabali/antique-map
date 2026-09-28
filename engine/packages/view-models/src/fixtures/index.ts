@@ -14,6 +14,7 @@ import type { SurfaceVM } from '../loaders'
 import type { ShellVM } from '../shell'
 import type { PurchaseVM } from '../surfaces/purchase'
 import * as account from './account'
+import * as retailer from './account-retailer'
 import * as cart from './cart'
 import {
   checkoutExport,
@@ -40,12 +41,15 @@ import { itemVariants, itemVariantsSelected } from './item-variants'
 import { listing, listingEmpty, search } from './listing'
 import * as order from './order'
 import * as lookup from './order-lookup'
+import * as partnership from './partnership'
 import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested } from './pay'
 import { purchaseStates } from './purchase-states'
-import { shell } from './shell'
+import { shell, shellShop } from './shell'
 import { gone, notFoundLegacy, serverError } from './status'
 
-export const SHELL_FIXTURES = { shell } as const satisfies Readonly<Record<string, ShellVM>>
+export const SHELL_FIXTURES = { shell, 'shell-shop': shellShop } as const satisfies Readonly<
+  Record<string, ShellVM>
+>
 
 /** The purchase panel's state matrix: panels, not pages (TASKS.md 34.1). */
 export const PURCHASE_STATES = purchaseStates satisfies Readonly<Record<string, PurchaseVM>>
@@ -116,6 +120,16 @@ export const FIXTURES = {
   'account-price-requests': account.accountPriceRequests,
   'account-viewings': account.accountViewings,
   'account-consignments': account.accountConsignments,
+  'account-retailer-signed-out': retailer.accountRetailerSignedOut,
+  'account-retailer-applied': retailer.accountRetailerApplied,
+  'account-retailer-approved': retailer.accountRetailerApproved,
+  'account-retailer-terms': retailer.accountRetailerTerms,
+  'account-retailer-quotes': retailer.accountRetailerQuotes,
+  'account-retailer-declined': retailer.accountRetailerDeclined,
+  partnership: partnership.partnership,
+  'partnership-applied': partnership.partnershipApplied,
+  'partnership-declined': partnership.partnershipDeclined,
+  'partnership-retailer': partnership.partnershipRetailer,
   'form-enquiry': form.formEnquiry,
   'form-offer': form.formOffer,
   'form-consignment': form.formConsignment,

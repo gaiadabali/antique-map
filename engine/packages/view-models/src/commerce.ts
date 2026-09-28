@@ -23,7 +23,7 @@ import type {
 import type { OrderStatus } from '@engine/domain/machines/order'
 import type { PaymentStatus } from '@engine/domain/machines/payment'
 
-import type { ImageVM, IsoDateTime, Money } from './common'
+import type { ImageVM, IsoDateTime, LineIntent, Money } from './common'
 import type { LocationSummaryVM } from './surfaces/editorial'
 import type { AxisKey } from './surfaces/purchase-variants'
 
@@ -95,6 +95,8 @@ export type DocumentKind =
   | 'commercial-invoice'
   | 'packing-slip'
   | 'return-authorisation'
+  /** An approved retailer's terms or price list (D32), to them alone. */
+  | 'trade-terms'
 export type DocumentVM = { kind: DocumentKind; href: string }
 
 /** An order in a list — the account, a lookup — with enough to recognise it. */
@@ -107,4 +109,13 @@ export type OrderSummaryVM = {
   items: readonly ItemRefVM[]
   /** `href('order', { number })`: it opens with the session or the order-access cookie. */
   href: string
+  /** An approved retailer's one-click reorder (`ReorderIntentVM`); `null` for everyone else. */
+  reorder: ReorderIntentVM | null
 }
+
+/**
+ * "Reorder, one click from your order history" (D32): the order's lines as a new quote
+ * request (C6 `quote.request`) — the component adds the idempotency key and the session is the
+ * contact. Never a cart, and never a price: the quote is priced when staff issue it.
+ */
+export type ReorderIntentVM = { lines: readonly LineIntent[] }

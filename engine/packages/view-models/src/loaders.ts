@@ -58,6 +58,7 @@ import type { GiftCardVM } from './surfaces/gift-card'
 import type { ItemVM } from './surfaces/item'
 import type { DirectoryVM, ListingVM, SearchVM } from './surfaces/listing'
 import type { OrderLookupVM, OrderVM } from './surfaces/order'
+import type { PartnershipVM } from './surfaces/partnership'
 import type { PayVM, QuoteVM } from './surfaces/pay'
 import type { ErrorVM, GoneVM, NotFoundVM } from './surfaces/status'
 import type { CachedPart } from './common'
@@ -97,6 +98,8 @@ export type Loaders = {
   pay: (p: At & { token: string }) => Promise<Found<PayVM>>
   quote: (p: At & { token: string }) => Promise<Found<QuoteVM>>
   orderLookup: (p: At) => Promise<OrderLookupVM>
+  /** `null` where `accounts.retailers` is off: the page 404s. */
+  partnership: (p: At) => Promise<PartnershipVM | null>
   /**
    * For `not-found.tsx`, which gets no params: `path` and `locale` come from the proxy's
    * request headers (C13 `PROXY_REQUEST_HEADERS`). A removed item's path answers `GoneVM` —

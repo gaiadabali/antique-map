@@ -23,7 +23,15 @@ export type StoryCardVM = {
 
 export type HomeBandVM =
   /** One object, full attention (the gallery) or the hero line as a story band (the shop). */
-  | { kind: 'feature'; title: string; lede: string | null; image: ImageVM; link: LinkVM }
+  | {
+      kind: 'feature'
+      title: string
+      lede: string | null
+      image: ImageVM
+      link: LinkVM
+      /** A highlight inside the hero — the shop's gate to its Partnership page (D31). */
+      highlight: { title: string; body: string | null; link: LinkVM } | null
+    }
   /** New arrivals (with the date each arrived), in the showroom now… */
   | { kind: 'rail'; rail: Streamed<RailVM> }
   /** The archipelago as the index: island groups with counts. */

@@ -30,6 +30,7 @@ export const orderLookupFound: OrderLookupVM = {
       total: money(1640000, 'IDR'),
       items: [PRINT, TOTE],
       href: '/orders/ID-000456',
+      reorder: null,
     },
     shipments: [
       {

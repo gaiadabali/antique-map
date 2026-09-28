@@ -53,6 +53,7 @@ export type HrefParams = {
   pay: { token: string }
   quote: { token: string }
   orderLookup: NoParams
+  partnership: NoParams
 }
 /** What `href()` reads from a brand config. */
 export type HrefConfig = { routes: RouteMap; locales: { default: LocaleCode } }

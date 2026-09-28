@@ -58,7 +58,17 @@ export type ShellVM = {
   /** From the `shipTo` cookie (defaulted from the visitor's country). */
   shipTo: Streamed<ShipToVM>
   cart: Streamed<{ count: number }>
-  account: Streamed<{ signedIn: boolean; firstName: string | null }>
+  /**
+   * The header's account entry — `null` where this visitor has none to see: a shop whose only
+   * accounts are retailers', to anyone not signed in as one (the Partnership item is the way
+   * in, D31).
+   */
+  account: Streamed<{
+    audience: 'buyer' | 'retailer'
+    signedIn: boolean
+    firstName: string | null
+    href: string
+  } | null>
   consent: Streamed<{
     policyVersion: string
     /** `null` until the visitor has chosen; the beacon stays cookieless until then. */

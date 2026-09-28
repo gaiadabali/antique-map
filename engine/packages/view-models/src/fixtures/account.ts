@@ -5,7 +5,7 @@
  * its true countdown, a hold about to end, a confirmed viewing with its pull list, a
  * consignment under review — and the signed-out state, which offers the claim flow.
  */
-import type { AccountNavVM, AccountVM, SignedInVM } from '../surfaces/account'
+import type { AccountNavVM, AccountVM, BuyerSectionVM } from '../surfaces/account'
 import { ISLE, SHOWROOM, STRAITS } from './_commerce'
 import { card, image, money, price, seo, streamed } from './_shared'
 
@@ -31,10 +31,11 @@ const nav = (selected: AccountNavVM['section']): readonly AccountNavVM[] =>
     count: section === 'offers' ? 1 : null,
     selected: section === selected,
   }))
-const signedIn = (view: SignedInVM['view']): AccountVM => ({
+const signedIn = (view: BuyerSectionVM): AccountVM => ({
   surface: 'account',
   session: {
     kind: 'signedIn',
+    audience: 'buyer',
     customer: { fullName: 'Anna Voorbeeld', email: 'anna@example.test' },
     nav: nav(view.section),
     view,
@@ -44,7 +45,13 @@ const signedIn = (view: SignedInVM['view']): AccountVM => ({
 
 export const accountSignedOut: AccountVM = {
   surface: 'account',
-  session: { kind: 'signedOut', returnTo: 'offers', claim: true, email: 'anna@example.test' },
+  session: {
+    kind: 'signedOut',
+    returnTo: 'offers',
+    signUp: [{ audience: 'buyer' }],
+    claim: true,
+    email: 'anna@example.test',
+  },
   seo: page,
 }
 
@@ -73,6 +80,7 @@ export const accountOverview: AccountVM = signedIn({
       total: money(103500, 'USD'),
       items: [STRAITS],
       href: '/orders/SG-000123',
+      reorder: null,
     },
   ],
 })

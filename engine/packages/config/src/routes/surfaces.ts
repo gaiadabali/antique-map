@@ -51,6 +51,8 @@ export const SURFACE_ROUTES = {
   pay: { internal: 'pay/[token]', sensitive: true },
   quote: { internal: 'quote/[token]', module: 'purchase.invoices', sensitive: true },
   orderLookup: { internal: 'order-lookup' },
+  // The retailer programme and its sign-up/sign-in (D31): where retailers are the only accounts.
+  partnership: { internal: 'partnership', module: 'accounts.retailers' },
   notFound: { internal: null },
   gone: { internal: null },
   error: { internal: null },
@@ -93,6 +95,8 @@ export const ACCOUNT_SECTIONS = {
   priceRequests: { segment: 'price-requests', module: 'purchase.requestPrice' },
   viewings: { segment: 'viewings', module: 'services.appointments' },
   consignments: { segment: 'consignments', module: 'services.consignment' },
+  quotes: { segment: 'quotes', module: 'accounts.retailers' },
+  terms: { segment: 'terms', module: 'accounts.retailers' },
 } as const satisfies Record<string, { segment: string | null; module?: ModuleKey }>
 export type AccountSection = keyof typeof ACCOUNT_SECTIONS
 

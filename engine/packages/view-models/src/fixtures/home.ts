@@ -15,6 +15,7 @@ export const homeGallery: HomeVM = {
       lede: 'The first map to give the island its whole coastline.',
       image: image('feature-1001', 2400, 1920, 'The Isle of Contoh, recto'),
       link: { label: 'See the map', href: '/product/1001-isle-of-contoh-voorbeeld-1718' },
+      highlight: null,
     },
     {
       kind: 'rail',
@@ -51,6 +52,11 @@ export const homeShop: HomeVM = {
       lede: 'From the archive, printed in the showroom.',
       image: image('hero-a0042', 2400, 1350, 'The harbour print in a sunlit room'),
       link: { label: 'Shop the line', href: '/collections/harbour' },
+      highlight: {
+        title: 'Stock our prints in your shop',
+        body: 'More than a hundred shops already do. Apply to become a partner.',
+        link: { label: 'Partnership', href: '/partnership' },
+      },
     },
     {
       kind: 'formatLadder',

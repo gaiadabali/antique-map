@@ -3,21 +3,24 @@
  *
  * One surface with sections (C10 `ACCOUNT_SECTIONS`): overview · orders · wishlist ·
  * want-lists · addresses · profile · privacy — and, where their modules are on, the
- * gallery's conversations in one place (`./account-conversations`). Customers are never
- * staff (ARCHITECTURE.md §12): their session has its own cookie, and a signed-out visitor
- * meets sign-in, account creation and the claim flow for migrated accounts on this surface.
- * Private, per request and never cached; the section list shows only what the modules allow.
+ * gallery's conversations in one place (`./account-conversations`) and a retailer's terms and
+ * quotes (`./account-retailer`). Customers are never staff (ARCHITECTURE.md §12): their
+ * session has its own cookie. Who may hold an account is the brand's modules (C1): buyers
+ * (`accounts.buyers`) and retailers by application (`accounts.retailers`); a shop with only
+ * the second offers no shopper sign-up anywhere (D31). Private, per request, never cached.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { LocaleCode } from '@engine/config/schema'
 
 import type { CardVM } from '../cards'
-import type { IsoDateTime, Money, SeoVM, Streamed } from '../common'
+import type { IsoDateTime, LinkVM, Money, SeoVM, Streamed } from '../common'
 import type { AddressVM, ItemRefVM, MarketVM, OrderSummaryVM } from '../commerce'
 import type { ConversationSectionVM } from './account-conversations'
+import type { ApprovedRetailerVM, PendingRetailerVM, RetailerSectionVM } from './account-retailer'
 import type { PaginationVM } from './listing'
 
 export type * from './account-conversations'
+export type * from './account-retailer'
 
 export type AccountNavVM = {
   section: AccountSection
@@ -90,22 +93,45 @@ export type AccountSectionVM =
       erase: { href: string }
     }
   | ConversationSectionVM
+  | RetailerSectionVM
+
+/** A buyer's sections: everything but a retailer's terms and quotes. */
+export type BuyerSectionVM = Exclude<AccountSectionVM, RetailerSectionVM>
+/** What a pending or declined retailer may open: the standing, their details, their data. */
+export type StandingSectionVM = Extract<
+  AccountSectionVM,
+  { section: 'overview' | 'addresses' | 'profile' | 'privacy' }
+>
 
 export type SignedOutVM = {
   kind: 'signedOut'
   /** Where sign-in returns to. */
   returnTo: AccountSection
-  /** A migrated customer sets a password through a claim link (MIGRATION.md §5). */
+  /**
+   * How an account is opened here: a buyer signs up (`accounts.buyers`); a retailer only
+   * applies, on the Partnership page (`accounts.retailers`). Where only the second is on, no
+   * shopper sign-up is offered and sign-in is the retailers' (D31).
+   */
+  signUp: readonly ({ audience: 'buyer' } | { audience: 'retailer'; apply: LinkVM })[]
+  /** A migrated buyer sets a password through a claim link (MIGRATION.md §5). */
   claim: boolean
   email: string | null
 }
 
-export type SignedInVM = {
+type SignedIn = {
   kind: 'signedIn'
   customer: { fullName: string; email: string }
   nav: readonly AccountNavVM[]
-  view: AccountSectionVM
 }
+
+/**
+ * A buyer's area; an approved retailer's, with the terms and quotes; or a pending or declined
+ * retailer's, whose view can only be an unpriced section beside its standing (D31).
+ */
+export type SignedInVM =
+  | (SignedIn & { audience: 'buyer'; view: BuyerSectionVM })
+  | (SignedIn & { audience: 'retailer'; retailer: ApprovedRetailerVM; view: AccountSectionVM })
+  | (SignedIn & { audience: 'retailer'; retailer: PendingRetailerVM; view: StandingSectionVM })
 
 export type AccountVM = {
   surface: 'account'
