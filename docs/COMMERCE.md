@@ -141,13 +141,35 @@ Showroom stock carries an "In the showroom now" badge and powers click & collect
 | `offer` | an offer is accepted | `offerHoldHours` (48); a counter-offer stays open `offerCounterHours` (72) | "On hold" |
 | `invoice` | a proforma invoice is issued | `invoiceHoldDays` (7) or the invoice's due date | "On hold" |
 
-`reserve(target, qty, kind, owner, ttl)` is the **only** writer, with `extend`,
-`release`, `convert` (sold) and `reverse` (refunded or returned). It writes the
-scalar `targetKey` the unique index guards (ARCHITECTURE.md §6); it first expires
-any lapsed `active` rows for the same target **in the same transaction**; and it
-returns a reservation or a typed conflict — never a database error at a buyer.
+`reserve(target, qty, kind, owner, ttl)` is the **only** writer, with
+`reserveAll` (several targets, all or nothing), `extend`, `release`, `convert`
+(sold), `reverse` (an order cancelled after payment, or an accepted return —
+never a refund alone) and the sweep's `expireDue` (C8). It writes the scalar
+`targetKey` the unique index guards (ARCHITECTURE.md §6); it first expires any
+lapsed `active` rows for the same target **in the same transaction**, judged by
+the database clock (`statement_timestamp()`); and it returns a reservation or a
+typed conflict — never a database error at a buyer. A buyer is never blocked by
+their own reservation: the same owner gets it back, and a hold or an offer hold
+paid through checkout is superseded by the checkout lock in the same call. A
+returned stocked item is a stock adjustment, not a reversed reservation.
 Cash-at-retail methods are never offered for a unique item, because they cannot
 complete inside any reasonable hold.
+
+**One transaction, one lock order.** Every domain write runs in one READ
+COMMITTED transaction — never REPEATABLE READ or SERIALIZABLE, where a second
+buyer's `reserve()` aborts instead of waiting — and takes rows in one order: the
+dedupe row, the request being answered, the order, its payment attempts, their
+refunds, reservations by target key, stock levels by variant and location, then
+counters (discount usage, gift-card balances, the document sequence last). A bag
+reserves all its lines in one call, whatever order they sit in, so two bags
+holding the same items cannot deadlock; sweeps skip rows a buyer holds. No
+transaction calls a payment provider while it holds a reservation it has written:
+before a capture, the buyer's hold is secured — extended or re-taken to outlast
+the call — and committed on its own, so another buyer of the same item is never
+kept waiting on a slow gateway. The rules, the timeouts and what "never aborts"
+cannot promise (a timeout, a lost connection) are C8
+(`domain/contracts/transactions.ts`); the indexes, checks and triggers they stand
+on are listed for SCH in `domain/contracts/storage.ts`.
 
 The checkout lock shows the buyer a countdown — *"We're holding this for you for
 14:52"* — because it is true. Marketing urgency is not allowed (DESIGN-SYSTEM.md §10).
@@ -203,11 +225,19 @@ a combinatorial status.
 | `pending_payment` | its payment reaches `paid` | `paid` |
 | `pending_payment` | buyer or staff cancel before payment | `cancelled` (reservation released, session cancelled) |
 | `pending_payment` | attempt expired / failed, no retry in window | `abandoned` (reservation released) |
+| `pending_payment` | a payment lands after its lock lapsed and the item sold elsewhere | `abandoned`, and the payment is refunded or voided |
 | `abandoned` | a **late** payment arrives | `paid` if the item can be re-reserved, else stays `abandoned` and the payment is refunded or voided |
+| `cancelled` | a late payment arrives | stays `cancelled`; the payment is refunded or voided |
+| `paid`, `fulfilling`, `completed` | a **second** payment settles (another attempt already paid the order) | unchanged; the second payment is refunded or voided whole |
 | `paid` | first shipment dispatched / pickup ready | `fulfilling` |
 | `fulfilling` | all lines delivered or collected | `completed` |
-| `paid`, `fulfilling` | staff cancel | `cancelled` → refund |
+| `paid`, `fulfilling` | staff cancel | `cancelled` → refund; the item is back on sale |
 | `completed` | an accepted return | `completed` (lines marked returned; stock or item restored) |
+
+A refund or a lost dispute at the provider moves no order: the order stands, its
+item stays sold, and staff are alerted to cancel it or accept a return. Money no
+transition keeps always goes back under a deterministic refund key (PAYMENTS.md
+§5), so it is never kept in silence and never refunded twice.
 
 **Payment** (per attempt) — `created → pending → (requires_action) →
 authorised → paid`, or `failed | expired | voided`; after `paid`:
@@ -215,8 +245,9 @@ authorised → paid`, or `failed | expired | voided`; after `paid`:
 Monotonic: a late `pending` event after `paid` changes nothing.
 
 **Reservation** — `active → converted | released | expired`; `active → active`
-on `extend`; `converted → reversed` on a refund or an accepted return (which
-releases the item again).
+on `extend`; `converted → reversed` when an order is cancelled after payment or a
+return is accepted (which releases the item again). A refund alone never
+reverses: a refund issued at the provider leaves the item sold until staff decide.
 
 **Availability** (per unique item or edition unit, derived — never typed) —
 `available → reserved → sold`, back to `available` when a reservation expires,
@@ -225,14 +256,19 @@ from reservations and product status, and every change emits an event that
 revalidates the pages showing it.
 
 **Offer** — `submitted → countered ⇄ submitted → accepted | declined | expired |
-withdrawn`; `accepted` creates an `offer` reservation and a payment link.
+withdrawn`; `accepted` creates an `offer` reservation, stores the agreed figure —
+the proposal or the counter, converted once into the charge currency with its FX
+snapshot — and a payment link that charges exactly that. An open offer closes as
+`declined` when its item sells or is withdrawn, and the buyer is told the item is
+no longer available rather than that the offer was turned down.
 
-Nothing else may change a status field. Every transition emits a **domain event**
-(`order.paid`, `offer.accepted`, `hold.expiring`…) written to an **outbox**
-(`engine.domain_events`) **in the same transaction** as the change, and
-dispatched at least once afterwards to notifications, analytics, sister sync and
-cache invalidation — so a crash after commit loses nothing and a rolled-back
-transaction sends nothing.
+Nothing else may change a status field, and every change is written as a
+compare-and-set (`WHERE id = $1 AND status = $from`, exactly one row). Every
+transition emits a **domain event** (`order.paid`, `offer.accepted`,
+`hold.expiring`…) written to an **outbox** (`engine.domain_events`) **in the same
+transaction** as the change, and dispatched at least once afterwards to
+notifications, analytics, sister sync and cache invalidation — so a crash after
+commit loses nothing and a rolled-back transaction sends nothing.
 
 ## 7. Buying a one-of-one object
 

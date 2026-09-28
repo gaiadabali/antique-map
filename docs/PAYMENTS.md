@@ -38,57 +38,83 @@ return, and no further.
 
 ## 2. The contract (C7)
 
+The code is the contract (`engine/packages/payments/src/contract.ts`, with the
+vocabulary it shares with the domain in `domain/src/contracts/payment-vocabulary.ts`);
+this sketch abbreviates it.
+
 ```ts
 // engine/packages/payments/src/contract.ts            @contract C7
-type ProviderId = 'manual' | 'bank-transfer' | 'stripe' | 'midtrans' | 'xendit' | 'doku' | 'paypal'
+type ProviderId = 'manual' | 'bank-transfer' | 'stripe' | 'midtrans' | 'xendit' | 'doku' | 'paypal'  // C1's
 
-interface PaymentGateway {
+type PaymentGateway = {
   readonly id: ProviderId
+  readonly sellerId: string                      // one instance per seller account: secrets are per seller (§8)
+  readonly authCapture: boolean                  // true → capture() and cancel() are required
+  readonly confirmWebhooksByRetrieve: boolean    // Midtrans: confirm a notification before applying it
 
   /** What this provider can do for this checkout — or null if it cannot serve it at all. */
   capabilities(ctx: {
-    seller: SellerConfig; charge: Money; destination: CountryCode; buyer: 'retail' | 'institution' | 'trade'
-  }): { methods: PaymentMethod[]; chargeCurrency: CurrencyCode;
-        sessionTtl: Duration;        // how long this method can take — drives extend()
-        refunds: 'full' | 'partial' | 'manual-only'; authCapture: boolean } | null
+    seller: SellerConfig; charge: Money; destination: CountryCode
+    buyer: 'retail' | 'institution' | 'trade'; hasUniqueItem: boolean
+  }): { chargeCurrency: CurrencyCode
+        methods: { method: PaymentMethod            // granular: 'va-bca', 'gopay', 'card' … each in one C1 family
+                   sessionTtl: Duration              // PER METHOD — how long it can take; drives extend()
+                   authCapture: boolean
+                   refunds: 'full' | 'partial' | 'manual-only'
+                   cap: Money | null }[] } | null
 
-  /** attemptId becomes the provider reference (one per attempt). The DOMAIN stores the
-   *  returned SessionResult and replays it on retry — the adapter keeps no state. */
+  /** attemptId is OUR reference: committed before this call, echoed back on every event. The
+   *  DOMAIN stores the returned SessionResult and replays it on retry — the adapter keeps no state. */
   createSession(input: {
-    attemptId: string; orderRef: string; charge: Money; display?: Money; fx?: FxSnapshot
-    method?: PaymentMethod; customer: Contact; lines: LineSummary[]
+    attemptId: string; orderRef: string; charge: Money; display: Money | null; fx: FxSnapshot | null
+    method: PaymentMethod | null; customer: Contact; lines: LineSummary[]
     returnUrls: { success: string; cancel: string }; expiresAt: Date
   }): Promise<SessionResult>
 
-  retrieve(providerRef: string): Promise<{
-    state: 'pending' | 'requires_action' | 'paid' | 'failed' | 'expired' | 'refunded' | 'partially_refunded'
-    paid?: Money
+  /** By the provider's id once it has named the payment, else by our reference. */
+  retrieve(lookup: { attemptRef: string; providerRef: string | null }): Promise<{
+    state: 'pending' | 'requires_action' | 'authorised' | 'paid' | 'failed' | 'expired' | 'voided'
+         | 'refunded' | 'partially_refunded' | 'unknown'
+    paid: Money | null; refundedTotal: Money | null
   }>
 
-  /** Verifies the signature (throws WebhookSignatureError) and normalises. */
-  parseWebhook(req: { headers: Headers; rawBody: string }): Promise<NormalizedPaymentEvent[]>
+  /** Verifies the signature on the RAW body. A bad signature is a value (→ 401 + alert), never a throw. */
+  parseWebhook(req: { headers: Headers; rawBody: string }): Promise<
+    | { kind: 'events'; events: NormalizedPaymentEvent[] }
+    | { kind: 'bad-signature' }
+    | { kind: 'ignored'; reason: string }>
 
-  refund(input: { providerRef: string; amount: Money; reason: string; idempotencyKey: string }): Promise<RefundResult>
-  capture?(providerRef: string, amount: Money): Promise<void>   // authCapture methods
-  cancel?(providerRef: string): Promise<void>                    // void an authorisation / expire a session
+  refund(input: { providerRef: string; amount: Money; reason: string
+                  idempotencyKey: `late:${string}` | `dup:${string}` | `staff:${string}` }): Promise<RefundResult>
+  capture?(providerRef: string, amount: Money): Promise<void>        // authCapture gateways
+  cancel?(lookup: { attemptRef: string; providerRef: string | null }): Promise<void>  // void / expire a session
 }
 
 type SessionResult =
   | { kind: 'redirect'; url: string; expiresAt: Date }                          // Midtrans Snap, Xendit, PayPal, Stripe Checkout
   | { kind: 'embedded'; clientSecret: string; publishableKey: string }          // Stripe Payment Element
-  | { kind: 'instructions'; reference: string; va?: string; bank?: BankDetails; expiresAt: Date } // VA, bank transfer
-  | { kind: 'qr'; qrString: string; expiresAt: Date }                           // QRIS
+  | { kind: 'instructions'; reference: string; virtualAccount: string | null
+      bank: BankDetails | null; expiresAt: Date }                               // VA, bank transfer
+  | { kind: 'qr'; qrString: string; deeplink: string | null; expiresAt: Date }  // QRIS
   | { kind: 'manual'; note: LocalisedText }                                     // KOI's truthful "settled on WhatsApp"
 
 type NormalizedPaymentEvent = {
-  providerEventId: string        // the dedup key — unique in payment_events; DERIVED PER ADAPTER:
+  provider: ProviderId
+  sellerId: string               // the account it came from: a webhook arrives on its seller's route
+  source: 'webhook' | 'retrieve' | 'staff'
+  providerEventId: string        // with provider + sellerId, the dedup key in payment_events; DERIVED PER ADAPTER:
                                  //   Stripe / PayPal: their event id;
                                  //   Midtrans (no event id in its notifications): a hash of
-                                 //   transaction_id | transaction_status | fraud_status | status_code,
-                                 //   so "pending" and the later "settlement" are distinct events
-  providerRef: string            // the provider's payment id, mapped to our attempt
-  type: 'paid' | 'failed' | 'expired' | 'refunded' | 'partially_refunded' | 'disputed' | 'dispute_closed'
-  amount?: Money
+                                 //   transaction_id | transaction_status | fraud_status | status_code
+                                 //   | the refunded total, so "pending" and the later "settlement"
+                                 //   are distinct events, and so are two partial refunds;
+                                 //   `retrieve:…` for the reconciler's events, `staff:…` for staff entries
+  attemptRef: string | null      // our reference, echoed back: the attempt is found by it first
+  providerRef: string            // the provider's payment id
+  type: 'pending' | 'requires_action' | 'authorised' | 'paid' | 'failed' | 'expired' | 'voided'
+      | 'refunded' | 'partially_refunded' | 'disputed' | 'dispute_closed'
+  // per type: amount (authorised, paid, refunds, disputed) · refundedTotal + refundRef (refunds)
+  // · reasonClass + providerCode (failed) · outcome + disputeRef (dispute_closed)
   occurredAt: Date
 }
 ```
@@ -159,16 +185,32 @@ POST /api/x/webhooks/payments/{provider}
 ## 5. Refunds, disputes, payment links
 
 - **Refunds** are requested in the admin against an order line or amount;
-  `refund()` is called with an idempotency key; methods that cannot refund
-  through the gateway produce a **manual refund task** with the buyer's bank
-  details, tracked to completion.
-- **Disputes** move the order to `disputed`, attach the evidence pack the order
-  already holds (condition report, photos, certificate, delivery signature) and
-  notify the manager.
+  `refund()` is called with a **deterministic idempotency key** — `staff:{refundId}`
+  for a refund staff asked for, `late:{attemptId}` for a late payment refused,
+  `dup:{attemptId}` for a duplicate — so asking again after a timeout, a rollback
+  or a crash refunds once. Money the domain owes back is recorded as owed before
+  the provider is asked; if the provider cannot be reached, the reconciler asks
+  again under the same key until it answers. Methods that cannot refund through
+  the gateway produce a **manual refund task** with the buyer's bank details,
+  tracked to completion. A refund counts once, by the rise in the provider's
+  running total, however many times a webhook or `retrieve()` reports it.
+- **A second payment on an order already paid** — a VA and then a QRIS both
+  settled — is given back whole, automatically (`dup:{attemptId}`), and the buyer
+  told; the order and its own payment are untouched.
+- **A refund issued at the provider** (in its dashboard, not in the admin) is
+  recorded against its attempt and alerted to staff; the order stands and its item
+  stays sold until staff cancel the order or accept a return. A refund alone never
+  puts a one-of-one item back on sale.
+- **Disputes** are the payment's (`disputed → dispute_won | dispute_lost`), never
+  an order status: the order stands, the evidence pack it already holds
+  (condition report, photos, certificate, delivery signature) is attached, and the
+  manager notified. A lost dispute is alerted like a refund at the provider.
 - **Payment links** serve accepted offers, staff holds, institutional invoices and
-  WhatsApp sales: `/pay/{token}` shows the seller, the amount, the expiry and the
-  methods routing allows. The hold is sized to outlast the method the buyer picks
-  (rule 4).
+  WhatsApp sales: `/pay/{token}` (C6 `payLink.get`, then `payLink.start`) shows the
+  seller, the amount, the expiry and the methods routing allows. An accepted
+  offer's link charges the agreed figure, stored in the charge currency at
+  acceptance with its FX snapshot — never a figure from the request. The hold is
+  sized to outlast the method the buyer picks (rule 4).
 
 ## 6. Providers per brand — the defaults
 
@@ -199,7 +241,7 @@ because OEI launches on it). Phase 9 adds Stripe, PayPal and, only if chosen,
 Xendit or DOKU. Every adapter passes the **shared contract suite**
 (`tests/contract/payments/*`) against recorded sandbox fixtures, including
 signature failure, duplicate delivery, out-of-order delivery and refund
-idempotency — and four cases the money path depends on:
+idempotency — and the cases the money path depends on:
 
 - **apply throws after the dedupe insert → the provider's retry is applied once**;
 - **`pending` then `settlement` for one Midtrans order → paid** (the two
@@ -207,7 +249,18 @@ idempotency — and four cases the money path depends on:
 - **a Stripe Checkout session is created with `expires_at` ≥ 30 minutes** and the
   reservation is extended to match;
 - **a payment after the item sold elsewhere → automatic refund or voided
-  authorisation**, and the buyer is told.
+  authorisation**, and the buyer is told — also when the lock lapsed and no sweep
+  had yet abandoned the order;
+- **a second attempt paid on an order another attempt already paid → that
+  payment refunded whole under `dup:{attemptId}`**, the order untouched;
+- **an event for an unknown attempt → 200, recorded apart, alerted — and its
+  dedupe key not consumed**, so it still applies if the attempt turns up;
+- **a refund reported before the payment it refunds → caught up through
+  `retrieve()` and applied once**, never ignored as stale;
+- **one refund reported by a webhook and by `retrieve()` → counted once**, by
+  the rise in the provider's running total;
+- **a refund whose provider call times out → the event still commits with the
+  refund owed**, and the reconciler's retry under the same key refunds once.
 
 ## 8. Secrets
 

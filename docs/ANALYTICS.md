@@ -42,7 +42,9 @@ existing event — dashboards depend on the string.
 
 **Discovery**
 `listing.viewed` (facets, result count) · `facet.applied` · `search.submitted`
-(query, result count, `zeroResults`) · `place.viewed` · `maker.viewed` ·
+(query — redacted and capped at `/api/x/collect` before it is stored, because a
+visitor can type an email address or a phone number into a search box — result
+count, `zeroResults`) · `place.viewed` · `maker.viewed` ·
 `curation.viewed` · `story.viewed` · `reading.depth` (25/50/75/100 on stories and
 essays)
 
@@ -64,8 +66,13 @@ essays)
 `checkout.stepCompleted` (step) · `checkout.lockTaken` ·
 `checkout.lockExpired` · `payment.methodSelected` · `payment.attempted` ·
 `payment.failed` (reason class) · and, from the domain: `order.paid` ·
-`order.refunded` · `offer.accepted` · `hold.granted` · `hold.expired` ·
-`reservation.conflicted` (someone else was first)
+`order.refunded` · `order.partiallyRefunded` · `offer.accepted` · `hold.granted` ·
+`hold.expired` · `reservation.conflicted` (someone else was first)
+
+The two refund events reverse revenue, so the domain emits them only for the
+payment that paid the order: giving back a late or a duplicate payment is the
+payment's own fact (`payment.refunded`) and never reaches a dashboard as a
+refund of revenue that was never counted.
 
 **People and performance**
 `newsletter.subscribed` · `newsletter.confirmed` · `account.created` ·
@@ -83,7 +90,7 @@ surface and device class — field data, not just lab)
 | `checkout.started` | `begin_checkout` | `InitiateCheckout` |
 | shipping / payment step | `add_shipping_info` / `add_payment_info` | `AddPaymentInfo` |
 | `order.paid` | `purchase` | `Purchase` |
-| `order.refunded` | `refund` | — |
+| `order.refunded` · `order.partiallyRefunded` | `refund` (with the refunded value) | — |
 | `price.requested` · `offer.submitted` · `enquiry.submitted` · `viewing.booked` | `generate_lead` | `Lead` |
 | `search.submitted` | `search` | `Search` |
 | `newsletter.confirmed` | `sign_up` | `Subscribe` |
