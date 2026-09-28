@@ -97,8 +97,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| W1 | 0.5 Contracts — platform and UI (ARC-P) | architect | worktree-agent-a1e288423b050020e | 2026-09-28 | 6 commits (C1, C3, C4, C9, C10, C13, most of C2); second run stalled; 2026-09-28 relaunch stopped at once on the weekly Opus limit — still to do: the commerce VMs (cart, checkout, pay, quote, order lookup, gift card), their fixtures and CONTRACTS.md |
-| W1 | 0.5 Contracts — domain (ARC-D) | architect | own worktree (isolation) | 2026-09-25 | C5–C8, C11, C12 — **reported done** (branch worktree-agent-a5abd4af956ac043a, 6 commits to 0591e73); merges together with ARC-P (install needs `@engine/config`); senior-db: sign-off with fixes (3 blockers, reviews/0.5-arc-d-senior-db.md); senior-be review not yet run (Opus limit); 14 doc findings to route to ARC |
+| W1 | 0.5 Contracts — platform and UI (ARC-P) | architect | worktree-agent-a1e288423b050020e | 2026-09-28 | **reported done** (14 commits; merged-tree `pnpm verify` green with ARC-D) — [report](.claude/specs/indies-platform/reviews/0.5-arc-p-report.md); senior-fe + senior-be review running |
+| W1 | 0.5 Contracts — domain (ARC-D) | architect | worktree-agent-a5abd4af956ac043a | 2026-09-28 | senior-db + senior-be: sign-off with fixes (5 blockers) — [db](.claude/specs/indies-platform/reviews/0.5-arc-d-senior-db.md), [be](.claude/specs/indies-platform/reviews/0.5-arc-d-senior-be.md); ARC-D applying the fixes + ARC-P cross-contract items |
 
 ## Decisions for the owner
 
