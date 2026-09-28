@@ -79,11 +79,14 @@ type ReserveInputOf<K extends ReservationKind> = {
   /** The kind's TTL from brand config (`commerce.ttl`), never beyond its maximum. */
   readonly ttl: Duration
   /**
-   * The same buyer's live reservation of this target that this one replaces — a hold or an offer
-   * hold paid through checkout. reserve() releases it as `superseded` and inserts the new row in
-   * the same call; it is ignored unless it names a live reservation of the same target (a lapsed
-   * one is retired by reserve()'s own lazy expiry). That it is the same buyer's is the caller's to
-   * prove (the session, the pay-link token): reserve() cannot tell a guest's hold from a stranger's.
+   * The same buyer's live reservation of this target that this one replaces: a hold, an offer
+   * hold or an invoice hold whose payment starts (payment.start and payLink.start replace it with
+   * the order's checkout lock, lasting at least as long), or a lock applyPaymentEvent()'s step 0
+   * re-takes for an authorised payment. reserve() releases it as `superseded` and inserts the new
+   * row in the same call; it is ignored unless it names a live reservation of the same target (a
+   * lapsed one is retired by reserve()'s own lazy expiry). That it is the same buyer's is the
+   * caller's to prove (the session, the pay-link token, the authorisation): reserve() cannot tell
+   * a guest's hold from a stranger's.
    */
   readonly supersedes: number | null
 } & TargetAndQuantity
