@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@engine/config": "workspace:*"
+    "@engine/config": "workspace:*",
+    "@engine/domain": "workspace:*"
   }
 }
