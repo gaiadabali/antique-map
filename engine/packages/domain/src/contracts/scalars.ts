@@ -51,3 +51,17 @@ export type RawWebhook = {
  * minutes, Date milliseconds); a bare number here is how a 15-minute lock becomes 15 seconds.
  */
 export type Duration = { readonly seconds: number }
+
+/**
+ * How an adapter derives the dedupe key of a provider's event (C7: payments, shipping,
+ * fulfilment), so a repeated delivery is recognised and two distinct events never collide:
+ * - `provider-event-id` — the provider's own event id (`source` names where it lives);
+ * - `state-hash` — sha256 of the listed fields joined by `|`, for a provider whose notifications
+ *   carry no event id: distinct states give distinct keys, a repeated delivery the same key;
+ * - `staff-entry` — recorded by hand in the admin: the id of the admin action.
+ * `Field` names a notification field for what it means; each adapter maps it to its provider's path.
+ */
+export type EventIdRule<Field extends string = string> =
+  | { readonly kind: 'provider-event-id'; readonly source: string }
+  | { readonly kind: 'state-hash'; readonly fields: readonly Field[] }
+  | { readonly kind: 'staff-entry' }

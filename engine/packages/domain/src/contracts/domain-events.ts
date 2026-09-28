@@ -24,6 +24,17 @@ export type NoticeDomainEvent =
   /** reserve() returned a conflict: someone else was first (ANALYTICS.md §2). */
   | 'reservation.conflicted'
   /**
+   * Revenue reversed (C11): emitted beside `payment.refunded` / `payment.partiallyRefunded` only
+   * for the attempt that paid the order — a late or duplicate payment given back reverses nothing.
+   */
+  | 'order.refunded'
+  | 'order.partiallyRefunded'
+  /**
+   * A refund issued at the provider, not asked for in the admin, on the attempt that paid the
+   * order: the order stands and its item stays sold until staff cancel it or accept a return.
+   */
+  | 'order.refundedAtProvider'
+  /**
    * Ahead of the end, once per reservation or counter (COMMERCE.md §6): `hold.expiring` from
    * ReservationService.noticeExpiring(), `offer.counterExpiring` from the offer sweep.
    */

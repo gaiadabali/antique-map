@@ -221,11 +221,19 @@ a combinatorial status.
 | `pending_payment` | its payment reaches `paid` | `paid` |
 | `pending_payment` | buyer or staff cancel before payment | `cancelled` (reservation released, session cancelled) |
 | `pending_payment` | attempt expired / failed, no retry in window | `abandoned` (reservation released) |
+| `pending_payment` | a payment lands after its lock lapsed and the item sold elsewhere | `abandoned`, and the payment is refunded or voided |
 | `abandoned` | a **late** payment arrives | `paid` if the item can be re-reserved, else stays `abandoned` and the payment is refunded or voided |
+| `cancelled` | a late payment arrives | stays `cancelled`; the payment is refunded or voided |
+| `paid`, `fulfilling`, `completed` | a **second** payment settles (another attempt already paid the order) | unchanged; the second payment is refunded or voided whole |
 | `paid` | first shipment dispatched / pickup ready | `fulfilling` |
 | `fulfilling` | all lines delivered or collected | `completed` |
-| `paid`, `fulfilling` | staff cancel | `cancelled` → refund |
+| `paid`, `fulfilling` | staff cancel | `cancelled` → refund; the item is back on sale |
 | `completed` | an accepted return | `completed` (lines marked returned; stock or item restored) |
+
+A refund or a lost dispute at the provider moves no order: the order stands, its
+item stays sold, and staff are alerted to cancel it or accept a return. Money no
+transition keeps always goes back under a deterministic refund key (PAYMENTS.md
+§5), so it is never kept in silence and never refunded twice.
 
 **Payment** (per attempt) — `created → pending → (requires_action) →
 authorised → paid`, or `failed | expired | voided`; after `paid`:
