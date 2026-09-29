@@ -4,8 +4,8 @@
  * An accepted offer's payment link (the offer hold ends on Sunday; the methods routing
  * allows for a unique item — no cash at a counter); the same link once paid; an
  * institution's proforma for two originals, each held until the due date, with its PDF and
- * PO number; a business quote staff are still preparing; and an approved retailer's reorder,
- * issued at its trade tier beside the list prices it started from (D32).
+ * PO number; a hotel partner's quote request staff are still preparing (D36); and an approved
+ * retailer's reorder, issued at its trade tier beside the list prices it started from (D32).
  */
 import type { PayVM, QuoteVM } from '../surfaces/pay'
 import { ISLE, paymentOption, PRINT, STRAITS, TOTE, token, totals } from './_commerce'
@@ -130,7 +130,10 @@ export const quoteProforma: QuoteVM = {
   seo: { ...seo('Proforma SGPF-000012', '/quote/tok_quote_fixture'), noindex: true },
 }
 
-/** For Business: forty framed prints for a hotel at list price; staff are preparing the quote. */
+/**
+ * A hotel partner's request (D36: every business buyer is a partner): forty framed prints, at
+ * list price until staff issue the quote at the partner's tier.
+ */
 export const quoteRequested: QuoteVM = {
   ...quoteProforma,
   kind: 'quote',

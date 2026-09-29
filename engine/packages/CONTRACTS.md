@@ -271,5 +271,12 @@ so it is breaking and also needs a redirect.
     - the want-list page: `WantListPageVM`, `WantListFormVM`, and `WantListVM`, moved from the
       account, with a stop intent in place of a GET link carrying a token and the frequencies of
       requirement 13.3; its loader and fixtures; every alert link leads there (D39).
+  - **D36 leftovers, found by 2.4.c:** C6 `EnquiryTopic` loses `wholesale` — every business buyer
+    applies as a partner, so no enquiry topic stands in for the programme (proved by
+    `_NoBusinessTopic`), and CONTENT-MODEL.md §4 says the same. Where `accounts.retailers` is on,
+    only an approved partner requests a quote: a guest's `quote.request` is `not-offered` there,
+    and C2's "Turn this into a quote" is a signed-in partner's alone. C11's
+    `retailerApplication.submitted` is the one application, and `whatsapp.clicked`'s `business`
+    context is the Partnership page.
 
   Announced to every lane in each contract's "Consumed by" column; none consumes them yet.
