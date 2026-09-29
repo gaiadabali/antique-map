@@ -119,7 +119,8 @@ export const ATTEMPT_WRITE_ONCE_COLUMNS = ['provider_ref'] as const
 // `idempotency_keys`: primary key `(operation, key)` — the caller is NOT in the key, so another
 // caller's reuse meets the row instead of starting afresh. Beside it `caller_ref` (the session's
 // customer, else the cart, else null), `request_sha256` (of the decoded request), the stored
-// response and `created_at`. Inserted `ON CONFLICT DO NOTHING` inside the request's own
+// response and `created_at`; an INDEX on `created_at` (the sweep) and one on `caller_ref` (an
+// erasure). Inserted `ON CONFLICT DO NOTHING` inside the request's own
 // transaction, so a rolled-back request leaves no key behind; on a conflict both are compared with
 // this request's: equal answers the stored response, either different is `invalid`
 // (`idempotencyKey`, `mismatch`) and never it. So a guest who signs in mid-flow (cart → customer)

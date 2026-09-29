@@ -204,7 +204,8 @@ the row rather than starting afresh — with `caller_ref`, a sha256 of the decod
 request, the stored response with its tokens left out (re-derived on replay) and
 `created_at`: the same key from another caller or with another request answers
 `invalid`, never the stored response; swept `IDEMPOTENCY_KEY_RETENTION`, 7 days,
-after `created_at`, C6 `IdempotencyKey`); `fx_rates`, `search_documents` (with per-market price columns), a
+after `created_at`, and indexed on `created_at` and on `caller_ref` for the sweep
+and an erasure, C6 `IdempotencyKey`); `fx_rates`, `search_documents` (with per-market price columns), a
 per-seller `document_sequences`, `inventory_movements`, `analytics_events` (+
 rollups), `sister_sync_log`.
 
