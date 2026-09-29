@@ -18,7 +18,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
-| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 2/4 | 20/22 | 0 | `█████████░`  91% |
+| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 3/4 | 21/22 | 0 | `██████████`  95% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **5/160** | **44/715** | **46** | `█░░░░░░░░░`   6% |
+| **All** | 44 phases | | | **6/160** | **45/715** | **46** | `█░░░░░░░░░`   6% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -359,7 +359,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 2.2.j move the contract smoke tests from `.claude/specs/indies-platform/reviews/smoke-tests/` (C1 config, the C10 round trip, the C13 addresses) into their packages so `pnpm test` runs them (qa, phase 1: no contract package has a test in the gate)
   - [x] 2.2.i **Check:** each gate fails on a planted violation in a CI test (a 301-line file, a brand literal in `engine/`, a drifted schema, a missing route, an engine route shadowing a collection slug, a proxy without a literal matcher, a config that differs with `BRAND` unset, a stale import map, a wave with overlapping **Owns**) and passes once it is removed; `pnpm brand:create` scaffolds a brand that validates.
 
-- [ ] **2.3 CI pipeline, artifact and deploy manifest** · needs: 2.1, 2.2
+- [x] **2.3 CI pipeline, artifact and deploy manifest** · needs: 2.1, 2.2 — ✅ 2026-09-29 2c4ecd9
   - **Lane** HAR · **Agent** devops · **Wave** W2
   - **Owns** `.github/**`, `.gaiadeploy.yml`
   - **Read** DEPLOYMENT.md §3–4
@@ -367,7 +367,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 2.3.a `ci.yml`: change detection; static job (file size, brand literals, `check:generated`, `validateBrandConfigs()`, `tasks:lint`, format, lint, types, unit); e2e job (Postgres service, migrate the four databases — ig, oei and the two `test` configs — seed, build both apps **with no database env**, Playwright for ig/oei/test-gallery/test-emporium); Lighthouse job
   - [x] 2.3.b `artifact` job: build `engine/apps/gallery` and `engine/apps/emporium` standalone, assemble subdirs with `sharp`/`@img` copied beside the server, tar + sha256; `publish` job creating the release (use the GDA deploy-workflows stub pinned by tag, if it fits)
   - [x] 2.3.c `.gaiadeploy.yml` with the two Helios targets and `subdir` (DEPLOYMENT.md §3); a CI check that fails on the string `TBD`
-  - [ ] 2.3.d **Check:** a push to `main` runs static checks, unit and e2e jobs green, and the e2e job's databases have `unaccent` and `pg_trgm` (2.1.d's CI clause); a push to `production` runs the release workflow, which says it has no app to build and publishes nothing. The tarball clause — a `deploy/production-*` release holding `indies-gallery/` and `old-east-indies/` standalone builds with their brand `site/` folders and a `.sha256` — moved to 4.1.g, the first point at which both apps exist.
+  - [x] 2.3.d **Check:** a push to `main` runs static checks, unit and e2e jobs green, and the e2e job's databases have `unaccent` and `pg_trgm` (2.1.d's CI clause); a push to `production` runs the release workflow, which says it has no app to build and publishes nothing. The tarball clause — a `deploy/production-*` release holding `indies-gallery/` and `old-east-indies/` standalone builds with their brand `site/` folders and a `.sha256` — moved to 4.1.g, the first point at which both apps exist. — CI run 36519600189 on `main` at 2c4ecd9: static, unit, e2e and Lighthouse green; `db:fresh` made the four databases and each reports `pg_trgm,unaccent`; `schema-hash --all` ok. Release run 36519473034 on `production` at cecf862: the artifact job said it had no app to build, publish skipped, no release created.
 
 - [ ] **2.4 Contract follow-ups (v1.1)** · needs: 1.2
   - **Lane** ARC · **Agent** architect · **Wave** W1
@@ -2360,6 +2360,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-29 — ✅ 2.3 (2c4ecd9) — `main` and a new `production` branch pushed to GitHub with the owner's OK, as web-gaiada (hansel-gaiada has no write access). CI went green on the fifth run; the first four each failed a step that passes on Windows: the config and http smoke tests had no Node types on Linux (`@types/node` declared on those two packages only; every package probed with `"types": []`); brand-create's rollback fixture imported zod from the OS temp dir, which resolved only through a stray node_modules in the user folder; and the e2e job now asserts both extensions per database. 2.2.k (schema-hash test databases unique per run) merged — the one flaky test both reviewers hit. GitHub reports 5 Dependabot alerts on dev-only packages (`extract-zip`, `tmp`, `uuid`).
 - 2026-09-29 — 2.3 merged (2.3.a–c) — `ci.yml` (change detection, static, unit), `e2e.yml` (a Postgres 18 service, the four databases made by the real `db:fresh` and compared by `schema-hash --all`), Lighthouse, `release.yml` (artifact and publish on `production`), `.gaiadeploy.yml` from DEPLOYMENT §3; actionlint clean. The db tooling gained a direct transport (`PGHOST`) so CI runs the same scripts as a laptop, which also fixed a CRLF bug in database listing. Build, Playwright, Lighthouse and the artifact skip with a notice until phase 4, so the tarball clause of 2.3.d moved to 4.1.g. 2.3.d waits on a push to `main` and to `production` (owner's OK).
 - 2026-09-29 — 2.4.c merged — 14 docs and design.md synced to contracts v1.1, D39 and the 1.2 fix reports; the 37 task-text edits it proposed (`.claude/specs/indies-platform/reviews/2.4c-tasks-edits.md`) applied to this board, among them 29.1 now owning the want-list operations, 31.3 and 34.3 each rendering the want-list page, and the `buyerOrderStatus()` test on 19.1. Found: C6 `EnquiryTopic` still has `'wholesale'` (a D36 leftover) — back to ARC before the 2.4.d sign-off.
 - 2026-09-29 — ✅ 2.2 (13a56d8) — every gate built and failing on its planted violation (file size, brand literals, schema hash against real Postgres, route parity, config drift on a fixture generator, overlapping **Owns**); `tasks:lint` parses all 160 tasks and 712 subtasks; `brand:create` scaffolds a brand that passes the C1 schema; the contract smoke tests moved into their packages (177 tests). Gates with no input yet say so and pass: route mounts until phase 4, the generators until 3.2 wires them, brand domains until 3.1 writes the configs. tasks-lint found two **Owns** defects, fixed on the board: 1.1/1.2 now say root vs per-package `package.json`; 30.4.b's configurator moves to `surfaces/configurator/**`, out of 30.3's `surfaces/item/**`.
