@@ -95,6 +95,7 @@ export type CheckoutProblemVM =
       state: 'held' | 'sold'
       heldUntil: IsoDateTime | null
       alternatives: readonly CardVM[]
+      /** The want-list page for the item (C10 `wantList`); `null` without `retention.emailWantList`. */
       wantList: { href: string } | null
     }
   | { code: 'line-not-routable'; lines: readonly LineProblem[] }

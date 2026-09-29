@@ -35,6 +35,7 @@ import type { GiftCardAmountVM } from './surfaces/gift-card'
 import type { PaymentPollVM } from './surfaces/order'
 import type { PayVM, QuoteVM } from './surfaces/pay'
 import type { PartnershipVM } from './surfaces/partnership'
+import type { WantListPageVM, WantListVM } from './surfaces/want-list'
 import type {
   HeldByOtherVM,
   HeldForMeVM,
@@ -65,6 +66,8 @@ type Intents =
   | NonNullable<AccountOfferVM['respond']>
   | NonNullable<AccountViewingVM['cancel']>
   | ReorderIntentVM
+  | NonNullable<WantListVM['confirm']>
+  | WantListVM['stop']
 
 // No intent carries a price a client could send back as authoritative.
 type _NoIntentCarriesAPrice = Assert<Equals<IsServerPriced<Intents>, true>>
@@ -105,6 +108,10 @@ type _RequestTimeStreams = Assert<
 // a streamed part stays hidden from them.
 type _ResultIsNotStreamed = Assert<
   Equals<Extract<FormVM['result'] | PartnershipVM['result'], Streamed<unknown>>, never>
+>
+// Everything on the want-list page is resolved: an email's link must work without JavaScript.
+type _WantListPageDoesNotStream = Assert<
+  Equals<Extract<WantListPageVM[keyof WantListPageVM], Streamed<unknown>>, never>
 >
 type _FormsAreCached = Assert<
   Equals<Extract<keyof CachedPart<PartnershipVM>, 'visitor'>, 'visitor'>

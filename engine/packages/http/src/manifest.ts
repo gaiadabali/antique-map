@@ -18,9 +18,11 @@
  * never travels in a URL (`ORDER_ACCESS`; `payment.status` is a POST). A pay-link or quote
  * token is the capability its page's own URL already carries (C10 `sensitive`), so
  * `payLink.get` and `quote.get` read it from the query; the one-hop links an email carries
- * (`ORDER_ACCESS.link`, the auth routes' GET links — `APPLICATION_ACCESS`, `PASSWORD_LINK`,
- * email verification — and one-click unsubscribe) are the only other credentials in a URL, and
- * each but the unsubscribe moves its token into a cookie and answers 303 to a clean page. Every
+ * (`ORDER_ACCESS.link`, `WANT_LIST_ACCESS.link`, the auth routes' GET links — `APPLICATION_ACCESS`,
+ * `PASSWORD_LINK`, email verification — and one-click unsubscribe) are the only other credentials
+ * in a URL, and each but the unsubscribe moves its token into a cookie and answers 303 to a clean
+ * page. RFC 8058's one-click unsubscribe — a want list's (`wantList.unsubscribe`), the
+ * newsletter's — is the one POST that carries its token in its URL, from the mail client. Every
  * operation a page calls is a GET or a POST (`FormMethod`), so a form reaches it without
  * JavaScript and comes back to its page through `FORM_RESULT`. The files hold
  * type imports of other packages only, and route parity reads them with the workspace's
@@ -86,8 +88,8 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   // customer accounts: `AUTH_OPERATIONS`, each 404 without its module
   route('/api/x/auth/[...path]', 'WEB', AUTH_ROUTE_AUTH, AUTH_ROUTE_METHODS),
   route('/api/x/privacy/[...path]', 'WEB', ['customer', 'token'], GET_POST), // export · erase
-  // uploads (C6 photos), newsletter (double opt-in, one-click unsubscribe), alerts, and
-  // `FORM_OPERATIONS` (saved items)
+  // uploads (C6 photos), newsletter (double opt-in, one-click unsubscribe), back-in-stock
+  // alerts, and `FORM_OPERATIONS` (saved items); want lists are C6's (`want-lists`)
   route('/api/x/forms/[...path]', 'WEB', ['public', 'customer', 'token'], GET_POST),
 
   // Scheduled — the site user's crontab (DEPLOYMENT.md §5)

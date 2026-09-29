@@ -43,7 +43,7 @@ export type CartLineRoleVM =
 export type LineRemedyVM =
   /** Acrylic instead of glass (glass is Bali-only): add this line, remove the old one. */
   | { kind: 'swap'; label: string; line: LineIntent; price: PriceVM | null }
-  /** A unique item someone else is buying: "check back in 15 minutes", or be told. */
+  /** A unique item someone else is buying: "check back in 15 minutes", or be told (C10 `wantList`). */
   | { kind: 'wantList'; href: string }
   /** Not sellable here at all (export, price on request): ask instead. */
   | { kind: 'enquire'; href: string }

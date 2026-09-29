@@ -164,7 +164,10 @@ export type UniqueBaseVM = {
   insuredShipping: { kind: 'estimate'; price: PriceVM } | { kind: 'quote' } | null
   /** The trust pages the panel cites: guarantee, certificate, returns, shipping. */
   reassurance: readonly LinkVM[]
-  /** "Tell me when another example arrives"; `null` when `retention.wantList` is off. */
+  /**
+   * "Tell me when another example arrives": the want-list page for this item (C10 `wantList`,
+   * `like` its public id); `null` when `retention.emailWantList` is off.
+   */
   alert: { href: string } | null
   analytics: PurchaseAnalyticsVM
 }

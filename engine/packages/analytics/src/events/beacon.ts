@@ -88,6 +88,11 @@ export type BeaconEventProps = {
    */
   readonly 'item.saved': WishlistChange
   readonly 'item.unsaved': WishlistChange
+  /**
+   * A want list asked for (C6 `wantList.subscribe`; an address's is pending until confirmed), with
+   * the surface of what it watches — a listing's, an item's. The demand dashboard counts the
+   * domain's `wantList.started` (`./domain`), never this.
+   */
   readonly 'alert.created': {
     readonly kind: 'want-list' | 'item-alert'
     readonly surface: SurfaceName

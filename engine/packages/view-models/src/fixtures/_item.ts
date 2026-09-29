@@ -38,7 +38,7 @@ export const uniqueBase: UniqueBaseVM = {
   shipsFrom: 'Singapore',
   insuredShipping: null,
   reassurance,
-  alert: { href: '/account/want-lists?like=1001' },
+  alert: { href: '/alerts?like=1001' },
   analytics: { priceBand: 'tier-2', status: 'available' },
 }
 

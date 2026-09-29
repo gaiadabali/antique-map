@@ -62,6 +62,16 @@ export type NoticeDomainEvent =
    * anew — within `RETAILER_APPLICATION_EMAIL_LIMIT`.
    */
   | 'retailer.applicationRepeated'
+  /**
+   * A want list's life (D39, C6 `./want-lists`): asked for — an address's, whose confirmation NTF
+   * emails; asked for again by a holder already watching its subject (NTF sends what applies,
+   * within `WANT_LIST_EMAIL_LIMIT`); started — confirmed, or saved to an account; stopped, and so
+   * erased.
+   */
+  | 'wantList.requested'
+  | 'wantList.repeated'
+  | 'wantList.started'
+  | 'wantList.stopped'
 
 export type DomainEventName =
   | OrderDomainEvent
@@ -87,6 +97,8 @@ export type AggregateType =
   | 'quote'
   /** A retail partner: its customer record (D31). */
   | 'retailer'
+  /** A saved search or an item alert (D39). */
+  | 'want-list'
 
 /** The records an event is about, by database id; a consumer loads what it needs. */
 export type DomainEventRefs = {
@@ -118,10 +130,26 @@ export type RetailerEventData = {
   readonly 'retailer.partnershipEnded': OfShopType
 }
 
+type OfWantList = { readonly subject: 'listing' | 'like'; readonly holder: 'account' | 'email' }
+
+/**
+ * The facts a `wantList.*` row carries: what kind of subject and who holds it — never the address
+ * or the query, which stay on the list for a consumer to load by `aggregate.id` (NTF, to write the
+ * email) until the list is erased.
+ */
+export type WantListEventData = {
+  readonly 'wantList.requested': OfWantList
+  readonly 'wantList.repeated': OfWantList
+  readonly 'wantList.started': OfWantList
+  readonly 'wantList.stopped': OfWantList
+}
+
 /** Event-specific facts. Ids and categories only — no email, phone or address (no PII). */
 type EventData<N extends DomainEventName> = N extends keyof RetailerEventData
   ? RetailerEventData[N]
-  : { readonly [key: string]: JsonValue }
+  : N extends keyof WantListEventData
+    ? WantListEventData[N]
+    : { readonly [key: string]: JsonValue }
 
 /** One outbox row, one per name. Consumers dedupe on `id`: dispatch is at least once. */
 export type DomainEvent<N extends DomainEventName = DomainEventName> = N extends unknown
@@ -180,6 +208,10 @@ type _RetailerDataCoversTheEvents = Assert<
   Equals<keyof RetailerEventData, Extract<DomainEventName, `retailer.${string}`>>
 >
 type _RetailerDataIsPiiFree = Assert<IsPiiFree<RetailerEventData>>
+type _WantListDataCoversTheEvents = Assert<
+  Equals<keyof WantListEventData, Extract<DomainEventName, `wantList.${string}`>>
+>
+type _WantListDataIsPiiFree = Assert<IsPiiFree<WantListEventData>>
 type _NpwpRejected = Assert<
   // @ts-expect-error — a tax number is personal data: it never enters the outbox
   IsPiiFree<RetailerEventData['retailer.applied'] & { readonly npwp: string }>

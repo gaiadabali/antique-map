@@ -141,7 +141,7 @@ export const checkoutConflict: CheckoutVM = {
     state: 'sold',
     heldUntil: null,
     alternatives: [card(1009, 'Chart of the Contoh Straits (another state)')],
-    wantList: { href: '/account/want-lists?like=1006' },
+    wantList: { href: '/alerts?like=1006' },
   },
 }
 

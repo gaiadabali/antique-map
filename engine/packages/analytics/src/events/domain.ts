@@ -33,6 +33,9 @@ export const DOMAIN_ANALYTICS_EVENTS = [
   'enquiry.received',
   'consignment.received',
   'appointment.booked',
+  // Demand the stock does not meet (ANALYTICS.md §3): the want lists kept — an address's once it
+  // confirmed, an account's once saved (D39).
+  'wantList.started',
   // The shop's partner funnel (D31): applications — first and again, the Leads dashboard's count
   // (never the beacon) — and staff's decisions, with how long they took.
   'retailer.applied',
@@ -72,6 +75,11 @@ export type DomainAnalyticsProps = {
   readonly 'enquiry.received': { readonly topic: EnquiryTopic; readonly productId: number | null }
   readonly 'consignment.received': NoProps
   readonly 'appointment.booked': { readonly locationId: string }
+  /** A saved search (`want-list`) or an item alert, and who keeps it — never the query or the address. */
+  readonly 'wantList.started': {
+    readonly kind: 'want-list' | 'item-alert'
+    readonly holder: 'account' | 'email'
+  }
   /** A retail partner by its customer id and kind of shop — never its name, NPWP or contact. */
   readonly 'retailer.applied': RetailerApplication
   readonly 'retailer.reapplied': RetailerApplication
