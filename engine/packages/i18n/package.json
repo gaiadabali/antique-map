@@ -1,0 +1,21 @@
+{
+  "name": "@engine/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Locales, message loading (the app's keys, the brand's values from <brand>/site/copy/<locale>.json) and the money, date and dimension formatters (TASKS.md 3.1.b). Pure: no Payload, no database; the one file read is a brand's copy.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@engine/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@engine/view-models": "workspace:*",
+    "@types/node": "26.6.3"
+  }
+}
