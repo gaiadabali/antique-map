@@ -132,6 +132,13 @@ export const brandConfigSchema = z
         ctx.addIssue({ code: 'custom', path: [...path], message: 'ids must be unique' })
       }
     }
+    // A sister is another brand: a copy's provenance names it, and one's own slug would claim
+    // the brand's own works as a sister's (3.4 senior-be #12).
+    config.sisters.forEach((sister, i) => {
+      if (sister.slug !== config.slug) return
+      const message = `is this brand's own slug ("${config.slug}"): a sister is another brand`
+      ctx.addIssue({ code: 'custom', path: ['sisters', i, 'slug'], message })
+    })
   })
   // A seller that names no couriers ships with the brand's: resolved once, here, so a consumer
   // reads one list per seller (`SellerConfig.shipping`) and never merges the two itself.

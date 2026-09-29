@@ -202,9 +202,9 @@ nothing else writes a reservation.
   order or accept a return. A second checkout gets a typed conflict, never an
   order. The index is declared through the Postgres adapter's `afterSchemaInit`
   / `extendTable` hook (a drizzle `uniqueIndex().on().where()`), so the wave's
-  migration **and** a schema author's push to an empty database (PARALLEL-TRACKS.md
-  §3.2) both carry it — a raw-SQL index would be missing from the pushed database
-  and let concurrency tests pass without it.
+  migration **and** a schema author's dev push (PARALLEL-TRACKS.md §3.2) both
+  carry it — a raw-SQL index would be missing from a pushed database and let
+  concurrency tests pass without it.
 - **Counted stock:** `UPDATE stock_levels SET reserved = reserved + $q WHERE id =
   $1 AND on_hand - reserved >= $q` — the row count is the answer.
 - **Expiry happens inside the next reservation.** `reserve()` first moves any
@@ -418,9 +418,12 @@ re-exports the engine's proxy handler but declares its `matcher` literally,
 because Next analyses it statically.
 
 **Engine routes live under `/api/x/`**, so no engine handler can shadow Payload's
-REST API (`/api/media/file/…` and the admin's lookups); the route-parity check
-fails if an engine route's first segment equals a collection slug, `payload-jobs`
-or `graphql`. A write that a cookie authenticates — the cart, the customer
+REST API (`/api/media/file/…` and the admin's lookups). Payload's catch-all,
+`api/[...slug]`, reads a collection from the first segment after `/api/`, and a
+static route there wins over it, so that segment is what the route-parity check
+compares — `x` for every engine route, `health` for the health route
+(`/brand-assets/…` is outside `/api/`): it fails if one equals a collection slug,
+`payload-jobs` or `graphql`, so no collection may be named `x` or `health`. A write that a cookie authenticates — the cart, the customer
 session, order access, a want list's own access, each `HttpOnly`, `Secure` and
 `SameSite=Lax` — is refused unless it comes from the site itself (`Origin` or
 `Sec-Fetch-Site`; C13 `sameOrigin`), and no credential travels in a URL beyond
@@ -505,9 +508,11 @@ Next's per-request inline scripts; if they do not, the spike adopts per-request
 nonces and records it. The proxy copies the answer's CSP onto the request too
 (C13 `PROXY_REQUEST_HEADERS`), because Next takes a nonce from the request's CSP
 header; with hashes, that copy is inert. **`img-src` allows the configured sister's media
-host too** (`brand.sisters[].baseUrl`'s origin): a sister link renders the other
-brand's derivative images straight from where they are, never copied into this
-brand's bucket or re-derived (BRANDS.md §5, C12 `SnapshotImage`), so a build
+host too** (the origin `sisterBaseUrl()` gives: the host's `SISTER_BASE_URL`, else
+the committed `sisters[].baseUrl`, the sister's staging site — C1, DEPLOYMENT.md
+§8): a sister link renders the other brand's derivative images straight from
+where they are, never copied into this brand's bucket or re-derived (BRANDS.md
+§5, C12 `SnapshotImage`), so a build
 that forgets the sister's host would fail silently as a blocked image, not a
 missing one. Rate limits on auth, forms, offers and checkout,
 webhook signature verification with replay protection, hosted payment fields or

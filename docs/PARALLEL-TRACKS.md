@@ -135,16 +135,17 @@ The lane that uses a table specifies it in its task; SCH writes it.
    disjoint. An agent that changes no schema never pushes: `pnpm db:fresh`
    migrates its database with the committed set, and its dev server boots on
    that. A **schema author** sees its work on **its own suffixed database only**,
-   by pushing it to an empty one: `pnpm db:fresh --brand <slug> --suffix <lane>
-   --no-migrate`, one boot with `PAYLOAD_DEV_PUSH=1` — Payload pushes the whole
-   schema, engine tables and their indexes included — and every later boot
-   without it. On this stack (Payload 3.90.2, drizzle-kit 0.31.7) a push works
-   only on an empty database: introspecting one that has tables fails with
-   `42P02` and Payload does not start. So a schema change means an empty database
-   again, seeded afresh; a push never meets a database that has tables, and never
-   runs in a production build. What only a migration carries — a trigger, raw SQL
-   — is missing from a pushed database, so its test runs on a migrated one. The
-   agent **never commits a generated migration**. After the wave merges, the **SCH
+   through Payload's dev push (`PAYLOAD_DEV_PUSH=1`, never in a production build),
+   which pushes the whole schema, engine tables and their indexes included.
+   drizzle-kit 0.31.7 cannot introspect a composite primary key — `42P02`, and
+   Payload does not start on a database that holds one (senior-db, 3.2 S1) — so no
+   table declares one: a key of several columns is a unique constraint over NOT NULL
+   columns, and the engine-table seam refuses anything else. Should a push still
+   fail on a database that has tables, push onto an empty one — `pnpm db:fresh
+   --brand <slug> --suffix <lane> --no-migrate` — and seed afresh. What only a
+   migration carries — a trigger, raw SQL — is missing from a pushed database, so
+   its test runs on a migrated one. The agent **never commits a generated
+   migration**. After the wave merges, the **SCH
    lead** runs `migrate:create` once, in a clean worktree, producing the wave's
    single migration — then `generate:types` (the one
    `engine/packages/cms/payload-types.ts`, which both apps and every package read),

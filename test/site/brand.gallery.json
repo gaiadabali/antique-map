@@ -296,7 +296,7 @@
   },
   "sisters": [
     {
-      "slug": "test",
+      "slug": "test-emporium",
       "name": "Test Emporium",
       "role": "merch-outlet",
       "baseUrl": "https://emporium.test.example"

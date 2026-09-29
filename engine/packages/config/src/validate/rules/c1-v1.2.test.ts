@@ -69,6 +69,23 @@ describe('validateBrandConfig() — C1 v1.2 rules', () => {
     ).toEqual(['shipping.providers[2]: "quote" is listed twice'])
   })
 
+  it('refuses a menu link to the account area when neither account module is on (be #5)', () => {
+    const linked = (raw: Raw) =>
+      raw.identity.navigation.footer.push({ surface: 'account', label: { en: 'Account' } })
+    expect(issuesOf('gallery', linked)).toEqual([])
+    expect(
+      issuesOf('gallery', (raw) => {
+        linked(raw)
+        raw.modules['accounts.buyers'] = false
+        // Nothing that needs an account stays on.
+        raw.modules['retention.wishlist'] = false
+        raw.modules['retention.wantList'] = false
+      }),
+    ).toEqual([
+      'identity.navigation.footer[2].surface: links to "account", whose modules "accounts.buyers" and "accounts.retailers" are all off, so the link would lead nowhere',
+    ])
+  })
+
   it('passes a seller naming some of the brand’s couriers', () => {
     expect(
       issuesOf('gallery', (raw) => {

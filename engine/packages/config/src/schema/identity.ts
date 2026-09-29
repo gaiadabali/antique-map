@@ -49,6 +49,7 @@ export type IdentityConfig = z.infer<typeof identitySchema>
  * config, so no brand name sits in engine code. Its secrets are `SISTER_API_KEY` and
  * `SISTER_WEBHOOK_SECRET` (DEPLOYMENT.md §8), which `bootCheck()` requires whenever a sister
  * is configured; one sister per brand, so a second is a contract change that keys them by slug.
+ * A sister is another brand: its `slug` is never the brand's own (3.4 senior-be #12).
  */
 export const sisterSchema = z.strictObject({
   slug: idSchema,
@@ -56,9 +57,12 @@ export const sisterSchema = z.strictObject({
   /** What the sister is to this brand: the origin of works, or an outlet for prints. */
   role: z.enum(['archive-origin', 'merch-outlet']),
   /**
-   * The sister's deployed site, as an https origin (`https://shop.example.com`): its archive API
-   * and pages are addressed from it and the CSP allows it. Never plain http: C12 allows http only
-   * from a local sister in development, and a committed config never names one.
+   * The sister's **staging** site, as an https origin (`https://shop.example.com`). One committed
+   * origin cannot serve two environments, so each host names the sister it syncs with in
+   * `SISTER_BASE_URL` — which production requires, and never this one — and `bootCheck()` checks
+   * it (`boot-check/sister.ts`, 3.4 senior-be #6); `sisterBaseUrl()` is what the sister client
+   * reads, and the CSP allows. Never plain http: C12's local sister in development is named by a
+   * workstation's `SISTER_BASE_URL` on loopback, never by a committed config.
    */
   baseUrl: httpsOriginSchema,
 })

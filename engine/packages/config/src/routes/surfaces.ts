@@ -82,10 +82,14 @@ export const SURFACES = Object.keys(SURFACE_ROUTES) as [Surface, ...Surface[]]
  * not found (C13) — and a loader or a menu before it links there.
  */
 export function hasSurface(config: { readonly modules: ModuleFlags }, surface: Surface): boolean {
+  const modules = surfaceModules(surface)
+  return modules.length === 0 || modules.some((key) => hasModule(config, key))
+}
+
+/** The modules any one of which switches a surface on; `[]` for one that is always on. */
+export function surfaceModules(surface: Surface): readonly ModuleKey[] {
   const row: SurfaceRoute = SURFACE_ROUTES[surface]
-  if (row.module !== undefined) return hasModule(config, row.module)
-  if (row.anyModule !== undefined) return row.anyModule.some((key) => hasModule(config, key))
-  return true
+  return row.module !== undefined ? [row.module] : (row.anyModule ?? [])
 }
 
 /** Surfaces with an address, i.e. everything `href()` can build. */

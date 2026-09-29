@@ -4,8 +4,8 @@
  *
  * The constraints and indexes the domain's guarantees stand on (senior-db review of 1.2), for the
  * SCH lead to declare through the Postgres adapter's `afterSchemaInit` / `extendTable`, so that
- * the wave's migration AND a schema author's push to an empty database carry them — a raw-SQL
- * index would be missing from the pushed database and let the concurrency tests pass without it
+ * the wave's migration AND a schema author's dev push carry them — a raw-SQL index would be
+ * missing from a pushed database and let the concurrency tests pass without it
  * (ARCHITECTURE.md §6, PARALLEL-TRACKS.md §3.2). This file is not DDL: SCH writes that, in the
  * wave's one migration (PARALLEL-TRACKS.md §3). Its constants are shared so the index SCH declares
  * and the `ON CONFLICT` DOM writes cannot drift apart.
@@ -13,7 +13,10 @@
  * Every table below lives in `public`, the adapter's schema, under the plain name it is given
  * here — a collection's (`reservations`, `payment_attempts`) and an engine table's
  * (`payment_events`, `domain_events`, `idempotency_keys`) alike; never an `engine` schema, so
- * the domain's SQL names them unqualified (PARALLEL-TRACKS.md §1).
+ * the domain's SQL names them unqualified (PARALLEL-TRACKS.md §1). **No engine table declares a
+ * composite primary key**: drizzle-kit 0.31.7 cannot introspect one (`42P02`, which fails a push
+ * onto a database that has tables — senior-db, 3.2 S1), so a key of several columns is a UNIQUE
+ * constraint over NOT NULL columns, which an `ON CONFLICT` infers just the same.
  */
 import type { INDEXED_RESERVATION_STATUSES } from '../reservations/machine'
 import type { NormalizedPaymentEvent } from './payment-vocabulary'
@@ -122,11 +125,15 @@ export const ATTEMPT_WRITE_ONCE_COLUMNS = ['provider_ref'] as const
 // `domain_events`: `uuid` primary key; INDEX on `(occurred_at, id)` WHERE `dispatched_at IS NULL`;
 // the dispatcher takes rows `FOR UPDATE SKIP LOCKED`; each consumer dedupes in its own table, keyed
 // `(consumer, event_id)`.
-// `idempotency_keys`: primary key `(operation, key)` — the caller is NOT in the key, so another
-// caller's reuse meets the row instead of starting afresh. Beside it `caller_ref` (the session's
-// customer, else the cart, else null), `request_sha256` (of the decoded request), the stored
-// response and `created_at`; an INDEX on `created_at` (the sweep) and one on `caller_ref` (an
-// erasure). Inserted `ON CONFLICT DO NOTHING` inside the request's own
+// `idempotency_keys`: UNIQUE `(operation, key)` over NOT NULL columns — a constraint, never a
+// composite primary key (above) — and the caller is NOT in the key, so another caller's reuse
+// meets the row instead of starting afresh. Beside it `caller_ref` (the session's customer, else
+// the cart, else null), `request_sha256` (of the decoded request), `response` and `created_at`;
+// an INDEX on `created_at` (the sweep) and one on `caller_ref` (an erasure). `response` is
+// NULLABLE: the dedupe row is the first taken in its transaction (`LOCK_ORDER`), so it is
+// inserted before the operation runs and its response is written by the same transaction before
+// it commits — a committed row always has one, and a concurrent insert of the same key waits on
+// the row until it does. Inserted `ON CONFLICT DO NOTHING` inside the request's own
 // transaction, so a rolled-back request leaves no key behind; on a conflict both are compared with
 // this request's: equal answers the stored response, either different is `invalid`
 // (`idempotencyKey`, `mismatch`) and never it. So a guest who signs in mid-flow (cart → customer)

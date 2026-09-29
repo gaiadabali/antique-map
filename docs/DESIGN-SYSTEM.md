@@ -130,12 +130,13 @@ View models are **resolved and honest**:
   `lang` when its alt or caption is not the page's locale (a Dutch caption, or
   a fallback that borrowed one), so a screen reader switches voice (WCAG 3.1.2);
 - money arrives as `Money` (C5) and is formatted by `@engine/i18n`'s
-  `formatMoney(locale)` — a component never does arithmetic on a price, and
-  never its rounding or its digits either: `formatMoney` pins an amount's
-  fraction digits to `CURRENCY_EXPONENT` itself, never the runtime's ICU
-  default (which differs between Node and the browser and would fail
-  hydration if they disagreed), and a display **estimate** (`PriceVM.estimate`)
-  carries none at all — a whole major unit, shown after "≈";
+  `formatMoney(locale)` on the server — a component never does arithmetic on a
+  price, and never its rounding or its digits either: `formatMoney` pins an
+  amount's fraction digits to `CURRENCY_EXPONENT` itself, never the runtime's
+  ICU default, and a display **estimate** (`PriceVM.estimate`) carries none at
+  all — a whole major unit, shown after "≈". Symbols and spacing still differ
+  between the server's ICU and a browser's, so a Client Component receives the
+  formatted string, never a `Money` to format (CONVENTIONS.md §6);
 - imprecise facts arrive with their precision (`{ year: 1750, precision: 'circa' }`)
   and the component must render it (`c. 1750`) — never imply certainty the
   record lacks (a KOI principle, and on an antique a legal one);
@@ -293,8 +294,9 @@ the options *are* the page: they are server-rendered as real radio groups inside
 a GET form (it works with JavaScript off, and the URL encodes the
 configuration), then hydrated progressively. Only the **preview layer** loads on
 intent. The destination's price table ships with the page so the price updates
-instantly on the client — display only; the cart re-prices on the server
-(COMMERCE.md §1). The preview is a pre-sized image (~1200 px AVIF), frames as
+instantly on the client — one row per variant, its display string formatted by
+the server, looked up rather than summed or formatted (CONVENTIONS.md §6) —
+display only; the cart re-prices on the server (COMMERCE.md §1). The preview is a pre-sized image (~1200 px AVIF), frames as
 9-slice SVG/CSS layers, pre-composited room plates per wall colour and "to scale"
 as SVG — never the scan redrawn on a canvas.
 

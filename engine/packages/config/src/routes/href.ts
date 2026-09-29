@@ -128,7 +128,9 @@ export function listingSearch(state: ListingState, omit: readonly FacetKey[] = [
  * `const href = createHref(brand)`, then `href(surface, params, locale)` → a root-relative
  * path. A locale without a segment map throws, and so does a surface or form kind without a
  * segment — its module is off, so nothing may link there: `validateBrandConfigs()` guarantees
- * both wherever they are needed, so either is a bug.
+ * both wherever they are needed, so either is a bug. So does a path element that is empty or
+ * holds a `/` (a slug, an order number, a place's element): it cannot be one segment, and
+ * `parsePublicPath()` would answer its URL not-found (3.4 senior-be #9, senior-fe #6).
  */
 export function createHref(config: HrefConfig): Href {
   return (surface, params, locale) => {
@@ -137,9 +139,18 @@ export function createHref(config: HrefConfig): Href {
     const context = { routes: config.routes, segments, locale, p: params as Params }
     const [parts, search] = partsOf(context, surface)
     const prefix = locale === config.locales.default ? '' : `/${locale}`
-    const path = parts.map((part) => `/${encodeURIComponent(part)}`).join('')
+    const path = parts.map((part) => `/${segmentOf(part, surface)}`).join('')
     return (prefix + path || '/') + search
   }
+}
+
+/** A path element as one segment, in the one spelling `parsePublicPath()` reads. */
+function segmentOf(part: string, surface: LinkSurface): string {
+  if (part === '') throw new Error(`a path element of "${surface}" is empty`)
+  if (part.includes('/')) {
+    throw new Error(`a path element of "${surface}" holds a "/": "${part}" would be two segments`)
+  }
+  return encodeURIComponent(part)
 }
 
 function partsOf(context: Context, surface: LinkSurface): [string[], string] {
@@ -150,7 +161,7 @@ function partsOf(context: Context, surface: LinkSurface): [string[], string] {
     case 'home':
       return [[], '']
     case 'page':
-      return [slug, '']
+      return [[p.slug ?? ''], '']
     case 'form': {
       const kind = p.kind ?? 'enquiry'
       const segment = present(segments.forms[kind], `form ${kind}`, context.locale)

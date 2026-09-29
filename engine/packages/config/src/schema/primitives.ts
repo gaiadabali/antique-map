@@ -35,11 +35,14 @@ export const moneySchema = z.strictObject({
 })
 export const positiveMoneySchema = moneySchema.refine((m) => m.amount > 0, 'a positive amount')
 
-const HTTPS_URL_MESSAGE = 'an https:// URL on a domain name, with no user or password in it'
+const HTTPS_URL_MESSAGE = 'an https:// URL on a public domain name, with no user or password in it'
+/** Names no deployed site answers at: loopback (RFC 6761), mDNS, private use (ICANN, 2024), invalid. */
+const NON_PUBLIC_NAME = /(?:^|\.)(?:localhost|local|internal|invalid)$/i
 /**
- * A URL a config links to or calls: written `https://`, on a domain name, carrying no
- * credentials — never `javascript:` or `data:`, never plain http, never an IP address or
- * `localhost`: a committed config names only what a deployed site can reach.
+ * A URL a config links to or calls: written `https://`, on a public domain name, carrying no
+ * credentials — never `javascript:` or `data:`, never plain http, never an IP address,
+ * `localhost` or a name under `.localhost`, `.local`, `.internal` or `.invalid`: a committed
+ * config names only what a deployed site can reach.
  */
 export const httpsUrlSchema = z.url({ error: HTTPS_URL_MESSAGE, abort: true }).refine(
   (value) => {
@@ -48,6 +51,7 @@ export const httpsUrlSchema = z.url({ error: HTTPS_URL_MESSAGE, abort: true }).r
       url !== null &&
       value.startsWith('https://') &&
       z.regexes.domain.test(url.hostname) &&
+      !NON_PUBLIC_NAME.test(url.hostname) &&
       url.username === '' &&
       url.password === ''
     )
@@ -63,7 +67,7 @@ export const httpsUrlSchema = z.url({ error: HTTPS_URL_MESSAGE, abort: true }).r
  */
 export const httpsOriginSchema = httpsUrlSchema.refine(
   (value) => URL.parse(value)?.origin === value,
-  'an https origin such as "https://shop.example.com": no path, query or trailing "/", in lower case',
+  'an https origin such as "https://shop.example.com": no path, query or trailing "/", in lower case, a name that is not ASCII in punycode (https://xn--…)',
 )
 
 /**

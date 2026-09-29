@@ -107,9 +107,10 @@ type PriceBase = {
  *
  * Display (`formatMoney`, `@engine/i18n`, TASKS.md 3.1.b) fixes the fraction digits itself —
  * `CURRENCY_EXPONENT[currency]` for an amount, none for an estimate — and never takes the
- * runtime's ICU default for the currency, which differs between Node and browsers (some give IDR
- * two): the server's render and the browser's would disagree, and hydration would fail. A
- * component never formats, rounds or sums a Money itself.
+ * runtime's ICU default for the currency, which differs between runtimes (some browsers give IDR
+ * two). Symbols and spacing still differ between ICUs, so formatting is the server's: a Client
+ * Component shows the server's string (CONVENTIONS.md §6). A component never formats, rounds or
+ * sums a Money itself.
  */
 export type PriceSet =
   | (PriceBase & { readonly basis: 'sole-currency'; readonly estimate: null })

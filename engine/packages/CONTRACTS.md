@@ -84,7 +84,10 @@ so it is breaking and also needs a redirect.
   re-exports; client code imports that entry, and nothing it holds may reach zod
   (`i18n/test/client-safe.test.ts`). A seller ships with its own subset of the brand's couriers
   (`sellers[].shipping`), resolved in the parsed config, so its secrets are its own couriers'. A
-  URL a config names is https, on a domain, with no credentials; a sister's is a bare origin. A
+  URL a config names is https, on a public domain name, with no credentials; a sister's is a bare
+  origin — its staging site, since each host names the sister it syncs with in `SISTER_BASE_URL`
+  (required in production, `sisterBaseUrl()`) — and a sister is never the brand itself. An asset
+  a config names is a file the brand-assets route serves (`BRAND_ASSET_TYPES`). A
   rule that needs the app or the whole config goes into `validateBrandConfigs()`'s list in the
   schema's header. Who may hold an account, and where
   saved items live, is modules, never a brand: `accounts.buyers` and `accounts.retailers`
@@ -140,10 +143,13 @@ so it is breaking and also needs a redirect.
   reference.
 - **C10.** Segments are public URLs, and the default locale stays unprefixed. `href()` and
   `parsePublicPath()` stay inverses, so one state has one URL: a segment is read only in the
-  spelling `href()` writes (`encodeURIComponent`), never another percent-encoding of it and
-  never with a `/` inside, so a path element `href()` is given holds no `/`. An old site's URL is a
-  legacy prefix or an exact legacy path, and neither shadows a live root segment; a page kept at
-  its old address is live and listed in neither. A surface or form kind a module switches on
+  spelling `href()` writes (`encodeURIComponent`), never another percent-encoding of it, never
+  empty and never with a `/` inside, so `href()` throws on a path element that is empty or holds
+  a `/`. The one exception is an item's `{id}-{slug}` segment, whose slug part an old link may spell
+  any way: it reaches the item route by its canonical id with a slug no item has, and the route
+  answers 301. An old site's URL is a legacy prefix or an exact legacy path, and neither shadows a
+  live root segment nor is one the proxy answers first (`ROOT_FILES`, `CLAIMED_SEGMENTS`) nor
+  holds a dot segment; a page kept at its old address is live and listed in neither. A surface or form kind a module switches on
   needs a segment only while its module is on, and `href()` refuses one without; the account
   area is on while either account module is (`hasSurface()`), and keeps its segment regardless. No page URL carries a credential: an
   order opens with the session or the order-access cookie (C13 `ORDER_ACCESS`), never with its
@@ -172,8 +178,11 @@ so it is breaking and also needs a redirect.
   token in its URL, on `ONE_CLICK_UNSUBSCRIBE`'s terms: that token alone, no cookie read, 200.
   Auth answers every email alike. A provider webhook route names the seller whose secret
   verifies it. A file a browser asks for at the root — robots, sitemaps, `.well-known`, the
-  favicon, the touch icons, the web manifest — is a `ROOT_REWRITES` row to an engine route,
-  never the designed not-found page. The proxy rewrites, and sets only
+  favicon, the touch icons, the web manifest — is a `ROOT_REWRITES` row to an engine route, its
+  `from` one of C10's `ROOT_FILES`, never the designed not-found page; a page links its icons and
+  manifest through its metadata, never Next's file conventions, which are one build's. A brand
+  file is linked at its versioned URL (`BRAND_ASSET_URL`) and served `immutable` only when the
+  version is the file's. The proxy rewrites, and sets only
   `PROXY_REQUEST_HEADERS`, C10's `sensitive` answer headers and the per-request
   `Content-Security-Policy`, which one builder makes (41.1.a) and the proxy copies onto the
   request too, where Next looks for a nonce. An account's offer or viewing is answered by its
@@ -472,11 +481,84 @@ so it is breaking and also needs a redirect.
     `idempotency_keys` …) beside Payload's, never an `engine` schema, which Payload's
     `migrate:fresh` would leave standing and its push would not see — so the domain's SQL names them
     unqualified. Its indexes reach a database through the wave's migration or a schema author's
-    push to an empty one (PARALLEL-TRACKS.md §3.2): a push onto a database with tables fails on this
-    stack (Payload 3.90.2, drizzle-kit 0.31.7, `42P02`). C6–C8 change no shape and stay at v1.1.
+    dev push (PARALLEL-TRACKS.md §3.2). Amended with senior-db's review of 3.2 (S1, S3): **no
+    engine table declares a composite primary key** — drizzle-kit 0.31.7 cannot introspect one
+    (`42P02`, which is what stopped a pushed database booting again), so a key of several columns
+    is a UNIQUE constraint over NOT NULL columns, which `ON CONFLICT` infers alike; so
+    `idempotency_keys` is keyed by UNIQUE `(operation, key)`, and its `response` is nullable,
+    since the dedupe row is inserted first (`LOCK_ORDER`) and its response written by the same
+    transaction before it commits. SCH changes the table to match, with its 3.2 review fixes.
+    C6–C8 change no shape and stay at v1.1.
   - **C13:** Payload's own mounts are its admin and its REST API alone. GraphQL is off, so no app
     mounts `api/graphql` or its playground, and `graphql` stays a reserved first segment.
   - The docs follow: PARALLEL-TRACKS.md §1 (the collection stubs, each in its own folder, and the
     engine tables in `public`) and §3.2 (the dev loop), ARCHITECTURE.md §6, DEPLOYMENT.md §3–4
     (boot migrations need a production build), CONTENT-MODEL.md (the frozen slug list, §4). And
     `bootCheck()` warns of `RUN_MIGRATIONS=1` on a dev server, which Payload never migrates on boot.
+- **2026-09-30**: **C1, C10 and C13 v1.2 amended by their reviews** (`reviews/3.4-senior-{be,fe}.md`,
+  and 3.5's route-parity reading). Each change narrows only what no lane uses yet, or adds; no
+  production build runs anywhere yet, so nothing breaks. The versions stay at v1.2.
+  - **C1:**
+    - A production build is local only at a loopback `SITE_URL` **and** with
+      `LOCAL_PRODUCTION_BUILD=1`, which a worktree's `.env.local` and CI set and a host never does
+      (ignored, with a warning, at a brand's own domain). Without it, it is refused and judged
+      production, so a staging host provisioned from `.env.example` cannot boot with a
+      workstation's leniency (be #1; this replaces v1.2's "judged local by decision").
+    - `LINK_TOKEN_KEYS` secrets are base64url alone; the refusal of a standard-base64 one names
+      the fix, and DEPLOYMENT.md §8 names the command that makes one, `LINK_KEY_COMMAND` (be #2).
+    - `redactCredentials()` hides a URL's user information whatever it holds (a `/` in a
+      password), a quoted `password="…"` pair and a JSON `"password"` (be #3).
+    - An editor's social link in the CMS globals is held to `httpsUrlSchema`, as the file's is
+      (be #4); `httpsUrlSchema` refuses a `localhost`, `.local`, `.internal` or `.invalid` name, and
+      `httpsOriginSchema` says a name that is not ASCII is written in punycode (be #7).
+    - The sister (be #6, #12): its `slug` is never the brand's own (the synthetic brand's two
+      configs now name `test-emporium` and `test-gallery`); its committed `baseUrl` is its
+      **staging** site, and each host names the one it syncs with in `SISTER_BASE_URL` — required
+      in production and never the committed one, left unset on staging, an http origin on
+      loopback on a workstation (C12's local sister) — checked by `bootCheck()`
+      (`boot-check/sister.ts`); `sisterBaseUrl()` is what the sister client and the CSP read.
+    - `BRAND_ASSET_TYPES`: the extensions the brand-assets route serves, each with its type
+      (`.webmanifest` → `application/manifest+json`, `.woff2` → `font/woff2` …); an asset path
+      names one of them (fe #2).
+    - `@engine/config/link-keys`: the import-free link-key rules, for `worktree:env` under plain
+      `node` (3.5, F4).
+  - **C10:**
+    - The proxy's module gate and the navigation rule read `hasSurface()` (with
+      `surfaceModules()`), so the account area is closed while both account modules are off —
+      PLT's follow-up from v1.2, done here (be #5).
+    - An old item link whose slug part is spelt otherwise than `href()` writes it — `%27`,
+      `(…)`, a lower-case escape, a `+` — reaches the item route by its canonical id with that slug
+      as asked for, which no item has, so the route answers 301 (MIGRATION.md §6); a segment that
+      picks a surface or a locale, a non-canonical id and a `%2F` stay not found (fe #1).
+    - An empty segment (`//`, a trailing `/`) is not found — Next answers both with a 308 first
+      — and `href()` throws on a path element that is empty or holds a `/`, a `page` with an empty
+      slug included (be #9, fe #6).
+    - `ROOT_FILES` (C13's root-file patterns, declared here since config imports no other
+      package), `CLAIMED_SEGMENTS` (`_next`, `not-found`, `.well-known`), `rootFileOf()` and
+      `matchRootFile()`: a legacy rule that is a root file, starts with a claimed segment or holds a
+      `.` or `..` segment is refused as dead, a route-map segment may not be a claimed one, and
+      `parsePublicPath()` answers `notFound` for one (be #8, fe #7).
+  - **C13:**
+    - `ROOT_REWRITES`' `from` patterns are exactly C10's `ROOT_FILES` (typed and tested); one row,
+      `/apple-touch-icon-:size.png`, answers the sized and precomposed touch icons, replacing the
+      precomposed row; a page links its icons and manifest through `generateMetadata()`, never
+      `app/icon.*` or `app/manifest.ts` (fe #7).
+    - `BRAND_ASSET_URL`: a brand file is linked at `/brand-assets/<path>?v=<first 8 hex digits of
+      its SHA-256>`, minted into `ShellVM`; `immutable` for a year only when `v` is the file's
+      version, else `max-age=300` with a strong `ETag`; `nosniff`, an SVG under
+      `default-src 'none'`, the path confined to the brand's assets folder (fe #2).
+    - Route parity compares the first segment after `/api/` — `x` for every engine route,
+      `health` for the health route — with the collection slugs, `payload-jobs` and `graphql`, so
+      no collection may be named `x` or `health` (3.5).
+  - **Recorded, not changed:** C10 v1.3 must carry a product page's configuration into the
+    internal URL before the configurator (Next replaces a rewritten request's query, so the GET
+    form's choice never reaches the server render — fe #9), and C2 must give the configurator's
+    price table the server's display strings (CONVENTIONS.md §6); both before 22.4 and 30.4. A
+    zod-free `href()` (moving `FACET_KEYS`, `SORT_KEYS`, `MODULE_KEYS` and `hasModule` into
+    `@engine/config/constants`, ~3.5 KB gzip) waits until a Client Component needs one (fe #4).
+  - The docs follow: CONVENTIONS.md §6 (Client Components format nothing; the ICU-dependent
+    formatters named; links as props, never `@engine/config/routes`, the schema or zod, never
+    state from `usePathname()`), COMMERCE.md §1 and §3, DESIGN-SYSTEM.md §3 and §7 and the money comments
+    (the stale hydration claims swept), MIGRATION.md §6 (how a legacy URL is matched), DEPLOYMENT.md
+    §8 (`LOCAL_PRODUCTION_BUILD`, `SISTER_BASE_URL`, the base64url command), ARCHITECTURE.md §11
+    (route parity) and §13 (the sister's origin in the CSP), BRANDS.md §3.
