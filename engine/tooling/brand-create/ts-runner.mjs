@@ -1,6 +1,6 @@
 // The same headless-Vite "workspace TypeScript runner" `route-parity` uses
 // (its file has the fuller explanation) — this tool needs it too, to
-// validate a scaffolded config against the real C1 zod schema without a
+// validate a scaffolded config with `@engine/config/validate` without a
 // build step. Kept as its own small copy rather than a cross-folder import,
 // matching this repo's one-tool-one-folder idiom.
 import { createServer } from 'vite'
