@@ -18,8 +18,18 @@ jobs:
     # it) — the image's own docker-entrypoint-initdb.d never runs here
     # (GitHub Actions `services:` supports no volume mounts), so the
     # `unaccent`/`pg_trgm` extensions this job's four databases need
-    # (2.1.d's CI clause) are created explicitly by e2e-db.mjs below, not by
+    # (2.1.d's CI clause) are created explicitly by `db:fresh`'s
+    # `createDatabase()` (engine/tooling/db/psql.mjs), not by
     # docker-compose.dev.yml's init script.
+    #
+    # PGHOST switches `psql.mjs`/`schema-hash/dump.mjs` to the direct
+    # transport (engine/tooling/db/transport.mjs) instead of `docker compose
+    # exec` — there is no compose project here for `exec` to reach.
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      POSTGRES_USER: postgres
+      PGPASSWORD: postgres
     services:
       postgres:
         image: postgres:18.0
@@ -38,18 +48,36 @@ jobs:
       - uses: ./.github/actions/apps-exist
         id: apps
 
-      # Creates ig/oei/test-gallery/test-emporium (2.1.d's naming), runs the
-      # migrate/seed no-ops (3.2 / 10.2), and asserts one schema across all
-      # four (schema-hash --all's own comparison) — see the script's header
-      # for why this does not call `pnpm db:fresh`/`pnpm schema-hash --all`
-      # directly in this job.
-      - name: Create the four databases, migrate, seed, compare schemas
-        env:
-          POSTGRES_HOST: 127.0.0.1
-          POSTGRES_PORT: '5432'
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        run: node .github/scripts/e2e-db.mjs
+      # pg_dump must be >= the server's major version (18) — schema-hash's
+      # normaliser already strips the `\restrict`/`\unrestrict` wrapper pg_dump
+      # 18 adds, so an older client here would silently dump a schema in an
+      # older dialect. The distro repo on ubuntu-latest ships 16; PGDG's own
+      # repo is the documented way to get a matching 18 client.
+      - name: Install postgresql-client-18 (PGDG)
+        run: |
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-18
+
+      # ig, oei, and the synthetic `test` brand's two storefront configs
+      # (CONVENTIONS.md §1) — `db:fresh` has no `--storefront` flag: nothing
+      # in it branches on TEST_STOREFRONT (only the app reads that at
+      # runtime), so the two `test` databases are told apart purely by
+      # suffix here, same as this job did before this follow-up. Each call
+      # also runs the migrate/seed no-ops (3.2 / 10.2) via the real hooks.
+      - name: db:fresh — ig, oei, test-gallery, test-emporium
+        run: |
+          pnpm db:fresh --brand indies-gallery --suffix ci
+          pnpm db:fresh --brand old-east-indies --suffix ci
+          pnpm db:fresh --brand test --suffix ci_gallery
+          pnpm db:fresh --brand test --suffix ci_emporium
+
+      # 2.1.d's CI clause, proven the same way the local Check is: one
+      # schema across every database the stack has (schema-hash --all's own
+      # comparison, 2.2.c) — trivially equal today (no migrations exist yet,
+      # 3.2), meaningful the day they do.
+      - name: schema-hash --all
+        run: pnpm schema-hash --all
 
       - name: Build both apps (no database env — like the deploy artifact)
         if: steps.apps.outputs.exists == 'true'
