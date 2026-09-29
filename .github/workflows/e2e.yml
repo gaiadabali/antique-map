@@ -1,0 +1,88 @@
+name: E2E (reusable)
+
+# Split out of ci.yml to keep both files under the 300-line rule
+# (CONVENTIONS.md §2, applied to workflows per this task's instructions).
+# Called only from ci.yml's `e2e` job, never triggered directly.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: End-to-end
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # A bare Postgres 18 service container (no docker-compose stack behind
+    # it) — the image's own docker-entrypoint-initdb.d never runs here
+    # (GitHub Actions `services:` supports no volume mounts), so the
+    # `unaccent`/`pg_trgm` extensions this job's four databases need
+    # (2.1.d's CI clause) are created explicitly by e2e-db.mjs below, not by
+    # docker-compose.dev.yml's init script.
+    services:
+      postgres:
+        image: postgres:18.0
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-pnpm-node
+      - uses: ./.github/actions/apps-exist
+        id: apps
+
+      # Creates ig/oei/test-gallery/test-emporium (2.1.d's naming), runs the
+      # migrate/seed no-ops (3.2 / 10.2), and asserts one schema across all
+      # four (schema-hash --all's own comparison) — see the script's header
+      # for why this does not call `pnpm db:fresh`/`pnpm schema-hash --all`
+      # directly in this job.
+      - name: Create the four databases, migrate, seed, compare schemas
+        env:
+          POSTGRES_HOST: 127.0.0.1
+          POSTGRES_PORT: '5432'
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        run: node .github/scripts/e2e-db.mjs
+
+      - name: Build both apps (no database env — like the deploy artifact)
+        if: steps.apps.outputs.exists == 'true'
+        run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm build
+
+      - name: Skip notice (build)
+        if: steps.apps.outputs.exists != 'true'
+        run: echo "::notice::Build skipped — engine/apps/{gallery,emporium} not scaffolded yet (phase 4)."
+
+      - name: Playwright browsers
+        if: steps.apps.outputs.exists == 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
+      # 2.3.a's eight projects: {ig, oei, test-gallery, test-emporium} ×
+      # {desktop, mobile} (playwright.config.ts). Each app serves two of the
+      # four brand/storefront pairs on its own port — E2E_*_URL points
+      # Playwright at whichever port each app was started on in this job.
+      - name: Playwright (8 projects)
+        if: steps.apps.outputs.exists == 'true'
+        env:
+          E2E_GALLERY_URL: http://localhost:4200
+          E2E_EMPORIUM_URL: http://localhost:4201
+          E2E_TEST_GALLERY_URL: http://localhost:4202
+          E2E_TEST_EMPORIUM_URL: http://localhost:4203
+        run: pnpm test:e2e
+
+      - name: Skip notice (Playwright)
+        if: steps.apps.outputs.exists != 'true'
+        run: echo "::notice::Playwright skipped — no app to serve yet (phase 4)."
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: failure() && steps.apps.outputs.exists == 'true'
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

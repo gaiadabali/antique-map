@@ -1,0 +1,24 @@
+# Pull-based deploy manifest (DEPLOYMENT.md §3, §9). Helios's `gaiada-poll`
+# fetches this file from `production` at the pushed SHA with its own
+# read-only App token, verifies the release's checksum, and unpacks `subdir`
+# under the matching `site_user`.
+#
+# `site_user` must equal the pm2 process name exactly, or the agent skips the
+# reload silently and the old code keeps serving (DEPLOYMENT.md §3).
+#
+# Never commit an unfilled placeholder value here — a real one, once, had
+# Helios's poller failing every 60 seconds for weeks on another repo (GDA
+# STAGES-AND-TYPES). CI fails on that literal token too
+# (.github/workflows/ci.yml, "Deploy manifest exists, parses, and has no
+# unfilled placeholder").
+production:
+  - server: helios
+    site_user: uig
+    domain: ig.gaiada.com
+    type: node
+    subdir: indies-gallery
+  - server: helios
+    site_user: uoei
+    domain: oei.gaiada.com
+    type: node
+    subdir: old-east-indies
