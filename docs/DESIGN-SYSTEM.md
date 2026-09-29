@@ -69,8 +69,9 @@ inside `<Suspense>`.
 | `Page` | `PageVM` | about, visit, FAQ, shipping, returns, policies — CMS pages from blocks |
 | `Cart` | `CartVM` | page and drawer share one VM |
 | `Checkout` | `CheckoutVM` | steps are data (COMMERCE.md §5), not separate surfaces |
-| `Order` | `OrderVM` | confirmation, and the account's order detail |
+| `Order` | `OrderVM` | confirmation, and the account's order detail; `status` is the buyer's derived `BuyerOrderStatus` (C6) — never the order's or a payment's raw state, so a dispute never reaches a buyer — and `conversion` (GA4/Meta's purchase value) is set only once, on a paid order's first confirmation |
 | `Account` | `AccountVM` | overview · orders · wishlist · want-lists · addresses · profile — and, for the gallery, **my offers** (with counter countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), consignments (status timeline). Where partners are the only accounts (the shop, D31): an approved partner's trade terms (D32), its quotes with a brief for a new one, and a reorder on each order — the only partner who signs in (D34) — and no shopper sign-up anywhere. Signed out: sign-in (one answer for every email), setting a password from an emailed link, and asking for one |
+| `WantList` | `WantListPageVM` | the one page every alert link leads to (C10 `wantList`, module `retention.emailWantList`, D39): saves what its URL names — a signed-in buyer's account at once where `retention.wantList` is on, else an email address to confirm by double opt-in — and reads the list an email's link opened, so its holder can confirm or stop it; resolved, never streamed, so it works without JavaScript |
 | `Form` | `FormVM` | enquiry · offer · consignment · appointment — one engine, config-driven fields; a post without JavaScript comes back to its page (C13 `FORM_RESULT`) |
 | `Pay` | `PayVM` | the landing page of a staff-sent payment link (accepted offer, hold, WhatsApp sale): the item, the terms, the expiry, the seller's identity, the routed methods |
 | `Quote` | `QuoteVM` | a business or institutional quote / proforma, or an approved retailer's order at its trade tier (D32: the tier and minimum it was issued at, each trade price beside its list price): lines, validity, PDF, accept → pay |
@@ -125,9 +126,16 @@ production.
 View models are **resolved and honest**:
 
 - relationships arrive populated, uploads flattened to the media contract (C9) —
-  no component ever handles `string | Media | null`;
+  no component ever handles `string | Media | null`; an image carries its own
+  `lang` when its alt or caption is not the page's locale (a Dutch caption, or
+  a fallback that borrowed one), so a screen reader switches voice (WCAG 3.1.2);
 - money arrives as `Money` (C5) and is formatted by `@engine/i18n`'s
-  `formatMoney(locale)` — a component never does arithmetic on a price;
+  `formatMoney(locale)` — a component never does arithmetic on a price, and
+  never its rounding or its digits either: `formatMoney` pins an amount's
+  fraction digits to `CURRENCY_EXPONENT` itself, never the runtime's ICU
+  default (which differs between Node and the browser and would fail
+  hydration if they disagreed), and a display **estimate** (`PriceVM.estimate`)
+  carries none at all — a whole major unit, shown after "≈";
 - imprecise facts arrive with their precision (`{ year: 1750, precision: 'circa' }`)
   and the component must render it (`c. 1750`) — never imply certainty the
   record lacks (a KOI principle, and on an antique a legal one);
@@ -137,6 +145,28 @@ View models are **resolved and honest**:
 If a component needs a field the VM lacks, the change goes VM first, fixture
 second, loader third — through ARC. Reaching past the fixture for a document is
 how the lanes quietly re-couple.
+
+**Two part-shapes carry the resolved/streamed split into the type system.** A
+`Streamed<T>` is a part read at request time and streamed into a `<Suspense>`
+boundary (ARCHITECTURE.md §9) — never produced inside a cached read — and it
+**never rejects**: a failed read resolves to its designed fallback (`null`, an
+empty list, `enquiryOnly` / `unverified` for a purchase panel), so no error
+boundary ever stands in for a panel; a fixture passes `Promise.resolve(…)`, or
+`pending()` for the reserved-height "Checking availability…" state. A
+`CachedPart<T>` is a view model with every `Streamed` property, at any depth,
+left out — what a loader's `'use cache'` + `cacheTag` read may return in
+phase one, before phase two adds the request-time parts. **What a visitor
+without JavaScript must see or act on is resolved, never streamed**: a form,
+its post's outcome (`FormResultVM`, C13 `FORM_RESULT`), and the list an
+email's link opened are all awaited at request time and rendered in the
+page's own body — never inside a nested `<Suspense>` a script would be needed
+to reveal.
+
+Each page's `SeoVM` also carries `contentLocale`: the locale its main content
+is really in, which may differ from the page's own when it falls back to
+another locale's text — the content itself then carries that `lang`, and the
+borrowed locale's URL leaves `alternates`, since it is no translation
+(ARCHITECTURE.md §11).
 
 **Fixtures cover states, not just the happy path.** Every surface has one fixture
 per state — loading/streaming, empty, partial (a band omitted because its data is
@@ -161,14 +191,17 @@ so the item page renders collation for a volume, not for a map.
 ## 4. The token contract (C3)
 
 Every app defines every token below. Components use roles, never raw values.
+**The contract is a floor, not a ceiling**: an app's own tokens are named
+`--app-…`, so they can never collide with one ARC adds later, and the shared
+primitives in `@engine/ui` read contract tokens only — never an app's.
 
 | Group | Tokens |
 | ----- | ------ |
-| Colour roles | `--c-ground` · `--c-surface` · `--c-surface-deep` · `--c-ink` · `--c-ink-soft` · `--c-rule` · `--c-accent` · `--c-accent-ink` · `--c-focus` · `--c-positive` · `--c-caution` · `--c-critical` |
+| Colour roles | `--c-ground` · `--c-surface` · `--c-surface-deep` · `--c-ink` · `--c-ink-soft` · `--c-rule` · `--c-accent` · `--c-accent-ink` · `--c-focus` · `--c-positive` · `--c-caution` · `--c-critical` · `--c-viewer` · `--c-viewer-ink` (the deep-zoom viewer's full-screen surface — the one dark rung, below) · `--c-scrim` (the backdrop behind a dialog, sheet or the viewer) |
 | Type families | `--font-display` · `--font-text` · `--font-ui` · `--font-numeric` |
 | Type steps | `--t-hero` · `--t-display` · `--t-title` · `--t-lede` · `--t-body` · `--t-small` · `--t-micro` (fluid where it matters) |
 | Measure & space | `--measure` (one reading measure) · `--space-1…9` · `--gutter` |
-| Shape | `--radius-control` · `--radius-card` · `--rule-hair` · `--rule-strong` |
+| Shape | `--radius-control` · `--radius-card` · `--rule-hair` · `--rule-strong` · `--focus-width` |
 | Motion | `--dur-in` · `--dur-out` · `--ease` · `--reveal-distance` |
 
 **Brand-overridable subset:** `--c-accent`, `--c-accent-ink`, `--c-ground`,
