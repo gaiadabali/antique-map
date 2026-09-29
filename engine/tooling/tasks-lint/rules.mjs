@@ -5,6 +5,8 @@
 import { expandNeedsToken } from './needs.mjs'
 import { findOwnsConflicts } from './owns.mjs'
 import { findUncoveredRequirements } from './requirements.mjs'
+import { isCut } from './status.mjs'
+import { checkNeedsCut, checkTaskStatus } from './status-rules.mjs'
 
 function finding(rule, message, line) {
   return { rule, message, line }
@@ -162,15 +164,15 @@ export function checkPhaseNeedsMatchTasks(model, tasks) {
   return findings
 }
 
-/** A task never shares a wave with a task it depends on (same phase, same wave literal). */
+/** A task never shares a wave with a task it depends on (same phase, same wave literal); ✂️ tasks run in no wave. */
 export function checkNoSameWaveDependency(model, tasks) {
   const findings = []
   for (const task of tasks) {
-    if (!task.wave) continue
+    if (!task.wave || isCut(task)) continue
     for (const id of resolvedTaskIds(task)) {
       const depTaskId = id.split('.').slice(0, 2).join('.')
       const dep = taskById(tasks, depTaskId)
-      if (dep && dep.phaseNumber === task.phaseNumber && dep.wave === task.wave) {
+      if (dep && !isCut(dep) && dep.phaseNumber === task.phaseNumber && dep.wave === task.wave) {
         findings.push(
           finding(
             'no-same-wave-dependency',
@@ -184,13 +186,13 @@ export function checkNoSameWaveDependency(model, tasks) {
   return findings
 }
 
-/** No two tasks in one (phase, wave) may have an overlapping Owns entry. */
+/** No two tasks in one (phase, wave) may have an overlapping Owns entry; a ✂️ task owns nothing. */
 export function checkOwnsOverlap(model) {
   const findings = []
   for (const phase of model.phases) {
     const byWave = new Map()
     for (const task of phase.tasks) {
-      if (!task.wave) continue
+      if (!task.wave || isCut(task)) continue
       if (!byWave.has(task.wave)) byWave.set(task.wave, [])
       byWave.get(task.wave).push(task)
     }
@@ -213,20 +215,21 @@ export function checkOwnsOverlap(model) {
   return findings
 }
 
-/** At most eight tasks and three waves per phase. */
+/** At most eight tasks and three waves per phase — a ✂️ task stops counting (TASKS.md rule 7). */
 export function checkPhaseLimits(model) {
   const findings = []
   for (const phase of model.phases) {
-    if (phase.tasks.length > 8) {
+    const counted = phase.tasks.filter((t) => !isCut(t))
+    if (counted.length > 8) {
       findings.push(
         finding(
           'phase-limits',
-          `phase ${phase.number} has ${phase.tasks.length} tasks, more than 8`,
+          `phase ${phase.number} has ${counted.length} tasks, more than 8`,
           phase.line,
         ),
       )
     }
-    const waves = new Set(phase.tasks.map((t) => t.wave).filter(Boolean))
+    const waves = new Set(counted.map((t) => t.wave).filter(Boolean))
     if (waves.size > 3) {
       findings.push(
         finding(
@@ -271,4 +274,6 @@ export const ALL_RULES = [
   checkOwnsOverlap,
   checkPhaseLimits,
   checkEndsInCheck,
+  checkTaskStatus,
+  checkNeedsCut,
 ]

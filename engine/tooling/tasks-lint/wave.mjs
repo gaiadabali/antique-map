@@ -2,19 +2,41 @@
 // specific wave is actually ready to dispatch — its phase's needs are ✅ and
 // every task in the wave has its dependencies ticked — not the whole
 // document's structural health (that's `lintFullFile`).
+//
+// The status suffixes (3.3.d, `status.mjs`) read as the board's rules say:
+// - 🔄 is in flight, not ✅: a task waiting on a 🔄 one is not ready, and a 🔄
+//   task in the wave is already dispatched, so it asks nothing more of it.
+// - ⛔ holds its own task: a ⛔ task in the wave is a blocker, named with its
+//   reason (the orchestrator "moves on to the next unblocked task", rule 6).
+// - ✂️ stops counting (rule 7): a cut task is not dispatched and does not keep
+//   its wave or its phase from being done; a task that still needs an unticked
+//   piece of a cut one is blocked until the need is re-pointed — it will never
+//   be ✅. (A subtask ticked before the cut was delivered and still counts.)
 import { expandNeedsToken } from './needs.mjs'
+import { isCut, statusEntry } from './status.mjs'
 
+/** A phase is done when every task that still counts is ticked (and at least one does). */
 function isPhaseDone(phase) {
-  return phase.tasks.length > 0 && phase.tasks.every((t) => t.checked)
+  const counted = phase.tasks.filter((t) => !isCut(t))
+  return counted.length > 0 && counted.every((t) => t.checked)
 }
 
-function idChecked(tasks, id) {
+function idState(tasks, id) {
   const [phaseNum, taskNum, letter] = id.split('.')
   const task = tasks.find((t) => t.id === `${phaseNum}.${taskNum}`)
-  if (!task) return { exists: false, checked: false }
-  if (!letter) return { exists: true, checked: task.checked }
+  if (!task) return { exists: false, checked: false, task: null }
+  if (!letter) return { exists: true, checked: task.checked, task }
   const subtask = task.subtasks.find((s) => s.id === id)
-  return { exists: Boolean(subtask), checked: Boolean(subtask?.checked) }
+  return { exists: Boolean(subtask), checked: Boolean(subtask?.checked), task }
+}
+
+/** Why an unticked need is unticked, from its task's suffixes. */
+function whyNotTicked(task) {
+  const blocked = statusEntry(task, 'blocked')
+  if (blocked) return ` (⛔ ${blocked.reason ?? blocked.raw})`
+  const doing = statusEntry(task, 'doing')
+  if (doing) return ' (🔄 in flight)'
+  return ''
 }
 
 /**
@@ -38,13 +60,17 @@ export function checkWaveReadiness(model, tasks, phaseNumber, waveLabel) {
     }
   }
 
-  const waveTasks = phase.tasks.filter((t) => t.wave === waveLabel)
+  const waveTasks = phase.tasks.filter((t) => t.wave === waveLabel && !isCut(t))
   if (waveTasks.length === 0) {
-    blockers.push(`phase ${phaseNumber} has no task in wave ${waveLabel}`)
+    blockers.push(`phase ${phaseNumber} has no task in wave ${waveLabel} that is not ✂️ cut`)
     return { ready: false, blockers }
   }
 
   for (const task of waveTasks) {
+    const blocked = statusEntry(task, 'blocked')
+    if (blocked && !task.checked) {
+      blockers.push(`${task.id} is ⛔ blocked: ${blocked.reason ?? blocked.raw}`)
+    }
     for (const token of task.needs) {
       const result = expandNeedsToken(token)
       if (result.error) continue // reported by lintFullFile, not this mode
@@ -56,9 +82,13 @@ export function checkWaveReadiness(model, tasks, phaseNumber, waveLabel) {
         continue
       }
       for (const id of result.ids ?? []) {
-        const { exists, checked } = idChecked(tasks, id)
-        if (!exists) continue // reported by lintFullFile
-        if (!checked) blockers.push(`${task.id} needs ${id}, not ticked yet`)
+        const { exists, checked, task: needed } = idState(tasks, id)
+        if (!exists || checked) continue // a missing id is reported by lintFullFile
+        if (isCut(needed)) {
+          blockers.push(`${task.id} needs ${id}, which is ✂️ cut: re-point the need`)
+        } else {
+          blockers.push(`${task.id} needs ${id}, not ticked yet${whyNotTicked(needed)}`)
+        }
       }
     }
   }
