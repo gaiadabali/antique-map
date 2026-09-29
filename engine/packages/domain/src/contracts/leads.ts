@@ -37,12 +37,21 @@ export type OfferResponse =
   | { readonly action: 'withdraw' }
 
 /**
- * Addressed by the opaque token in the counter email or the account. The answer sits at the top
- * level, so a revised bid is the request's own `proposal` — the one place a client amount is let
- * through — and nothing nested can borrow that exemption.
+ * How a caller proves an offer is theirs, as `OrderAccess` does for an order: the account's session
+ * and the offer's id — its `ref` (./storage.ts), which opens nothing without that session — so a
+ * signed-in page holds no token (C2 `AccountOfferVM`); or the token its emails carry (`./links`,
+ * purpose `offer`), for a buyer who is not signed in.
+ */
+export type OfferAccess =
+  | { readonly kind: 'account'; readonly offerId: string }
+  | { readonly kind: 'token'; readonly token: string }
+
+/**
+ * The answer sits at the top level, so a revised bid is the request's own `proposal` — the one
+ * place a client amount is let through — and nothing nested can borrow that exemption.
  */
 export type OfferRespondRequest = {
-  readonly offerToken: string
+  readonly access: OfferAccess
   readonly idempotencyKey: IdempotencyKey
 } & OfferResponse
 

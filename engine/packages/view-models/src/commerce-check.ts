@@ -11,8 +11,10 @@
  * an action it rules out. The account's pages are exactly C10's sections, and C1's FX buffer
  * is C5's to the character. A hidden field is never asked for, a tick box posts `'true'`, and
  * a request-time part never enters a cached read — nor a post's outcome a streamed one. A buyer
- * reads an order's status, never a payment's, and a page's poll never holds a lookup token. The
- * partner rules (D31–D36) are `retailer-check.ts`'s.
+ * reads an order's status, never a payment's. No intent holds a token but its page's own
+ * capability: the order page's poll no lookup token and no pay link's, the pay page's no lookup
+ * token, a want list's stop none, and a signed-in page's offers and viewings act by its session.
+ * The partner rules (D31–D36) are `retailer-check.ts`'s.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { CurrencyCode, MoneyConfig } from '@engine/config/schema'
@@ -141,6 +143,31 @@ type _NoTokenInAPagePoll = Accepts<
   PaymentPollVM,
   // @ts-expect-error — a lookup token stays in its cookie: a page's poll says `lookup-cookie`
   { attemptId: 'att'; scope: { kind: 'order'; access: { kind: 'lookup'; lookupToken: 'lk' } } }
+>
+type _NoPayLinkTokenInTheOrderPoll = Accepts<
+  PaymentPollVM,
+  // @ts-expect-error — a pay link's token is the pay page's: the order page polls by its own access
+  { attemptId: 'att'; scope: { kind: 'pay-link'; token: 'tok' } }
+>
+type PayPoll = NonNullable<NonNullable<PayVM['intents']>['poll']>
+type _PayPollsByItsLink = Accepts<
+  PayPoll,
+  { attemptId: 'att'; scope: { kind: 'pay-link'; token: 'tok' } }
+>
+type _NoLookupTokenInThePayPoll = Accepts<
+  PayPoll,
+  // @ts-expect-error — the pay page polls by its own link, never by an order's lookup token
+  { attemptId: 'att'; scope: { kind: 'order'; access: { kind: 'lookup'; lookupToken: 'lk' } } }
+>
+type _NoTokenInTheAccountsOffers = Accepts<
+  NonNullable<AccountOfferVM['respond']>,
+  // @ts-expect-error — a signed-in page answers an offer by its session, holding no token
+  { access: { kind: 'token'; token: 'tok' } }
+>
+type _NoTokenInTheAccountsViewings = Accepts<
+  NonNullable<AccountViewingVM['cancel']>,
+  // @ts-expect-error — nor cancels a viewing by one
+  { access: { kind: 'token'; token: 'tok' } }
 >
 type NoActions = { primary: null; secondary: readonly [] }
 type Fixed = { kind: 'fixed'; price: PriceVM }

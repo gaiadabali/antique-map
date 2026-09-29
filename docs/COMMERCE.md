@@ -338,7 +338,13 @@ as non-binding offers (D22); binding offers are v2.
   form (C10 `quote`) that staff issue as a proforma: PO number, bank transfer,
   `invoice` holds on every line until the due date, a PDF, and a "pay this
   proforma" page (the `Quote` surface); "payment must be received and confirmed
-  before an order is considered complete".
+  before an order is considered complete". The checkout's id is bound to the
+  cart cookie or the session, as every checkout operation's is (C13 `quotes`).
+  **Owner decision, open (senior-be F13):** a checkout's proforma takes
+  `invoice` holds on its unique lines with no payment, in one click, so an
+  anonymous visitor could hold a one-of-one map for a week again and again.
+  Either cap it per contact and per IP, or have staff approve a unique line
+  before its hold starts.
 - **Sold** items stay published: no price (optionally "price realised" for
   signed-in buyers), available alternatives, and "Tell me when another example
   arrives" — every such link, and every saved-search alert from browse or

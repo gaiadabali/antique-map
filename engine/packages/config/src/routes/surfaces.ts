@@ -75,7 +75,8 @@ export const SEGMENT_SURFACES = SURFACES.filter(isSegmentSurface)
 
 /**
  * The `Form` surface's kinds, each at its own localised segment, and the C6 operation each posts:
- * `enquiry.submit`, `offer.submit`, `consignment.submit`, `appointment.book`; `hold` —
+ * `enquiry.submit`, `offer.submit`, `consignment.submit`, `appointment.book` — or, given an
+ * `appointment` the session owns, `appointment.change` to reschedule it; `hold` —
  * `hold.request`, for an item; `quote` — `quote.request`, for an item (a configured `variant` of
  * it) or as a brief, from a guest where `accounts.retailers` is off and only from a signed-in
  * partner where it is on (D36). A proforma is the checkout's, not a form (C6 `quote.proforma`).

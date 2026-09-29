@@ -132,7 +132,7 @@ export const accountOffers: AccountVM = signedIn({
       counter: money(450000, 'USD'),
       expiresAt: '2026-09-28T10:00:00+08:00',
       payHref: null,
-      respond: { offerToken: 'off_fixture_1' },
+      respond: { access: { kind: 'account', offerId: '6b1f0c9e-2d4a-4c8b-9e1f-7a2b3c4d5e6f' } },
     },
   ],
 })
@@ -158,9 +158,12 @@ export const accountViewings: AccountVM = signedIn({
       purpose: 'viewing',
       status: 'confirmed',
       pullList: [ISLE, STRAITS],
-      reschedule: { href: '/book-a-visit?reschedule=apt_fixture_1' },
-      cancel: { appointmentToken: 'apt_fixture_1' },
-      ics: '/api/x/commerce/appointments/ics?token=apt_fixture_1',
+      // By session and the viewing's id: a signed-in page holds no token, not even in a URL.
+      reschedule: { href: '/book-a-visit?appointment=0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a' },
+      cancel: {
+        access: { kind: 'account', appointmentId: '0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a' },
+      },
+      ics: '/api/x/commerce/appointments/ics?appointment=0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a',
     },
   ],
   book: { href: '/book-a-visit' },

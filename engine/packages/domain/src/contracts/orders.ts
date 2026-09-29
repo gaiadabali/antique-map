@@ -113,8 +113,9 @@ export type OrderLineView = OrderedLineView & { readonly returnable: boolean }
  * - `abandoned` → `not-paid`: the money never came, and the items went back on sale;
  * - `paid` → `paid`: nothing has left yet;
  * - `fulfilling` → `shipped` when any shipment is `ShipmentOnItsWay` (a delivery exception and a
- *   return to sender included: it did leave); else `ready-for-pickup` when a pickup is ready; else
- *   `paid` (labels printed, or a pickup collected while another line waits);
+ *   return to sender included: it did leave); else `ready-for-pickup` when a shipment's status is
+ *   `ready-for-pickup` itself — of `ShipmentAtPickup`, only that: a `collected` one has gone to its
+ *   buyer; else `paid` (labels printed, or a pickup collected while another line waits);
  * - `completed` → `completed`.
  * An order with nothing to ship — a digital gift card — takes the same rows: `paid` until its last
  * card is sent, when C8 completes it. A dispute, won or lost, changes nothing a buyer reads (the

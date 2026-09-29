@@ -135,8 +135,12 @@ export const ATTEMPT_WRITE_ONCE_COLUMNS = ['provider_ref'] as const
 //
 // Every record a derived link names — a want list, a subscriber, a retailer's customer record, an
 // order, a pay link, a quote, an offer, a hold request, an appointment, a return, an enquiry, a
-// consignment — has `ref uuid NOT NULL UNIQUE` (random, never sequential) and `token_version int
-// NOT NULL DEFAULT 1`, and no column holding a token or a hash of one. The customer record alone
+// consignment — has `ref uuid NOT NULL UNIQUE` (random, never sequential; Postgres prints it in
+// the lowercase form a token carries) and `token_version int NOT NULL DEFAULT 1 CHECK
+// (token_version > 0)`, and no column holding a token or a hash of one. Each whose purpose has a
+// window (C6 `LINK_WINDOW_DAYS`: all but want lists and subscribers) also has `links_anchor_at
+// timestamptz NOT NULL`, moved only by the domain as it issues a link, after bumping the version
+// if the window had already run out (C6 `links`, "a lapse is final"). The customer record alone
 // also keeps a pending password link's nonce hash and expiry (C13 `PASSWORD_LINK`), cleared on use.
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────

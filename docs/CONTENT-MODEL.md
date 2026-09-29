@@ -190,6 +190,12 @@ orientation · dominant colour · room · mood · occasion · recipient ·
 | **invoices** | proforma / final, number per seller, customer (institution), PO number, lines, currency, bank details **on the document only**, due date, status, PDF | wire details are never on a public page (fraud) |
 | **discounts** · **gift-cards** | COMMERCE.md §10 | gift-card ledger is append-only |
 
+Every record a derived link names (C6 `links`) — an order, a pay link, a quote
+or proforma, an offer, a hold request, an appointment, a return, an enquiry, a
+consignment — has a `ref` (a random UUID), a `token_version` and a
+`links_anchor_at`: the latest instant its link was issued, from which its window
+runs (C6 `LINK_WINDOW_DAYS`). No column holds a token or a hash of one.
+
 Engine tables (schema `engine`, created by the same migrations — written by the
 SCH lead only — never edited by hand): `payment_events` (unique `provider,
 seller_id, provider_event_id` — secrets, and so webhook routes, are per
@@ -215,9 +221,10 @@ rollups), `sister_sync_log`.
   normalised), name, `type` (`collector` · `institution` · `trade` · `retail`),
   organisation, tax id, phone/WhatsApp, locale, preferred market, price list
   (trade), consents (per purpose, with timestamp and policy version),
-  `legacyId`, `claimedAt` (migrated accounts), staff notes; a `ref` and a
-  `token_version` for the links that name it (an application's status link,
-  C6 `links`), and a pending password link's nonce **hash** and expiry — the
+  `legacyId`, `claimedAt` (migrated accounts), staff notes; a `ref`, a
+  `token_version` and a `links_anchor_at` for the links that name it (an
+  application's status link, whose window runs from its latest email, C6
+  `links`), and a pending password link's nonce **hash** and expiry — the
   one link kept at all, single-use, because it sets a credential (C13
   `PASSWORD_LINK`).
 - **addresses** — per customer, shaped per country (Indonesia down to

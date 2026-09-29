@@ -432,9 +432,16 @@ stored** (C6 `links`): an HMAC of the record's public reference and its
 `token_version` under a key kept with the other secrets, so a copy of the
 database opens no link, and NTF derives each email's link as it sends it — an
 outbox row never carries a token. Bumping the version revokes every link a
-record has. The one exception is a set-password link: it sets a credential, so
-it is a single-use random nonce, kept only as a hash until used (C13
-`PASSWORD_LINK`). **The want-lists area** (C10
+record has. A link whose page shows personal data works for a window after it
+was last issued (C6 `LINK_WINDOW_DAYS`), and a lapse is final: moving a lapsed
+record's window bumps its version first. The keys are one ring per brand and per
+environment, never shared, and a leaked one is revoked at once (DEPLOYMENT.md
+§8). The one exception is a set-password link: it sets a credential, so it is a
+single-use random nonce, kept only as a hash until used (C13 `PASSWORD_LINK`).
+A signed-in page acts by its session: the account answers its offers and
+viewings by the session and the record's id (C6 `OfferAccess`,
+`AppointmentAccess`), and holds no token but a payment link's or a quote's own
+address. **The want-lists area** (C10
 `wantList`, C13's `want-lists` routes) reads this exactly like an order: its
 confirmation and every alert carry the list's token, which the link stores in
 `WANT_LIST_ACCESS`'s cookie before it answers 303 to the want-list page, so the
@@ -489,10 +496,14 @@ Security headers from the app (tested); the **CSP is built per request in the
 proxy from brand config** — its analytics and payment-provider origins are
 runtime values, because `NEXT_PUBLIC_*` variables and a build-time CSP would bake
 one brand's (or no brand's) settings into a shared build — which is why the
-proxy sets it (C13 lists it among the proxy's headers). Hashes or
-`strict-dynamic` rather than nonces, **provided the Cache Components spike (TASKS.md
-4.1.e) proves they hold** with Next's per-request inline scripts; if they do not,
-the spike adopts per-request nonces and records it. **`img-src` allows the configured sister's media
+proxy sets it (C13 lists it among the proxy's headers). **One owner builds it:
+41.1.a**, whose builder the proxy calls; 40.2 only declares the analytics origins
+its tags need, in brand config. Hashes or `strict-dynamic` rather than nonces,
+**provided the Cache Components spike (TASKS.md 4.1.e) proves they hold** with
+Next's per-request inline scripts; if they do not, the spike adopts per-request
+nonces and records it. The proxy copies the answer's CSP onto the request too
+(C13 `PROXY_REQUEST_HEADERS`), because Next takes a nonce from the request's CSP
+header; with hashes, that copy is inert. **`img-src` allows the configured sister's media
 host too** (`brand.sisters[].baseUrl`'s origin): a sister link renders the other
 brand's derivative images straight from where they are, never copied into this
 brand's bucket or re-derived (BRANDS.md §5, C12 `SnapshotImage`), so a build

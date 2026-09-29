@@ -28,13 +28,7 @@
  * (`permanentRedirect()`) — and temporary on a session page (`redirect()`: a checkout with
  * no bag goes to the bag; an order without access goes to the order lookup).
  */
-import type {
-  AccountSection,
-  FormKind,
-  HrefParams,
-  ListingQuery,
-  Surface,
-} from '@engine/config/routes'
+import type { AccountSection, HrefParams, ListingQuery, Surface } from '@engine/config/routes'
 import type { LocaleCode } from '@engine/config/schema'
 
 import type { ShellVM } from './shell'
@@ -104,10 +98,9 @@ export type Loaders = {
   /**
    * `hold` and `quote` for an item they cannot serve answer `null`. Where `accounts.retailers` is
    * on, `quote` answers `redirectTo` the Partnership page for anyone but a signed-in partner (D36).
+   * An `appointment` the session does not own is the plain booking form: it reveals nothing.
    */
-  form: (
-    p: At & { kind: FormKind; item?: number; variant?: number; topic?: string },
-  ) => Promise<Found<FormVM>>
+  form: (p: At & HrefParams['form']) => Promise<Found<FormVM>>
   pay: (p: At & { token: string }) => Promise<Found<PayVM>>
   quote: (p: At & { token: string }) => Promise<Found<QuoteVM>>
   orderLookup: (p: At) => Promise<OrderLookupVM>

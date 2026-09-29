@@ -58,9 +58,15 @@ export type PaymentOptionView = {
  * `rate-limited`, its `retryAfterSeconds` the lease's remainder, so a second click never voids a
  * live attempt, and the page asks again (without JavaScript, its result page offers to). Past the
  * lease with no session stored, it was a crash between 2 and 3: the retry voids that attempt and
- * creates another — a provider reference is never used twice. Choosing another method keeps the
- * bag and cancels the previous session. A method whose floor (C7 `minSessionTtl`) no longer fits
- * before the lock's ceiling or the hold's end answers `method-unavailable` (`window-too-short`).
+ * creates another — a provider reference is never used twice. Step 3's store and a retry's void
+ * are each a compare-and-set under the attempt's row lock: the store writes only if the attempt
+ * is not voided, the void only if no session is stored, so a store that lands just past the lease
+ * and the retry that voids cannot both win. A store that finds its attempt voided cancels its
+ * provider session (C7 `cancel()`, where the gateway has one); money that reaches a voided attempt
+ * anyway is C8's late payment (`payment.lateSettled`), never lost. Choosing another method keeps
+ * the bag and cancels the previous session. A method whose floor (C7 `minSessionTtl`) no longer
+ * fits before the lock's ceiling or the hold's end answers `method-unavailable`
+ * (`window-too-short`).
  */
 export type PaymentStartRequest = {
   readonly checkoutId: string

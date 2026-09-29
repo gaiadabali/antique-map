@@ -270,8 +270,10 @@ networks, and ends with a "what happens next" timeline; the framing quote has it
 own short flow; institutions can turn a **cart of several items into a proforma**
 at the checkout's payment step ("Proforma instead"), or ask for one on a single
 item — even one on request — through the quote form (PO field, PDF, and a "pay
-this proforma" page — the `Quote` surface); "Reserve" has its own short form, a
-request for a staff hold.
+this proforma" page — the `Quote` surface). Staff answer the form's request with
+the proforma within the stated reply time, so "Proforma for institutions"
+promises that, never a PDF at once. "Reserve" has its own short form, a request
+for a staff hold.
 
 ## 10. Accounts and retention
 

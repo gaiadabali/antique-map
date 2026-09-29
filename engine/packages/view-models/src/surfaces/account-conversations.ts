@@ -5,10 +5,17 @@
  * the counter's true countdown (`purchase.offers`), holds (`purchase.holds`), price requests
  * (`purchase.requestPrice`), viewings to reschedule, cancel or add to a calendar
  * (`services.appointments`) and consignments with their status timeline
- * (`services.consignment`). Statuses are C6/C8's own; the buyer's answers go through C6
- * with the opaque token each conversation carries, never with a price the page showed.
+ * (`services.consignment`). Statuses are C6/C8's own; the buyer's answers go through C6 by the
+ * account's session and each record's id, never with a price the page showed — and never with a
+ * token: the page holds none, in an intent or a URL, but a payment link's own address (`payHref`,
+ * C13); the emailed links carry theirs.
  */
-import type { AppointmentPurpose, ConsignmentStatus } from '@engine/domain/api'
+import type {
+  AppointmentAccess,
+  AppointmentPurpose,
+  ConsignmentStatus,
+  OfferAccess,
+} from '@engine/domain/api'
 import type { OfferStatus } from '@engine/domain/machines/offer'
 
 import type { ImageVM, IsoDateTime, Money, PriceVM } from '../common'
@@ -24,8 +31,11 @@ export type AccountOfferVM = {
   expiresAt: IsoDateTime | null
   /** Accepted: the private payment link, which expires before the offer hold does. */
   payHref: string | null
-  /** Submitted or countered: `offer.respond` — accept, revise or withdraw. */
-  respond: { offerToken: string } | null
+  /**
+   * Submitted or countered: `offer.respond` — accept, revise or withdraw — by the session and the
+   * offer's id. The component adds the answer and an idempotency key.
+   */
+  respond: { access: Extract<OfferAccess, { kind: 'account' }> } | null
 }
 
 export type AccountHoldVM = {
@@ -53,9 +63,11 @@ export type AccountViewingVM = {
   status: 'requested' | 'confirmed' | 'cancelled' | 'completed'
   /** The pieces brought out of the drawer in advance, from the wishlist. */
   pullList: readonly ItemRefVM[]
+  /** The `appointment` form for this viewing (C10 `form` with `appointment`), read by session. */
   reschedule: { href: string } | null
-  /** `appointment.change` with `{ action: 'cancel' }`. */
-  cancel: { appointmentToken: string } | null
+  /** `appointment.change` with `{ action: 'cancel' }`, by the session and the viewing's id. */
+  cancel: { access: Extract<AppointmentAccess, { kind: 'account' }> } | null
+  /** Its `.ics`, served by session (C6 `AppointmentView.icsUrl`): the URL names it, no token. */
   ics: string | null
 }
 

@@ -138,9 +138,17 @@ export const ROOT_REWRITES = [
  * The request headers the proxy sets on every request it rewrites — overwriting whatever a
  * client sent — so a page that gets no params (`not-found.tsx`, `error.tsx`) still knows the
  * public path asked for and its locale: the not-found loader tells a removed item (Gone) from
- * a legacy slug to search for (C2 `Loaders.notFound`).
+ * a legacy slug to search for (C2 `Loaders.notFound`). And the answer's own
+ * `Content-Security-Policy`, copied onto the request: Next takes a nonce from the request's CSP
+ * header, so if the CSP uses nonces (the 4.1.e spike decides, and confirms this against the
+ * installed docs) Next's scripts carry the one the answer allows; with hashes the copy is inert.
+ * Either way no client's own header survives.
  */
-export const PROXY_REQUEST_HEADERS = { publicPath: 'x-public-path', locale: 'x-locale' } as const
+export const PROXY_REQUEST_HEADERS = {
+  publicPath: 'x-public-path',
+  locale: 'x-locale',
+  contentSecurityPolicy: 'content-security-policy',
+} as const
 
 /**
  * The literal each app's `src/proxy.ts` declares — Next reads `config.matcher` statically,
@@ -153,8 +161,9 @@ export const PROXY_REQUEST_HEADERS = { publicPath: 'x-public-path', locale: 'x-l
  * assets reaches the proxy: pages, `/admin` (English by default), legacy prefixes (brand
  * config, so knowable only at runtime) and `ROOT_REWRITES`. The proxy only rewrites and sets
  * headers — `PROXY_REQUEST_HEADERS` on the request; on the answer, C10's `sensitive` headers and
- * the `Content-Security-Policy` it builds per request from the brand's config (its analytics,
- * payment and sister origins, ARCHITECTURE.md §13), since one build serves several brands and a
- * CSP in `next.config` would bake one in; it never touches the database.
+ * the `Content-Security-Policy`, built per request from the brand's config (its analytics,
+ * payment and sister origins, ARCHITECTURE.md §13) by the one CSP builder, 41.1.a's, since one
+ * build serves several brands and a CSP in `next.config` would bake one in; it never touches the
+ * database.
  */
 export const PROXY_MATCHER = ['/((?!api/|_next/|brand-assets/).*)'] as const

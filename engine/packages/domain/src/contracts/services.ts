@@ -82,9 +82,19 @@ export type AppointmentBookRequest = {
   readonly idempotencyKey: IdempotencyKey
 }
 
-/** Reschedule or cancel, by the opaque token in the confirmation (email, WhatsApp, account). */
+/**
+ * How a caller proves an appointment is theirs, as `OfferAccess` does: the account's session and
+ * the appointment's id — its `ref` (./storage.ts), which opens nothing without that session — so
+ * a signed-in page holds no token (C2 `AccountViewingVM`); or the token its confirmation carries
+ * (email, WhatsApp; `./links`, purpose `appointment`), for a booker who is not signed in.
+ */
+export type AppointmentAccess =
+  | { readonly kind: 'account'; readonly appointmentId: string }
+  | { readonly kind: 'token'; readonly token: string }
+
+/** Reschedule or cancel. */
 export type AppointmentChangeRequest = {
-  readonly appointmentToken: string
+  readonly access: AppointmentAccess
   readonly change:
     | { readonly action: 'reschedule'; readonly slotStart: IsoInstant }
     | { readonly action: 'cancel' }
@@ -96,8 +106,12 @@ export type AppointmentView = {
   readonly locationId: string
   readonly slotStart: IsoInstant
   readonly timeZone: string
-  /** The `.ics` the confirmation carries. */
-  readonly icsUrl: string
+  /**
+   * The `.ics` for a signed-in booker: C13's `appointments` `ics`, read by the session, its URL
+   * naming the appointment and never a token. `null` for a guest, whose confirmation email
+   * attaches its `.ics` instead: no calendar URL ever carries a token.
+   */
+  readonly icsUrl: string | null
 }
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────

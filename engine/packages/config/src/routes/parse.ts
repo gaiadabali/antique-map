@@ -117,13 +117,16 @@ export function parsePublicPath(
     const all = reader(search)
     const [item, variant] = [positive(all('item')[0]), positive(all('variant')[0])]
     const [topic] = all('topic')
+    const appointment = uuid(all('appointment')[0])
     const params: HrefParams['form'] = {
       kind,
       ...(item ? { item } : {}),
       ...(variant ? { variant } : {}),
       ...(topic ? { topic } : {}),
+      ...(appointment ? { appointment } : {}),
     }
-    const q = query({ item: params.item, variant: params.variant, topic })
+    // The canonical query, in href()'s order: whatever was dropped above is dropped here too.
+    const q = query({ ...params, kind: undefined })
     return match('form', locale, params, `/${kind}${q}`)
   }
   const named = namedFacets(routes, locale, parts)
@@ -257,6 +260,12 @@ function positive(value: string | undefined): number | null {
   const n = Number(value)
   return value !== undefined && Number.isSafeInteger(n) && n > 0 ? n : null
 }
+
+/** A record's `ref` from a query value, as the lowercase UUID it is written as, else null. */
+function uuid(value: string | undefined): string | null {
+  return value !== undefined && UUID.test(value) ? value : null
+}
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 const isLocaleCode = (value: string): value is LocaleCode =>
   (LOCALE_CODES as readonly string[]).includes(value)

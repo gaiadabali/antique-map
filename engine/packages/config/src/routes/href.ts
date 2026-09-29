@@ -55,8 +55,12 @@ export type HrefParams = {
   /** The number alone opens nothing: the session or the order-access cookie does (C13). */
   order: { number: string }
   account: { section?: AccountSection }
-  /** `variant`: the configured form of `item` a quote asks about. */
-  form: { kind: FormKind; item?: number; variant?: number; topic?: string }
+  /**
+   * `variant`: the configured form of `item` a quote asks about. `appointment`: the id (C6 `ref`)
+   * of the signed-in booker's own viewing that an `appointment` form reschedules — read by the
+   * session, never a token.
+   */
+  form: { kind: FormKind; item?: number; variant?: number; topic?: string; appointment?: string }
   pay: { token: string }
   quote: { token: string }
   orderLookup: NoParams
@@ -150,7 +154,8 @@ function partsOf(context: Context, surface: LinkSurface): [string[], string] {
     case 'form': {
       const kind = p.kind ?? 'enquiry'
       const segment = present(segments.forms[kind], `form ${kind}`, context.locale)
-      return [[segment], searchOf({ item: p.item, variant: p.variant, topic: p.topic })]
+      const { item, variant, topic, appointment } = p
+      return [[segment], searchOf({ item, variant, topic, appointment })]
     }
     case 'item':
       return [[segments.item, p.slug ? `${p.publicId}-${p.slug}` : `${p.publicId}`], '']

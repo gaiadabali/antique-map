@@ -72,14 +72,16 @@ export type OrderDeliveryVM =
   | { kind: 'none' }
 
 /**
- * The payment poll a page posts (C6 `payment.status`): scoped to the checkout it came from, or to
- * the order by the session or this browser's order-access cookie — never by a lookupToken, which
- * stays in its cookie and so never enters the page's HTML (C6 `OrderAccess`).
+ * The payment poll the order page posts (C6 `payment.status`): scoped to the checkout it came
+ * from, or to the order by the session or this browser's order-access cookie — never by a
+ * lookupToken, which stays in its cookie and so never enters the page's HTML (C6 `OrderAccess`),
+ * and never by a pay link's token, which is the pay page's own: the order page opens by the
+ * session or that cookie (C13 `ORDER_ACCESS`), so it needs neither.
  */
 export type PaymentPollVM = {
   attemptId: string
   scope:
-    | Exclude<PaymentStatusRequest['scope'], { kind: 'order' }>
+    | Extract<PaymentStatusRequest['scope'], { kind: 'checkout' }>
     | { kind: 'order'; access: Exclude<OrderAccess, { kind: 'lookup' }> }
 }
 

@@ -1,5 +1,5 @@
 /**
- * @contract C2 — fixtures `form` (enquiry, offer, consignment, appointment, hold, quote, invalid, refused) · owner: ARC
+ * @contract C2 — fixtures `form` (enquiry, offer, consignment, appointment, reschedule, hold, quote, invalid, refused) · owner: ARC
  *
  * One engine, four kinds: fields are data named by their C6 request paths. The offer states
  * that it is non-binding and bids in the ship-to market's currency; the consignment takes
@@ -78,6 +78,19 @@ export const formConsignment: FormVM = {
   seo: { ...seo('Sell to us', '/sell-to-us'), noindex: false },
 }
 
+const viewing = {
+  locations: [{ id: 'showroom', name: SHOWROOM.name, timeZone: 'Asia/Makassar' }],
+  // Resolved with the page, never streamed: they are the form's own choices.
+  slots: {
+    timeZone: 'Asia/Makassar',
+    slots: [
+      { start: '2026-10-03T03:00:00.000Z', end: '2026-10-03T04:00:00.000Z' },
+      { start: '2026-10-03T06:00:00.000Z', end: '2026-10-03T07:00:00.000Z' },
+    ],
+  },
+  pullList: [ISLE],
+} satisfies FormVM['appointment']
+
 export const formAppointment: FormVM = {
   ...formEnquiry,
   kind: 'appointment',
@@ -86,19 +99,28 @@ export const formAppointment: FormVM = {
   fields: [...contact('/book-a-visit'), entry('locationId', 'radio'), entry('slotStart', 'radio')],
   action: '/api/x/commerce/appointments',
   reply: null,
-  appointment: {
-    locations: [{ id: 'showroom', name: SHOWROOM.name, timeZone: 'Asia/Makassar' }],
-    // Resolved with the page, never streamed: they are the form's own choices.
-    slots: {
-      timeZone: 'Asia/Makassar',
-      slots: [
-        { start: '2026-10-03T03:00:00.000Z', end: '2026-10-03T04:00:00.000Z' },
-        { start: '2026-10-03T06:00:00.000Z', end: '2026-10-03T07:00:00.000Z' },
-      ],
-    },
-    pullList: [ISLE],
-  },
+  appointment: viewing,
   seo: { ...seo('Book a viewing', '/book-a-visit'), noindex: false },
+}
+
+/**
+ * A signed-in booker's own viewing, rescheduled (C10 `form` with `appointment`): the form posts
+ * `appointment.change` by the session and the viewing's id — no token in the page or its URL.
+ */
+export const formReschedule: FormVM = {
+  ...formAppointment,
+  title: 'Move your viewing',
+  fields: [
+    hidden('access.kind', 'account'),
+    hidden('access.appointmentId', '0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a'),
+    hidden('change.action', 'reschedule'),
+    entry('change.slotStart', 'radio'),
+    hidden('returnTo', '/book-a-visit?appointment=0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a'),
+  ],
+  action: '/api/x/commerce/appointments/change',
+  consents: [],
+  appointment: { ...viewing, pullList: [] },
+  seo: { ...seo('Move your viewing', '/book-a-visit'), noindex: true },
 }
 
 export const formInvalid: FormVM = {

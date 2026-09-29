@@ -15,8 +15,8 @@ import type { SubRoute } from './types'
  * - The body is `application/x-www-form-urlencoded` in UTF-8, at most `maxBodyBytes`; or
  *   `multipart/form-data` where a form takes files: `maxBodyBytes` of fields, plus the form's
  *   `uploads.maxFiles` × `maxMegabytes` of files (C2), each streamed to the upload store as it
- *   arrives, checked there, and replaced by its C6 `UploadId`. A larger body, or more than
- *   `maxFields` fields, is refused unread (413): no page renders such a form.
+ *   arrives, checked there, and replaced by its C6 `UploadId`. A larger body is refused unread,
+ *   and more than `maxFields` fields before any is decoded (413): no page renders such a form.
  * - A field's name is its request path. Dots nest and a numeric segment is an array index
  *   (`lines.0.productId`). An array element whose every posted field is empty — a photo slot left
  *   blank — is dropped, and the rest keep their order; a gap among the indices left is `format` on
@@ -44,7 +44,7 @@ import type { SubRoute } from './types'
 export const FORM_DECODING = {
   /** A larger urlencoded body, or a multipart post's fields past it, is refused unread (413). */
   maxBodyBytes: 64 * 1024,
-  /** More fields than this is refused unread (413). */
+  /** More fields than this is refused before any is decoded (413). */
   maxFields: 200,
   /** A money field's one separator: the decimal point, whatever the page's locale writes. */
   decimalSeparator: '.',

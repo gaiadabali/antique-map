@@ -111,6 +111,7 @@ const cases: { [S in LinkSurface]?: HrefParams[S][] } = {
     { kind: 'hold', item: 1001 },
     { kind: 'quote', item: 1001 },
     { kind: 'quote', item: 7001, variant: 70011 },
+    { kind: 'appointment', appointment: '0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a' },
   ],
   pay: [{ token: 'tok_abc' }],
   quote: [{ token: 'q_1' }],
@@ -159,6 +160,19 @@ describe('C10 canonical forms and rewrites', () => {
     expect(href('form', { kind: 'quote', item: 7001, variant: 70011 }, 'en')).toBe(
       '/request-a-quote?item=7001&variant=70011',
     )
+    // The account's reschedule link names the viewing by its id, never by a token (2.4.f).
+    const appointment = '0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a'
+    expect(href('form', { kind: 'appointment', appointment }, 'en')).toBe(
+      `/book-a-visit?appointment=${appointment}`,
+    )
+  })
+  it('keeps an appointment only as the lowercase UUID it is written as', () => {
+    const upper = new URLSearchParams('appointment=0D9C8B7A-6F5E-4D3C-8B2A-1F0E9D8C7B6A')
+    expect(parsePublicPath(config, '/book-a-visit', upper)).toMatchObject({
+      surface: 'form',
+      params: { kind: 'appointment' },
+      internal: '/en/form/appointment',
+    })
   })
   it('rewrites to internal routes carrying the canonical query', () => {
     const p = parsePublicPath(
