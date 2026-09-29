@@ -19,7 +19,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
-| **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
+| **3** Config spine and Payload boot | Foundation | 2 | 🔄 in progress | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
@@ -157,6 +157,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 3·W1 | 3.1 Platform spine | senior-be (opus) | `antique-map-p3-plt` / `feat/p3-plt` (PORT 4166, `p3_plt`) | 2026-09-29 | reviewer: senior-fe (proxy/i18n) |
 
 ## Decisions for the owner
 
@@ -387,7 +388,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 **Done when:** each brand's config loads and a broken one is refused with the field named; `bootCheck()` refuses a missing secret; `/admin` logs in against two different databases whose schema hashes are equal.
 **Waves:** W1 — 3.1 · W2 — 3.2
 
-- [ ] **3.1 Platform spine: config loader, i18n, proxy helpers, brand folders** · needs: 1.2.a, 1.2.i
+- [ ] **3.1 Platform spine: config loader, i18n, proxy helpers, brand folders** · needs: 1.2.a, 1.2.i — 🔄 3·W1
   - **Lane** PLT (+ BRD for brand folders) · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/config/src/{loader,validate,boot-check}/**`, `engine/packages/i18n/**`, `engine/packages/http/src/proxy/**`, `indies-gallery/site/**`, `old-east-indies/site/**`, `test/site/**`
   - **Read** BRANDS.md §3–4, ARCHITECTURE.md §2, §11, COMPLIANCE.md §1
@@ -2363,6 +2364,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-29 — **phase 3 opened** — 3·W1 dispatched: 3.1 (senior-be, lane PLT). 3.2 (SCH) follows in W2 once 3.1 merges. Owner items for 3.1 run on defaults: draft sellers (D1–D3), English unprefixed (D18). Phase 7 could also open (needs 2) but waits on OA9, the export of the old catalogue.
 - 2026-09-29 — ✅ **phase 2** — local stack and db scripts (2.1), every gate failing on a planted violation (2.2, with 2.2.k/l), CI green on `main` and the release workflow proven on `production` (2.3), contracts v1.1 signed off (2.4). Open for the owner: 34.2.f (an anonymous proforma's hold on a unique line — ARC recommends staff approval) and the want-list suppression list after a stop (counsel, 2.4 review be F9). Follow-ups: an emailed counter-offer or viewing link has no landing page for a guest who is not signed in (ARC — a one-hop link like `ORDER_ACCESS`, before 21.1 and 28.2 dispatch); the Dependabot alerts under `@lhci/cli` (revisit at phase 4, when Lighthouse runs against real apps). Phase 3 can open.
 - 2026-09-29 — ✅ 2.4 (e2e10ae) — contracts v1.1: the senior-fe should-fix rows 3–17 and D39's email want lists (2.4.a/b), the docs synced (2.4.c), and two sign-off fix passes (2.4.e/f): every emailed link derived by HMAC and never stored (`links.ts`, a pinned encoding with test vectors, a key ring with retirement and revocation, a window per purpose, lapses final), the password link a single-use nonce; `idempotency_keys` keyed by `(operation, key)` and kept 7 days; `minSessionTtl` and a 15-second attempt lease; a total `BuyerOrderStatus`; `FORM_DECODING` settled; hold and quote forms; no token in any page (type tests); one CSP owner (41.1.a). The task-text edits (2.4c/2.4e files, 100 pairs and 3 new subtasks: 18.2.g, 21.1.f, 34.2.f) applied here.
 - 2026-09-29 — 2.2.l merged (follow-up to 2.2, from the 2.4.d senior-be review) — a committed test walks every C2 fixture and its streamed parts: 195 distinct Money values are safe integers of minor units and every converted estimate among 80 PriceSets is a whole major unit; planted €959.50, float, negative, unsafe and unknown-currency values fail with their path. ESLint boundary 3 ignores `view-models/test/**` only. C5 has no rule that a sole-currency price is IDR, so none is asserted.
