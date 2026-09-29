@@ -25,7 +25,14 @@ jobs:
     # PGHOST switches `psql.mjs`/`schema-hash/dump.mjs` to the direct
     # transport (engine/tooling/db/transport.mjs) instead of `docker compose
     # exec` — there is no compose project here for `exec` to reach.
+    #
+    # LOCAL_PRODUCTION_BUILD=1: this job builds both apps and serves the
+    # production builds on loopback ports for Playwright, which bootCheck()
+    # judges local only with it (DEPLOYMENT.md §8, TASKS.md 3.5.g) — without
+    # it they are judged production and refuse to start on sandbox keys and
+    # draft configs. Only CI and a worktree's .env.local set it; never a host.
     env:
+      LOCAL_PRODUCTION_BUILD: '1'
       PGHOST: 127.0.0.1
       PGPORT: '5432'
       POSTGRES_USER: postgres
@@ -97,12 +104,10 @@ jobs:
       # CMS_TEST_POSTGRES_URL names (the maintenance database; the role must
       # be able to CREATE DATABASE), migrates it and drops it WITH (FORCE).
       # Without the variable they skip, so this step is what runs them.
-      # --passWithNoTests: on a branch with no such file yet the filter matches
-      # nothing, which vitest otherwise fails; once one exists it runs.
       - name: CMS real-database tests
         env:
           CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
-        run: pnpm exec vitest run --project packages --passWithNoTests .db.test
+        run: pnpm exec vitest run --project packages .db.test
 
       - name: Build both apps (no database env — like the deploy artifact)
         if: steps.apps.outputs.exists == 'true'
