@@ -19,7 +19,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
-| **3** Config spine and Payload boot | Foundation | 2 | 🔄 in progress | 2/4 | 10/22 | 0 | `█████░░░░░`  45% |
+| **3** Config spine and Payload boot | Foundation | 2 | 🔄 in progress | 2/5 | 15/27 | 0 | `██████░░░░`  56% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **9/162** | **56/729** | **47** | `█░░░░░░░░░`   8% |
+| **All** | 44 phases | | | **9/163** | **61/734** | **47** | `█░░░░░░░░░`   8% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -158,6 +158,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 3·W2 | 3.2 Payload bootstrap | senior-be (opus) | `antique-map-p3-sch` / `feat/p3-sch` | 2026-09-30 | SCH lead; reviewer senior-db |
+| 3·W3 | 3.5 Tooling for the CMS | devops (opus) | `antique-map-p3-har-g` / `feat/p3-har-g` (from `feat/p3-sch` + `feat/p3-arc` + main) | 2026-09-30 | merges together with 3.2 and 3.4 |
 | 3·W2 | 3.4 Contract follow-ups (v1.2) | architect (opus) | `antique-map-p3-arc` / `feat/p3-arc` | 2026-09-30 | sign-off: senior-be + senior-fe |
 
 ## Decisions for the owner
@@ -387,7 +388,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 **Goal:** brand configs loaded and validated, i18n and the proxy helpers, and one brand-independent Payload config.
 **Done when:** each brand's config loads and a broken one is refused with the field named; `bootCheck()` refuses a missing secret; `/admin` logs in against two different databases whose schema hashes are equal.
-**Waves:** W1 — 3.1 · W2 — 3.2, 3.3, 3.4
+**Waves:** W1 — 3.1 · W2 — 3.2, 3.3, 3.4 · W3 — 3.5
 
 - [x] **3.1 Platform spine: config loader, i18n, proxy helpers, brand folders** · needs: 1.2.a, 1.2.i — ✅ 2026-09-30 ff71f66
   - **Lane** PLT (+ BRD for brand folders) · **Agent** senior-be · **Wave** W1
@@ -405,11 +406,11 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Owns** `engine/packages/cms/src/{payload.config.ts,collections/users,access,migrations,db,registries}/**`, `engine/packages/cms/package.json`
   - **Read** ARCHITECTURE.md §2, §6, §10, §12, DEPLOYMENT.md §3–4, PARALLEL-TRACKS.md §1 (registries), KOI `src/lib/cms/db-adapter.ts`
   - _Requirements: 1.1, 1.5, 1.8, 3.6, 19.7_
-  - [ ] 3.2.a `buildConfig()` — **brand-independent** (ARCHITECTURE.md §2): Postgres adapter from `DATABASE_URL`, `push: false`, the superset locales `en`/`id`/`nl`, every collection registered whatever the modules (flags only set `admin.hidden` and access), the S3 storage adapter with `alwaysInsertFields: true` (MinIO locally), nodemailer (Mailpit locally); `BRAND` may set only the server URL, CSRF/CORS, email sender and admin branding (through runtime-reading admin components, not config values)
-  - [ ] 3.2.b `users` collection with the seven roles (default `contributor`), access helpers — including **`publishedOrStaff`** (the public sees `_status: 'published'` only) and field-level `staffOnly` — first-user flow, lockout
-  - [ ] 3.2.c initial migration (creating `unaccent` and `pg_trgm`) + `prodMigrations` wiring gated by `RUN_MIGRATIONS=1` and `pg_advisory_lock`; the "No schema changes detected" check script
-  - [ ] 3.2.d `generate:types` and `generate:importmap` per app (checked by 2.2.g)
-  - [ ] 3.2.e the `db/` DDL seam — engine tables and indexes Payload cannot express, declared through the adapter's `afterSchemaInit` / `extendTable` so migrations carry them — proven with one engine table; the `registries/{jobs,views,plugins}.ts` that import each package's barrel (PARALLEL-TRACKS.md §1)
+  - [x] 3.2.a `buildConfig()` — **brand-independent** (ARCHITECTURE.md §2): Postgres adapter from `DATABASE_URL`, `push: false`, the superset locales `en`/`id`/`nl`, every collection registered whatever the modules (flags only set `admin.hidden` and access), the S3 storage adapter with `alwaysInsertFields: true` (MinIO locally), nodemailer (Mailpit locally); `BRAND` may set only the server URL, CSRF/CORS, email sender and admin branding (through runtime-reading admin components, not config values)
+  - [x] 3.2.b `users` collection with the seven roles (default `contributor`), access helpers — including **`publishedOrStaff`** (the public sees `_status: 'published'` only) and field-level `staffOnly` — first-user flow, lockout
+  - [x] 3.2.c initial migration (creating `unaccent` and `pg_trgm`) + `prodMigrations` wiring gated by `RUN_MIGRATIONS=1` and `pg_advisory_lock`; the "No schema changes detected" check script
+  - [x] 3.2.d `generate:types` and `generate:importmap` per app (checked by 2.2.g)
+  - [x] 3.2.e the `db/` DDL seam — engine tables and indexes Payload cannot express, declared through the adapter's `afterSchemaInit` / `extendTable` so migrations carry them — proven with one engine table; the `registries/{jobs,views,plugins}.ts` that import each package's barrel (PARALLEL-TRACKS.md §1)
   - [ ] 3.2.f **Check:** both apps' `/admin` log in against two different databases; `push: false` is set; migrations apply only in a process with `RUN_MIGRATIONS=1`, under an advisory lock, when `/api/health` first calls `getPayload()`; the config generated with `BRAND` unset equals every brand's (2.2.g); and `schema-hash --all` is equal for the ig, oei and test databases.
 
 - [x] **3.3 Tooling follow-ups from 3.1: a valid brand scaffold and a dev link-key ring** · needs: 3.1 — ✅ 2026-09-30 63ad811
@@ -433,7 +434,19 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 3.4.c C10 / C13: a segment that does not survive decode-then-encode is refused (fe #13); the icon and manifest requests in `ROOT_REWRITES` (fe #12); a decision, written into MIGRATION.md §6, on how the legacy static pages (`/about-us`…) reach `/api/x/legacy` when a legacy prefix must end in `/`
   - [ ] 3.4.d doc sync: BRANDS.md §4 `fulfilment.pod` for OEI → "v2 (D23)"; PAYMENTS.md §8 and DEPLOYMENT.md §8 — the environment is read from `SITE_URL` against the brand's `domains`, and the provider secret names and `*_MODE` variables of `boot-check/provider-secrets.ts`; a CONVENTIONS.md line: Client Components receive preformatted money and dates (fe #7), and the facet panel never builds listing state from `useSearchParams()` (C10 drops the public query on rewrite)
   - [ ] 3.4.f from 3.1's qa: a patterned `LINK_TOKEN_KEYS` secret (bytes 0x00…0x1f) is refused; `redactCredentials()` also hides a `password=` query parameter and a libpq `password=` pair; decide and record whether a production build with a loopback `SITE_URL` may be judged `local` (senior-be nit #5, qa #2); and whether the C10 `account` surface is gated on `accounts.buyers` or `accounts.retailers`
+  - [ ] 3.4.g settle what 3.2 found against the docs: engine tables in `public` under plain names, not `engine.*` (PARALLEL-TRACKS §1, `domain/src/contracts/storage.ts`, 10.3.c); every frozen slug a stub from Foundation (CONTENT-MODEL vs 3.2.e); the dev push (`PAYLOAD_DEV_PUSH=1`) failing on its second boot on Payload 3.90.2 (PARALLEL-TRACKS §3.2, ARCHITECTURE §6); boot migrations needing `NODE_ENV=production` besides `RUN_MIGRATIONS=1` (DEPLOYMENT §3–4); one shared `engine/packages/cms/payload-types.ts` (2.2.g vs 10.3); GraphQL off, so no `(payload)/api/graphql` mount (4.1.a)
   - [ ] 3.4.e **Check:** C1, C10 and C13 at v1.2 with a CONTRACTS.md changelog entry; `import { formatMoney } from '@engine/i18n'` bundles under 2 KB gzip (a measured number) with no `zod`; a planted `%6F` segment is refused and IG's Singapore seller boots without Biteship secrets (tests); `pnpm verify` green; one senior-be and one senior-fe pass sign it off.
+
+- [ ] **3.5 Tooling for the CMS: route parity, the generators and the migrate hook** · needs: 3.2, 3.4
+  - **Lane** HAR · **Agent** devops · **Wave** W3
+  - **Owns** `engine/tooling/{route-parity,config-drift,db,worktree}/**`, `.prettierignore`, `.env.example`
+  - **Read** 3.2's report (the Log line of 2026-09-30); ARCHITECTURE.md §2; DEPLOYMENT.md §8; `engine/packages/cms/package.json` scripts (`schema:check`, `generate:types`, `generate:importmap`, `migrate`)
+  - _Requirements: 1.5, 1.8_
+  - [ ] 3.5.a `route-parity`: its test stops asserting the real repo has no `cms/src/collections` (build discovery from a sandbox root, or assert `users` is found); discovery also reads `COLLECTION_SLUGS` from `cms/src/registries/collections.ts`, so a stub slug counts
+  - [ ] 3.5.b `check:generated` runs the real generators with `BRAND` unset and once per brand (and each `TEST_STOREFRONT`): the migration snapshot through `schema:check` / `schema:check print`, the one `engine/packages/cms/payload-types.ts` through `generate:types`, and `generate:importmap <app>` once an app has an admin mount (skipped with a notice before 4.1) — none of them given a `DATABASE_URL`
+  - [ ] 3.5.c `db:fresh`'s migrate hook runs `pnpm --filter @engine/cms migrate` against the new database with a dev `PAYLOAD_SECRET`; `.prettierignore` gains `**/importMap.js`; `.env.example` documents `PAYLOAD_SECRET`, `PAYLOAD_DEV_PUSH` (and that it breaks on a second boot), `RUN_MIGRATIONS` with `NODE_ENV=production`, and optional `S3_REGION`
+  - [ ] 3.5.e `worktree:env`'s `generateDevRing()` refuses everything C1 v1.2's `parseLinkTokenKeys()` refuses (stepped runs, repeated blocks — 3.4.f), and its test's "accepted" draw is random (today a stride of 37, which v1.2 rightly refuses); `.env.example` says a seller's shipping secrets follow its own `sellers[].shipping`
+  - [ ] 3.5.d **Check:** `pnpm verify` green on 3.2, 3.4 and this merged together; a planted field in `users` makes `check:generated` fail and passes once removed; a brand-shaped difference in the config fails it; `pnpm db:fresh --brand test --storefront gallery` leaves a migrated database whose `schema-hash` equals the others'.
 
 ---
 
@@ -2388,6 +2401,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-30 — 3.2 reported done on `feat/p3-sch` (549544b): the brand-independent Payload config (39 collections and 6 globals, stubs included, identical under every `BRAND`), users with seven roles, lockout and a race-safe first admin, `publishedOrStaff`/`staffOnly`, the initial migration with `unaccent`/`pg_trgm` and one engine table (`idempotency_keys`), migrations under `pg_advisory_lock` only with `RUN_MIGRATIONS=1`, `schema-hash` equal across the four databases; `/admin` signed in against two databases through a throwaway Next 16.3.6 production build (the two-apps and `/api/health` clauses move to 4.1.g). 3.2.a–e ticked. Its merge is blocked by a HAR test that asserted no collections exist → new task **3.5** (HAR, 3·W3, branched from `feat/p3-sch`, merged with it), which also wires the real generators into `check:generated` and the migrate hook into `db:fresh`. The doc contradictions it found → 3.4.g. Review: senior-db.
 - 2026-09-30 — ✅ 3.3 (63ad811) — `brand:create` scaffolds a brand that passes `validateBrandConfig()` (an IDR market, ladder and buffer; validated before writing); `worktree:env` writes a random dev `LINK_TOKEN_KEYS` ring and never overwrites one; `.env.example` documents the ring, `LOADERS_SOURCE`, the environment rule and per-seller provider secrets; `tasks-lint` parses 🔄/⛔/✂️ suffixes (a ✂️ task stops counting; a need on a cut task is flagged); `pnpm verify` now runs every gate (CI runs them as separate steps, unaffected). The 🔄 markers go back on 3.2 and 3.4. Follow-ups: `createBrand` and `check:brands` take each app's real `supports` after 4.1.c; `wave.mjs` could enforce "every earlier wave merged".
 - 2026-09-30 — ✅ 3.1 (ff71f66) — the platform spine: `loadBrandConfig()`, `validateBrandConfigs()` over every C1 rule (the rupiah rule now binds every seller reaching Indonesia), `bootCheck()` (environment read from `SITE_URL` against the brand's domains; the `LINK_TOKEN_KEYS` ring; sandbox vs live; per-seller secrets), the per-part CMS-globals seam, `@engine/i18n` (formatters pinned to `CURRENCY_EXPONENT`, plurals per locale), the rewrites-only proxy (module-off surfaces and internal paths → `/<locale>/not-found`, both CSP request headers dropped), and draft configs for all three brand folders; 360 tests, every gate green, qa drove the Check. qa's low findings (a patterned link key, two redaction gaps, loopback `SITE_URL`, the ungated `account` surface) → 3.4.f. **3·W2 dispatched:** 3.2 (SCH), 3.3 (HAR), 3.4 (ARC).
 - 2026-09-30 — 3.1 reviewed: senior-be and senior-fe both **sign off with should-fix** (`.claude/specs/indies-platform/reviews/3.1-senior-{be,fe}.md`). In-scope fixes back to PLT before merge: the rupiah rule skipped `*` sellers, one bad key voided every CMS override, `javascript:` social links, a client's report-only CSP header setting the page nonce, module-off surfaces still served, the not-found target (Next's unbranded 404 under two root layouts → `/<locale>/not-found`), Indonesian plurals, and seven nits. Contract items to ARC as new task **3.4** (3·W2): a zod-free constants leaf (i18n pulls 31.9 KB gzip of zod into client bundles today), per-seller shipping providers, https-only URLs, encoded segments, icon rewrites, legacy static pages, and four doc lines.
