@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Local database lifecycle (TASKS.md 2.1.b, 3.5.c, DEPLOYMENT.md §1).
 //
-//   pnpm db:fresh --brand <slug> [--storefront <app>] [--suffix <lane>]
+//   pnpm db:fresh --brand <slug> [--storefront <app>] [--suffix <lane>] [--no-migrate]
 //     Creates <brand>_<suffix> if missing (unaccent/pg_trgm included, 2.1.a),
 //     then migrates it with the CMS package's own `migrate` (migrate.mjs, 3.5.c)
 //     and runs the seed hook (a no-op until 10.2). A brand with one config per
@@ -10,6 +10,9 @@
 //     storefront's process runs (TEST_STOREFRONT=<storefront>). Named none, it
 //     is <brand>_<suffix> as before, migrated with BRAND unset — the schema is
 //     the same either way (ARCHITECTURE.md §2); CI's e2e job still calls it so.
+//     --no-migrate leaves a new database empty, for a schema author whose dev
+//     push fails on a database that has tables (PARALLEL-TRACKS.md §3.2); it
+//     refuses a database that already holds tables rather than leave it as is.
 //
 //   pnpm db:drop --brand <slug> [--storefront <app>] [--suffix <lane>]
 //     Drops that database if it exists, terminating other connections first.
@@ -32,30 +35,40 @@ import {
   parseStorefront,
   parseSuffix,
 } from './naming.mjs'
-import { createDatabase, dropDatabase, listDatabases } from './psql.mjs'
+import { countTables, createDatabase, dropDatabase, listDatabases } from './psql.mjs'
 import { runSeed } from './seed.mjs'
 import { readEnvFile } from '../worktree/env-file.mjs'
 import { topLevel } from '../worktree/git.mjs'
 
 const USAGE = `usage:
-  pnpm db:fresh --brand <slug> [--storefront <app>] [--suffix <lane>]
+  pnpm db:fresh --brand <slug> [--storefront <app>] [--suffix <lane>] [--no-migrate]
   pnpm db:drop  --brand <slug> [--storefront <app>] [--suffix <lane>]
   pnpm db:list
 
   --brand       a brand folder's slug at the repo root (e.g. test, fixture-atlas)
   --storefront  for a brand with one config per storefront
                 (site/brand.<storefront>.json) only; refused for any other
-  --suffix      defaults to DB_SUFFIX in .env.local (written by \`pnpm worktree\`)`
+  --suffix      defaults to DB_SUFFIX in .env.local (written by \`pnpm worktree\`)
+  --no-migrate  db:fresh only: leave the new database empty, for a schema
+                author's dev push (PAYLOAD_DEV_PUSH=1, PARALLEL-TRACKS.md §3.2)`
 
 class UsageError extends Error {}
 
 function parseArgs(argv) {
   const [command, ...rest] = argv
-  const args = { command, brand: null, storefront: null, suffix: null, help: false }
+  const args = {
+    command,
+    brand: null,
+    storefront: null,
+    suffix: null,
+    migrate: true,
+    help: false,
+  }
   while (rest.length > 0) {
     const arg = rest.shift()
     if (arg === '--brand') args.brand = rest.shift()
     else if (arg === '--storefront') args.storefront = rest.shift()
+    else if (arg === '--no-migrate') args.migrate = false
     else if (arg === '--suffix') args.suffix = rest.shift()
     else if (arg === '-h' || arg === '--help') args.help = true
     else throw new UsageError(`unknown option ${arg}`)
@@ -115,12 +128,22 @@ function toolEnv(repoRoot) {
   return { ...Object.fromEntries(postgres), ...process.env }
 }
 
-async function fresh({ brand, storefront, brandless, suffix, repoRoot, log = console.log }) {
+async function fresh({ brand, storefront, brandless, suffix, migrate, repoRoot, log }) {
   const database = databaseName(brand, suffix, storefront)
   log(`[db] fresh ${database}`)
   createDatabase(database, { cwd: repoRoot })
-  const env = toolEnv(repoRoot)
-  await runMigrations({ database, brand, storefront, brandless, repoRoot, env, log })
+  if (migrate) {
+    const env = toolEnv(repoRoot)
+    await runMigrations({ database, brand, storefront, brandless, repoRoot, env, log })
+  } else {
+    const tables = countTables(database, { cwd: repoRoot })
+    if (tables > 0) {
+      throw new ArgError(
+        `--no-migrate wants an empty database, and ${database} already holds ${tables} table(s): db:drop it first`,
+      )
+    }
+    log(`[db] migrate ${database}: skipped (--no-migrate) — empty, for a schema author's dev push`)
+  }
   await runSeed({ database, brand, log })
   log(`[db] ${database} ready`)
   return database
@@ -172,8 +195,13 @@ async function main(argv) {
   const brand = resolveBrand(args.brand, repoRoot)
   const { storefront, brandless } = resolveStorefront(brand, args.storefront, repoRoot)
   const suffix = resolveSuffix(args.suffix, repoRoot)
-  if (args.command === 'fresh') await fresh({ brand, storefront, brandless, suffix, repoRoot })
-  else drop({ brand, storefront, suffix, repoRoot })
+  if (args.command === 'fresh') {
+    const { migrate } = args
+    await fresh({ brand, storefront, brandless, suffix, migrate, repoRoot, log: console.log })
+  } else {
+    if (!args.migrate) throw new UsageError('--no-migrate applies to db:fresh only')
+    drop({ brand, storefront, suffix, repoRoot })
+  }
 }
 
 try {

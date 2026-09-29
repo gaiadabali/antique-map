@@ -52,6 +52,11 @@ export function databaseExists(database, opts) {
   return row === '1'
 }
 
+/** How many tables `database`'s `public` schema holds — 0 for a database nothing has migrated or pushed into. */
+export function countTables(database, opts) {
+  return Number(psql(database, "SELECT count(*) FROM pg_tables WHERE schemaname = 'public'", opts))
+}
+
 /** Every non-template, non-administrative database name, sorted. */
 export function listDatabases(opts) {
   const out = psql(
