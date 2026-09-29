@@ -234,8 +234,12 @@ page) · a "Similar to sell?" micro-block linking to consignment.
 - A held item says "On hold until Friday 14:00" and offers the same alert.
 - Want-lists are saved searches by maker, place, date and budget, from any browse
   page ("Alert me about new maps of Bali under US$2,000" — the budget in the
-  viewer's market currency, stored with it), and a guest can leave an email
-  without an account.
+  viewer's market currency, stored with it), delivered **within 15 minutes or
+  in a daily digest**, the subscriber's choice. A signed-in collector's saves at
+  once; a guest leaves an email with no account, which starts watching only
+  once confirmed — a **double opt-in** link the confirmation email carries, so
+  the same courteous, admits-nothing answer goes out whoever asks and however
+  often (D39).
 
 ## 9. Trust pages — the gap competitors fill and this site does not
 
@@ -269,7 +273,14 @@ own short flow; institutions can turn a **cart of several items into a proforma*
 
 - Wishlist → **viewing pull list**: booking a viewing sends the wishlist to the
   gallery so the pieces are out of the drawer.
-- Want-lists and item alerts, with an unsubscribe landing page per list.
+- Want-lists and item alerts, each with its stop button. There is no separate
+  unsubscribe landing page: every alert email and its own confirmation open
+  the **same want-list page**, which moves the list's token into a cookie on
+  the way, so the page reads and stops that list by a plain POST — never a GET
+  link a mail scanner could trigger by prefetching it. The one exception is
+  RFC 8058's one-click unsubscribe, the single POST a mail client sends
+  straight from its own "unsubscribe" action, carrying the token in the URL
+  itself rather than the page.
 - Orders with **certificate and invoice downloads**.
 - The gallery's conversations, in one place: **my offers** (with the counter's
   countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), and

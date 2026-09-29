@@ -15,6 +15,14 @@ instance per tenant).
 | **staging** | Helios — `ig.gaiada.com`, `oei.gaiada.com` | seeded + rehearsal migration imports; payment **sandboxes** | a green push to `production` (the GDA pipeline's only Helios branch) |
 | **production** | Helios — the brands' real domains, added at cutover (MIGRATION.md §8) | live | the same, once cutover moves the targets |
 
+Two of `docker-compose.dev.yml`'s pins are load-bearing, not arbitrary
+(`docker-compose.dev.yml` on `main`): MinIO runs `bitnamilegacy/minio`, Bitnami's
+frozen "legacy" line, because the upstream `minio/minio` image now requires a
+registered pull and would fail an anonymous one in CI; and Postgres's data
+volume mounts at `/var/lib/postgresql` — one level above where earlier majors
+put it — because 18+ nests its version number beneath that path and refuses to
+start if the volume is mounted at the old, more specific location.
+
 Staging on Helios mirrors what KOI does today (`koi.gaiada.com` is staging on
 the production pipeline, by decision). At cutover the production domains become
 new targets with their own site users and databases; staging can move to Delphi
@@ -46,8 +54,9 @@ KOI keeps uploads in `shared/uploads`. That does not scale to this catalogue:
 ~9,500 works × several images × derivatives × IIIF tiles is tens to hundreds of
 GB, and Helios's disk hit **93%** in September 2026. Media goes to **S3-compatible
 object storage** (Cloudflare R2 by default: no egress fees, CDN in front) through
-`@payloadcms/storage-s3`; local dev uses MinIO; switching provider is an
-endpoint change.
+`@payloadcms/storage-s3`; local dev uses MinIO (the `bitnamilegacy/minio` image,
+since `minio/minio` no longer allows an anonymous pull, §1); switching provider
+is an endpoint change.
 
 ## 3. Release flow
 
@@ -131,6 +140,8 @@ unset the route answers 503 and does nothing.
 | payment status reconciliation | 10 min | a webhook that never arrived must not leave an order "pending" forever |
 | FX rates refresh | daily 06:00 WIB | display prices in other currencies |
 | want-list / saved-search alerts | matched on publish through the outbox and the queue (≤ 15 min end to end); digest daily | "tell me when a Valentijn of Bali arrives" — the first collector to hear gets the map |
+| an address's want-list confirmation | sent from the outbox on `wantList.requested`, the moment it is asked for | the double opt-in link, so an unowned inbox is never subscribed on someone else's say-so (D39) |
+| unconfirmed want-list purge | daily | an address's list never confirmed within `WANT_LIST_PENDING_DAYS` (7) is erased whole — address, query and consent — so a stale invitation can never be revived |
 | abandoned-cart email (consented only) | hourly | |
 | events partition + retention roll-up | nightly | KOI analytics pattern |
 | sitemap + merchant feed regeneration | nightly | also on publish via tag revalidation |
@@ -176,7 +187,8 @@ S3_ENDPOINT  S3_BUCKET  S3_ACCESS_KEY_ID  S3_SECRET_ACCESS_KEY  MEDIA_PUBLIC_URL
 MASTERS_BUCKET  MASTERS_ACCESS_KEY_ID  MASTERS_SECRET_ACCESS_KEY   (OEI's key: print-files/ write only)
 SMTP_HOST/PORT/USER/PASS    SMTP_FROM_ADDRESS  SMTP_FROM_NAME
 PAYMENT_<SELLER>_<PROVIDER>_*   per seller, per enabled provider, per environment (PAYMENTS.md §8)
-SHIPPING_<PROVIDER>_*       FULFILMENT_<PROVIDER>_*
+SHIPPING_<SELLER>_<PROVIDER>_*  per seller, like payments — a shipping webhook is per seller too
+FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
 WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
 REVALIDATE_SECRET  CRON_SECRET
 LEGACY_DATA_DIR             workstations only: where the old site's raw extracts live

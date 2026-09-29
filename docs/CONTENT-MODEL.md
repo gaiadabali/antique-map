@@ -177,10 +177,10 @@ orientation · dominant colour · room · mood · occasion · recipient ·
 | Collection | Holds | Notes |
 | ---------- | ----- | ----- |
 | **carts** | owner (customer or hashed guest token), market, destination, lines `{ product, variant, qty, configuration }`, codes, gift options, `expiresAt` | never reserves |
-| **reservations** | `targetKey` (scalar, e.g. `product:123`, written only by `reserve()`), target (product / edition unit / variant+location), qty, kind, owner refs (cart, order, offer, customer), `expiresAt`, status (`active` · `converted` · `released` · `expired` · `reversed`), createdBy | the partial unique index on `target_key` for `active` + `converted` exclusive targets (ARCHITECTURE.md §6), declared through the adapter's schema hook; holds are visible and grantable in the admin |
+| **reservations** | `targetKey` (scalar, e.g. `product:123`, written only by `reserve()`), target (product / edition unit / variant+location), qty, kind, owner refs (cart, order, customer, hold request + who granted it, offer, invoice), `expiresAt`, status (`active` · `converted` · `released` · `expired` · `reversed`), createdBy | the partial unique index on `target_key` for `active` + `converted` exclusive targets (ARCHITECTURE.md §6), declared through the adapter's schema hook; holds are visible and grantable in the admin |
 | **orders** | `number` (gapless per seller, prefix from the seller's config), channel (`web` · `showroom` · `manual` · `marketplace` · `legacy`), seller snapshot, customer + contact snapshot, market, `fx`, lines (snapshots), totals (every pipeline step), tax lines, addresses, shipping choice, status, notes, documents, `legacyOrderId` | written only by the domain — never by a public caller |
-| **payment-attempts** | order, seller, provider, method, charge + display Money, fx, providerRef, the stored `SessionResult` (replayed on retry), status, `expiresAt` | |
-| **refunds** | attempt, amount, reason, status, providerRef, `manual` flag + bank details task | |
+| **payment-attempts** | order, seller, `attemptRef` (our own reference, committed before the provider hears of it), provider, method, charge + display Money, fx, `providerRef` (write-once: null until the provider names it), the stored `SessionResult` (replayed on retry), status, `expiresAt`, `expectedBy` (past it, the reconciler asks) | order, seller, provider and `attemptRef` are immutable once inserted, enforced by a trigger — applying a payment event reads them without a lock |
+| **refunds** | attempt, amount, reason, status, `refundRef` (the provider's own id, or `retrieve:<cumulative>` for one learnt from `retrieve()`), `idempotencyKey` (`late:` · `dup:` · `staff:`, for a refund the domain owes), `manual` flag + bank details task | unique `(attempt, refundRef)`; unique `idempotencyKey` |
 | **shipments** | order, lines, carrier/service, tracking, label, insured + declared value, HS codes, POD job ref, events | |
 | **returns** | order line, reason, photos, status, inspection, restock location | |
 | **offers** | product, contact / customer, amount (Money), message, history of counters, status, `expiresAt`, resulting reservation + payment link | |
@@ -192,10 +192,19 @@ orientation · dominant colour · room · mood · occasion · recipient ·
 
 Engine tables (schema `engine`, created by the same migrations — written by the
 SCH lead only — never edited by hand): `payment_events` (unique `provider,
-provider_event_id`), **`domain_events`** (the outbox, COMMERCE.md §6),
-`fx_rates`, `search_documents` (with per-market price columns), a per-seller
-`document_sequences`, `inventory_movements`, `analytics_events` (+ rollups),
-`sister_sync_log`.
+seller_id, provider_event_id` — secrets, and so webhook routes, are per
+seller, C13 `/api/x/webhooks/payments/[provider]/[seller]`), a matched event's
+outcome (`ApplyPaymentEventOutcome`) and a hash of its redacted payload;
+`payment_events_unmatched` (an event for no attempt this seller knows, kept
+apart so it never consumes a dedupe key: the normalised event itself, so it
+can be re-driven once its attempt turns up, first/last seen, a count);
+**`domain_events`** (the outbox, COMMERCE.md §6); `idempotency_keys` (primary key
+`scope, key` — the operation and its caller, C6 `IdempotencyKey` — the stored
+response, and a sha256 of the decoded request beside it, so the same key with
+another request or another caller answers `invalid`, never the stored
+response); `fx_rates`, `search_documents` (with per-market price columns), a
+per-seller `document_sequences`, `inventory_movements`, `analytics_events` (+
+rollups), `sister_sync_log`.
 
 ## 5. People
 
@@ -208,8 +217,14 @@ provider_event_id`), **`domain_events`** (the outbox, COMMERCE.md §6),
   sub-district + courier area id).
 - **saved-items** (wishlist) — customer, product, note; a saved item that sells
   becomes a want-list suggestion.
-- **want-lists** — saved searches and "notify me when another example arrives":
-  customer **or** email, facet query + text, frequency, `lastNotifiedAt`.
+- **want-lists** — a saved search or "tell me when another example arrives"
+  (D39): a customer **or** an email address (never both), status (`pending` ·
+  `active`), a hashed access token, its subject (a listing's public path, or
+  the product it watches another example of), a budget in its own market
+  currency, frequency (`instant` · `daily`), consent (alerts; marketing email,
+  separate), `lastNotifiedAt`. Stopping erases the row whole — its address, its
+  query and its consent — and a `pending` row never confirmed is purged after
+  `WANT_LIST_PENDING_DAYS` (7).
 - **subscribers** — newsletter without an account: double opt-in, source,
   status, tokens, legacy flag (KOI).
 - **reviews** (emporium) — product, verified order, rating, text, photos,

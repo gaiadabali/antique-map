@@ -169,7 +169,7 @@ announced to every lane that consumes it.
 | C9 | **Media artefacts** — derivative names/sizes, IIIF paths, master access | `engine/packages/media/src/contract.ts` | MED, WEB, apps, MIG |
 | C10 | **Route map** — surface → path segment per locale, facet vocabularies, legacy prefixes, `href()` | `engine/packages/config/src/routes.ts` | PLT, WEB, apps, SEO, MIG (redirects) |
 | C11 | **Analytics events** — names and props | `engine/packages/analytics/src/events.ts` | every surface |
-| C12 | **Sister archive API** — the work snapshot shape and webhook events | `engine/packages/sister/src/contract.ts` | SIS, SCH, apps |
+| C12 | **Sister archive API** — the work snapshot, per-market prices and the prints feed both ways (origin → outlet and back), webhooks and the nightly reconcile | `engine/packages/sister/src/contract.ts`, `sister/src/contract/**` | SIS, SCH, apps |
 | C13 | **HTTP handler manifest** — every `/api/x/*` route an app must mount, and the proxy `matcher` each app must declare | `engine/packages/http/src/manifest.ts` | WEB, both apps (parity test) |
 
 **C2 is the one that actually decouples the lanes.** Apps render view models

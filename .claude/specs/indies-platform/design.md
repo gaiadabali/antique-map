@@ -136,9 +136,8 @@ sequenceDiagram
     B->>App: Continue to payment
     App->>H: POST /api/x/commerce/checkout (payment step)
     H->>D: recompute totals on the server, route seller
-    D->>DB: reserve() in one tx: expire stale rows for targetKey, insert checkout lock 15 min
-    alt the item is held or sold
-        DB-->>D: partial unique index violation (active or converted)
+    D->>DB: reserve() in one tx: expire stale rows for targetKey, INSERT … ON CONFLICT (target_key) DO NOTHING
+    alt the item is held or sold (no row returned — never a raised violation)
         D-->>App: typed conflict
         App-->>B: someone else was first, alternatives and a want-list
     else reserved
@@ -149,17 +148,24 @@ sequenceDiagram
         D->>G: createSession (stored SessionResult returned on a retry)
         G-->>App: redirect, embedded, VA or QR
         B->>G: pays (card: authorised, not yet captured)
-        G->>W: webhook
-        W->>W: verify signature on the raw body
+        G->>W: webhook (per seller: /api/x/webhooks/payments/{provider}/{seller})
+        W->>W: verify signature on the raw body, with this seller's secret
         W->>G: retrieve() where the adapter says so (Midtrans)
-        W->>D: applyPaymentEvent(normalised event)
-        D->>DB: BEGIN, INSERT payment_events ON CONFLICT DO NOTHING RETURNING id
-        alt no row returned (duplicate)
-            D->>DB: COMMIT (no-op)
+        W->>D: applyPaymentEvent(normalised event, ports)
+        D->>DB: find the attempt; BEGIN; INSERT payment_events (provider, seller, event id) ON CONFLICT DO NOTHING RETURNING id
+        alt no row returned
+            D->>DB: COMMIT (no-op) — duplicate
             W-->>G: 200
-        else new event
+        else early (ranked ahead of the attempt's state)
+            D->>G: retrieve() again, apply the provider's state first, then the event — caught-up
+            W-->>G: 200
+        else new event, a move the table has
             D->>G: capture while the reservation is live (authorise-capture methods)
-            D->>DB: payment paid, reservation converted, order paid, outbox events, COMMIT
+            D->>DB: payment paid, reservation converted, order paid, outbox events, COMMIT — applied
+            W-->>G: 200
+        end
+        opt no attempt found, or another seller's
+            D->>DB: record in payment_events_unmatched, alert, dedupe key NOT consumed — unknown-attempt
             W-->>G: 200
         end
         opt any step fails
@@ -221,12 +227,17 @@ function reserve(input: {
   quantity: number
   kind: 'checkout-lock' | 'hold' | 'offer' | 'invoice'
   owner: ReservationOwner; ttl: Duration
-}): Promise<{ ok: true; reservation: Reservation } | { ok: false; conflict: ReservationConflict }>
-// also: extend(id, until) · release(id) · convert(id, orderId) · reverse(id, reason)
+}): Promise<{ ok: true; reservation: Reservation; reused: boolean } | { ok: false; conflict: ReservationConflict }>
+// reserveAll(inputs) reserves several targets at once, all or nothing, under a savepoint —
+// a bag at "Continue to payment" — never raising a unique violation, a serialization failure
+// or a deadlock into the caller's transaction (READ COMMITTED, the fixed lock order,
+// ARCHITECTURE.md §6). extend/release/convert/reverse take reservation ids in bulk.
 
 // C8 / domain — the only path from a provider event to a state change
-function applyPaymentEvent(event: NormalizedPaymentEvent):
-  Promise<'applied' | 'duplicate' | 'late-payment-resolved' | 'ignored-stale'>   // throws → rollback → 5xx
+function applyPaymentEvent(event: NormalizedPaymentEvent, ports: PaymentPorts):
+  Promise<'applied' | 'caught-up' | 'duplicate' | 'late-payment-resolved'
+    | 'duplicate-payment-refused' | 'ignored-stale' | 'unknown-attempt' | 'flagged'>
+  // every outcome answers 200 to the webhook; only a throw rolls back and answers 5xx
 
 // seller routing — an unknown stock location sells nowhere
 function routeSeller(input: { lines: CartLine[]; destination: CountryCode }):
@@ -296,8 +307,12 @@ type Reservation = {
 type Order = {
   number: string; channel: Channel; seller: SellerSnapshot; market: MarketSnapshot; fx?: FxSnapshot
   lines: OrderLineSnapshot[]; totals: PipelineTotals; taxLines: TaxLine[]
-  status: OrderStatus; paymentStatus: PaymentStatus; documents: DocumentRef[]
+  status: OrderStatus; paymentStatus: PaymentStatus /* staff's machine states — a dispute included */
+  documents: DocumentRef[]
 }
+// What a buyer reads is never the two fields above: one pure function derives BuyerOrderStatus
+// from status, the attempt that paid the order (or the latest, before one has) and its shipments,
+// for a C6 answer and a C2 loader alike — a dispute, won or lost, never reaches it (COMMERCE.md §6).
 ```
 
 ### Data Model Diagram
@@ -321,7 +336,7 @@ erDiagram
     ORDERS ||--o{ PAYMENT_ATTEMPTS : "paid by"
     PAYMENT_ATTEMPTS ||--o{ REFUNDS : "refunded by"
     ORDERS ||--o{ SHIPMENTS : "ships as"
-    CUSTOMERS ||--o{ WANT_LISTS : "saves"
+    CUSTOMERS |o--o{ WANT_LISTS : "saves (or held by an email alone, no account, D39)"
     CUSTOMERS ||--o{ SAVED_ITEMS : "wishes"
 ```
 

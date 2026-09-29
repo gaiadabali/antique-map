@@ -206,7 +206,9 @@ design gate passes against the approved comp.
 Loaders for every shop surface; home, the Shop menu, collections, places and eras,
 gifts, search and filters; the product page and **the configurator** (constraints
 with reasons, live price, flat / on the wall / to scale, state in the URL); design
-pages; stories with shop-the-story; For Business; the `/ig` page; the showroom
+pages; stories with shop-the-story; the **Partnership** page — the one
+programme for every business buyer, never a separate "For Business" path
+(D31, D36); the `/ig` page; the showroom
 page; gift cards; the bag drawer and both checkout flows (Indonesian and export).
 
 **Done when:** the Design stage's journeys (6.1.c) pass on a phone **inside the Instagram in-app

@@ -271,7 +271,9 @@ blocks, select options or locales exist (ARCHITECTURE.md §2).
 | `accounts.retailers` | partner accounts by application only, for every business buyer — shops, hotels, villas, cafés, companies: the Partnership page, staff approval, trade terms, orders by quote (D31, D32, D36) — shoppers buy as guests, and there is no separate trade enquiry | — | ✅ |
 | `retention.wishlist` | saved items in the buyer's account (needs `accounts.buyers`); a viewing's pull list | ✅ | — |
 | `retention.deviceWishlist` | saved items on the guest's device, with no account; each save tracked under ANALYTICS.md §1's consent rule (D35, D38) | — | ✅ |
-| `retention.wantList` · `.newsletter` | saved-search alerts · digest | ✅ | ✅ |
+| `retention.wantList` | saved searches and "tell me when another example arrives" kept in a signed-in buyer's account — allowed only together with `accounts.buyers` **and** `retention.emailWantList`, since every want list is sent by email and made on the want-list page, and an account's builds on an address's (D39) | ✅ | — |
+| `retention.emailWantList` | the same saved searches and item alerts, held by an email address with no account: double opt-in, confirmed and stopped from the want-list page, erased on stop (D39) | ✅ | ✅ |
+| `retention.newsletter` | newsletter signup, the generated digest and the issue archive | ✅ | ✅ |
 | `retention.reviews` · `.backInStock` · `.abandonedCart` | product reviews · restock alerts · recovery email | — | ✅ |
 | `commerce.giftCards` · `.giftWrap` · `.discounts` · `.bundles` | | — / — / ✅ / — | ✅ |
 | `fulfilment.pod` · `.clickAndCollect` | print-on-demand routing · pickup at the gallery / showroom | — / ✅ | ✅ / ✅ |
@@ -297,6 +299,19 @@ never join across databases on a request path.**
   Indies Gallery collection — available / sold"_ on OEI; _"Prints of this map
   from Old East Indies"_ on IG. Availability is at most one webhook stale, and
   the link text never claims more certainty than the copy has.
+- **The prints feed runs the other way too.** OEI sends the origin what it
+  makes from a work, as that work's whole feed — replacing IG's copy of it
+  whole, so a withdrawn product simply drops out — and IG renders "Prints of
+  this map" from that copy, never a live read of OEI's database (C12
+  `PrintsFeed`, TASKS.md 27.1.d).
+- **Every price a sister link shows travels per market**, as the brand that
+  sells shows it — the rupiah rule included — so the page it lands on shows
+  this visitor's own figure, never a foreign one beside it.
+- **Images render from the sister's media host, never copied.** Each snapshot
+  or feed carries C9's derivative ladder at absolute URLs on the brand that
+  owns them; the other brand's CSP allows that host and renders the image
+  where it is (ARCHITECTURE.md §13) — never fetched into the reader's own
+  bucket or re-derived, so a new derivative version is simply a new snapshot.
 - **Customer accounts, carts, newsletters and consents are never shared.** They
   belong to different companies under UU PDP / PDPA. A shared sign-in is a
   later, consented feature, not a default — so every cross-link says so ("Old

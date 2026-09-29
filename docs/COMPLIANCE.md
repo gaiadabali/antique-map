@@ -122,11 +122,25 @@ this (COMMERCE.md §8).
   organisation **(confirm)**.
 - **EU visitors** — GDPR-grade cookie consent: IG sells to the Dutch heritage
   market.
+- **A retailer's application is personal data even when it never becomes a
+  partner.** One declined or left pending has no order behind it, so it needs
+  its own retention period, not the customer record's — **the period is
+  counsel's to confirm**; a purge job then removes it, and it is included in
+  the 28.4 export/erase flow and the record of processing like any other
+  personal data.
 
 The engine provides: consent records with policy version and timestamp per
-purpose (marketing email, WhatsApp, analytics), a processing-record export, a
-data-subject export and deletion flow, retention jobs, and a breach runbook in
-`manual/`. Marketing opt-in is always a separate, unticked checkbox.
+purpose (marketing email, WhatsApp, analytics, **want-list alerts** —
+separate from marketing email, since a want list may be kept by someone who
+never subscribed to anything else), a processing-record export, a
+data-subject export and deletion flow, retention jobs — a declined or
+never-approved retailer application purged on counsel's schedule, and an
+email want list never confirmed purged after **7 days** — and a breach
+runbook in `manual/`. Marketing opt-in is always a separate, unticked
+checkbox; a want-list alert is consented to at the same **double opt-in**
+that confirms the address (D39), and stopping the alert erases the list
+whole — its address, its query and its consent together — so nothing of it
+remains for the record of processing to still cover.
 
 ## 8. Rights in the images
 

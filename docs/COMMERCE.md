@@ -18,8 +18,11 @@ COMPLIANCE.md.
    configurator's display, from a price table the server sent with the page for
    that destination — display only; adding to the bag re-prices on the server,
    and a difference is shown, never charged silently (`PriceChanged`).
-2. **Snapshots, not references,** on everything that has been sold: line title,
-   image, SKU, unit price, tax, discount, FX rate, seller identity.
+2. **Snapshots, not references,** on everything that has been sold: a line's
+   title, its chosen options with the labels the buyer read (never re-read from
+   the product), stock number, the reproduction label, its image by C9 asset id
+   (never a URL a new derivative version would leave behind), unit price, tax,
+   discount, FX rate, seller identity.
 3. **One `reserve()` for every channel** (ARCHITECTURE.md §6).
 4. **One seller per checkout.** Everything the buyer sees — currency, taxes,
    methods, legal identity — follows from which seller of record serves this
@@ -66,8 +69,12 @@ currency, prices, price facets and duties everywhere on the site follow from it
 ## 3. Money, currencies and price lists
 
 - `Money = { amount: number, currency }` (C5) — `amount` is a **safe integer**
-  in minor units (never a float, never a bigint across the wire). Exponents from
-  ISO 4217.
+  in minor units (never a float, never a bigint across the wire). **The
+  exponent is the engine's, not ISO 4217's** — `CURRENCY_EXPONENT` in
+  `@engine/config/schema`: IDR is 0 here (Rp 95.000 is `95000`) though ISO
+  lists two, while USD/SGD/EUR/AUD/GBP are 2 as ISO has them. A provider that
+  counts in other units (IDR in hundredths) is converted both ways in its own
+  C7 adapter — never in the domain, never twice.
 - **Currency is decided by destination and seller, not by IP or language.**
   Delivering in Indonesia → **IDR only, with no foreign amount beside it**
   (the rupiah rule; COMPLIANCE.md §1) — on item pages, tiles, price facets,
@@ -98,14 +105,23 @@ currency, prices, price facets and duties everywhere on the site follow from it
   Every rounded figure is stored, so a document can be reproduced to the rupiah.
 - **FX** refreshes daily (DEPLOYMENT.md §5). Every order stores the rate it used
   (`fx` snapshot); a displayed estimate always says which currency is charged.
+  **An estimate is display-only, in whole major units** — converted half-even
+  at the `fx-conversion` point to a multiple of the currency's exponent and
+  shown with no fraction digits after "≈" ("≈ €1,020 — charged in USD 1,100"):
+  never charged, never summed into a total, never sent back by a client.
+  `formatMoney` (`@engine/i18n`, CONVENTIONS.md §3) fixes an amount's fraction
+  digits to `CURRENCY_EXPONENT` itself and never takes the runtime's ICU
+  default, which differs between Node and the browser (some give IDR two) and
+  would fail hydration if the server and the browser disagreed.
 - **"From" prices** on tiles are the cheapest *valid* variant for this market and
   destination, never a variant that cannot ship there.
 
 ### The pricing pipeline
 
 ```
-unit price   (market list: explicit | product-type table × multiplier | derived)
-→ customer price list          trade / wholesale tiers (v2)
+unit price   (market list: explicit | product-type table × multiplier | derived —
+              or an already-agreed price: an accepted offer's, an issued quote's or proforma's line)
+→ customer price list          an approved retail partner's trade tier only (D32); no wholesale list
 → line discounts               bundles, multi-buy ("3 for 2" cards)
 → order discounts              codes, first-order offer, automatic rules (the free-shipping threshold)
 → shipping                     rate or quote (§8)
@@ -239,6 +255,16 @@ item stays sold, and staff are alerted to cancel it or accept a return. Money no
 transition keeps always goes back under a deterministic refund key (PAYMENTS.md
 §5), so it is never kept in silence and never refunded twice.
 
+**A buyer never reads the machine's own state — only `BuyerOrderStatus`**
+(`awaiting-payment` · `not-paid` · `paid` · `shipped` · `ready-for-pickup` ·
+`completed` · `cancelled` · `refunded`), the one status every buyer-facing
+answer shows: a lookup, a checkout's or a pay link's order, the payment poll,
+the account's order detail. One pure function derives it from the order's own
+status, the attempt that paid it (or the latest, before one has) and its
+shipments (C6 `orders.ts`), so a dispute — won or lost — and a refused
+duplicate payment never reach a buyer: they change what staff see, never what
+the order reads as.
+
 **Payment** (per attempt) — `created → pending → (requires_action) →
 authorised → paid`, or `failed | expired | voided`; after `paid`:
 `partially_refunded → refunded`, and `disputed → dispute_won | dispute_lost`.
@@ -298,7 +324,11 @@ as non-binding offers (D22); binding offers are v2.
   and confirmed before an order is considered complete".
 - **Sold** items stay published: no price (optionally "price realised" for
   signed-in buyers), available alternatives, and "Tell me when another example
-  arrives" (want-list).
+  arrives" — every such link, and every saved-search alert from browse or
+  search, leads to the one **want-list page** (C10 `wantList`), which saves it
+  to a signed-in buyer's account at once or, for anyone else, to the email
+  address they give, confirmed by double opt-in before the first alert goes
+  out (C6 `wantList.*`, D39).
 
 ## 8. Shipping and fulfilment
 
@@ -397,3 +427,15 @@ to the outbox in the same transaction (§6) and dispatched at least once. Consum
 email and WhatsApp templates (NTF), analytics, sister sync (a sold original
 updates the merch shop's "own the original" link), and cache revalidation
 (availability is never stale in a cached page — ARCHITECTURE.md §9).
+
+**What the business counts is counted from these records, never from the
+beacon.** A lead — an offer, a hold request, a price request, an enquiry, a
+consignment, an appointment — is stored the moment it is received, and the
+Leads dashboard's response times and conversion count that record, which a
+blocked script or a failed beacon post cannot move (ANALYTICS.md §2–§3). A
+want list emits `wantList.requested` when it is asked for, `wantList.started`
+once it is confirmed or saved to an account — what the demand dashboard counts
+as a kept want-list — `wantList.repeated` when an address already watching a
+subject is asked again, and `wantList.stopped` when it is erased; none of the
+four names the address or the query, which stay on the list itself for a
+consumer to load until it is gone.
