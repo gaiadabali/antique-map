@@ -52,7 +52,10 @@ Showroom. There is no separate For Business item (D36).
 kept on this device — D35) · bag — no shopper account: shoppers buy as guests and
 track orders by number (D31, TASKS.md 28.5). Saving an item needs no account, and
 each save is tracked under ANALYTICS.md §1's consent rule (D38): counted by the
-cookieless beacon, and sent to GA4 and Meta only after consent.
+cookieless beacon, and sent to GA4 and Meta only after consent. A saved-search
+alert (§10) works the same way with no account behind it: every "alert me"
+link a surface offers leads to the one want-list page, which takes an email
+address instead and confirms it by double opt-in (D39).
 
 **Shop** mega-menu, three columns plus a feature tile (the hero line):
 - **Wall Art** — Posters · Giclée · Framed · Canvas · Murals · Print from the
@@ -283,7 +286,11 @@ cards.
 Welcome offer (email or WhatsApp) · reviews with photos · back-in-stock alerts ·
 abandoned-bag email (consented only) · gift cards · v2 loyalty with showroom
 visits earning points · every print buyer invited to the gallery's collectors'
-newsletter (with separate consent — different companies).
+newsletter (with separate consent — different companies) · a saved-search
+alert by email (module `retention.emailWantList`, D39) — no shopper account
+here, so it is always an address, confirmed by double opt-in before the first
+alert and stopped by its own one-click link, on the one want-list page every
+alert leads to (COMMERCE.md §7).
 
 ## 11. Scope
 
