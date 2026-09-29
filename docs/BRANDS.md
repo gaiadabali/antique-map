@@ -154,7 +154,8 @@ city's masthead into the shared image).
                         "id": { "map": "peta-antik", "print": "cetakan-antik", "photograph": "foto" } } }
     },
     "defaultSort": { "browse": "newest", "search": "relevance" },   // never written into a URL
-    "legacyPrefixes": ["/category/", "/storage/products/"]  // → /api/x/legacy/…; never a live segment
+    "legacyPrefixes": ["/category/", "/storage/products/"],  // → /api/x/legacy/…; never a live segment
+    "legacyPaths": ["/terms-conditions"]               // a static page that moved, exactly (MIGRATION.md §6)
   },
   "ids": { "workUidPrefix": "…", "stockNumberPattern": "^[MPF]\\.[A-Za-z0-9]+$" },
   "money": {                                           // every amount: integer minor units
@@ -181,6 +182,8 @@ city's masthead into the shared image).
       "tax": { "regime": "SG-GST", "registered": false },
       "charge": ["USD", "EUR", "SGD", "AUD", "IDR"],
       "payments": ["stripe", "bank-transfer"],
+      "shipping": { "providers": ["dhl-express", "quote", "collect"] }, // its own couriers, some of the
+                                                                         // brand's; left out, all of them
       "methodOrder": ["card", "paynow", "bank-transfer"],             // method families, first to last
       "cardCeiling": { "amount": 1000000, "currency": "USD" },           // USD 10,000.00
       "insuredThreshold": { "amount": 100000, "currency": "USD" },       // above → quote + fine-art cover
@@ -208,22 +211,26 @@ city's masthead into the shared image).
                                                        //   "waiver" }; only an owner-role CMS user may override
                                                        //   the tiers, every change audited (D33)
   "analytics": { "ga4Id": null, "metaPixelId": null },  // runtime values — never NEXT_PUBLIC_*
-  "shipping": { "providers": ["dhl-express", "biteship", "quote", "collect"] },
+  "shipping": { "providers": ["dhl-express", "biteship", "quote", "collect"] },  // all its couriers
   "fulfilment": { "providers": ["own-stock"] },
   "modules": { "catalogue.unique": true, "purchase.offers": true, "…": "§4" },
-  "sisters": [{ "slug": "old-east-indies", "name": "Old East Indies",   // at most one
-                "role": "merch-outlet", "baseUrl": "…" }]
+  "sisters": [{ "slug": "old-east-indies", "name": "Old East Indies",   // at most one; sister.links
+                "role": "merch-outlet", "baseUrl": "https://…" }]     // needs it; an https origin
 }
 ```
 
 Values above are illustrative; the schema is `@engine/config/schema` (C1), and
-anything it cannot check alone — the rupiah rule, disjoint markets, a ladder per
-derived currency, modules the app supports — `validateBrandConfigs()` checks in
-CI (above). Every amount is integer minor units (IDR has none, USD two), so
-`"cardCeiling": 1000000` is USD 10,000.00. A price-point ladder rounds a
-**derived** price up to a multiple of the band's step — explicit and
-product-type-table prices are entered at their price point and never rounded —
-with bands close enough that rounding never adds more than a tenth.
+anything it cannot check alone — the rupiah rule, disjoint markets, a ladder and
+an FX buffer per derived currency, a seller's couriers among the brand's, a
+sister for `sister.links`, modules the app supports — `validateBrandConfigs()`
+checks in CI (above). A seller that names no couriers ships with all of the
+brand's, and its courier secrets are its own either way (DEPLOYMENT.md §8); the
+URLs a config names are `https://` only. Every amount is integer minor units
+(IDR has none, USD two), so `"cardCeiling": 1000000` is USD 10,000.00. A
+price-point ladder rounds a **derived** price up to a multiple of the band's
+step — explicit and product-type-table prices are entered at their price point
+and never rounded — with bands close enough that rounding never adds more than a
+tenth.
 
 The legal entities, domains, tax registrations and payment providers are **open
 decisions** (PLAN.md § Open decisions) — the schema accepts every answer, so
@@ -276,7 +283,7 @@ blocks, select options or locales exist (ARCHITECTURE.md §2).
 | `retention.newsletter` | newsletter signup, the generated digest and the issue archive | ✅ | ✅ |
 | `retention.reviews` · `.backInStock` · `.abandonedCart` | product reviews · restock alerts · recovery email | — | ✅ |
 | `commerce.giftCards` · `.giftWrap` · `.discounts` · `.bundles` | | — / — / ✅ / — | ✅ |
-| `fulfilment.pod` · `.clickAndCollect` | print-on-demand routing · pickup at the gallery / showroom | — / ✅ | ✅ / ✅ |
+| `fulfilment.pod` · `.clickAndCollect` | print-on-demand routing · pickup at the gallery / showroom | — / ✅ | v2 (D23) / ✅ |
 | `sister.links` | "own the original" ↔ "get a print" cross-links and work sync | ✅ | ✅ |
 | `ai.cataloguing` | vision-assisted draft cataloguing in the admin, always human-verified | ✅ | ✅ |
 | `channels.marketplaces` | Tokopedia / Shopee / TikTok Shop sync — **later** | — | later |

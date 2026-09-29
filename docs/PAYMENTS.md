@@ -311,7 +311,27 @@ idempotency — and the cases the money path depends on:
 
 ## 8. Secrets
 
-Per seller, per provider, per environment: `PAYMENT_<SELLER>_<PROVIDER>_*`
-(e.g. `PAYMENT_ID_MIDTRANS_SERVER_KEY`). The boot check fails if a configured
-provider has no secrets, or if a sandbox key meets `NODE_ENV=production`
-(and the reverse). Publishable keys reach the browser only on the payment step.
+Per seller, per provider, per environment: `PAYMENT_<SELLER>_<PROVIDER>_<NAME>`,
+the seller and provider ids upper-cased with `-` as `_`
+(`PAYMENT_ID_MIDTRANS_SERVER_KEY`). The names are the ones the adapters read,
+declared in `@engine/config`'s `boot-check/provider-secrets.ts` — an adapter that
+needs another adds it there in the same change:
+
+| Provider | `<NAME>`s | Sandbox or live |
+| --- | --- | --- |
+| `stripe` | `SECRET_KEY`, `PUBLISHABLE_KEY`, `WEBHOOK_SECRET` (`whsec_…`) | the keys say: `sk_test_` / `pk_test_` or `sk_live_` / `pk_live_` (an `rk_` restricted key alike) |
+| `midtrans` | `SERVER_KEY`, `CLIENT_KEY` | the keys say: `SB-Mid-server-` / `SB-Mid-client-` or `Mid-server-` / `Mid-client-` |
+| `xendit` | `SECRET_KEY`, `WEBHOOK_TOKEN` | the key says: `xnd_development_` or `xnd_production_` |
+| `paypal` | `CLIENT_ID`, `CLIENT_SECRET`, `WEBHOOK_ID` | `PAYMENT_<SELLER>_PAYPAL_MODE`: `sandbox` or `live` |
+| `doku` | `CLIENT_ID`, `SECRET_KEY` | `PAYMENT_<SELLER>_DOKU_MODE`: `sandbox` or `live` |
+| `bank-transfer`, `manual` | none | — |
+
+The environment is read from `SITE_URL` against the brand's `domains`
+(DEPLOYMENT.md §1, §8), never from `NODE_ENV` alone, since staging runs production
+builds: the brand's production domain or an alias is production and runs on live
+keys; its staging domain is staging and runs on sandbox keys, as a workstation
+does. The boot check refuses to start on a configured provider's missing secret
+(on a deployed host — a workstation is only warned), a key that is not the
+provider's, a seller's keys mixing sandbox and live, and a key of the wrong kind
+for the environment — a sandbox key in production, a live one anywhere else.
+Publishable keys reach the browser only on the payment step.

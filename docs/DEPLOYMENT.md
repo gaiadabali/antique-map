@@ -182,23 +182,67 @@ runbook records how long it actually took.
 BRAND                       indies-gallery | old-east-indies | test
 BRAND_ROOT                  path to the brand folder shipped in the artifact (config, copy, assets)
 TEST_STOREFRONT             CI only: gallery | emporium — which test config to load
-DATABASE_URL                PAYLOAD_SECRET              SITE_URL (runtime, from brand config)
+DATABASE_URL                PAYLOAD_SECRET
+SITE_URL                    the origin this process serves: https://<its domain> on a host; the boot
+                            check reads the environment from it (below)
 RUN_MIGRATIONS              1 in the web process only
 S3_ENDPOINT  S3_BUCKET  S3_ACCESS_KEY_ID  S3_SECRET_ACCESS_KEY  MEDIA_PUBLIC_URL
 MASTERS_BUCKET  MASTERS_ACCESS_KEY_ID  MASTERS_SECRET_ACCESS_KEY   (OEI's key: print-files/ write only)
 SMTP_HOST/PORT/USER/PASS    SMTP_FROM_ADDRESS  SMTP_FROM_NAME
 PAYMENT_<SELLER>_<PROVIDER>_*   per seller, per enabled provider, per environment (PAYMENTS.md §8)
-SHIPPING_<SELLER>_<PROVIDER>_*  per seller, like payments — a shipping webhook is per seller too
+SHIPPING_<SELLER>_<PROVIDER>_*  per seller, for each of its own couriers (sellers[].shipping, all of the
+                                brand's when it names none) — a shipping webhook is per seller too
 FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
+<PREFIX>_MODE               sandbox | live, for a provider whose keys cannot say which (below)
 WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
 REVALIDATE_SECRET  CRON_SECRET
 LINK_TOKEN_KEYS             the capability links' key ring (C6 links), one per brand and per environment,
                             never shared: comma-separated kid:secret (the one current key),
                             kid:secret:YYYY-MM-DD (retired that UTC day; verifies LINK_TOKEN.keyOverlapDays
                             more) and kid:revoked (refuses at once: a leak); secrets base64url, ≥ 32 random
-                            bytes; a kid is never reused; a restart applies a change
+                            bytes (openssl rand -base64 32) — never a pattern: a counter, a stride, zeros
+                            padding a short key, a block repeated; a kid is never reused; a restart applies
+                            a change
 LEGACY_DATA_DIR             workstations only: where the old site's raw extracts live
 ```
+
+**Which environment a process is in** is read from `SITE_URL` against the
+brand's `domains` (C1), never from `NODE_ENV` alone, because staging runs
+production builds (§1). The brand's production domain or an alias is
+**production**, its staging domain **staging**, and a dev server — or a
+production build at a loopback origin (`localhost`, `*.localhost`, `127.0.0.1`,
+`[::1]`) — **local**. A production build at any other host, or with no usable
+`SITE_URL`, is refused and judged production, so the strictest rules apply to
+whatever it is. The loopback case is local **by decision** (TASKS.md 3.4.f): it
+is how a worktree and CI open a production build on their own port, with draft
+configs and sandbox keys. It is never quiet — the boot report warns — and it buys
+a misconfigured host nothing that sells: local runs on sandbox keys only, so a
+host holding its live keys refuses to start as local, and a loopback origin is no
+address a buyer, a gateway or an email can reach. `0.0.0.0` is a bind address,
+not a loopback origin, and a production build naming it is judged production.
+Every host's `shared/.env` sets `SITE_URL=https://<its domain>`, and `/api/health`
+should report the environment judged, so the release flow's check at the brand's
+domain (§3) catches a host that judged itself local (a follow-up for TASKS.md 4.1.b).
+
+**Provider secrets**, by the names the adapters read — declared in
+`@engine/config`'s `boot-check/provider-secrets.ts`, the seller and provider ids
+upper-cased with `-` as `_` (`SHIPPING_SG_DHL_EXPRESS_API_KEY`):
+
+| Provider | Variables | Sandbox or live |
+| --- | --- | --- |
+| payments (per seller) | PAYMENTS.md §8: `stripe`, `midtrans`, `xendit`, `paypal`, `doku` | the keys, or `PAYMENT_<SELLER>_<PROVIDER>_MODE` |
+| `biteship` (per seller) | `SHIPPING_<SELLER>_BITESHIP_API_KEY`, `_WEBHOOK_SECRET` | `SHIPPING_<SELLER>_BITESHIP_MODE` |
+| `dhl-express` (per seller) | `SHIPPING_<SELLER>_DHL_EXPRESS_API_KEY`, `_API_SECRET`, `_ACCOUNT_NUMBER` | `SHIPPING_<SELLER>_DHL_EXPRESS_MODE` |
+| `prodigi`, `gelato` (per brand, v2) | `FULFILMENT_PRODIGI_API_KEY`, `FULFILMENT_GELATO_API_KEY` | `FULFILMENT_<PROVIDER>_MODE` |
+| `bank-transfer`, `manual`, `flat`, `quote`, `collect`, `own-stock`, `local-production` | none | — |
+
+A seller needs its own payment providers' secrets and its own couriers' — the
+brand's couriers when it names none (C1 `sellers[].shipping`) — and no other: a
+Singapore seller shipping its own stock by DHL Express needs no Biteship key. A
+`*_MODE` is `sandbox` or `live` and nothing else. A missing secret refuses a
+deployed process and only warns a workstation; a key of the wrong kind refuses
+anywhere — production runs on live keys, staging and local on sandbox keys — and
+so does a seller whose keys for one provider mix the two.
 
 **No `NEXT_PUBLIC_*` per brand.** Those are inlined at `next build`, and one
 gallery build serves several brands (and the artifact is built with none), so GA4
