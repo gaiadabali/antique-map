@@ -1,6 +1,7 @@
 // A seller's courier secrets follow its own couriers (C1 v1.2 `sellers[].shipping`, 3.1 senior-be
 // #2): the committed gallery brand's Singapore seller ships its own stock abroad and holds no
-// account with an Indonesian courier, so once it names its couriers it boots without Biteship's.
+// account with an Indonesian courier, so it names its couriers (a draft value, D1) and boots
+// without Biteship's (TASKS.md 3.4.e).
 import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -88,32 +89,47 @@ describe('bootCheck() — per-seller courier secrets follow sellers[].shipping',
     )
   })
 
-  it('the Singapore seller boots without Biteship secrets once it names its own couriers', () => {
-    const raw = structuredClone(brand.raw)
-    raw.sellers[singaporeIndex(raw)].shipping = { providers: ['dhl-express', 'quote', 'collect'] }
-    // The Indonesian seller keeps the brand's couriers, Biteship among them.
-    for (const seller of raw.sellers) if (seller.entity.country === 'ID') delete seller.shipping
-    const valid = validateBrandConfig(raw, {
+  it('the committed Singapore seller boots without Biteship secrets, as the file stands', () => {
+    // The file, untouched: CI's own validation, then the boot on the brand's staging host.
+    const valid = validateBrandConfig(structuredClone(brand.raw), {
       supports: C1_STATED_SUPPORTS.gallery,
       expect: { slug: brand.folder, storefront: null },
     })
     expect(valid.issues.map(formatIssue)).toEqual([])
-    const config = brandConfigSchema.parse(raw)
+    const config = brandConfigSchema.parse(structuredClone(brand.raw))
+    const sg = config.sellers[singaporeIndex(brand.raw)]!
+    expect(brand.raw.sellers[singaporeIndex(brand.raw)].shipping).toEqual({
+      providers: ['dhl-express', 'quote', 'collect'],
+    })
+    expect(sg.shipping.providers).not.toContain('biteship')
 
-    // No Biteship secret for the Singapore seller at all — and no finding asks for one.
+    // No SHIPPING_SG_BITESHIP_* in the environment at all, and no finding asks for one.
     const report = stagingReport(config, (name) => name.startsWith('SHIPPING_SG_BITESHIP_'))
     expect(report.problems, formatBootReport(report)).toEqual([])
     expect(report.ok).toBe(true)
     expect(mentions(report, 'SHIPPING_SG_BITESHIP')).toEqual([])
-    // Its own couriers' secrets are still its own, and the Indonesian seller keeps Biteship's.
-    expect(
-      stagingReport(config, (name) => name === 'SHIPPING_SG_DHL_EXPRESS_API_KEY').problems,
-    ).toEqual([
-      {
-        subject: 'SHIPPING_SG_DHL_EXPRESS_API_KEY',
-        message: 'is not set: seller "sg" ships by dhl-express (DEPLOYMENT.md §8)',
-      },
+
+    // With every SHIPPING_SG_* gone, it is asked for its own couriers' secrets and no other:
+    // DHL Express's (quote and collect have none) — never Biteship's.
+    const bare = stagingReport(config, (name) => name.startsWith('SHIPPING_SG_'))
+    expect(bare.problems.map((problem) => problem.subject)).toEqual([
+      'SHIPPING_SG_DHL_EXPRESS_API_KEY',
+      'SHIPPING_SG_DHL_EXPRESS_API_SECRET',
+      'SHIPPING_SG_DHL_EXPRESS_ACCOUNT_NUMBER',
+      'SHIPPING_SG_DHL_EXPRESS_MODE',
     ])
+    expect(bare.problems[0]?.message).toBe(
+      'is not set: seller "sg" ships by dhl-express (DEPLOYMENT.md §8)',
+    )
+    const asked = SHIPPING_PROVIDERS.filter((provider) =>
+      bare.problems.some((problem) =>
+        problem.subject.startsWith(`${secretPrefix('SHIPPING', 'sg', provider)}_`),
+      ),
+    )
+    const own = sg.shipping.providers.filter((each) => SHIPPING_SECRETS[each].secrets.length > 0)
+    expect(asked).toEqual(own)
+
+    // The Indonesian seller names none, so it ships with all the brand's couriers, Biteship's too.
     expect(
       stagingReport(config, (name) => name.startsWith('SHIPPING_ID_BITESHIP_')).problems.map(
         (problem) => problem.subject,
@@ -123,21 +139,5 @@ describe('bootCheck() — per-seller courier secrets follow sellers[].shipping',
       'SHIPPING_ID_BITESHIP_WEBHOOK_SECRET',
       'SHIPPING_ID_BITESHIP_MODE',
     ])
-  })
-
-  it('asks the committed Singapore seller for its own couriers’ secrets and no other', () => {
-    // As the file stands — whether or not it names the seller's couriers yet (BRD).
-    const config = brandConfigSchema.parse(structuredClone(brand.raw))
-    const sg = config.sellers[singaporeIndex(brand.raw)]!
-    const report = stagingReport(config, (name) => name.startsWith('SHIPPING_SG_'))
-    const asked = SHIPPING_PROVIDERS.filter((provider) =>
-      report.problems.some((problem) =>
-        problem.subject.startsWith(`${secretPrefix('SHIPPING', 'sg', provider)}_`),
-      ),
-    )
-    const expected = sg.shipping.providers.filter(
-      (provider) => SHIPPING_SECRETS[provider].secrets.length > 0,
-    )
-    expect([...asked].sort()).toEqual([...new Set(expected)].sort())
   })
 })

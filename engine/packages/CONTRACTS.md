@@ -425,7 +425,9 @@ so it is breaking and also needs a redirect.
       secrets — each one of the brand's `shipping.providers`, and all of them when it names none.
       `brandConfigSchema` resolves it, so every parsed `SellerConfig` carries its list;
       `SellerConfigInput` is the form a file writes. The schema is now a zod pipe rather than an
-      object, which no lane reads the shape of (be #2).
+      object, which no lane reads the shape of (be #2). The gallery's Singapore seller names its
+      couriers — DHL Express, quote and collect, a draft value (D1) the owner confirms — so it
+      boots without an Indonesian courier's secrets.
     - `identity.social` takes https URLs on a domain name, never `javascript:`, http or an
       address with credentials; `sisters[].baseUrl` is an https origin, with no path and no
       trailing `/` (be #4). `httpsUrlSchema` and `httpsOriginSchema` are the primitives.
@@ -459,5 +461,5 @@ so it is breaking and also needs a redirect.
 
   Announced to every lane in each contract's "Consumed by" column. The follow-ups it hands other
   lanes are in 3.4's report: PLT's proxy reads `hasSurface()`; SCH's pages validator refuses a
-  CMS slug that is a one-segment legacy path; BRD names the gallery's Singapore seller's
-  couriers and ships the touch icon and the manifest; WEB serves the root files unversioned.
+  CMS slug that is a one-segment legacy path; BRD ships the touch icon and the manifest; WEB
+  serves the root files unversioned.
