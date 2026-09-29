@@ -184,7 +184,7 @@ orientation · dominant colour · room · mood · occasion · recipient ·
 | **shipments** | order, lines, carrier/service, tracking, label, insured + declared value, HS codes, POD job ref, events | |
 | **returns** | order line, reason, photos, status, inspection, restock location | |
 | **offers** | product, contact / customer, amount (Money), message, history of counters, status, `expiresAt`, resulting reservation + payment link | |
-| **enquiries** | `topic`: `general` · `price-request` · `condition` · `shipping-quote` · `framing` · `export` · `wholesale`; product, contact, message, attachments, status, assignee | **stored, not merely forwarded** (KOI) |
+| **enquiries** | `topic`: `general` · `price-request` · `condition` · `shipping-quote` · `framing` · `export` (C6 `EnquiryTopic`) — no trade topic: every business buyer applies as a partner (D36); product, contact, message, attachments, status, assignee | **stored, not merely forwarded** (KOI) |
 | **consignments** | "sell to us": contact, description, photos (item, titles, verso), condition notes, status (`received` · `reviewing` · `offer-made` · `accepted` · `declined`) | |
 | **appointments** | location, slot, contact, purpose (viewing — with a pull list from the wishlist), status | |
 | **invoices** | proforma / final, number per seller, customer (institution), PO number, lines, currency, bank details **on the document only**, due date, status, PDF | wire details are never on a public page (fraud) |

@@ -8,10 +8,15 @@
 import type { LeadContactInput, ProductPublicId, UploadId } from './requests'
 import type { IdempotencyKey } from './results'
 import type { IsoDate, IsoInstant } from './scalars'
+import type { Assert, Equals } from './type-assertions'
 
-/** CONTENT-MODEL.md §4 `enquiries.topic`. */
+/**
+ * CONTENT-MODEL.md §4 `enquiries.topic`. No topic is for trade or business: every business buyer
+ * applies as a partner (`retailer.apply`, the Partnership page — D36), and an institution asks for
+ * a proforma or a quote (`./after-sale`).
+ */
 export type EnquiryTopic =
-  'general' | 'price-request' | 'condition' | 'shipping-quote' | 'framing' | 'export' | 'wholesale'
+  'general' | 'price-request' | 'condition' | 'shipping-quote' | 'framing' | 'export'
 
 export type EnquiryRequest = {
   readonly topic: EnquiryTopic
@@ -94,3 +99,10 @@ export type AppointmentView = {
   /** The `.ics` the confirmation carries. */
   readonly icsUrl: string
 }
+
+// ─── Type-level tests ────────────────────────────────────────────────────────────────────────
+
+// D36: one programme for every business buyer — no enquiry topic stands in for it.
+type _NoBusinessTopic = Assert<
+  Equals<Extract<EnquiryTopic, 'wholesale' | 'trade' | 'business'>, never>
+>

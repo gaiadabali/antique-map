@@ -113,8 +113,9 @@ export type BeaconEventProps = {
   readonly 'enquiry.submitted': { readonly topic: EnquiryTopic; readonly productId: number | null }
   readonly 'viewing.booked': { readonly locationId: string }
   readonly 'consignment.submitted': NoProps
+  /** `business`: the Partnership page (D36), the one place a business buyer is addressed. */
   readonly 'whatsapp.clicked': { readonly context: 'item' | 'checkout' | 'footer' | 'business' }
-  /** The Partnership form's shop branch sent (D31): the kind of shop, never who it is. */
+  /** The Partnership application sent (D31, D36): the kind of business, never who it is. */
   readonly 'retailerApplication.submitted': { readonly shopType: RetailerShopType }
   // Purchase
   /**

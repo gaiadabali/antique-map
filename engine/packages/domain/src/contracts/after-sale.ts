@@ -106,9 +106,11 @@ type QuoteRequestSubject =
   | { readonly lines: readonly []; readonly message: string }
 
 /**
- * A quote to prepare — a signed-in partner's order (D32, D36) or, where a brand's app offers one,
- * a guest's business quote — which staff price when they issue it (a partner's at its trade
- * tier), then send.
+ * A quote to prepare, which staff price when they issue it and then send: a signed-in partner's
+ * order (D32), at its trade tier; or, where `accounts.retailers` is off, a guest's — an
+ * institution's or a business's ("Turn this into a quote"). Where it is on, every business buyer
+ * quotes as a partner (D36): a request from anyone but an approved partner is `not-offered`, and
+ * the Partnership page is the way in.
  */
 export type QuoteRequest = QuoteRequestSubject & {
   readonly neededBy: IsoDate | null
