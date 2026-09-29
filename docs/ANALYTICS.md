@@ -22,6 +22,18 @@ through `ShellVM` — never `NEXT_PUBLIC_*`, which would be baked into a build t
 serves more than one brand — and the per-request CSP allows exactly their origins
 (ARCHITECTURE.md §13).
 
+**The page sends only what it can know; `/api/x/collect` stamps the rest.** A
+beacon event carries its own props from the page's own view model, plus `at`,
+`surface`, `locale` and `deviceClass` — never a session, an anonymous id or a
+market, which the page cannot know and could forge. Collect **derives**
+`sessionId` itself, at request time: a hash of a secret salt that rotates daily
+and is then discarded, the site, the client's address and its user agent —
+nothing is stored that could reverse it. `anonymousId` is the persistent id
+collect keeps in its own HttpOnly `anon_id` cookie (390 days), set and read
+only once analytics consent allows it. `market` is the ship-to market's id,
+read from the `shipTo` cookie — `null` before one is set (C11
+`CollectedContext`).
+
 A domain event is never emitted from the browser and never from a webhook
 handler directly: an `order.paid` that reached GA4 while its transaction rolled
 back would be revenue that does not exist. The outbox dispatcher is the only
@@ -49,25 +61,43 @@ count, `zeroResults`) · `place.viewed` · `maker.viewed` ·
 essays)
 
 **Item**
-`item.viewed` (product id, kind, inventory model, price band, status) ·
-`item.zoomed` (image role, max zoom) · `item.versoViewed` ·
+`item.viewed` (product id, kind, inventory model, price band, status) — sent
+once the purchase panel **resolves**: `priceBand` and `status` are its own
+`analytics` (C2 `PurchaseVM`), which only the streamed part knows, and
+`status` is `null` when availability could not be read (the `unverified`
+panel) · `item.zoomed` (image role, max zoom) · `item.versoViewed` ·
 `item.roomViewOpened` · `item.factsheetDownloaded` · `item.shared` (channel) ·
-`item.saved` · `alert.created` (want-list, from which surface) ·
-`sister.clicked` (direction: to-original · to-prints) ·
+`item.saved` · `item.unsaved` (both: product id, variant id, the list's new
+size — the wishlist's contents never leave the device, D35) · `alert.created`
+(want-list · item-alert, from which surface — the demand dashboard counts the
+domain's `wantList.started` instead, never this) ·
+`sister.clicked` (direction: to-original · to-prints, the link's own `workUid`) ·
 `configurator.changed` (axis) · `configurator.completed`
 
 **Leads — the gallery's real funnel**
 `price.requested` · `offer.submitted` · `hold.requested` · `enquiry.submitted`
 (topic) · `viewing.booked` · `consignment.submitted` · `whatsapp.clicked`
-(context: item · checkout · footer · business)
+(context: item · checkout · footer · business) · `retailerApplication.submitted`
+(shop type only, never who it is). These feed GA4's `generate_lead`, Meta's
+`Lead` and the funnel's steps; the **Leads dashboard's own counts** (§3) come
+from the domain's stored records instead, which a blocked script, a failed
+beacon post or a reload cannot move.
 
 **Purchase**
-`cart.added` · `cart.removed` · `cart.viewed` · `checkout.started` ·
-`checkout.stepCompleted` (step) · `checkout.lockTaken` ·
+`cart.added` (product id, variant id, quantity, `value` — the added line's own
+subtotal as the cart's answer states it, the unit's charge × quantity, never
+an estimate and never recomputed in the page) · `cart.removed` · `cart.viewed` ·
+`checkout.started` · `checkout.stepCompleted` (step) · `checkout.lockTaken` ·
 `checkout.lockExpired` · `payment.methodSelected` · `payment.attempted` ·
-`payment.failed` (reason class) · and, from the domain: `order.paid` ·
-`order.refunded` · `order.partiallyRefunded` · `offer.accepted` · `hold.granted` ·
-`hold.expired` · `reservation.conflicted` (someone else was first)
+`payment.failed` (`reasonClass`, C7's failure class) · and, from the domain:
+`order.paid` · `order.refunded` · `order.partiallyRefunded` · `offer.accepted` ·
+`hold.granted` · `hold.expired` · `reservation.conflicted` (someone else was
+first) · `retailer.applied` · `retailer.reapplied` · `retailer.approved` ·
+`retailer.declined` (the shop's partner funnel, D31: applications — first and
+again — and staff's decisions, with the hours they took; never the applicant's
+name, NPWP or contact) · `wantList.started` (a saved search or item alert kept
+— an address's once confirmed, an account's once saved, D39; what the demand
+dashboard counts as unmet demand, §3).
 
 The two refund events reverse revenue, so the domain emits them only for the
 payment that paid the order: giving back a late or a duplicate payment is the
@@ -91,7 +121,7 @@ surface and device class — field data, not just lab)
 | shipping / payment step | `add_shipping_info` / `add_payment_info` | `AddPaymentInfo` |
 | `order.paid` | `purchase` | `Purchase` |
 | `order.refunded` · `order.partiallyRefunded` | `refund` (with the refunded value) | — |
-| `price.requested` · `offer.submitted` · `enquiry.submitted` · `viewing.booked` | `generate_lead` | `Lead` |
+| `price.requested` · `offer.submitted` · `enquiry.submitted` · `viewing.booked` · `retailerApplication.submitted` | `generate_lead` | `Lead` |
 | `search.submitted` | `search` | `Search` |
 | `newsletter.confirmed` | `sign_up` | `Subscribe` |
 
@@ -99,7 +129,11 @@ Purchase values are sent in the **charge currency** with the order's FX snapshot
 recorded server-side, never recomputed in the browser. The browser's `purchase`
 tag fires from the order-confirmation page with the order id as `transaction_id`
 (so GA4 dedupes a reload); a server-side conversion API, if added later, reads
-from the outbox, not from the webhook.
+from the outbox, not from the webhook. Every tag converts a `Money` to the
+decimal figure GA4 and Meta expect by its currency's exponent
+(`CURRENCY_EXPONENT`, @engine/config/schema) — IDR 95000 is `95000`, USD 1000
+is `10.00` — the one place in the pipeline a minor-unit integer becomes a
+float, and only for the platforms that require one.
 
 ## 3. Dashboards (in each brand's admin)
 
@@ -109,10 +143,12 @@ DESIGN-SYSTEM §5).
 
 - **Funnels** — listing → item → (cart | lead) → checkout → paid, by market,
   destination, device class and source.
-- **Demand the stock does not meet** — zero-result searches and want-lists
+- **Demand the stock does not meet** — zero-result searches and want-lists kept
+  (the domain's `wantList.started`, never the beacon's `alert.created`)
   grouped by maker, place and budget. For the gallery this is a **buying list**:
   what collectors want that is not in the drawers.
-- **Leads** — requests, offers, holds, enquiries and viewings, with response
+- **Leads** — requests, offers, holds, enquiries, viewings and retailer
+  applications, counted from the domain's stored records (§2) with response
   time to first reply and conversion to paid.
 - **The sold archive** — traffic to sold pages and the alerts they create.
 - **Payments** — method mix, failure reasons, reconciliation corrections,
