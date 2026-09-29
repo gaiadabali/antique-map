@@ -1,4 +1,5 @@
-// Scratch smoke test for C1 and C10 — never committed.
+// Moved from .claude/specs/indies-platform/reviews/smoke-tests/config.smoke.test.ts
+// into the package it tests (TASKS.md 2.2.j), so `pnpm test` runs it.
 import { describe, expect, it } from 'vitest'
 
 import { createHref, routeMapSchema } from '../src/routes'
@@ -33,7 +34,6 @@ const en = {
     offer: 'make-an-offer',
     consignment: 'sell-to-us',
     appointment: 'book-a-visit',
-    wholesale: 'trade',
   },
 }
 const { home: _h, ...enSegments } = en
@@ -144,14 +144,19 @@ describe('C1 brand config', () => {
     negative.sellers[0]!.cardCeiling = { amount: -5, currency: 'USD' }
     expect(brandConfigSchema.safeParse(negative).success).toBe(false)
     for (const bad of ['3.555', '-1', '21', '03', 'three']) {
-      const buffer = structuredClone(config) as unknown as { money: { fx: { bufferPct: Record<string, string> } } }
+      const buffer = structuredClone(config) as unknown as {
+        money: { fx: { bufferPct: Record<string, string> } }
+      }
       buffer.money.fx.bufferPct.IDR = bad
       expect(brandConfigSchema.safeParse(buffer).success, bad).toBe(false)
     }
-    const twoSisters = { ...config, sisters: [
-      { slug: 'a', name: 'A', role: 'merch-outlet' as const, baseUrl: 'https://a.example.test' },
-      { slug: 'b', name: 'B', role: 'merch-outlet' as const, baseUrl: 'https://b.example.test' },
-    ] }
+    const twoSisters = {
+      ...config,
+      sisters: [
+        { slug: 'a', name: 'A', role: 'merch-outlet' as const, baseUrl: 'https://a.example.test' },
+        { slug: 'b', name: 'B', role: 'merch-outlet' as const, baseUrl: 'https://b.example.test' },
+      ],
+    }
     expect(brandConfigSchema.safeParse(twoSisters).success).toBe(false)
   })
   it('rejects a root segment used twice', () => {
@@ -164,15 +169,23 @@ describe('C10 href()', () => {
   const parsed = brandConfigSchema.parse(config)
   const href = createHref(parsed)
   it('builds localised, deterministic paths', () => {
-    expect(href('item', { publicId: 1706, slug: 'bali-island' }, 'en')).toBe('/product/1706-bali-island')
-    expect(href('item', { publicId: 1706, slug: 'bali-island' }, 'id')).toBe('/id/produk/1706-bali-island')
+    expect(href('item', { publicId: 1706, slug: 'bali-island' }, 'en')).toBe(
+      '/product/1706-bali-island',
+    )
+    expect(href('item', { publicId: 1706, slug: 'bali-island' }, 'id')).toBe(
+      '/id/produk/1706-bali-island',
+    )
     expect(href('home', {}, 'en')).toBe('/')
     expect(href('home', {}, 'id')).toBe('/id')
+    expect(href('browse', { facets: { objectType: 'map', place: 'java/batavia' } }, 'en')).toBe(
+      '/antique-maps/java/batavia',
+    )
     expect(
-      href('browse', { facets: { objectType: 'map', place: 'java/batavia' } }, 'en'),
-    ).toBe('/antique-maps/java/batavia')
-    expect(
-      href('browse', { facets: { objectType: 'map', technique: ['etching', 'aquatint'] }, page: 2 }, 'id'),
+      href(
+        'browse',
+        { facets: { objectType: 'map', technique: ['etching', 'aquatint'] }, page: 2 },
+        'id',
+      ),
     ).toBe('/id/peta-antik?technique=aquatint&technique=etching&page=2')
     expect(href('search', { q: 'celebes', page: 1 }, 'en')).toBe('/search?q=celebes')
     expect(href('form', { kind: 'offer', item: 1706 }, 'en')).toBe('/make-an-offer?item=1706')
