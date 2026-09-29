@@ -18,7 +18,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
-| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 2/4 | 17/22 | 0 | `████████░░`  77% |
+| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 2/4 | 20/22 | 0 | `█████████░`  91% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **5/160** | **41/715** | **46** | `█░░░░░░░░░`   6% |
+| **All** | 44 phases | | | **5/160** | **44/715** | **46** | `█░░░░░░░░░`   6% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -330,7 +330,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 ## Phase 2 — Local infrastructure, quality gates and CI · Foundation · needs 1 · ~1.5d
 
 **Goal:** Postgres, mail and object storage on a laptop; every quality gate; CI and the release artifact.
-**Done when:** `pnpm db:fresh` creates a brand database with `unaccent` and `pg_trgm`; every gate fails on a planted violation and passes once it is removed; a push to `main` runs CI green and a push to `production` publishes a release tarball with both standalone builds.
+**Done when:** `pnpm db:fresh` creates a brand database with `unaccent` and `pg_trgm`; every gate fails on a planted violation and passes once it is removed; a push to `main` runs CI green and a push to `production` runs the release workflow (its tarball of both standalone builds is proven at 4.1.g, once the apps exist).
 **Waves:** W1 — 2.1, 2.2, 2.4 · W2 — 2.3
 
 - [x] **2.1 Local infrastructure and database scripts** · needs: 1.1 — ✅ 2026-09-29 463bd91
@@ -364,10 +364,10 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Owns** `.github/**`, `.gaiadeploy.yml`
   - **Read** DEPLOYMENT.md §3–4
   - _Requirements: 1.4, 1.5, 19.4, 19.7_
-  - [ ] 2.3.a `ci.yml`: change detection; static job (file size, brand literals, `check:generated`, `validateBrandConfigs()`, `tasks:lint`, format, lint, types, unit); e2e job (Postgres service, migrate the four databases — ig, oei and the two `test` configs — seed, build both apps **with no database env**, Playwright for ig/oei/test-gallery/test-emporium); Lighthouse job
-  - [ ] 2.3.b `artifact` job: build `engine/apps/gallery` and `engine/apps/emporium` standalone, assemble subdirs with `sharp`/`@img` copied beside the server, tar + sha256; `publish` job creating the release (use the GDA deploy-workflows stub pinned by tag, if it fits)
-  - [ ] 2.3.c `.gaiadeploy.yml` with the two Helios targets and `subdir` (DEPLOYMENT.md §3); a CI check that fails on the string `TBD`
-  - [ ] 2.3.d **Check:** a push to `main` runs static checks, unit and e2e jobs green; a push to `production` publishes a `deploy/production-*` release whose tarball holds `indies-gallery/` and `old-east-indies/` standalone builds with their brand `site/` folders and a `.sha256`; and the e2e job's databases have `unaccent` and `pg_trgm` (2.1.d's CI clause).
+  - [x] 2.3.a `ci.yml`: change detection; static job (file size, brand literals, `check:generated`, `validateBrandConfigs()`, `tasks:lint`, format, lint, types, unit); e2e job (Postgres service, migrate the four databases — ig, oei and the two `test` configs — seed, build both apps **with no database env**, Playwright for ig/oei/test-gallery/test-emporium); Lighthouse job
+  - [x] 2.3.b `artifact` job: build `engine/apps/gallery` and `engine/apps/emporium` standalone, assemble subdirs with `sharp`/`@img` copied beside the server, tar + sha256; `publish` job creating the release (use the GDA deploy-workflows stub pinned by tag, if it fits)
+  - [x] 2.3.c `.gaiadeploy.yml` with the two Helios targets and `subdir` (DEPLOYMENT.md §3); a CI check that fails on the string `TBD`
+  - [ ] 2.3.d **Check:** a push to `main` runs static checks, unit and e2e jobs green, and the e2e job's databases have `unaccent` and `pg_trgm` (2.1.d's CI clause); a push to `production` runs the release workflow, which says it has no app to build and publishes nothing. The tarball clause — a `deploy/production-*` release holding `indies-gallery/` and `old-east-indies/` standalone builds with their brand `site/` folders and a `.sha256` — moved to 4.1.g, the first point at which both apps exist.
 
 - [ ] **2.4 Contract follow-ups (v1.1)** · needs: 1.2
   - **Lane** ARC · **Agent** architect · **Wave** W1
@@ -429,7 +429,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 4.1.d placeholder `PRODUCT.md` stays as drafted in planning (do not overwrite); `DESIGN.md` absent until 14.1
   - [ ] 4.1.e **the Cache Components spike** (ARCHITECTURE.md §9): a fixture item route resolved by public id with `permanentRedirect()` on a slug mismatch; a `'use cache'` + `cacheTag` record; a `<Suspense>` purchase panel reading the `shipTo` cookie and a fake availability source; `revalidateTag(tag, 'max')` for the record and `{ expire: 0 }` for availability, proven by a test that flips availability and never sees it stale; `next build` with the admin mounted and **no database, brand or secrets**; one gallery build serving `test` and Indies Gallery with different mastheads. Written up in `docs/spikes/cache-components.md` The spike also proves a **JavaScript-off** request gets the page body and every form in the first flush, not only a root fallback (senior-fe, 1.2.l): a streamed part never carries a form or a post result. It posts the ship-to selector and a bag-line removal with JavaScript off (every write is a POST form, C13).
   - [ ] 4.1.f `/brand-assets/[...path]` in `@engine/http`: serves logo, favicon, OG fallback and fonts from `BRAND_ROOT` with immutable caching; the legacy handler stub at `/api/x/legacy/[...path]` (404 until 36.4)
-  - [ ] 4.1.g **Check:** both apps run for their brand and for `test`, render the brand name and logo from config with placeholder tokens in EN and ID, mount Payload at `/admin`, serve `/api/health` (app, DB, storage — and it initialises Payload), serve brand files at `/brand-assets/…`, and route parity passes; **the spike's verdict is recorded** in ARCHITECTURE.md §9 — Cache Components confirmed, or the fallback adopted whole.
+  - [ ] 4.1.g **Check:** both apps run for their brand and for `test`, render the brand name and logo from config with placeholder tokens in EN and ID, mount Payload at `/admin`, serve `/api/health` (app, DB, storage — and it initialises Payload), serve brand files at `/brand-assets/…`, and route parity passes; **the spike's verdict is recorded** in ARCHITECTURE.md §9 — Cache Components confirmed, or the fallback adopted whole; and a push to `production` publishes a `deploy/production-*` release whose tarball holds `indies-gallery/` and `old-east-indies/` standalone builds, each with its brand `site/` folder and `sharp`, and a `.sha256` — `.github/scripts/assemble-artifact.sh` checked against the real standalone output first (moved from 2.3.d).
 
 ---
 
@@ -2360,6 +2360,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-29 — 2.3 merged (2.3.a–c) — `ci.yml` (change detection, static, unit), `e2e.yml` (a Postgres 18 service, the four databases made by the real `db:fresh` and compared by `schema-hash --all`), Lighthouse, `release.yml` (artifact and publish on `production`), `.gaiadeploy.yml` from DEPLOYMENT §3; actionlint clean. The db tooling gained a direct transport (`PGHOST`) so CI runs the same scripts as a laptop, which also fixed a CRLF bug in database listing. Build, Playwright, Lighthouse and the artifact skip with a notice until phase 4, so the tarball clause of 2.3.d moved to 4.1.g. 2.3.d waits on a push to `main` and to `production` (owner's OK).
 - 2026-09-29 — 2.4.c merged — 14 docs and design.md synced to contracts v1.1, D39 and the 1.2 fix reports; the 37 task-text edits it proposed (`.claude/specs/indies-platform/reviews/2.4c-tasks-edits.md`) applied to this board, among them 29.1 now owning the want-list operations, 31.3 and 34.3 each rendering the want-list page, and the `buyerOrderStatus()` test on 19.1. Found: C6 `EnquiryTopic` still has `'wholesale'` (a D36 leftover) — back to ARC before the 2.4.d sign-off.
 - 2026-09-29 — ✅ 2.2 (13a56d8) — every gate built and failing on its planted violation (file size, brand literals, schema hash against real Postgres, route parity, config drift on a fixture generator, overlapping **Owns**); `tasks:lint` parses all 160 tasks and 712 subtasks; `brand:create` scaffolds a brand that passes the C1 schema; the contract smoke tests moved into their packages (177 tests). Gates with no input yet say so and pass: route mounts until phase 4, the generators until 3.2 wires them, brand domains until 3.1 writes the configs. tasks-lint found two **Owns** defects, fixed on the board: 1.1/1.2 now say root vs per-package `package.json`; 30.4.b's configurator moves to `surfaces/configurator/**`, out of 30.3's `surfaces/item/**`.
 - 2026-09-29 — ✅ 2.1 (463bd91) — `docker-compose.dev.yml` (postgres:18 with `unaccent`/`pg_trgm` in template1, Mailpit, MinIO with the four buckets), `db:fresh`/`db:drop`/`db:list` isolating each worktree's suffix, `.env.example` for DEPLOYMENT §8. The CI clause of 2.1.d moved to 2.3.d. Found: `minio/minio` no longer allows anonymous pulls, so the stack uses `bitnamilegacy/minio` (a frozen image, owner to decide); Postgres 18 mounts its volume at `/var/lib/postgresql`.
