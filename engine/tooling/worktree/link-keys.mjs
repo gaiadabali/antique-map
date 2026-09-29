@@ -9,32 +9,48 @@
 // emailed from this worktree's database verify against it. A blank
 // `LINK_TOKEN_KEYS=` line (a copied .env.example) is not a ring and is filled.
 import { randomBytes } from 'node:crypto'
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 import { readEnvFile, writeEnvFile } from './env-file.mjs'
 
 export const LINK_KEY_VARIABLE = 'LINK_TOKEN_KEYS'
 export const DEV_KID = 'dev'
 const SECRET_BYTES = 32
-/** parseLinkTokenKeys() refuses fewer distinct byte values than this as a pattern. */
-const MIN_DISTINCT_BYTES = 16
+/** More draws than this all refused is a broken `random`, not bad luck (each is ~10^-12). */
+const MAX_DRAWS = 64
 
 /**
- * Whether `parseLinkTokenKeys()` would refuse these bytes as not random — one byte
- * repeated, a pattern, or all printable text. Vanishingly rare for 32 random bytes;
- * checked so the generated ring can never be one it refuses.
+ * C1's own `parseLinkTokenKeys()` (`@engine/config/boot-check`), so a generated ring is judged
+ * by exactly the rules bootCheck() applies — v1.2's stepped runs and repeated blocks, and
+ * whatever a later version adds — never by a copy of them here (TASKS.md 3.5.e). This file
+ * runs under plain `node` (the `worktree:env` CLI), which strips types but cannot follow the
+ * package index's extensionless imports, so it loads the one leaf module that holds the rule,
+ * `link-keys.ts`, beside the index the package's `exports` names; that module imports nothing.
  */
-function looksPatterned(bytes) {
-  const distinct = new Set(bytes).size
-  const printable = bytes.every((byte) => byte >= 0x20 && byte <= 0x7e)
-  return distinct < MIN_DISTINCT_BYTES || printable
-}
+const { parseLinkTokenKeys } = await import(
+  pathToFileURL(
+    join(
+      dirname(createRequire(import.meta.url).resolve('@engine/config/boot-check')),
+      'link-keys.ts',
+    ),
+  ).href
+)
 
-/** A fresh one-key ring, `dev:<43 base64url characters>`. `random` is injectable for tests. */
+/**
+ * A fresh one-key ring, `dev:<43 base64url characters>`: 32 random bytes, drawn again until
+ * `parseLinkTokenKeys()` accepts them (a refusal among random bytes is ~10^-12 a draw).
+ * `random` is injectable for tests. Throws, naming no secret, if every draw is refused.
+ */
 export function generateDevRing(random = randomBytes) {
-  let bytes
-  do bytes = random(SECRET_BYTES)
-  while (looksPatterned(bytes))
-  return `${DEV_KID}:${Buffer.from(bytes).toString('base64url')}`
+  for (let draw = 0; draw < MAX_DRAWS; draw += 1) {
+    const ring = `${DEV_KID}:${Buffer.from(random(SECRET_BYTES)).toString('base64url')}`
+    if (parseLinkTokenKeys(ring).ok) return ring
+  }
+  throw new Error(
+    `${MAX_DRAWS} draws of ${SECRET_BYTES} bytes were all refused by parseLinkTokenKeys(): the random source is broken`,
+  )
 }
 
 /**
