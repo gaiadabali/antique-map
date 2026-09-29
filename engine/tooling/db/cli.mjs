@@ -35,7 +35,7 @@ const USAGE = `usage:
   pnpm db:drop  --brand <slug> [--suffix <lane>]
   pnpm db:list
 
-  --brand   a brand folder's slug at the repo root (e.g. test, indies-gallery)
+  --brand   a brand folder's slug at the repo root (e.g. test, fixture-atlas)
   --suffix  defaults to DB_SUFFIX in .env.local (written by \`pnpm worktree\`)`
 
 class UsageError extends Error {}

@@ -23,13 +23,13 @@ describe('discoverBrands', () => {
   it('finds the real brand folders, sorted, and never a literal slug', () => {
     root = mkdtempSync(join(tmpdir(), 'db-brands-'))
     brandFolder('test')
-    brandFolder('old-east-indies')
-    brandFolder('indies-gallery')
+    brandFolder('fixture-emporium')
+    brandFolder('fixture-atlas')
     mkdirSync(join(root, 'engine'), { recursive: true }) // infra, not a brand
     mkdirSync(join(root, 'docs'), { recursive: true })
     writeFileSync(join(root, 'docs', 'README.md'), '# docs\n') // has a README but is denylisted
 
-    expect(discoverBrands(root)).toEqual(['indies-gallery', 'old-east-indies', 'test'])
+    expect(discoverBrands(root)).toEqual(['fixture-atlas', 'fixture-emporium', 'test'])
   })
 
   it('ignores a top-level directory with no README.md', () => {

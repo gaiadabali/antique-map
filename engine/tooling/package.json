@@ -6,5 +6,9 @@
   "type": "module",
   "exports": {
     "./tsconfig/package.tsconfig.json": "./tsconfig/package.tsconfig.json"
+  },
+  "devDependencies": {
+    "@engine/config": "workspace:*",
+    "@engine/http": "workspace:*"
   }
 }

@@ -41,8 +41,8 @@ export function parseSuffix(value) {
 
 /**
  * The database name for a (brand, suffix) pair: the brand slug with dashes
- * turned into underscores, then the suffix — so `indies-gallery` + `p2_har`
- * is `indies_gallery_p2_har`. Two different (brand, suffix) pairs always
+ * turned into underscores, then the suffix — so `fixture-atlas` + `p2_har`
+ * is `fixture_atlas_p2_har`. Two different (brand, suffix) pairs always
  * differ here as long as each is valid, which is what keeps two worktrees'
  * databases apart (PARALLEL-TRACKS.md §3.1).
  */
@@ -61,7 +61,7 @@ export function databaseName(brand, suffix) {
  * True for a name `databaseName()` could have produced for one of `brands`
  * (used by `db:list` to annotate rows, and to guard `db:drop` against
  * dropping an unrelated database). Tries the longest brand prefix first, so
- * a brand whose slug prefixes another's (e.g. `old` and `old-east-indies`)
+ * a brand whose slug prefixes another's (e.g. `old` and `fixture-emporium`)
  * never shadows the longer, more specific match.
  */
 export function parseDatabaseName(name, brands) {
