@@ -36,7 +36,10 @@ export const MODULES = {
     "Saved items in the buyer's account (with `accounts.buyers`): a viewing's pull list",
   'retention.deviceWishlist':
     "Saved items on the guest's device, with no account (D35): each save tracked under ANALYTICS.md §1's consent rule (D38)",
-  'retention.wantList': 'Saved searches and "tell me when another example arrives"',
+  'retention.wantList':
+    'Saved searches and "tell me when another example arrives" kept in a buyer account (with `accounts.buyers` and `retention.emailWantList`)',
+  'retention.emailWantList':
+    'Saved searches and item alerts held by an email address, with no account (D39): confirmed by email (double opt-in), every alert with its one-click unsubscribe, on the want-list page',
   'retention.newsletter': 'Newsletter signup, digest and the issue archive',
   'retention.reviews': 'Product reviews from verified orders',
   'retention.backInStock': 'Restock alerts',
@@ -70,9 +73,10 @@ export function hasModule(config: { readonly modules: ModuleFlags }, key: Module
  * `validateBrandConfigs()` rejects a brand whose modules are not a subset, so a missing
  * surface fails CI instead of rendering as a blank section (BRANDS.md §6). It is also how a
  * difference of archetype stays a flag rather than a brand check: the emporium's list omits
- * `accounts.buyers` and `retention.wishlist` — shoppers there buy as guests and save items on
- * their device, so no shop can open shopper sign-up or an account wishlist (D31, D35) — and
- * the gallery's omits `accounts.retailers`, so the Partnership surface is the emporium's.
+ * `accounts.buyers`, `retention.wishlist` and `retention.wantList` — shoppers there buy as
+ * guests, save items on their device and keep want lists by email, so no shop can open shopper
+ * sign-up, an account wishlist or an account's want lists (D31, D35, D39) — and the gallery's
+ * omits `accounts.retailers`, so the Partnership surface is the emporium's.
  * There is no separate trade enquiry: every business buyer applies as a partner (D36).
  */
 export type AppSupports = {

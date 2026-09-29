@@ -69,6 +69,7 @@ const purchase: VariantsPurchaseVM = {
     scale: { widthMm: 450, heightMm: 360 },
   },
   showroom: false,
+  analytics: { priceBand: 'tier-1', status: 'available' },
 }
 
 const base = originalItem('pending')
@@ -110,6 +111,7 @@ export const itemVariants: ItemVM = {
   sister: streamed({
     kind: 'original',
     sister: { name: 'Fixture Gallery', href: 'https://gallery.example.test', syncedAt: NOW },
+    workUid: 'FIX-000001',
     original: {
       title: 'The Isle of Contoh by Hendrik Voorbeeld, 1718',
       href: 'https://gallery.example.test/product/1001-isle-of-contoh-voorbeeld-1718',

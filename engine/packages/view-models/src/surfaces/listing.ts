@@ -54,7 +54,7 @@ export type EmptyResultsVM = {
   suggestions: readonly LinkVM[]
   /** An enquiry prefilled with the query. */
   enquiry: string
-  /** A want-list alert for this query; `null` when `retention.wantList` is off. */
+  /** A want-list alert for this query (C10 `wantList`); `null` when `retention.emailWantList` is off. */
   alert: { href: string } | null
   /** "We hold about 9,500 works and not all are online — ask us." */
   message: MessageVM
@@ -72,7 +72,10 @@ type ListingBase = {
   sort: readonly { key: SortKey; href: string; selected: boolean }[]
   pagination: PaginationVM
   empty: EmptyResultsVM | null
-  /** "Alert me about new maps of Bali under US$2,000"; `null` when the module is off. */
+  /**
+   * "Alert me about new maps of Bali under US$2,000": the want-list page for this listing (C10
+   * `wantList`, `watch` its canonical path); `null` when `retention.emailWantList` is off.
+   */
   alert: { href: string } | null
   seo: SeoVM
   breadcrumbs: readonly LinkVM[]

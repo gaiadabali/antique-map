@@ -1,10 +1,44 @@
 /**
  * @contract C13 — the HTTP handler manifest: form posts and saved items · owner: ARC · entry: `@engine/http/manifest`
  *
- * How every form's post comes back to its page, and the forms route's own operations
- * (`/api/x/forms/<path>`; WEB), beside C6's commerce API and the auth routes.
+ * How every form's post is read (`FORM_DECODING`) and comes back to its page (`FORM_RESULT`), and
+ * the forms route's own operations (`/api/x/forms/<path>`; WEB), beside C6's commerce API and the
+ * auth routes.
  */
 import type { SubRoute } from './types'
+
+/**
+ * How an HTML form post becomes its operation's request (C6's, or an auth or forms operation's):
+ * one decoder for every handler, after which the request is validated exactly as a script's JSON
+ * body is — one validator, whichever way it came. The body is `application/x-www-form-urlencoded`
+ * in UTF-8, or `multipart/form-data` where a form takes files: each file then passes the upload
+ * endpoint's own checks and becomes its C6 `UploadId`.
+ * - A field's name is its request path. Dots nest and a numeric segment is an array index
+ *   (`lines.0.productId`), counted from 0 with no gap. A name posted twice is `invalid` — never
+ *   the last one winning — and a name outside the request's shape is dropped, never passed on.
+ * - Text is trimmed, and an empty field is `null`: an optional one left blank is `null`, a
+ *   required one `required`.
+ * - A number — an id, a quantity — is ASCII digits for a safe integer: anything else is `format`,
+ *   and past a safe integer `out-of-range`. (A map pin's coordinates, the one fractional number
+ *   a request holds, come only from a script's JSON: the pin needs the map.)
+ * - A tick box posts `'true'`, and its absence is `false`.
+ * - Money is only ever the offer's bid (C6 `proposal`): one text field of ASCII digits, with at
+ *   most one `decimalSeparator` followed by at most the currency's exponent of digits — no
+ *   grouping, sign, symbol or exponent. Its currency is the ship-to market's (the `shipTo`
+ *   cookie), never the post's; its amount is the major units times 10 to that exponent (USD
+ *   `4200.50` is `420050`, IDR `4200000` is `4200000`, C1 `CURRENCY_EXPONENT`). `4.200.000`,
+ *   `4,20` and `1e6` are `format`: an amount is never guessed at.
+ * - `idempotencyKey` is the hidden field the page minted as it rendered the form (C6
+ *   `IdempotencyKey`), and `returnTo` is taken only as one of this site's pages (`FORM_RESULT`).
+ */
+export const FORM_DECODING = {
+  /** A larger post is refused unread (413); files ride in the upload endpoint's own limits. */
+  maxBodyBytes: 64 * 1024,
+  /** More fields than this is `invalid` (`limit`). */
+  maxFields: 200,
+  /** A money field's one separator: the decimal point, whatever the page's locale writes. */
+  decimalSeparator: '.',
+} as const
 
 /**
  * How a post comes back (C2 `FormResultVM`, on every form). A script's `fetch` asks for JSON
@@ -19,7 +53,7 @@ import type { SubRoute } from './types'
  * after `maxAgeSeconds` — never on first read, so a second render or a prefetch in the same
  * request finds it still there. `received` is the same for everyone who posts that form, so it
  * names no one and admits nothing about an account. A tick box posts `'true'` when ticked and
- * nothing when not; the handler's decoder reads the absence as `false`.
+ * nothing when not; the decoder reads the absence as `false` (`FORM_DECODING`).
  */
 export const FORM_RESULT = { cookie: 'form_result', maxAgeSeconds: 600 } as const
 

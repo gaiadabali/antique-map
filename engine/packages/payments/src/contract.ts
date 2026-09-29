@@ -14,7 +14,7 @@ import type {
   PaymentMethodFamily,
   SellerConfig,
 } from '@engine/config/schema'
-import type { Duration, EventIdRule, RawWebhook } from '@engine/domain/api'
+import type { Duration, EventIdRule, PaymentOptionView, RawWebhook } from '@engine/domain/api'
 import type {
   NormalizedPaymentEvent,
   PaymentLookup,
@@ -100,6 +100,8 @@ export type MethodCapability<AuthCapture extends boolean = boolean> = {
    * account hours. The domain extends the checkout lock to this plus a margin (extend()).
    */
   readonly sessionTtl: Duration
+  /** The session kind `createSession()` returns for it: what C6's `PaymentOptionView` tells. */
+  readonly presentation: SessionResult['kind']
   /** Authorise now, capture while the reservation is live — only where the gateway can capture. */
   readonly authCapture: AuthCapture extends true ? boolean : false
   readonly refunds: 'full' | 'partial' | 'manual-only'
@@ -127,7 +129,10 @@ export type SessionInput = {
    */
   readonly attemptId: string
   readonly orderRef: string
-  /** The order's computed total in the charge currency — never the browser's (PAYMENTS.md §1). */
+  /**
+   * The order's computed total in the charge currency — never the browser's (PAYMENTS.md §1) —
+   * in C5's minor units; the adapter converts to its provider's (IDR in hundredths) and back.
+   */
   readonly charge: Money
   /** A display-only estimate in the market currency, where the rules allow one. */
   readonly display: Money | null
@@ -282,3 +287,9 @@ type _AuthoriseNeedsCapture = Accepts<
   Omit<Gateway, 'capture'>
 >
 type _NoCaptureOnImmediate = Assert<NoCapture['capture'] extends undefined ? true : false>
+// C6 shows what C7 declares: a method's family is C1's, its presentation the adapter's.
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false
+type _FamilyIsC1s = Assert<Same<PaymentOptionView['family'], PaymentMethodFamily>>
+type _PresentationIsC7s = Assert<
+  Same<PaymentOptionView['presentation'], MethodCapability['presentation']>
+>

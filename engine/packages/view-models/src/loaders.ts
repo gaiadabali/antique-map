@@ -14,11 +14,12 @@
  * §9): phase one is a `'use cache'` + `cacheTag` read returning `CachedPart<VM>` (`../common`)
  * — published-only, projected, the same for every visitor; phase two creates each `Streamed`
  * part at request time, inside the route's `<Suspense>`, and the loader returns the two
- * together. A cached read never awaits a streamed part. The one request-time part that is
- * awaited instead is a post's `result` (C13 `FORM_RESULT`): only a visitor without JavaScript
- * ever gets one, and a streamed part stays hidden from them, so the loader resolves it and the
- * page renders it in its own body, never inside a nested `<Suspense>` — which costs no caching,
- * since the route renders at request time and only the content read is `'use cache'`. There is
+ * together. A cached read never awaits a streamed part. The request-time parts awaited instead
+ * are what a visitor without JavaScript must see and act on — a post's `result` (C13
+ * `FORM_RESULT`), and on the want-list page its form and the list an email's link opened: a
+ * streamed part stays hidden from that visitor, so the loader resolves them and the page renders
+ * them in its own body, never inside a nested `<Suspense>` — which costs no caching, since the
+ * route renders at request time and only the content read is `'use cache'`. There is
  * no cookie-free fixed shell to prerender: the `(site)` layout awaits `connection()`, so every
  * page is rendered per request and caching is per read, by tag.
  *
@@ -65,6 +66,7 @@ import type { OrderLookupVM, OrderVM } from './surfaces/order'
 import type { PartnershipVM } from './surfaces/partnership'
 import type { PayVM, QuoteVM } from './surfaces/pay'
 import type { ErrorVM, GoneVM, NotFoundVM } from './surfaces/status'
+import type { WantListPageVM } from './surfaces/want-list'
 import type { WishlistVM } from './surfaces/wishlist'
 import type { CachedPart } from './common'
 
@@ -107,6 +109,8 @@ export type Loaders = {
   partnership: (p: At) => Promise<PartnershipVM | null>
   /** `null` where `retention.deviceWishlist` is off: the page 404s. */
   wishlist: (p: At) => Promise<WishlistVM | null>
+  /** `null` where `retention.emailWantList` is off: the page 404s. At most one subject. */
+  wantList: (p: At & { watch?: string; like?: number }) => Promise<WantListPageVM | null>
   /**
    * For `not-found.tsx`, which gets no params: `path` and `locale` come from the proxy's
    * request headers (C13 `PROXY_REQUEST_HEADERS`). A removed item's path answers `GoneVM` —

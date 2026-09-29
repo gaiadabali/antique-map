@@ -74,6 +74,13 @@ export const purchaseTierSchema = z.strictObject({
 })
 export type PurchaseTier = z.infer<typeof purchaseTierSchema>
 
+/**
+ * Which purchase tier an item's price falls in, by its position in `purchaseTiers` (`tier-1` the
+ * lowest), or why it has none: what C11's `item.viewed` reports instead of an amount, and what
+ * the streamed purchase panel hands the page to report (C2 `PurchaseVM.analytics`).
+ */
+export type PurchaseBand = `tier-${number}` | 'on-request' | 'none'
+
 export const commerceConfigSchema = z.strictObject({
   inventoryModels: z.array(z.enum(INVENTORY_MODELS)).min(1),
   ttl: ttlSchema.prefault({}),

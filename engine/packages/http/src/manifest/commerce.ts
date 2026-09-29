@@ -48,6 +48,15 @@ export const COMMERCE_AREAS = {
   quotes: { auth: ['public', 'customer', 'token'], methods: GET_POST, module: 'purchase.invoices' },
   // A business's application (D31, D36): the same receipt whoever applies, so it admits no one.
   retailers: { auth: ['public'], methods: POST, module: 'accounts.retailers' },
+  // Saved searches and item alerts (D39): an address's, confirmed from its email, or with
+  // `retention.wantList` a signed-in buyer's (a holder whose module is off is `not-offered`).
+  // GET is `WANT_LIST_ACCESS.link` alone. RFC 8058's one-click unsubscribe is the mail client's
+  // POST carrying its own token, which the same-origin check lets through (`sameOrigin`).
+  'want-lists': {
+    auth: ['public', 'customer', 'token'],
+    methods: GET_POST,
+    module: 'retention.emailWantList',
+  },
 } as const satisfies Record<string, CommerceRoute>
 export type CommerceArea = keyof typeof COMMERCE_AREAS
 
@@ -108,6 +117,11 @@ export const COMMERCE_OPERATIONS = {
   // copies the order's lines (D32).
   'quote.reorder': { area: 'quotes', method: 'POST', path: 'reorder' },
   'retailer.apply': { area: 'retailers', method: 'POST', path: 'applications' },
+  'wantList.subscribe': { area: 'want-lists', method: 'POST', path: '' },
+  // The want-list page's button, by the page's cookie (`WANT_LIST_ACCESS`).
+  'wantList.confirm': { area: 'want-lists', method: 'POST', path: 'confirm' },
+  // The page's button, the account's, and the mail client's `…/unsubscribe?token=…` (RFC 8058).
+  'wantList.unsubscribe': { area: 'want-lists', method: 'POST', path: 'unsubscribe' },
 } as const satisfies { readonly [O in CommerceOperation]: OperationAddress }
 
 /** The URL an app's client calls for a C6 operation. */
@@ -127,4 +141,19 @@ export function commerceUrl(operation: CommerceOperation): string {
 export const ORDER_ACCESS = {
   cookie: 'order_access',
   link: '/api/x/commerce/orders/access',
+} as const
+
+/**
+ * An address's want list, opened from its emails (C6 `WantListAccess`, C10 `wantList`, D39). The
+ * confirmation and every alert carry `link?token=…` — the list's token: random, stored hashed,
+ * living as long as the list. The link stores it in `cookie` (HttpOnly, Secure, SameSite=Lax,
+ * Path=/, for `maxAgeDays`) — a dead one too, so the page can say so — and answers 303 to the
+ * clean want-list page, which shows that list with its buttons, each a POST, so following the link
+ * changes nothing; a handler logs the link's path without `?token=`. A write the cookie
+ * authenticates is refused from another origin, so a planted token only shows its own list.
+ */
+export const WANT_LIST_ACCESS = {
+  cookie: 'want_list_access',
+  link: '/api/x/commerce/want-lists/access',
+  maxAgeDays: 30,
 } as const

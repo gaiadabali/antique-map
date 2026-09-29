@@ -47,6 +47,7 @@ import { pay, payPaid, payTransferPending, quoteProforma, quoteRequested, quoteT
 import { purchaseStates } from './purchase-states'
 import { shell, shellShop } from './shell'
 import { gone, notFoundLegacy, serverError } from './status'
+import * as wantList from './want-list'
 import { wishlist, wishlistEmpty } from './wishlist'
 
 export const SHELL_FIXTURES = { shell, 'shell-shop': shellShop } as const satisfies Readonly<
@@ -109,6 +110,7 @@ export const FIXTURES = {
   'order-lookup-found': lookup.orderLookupFound,
   'order-lookup-not-found': lookup.orderLookupNotFound,
   'order-lookup-rate-limited': lookup.orderLookupRateLimited,
+  'order-lookup-invalid': lookup.orderLookupInvalid,
   pay,
   'pay-paid': payPaid,
   'pay-transfer-pending': payTransferPending,
@@ -140,6 +142,12 @@ export const FIXTURES = {
   'partnership-retailer': partnership.partnershipRetailer,
   wishlist,
   'wishlist-empty': wishlistEmpty,
+  'want-list': wantList.wantListSubscribe,
+  'want-list-received': wantList.wantListReceived,
+  'want-list-account': wantList.wantListForAccount,
+  'want-list-pending': wantList.wantListPending,
+  'want-list-active': wantList.wantListActive,
+  'want-list-gone': wantList.wantListGone,
   'form-enquiry': form.formEnquiry,
   'form-offer': form.formOffer,
   'form-consignment': form.formConsignment,

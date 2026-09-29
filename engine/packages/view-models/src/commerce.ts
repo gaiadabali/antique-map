@@ -8,11 +8,12 @@
  * the commerce API. No figure is ever part of an intent, so nothing a component posts can
  * name a price: the server prices again and answers `price-changed` when its own figures
  * produce a different token from the one the buyer accepted. C6, C7 and C8 vocabulary —
- * steps, problems, notices, statuses, sessions — is used as it is, so a code means the same
- * thing on the wire and on the page.
+ * steps, problems, notices, sessions — is used as it is, so a code means the same thing on the
+ * wire and on the page; an order's status is C6's `BuyerOrderStatus`, never a machine's state.
  */
 import type { CountryCode, CurrencyCode, TaxRegime } from '@engine/config/schema'
 import type {
+  BuyerOrderStatus,
   CartRemoveCodeRequest,
   OrderTotalsView,
   PaymentOptionView,
@@ -20,8 +21,6 @@ import type {
   ShipmentView,
   ShippingOptionView,
 } from '@engine/domain/api'
-import type { OrderStatus } from '@engine/domain/machines/order'
-import type { PaymentStatus } from '@engine/domain/machines/payment'
 
 import type { ImageVM, IsoDateTime, Money } from './common'
 import type { LocationSummaryVM } from './surfaces/editorial'
@@ -107,8 +106,8 @@ export type DocumentVM = { kind: DocumentKind; href: string }
 export type OrderSummaryVM<Reorder extends ReorderIntentVM | null> = {
   number: string
   placedAt: IsoDateTime
-  status: OrderStatus
-  payment: PaymentStatus
+  /** Where the order stands for its buyer (C6), derived by the loader: never a dispute. */
+  status: BuyerOrderStatus
   total: Money
   items: readonly ItemRefVM[]
   /** `href('order', { number })`: it opens with the session or the order-access cookie. */

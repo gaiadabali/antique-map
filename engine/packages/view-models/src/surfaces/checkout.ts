@@ -11,6 +11,7 @@
  */
 import type { CountryCode } from '@engine/config/schema'
 import type {
+  BuyerOrderStatus,
   CheckoutContinueRequest,
   CheckoutStep,
   ChosenDelivery,
@@ -20,10 +21,10 @@ import type {
   ProblemOf,
   WireSessionResult,
 } from '@engine/domain/api'
-import type { OrderStatus } from '@engine/domain/machines/order'
+import type { PaymentFailureClass, PaymentMethodId } from '@engine/domain/machines/payment'
 
 import type { CardVM } from '../cards'
-import type { IsoDateTime, LinkVM, SellerIdentityVM, SeoVM, Streamed } from '../common'
+import type { IsoDateTime, LinkVM, SellerIdentityVM, SeoVM } from '../common'
 import type {
   AddressVM,
   AppliedCodeVM,
@@ -80,7 +81,11 @@ export type CheckoutPaymentVM = {
   session: WireSessionResult | null
 }
 
-/** Why the last step could not proceed — each a designed state that explains and instructs. */
+/**
+ * Why the last step could not proceed — each a designed state that explains and instructs. It is
+ * a post's outcome, which a page without JavaScript reads back through C13's `FORM_RESULT`, so
+ * it is resolved, and nothing in it streams: a streamed part would stay hidden from that visitor.
+ */
 export type CheckoutProblemVM =
   /** The totals above are the new figures: shown, and confirmed again — never charged silently. */
   | { code: 'price-changed' }
@@ -89,15 +94,19 @@ export type CheckoutProblemVM =
       code: 'reservation-conflict'
       state: 'held' | 'sold'
       heldUntil: IsoDateTime | null
-      alternatives: Streamed<readonly CardVM[]>
+      alternatives: readonly CardVM[]
+      /** The want-list page for the item (C10 `wantList`); `null` without `retention.emailWantList`. */
       wantList: { href: string } | null
     }
   | { code: 'line-not-routable'; lines: readonly LineProblem[] }
   /** The lock ran out mid-payment: start again from `href`. */
   | { code: 'expired'; restartAt: 'cart' | 'item' | 'link'; href: string }
   | ProblemOf<'method-unavailable'>
-  /** A failed payment or a cancelled redirect: another method, the bag kept. */
-  | { code: 'payment-failed'; reason: 'failed' | 'expired' | 'cancelled' }
+  /**
+   * A payment declined, failed or expired, or a redirect cancelled: another method, the bag
+   * kept. `reason` is C7's class, which the page words and `payment.failed` reports (C11).
+   */
+  | { code: 'payment-failed'; method: PaymentMethodId; reason: PaymentFailureClass }
   /** Every failing field at once, the buyer's entries kept. */
   | { code: 'invalid'; fields: readonly FieldError[] }
 
@@ -117,8 +126,8 @@ export type CheckoutVM = {
   payment: CheckoutPaymentVM
   /** A unique item's lock once taken: "We're holding this for you for 14:52". */
   lock: { expiresAt: IsoDateTime } | null
-  /** The order, once checkout reached payment. */
-  order: { number: string; status: OrderStatus } | null
+  /** The order, once checkout reached payment, as its buyer reads it (C6 `BuyerOrderStatus`). */
+  order: { number: string; status: BuyerOrderStatus } | null
   terms: LinkVM
   problem: CheckoutProblemVM | null
   intents: {

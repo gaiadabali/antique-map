@@ -76,7 +76,6 @@ export const accountRetailerApproved: AccountVM = {
           number: 'ID-000501',
           placedAt: '2026-10-20T09:00:00+08:00',
           status: 'completed',
-          payment: 'paid',
           total: money(9600000, 'IDR'),
           items: [PRINT, TOTE],
           href: '/orders/ID-000501',

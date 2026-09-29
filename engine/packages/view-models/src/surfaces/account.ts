@@ -15,12 +15,13 @@ import type { AccountSection } from '@engine/config/routes'
 import type { LocaleCode } from '@engine/config/schema'
 
 import type { CardVM } from '../cards'
-import type { IsoDateTime, Money, SeoVM, Streamed } from '../common'
+import type { IsoDateTime, SeoVM, Streamed } from '../common'
 import type { AddressVM, ItemRefVM, MarketVM, OrderSummaryVM, ReorderIntentVM } from '../commerce'
 import type { ConversationSectionVM } from './account-conversations'
 import type { ResetRequestVM, SetPasswordVM, SignedOutVM } from './account-entry'
 import type { ApprovedRetailerVM, RetailerSectionVM } from './account-retailer'
 import type { PaginationVM } from './listing'
+import type { WantListVM } from './want-list'
 
 export type * from './account-conversations'
 export type * from './account-entry'
@@ -40,20 +41,6 @@ export type AttentionVM = {
   item: ItemRefVM | null
   href: string
   until: IsoDateTime | null
-}
-
-/** A saved search or "tell me when another example arrives" (EXPERIENCE-GALLERY.md §8). */
-export type WantListVM = {
-  id: string
-  /** "Maps of Bali" — the query in words; the app adds the budget, formatted from `budget`. */
-  label: string
-  /** The browse page the list watches. */
-  href: string
-  /** In the viewer's market currency, stored with the list. */
-  budget: Money | null
-  frequency: 'instant' | 'weekly' | 'fortnightly'
-  lastNotifiedAt: IsoDateTime | null
-  unsubscribe: { href: string }
 }
 
 export type ProfileVM = {
@@ -94,6 +81,10 @@ export type AccountSectionVM<Reorder extends ReorderIntentVM | null> =
     }
   /** Booking a viewing sends the wishlist ahead as the pull list. */
   | { section: 'wishlist'; items: Streamed<readonly CardVM[]>; pullList: { href: string } | null }
+  /**
+   * The buyer's saved searches and item alerts (`retention.wantList`, D39), each with its stop
+   * button; a new one is saved from any alert link, on the want-list page (C10 `wantList`).
+   */
   | { section: 'wantLists'; lists: readonly WantListVM[] }
   | { section: 'addresses'; addresses: readonly AddressVM[] }
   | { section: 'profile'; profile: ProfileVM }

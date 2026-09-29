@@ -79,7 +79,6 @@ export const accountOverview: AccountVM = signedIn({
       number: 'SG-000123',
       placedAt: '2026-09-25T10:32:00+08:00',
       status: 'paid',
-      payment: 'paid',
       total: money(103500, 'USD'),
       items: [STRAITS],
       href: '/orders/SG-000123',
@@ -94,6 +93,7 @@ export const accountWishlist: AccountVM = signedIn({
   pullList: { href: '/book-a-visit?pullList=wishlist' },
 })
 
+/** A buyer's own lists (`retention.wantList`): each stops by the session, never by a token. */
 export const accountWantLists: AccountVM = signedIn({
   section: 'wantLists',
   lists: [
@@ -103,8 +103,21 @@ export const accountWantLists: AccountVM = signedIn({
       href: '/antique-maps/contoh?price=0-200000',
       budget: money(200000, 'USD'),
       frequency: 'instant',
+      status: 'active',
       lastNotifiedAt: '2026-09-20T08:00:00+08:00',
-      unsubscribe: { href: '/api/x/forms/want-lists/wl-1/unsubscribe?token=fixture' },
+      confirm: null,
+      stop: { access: { kind: 'account', wantListId: 'wl-1' } },
+    },
+    {
+      id: 'wl-2',
+      label: 'Another example of the Isle of Contoh',
+      href: '/product/1001-isle-of-contoh',
+      budget: null,
+      frequency: 'daily',
+      status: 'active',
+      lastNotifiedAt: null,
+      confirm: null,
+      stop: { access: { kind: 'account', wantListId: 'wl-2' } },
     },
   ],
 })

@@ -8,6 +8,7 @@
  * client — display only: the bag re-prices on the server and shows any difference.
  */
 import type { ImageVM, LineIntent, MessageVM, PriceVM, VariantId } from '../common'
+import type { PurchaseAnalyticsVM } from './purchase'
 
 /** Product-type axes (CONTENT-MODEL.md §2). */
 export type AxisKey =
@@ -108,4 +109,5 @@ export type VariantsPurchaseVM = {
   preview: PreviewVM | null
   /** Opened from a showroom QR label: pick it up now, buy and take it, or have it sent. */
   showroom: boolean
+  analytics: PurchaseAnalyticsVM
 }

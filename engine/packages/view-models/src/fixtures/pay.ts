@@ -8,7 +8,7 @@
  * issued at its trade tier beside the list prices it started from (D32).
  */
 import type { PayVM, QuoteVM } from '../surfaces/pay'
-import { ISLE, PRINT, STRAITS, TOTE, token, totals } from './_commerce'
+import { ISLE, paymentOption, PRINT, STRAITS, TOTE, token, totals } from './_commerce'
 import { money, SELLER_ID, SELLER_SG, seo } from './_shared'
 
 export const pay: PayVM = {
@@ -34,13 +34,12 @@ export const pay: PayVM = {
     { label: 'Returns and the guarantee', href: '/guarantee' },
   ],
   methods: [
-    { method: 'card', provider: 'stripe', confirmation: 'automatic', refunds: 'gateway' },
-    {
-      method: 'bank-transfer',
-      provider: 'bank-transfer',
+    paymentOption('card', 'stripe', 'card', 'embedded', 30),
+    // The link's hold ends on Sunday: a transfer's window closes before it does.
+    paymentOption('bank-transfer', 'bank-transfer', 'bank-transfer', 'instructions', 36 * 60, {
       confirmation: 'manual',
       refunds: 'manual',
-    },
+    }),
   ],
   payment: null,
   order: null,
@@ -78,6 +77,7 @@ export const payTransferPending: PayVM = {
     },
     expiresAt: '2026-09-27T04:00:00.000Z',
     lockExpiresAt: '2026-09-27T06:00:00.000Z',
+    dailyCapWarning: false,
   },
   order: { number: 'SG-000125', href: '/orders/SG-000125' },
   intents: {

@@ -76,7 +76,7 @@ export const listing: ListingVM = {
   ],
   pagination: { page: 1, pages: 1, previous: null, next: null },
   empty: null,
-  alert: { href: '/account/want-lists?place=contoh&objectType=map' },
+  alert: { href: '/alerts?watch=%2Fantique-maps%2Fcontoh' },
   status: [
     { key: 'available', href: '/antique-maps/contoh', selected: true },
     { key: 'onHold', href: '/antique-maps/contoh?availability=onHold', selected: false },
@@ -94,7 +94,7 @@ export const listingEmpty: ListingVM = {
   empty: {
     suggestions: [{ label: 'Insula Exempli → Pulau Contoh', href: '/antique-maps/contoh' }],
     enquiry: '/enquire?topic=general&q=insula',
-    alert: { href: '/account/want-lists?q=insula' },
+    alert: { href: '/alerts?watch=%2Fsearch%3Fq%3Dinsula' },
     message: { code: 'notAllOnline', params: { held: 9500 } },
   },
 }
@@ -113,7 +113,7 @@ export const search: SearchVM = {
   sort: listing.sort,
   pagination: listing.pagination,
   empty: null,
-  alert: { href: '/account/want-lists?q=insula+exempli' },
+  alert: { href: '/alerts?watch=%2Fsearch%3Fq%3Dinsula%2520exempli' },
   seo: { ...seo('Search', '/search'), noindex: true },
   breadcrumbs: [],
 }

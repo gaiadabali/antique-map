@@ -5,14 +5,38 @@
  * units (IDR exponent 0, USD and EUR 2). A pricing token is opaque and server-issued; a
  * fixture mints a placeholder with a cast, which no application code may do.
  */
-import type { CurrencyCode, TaxRegime } from '@engine/config/schema'
+import type { CurrencyCode, PaymentMethodFamily, TaxRegime } from '@engine/config/schema'
+import type { PaymentPresentation } from '@engine/domain/api'
+import type { PaymentMethodId, PaymentProviderId } from '@engine/domain/machines/payment'
 
 import type { Money } from '../common'
-import type { ItemRefVM, PricingToken, TotalsVM } from '../commerce'
+import type { ItemRefVM, PaymentOptionVM, PricingToken, TotalsVM } from '../commerce'
 import type { LocationSummaryVM } from '../surfaces/editorial'
 import { image, money, price } from './_shared'
 
 export const token = (value: string) => value as PricingToken
+
+type Settled = { confirmation?: 'automatic' | 'manual'; refunds?: 'gateway' | 'manual' }
+
+/** A method as routing offers it (C6 `PaymentOptionView`): what it opens, and for how long. */
+export function paymentOption(
+  method: PaymentMethodId,
+  provider: PaymentProviderId,
+  family: PaymentMethodFamily,
+  presentation: PaymentPresentation,
+  minutes: number,
+  settled: Settled = {},
+): PaymentOptionVM {
+  return {
+    method,
+    provider,
+    family,
+    presentation,
+    sessionTtl: { seconds: minutes * 60 },
+    confirmation: settled.confirmation ?? 'automatic',
+    refunds: settled.refunds ?? 'gateway',
+  }
+}
 
 type TotalsInput = {
   currency: CurrencyCode

@@ -26,6 +26,8 @@
  * - `documentPrefix` unique across sellers, and no provider listed twice in one seller;
  * - `retention.wishlist` only with `accounts.buyers` (its saved items are a buyer's account's),
  *   and never beside `retention.deviceWishlist` (a guest's, on the device — D35);
+ * - `retention.wantList` only with `accounts.buyers` (its lists are a buyer account's) and with
+ *   `retention.emailWantList`, whose want-list page is where every list is made (D39);
  * - `accounts.retailers` only with `commerce.trade` set, since approval assigns its
  *   `defaultTier` (the schema itself checks the tiers: ids unique, `defaultTier` one of them,
  *   none past `maxDiscountBps`);

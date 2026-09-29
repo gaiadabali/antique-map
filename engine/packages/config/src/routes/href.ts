@@ -61,6 +61,12 @@ export type HrefParams = {
   orderLookup: NoParams
   partnership: NoParams
   wishlist: NoParams
+  /**
+   * At most one subject: `watch`, the public path of the browse or search page to watch, or
+   * `like`, the public id of an item another example of which to wait for; `{}`, the bare page an
+   * email's link lands on.
+   */
+  wantList: { watch?: string; like?: number }
 }
 /** What `href()` reads from a brand config. */
 export type HrefConfig = { routes: RouteMap; locales: { default: LocaleCode } }
@@ -153,6 +159,8 @@ function partsOf(context: Context, surface: LinkSurface): [string[], string] {
     case 'pay':
     case 'quote':
       return [[at(surface), p.token ?? ''], '']
+    case 'wantList':
+      return [[at('wantList')], searchOf({ watch: p.watch, like: p.like })]
     case 'browse':
     case 'search':
       return listing(context, surface)
