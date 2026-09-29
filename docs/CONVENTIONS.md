@@ -67,16 +67,27 @@ and defeats the point. Don't.
   **safe integer** of minor units — asserted with `Number.isSafeInteger` at every
   boundary (Postgres `bigint` columns are read through a guard, never as a
   string, never as a `BigInt` across the wire). Rp 1.25 billion is far inside
-  the range. IDR has zero minor units, USD/SGD/EUR/AUD two — read the exponent
-  from `@engine/domain/money`, never hard-code 100.
+  the range. **The exponent is the engine's, not ISO 4217's** — read
+  `CURRENCY_EXPONENT` from `@engine/config/schema`, never `@engine/domain/money`
+  (which imports it and asserts against it, but never redeclares it), and never
+  hard-code 100: IDR is 0 here though ISO lists two, USD/SGD/EUR/AUD/GBP are 2
+  as ISO has them. A provider that counts in other units (IDR in hundredths)
+  converts both ways in its own adapter — never in the domain, never twice.
+  `formatMoney` (`@engine/i18n`) pins an amount's fraction digits to the
+  exponent itself, never the runtime's ICU default, so the server's render and
+  the browser's agree; a display **estimate** carries no fraction digits at all
+  — it is a whole major unit, never charged, never summed (COMMERCE.md §3).
 - **Prices are computed on the server, every time.** The browser sends product
   ids, variant ids and quantities — never a price, a total, a discount amount or
   a shipping cost (KOI `lib/commerce/pricing.ts` rule). A basket that arrives
   carrying its own prices buys nothing. The configurator may *display* a price
   looked up from a table the server sent for that destination; the bag re-prices
   on the server and shows any difference (COMMERCE.md §1).
-- Order lines **snapshot** price, tax, title and image at order time. An order
-  must still read correctly after the product is edited or deleted.
+- Order lines **snapshot** everything sold: title, chosen options with their
+  labels as read, stock number, the reproduction label, an image by its C9
+  asset id (never a URL a new derivative version would leave behind), unit
+  price, tax and discount. An order must still read correctly after the
+  product is edited or deleted.
 - **Rounding happens only at the named rounding points** (COMMERCE.md §3) —
   market price point, line discount, order-discount allocation, tax per line,
   FX conversion, partial-refund allocation — each with its documented method
