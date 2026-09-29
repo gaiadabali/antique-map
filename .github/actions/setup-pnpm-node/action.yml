@@ -1,0 +1,28 @@
+# Checkout + pnpm + Node + install, the four steps every job below repeats.
+# One place to bump pnpm/Node versions (HAR owns both, PARALLEL-TRACKS.md §1)
+# instead of four-plus copies drifting apart (TASKS.md 2.3.a).
+name: Set up pnpm and Node
+description: Checks out the repo, installs the pinned pnpm and Node, restores the pnpm store cache, and runs a frozen-lockfile install.
+inputs:
+  install:
+    description: Run `pnpm install --frozen-lockfile` after setup. Set to 'false' for a job that only reads files (e.g. the deploy-manifest check).
+    required: false
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    # pnpm@11.3.0 (packageManager, root package.json) — action-setup reads the
+    # version from packageManager itself, so nothing here can drift from it.
+    - name: Set up pnpm
+      uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+
+    - name: Set up Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      with:
+        node-version: '22.13.0' # engines.node in root package.json
+        cache: pnpm
+
+    - name: Install dependencies
+      if: inputs.install == 'true'
+      shell: bash
+      run: pnpm install --frozen-lockfile

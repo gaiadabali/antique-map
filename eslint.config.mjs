@@ -133,7 +133,7 @@ export default defineConfig([
   },
   {
     name: 'node scripts and tooling',
-    files: ['*.{js,mjs,cjs}', 'scripts/**', 'engine/tooling/**'],
+    files: ['*.{js,mjs,cjs}', 'scripts/**', 'engine/tooling/**', '.github/scripts/**'],
     languageOptions: { globals: { ...globals.node } },
   },
 

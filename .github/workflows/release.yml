@@ -1,0 +1,127 @@
+name: Release
+
+# The other half of DEPLOYMENT.md §3's release flow: ci.yml proves main; a
+# merge to `production` (never pushed to directly — CONVENTIONS.md §9) builds
+# the standalone artifact and publishes it as a `deploy/production-*` GitHub
+# release. `gaiada-poll` on Helios (60 s) picks the release up, verifies the
+# `.sha256`, and unpacks per `.gaiadeploy.yml`'s `subdir` — nothing here
+# touches Helios directly (DEPLOYMENT.md §9: Helios writes need the owner's
+# go-ahead every time).
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+concurrency:
+  # One release at a time, never cancelled mid-publish — two pushes finishing
+  # out of order must not have the poller pick up the older one.
+  group: release-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  artifact:
+    name: Build the deploy artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      name: ${{ steps.pack.outputs.name }}
+      built: ${{ steps.apps.outputs.exists }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-pnpm-node
+      - uses: ./.github/actions/apps-exist
+        id: apps
+
+      # Phase 4 (App shells) has not landed — `engine/apps/*` are empty
+      # directories, so there is nothing to build yet. A push to `production`
+      # is not expected before then; this keeps an early or accidental push
+      # from failing red with no actionable cause.
+      - name: Skip notice
+        if: steps.apps.outputs.exists != 'true'
+        run: |
+          echo "::notice::No deploy artifact built — engine/apps/{gallery,emporium} not scaffolded yet (phase 4). This job will build for real once both exist; nothing is published this run."
+
+      - name: Build gallery (no database env — the artifact never touches a database)
+        if: steps.apps.outputs.exists == 'true'
+        run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm --filter ./engine/apps/gallery run build
+
+      - name: Build emporium (no database env)
+        if: steps.apps.outputs.exists == 'true'
+        run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm --filter ./engine/apps/emporium run build
+
+      # One tarball, two brand subdirs (DEPLOYMENT.md §3) — the standalone
+      # server plus its `.next/static`/`public` (Next's tracing does not
+      # follow files that are only ever served, KOI's finding), `sharp`/`@img`
+      # copied in beside the server (native addon, not traced by `output:
+      # standalone` either), and the brand's own `site/` folder (config,
+      # copy, assets — BRAND_ROOT at runtime).
+      - name: Assemble indies-gallery/ and old-east-indies/
+        if: steps.apps.outputs.exists == 'true'
+        run: bash .github/scripts/assemble-artifact.sh
+
+      - name: Package
+        id: pack
+        if: steps.apps.outputs.exists == 'true'
+        run: |
+          set -euo pipefail
+          sha="${GITHUB_SHA::7}"
+          stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+          name="production-${stamp}-${sha}"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          tar -czf "${name}.tar.gz" -C "$RUNNER_TEMP/artifact" indies-gallery old-east-indies
+          sha256sum "${name}.tar.gz" > "${name}.sha256"
+          ls -lh "${name}.tar.gz"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: steps.apps.outputs.exists == 'true'
+        with:
+          name: deploy
+          path: |
+            ${{ steps.pack.outputs.name }}.tar.gz
+            ${{ steps.pack.outputs.name }}.sha256
+          retention-days: 1
+          compression-level: 0
+
+  publish:
+    name: Publish deploy/production release
+    needs: artifact
+    if: needs.artifact.outputs.built == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # the release asset only — this job pushes no ref
+    env:
+      NAME: ${{ needs.artifact.outputs.name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: deploy
+
+      - name: Verify the checksum
+        run: sha256sum -c "${NAME}.sha256"
+
+      - name: Publish the release
+        run: |
+          set -euo pipefail
+          gh release create "deploy/${NAME}" \
+            --title "${NAME}" \
+            --notes "env=production site_type=node branch=${GITHUB_REF_NAME} commit=${GITHUB_SHA}" \
+            --target "${GITHUB_SHA}" \
+            "${NAME}.tar.gz" \
+            "${NAME}.sha256"
+
+      - name: Prune old deploy releases (keep 2 — DEPLOYMENT.md §3)
+        run: |
+          gh release list --limit 100 --json tagName,createdAt \
+            --jq '[.[] | select(.tagName | startswith("deploy/production-"))] | sort_by(.createdAt) | reverse | .[2:] | .[].tagName' \
+            > to-delete.txt
+          while read -r tag; do
+            [ -n "$tag" ] || continue
+            echo "pruning $tag"
+            gh release delete "$tag" --yes --cleanup-tag || true
+          done < to-delete.txt

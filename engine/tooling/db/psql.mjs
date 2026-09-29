@@ -1,55 +1,44 @@
-// Talks to the local Postgres through `docker compose exec`, never a Node
-// Postgres client — DEVOPS is told to prefer shelling to
-// `docker compose exec postgres psql` over adding a dependency, and this is
-// the one place that does it (TASKS.md 2.1.b).
+// Talks to Postgres through `psql` — never a Node Postgres client (DEVOPS is
+// told to prefer shelling to `psql` over adding a dependency, TASKS.md
+// 2.1.b). Two transports, chosen by environment (transport.mjs, 2.3.a's
+// follow-up): `docker compose exec` against the local dev stack by default,
+// or a direct `psql` on PATH against PGHOST/PGPORT — CI's Postgres is a bare
+// service container with no compose project for `exec` to reach.
 import { execFileSync } from 'node:child_process'
 
-const DEFAULT_USER = process.env.POSTGRES_USER ?? 'postgres'
-const COMPOSE_FILE = process.env.DOCKER_COMPOSE_FILE ?? 'docker-compose.dev.yml'
-// Matches docker-compose.dev.yml's top-level `name:` — pinned so every
-// worktree's `docker compose` reaches the one shared stack regardless of
-// which directory it runs from (a project name otherwise defaults to the
-// current directory's name, which is different in every worktree).
-const PROJECT = process.env.COMPOSE_PROJECT_NAME ?? 'indies-platform-dev'
-const SERVICE = 'postgres'
+import { buildCommand, resolveTransport } from './transport.mjs'
 
 export class PsqlError extends Error {}
 
-/** Runs one SQL statement against `database` as the superuser and returns trimmed stdout. Rejects with the container's stderr on failure — never swallowed, so a stopped stack fails loudly rather than looking like an empty result. */
+/** Runs one SQL statement against `database` as the superuser and returns trimmed stdout. Rejects with the failure's stderr on failure — never swallowed, so an unreachable Postgres fails loudly rather than looking like an empty result. */
 export function psql(database, sql, { cwd } = {}) {
-  const args = [
-    'compose',
-    '-p',
-    PROJECT,
-    '-f',
-    COMPOSE_FILE,
-    'exec',
-    '-T',
-    SERVICE,
+  const { bin, args } = buildCommand(
     'psql',
-    '-v',
-    'ON_ERROR_STOP=1',
-    '--username',
-    DEFAULT_USER,
-    '--dbname',
-    database,
-    '--tuples-only',
-    '--no-align',
-    '--command',
-    sql,
-  ]
+    [
+      '-v',
+      'ON_ERROR_STOP=1',
+      '--dbname',
+      database,
+      '--tuples-only',
+      '--no-align',
+      '--command',
+      sql,
+    ],
+    process.env,
+  )
   try {
-    return execFileSync('docker', args, {
+    return execFileSync(bin, args, {
       cwd,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
     }).trim()
   } catch (error) {
     const detail = error.stderr ? String(error.stderr).trim() : error.message
-    throw new PsqlError(
-      `postgres (via docker compose) rejected the query — is the stack up? ` +
-        `(\`docker compose -f ${COMPOSE_FILE} up -d\`)\n${detail}`,
-    )
+    const hint =
+      resolveTransport(process.env) === 'direct'
+        ? `is Postgres reachable at ${process.env.PGHOST}:${process.env.PGPORT ?? '5432'}?`
+        : `is the stack up? (\`docker compose -f ${process.env.DOCKER_COMPOSE_FILE ?? 'docker-compose.dev.yml'} up -d\`)`
+    throw new PsqlError(`postgres rejected the query — ${hint}\n${detail}`)
   }
 }
 
@@ -70,7 +59,11 @@ export function listDatabases(opts) {
     "SELECT datname FROM pg_database WHERE datistemplate = false AND datname <> 'postgres' ORDER BY 1",
     opts,
   )
-  return out === '' ? [] : out.split('\n')
+  // `\r\n` under the direct transport with a native Windows `psql` client
+  // (found running this against one locally) — `docker compose exec`'s
+  // Linux `psql` never emits `\r`, but splitting on `\r?\n` costs nothing
+  // there and keeps a database name from silently carrying a stray `\r`.
+  return out === '' ? [] : out.split(/\r?\n/)
 }
 
 /** Creates `database` if it does not exist (idempotent — `db:fresh` is safe to re-run). New databases inherit `unaccent`/`pg_trgm` from `template1` (init script, 2.1.a); this re-asserts both so a database created against a different template still has them. */
