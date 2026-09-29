@@ -142,7 +142,11 @@ that confirms the address (D39), and stopping the alert erases the list
 whole — its address, its query and its consent together — so nothing of it
 remains for the record of processing to still cover. No emailed or addressed
 link's token is kept at rest (C6 `links`: derived when needed, never stored),
-so a copy of the database opens no one's order, application or alert; and a
+so a copy of the database opens no one's order, application or alert. A link to
+a page that shows personal data — an order's address, a quote's buyer, an
+enquiry's message — stops working a set window after its latest email
+(`LINK_WINDOW_DAYS`: 30 or 90 days), so an old or forwarded email no longer opens
+it; the account still does, by session. And a
 request's stored idempotent answer — which can hold a buyer's contact or a tax
 id — is kept 7 days (`IDEMPOTENCY_KEY_RETENTION`), then swept, and erased at
 once with the rest of its caller's data.

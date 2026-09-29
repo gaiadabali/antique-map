@@ -192,8 +192,11 @@ SHIPPING_<SELLER>_<PROVIDER>_*  per seller, like payments — a shipping webhook
 FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
 WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
 REVALIDATE_SECRET  CRON_SECRET
-LINK_TOKEN_KEYS             kid:secret pairs (≥ 32 random bytes each), the first current: every capability
-                            link's HMAC key (C6 links); a retired key keeps verifying LINK_TOKEN.keyOverlapDays
+LINK_TOKEN_KEYS             the capability links' key ring (C6 links), one per brand and per environment,
+                            never shared: comma-separated kid:secret (the one current key),
+                            kid:secret:YYYY-MM-DD (retired that UTC day; verifies LINK_TOKEN.keyOverlapDays
+                            more) and kid:revoked (refuses at once: a leak); secrets base64url, ≥ 32 random
+                            bytes; a kid is never reused; a restart applies a change
 LEGACY_DATA_DIR             workstations only: where the old site's raw extracts live
 ```
 
