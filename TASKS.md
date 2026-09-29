@@ -474,11 +474,12 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [ ] **4.2 The client-safe gate** · needs: phase 3
   - **Lane** HAR · **Agent** medior · **Wave** W1
-  - **Owns** `engine/tooling/client-safe/**`, the `check:client-safe` script and its step in `pnpm verify`, `engine/packages/i18n/test/client-safe.test.ts`
+  - **Owns** `engine/tooling/client-safe/**`, the `check:client-safe` script and its step in `pnpm verify`, `engine/packages/i18n/test/client-safe.test.ts`, `.github/workflows/ci.yml` (the `lighthouse` job's `env` only)
   - **Read** CONVENTIONS.md §6, DESIGN-SYSTEM.md §7, CONTRACTS.md (C1 `@engine/config/constants`)
   - _Requirements: 19.1_
   - [ ] 4.2.a `check:client-safe`: the walker of `engine/packages/i18n/test/client-safe.test.ts` (static and dynamic imports, `@engine/*` packages under the browser conditions), moved into the tool and imported back by that test, run over every module under `engine/` whose first statement is `'use client'`; it fails on a reach of `zod`, `@engine/config/{schema,routes,loader,validate,boot-check}`, `node:*`, `payload`, `@payloadcms/*` or `@engine/cms`, naming the import chain
   - [ ] 4.2.b a CI test plants each violation — direct, through a relative import, through a workspace package, through a dynamic `import()` — and sees it fail, then pass once removed
+  - [ ] 4.2.d `ci.yml`'s `lighthouse` job sets `env: LOCAL_PRODUCTION_BUILD: '1'` (it serves a production build at `localhost:4200`, which C1 v1.2 judges production without the opt-in — 3.5's report)
   - [ ] 4.2.c **Check:** `pnpm verify` runs `check:client-safe`; each planted violation fails it with its import chain and passes once removed; the i18n root entry and every `'use client'` module in the apps pass.
 
 ---
