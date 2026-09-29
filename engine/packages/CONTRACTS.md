@@ -17,7 +17,7 @@ each contract is one module, re-exported from the entry named below.
 | C2 | Surfaces and view models, loader signatures, typed fixtures | `@engine/view-models`, `@engine/view-models/fixtures` | `view-models/src/**` (except `blocks*.ts`) | WEB (`@engine/loaders`; state fixtures, TASKS.md 11.4) | WEB, UXG, UXE, SEO, DOM, NTF | v1.1 |
 | C3 | Token contract and the brand-overridable subset | `@engine/ui/tokens/contract` | `ui/src/tokens/contract.ts` | UXG, UXE (app defaults), WEB (token pipeline, TASKS.md 11.2) | UXG, UXE, BRD, ADM | v1.1 |
 | C4 | Content blocks: the frozen list and prop shapes | `@engine/view-models` | `view-models/src/blocks.ts`, `blocks-check.ts` | SCH (Payload blocks), UXG and UXE (renderers) | SCH, UXG, UXE, WEB | v1.1 |
-| C5 | Money: `Money`, `PriceSet`, rounding points, the pricing step | `@engine/domain/money` | `domain/src/money/contract.ts`, `domain/src/contracts/{pricing,price-sources}.ts`; shared by C5–C8: `domain/src/contracts/{scalars,type-assertions,storage}.ts` (`@engine/domain/storage`) | DOM | DOM, PAY, WEB, apps, C2 | v1.1 |
+| C5 | Money: `Money`, `PriceSet`, rounding points, the pricing step | `@engine/domain/money` | `domain/src/money/contract.ts`, `domain/src/contracts/{pricing,price-sources}.ts`; shared by C5–C8: `domain/src/contracts/{scalars,type-assertions,storage}.ts` (`@engine/domain/storage`) | DOM | DOM, PAY, WEB, apps, C2 | v1.2 |
 | C6 | Commerce API: requests, responses, problems, capability links | `@engine/domain/api`; values at `@engine/domain/retailers`, `@engine/domain/want-lists`, `@engine/domain/links` | `domain/src/contracts/{api,cart,checkout,paying,orders,leads,links,services,after-sale,retailers,want-lists,requests,results}.ts` | DOM (handlers in `http/src/commerce/**`) | apps, WEB, C2, C13 | v1.1 |
 | C7 | Provider interfaces and normalised events | `@engine/payments/contract`, `@engine/shipping/contract`, `@engine/fulfilment/contract` | `{payments,shipping,fulfilment}/src/contract.ts`, `payments/src/contract/**`, `domain/src/contracts/payment-vocabulary.ts` | PAY, LOG | PAY, LOG, DOM | v1.1 |
 | C8 | State machines, `reserve()`, `applyPaymentEvent()`, domain events | `@engine/domain/machines/*`, `@engine/domain/reservations`, `@engine/domain/transactions`, `@engine/domain/events` | `domain/src/*/machine.ts`, `domain/src/reservations/contract.ts`, `domain/src/contracts/{machine-types,reservation-types,transactions,domain-events,apply-payment-event}.ts` | DOM | DOM, PAY, ADM, NTF, WEB, C2 | v1.1 |
@@ -132,7 +132,9 @@ so it is breaking and also needs a redirect.
   byte with known answers), stored nowhere and never in an outbox row (C8 `IsPiiFree` refuses a
   credential's name) — a set-password link, single-use and hashed, alone excepted. Its keys are one
   ring per brand and environment, and a leaked one is revoked at once; a link to a page that shows
-  personal data works for its purpose's window, and a lapse is final.
+  personal data works for its purpose's window, and a lapse is final. What the database enforces is
+  `storage.ts`'s, on tables that all live in `public` under their plain names — a collection's and
+  an engine table's alike, never an `engine` schema — so the domain's SQL names them unqualified.
 - **C9.** Keys are content-addressed and versioned. A pipeline change raises
   `DERIVATIVE_VERSION` and never overwrites a key. `masterKey()` is what C12 snapshots
   reference.
@@ -463,3 +465,18 @@ so it is breaking and also needs a redirect.
   lanes are in 3.4's report: PLT's proxy reads `hasSurface()`; SCH's pages validator refuses a
   CMS slug that is a one-segment legacy path; BRD ships the touch icon and the manifest; WEB
   serves the root files unversioned.
+- **2026-09-30**: **C5 v1.2, and C13 v1.2 amended** (TASKS.md 3.4.g) — what 3.2 found building the
+  Payload config, settled against the docs. Nothing breaks: no lane has SQL or a mount yet.
+  - **C5, for the `storage.ts` C5–C8 share:** every table it constrains lives in `public`, the
+    adapter's schema, under its plain name — engine tables (`payment_events`, `domain_events`,
+    `idempotency_keys` …) beside Payload's, never an `engine` schema, which Payload's
+    `migrate:fresh` would leave standing and its push would not see — so the domain's SQL names them
+    unqualified. Its indexes reach a database through the wave's migration or a schema author's
+    push to an empty one (PARALLEL-TRACKS.md §3.2): a push onto a database with tables fails on this
+    stack (Payload 3.90.2, drizzle-kit 0.31.7, `42P02`). C6–C8 change no shape and stay at v1.1.
+  - **C13:** Payload's own mounts are its admin and its REST API alone. GraphQL is off, so no app
+    mounts `api/graphql` or its playground, and `graphql` stays a reserved first segment.
+  - The docs follow: PARALLEL-TRACKS.md §1 (the collection stubs, each in its own folder, and the
+    engine tables in `public`) and §3.2 (the dev loop), ARCHITECTURE.md §6, DEPLOYMENT.md §3–4
+    (boot migrations need a production build), CONTENT-MODEL.md (the frozen slug list, §4). And
+    `bootCheck()` warns of `RUN_MIGRATIONS=1` on a dev server, which Payload never migrates on boot.

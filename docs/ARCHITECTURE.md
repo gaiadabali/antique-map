@@ -201,9 +201,10 @@ nothing else writes a reservation.
   dashboard, never in the admin) leaves the item sold until staff cancel the
   order or accept a return. A second checkout gets a typed conflict, never an
   order. The index is declared through the Postgres adapter's `afterSchemaInit`
-  / `extendTable` hook (a drizzle `uniqueIndex().on().where()`), so migrations
-  **and** a dev push both carry it — a raw-SQL index would be dropped by a dev
-  push and let concurrency tests pass without it.
+  / `extendTable` hook (a drizzle `uniqueIndex().on().where()`), so the wave's
+  migration **and** a schema author's push to an empty database (PARALLEL-TRACKS.md
+  §3.2) both carry it — a raw-SQL index would be missing from the pushed database
+  and let concurrency tests pass without it.
 - **Counted stock:** `UPDATE stock_levels SET reserved = reserved + $q WHERE id =
   $1 AND on_hand - reserved >= $q` — the row count is the answer.
 - **Expiry happens inside the next reservation.** `reserve()` first moves any
@@ -252,8 +253,8 @@ nothing else writes a reservation.
 
 Concurrency tests — fifty parallel checkouts on one item → exactly one order; a
 sold item → conflict; an expired-unswept lock → the next buyer succeeds; one
-webhook delivered twice → one payment; the index survives a dev push — are part
-of the Commerce stage's gate (TASKS.md 21.2).
+webhook delivered twice → one payment; the index is in a pushed database as in a
+migrated one — are part of the Commerce stage's gate (TASKS.md 21.2).
 
 ## 7. Media, deep zoom and print files
 

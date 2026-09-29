@@ -73,8 +73,9 @@ push to main
   → per .gaiadeploy.yml target: unpack its `subdir`, symlink `current`, pm2 reload <site user>
   → the new process boots and reads shared/.env
   → health check https://<domain>/api/health — it calls getPayload(), which initialises
-    Payload and applies pending migrations (web process only, RUN_MIGRATIONS=1, under a
-    Postgres advisory lock); on failure, roll back and reload
+    Payload and applies pending migrations (web process only: RUN_MIGRATIONS=1 in a
+    production build — Payload migrates on boot only when NODE_ENV=production, which
+    `next start` sets — under a Postgres advisory lock); on failure, roll back and reload
 ```
 
 `.gaiadeploy.yml`, using the pipeline's monorepo support (`subdir`, added
@@ -109,8 +110,13 @@ The same rules as KOI, applied to two databases:
 0. **One migration set, two databases.** Each brand's web process applies the
    same pending migrations when its first health check initialises Payload —
    one process per database, under an advisory lock, never a worker.
-   `pnpm db:schema-hash --all` in CI and after every deploy proves the schemas are
-   identical.
+   `RUN_MIGRATIONS=1` hands Payload the bundled set, and Payload applies it on
+   boot only in a production build (`NODE_ENV=production`, which `next start`
+   sets): a dev server never migrates on boot, whatever it is given, so a
+   workstation's database is migrated by `pnpm --filter @engine/cms migrate`,
+   which `db:fresh` runs, and the boot check warns of `RUN_MIGRATIONS=1` on a dev
+   server. `pnpm db:schema-hash --all` in CI and after every deploy proves the
+   schemas are identical.
 1. **Additive first.** Add, backfill, switch reads, and drop only in a later
    release. A failed migration rolls back its transaction, the process fails to
    boot, the health check fails, and the agent rolls back to a release that
@@ -123,8 +129,11 @@ The same rules as KOI, applied to two databases:
 4. `payload migrate:create` against a migrated database must report "No schema
    changes detected" before and after — or the snapshot chain has drifted.
 5. **Payload dev "push" is off** (`push: false`). Schema reaches every database
-   through migrations only. KOI lost time to a dev server generating a migration
-   that carried another session's schema change.
+   that has tables through migrations only. The one exception is a schema author's
+   own empty database, pushed once on its first boot (`PAYLOAD_DEV_PUSH=1`,
+   PARALLEL-TRACKS.md §3.2) — never a production build, never a database with
+   tables. KOI lost time to a dev server generating a migration that carried
+   another session's schema change.
 
 ## 5. Scheduled jobs
 

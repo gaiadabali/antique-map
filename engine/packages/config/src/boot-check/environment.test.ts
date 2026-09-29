@@ -82,3 +82,34 @@ describe('bootCheck() — a production build on a loopback SITE_URL', () => {
     }
   })
 })
+
+// Payload applies its bundled migrations on boot only in a production build (3.4.g, DEPLOYMENT.md
+// §4): `RUN_MIGRATIONS=1` hands it the set, `NODE_ENV=production` lets it run.
+describe('bootCheck() — RUN_MIGRATIONS outside a production build', () => {
+  const migrationFindings = (report: BootReport) =>
+    [...report.problems, ...report.warnings].filter((each) => each.subject === 'RUN_MIGRATIONS')
+
+  it('warns a dev server given RUN_MIGRATIONS=1 that it will not migrate on boot', () => {
+    const report = check({ ...fullEnv(config, 'local'), RUN_MIGRATIONS: '1' })
+    expect(report.ok).toBe(true)
+    expect(report.warnings.filter((each) => each.subject === 'RUN_MIGRATIONS')).toEqual([
+      {
+        subject: 'RUN_MIGRATIONS',
+        message: expect.stringMatching(
+          /^is "1", but this is not a production build: Payload migrates on boot only when NODE_ENV=production/,
+        ),
+      },
+    ])
+  })
+
+  it('says nothing of it in a production build, on a host or a workstation, or when it is unset', () => {
+    for (const environment of ['staging', 'production'] as const) {
+      expect(
+        migrationFindings(check({ ...fullEnv(config, environment), RUN_MIGRATIONS: '1' })),
+      ).toEqual([])
+    }
+    const localBuild = { ...fullEnv(config, 'local'), NODE_ENV: 'production', RUN_MIGRATIONS: '1' }
+    expect(migrationFindings(check(localBuild))).toEqual([])
+    expect(migrationFindings(check(fullEnv(config, 'local')))).toEqual([])
+  })
+})

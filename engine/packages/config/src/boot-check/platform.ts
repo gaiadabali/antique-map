@@ -80,6 +80,13 @@ export function checkPlatform(
       'RUN_MIGRATIONS',
       'is "1" in the web process and unset everywhere else (DEPLOYMENT.md §2)',
     )
+  } else if (migrations === '1' && read(env, 'NODE_ENV') !== 'production') {
+    // Payload applies its bundled migrations on boot only in a production build: said here, so a
+    // dev server given the web process's variables never looks migrated when it is not.
+    findings.warn(
+      'RUN_MIGRATIONS',
+      'is "1", but this is not a production build: Payload migrates on boot only when NODE_ENV=production — migrate with pnpm --filter @engine/cms migrate (DEPLOYMENT.md §4)',
+    )
   }
 
   if (environment !== 'local') {

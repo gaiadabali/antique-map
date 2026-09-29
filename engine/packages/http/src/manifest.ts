@@ -8,6 +8,10 @@
  * first segment after `/api/` equal to a collection slug, `payload-jobs` or `graphql`, or a
  * matcher that differs from `PROXY_MATCHER`. Engine routes live under `/api/x/` so none
  * shadows Payload's REST API; `/api/health` and `/brand-assets/…` are the named exceptions.
+ * Payload's own mounts, in each app's `(payload)` group, are its admin (`admin/[[...segments]]`)
+ * and that REST API (`api/[...slug]`) alone: GraphQL is off (`graphQL.disable` — the loaders read
+ * through the Local API and the sister API is REST), so no app mounts `api/graphql` or its
+ * playground, and `graphql` stays a reserved first segment should it ever be switched on.
  * Every app mounts every route whatever the brand's modules: a handler whose `module` is off
  * answers 404 — so does an operation whose module is off, at a sub-path of a mounted route —
  * and parity never depends on config. The parts: the commerce API and its addresses

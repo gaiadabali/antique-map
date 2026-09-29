@@ -4,10 +4,16 @@
  *
  * The constraints and indexes the domain's guarantees stand on (senior-db review of 1.2), for the
  * SCH lead to declare through the Postgres adapter's `afterSchemaInit` / `extendTable`, so that
- * migrations AND a dev push carry them — a raw-SQL index would be dropped by a push and let the
- * concurrency tests pass without it (ARCHITECTURE.md §6). This file is not DDL: SCH writes that, in
- * the wave's one migration (PARALLEL-TRACKS.md §3). Its constants are shared so the index SCH
- * declares and the `ON CONFLICT` DOM writes cannot drift apart.
+ * the wave's migration AND a schema author's push to an empty database carry them — a raw-SQL
+ * index would be missing from the pushed database and let the concurrency tests pass without it
+ * (ARCHITECTURE.md §6, PARALLEL-TRACKS.md §3.2). This file is not DDL: SCH writes that, in the
+ * wave's one migration (PARALLEL-TRACKS.md §3). Its constants are shared so the index SCH declares
+ * and the `ON CONFLICT` DOM writes cannot drift apart.
+ *
+ * Every table below lives in `public`, the adapter's schema, under the plain name it is given
+ * here — a collection's (`reservations`, `payment_attempts`) and an engine table's
+ * (`payment_events`, `domain_events`, `idempotency_keys`) alike; never an `engine` schema, so
+ * the domain's SQL names them unqualified (PARALLEL-TRACKS.md §1).
  */
 import type { INDEXED_RESERVATION_STATUSES } from '../reservations/machine'
 import type { NormalizedPaymentEvent } from './payment-vocabulary'
@@ -111,7 +117,7 @@ export const ATTEMPT_WRITE_ONCE_COLUMNS = ['provider_ref'] as const
 // (RefundIdempotencyKey) for a refund the domain owes; its status (`requested` · `pending` ·
 // `refunded` · `manual-required`).
 
-// ─── engine.domain_events, engine.idempotency_keys ───────────────────────────────────────────
+// ─── domain_events, idempotency_keys (engine tables) ─────────────────────────────────────────
 //
 // `domain_events`: `uuid` primary key; INDEX on `(occurred_at, id)` WHERE `dispatched_at IS NULL`;
 // the dispatcher takes rows `FOR UPDATE SKIP LOCKED`; each consumer dedupes in its own table, keyed

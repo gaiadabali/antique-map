@@ -20,7 +20,11 @@ the fields its view model needs (ARCHITECTURE.md §12).
 
 Collections relate to each other across tasks that run in parallel, so every
 slug exists from the Foundation stage as a **stub** in a registry the SCH lead owns (TASKS.md
-3.2.e); tasks fill in fields, never invent slugs. Slugs are kebab-case:
+3.2.e): hidden in the admin, readable by admins only, writable by nobody — a table
+with an id and timestamps in the first migration, which the owning task's wave
+widens with columns, additively. Each slug has its own folder,
+`collections/<slug>/`, that its task fills in (PARALLEL-TRACKS.md §1); tasks fill in
+fields, never invent slugs. Slugs are kebab-case:
 
 `users` · `customers` · `addresses` · `saved-items` · `want-lists` ·
 `subscribers` · `reviews` · `makers` · `places` · `terms` · `sources` ·
@@ -196,8 +200,9 @@ consignment — has a `ref` (a random UUID), a `token_version` and a
 `links_anchor_at`: the latest instant its link was issued, from which its window
 runs (C6 `LINK_WINDOW_DAYS`). No column holds a token or a hash of one.
 
-Engine tables (schema `engine`, created by the same migrations — written by the
-SCH lead only — never edited by hand): `payment_events` (unique `provider,
+Engine tables (in `public`, beside Payload's tables and under these plain names —
+never an `engine` schema — created by the same migrations, written by the SCH lead
+only, never edited by hand): `payment_events` (unique `provider,
 seller_id, provider_event_id` — secrets, and so webhook routes, are per
 seller, C13 `/api/x/webhooks/payments/[provider]/[seller]`), a matched event's
 outcome (`ApplyPaymentEventOutcome`) and a hash of its redacted payload;
