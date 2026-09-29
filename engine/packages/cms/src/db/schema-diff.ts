@@ -6,9 +6,10 @@
  * And, with a connection, a live database against the migration set: every bundled migration
  * applied, and none recorded that the code does not know (a database migrated by another branch).
  * Structural equality across the brands' databases is `schema-hash --all`'s (TASKS.md 2.2.c):
- * drizzle-kit's own database comparison — the one a dev push uses — cannot run on this stack; its
- * introspection sends parameterised queries through a path that drops the parameters, and
- * Postgres answers `42P02 there is no parameter $1` (found in KOI, confirmed here on 0.31.7).
+ * drizzle-kit's own database comparison — the one a dev push uses — fails on any database that
+ * already has tables: its introspection sends parameterised queries through a path that drops the
+ * parameters, and Postgres answers `42P02 there is no parameter $1` (KOI's finding, confirmed here
+ * on drizzle-kit 0.31.7).
  */
 import type { Payload } from 'payload'
 

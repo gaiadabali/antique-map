@@ -7,7 +7,8 @@
   "exports": {
     "./payload.config": "./src/payload.config.ts",
     "./access": "./src/access/index.ts",
-    "./registries": "./src/registries/index.ts"
+    "./registries": "./src/registries/index.ts",
+    "./db/probe": "./src/db/probe.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -7,6 +7,9 @@
  * - **No schema push.** Schema reaches a database through migrations only (DEPLOYMENT.md §4.5).
  *   The one exception is PARALLEL-TRACKS.md §3.2's opt-in for an agent's own suffixed database,
  *   `PAYLOAD_DEV_PUSH=1`, and never in a production build (Payload itself never pushes there).
+ *   On this stack (Payload 3.90.2, drizzle-kit 0.31.7) it works once, on an empty database; the
+ *   next boot fails in drizzle-kit's introspection — `42P02 there is no parameter $1`, KOI's
+ *   finding — and Payload does not start. A fresh database per try, or a migration, instead.
  * - **Migrations in the web process only**: the bundled set (`prodMigrations` — a standalone
  *   build has no migration folder to read) is handed to Payload only when `RUN_MIGRATIONS=1`,
  *   so a worker, a CLI or a second pm2 app never migrates (ARCHITECTURE.md §10). Payload applies
