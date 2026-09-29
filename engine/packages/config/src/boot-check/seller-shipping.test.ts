@@ -7,10 +7,16 @@ import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { brandConfigSchema, type BrandConfig } from '../schema'
+import { brandConfigSchema, SHIPPING_PROVIDERS, type BrandConfig } from '../schema'
 import { formatIssue, validateBrandConfig } from '../validate'
 import { C1_STATED_SUPPORTS } from '../validate/testing/fixtures'
-import { bootCheck, formatBootReport, type BootReport } from './index'
+import {
+  bootCheck,
+  formatBootReport,
+  secretPrefix,
+  SHIPPING_SECRETS,
+  type BootReport,
+} from './index'
 import { fullEnv, REPO_ROOT } from './testing'
 
 const NOW = new Date('2026-09-29T12:00:00Z')
@@ -66,8 +72,10 @@ describe('bootCheck() — per-seller courier secrets follow sellers[].shipping',
   })
 
   it('a seller that names no couriers needs every courier of the brand’s', () => {
-    const config = brandConfigSchema.parse(structuredClone(brand.raw))
-    const sg = config.sellers[singaporeIndex(brand.raw)]!
+    const raw = structuredClone(brand.raw)
+    delete raw.sellers[singaporeIndex(raw)].shipping
+    const config = brandConfigSchema.parse(raw)
+    const sg = config.sellers[singaporeIndex(raw)]!
     expect(sg.shipping.providers).toEqual(config.shipping.providers)
     const report = stagingReport(config, (name) => name.startsWith('SHIPPING_SG_BITESHIP_'))
     expect(report.problems.map((problem) => problem.subject)).toEqual([
@@ -83,6 +91,8 @@ describe('bootCheck() — per-seller courier secrets follow sellers[].shipping',
   it('the Singapore seller boots without Biteship secrets once it names its own couriers', () => {
     const raw = structuredClone(brand.raw)
     raw.sellers[singaporeIndex(raw)].shipping = { providers: ['dhl-express', 'quote', 'collect'] }
+    // The Indonesian seller keeps the brand's couriers, Biteship among them.
+    for (const seller of raw.sellers) if (seller.entity.country === 'ID') delete seller.shipping
     const valid = validateBrandConfig(raw, {
       supports: C1_STATED_SUPPORTS.gallery,
       expect: { slug: brand.folder, storefront: null },
@@ -113,5 +123,21 @@ describe('bootCheck() — per-seller courier secrets follow sellers[].shipping',
       'SHIPPING_ID_BITESHIP_WEBHOOK_SECRET',
       'SHIPPING_ID_BITESHIP_MODE',
     ])
+  })
+
+  it('asks the committed Singapore seller for its own couriers’ secrets and no other', () => {
+    // As the file stands — whether or not it names the seller's couriers yet (BRD).
+    const config = brandConfigSchema.parse(structuredClone(brand.raw))
+    const sg = config.sellers[singaporeIndex(brand.raw)]!
+    const report = stagingReport(config, (name) => name.startsWith('SHIPPING_SG_'))
+    const asked = SHIPPING_PROVIDERS.filter((provider) =>
+      report.problems.some((problem) =>
+        problem.subject.startsWith(`${secretPrefix('SHIPPING', 'sg', provider)}_`),
+      ),
+    )
+    const expected = sg.shipping.providers.filter(
+      (provider) => SHIPPING_SECRETS[provider].secrets.length > 0,
+    )
+    expect([...asked].sort()).toEqual([...new Set(expected)].sort())
   })
 })
