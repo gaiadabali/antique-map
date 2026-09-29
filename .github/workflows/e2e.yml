@@ -79,6 +79,15 @@ jobs:
       - name: schema-hash --all
         run: pnpm schema-hash --all
 
+      # 2.1.d's CI clause, stated in the log: every database has both extensions.
+      - name: unaccent and pg_trgm in every database
+        run: |
+          for db in indies_gallery_ci old_east_indies_ci test_ci_gallery test_ci_emporium; do
+            found=$(psql -U "$POSTGRES_USER" -d "$db" -tAc "select string_agg(extname, ',' order by extname) from pg_extension where extname in ('pg_trgm','unaccent')")
+            echo "$db: $found"
+            [ "$found" = "pg_trgm,unaccent" ] || { echo "::error::$db lacks unaccent or pg_trgm"; exit 1; }
+          done
+
       - name: Build both apps (no database env — like the deploy artifact)
         if: steps.apps.outputs.exists == 'true'
         run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm build

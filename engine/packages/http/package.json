@@ -14,5 +14,8 @@
   "dependencies": {
     "@engine/config": "workspace:*",
     "@engine/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3"
   }
 }
