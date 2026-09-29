@@ -1,16 +1,10 @@
 /**
- * `@engine/i18n` (PLT, TASKS.md 3.1.b): the engine's locales, the message-key loader — the
+ * `@engine/i18n` (PLT, TASKS.md 3.1.b): the engine's locales, the message-key joiner — the
  * app's keys, the brand's values — and the formatters every surface shows money, dates and
- * dimensions through. Nothing here queries anything; the only file it reads is a brand's copy.
+ * dimensions through. This entry reads no file and queries nothing, so a Client Component may
+ * import it; reading a brand's copy files — `loadMessages()`, `readCopyFile()`, `checkCopy()` —
+ * is the server's, at `@engine/i18n/copy`.
  */
-export {
-  checkCopy,
-  CopyFileError,
-  placeholdersOf,
-  readCopyFile,
-  type CopyIssue,
-  type CopyValues,
-} from './copy'
 export {
   DATE_WORDS,
   formatCalendarDate,
@@ -37,7 +31,7 @@ export {
 export {
   createMessages,
   defineMessages,
-  loadMessages,
+  type CopyValues,
   type MessageParams,
   type Messages,
   type MessageSource,

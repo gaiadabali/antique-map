@@ -5,14 +5,11 @@ import { fileURLToPath } from 'node:url'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
+import { checkCopy, CopyFileError, loadMessages, readCopyFile } from '../src/copy'
 import {
-  checkCopy,
-  CopyFileError,
   defineMessages,
-  loadMessages,
   localeOfPath,
   localePrefix,
-  readCopyFile,
   resolveLocale,
   suggestLocale,
 } from '../src/index'

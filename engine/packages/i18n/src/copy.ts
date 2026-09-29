@@ -4,14 +4,18 @@
  * `{name}` marks a value the app fills. The folder is found by `@engine/config`'s loader
  * (`BrandPaths.copyDir`) and read at runtime, never at build — it ships inside the brand
  * folder, so a brand's voice changes with a deploy of its folder, not a rebuild of the app.
+ *
+ * Server only: this entry (`@engine/i18n/copy`) reads files, so it is kept out of the root
+ * entry, which a Client Component may import for the formatters.
  */
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import type { LocaleCode } from '@engine/config/schema'
 
-/** One locale's values, key → text. */
-export type CopyValues = Readonly<Record<string, string>>
+import { createMessages, type CopyValues, type Messages, type MessageSource } from './messages'
+
+export type { CopyValues }
 
 export class CopyFileError extends Error {
   override readonly name = 'CopyFileError'
@@ -109,4 +113,15 @@ export function checkCopy(input: {
     }
   }
   return issues
+}
+
+/** Joins an app's keys with the brand's copy files in `copyDir` (`BrandPaths.copyDir`). */
+export function loadMessages<K extends string>(
+  source: MessageSource<K> & { readonly copyDir: string },
+): Messages<K> {
+  const copy: Partial<Record<LocaleCode, CopyValues | null>> = {
+    [source.locale]: readCopyFile(source.copyDir, source.locale),
+    [source.defaultLocale]: readCopyFile(source.copyDir, source.defaultLocale),
+  }
+  return createMessages({ ...source, copy })
 }

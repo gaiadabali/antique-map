@@ -1,9 +1,11 @@
 /**
  * The message-key loader (BRANDS.md §2). An app defines its keys with neutral defaults
- * (`defineMessages`); the brand supplies the values in its copy files; `loadMessages()` joins
- * them for one locale: the brand's value in that locale, else in the brand's default locale,
- * else the app's neutral default — and records each key that fell back, so a gap is visible
- * rather than silently English. Brand voice never sits inside `engine/`.
+ * (`defineMessages`); the brand supplies the values in its copy files, which `loadMessages()`
+ * (`@engine/i18n/copy`) reads on the server; `createMessages()` joins them for one locale: the
+ * brand's value in that locale, else in the brand's default locale, else the app's neutral
+ * default — and records each key that fell back, so a gap is visible rather than silently
+ * English. Brand voice never sits inside `engine/`. This file reads nothing, so it is safe in a
+ * Client Component given the values it renders.
  *
  * `{name}` is filled from the params (a number in the locale's digits). A count picks a plural
  * form: `t('cart.items', { count })` reads `cart.items.one` or `cart.items.other` by the
@@ -11,13 +13,15 @@
  */
 import type { LocaleCode } from '@engine/config/schema'
 
-import { readCopyFile, type CopyValues } from './copy'
 import { formattingTag } from './locales'
 
 /** An app's keys and their neutral defaults, kept literal so a misspelt key is a type error. */
 export function defineMessages<const T extends Record<string, string>>(defaults: T): T {
   return defaults
 }
+
+/** One locale's values from a brand's copy, key → text. */
+export type CopyValues = Readonly<Record<string, string>>
 
 export type MessageParams = Readonly<Record<string, string | number>>
 
@@ -74,15 +78,4 @@ export function createMessages<K extends string>(
       return fill(text ?? key, params)
     },
   }
-}
-
-/** Joins an app's keys with the brand's copy files in `copyDir` (`BrandPaths.copyDir`). */
-export function loadMessages<K extends string>(
-  source: MessageSource<K> & { readonly copyDir: string },
-): Messages<K> {
-  const copy: Partial<Record<LocaleCode, CopyValues | null>> = {
-    [source.locale]: readCopyFile(source.copyDir, source.locale),
-    [source.defaultLocale]: readCopyFile(source.copyDir, source.defaultLocale),
-  }
-  return createMessages({ ...source, copy })
 }
