@@ -20,6 +20,7 @@ export {
   LINK_KEY_MIN_BYTES,
   LINK_KEY_MIN_DISTINCT_BYTES,
   LINK_KEY_OVERLAP_DAYS,
+  LINK_KEY_STEPPED_RUN,
   parseLinkTokenKeys,
   type LinkKeyRing,
   type LinkKeyRingResult,

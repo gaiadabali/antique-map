@@ -2,7 +2,9 @@
  * Every configured provider's secrets, per seller for payments and shipping, per brand for
  * fulfilment (DEPLOYMENT.md §8, PAYMENTS.md §8): `PAYMENT_<SELLER>_<PROVIDER>_<NAME>`,
  * `SHIPPING_<SELLER>_<PROVIDER>_<NAME>`, `FULFILMENT_<PROVIDER>_<NAME>` — seller and provider
- * ids upper-cased, `-` as `_` (`PAYMENT_ID_BANK_TRANSFER_…`).
+ * ids upper-cased, `-` as `_` (`PAYMENT_ID_BANK_TRANSFER_…`). A seller needs the secrets of its
+ * own payment providers and its own couriers (`sellers[].shipping`, the brand's when it names
+ * none) and no other: a Singapore seller shipping by DHL Express needs no Indonesian courier's.
  *
  * Sandbox vs live: where a provider's keys say which they are, the key itself is read
  * (Stripe `sk_test_`/`sk_live_`, Midtrans `SB-Mid-…`/`Mid-…`, Xendit
@@ -138,7 +140,7 @@ export function checkProviderSecrets(
         findings,
       )
     }
-    for (const provider of new Set(config.shipping.providers)) {
+    for (const provider of new Set(seller.shipping.providers)) {
       const why = `seller "${seller.id}" ships by ${provider} (DEPLOYMENT.md §8)`
       check(
         env,

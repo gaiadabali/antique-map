@@ -9,6 +9,7 @@
  */
 import { z } from 'zod'
 
+import { shippingConfigSchema, type ShippingConfig } from './commerce'
 import {
   countryCodeSchema,
   currencyCodeSchema,
@@ -77,6 +78,15 @@ export const sellerSchema = z.strictObject({
   /** The currencies this entity may charge — an Indonesian PT: IDR only. */
   charge: z.array(currencyCodeSchema).min(1),
   payments: z.array(z.enum(PAYMENT_PROVIDERS)).min(1),
+  /**
+   * The couriers this seller ships with. A courier account is the seller's own, like a gateway's,
+   * so its secrets are too (`SHIPPING_<SELLER>_<PROVIDER>_*`, DEPLOYMENT.md §8): a Singapore
+   * entity shipping its own stock abroad has no Indonesian courier account. Each is one of the
+   * brand's `shipping.providers`, which list every courier the brand uses (`validateBrandConfigs()`).
+   * Left out, the seller ships with all of the brand's: the parsed config always carries the
+   * resolved list (`SellerConfig`), so no consumer merges the two.
+   */
+  shipping: shippingConfigSchema.optional(),
   /** Families first to last; a family left out sorts after those listed. */
   methodOrder: z.array(z.enum(PAYMENT_METHOD_FAMILIES)).default([]),
   /** Cards above this route to bank transfer or invoice (PAYMENTS.md §3 risk policy). */
@@ -88,4 +98,12 @@ export const sellerSchema = z.strictObject({
   /** Prefix of the seller's gapless order, proforma and invoice numbers (COMMERCE.md §12). */
   documentPrefix: z.string().regex(/^[A-Z0-9]{1,8}$/, '1–8 upper-case letters or digits'),
 })
-export type SellerConfig = z.infer<typeof sellerSchema>
+/** A seller as its brand's file writes it: `shipping` may be left out. */
+export type SellerConfigInput = z.input<typeof sellerSchema>
+/**
+ * A seller as every consumer reads it, from the parsed `BrandConfig`: its couriers resolved —
+ * its own, or the brand's when it names none (`brandConfigSchema` resolves them).
+ */
+export type SellerConfig = Omit<z.infer<typeof sellerSchema>, 'shipping'> & {
+  shipping: ShippingConfig
+}

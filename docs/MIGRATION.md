@@ -216,6 +216,29 @@ itself never touches the database (ARCHITECTURE.md §11). The verification scrip
 requests **every** legacy URL — from the owner's export and the URL inventory —
 **against the new site** and asserts 200 or one 301 to 200; the migration is not done until the failure count is zero.
 
+**The static pages, by decision (TASKS.md 3.4.c).** A legacy prefix ends in `/`
+(C10), so it cannot name `/about-us`, and the proxy may not ask the database
+which slugs moved. Each of the ~15 rows of the hand map therefore takes one of
+two paths:
+
+- **It keeps its URL** — the default, as for the product URLs: the new site
+  serves the same address, as a CMS page with the old slug (`/about-us`, `/faq`,
+  `/privacy-policy`) or as a surface whose segment is the same (`/newsletter`,
+  `/sell-to-us` — the consignment form — and `/account/*`). No rule, no redirect.
+- **It moves** — its old path goes into the brand's `routes.legacyPaths` (C10
+  v1.2: exact paths, no trailing `/`, such as `/catalogue` for the catalogues'
+  new `/catalogues`, `/s` for search, `/new-additions` for the browse page by
+  newest), which the proxy rewrites to `/api/x/legacy/…` exactly as it does a
+  prefix, its query kept; the `redirects` row holds the target, and the handler
+  answers 301.
+
+The two never compete: CI refuses a legacy path that shadows a live root segment
+or sits under a legacy prefix, and the pages validator (SCH, TASKS.md 9.3)
+refuses a CMS slug that is a one-segment legacy path. Rejected: letting the page
+route or the designed not-found page look up `redirects` for an unknown slug —
+it queries the database for every mistyped URL, and a redirect decided while a
+page streams cannot answer 301.
+
 ## 7. Domain — do not move it in the same release
 
 `antiquemapsindonesia.com` holds the rankings. **The platform migration keeps it

@@ -11,7 +11,7 @@ import { z } from 'zod'
 
 import { routeTargetSchema } from '../routes'
 import { localisedTextSchema } from './locales'
-import { idSchema } from './primitives'
+import { httpsOriginSchema, httpsUrlSchema, idSchema } from './primitives'
 
 export const domainsSchema = z.strictObject({
   /** `null` until the owner decides (and always for the synthetic `test` brand). */
@@ -34,7 +34,8 @@ export const identitySchema = z.strictObject({
     whatsapp: z.e164().nullable().default(null),
     phone: z.e164().nullable().default(null),
   }),
-  social: z.partialRecord(z.enum(SOCIAL_NETWORKS), z.url()).default({}),
+  /** Rendered as links in every page: https only, so never `javascript:` or plain http. */
+  social: z.partialRecord(z.enum(SOCIAL_NETWORKS), httpsUrlSchema).default({}),
   announcement: localisedTextSchema.nullable().default(null),
   navigation: z
     .strictObject({ header: z.array(navItemSchema), footer: z.array(navItemSchema) })
@@ -54,6 +55,11 @@ export const sisterSchema = z.strictObject({
   name: z.string().min(1),
   /** What the sister is to this brand: the origin of works, or an outlet for prints. */
   role: z.enum(['archive-origin', 'merch-outlet']),
-  baseUrl: z.url(),
+  /**
+   * The sister's deployed site, as an https origin (`https://shop.example.com`): its archive API
+   * and pages are addressed from it and the CSP allows it. Never plain http: C12 allows http only
+   * from a local sister in development, and a committed config never names one.
+   */
+  baseUrl: httpsOriginSchema,
 })
 export type SisterConfig = z.infer<typeof sisterSchema>

@@ -1,8 +1,9 @@
 /**
  * The commerce rules of `validateBrandConfigs()` (C1's header list): reservation TTLs in the
- * order C8's machines assume, one document sequence per seller, and no provider listed twice.
+ * order C8's machines assume, one document sequence per seller, no provider listed twice, and a
+ * seller's own couriers drawn from the brand's.
  */
-import type { BrandConfig } from '../../schema'
+import type { BrandConfig, SellerConfig } from '../../schema'
 import type { Report } from '../issues'
 
 export function checkCommerce(
@@ -42,9 +43,34 @@ export function checkCommerce(
       prefixes.set(seller.documentPrefix, seller.id)
     }
     reportRepeats(seller.payments, ['sellers', i, 'payments'], report)
+    checkSellerShipping(seller, i, shipping.providers, report)
   })
   reportRepeats(shipping.providers, ['shipping', 'providers'], report)
   reportRepeats(fulfilment.providers, ['fulfilment', 'providers'], report)
+}
+
+/**
+ * A seller's couriers are its own subset of the brand's, which name every courier the brand
+ * uses (its admin, webhooks and rate sources). A seller that named none ships with the brand's
+ * whole list — resolved by the schema, and checked once, as `shipping.providers`.
+ */
+function checkSellerShipping(
+  seller: SellerConfig,
+  i: number,
+  brand: readonly string[],
+  report: Report,
+): void {
+  const own = seller.shipping.providers
+  if (own.length === brand.length && own.every((provider, j) => provider === brand[j])) return
+  const path = ['sellers', i, 'shipping', 'providers']
+  reportRepeats(own, path, report)
+  own.forEach((provider, j) => {
+    if (brand.includes(provider)) return
+    report(
+      [...path, j],
+      `"${provider}" is not one of the brand's shipping.providers (${brand.join(', ')}): a seller ships with some of the couriers the brand lists`,
+    )
+  })
 }
 
 function reportRepeats(

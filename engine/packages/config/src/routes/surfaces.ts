@@ -5,8 +5,8 @@
  * the engine guarantees (DESIGN-SYSTEM.md §2) with its app route, the form kinds and the
  * account sections. A leaf of `./routes.ts`, so nothing here imports the entry.
  */
-import { LOCALE_CODES } from '../schema/locales'
-import type { ModuleKey } from '../schema/modules'
+import { LOCALE_CODES } from '../constants'
+import { hasModule, type ModuleFlags, type ModuleKey } from '../schema/modules'
 
 type SurfaceRoute = {
   /** The app route under `src/app/(site)/[locale]/`; `''` the locale root, `null` no address. */
@@ -15,6 +15,11 @@ type SurfaceRoute = {
   index?: true
   /** The module that switches the surface on — its routes 404 when off. Absent: always on. */
   module?: ModuleKey
+  /**
+   * Modules any one of which switches the surface on, for a surface two capabilities share —
+   * its routes 404 while every one is off (`hasSurface()`). Its segment is required either way.
+   */
+  anyModule?: readonly [ModuleKey, ModuleKey, ...ModuleKey[]]
   /**
    * The URL names something private — an order, a payment link, a quote. The proxy answers it
    * with `Referrer-Policy: no-referrer` and `X-Robots-Tag: noindex`, so no path or token leaks
@@ -46,7 +51,13 @@ export const SURFACE_ROUTES = {
   checkout: { internal: 'checkout' },
   // The session or the order-access cookie (C13 `ORDER_ACCESS`), never the number alone.
   order: { internal: 'order/[number]', sensitive: true },
-  account: { internal: 'account/[section]', index: true },
+  // Every signed-in customer's area — a buyer's, or an approved partner's (D31) — so on while
+  // either may hold an account, and on no brand where no one can (3.4.f).
+  account: {
+    internal: 'account/[section]',
+    index: true,
+    anyModule: ['accounts.buyers', 'accounts.retailers'],
+  },
   form: { internal: 'form/[kind]' },
   pay: { internal: 'pay/[token]', sensitive: true },
   quote: { internal: 'quote/[token]', module: 'purchase.invoices', sensitive: true },
@@ -64,6 +75,18 @@ export const SURFACE_ROUTES = {
 } as const satisfies Record<string, SurfaceRoute>
 export type Surface = keyof typeof SURFACE_ROUTES
 export const SURFACES = Object.keys(SURFACE_ROUTES) as [Surface, ...Surface[]]
+
+/**
+ * Whether a brand has a surface: one always on, one whose `module` is on, or one any of whose
+ * `anyModule` is on. What the proxy asks before it rewrites to a surface — a closed one is
+ * not found (C13) — and a loader or a menu before it links there.
+ */
+export function hasSurface(config: { readonly modules: ModuleFlags }, surface: Surface): boolean {
+  const row: SurfaceRoute = SURFACE_ROUTES[surface]
+  if (row.module !== undefined) return hasModule(config, row.module)
+  if (row.anyModule !== undefined) return row.anyModule.some((key) => hasModule(config, key))
+  return true
+}
 
 /** Surfaces with an address, i.e. everything `href()` can build. */
 export type LinkSurface = Exclude<Surface, 'notFound' | 'gone' | 'error'>

@@ -5,7 +5,7 @@
  * see one answer — so `suggestLocale()` only feeds the dismissible banner that offers the
  * visitor's language; nothing here redirects.
  */
-import { LOCALE_CODES, type LocaleCode } from '@engine/config/schema'
+import { LOCALE_CODES, type LocaleCode } from '@engine/config/constants'
 
 export { LOCALE_CODES, type LocaleCode }
 

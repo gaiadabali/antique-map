@@ -9,9 +9,12 @@
  * A `kid` is 1–12 characters of a–z and 0–9 and is never used twice; a secret is base64url of
  * at least 32 random bytes — never one byte repeated, which is what C6's test vectors' key is
  * (32 × 0x0b), so a ring copied from the vectors never starts anywhere; never fewer than 16
- * distinct byte values (a pattern) and never all printable text (a password, base64-encoded);
- * a retirement day is never in the future. The parsed ring is what the links module (TASKS.md 18.2.g) derives and
- * verifies with. No message ever carries a secret.
+ * distinct byte values, never all printable text (a password, base64-encoded), never a run of
+ * `LINK_KEY_STEPPED_RUN` bytes stepping by one constant (0x00, 0x01, 0x02 …, or zeros padding a
+ * short key) and never a shorter block repeated to length — patterns, all of them, that random
+ * bytes form with a chance below 10^-12; a retirement day is never in the future. The parsed
+ * ring is what the links module (TASKS.md 18.2.g) derives and verifies with. No message ever
+ * carries a secret.
  */
 
 export type LinkTokenKey =
@@ -52,6 +55,12 @@ const DAY = /^(\d{4})-(\d{2})-(\d{2})$/
 export const LINK_KEY_MIN_BYTES = 32
 /** Fewer distinct byte values than this is a pattern, not randomness (32 random bytes have ~30). */
 export const LINK_KEY_MIN_DISTINCT_BYTES = 16
+/**
+ * This many bytes in a row stepping by one constant (mod 256) is a pattern: a counter
+ * (0x00 … 0x1f), a descending one, a stride, or a run of one value padding a short key. Among
+ * 32 random bytes such a run turns up with a chance near 10^-13.
+ */
+export const LINK_KEY_STEPPED_RUN = 8
 /**
  * C6 `LINK_TOKEN.keyOverlapDays`, mirrored: config imports no other package. A retired key
  * verifies this long, then refuses; past it, it is only clutter in the ring.
@@ -149,7 +158,36 @@ function decodeSecret(encoded: string): Uint8Array | string {
   if (bytes.every((byte) => byte >= 0x20 && byte <= 0x7e)) {
     return 'the secret decodes to printable text — a password encoded, not random bytes (openssl rand -base64 32)'
   }
+  const run = longestSteppedRun(bytes)
+  if (run >= LINK_KEY_STEPPED_RUN) {
+    return `the secret has ${run} bytes in a row stepping by one constant (like 0x00, 0x01, 0x02…): a pattern, not random bytes`
+  }
+  const period = repeatingPeriod(bytes)
+  if (period !== null) {
+    return `the secret is a ${period}-byte block repeated: a pattern, not random bytes`
+  }
   return new Uint8Array(bytes)
+}
+
+/** The longest run of bytes whose successive differences (mod 256) are all equal. */
+function longestSteppedRun(bytes: Uint8Array): number {
+  let longest = Math.min(bytes.length, 2)
+  let run = longest
+  for (let i = 2; i < bytes.length; i++) {
+    const step = (bytes[i]! - bytes[i - 1]! + 256) % 256
+    const previous = (bytes[i - 1]! - bytes[i - 2]! + 256) % 256
+    run = step === previous ? run + 1 : 2
+    longest = Math.max(longest, run)
+  }
+  return longest
+}
+
+/** The shortest period a secret repeats with (a block written twice or more), else `null`. */
+function repeatingPeriod(bytes: Uint8Array): number | null {
+  for (let period = 1; period <= bytes.length / 2; period++) {
+    if (bytes.every((byte, i) => i < period || byte === bytes[i - period])) return period
+  }
+  return null
 }
 
 function checkDay(day: string, today: string): string | null {

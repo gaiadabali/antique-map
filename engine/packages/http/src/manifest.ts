@@ -83,7 +83,8 @@ const commerceRoutes = Object.entries(COMMERCE_AREAS).map(([area, spec]: [string
 export const ENGINE_ROUTES: readonly EngineRoute[] = [
   // Platform
   route('/api/health', 'WEB', 'public', GET), // app, DB, storage, queue lag; initialises Payload
-  route('/brand-assets/[...path]', 'WEB', 'public', GET), // BRAND_ROOT assets, immutable
+  // BRAND_ROOT assets — `immutable` only at a versioned URL, never for a ROOT_REWRITES file
+  route('/brand-assets/[...path]', 'WEB', 'public', GET),
   route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
   route('/api/x/legacy/[...path]', 'WEB', 'public', GET), // legacy URLs: 301 · 404 · 410
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // invalidate(tags) from outside a request
@@ -125,6 +126,14 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
  * Root files the proxy rewrites to engine routes, so each keeps its conventional public
  * URL (a sitemap may list only URLs at or below its own path). `:favicon` is the brand's
  * `assets.favicon` (C1), read at runtime. The proxy applies these before C10's parser.
+ *
+ * iOS asks for a home-screen icon at the root whatever a page links —
+ * `/apple-touch-icon.png` and, older, `/apple-touch-icon-precomposed.png` — and crawlers probe
+ * `/site.webmanifest`, the address a page's `<link rel="manifest">` names too. Each is answered
+ * from the brand's assets folder by the file of that name (`apple-touch-icon.png`, 180 × 180,
+ * serving both; `site.webmanifest`), and one a brand lacks is a plain 404 from the brand-assets
+ * route, never the designed not-found page and its loader (3.1 senior-fe #12). Every file here
+ * keeps an unversioned public URL, so none is served `immutable`.
  */
 export const ROOT_REWRITES = [
   { from: '/robots.txt', to: '/api/x/robots' },
@@ -132,6 +141,9 @@ export const ROOT_REWRITES = [
   { from: '/sitemap-:name.xml', to: '/api/x/sitemap/:name' },
   { from: '/.well-known/:path*', to: '/api/x/well-known/:path*' },
   { from: '/favicon.ico', to: '/brand-assets/:favicon' },
+  { from: '/apple-touch-icon.png', to: '/brand-assets/apple-touch-icon.png' },
+  { from: '/apple-touch-icon-precomposed.png', to: '/brand-assets/apple-touch-icon.png' },
+  { from: '/site.webmanifest', to: '/brand-assets/site.webmanifest' },
 ] as const
 
 /**
