@@ -37,16 +37,21 @@ describe('the users collection', () => {
     expect(LOCK_TIME_MS).toBe(15 * 60 * 1000)
   })
 
-  it('offers exactly C1 STAFF_ROLES, several at once, contributor by default, only an admin setting them', () => {
+  it('offers exactly C1 STAFF_ROLES, several at once, contributor by default, only an admin setting them', async () => {
     expect(rolesField).toMatchObject({
       name: 'roles',
       type: 'select',
       hasMany: true,
       required: true,
     })
-    const field = rolesField as { options: Array<{ value: string }>; defaultValue: unknown }
+    const field = rolesField as {
+      options: Array<{ value: string }>
+      defaultValue: (args: { req: PayloadRequest }) => Promise<unknown>
+    }
     expect(field.options.map((option) => option.value)).toEqual([...STAFF_ROLES])
-    expect(field.defaultValue).toEqual(['contributor'])
+    expect(await field.defaultValue({ req: fakeReq([1]).req })).toEqual(['contributor'])
+    // Truthful on the create-first-user screen: that account becomes an admin.
+    expect(await field.defaultValue({ req: fakeReq([0]).req })).toEqual(['admin'])
     const access = (rolesField as { access: Record<string, (a: never) => boolean> }).access
     const as = (user: unknown) => ({ req: { user } }) as never
     expect(access.update!(as({ collection: 'users', roles: ['manager'] }))).toBe(false)

@@ -7,10 +7,20 @@
  * Saved to the session token so access checks read roles without a query. Only an admin sets
  * them: a member of staff cannot grant themselves more (field access), and the first user's
  * and last admin's cases are the collection's hooks (`./guards`).
+ *
+ * The default says what will happen: `admin` while nobody has an account — the create-first-user
+ * screen would otherwise offer "Contributor" for an account the hook then makes an admin — and
+ * `contributor` for everyone after. A function default reaches neither the DDL nor the types.
  */
-import type { Field } from 'payload'
+import type { Field, PayloadRequest } from 'payload'
 
-import { adminOnlyField, DEFAULT_STAFF_ROLE, STAFF_ROLES, type StaffRole } from '../../access/roles'
+import {
+  adminOnlyField,
+  DEFAULT_STAFF_ROLE,
+  STAFF_ROLES,
+  USERS_SLUG,
+  type StaffRole,
+} from '../../access/roles'
 
 export const ROLE_LABELS: Record<StaffRole, string> = {
   admin: 'Admin',
@@ -22,12 +32,21 @@ export const ROLE_LABELS: Record<StaffRole, string> = {
   contributor: 'Contributor',
 }
 
+export async function defaultRoles(req: PayloadRequest): Promise<StaffRole[]> {
+  const { totalDocs } = await req.payload.count({
+    collection: USERS_SLUG,
+    overrideAccess: true,
+    req,
+  })
+  return totalDocs === 0 ? ['admin'] : [DEFAULT_STAFF_ROLE]
+}
+
 export const rolesField: Field = {
   name: 'roles',
   type: 'select',
   hasMany: true,
   required: true,
-  defaultValue: [DEFAULT_STAFF_ROLE],
+  defaultValue: ({ req }: { req: PayloadRequest }) => defaultRoles(req),
   saveToJWT: true,
   options: STAFF_ROLES.map((role) => ({ label: ROLE_LABELS[role], value: role })),
   access: {
