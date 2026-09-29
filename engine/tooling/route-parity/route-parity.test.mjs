@@ -1,9 +1,10 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
+import { writeFixtureApp, writeFixtureManifest } from './fixtures.mjs'
 import { checkRouteParity } from './route-parity.mjs'
 
 const repoRoot = process.cwd()
@@ -14,66 +15,35 @@ afterEach(() => {
   sandbox = undefined
 })
 
-/** A tiny fixture manifest — three routes, one deliberately shadowing `graphql`. */
-function writeFixtureManifest(
-  dir,
-  { includeShadowingRoute = false, matcher = ['/((?!api/).*)'] } = {},
-) {
-  mkdirSync(dir, { recursive: true })
-  const routes = [
-    "{ path: '/api/health', handler: '@engine/http/health', methods: ['GET'] }",
-    "{ path: '/api/x/commerce/cart/[[...path]]', handler: '@engine/http/commerce/cart', methods: ['GET', 'POST'] }",
-  ]
-  if (includeShadowingRoute) {
-    routes.push(
-      "{ path: '/api/x/graphql/[...path]', handler: '@engine/http/graphql', methods: ['GET'] }",
-    )
-  }
-  const file = join(dir, 'manifest.ts')
-  writeFileSync(
-    file,
-    `export const ENGINE_ROUTES = [${routes.join(', ')}]\n` +
-      `export const PROXY_MATCHER = ${JSON.stringify(matcher)}\n`,
-  )
-  return file
-}
-
-function writeFixtureApp(
-  appsDir,
-  name,
-  { mountedRoutes = [], matcher = ['/((?!api/).*)'], noProxy = false } = {},
-) {
-  const appDir = join(appsDir, name)
-  for (const { path, exports } of mountedRoutes) {
-    const routeFile = join(appDir, 'src', 'app', ...path.split('/').filter(Boolean), 'route.ts')
-    mkdirSync(join(routeFile, '..'), { recursive: true })
-    writeFileSync(
-      routeFile,
-      exports.map((m) => `export const ${m} = () => new Response('ok')`).join('\n') + '\n',
-    )
-  }
-  mkdirSync(join(appDir, 'src', 'app'), { recursive: true }) // ensures discoverScaffoldedApps sees it even with 0 routes
-  if (!noProxy) {
-    writeFileSync(
-      join(appDir, 'src', 'proxy.ts'),
-      `export const config = ${JSON.stringify({ matcher })}\n`,
-    )
-  }
-  return appDir
-}
-
 describe('checkRouteParity — degrades explicitly with no scaffolded apps', () => {
   it('reports the manifest-only checks and degrades the per-app ones', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const manifestAbsPath = writeFixtureManifest(sandbox)
     const appsAbsDir = join(sandbox, 'apps') // does not exist
-    const result = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
+    // A root with no engine/packages/cms at all: slug discovery degrades too.
+    const result = await checkRouteParity(repoRoot, {
+      manifestAbsPath,
+      appsAbsDir,
+      collectionsRoot: sandbox,
+    })
     expect(result.violations).toEqual([])
     expect(result.degraded.some((d) => d.includes('no app under'))).toBe(true)
-    expect(result.degraded.some((d) => d.includes('collections does not exist'))).toBe(true)
+    expect(result.degraded.some((d) => d.includes('registries/collections.ts exists'))).toBe(true)
+  })
+
+  it("reads the real CMS's slugs: users (built) and the frozen stubs, so it does not degrade", async () => {
+    sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
+    const manifestAbsPath = writeFixtureManifest(sandbox)
+    const result = await checkRouteParity(repoRoot, {
+      manifestAbsPath,
+      appsAbsDir: join(sandbox, 'apps'),
+    })
+    expect(result.violations).toEqual([])
+    expect(result.degraded.some((d) => d.includes('collection-slug'))).toBe(false)
+    expect(result.collectionSlugs).toContain('users')
+    expect(result.collectionSlugs.length).toBeGreaterThan(1) // the stubs count (3.5.a)
   })
 })
-
 describe('checkRouteParity — the planted violations (2.2.i)', () => {
   it('flags an engine route shadowing a reserved segment, and clears once removed', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
@@ -92,7 +62,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
       appsAbsDir: join(sandbox, 'apps'),
     })
     expect(violated.violations).toEqual([
-      { kind: 'reserved-segment-collision', path: '/api/x/graphql/[...path]', segment: 'graphql' },
+      { kind: 'reserved-segment-collision', path: '/api/graphql/[...path]', segment: 'graphql' },
     ])
   })
 

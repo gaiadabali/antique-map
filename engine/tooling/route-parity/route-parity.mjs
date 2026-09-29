@@ -11,15 +11,17 @@ import { withTsRunner } from './ts-runner.mjs'
 const MANIFEST_PATH = ['engine', 'packages', 'http', 'src', 'manifest.ts']
 
 /**
- * `opts.manifestAbsPath` and `opts.appsAbsDir` let a test point at fixtures
- * outside `repoRoot` (the real manifest and `engine/apps/*` are what CI
- * checks; production code never overrides them).
+ * `opts.manifestAbsPath`, `opts.appsAbsDir` and `opts.collectionsRoot` (the
+ * root whose `engine/packages/cms` is read for slugs) let a test point at
+ * fixtures outside `repoRoot` (the real manifest, `engine/apps/*` and CMS are
+ * what CI checks; production code never overrides them).
  */
 export async function checkRouteParity(repoRoot, opts = {}) {
   const violations = []
   const degraded = []
   const manifestAbsPath = opts.manifestAbsPath ?? join(repoRoot, ...MANIFEST_PATH)
   const appsAbsDir = opts.appsAbsDir ?? join(repoRoot, 'engine', 'apps')
+  const collectionsRoot = opts.collectionsRoot ?? repoRoot
 
   return withTsRunner(repoRoot, async (loadModule) => {
     const manifest = await loadModule(manifestAbsPath)
@@ -30,10 +32,10 @@ export async function checkRouteParity(repoRoot, opts = {}) {
     for (const path of findDuplicateMounts(routes)) {
       violations.push({ kind: 'duplicate-mount', path })
     }
-    const { slugs: collectionSlugs, available } = discoverCollectionSlugs(repoRoot)
+    const { slugs: collectionSlugs, available } = discoverCollectionSlugs(collectionsRoot)
     if (!available) {
       degraded.push(
-        'collection-slug collisions: nothing to check yet — engine/packages/cms/src/collections does not exist (Payload boot is 3.2+); reserved-word collisions (payload-jobs, graphql) are still checked',
+        'collection-slug collisions: nothing to check yet — neither engine/packages/cms/src/collections nor registries/collections.ts exists (Payload boot is 3.2+); reserved-word collisions (payload-jobs, graphql) are still checked',
       )
     }
     for (const collision of findReservedSegmentCollisions(routes, collectionSlugs)) {
@@ -69,6 +71,6 @@ export async function checkRouteParity(repoRoot, opts = {}) {
       }
     }
 
-    return { violations, degraded, routeCount: routes.length }
+    return { violations, degraded, routeCount: routes.length, collectionSlugs }
   })
 }
