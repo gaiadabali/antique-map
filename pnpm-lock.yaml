@@ -50,6 +50,9 @@ importers:
       '@engine/domain':
         specifier: workspace:*
         version: link:../domain
+      '@engine/media':
+        specifier: workspace:*
+        version: link:../media
 
   engine/packages/config:
     dependencies:

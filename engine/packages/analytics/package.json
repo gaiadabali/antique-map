@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@engine/config": "workspace:*",
-    "@engine/domain": "workspace:*"
+    "@engine/domain": "workspace:*",
+    "@engine/media": "workspace:*"
   }
 }
