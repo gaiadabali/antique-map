@@ -1,0 +1,256 @@
+{
+  "draft": true,
+  "slug": "indies-gallery",
+  "name": "Indies Gallery",
+  "domains": { "production": null, "staging": "ig.gaiada.com", "aliases": [] },
+  "storefront": "gallery",
+  "identity": {
+    "contact": { "email": "draft.contact@example.com", "whatsapp": "+15555550100", "phone": null },
+    "social": {},
+    "announcement": null,
+    "navigation": {
+      "header": [
+        {
+          "surface": "browse",
+          "facets": { "objectType": "map" },
+          "label": { "en": "Maps & Charts", "id": "Peta" }
+        },
+        {
+          "surface": "browse",
+          "facets": { "objectType": "print" },
+          "label": { "en": "Prints", "id": "Cetakan" }
+        },
+        {
+          "surface": "browse",
+          "facets": { "objectType": "photograph" },
+          "label": { "en": "Photographs", "id": "Foto" }
+        },
+        { "surface": "maker", "label": { "en": "Makers", "id": "Pembuat" } },
+        { "surface": "story", "label": { "en": "Stories", "id": "Cerita" } },
+        { "surface": "location", "label": { "en": "Visit", "id": "Kunjungi" } }
+      ],
+      "footer": [
+        { "surface": "orderLookup", "label": { "en": "Track an order", "id": "Lacak pesanan" } },
+        { "surface": "exhibition", "label": { "en": "Exhibitions", "id": "Pameran" } },
+        { "surface": "newsletterArchive", "label": { "en": "Newsletter", "id": "Buletin" } }
+      ]
+    }
+  },
+  "assets": {
+    "logo": "logo.svg",
+    "mark": null,
+    "favicon": "favicon.ico",
+    "ogImage": "og.png",
+    "fonts": []
+  },
+  "tokens": {},
+  "locales": { "default": "en", "supported": ["en", "id"] },
+  "routes": {
+    "en": {
+      "browse": "browse",
+      "search": "search",
+      "item": "product",
+      "maker": "makers",
+      "place": "places",
+      "collection": "collections",
+      "source": "sources",
+      "exhibition": "exhibitions",
+      "location": "visit",
+      "newsletterArchive": "newsletter",
+      "story": "stories",
+      "catalogue": "catalogues",
+      "cart": "bag",
+      "checkout": "checkout",
+      "order": "orders",
+      "account": "account",
+      "pay": "pay",
+      "quote": "quote",
+      "orderLookup": "track",
+      "wantList": "want-list",
+      "forms": {
+        "enquiry": "enquire",
+        "offer": "make-an-offer",
+        "consignment": "sell-to-us",
+        "appointment": "book-a-visit",
+        "hold": "reserve",
+        "quote": "request-a-quote"
+      }
+    },
+    "id": {
+      "browse": "jelajah",
+      "search": "cari",
+      "item": "produk",
+      "maker": "pembuat",
+      "place": "tempat",
+      "collection": "koleksi",
+      "source": "sumber",
+      "exhibition": "pameran",
+      "location": "kunjungi",
+      "newsletterArchive": "buletin",
+      "story": "cerita",
+      "catalogue": "katalog",
+      "cart": "tas",
+      "checkout": "checkout",
+      "order": "pesanan",
+      "account": "akun",
+      "pay": "bayar",
+      "quote": "penawaran",
+      "orderLookup": "lacak",
+      "wantList": "pantauan",
+      "forms": {
+        "enquiry": "tanya",
+        "offer": "ajukan-tawaran",
+        "consignment": "titip-jual",
+        "appointment": "buat-janji",
+        "hold": "tahan",
+        "quote": "minta-penawaran"
+      }
+    },
+    "facets": {
+      "path": ["objectType", "place"],
+      "vocabularies": {
+        "objectType": {
+          "en": {
+            "map": "antique-maps",
+            "sea-chart": "sea-charts",
+            "city-plan": "city-plans",
+            "view": "views",
+            "print": "antique-prints",
+            "photograph": "photographs",
+            "book": "books",
+            "atlas": "atlases"
+          },
+          "id": {
+            "map": "peta-antik",
+            "sea-chart": "peta-laut",
+            "city-plan": "peta-kota",
+            "view": "pemandangan",
+            "print": "cetakan-antik",
+            "photograph": "foto",
+            "book": "buku",
+            "atlas": "atlas"
+          }
+        }
+      }
+    },
+    "defaultSort": { "browse": "newest", "search": "relevance" },
+    "legacyPrefixes": ["/category/", "/storage/products/"]
+  },
+  "ids": { "workUidPrefix": "IG", "stockNumberPattern": "^[MPF]\\.[A-Za-z0-9]+$" },
+  "money": {
+    "base": "USD",
+    "markets": [
+      { "id": "id", "destinations": ["ID"], "currency": "IDR" },
+      { "id": "sg", "destinations": ["SG"], "currency": "SGD" },
+      {
+        "id": "eu",
+        "destinations": ["NL", "DE", "FR", "BE", "LU", "AT", "IT", "ES", "PT", "IE", "FI"],
+        "currency": "EUR"
+      },
+      { "id": "au", "destinations": ["AU"], "currency": "AUD" },
+      { "id": "row", "destinations": ["*"], "currency": "USD" }
+    ],
+    "rounding": {
+      "IDR": [
+        { "upTo": 100000, "step": 5000 },
+        { "upTo": 1000000, "step": 10000 },
+        { "upTo": 10000000, "step": 50000 },
+        { "upTo": null, "step": 100000 }
+      ],
+      "SGD": [{ "upTo": null, "step": 1000 }],
+      "EUR": [{ "upTo": null, "step": 1000 }],
+      "AUD": [{ "upTo": null, "step": 1000 }]
+    },
+    "fx": {
+      "source": "ecb-reference",
+      "bufferPct": { "IDR": "3", "SGD": "3", "EUR": "3", "AUD": "3.5" }
+    }
+  },
+  "sellers": [
+    {
+      "id": "sg",
+      "draft": true,
+      "entity": {
+        "name": "Placeholder Singapore Seller Pte. Ltd. (draft, D1)",
+        "country": "SG",
+        "registration": "UEN 000000000X (placeholder)",
+        "address": []
+      },
+      "serves": { "stockLocations": ["singapore"], "destinations": ["*"] },
+      "tax": { "regime": "SG-GST", "registered": false },
+      "charge": ["USD", "EUR", "SGD", "AUD", "IDR"],
+      "payments": ["stripe", "bank-transfer"],
+      "methodOrder": ["card", "express-wallet", "paynow", "bank-transfer"],
+      "cardCeiling": { "amount": 1000000, "currency": "USD" },
+      "insuredThreshold": { "amount": 100000, "currency": "USD" },
+      "duties": "DAP",
+      "documentPrefix": "SG"
+    },
+    {
+      "id": "id",
+      "draft": true,
+      "entity": {
+        "name": "PT Placeholder Seller Indonesia (draft, D1)",
+        "country": "ID",
+        "registration": "NIB 0000000000000 (placeholder)",
+        "address": []
+      },
+      "serves": { "stockLocations": ["jakarta"], "destinations": ["ID"] },
+      "tax": { "regime": "ID-PPN", "registered": false },
+      "charge": ["IDR"],
+      "payments": ["bank-transfer"],
+      "methodOrder": ["bank-transfer"],
+      "cardCeiling": null,
+      "insuredThreshold": { "amount": 15000000, "currency": "IDR" },
+      "duties": "DAP",
+      "documentPrefix": "ID"
+    }
+  ],
+  "commerce": {
+    "inventoryModels": ["unique", "stocked"],
+    "ttl": {},
+    "purchaseTiers": [
+      { "upTo": 500000, "primary": "buy", "secondary": ["enquire", "whatsapp"] },
+      { "upTo": 2500000, "primary": "buy", "secondary": ["reserve", "offer", "enquire"] },
+      { "upTo": null, "primary": "requestPrice", "secondary": ["viewing", "proforma"] }
+    ],
+    "trade": null
+  },
+  "shipping": { "providers": ["dhl-express", "biteship", "quote", "collect"] },
+  "fulfilment": { "providers": ["own-stock"] },
+  "analytics": { "ga4Id": null, "metaPixelId": null },
+  "modules": {
+    "catalogue.unique": true,
+    "catalogue.variants": true,
+    "purchase.offers": true,
+    "purchase.holds": true,
+    "purchase.requestPrice": true,
+    "purchase.invoices": true,
+    "media.deepZoom": true,
+    "media.roomView": true,
+    "content.makers": true,
+    "content.gazetteer": true,
+    "content.catalogues": true,
+    "content.journal": true,
+    "content.exhibitions": true,
+    "services.consignment": true,
+    "services.appointments": true,
+    "accounts.buyers": true,
+    "retention.wishlist": true,
+    "retention.wantList": true,
+    "retention.emailWantList": true,
+    "retention.newsletter": true,
+    "commerce.discounts": true,
+    "fulfilment.clickAndCollect": true,
+    "sister.links": true,
+    "ai.cataloguing": true
+  },
+  "sisters": [
+    {
+      "slug": "old-east-indies",
+      "name": "Old East Indies",
+      "role": "merch-outlet",
+      "baseUrl": "https://oei.gaiada.com"
+    }
+  ]
+}

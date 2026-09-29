@@ -1,0 +1,298 @@
+{
+  "draft": false,
+  "slug": "test",
+  "name": "Test Gallery",
+  "domains": { "production": null, "staging": null, "aliases": [] },
+  "storefront": "gallery",
+  "identity": {
+    "contact": {
+      "email": "desk@test-gallery.example",
+      "whatsapp": "+15555550100",
+      "phone": "+15555550101"
+    },
+    "social": { "instagram": "https://instagram.example/test-gallery" },
+    "announcement": {
+      "en": "A fictional gallery for tests.",
+      "id": "Galeri fiktif untuk pengujian.",
+      "nl": "Een fictieve galerie voor tests."
+    },
+    "navigation": {
+      "header": [
+        {
+          "surface": "browse",
+          "facets": { "objectType": "map" },
+          "label": { "en": "Maps", "id": "Peta", "nl": "Kaarten" }
+        },
+        { "surface": "maker", "label": { "en": "Makers", "id": "Pembuat", "nl": "Makers" } },
+        { "surface": "story", "label": { "en": "Stories", "id": "Cerita", "nl": "Verhalen" } },
+        { "surface": "location", "label": { "en": "Visit", "id": "Kunjungi", "nl": "Bezoek" } }
+      ],
+      "footer": [
+        {
+          "surface": "orderLookup",
+          "label": { "en": "Track an order", "id": "Lacak pesanan", "nl": "Bestelling volgen" }
+        },
+        {
+          "surface": "page",
+          "slug": "about",
+          "label": { "en": "About", "id": "Tentang", "nl": "Over ons" }
+        }
+      ]
+    }
+  },
+  "assets": {
+    "logo": "logo.svg",
+    "mark": "mark.svg",
+    "favicon": "favicon.ico",
+    "ogImage": "og.png",
+    "fonts": []
+  },
+  "tokens": {},
+  "media": { "publicZoomMaxPx": 4096 },
+  "locales": { "default": "en", "supported": ["en", "id", "nl"] },
+  "routes": {
+    "en": {
+      "browse": "browse",
+      "search": "search",
+      "item": "product",
+      "design": "designs",
+      "maker": "makers",
+      "place": "places",
+      "collection": "collections",
+      "source": "sources",
+      "exhibition": "exhibitions",
+      "location": "visit",
+      "ig": "ig",
+      "giftCard": "gift-cards",
+      "newsletterArchive": "newsletter",
+      "story": "stories",
+      "catalogue": "catalogues",
+      "cart": "bag",
+      "checkout": "checkout",
+      "order": "orders",
+      "account": "account",
+      "pay": "pay",
+      "quote": "quote",
+      "orderLookup": "track",
+      "partnership": "partnership",
+      "wishlist": "wishlist",
+      "wantList": "want-list",
+      "forms": {
+        "enquiry": "enquire",
+        "offer": "make-an-offer",
+        "consignment": "sell-to-us",
+        "appointment": "book-a-visit",
+        "hold": "reserve",
+        "quote": "request-a-quote"
+      }
+    },
+    "id": {
+      "browse": "jelajah",
+      "search": "cari",
+      "item": "produk",
+      "design": "desain",
+      "maker": "pembuat",
+      "place": "tempat",
+      "collection": "koleksi",
+      "source": "sumber",
+      "exhibition": "pameran",
+      "location": "kunjungi",
+      "ig": "ig",
+      "giftCard": "kartu-hadiah",
+      "newsletterArchive": "buletin",
+      "story": "cerita",
+      "catalogue": "katalog",
+      "cart": "tas",
+      "checkout": "checkout",
+      "order": "pesanan",
+      "account": "akun",
+      "pay": "bayar",
+      "quote": "penawaran",
+      "orderLookup": "lacak",
+      "partnership": "kemitraan",
+      "wishlist": "favorit",
+      "wantList": "pantauan",
+      "forms": {
+        "enquiry": "tanya",
+        "offer": "ajukan-tawaran",
+        "consignment": "titip-jual",
+        "appointment": "buat-janji",
+        "hold": "tahan",
+        "quote": "minta-penawaran"
+      }
+    },
+    "nl": {
+      "browse": "bladeren",
+      "search": "zoeken",
+      "item": "product",
+      "design": "ontwerpen",
+      "maker": "makers",
+      "place": "plaatsen",
+      "collection": "collecties",
+      "source": "bronnen",
+      "exhibition": "tentoonstellingen",
+      "location": "bezoek",
+      "ig": "ig",
+      "giftCard": "cadeaubonnen",
+      "newsletterArchive": "nieuwsbrief",
+      "story": "verhalen",
+      "catalogue": "catalogi",
+      "cart": "tas",
+      "checkout": "afrekenen",
+      "order": "bestellingen",
+      "account": "account",
+      "pay": "betalen",
+      "quote": "offerte",
+      "orderLookup": "volgen",
+      "partnership": "partners",
+      "wishlist": "verlanglijst",
+      "wantList": "zoeklijst",
+      "forms": {
+        "enquiry": "vraag",
+        "offer": "bod-doen",
+        "consignment": "verkoop-aan-ons",
+        "appointment": "afspraak",
+        "hold": "reserveren",
+        "quote": "offerte-aanvragen"
+      }
+    },
+    "facets": {
+      "path": ["objectType", "place"],
+      "vocabularies": {
+        "objectType": {
+          "en": { "map": "old-maps", "print": "old-prints", "photograph": "old-photographs" },
+          "id": { "map": "peta-lama", "print": "cetakan-lama", "photograph": "foto-lama" },
+          "nl": { "map": "oude-kaarten", "print": "oude-prenten", "photograph": "oude-fotos" }
+        }
+      }
+    },
+    "defaultSort": { "browse": "newest", "search": "relevance" },
+    "legacyPrefixes": ["/category/", "/storage/products/"]
+  },
+  "ids": { "workUidPrefix": "TG", "stockNumberPattern": "^T\\.[0-9]+$" },
+  "money": {
+    "base": "USD",
+    "markets": [
+      { "id": "id", "destinations": ["ID"], "currency": "IDR" },
+      { "id": "sg", "destinations": ["SG"], "currency": "SGD" },
+      { "id": "eu", "destinations": ["NL", "DE", "FR", "BE"], "currency": "EUR" },
+      { "id": "au", "destinations": ["AU"], "currency": "AUD" },
+      { "id": "gb", "destinations": ["GB"], "currency": "GBP", "pricesIncludeTax": false },
+      { "id": "row", "destinations": ["*"], "currency": "USD" }
+    ],
+    "rounding": {
+      "IDR": [
+        { "upTo": 100000, "step": 5000 },
+        { "upTo": 1000000, "step": 10000 },
+        { "upTo": 10000000, "step": 50000 },
+        { "upTo": null, "step": 100000 }
+      ],
+      "SGD": [{ "upTo": null, "step": 1000 }],
+      "EUR": [{ "upTo": null, "step": 1000 }],
+      "AUD": [{ "upTo": null, "step": 1000 }],
+      "GBP": [{ "upTo": null, "step": 1000 }]
+    },
+    "fx": {
+      "source": "ecb-reference",
+      "bufferPct": { "IDR": "3", "SGD": "3", "EUR": "3", "AUD": "3.5", "GBP": "2.5" }
+    }
+  },
+  "sellers": [
+    {
+      "id": "sg",
+      "draft": true,
+      "entity": {
+        "name": "Fictional Test Gallery Pte. Ltd.",
+        "country": "SG",
+        "registration": "UEN TEST00000G",
+        "address": ["1 Fixture Street", "Singapore 000001"]
+      },
+      "serves": { "stockLocations": ["singapore"], "destinations": ["*"] },
+      "tax": { "regime": "SG-GST", "registered": true },
+      "charge": ["USD", "EUR", "SGD", "AUD", "GBP", "IDR"],
+      "payments": ["stripe", "paypal", "bank-transfer", "manual"],
+      "methodOrder": [
+        "card",
+        "express-wallet",
+        "paynow",
+        "ideal",
+        "sepa-debit",
+        "paypal",
+        "bank-transfer"
+      ],
+      "cardCeiling": { "amount": 1000000, "currency": "USD" },
+      "insuredThreshold": { "amount": 100000, "currency": "USD" },
+      "duties": "DDP",
+      "documentPrefix": "TSG"
+    },
+    {
+      "id": "id",
+      "draft": true,
+      "entity": {
+        "name": "PT Fiktif Galeri Uji",
+        "country": "ID",
+        "registration": "NIB TEST000000000",
+        "address": ["Jalan Fiktif 1", "Jakarta"]
+      },
+      "serves": { "stockLocations": ["jakarta"], "destinations": ["ID"] },
+      "tax": { "regime": "ID-PPN", "registered": true },
+      "charge": ["IDR"],
+      "payments": ["midtrans", "bank-transfer"],
+      "methodOrder": ["va", "card", "qris", "bank-transfer"],
+      "cardCeiling": null,
+      "insuredThreshold": { "amount": 15000000, "currency": "IDR" },
+      "duties": "DAP",
+      "documentPrefix": "TID"
+    }
+  ],
+  "commerce": {
+    "inventoryModels": ["unique", "edition", "stocked", "made-to-order", "pod", "service"],
+    "ttl": {},
+    "purchaseTiers": [
+      { "upTo": 500000, "primary": "buy", "secondary": ["enquire", "whatsapp"] },
+      { "upTo": 2500000, "primary": "buy", "secondary": ["reserve", "offer", "enquire"] },
+      { "upTo": null, "primary": "requestPrice", "secondary": ["viewing", "proforma"] }
+    ],
+    "trade": null
+  },
+  "shipping": { "providers": ["flat", "biteship", "dhl-express", "quote", "collect"] },
+  "fulfilment": { "providers": ["own-stock", "local-production", "prodigi", "gelato"] },
+  "analytics": { "ga4Id": null, "metaPixelId": null },
+  "modules": {
+    "catalogue.unique": true,
+    "catalogue.variants": true,
+    "catalogue.productTypes": true,
+    "purchase.offers": true,
+    "purchase.holds": true,
+    "purchase.requestPrice": true,
+    "purchase.invoices": true,
+    "media.deepZoom": true,
+    "media.roomView": true,
+    "configurator.framing": true,
+    "content.makers": true,
+    "content.gazetteer": true,
+    "content.catalogues": true,
+    "content.journal": true,
+    "content.exhibitions": true,
+    "content.linkInBio": true,
+    "services.consignment": true,
+    "services.appointments": true,
+    "accounts.buyers": true,
+    "retention.wishlist": true,
+    "retention.wantList": true,
+    "retention.emailWantList": true,
+    "retention.newsletter": true,
+    "retention.reviews": true,
+    "retention.backInStock": true,
+    "retention.abandonedCart": true,
+    "commerce.giftCards": true,
+    "commerce.giftWrap": true,
+    "commerce.discounts": true,
+    "commerce.bundles": true,
+    "fulfilment.pod": true,
+    "fulfilment.clickAndCollect": true,
+    "sister.links": true,
+    "ai.cataloguing": true
+  },
+  "sisters": []
+}

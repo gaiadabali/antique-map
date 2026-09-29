@@ -101,6 +101,19 @@ importers:
         specifier: 26.6.3
         version: 26.6.3
 
+  engine/packages/i18n:
+    dependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
+    devDependencies:
+      '@engine/view-models':
+        specifier: workspace:*
+        version: link:../view-models
+      '@types/node':
+        specifier: 26.6.3
+        version: 26.6.3
+
   engine/packages/media: {}
 
   engine/packages/payments:

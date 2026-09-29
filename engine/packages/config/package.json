@@ -6,7 +6,10 @@
   "type": "module",
   "exports": {
     "./schema": "./src/schema.ts",
-    "./routes": "./src/routes.ts"
+    "./routes": "./src/routes.ts",
+    "./loader": "./src/loader/index.ts",
+    "./validate": "./src/validate/index.ts",
+    "./boot-check": "./src/boot-check/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
