@@ -60,7 +60,7 @@ function worktreeEnv(cwd, ...args) {
 describe('generateDevRing()', () => {
   it('is one current "dev" key of 32 bytes, base64url, which parseLinkTokenKeys() accepts', () => {
     const ring = generateDevRing()
-    expect(ring).toMatch(/^dev:[A-Za-z0-9_-]{43}$/)
+    expect(ring).toMatch(/^dev:[A-Za-z0-9_-]{43}$/) // base64url only: no +, / or = padding (C1 v1.2)
     const parsed = parseLinkTokenKeys(ring)
     expect(parsed.problems).toEqual([])
     expect(parsed.ok).toBe(true)
@@ -70,8 +70,13 @@ describe('generateDevRing()', () => {
   })
 
   it('is fresh each time', () => {
-    const rings = new Set(Array.from({ length: 20 }, () => generateDevRing()))
-    expect(rings.size).toBe(20)
+    const rings = new Set(Array.from({ length: 500 }, () => generateDevRing()))
+    expect(rings.size).toBe(500)
+    // Every one base64url only, and accepted by C1 v1.2 (which refuses standard base64).
+    for (const ring of rings) {
+      expect(ring).not.toMatch(/[+/=]/)
+      expect(parseLinkTokenKeys(ring).ok).toBe(true)
+    }
   })
 
   it('never emits bytes parseLinkTokenKeys() refuses as not random — it draws again', () => {

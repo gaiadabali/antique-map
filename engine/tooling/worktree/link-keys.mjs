@@ -11,8 +11,6 @@
 import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { createRequire, stripTypeScriptTypes } from 'node:module'
-import { dirname, join } from 'node:path'
-import { pathToFileURL } from 'node:url'
 
 import { readEnvFile, writeEnvFile } from './env-file.mjs'
 
@@ -23,27 +21,23 @@ const SECRET_BYTES = 32
 const MAX_DRAWS = 64
 
 /**
- * C1's own `parseLinkTokenKeys()` (`@engine/config/boot-check`), so a generated ring is judged
- * by exactly the rules bootCheck() applies — v1.2's stepped runs and repeated blocks, and
- * whatever a later version adds — never by a copy of them here (TASKS.md 3.5.e). This file
- * runs under plain `node` (the `worktree:env` CLI), which cannot follow the package index's
- * extensionless imports, so it loads the one leaf module that holds the rule, `link-keys.ts`,
- * beside the index the package's `exports` names; that module imports nothing. Node strips
- * its types itself from 22.18; on the floor `engines.node` allows (22.13, CI's pin) it does
- * not, so the source is stripped with `module.stripTypeScriptTypes()` and imported from a
- * data URL instead.
+ * C1's own `parseLinkTokenKeys()`, from its `@engine/config/link-keys` export (3.4), so a
+ * generated ring is judged by exactly the rules bootCheck() applies — stepped runs, repeated
+ * blocks, base64url only, and whatever a later version adds — never by a copy of them here
+ * (TASKS.md 3.5.e). This file runs under plain `node` (the `worktree:env` CLI), and the export
+ * is a TypeScript source with no imports: Node strips its types itself from 22.18, but on the
+ * floor `engines.node` allows (22.13, CI's pin) it does not, so there the source the export
+ * resolves to is stripped with `module.stripTypeScriptTypes()` and imported from a data URL.
  */
-const LINK_KEYS_SOURCE = join(
-  dirname(createRequire(import.meta.url).resolve('@engine/config/boot-check')),
-  'link-keys.ts',
-)
+const LINK_KEYS = '@engine/config/link-keys'
 
 async function loadLinkKeyRules() {
   try {
-    return await import(pathToFileURL(LINK_KEYS_SOURCE).href)
+    return await import(LINK_KEYS)
   } catch (error) {
     if (error?.code !== 'ERR_UNKNOWN_FILE_EXTENSION') throw error
-    const javascript = stripTypeScriptTypes(readFileSync(LINK_KEYS_SOURCE, 'utf8'))
+    const source = readFileSync(createRequire(import.meta.url).resolve(LINK_KEYS), 'utf8')
+    const javascript = stripTypeScriptTypes(source)
     return import(`data:text/javascript;base64,${Buffer.from(javascript).toString('base64')}`)
   }
 }
