@@ -329,6 +329,8 @@ so it is breaking and also needs a redirect.
     - `FORM_KINDS` gains `hold` (posting `hold.request`) and `quote` (posting `quote.request`;
       D36's audience), and forms take a `variant` (fe F1).
     - `wantList` takes one subject, and two answer `notFound` (fe S6).
+    - The round-trip test covers both new kinds, a variant and two subjects, and pins the literal
+      links C2's fixtures spell out (view-models may not import `href()`).
   - **C13:**
     - `ONE_CLICK_UNSUBSCRIBE` states the RFC 8058 exemption exactly (be S7, fe S5).
     - `FORM_DECODING` is schema-driven, with five ambiguities settled and the money grammar
