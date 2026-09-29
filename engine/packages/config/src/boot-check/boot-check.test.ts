@@ -115,18 +115,19 @@ describe('bootCheck() — missing secrets refuse the start', () => {
     expect(
       refusal(check({ ...fullEnv(config, 'production'), CRON_SECRET: undefined }), 'CRON_SECRET'),
     ).toMatch(/is not set/)
-    const cfg = deployableConfig((raw) => {
-      raw.sisters = [
-        {
-          slug: 'sister',
-          name: 'Sister',
-          role: 'merch-outlet',
-          baseUrl: 'https://sister.example.com',
-        },
-      ]
+    // The synthetic gallery links to its sister (C1 v1.2: `sister.links` needs one).
+    expect(config.sisters).toHaveLength(1)
+    const noSisterSecrets = {
+      ...fullEnv(config, 'staging'),
+      SISTER_API_KEY: undefined,
+      SISTER_WEBHOOK_SECRET: undefined,
+    }
+    expect(subjects(check(noSisterSecrets))).toEqual(['SISTER_API_KEY', 'SISTER_WEBHOOK_SECRET'])
+    const alone = deployableConfig((raw) => {
+      raw.sisters = []
+      raw.modules['sister.links'] = false
     })
-    const report = check(fullEnv(cfg, 'staging'), { cfg })
-    expect(subjects(report)).toEqual(['SISTER_API_KEY', 'SISTER_WEBHOOK_SECRET'])
+    expect(check(noSisterSecrets, { cfg: alone }).problems).toEqual([])
   })
 
   it('refuses a malformed LINK_TOKEN_KEYS: no current key or two, a repeated kid, a short or test key, a future day', () => {

@@ -1,11 +1,11 @@
 /**
  * The money rules of `validateBrandConfigs()` (C1's header list): markets partition the world,
- * sellers cover every market, the rupiah rule, a price ladder for every derived currency, and
- * trade minimums in a currency whichever seller quotes can charge. These are the rules whose
- * breach costs money or breaks the law, so each message says which (COMMERCE.md §2–3,
- * COMPLIANCE.md §1).
+ * sellers cover every market, the rupiah rule, a price ladder and an FX buffer for every
+ * derived currency, and trade minimums in a currency whichever seller quotes can charge. These
+ * are the rules whose breach costs money or breaks the law, so each message says which
+ * (COMMERCE.md §2–3, COMPLIANCE.md §1).
  */
-import type { BrandConfig, SellerConfig } from '../../schema'
+import type { BrandConfig, CurrencyCode, SellerConfig } from '../../schema'
 import type { Report } from '../issues'
 
 const RUPIAH =
@@ -15,7 +15,15 @@ export function checkMoney(config: BrandConfig, report: Report): void {
   checkMarkets(config, report)
   checkRupiah(config, report)
   checkLadders(config, report)
+  checkBuffers(config, report)
   checkTradeCurrency(config, report)
+}
+
+/** The market currencies whose prices are derived from the base: every one but the base. */
+function derivedCurrencies(money: BrandConfig['money']): Set<CurrencyCode> {
+  return new Set(
+    money.markets.map((market) => market.currency).filter((currency) => currency !== money.base),
+  )
 }
 
 function serves(seller: SellerConfig, destination: string): boolean {
@@ -74,10 +82,7 @@ function checkRupiah({ money, sellers }: BrandConfig, report: Report): void {
 }
 
 function checkLadders({ money }: BrandConfig, report: Report): void {
-  const derived = new Set(
-    money.markets.map((market) => market.currency).filter((currency) => currency !== money.base),
-  )
-  for (const currency of derived) {
+  for (const currency of derivedCurrencies(money)) {
     const ladder = money.rounding[currency]
     if (!ladder) {
       report(
@@ -96,6 +101,18 @@ function checkLadders({ money }: BrandConfig, report: Report): void {
         )
       }
     })
+  }
+}
+
+// A derived price is the base at the day's rate plus this buffer, then rounded (COMMERCE.md §3).
+// A currency left out would be priced at the bare rate — 0 % — with nobody having said so.
+function checkBuffers({ money }: BrandConfig, report: Report): void {
+  for (const currency of derivedCurrencies(money)) {
+    if (money.fx.bufferPct[currency] !== undefined) continue
+    report(
+      ['money', 'fx', 'bufferPct', currency],
+      `needs a buffer: ${currency} prices are derived from ${money.base} at the day's rate plus this percentage — write "0" for none, rather than leave it to a silent 0 % (COMMERCE.md §3)`,
+    )
   }
 }
 

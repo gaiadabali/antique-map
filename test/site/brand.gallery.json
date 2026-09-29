@@ -294,5 +294,12 @@
     "sister.links": true,
     "ai.cataloguing": true
   },
-  "sisters": []
+  "sisters": [
+    {
+      "slug": "test",
+      "name": "Test Emporium",
+      "role": "merch-outlet",
+      "baseUrl": "https://emporium.test.example"
+    }
+  ]
 }

@@ -1,7 +1,8 @@
 /**
  * The module rules of `validateBrandConfigs()` (C1's header list): what the chosen app can
- * render, which modules only make sense together, and the purchase panel's actions, each of
- * which opens a flow some module owns. A flag is a capability, never a brand (BRANDS.md §4).
+ * render, which modules only make sense together (or with the data they work on — a sister to
+ * link to), and the purchase panel's actions, each of which opens a flow some module owns. A
+ * flag is a capability, never a brand (BRANDS.md §4).
  */
 import {
   hasModule,
@@ -52,6 +53,12 @@ export function checkModules(
     report(
       ['commerce', 'trade'],
       'must be set while "accounts.retailers" is on: approving a partner assigns its defaultTier (D32)',
+    )
+  }
+  if (hasModule(config, 'sister.links') && config.sisters.length === 0) {
+    report(
+      ['modules', 'sister.links'],
+      'needs a sister in "sisters": its cross-links and work sync are with that brand (BRANDS.md §5)',
     )
   }
   checkPurchaseTiers(config, report)

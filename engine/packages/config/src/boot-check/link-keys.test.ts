@@ -1,11 +1,14 @@
+import { createHash } from 'node:crypto'
+
 import { describe, expect, it } from 'vitest'
 
 import { parseLinkTokenKeys } from './index'
 
 const NOW = new Date('2026-09-29T12:00:00Z')
-/** 32 distinct bytes, base64url: a well-formed secret. */
-const key = (seed: number) =>
-  Buffer.from(Array.from({ length: 32 }, (_, i) => (i * 7 + seed) % 256)).toString('base64url')
+/** 32 bytes that look random (a hash of the seed), base64url: a well-formed secret. */
+const bytesOf = (seed: number) => createHash('sha256').update(`link-key-${seed}`).digest()
+const key = (seed: number) => bytesOf(seed).toString('base64url')
+const encode = (bytes: number[] | Buffer) => Buffer.from(bytes).toString('base64url')
 /** C6 `LINK_TOKEN_VECTORS.key.secret` — 32 × 0x0b — copied, since config imports no other package. */
 const VECTORS_TEST_KEY = 'CwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCws'
 
@@ -93,6 +96,34 @@ describe('LINK_TOKEN_KEYS — a well-formed ring (C6 links)', () => {
     expect(refused('a:' + password)).toMatch(/fewer than 16/)
     const phrase = Buffer.from('correct horse battery staple, 42!').toString('base64url')
     expect(refused('a:' + phrase)).toMatch(/decodes to printable text/)
+  })
+
+  it('refuses a counter, a stride, a padded key and a block repeated (3.1 qa)', () => {
+    const run = /bytes in a row stepping by one constant/
+    // 0x00 … 0x1f: 32 distinct bytes, none printable — what the 3.1 rule let through.
+    const counter = Array.from({ length: 32 }, (_, i) => i)
+    expect(refused('a:' + encode(counter))).toMatch(/has 32 bytes in a row stepping/)
+    expect(refused('a:' + encode([...counter].reverse()))).toMatch(run)
+    expect(refused('a:' + encode(counter.map((i) => (i * 7 + 3) % 256)))).toMatch(run)
+    // A counter running into a random tail, and a short random key padded out with zeros.
+    expect(refused('a:' + encode([...counter.slice(0, 8), ...bytesOf(1).subarray(8)]))).toMatch(
+      /has 8 bytes in a row/,
+    )
+    expect(refused('a:' + encode([...bytesOf(2).subarray(0, 20), ...Array(12).fill(0)]))).toMatch(
+      /has 12 bytes in a row/,
+    )
+    // A 20-byte key written twice to pass the 32-byte floor.
+    const half = bytesOf(3).subarray(0, 20)
+    expect(refused('a:' + encode([...half, ...half]))).toMatch(/is a 20-byte block repeated/)
+  })
+
+  it('accepts random bytes, whose runs are short', () => {
+    for (let seed = 0; seed < 200; seed++) {
+      expect(parseLinkTokenKeys(`a:${key(seed)}`, NOW).problems, `seed ${seed}`).toEqual([])
+    }
+    // Seven bytes stepping by one constant is below the line.
+    const seven = [...Array.from({ length: 7 }, (_, i) => i * 3), ...bytesOf(4).subarray(7)]
+    expect(parseLinkTokenKeys('a:' + encode(seven), NOW).ok).toBe(true)
   })
 
   it('warns, and only warns, of a retired key past the overlap', () => {

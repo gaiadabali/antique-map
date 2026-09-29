@@ -5,13 +5,15 @@
  * which surface a URL names and the app route to rewrite it to, and what a listing page runs
  * on its search params. `parsePublicPath(config, href(s, p, l))` gives back `s` and `p` in
  * canonical form (a round-trip test proves it). Anything else — an internal path asked for
- * directly, a default-locale or unsupported-locale prefix, an extra segment — is `notFound`,
- * so no page has two addresses. The internal URL carries a listing's whole canonical state as
- * its query (named-path facets included), so a listing page reads `parseListingQuery()` and
- * never the public path. Pure: no database, no request object.
+ * directly, a default-locale or unsupported-locale prefix, an extra segment, a segment spelt
+ * otherwise than `href()` spells it (`./segments`) — is `notFound`, so no page has two
+ * addresses. An old site's URL goes to the legacy handler first (`./legacy`), as asked for. The
+ * internal URL carries a listing's whole canonical state as its query (named-path facets
+ * included), so a listing page reads `parseListingQuery()` and never the public path. Pure: no
+ * database, no request object.
  */
 import { FACET_KEYS, SORT_KEYS, type FacetKey, type SortKey } from '../schema/facets'
-import { LOCALE_CODES, type LocaleCode } from '../schema/locales'
+import { LOCALE_CODES, type LocaleCode } from '../constants'
 import type { RouteMap } from '../routes'
 import {
   canonicalListing,
@@ -20,6 +22,9 @@ import {
   type ListingState,
   type ListingSurface,
 } from './href'
+import { legacyTarget } from './legacy'
+import { positive, query, reader, uuid, type SearchInput } from './query'
+import { decodeSegments } from './segments'
 import {
   ACCOUNT_SECTIONS,
   FORM_KINDS,
@@ -32,16 +37,13 @@ import {
   type SegmentSurface,
 } from './surfaces'
 
+export type { SearchInput } from './query'
+
 /** What parsing reads from a brand config. */
 export type ParseConfig = {
   routes: RouteMap
   locales: { default: LocaleCode; supported: readonly LocaleCode[] }
 }
-
-/** `URLSearchParams`, or the record a Next page receives as `searchParams`. */
-export type SearchInput =
-  | { get(name: string): string | null; getAll(name: string): string[] }
-  | Readonly<Record<string, string | readonly string[] | undefined>>
 
 type SurfaceMatch = {
   [S in LinkSurface]: {
@@ -92,9 +94,9 @@ export function parsePublicPath(
   search: SearchInput = {},
 ): ParsedPath {
   const { routes, locales } = config
-  const prefix = routes.legacyPrefixes.find((legacy) => pathname.startsWith(legacy))
-  if (prefix) return { kind: 'legacy', internal: `/api/x/legacy${pathname}` }
-  const parts = decodeAll(pathname.split('/').filter((part) => part !== ''))
+  const legacy = legacyTarget(routes, pathname)
+  if (legacy !== null) return { kind: 'legacy', internal: legacy }
+  const parts = decodeSegments(pathname)
   if (!parts) return NOT_FOUND
   let locale = locales.default
   const first = parts[0]
@@ -231,41 +233,6 @@ function match<S extends LinkSurface>(
 function segmentOf(section: AccountSection): string | null {
   return ACCOUNT_SECTIONS[section].segment
 }
-
-function reader(search: SearchInput): (key: string) => string[] {
-  if (typeof search.getAll === 'function' && typeof search.get === 'function') {
-    return (key) => (search.getAll as (name: string) => string[])(key)
-  }
-  const record = search as Readonly<Record<string, string | readonly string[] | undefined>>
-  return (key) => [record[key] ?? []].flat()
-}
-
-function query(values: Record<string, string | number | undefined>): string {
-  const pairs = Object.entries(values).flatMap(([key, value]) =>
-    value === undefined || value === '' ? [] : [`${key}=${encodeURIComponent(value)}`],
-  )
-  return pairs.length > 0 ? `?${pairs.join('&')}` : ''
-}
-
-function decodeAll(parts: string[]): string[] | null {
-  try {
-    return parts.map((part) => decodeURIComponent(part))
-  } catch {
-    return null
-  }
-}
-
-/** A positive safe integer from a query value, else null. */
-function positive(value: string | undefined): number | null {
-  const n = Number(value)
-  return value !== undefined && Number.isSafeInteger(n) && n > 0 ? n : null
-}
-
-/** A record's `ref` from a query value, as the lowercase UUID it is written as, else null. */
-function uuid(value: string | undefined): string | null {
-  return value !== undefined && UUID.test(value) ? value : null
-}
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 const isLocaleCode = (value: string): value is LocaleCode =>
   (LOCALE_CODES as readonly string[]).includes(value)

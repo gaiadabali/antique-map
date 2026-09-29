@@ -6,12 +6,21 @@
  * cannot say it: staging runs production builds on sandbox keys (DEPLOYMENT.md §1).
  *
  * It fails closed: a production build on a host that is none of the brand's domains is
- * refused and judged as production, so the strictest rules apply to whatever it is.
+ * refused and judged as production, so the strictest rules apply to whatever it is; so is one
+ * with no `SITE_URL` or a malformed one.
+ *
+ * A production build on a loopback `SITE_URL` is judged local, by decision (3.4.f): it is how a
+ * worktree and CI open the thing on a production build on their own port (CONVENTIONS.md §11),
+ * with draft configs and sandbox or no keys, which production would refuse. It is never quiet
+ * about it — the boot report warns — and it buys a misconfigured host little: local runs on
+ * sandbox keys, so a host holding live keys refuses to start as local, and a loopback URL is
+ * no origin a buyer, a gateway or an email can reach. `0.0.0.0` is not loopback: it is a bind
+ * address, never an origin, and a production build naming it is judged production.
  */
 import type { BrandConfig } from '../schema'
 import { read, type DeploymentEnvironment, type Findings } from './findings'
 
-const LOOPBACK = /^(?:localhost|.+\.localhost|127(?:\.\d{1,3}){3}|\[::1\]|0\.0\.0\.0)$/
+const LOOPBACK = /^(?:localhost|.+\.localhost|127(?:\.\d{1,3}){3}|\[::1\])$/
 
 export function deploymentEnvironment(
   env: Readonly<Record<string, string | undefined>>,
@@ -52,7 +61,14 @@ export function deploymentEnvironment(
       findings.refuse('SITE_URL', `must be https:// on the ${deployed} domain`)
     return deployed
   }
-  if (!productionBuild || LOOPBACK.test(host)) return 'local'
+  if (!productionBuild) return 'local'
+  if (LOOPBACK.test(host)) {
+    findings.warn(
+      'SITE_URL',
+      `is loopback (${host}): a production build judged local — sandbox keys only, drafts and fixtures allowed; a deployed host names its own domain (DEPLOYMENT.md §8)`,
+    )
+    return 'local'
+  }
   findings.refuse(
     'SITE_URL',
     `host "${host}" is none of the brand's domains (domains.production, .staging, .aliases); judged as production until it is`,

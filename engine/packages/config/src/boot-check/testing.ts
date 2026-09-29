@@ -3,6 +3,8 @@
  * run anywhere (the synthetic brand's, given domains and no drafts) and a complete, valid
  * environment for each deployment environment.
  */
+import { createHash } from 'node:crypto'
+
 import { brandConfigSchema, type BrandConfig } from '../schema'
 import { REPO_ROOT, testBrandConfig } from '../validate/testing/fixtures'
 import type { DeploymentEnvironment } from './findings'
@@ -28,9 +30,12 @@ export function deployableConfig(
   return brandConfigSchema.parse(raw)
 }
 
-/** A well-formed secret of 32 distinct bytes. */
+/**
+ * A well-formed secret: 32 bytes that look random (a hash of the seed), since a pattern — a
+ * step, a run, a block repeated — is refused like a short key.
+ */
 export const secret = (seed: number) =>
-  Buffer.from(Array.from({ length: 32 }, (_, i) => (i * 11 + seed) % 256)).toString('base64url')
+  createHash('sha256').update(`link-key-${seed}`).digest().toString('base64url')
 
 const SAMPLE: Record<string, { sandbox: string; live: string }> = {
   SECRET_KEY: { sandbox: 'sk_test_51Fixture', live: 'sk_live_51Fixture' },
@@ -58,7 +63,7 @@ export function providerEnv(config: BrandConfig, mode: 'sandbox' | 'live'): Reco
   for (const seller of config.sellers) {
     for (const p of seller.payments)
       fill(secretPrefix('PAYMENT', seller.id, p), PAYMENT_SECRETS[p], p)
-    for (const p of config.shipping.providers)
+    for (const p of seller.shipping.providers)
       fill(secretPrefix('SHIPPING', seller.id, p), SHIPPING_SECRETS[p], p)
   }
   for (const p of config.fulfilment.providers)
@@ -98,6 +103,9 @@ export function fullEnv(
     SMTP_PORT: '587',
     SMTP_FROM_ADDRESS: 'desk@example.com',
     LINK_TOKEN_KEYS: `k2:${secret(2)},k1:${secret(1)}:2026-01-01`,
+    ...(config.sisters.length > 0
+      ? { SISTER_API_KEY: `sister-${STRONG}`, SISTER_WEBHOOK_SECRET: `sister-hook-${STRONG}` }
+      : {}),
     ...providerEnv(config, environment === 'production' ? 'live' : 'sandbox'),
   }
 }
