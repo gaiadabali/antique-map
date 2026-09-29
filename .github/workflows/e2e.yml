@@ -59,23 +59,26 @@ jobs:
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get install -y postgresql-client-18
 
-      # ig, oei, and the synthetic `test` brand's two storefront configs
-      # (CONVENTIONS.md §1) — `db:fresh` has no `--storefront` flag: nothing
-      # in it branches on TEST_STOREFRONT (only the app reads that at
-      # runtime), so the two `test` databases are told apart purely by
-      # suffix here, same as this job did before this follow-up. Each call
-      # also runs the migrate/seed no-ops (3.2 / 10.2) via the real hooks.
-      - name: db:fresh — ig, oei, test-gallery, test-emporium
+      # ig, oei, and the synthetic `test` brand once per storefront config
+      # (CONVENTIONS.md §1): `--storefront` names `test_ci_<storefront>`.
+      # Each call creates the database, then migrates it (TASKS.md 3.5.c):
+      # `pnpm --filter @engine/cms migrate` — the committed migration set,
+      # under the advisory lock, with BRAND (and TEST_STOREFRONT) as that
+      # brand's process runs — with a DATABASE_URL the hook builds from this
+      # job's PGHOST/PGPORT/POSTGRES_USER/PGPASSWORD and a dev PAYLOAD_SECRET
+      # of its own; everything it needs is the frozen install above. A failed
+      # migration fails the step. The seed hook is still a no-op (10.2).
+      - name: db:fresh — ig, oei, test-gallery, test-emporium (created and migrated)
         run: |
           pnpm db:fresh --brand indies-gallery --suffix ci
           pnpm db:fresh --brand old-east-indies --suffix ci
-          pnpm db:fresh --brand test --suffix ci_gallery
-          pnpm db:fresh --brand test --suffix ci_emporium
+          pnpm db:fresh --brand test --storefront gallery --suffix ci
+          pnpm db:fresh --brand test --storefront emporium --suffix ci
 
-      # 2.1.d's CI clause, proven the same way the local Check is: one
-      # schema across every database the stack has (schema-hash --all's own
-      # comparison, 2.2.c) — trivially equal today (no migrations exist yet,
-      # 3.2), meaningful the day they do.
+      # 2.1.d's and 3.2.f's CI clause, proven the same way the local Check
+      # is: one schema across every database the stack has (schema-hash
+      # --all's own comparison, 2.2.c) — four migrated databases, so a
+      # migration that applied differently anywhere fails here.
       - name: schema-hash --all
         run: pnpm schema-hash --all
 
@@ -87,6 +90,19 @@ jobs:
             echo "$db: $found"
             [ "$found" = "pg_trgm,unaccent" ] || { echo "::error::$db lacks unaccent or pg_trgm"; exit 1; }
           done
+
+      # The CMS's real-database tests (`*.db.test.ts`, TASKS.md 3.2's senior-db
+      # review): the unit job has no Postgres, so they run here, where the
+      # service is. Each makes its own database on the server
+      # CMS_TEST_POSTGRES_URL names (the maintenance database; the role must
+      # be able to CREATE DATABASE), migrates it and drops it WITH (FORCE).
+      # Without the variable they skip, so this step is what runs them.
+      # --passWithNoTests: on a branch with no such file yet the filter matches
+      # nothing, which vitest otherwise fails; once one exists it runs.
+      - name: CMS real-database tests
+        env:
+          CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+        run: pnpm exec vitest run --project packages --passWithNoTests .db.test
 
       - name: Build both apps (no database env — like the deploy artifact)
         if: steps.apps.outputs.exists == 'true'
