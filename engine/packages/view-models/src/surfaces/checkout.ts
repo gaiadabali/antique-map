@@ -19,6 +19,7 @@ import type {
   LineProblem,
   PaymentStartRequest,
   ProblemOf,
+  ProformaRequest,
   WireSessionResult,
 } from '@engine/domain/api'
 import type { PaymentFailureClass, PaymentMethodId } from '@engine/domain/machines/payment'
@@ -135,6 +136,11 @@ export type CheckoutVM = {
     continue: Omit<CheckoutContinueRequest, 'termsAccepted' | 'idempotencyKey'>
     /** A method chosen: the component adds the method and an idempotency key. */
     pay: Omit<PaymentStartRequest, 'method' | 'idempotencyKey'>
+    /**
+     * "Proforma instead" (C6 `quote.proforma`): the component adds an idempotency key. `null`
+     * unless `purchase.invoices` is on and the contact step named an institution.
+     */
+    proforma: Omit<ProformaRequest, 'idempotencyKey'> | null
   }
   seo: SeoVM
 }

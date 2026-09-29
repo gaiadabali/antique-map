@@ -35,9 +35,10 @@ export type EngineRoute = {
   readonly owner: Lane
   readonly auth: readonly RouteAuth[]
   /**
-   * CSRF: a cookie can authenticate a write here, so the handler refuses a non-GET request a
-   * cookie authenticates unless `Origin` is this site's (or `Sec-Fetch-Site: same-origin`). A
-   * request carrying its own token (a one-click unsubscribe) is not a forgery target.
+   * CSRF: a cookie can authenticate a write here, so the handler refuses a non-GET request unless
+   * `Origin` is this site's (or `Sec-Fetch-Site: same-origin`). The one exception is RFC 8058's
+   * one-click unsubscribe, and only as `ONE_CLICK_UNSUBSCRIBE` states it: its URL's token is its
+   * whole credential and it reads no cookie, so a cross-site post can do nothing a cookie allows.
    */
   readonly sameOrigin: boolean
   /** The module whose absence makes the handler answer 404 (the file is mounted regardless). */

@@ -68,6 +68,13 @@ export const DOMAIN_TX_TIMEOUTS = {
 } as const satisfies { readonly [limit: string]: Duration }
 
 /**
+ * How long a payment attempt with no stored session is taken for one still in its provider call
+ * (C6 `PaymentStartRequest`): `port`, the call's own limit, plus a margin. Inside it the same key
+ * answers `rate-limited`; past it, the attempt is taken for a crash, voided and made again.
+ */
+export const PAYMENT_ATTEMPT_LEASE = { seconds: 15 } as const satisfies Duration
+
+/**
  * The one order in which every writer takes rows, so no two writers can deadlock. A transaction
  * may skip a step, never return to an earlier one, and within a step takes rows in the key order.
  * It governs every statement that can WAIT: `SELECT … FOR UPDATE`, `UPDATE`, `DELETE`, and an
@@ -138,6 +145,11 @@ export type DomainSweeps<Tx extends DomainTx = DomainTx> = {
   readonly abandonedOrders: (tx: Tx, limit: number) => Promise<SweepResult>
   /** Open offers past `expiresAt` → `expired`; a counter near its end → `offer.counterExpiring`, once. */
   readonly offers: (tx: Tx, limit: number) => Promise<SweepResult>
+  /**
+   * Idempotency keys past `IDEMPOTENCY_KEY_RETENTION` (./storage.ts) → deleted with their stored
+   * answers: DEPLOYMENT.md §5's daily run.
+   */
+  readonly idempotencyKeys: (tx: Tx, limit: number) => Promise<SweepResult>
 }
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────

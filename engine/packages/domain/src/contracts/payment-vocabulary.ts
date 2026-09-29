@@ -9,9 +9,10 @@
  * are stateless translators; all state lives in the domain). Provider ids are C1's, imported and
  * never redeclared; C7 maps each granular method below onto one of C1's method families.
  */
-import type { LocaleCode, PaymentProviderId } from '@engine/config/schema'
+import type { CurrencyCode, LocaleCode, PaymentProviderId } from '@engine/config/schema'
 
 import type { Money } from '../money/contract'
+import type { DecimalString } from './scalars'
 
 /** Every gateway the engine supports; a seller's config selects from these (PAYMENTS.md §2, §6). */
 export type { PaymentProviderId } from '@engine/config/schema'
@@ -90,14 +91,25 @@ export type SessionResult =
  */
 export type PaymentFailureClass = 'declined' | 'expired' | 'cancelled' | 'unavailable' | 'error'
 
+/**
+ * A provider's figure that is no whole number of the engine's minor units (C5) — IDR counted in
+ * hundredths that is not a whole rupiah (`100050`, Rp 1.000,50). The adapter never rounds it, which
+ * would be a rounding at no named point: it passes the provider's figure on as written, in major
+ * units, and applyPaymentEvent() flags the event — recorded and alerted for a human, never paid.
+ */
+export type InexactMoney = { readonly inexact: DecimalString; readonly currency: CurrencyCode }
+
+/** A figure as a provider reported it: C5's `Money` when it converts exactly, else as written. */
+export type ProviderMoney = Money | InexactMoney
+
 /** What a payment event says happened. `paid` and `authorised` always carry the amount. */
 export type PaymentEventBody =
   | { readonly type: 'pending' }
   | { readonly type: 'requires_action' }
   /** Authorised, not yet captured: the domain captures only while the reservation is live. */
-  | { readonly type: 'authorised'; readonly amount: Money }
+  | { readonly type: 'authorised'; readonly amount: ProviderMoney }
   /** `amount` is checked against the attempt's charge; a mismatch is alerted, never paid. */
-  | { readonly type: 'paid'; readonly amount: Money }
+  | { readonly type: 'paid'; readonly amount: ProviderMoney }
   | {
       readonly type: 'failed'
       readonly reasonClass: PaymentFailureClass
@@ -114,11 +126,11 @@ export type PaymentEventBody =
    */
   | {
       readonly type: 'refunded' | 'partially_refunded'
-      readonly amount: Money
-      readonly refundedTotal: Money
+      readonly amount: ProviderMoney
+      readonly refundedTotal: ProviderMoney
       readonly refundRef: string
     }
-  | { readonly type: 'disputed'; readonly amount: Money; readonly disputeRef: string }
+  | { readonly type: 'disputed'; readonly amount: ProviderMoney; readonly disputeRef: string }
   /** The machine's `dispute_won` (outcome `won`) or `dispute_lost` (outcome `lost`). */
   | {
       readonly type: 'dispute_closed'
@@ -188,8 +200,8 @@ export type ProviderState = {
     | 'refunded'
     | 'partially_refunded'
     | 'unknown'
-  readonly paid: Money | null
-  readonly refundedTotal: Money | null
+  readonly paid: ProviderMoney | null
+  readonly refundedTotal: ProviderMoney | null
 }
 
 /**

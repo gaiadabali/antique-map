@@ -20,6 +20,7 @@ import * as cart from './cart'
 import {
   checkoutExport,
   checkoutConflict,
+  checkoutInstitution,
   checkoutLockExpired,
   checkoutPriceChanged,
 } from './checkout-export'
@@ -38,7 +39,7 @@ import { itemOnHold } from './item-on-hold'
 import { itemPriceOnRequest, itemPriceRevealed } from './item-price-on-request'
 import { itemSoldPriceRealised, itemSoldWithAlternative } from './item-sold-with-alternative'
 import { itemUnique, itemUniqueStreaming } from './item-unique'
-import { itemVariants, itemVariantsSelected } from './item-variants'
+import { itemVariants, itemVariantsForPartner, itemVariantsSelected } from './item-variants'
 import { listing, listingEmpty, search } from './listing'
 import * as order from './order'
 import * as lookup from './order-lookup'
@@ -74,6 +75,7 @@ export const FIXTURES = {
   'item-availability-unverified': itemAvailabilityUnverified,
   'item-variants': itemVariants,
   'item-variants-selected': itemVariantsSelected,
+  'item-variants-partner': itemVariantsForPartner,
   'item-long-content': itemLongContent,
   'item-without-hook-title': itemWithoutHookTitle,
   design,
@@ -101,6 +103,7 @@ export const FIXTURES = {
   'checkout-conflict': checkoutConflict,
   'checkout-price-changed': checkoutPriceChanged,
   'checkout-lock-expired': checkoutLockExpired,
+  'checkout-institution': checkoutInstitution,
   'order-paid': order.orderPaid,
   'order-pending-va': order.orderPendingVa,
   'order-pending-qris': order.orderPendingQris,
@@ -148,11 +151,20 @@ export const FIXTURES = {
   'want-list-pending': wantList.wantListPending,
   'want-list-active': wantList.wantListActive,
   'want-list-gone': wantList.wantListGone,
+  'want-list-invalid': wantList.wantListInvalid,
+  'want-list-rate-limited': wantList.wantListRateLimited,
+  'want-list-confirmed': wantList.wantListConfirmed,
+  'want-list-stopped': wantList.wantListStopped,
+  'want-list-link-expired': wantList.wantListLinkExpired,
   'form-enquiry': form.formEnquiry,
   'form-offer': form.formOffer,
   'form-consignment': form.formConsignment,
   'form-appointment': form.formAppointment,
   'form-invalid': form.formInvalid,
+  'form-hold': form.formHold,
+  'form-refused': form.formRefused,
+  'form-quote': form.formQuote,
+  'form-quote-partner': form.formQuotePartner,
   'not-found-legacy': notFoundLegacy,
   gone,
   error: serverError,

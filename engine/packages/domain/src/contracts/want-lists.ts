@@ -1,6 +1,7 @@
 /**
  * @contract C6 Commerce API — want lists · owner: ARC · via `@engine/domain/api`
- * The values `WANT_LIST_PENDING_DAYS` and `WANT_LIST_EMAIL_LIMIT` are at `@engine/domain/want-lists`.
+ * The values `WANT_LIST_PENDING_DAYS`, `WANT_LIST_PENDING_PER_ADDRESS` and `WANT_LIST_EMAIL_LIMIT`
+ * are at `@engine/domain/want-lists`.
  *
  * "Alert me about new maps of Bali under US$2,000", "Tell me when another example arrives"
  * (EXPERIENCE-GALLERY.md §8): a saved search or an item alert, matched against what is published
@@ -14,10 +15,13 @@
  * and emails a link through the outbox after commit, so the answer and its timing are the same
  * whoever subscribes. The link opens the want-list page (C10 `wantList`, C13 `WANT_LIST_ACCESS`),
  * whose button confirms it — a POST, so a mail scanner that follows the link confirms nothing. A
- * list never confirmed is erased after `WANT_LIST_PENDING_DAYS`. Every email about a list carries
- * its token: in the page's link, and in RFC 8058's one-click unsubscribe. Stopping a list erases
- * it — its address, its query and its consent — so starting again is a new subscription,
- * confirmed again. An account's list needs no confirmation: the account's address is proven.
+ * list never confirmed is erased after `WANT_LIST_PENDING_DAYS`, and at most
+ * `WANT_LIST_PENDING_PER_ADDRESS` of an address's lists wait at once. Every email about a list —
+ * the confirmation, a resend, each alert — carries its token, in the page's link and in RFC 8058's
+ * one-click unsubscribe: a derived capability link (`./links`, purpose `want-list`) NTF computes as
+ * it sends each email, never stored and never in an outbox row. Stopping a list erases it — its
+ * address, its query and its consent — so its links name nothing, and starting again is a new
+ * subscription, confirmed again. An account's list needs no confirmation: its address is proven.
  */
 import type { LocaleCode } from '@engine/config/schema'
 
@@ -46,8 +50,9 @@ export type WantListContactInput = { readonly email: string; readonly locale: Lo
 
 /**
  * Save a search or an item alert. `contact` is null only for a signed-in buyer where
- * `retention.wantList` is on: the list is the account's and starts at once. From anyone else a
- * contact is required (`invalid` without one); a holder whose module is off is `not-offered`.
+ * `retention.wantList` is on: the list is the account's and starts at once — and a signed-in buyer
+ * there who sends a contact anyway saves to the account too, the contact ignored. From anyone else
+ * a contact is required (`invalid` without one); a holder whose module is off is `not-offered`.
  * Asking again for a subject its holder already watches: an account's list takes the new
  * frequency, since the session is its holder; an address's changes nothing — the post proves no
  * one owns the address, so it never edits a list — and the address gets its list's link again
@@ -69,6 +74,7 @@ export type WantListStatus = 'pending' | 'active'
 
 /** A list as its holder reads it. */
 export type WantListView = {
+  /** The list's `ref` (./storage.ts): a random UUID — what its token names, never a sequence. */
   readonly id: string
   readonly status: WantListStatus
   readonly subject: WantListSubject
@@ -118,6 +124,13 @@ export type WantListUnsubscribeReceipt = { readonly stopped: true }
 export const WANT_LIST_PENDING_DAYS = 7
 
 /**
+ * The most of one address's lists that wait for confirmation at once — `WANT_LIST_EMAIL_LIMIT`'s
+ * `perAddress`, so a script cannot park a stranger's address, unconsented, on more lists than it
+ * could email. Past it, subscribing stores nothing, sends nothing and answers the same receipt.
+ */
+export const WANT_LIST_PENDING_PER_ADDRESS = 10
+
+/**
  * The emails subscribing can cause, in every case, reach one address at most `perList` times for
  * one list and `perAddress` times in all within `windowHours` — counted by NTF at dispatch, on top
  * of C13's per-IP limit on the route, and silent: a post past it gets the same receipt.
@@ -134,6 +147,10 @@ type _AlertsAreAgreedTo = Accepts<
 // An address's receipt names, admits and links nothing: the same for everyone who subscribes.
 type _AddressReceiptAdmitsNothing = Assert<
   Equals<keyof Extract<WantListSubscribeReceipt, { holder: 'email' }>, 'holder' | 'received'>
+>
+// The pending cap is the email cap: no address waits on more lists than it could be written about.
+type _PendingCapIsTheEmailCap = Assert<
+  Equals<typeof WANT_LIST_PENDING_PER_ADDRESS, (typeof WANT_LIST_EMAIL_LIMIT)['perAddress']>
 >
 // Only the page's cookie confirms: a scanner holding a link, or a stranger holding an id, cannot.
 type _ConfirmByTheCookieOnly = Assert<

@@ -123,7 +123,8 @@ export const ORDER_TRANSITIONS = [
     emits: 'order.duplicatePaymentRefused',
     by: ['system'],
   },
-  // The first shipment dispatched or a pickup ready.
+  // The first shipment dispatched or a pickup ready — or, with nothing to ship (a digital gift
+  // card), the first card sent.
   {
     from: ['paid'],
     event: 'fulfilment-started',
@@ -131,7 +132,7 @@ export const ORDER_TRANSITIONS = [
     emits: 'order.fulfilmentStarted',
     by: ['staff', 'system'],
   },
-  // Every line delivered or collected.
+  // Every line delivered, collected or, a digital gift card, sent.
   {
     from: ['fulfilling'],
     event: 'fulfilment-completed',

@@ -15,7 +15,10 @@ import type { PriceSet } from '@engine/domain/money'
 /** Text per locale, as the brand published it. */
 export type Localised = { readonly [L in LocaleCode]?: string }
 
-/** A URL with its origin: a sister's page or asset, rendered on another brand's domain. */
+/**
+ * A URL with its origin: a sister's page or asset, rendered on another brand's domain. `http://`
+ * only in development (a local sister); a receiver refuses one anywhere else.
+ */
 export type AbsoluteUrl = `https://${string}` | `http://${string}`
 export type LocalisedUrls = { readonly [L in LocaleCode]?: AbsoluteUrl }
 
@@ -33,6 +36,7 @@ export type SnapshotImage = {
   readonly alt: Localised
   /** The fallback: the 1024 px WebP. */
   readonly src: AbsoluteUrl
+  /** Every URL in a `srcSet` is absolute too, on the same media host as `src`. */
   readonly sources: readonly { readonly format: 'avif' | 'webp'; readonly srcSet: string }[]
 }
 

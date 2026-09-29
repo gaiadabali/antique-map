@@ -26,6 +26,9 @@ import type { Assert, Equals } from './type-assertions'
 /** The largest amount a money column admits: the largest safe integer, so every read is exact. */
 export const MONEY_AMOUNT_MAX = 9007199254740991
 
+/** How long an idempotency key and its stored response are kept (see `idempotency_keys` below). */
+export const IDEMPOTENCY_KEY_RETENTION = { days: 7 } as const
+
 // ─── reservations ────────────────────────────────────────────────────────────────────────────
 //
 // A collection with drafts and versions off and create / update / delete access `false`: only
@@ -113,11 +116,27 @@ export const ATTEMPT_WRITE_ONCE_COLUMNS = ['provider_ref'] as const
 // `domain_events`: `uuid` primary key; INDEX on `(occurred_at, id)` WHERE `dispatched_at IS NULL`;
 // the dispatcher takes rows `FOR UPDATE SKIP LOCKED`; each consumer dedupes in its own table, keyed
 // `(consumer, event_id)`.
-// `idempotency_keys`: primary key `(scope, key)` and the stored response, inserted `ON CONFLICT DO
-// NOTHING` inside the request's own transaction, so a rolled-back request leaves no key behind.
-// `scope` is the operation and the caller it binds (C6 `IdempotencyKey`: the customer, else the
-// cart, else none); a sha256 of the decoded request sits beside the response, and a stored key
-// met with another caller or another hash answers `invalid`, never the stored response.
+// `idempotency_keys`: primary key `(operation, key)` — the caller is NOT in the key, so another
+// caller's reuse meets the row instead of starting afresh. Beside it `caller_ref` (the session's
+// customer, else the cart, else null), `request_sha256` (of the decoded request), the stored
+// response and `created_at`. Inserted `ON CONFLICT DO NOTHING` inside the request's own
+// transaction, so a rolled-back request leaves no key behind; on a conflict both are compared with
+// this request's: equal answers the stored response, either different is `invalid`
+// (`idempotencyKey`, `mismatch`) and never it. So a guest who signs in mid-flow (cart → customer)
+// meets `mismatch` on a retry, and the page, re-rendered, mints a new key; a guest with no cart
+// binds by the request's hash alone — enough only because a key is a per-render UUID that never
+// leaves its page (C6 `IdempotencyKey`). A stored response keeps no token (the domain derives
+// each again when it replays one, C6 `links`), and a row is swept `IDEMPOTENCY_KEY_RETENTION`
+// after `created_at` (DEPLOYMENT.md §5) — longer than any retry, far shorter than the entries it
+// holds (a contact, a tax id) could justify — and an erasure (28.4) deletes its caller's at once.
+//
+// ─── Capability links (C6 `links`) ────────────────────────────────────────────────────────────
+//
+// Every record a derived link names — a want list, a subscriber, a retailer's customer record, an
+// order, a pay link, a quote, an offer, a hold request, an appointment, a return, an enquiry, a
+// consignment — has `ref uuid NOT NULL UNIQUE` (random, never sequential) and `token_version int
+// NOT NULL DEFAULT 1`, and no column holding a token or a hash of one. The customer record alone
+// also keeps a pending password link's nonce hash and expiry (C13 `PASSWORD_LINK`), cleared on use.
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────
 

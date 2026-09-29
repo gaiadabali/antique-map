@@ -15,7 +15,6 @@ import type {
 import type { SellerIdentity } from './checkout'
 import type { OrderSummaryView } from './orders'
 import type {
-  ContactInput,
   InstitutionInput,
   LeadContactInput,
   LineInput,
@@ -82,13 +81,17 @@ export type ReturnRequestView = {
 }
 
 /**
- * A proforma for an institution, from one seller's group of the bag (module `purchase.invoices`):
- * `invoice` holds on every line until the due date, a PDF, and a "pay this proforma" page.
+ * A proforma for an institution (module `purchase.invoices`), from its checkout — one seller's
+ * group of the bag — instead of paying now: the payment step's "Proforma instead" (C2
+ * `CheckoutVM.intents.proforma`). Its contact and institution are the checkout's own, as the
+ * contact step stored them, never posted again; a checkout that named no institution is `invalid`.
+ * Priced like `checkout.continue` (another figure than `acceptedPricing` names is
+ * `price-changed`), it takes `invoice` holds on every unique line until the due date and issues the
+ * proforma's number and PDF; paying it is the quote's page. It stays open to any buyer where
+ * `accounts.retailers` is on: it prices at retail, and D36 is about trade terms, not proformas.
  */
 export type ProformaRequest = {
-  readonly sellerId: string
-  readonly institution: InstitutionInput
-  readonly contact: ContactInput
+  readonly checkoutId: string
   readonly acceptedPricing: PricingToken
   readonly idempotencyKey: IdempotencyKey
 }
@@ -110,7 +113,7 @@ type QuoteRequestSubject =
  * order (D32), at its trade tier; or, where `accounts.retailers` is off, a guest's — an
  * institution's or a business's ("Turn this into a quote"). Where it is on, every business buyer
  * quotes as a partner (D36): a request from anyone but an approved partner is `not-offered`, and
- * the Partnership page is the way in.
+ * the Partnership page is the way in. Its page is C10's `quote` form kind: an item's, or a brief.
  */
 export type QuoteRequest = QuoteRequestSubject & {
   readonly neededBy: IsoDate | null

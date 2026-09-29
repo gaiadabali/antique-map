@@ -7,7 +7,7 @@
  * hint are looked up by, so no English string arrives in a field. A form posts to its C13 route
  * with JavaScript or without; without, it comes back through C13's `FORM_RESULT`.
  */
-import type { FieldError } from '@engine/domain/api'
+import type { FieldError, ProblemCode } from '@engine/domain/api'
 
 import type { MessageVM } from '../common'
 
@@ -89,3 +89,9 @@ export type FormResultVM =
   | { kind: 'received'; reply: MessageVM | null }
   | { kind: 'invalid'; fields: readonly FieldError[]; values: Readonly<Record<string, string>> }
   | { kind: 'rateLimited'; retryAfterSeconds: number }
+  /**
+   * The operation refused it (C6's `Problem` beyond a field or a rate): the item held or sold
+   * meanwhile, a slot taken, a link expired, a record not found, an offer not open here — with
+   * its sentence that explains and instructs, keyed by the problem's code (DESIGN-SYSTEM.md §10).
+   */
+  | { kind: 'refused'; code: Exclude<ProblemCode, 'invalid' | 'rate-limited'>; message: MessageVM }

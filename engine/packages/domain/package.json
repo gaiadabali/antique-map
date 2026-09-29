@@ -16,6 +16,7 @@
     "./reservations": "./src/reservations/contract.ts",
     "./retailers": "./src/contracts/retailers.ts",
     "./want-lists": "./src/contracts/want-lists.ts",
+    "./links": "./src/contracts/links.ts",
     "./transactions": "./src/contracts/transactions.ts",
     "./storage": "./src/contracts/storage.ts",
     "./events": "./src/contracts/domain-events.ts"

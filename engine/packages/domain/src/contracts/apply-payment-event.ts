@@ -32,8 +32,9 @@ import type {
  *   recorded, no change.
  * - `unknown-attempt` — no attempt has this reference: recorded apart and alerted, the dedupe key
  *   not consumed; never a 5xx, or the provider retries for ever.
- * - `flagged` — money for another amount or currency than the attempt's charge, or a state the
- *   table cannot reach even after catching up: recorded and alerted for a human, never marked paid.
+ * - `flagged` — money for another amount or currency than the attempt's charge, a figure that is
+ *   no whole minor unit (C7 `InexactMoney`, never rounded), or a state the table cannot reach even
+ *   after catching up: recorded and alerted for a human, never marked paid.
  */
 export type ApplyPaymentEventOutcome =
   | 'applied'
@@ -98,9 +99,10 @@ export type PaymentPorts = {
  * 3. Lock the attempt's order, then the attempt (`FOR UPDATE`), and read the attempt's status
  *    under that lock. Step 1 could read the attempt's order and seller unlocked only because the
  *    database refuses to change them (./storage.ts `ATTEMPT_IMMUTABLE_COLUMNS`).
- * 4. Classify. `paid` or `authorised` for another amount or currency than the attempt's charge:
- *    `flagged`. A move the table has: apply it (5). No move, and the event ranks at or below the
- *    attempt (`PAYMENT_STATUS_RANK`): `ignored-stale`. No move, and it ranks above: EARLY —
+ * 4. Classify. `paid` or `authorised` for another amount or currency than the attempt's charge,
+ *    or any figure of the event that is `InexactMoney`: `flagged`. A move the table has: apply it
+ *    (5). No move, and the event ranks at or below the attempt (`PAYMENT_STATUS_RANK`):
+ *    `ignored-stale`. No move, and it ranks above: EARLY —
  *    `ports.retrieve()`, apply the provider's state along the table (through `CATCH_UP_VIA`),
  *    then the event if a move now exists: `caught-up`. Early is never ignored: a refund reported
  *    before the payment it refunds would otherwise vanish. A catch-up never captures: CATCH_UP_VIA

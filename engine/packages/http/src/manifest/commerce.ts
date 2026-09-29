@@ -50,8 +50,8 @@ export const COMMERCE_AREAS = {
   retailers: { auth: ['public'], methods: POST, module: 'accounts.retailers' },
   // Saved searches and item alerts (D39): an address's, confirmed from its email, or with
   // `retention.wantList` a signed-in buyer's (a holder whose module is off is `not-offered`).
-  // GET is `WANT_LIST_ACCESS.link` alone. RFC 8058's one-click unsubscribe is the mail client's
-  // POST carrying its own token, which the same-origin check lets through (`sameOrigin`).
+  // GET is `WANT_LIST_ACCESS.link` alone. The one request the same-origin check lets through is
+  // RFC 8058's, exactly as `ONE_CLICK_UNSUBSCRIBE` states it.
   'want-lists': {
     auth: ['public', 'customer', 'token'],
     methods: GET_POST,
@@ -132,11 +132,13 @@ export function commerceUrl(operation: CommerceOperation): string {
 
 /**
  * Order access without a session (C6 `OrderAccess`; C10 `order` is `sensitive`). A
- * lookupToken never rides in a page URL: `orderLookup.find`, the confirmation after checkout
- * or a pay link, and `link` — which an email or WhatsApp message carries as
- * `?number=…&token=…` — store it in `cookie` (HttpOnly, Secure, SameSite=Lax, as short-lived
- * as the token), and `link` answers 303 to the clean order page. The order page and the
- * `orders`, `returns` and `payments` handlers read it there.
+ * lookupToken — the order's derived capability link (C6 `links`, purpose `order`, valid
+ * `LINK_TOKEN.orderDays` after the order last changed) — never rides in a page URL:
+ * `orderLookup.find`, the confirmation after checkout or a pay link, and `link` — which an email
+ * or WhatsApp message carries as `?number=…&token=…`, the token derived as NTF sends it — store it
+ * in `cookie` (HttpOnly, Secure, SameSite=Lax, as long-lived as the token), and `link` answers 303
+ * to the clean order page. The order page and the `orders`, `returns` and `payments` handlers read
+ * it there.
  */
 export const ORDER_ACCESS = {
   cookie: 'order_access',
@@ -145,8 +147,9 @@ export const ORDER_ACCESS = {
 
 /**
  * An address's want list, opened from its emails (C6 `WantListAccess`, C10 `wantList`, D39). The
- * confirmation and every alert carry `link?token=…` — the list's token: random, stored hashed,
- * living as long as the list. The link stores it in `cookie` (HttpOnly, Secure, SameSite=Lax,
+ * confirmation and every alert carry `link?token=…` — the list's token, a derived capability link
+ * (C6 `links`, purpose `want-list`) NTF computes for each email, stored nowhere and valid while the
+ * list exists. The link stores it in `cookie` (HttpOnly, Secure, SameSite=Lax,
  * Path=/, for `maxAgeDays`) — a dead one too, so the page can say so — and answers 303 to the
  * clean want-list page, which shows that list with its buttons, each a POST, so following the link
  * changes nothing; a handler logs the link's path without `?token=`. A write the cookie
@@ -156,4 +159,24 @@ export const WANT_LIST_ACCESS = {
   cookie: 'want_list_access',
   link: '/api/x/commerce/want-lists/access',
   maxAgeDays: 30,
+} as const
+
+/**
+ * RFC 8058's one-click unsubscribe: the mail client's own POST to the URL an email's
+ * `List-Unsubscribe` header names, and the one request the same-origin check lets through from
+ * outside the site (`EngineRoute.sameOrigin`). It is `wantList.unsubscribe` at `…/unsubscribe`
+ * with `?token=`, and the newsletter's stop in the forms route, and it holds only if all this is:
+ * - the query carries `tokenParam` and nothing else, and the body is exactly `body`, the only
+ *   field — anything more is 400;
+ * - `access` is `{ kind: 'token' }` with the URL's token — the one request built from its query
+ *   rather than by `FORM_DECODING` — and the handler reads no cookie and no session, so a
+ *   cross-site post can borrow nothing of the visitor's;
+ * - it answers `200` with an empty body whatever `Accept` says: a mail client neither follows a
+ *   303 nor reads JSON;
+ * - the log keeps the path without `?token=`.
+ * No other want-list operation takes a token; confirming is the page's cookie's alone.
+ */
+export const ONE_CLICK_UNSUBSCRIBE = {
+  body: 'List-Unsubscribe=One-Click',
+  tokenParam: 'token',
 } as const

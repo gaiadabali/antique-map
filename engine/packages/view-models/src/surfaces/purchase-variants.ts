@@ -103,8 +103,9 @@ export type VariantsPurchaseVM = {
     /** "Ask on WhatsApp" with the product and chosen options prefilled. */
     whatsapp: string | null
     /**
-     * "Turn this into a quote" (the Quote surface) where `purchase.invoices` is on; where
-     * `accounts.retailers` is too, only for a signed-in partner (D36), `null` for anyone else.
+     * "Turn this into a quote": the `quote` form's page for this product and its selected variant
+     * (C10 `href('form', { kind: 'quote', item, variant })`), where `purchase.invoices` is on;
+     * where `accounts.retailers` is too, only for a signed-in partner (D36), else `null`.
      */
     quote: string | null
   }

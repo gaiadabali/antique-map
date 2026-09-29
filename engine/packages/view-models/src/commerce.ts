@@ -49,8 +49,11 @@ export type ItemRefVM = {
   isReproduction: boolean
 }
 
-/** A configured line's choices as the page shows them: "Frame · Natural teak". */
-export type OptionLabelVM = { axis: AxisKey; value: string }
+/**
+ * A configured line's choices as the page shows them: "Frame · Natural teak". `axis` is `null` for
+ * an order's option whose axis no product type has any more: its label as sold, shown alone.
+ */
+export type OptionLabelVM = { axis: AxisKey | null; value: string }
 
 /** A code on the bag: what it takes off or pays at the current totals, and how to remove it. */
 export type AppliedCodeVM = {
