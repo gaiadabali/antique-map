@@ -10,15 +10,15 @@ import {
 
 describe('parseBrandSlug', () => {
   it('accepts a kebab-case slug', () => {
-    expect(parseBrandSlug('indies-gallery')).toBe('indies-gallery')
+    expect(parseBrandSlug('fixture-atlas')).toBe('fixture-atlas')
     expect(parseBrandSlug('test')).toBe('test')
   })
 
   it('rejects an empty, upper-case or symbol-bearing value', () => {
     expect(() => parseBrandSlug('')).toThrow(ArgError)
-    expect(() => parseBrandSlug('Indies-Gallery')).toThrow(ArgError)
-    expect(() => parseBrandSlug('indies_gallery')).toThrow(ArgError)
-    expect(() => parseBrandSlug('indies gallery')).toThrow(ArgError)
+    expect(() => parseBrandSlug('Fixture-Atlas')).toThrow(ArgError)
+    expect(() => parseBrandSlug('fixture_atlas')).toThrow(ArgError)
+    expect(() => parseBrandSlug('fixture atlas')).toThrow(ArgError)
     expect(() => parseBrandSlug(undefined)).toThrow(ArgError)
   })
 })
@@ -39,7 +39,7 @@ describe('parseSuffix', () => {
 
 describe('databaseName', () => {
   it('turns brand dashes into underscores and appends the suffix', () => {
-    expect(databaseName('indies-gallery', 'p2_har_inf')).toBe('indies_gallery_p2_har_inf')
+    expect(databaseName('fixture-atlas', 'p2_har_inf')).toBe('fixture_atlas_p2_har_inf')
     expect(databaseName('test', 'smoke')).toBe('test_smoke')
   })
 
@@ -48,37 +48,37 @@ describe('databaseName', () => {
   })
 
   it('gives two brands on the same suffix distinct names', () => {
-    expect(databaseName('indies-gallery', 'smoke')).not.toBe(
-      databaseName('old-east-indies', 'smoke'),
+    expect(databaseName('fixture-atlas', 'smoke')).not.toBe(
+      databaseName('fixture-emporium', 'smoke'),
     )
   })
 
   it('rejects a combination over the 63-byte Postgres identifier limit', () => {
-    expect(() => databaseName('old-east-indies', 'a'.repeat(50))).toThrow(ArgError)
+    expect(() => databaseName('fixture-emporium', 'a'.repeat(50))).toThrow(ArgError)
   })
 })
 
 describe('parseDatabaseName', () => {
-  const brands = ['indies-gallery', 'old-east-indies', 'test']
+  const brands = ['fixture-atlas', 'fixture-emporium', 'test']
 
   it('recovers the (brand, suffix) pair a valid name was built from', () => {
     expect(parseDatabaseName('test_smoke', brands)).toEqual({ brand: 'test', suffix: 'smoke' })
-    expect(parseDatabaseName('indies_gallery_p2_har', brands)).toEqual({
-      brand: 'indies-gallery',
+    expect(parseDatabaseName('fixture_atlas_p2_har', brands)).toEqual({
+      brand: 'fixture-atlas',
       suffix: 'p2_har',
     })
   })
 
   it('prefers the longer brand prefix when one brand slug prefixes another', () => {
-    // A hypothetical "old" brand must not shadow "old-east-indies" just
+    // A hypothetical "old" brand must not shadow "fixture-emporium" just
     // because it is checked first — order in `brands` must not matter.
-    const ambiguous = ['old', 'old-east-indies']
-    expect(parseDatabaseName('old_east_indies_x', ambiguous)).toEqual({
-      brand: 'old-east-indies',
+    const ambiguous = ['old', 'fixture-emporium']
+    expect(parseDatabaseName('fixture_emporium_x', ambiguous)).toEqual({
+      brand: 'fixture-emporium',
       suffix: 'x',
     })
-    expect(parseDatabaseName('old_east_indies_x', [...ambiguous].reverse())).toEqual({
-      brand: 'old-east-indies',
+    expect(parseDatabaseName('fixture_emporium_x', [...ambiguous].reverse())).toEqual({
+      brand: 'fixture-emporium',
       suffix: 'x',
     })
   })
