@@ -75,8 +75,23 @@ export const checkoutId: CheckoutVM = {
     deliverBeforeAllowed: true,
     chosen: {
       kind: 'ship',
-      address: ['Wayan Contoh', 'Jl. Contoh Raya No. 2', 'Sanur, Denpasar Selatan', 'Bali 80228'],
+      address: {
+        shape: 'indonesia',
+        recipientName: 'Wayan Contoh',
+        phone: '+6281200000002',
+        street: 'Jl. Contoh Raya No. 2',
+        subdistrictId: 'sub_fixture_sanur',
+        postalCode: '80228',
+        pin: null,
+        notes: null,
+      },
       deliverBefore: null,
+      addressLines: [
+        'Wayan Contoh',
+        'Jl. Contoh Raya No. 2',
+        'Sanur, Denpasar Selatan',
+        'Bali 80228',
+      ],
     },
   },
   shipping: {

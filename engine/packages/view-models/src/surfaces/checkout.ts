@@ -13,6 +13,7 @@ import type { CountryCode } from '@engine/config/schema'
 import type {
   CheckoutContinueRequest,
   CheckoutStep,
+  ChosenDelivery,
   FieldError,
   LineProblem,
   PaymentStartRequest,
@@ -22,7 +23,7 @@ import type {
 import type { OrderStatus } from '@engine/domain/machines/order'
 
 import type { CardVM } from '../cards'
-import type { IsoDate, IsoDateTime, LinkVM, SellerIdentityVM, SeoVM, Streamed } from '../common'
+import type { IsoDateTime, LinkVM, SellerIdentityVM, SeoVM, Streamed } from '../common'
 import type {
   AddressVM,
   AppliedCodeVM,
@@ -64,10 +65,11 @@ export type CheckoutDeliveryVM = {
   pickup: readonly PickupVM[]
   /** Hotel or villa delivery before a visitor's departure date. */
   deliverBeforeAllowed: boolean
-  chosen:
-    | { kind: 'ship'; address: readonly string[]; deliverBefore: IsoDate | null }
-    | { kind: 'pickup'; locationId: string; collectorName: string | null }
-    | null
+  /**
+   * What the buyer chose (C6 `ChosenDelivery`): the entries the form refills with when they
+   * change it — after a 303 or a reload too — and a shipment's address as its label prints it.
+   */
+  chosen: ChosenDelivery | null
 }
 
 export type CheckoutPaymentVM = {

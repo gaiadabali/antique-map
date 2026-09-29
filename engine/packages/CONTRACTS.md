@@ -188,3 +188,11 @@ so it is breaking and also needs a redirect.
     - C11 `item.unsaved` and `retailer.reapplied`.
 
   No lane consumes them yet.
+- **2026-09-29**: the senior-fe review of ARC-D (`reviews/1.2-arc-d-senior-fe.md`, blockers 1–2),
+  within v1.0 before Phase 1 closes. **C13:** every operation a page calls is a GET or a POST
+  (`FormMethod`), so `shipTo.set`, `cart.updateLine`, `cart.removeLine`, `cart.removeCode`,
+  `cart.setGiftOptions` and `appointment.change` are POSTs at their own sub-paths, answered 303
+  under `FORM_RESULT` without JavaScript. **C6:** `CheckoutView` carries its own state
+  (`contact.values`, `delivery.chosen`, `shipping.selectedOptionId` with `shippingOptions` →
+  `shipping.options`, `payment`, `codes`) and is answered only to the checkout's owner. **C2:**
+  `CheckoutVM.delivery.chosen` is C6's `ChosenDelivery`. No lane consumes them yet.

@@ -15,7 +15,7 @@ import type { Money } from '../money/contract'
 import type { OrderStatus } from '../order/machine'
 import type { PaymentStatus } from '../payment/machine'
 import type { OrderAccess } from './after-sale'
-import type { CartLineView, MarketView } from './cart'
+import type { AppliedCode, CartLineView, MarketView } from './cart'
 import type { PaymentMethodId, PaymentProviderId, SessionResult } from './payment-vocabulary'
 import type { ContactInput, InstitutionInput } from './requests'
 import type { IdempotencyKey, PricedTotals, PricingToken } from './results'
@@ -68,6 +68,12 @@ export type PaymentOptionView = {
   readonly refunds: 'gateway' | 'manual'
 }
 
+/**
+ * A checkout as its page renders it: what each step offers and what the buyer chose so far, so
+ * the page is rebuilt from it alone after a 303, a reload or a step's JSON answer. It holds the
+ * buyer's own entries, so it is answered only to the checkout's owner — the cart cookie or the
+ * session C13 binds it to. To anyone else a checkout id opens nothing: `not-found`.
+ */
 export type CheckoutView = {
   readonly checkoutId: string
   readonly seller: SellerIdentity
@@ -75,15 +81,28 @@ export type CheckoutView = {
   readonly steps: readonly CheckoutStep[]
   readonly lines: readonly CartLineView[]
   readonly pricing: PricedTotals
-  /** For an Indonesian destination the WhatsApp number comes first (updates arrive there). */
-  readonly contact: { readonly whatsappFirst: boolean; readonly institutionAllowed: boolean }
+  /** The bag's codes, valued at this checkout's totals (set by `cart.applyCode`). */
+  readonly codes: readonly AppliedCode[]
+  readonly contact: {
+    /** For an Indonesian destination the WhatsApp number comes first (updates arrive there). */
+    readonly whatsappFirst: boolean
+    readonly institutionAllowed: boolean
+    readonly values: EnteredContact | null
+  }
   readonly delivery: {
     readonly addressShape: 'indonesia' | 'international' | null
     readonly pickup: readonly PickupOptionView[]
     readonly deliverBeforeAllowed: boolean
+    readonly chosen: ChosenDelivery | null
   }
-  readonly shippingOptions: readonly ShippingOptionView[]
+  readonly shipping: {
+    readonly options: readonly ShippingOptionView[]
+    /** Null until `checkout.shipping` chose one, or once a new delivery no longer offers it. */
+    readonly selectedOptionId: string | null
+  }
   readonly paymentOptions: readonly PaymentOptionView[]
+  /** The open attempt, its stored session replayed so the page picks it up again; else null. */
+  readonly payment: PaymentStarted | null
   /** The checkout lock, once taken — the countdown is true, so it is shown. */
   readonly lock: { readonly expiresAt: IsoInstant } | null
   /** The order, once checkout reached payment. */
@@ -129,6 +148,17 @@ export type DeliveryInput =
       readonly deliverBefore: IsoDate | null
     }
   | { readonly kind: 'pickup'; readonly locationId: string; readonly collectorName: string | null }
+
+/** The contact step as `checkout.contact` stored it: `ContactInput` less locale and consents. */
+export type EnteredContact = Pick<
+  ContactInput,
+  'fullName' | 'email' | 'whatsapp' | 'whatsappConfirmed'
+> & { readonly institution: InstitutionInput | null }
+
+/** The delivery as `checkout.delivery` stored it, for its form to refill, and a shipment's label. */
+export type ChosenDelivery =
+  | (Extract<DeliveryInput, { kind: 'ship' }> & { readonly addressLines: readonly string[] })
+  | Extract<DeliveryInput, { kind: 'pickup' }>
 
 /** Starts (or resumes) the checkout of one seller's group of the bag. */
 export type CheckoutStartRequest = { readonly sellerId: string }

@@ -73,8 +73,19 @@ export const checkoutExport: CheckoutVM = {
     deliverBeforeAllowed: false,
     chosen: {
       kind: 'ship',
-      address: ['Anna Voorbeeld', 'Voorbeeldstraat 1', '1000 AA Amsterdam', 'Netherlands'],
+      address: {
+        shape: 'international',
+        country: 'NL',
+        recipientName: 'Anna Voorbeeld',
+        phone: null,
+        line1: 'Voorbeeldstraat 1',
+        line2: null,
+        city: 'Amsterdam',
+        region: null,
+        postalCode: '1000 AA',
+      },
       deliverBefore: null,
+      addressLines: ['Anna Voorbeeld', 'Voorbeeldstraat 1', '1000 AA Amsterdam', 'Netherlands'],
     },
   },
   shipping: {
