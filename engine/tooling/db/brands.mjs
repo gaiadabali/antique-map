@@ -30,3 +30,25 @@ export function discoverBrands(repoRoot) {
     .map((entry) => entry.name)
     .sort()
 }
+
+const SINGLE_CONFIG = 'brand.config.json'
+const PER_STOREFRONT = /^brand\.([a-z][a-z0-9-]*)\.json$/
+
+/**
+ * How a brand folder keeps its config (`@engine/config/loader`'s rule, BRANDS.md
+ * §2): one `site/brand.config.json`, or one `site/brand.<storefront>.json` per
+ * storefront (the synthetic brand, which runs on both apps, chosen by
+ * `TEST_STOREFRONT`). `{ single, storefronts }`: `storefronts` is read from the
+ * file names, sorted, and empty for a single-config brand; `single` is false
+ * and `storefronts` empty for a folder with no config at all.
+ */
+export function brandLayout(repoRoot, brand) {
+  const site = join(repoRoot, brand, 'site')
+  if (existsSync(join(site, SINGLE_CONFIG))) return { single: true, storefronts: [] }
+  if (!existsSync(site)) return { single: false, storefronts: [] }
+  const storefronts = readdirSync(site)
+    .map((name) => PER_STOREFRONT.exec(name)?.[1])
+    .filter((name) => name !== undefined && name !== 'config')
+    .sort()
+  return { single: false, storefronts }
+}

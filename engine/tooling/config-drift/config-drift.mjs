@@ -1,19 +1,29 @@
-// 2.2.g — `pnpm check:generated`: regenerate → diff → fail, generic over a
-// pluggable list of generators (ARCHITECTURE.md §2, PARALLEL-TRACKS.md §2).
-// No Payload exists yet (3.2), so `generators.mjs`'s real registry cannot run
-// today — this module is the mechanism, unit-proven against a fixture
-// generator; `generators.mjs` names precisely what 3.2 must plug in.
+// 2.2.g / 3.5.b — `pnpm check:generated`: regenerate → diff → fail, generic over a
+// pluggable list of generators (ARCHITECTURE.md §2, PARALLEL-TRACKS.md §2). This
+// module is the mechanism, unit-proven against fixture generators;
+// `generators.mjs` is the real registry, running the CMS package's own scripts.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 /**
- * A `Generator` is `{ name, committedPath, regenerate(repoRoot) }`:
- * `committedPath` is the file nobody hand-edits (`payload-types.ts`,
- * `importMap.js`, the migration snapshot); `regenerate` returns what running
- * the real generator today would produce, or throws/returns `null` when its
- * prerequisite does not exist yet — the caller reports that as a gap, not a
- * failure.
+ * A generator is one of:
+ *
+ *   { name, committedPath, regenerate(repoRoot), expected?(repoRoot), required? }
+ *     `regenerate` returns what running the real generator today produces (or
+ *     `null`: not wired up). It is compared with `expected()` when given — the
+ *     BRAND-unset output, for a per-brand run — else with the file at
+ *     `committedPath`, which nobody hand-edits (`referenceName` says which, in
+ *     the message). A `required` generator's missing reference is drift;
+ *     otherwise it is a gap.
+ *
+ *   { name, committedPath, check(repoRoot) } → { ok, detail? }
+ *     a generator that judges for itself (`schema:check`'s exit code).
+ *
+ * Throwing `NothingToCheckYet` reports a gap (a prerequisite a later task
+ * adds); throwing anything else is a violation — a generator that cannot run
+ * is never a pass.
  */
+export class NothingToCheckYet extends Error {}
 
 function readCommitted(repoRoot, committedPath) {
   try {
@@ -23,34 +33,65 @@ function readCommitted(repoRoot, committedPath) {
   }
 }
 
-/** Runs every generator in `generators` and reports violations and gaps. */
-export async function runConfigDrift(repoRoot, generators) {
-  const violations = []
-  const degraded = []
-  for (const generator of generators) {
-    let fresh
-    try {
-      fresh = await generator.regenerate(repoRoot)
-    } catch (error) {
-      degraded.push(`${generator.name}: nothing to check yet — ${error.message}`)
-      continue
+const clip = (line) => JSON.stringify(line.length > 100 ? `${line.slice(0, 100)}…` : line)
+
+/** Where two texts first differ, as one line a person can act on. */
+export function firstDifference(reference, fresh, referenceName = 'committed') {
+  const a = reference.split('\n')
+  const b = fresh.split('\n')
+  const index = a.findIndex((line, i) => line !== b[i])
+  const at = index === -1 ? a.length : index
+  return `first difference at line ${at + 1}: ${referenceName} ${clip(a[at] ?? '<end of file>')}, regenerated ${clip(b[at] ?? '<end of file>')}`
+}
+
+async function judge(repoRoot, generator) {
+  const { name, committedPath } = generator
+  try {
+    if (generator.check) {
+      const { ok, detail } = await generator.check(repoRoot)
+      return ok ? {} : { violation: { name, path: committedPath, detail } }
     }
+    const fresh = await generator.regenerate(repoRoot)
     if (fresh === null) {
-      degraded.push(
-        `${generator.name}: nothing to check yet — its generator is not wired up (see generators.mjs)`,
-      )
-      continue
+      return {
+        degraded: `${name}: nothing to check yet — its generator is not wired up (see generators.mjs)`,
+      }
     }
-    const committed = readCommitted(repoRoot, generator.committedPath)
-    if (committed === null) {
-      degraded.push(
-        `${generator.name}: nothing to check yet — ${generator.committedPath} does not exist`,
-      )
-      continue
+    const reference = generator.expected
+      ? await generator.expected(repoRoot)
+      : readCommitted(repoRoot, committedPath)
+    if (reference === null) {
+      if (generator.required) {
+        return { violation: { name, path: committedPath, detail: 'the file is not committed' } }
+      }
+      return { degraded: `${name}: nothing to check yet — ${committedPath} does not exist` }
     }
-    if (committed !== fresh) {
-      violations.push({ name: generator.name, path: generator.committedPath })
+    if (reference === fresh) return {}
+    const referenceName =
+      generator.referenceName ?? (generator.expected ? 'with BRAND unset' : 'committed')
+    return {
+      violation: {
+        name,
+        path: committedPath,
+        detail: firstDifference(reference, fresh, referenceName),
+      },
     }
+  } catch (error) {
+    if (error instanceof NothingToCheckYet) {
+      return { degraded: `${name}: nothing to check yet — ${error.message}` }
+    }
+    const detail = `the generator failed: ${error instanceof Error ? error.message : String(error)}`
+    return { violation: { name, path: committedPath, detail } }
   }
-  return { violations, degraded }
+}
+
+/**
+ * Runs every generator in `generators` — concurrently; each bounds its own
+ * processes — and reports violations and gaps in the generators' order.
+ */
+export async function runConfigDrift(repoRoot, generators) {
+  const results = await Promise.all(generators.map((generator) => judge(repoRoot, generator)))
+  const violations = results.filter((r) => r.violation).map((r) => r.violation)
+  const degraded = results.filter((r) => r.degraded).map((r) => r.degraded)
+  return { violations, degraded, ran: results.length - degraded.length }
 }

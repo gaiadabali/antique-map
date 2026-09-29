@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { discoverBrands } from './brands.mjs'
+import { brandLayout, discoverBrands } from './brands.mjs'
 
 let root
 
@@ -47,5 +47,26 @@ describe('discoverBrands', () => {
     writeFileSync(join(root, '.git', 'README.md'), 'not a brand\n')
 
     expect(discoverBrands(root)).toEqual(['test'])
+  })
+})
+
+describe('brandLayout (3.5.c)', () => {
+  it('tells a single-config brand from one with a config per storefront, from file names', () => {
+    root = mkdtempSync(join(tmpdir(), 'db-brands-'))
+    mkdirSync(join(root, 'fixture-atlas', 'site'), { recursive: true })
+    writeFileSync(join(root, 'fixture-atlas', 'site', 'brand.config.json'), '{}\n')
+    mkdirSync(join(root, 'fixture-synthetic', 'site', 'copy'), { recursive: true })
+    for (const file of ['brand.gallery.json', 'brand.emporium.json', 'notes.json']) {
+      writeFileSync(join(root, 'fixture-synthetic', 'site', file), '{}\n')
+    }
+    mkdirSync(join(root, 'fixture-empty', 'site'), { recursive: true })
+
+    expect(brandLayout(root, 'fixture-atlas')).toEqual({ single: true, storefronts: [] })
+    expect(brandLayout(root, 'fixture-synthetic')).toEqual({
+      single: false,
+      storefronts: ['emporium', 'gallery'],
+    })
+    expect(brandLayout(root, 'fixture-empty')).toEqual({ single: false, storefronts: [] })
+    expect(brandLayout(root, 'fixture-missing')).toEqual({ single: false, storefronts: [] })
   })
 })
