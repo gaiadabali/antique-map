@@ -18,7 +18,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
-| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 0/4 | 5/22 | 0 | `██░░░░░░░░`  23% |
+| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 2/4 | 16/22 | 0 | `███████░░░`  73% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **3/160** | **29/712** | **46** | `░░░░░░░░░░`   4% |
+| **All** | 44 phases | | | **5/160** | **40/712** | **46** | `█░░░░░░░░░`   6% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -285,7 +285,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [x] **1.1 Initialise the repository and pnpm workspace** · needs: — — ✅ 2026-09-28 f7e32c1
   - **Lane** HAR · **Agent** devops · **Wave** W1
-  - **Owns** `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `eslint.config.mjs`, `.prettierrc.json`, `.gitignore`, `.gitattributes`, `.editorconfig`
+  - **Owns** root `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `eslint.config.mjs`, `.prettierrc.json`, `.gitignore`, `.gitattributes`, `.editorconfig`
   - **Read** ARCHITECTURE.md §3–4, CONVENTIONS.md §9
   - _Requirements: 1.2, 19.3_
   - [x] 1.1.a `git init`; `.gitignore` (node_modules, `.next`, `.env*` except `.env.example`, `*/db/`, `*/content/legacy/raw/**` — the old site's raw extracts live in `LEGACY_DATA_DIR`, never in git, while mapping files and URL inventories under `content/legacy/` **are** committed — `test-results/`, `TASKS.md.lock`); `.gitattributes` forcing LF (CRLF breaks deploy scripts — GDA memory); the first commit holds the planning docs, `TASKS.md` and `scripts/progress.mjs` as they stand
@@ -298,7 +298,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [x] **1.2 Freeze the contracts C1–C13** · needs: — — ✅ 2026-09-29 e16d73b
   - **Lane** ARC · **Agent** architect ×2, types and docs only — **ARC-P** (platform and UI: 1.2.a–1.2.d, 1.2.h, 1.2.i) and **ARC-D** (domain: 1.2.e–1.2.g, 1.2.j); ARC-P writes 1.2.k · **Wave** W1
-  - **Owns** ARC-P: `engine/packages/config/src/{schema,routes}.ts`, `engine/packages/view-models/**`, `engine/packages/ui/src/tokens/contract.ts`, `engine/packages/media/src/contract.ts`, `engine/packages/http/src/manifest.ts`, `engine/packages/CONTRACTS.md` · ARC-D: `engine/packages/domain/src/{money/contract.ts,contracts/**,*/machine.ts,reservations/contract.ts}`, `engine/packages/{payments,shipping,fulfilment,analytics,sister}/src/contract.ts` · each: the `package.json` skeletons and `tsconfig.json` (extending the 1.1 template) of the packages it touches
+  - **Owns** ARC-P: `engine/packages/config/src/{schema,routes}.ts`, `engine/packages/view-models/**`, `engine/packages/ui/src/tokens/contract.ts`, `engine/packages/media/src/contract.ts`, `engine/packages/http/src/manifest.ts`, `engine/packages/CONTRACTS.md` · ARC-D: `engine/packages/domain/src/{money/contract.ts,contracts/**,*/machine.ts,reservations/contract.ts}`, `engine/packages/{payments,shipping,fulfilment,analytics,sister}/src/contract.ts` · each: `engine/packages/<pkg>/{package.json,tsconfig.json}` skeletons (the tsconfig extending the 1.1 template) of the packages it touches
   - **Read** PARALLEL-TRACKS.md §4, BRANDS.md, CONTENT-MODEL.md, COMMERCE.md, PAYMENTS.md §2–4, ARCHITECTURE.md §6, §9, §11, DESIGN-SYSTEM.md §2–5
   - _Requirements: 1.2, 2.7, 3.1, 8.4, 9.1, 10.4, 11.1_
   - [x] 1.2.a C1 `BrandConfig` zod schema: identity, domains, storefront, tokens, locales, routes, ids, money/markets and rounding, sellers (serves, tax, charge currencies, payments, method order, card ceiling, insured threshold, document prefix), commerce (inventory models, named TTLs, purchase tiers), shipping, fulfilment, analytics ids (runtime), modules (a typed registry with descriptions — `hasModule()` keys), sisters
@@ -333,7 +333,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 **Done when:** `pnpm db:fresh` creates a brand database with `unaccent` and `pg_trgm`; every gate fails on a planted violation and passes once it is removed; a push to `main` runs CI green and a push to `production` publishes a release tarball with both standalone builds.
 **Waves:** W1 — 2.1, 2.2, 2.4 · W2 — 2.3
 
-- [ ] **2.1 Local infrastructure and database scripts** · needs: 1.1
+- [x] **2.1 Local infrastructure and database scripts** · needs: 1.1 — ✅ 2026-09-29 463bd91
   - **Lane** HAR · **Agent** devops · **Wave** W1
   - **Owns** `docker-compose.dev.yml`, `.env.example`, `engine/tooling/db/**`
   - **Read** DEPLOYMENT.md §1, §8
@@ -341,23 +341,23 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 2.1.a compose: `postgres:18` with an init script enabling `unaccent`, `pg_trgm`; Mailpit; MinIO with bootstrap buckets `ig-media`, `oei-media`, `test-media`, `archive-masters`
   - [x] 2.1.b `db:fresh --brand <slug> [--suffix <lane>]` (`--suffix` and the port default to `DB_SUFFIX`/`PORT` in `.env.local`, written by 1.3's `pnpm worktree:env`; add both to `.env.example`), `db:drop`, `db:list` (create, migrate, seed — seed hook no-op until 10.2)
   - [x] 2.1.c `.env.example` documenting every variable in DEPLOYMENT.md §8, grouped, with safe local defaults
-  - [ ] 2.1.d **Check:** `docker compose -f docker-compose.dev.yml up -d` then `pnpm db:fresh --brand test --suffix smoke` creates a database with `unaccent` and `pg_trgm` on Windows (Docker Desktop) and in CI; and two worktrees made by `pnpm worktree` each run `db:fresh` against their own suffix without touching the other (1.3.c's deferred clause).
+  - [x] 2.1.d **Check:** `docker compose -f docker-compose.dev.yml up -d` then `pnpm db:fresh --brand test --suffix smoke` creates a database with `unaccent` and `pg_trgm` on Windows (Docker Desktop) and in CI; and two worktrees made by `pnpm worktree` each run `db:fresh` against their own suffix without touching the other (1.3.c's deferred clause). — Docker Desktop: `test_smoke` has `unaccent` 1.1 and `pg_trgm` 1.6 (template1 carries both); two `pnpm worktree` checkouts made `test_p2_zza` and `test_p2_zzb`, and a table in one was absent from the other; the CI clause moved to 2.3.d, which builds CI
 
-- [ ] **2.2 Quality-gate tooling** · needs: 1.1
+- [x] **2.2 Quality-gate tooling** · needs: 1.1 — ✅ 2026-09-29 13a56d8
   - **Lane** HAR · **Agent** devops · **Wave** W1
   - **Owns** `engine/tooling/{check-file-size,lint-brand-literals,schema-hash,route-parity,tasks-lint,config-drift,brand-create}/**`, `vitest.config.ts` (Vitest 5 has no workspace file — `test.projects`; found in 1.1), `playwright.config.ts`, `lighthouserc*.json`, root `package.json` (scripts and devDependencies for its gates only; the only task in its wave touching it)
   - **Read** CONVENTIONS.md §1–2, BRANDS.md §6–7, ARCHITECTURE.md §2, §11, DESIGN-SYSTEM.md §7, PARALLEL-TRACKS.md §2, §5
   - _Requirements: 1.3, 1.5, 1.6, 1.7, 1.8, 19.1, 19.3_
-  - [ ] 2.2.a `check-file-size` (port KOI's `scripts/check-file-size.mjs`; 300 lines over `*.ts`, `*.tsx`, `*.js`, `*.mjs`, `*.css` in `engine/` and `scripts/`; generated files, migrations and fixtures excluded — CONVENTIONS.md §2)
-  - [ ] 2.2.b `lint-brand-literals`: banned terms read from each brand folder's config (slug, names, domains); scans `engine/**`; excludes generated migrations, fixtures with catalogue text, `.env*`
-  - [ ] 2.2.c `schema-hash`: normalised `pg_dump --schema-only` → sha256 per database; `--all` compares every brand database
-  - [ ] 2.2.d `route-parity`: reads the `@engine/http` manifest (C13) and fails if an app lacks a mounted `/api/x/*` route, if an engine route's first segment equals a collection slug, `payload-jobs` or `graphql`, or if an app's `proxy.ts` matcher differs from the manifest's literal
-  - [ ] 2.2.e Vitest workspace; Playwright projects `{ig, oei, test-gallery, test-emporium} × {desktop, mobile}` with axe; LHCI configs per app with the DESIGN-SYSTEM.md §7 budgets
-  - [ ] 2.2.f `tasks-lint`: parses the root `TASKS.md` — unique ids, every `needs:` resolvable (a task, a subtask, a range or "phase N"), every phase heading's needs earlier-numbered and equal to what its tasks need from outside it, no task sharing a wave with its own dependency, no two tasks in one wave with overlapping **Owns**, at most eight tasks and three waves per phase, every task ending in a **Check** subtask, every requirement covered; `--phase <n> --wave <k>` checks one wave against the ticked boxes, including that the phase's needs are ✅
-  - [ ] 2.2.g `config-drift` (`pnpm check:generated`): regenerates the migration snapshot, `payload-types.ts` and both apps' `importMap.js` **with `BRAND` unset** and once per brand, and fails on any diff (ARCHITECTURE.md §2)
-  - [ ] 2.2.h `brand:create <slug> --storefront gallery|emporium`: scaffolds `<slug>/site/` from the matching `test` config with `"draft": true`, database and bucket names, and a copy folder; the result passes `validateBrandConfigs()` (Req 1.7)
-  - [ ] 2.2.j move the contract smoke tests from `.claude/specs/indies-platform/reviews/smoke-tests/` (C1 config, the C10 round trip, the C13 addresses) into their packages so `pnpm test` runs them (qa, phase 1: no contract package has a test in the gate)
-  - [ ] 2.2.i **Check:** each gate fails on a planted violation in a CI test (a 301-line file, a brand literal in `engine/`, a drifted schema, a missing route, an engine route shadowing a collection slug, a proxy without a literal matcher, a config that differs with `BRAND` unset, a stale import map, a wave with overlapping **Owns**) and passes once it is removed; `pnpm brand:create` scaffolds a brand that validates.
+  - [x] 2.2.a `check-file-size` (port KOI's `scripts/check-file-size.mjs`; 300 lines over `*.ts`, `*.tsx`, `*.js`, `*.mjs`, `*.css` in `engine/` and `scripts/`; generated files, migrations and fixtures excluded — CONVENTIONS.md §2)
+  - [x] 2.2.b `lint-brand-literals`: banned terms read from each brand folder's config (slug, names, domains); scans `engine/**`; excludes generated migrations, fixtures with catalogue text, `.env*`
+  - [x] 2.2.c `schema-hash`: normalised `pg_dump --schema-only` → sha256 per database; `--all` compares every brand database
+  - [x] 2.2.d `route-parity`: reads the `@engine/http` manifest (C13) and fails if an app lacks a mounted `/api/x/*` route, if an engine route's first segment equals a collection slug, `payload-jobs` or `graphql`, or if an app's `proxy.ts` matcher differs from the manifest's literal
+  - [x] 2.2.e Vitest workspace; Playwright projects `{ig, oei, test-gallery, test-emporium} × {desktop, mobile}` with axe; LHCI configs per app with the DESIGN-SYSTEM.md §7 budgets
+  - [x] 2.2.f `tasks-lint`: parses the root `TASKS.md` — unique ids, every `needs:` resolvable (a task, a subtask, a range or "phase N"), every phase heading's needs earlier-numbered and equal to what its tasks need from outside it, no task sharing a wave with its own dependency, no two tasks in one wave with overlapping **Owns**, at most eight tasks and three waves per phase, every task ending in a **Check** subtask, every requirement covered; `--phase <n> --wave <k>` checks one wave against the ticked boxes, including that the phase's needs are ✅
+  - [x] 2.2.g `config-drift` (`pnpm check:generated`): regenerates the migration snapshot, `payload-types.ts` and both apps' `importMap.js` **with `BRAND` unset** and once per brand, and fails on any diff (ARCHITECTURE.md §2)
+  - [x] 2.2.h `brand:create <slug> --storefront gallery|emporium`: scaffolds `<slug>/site/` from the matching `test` config with `"draft": true`, database and bucket names, and a copy folder; the result passes `validateBrandConfigs()` (Req 1.7)
+  - [x] 2.2.j move the contract smoke tests from `.claude/specs/indies-platform/reviews/smoke-tests/` (C1 config, the C10 round trip, the C13 addresses) into their packages so `pnpm test` runs them (qa, phase 1: no contract package has a test in the gate)
+  - [x] 2.2.i **Check:** each gate fails on a planted violation in a CI test (a 301-line file, a brand literal in `engine/`, a drifted schema, a missing route, an engine route shadowing a collection slug, a proxy without a literal matcher, a config that differs with `BRAND` unset, a stale import map, a wave with overlapping **Owns**) and passes once it is removed; `pnpm brand:create` scaffolds a brand that validates.
 
 - [ ] **2.3 CI pipeline, artifact and deploy manifest** · needs: 2.1, 2.2
   - **Lane** HAR · **Agent** devops · **Wave** W2
@@ -367,7 +367,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 2.3.a `ci.yml`: change detection; static job (file size, brand literals, `check:generated`, `validateBrandConfigs()`, `tasks:lint`, format, lint, types, unit); e2e job (Postgres service, migrate the four databases — ig, oei and the two `test` configs — seed, build both apps **with no database env**, Playwright for ig/oei/test-gallery/test-emporium); Lighthouse job
   - [ ] 2.3.b `artifact` job: build `engine/apps/gallery` and `engine/apps/emporium` standalone, assemble subdirs with `sharp`/`@img` copied beside the server, tar + sha256; `publish` job creating the release (use the GDA deploy-workflows stub pinned by tag, if it fits)
   - [ ] 2.3.c `.gaiadeploy.yml` with the two Helios targets and `subdir` (DEPLOYMENT.md §3); a CI check that fails on the string `TBD`
-  - [ ] 2.3.d **Check:** a push to `main` runs static checks, unit and e2e jobs green; a push to `production` publishes a `deploy/production-*` release whose tarball holds `indies-gallery/` and `old-east-indies/` standalone builds with their brand `site/` folders and a `.sha256`.
+  - [ ] 2.3.d **Check:** a push to `main` runs static checks, unit and e2e jobs green; a push to `production` publishes a `deploy/production-*` release whose tarball holds `indies-gallery/` and `old-east-indies/` standalone builds with their brand `site/` folders and a `.sha256`; and the e2e job's databases have `unaccent` and `pg_trgm` (2.1.d's CI clause).
 
 - [ ] **2.4 Contract follow-ups (v1.1)** · needs: 1.2
   - **Lane** ARC · **Agent** architect · **Wave** W1
@@ -1647,7 +1647,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 
 - [ ] **30.4 The configurator** · needs: 9.2, 17.2
   - **Lane** WEB (30.4.a) + UXE (30.4.b) · **Agent** senior-fe, senior-uiux (UXE-B) · **Wave** W1
-  - **Owns** `engine/packages/ui/src/configurator/**` (30.4.a), `engine/apps/emporium/src/surfaces/item/configurator/**` (30.4.b)
+  - **Owns** `engine/packages/ui/src/configurator/**` (30.4.a), `engine/apps/emporium/src/surfaces/configurator/**` (30.4.b; the item page imports it)
   - **Read** EXPERIENCE-SHOP.md §5, COMMERCE.md §3
   - _Requirements: 4.4, 7.2, 7.3, 19.1, 19.2_
   - [ ] 30.4.a headless configurator state machine, constraint evaluation, URL codec, GET-form fallback (unit-tested)
@@ -2356,6 +2356,8 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-29 — ✅ 2.2 (13a56d8) — every gate built and failing on its planted violation (file size, brand literals, schema hash against real Postgres, route parity, config drift on a fixture generator, overlapping **Owns**); `tasks:lint` parses all 160 tasks and 712 subtasks; `brand:create` scaffolds a brand that passes the C1 schema; the contract smoke tests moved into their packages (177 tests). Gates with no input yet say so and pass: route mounts until phase 4, the generators until 3.2 wires them, brand domains until 3.1 writes the configs. tasks-lint found two **Owns** defects, fixed on the board: 1.1/1.2 now say root vs per-package `package.json`; 30.4.b's configurator moves to `surfaces/configurator/**`, out of 30.3's `surfaces/item/**`.
+- 2026-09-29 — ✅ 2.1 (463bd91) — `docker-compose.dev.yml` (postgres:18 with `unaccent`/`pg_trgm` in template1, Mailpit, MinIO with the four buckets), `db:fresh`/`db:drop`/`db:list` isolating each worktree's suffix, `.env.example` for DEPLOYMENT §8. The CI clause of 2.1.d moved to 2.3.d. Found: `minio/minio` no longer allows anonymous pulls, so the stack uses `bitnamilegacy/minio` (a frozen image, owner to decide); Postgres 18 mounts its volume at `/var/lib/postgresql`.
 - 2026-09-29 — ✅ **phase 1** — qa on a fresh clone of `main`: `pnpm install && pnpm verify` green (11 packages, 10 tests, also with `types: []`); all 123 contract files `@contract` with an owner, CONTRACTS.md lists C1–C13, sign-offs on file for every contract (senior-be, senior-fe, senior-db — the missing senior-fe review of ARC-D ran and its two blockers were fixed, e16d73b: every write is a POST form; `CheckoutView` returns its own state); `pnpm worktree` gives distinct branch, PORT and DB_SUFFIX. Follow-ups: new task 2.4 (contract v1.1), 2.2.j (smoke tests into the gate), 4.1.e (JS-off posts). Phase 2 opened.
 - 2026-09-29 — ✅ 1.2 (again, 4f105b7) — 1.2.l's D31 Partnership and retailer contracts (and D33–D40) merged from ARC-P and ARC-D after senior-be and senior-fe reviews; `pnpm verify` green on main (11 packages). Reviews: `.claude/specs/indies-platform/reviews/1.2l-*.md`. Follow-ups carried: D39's want-list contract (minor version, with its task); doc sync for "For Business"/wholesale remnants (TASKS 22.3.d, 31.1, COMMERCE §3, CONTENT-MODEL, PLAN, C6 `EnquiryTopic`), ANALYTICS §2 (`item.unsaved`), COMPLIANCE §7 (365-day application retention — counsel to confirm); C6 `api.ts` "read once" wording (ARC-D); `engine/apps/*/PRODUCT.md` brand names vs the brand-literal lint (4.1.d); the JS-off proof added to 4.1.e.
 - 2026-09-28 — **Correction:** 1.2 was closed at b0fa092 with 1.2.l (D31 Partnership and retailer contracts) ticked by mistake — the orchestrator took the new 1.2.l for the old Check. 1.2 and phase 1 are reopened; 1.2.l is dispatched to ARC-P and ARC-D; 1.2.m (the Check) follows their reviews.
