@@ -3,23 +3,25 @@
  *
  * The commerce API (C6, `@engine/domain/api`) — DOM's handlers, one route file per area at
  * `/api/x/commerce/<area>/[[...path]]`, each operation at a sub-path of its catch-all. A
- * request never carries a price (C6 `IsServerPriced`); every answer is priced again. A form
- * posted without JavaScript comes back to its page through `FORM_RESULT` (`./forms`).
+ * request never carries a price (C6 `IsServerPriced`); every answer is priced again. Every
+ * operation a page posts is reachable by a POST form, and comes back to its page through
+ * `FORM_RESULT` (`./forms`).
  */
 import type { ModuleKey } from '@engine/config/schema'
 import type { CommerceOperation } from '@engine/domain/api'
 
-import { GET, GET_POST, POST, type HttpMethod, type RouteAuth } from './types'
+import { GET, GET_POST, POST, type FormMethod, type RouteAuth } from './types'
 
 export type CommerceRoute = {
   readonly auth: readonly RouteAuth[]
-  readonly methods: readonly HttpMethod[]
+  /** A form's methods only: nothing here needs a script to be reached. */
+  readonly methods: readonly FormMethod[]
   readonly module?: ModuleKey
 }
 
 export const COMMERCE_AREAS = {
-  destination: { auth: ['public'], methods: ['PUT'] }, // the shipTo cookie: the only market input
-  cart: { auth: ['public'], methods: ['GET', 'POST', 'PATCH', 'DELETE'] }, // never reserves
+  destination: { auth: ['public'], methods: POST }, // the shipTo cookie: the only market input
+  cart: { auth: ['public'], methods: GET_POST }, // never reserves
   // A checkout id is bound to the cart cookie or the session: on its own it opens nothing.
   checkout: { auth: ['public', 'customer'], methods: POST },
   // Its scope — a checkout, a pay link, an order's access — is a credential: body only.
@@ -35,7 +37,7 @@ export const COMMERCE_AREAS = {
   consignments: { auth: ['public', 'customer'], methods: POST, module: 'services.consignment' },
   appointments: {
     auth: ['public', 'customer', 'token'],
-    methods: ['GET', 'POST', 'PATCH'],
+    methods: GET_POST,
     module: 'services.appointments',
   },
   returns: { auth: ['customer', 'token'], methods: POST },
@@ -59,20 +61,24 @@ type OperationAddress = {
 }[CommerceArea]
 
 /**
- * Every C6 operation's address. A GET reads its request from the query string — where only
- * a page's own capability (a pay-link or quote token) may ride — the others from the body:
- * JSON, or a form post when JavaScript is off. `satisfies` makes the map total over
- * `CommerceOperation`, and each method one its area's route exports.
+ * Every C6 operation's address: one each, the same for a script's `fetch` and an HTML form.
+ * Every operation a page posts is reachable by a POST form. A read is a GET and takes its
+ * request from the query string, where only a page's own capability (a pay-link or quote token)
+ * may ride. Every other operation is a POST at its own sub-path, a change or a removal included
+ * (a form sends no other method: `FormMethod`), and takes its request from the body — JSON from
+ * a script; without JavaScript a form post, answered 303 to its page under `FORM_RESULT`.
+ * `satisfies` makes the map total over `CommerceOperation`, and each method one its area's route
+ * exports.
  */
 export const COMMERCE_OPERATIONS = {
   'cart.get': { area: 'cart', method: 'GET', path: '' },
   'cart.addLines': { area: 'cart', method: 'POST', path: 'lines' },
-  'cart.updateLine': { area: 'cart', method: 'PATCH', path: 'lines' },
-  'cart.removeLine': { area: 'cart', method: 'DELETE', path: 'lines' },
+  'cart.updateLine': { area: 'cart', method: 'POST', path: 'lines/update' },
+  'cart.removeLine': { area: 'cart', method: 'POST', path: 'lines/remove' },
   'cart.applyCode': { area: 'cart', method: 'POST', path: 'codes' },
-  'cart.removeCode': { area: 'cart', method: 'DELETE', path: 'codes' },
-  'cart.setGiftOptions': { area: 'cart', method: 'PATCH', path: 'gift-options' },
-  'shipTo.set': { area: 'destination', method: 'PUT', path: '' },
+  'cart.removeCode': { area: 'cart', method: 'POST', path: 'codes/remove' },
+  'cart.setGiftOptions': { area: 'cart', method: 'POST', path: 'gift-options' },
+  'shipTo.set': { area: 'destination', method: 'POST', path: '' },
   'giftCard.balance': { area: 'gift-cards', method: 'POST', path: 'balance' },
   'checkout.start': { area: 'checkout', method: 'POST', path: '' },
   'checkout.contact': { area: 'checkout', method: 'POST', path: 'contact' },
@@ -91,7 +97,7 @@ export const COMMERCE_OPERATIONS = {
   'consignment.submit': { area: 'consignments', method: 'POST', path: '' },
   'appointment.slots': { area: 'appointments', method: 'GET', path: 'slots' },
   'appointment.book': { area: 'appointments', method: 'POST', path: '' },
-  'appointment.change': { area: 'appointments', method: 'PATCH', path: '' },
+  'appointment.change': { area: 'appointments', method: 'POST', path: 'change' },
   'orderLookup.find': { area: 'order-lookup', method: 'POST', path: '' },
   'return.request': { area: 'returns', method: 'POST', path: '' },
   'quote.proforma': { area: 'quotes', method: 'POST', path: 'proforma' },

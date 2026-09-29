@@ -20,8 +20,9 @@
  * `payLink.get` and `quote.get` read it from the query; the one-hop links an email carries
  * (`ORDER_ACCESS.link`, the auth routes' GET links — `APPLICATION_ACCESS`, `PASSWORD_LINK`,
  * email verification — and one-click unsubscribe) are the only other credentials in a URL, and
- * each but the unsubscribe moves its token into a cookie and answers 303 to a clean page. A
- * form posted without JavaScript comes back to its page through `FORM_RESULT`. The files hold
+ * each but the unsubscribe moves its token into a cookie and answers 303 to a clean page. Every
+ * operation a page calls is a GET or a POST (`FormMethod`), so a form reaches it without
+ * JavaScript and comes back to its page through `FORM_RESULT`. The files hold
  * type imports of other packages only, and route parity reads them with the workspace's
  * TypeScript runner.
  */
