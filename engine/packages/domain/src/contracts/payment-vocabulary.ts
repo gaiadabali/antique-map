@@ -155,7 +155,7 @@ type EventSource =
 
 /**
  * A provider's news, normalised (PAYMENTS.md §2, §4) — the only input to applyPaymentEvent().
- * The dedupe key is `(provider, sellerId, providerEventId)`, unique in `engine.payment_events`,
+ * The dedupe key is `(provider, sellerId, providerEventId)`, unique in `payment_events`,
  * so two sellers on one provider can never swallow each other's events.
  */
 export type NormalizedPaymentEvent = PaymentEventBody &

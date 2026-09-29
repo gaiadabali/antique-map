@@ -2,7 +2,7 @@
  * @contract C8 State machines — domain event names and the outbox record · owner: ARC
  * Entry `@engine/domain/events`.
  *
- * Every transition emits one named domain event, written to the outbox (`engine.domain_events`)
+ * Every transition emits one named domain event, written to the outbox (`domain_events`)
  * in the same transaction as the change and dispatched at least once afterwards — to email and
  * WhatsApp (NTF), analytics (SEO), sister sync (SIS) and cache invalidation (COMMERCE.md §6, §13;
  * ANALYTICS.md §1). A rolled-back transaction sends nothing; a crash after commit loses nothing.

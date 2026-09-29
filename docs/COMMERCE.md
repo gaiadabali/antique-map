@@ -304,7 +304,7 @@ no longer available rather than that the offer was turned down.
 Nothing else may change a status field, and every change is written as a
 compare-and-set (`WHERE id = $1 AND status = $from`, exactly one row). Every
 transition emits a **domain event** (`order.paid`, `offer.accepted`,
-`hold.expiring`…) written to an **outbox** (`engine.domain_events`) **in the same
+`hold.expiring`…) written to an **outbox** (`domain_events`) **in the same
 transaction** as the change, and dispatched at least once afterwards to
 notifications, analytics, sister sync and cache invalidation — so a crash after
 commit loses nothing and a rolled-back transaction sends nothing.

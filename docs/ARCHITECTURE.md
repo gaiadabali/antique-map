@@ -291,7 +291,7 @@ master's pixels, stored on the design, and enforced when variants are generated.
 
 ## 8. Search
 
-Postgres full text, per brand, per locale, in a derived `engine.search_documents`
+Postgres full text, per brand, per locale, in a derived `search_documents`
 table rebuilt on publish (its DDL, like every engine table, is written by the SCH
 lead):
 
