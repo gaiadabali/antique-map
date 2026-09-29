@@ -92,7 +92,10 @@ an estimate and never recomputed in the page) · `cart.removed` · `cart.viewed`
 `payment.failed` (`reasonClass`, C7's failure class) · and, from the domain:
 `order.paid` · `order.refunded` · `order.partiallyRefunded` · `offer.accepted` ·
 `hold.granted` · `hold.expired` · `reservation.conflicted` (someone else was
-first) · `retailer.applied` · `retailer.reapplied` · `retailer.approved` ·
+first) · the leads as stored — `offer.received` · `holdRequest.received` ·
+`priceRequest.received` · `enquiry.received` · `consignment.received` ·
+`appointment.booked` · `quote.requested` (a partner's brief or reorder, an
+institution's request: who asked and how, never who they are) · `retailer.applied` · `retailer.reapplied` · `retailer.approved` ·
 `retailer.declined` (the shop's partner funnel, D31: applications — first and
 again — and staff's decisions, with the hours they took; never the applicant's
 name, NPWP or contact) · `wantList.started` (a saved search or item alert kept
@@ -127,8 +130,10 @@ surface and device class — field data, not just lab)
 
 Purchase values are sent in the **charge currency** with the order's FX snapshot
 recorded server-side, never recomputed in the browser. The browser's `purchase`
-tag fires from the order-confirmation page with the order id as `transaction_id`
-(so GA4 dedupes a reload); a server-side conversion API, if added later, reads
+tag fires from the order-confirmation page with the order id as GA4's
+`transaction_id` and Meta's `eventID` (so each dedupes a reload) — and when the
+payment lands while the payment-pending page polls, from its re-render once the
+poll answers paid, since the poll's answer carries no conversion; a server-side conversion API, if added later, reads
 from the outbox, not from the webhook. Every tag converts a `Money` to the
 decimal figure GA4 and Meta expect by its currency's exponent
 (`CURRENCY_EXPONENT`, @engine/config/schema) — IDR 95000 is `95000`, USD 1000
@@ -147,8 +152,8 @@ DESIGN-SYSTEM §5).
   (the domain's `wantList.started`, never the beacon's `alert.created`)
   grouped by maker, place and budget. For the gallery this is a **buying list**:
   what collectors want that is not in the drawers.
-- **Leads** — requests, offers, holds, enquiries, viewings and retailer
-  applications, counted from the domain's stored records (§2) with response
+- **Leads** — requests, offers, holds, enquiries, viewings, quote requests and
+  retailer applications, counted from the domain's stored records (§2) with response
   time to first reply and conversion to paid.
 - **The sold archive** — traffic to sold pages and the alerts they create.
 - **Payments** — method mix, failure reasons, reconciliation corrections,

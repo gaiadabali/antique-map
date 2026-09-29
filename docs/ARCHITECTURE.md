@@ -410,7 +410,9 @@ proxy sets headers and nothing else: `x-public-path` and `x-locale` on the
 request it passes on (C13 `PROXY_REQUEST_HEADERS`, overwriting any a client
 sent), so a page with no params — the designed 404 — knows what was asked; and
 `Referrer-Policy: no-referrer` with `X-Robots-Tag: noindex` on the order,
-payment-link and quote pages (C10 `sensitive`). Each app's `src/proxy.ts`
+payment-link and quote pages (C10 `sensitive`); and on every page, the
+`Content-Security-Policy` it builds per request from the brand's config (§13).
+Each app's `src/proxy.ts`
 re-exports the engine's proxy handler but declares its `matcher` literally,
 because Next analyses it statically.
 
@@ -425,7 +427,14 @@ a page's own capability (a payment link's or a quote's token) and the one-hop
 links an email carries (order access, an application's status, set-password
 and reset, email verification, a want list's confirm and account access,
 one-click unsubscribe), each of which but the unsubscribe moves its token into
-a cookie and answers 303 to a clean page. **The want-lists area** (C10
+a cookie and answers 303 to a clean page. **Every such token is derived, never
+stored** (C6 `links`): an HMAC of the record's public reference and its
+`token_version` under a key kept with the other secrets, so a copy of the
+database opens no link, and NTF derives each email's link as it sends it — an
+outbox row never carries a token. Bumping the version revokes every link a
+record has. The one exception is a set-password link: it sets a credential, so
+it is a single-use random nonce, kept only as a hash until used (C13
+`PASSWORD_LINK`). **The want-lists area** (C10
 `wantList`, C13's `want-lists` routes) reads this exactly like an order: its
 confirmation and every alert carry the list's token, which the link stores in
 `WANT_LIST_ACCESS`'s cookie before it answers 303 to the want-list page, so the
@@ -433,7 +442,11 @@ token itself never enters the page's HTML or its scripts. RFC 8058's one-click
 unsubscribe is the sole exception, for a want-list alert exactly as for the
 newsletter: the one POST the same-origin check still admits from outside the
 site, because it is the mail client's own action and carries its token in the
-URL by design — the only page-level credential that ever does. **A form works without
+URL by design — the only page-level credential that ever does. It is exempt only
+as C13 `ONE_CLICK_UNSUBSCRIBE` states it: the URL's token is its whole
+credential, its body is `List-Unsubscribe=One-Click` alone, it reads no cookie
+and no session — so a cross-site post can borrow nothing of the visitor's — and
+it answers 200 with an empty body, its token stripped from the log. **A form works without
 JavaScript** (C13 `FORM_RESULT`): a script's post gets JSON; an HTML form post
 answers 303 See Other to its page (a `returnTo` the handler checks against C10),
 and its outcome waits on the server under an `HttpOnly` cookie holding an opaque
@@ -475,8 +488,11 @@ streamed part.
 Security headers from the app (tested); the **CSP is built per request in the
 proxy from brand config** — its analytics and payment-provider origins are
 runtime values, because `NEXT_PUBLIC_*` variables and a build-time CSP would bake
-one brand's (or no brand's) settings into a shared build; hashes or
-`strict-dynamic`, not nonces. **`img-src` allows the configured sister's media
+one brand's (or no brand's) settings into a shared build — which is why the
+proxy sets it (C13 lists it among the proxy's headers). Hashes or
+`strict-dynamic` rather than nonces, **provided the Cache Components spike (TASKS.md
+4.1.e) proves they hold** with Next's per-request inline scripts; if they do not,
+the spike adopts per-request nonces and records it. **`img-src` allows the configured sister's media
 host too** (`brand.sisters[].baseUrl`'s origin): a sister link renders the other
 brand's derivative images straight from where they are, never copied into this
 brand's bucket or re-derived (BRANDS.md §5, C12 `SnapshotImage`), so a build

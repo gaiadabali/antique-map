@@ -261,9 +261,22 @@ transition keeps always goes back under a deterministic refund key (PAYMENTS.md
 answer shows: a lookup, a checkout's or a pay link's order, the payment poll,
 the account's order detail. One pure function derives it from the order's own
 status, the attempt that paid it (or the latest, before one has) and its
-shipments (C6 `orders.ts`), so a dispute — won or lost — and a refused
-duplicate payment never reach a buyer: they change what staff see, never what
-the order reads as.
+shipments (C6 `orders.ts`), total over all three, so a dispute — won or lost —
+and a refused duplicate payment never reach a buyer: they change what staff
+see, never what the order reads as. First, whatever the stage: `cancelled` for
+a cancelled order, `refunded` when the attempt that paid it is refunded in full
+(a refused late payment reads so too); then by the order's status:
+
+| Order | Buyer reads |
+| ----- | ----------- |
+| `pending_payment` | `awaiting-payment` — a failed or expired attempt is the page's retry state |
+| `abandoned` | `not-paid` |
+| `paid` | `paid` |
+| `fulfilling` | `shipped` if a shipment has left (an exception or a return to sender included), else `ready-for-pickup` if a pickup is ready, else `paid` |
+| `completed` | `completed` |
+
+An order with nothing to ship — a digital gift card — reads `paid` until its
+last card is sent, when the machine completes it.
 
 **Payment** (per attempt) — `created → pending → (requires_action) →
 authorised → paid`, or `failed | expired | voided`; after `paid`:
@@ -317,11 +330,15 @@ as non-binding offers (D22); binding offers are v2.
   decline. Acceptance creates the `offer` hold and a payment link. v2 makes
   offers *binding* by collecting a payment method with the offer where the
   seller's gateway supports it (Stripe), as Artsy does.
-- **Reserve** requests a staff hold; a deposit option is v2.
-- **Proforma invoice** for institutions — for one item or **a whole cart**: PO
-  number, bank transfer, `invoice` holds on every line until the due date, a PDF,
-  and a "pay this proforma" page (the `Quote` surface); "payment must be received
-  and confirmed before an order is considered complete".
+- **Reserve** requests a staff hold on its own short form (C10 `hold`, posting
+  `hold.request`); a deposit option is v2.
+- **Proforma invoice** for institutions — **a whole cart** at its checkout's
+  payment step ("Proforma instead", C6 `quote.proforma`, from the checkout's own
+  contact and institution), or one item, even one on request, through the quote
+  form (C10 `quote`) that staff issue as a proforma: PO number, bank transfer,
+  `invoice` holds on every line until the due date, a PDF, and a "pay this
+  proforma" page (the `Quote` surface); "payment must be received and confirmed
+  before an order is considered complete".
 - **Sold** items stay published: no price (optionally "price realised" for
   signed-in buyers), available alternatives, and "Tell me when another example
   arrives" — every such link, and every saved-search alert from browse or

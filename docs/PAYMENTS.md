@@ -23,7 +23,10 @@ return, and no further.
    applied rather than swallowed as a duplicate.
 4. **The reservation outlives the payment window.** When the buyer picks a method,
    the checkout lock is extended to that method's session lifetime plus a margin
-   (`extend()`); card and wallet methods that support it authorise first and
+   (`extend()`) — never below the method's own floor (`minSessionTtl`, Stripe
+   Checkout's 30 minutes): a method whose floor no longer fits before the lock's
+   ceiling or the hold's end is not offered, and a start that finds so answers
+   `window-too-short`; card and wallet methods that support it authorise first and
    **capture only while the reservation is live**; cash-at-retail is never offered
    for a unique item. No payment completes against an expired reservation
    without going through rule 5.
@@ -34,7 +37,14 @@ return, and no further.
 6. **Idempotency lives in the domain, not the adapter.** Adapters are stateless;
    the domain stores each attempt's `SessionResult` and returns it when the buyer
    retries, and gives each attempt its own provider reference (Midtrans rejects a
-   reused `order_id`).
+   reused `order_id`). A retry while the first call may still be running — within
+   the attempt's lease, `PAYMENT_ATTEMPT_LEASE` — waits (`rate-limited`) and never
+   voids a live attempt; only past the lease is a missing session a crash.
+7. **Every figure an adapter passes is in the engine's units.** Every `Money` in or
+   out of an adapter is C5's minor units; the adapter converts at its boundary
+   (IDR in hundredths) and never rounds: a figure that is no whole minor unit
+   comes back as `InexactMoney`, as the provider wrote it, and is flagged for a
+   human, never paid.
 
 ## 2. The contract (C7)
 
@@ -59,6 +69,7 @@ type PaymentGateway = {
   }): { chargeCurrency: CurrencyCode
         methods: { method: PaymentMethod            // granular: 'va-bca', 'gopay', 'card' … each in one C1 family
                    sessionTtl: Duration              // PER METHOD — how long it can take; drives extend()
+                   minSessionTtl: Duration           // the provider's floor: never cut below; else not offered
                    presentation: SessionResult['kind']  // what createSession() will return: told before choosing
                    authCapture: boolean
                    refunds: 'full' | 'partial' | 'manual-only'
@@ -116,6 +127,7 @@ type NormalizedPaymentEvent = {
   providerRef: string            // the provider's payment id
   type: 'pending' | 'requires_action' | 'authorised' | 'paid' | 'failed' | 'expired' | 'voided'
       | 'refunded' | 'partially_refunded' | 'disputed' | 'dispute_closed'
+  // figures are ProviderMoney: C5's Money when exact, else InexactMoney as the provider wrote it
   // per type: amount (authorised, paid, refunds, disputed) · refundedTotal + refundRef (refunds)
   // · reasonClass + providerCode (failed) · outcome + disputeRef (dispute_closed)
   occurredAt: Date
@@ -151,7 +163,9 @@ the page groups the methods rather than listing every granular one flat — its
 `createSession()` will return — a redirect, an embedded card form, a virtual
 account to pay from a bank app, a QR, or settled off-platform), and its
 `sessionTtl` — "pay within 15 minutes" is true because the domain reads it to
-size `extend()` (rule 4). Once a session starts, `PaymentStarted.dailyCapWarning`
+size `extend()` (rule 4), cut to end before the lock or hold behind it but never
+below the method's floor (`minSessionTtl`): a method whose floor no longer fits
+is left out here rather than started and cut short. Once a session starts, `PaymentStarted.dailyCapWarning`
 is set when the amount is above the daily transfer limit many buyers' banks set
 for that method — a VA or a bank transfer, checked against the dated limits
 beside the caps above — so the payment-pending page warns before a transfer

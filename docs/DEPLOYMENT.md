@@ -141,6 +141,7 @@ unset the route answers 503 and does nothing.
 | FX rates refresh | daily 06:00 WIB | display prices in other currencies |
 | want-list / saved-search alerts | matched on publish through the outbox and the queue (≤ 15 min end to end); digest daily | "tell me when a Valentijn of Bali arrives" — the first collector to hear gets the map |
 | an address's want-list confirmation | sent from the outbox on `wantList.requested`, the moment it is asked for | the double opt-in link, so an unowned inbox is never subscribed on someone else's say-so (D39) |
+| idempotency-key sweep | daily | a stored answer can hold a buyer's contact or a tax id, so none outlives `IDEMPOTENCY_KEY_RETENTION` (7 days) — longer than any retry |
 | unconfirmed want-list purge | daily | an address's list never confirmed within `WANT_LIST_PENDING_DAYS` (7) is erased whole — address, query and consent — so a stale invitation can never be revived |
 | abandoned-cart email (consented only) | hourly | |
 | events partition + retention roll-up | nightly | KOI analytics pattern |
@@ -191,6 +192,8 @@ SHIPPING_<SELLER>_<PROVIDER>_*  per seller, like payments — a shipping webhook
 FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
 WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
 REVALIDATE_SECRET  CRON_SECRET
+LINK_TOKEN_KEYS             kid:secret pairs (≥ 32 random bytes each), the first current: every capability
+                            link's HMAC key (C6 links); a retired key keeps verifying LINK_TOKEN.keyOverlapDays
 LEGACY_DATA_DIR             workstations only: where the old site's raw extracts live
 ```
 
