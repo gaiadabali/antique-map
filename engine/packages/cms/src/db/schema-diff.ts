@@ -5,11 +5,9 @@
  *
  * And, with a connection, a live database against the migration set: every bundled migration
  * applied, and none recorded that the code does not know (a database migrated by another branch).
- * Structural equality across the brands' databases is `schema-hash --all`'s (TASKS.md 2.2.c):
- * drizzle-kit's own database comparison — the one a dev push uses — fails on any database that
- * already has tables: its introspection sends parameterised queries through a path that drops the
- * parameters, and Postgres answers `42P02 there is no parameter $1` (KOI's finding, confirmed here
- * on drizzle-kit 0.31.7).
+ * Structural equality across the brands' databases is `schema-hash --all`'s (TASKS.md 2.2.c).
+ * drizzle-kit's own database comparison (the one a dev push uses) is not used: this checks what
+ * CI needs without depending on drizzle-kit introspecting every construct we declare.
  */
 import type { Payload } from 'payload'
 
@@ -56,7 +54,7 @@ export async function pendingMigrationStatements(payload: Payload): Promise<{
   const after = await currentSnapshot(payload)
   const latest = latestSnapshot(adapter.migrationDir)
   let before = (latest?.json as SnapshotJson | undefined) ?? adapter.defaultDrizzleSnapshot
-  if (latest && kit.upSnapshot && String(before.version) < String(after.version)) {
+  if (latest && kit.upSnapshot && Number(before.version) < Number(after.version)) {
     before = kit.upSnapshot(before)
   }
   return { statements: await kit.generateMigration(before, after), against: latest?.file ?? null }

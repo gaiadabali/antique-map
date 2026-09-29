@@ -187,7 +187,7 @@ export type BeaconEvent = {
 }[BeaconEventName] &
   BeaconContext
 
-/** A beacon event as stored in `engine.analytics_events`: what the page sent, stamped by collect. */
+/** A beacon event as stored in `analytics_events`: what the page sent, stamped by collect. */
 export type CollectedEvent = BeaconEvent & CollectedContext
 
 /** One `POST /api/x/collect`: batched, at most one request per 5 s per tab, fire-and-forget. */

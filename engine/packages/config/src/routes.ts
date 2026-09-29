@@ -9,8 +9,9 @@
  * the proxy (PLT) runs to rewrite a public URL to its app route, whose query carries the page's
  * whole canonical state — and answers `notFound` for an internal path asked for directly, or a
  * segment spelt otherwise than `href()` spells it (`./routes/segments`), so no page exists at two
- * addresses. The surface, form and account tables are `./routes/surfaces`; this file is the
- * schema.
+ * addresses. The surface, form and account tables are `./routes/surfaces`, and what the proxy
+ * answers before the route map is read — C13's root files, the claimed first segments —
+ * `./routes/root-files`; this file is the schema.
  */
 import { z } from 'zod'
 
@@ -18,6 +19,7 @@ import { facetKeySchema, sortKeySchema } from './schema/facets'
 import { LOCALE_CODES, localeCodeSchema } from './schema/locales'
 import type { ModuleKey } from './schema/modules'
 import { LEGACY_PATH, LEGACY_PREFIX, legacyIssues } from './routes/legacy'
+import { CLAIMED_SEGMENTS } from './routes/root-files'
 import {
   FORM_KINDS,
   RESERVED_SEGMENTS,
@@ -30,6 +32,7 @@ import {
 export * from './routes/href'
 export { legacyTarget, type LegacyRoutes } from './routes/legacy'
 export * from './routes/parse'
+export * from './routes/root-files'
 export { decodeSegments } from './routes/segments'
 export * from './routes/surfaces'
 
@@ -104,9 +107,9 @@ export const routeMapSchema = z
   })
   .superRefine((routes, ctx) => {
     // A root segment resolves to exactly one thing — a surface, a form or a named-facet
-    // value — and never a reserved path. The pages validator (SCH) checks CMS page slugs
-    // against the same set, and against the legacy prefixes' first segments and the
-    // one-segment legacy paths.
+    // value — and never a reserved path, nor one the proxy answers first (`CLAIMED_SEGMENTS`).
+    // The pages validator (SCH) checks CMS page slugs against the same sets, and against the
+    // legacy prefixes' first segments and the one-segment legacy paths.
     const everyRoot = new Set<string>(RESERVED_SEGMENTS)
     for (const locale of LOCALE_CODES) {
       const segments = routes[locale]
@@ -114,7 +117,7 @@ export const routeMapSchema = z
       const { forms, ...surfaces } = segments
       const facet = routes.facets.path[0]
       const vocabulary = facet ? (routes.facets.vocabularies[facet]?.[locale] ?? {}) : {}
-      const seen = new Set<string>(RESERVED_SEGMENTS)
+      const seen = new Set<string>([...RESERVED_SEGMENTS, ...CLAIMED_SEGMENTS])
       const all = [surfaces, forms, vocabulary].flatMap((m) => Object.values<string | undefined>(m))
       for (const segment of all.filter((each) => each !== undefined)) {
         if (seen.has(segment)) {

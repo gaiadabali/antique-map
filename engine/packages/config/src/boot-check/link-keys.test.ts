@@ -1,8 +1,10 @@
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 
 import { describe, expect, it } from 'vitest'
 
-import { parseLinkTokenKeys } from './index'
+import { LINK_KEY_COMMAND, parseLinkTokenKeys } from './index'
 
 const NOW = new Date('2026-09-29T12:00:00Z')
 /** 32 bytes that look random (a hash of the seed), base64url: a well-formed secret. */
@@ -117,6 +119,21 @@ describe('LINK_TOKEN_KEYS — a well-formed ring (C6 links)', () => {
     expect(refused('a:' + encode([...half, ...half]))).toMatch(/is a 20-byte block repeated/)
   })
 
+  it('refuses standard base64 with the command that makes base64url, and accepts what it makes', () => {
+    // A key with "+" or "/" is standard base64 (openssl rand -base64 32): one secret, two spellings.
+    const standard = Buffer.from(bytesOf(7))
+      .toString('base64')
+      .replace(/[A-Za-z]/, '+')
+    expect(refused('a:' + standard)).toMatch(
+      /the secret is not base64url but standard base64 \("\+" or "\/"\): .*node -e "console\.log\(require\('node:crypto'\)\.randomBytes\(32\)\.toString\('base64url'\)\)"/,
+    )
+    const made = execFileSync(process.execPath, ['-e', LINK_KEY_COMMAND.slice(9, -1)], {
+      encoding: 'utf8',
+    }).trim()
+    expect(made).toMatch(/^[A-Za-z0-9_-]{43}$/)
+    expect(parseLinkTokenKeys(`a:${made}`, NOW).problems).toEqual([])
+  })
+
   it('accepts random bytes, whose runs are short', () => {
     for (let seed = 0; seed < 200; seed++) {
       expect(parseLinkTokenKeys(`a:${key(seed)}`, NOW).problems, `seed ${seed}`).toEqual([])
@@ -135,5 +152,14 @@ describe('LINK_TOKEN_KEYS — a well-formed ring (C6 links)', () => {
     expect(
       parseLinkTokenKeys('b:' + key(2) + ',a:' + key(1) + ':2026-01-01', NOW).warnings,
     ).toEqual([])
+  })
+})
+
+describe('@engine/config/link-keys', () => {
+  it('imports nothing, so plain node loads it for worktree:env (3.5 F4)', () => {
+    const source = readFileSync(new URL('./link-keys.ts', import.meta.url), 'utf8')
+    expect(source).not.toMatch(/^\s*(?:import|export)\b[^\n]*\bfrom\s*['"]/m)
+    // (`LINK_KEY_COMMAND`'s `require()` is text for a shell, never run here.)
+    expect(source).not.toMatch(/\bimport\s*[('"]/)
   })
 })

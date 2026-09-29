@@ -10,7 +10,8 @@
     "./routes": "./src/routes.ts",
     "./loader": "./src/loader/index.ts",
     "./validate": "./src/validate/index.ts",
-    "./boot-check": "./src/boot-check/index.ts"
+    "./boot-check": "./src/boot-check/index.ts",
+    "./link-keys": "./src/boot-check/link-keys.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

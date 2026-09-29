@@ -214,8 +214,9 @@ city's masthead into the shared image).
   "shipping": { "providers": ["dhl-express", "biteship", "quote", "collect"] },  // all its couriers
   "fulfilment": { "providers": ["own-stock"] },
   "modules": { "catalogue.unique": true, "purchase.offers": true, "…": "§4" },
-  "sisters": [{ "slug": "old-east-indies", "name": "Old East Indies",   // at most one; sister.links
-                "role": "merch-outlet", "baseUrl": "https://…" }]     // needs it; an https origin
+  "sisters": [{ "slug": "old-east-indies", "name": "Old East Indies",   // at most one, never itself;
+                "role": "merch-outlet", "baseUrl": "https://…" }]     // sister.links needs it; baseUrl its
+                                                       //   staging origin, SISTER_BASE_URL per host
 }
 ```
 

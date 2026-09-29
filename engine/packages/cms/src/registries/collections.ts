@@ -1,22 +1,102 @@
 /**
  * The frozen slug list (CONTENT-MODEL.md "The frozen slug list") and the registry that puts every
- * one of them in the config from the Foundation stage — as a **stub** until the task that owns it
- * fills in its fields. Collections relate to each other across tasks that run in parallel
- * (9.3's stories point at works while 8.2 is still writing them), and a `relationTo` naming a
- * collection the config lacks fails at boot; so every slug exists now, and tasks fill in fields,
- * never invent slugs. A new slug is a CONTENT-MODEL.md change first.
+ * one of them in the config from the Foundation stage (TASKS.md 3.2.e, 3.2.g). Each collection
+ * lives in its own `collections/<slug>/index.ts` — a stub (`collections/stub.ts`) until the task
+ * that owns the slug replaces that file — so a collection task edits only its folder, never this
+ * registry. A new slug is a CONTENT-MODEL.md change first.
  *
  * Every collection is registered whatever the brand's modules (ARCHITECTURE.md §2): both brands'
- * databases hold every table. A stub is hidden in the admin, readable by admins only, and
- * writable by nobody — a table with an id and timestamps and no way in.
+ * databases hold every table. Globals stay stubs here until 9.3 builds them.
  *
- * Replacing a stub: the owning task exports its collection from `collections/<slug>/` and the
- * SCH lead swaps the stub for it in `BUILT` below, in the wave that lands it.
+ * A collection or global with drafts must say who reads its drafts: `read` and `readVersions`
+ * both set (`DRAFTED_ACCESS`), or the config refuses to build — Payload's fallback for an unset
+ * `readVersions` is "any signed-in user", which would show a buyer every draft through `/versions`.
  */
 import type { CollectionConfig, GlobalConfig } from 'payload'
 
 import { isAdmin } from '../access/roles'
+import { Addresses } from '../collections/addresses'
+import { Appointments } from '../collections/appointments'
+import { Carts } from '../collections/carts'
+import { Consignments } from '../collections/consignments'
+import { Curations } from '../collections/curations'
+import { Customers } from '../collections/customers'
+import { Designs } from '../collections/designs'
+import { Discounts } from '../collections/discounts'
+import { Enquiries } from '../collections/enquiries'
+import { Exhibitions } from '../collections/exhibitions'
+import { GiftCards } from '../collections/gift-cards'
+import { Invoices } from '../collections/invoices'
+import { Locations } from '../collections/locations'
+import { Makers } from '../collections/makers'
+import { Masters } from '../collections/masters'
+import { Media } from '../collections/media'
+import { Offers } from '../collections/offers'
+import { Orders } from '../collections/orders'
+import { Pages } from '../collections/pages'
+import { PaymentAttempts } from '../collections/payment-attempts'
+import { Places } from '../collections/places'
+import { Products } from '../collections/products'
+import { ProductTypes } from '../collections/product-types'
+import { Redirects } from '../collections/redirects'
+import { Refunds } from '../collections/refunds'
+import { Reservations } from '../collections/reservations'
+import { Returns } from '../collections/returns'
+import { Reviews } from '../collections/reviews'
+import { SavedItems } from '../collections/saved-items'
+import { Shipments } from '../collections/shipments'
+import { Sources } from '../collections/sources'
+import { StockLevels } from '../collections/stock-levels'
+import { Stories } from '../collections/stories'
+import { Subscribers } from '../collections/subscribers'
+import { Terms } from '../collections/terms'
 import { Users } from '../collections/users'
+import { Variants } from '../collections/variants'
+import { WantLists } from '../collections/want-lists'
+import { Works } from '../collections/works'
+
+/** The frozen order: the admin sidebar's order within each group. */
+const COLLECTIONS = [
+  Users,
+  Customers,
+  Addresses,
+  SavedItems,
+  WantLists,
+  Subscribers,
+  Reviews,
+  Makers,
+  Places,
+  Terms,
+  Sources,
+  Curations,
+  Works,
+  Designs,
+  Products,
+  ProductTypes,
+  Variants,
+  Locations,
+  StockLevels,
+  Media,
+  Masters,
+  Stories,
+  Pages,
+  Exhibitions,
+  Redirects,
+  Carts,
+  Reservations,
+  Orders,
+  PaymentAttempts,
+  Refunds,
+  Shipments,
+  Returns,
+  Offers,
+  Enquiries,
+  Consignments,
+  Appointments,
+  Invoices,
+  Discounts,
+  GiftCards,
+] as const satisfies readonly CollectionConfig[]
 
 export const COLLECTION_SLUGS = [
   'users',
@@ -71,22 +151,7 @@ export const GLOBAL_SLUGS = [
 ] as const
 export type EngineGlobalSlug = (typeof GLOBAL_SLUGS)[number]
 
-/** The collections built so far, by slug. Everything else in `COLLECTION_SLUGS` is a stub. */
-const BUILT: Partial<Record<EngineCollectionSlug, CollectionConfig>> = {
-  users: Users, // SCH — 3.2.b
-}
-const BUILT_GLOBALS: Partial<Record<EngineGlobalSlug, GlobalConfig>> = {}
-
 const nobody = () => false
-
-export function stubCollection(slug: EngineCollectionSlug): CollectionConfig {
-  return {
-    slug,
-    admin: { hidden: true },
-    access: { read: isAdmin, create: nobody, update: nobody, delete: nobody },
-    fields: [],
-  }
-}
 
 export function stubGlobal(slug: EngineGlobalSlug): GlobalConfig {
   return {
@@ -97,22 +162,54 @@ export function stubGlobal(slug: EngineGlobalSlug): GlobalConfig {
   }
 }
 
-/** Every collection, in the frozen order (the admin sidebar's order within each group). */
-export function registeredCollections(): CollectionConfig[] {
-  return COLLECTION_SLUGS.map((slug) => {
-    const built = BUILT[slug]
-    if (built && built.slug !== slug) {
-      throw new Error(`registries/collections: "${slug}" is registered with slug "${built.slug}"`)
+type Drafted = Pick<CollectionConfig | GlobalConfig, 'slug' | 'versions'> & {
+  access?: { read?: unknown; readVersions?: unknown }
+}
+
+/** Throws for a drafts collection or global that leaves `read` or `readVersions` unset. */
+export function assertDraftAccess(kind: 'collection' | 'global', config: Drafted): void {
+  const versions = config.versions
+  const drafted = typeof versions === 'object' && versions !== null && Boolean(versions.drafts)
+  if (!drafted) return
+  const missing = (['read', 'readVersions'] as const).filter((key) => !config.access?.[key])
+  if (missing.length > 0) {
+    throw new Error(
+      `${kind} "${config.slug}" has drafts but no access.${missing.join(' / access.')}: use DRAFTED_ACCESS (@engine/cms/access) — Payload would let any signed-in user read its drafts`,
+    )
+  }
+}
+
+/** Every collection, in the frozen order, each checked against the slug it is registered under. */
+export function registeredCollections(
+  collections: readonly CollectionConfig[] = COLLECTIONS,
+): CollectionConfig[] {
+  if (collections.length !== COLLECTION_SLUGS.length) {
+    throw new Error(
+      `registries/collections: ${collections.length} collections for ${COLLECTION_SLUGS.length} frozen slugs`,
+    )
+  }
+  return collections.map((collection, i) => {
+    if (collection.slug !== COLLECTION_SLUGS[i]) {
+      throw new Error(
+        `registries/collections: position ${i} is "${collection.slug}", the frozen list says "${COLLECTION_SLUGS[i]}"`,
+      )
     }
-    return built ?? stubCollection(slug)
+    assertDraftAccess('collection', collection)
+    return collection
   })
 }
 
-export function registeredGlobals(): GlobalConfig[] {
-  return GLOBAL_SLUGS.map((slug) => BUILT_GLOBALS[slug] ?? stubGlobal(slug))
+export function registeredGlobals(
+  globals: readonly GlobalConfig[] = GLOBAL_SLUGS.map(stubGlobal),
+): GlobalConfig[] {
+  for (const global of globals) assertDraftAccess('global', global)
+  return [...globals]
 }
 
-/** Which slugs are still stubs — for the report of each wave, and a test that watches them shrink. */
+/** Which collections are still stubs — hidden and field-less — for each wave's report. */
 export function stubSlugs(): EngineCollectionSlug[] {
-  return COLLECTION_SLUGS.filter((slug) => BUILT[slug] === undefined)
+  return COLLECTION_SLUGS.filter((slug, i) => {
+    const collection = COLLECTIONS[i]!
+    return collection.fields.length === 0 && collection.admin?.hidden === true && slug !== 'users'
+  })
 }

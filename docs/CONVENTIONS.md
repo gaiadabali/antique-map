@@ -132,13 +132,25 @@ configurator, the cart drawer, facet panel interactions, the search box, the
 consent banner, and preference toggles.
 
 Props to a Client Component are serialised into the HTML: pass what it renders,
-never a whole document or dictionary. **Money and dates arrive preformatted** —
-the server calls `formatMoney` / `formatDate` and passes the string — since only
-the fraction digits are pinned, and symbols and spaces still differ between the
-server's ICU and the browser's (§3). **A listing's state comes from the page's
-server `searchParams`**, the canonical query C10 rewrote to, never from
-`useSearchParams()`, which sees the public URL — whose named facets sit in its
-path, not its query — so the facet panel takes its state as props.
+never a whole document or dictionary. **Money, dates and dimensions arrive
+preformatted** — the server calls the formatter and passes the string — since
+only the fraction digits are pinned, and symbols, spaces and month names still
+differ between the server's ICU and the browser's (§3). The ICU-dependent
+formatters — `formatMoney` / `formatPrice`, `formatCalendarDate` and
+`formatDimensions` — never run in a Client Component; `formatDate` (a fuzzy
+date's words) is deterministic, and its string is passed all the same. **A price
+shown after an interaction** — the configurator's as options change
+(DESIGN-SYSTEM.md §7), a bag drawer's total — ships as the server's display
+strings beside the `Money` (one row per variant, looked up, never summed), or
+comes back formatted in the action's answer. **Links arrive as props**, built by
+`href()` on the server: a Client Component never imports `@engine/config/routes`,
+`@engine/config/schema` or `zod` (`createHref` alone pulls in C1's schema, ~28 KB
+gzip of the 150 KB budget), and never derives state from `usePathname()`, which
+sees the public path, not the canonical state C10 rewrote it to. **A listing's
+state comes from the page's server `searchParams`**, the canonical query C10
+rewrote to, never from `useSearchParams()`, which sees the public URL — whose
+named facets sit in its path, not its query — so the facet panel takes its state
+as props.
 
 Every component answers one question. If its props need a comment to explain a
 combination, it is two components.

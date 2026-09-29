@@ -1,12 +1,13 @@
 /**
  * The CMS registries (PARALLEL-TRACKS.md §1, TASKS.md 3.2.e) — `@engine/cms/registries`.
  */
+export { stubCollection } from '../collections/stub'
 export {
+  assertDraftAccess,
   COLLECTION_SLUGS,
   GLOBAL_SLUGS,
   registeredCollections,
   registeredGlobals,
-  stubCollection,
   stubGlobal,
   stubSlugs,
   type EngineCollectionSlug,

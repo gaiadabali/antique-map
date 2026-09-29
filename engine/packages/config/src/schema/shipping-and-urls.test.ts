@@ -1,8 +1,9 @@
 // C1 v1.2 (TASKS.md 3.4.b): a seller's own couriers, resolved to the brand's when it names none
 // (3.1 senior-be #2); the URLs a config names are https only (senior-be #4) — a social link on a
-// domain, a sister's base as a bare origin.
+// domain, a sister's base as a bare origin; an asset only of a type the brand-assets route serves.
 import { describe, expect, expectTypeOf, it } from 'vitest'
 
+import { parseEditorialGlobals } from '../loader/globals-parts'
 import { testBrandConfig } from '../validate/testing/fixtures'
 import {
   brandConfigSchema,
@@ -73,6 +74,11 @@ describe('C1 — the URLs a config names are https only', () => {
     'https://localhost/shop',
     'https://127.0.0.1/shop',
     'ftp://instagram.example/shop',
+    // 3.4 senior-be #7: names no deployed site answers at.
+    'https://shop.localhost/x',
+    'https://printer.local/x',
+    'https://svc.internal/x',
+    'https://nowhere.invalid/x',
   ]
 
   it('takes a social link on a domain, with a path, and nothing else', () => {
@@ -85,9 +91,31 @@ describe('C1 — the URLs a config names are https only', () => {
     }
   })
 
+  it('holds an editor’s social link in the CMS to the same rule as the file’s (3.4 be #4)', () => {
+    const social = (url: string) => parseEditorialGlobals({ social: { instagram: url } })
+    expect(social('https://instagram.example/test-gallery')?.overrides.social).toEqual({
+      instagram: 'https://instagram.example/test-gallery',
+    })
+    for (const url of refused) {
+      const parsed = social(url)
+      expect(parsed?.overrides.social, url).toBeUndefined()
+      expect(
+        parsed?.refused.map((each) => each.part),
+        url,
+      ).toEqual(['social'])
+    }
+  })
+
   it('takes a sister’s base as a bare https origin, a port allowed', () => {
-    for (const origin of ['https://shop.example.com', 'https://shop.example.com:8443'])
+    for (const origin of [
+      'https://shop.example.com',
+      'https://shop.example.com:8443',
+      'https://xn--bcher-kva.example',
+    ])
       expect(httpsOriginSchema.safeParse(origin).success, origin).toBe(true)
+    // A name that is not ASCII is written as its origin is: in punycode.
+    const unicode = httpsOriginSchema.safeParse('https://bücher.example')
+    expect(unicode.success ? '' : unicode.error.issues[0]?.message).toMatch(/punycode/)
     for (const url of [
       ...refused,
       'https://shop.example.com/',
@@ -95,11 +123,45 @@ describe('C1 — the URLs a config names are https only', () => {
       'https://shop.example.com?x=1',
       'https://shop.example.com#top',
       'https://Shop.example.com',
+      'https://bücher.example',
     ]) {
       expect(httpsOriginSchema.safeParse(url).success, url).toBe(false)
       expect(paths(parse((raw) => (raw.sisters[0].baseUrl = url))), url).toEqual([
         'sisters.0.baseUrl',
       ])
     }
+  })
+})
+
+describe('C1 — a sister is another brand (3.4 senior-be #12)', () => {
+  it('refuses a sister named by the brand’s own slug', () => {
+    expect(paths(parse(() => {}))).toEqual([])
+    const own = parse((raw) => (raw.sisters[0].slug = raw.slug))
+    expect(paths(own)).toEqual(['sisters.0.slug'])
+    expect(own.success ? '' : own.error.issues[0]?.message).toBe(
+      'is this brand\'s own slug ("test"): a sister is another brand',
+    )
+  })
+})
+
+describe('C1 — a brand names only files the brand-assets route serves (3.4 senior-fe #2)', () => {
+  it('takes the allowlisted extensions, in any case, and refuses the rest with one issue', () => {
+    const ok = parse((raw) => {
+      raw.assets.logo = 'marks/Logo.SVG'
+      raw.assets.fonts = [{ family: 'Display', src: 'fonts/display.woff2' }]
+    })
+    expect(paths(ok)).toEqual([])
+    for (const [field, value] of [
+      ['logo', 'logo.gif'],
+      ['favicon', 'favicon'],
+      ['ogImage', 'og.html'],
+      ['ogImage', '../og.png'],
+    ] as const) {
+      const result = parse((raw) => (raw.assets[field] = value))
+      expect(paths(result), value).toEqual([`assets.${field}`])
+    }
+    const font = parse((raw) => (raw.assets.fonts = [{ family: 'Display', src: 'display.ttf' }]))
+    expect(paths(font)).toEqual(['assets.fonts.0.src'])
+    expect(font.success ? '' : font.error.issues[0]?.message).toMatch(/\.woff2/)
   })
 })

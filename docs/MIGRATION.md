@@ -239,6 +239,28 @@ route or the designed not-found page look up `redirects` for an unknown slug —
 it queries the database for every mistyped URL, and a redirect decided while a
 page streams cannot answer 301.
 
+**How a legacy URL is matched (C10, 3.4 reviews).** Exactly, on the path as the
+browser sent it — case and percent-encoding included — its query carried along.
+No rule names a `.` or `..` segment (the URL parser removes them before a
+request is made), a root file (C13 `ROOT_REWRITES`: robots, the sitemaps, the
+icons, the manifest) or a first segment Next or the proxy claims (`_next`,
+`not-found`, `.well-known`): each would never be reached, and CI refuses it.
+
+- **A trailing `/` or a doubled `//`** is answered by Next itself, a 308 to the
+  path without it, before the proxy runs (measured on 16.3.6; C10 refuses both
+  too): an inventory URL `/about-us/` goes 308 → `/about-us` → 301 → the new page. The URL gate (TASKS.md 37.1.b) counts
+  Next's 308 as normalisation and still requires the one 301 after it.
+- **An old item link works whatever its slug spells** — `%27`, `(…)`, a
+  lower-case escape, a `+`: its id picks the item and the route answers 301 to
+  the current URL (C10's one exception to strict segments; a `%2F` or a
+  non-canonical id is still not found). The 4.1.e spike proves
+  `permanentRedirect()` with an encoded slug: a `Location` encoded twice would
+  loop.
+- **The handler (36.4) takes a `Location` only from a root-relative `redirects`
+  row** — matching `^/(?![/\\])`, never `//host` or `/\host`, which a browser
+  reads as another site. A request such as `/category/%2F%2Fevil.com` reaches it
+  as asked for, and is a 404 unless a row names it.
+
 ## 7. Domain — do not move it in the same release
 
 `antiquemapsindonesia.com` holds the rankings. **The platform migration keeps it

@@ -10,9 +10,12 @@
  * A page kept at its old address is simply live, like the product URLs — a CMS page with the same
  * slug, or a surface whose segment is the same — and listed in neither. Neither shape shadows a
  * live root segment in any locale, so the two never compete: the pages validator (SCH) refuses a
- * CMS slug that is a prefix's first segment or a one-segment legacy path. C13's root files
- * (`ROOT_REWRITES`) come before both.
+ * CMS slug that is a prefix's first segment or a one-segment legacy path. Nor is either one the
+ * proxy answers before it reads the route map (`./root-files`: a root file, a first segment Next
+ * or the proxy claims), nor holds a `.` or `..` segment, which the URL parser removes before a
+ * request is sent: each would be dead (3.4 senior-be #8).
  */
+import { CLAIMED_SEGMENTS, rootFileOf } from './root-files'
 
 const PATH_SEGMENTS = String.raw`\/[A-Za-z0-9._~-]+(?:\/[A-Za-z0-9._~-]+)*`
 export const LEGACY_PREFIX = new RegExp(`^${PATH_SEGMENTS}\\/$`)
@@ -33,7 +36,8 @@ export function legacyTarget(routes: LegacyRoutes, pathname: string): string | n
 }
 
 /**
- * Why a legacy rule is refused: it shadows a live root segment (`everyRoot`: the reserved ones,
+ * Why a legacy rule is refused: it is dead — a `.` or `..` segment, a first segment Next or the
+ * proxy claims, a root file — or shadows a live root segment (`everyRoot`: the reserved ones,
  * every locale's surfaces and forms, the named-facet values), a path is listed twice, or a path
  * already sits under a legacy prefix.
  */
@@ -42,26 +46,32 @@ export function legacyIssues(
   everyRoot: ReadonlySet<string>,
 ): { path: [string, number]; message: string }[] {
   const issues: { path: [string, number]; message: string }[] = []
-  const shadows = (rule: string) => {
-    const first = rule.split('/')[1] ?? ''
-    return everyRoot.has(first.toLowerCase()) ? first : null
+  const claimed: readonly string[] = CLAIMED_SEGMENTS
+  const refusal = (rule: string, exact: boolean): string | null => {
+    const segments = rule.split('/').filter((segment) => segment !== '')
+    const first = segments[0] ?? ''
+    if (segments.some((segment) => segment === '.' || segment === '..')) {
+      return 'has a "." or ".." segment, which the URL parser removes: no request carries one'
+    }
+    if (claimed.includes(first.toLowerCase())) {
+      return `starts with "${first}", which Next or the proxy answers first`
+    }
+    if (exact && rootFileOf(rule) !== null) {
+      return 'is a root file, which the proxy answers first (C13 ROOT_REWRITES)'
+    }
+    return everyRoot.has(first.toLowerCase()) ? `shadows the live root segment "${first}"` : null
   }
   routes.legacyPrefixes.forEach((prefix, i) => {
-    const live = shadows(prefix)
-    if (live !== null) {
-      const message = `legacy prefix "${prefix}" shadows the live root segment "${live}"`
-      issues.push({ path: ['legacyPrefixes', i], message })
-    }
+    const why = refusal(prefix, false)
+    if (why !== null)
+      issues.push({ path: ['legacyPrefixes', i], message: `legacy prefix "${prefix}" ${why}` })
   })
   routes.legacyPaths.forEach((path, i) => {
     const at: [string, number] = ['legacyPaths', i]
-    const live = shadows(path)
+    const why = refusal(path, true)
     const prefix = routes.legacyPrefixes.find((each) => path.startsWith(each))
-    if (live !== null) {
-      issues.push({
-        path: at,
-        message: `legacy path "${path}" shadows the live root segment "${live}"`,
-      })
+    if (why !== null) {
+      issues.push({ path: at, message: `legacy path "${path}" ${why}` })
     } else if (prefix !== undefined) {
       issues.push({
         path: at,

@@ -10,6 +10,15 @@
  * released early by a migration's own COMMIT or ROLLBACK. A process that dies mid-migration
  * drops its connection and Postgres releases the lock with it — no stale lock survives a crash.
  * Advisory locks are scoped to the current database, so the two brands never wait on each other.
+ *
+ * Two things this needs of the connection (senior-db review of 3.2, N2):
+ * - **`DATABASE_URL` reaches Postgres directly, or through a session-mode pooler** — never a
+ *   transaction-mode one (PgBouncer's default for many hosts), which hands each statement to a
+ *   different server session: the lock would be taken and released on sessions nobody holds.
+ * - **The lock's connection must outlive the migration.** It sits idle while the migration runs on
+ *   other connections, so a server `idle_session_timeout` shorter than the longest migration
+ *   would end it and release the lock mid-migration. Losing the connection ends the process
+ *   (`onLost`): carrying on would let a second process migrate beside this one.
  */
 import { createHash } from 'node:crypto'
 
@@ -20,6 +29,8 @@ export type LockPool = {
 export type LockClient = {
   query(text: string, values?: unknown[]): Promise<{ rows: Array<Record<string, unknown>> }>
   release(error?: Error | boolean): void
+  on?(event: 'error', listener: (error: Error) => void): unknown
+  off?(event: 'error', listener: (error: Error) => void): unknown
 }
 
 export type LockLog = (message: string) => void
@@ -42,13 +53,24 @@ export const MIGRATION_LOCK_KEY = advisoryLockKey(MIGRATION_LOCK_NAME)
  * hangs holds up the second process's health check, which rolls the deploy back — DEPLOYMENT.md
  * §3). Always unlocks and releases, and destroys the connection if unlocking itself failed.
  */
+/** The lock's connection died while held: the lock is gone, so this process must not go on. */
+function exitOnLostLock(error: Error, log: LockLog): void {
+  log(
+    `lost the advisory lock's connection (${error.message}); exiting so no second migration runs beside this one`,
+  )
+  process.exit(1)
+}
+
 export async function withAdvisoryLock<T>(
   pool: LockPool,
   key: string,
   task: () => Promise<T>,
   log: LockLog = () => {},
+  onLost: (error: Error, log: LockLog) => void = exitOnLostLock,
 ): Promise<T> {
   const client = await pool.connect()
+  const lost = (error: Error) => onLost(error, log)
+  client.on?.('error', lost)
   let broken: Error | undefined
   try {
     const tried = await client.query('SELECT pg_try_advisory_lock($1::bigint) AS locked', [key])
@@ -69,6 +91,7 @@ export async function withAdvisoryLock<T>(
       }
     }
   } finally {
+    client.off?.('error', lost)
     client.release(broken ?? false)
   }
 }

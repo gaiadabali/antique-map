@@ -7,15 +7,15 @@
  * - **No schema push.** Schema reaches a database through migrations only (DEPLOYMENT.md §4.5).
  *   The one exception is PARALLEL-TRACKS.md §3.2's opt-in for an agent's own suffixed database,
  *   `PAYLOAD_DEV_PUSH=1`, and never in a production build (Payload itself never pushes there).
- *   On this stack (Payload 3.90.2, drizzle-kit 0.31.7) it works once, on an empty database; the
- *   next boot fails in drizzle-kit's introspection — `42P02 there is no parameter $1`, KOI's
- *   finding — and Payload does not start. A fresh database per try, or a migration, instead.
+ *   It survives a second boot now that no engine table has a composite primary key — the thing
+ *   drizzle-kit 0.31.7's push introspection could not read (`42P02`, senior-db review of 3.2, S1).
  * - **Migrations in the web process only**: the bundled set (`prodMigrations` — a standalone
  *   build has no migration folder to read) is handed to Payload only when `RUN_MIGRATIONS=1`,
  *   so a worker, a CLI or a second pm2 app never migrates (ARCHITECTURE.md §10). Payload applies
  *   it on the first `getPayload()` of a production build — `/api/health`'s, on a deploy.
- * - **Under an advisory lock**: every `migrate()` — the web process's and `payload migrate`'s —
- *   takes `MIGRATION_LOCK_KEY` first (`./advisory-lock`).
+ * - **Under an advisory lock**: every migration command — the web process's `migrate()` and the
+ *   CLI's `migrate`, `migrate:down`, `:fresh`, `:refresh`, `:reset` — takes `MIGRATION_LOCK_KEY`
+ *   first (`./advisory-lock`).
  * - **Engine tables** Payload cannot express are declared in `afterSchemaInit` (`./engine-tables`),
  *   so the one migration set carries them (PARALLEL-TRACKS.md §1).
  */
@@ -63,11 +63,21 @@ export function buildDatabaseAdapter(
   return withMigrationLock(adapter)
 }
 
+/** Every adapter method that runs migrations: each takes the lock (senior-db review of 3.2, N1). */
+export const LOCKED_MIGRATION_METHODS = [
+  'migrate',
+  'migrateDown',
+  'migrateFresh',
+  'migrateRefresh',
+  'migrateReset',
+] as const
+
 /**
- * Wraps the adapter Payload builds so its `migrate()` runs under the migration lock. Payload
- * calls `this.migrate(...)` both on boot (`connect()`, production + `prodMigrations`) and from
- * `payload migrate`, so replacing the method covers both; the pool exists by then, since both
- * migrate after connecting.
+ * Wraps the adapter Payload builds so every migration command runs under the migration lock.
+ * Payload calls `this.migrate(...)` both on boot (`connect()`, production + `prodMigrations`) and
+ * from `payload migrate`; `migrate:down`, `:fresh`, `:refresh` and `:reset` are wrapped the same.
+ * The pool exists by then, since each runs after connecting. Re-entrant within the process: a
+ * command that called another would otherwise wait on its own lock from a second connection.
  */
 export function withMigrationLock(
   adapterObj: DatabaseAdapterObj<PostgresAdapter>,
@@ -76,14 +86,31 @@ export function withMigrationLock(
     ...adapterObj,
     init: (args) => {
       const adapter = adapterObj.init(args)
-      const migrate = adapter.migrate.bind(adapter)
-      adapter.migrate = (migrateArgs) =>
-        withAdvisoryLock(
-          adapter.pool as unknown as LockPool,
-          MIGRATION_LOCK_KEY,
-          () => migrate(migrateArgs),
-          (message) => adapter.payload.logger.info({ msg: `[migrations] ${message}` }),
-        )
+      let holding = false
+      const log = (message: string) =>
+        adapter.payload.logger.info({ msg: `[migrations] ${message}` })
+      for (const method of LOCKED_MIGRATION_METHODS) {
+        const original = adapter[method] as ((...a: unknown[]) => Promise<unknown>) | undefined
+        if (typeof original !== 'function') continue
+        const bound = original.bind(adapter)
+        const locked = async (...methodArgs: unknown[]) => {
+          if (holding) return bound(...methodArgs)
+          return withAdvisoryLock(
+            adapter.pool as unknown as LockPool,
+            MIGRATION_LOCK_KEY,
+            async () => {
+              holding = true
+              try {
+                return await bound(...methodArgs)
+              } finally {
+                holding = false
+              }
+            },
+            log,
+          )
+        }
+        Object.assign(adapter, { [method]: locked })
+      }
       return adapter
     },
   }

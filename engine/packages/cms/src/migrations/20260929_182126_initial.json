@@ -4608,19 +4608,19 @@
       "columns": {
         "operation": {
           "name": "operation",
-          "type": "text",
+          "type": "text COLLATE \"C\"",
           "primaryKey": false,
           "notNull": true
         },
         "key": {
           "name": "key",
-          "type": "text",
+          "type": "text COLLATE \"C\"",
           "primaryKey": false,
           "notNull": true
         },
         "caller_ref": {
           "name": "caller_ref",
-          "type": "text",
+          "type": "text COLLATE \"C\"",
           "primaryKey": false,
           "notNull": false
         },
@@ -4634,7 +4634,7 @@
           "name": "response",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -4671,28 +4671,34 @@
             }
           ],
           "isUnique": false,
+          "where": "\"caller_ref\" IS NOT NULL",
           "concurrently": false,
           "method": "btree",
           "with": {}
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "idempotency_keys_pkey": {
-          "name": "idempotency_keys_pkey",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "idempotency_keys_operation_key_unique": {
+          "name": "idempotency_keys_operation_key_unique",
+          "nullsNotDistinct": false,
           "columns": ["operation", "key"]
         }
       },
-      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {
         "idempotency_keys_request_sha256_hex": {
           "name": "idempotency_keys_request_sha256_hex",
           "value": "\"request_sha256\" ~ '^[0-9a-f]{64}$'"
         },
-        "idempotency_keys_key_not_blank": {
-          "name": "idempotency_keys_key_not_blank",
-          "value": "length(\"key\") > 0"
+        "idempotency_keys_key_length": {
+          "name": "idempotency_keys_key_length",
+          "value": "length(\"key\") BETWEEN 1 AND 128"
+        },
+        "idempotency_keys_operation_length": {
+          "name": "idempotency_keys_operation_length",
+          "value": "length(\"operation\") BETWEEN 1 AND 64"
         }
       },
       "isRLSEnabled": false
@@ -4720,6 +4726,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "633197e7-969f-4d81-ab5c-3c08ea59e9cd",
+  "id": "c31118b0-30c1-4519-b077-3b08ec4def7f",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

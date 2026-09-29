@@ -5,7 +5,8 @@
 import {
   ACCOUNT_SECTIONS,
   FORM_KINDS,
-  SURFACE_ROUTES,
+  hasSurface,
+  surfaceModules,
   type ParsedPath,
 } from '@engine/config/routes'
 import {
@@ -48,7 +49,8 @@ type SurfaceMatch = Extract<ParsedPath, { kind: 'surface' }>
 /**
  * The module a parsed page needs and the brand has off, or `null`. A config may keep a segment
  * for a module it turns off (C1), so the route map alone does not say the page is closed: its
- * surface, its form kind or its account section does (C10's module column).
+ * surface (C10 `hasSurface()`, which reads a surface two modules share — the account area, open
+ * while either account module is), its form kind or its account section does.
  */
 export function closedModule(
   config: { readonly modules: ModuleFlags },
@@ -58,8 +60,7 @@ export function closedModule(
     'module' in row && !hasModule(config, row.module as ModuleKey)
       ? (row.module as ModuleKey)
       : null
-  const surface = off(SURFACE_ROUTES[parsed.surface])
-  if (surface) return surface
+  if (!hasSurface(config, parsed.surface)) return surfaceModules(parsed.surface)[0] ?? null
   if (parsed.surface === 'form') return off(FORM_KINDS[parsed.params.kind])
   if (parsed.surface === 'account' && parsed.params.section) {
     return off(ACCOUNT_SECTIONS[parsed.params.section])

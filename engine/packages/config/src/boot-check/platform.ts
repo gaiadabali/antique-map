@@ -1,15 +1,16 @@
 /**
  * The process's own environment (DEPLOYMENT.md §8) and what the config may not be where it
  * runs: the database and Payload secrets, storage, mail, the cron and revalidation secrets,
- * the link-key ring, the sister's secrets, the loader source, and no placeholder anywhere a
- * buyer can pay. A development default such as `dev-only-not-a-secret` (`.env.example`) or
- * MinIO's `minioadmin` is refused on a deployed host.
+ * the link-key ring, the sister's secrets and origin (`./sister`), the loader source, and no
+ * placeholder anywhere a buyer can pay. A development default such as `dev-only-not-a-secret`
+ * (`.env.example`) or MinIO's `minioadmin` is refused on a deployed host.
  */
 import { isAbsolute } from 'node:path'
 
 import type { BrandConfig } from '../schema'
 import { read, type DeploymentEnvironment, type Findings } from './findings'
 import { parseLinkTokenKeys } from './link-keys'
+import { checkSister } from './sister'
 
 type Env = Readonly<Record<string, string | undefined>>
 
@@ -80,6 +81,13 @@ export function checkPlatform(
       'RUN_MIGRATIONS',
       'is "1" in the web process and unset everywhere else (DEPLOYMENT.md §2)',
     )
+  } else if (migrations === '1' && read(env, 'NODE_ENV') !== 'production') {
+    // Payload applies its bundled migrations on boot only in a production build: said here, so a
+    // dev server given the web process's variables never looks migrated when it is not.
+    findings.warn(
+      'RUN_MIGRATIONS',
+      'is "1", but this is not a production build: Payload migrates on boot only when NODE_ENV=production — migrate with pnpm --filter @engine/cms migrate (DEPLOYMENT.md §4)',
+    )
   }
 
   if (environment !== 'local') {
@@ -113,18 +121,7 @@ export function checkPlatform(
   for (const problem of ring.problems) findings.refuse('LINK_TOKEN_KEYS', problem)
   for (const warning of ring.warnings) findings.warn('LINK_TOKEN_KEYS', warning)
 
-  if (config.sisters.length > 0) {
-    const [sister] = config.sisters
-    for (const name of ['SISTER_API_KEY', 'SISTER_WEBHOOK_SECRET']) {
-      if (read(env, name) === undefined) {
-        findings.require(
-          name,
-          `is not set: the brand syncs with its sister "${sister?.slug}" (C12)`,
-          environment,
-        )
-      }
-    }
-  }
+  checkSister(env, config, environment, findings)
   checkPlaceholders(config, environment, findings)
   return loadersSource(env, environment, findings)
 }

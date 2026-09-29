@@ -5,7 +5,7 @@ import { brandFrom } from './brand'
 import { rolesOnlyField, STAFF_ONLY_ACCESS, staffOnly } from './fields'
 import { hiddenUnlessModule, moduleEnabled, whenModule } from './modules'
 import { siteOrigin, trustedOrigins } from './origins'
-import { PUBLISHED_ONLY, publishedOrStaff } from './published'
+import { DRAFTED_ACCESS, PUBLISHED_ONLY, publishedOrStaff } from './published'
 import { hasRole, isAdmin, isStaff, rolesOf, staffWithRoles, STAFF_ROLES } from './roles'
 
 type User = Record<string, unknown> | null
@@ -26,6 +26,13 @@ describe('publishedOrStaff', () => {
 
   it('treats a signed-in customer as the public, whatever roles it claims', () => {
     expect(publishedOrStaff(req(customer))).toEqual(PUBLISHED_ONLY)
+  })
+
+  it('comes with staff-only versions in DRAFTED_ACCESS: a signed-in customer reads no /versions', () => {
+    expect(DRAFTED_ACCESS.read).toBe(publishedOrStaff)
+    expect(DRAFTED_ACCESS.readVersions(req(customer))).toBe(false)
+    expect(DRAFTED_ACCESS.readVersions(req(anonymous))).toBe(false)
+    expect(DRAFTED_ACCESS.readVersions(req(contributor))).toBe(true)
   })
 
   it('shows staff drafts too, whatever their role', () => {

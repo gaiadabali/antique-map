@@ -106,6 +106,10 @@ export function fullEnv(
     ...(config.sisters.length > 0
       ? { SISTER_API_KEY: `sister-${STRONG}`, SISTER_WEBHOOK_SECRET: `sister-hook-${STRONG}` }
       : {}),
+    // Production syncs with its sister's production site, never the committed staging one.
+    ...(config.sisters.length > 0 && environment === 'production'
+      ? { SISTER_BASE_URL: 'https://sister-production.example.com' }
+      : {}),
     ...providerEnv(config, environment === 'production' ? 'live' : 'sandbox'),
   }
 }

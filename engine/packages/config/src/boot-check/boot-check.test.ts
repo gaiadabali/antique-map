@@ -42,7 +42,10 @@ describe('bootCheck() — the environment', () => {
       check({ ...fullEnv(config, 'production'), SITE_URL: 'https://alias.example.com' })
         .environment,
     ).toBe('production')
-    expect(check({ ...fullEnv(config, 'local'), NODE_ENV: 'production' }).environment).toBe('local') // a local production build
+    // A local production build is local when it says so (LOCAL_PRODUCTION_BUILD=1), else production.
+    const localBuild = { ...fullEnv(config, 'local'), NODE_ENV: 'production' }
+    expect(check({ ...localBuild, LOCAL_PRODUCTION_BUILD: '1' }).environment).toBe('local')
+    expect(check(localBuild).environment).toBe('production')
   })
 
   it('fails closed on a production build at a host that is none of the brand’s domains', () => {

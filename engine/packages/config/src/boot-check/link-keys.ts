@@ -15,6 +15,10 @@
  * bytes form with a chance below 10^-12; a retirement day is never in the future. The parsed
  * ring is what the links module (TASKS.md 18.2.g) derives and verifies with. No message ever
  * carries a secret.
+ *
+ * Also the entry `@engine/config/link-keys`, which `worktree:env` loads under plain `node` to
+ * judge the dev ring it makes by these same rules (TASKS.md 3.5.e): so this module imports
+ * nothing, and stays that way.
  */
 
 export type LinkTokenKey =
@@ -51,6 +55,12 @@ export type LinkKeyRingResult =
 
 const KID = /^[a-z0-9]{1,12}$/
 const BASE64URL = /^[A-Za-z0-9_-]+={0,2}$/
+/**
+ * How to make one: 32 random bytes, base64url. Base64url alone, never standard base64 (`+`, `/`),
+ * so a secret has one spelling and a key copied twice under two kids is always caught; `openssl
+ * rand -base64 32` writes the other alphabet (3.4 senior-be #2).
+ */
+export const LINK_KEY_COMMAND = `node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"`
 const DAY = /^(\d{4})-(\d{2})-(\d{2})$/
 export const LINK_KEY_MIN_BYTES = 32
 /** Fewer distinct byte values than this is a pattern, not randomness (32 random bytes have ~30). */
@@ -141,7 +151,11 @@ function fail(problems: string[], warnings: string[] = []): LinkKeyRingResult {
 /** The secret's bytes, or why they are refused. */
 function decodeSecret(encoded: string): Uint8Array | string {
   const bare = encoded.replace(/=+$/, '')
-  if (!BASE64URL.test(encoded) || bare.length % 4 === 1) return 'the secret is not base64url'
+  if (!BASE64URL.test(encoded) || bare.length % 4 === 1) {
+    return /^[A-Za-z0-9+/]+={0,2}$/.test(encoded) && /[+/]/.test(encoded)
+      ? `the secret is not base64url but standard base64 ("+" or "/"): write "-" for "+" and "_" for "/", or make one with ${LINK_KEY_COMMAND}`
+      : 'the secret is not base64url'
+  }
   const bytes = Buffer.from(bare, 'base64url')
   // Node's decoder skips what it cannot read; re-encoding proves every character was data.
   if (bytes.toString('base64url') !== bare) return 'the secret is not canonical base64url'
@@ -156,7 +170,7 @@ function decodeSecret(encoded: string): Uint8Array | string {
     return `the secret has ${distinct} distinct byte values, fewer than ${LINK_KEY_MIN_DISTINCT_BYTES}: a pattern, not random bytes`
   }
   if (bytes.every((byte) => byte >= 0x20 && byte <= 0x7e)) {
-    return 'the secret decodes to printable text — a password encoded, not random bytes (openssl rand -base64 32)'
+    return `the secret decodes to printable text — a password encoded, not random bytes (make one with ${LINK_KEY_COMMAND})`
   }
   const run = longestSteppedRun(bytes)
   if (run >= LINK_KEY_STEPPED_RUN) {

@@ -6,8 +6,9 @@
  * on its search params. `parsePublicPath(config, href(s, p, l))` gives back `s` and `p` in
  * canonical form (a round-trip test proves it). Anything else — an internal path asked for
  * directly, a default-locale or unsupported-locale prefix, an extra segment, a segment spelt
- * otherwise than `href()` spells it (`./segments`) — is `notFound`, so no page has two
- * addresses. An old site's URL goes to the legacy handler first (`./legacy`), as asked for. The
+ * otherwise than `href()` spells it (`./segments`; an old item link's slug is the one exception,
+ * `oldItemLink()`), a first segment the proxy answers first (`./root-files`) — is `notFound`, so
+ * no page has two addresses. An old site's URL goes to the legacy handler first (`./legacy`). The
  * internal URL carries a listing's whole canonical state as its query (named-path facets
  * included), so a listing page reads `parseListingQuery()` and never the public path. Pure: no
  * database, no request object.
@@ -24,7 +25,8 @@ import {
 } from './href'
 import { legacyTarget } from './legacy'
 import { positive, query, reader, uuid, type SearchInput } from './query'
-import { decodeSegments } from './segments'
+import { CLAIMED_SEGMENTS } from './root-files'
+import { readSegments, type ReadSegment } from './segments'
 import {
   ACCOUNT_SECTIONS,
   FORM_KINDS,
@@ -96,8 +98,10 @@ export function parsePublicPath(
   const { routes, locales } = config
   const legacy = legacyTarget(routes, pathname)
   if (legacy !== null) return { kind: 'legacy', internal: legacy }
-  const parts = decodeSegments(pathname)
-  if (!parts) return NOT_FOUND
+  const read = readSegments(pathname)
+  if (!read) return NOT_FOUND
+  if (read.some((segment) => !segment.canonical)) return oldItemLink(config, read) ?? NOT_FOUND
+  const parts = read.map((segment) => segment.text)
   let locale = locales.default
   const first = parts[0]
   if (first !== undefined && isLocaleCode(first)) {
@@ -111,6 +115,7 @@ export function parsePublicPath(
   if (head === undefined) return match('home', locale, {}, '')
   if (RESERVED_SEGMENTS.includes(head))
     return locale === locales.default ? { kind: 'app' } : NOT_FOUND
+  if ((CLAIMED_SEGMENTS as readonly string[]).includes(head)) return NOT_FOUND
   const surface = SEGMENT_SURFACES.find((each) => segments[each] === head)
   if (surface) return segmentSurface(config, locale, surface, rest, search)
   const kind = (Object.keys(FORM_KINDS) as FormKind[]).find((each) => segments.forms[each] === head)
@@ -142,6 +147,31 @@ export function parsePublicPath(
   }
   if (rest.length > 0 || !SLUG.test(head)) return NOT_FOUND
   return match('page', locale, { slug: head }, `/${encodeURIComponent(head)}`)
+}
+
+/**
+ * An old link to an item — `/product/{id}-{anything}` (MIGRATION.md §6) — whose slug part is not
+ * in `href()`'s spelling (`%27`, `(…)`, a lower-case hex, a `+`), every segment before it canonical.
+ * It reaches the item route by its id with its slug as asked for, which contains a character no
+ * slug has, so it never matches and the route answers a permanent redirect to the current URL:
+ * never a second 200 address, never a lost link (3.4 senior-fe #1). The id itself must be canonical,
+ * and a segment that picks a surface or a locale always is.
+ */
+function oldItemLink(config: ParseConfig, read: readonly ReadSegment[]): ParsedPath | null {
+  const [first] = read
+  const prefixed =
+    first !== undefined && isLocaleCode(first.text) && first.text !== config.locales.default
+  const locale = prefixed ? (first.text as LocaleCode) : config.locales.default
+  if (prefixed && !config.locales.supported.includes(locale)) return null
+  const [head, item, ...more] = prefixed ? read.slice(1) : read
+  const segments = config.routes[locale]
+  if (!head?.canonical || !item || more.length > 0 || head.text !== segments?.item) return null
+  if (read.slice(0, -1).some((segment) => !segment.canonical)) return null
+  const id = /^([1-9]\d*)-(.+)$/.exec(item.raw)
+  const publicId = Number(id?.[1])
+  if (!id?.[2] || !Number.isSafeInteger(publicId)) return null
+  const internal = `/${encodeURIComponent(`${publicId}-${id[2]}`)}`
+  return match('item', locale, { publicId, slug: id[2] }, internal)
 }
 
 function segmentSurface(
