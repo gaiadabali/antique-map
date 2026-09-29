@@ -1,6 +1,11 @@
+import { randomBytes } from 'node:crypto'
+
 import { afterAll, describe, expect, it } from 'vitest'
 
+import { databaseName, parseSuffix } from '../db/naming.mjs'
 import { psql } from '../db/psql.mjs'
+import { readEnvFile } from '../worktree/env-file.mjs'
+import { topLevel } from '../worktree/git.mjs'
 import { compareSchemas, hashDatabase, normalizeSchema } from './schema-hash.mjs'
 
 describe('normalizeSchema', () => {
@@ -42,11 +47,25 @@ const stackUp = (() => {
   }
 })()
 
+// Fixture database names are derived from this worktree's DB_SUFFIX (read
+// the same way `db/cli.mjs` reads it) plus this process's pid and a random
+// token, so two worktrees — or two `pnpm verify` runs in one worktree —
+// never collide over the shared Postgres (2.2.k: seen as duplicate
+// `pg_database_datname_index`, "database … does not exist", `allEqual`
+// false when they did).
+function fixtureRunSuffix() {
+  const repoRoot = topLevel(process.cwd())
+  const dbSuffix = readEnvFile(`${repoRoot}/.env.local`).get('DB_SUFFIX') ?? 'local'
+  const token = randomBytes(3).toString('hex')
+  return parseSuffix(`${dbSuffix}_${process.pid}_${token}`)
+}
+
 describe.skipIf(!stackUp)(
   'schema-hash against the real stack — the planted violation (2.2.i)',
   () => {
-    const dbA = 'schema_hash_fixture_a'
-    const dbB = 'schema_hash_fixture_b'
+    const runSuffix = fixtureRunSuffix()
+    const dbA = databaseName('schema-hash-fixture-a', runSuffix)
+    const dbB = databaseName('schema-hash-fixture-b', runSuffix)
 
     afterAll(() => {
       for (const db of [dbA, dbB]) {
