@@ -7,6 +7,12 @@
 import type { ModuleKey } from '@engine/config/schema'
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+/**
+ * The only methods an HTML form sends. Every operation a page calls — C6's commerce API, the
+ * auth and forms routes — uses these alone: a read is a GET, and every write a POST, a change or
+ * a removal included. So a form reaches each one without JavaScript (`FORM_RESULT`).
+ */
+export type FormMethod = Extract<HttpMethod, 'GET' | 'POST'>
 export type Lane = 'WEB' | 'DOM' | 'PAY' | 'LOG' | 'MED' | 'SRC' | 'SIS' | 'SEO'
 
 /** How a caller proves itself. The handler enforces it; the manifest makes it reviewable. */
@@ -43,7 +49,7 @@ export type EngineRoute = {
  * call it, and the module without which the handler answers 404.
  */
 export type SubRoute = {
-  readonly method: HttpMethod
+  readonly method: FormMethod
   readonly path: string
   readonly auth: readonly RouteAuth[]
   readonly module?: ModuleKey
