@@ -18,7 +18,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
-| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 2/4 | 16/22 | 0 | `███████░░░`  73% |
+| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 2/4 | 17/22 | 0 | `████████░░`  77% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
@@ -45,12 +45,12 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **26** Couriers and the fulfilment router 👤 | Integrations | 15, 20 | · not started | 0/3 | 0/12 | 2 | `░░░░░░░░░░`   0% |
 | **27** Sister sync, WhatsApp and the integrations gate 👤 | Integrations | 25, 26 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
 | **28** Accounts, consent and data-subject operations | Accounts | 17, 22 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
-| **29** Alerts, newsletter, retention and the accounts gate | Accounts | 16, 20, 28 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **29** Alerts, newsletter, retention and the accounts gate | Accounts | 16, 20, 28 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **30** Shop: loaders, home and collections, the product page and the configurator | Shop | 16, 21, 22 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
-| **31** Shop: stories, the bag and checkout, order tracking | Shop | 21, 22 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
+| **31** Shop: stories, the bag and checkout, order tracking | Shop | 21, 22 | · not started | 0/3 | 0/15 | 0 | `░░░░░░░░░░`   0% |
 | **32** Shop: polish, buyers and the shop gate 👤 | Shop | 30, 31 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
-| **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/13 | 0 | `░░░░░░░░░░`   0% |
+| **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/14 | 3 | `░░░░░░░░░░`   0% |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **5/160** | **40/712** | **46** | `█░░░░░░░░░`   6% |
+| **All** | 44 phases | | | **5/160** | **41/715** | **46** | `█░░░░░░░░░`   6% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -376,7 +376,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - _Requirements: 1.2_
   - [x] 2.4.a the should-fix rows 3–17 of the senior-fe review of the domain contracts (order-line snapshot, `QuoteView.buyer`, payment-option UX fields, money display and the exponent note, form decoding and idempotency keys, buyer-facing order status, analytics props the page can know, lead counting, C12 per-market prices and the shop → gallery prints feed)
   - [x] 2.4.b D39's want-list contract (C6 subscribe intent with double opt-in, C2 VM, C1 module variant) and C6 `api.ts`'s "read once" wording aligned with C13 `FORM_RESULT`
-  - [ ] 2.4.c doc sync: "For Business"/wholesale remnants (22.3.d, 31.1, COMMERCE §3, CONTENT-MODEL, PLAN, C6 `EnquiryTopic`), ANALYTICS §2 (`item.unsaved`, retailer events), COMPLIANCE §7 (application retention, counsel to confirm), DESIGN-SYSTEM §3–4, DEPLOYMENT §8, ARCHITECTURE §6, PAYMENTS §4, CONTENT-MODEL §4–5, design.md sketches, and the task checks the fix reports list
+  - [x] 2.4.c doc sync: "For Business"/wholesale remnants (22.3.d, 31.1, COMMERCE §3, CONTENT-MODEL, PLAN, C6 `EnquiryTopic`), ANALYTICS §2 (`item.unsaved`, retailer events), COMPLIANCE §7 (application retention, counsel to confirm), DESIGN-SYSTEM §3–4, DEPLOYMENT §8, ARCHITECTURE §6, PAYMENTS §4, CONTENT-MODEL §4–5, design.md sketches, and the task checks the fix reports list
   - [ ] 2.4.d **Check:** every contract bumped to v1.1 with a CONTRACTS.md changelog entry; `pnpm verify` green; one senior-fe and one senior-be pass sign it off.
 
 ---
@@ -392,11 +392,11 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Owns** `engine/packages/config/src/{loader,validate,boot-check}/**`, `engine/packages/i18n/**`, `engine/packages/http/src/proxy/**`, `indies-gallery/site/**`, `old-east-indies/site/**`, `test/site/**`
   - **Read** BRANDS.md §3–4, ARCHITECTURE.md §2, §11, COMPLIANCE.md §1
   - _Requirements: 2.1, 2.2, 2.4, 18.1, 18.2_
-  - [ ] 3.1.a `loadBrandConfig()` from `BRAND_ROOT` / `BRAND` → `<brand>/site/brand.config.json` (for `test`, the file `TEST_STOREFRONT` names); **`validateBrandConfigs()`** for CI — every committed config: schema, modules ⊆ the app's `supports`, a rounding rule per currency, sellers covering every market — and **`bootCheck()`** at process start — environment, per-seller provider secrets present, sandbox vs live, loader source; the CMS-global merge seam with file fallback and a logged reason
+  - [ ] 3.1.a `loadBrandConfig()` from `BRAND_ROOT` / `BRAND` → `<brand>/site/brand.config.json` (for `test`, the file `TEST_STOREFRONT` names); **`validateBrandConfigs()`** for CI — every committed config: schema, modules ⊆ the app's `supports`, a rounding rule per currency, sellers covering every market, `retention.wantList` only together with `accounts.buyers` **and** `retention.emailWantList` (D39) — and **`bootCheck()`** at process start — environment, per-seller provider secrets present, sandbox vs live, loader source; the CMS-global merge seam with file fallback and a logged reason
   - [ ] 3.1.b `@engine/i18n`: locales, the message-key loader (keys from the app, **values from `<brand>/site/copy/{en,id}.json`**), `formatMoney`, `formatDate` with precision, `formatDimensions` (mm + inches)
   - [ ] 3.1.c proxy helpers — **rewrites only**: locale resolution (default unprefixed), route-map rewrites for localised segments and facet vocabularies (C10), 404 for internal paths, legacy-prefix rewrite to `/api/x/legacy/…` (the handler answers 404 until 36.4), admin-in-English default (KOI)
   - [ ] 3.1.d draft brand configs for `indies-gallery`, `old-east-indies` and `test` (two configs, `brand.gallery.json` and `brand.emporium.json`) with staging domains, sellers with clearly fictional placeholder legal entities flagged `"draft": true` (owner fills real values later — D1–D3), and empty `copy/` folders
-  - [ ] 3.1.e **Check:** `BRAND=test TEST_STOREFRONT=gallery` loads and validates; `validateBrandConfigs()` rejects a broken committed config with a readable message naming the field; `bootCheck()` refuses to start on a missing secret, a sandbox key in production or `LOADERS_SOURCE=fixtures` in production; formatter tests pass (IDR has no decimals, `c. 1750`, 450 mm → 17¾ in); the proxy serves the default locale unprefixed and `/id/…` prefixed, answers 404 for internal paths, rewrites legacy prefixes to `/api/x/legacy/…`, never touches the database, and redirects nothing at the root by `Accept-Language`.
+  - [ ] 3.1.e **Check:** `BRAND=test TEST_STOREFRONT=gallery` loads and validates; `validateBrandConfigs()` rejects a broken committed config with a readable message naming the field, including a `retention.wantList` brand missing `accounts.buyers` or `retention.emailWantList`; `bootCheck()` refuses to start on a missing secret, a sandbox key in production or `LOADERS_SOURCE=fixtures` in production; formatter tests pass — IDR has no decimals, `c. 1750`, 450 mm → 17¾ in, `formatMoney` pins every currency's fraction digits to `CURRENCY_EXPONENT` and never the runtime's ICU default, and a display estimate renders with none at all; the proxy serves the default locale unprefixed and `/id/…` prefixed, answers 404 for internal paths, rewrites legacy prefixes to `/api/x/legacy/…`, never touches the database, and redirects nothing at the root by `Accept-Language`.
 
 - [ ] **3.2 Payload bootstrap: one brand-independent config, staff users, migrations in the web process** · needs: 2.1, 3.1.a
   - **Lane** SCH · **Agent** senior-be · **Wave** W2
@@ -635,9 +635,9 @@ run beside the build line rather than in it.
   - _Requirements: 13.1, 13.2, 18.5_
   - [ ] 9.4.a `customers` as its own auth collection (profile, verification, consents) — never the staff collection; the custom strategy and its cookie arrive in 28.1
   - [ ] 9.4.b `addresses` with the Indonesian shape (province → city → district → sub-district, postcode) and an international form
-  - [ ] 9.4.c `saved-items`, `want-lists` (saved query + budget stored with its market currency), `subscribers` (with recorded consent), `reviews` (verified buyer, moderation state)
+  - [ ] 9.4.c `saved-items`, `want-lists` (a customer **or** an email address, never both; status `pending`/`active`; a hashed access token; subject — a listing's path or a product it watches another example of; budget stored with its market currency; frequency `instant`/`daily`; consent for alerts, separate from marketing email), `subscribers` (with recorded consent), `reviews` (verified buyer, moderation state)
   - [ ] 9.4.d Access rules — a customer reads and edits only their own records — with tests
-  - [ ] 9.4.e **Check:** `customers` is its own auth collection (the custom strategy and its separate session cookie arrive in 28.1), a customer can read and edit only their own records (tested), addresses validate the Indonesian shape, want-list budgets store their market currency, and consents store purpose, timestamp and policy version.
+  - [ ] 9.4.e **Check:** `customers` is its own auth collection (the custom strategy and its separate session cookie arrive in 28.1), a customer can read and edit only their own records (tested), addresses validate the Indonesian shape, want-list budgets store their market currency, an email-held want list stores no more than its hashed token and starts `pending` until confirmed, and consents store purpose, timestamp and policy version.
 
 ---
 
@@ -727,7 +727,7 @@ run beside the build line rather than in it.
   - [ ] 11.3.b The fixture source behind `LOADERS_SOURCE=fixtures` — the boot check refuses it in production
   - [ ] 11.3.c The one Payload read helper — always `overrideAccess: false`, `_status: 'published'` and a `select` — and a lint rule failing any other Local API call in `loaders/`
   - [ ] 11.3.d Stubbed Payload sources per surface, ready for the storefront stages
-  - [ ] 11.3.e **Check:** every surface has a `loadX(params)` returning its VM (`loadItem` returns `{ vm } | { redirectTo } | null`), backed by fixtures when `LOADERS_SOURCE=fixtures` (dev and component tests — the boot check refuses it in production), with the Payload source stubbed for the storefront stages behind one read helper that **always** passes `overrideAccess: false`, `_status: 'published'` and a `select` (a lint rule fails any other Local API call in `loaders/`).
+  - [ ] 11.3.e **Check:** every surface has a `loadX(params)` returning its VM (`loadItem` returns `{ vm } | { redirectTo } | null`), backed by fixtures when `LOADERS_SOURCE=fixtures` (dev and component tests — the boot check refuses it in production), with the Payload source stubbed for the storefront stages behind one read helper that **always** passes `overrideAccess: false`, `_status: 'published'` and a `select` for published content (a lint rule fails any other Local API call in `loaders/`); a caller-scoped surface — cart, checkout, order, pay, quote, order-lookup, and now `wantList` — reads instead by the caller's own session or access cookie, never a public id, and its request-time parts (a form, a post's result, on the want-list page the list an email's link opened) are resolved and rendered in the page's own body, never behind a nested `<Suspense>`, so a visitor with no JavaScript still sees them.
 
 - [ ] **11.4 State matrix fixtures** · needs: 1.2.b, 11.3
   - **Lane** WEB · **Agent** senior-fe · **Wave** W2
@@ -738,7 +738,7 @@ run beside the build line rather than in it.
   - [ ] 11.4.b Long content and extreme values — Dutch titles, 300-character Latin transcriptions, +30% text, `Rp 1.250.000.000` — and images at aspects 0.3, 1 and 3.5
   - [ ] 11.4.c The purchase-panel matrix: one fixture per combination, including *enquiry-only*
   - [ ] 11.4.d Register every fixture with both apps' `/style-guide` state switchers
-  - [ ] 11.4.e **Check:** every surface has fixtures for loading/streaming, empty, partial, error, JavaScript off, long content (Dutch titles, 300-character Latin transcriptions, +30% text expansion) and extreme values (`Rp 1.250.000.000`), and the gallery purchase panel has one fixture per purchase-state combination (including *enquiry-only*: an original with no known location); both apps' `/style-guide` state switchers list them.
+  - [ ] 11.4.e **Check:** every surface has fixtures for loading/streaming, empty, partial, error, JavaScript off, long content (Dutch titles, 300-character Latin transcriptions, +30% text expansion) and extreme values (`Rp 1.250.000.000`), and the gallery purchase panel has one fixture per purchase-state combination (including *enquiry-only*: an original with no known location); the want-list page has a fixture per state of its own small matrix — a subject named or not, an opened list present, gone or none, and each result its form can show — resolved, never streamed, proving it renders without JavaScript; both apps' `/style-guide` state switchers list them.
 
 ---
 
@@ -972,7 +972,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 17.2.a money module, rounding points, allocation + property tests
   - [ ] 17.2.b FX: rate source port (ECB reference rates by default, D27), daily refresh job, snapshots
   - [ ] 17.2.c market price resolution + "From" price for a destination
-  - [ ] 17.2.d **Check:** safe-integer money arithmetic with ISO exponents (a guard rejects any non-safe-integer at every boundary), the **named rounding points** with their methods — half-even, and largest-remainder allocation so parts sum to the whole (COMMERCE.md §3) — the three price sources (explicit, product-type table × multiplier, derived FX + buffer + market price point), "From" prices and the FX snapshot are pure and **property-tested** (no float, no rounding outside a named point, totals reproducible).
+  - [ ] 17.2.d **Check:** safe-integer money arithmetic with the **engine's own exponents** (not ISO 4217's — a guard rejects any non-safe-integer at every boundary), the **named rounding points** with their methods — half-even, and largest-remainder allocation so parts sum to the whole (COMMERCE.md §3) — the **five price sources** (explicit, product-type table × multiplier, derived — FX + buffer + market price point — an accepted offer's agreed price, an issued quote's or proforma's line), "From" prices and the FX snapshot are pure and **property-tested** (no float, no rounding outside a named point, totals reproducible).
 
 - [ ] **17.3 Seller routing, destination and the rupiah rule** · needs: 3.1.a, 17.2
   - **Lane** DOM · **Agent** senior-be (DOM-A) · **Wave** W2
@@ -1009,10 +1009,10 @@ state machines and `applyPaymentEvent()` above all.
   - **Read** ARCHITECTURE.md §6, COMMERCE.md §4, PAYMENTS.md §1
   - _Requirements: 9.1, 9.2, 9.4, 9.5, 9.9, 11.6_
   - [ ] 18.1.a `reserve()` writing the scalar `targetKey` and first expiring stale active rows for that target, in one transaction
-  - [ ] 18.1.b `extend`, `release`, `convert` and `reverse`; counted stock through the conditional `stock_levels` update
+  - [ ] 18.1.b `reserveAll` (several targets at once, all-or-nothing under a savepoint — a bag at "Continue to payment"); `extend`, `release`, `convert` and `reverse`, each taking reservation ids in bulk; counted stock through the conditional `stock_levels` update
   - [ ] 18.1.c The concurrency harness: 50 parallel reservations → one success and 49 typed conflicts; a sold item refusing a new reservation, even by direct insert
   - [ ] 18.1.d The sweeper route `/api/x/cron/reservations` — housekeeping only
-  - [ ] 18.1.e **Check:** `reserve()` — `reserve` · `extend` · `release` · `convert` · `reverse` — is the only writer and always writes the scalar `targetKey`; inside its transaction it first expires stale active rows **for that target**, so correctness never waits on the sweeper; 50 parallel reservations of one unique item yield exactly one success and 49 typed conflicts (test); **a converted (sold) item refuses every new reservation at the database** (test, including a direct insert); `extend` lengthens a checkout lock to the chosen method's `sessionTtl` + margin within the configured ceiling; stocked quantity races never oversell; an expired active row reads as available; the sweeper route is housekeeping only.
+  - [ ] 18.1.e **Check:** `reserve()` — `reserve` · `reserveAll` · `extend` · `release` · `convert` · `reverse` — is the only writer and always writes the scalar `targetKey`; inside its transaction it first expires stale active rows **for that target**, so correctness never waits on the sweeper; 50 parallel reservations of one unique item yield exactly one success and 49 typed conflicts (test); `reserveAll` reserves several targets under one savepoint, all or nothing, rolling back only its own work on any conflict (test); **a converted (sold) item refuses every new reservation at the database** (test, including a direct insert); `extend` lengthens a checkout lock to the chosen method's `sessionTtl` + margin within the configured ceiling; stocked quantity races never oversell; an expired active row reads as available; the sweeper claims its rows with `FOR UPDATE SKIP LOCKED` and is otherwise housekeeping only.
 
 - [ ] **18.2 State machines and the outbox** · needs: 1.2.g, 17.1
   - **Lane** DOM · **Agent** senior-be (DOM-D), reviewed by senior-db · **Wave** W1
@@ -1051,23 +1051,23 @@ state machines and `applyPaymentEvent()` above all.
   - _Requirements: 9.3, 9.5, 9.6, 9.7, 10.1, 10.4, 11.6_
   - [ ] 19.1.a `CheckoutVM.steps` derived from seller, destination and lines
   - [ ] 19.1.b Order placement snapshotting every figure: lines, pipeline, tax, FX, seller
-  - [ ] 19.1.c The payment step: take the checkout lock, `extend()` it at method choice to the method's `sessionTtl` + margin (no cash-at-retail for a unique item), and create the payment attempt idempotently — a retry returns its stored `SessionResult`
-  - [ ] 19.1.d Offers (non-binding, D22): submit, auto-decline below the floor, accept → an offer hold and a payment link that expires before it; staff holds
+  - [ ] 19.1.c The payment step: take the checkout lock, `extend()` it at method choice to the method's `sessionTtl` + margin (no cash-at-retail for a unique item), close any other open attempt of the order first (so a provider reference is never used twice, and every reservation the new attempt pays for carries the order's id), and create the payment attempt idempotently — a retry returns its stored `SessionResult`
+  - [ ] 19.1.d Offers (non-binding, D22): submit, auto-decline below the floor, accept → an offer hold and a payment link that expires before it; a submitted or countered offer closes as declined — never left open — the moment its item sells or is withdrawn elsewhere (`offer.closedUnavailable`); staff holds
   - [ ] 19.1.e Every transition through the 18.2 machine runner
-  - [ ] 19.1.f **Check:** `CheckoutVM.steps` derive from seller, destination and lines; placing an order snapshots every figure; the checkout lock is taken at the payment step and **extended at method choice** to that method's `sessionTtl` + margin (no cash-at-retail for a unique item); the payment step creates a payment attempt idempotently and returns its **stored `SessionResult`** on a retry; offers are non-binding (D22), auto-decline below the floor, and an accepted offer creates an offer hold and a payment link that expires before it; every transition goes through the 18.2 machine runner.
+  - [ ] 19.1.f **Check:** `CheckoutVM.steps` derive from seller, destination and lines; placing an order snapshots every figure; the checkout lock is taken at the payment step and **extended at method choice** to that method's `sessionTtl` + margin (no cash-at-retail for a unique item); the payment step creates a payment attempt idempotently and returns its **stored `SessionResult`** on a retry; offers are non-binding (D22), auto-decline below the floor, an accepted offer creates an offer hold and a payment link that expires before it, and one left open closes as declined the moment its item sells or is withdrawn elsewhere; every transition goes through the 18.2 machine runner; a pure `buyerOrderStatus()` derives the buyer-facing status from the order's own status, the attempt that paid it (or the latest, before one has) and its shipments (COMMERCE.md §6), tested with one case per row of its table — a buyer's answer never carries a raw `OrderStatus`, a `PaymentStatus` or a dispute.
 
 - [ ] **19.2 Payments core** · needs: 1.2.f, 17.3, 19.1
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W2
   - **Owns** `engine/packages/payments/src/{registry,routing,limits.ts,reconcile,links,boot-check,adapters/manual,adapters/bank-transfer}/**`, `engine/packages/http/src/webhooks/payments/**`, `engine/packages/http/src/cron/reconcile/**`, `tests/contract/payments/**`
   - **Read** PAYMENTS.md
   - _Requirements: 11.1, 11.2, 11.4, 11.5, 11.8, 18.7_
-  - [ ] 19.2.a provider registry per seller (secrets as `PAYMENT_<SELLER>_<PROVIDER>_*`) + the shared contract suite: signature failure, duplicate, out-of-order, **crash after the dedupe insert**, pending → settlement, refund idempotency, a session outliving its reservation window, late payment after the item sold
+  - [ ] 19.2.a provider registry per seller (secrets as `PAYMENT_<SELLER>_<PROVIDER>_*`) + the shared contract suite: signature failure, duplicate, out-of-order, **crash after the dedupe insert**, pending → settlement, refund idempotency, a session outliving its reservation window, late payment after the item sold, an event for an unknown attempt routed to `payment_events_unmatched` without consuming the dedupe key
   - [ ] 19.2.b routing with `limits.ts` (sourced, dated caps)
-  - [ ] 19.2.c the thin webhook handler (parse → retrieve → apply; no business logic)
+  - [ ] 19.2.c the thin webhook handler, mounted **per seller** (`/api/x/webhooks/payments/[provider]/[seller]`: parse → retrieve → apply; no business logic)
   - [ ] 19.2.d reconciliation cron route `/api/x/cron/reconcile`
   - [ ] 19.2.e payment links `/pay/{token}`; manual and bank-transfer providers (instructions, proforma reference)
   - [ ] 19.2.f the payments part of the boot check: sandbox/live key vs environment
-  - [ ] 19.2.g **Check:** routing offers only allowed methods with dated caps (no retail method for a unique item); the webhook handler at `/api/x/webhooks/payments/{provider}` verifies the signature on the raw body, calls `retrieve()` where the adapter says so, and hands one normalised event to `domain.applyPaymentEvent()` (19.4), answering 200 only after it commits and 5xx otherwise; reconciliation runs every 10 minutes through the same path; payment links work; `manual` and `bank-transfer` pass the contract suite.
+  - [ ] 19.2.g **Check:** routing offers only allowed methods with dated caps (no retail method for a unique item); the webhook handler at `/api/x/webhooks/payments/{provider}/{seller}` verifies the signature on the raw body with that seller's secret, calls `retrieve()` where the adapter says so, and hands one normalised event to `domain.applyPaymentEvent()` (19.4), answering 200 for every outcome and 5xx only on a throw; reconciliation runs every 10 minutes through the same path; payment links work; `manual` and `bank-transfer` pass the contract suite.
 
 - [ ] **19.3 👤 Midtrans adapter (sandbox)** · needs: 19.2.a · 👤 a Midtrans sandbox merchant account and keys
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W3
@@ -1086,11 +1086,11 @@ state machines and `applyPaymentEvent()` above all.
   - **Owns** `engine/packages/domain/src/payments/**` (not its `machine.ts`)
   - **Read** PAYMENTS.md §1, §4, ARCHITECTURE.md §6
   - _Requirements: 9.8, 11.3, 11.6_
-  - [ ] 19.4.a The one transaction: `INSERT … engine.payment_events … ON CONFLICT DO NOTHING RETURNING id`, then the payment transition, reservation conversion, order transition and outbox events
+  - [ ] 19.4.a Find the attempt first — by our own reference, else `(provider, sellerId, providerRef)` — then the one transaction: `INSERT … engine.payment_events (provider, seller_id, provider_event_id, attempt_id) … ON CONFLICT DO NOTHING RETURNING id`, then the payment transition, reservation conversion, order transition and outbox events
   - [ ] 19.4.b Capture or settlement only while the reservation is live
   - [ ] 19.4.c The late-payment path: re-reserve if the item is still free, otherwise void or refund automatically and tell the buyer
   - [ ] 19.4.d Stale and out-of-order events never move a machine backwards; the crash-after-dedupe contract test passes
-  - [ ] 19.4.e **Check:** `applyPaymentEvent()` runs **one** transaction — `INSERT … engine.payment_events … ON CONFLICT DO NOTHING RETURNING id` (no row → commit as a no-op), then the payment transition, reservation conversion, order transition and outbox events — and any failure rolls back **the dedupe row too**, so the provider's retry applies it once (the crash-after-dedupe contract test passes); capture or settlement happens only while the reservation is live; a **late payment** re-reserves the item if it is still free, otherwise voids or refunds automatically and notifies the buyer; a stale or out-of-order event never moves a machine backwards.
+  - [ ] 19.4.e **Check:** `applyPaymentEvent()` finds the attempt by our reference, else by `(provider, sellerId, providerRef)`, then runs **one** transaction — `INSERT … engine.payment_events (provider, seller_id, provider_event_id, attempt_id) … ON CONFLICT DO NOTHING RETURNING id` (no row → commit as a no-op), then the payment transition, reservation conversion, order transition and outbox events — and any failure rolls back **the dedupe row too**, so the provider's retry applies it once (the crash-after-dedupe contract test passes); capture or settlement happens only while the reservation is live; a **late payment** re-reserves the item if it is still free, otherwise voids or refunds automatically and notifies the buyer; a second payment settling on an order another attempt already paid is given back whole under `dup:{attemptId}`, the order untouched; an event for no known attempt (or another seller's) is recorded in `payment_events_unmatched` and alerted, its dedupe key **not** consumed; an early event is caught up through `retrieve()` before it applies; a stale or out-of-order event never moves a machine backwards.
 
 ---
 
@@ -1127,10 +1127,10 @@ state machines and `applyPaymentEvent()` above all.
   - **Owns** `engine/packages/{mail,documents}/**`
   - **Read** COMMERCE.md §12–13, ANALYTICS.md §1–2
   - _Requirements: 10.5, 13.5_
-  - [ ] 20.3.a template system and senders (SMTP), bilingual, list-unsubscribe where marketing
+  - [ ] 20.3.a template system and senders (SMTP), bilingual, `List-Unsubscribe` (RFC 8058, one-click) where marketing **or** a want-list alert
   - [ ] 20.3.b event → template wiring; PDF job infrastructure (confirmation, proforma; COA and commercial invoice in 24.2)
   - [ ] 20.3.c email design system per brand (senior-uiux): layouts that work with images off and in dark-mode clients, stay under Gmail's 102 KB clipping limit and render in Outlook; the payment-instructions email designed as carefully as the payment-pending page; the newsletter layout for 29.2
-  - [ ] 20.3.d **Check:** EN/ID templates exist for order received/paid, payment instructions (VA, QR), pickup ready, shipped, refund, return received, offer received/accepted/countered/expired, hold granted/expiring, enquiry acknowledged + staff alert, consignment received; WhatsApp deep links are built; a Payload job renders order PDFs; **the outbox dispatcher (18.2) triggers them** — never a request handler — with the event id as the idempotency key (Mailpit in CI).
+  - [ ] 20.3.d **Check:** EN/ID templates exist for order received/paid, payment instructions (VA, QR), pickup ready, shipped, refund, return received, offer received/accepted/countered/expired, hold granted/expiring, enquiry acknowledged + staff alert, consignment received, **a want-list's double opt-in confirmation and its instant/daily alert** (each with its own RFC 8058 one-click stop link); WhatsApp deep links are built; a Payload job renders order PDFs; **the outbox dispatcher (18.2) triggers them** — never a request handler — with the event id as the idempotency key (Mailpit in CI).
 
 - [ ] **20.4 Returns** · needs: 17.4, 19.1
   - **Lane** DOM · **Agent** senior-be (DOM-B) · **Wave** W1
@@ -1224,7 +1224,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 22.3.a gallery surface briefs
   - [ ] 22.3.b shop surface briefs
   - [ ] 22.3.c cross-cutting behaviours, designed: switching ship-to (which moves currency) and locale; the language banner's place; the WhatsApp handoff (DESIGN-SYSTEM.md §12)
-  - [ ] 22.3.d **Check:** every surface not comped in the Design stage has an impeccable `shape` brief naming its mode (Experience · Operate · Read · Persuade), its states and its content rules, with `concept-seed --scope surface` run for the open ones — including 404/410/500, the payment-pending page, the bag's edge cases, `Pay`, `Quote`, `OrderLookup`, the trust pages, For Business and the design page.
+  - [ ] 22.3.d **Check:** every surface not comped in the Design stage has an impeccable `shape` brief naming its mode (Experience · Operate · Read · Persuade), its states and its content rules, with `concept-seed --scope surface` run for the open ones — including 404/410/500, the payment-pending page, the bag's edge cases, `Pay`, `Quote`, `OrderLookup`, `WantList`, the trust pages, Partnership and the design page.
 
 - [ ] **22.4 Surface skeletons from fixtures in both apps** · needs: 11.3, 22.1–22.3
   - **Lane** UXG + UXE · **Agent** medior (one per app) · **Wave** W2
@@ -1457,10 +1457,10 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Owns** `engine/packages/fulfilment/src/{routing,adapters/{own-stock,local-mto}}/**`
   - **Read** COMMERCE.md §8, COMPLIANCE.md §5
   - _Requirements: 12.4, 12.5, 12.7_
-  - [ ] 26.3.a The router: own stock → local made-to-order → POD near the buyer (only while `fulfilment.pod` is on) → not offered
+  - [ ] 26.3.a The router: a **pure** function over `RouteFulfilmentInput` (variant, quantity, destination) and a `RouteFulfilmentContext` the caller loads first — stock per location, locations to try first (the showroom for Bali), local-production and POD eligibility (C7 `RouteFulfilment`) — own stock → local made-to-order → POD near the buyer (only while `fulfilment.pod` is on) → not offered
   - [ ] 26.3.b The local made-to-order adapter: a production task for the Bali print partner, with a presigned print file from `print-files/`
   - [ ] 26.3.c Tests: an Indonesian destination never routes overseas; switching `fulfilment.pod` on needs no router change
-  - [ ] 26.3.d **Check:** each line routes own stock → local made-to-order (a production task for the Bali print partner, with its presigned print file from `print-files/`) → **POD near the buyer only while `fulfilment.pod` is on** (off at launch, D23) → not offered; a test proves Indonesian destinations never route overseas and that switching `fulfilment.pod` on needs no router change. The Prodigi and Gelato adapters are post-launch (v2.18).
+  - [ ] 26.3.d **Check:** each line routes own stock → local made-to-order (a production task for the Bali print partner, with its presigned print file from `print-files/`) → **POD near the buyer only while `fulfilment.pod` is on** (off at launch, D23) → not offered; the router does no I/O of its own — every fact it needs arrives in its loaded context — so it is unit-tested as a pure function; a test proves Indonesian destinations never route overseas and that switching `fulfilment.pod` on needs no router change. The Prodigi and Gelato adapters are post-launch (v2.18).
 
 ---
 
@@ -1476,11 +1476,11 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Read** BRANDS.md §5
   - _Requirements: 3.8, 3.11, 15.1, 15.2, 15.3, 15.4, 15.5, 16.6, 8.3_
   - [ ] 27.1.a The gallery's signed read-only archive API at `/api/x/sister/…` — published works only, `overrideAccess: false`, a field `select` — and a test that drafts, `physical` and acquisition fields never leave
-  - [ ] 27.1.b `work.*` webhooks, sent from the outbox
-  - [ ] 27.1.c The shop's idempotent provenance-copy importer (synced fields read-only) and a nightly reconcile
-  - [ ] 27.1.d Both cross-links: the gallery item page linking to the exact products; the shop's "own the original" in the visitor's market currency, export status respected
+  - [ ] 27.1.b `work.*` webhooks, sent from the outbox, and the shop's `prints.*` webhook back — both signed with the pair's shared secret
+  - [ ] 27.1.c The shop's idempotent provenance-copy importer (synced fields read-only); the shop sends what it makes from a work back as that work's whole `PrintsFeed`, which the gallery's idempotent importer uses to replace its copy whole, so a withdrawn product simply drops out; a nightly reconcile each way
+  - [ ] 27.1.d Both cross-links: the gallery item page linking to the exact products, and — from its copy of the shop's feed, never a live read of the shop's database — "Prints of this map"; the shop's "own the original" in the visitor's market currency, export status respected. Every price on either link travels per market as the selling brand shows it, and every image is the C9 ladder at the owning brand's absolute URLs, never copied or re-derived.
   - [ ] 27.1.e A two-database test: a sale in the gallery flips the shop's block to sold within a minute
-  - [ ] 27.1.f **Check:** the gallery's signed read-only archive API at `/api/x/sister/…` — reading **published works only**, with `overrideAccess: false` and a field `select`, so drafts, `physical` and acquisition fields never leave (a test asserts it) — and `work.*` webhooks sent from the outbox feed the shop's idempotent provenance-copy importer (synced fields read-only); both cross-links resolve, the gallery item page links to the exact products made from its work (Req 16.6), and a two-database test proves a sale in the gallery flips the shop's "own the original" to sold within a minute. The shop's link shows the original's price **in the visitor's market currency** (never USD beside an IDR page) and **respects export status** — tested for an Indonesian destination and for a `domestic-only` original seen from abroad.
+  - [ ] 27.1.f **Check:** the gallery's signed read-only archive API at `/api/x/sister/…` — reading **published works only**, with `overrideAccess: false` and a field `select`, so drafts, `physical` and acquisition fields never leave (a test asserts it) — and `work.*` webhooks sent from the outbox feed the shop's idempotent provenance-copy importer (synced fields read-only); the shop's `prints.*` webhook feeds the gallery's copy back the same way, so "Prints of this map" renders from it, never a live read; both cross-links resolve, the gallery item page links to the exact products made from its work (Req 16.6), and a two-database test proves a sale in the gallery flips the shop's "own the original" to sold within a minute. Every price either link shows is **per market, as the selling brand shows it** (never USD beside an IDR page) and **respects export status** — tested for an Indonesian destination and for a `domestic-only` original seen from abroad; every image renders at the owning brand's absolute URL from the C9 ladder, never copied into the other brand's bucket.
 
 - [ ] **27.2 👤 WhatsApp notifications** · needs: 20.3 · 👤 provider (D14 — needed before this wave; otherwise close as email-only with the date)
   - **Lane** NTF · **Agent** senior-integrator · **Wave** W1
@@ -1522,10 +1522,10 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** UXG + UXE · **Agent** senior-uiux (one per app) · **Wave** W2
   - **Owns** `engine/apps/*/src/surfaces/account/**` + routes
   - _Requirements: 13.2, 18.6_
-  - [ ] 28.2.a The gallery: overview, orders with documents, wishlist, want-lists (with an unsubscribe landing page), addresses, profile, consents, export and deletion requests. The shop's retailer area: overview, orders and quotes with documents, the retail terms (data set by D32), addresses, profile, consents, export and deletion requests
+  - [ ] 28.2.a The gallery: overview, orders with documents, wishlist, want-lists (each with its own stop button — no separate unsubscribe landing page: every alert leads to the one want-list page, C10 `wantList`), addresses, profile, consents, export and deletion requests. The shop's retailer area: overview, orders and quotes with documents, the retail terms (data set by D32), addresses, profile, consents, export and deletion requests
   - [ ] 28.2.b The gallery's conversations: my offers (with the counter's countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), consignments with their timeline
   - [ ] 28.2.c Empty states that invite rather than blank
-  - [ ] 28.2.d **Check:** the gallery's account and the shop's retailer area each hold what 28.2.a lists; in the gallery, overview, orders with documents, wishlist (the gallery's viewing pull list), want-lists (with an unsubscribe landing page), addresses, profile and consents, and export/deletion requests work; the gallery's account also holds **my offers** (with the counter's countdown), holds, price requests, viewings (reschedule, cancel, `.ics`) and consignments with their status timeline; empty states invite rather than blank (NOW! DESIGN-SYSTEM §4).
+  - [ ] 28.2.d **Check:** the gallery's account and the shop's retailer area each hold what 28.2.a lists; in the gallery, overview, orders with documents, wishlist (the gallery's viewing pull list), want-lists (each stopped from the one want-list page, never a separate landing page), addresses, profile and consents, and export/deletion requests work; the gallery's account also holds **my offers** (with the counter's countdown), holds, price requests, viewings (reschedule, cancel, `.ics`) and consignments with their status timeline; empty states invite rather than blank (NOW! DESIGN-SYSTEM §4).
 
 - [ ] **28.3 Consent banner, records and the cookieless beacon mode** · needs: 9.4, 22.1, 22.2
   - **Lane** SEO · **Agent** senior-fe · **Wave** W1
@@ -1566,14 +1566,16 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 **Done when:** a guest's saved search emails them when a match is published; a confirmed subscriber receives the next generated digest; a consented abandoned bag sends one email and a non-consented one sends none; an erasure request removes a customer's personal data while their orders stay reproducible.
 **Waves:** W1 — 29.1, 29.2 · W2 — 29.3 · W3 — 29.4
 
-- [ ] **29.1 Want-list matching and alerts** · needs: 16.3, 20.3
+- [ ] **29.1 Want-lists: subscribe, confirm, match and alert** · needs: 16.3, 20.3
   - **Lane** DOM · **Agent** senior-be · **Wave** W1
-  - **Owns** `engine/packages/domain/src/want-lists/**`
+  - **Owns** `engine/packages/domain/src/want-lists/**`, `engine/packages/http/src/commerce/want-lists/**`
+  - **Read** COMMERCE.md §7, COMPLIANCE.md §7, ARCHITECTURE.md §11
   - _Requirements: 13.3, 5.6_
-  - [ ] 29.1.a Matching on publish, from an outbox event run by the queue
-  - [ ] 29.1.b Delivery within 15 minutes or in a daily digest, as the subscriber chose; "another example arrived" for sold items
-  - [ ] 29.1.c Budgets compared in the want-list's own market currency; an unsubscribe per alert
-  - [ ] 29.1.d **Check:** publishing a work or product emits an outbox event that the queue matches against saved queries, notifying **within 15 minutes** or in a daily digest as the subscriber chose (a test measures publish → email in Mailpit), including "another example arrived" for sold items; budgets compare in the want-list's own market currency; each alert can be unsubscribed.
+  - [ ] 29.1.a `wantList.subscribe`: an account's list starts at once (`retention.wantList`); an address's is stored `pending` and answers the same — a link is on its way — whoever asks and whatever it already watches, within `WANT_LIST_EMAIL_LIMIT`; the confirmation is sent from the outbox after commit
+  - [ ] 29.1.b `wantList.confirm` (POST, by `WANT_LIST_ACCESS`'s cookie only) starts a `pending` list; `wantList.unsubscribe` erases a list whole — address, query and consent — by the account, the page's cookie, or RFC 8058's one-click token; a daily sweep purges a `pending` list never confirmed within `WANT_LIST_PENDING_DAYS` (7)
+  - [ ] 29.1.c Matching on publish, from an outbox event run by the queue; delivery within 15 minutes or in a daily digest, as the subscriber chose; "another example arrived" for sold items
+  - [ ] 29.1.d Budgets compared in the want-list's own market currency
+  - [ ] 29.1.e **Check:** an address's `wantList.subscribe` stores a `pending` list and emails a double opt-in link from the outbox, admitting nothing about what it already watches; the want-list page's POST confirms it or, by the same access cookie or an emailed RFC 8058 token, stops it — erasing the list whole; a `pending` list never confirmed is purged after 7 days (test); publishing a work or product emits an outbox event that the queue matches against saved queries, notifying **within 15 minutes** or in a daily digest as the subscriber chose (a test measures publish → email in Mailpit), including "another example arrived" for sold items; budgets compare in the want-list's own market currency; subscribing past `WANT_LIST_EMAIL_LIMIT` answers the same receipt without sending another email (test).
 
 - [ ] **29.2 Newsletter: double opt-in and the generated digest** · needs: 9.4, 20.3
   - **Lane** NTF · **Agent** medior · **Wave** W1
@@ -1662,16 +1664,16 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 **Done when:** the shop's design pages, stories, For Business, `/ig`, showroom and gift-card pages render on real data; a bag checks out in the sandbox in IDR only — by QRIS, or by VA following the payment-pending page; a guest tracks the order and a showroom pickup is confirmed.
 **Waves:** W1 — 31.1, 31.2 · W2 — 31.3
 
-- [ ] **31.1 Design pages, stories, For Business, `/ig`, showroom, gift cards** · needs: 21.1, 22.4
+- [ ] **31.1 Design pages, stories, the quote page, `/ig`, showroom, gift cards** · needs: 21.1, 22.4
   - **Lane** UXE · **Agent** senior-uiux (UXE-C) · **Wave** W1
   - **Owns** `engine/apps/emporium/src/surfaces/{design,story,page,form,quote,ig,showroom,gift-card}/**` + routes
   - **Read** EXPERIENCE-SHOP.md §6, §8–9
   - _Requirements: 7.7, 7.8_
   - [ ] 31.1.a Design pages listing every product made from one design
   - [ ] 31.1.b Stories with shop-the-story rails and `shoppableImage` hotspots
-  - [ ] 31.1.c For Business → the quote page (lines, validity, PDF, accept → payment link), and "Turn this into a quote" from a configured product
+  - [ ] 31.1.c The **quote page** (lines, validity, PDF, accept → payment link) that an approved partner's brief becomes (28.5's Partnership page, D31/D36 — never a separate "For Business" surface) or that a configured product starts ("Turn this into a quote")
   - [ ] 31.1.d `/ig` from the CMS-curated posts; the showroom page ("In the showroom now", hours, map); gift cards (choose, schedule for a recipient, check a balance)
-  - [ ] 31.1.e **Check:** a design page lists every product from one design; stories carry shop-the-story rails and `shoppableImage` hotspots; the business enquiry becomes a **quote page** (lines, validity, PDF, accept → payment link) that a configured product can also start ("Turn this into a quote"); `/ig` shows the posts staff curate in the CMS, each linked to the products it shows (no Instagram API at launch); the showroom page shows "In the showroom now" stock with hours and map; gift cards can be chosen, scheduled for a recipient, and checked for balance.
+  - [ ] 31.1.e **Check:** a design page lists every product from one design; stories carry shop-the-story rails and `shoppableImage` hotspots; an approved partner's brief becomes a **quote page** (lines, validity, PDF, accept → payment link), which a configured product can also start ("Turn this into a quote"); `/ig` shows the posts staff curate in the CMS, each linked to the products it shows (no Instagram API at launch); the showroom page shows "In the showroom now" stock with hours and map; gift cards can be chosen, scheduled for a recipient, and checked for balance.
 
 - [ ] **31.2 Bag drawer, checkout, payment-pending and order pages** · needs: 19.1, 21.1, 22.4
   - **Lane** UXE · **Agent** senior-fe (UXE-D) · **Wave** W1
@@ -1684,15 +1686,16 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 31.2.d The in-app-browser hint; the `Pay` page; the export flow with market currency and duties
   - [ ] 31.2.e **Check:** the drawer shows the free-shipping bar, upsells and voucher field, and **every bag edge case** in EXPERIENCE-SHOP.md §7 has a fixture and a designed state — including the bag re-pricing to IDR with a visible notice when ship-to moves to Indonesia; the Indonesian flow asks WhatsApp first (normalised to +62), uses one full-name field and searchable address pickers with an optional pin; the "I'm visiting Bali" path works (deliver before a date, pickup, send home); gift options (recipient address, note preview, prices hidden, target date); payment shows only routed methods; the **payment-pending page** (VA copy, per-bank steps, countdown matching the session's real expiry, cap warning, auto-switch to paid; QRIS save-to-gallery and e-wallet deep links; retry keeps the bag) is complete; an in-app browser gets "open in your browser" where a payment cannot complete; the `Pay` page serves staff-sent links; the export flow shows market currency and duties.
 
-- [ ] **31.3 Guest order tracking and pickup confirmation** · needs: 20.3, 31.2
+- [ ] **31.3 Guest order tracking, pickup confirmation and the want-list page** · needs: 20.3, 31.2
   - **Lane** UXE · **Agent** senior-fe · **Wave** W2
-  - **Owns** `engine/apps/emporium/src/surfaces/order-lookup/**` + route (the gallery's own lookup page is 34.3's; both follow the one 22.3 brief)
-  - **Read** EXPERIENCE-SHOP.md §7, DESIGN-SYSTEM.md §2
+  - **Owns** `engine/apps/emporium/src/surfaces/{order-lookup,want-list}/**` + routes (the gallery's own lookup and want-list pages are 34.3's; both follow the one 22.3 brief)
+  - **Read** EXPERIENCE-SHOP.md §7, §10, DESIGN-SYSTEM.md §2
   - _Requirements: 7.10_
   - [ ] 31.3.a Lookup by order number plus email or WhatsApp number — rate-limited, the same answer for a wrong pair and an unknown order
   - [ ] 31.3.b The courier timeline, and the tracking link in every WhatsApp update
   - [ ] 31.3.c Pickup orders: a code or QR, the "ready" notice, hours, map and who may collect
-  - [ ] 31.3.d **Check:** a guest finds an order by order number plus email or WhatsApp number (rate-limited, answering the same for a wrong pair and an unknown order) and sees the courier timeline; every WhatsApp update carries the tracking link; a pickup order shows a pickup code or QR, the "ready" notice, hours, map and who may collect.
+  - [ ] 31.3.d The want-list page (C10 `wantList`, module `retention.emailWantList`): the subscribe form for what its URL names — always an email address here, no shopper account — the list an email's link opened (confirm or stop), and the last post's result, all resolved at request time, none of it streamed (D39)
+  - [ ] 31.3.e **Check:** a guest finds an order by order number plus email or WhatsApp number (rate-limited, answering the same for a wrong pair and an unknown order) and sees the courier timeline; every WhatsApp update carries the tracking link; a pickup order shows a pickup code or QR, the "ready" notice, hours, map and who may collect; the want-list page saves, confirms or stops what its URL and access cookie name, every state resolved without JavaScript.
 
 ---
 
@@ -1758,9 +1761,9 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 5.3, 5.4, 5.5, 5.6, 5.7_
   - [ ] 33.2.a Home bands from the homepage global
   - [ ] 33.2.b Browse: available by default with the sold toggle; the facet bottom sheet on phones (chips, live count, number inputs, sticky apply/clear); sort; named facet URLs
-  - [ ] 33.2.c Search without JavaScript; the zero-results page ("not all 9,500 works are online — ask us", a prefilled enquiry, historical-name suggestions, Indonesian queries, a want-list)
+  - [ ] 33.2.c Search without JavaScript; the zero-results page ("not all 9,500 works are online — ask us", a prefilled enquiry, historical-name suggestions, Indonesian queries, a want-list link to the want-list page, C10 `wantList`)
   - [ ] 33.2.d The designed 404, 410 and 500
-  - [ ] 33.2.e **Check:** home bands follow the homepage global; browse defaults to available with the sold toggle, the full facet set in a bottom sheet on phones (applied-filter chips, live count on apply, number inputs beside sliders, sticky apply/clear), working sort, named facet URLs; search works without JavaScript; **zero results never dead-end** ("not all 9,500 works are online — ask us" with a prefilled enquiry, historical-name suggestions, Indonesian queries, a want-list); 404, 410 and 500 are the designed pages.
+  - [ ] 33.2.e **Check:** home bands follow the homepage global; browse defaults to available with the sold toggle, the full facet set in a bottom sheet on phones (applied-filter chips, live count on apply, number inputs beside sliders, sticky apply/clear), working sort, named facet URLs; search works without JavaScript; **zero results never dead-end** ("not all 9,500 works are online — ask us" with a prefilled enquiry, historical-name suggestions, Indonesian queries, a link to the want-list page); 404, 410 and 500 are the designed pages.
 
 - [ ] **33.3 The item page** · needs: 16.1, 22.4
   - **Lane** UXG · **Agent** senior-uiux (UXG-B) · **Wave** W1
@@ -1812,16 +1815,17 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 34.2.d The framing quote; a cart → multi-item proforma on the `Quote` surface (PO field, PDF, "pay this proforma")
   - [ ] 34.2.e **Check:** page templates serve guarantee, authentication, grades, certificate, shipping & insurance, framing & conservation, institutions, visit and FAQ from the CMS; consignment uses the phone camera, accepts HEIC, shows per-file progress with retry and a "what happens next" timeline; viewing booking shows the location's time zone, sends an `.ics`, reminds on WhatsApp, can be rescheduled and attaches the wishlist as a pull list; the framing quote has its flow; a cart becomes a multi-item proforma on the `Quote` surface with a PO field, PDF and "pay this proforma".
 
-- [ ] **34.3 Cart, checkout, payment and order pages** · needs: 19.1, 21.1, 22.4
+- [ ] **34.3 Cart, checkout, payment, order and want-list pages** · needs: 19.1, 21.1, 22.4
   - **Lane** UXG · **Agent** senior-fe (UXG-D) · **Wave** W1
-  - **Owns** `engine/apps/gallery/src/surfaces/{cart,checkout,order,pay,order-lookup}/**` + routes
-  - **Read** COMMERCE.md §5, PAYMENTS.md §2–5, DESIGN-SYSTEM.md §2
+  - **Owns** `engine/apps/gallery/src/surfaces/{cart,checkout,order,pay,order-lookup,want-list}/**` + routes
+  - **Read** COMMERCE.md §5, §7, PAYMENTS.md §2–5, DESIGN-SYSTEM.md §2
   - _Requirements: 9.3, 10.1, 10.5, 10.7, 11.5, 18.3_
   - [ ] 34.3.a Cart and checkout rendering the steps the VM contains and every `SessionResult` kind
-  - [ ] 34.3.b The lock countdown surviving a 3-D Secure redirect; its expiry mid-payment as a designed state; "someone else was first" with alternatives and a want-list
+  - [ ] 34.3.b The lock countdown surviving a 3-D Secure redirect; its expiry mid-payment as a designed state; "someone else was first" with alternatives and a link to the want-list page
   - [ ] 34.3.c Bank transfer for a high-value item (how long it is held, the SWIFT instructions, what happens at expiry); the `Pay` page for staff-sent links
   - [ ] 34.3.d Guest order lookup; confirmation and order pages with the seller identity and documents
-  - [ ] 34.3.e **Check:** checkout renders the steps its VM contains and every `SessionResult` kind (embedded, redirect, instructions, QR, manual); the lock countdown survives a 3-D Secure redirect, and its expiry mid-payment is a designed state; "someone else was first" offers alternatives and a want-list; a bank transfer for a high-value item shows how long it is held, the SWIFT instructions and what happens at expiry; the `Pay` page serves staff-sent links; guests can look an order up; confirmation and order pages show the seller identity and documents.
+  - [ ] 34.3.e The want-list page (C10 `wantList`, module `retention.emailWantList`): the subscribe form for what its URL names, the list an email's link opened (confirm or stop), and the last post's result — all resolved at request time, none of it streamed, so it works without JavaScript (D39)
+  - [ ] 34.3.f **Check:** checkout renders the steps its VM contains and every `SessionResult` kind (embedded, redirect, instructions, QR, manual); the lock countdown survives a 3-D Secure redirect, and its expiry mid-payment is a designed state; "someone else was first" offers alternatives and a link to the want-list page; a bank transfer for a high-value item shows how long it is held, the SWIFT instructions and what happens at expiry; the `Pay` page serves staff-sent links; guests can look an order up; confirmation and order pages show the seller identity and documents; the want-list page saves, confirms or stops what its URL and access cookie name, every state resolved without JavaScript.
 
 ---
 
@@ -2053,7 +2057,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** ADM + SEO · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/packages/cms/src/admin/analytics/**`, `engine/packages/analytics/src/queries/**`
   - _Requirements: 17.7_
-  - [ ] 40.3.a Queries: funnels, leads with response times, unmet demand, the sold archive, payments, merchandise, field Web Vitals
+  - [ ] 40.3.a Queries: funnels, leads with response times, unmet demand (zero results + want-lists kept), the sold archive, payments, merchandise, field Web Vitals
   - [ ] 40.3.b Admin views per brand, inside Payload's navigation
   - [ ] 40.3.c Opened and seen with real staging sessions
   - [ ] 40.3.d **Check:** funnels, leads with response times, unmet demand (zero results + want-lists), the sold archive, payments, merchandise metrics and field Web Vitals render per brand — **opened and seen with real session data**, not only queried.
@@ -2356,6 +2360,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-29 — 2.4.c merged — 14 docs and design.md synced to contracts v1.1, D39 and the 1.2 fix reports; the 37 task-text edits it proposed (`.claude/specs/indies-platform/reviews/2.4c-tasks-edits.md`) applied to this board, among them 29.1 now owning the want-list operations, 31.3 and 34.3 each rendering the want-list page, and the `buyerOrderStatus()` test on 19.1. Found: C6 `EnquiryTopic` still has `'wholesale'` (a D36 leftover) — back to ARC before the 2.4.d sign-off.
 - 2026-09-29 — ✅ 2.2 (13a56d8) — every gate built and failing on its planted violation (file size, brand literals, schema hash against real Postgres, route parity, config drift on a fixture generator, overlapping **Owns**); `tasks:lint` parses all 160 tasks and 712 subtasks; `brand:create` scaffolds a brand that passes the C1 schema; the contract smoke tests moved into their packages (177 tests). Gates with no input yet say so and pass: route mounts until phase 4, the generators until 3.2 wires them, brand domains until 3.1 writes the configs. tasks-lint found two **Owns** defects, fixed on the board: 1.1/1.2 now say root vs per-package `package.json`; 30.4.b's configurator moves to `surfaces/configurator/**`, out of 30.3's `surfaces/item/**`.
 - 2026-09-29 — ✅ 2.1 (463bd91) — `docker-compose.dev.yml` (postgres:18 with `unaccent`/`pg_trgm` in template1, Mailpit, MinIO with the four buckets), `db:fresh`/`db:drop`/`db:list` isolating each worktree's suffix, `.env.example` for DEPLOYMENT §8. The CI clause of 2.1.d moved to 2.3.d. Found: `minio/minio` no longer allows anonymous pulls, so the stack uses `bitnamilegacy/minio` (a frozen image, owner to decide); Postgres 18 mounts its volume at `/var/lib/postgresql`.
 - 2026-09-29 — ✅ **phase 1** — qa on a fresh clone of `main`: `pnpm install && pnpm verify` green (11 packages, 10 tests, also with `types: []`); all 123 contract files `@contract` with an owner, CONTRACTS.md lists C1–C13, sign-offs on file for every contract (senior-be, senior-fe, senior-db — the missing senior-fe review of ARC-D ran and its two blockers were fixed, e16d73b: every write is a POST form; `CheckoutView` returns its own state); `pnpm worktree` gives distinct branch, PORT and DB_SUFFIX. Follow-ups: new task 2.4 (contract v1.1), 2.2.j (smoke tests into the gate), 4.1.e (JS-off posts). Phase 2 opened.
