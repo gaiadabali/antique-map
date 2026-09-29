@@ -42,19 +42,54 @@ export type MessageSource<K extends string> = {
   readonly defaultLocale: LocaleCode
 }
 
+/** The plural categories a locale's rules select from: Indonesian `other` alone, English `one` and `other`. */
+export function pluralCategoriesOf(locale: LocaleCode): readonly string[] {
+  return new Intl.PluralRules(formattingTag(locale)).resolvedOptions().pluralCategories
+}
+
+const PLURAL_FORM = /^(.+)\.(zero|one|two|few|many|other)$/
+
+/** `cart.items.one` → `{ base: 'cart.items', category: 'one' }`, when the app defines `cart.items.other`. */
+export function pluralFormOf(
+  key: string,
+  defaults: Readonly<Record<string, string>>,
+): { readonly base: string; readonly category: string } | null {
+  const match = PLURAL_FORM.exec(key)
+  const [, base, category] = match ?? []
+  return base && category && `${base}.other` in defaults ? { base, category } : null
+}
+
+/** A copy value, where `''` reads as absent: an empty value is a gap, never a blank. */
+export function textOf(copy: CopyValues, key: string): string | undefined {
+  const value = copy[key]
+  return value === undefined || value === '' ? undefined : value
+}
+
 /** Joins an app's keys with copy already in hand (tests, a preview). */
 export function createMessages<K extends string>(
   source: MessageSource<K> & { readonly copy: Partial<Record<LocaleCode, CopyValues | null>> },
 ): Messages<K> {
   const own = source.copy[source.locale] ?? {}
   const fallback = source.copy[source.defaultLocale] ?? {}
+  const categories = new Set(pluralCategoriesOf(source.locale))
   const keys = Object.keys(source.defaults) as K[]
   const values = new Map<string, string>()
   const missing: K[] = []
   for (const key of keys) {
-    const value = own[key] ?? fallback[key] ?? source.defaults[key]
-    if (own[key] === undefined) missing.push(key)
+    const value = textOf(own, key) ?? textOf(fallback, key) ?? source.defaults[key]
+    // A plural form the locale never selects (Indonesian `one`) is not a gap in its copy.
+    const form = pluralFormOf(key, source.defaults)
+    const needed = !form || categories.has(form.category)
+    if (needed && textOf(own, key) === undefined) missing.push(key)
     values.set(key, value)
+  }
+  // A brand may write a form its locale selects that the app's defaults lack (a `few`).
+  for (const key of Object.keys(own)) {
+    const form = pluralFormOf(key, source.defaults)
+    const text = textOf(own, key)
+    if (form && categories.has(form.category) && text !== undefined && !values.has(key)) {
+      values.set(key, text)
+    }
   }
   const tag = formattingTag(source.locale)
   const numbers = new Intl.NumberFormat(tag)

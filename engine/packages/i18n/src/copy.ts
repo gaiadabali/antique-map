@@ -13,7 +13,15 @@ import { join } from 'node:path'
 
 import type { LocaleCode } from '@engine/config/schema'
 
-import { createMessages, type CopyValues, type Messages, type MessageSource } from './messages'
+import {
+  createMessages,
+  pluralCategoriesOf,
+  pluralFormOf,
+  textOf,
+  type CopyValues,
+  type Messages,
+  type MessageSource,
+} from './messages'
 
 export type { CopyValues }
 
@@ -72,43 +80,55 @@ export type CopyIssue = {
 
 /**
  * What a brand's copy lacks or gets wrong against an app's keys, per locale — for CI and the
- * lexicon (TASKS.md 6.3): a key with no value (the app's neutral default would show), a value
- * for a key the app does not define (a typo, or a key the app dropped), and a value whose
- * `{placeholders}` differ from the default's (the app fills names the text must carry).
+ * lexicon (TASKS.md 6.3): a key with no value, `''` included (the app's neutral default would
+ * show); a value for a key the app does not define (a typo, or a key the app dropped); and a
+ * value whose `{placeholders}` differ from the default's (the app fills names the text must
+ * carry). Plural forms follow the locale's own rules: a form the locale never selects is not
+ * required (Indonesian has `other` alone), a form it selects may be added even if the app's
+ * defaults lack it, and a form other than `other` may carry fewer placeholders ("One item").
  */
 export function checkCopy(input: {
   readonly defaults: Readonly<Record<string, string>>
   readonly copyDir: string
   readonly locales: readonly LocaleCode[]
 }): CopyIssue[] {
+  const { defaults } = input
   const issues: CopyIssue[] = []
   for (const locale of input.locales) {
     const copy = readCopyFile(input.copyDir, locale, { fresh: true }) ?? {}
-    for (const [key, fallback] of Object.entries(input.defaults)) {
-      const value = copy[key]
-      if (value === undefined) {
-        issues.push({ locale, key, kind: 'missing', message: `${locale}.json has no "${key}"` })
-      } else if (placeholdersOf(value).join() !== placeholdersOf(fallback).join()) {
-        const want =
-          placeholdersOf(fallback)
-            .map((name) => `{${name}}`)
-            .join(' ') || 'none'
-        issues.push({
-          locale,
+    const categories = new Set(pluralCategoriesOf(locale))
+    const push = (key: string, kind: CopyIssue['kind'], message: string) =>
+      void issues.push({ locale, key, kind, message: `${locale}.json ${message}` })
+    const checkPlaceholders = (key: string, value: string) => {
+      const form = pluralFormOf(key, defaults)
+      const want = placeholdersOf(defaults[form ? `${form.base}.other` : key] ?? '')
+      const have = placeholdersOf(value)
+      const fits =
+        form && form.category !== 'other'
+          ? have.every((name) => want.includes(name))
+          : have.join() === want.join()
+      const names = want.map((name) => `{${name}}`).join(' ') || 'none'
+      if (!fits)
+        push(
           key,
-          kind: 'placeholders',
-          message: `${locale}.json "${key}" must carry ${want}`,
-        })
-      }
+          'placeholders',
+          `"${key}" must carry ${form && form.category !== 'other' ? `only from ${names}` : names}`,
+        )
+    }
+    for (const key of Object.keys(defaults)) {
+      const form = pluralFormOf(key, defaults)
+      const value = textOf(copy, key)
+      if (value !== undefined) checkPlaceholders(key, value)
+      else if (!form || categories.has(form.category)) push(key, 'missing', `has no "${key}"`)
     }
     for (const key of Object.keys(copy)) {
-      if (!(key in input.defaults)) {
-        issues.push({
-          locale,
-          key,
-          kind: 'unknown',
-          message: `${locale}.json has "${key}", which the app does not define`,
-        })
+      if (key in defaults) continue
+      const form = pluralFormOf(key, defaults)
+      const value = textOf(copy, key)
+      if (form && categories.has(form.category)) {
+        if (value !== undefined) checkPlaceholders(key, value)
+      } else {
+        push(key, 'unknown', `has "${key}", which the app does not define`)
       }
     }
   }

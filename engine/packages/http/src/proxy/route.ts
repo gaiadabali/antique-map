@@ -10,23 +10,23 @@
  * build has no brand, and the config is read on the first request.
  */
 import { loadBrandConfig } from '@engine/config/loader'
-import {
-  decideProxy,
-  type ContentSecurityPolicy,
-  type ProxyConfig,
-  type ProxyDecision,
-} from './decide'
+import { decideProxy, type DecideOptions, type ProxyConfig, type ProxyDecision } from './decide'
 import { toResponse } from './respond'
 
-export { decideProxy, NOT_FOUND_PATH } from './decide'
-export type { ContentSecurityPolicy, ProxyConfig, ProxyDecision, ProxyRequest } from './decide'
+export { decideProxy, NOT_FOUND_SEGMENT, notFoundPath } from './decide'
+export type {
+  ContentSecurityPolicy,
+  DecideOptions,
+  ProxyConfig,
+  ProxyDecision,
+  ProxyRequest,
+} from './decide'
 export { toResponse } from './respond'
 
-export type ProxyOptions = {
+/** The CSP builder (TASKS.md 41.1.a; until it lands, no CSP is set) and Payload's cookie prefix. */
+export type ProxyOptions = DecideOptions & {
   /** Where the brand config comes from; the process's own file by default. */
   readonly config?: () => ProxyConfig
-  /** The per-request CSP builder (TASKS.md 41.1.a); until it lands, no CSP is set. */
-  readonly contentSecurityPolicy?: ContentSecurityPolicy
 }
 
 export function createProxy(options: ProxyOptions = {}): (request: Request) => Response {
@@ -37,7 +37,7 @@ export function createProxy(options: ProxyOptions = {}): (request: Request) => R
     const decision: ProxyDecision = decideProxy(
       config(),
       { url: new URL(request.url), headers: request.headers },
-      options.contentSecurityPolicy,
+      options,
     )
     return toResponse(decision, request)
   }

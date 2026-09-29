@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import { loadBrandConfig } from '@engine/config/loader'
 import { PROXY_REQUEST_HEADERS } from '../manifest'
-import { createProxy, decideProxy, NOT_FOUND_PATH } from './route'
+import { createProxy, decideProxy, notFoundPath } from './route'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url))
 const brand = (storefront: 'gallery' | 'emporium') =>
@@ -70,12 +70,15 @@ describe('the proxy — rewrites only, the default locale unprefixed (ARCHITECTU
     ]) {
       expect(decide(path), path).toMatchObject({
         kind: 'rewrite',
-        to: NOT_FOUND_PATH,
+        to: expect.stringMatching(/^\/(?:en|id|nl)\/not-found$/),
         why: 'not-found',
       })
     }
-    expect(decide('/id/tidak/ada').locale).toBe('id') // the 404 speaks the prefix's language
-    expect(decide('/en/produk/1', {}, emporium)).toMatchObject({ to: NOT_FOUND_PATH, locale: 'en' })
+    expect(decide('/id/tidak/ada')).toMatchObject({ to: '/id/not-found', locale: 'id' }) // its language
+    expect(decide('/en/produk/1', {}, emporium)).toMatchObject({
+      to: notFoundPath('en'),
+      locale: 'en',
+    })
   })
 
   it('rewrites legacy prefixes to /api/x/legacy/…, keeping the old query', () => {
@@ -126,7 +129,10 @@ describe('the proxy — rewrites only, the default locale unprefixed (ARCHITECTU
       [PROXY_REQUEST_HEADERS.publicPath]: '/id/produk/1706',
       [PROXY_REQUEST_HEADERS.locale]: 'id',
     })
-    expect(decision.removeRequest).toEqual([PROXY_REQUEST_HEADERS.contentSecurityPolicy])
+    expect(decision.removeRequest).toEqual([
+      'content-security-policy',
+      'content-security-policy-report-only',
+    ])
     expect(decide('/en/item/1').setRequest[PROXY_REQUEST_HEADERS.publicPath]).toBe('/en/item/1')
   })
 
@@ -144,10 +150,11 @@ describe('the proxy — rewrites only, the default locale unprefixed (ARCHITECTU
     const decision = decideProxy(
       gallery,
       { url: new URL('https://shop.example.com/product/1'), headers: new Headers() },
-      ({ locale }) => `default-src 'self'; x-locale ${locale}`,
+      { contentSecurityPolicy: ({ locale }) => `default-src 'self'; x-locale ${locale}` },
     )
     expect(decision.setResponse['Content-Security-Policy']).toBe("default-src 'self'; x-locale en")
     expect(decision.setRequest['content-security-policy']).toBe("default-src 'self'; x-locale en")
-    expect(decision.removeRequest).toEqual([])
+    // Both are still removed first; the builder's policy is then set on the request.
+    expect(decision.removeRequest).toContain('content-security-policy-report-only')
   })
 })

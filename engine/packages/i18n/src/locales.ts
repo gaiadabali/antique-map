@@ -73,7 +73,7 @@ export function suggestLocale(
         .map((param) => /^\s*q=([\d.]+)\s*$/.exec(param)?.[1])
         .find((each) => each !== undefined)
       return {
-        language: range.trim().toLowerCase().split('-')[0] ?? '',
+        language: modernCode(range.trim().toLowerCase().split('-')[0] ?? ''),
         q: q === undefined ? 1 : Number(q),
         index,
       }
@@ -82,4 +82,13 @@ export function suggestLocale(
     .sort((a, b) => b.q - a.q || a.index - b.index)
   const match = ranked.find((each) => isSupportedLocale(config, each.language))
   return match ? (match.language as LocaleCode) : null
+}
+
+/** ISO 639's withdrawn code for Indonesian, which older Android and Java browsers still send. */
+const WITHDRAWN = { in: 'id' } as const satisfies Record<string, LocaleCode>
+
+function modernCode(language: string): string {
+  return Object.hasOwn(WITHDRAWN, language)
+    ? WITHDRAWN[language as keyof typeof WITHDRAWN]
+    : language
 }

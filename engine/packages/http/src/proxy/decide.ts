@@ -8,20 +8,29 @@
  * `parsePublicPath()` — a legacy prefix goes to `/api/x/legacy/…` with its query, a surface to
  * its internal app route (default locale unprefixed, others under their prefix), the app's
  * own routes (`/admin`, `/style-guide`) pass through, and anything else — an internal path
- * asked for directly, a default-locale prefix, a surface whose module is off — rewrites to
- * the not-found route, which answers 404, so no page has two addresses.
+ * asked for directly, a default-locale prefix, a page whose module is off (its surface, form
+ * kind or account section), the not-found route itself — rewrites to the locale's not-found
+ * route, which answers 404, so no page has two addresses.
  *
- * On every request it sets C13's `PROXY_REQUEST_HEADERS`, overwriting whatever a client sent;
- * on a `sensitive` surface's answer, `Referrer-Policy: no-referrer` and `X-Robots-Tag: noindex`;
- * and, once 41.1.a's builder is passed in, the per-request CSP on the answer and the request.
+ * On every request it sets C13's `PROXY_REQUEST_HEADERS`, overwriting whatever a client sent,
+ * and drops any CSP header a client sent — Next takes a nonce from either CSP request header,
+ * report-only included; on a `sensitive` surface's answer, `Referrer-Policy: no-referrer` and
+ * `X-Robots-Tag: noindex`; and, once 41.1.a's builder is passed in, the per-request CSP on the
+ * answer and the request.
  */
 import { parsePublicPath, SURFACE_ROUTES, type ParseConfig } from '@engine/config/routes'
-import type { BrandConfig, LocaleCode } from '@engine/config/schema'
+import type { BrandConfig, LocaleCode, ModuleFlags } from '@engine/config/schema'
 
-import { PROXY_REQUEST_HEADERS, ROOT_REWRITES } from '../manifest'
+import { PROXY_REQUEST_HEADERS } from '../manifest'
+import { closedModule, hasCookie, namesNotFoundRoute, notFoundPath, rootRewrite } from './gates'
+
+export { NOT_FOUND_SEGMENT, notFoundPath } from './gates'
 
 /** What the proxy reads from a brand config. */
-export type ProxyConfig = ParseConfig & { readonly assets: Pick<BrandConfig['assets'], 'favicon'> }
+export type ProxyConfig = ParseConfig & {
+  readonly assets: Pick<BrandConfig['assets'], 'favicon'>
+  readonly modules: ModuleFlags
+}
 
 export type ProxyRequest = { readonly url: URL; readonly headers: Headers }
 
@@ -32,6 +41,12 @@ export type ContentSecurityPolicy = (context: {
   readonly pathname: string
 }) => string | null
 
+export type DecideOptions = {
+  readonly contentSecurityPolicy?: ContentSecurityPolicy | undefined
+  /** Payload's `cookiePrefix` (3.2's config); its language cookie is `<prefix>-lng`. */
+  readonly cookiePrefix?: string | undefined
+}
+
 export type ProxyDecision = {
   /** `rewrite`: serve `to` (a path and query) at the public URL; `next`: serve the URL as is. */
   readonly kind: 'rewrite' | 'next'
@@ -40,39 +55,43 @@ export type ProxyDecision = {
   readonly locale: LocaleCode
   /** Headers set on the request passed on, overwriting a client's. */
   readonly setRequest: Readonly<Record<string, string>>
-  /** Headers removed from the request passed on. */
+  /** Headers removed from the request passed on (before `setRequest` is applied). */
   readonly removeRequest: readonly string[]
   /** Headers set on the answer. */
   readonly setResponse: Readonly<Record<string, string>>
 }
 
-/**
- * Next's not-found route: rewriting there renders the app's designed not-found page with a
- * 404, reading what was asked from `x-public-path` (C2 `Loaders.notFound`). The 4.1.e spike
- * confirms it against the app shells.
- */
-export const NOT_FOUND_PATH = '/_not-found'
-
 const SENSITIVE_HEADERS = { 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' } as const
-/** Payload's own language choice (Account → Language), which the admin keeps once made. */
-const ADMIN_LANGUAGE_COOKIE = 'payload-lng'
+/** Both headers Next reads a nonce from: a client's never reaches the page. */
+const CSP_REQUEST_HEADERS = [
+  PROXY_REQUEST_HEADERS.contentSecurityPolicy,
+  'content-security-policy-report-only',
+] as const
+
+type Decided = Omit<ProxyDecision, 'setRequest' | 'removeRequest' | 'setResponse'>
 
 export function decideProxy(
   config: ProxyConfig,
   request: ProxyRequest,
-  contentSecurityPolicy?: ContentSecurityPolicy,
+  options: DecideOptions = {},
 ): ProxyDecision {
   const { pathname, search, searchParams } = request.url
   const base = { kind: 'rewrite' as const, locale: config.locales.default }
-  let decision: Omit<ProxyDecision, 'setRequest' | 'removeRequest' | 'setResponse'>
+  const notFound = (): Decided => {
+    const locale = localeOfPrefix(config, pathname)
+    return { ...base, to: notFoundPath(locale), why: 'not-found', locale }
+  }
+  let decision: Decided
   let setResponse: Record<string, string> = {}
   let setRequest: Record<string, string> = {}
 
-  const root = rootRewrite(config, pathname)
+  const root = rootRewrite(config.assets.favicon, pathname)
   if (pathname.startsWith('/_next/')) {
     decision = { ...base, kind: 'next', to: null, why: 'next-internal' }
   } else if (root !== null) {
     decision = { ...base, to: `${root}${search}`, why: 'root-file' }
+  } else if (namesNotFoundRoute(pathname)) {
+    decision = notFound()
   } else {
     const parsed = parsePublicPath(config, pathname, searchParams)
     switch (parsed.kind) {
@@ -82,28 +101,30 @@ export function decideProxy(
         break
       case 'app':
         decision = { ...base, kind: 'next', to: null, why: 'app' }
-        if (isAdmin(pathname) && !hasCookie(request.headers, ADMIN_LANGUAGE_COOKIE)) {
+        if (
+          isAdmin(pathname) &&
+          !hasCookie(request.headers, `${options.cookiePrefix ?? 'payload'}-lng`)
+        ) {
           // The admin starts in English unless its user chose otherwise (KOI): Payload reads the
           // browser's Accept-Language, which on an Indonesian laptop is Indonesian.
           setRequest = { 'accept-language': 'en' }
         }
         break
       case 'surface':
+        if (closedModule(config, parsed)) {
+          decision = notFound()
+          break
+        }
         decision = { ...base, to: parsed.internal, why: 'surface', locale: parsed.locale }
         if ('sensitive' in SURFACE_ROUTES[parsed.surface]) setResponse = { ...SENSITIVE_HEADERS }
         break
       case 'notFound':
-        decision = {
-          ...base,
-          to: NOT_FOUND_PATH,
-          why: 'not-found',
-          locale: localeOfPrefix(config, pathname),
-        }
+        decision = notFound()
         break
     }
   }
 
-  const csp = contentSecurityPolicy?.({ config, locale: decision.locale, pathname }) ?? null
+  const csp = options.contentSecurityPolicy?.({ config, locale: decision.locale, pathname }) ?? null
   const headers = PROXY_REQUEST_HEADERS
   return {
     ...decision,
@@ -113,48 +134,13 @@ export function decideProxy(
       [headers.locale]: decision.locale,
       ...(csp === null ? {} : { [headers.contentSecurityPolicy]: csp }),
     },
-    // No client's own CSP header survives to the page (C13 `PROXY_REQUEST_HEADERS`).
-    removeRequest: csp === null ? [headers.contentSecurityPolicy] : [],
+    removeRequest: [...CSP_REQUEST_HEADERS],
     setResponse: { ...setResponse, ...(csp === null ? {} : { 'Content-Security-Policy': csp }) },
   }
 }
 
-/** A `ROOT_REWRITES` target for the path, its `:params` filled; the favicon is the brand's. */
-function rootRewrite(config: ProxyConfig, pathname: string): string | null {
-  for (const { from, to } of ROOT_REWRITES) {
-    const match = compile(from).exec(pathname)
-    if (!match) continue
-    const values: Record<string, string> = { ...match.groups, favicon: config.assets.favicon }
-    return to.replace(/:(\w+)\*?/g, (whole, name: string) => values[name] ?? whole)
-  }
-  return null
-}
-
-const compiled = new Map<string, RegExp>()
-/** `/sitemap-:name.xml` → `^/sitemap-(?<name>[^/]+?)\.xml$`; `:path*` takes the rest. */
-function compile(pattern: string): RegExp {
-  let regex = compiled.get(pattern)
-  if (!regex) {
-    const source = pattern
-      .split(/(:\w+\*?)/)
-      .map((part) => {
-        const param = /^:(\w+)(\*)?$/.exec(part)
-        if (!param) return part.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
-        return param[2] ? `(?<${param[1]}>.*)` : `(?<${param[1]}>[^/]+?)`
-      })
-      .join('')
-    regex = new RegExp(`^${source}$`)
-    compiled.set(pattern, regex)
-  }
-  return regex
-}
-
 function isAdmin(pathname: string): boolean {
   return pathname === '/admin' || pathname.startsWith('/admin/')
-}
-
-function hasCookie(headers: Headers, name: string): boolean {
-  return (headers.get('cookie') ?? '').split(';').some((pair) => pair.trim().startsWith(`${name}=`))
 }
 
 /** A not-found page speaks the locale its prefix asked for, when the brand serves it. */

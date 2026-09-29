@@ -31,6 +31,9 @@ export {
 export {
   createMessages,
   defineMessages,
+  pluralCategoriesOf,
+  pluralFormOf,
+  textOf,
   type CopyValues,
   type MessageParams,
   type Messages,

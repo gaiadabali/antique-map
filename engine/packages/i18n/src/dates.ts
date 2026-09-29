@@ -105,6 +105,10 @@ export function formatCalendarDate(
   const rank = { year: 0, month: 1, day: 2 } as const
   if (rank[at] > rank[known]) throw new RangeError(`"${value}" is known only to the ${known}`)
   const instant = new Date(Date.UTC(Number(year), Number(month ?? 1) - 1, Number(day ?? 1)))
+  // `Date` rolls 2026-02-30 into March; a date that does not round-trip does not exist.
+  const [back] = instant.toISOString().split('T')
+  if (back?.slice(0, value.length) !== value)
+    throw new RangeError(`"${value}" is not a calendar date`)
   return new Intl.DateTimeFormat(formattingTag(locale), {
     timeZone: 'UTC',
     year: 'numeric',

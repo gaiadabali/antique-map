@@ -102,11 +102,16 @@ describe('the proxy never touches the database', () => {
     expect([...packages].filter((name) => !allowed.includes(name))).toEqual([])
     expect(packages).toContain('@engine/config/routes') // the graph really was followed…
     expect(files.some((file) => /[\\/]loader[\\/]load\.ts$/.test(file))).toBe(true) // …into the loader
+    const driver =
+      /\b(?:from|import|require)\s*\(?\s*['"](?:payload|@payloadcms\/|pg|postgres|drizzle)/
     for (const file of files) {
-      expect(readFileSync(file, 'utf8'), file).not.toMatch(
-        /\b(?:payload|pg|postgres|drizzle|DATABASE_URL)\b['"]/,
-      )
+      const source = readFileSync(file, 'utf8')
+      expect(source, file).not.toMatch(driver) // no import of a database or the CMS, dynamic included
+      expect(source, file).not.toMatch(/\bDATABASE_URL\b/) // no connection string read, however spelt
     }
+    // The checks bite: each would catch what it is for.
+    expect("const pool = await import('pg')").toMatch(driver)
+    expect('const url = process.env.DATABASE_URL').toMatch(/\bDATABASE_URL\b/)
   })
 
   it('answers with no database configured at all', () => {

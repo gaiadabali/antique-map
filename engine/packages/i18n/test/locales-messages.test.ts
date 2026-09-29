@@ -36,6 +36,8 @@ describe('locales — the default unprefixed, never negotiated', () => {
     expect(suggestLocale(brand, 'en;q=0.2, id;q=0.9')).toBe('id')
     expect(suggestLocale(brand, 'id;q=0, en;q=0.1')).toBe('en')
     expect(suggestLocale(brand, null)).toBeNull()
+    expect(suggestLocale(brand, 'in-ID,in;q=0.9')).toBe('id') // ISO 639's withdrawn code for Indonesian
+    expect(suggestLocale(brand, 'constructor')).toBeNull()
   })
 })
 
@@ -82,7 +84,8 @@ describe('messages — keys from the app, values from the brand’s copy', () =>
     expect(id.t('item.price.estimate', { estimate: '€1.020', charge: 'US$1.100,00' })).toBe(
       '≈ €1.020, charged in US$1.100,00',
     ) // the app's neutral default
-    expect(id.missing).toEqual(['item.price.estimate', 'cart.items.one', 'footer.tagline'])
+    // Indonesian selects `other` alone, so a missing `cart.items.one` is no gap in its copy.
+    expect(id.missing).toEqual(['item.price.estimate', 'footer.tagline'])
     expect(id.t('cart.items', { count: 1200 })).toBe('1.200 barang') // Indonesian has no singular form
     const en = loadMessages({
       defaults: appMessages,
@@ -138,7 +141,6 @@ describe('messages — keys from the app, values from the brand’s copy', () =>
     expect(issues.filter((issue) => issue.locale === 'en')).toEqual([])
     expect(issues.map((issue) => `${issue.kind} ${issue.key}`)).toEqual([
       'placeholders item.price.estimate',
-      'missing cart.items.one',
       'missing cart.items.other',
       'missing footer.tagline',
       'unknown nav.brwose',

@@ -4,8 +4,11 @@
  *
  * The fraction digits are pinned to the ENGINE's exponent (`CURRENCY_EXPONENT`, IDR 0) on
  * every call — never the runtime's ICU default, which differs between Node and browsers (some
- * give IDR two decimals), so the server's render and the browser's would disagree and
- * hydration would fail. The amount reaches `Intl` as an exact decimal string built from the
+ * give IDR two decimals), so how much precision a price shows never depends on where it was
+ * formatted. That is not the whole text: symbols and spacing still come from each runtime's
+ * locale data ("US$" or "$", a narrow or a plain space), so the server formats and a Client
+ * Component receives the finished string rather than formatting again — the one way the
+ * server's render and the browser's stay identical. The amount reaches `Intl` as an exact decimal string built from the
  * integer minor units — never a float, so nothing is rounded on the way, not even at 2^53.
  * A display estimate (`PriceSet.estimate`, C5) is a whole major unit and shows no fraction
  * digits at all; one that is not whole is a bug upstream and throws rather than rounding.

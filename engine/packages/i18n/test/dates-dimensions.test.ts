@@ -62,6 +62,11 @@ describe('formatCalendarDate — a date at the precision it is known to', () => 
   it('refuses more precision than the date has, and a non-date', () => {
     expect(() => formatCalendarDate('2026', 'en', 'day')).toThrow(/known only to the year/)
     expect(() => formatCalendarDate('29/09/2026', 'en')).toThrow(/not a calendar date/)
+    expect(() => formatCalendarDate('2026-02-30', 'en')).toThrow(
+      /"2026-02-30" is not a calendar date/,
+    )
+    expect(() => formatCalendarDate('2026-13', 'en')).toThrow(/not a calendar date/)
+    expect(formatCalendarDate('2028-02-29', 'en')).toBe('29 February 2028') // a leap day is one
   })
 })
 
