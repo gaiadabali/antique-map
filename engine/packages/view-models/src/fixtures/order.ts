@@ -1,11 +1,12 @@
 /**
  * @contract C2 — fixtures `order` (paid, payment pending by VA and by QRIS, retry, manual) · owner: ARC
  *
- * The confirmation of the export checkout, opened with its lookupToken; the Indonesian
- * order waiting on a BCA virtual account — amount, VA number, countdown, WhatsApp updates,
- * the poll that turns the page to Paid; the same order paid by QRIS, which a phone cannot
- * scan from its own screen; a lapsed payment that retries with the bag kept; and a showroom
- * sale settled on WhatsApp, collected with a pickup code.
+ * The confirmation of the export checkout, opened with its order-access cookie, with the
+ * conversion its consented tags report; the Indonesian order waiting on a BCA virtual account —
+ * amount, VA number, countdown, WhatsApp updates, the poll that turns the page to Paid, scoped by
+ * the cookie, never a token in the page; the same order paid by QRIS, which a phone cannot scan
+ * from its own screen; a lapsed payment that retries with the bag kept; and a showroom sale
+ * settled on WhatsApp, ready to collect with a pickup code.
  */
 import type { OrderLineVM, OrderVM } from '../surfaces/order'
 import { ISLE, PRINT, SHOWROOM, STRAITS, TOTE, totals, WRAP } from './_commerce'
@@ -62,6 +63,13 @@ export const orderPaid: OrderVM = {
   ],
   updates: 'email',
   returns: { href: '/orders/SG-000123/return' },
+  conversion: {
+    transactionId: 'SG-000123',
+    value: money(103500, 'USD'),
+    tax: money(0, 'USD'),
+    shipping: money(8500, 'USD'),
+    items: [{ productId: 1006, variantId: null, quantity: 1, unitPrice: money(95000, 'USD') }],
+  },
   seo: { ...seo('Order SG-000123', '/orders/SG-000123'), noindex: true },
 }
 
@@ -99,7 +107,7 @@ export const orderPendingVa: OrderVM = {
   placedAt: '2026-09-25T10:40:00+08:00',
   access: 'lookup',
   context: 'confirmation',
-  status: 'pending_payment',
+  status: 'awaiting-payment',
   seller: SELLER_ID,
   lines: idrLines,
   totals: totals({
@@ -131,13 +139,14 @@ export const orderPendingVa: OrderVM = {
     dailyCapWarning: false,
     poll: {
       attemptId: 'att_fixture_va',
-      scope: { kind: 'order', access: { kind: 'lookup', lookupToken: 'lk_fixture_000456' } },
+      scope: { kind: 'order', access: { kind: 'lookup-cookie' } },
     },
   },
   documents: [],
   nextSteps: [{ code: 'payWithinCountdown' }, { code: 'whatsappWhenPaid' }],
   updates: 'whatsapp',
   returns: null,
+  conversion: null,
   seo: { ...seo('Pesanan ID-000456', '/orders/ID-000456', ['id']), noindex: true },
 }
 
@@ -158,7 +167,7 @@ export const orderPendingQris: OrderVM = {
     dailyCapWarning: false,
     poll: {
       attemptId: 'att_fixture_qris',
-      scope: { kind: 'order', access: { kind: 'lookup', lookupToken: 'lk_fixture_000456' } },
+      scope: { kind: 'order', access: { kind: 'lookup-cookie' } },
     },
   },
 }
@@ -166,8 +175,8 @@ export const orderPendingQris: OrderVM = {
 /** The VA expired unpaid: choose another method; the bag is kept. */
 export const orderRetry: OrderVM = {
   ...orderPendingVa,
-  status: 'abandoned',
-  payment: { state: 'retry', reason: 'expired', retryHref: '/checkout' },
+  status: 'not-paid',
+  payment: { state: 'retry', method: 'va-bca', reason: 'expired', retryHref: '/checkout' },
   nextSteps: [{ code: 'bagKept' }],
 }
 
@@ -177,7 +186,7 @@ export const orderManual: OrderVM = {
   number: 'SG-000124',
   access: 'account',
   context: 'detail',
-  status: 'fulfilling',
+  status: 'ready-for-pickup',
   lines: [
     orderLine('m1', {
       item: ISLE,
@@ -191,5 +200,6 @@ export const orderManual: OrderVM = {
   delivery: { kind: 'pickup', location: SHOWROOM, code: 'K7Q2', ready: true, collector: null },
   payment: { state: 'manual', note: 'Paid by bank transfer, as agreed on WhatsApp.' },
   nextSteps: [{ code: 'bringPickupCode' }],
+  conversion: null,
   seo: { ...seo('Order SG-000124', '/orders/SG-000124'), noindex: true },
 }

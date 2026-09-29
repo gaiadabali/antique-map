@@ -79,7 +79,6 @@ export const accountOverview: AccountVM = signedIn({
       number: 'SG-000123',
       placedAt: '2026-09-25T10:32:00+08:00',
       status: 'paid',
-      payment: 'paid',
       total: money(103500, 'USD'),
       items: [STRAITS],
       href: '/orders/SG-000123',

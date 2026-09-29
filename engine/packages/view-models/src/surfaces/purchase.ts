@@ -10,7 +10,8 @@
  * `enquiryOnly` / `unverified`, never to an error (`Streamed`). Loaders apply the tier, the
  * status and the modules, so a component never decides which actions exist.
  */
-import type { CountryCode, PurchaseAction } from '@engine/config/schema'
+import type { CountryCode, PurchaseAction, PurchaseBand } from '@engine/config/schema'
+import type { AvailabilityState } from '@engine/domain/machines/availability'
 
 import type { CardVM } from '../cards'
 import type { IsoDateTime, LineIntent, LinkVM, Money, PriceVM } from '../common'
@@ -21,6 +22,14 @@ export type * from './purchase-variants'
 export type * from './sister'
 
 export type PurchaseVM = UniquePurchaseVM | VariantsPurchaseVM | EnquiryOnlyPurchaseVM
+
+/**
+ * What C11's `item.viewed` reports that only this streamed part knows, so the page sends that
+ * event once the panel resolves: the purchase tier the price falls in (C1 `PurchaseBand`, never
+ * the amount) and the item's availability (C8) — `null` when it could not be read (`unverified`).
+ * For counted stock, `available` while a variant can be bought, `sold` once every one is sold out.
+ */
+export type PurchaseAnalyticsVM = { priceBand: PurchaseBand; status: AvailabilityState | null }
 
 /**
  * An action the panel offers. `buy` posts its line to `cart.addLines` (C6) — ids and a
@@ -157,6 +166,7 @@ export type UniqueBaseVM = {
   reassurance: readonly LinkVM[]
   /** "Tell me when another example arrives"; `null` when `retention.wantList` is off. */
   alert: { href: string } | null
+  analytics: PurchaseAnalyticsVM
 }
 export type UniquePurchaseVM = UniqueBaseVM & UniquePanelVM
 
@@ -170,4 +180,5 @@ export type EnquiryOnlyPurchaseVM = {
   reason: 'unroutable' | 'notForSale' | 'unverified'
   price: PriceVM | null
   actions: PurchaseActionsVM<NoBuyActionVM>
+  analytics: PurchaseAnalyticsVM
 }

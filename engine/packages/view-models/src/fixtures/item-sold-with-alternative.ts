@@ -19,6 +19,7 @@ export const itemSoldWithAlternative: ItemVM = originalItem({
     print: {
       kind: 'prints',
       sister: { name: 'Sample Emporium', href: SISTER_ORIGIN, syncedAt: NOW },
+      workUid: 'FIX-000001',
       products: [
         card(7001, 'Isle of Contoh — Giclée print', {
           href: `${SISTER_ORIGIN}/product/7001-isle-of-contoh-giclee`,
@@ -33,6 +34,7 @@ export const itemSoldWithAlternative: ItemVM = originalItem({
     },
   },
   actions: { primary: null, secondary: [] },
+  analytics: { priceBand: 'none', status: 'sold' },
 })
 
 /** Sold, seen by a signed-in buyer: the price realised is shown. */
@@ -46,4 +48,5 @@ export const itemSoldPriceRealised: ItemVM = originalItem({
     print: null,
   },
   actions: { primary: null, secondary: [] },
+  analytics: { priceBand: 'none', status: 'sold' },
 })

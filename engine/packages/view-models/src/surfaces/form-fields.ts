@@ -18,7 +18,9 @@ type Grouped = { name: string; group: string | null }
  * A field the visitor fills in. `autocomplete` is its HTML token wherever one exists (WCAG
  * 1.3.5: `organization`, `street-address`, `country`, `url`, `name`, `email`, `tel`, `username`,
  * `current-password`, `new-password`); `inputMode` the keyboard a phone shows (`numeric` for an
- * NPWP, `tel` for WhatsApp).
+ * NPWP, `tel` for WhatsApp). A `money` field — the offer's bid, the one amount a client sends —
+ * takes major units in ASCII digits, its currency the ship-to market's (`inputMode: 'decimal'`,
+ * or `'numeric'` for a currency with no minor unit), decoded by C13's `FORM_DECODING`.
  */
 export type EntryFieldVM = Grouped & {
   input:
@@ -65,7 +67,8 @@ export type CheckboxFieldVM = Grouped & { input: 'checkbox'; required: boolean; 
  * `returnTo` (its public path, where an HTML form post answers 303) and `contact.locale` (its
  * locale). Both come back from the client, so both are untrusted: the handler takes `returnTo`
  * only if it is one of this site's pages (C10 `parsePublicPath`), and the locale only as a
- * preference among the brand's own.
+ * preference among the brand's own. The `idempotencyKey` is hidden too, but never a view model's:
+ * the component mints it each time it renders the form, outside any `'use cache'` (C6).
  */
 export type HiddenFieldVM = { input: 'hidden'; name: string; value: string }
 

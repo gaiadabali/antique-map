@@ -109,6 +109,7 @@ export const FIXTURES = {
   'order-lookup-found': lookup.orderLookupFound,
   'order-lookup-not-found': lookup.orderLookupNotFound,
   'order-lookup-rate-limited': lookup.orderLookupRateLimited,
+  'order-lookup-invalid': lookup.orderLookupInvalid,
   pay,
   'pay-paid': payPaid,
   'pay-transfer-pending': payTransferPending,

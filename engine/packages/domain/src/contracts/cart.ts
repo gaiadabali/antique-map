@@ -34,6 +34,11 @@ export type CartLineView = {
   readonly productId: ProductPublicId
   readonly variantId: VariantId | null
   readonly quantity: number
+  /**
+   * The most this line may hold: 1 for a unique item or an edition unit, what can be sold for
+   * counted stock, `null` when nothing bounds it. More is `invalid` (`out-of-range`).
+   */
+  readonly maxQuantity: number | null
   readonly options: { readonly [axis: string]: string } | null
   readonly giftCard: GiftCardDelivery | null
   /** A gift-wrap line: the order or the line it wraps (EXPERIENCE-SHOP.md §7). Else null. */

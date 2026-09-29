@@ -28,6 +28,7 @@ import type {
 import type * as Cart from './cart'
 import type * as Checkout from './checkout'
 import type * as Leads from './leads'
+import type * as Paying from './paying'
 import type { IsServerPriced, LineInput } from './requests'
 import type { ApiResult, ProblemCode, ProblemOf } from './results'
 import type * as Retailers from './retailers'
@@ -39,6 +40,8 @@ export type * from './after-sale'
 export type * from './cart'
 export type * from './checkout'
 export type * from './leads'
+export type * from './orders'
+export type * from './paying'
 export type * from './requests'
 export type * from './results'
 export type * from './retailers'
@@ -101,19 +104,15 @@ export type CommerceApi = {
     'not-found' | Priced
   >
   readonly 'payment.start': Op<
-    Checkout.PaymentStartRequest,
-    Checkout.PaymentStarted,
+    Paying.PaymentStartRequest,
+    Paying.PaymentStarted,
     'not-found' | 'method-unavailable' | Priced
   >
-  readonly 'payment.status': Op<
-    Checkout.PaymentStatusRequest,
-    Checkout.PaymentStatusView,
-    'not-found'
-  >
-  readonly 'payLink.get': Op<Checkout.PayLinkGetRequest, Checkout.PayLinkView, 'not-found'>
+  readonly 'payment.status': Op<Paying.PaymentStatusRequest, Paying.PaymentStatusView, 'not-found'>
+  readonly 'payLink.get': Op<Paying.PayLinkGetRequest, Paying.PayLinkView, 'not-found'>
   readonly 'payLink.start': Op<
-    Checkout.PayLinkStartRequest,
-    Checkout.PaymentStarted,
+    Paying.PayLinkStartRequest,
+    Paying.PaymentStarted,
     'not-found' | 'method-unavailable' | Priced
   >
   readonly 'offer.submit': Op<

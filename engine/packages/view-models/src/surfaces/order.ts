@@ -5,17 +5,33 @@
  * An order number is never a credential (C6): the page opens only for the signed-in buyer or
  * with the order-access cookie a lookup, the confirmation or an emailed access link sets (C13
  * `ORDER_ACCESS`) — never with a token in its URL (C10 `order` is `sensitive`) — and `access`
- * says which; the number alone reveals nothing, and a wrong token answers like no order. Lines are the order's snapshots: title, image and price as sold, whatever
- * changed since. The payment-pending state is the most important page in an Indonesian
+ * says which; the number alone reveals nothing, and a wrong token answers like no order. Lines
+ * are the order's snapshots (C6 `OrderedLineView`): title, image, options and price as sold,
+ * whatever changed since; the status is the buyer's (C6 `BuyerOrderStatus`), never a dispute.
+ * The payment-pending state is the most important page in an Indonesian
  * checkout: the exact amount, the VA number to copy, per-bank steps (the app's message keys
  * for the method), the true countdown, the daily-cap warning, where the "paid" news will
  * arrive, and a poll that switches the page to Paid by itself.
  */
-import type { PaymentStatusRequest, WireSessionResult } from '@engine/domain/api'
-import type { OrderStatus } from '@engine/domain/machines/order'
-import type { PaymentMethodId } from '@engine/domain/machines/payment'
+import type {
+  BuyerOrderStatus,
+  FieldError,
+  OrderAccess,
+  PaymentStatusRequest,
+  WireSessionResult,
+} from '@engine/domain/api'
+import type { PaymentFailureClass, PaymentMethodId } from '@engine/domain/machines/payment'
 
-import type { IsoDate, IsoDateTime, MessageVM, Money, SellerIdentityVM, SeoVM } from '../common'
+import type {
+  IsoDate,
+  IsoDateTime,
+  MessageVM,
+  Money,
+  ProductPublicId,
+  SellerIdentityVM,
+  SeoVM,
+  VariantId,
+} from '../common'
 import type {
   DocumentVM,
   ItemRefVM,
@@ -25,7 +41,12 @@ import type {
   TotalsVM,
 } from '../commerce'
 import type { LocationSummaryVM } from './editorial'
+import type { FormPostVM } from './form-fields'
 
+/**
+ * C6's `OrderedLineView` as the page reads it: `item` from the snapshot — the image rebuilt from
+ * its asset id, the link only while the product is published — and `options` the labels as sold.
+ */
 export type OrderLineVM = {
   lineId: string
   item: ItemRefVM
@@ -50,6 +71,18 @@ export type OrderDeliveryVM =
   /** Nothing ships: a digital gift card. */
   | { kind: 'none' }
 
+/**
+ * The payment poll a page posts (C6 `payment.status`): scoped to the checkout it came from, or to
+ * the order by the session or this browser's order-access cookie — never by a lookupToken, which
+ * stays in its cookie and so never enters the page's HTML (C6 `OrderAccess`).
+ */
+export type PaymentPollVM = {
+  attemptId: string
+  scope:
+    | Exclude<PaymentStatusRequest['scope'], { kind: 'order' }>
+    | { kind: 'order'; access: Exclude<OrderAccess, { kind: 'lookup' }> }
+}
+
 export type OrderPaymentVM =
   /** Waiting for the money: a VA or a transfer to make, a QR to scan, a redirect not finished. */
   | {
@@ -60,19 +93,36 @@ export type OrderPaymentVM =
       expiresAt: IsoDateTime | null
       /** A large VA transfer can exceed the buyer's own bank's daily cap: say so before it fails. */
       dailyCapWarning: boolean
-      /**
-       * Polled (a POST) until the page switches to Paid, scoped to how the page was opened: the
-       * checkout it came from, or the order by the session or this browser's order-access
-       * cookie — a lookupToken here came from that cookie, never from a URL.
-       */
-      poll: PaymentStatusRequest
+      /** Polled (a POST) until the page switches to Paid, scoped to how the page was opened. */
+      poll: PaymentPollVM
     }
   | { state: 'paid'; method: PaymentMethodId; amount: Money; paidAt: IsoDateTime }
-  /** Failed, expired or a cancelled redirect: another method, the bag kept. */
-  | { state: 'retry'; reason: 'failed' | 'expired' | 'cancelled'; retryHref: string }
+  /**
+   * Declined, unavailable, failed, expired or a cancelled redirect: another method, the bag kept.
+   * `reason` is C7's class, which the page words and `payment.failed` reports (C11).
+   */
+  | { state: 'retry'; method: PaymentMethodId; reason: PaymentFailureClass; retryHref: string }
   /** Settled off-platform — on WhatsApp, in the showroom — in the editor's own words (KOI). */
   | { state: 'manual'; note: string }
   | { state: 'refunded'; refunded: Money; partial: boolean }
+
+/**
+ * What the consented GA4 `purchase` and Meta `Purchase` tags send (ANALYTICS.md §2): the order's
+ * charge-currency figures — `value` its grand total, as `order.paid` reports it — never an
+ * estimate. The tag converts minor units by the currency's exponent (C11).
+ */
+export type ConversionVM = {
+  transactionId: string
+  value: Money
+  tax: Money
+  shipping: Money | null
+  items: readonly {
+    productId: ProductPublicId
+    variantId: VariantId | null
+    quantity: number
+    unitPrice: Money
+  }[]
+}
 
 export type OrderVM = {
   surface: 'order'
@@ -82,7 +132,7 @@ export type OrderVM = {
   access: 'account' | 'lookup'
   /** Straight after checkout or a payment link, or later from the account or a lookup. */
   context: 'confirmation' | 'detail'
-  status: OrderStatus
+  status: BuyerOrderStatus
   seller: SellerIdentityVM
   lines: readonly OrderLineVM[]
   totals: TotalsVM
@@ -96,6 +146,12 @@ export type OrderVM = {
   updates: 'whatsapp' | 'email'
   /** `null` once no line is returnable. */
   returns: { href: string } | null
+  /**
+   * Set only on a paid order's confirmation (`context: 'confirmation'`) — so a pending or a lapsed
+   * order never reports revenue, and one reopened later never reports it again (GA4 also dedupes
+   * by `transactionId`); `null` otherwise. A payment that lands while the page polls sets it then.
+   */
+  conversion: ConversionVM | null
   seo: SeoVM
 }
 
@@ -108,11 +164,17 @@ export type OrderVM = {
  */
 export type OrderLookupVM = {
   surface: 'orderLookup'
-  form: { orderNumber: string | null; channel: 'email' | 'whatsapp'; contact: string | null }
+  /**
+   * C6 `orderLookup.find` as a form: `orderNumber`, `email` and `whatsapp`, named for the request
+   * (either contact field is enough), refilled after an attempt.
+   */
+  form: FormPostVM
   result:
     | { kind: 'found'; order: OrderSummaryVM<null>; shipments: readonly ShipmentVM[] }
     | { kind: 'notFound' }
     | { kind: 'rateLimited'; retryAfterSeconds: number }
+    /** No contact given (reported on `email`), or one malformed: every failing field at once. */
+    | { kind: 'invalid'; fields: readonly FieldError[] }
     | null
   seo: SeoVM
 }

@@ -27,6 +27,7 @@ const unverified: PurchaseVM = {
   reason: 'unverified',
   price: null,
   actions: { primary: enquire, secondary: [] },
+  analytics: { priceBand: 'none', status: null },
 }
 
 /** Shared by the unique fixtures; each adds its `state` with the `price` and `actions` it allows. */
@@ -38,6 +39,7 @@ export const uniqueBase: UniqueBaseVM = {
   insuredShipping: null,
   reassurance,
   alert: { href: '/account/want-lists?like=1001' },
+  analytics: { priceBand: 'tier-2', status: 'available' },
 }
 
 export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {

@@ -11,4 +11,5 @@ export const itemOnHold: ItemVM = originalItem({
   price: { kind: 'fixed', price: price(money(480000, 'USD')) },
   state: { kind: 'heldByOther', until: '2026-09-26T14:00:00+08:00' },
   actions: { primary: null, secondary: [enquire] },
+  analytics: { priceBand: 'tier-2', status: 'reserved' },
 })

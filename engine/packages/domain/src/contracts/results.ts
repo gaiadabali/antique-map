@@ -28,9 +28,15 @@ import type { IsoInstant } from './scalars'
 export type PricingToken = string & { readonly __pricingToken: 'opaque, server-issued' }
 
 /**
- * A client-generated UUID for a request that must not happen twice (a payment attempt, an offer,
- * a form submission). The same key returns the first result — for a payment, the stored
- * SessionResult (PAYMENTS.md §1 rule 6).
+ * A UUID for a request that must not happen twice (a payment attempt, an offer, a form
+ * submission), minted per attempt: by a script when it sends, or by the page each time it renders
+ * a form (a hidden field) — at request time, never inside a `'use cache'` function or component,
+ * whose output every visitor shares, so two visitors would share one key. The view models never
+ * carry one. The server binds a key to its caller — the session's customer, else the cart cookie,
+ * else the request's own content — and a repeat by that caller with the same request returns the
+ * first result (for a payment, the stored SessionResult: PAYMENTS.md §1 rule 6); the same key from
+ * another caller or with another request is `invalid` (`idempotencyKey`, `mismatch`), and never
+ * returns what the first caller was answered (C13 `FORM_DECODING`, ./storage.ts).
  */
 export type IdempotencyKey = string
 
@@ -133,10 +139,29 @@ export type Problem =
 
 export type ProblemCode = Problem['code']
 
+/**
+ * One failing field. `path` is the field's dotted request path, which is also its form field's
+ * name (C2), so the page puts the message beside the field and can focus it. A rule across
+ * fields reports on a field the form has: the one the rule makes required (`business.npwp` while
+ * `business.country` is `ID`), or, of a choice between fields (an email or a WhatsApp number), the
+ * first in the form — never on a path no field carries.
+ */
 export type FieldError = {
   /** A dotted path into the request, e.g. `contact.whatsapp` or `lines.0.quantity`. */
   readonly path: string
-  readonly reason: 'required' | 'format' | 'too-long' | 'not-allowed' | 'mismatch'
+  readonly reason:
+    | 'required'
+    | 'format'
+    | 'too-long'
+    | 'not-allowed'
+    | 'mismatch'
+    /** A list holds more than it may: photos past the form's `maxFiles`, lines past a cap. */
+    | 'limit'
+    /**
+     * A number outside its bounds: a quantity of 0 or above the line's `maxQuantity`, an amount
+     * past a safe integer (C5), a date already past.
+     */
+    | 'out-of-range'
 }
 
 /** Something the buyer must see even though the request succeeded. */

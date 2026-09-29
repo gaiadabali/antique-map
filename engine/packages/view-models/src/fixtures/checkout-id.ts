@@ -8,7 +8,7 @@
  * this bag holds no unique item). No lock yet: it is taken at the payment step.
  */
 import type { CheckoutLineVM, CheckoutVM } from '../surfaces/checkout'
-import { SHOWROOM, token, totals } from './_commerce'
+import { paymentOption, SHOWROOM, token, totals } from './_commerce'
 import { cart } from './cart'
 import { money, SELLER_ID, seo } from './_shared'
 
@@ -25,13 +25,24 @@ const rate = (optionId: string, carrier: string, service: string, amount: number
   cover: 'courier' as const,
   duties: null,
 })
-const midtrans = (method: CheckoutVM['payment']['options'][number]['method']) => ({
-  method,
-  provider: 'midtrans' as const,
-  confirmation: 'automatic' as const,
-  refunds:
-    method.startsWith('va-') || method === 'alfamart' ? ('manual' as const) : ('gateway' as const),
-})
+/** Midtrans: QRIS and GoPay a QR, a VA and Alfamart a code to pay, the rest a redirect. */
+const MIDTRANS = {
+  qris: ['qris', 'qr', 15],
+  gopay: ['ewallet', 'qr', 15],
+  shopeepay: ['ewallet', 'redirect', 15],
+  'va-bca': ['va', 'instructions', 24 * 60],
+  'va-mandiri': ['va', 'instructions', 24 * 60],
+  card: ['card', 'redirect', 30],
+  alfamart: ['retail', 'instructions', 24 * 60],
+  akulaku: ['paylater', 'redirect', 60],
+} as const
+const midtrans = (method: keyof typeof MIDTRANS) => {
+  const [family, presentation, minutes] = MIDTRANS[method]
+  const manual = family === 'va' || family === 'retail'
+  return paymentOption(method, 'midtrans', family, presentation, minutes, {
+    refunds: manual ? 'manual' : 'gateway',
+  })
+}
 
 export const checkoutId: CheckoutVM = {
   surface: 'checkout',

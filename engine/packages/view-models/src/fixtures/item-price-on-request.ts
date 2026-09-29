@@ -19,6 +19,7 @@ export const itemPriceOnRequest: ItemVM = originalItem({
     ],
   },
   insuredShipping: { kind: 'quote' },
+  analytics: { priceBand: 'on-request', status: 'available' },
 })
 
 /** After the visitor left an email: the price appears on the page and the lead is logged. */
@@ -31,4 +32,5 @@ export const itemPriceRevealed: ItemVM = originalItem({
     secondary: [{ action: 'proforma', href: '/trade?item=1001' }, whatsapp],
   },
   insuredShipping: { kind: 'quote' },
+  analytics: { priceBand: 'on-request', status: 'available' },
 })

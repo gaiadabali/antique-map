@@ -3,7 +3,8 @@
  *
  * The purchase panel's state matrix (DESIGN-SYSTEM.md §3, TASKS.md 34.1.a): the item's
  * status × the viewer's relation × export status × ship-to. The style guide's state
- * switcher renders each; every one is a designed state, never a disabled Buy button.
+ * switcher renders each; every one is a designed state, never a disabled Buy button. Each says,
+ * for `item.viewed`, the availability it shows (an offer holds nothing, so `myOffer` is available).
  */
 import type { PurchaseVM } from '../surfaces/purchase'
 import { enquire, uniqueBase, whatsapp } from './_item'
@@ -26,6 +27,7 @@ export const purchaseStates = {
     price: fixed,
     state: { kind: 'heldByOther', until: '2026-09-26T14:00:00+08:00' },
     actions: { primary: null, secondary: [enquire] },
+    analytics: { priceBand: 'tier-2', status: 'reserved' },
   },
   /** Held for this viewer: Pay leads — never Buy beside their own hold. */
   heldForMe: {
@@ -33,6 +35,7 @@ export const purchaseStates = {
     price: fixed,
     state: { kind: 'heldForMe', reason: 'hold', until: '2026-09-27T09:00:00+08:00' },
     actions: { primary: { action: 'pay', href: '/pay/tok_hold_fixture' }, secondary: [whatsapp] },
+    analytics: { priceBand: 'tier-2', status: 'reserved' },
   },
   /** Already in this viewer's bag: the panel says so and links to it. */
   inMyBag: {
@@ -50,6 +53,7 @@ export const purchaseStates = {
       checkoutHref: '/checkout',
     },
     actions: { primary: null, secondary: [] },
+    analytics: { priceBand: 'tier-2', status: 'reserved' },
   },
   myOfferSubmitted: {
     ...uniqueBase,
@@ -87,6 +91,7 @@ export const purchaseStates = {
       print: null,
     },
     actions: { primary: null, secondary: [] },
+    analytics: { priceBand: 'none', status: 'sold' },
   },
   /** A Jakarta item, not export-cleared, seen with a Singapore ship-to. */
   domesticOnlyFromAbroad: {
@@ -99,6 +104,7 @@ export const purchaseStates = {
       primary: { action: 'viewing', href: '/book-a-visit?item=1001' },
       secondary: [{ action: 'enquire', href: '/enquire?item=1001&topic=export' }, whatsapp],
     },
+    analytics: { priceBand: 'tier-3', status: 'available' },
   },
   /** The same item with an Indonesian ship-to: IDR alone, no foreign amount beside it. */
   domesticOnlyAtHome: {
@@ -107,6 +113,7 @@ export const purchaseStates = {
     state: { kind: 'available' },
     shipsFrom: 'Jakarta',
     actions: { primary: buy, secondary: [enquire, whatsapp] },
+    analytics: { priceBand: 'tier-3', status: 'available' },
   },
   exportPending: {
     ...uniqueBase,
@@ -122,6 +129,7 @@ export const purchaseStates = {
     state: { kind: 'available' },
     edition: { number: 12, of: 100 },
     actions: { primary: { action: 'buy', line: line(1004) }, secondary: [enquire] },
+    analytics: { priceBand: 'tier-1', status: 'available' },
   },
   /** No asking price: the panel invites an offer. */
   offerOnly: {
@@ -129,6 +137,7 @@ export const purchaseStates = {
     price: { kind: 'offerOnly' },
     state: { kind: 'available' },
     actions: { primary: offer, secondary: [enquire, whatsapp] },
+    analytics: { priceBand: 'none', status: 'available' },
   },
   /** Queued for a human: the item is marked sensitive. */
   priceQueued: {
@@ -136,12 +145,14 @@ export const purchaseStates = {
     price: { kind: 'queued', replyHours: 24 },
     state: { kind: 'available' },
     actions: { primary: null, secondary: [enquire, whatsapp] },
+    analytics: { priceBand: 'on-request', status: 'available' },
   },
   notForSale: {
     kind: 'enquiryOnly',
     reason: 'notForSale',
     price: null,
     actions: { primary: enquire, secondary: [] },
+    analytics: { priceBand: 'none', status: 'withdrawn' },
   },
   /** Availability could not be read just now: an enquiry, never an error or a guess. */
   unverified: {
@@ -149,5 +160,6 @@ export const purchaseStates = {
     reason: 'unverified',
     price: null,
     actions: { primary: enquire, secondary: [whatsapp] },
+    analytics: { priceBand: 'none', status: null },
   },
 } satisfies Record<string, PurchaseVM>

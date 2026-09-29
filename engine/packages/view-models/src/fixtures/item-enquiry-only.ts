@@ -15,4 +15,5 @@ export const itemEnquiryOnly: ItemVM = originalItem({
     primary: enquire,
     secondary: [whatsapp, { action: 'viewing', href: '/book-a-visit?item=1001' }],
   },
+  analytics: { priceBand: 'none', status: 'available' },
 })

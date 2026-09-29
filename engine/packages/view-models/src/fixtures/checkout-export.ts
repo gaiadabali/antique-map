@@ -9,15 +9,12 @@
  * states the payment step must design: someone else was first, the price moved, the lock ran out.
  */
 import type { CheckoutVM } from '../surfaces/checkout'
-import { STRAITS, token, totals } from './_commerce'
-import { card, money, price, SELLER_SG, seo, streamed } from './_shared'
+import { paymentOption, STRAITS, token, totals } from './_commerce'
+import { card, money, price, SELLER_SG, seo } from './_shared'
 
-const stripe = (method: 'card' | 'apple-pay' | 'google-pay') => ({
-  method,
-  provider: 'stripe' as const,
-  confirmation: 'automatic' as const,
-  refunds: 'gateway' as const,
-})
+/** Stripe's Payment Element: a card form on the page; its wallets are the express buttons. */
+const stripe = (method: 'card' | 'apple-pay' | 'google-pay') =>
+  paymentOption(method, 'stripe', method === 'card' ? 'card' : 'express-wallet', 'embedded', 30)
 
 export const checkoutExport: CheckoutVM = {
   surface: 'checkout',
@@ -108,13 +105,12 @@ export const checkoutExport: CheckoutVM = {
   payment: {
     options: [
       stripe('card'),
-      { method: 'paypal', provider: 'paypal', confirmation: 'automatic', refunds: 'gateway' },
-      {
-        method: 'bank-transfer',
-        provider: 'bank-transfer',
+      paymentOption('paypal', 'paypal', 'paypal', 'redirect', 60),
+      // A unique item: the transfer's window ends before the lock's ceiling (C1 3 h, less margin).
+      paymentOption('bank-transfer', 'bank-transfer', 'bank-transfer', 'instructions', 150, {
         confirmation: 'manual',
         refunds: 'manual',
-      },
+      }),
     ],
     express: [stripe('apple-pay'), stripe('google-pay')],
     session: {
@@ -124,7 +120,7 @@ export const checkoutExport: CheckoutVM = {
     },
   },
   lock: { expiresAt: '2026-09-25T10:45:00+08:00' },
-  order: { number: 'SG-000123', status: 'pending_payment' },
+  order: { number: 'SG-000123', status: 'awaiting-payment' },
   terms: { label: 'Conditions of sale', href: '/terms' },
   problem: null,
   intents: {
@@ -144,7 +140,7 @@ export const checkoutConflict: CheckoutVM = {
     code: 'reservation-conflict',
     state: 'sold',
     heldUntil: null,
-    alternatives: streamed([card(1009, 'Chart of the Contoh Straits (another state)')]),
+    alternatives: [card(1009, 'Chart of the Contoh Straits (another state)')],
     wantList: { href: '/account/want-lists?like=1006' },
   },
 }
