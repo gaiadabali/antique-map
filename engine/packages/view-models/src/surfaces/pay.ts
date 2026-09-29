@@ -58,8 +58,14 @@ export type PayVM = {
   intents: {
     /** The component adds the method and an idempotency key. */
     start: Omit<PayLinkStartRequest, 'method' | 'idempotencyKey'>
-    /** Once a payment is under way, polled until it settles; scoped to this link. */
-    poll: PaymentStatusRequest | null
+    /**
+     * Once a payment is under way, polled until it settles — scoped to this link by its own token,
+     * the page's own capability (C13), never by an order's lookup token.
+     */
+    poll: {
+      attemptId: string
+      scope: Extract<PaymentStatusRequest['scope'], { kind: 'pay-link' }>
+    } | null
   } | null
   seo: SeoVM
 }

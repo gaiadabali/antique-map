@@ -98,9 +98,13 @@ so it is breaking and also needs a redirect.
   path and labelled by code, never an English string; a hidden field is never asked for, and
   a tick box posts `'true'` (`commerce-check.ts`). What such a visitor must act on beyond a form
   — a post's outcome, the list an email's link opened — is resolved, never streamed. A buyer
-  reads an order's C6 `BuyerOrderStatus`, never a payment's state, and a page never holds a
-  token — not a lookup's, not a want list's (`_NoTokenInAPagePoll`, `_NoTokenInAPageStop`). A
-  post the operation refuses comes back as `FormResultVM` `refused`, with its problem's sentence.
+  reads an order's C6 `BuyerOrderStatus`, never a payment's state. A page holds no token but a
+  capability page's own address (C13: a pay link's, a quote's): no intent or poll carries a
+  lookup token, a want list's, or — on the order page — a pay link's, and a signed-in page acts
+  by its session (`_NoTokenInAPagePoll`, `_NoTokenInAPageStop`, `_NoPayLinkTokenInTheOrderPoll`,
+  `_NoLookupTokenInThePayPoll`, `_NoTokenInTheAccountsOffers`, `_NoTokenInTheAccountsViewings`).
+  A post the operation refuses comes back as `FormResultVM` `refused`, with its problem's
+  sentence.
   Only an approved partner signs in, so only its view model carries
   trade terms or a reorder, and the Partnership page holds no term or price in any state
   (`retailer-check.ts`, D31–D36).
@@ -116,9 +120,11 @@ so it is breaking and also needs a redirect.
   paid; an estimate is whole major units, and `formatMoney` fixes the fraction digits itself. A
   machine table changes only together with its tests, and nothing outside the domain writes a
   status or a reservation. Every token an email or a page's address carries is a derived
-  capability link (C6 `links`: an HMAC of the record's `ref` and `token_version`), stored nowhere
-  and never in an outbox row (C8 `IsPiiFree` refuses a credential's name) — a set-password link,
-  single-use and hashed, alone excepted.
+  capability link (C6 `links`: an HMAC of the record's `ref` and `token_version`, fixed byte for
+  byte with known answers), stored nowhere and never in an outbox row (C8 `IsPiiFree` refuses a
+  credential's name) — a set-password link, single-use and hashed, alone excepted. Its keys are one
+  ring per brand and environment, and a leaked one is revoked at once; a link to a page that shows
+  personal data works for its purpose's window, and a lapse is final.
 - **C9.** Keys are content-addressed and versioned. A pipeline change raises
   `DERIVATIVE_VERSION` and never overwrites a key. `masterKey()` is what C12 snapshots
   reference.
@@ -129,15 +135,16 @@ so it is breaking and also needs a redirect.
   order opens with the session or the order-access cookie (C13 `ORDER_ACCESS`), never with its
   number alone, and a `sensitive` page is answered with `Referrer-Policy: no-referrer`. A page
   that takes a subject takes one (`wantList`: `watch` or `like`), so one subject has one URL, and
-  every write a page offers has a form kind or a surface that posts it.
+  every write a page offers has a form kind or a surface that posts it. A signed-in page names a
+  record by its id, read by the session (`form`'s `appointment`), never by a token.
 - **C11.** Add events; never rename one (ANALYTICS.md). A beacon prop comes from the page's own
   view model; what only the server knows — the session, the anonymous id, the market —
   `/api/x/collect` stamps. What the business counts — revenue, leads, the want lists kept — is
   counted from the domain's events, never the beacon.
 - **C12.** A snapshot or a feed carries published fields only. `physical`, costs and consignors
   never leave the origin brand. Prices travel per market, as the selling brand shows them, and
-  every URL is absolute. A copy only moves forward: what is no newer than it holds is
-  acknowledged and dropped.
+  every URL is absolute. A copy only moves forward, part by part (a work's fields, its original's
+  listing, the feed): what is no newer than it holds is acknowledged and dropped.
 - **C13.** Every app mounts every route. A new route needs a mount file in both apps
   (route parity); a new C6 operation needs an address in `COMMERCE_OPERATIONS`, and an auth
   or forms operation its row in `AUTH_OPERATIONS` or `FORM_OPERATIONS`, with the module
@@ -151,7 +158,9 @@ so it is breaking and also needs a redirect.
   token in its URL, on `ONE_CLICK_UNSUBSCRIBE`'s terms: that token alone, no cookie read, 200.
   Auth answers every email alike. A provider webhook route names the seller whose secret
   verifies it. The proxy rewrites, and sets only `PROXY_REQUEST_HEADERS`, C10's `sensitive`
-  answer headers and the per-request `Content-Security-Policy`.
+  answer headers and the per-request `Content-Security-Policy`, which one builder makes (41.1.a)
+  and the proxy copies onto the request too, where Next looks for a nonce. An account's offer or
+  viewing is answered by its session, and its `.ics` served by session.
 
 ## Changelog
 
@@ -353,3 +362,36 @@ so it is breaking and also needs a redirect.
     in development (be N5, fe N2).
   - The v1.1 entry's "no C10 segment remained" was the route map's truth, not the fixtures'
     (be S10).
+  - **The confirmation round (TASKS.md 2.4.f).** senior-be signed off with follow-ups, and
+    senior-fe was blocked on B2 alone.
+    - **C2 (senior-fe B2):** `PayVM.intents.poll` is scoped to its own link, and `PaymentPollVM`
+      drops `pay-link` (`_NoLookupTokenInThePayPoll`, `_NoPayLinkTokenInTheOrderPoll`); the
+      fixtures already complied. The all-VM probe for credential names now finds only a page's
+      own capability, the pricing-token brand, Stripe's `clientSecret`, citation `ref`s and the
+      consent policy's version.
+    - **C6 `links` (senior-be F10):**
+      - The token's grammar and the MAC input's bytes are pinned, with `LINK_TOKEN_VECTORS`.
+      - `LINK_TOKEN_KEYS` entries carry a retirement day or `revoked`, in one ring per brand and
+        environment.
+      - The blast-radius sentence names every action a forged link can take.
+      - `LINK_WINDOW_DAYS` bounds every purpose whose page shows personal data, enquiries and
+        consignments included, from `links_anchor_at`, and a lapse is final;
+        `LINK_TOKEN.orderDays` becomes `LINK_WINDOW_DAYS.order`.
+    - **C6, C2, C10, C13 (senior-fe F6):** `offer.respond` and `appointment.change` take
+      `OfferAccess` and `AppointmentAccess` — the session and the record's id, or an email's
+      token. The account's offers and viewings act by session (`_NoTokenInTheAccountsOffers`,
+      `_NoTokenInTheAccountsViewings`), a `form` names the viewing it reschedules by
+      `appointment`, the account's `.ics` is served by session, and a guest's
+      `AppointmentView.icsUrl` is `null`.
+    - **C13 (senior-fe F7):** `PROXY_REQUEST_HEADERS` gains `contentSecurityPolicy`, the answer's
+      CSP copied onto the request, where Next looks for a nonce; 41.1.a owns the CSP.
+    - **C6, C13 (senior-be F13):** `quote.proforma`'s checkout id is bound to the cart cookie or
+      the session; how an anonymous proforma may hold a unique line is the owner's open decision
+      (COMMERCE.md §7).
+    - **Also:**
+      - The payment start's store and void are compare-and-set under the attempt's lock
+        (be F11).
+      - A sister copy keeps one watermark per part (be F12).
+      - A `collected` pickup is not "ready for pickup" (fe N7).
+      - The `proforma` action promises a proforma staff issue, never an instant PDF (fe N8).
+      - `maxFields` refuses before decoding.

@@ -30,11 +30,15 @@ export const COMMERCE_AREAS = {
   orders: { auth: ['customer', 'token'], methods: GET },
   pay: { auth: ['token'], methods: GET_POST }, // a staff-sent payment link, read and paid
   'gift-cards': { auth: ['public'], methods: POST, module: 'commerce.giftCards' }, // balance
+  // `offer.respond` by the session and the offer's id (the account), or by an email's token.
   offers: { auth: ['public', 'customer', 'token'], methods: POST, module: 'purchase.offers' },
   holds: { auth: ['public', 'customer'], methods: POST, module: 'purchase.holds' },
   'price-requests': { auth: ['public'], methods: POST, module: 'purchase.requestPrice' },
   enquiries: { auth: ['public'], methods: POST }, // every topic, framing included
   consignments: { auth: ['public', 'customer'], methods: POST, module: 'services.consignment' },
+  // `appointment.change` by the session and the viewing's id, or by its confirmation's token. No
+  // C6 operation: `ics?appointment=<id>` (GET), a signed-in booker's own viewing as an `.ics`, by
+  // session — never by a token, which no calendar URL carries: a guest's confirmation attaches its.
   appointments: {
     auth: ['public', 'customer', 'token'],
     methods: GET_POST,
@@ -44,7 +48,8 @@ export const COMMERCE_AREAS = {
   'order-lookup': { auth: ['public'], methods: POST }, // number + email or WhatsApp; sets the cookie
   // A quote opens by the token in its URL, or by session for the retailer it was issued to. A
   // request with `contact: null` — a partner's brief or reorder — needs an approved retailer's
-  // session, and answers `invalid` without one.
+  // session, and answers `invalid` without one. `quote.proforma`'s checkout id is bound to the
+  // cart cookie or the session exactly as the `checkout` area binds it: alone it opens nothing.
   quotes: { auth: ['public', 'customer', 'token'], methods: GET_POST, module: 'purchase.invoices' },
   // A business's application (D31, D36): the same receipt whoever applies, so it admits no one.
   retailers: { auth: ['public'], methods: POST, module: 'accounts.retailers' },
@@ -133,12 +138,13 @@ export function commerceUrl(operation: CommerceOperation): string {
 /**
  * Order access without a session (C6 `OrderAccess`; C10 `order` is `sensitive`). A
  * lookupToken — the order's derived capability link (C6 `links`, purpose `order`, valid
- * `LINK_TOKEN.orderDays` after the order last changed) — never rides in a page URL:
+ * `LINK_WINDOW_DAYS.order` days after the order's link was last issued, by an email or a lookup,
+ * and a lapse is final) — never rides in a page URL:
  * `orderLookup.find`, the confirmation after checkout or a pay link, and `link` — which an email
  * or WhatsApp message carries as `?number=…&token=…`, the token derived as NTF sends it — store it
- * in `cookie` (HttpOnly, Secure, SameSite=Lax, as long-lived as the token), and `link` answers 303
- * to the clean order page. The order page and the `orders`, `returns` and `payments` handlers read
- * it there.
+ * in `cookie` (HttpOnly, Secure, SameSite=Lax, living as long as the token's window), and `link`
+ * answers 303 to the clean order page. The order page and the `orders`, `returns` and `payments`
+ * handlers read it there.
  */
 export const ORDER_ACCESS = {
   cookie: 'order_access',

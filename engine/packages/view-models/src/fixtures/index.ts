@@ -160,6 +160,7 @@ export const FIXTURES = {
   'form-offer': form.formOffer,
   'form-consignment': form.formConsignment,
   'form-appointment': form.formAppointment,
+  'form-reschedule': form.formReschedule,
   'form-invalid': form.formInvalid,
   'form-hold': form.formHold,
   'form-refused': form.formRefused,

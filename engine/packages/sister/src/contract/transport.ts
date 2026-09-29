@@ -7,14 +7,18 @@
  * every receiver dedupes on `id`; each side's nightly reconcile pulls the other's list, so a lost
  * webhook costs at most a day.
  *
- * Deduping stops repeats, not reordering, so a copy only ever moves forward: it keeps the newest
- * instant it has applied for each work — a snapshot's `updatedAt`, a listing's or a feed's `asOf`,
- * a tombstone's `at` or an unpublishing's `occurredAt` — and a delivery or a pulled item no newer
- * is acknowledged (200) and dropped. A retried "available" that arrives after "sold" leaves the
- * copy sold. Prices derived by FX move with each day's rate without any webhook: the origin's (and
- * the outlet's) FX refresh stamps a new `asOf` on every listing whose price it moved, so the next
- * nightly pull carries it — and a copy's price is display only: the selling brand prices again
- * when it sells.
+ * Deduping stops repeats, not reordering, so a copy only ever moves forward. It keeps, per work,
+ * the newest instant it has applied for each of the work's parts: its own fields (a snapshot's
+ * `updatedAt`), its original's listing (an `OriginalListing`'s `asOf`, whether it came alone or
+ * inside a snapshot as `original`) and, at the origin, the outlet's feed (a `PrintsFeed`'s
+ * `asOf`). A delivery or a pulled item no newer than its part's instant is acknowledged (200) and
+ * dropped. A snapshot's parts are judged apart: one whose fields are newer than the copy's but
+ * whose `original` is older than the listing applied updates the fields alone. A tombstone's
+ * `at` or an unpublishing's `occurredAt` moves every part's instant: nothing older brings the work
+ * back. A retried "available" that arrives after "sold" leaves the copy sold. Prices derived by
+ * FX move with each day's rate without any webhook: the origin's (and the outlet's) FX refresh
+ * stamps a new `asOf` on every listing whose price it moved, so the next nightly pull carries it
+ * — and a copy's price is display only: the selling brand prices again when it sells.
  */
 import type { IsoInstant } from '@engine/domain/api'
 

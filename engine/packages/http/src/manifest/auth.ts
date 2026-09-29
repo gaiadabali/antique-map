@@ -60,9 +60,10 @@ export function authUrl(operation: AuthOperation): string {
  * An applicant's read-only view of its application, without a password (D31; C2
  * `PartnershipAccessVM`). The acknowledgement email carries `link?token=…`
  * (`auth.applicationLink`): a derived capability link (C6 `links`, purpose `application`) NTF
- * computes as it sends the email — stored nowhere, valid 30 days from the latest acknowledgement or
- * decline, void from approval on (the partner then signs in), its version bumped at each
- * acknowledgement so the newest email's link supersedes the older.
+ * computes as it sends the email — stored nowhere, valid `LINK_WINDOW_DAYS.application` days from
+ * the latest acknowledgement or decline, void from approval on (the partner then signs in), its
+ * version bumped at each acknowledgement so the newest email's link supersedes the older. A lapse
+ * is final: a decline after the window has run out sends a fresh link, never the old one's.
  * The link stores it in `cookie` (HttpOnly, Secure, SameSite=Lax, Path=/, as long-lived as the
  * token) and answers 303 to the clean Partnership page, whose loader reads the standing there,
  * never a term or a price; a handler logs the link's path without `?token=`. No write accepts

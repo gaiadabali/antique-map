@@ -31,6 +31,9 @@ export const PURCHASE_ACTIONS = [
   'whatsapp',
   'requestPrice',
   'viewing',
+  // Opens the `quote` form (C10; `quote.request`), which staff answer with a proforma within the
+  // stated reply time — so its copy promises that, never an instant proforma PDF: the instant one
+  // is the checkout's ("Proforma instead", C6 `quote.proforma`).
   'proforma',
 ] as const
 export type PurchaseAction = (typeof PURCHASE_ACTIONS)[number]

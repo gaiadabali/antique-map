@@ -89,6 +89,10 @@ export type ReturnRequestView = {
  * `price-changed`), it takes `invoice` holds on every unique line until the due date and issues the
  * proforma's number and PDF; paying it is the quote's page. It stays open to any buyer where
  * `accounts.retailers` is on: it prices at retail, and D36 is about trade terms, not proformas.
+ * Its `checkoutId` is bound to the cart cookie or the session, as every checkout operation's is
+ * (C13 `quotes`): alone it opens nothing. Whether an anonymous buyer's proforma holds a unique
+ * line at once, capped per contact and IP, or only once staff approve it, is the owner's open
+ * decision (COMMERCE.md §7).
  */
 export type ProformaRequest = {
   readonly checkoutId: string
