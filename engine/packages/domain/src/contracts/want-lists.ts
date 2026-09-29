@@ -48,8 +48,10 @@ export type WantListContactInput = { readonly email: string; readonly locale: Lo
  * Save a search or an item alert. `contact` is null only for a signed-in buyer where
  * `retention.wantList` is on: the list is the account's and starts at once. From anyone else a
  * contact is required (`invalid` without one); a holder whose module is off is `not-offered`.
- * Asking again for a subject its holder already watches changes its frequency and nothing else —
- * an address's list stays pending, or active, as it was.
+ * Asking again for a subject its holder already watches: an account's list takes the new
+ * frequency, since the session is its holder; an address's changes nothing — the post proves no
+ * one owns the address, so it never edits a list — and the address gets its list's link again
+ * (`wantList.repeated`), from which its holder may stop it and save it anew.
  */
 export type WantListSubscribeRequest = {
   readonly subject: WantListSubject
@@ -105,8 +107,9 @@ export type WantListAccess =
 export type WantListConfirmRequest = { readonly access: { readonly kind: 'access-cookie' } }
 
 /**
- * "Stop this alert": the list is erased. The answer is the same whether it was still there or
- * not, so a second click, or a mail client's retry, never meets an error.
+ * "Stop this alert": the list is erased. The answer is the same whether it was still there, or
+ * ever the caller's, or not — so a second click or a mail client's retry never meets an error,
+ * and an id tried at random reveals nothing.
  */
 export type WantListUnsubscribeRequest = { readonly access: WantListAccess }
 export type WantListUnsubscribeReceipt = { readonly stopped: true }

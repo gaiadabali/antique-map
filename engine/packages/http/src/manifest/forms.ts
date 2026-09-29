@@ -19,7 +19,8 @@ import type { SubRoute } from './types'
  * - Text is trimmed, and an empty field is `null`: an optional one left blank is `null`, a
  *   required one `required`.
  * - A number — an id, a quantity — is ASCII digits for a safe integer: anything else is `format`,
- *   and past a safe integer `out-of-range`.
+ *   and past a safe integer `out-of-range`. (A map pin's coordinates, the one fractional number
+ *   a request holds, come only from a script's JSON: the pin needs the map.)
  * - A tick box posts `'true'`, and its absence is `false`.
  * - Money is only ever the offer's bid (C6 `proposal`): one text field of ASCII digits, with at
  *   most one `decimalSeparator` followed by at most the currency's exponent of digits — no
