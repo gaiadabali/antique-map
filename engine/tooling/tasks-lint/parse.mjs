@@ -1,10 +1,12 @@
 // 2.2.f — turns `TASKS.md` into a structured model: phases, each with tasks,
 // each with subtasks. A best-effort line grammar over one specific document,
 // not a general Markdown parser — see CONVENTIONS.md's own idiom of small,
-// single-purpose files.
+// single-purpose files. A task line's status suffixes (✅ 🔄 ⛔ ✂️) are
+// `status.mjs`'s grammar.
+
+import { splitStatusSuffix, statusEntry, statusOf } from './status.mjs'
 
 const PHASE_RE = /^## Phase (\d+) — (.+?) · ([^·]+) · needs (.+?) · ~.+$/
-const DONE_SUFFIX_RE = / — ✅ (\d{4}-\d{2}-\d{2}) ([0-9a-f]{6,})\s*$/
 const TASK_RE = /^- \[( |x)\] \*\*(\d+)\.(\d+) (.+?)\*\* · needs: (.+)$/
 const SUBTASK_RE = /^ {2}- \[( |x)\] (\d+)\.(\d+)\.([a-z]) (.+)$/
 const WAVE_RE = /\*\*Wave\*\*\s+(W\d(?:\s*·\s*W\d)*)/
@@ -53,15 +55,19 @@ export function parseTasksMd(text) {
     const taskMatch = TASK_RE.exec(line)
     if (taskMatch) {
       const [, checked, phaseNum, taskNum, titleAndRest, needsAndRest] = taskMatch
-      const doneMatch = DONE_SUFFIX_RE.exec(needsAndRest)
-      const needsRaw = doneMatch ? needsAndRest.slice(0, doneMatch.index) : needsAndRest
+      const { needsRaw, statuses } = splitStatusSuffix(needsAndRest.trimEnd())
+      const done = statusEntry({ statuses }, 'done')
       task = {
         id: `${phaseNum}.${taskNum}`,
         phaseNumber: Number(phaseNum),
         title: titleAndRest.trim(),
         checked: checked === 'x',
-        doneDate: doneMatch ? doneMatch[1] : null,
-        doneSha: doneMatch ? doneMatch[2] : null,
+        /** Every status suffix on the line, in order (`status.mjs`). */
+        statuses,
+        /** `open` | `doing` | `blocked` | `done` | `cut` — the strongest suffix. */
+        status: statusOf(statuses),
+        doneDate: done && !done.malformed ? done.date : null,
+        doneSha: done && !done.malformed ? done.sha : null,
         needsRaw: needsRaw.trim(),
         needs: needsRaw.trim() === '—' ? [] : splitList(needsRaw),
         wave: null,

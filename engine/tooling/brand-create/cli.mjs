@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// `pnpm brand:create <slug> --storefront gallery|emporium [--name "<Name>"]` — TASKS.md 2.2.h.
+// `pnpm brand:create <slug> --storefront gallery|emporium [--name "<Name>"]` — TASKS.md 2.2.h, 3.3.a.
 import { BrandCreateError, createBrand } from './brand-create.mjs'
 
 const args = process.argv.slice(2)
@@ -18,18 +18,10 @@ if (!slug || !storefront) {
 }
 
 try {
-  const { brandDir, infra, checkedAgainstSchema } = await createBrand(process.cwd(), {
-    slug,
-    storefront,
-    name,
-  })
+  const { brandDir, infra } = await createBrand(process.cwd(), { slug, storefront, name })
   console.log(`brand:create: scaffolded ${brandDir}`)
   console.log(`  database: ${infra.database}   bucket: ${infra.bucket}`)
-  console.log(
-    checkedAgainstSchema
-      ? '  validated against the C1 brandConfigSchema (validateBrandConfigs() does not exist yet — 3.1)'
-      : '  NOT validated: engine/packages/config/src/schema.ts does not exist',
-  )
+  console.log('  validated with validateBrandConfig() (@engine/config/validate, C1)')
   console.log(
     '  next: add a .gaiadeploy.yml target, provider secrets in Infisical, and pnpm db:fresh --brand ' +
       slug,
