@@ -19,7 +19,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
-| **3** Config spine and Payload boot | Foundation | 2 | 🔄 in progress | 0/3 | 4/15 | 0 | `███░░░░░░░`  27% |
+| **3** Config spine and Payload boot | Foundation | 2 | 🔄 in progress | 0/4 | 4/20 | 0 | `██░░░░░░░░`  20% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **7/161** | **50/722** | **47** | `█░░░░░░░░░`   7% |
+| **All** | 44 phases | | | **7/162** | **50/727** | **47** | `█░░░░░░░░░`   7% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -386,7 +386,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 **Goal:** brand configs loaded and validated, i18n and the proxy helpers, and one brand-independent Payload config.
 **Done when:** each brand's config loads and a broken one is refused with the field named; `bootCheck()` refuses a missing secret; `/admin` logs in against two different databases whose schema hashes are equal.
-**Waves:** W1 — 3.1 · W2 — 3.2, 3.3
+**Waves:** W1 — 3.1 · W2 — 3.2, 3.3, 3.4
 
 - [ ] **3.1 Platform spine: config loader, i18n, proxy helpers, brand folders** · needs: 1.2.a, 1.2.i
   - **Lane** PLT (+ BRD for brand folders) · **Agent** senior-be · **Wave** W1
@@ -420,6 +420,17 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 3.3.b `worktree:env` writes a fresh random `LINK_TOKEN_KEYS` ring (one current `dev` key of 32 random bytes) into `.env.local` when absent; `.env.example` documents `LINK_TOKEN_KEYS`, `LOADERS_SOURCE` and the provider `*_MODE` variables bootCheck reads
   - [ ] 3.3.d `tasks-lint` accepts the board's own status suffixes on a task line — `— 🔄 N·Wk`, `— ⛔ <reason>`, `— ✂️ cut: <reason>` — as well as `— ✅ date sha` (today only ✅ parses, so a dispatched task fails `needs-resolvable`)
   - [ ] 3.3.c **Check:** `pnpm brand:create` for each storefront scaffolds a brand that passes `validateBrandConfigs()` (a test); a new worktree's `.env.local` carries a ring that `bootCheck()` accepts, and re-running `worktree:env` keeps it; a task line marked 🔄, ⛔ or ✂️ lints clean (a test); `pnpm verify` green.
+
+- [ ] **3.4 Contract follow-ups from the 3.1 reviews (v1.2)** · needs: 3.1
+  - **Lane** ARC · **Agent** architect · **Wave** W2
+  - **Owns** the contract files of C1, C10 and C13 (`engine/packages/config/src/{schema,routes}{.ts,/**}`, `engine/packages/config/src/constants/**` (new), `engine/packages/http/src/manifest{.ts,/**}`), the `@engine/config` package.json `exports`, the two C5 imports in `engine/packages/i18n/src/{locales,money}.ts` and `engine/packages/i18n/test/client-safe.test.ts`, `engine/packages/CONTRACTS.md`, and the doc sections named below
+  - **Read** `.claude/specs/indies-platform/reviews/3.1-senior-{be,fe}.md`; CONTRACTS.md (minor versions); DESIGN-SYSTEM.md §7; COMMERCE.md §2; DEPLOYMENT.md §1, §8; PAYMENTS.md §8; MIGRATION.md §6
+  - _Requirements: 1.2, 2.1_
+  - [ ] 3.4.a a zod-free `@engine/config/constants` leaf (`LOCALE_CODES`, `LocaleCode`, `CURRENCY_EXPONENT`, `CurrencyCode`) that `schema/*` re-exports; `@engine/i18n` imports it, and `client-safe.test.ts` asserts the root entry reaches no `zod` (fe #1: 31.9 KB gzip today)
+  - [ ] 3.4.b C1 additions: `sellers[].shipping?` defaulting to the brand's providers, and bootCheck's per-seller secrets following it (be #2, DEPLOYMENT §8); `identity.social` and `sisters[].baseUrl` https-only (be #4); `sister.links` needing a sister, a derived currency needing its `fx.bufferPct` (be #9)
+  - [ ] 3.4.c C10 / C13: a segment that does not survive decode-then-encode is refused (fe #13); the icon and manifest requests in `ROOT_REWRITES` (fe #12); a decision, written into MIGRATION.md §6, on how the legacy static pages (`/about-us`…) reach `/api/x/legacy` when a legacy prefix must end in `/`
+  - [ ] 3.4.d doc sync: BRANDS.md §4 `fulfilment.pod` for OEI → "v2 (D23)"; PAYMENTS.md §8 and DEPLOYMENT.md §8 — the environment is read from `SITE_URL` against the brand's `domains`, and the provider secret names and `*_MODE` variables of `boot-check/provider-secrets.ts`; a CONVENTIONS.md line: Client Components receive preformatted money and dates (fe #7), and the facet panel never builds listing state from `useSearchParams()` (C10 drops the public query on rewrite)
+  - [ ] 3.4.e **Check:** C1, C10 and C13 at v1.2 with a CONTRACTS.md changelog entry; `import { formatMoney } from '@engine/i18n'` bundles under 2 KB gzip (a measured number) with no `zod`; a planted `%6F` segment is refused and IG's Singapore seller boots without Biteship secrets (tests); `pnpm verify` green; one senior-be and one senior-fe pass sign it off.
 
 ---
 
@@ -2374,6 +2385,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-30 — 3.1 reviewed: senior-be and senior-fe both **sign off with should-fix** (`.claude/specs/indies-platform/reviews/3.1-senior-{be,fe}.md`). In-scope fixes back to PLT before merge: the rupiah rule skipped `*` sellers, one bad key voided every CMS override, `javascript:` social links, a client's report-only CSP header setting the page nonce, module-off surfaces still served, the not-found target (Next's unbranded 404 under two root layouts → `/<locale>/not-found`), Indonesian plurals, and seven nits. Contract items to ARC as new task **3.4** (3·W2): a zod-free constants leaf (i18n pulls 31.9 KB gzip of zod into client bundles today), per-seller shipping providers, https-only URLs, encoded segments, icon rewrites, legacy static pages, and four doc lines.
 - 2026-09-30 — 3.1 reported done on `feat/p3-plt` (e5d2db7; 337 tests, `pnpm verify` green): 3.1.a–d ticked, 3.1.e waits on merged `main`. New task **3.3** (HAR, 3·W2) from its follow-ups: `brand:create` scaffolds a config C1's rupiah rule refuses (F3), no dev `LINK_TOKEN_KEYS` ring, so a workstation fails `bootCheck()` (F5), and `tasks-lint` rejects the board's own `— 🔄` marker (found by the orchestrator; 3.1's line carries no 🔄 until 3.3.d lands, its **Now** row stands). Other follow-ups held for their lanes: `check:brands` in verify after 4.1.c (F4), docs on the environment rule and per-seller shipping secrets (ARC, F6), bootCheck and the proxy wired in 4.1 (F7), `parseLinkTokenKeys()` reused by 18.2.g (F8), provider secret names checked in 25/26 (F9), a zod-free currency/locale entry for client bundles (F10), the globals reader (F11). Found: BRANDS §4 has `fulfilment.pod` on for OEI, D23 says not at launch — the config follows D23.
 - 2026-09-29 — **phase 3 opened** — 3·W1 dispatched: 3.1 (senior-be, lane PLT). 3.2 (SCH) follows in W2 once 3.1 merges. Owner items for 3.1 run on defaults: draft sellers (D1–D3), English unprefixed (D18). Phase 7 could also open (needs 2) but waits on OA9, the export of the old catalogue.
 - 2026-09-29 — ✅ **phase 2** — local stack and db scripts (2.1), every gate failing on a planted violation (2.2, with 2.2.k/l), CI green on `main` and the release workflow proven on `production` (2.3), contracts v1.1 signed off (2.4). Open for the owner: 34.2.f (an anonymous proforma's hold on a unique line — ARC recommends staff approval) and the want-list suppression list after a stop (counsel, 2.4 review be F9). Follow-ups: an emailed counter-offer or viewing link has no landing page for a guest who is not signed in (ARC — a one-hop link like `ORDER_ACCESS`, before 21.1 and 28.2 dispatch); the Dependabot alerts under `@lhci/cli` (revisit at phase 4, when Lighthouse runs against real apps). Phase 3 can open.
