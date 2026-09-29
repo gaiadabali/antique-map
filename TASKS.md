@@ -19,7 +19,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
-| **3** Config spine and Payload boot | Foundation | 2 | 🔄 in progress | 2/5 | 15/29 | 0 | `█████░░░░░`  52% |
+| **3** Config spine and Payload boot | Foundation | 2 | 🔄 in progress | 2/5 | 19/30 | 0 | `██████░░░░`  63% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **9/163** | **61/736** | **47** | `█░░░░░░░░░`   8% |
+| **All** | 44 phases | | | **9/163** | **65/737** | **47** | `█░░░░░░░░░`   9% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -440,13 +440,14 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [ ] **3.5 Tooling for the CMS: route parity, the generators and the migrate hook** · needs: 3.2, 3.4
   - **Lane** HAR · **Agent** devops · **Wave** W3
-  - **Owns** `engine/tooling/{route-parity,config-drift,db,worktree}/**`, `.prettierignore`, `.env.example`
+  - **Owns** `engine/tooling/{route-parity,config-drift,db,worktree}/**`, `.prettierignore`, `.env.example`, `.github/workflows/e2e.yml`
   - **Read** 3.2's report (the Log line of 2026-09-30); ARCHITECTURE.md §2; DEPLOYMENT.md §8; `engine/packages/cms/package.json` scripts (`schema:check`, `generate:types`, `generate:importmap`, `migrate`)
   - _Requirements: 1.5, 1.8_
-  - [ ] 3.5.a `route-parity`: its test stops asserting the real repo has no `cms/src/collections` (build discovery from a sandbox root, or assert `users` is found); discovery also reads `COLLECTION_SLUGS` from `cms/src/registries/collections.ts`, so a stub slug counts
-  - [ ] 3.5.b `check:generated` runs the real generators with `BRAND` unset and once per brand (and each `TEST_STOREFRONT`): the migration snapshot through `schema:check` / `schema:check print`, the one `engine/packages/cms/payload-types.ts` through `generate:types`, and `generate:importmap <app>` once an app has an admin mount (skipped with a notice before 4.1) — none of them given a `DATABASE_URL`
-  - [ ] 3.5.c `db:fresh`'s migrate hook runs `pnpm --filter @engine/cms migrate` against the new database with a dev `PAYLOAD_SECRET`, and `--no-migrate` leaves it empty for a schema author's one push boot (PARALLEL-TRACKS.md §3.2); `.prettierignore` gains `**/importMap.js`; `.env.example` documents `PAYLOAD_SECRET`, `PAYLOAD_DEV_PUSH` (one boot, on an empty database only), `RUN_MIGRATIONS` with `NODE_ENV=production`, and optional `S3_REGION`
-  - [ ] 3.5.e `worktree:env`'s `generateDevRing()` refuses everything C1 v1.2's `parseLinkTokenKeys()` refuses (stepped runs, repeated blocks — 3.4.f), and its test's "accepted" draw is random (today a stride of 37, which v1.2 rightly refuses); `.env.example` says a seller's shipping secrets follow its own `sellers[].shipping`
+  - [x] 3.5.a `route-parity`: its test stops asserting the real repo has no `cms/src/collections` (build discovery from a sandbox root, or assert `users` is found); discovery also reads `COLLECTION_SLUGS` from `cms/src/registries/collections.ts`, so a stub slug counts
+  - [x] 3.5.b `check:generated` runs the real generators with `BRAND` unset and once per brand (and each `TEST_STOREFRONT`): the migration snapshot through `schema:check` / `schema:check print`, the one `engine/packages/cms/payload-types.ts` through `generate:types`, and `generate:importmap <app>` once an app has an admin mount (skipped with a notice before 4.1) — none of them given a `DATABASE_URL`
+  - [x] 3.5.c `db:fresh`'s migrate hook runs `pnpm --filter @engine/cms migrate` against the new database with a dev `PAYLOAD_SECRET`, and `--no-migrate` leaves it empty for a schema author's one push boot (PARALLEL-TRACKS.md §3.2); `.prettierignore` gains `**/importMap.js`; `.env.example` documents `PAYLOAD_SECRET`, `PAYLOAD_DEV_PUSH` (one boot, on an empty database only), `RUN_MIGRATIONS` with `NODE_ENV=production`, and optional `S3_REGION`
+  - [x] 3.5.e `worktree:env`'s `generateDevRing()` refuses everything C1 v1.2's `parseLinkTokenKeys()` refuses (stepped runs, repeated blocks — 3.4.f), and its test's "accepted" draw is random (today a stride of 37, which v1.2 rightly refuses); `.env.example` says a seller's shipping secrets follow its own `sellers[].shipping`
+  - [ ] 3.5.f `e2e.yml` makes the two `test` databases with `db:fresh --brand test --storefront gallery|emporium --suffix ci` (now migrated for real), its extension loop and comments follow, and the CI run on the merge is green
   - [ ] 3.5.d **Check:** `pnpm verify` green on 3.2, 3.4 and this merged together; a planted field in `users` makes `check:generated` fail and passes once removed; a brand-shaped difference in the config fails it; `pnpm db:fresh --brand test --storefront gallery` leaves a migrated database whose `schema-hash` equals the others'.
 
 ---
