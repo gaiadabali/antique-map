@@ -18,7 +18,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
-| **2** Local infrastructure, quality gates and CI | Foundation | 1 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
+| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 0/4 | 3/22 | 0 | `█░░░░░░░░░`  14% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **3/160** | **24/712** | **46** | `░░░░░░░░░░`   3% |
+| **All** | 44 phases | | | **3/160** | **27/712** | **46** | `░░░░░░░░░░`   4% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -338,9 +338,9 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Owns** `docker-compose.dev.yml`, `.env.example`, `engine/tooling/db/**`
   - **Read** DEPLOYMENT.md §1, §8
   - _Requirements: 1.1, 19.7_
-  - [ ] 2.1.a compose: `postgres:18` with an init script enabling `unaccent`, `pg_trgm`; Mailpit; MinIO with bootstrap buckets `ig-media`, `oei-media`, `test-media`, `archive-masters`
-  - [ ] 2.1.b `db:fresh --brand <slug> [--suffix <lane>]` (`--suffix` and the port default to `DB_SUFFIX`/`PORT` in `.env.local`, written by 1.3's `pnpm worktree:env`; add both to `.env.example`), `db:drop`, `db:list` (create, migrate, seed — seed hook no-op until 10.2)
-  - [ ] 2.1.c `.env.example` documenting every variable in DEPLOYMENT.md §8, grouped, with safe local defaults
+  - [x] 2.1.a compose: `postgres:18` with an init script enabling `unaccent`, `pg_trgm`; Mailpit; MinIO with bootstrap buckets `ig-media`, `oei-media`, `test-media`, `archive-masters`
+  - [x] 2.1.b `db:fresh --brand <slug> [--suffix <lane>]` (`--suffix` and the port default to `DB_SUFFIX`/`PORT` in `.env.local`, written by 1.3's `pnpm worktree:env`; add both to `.env.example`), `db:drop`, `db:list` (create, migrate, seed — seed hook no-op until 10.2)
+  - [x] 2.1.c `.env.example` documenting every variable in DEPLOYMENT.md §8, grouped, with safe local defaults
   - [ ] 2.1.d **Check:** `docker compose -f docker-compose.dev.yml up -d` then `pnpm db:fresh --brand test --suffix smoke` creates a database with `unaccent` and `pg_trgm` on Windows (Docker Desktop) and in CI; and two worktrees made by `pnpm worktree` each run `db:fresh` against their own suffix without touching the other (1.3.c's deferred clause).
 
 - [ ] **2.2 Quality-gate tooling** · needs: 1.1
