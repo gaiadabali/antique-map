@@ -52,10 +52,12 @@ describe('createBrand', () => {
     const schemaDir = join(sandbox, 'engine', 'packages', 'config', 'src')
     mkdirSync(schemaDir, { recursive: true })
     // A fixture schema that rejects everything (any real scaffold included) —
-    // stands in for a C1 change the scaffold has not caught up with yet.
+    // stands in for a C1 change the scaffold has not caught up with yet. It
+    // imports nothing: the sandbox is outside the repo, so `zod` resolves only
+    // where a stray node_modules sits above the temp dir (a laptop, not CI).
     writeFileSync(
       join(schemaDir, 'schema.ts'),
-      "import { z } from 'zod'\nexport const brandConfigSchema = z.strictObject({ mustHave: z.literal('nope') })\n",
+      "export const brandConfigSchema = {\n  safeParse: () => ({\n    success: false,\n    error: { issues: [{ path: ['mustHave'], message: 'Required' }] },\n  }),\n}\n",
     )
     const slug = 'fixture-atlas'
     await expect(createBrand(sandbox, { slug, storefront: 'gallery' })).rejects.toThrow(
