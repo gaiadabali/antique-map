@@ -1,0 +1,71 @@
+# Local infrastructure shared by every worktree (TASKS.md 2.1.a, DEPLOYMENT.md §1).
+# One Postgres, one Mailpit, one MinIO for the whole machine — isolation between
+# lanes is by database name suffix (engine/tooling/db) and bucket prefix, not by
+# separate containers. Never `latest`: every image is pinned to a tag that was
+# verified pullable when this file was written.
+#
+# A fixed project name: every worktree is its own directory, and `docker
+# compose` otherwise derives the project name (and so the container set) from
+# the directory it is run in — two worktrees would each get their own
+# Postgres instead of sharing one. `engine/tooling/db/psql.mjs` passes this
+# same name explicitly, so any worktree reaches the one running stack.
+name: indies-platform-dev
+services:
+  postgres:
+    image: postgres:18.0
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      # postgres:18+ stores data under /var/lib/postgresql/<version>, so the
+      # volume mounts one level up (docker-library/postgres#1259) — mounting
+      # at .../data as earlier majors did refuses to start.
+      - postgres-data:/var/lib/postgresql
+      - ./engine/tooling/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:v1.31.3
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP — SMTP_HOST=localhost SMTP_PORT=1025 (DEPLOYMENT.md §8)
+      - '8025:8025' # web UI
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:8025/readyz']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    # Bitnami's frozen "legacy" line — the upstream minio/minio image now
+    # requires a registered pull; this tag was verified pullable anonymously.
+    image: bitnamilegacy/minio:2025.7.23-debian-12-r5
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      # Bootstrap buckets declaratively on first start (2.1.a) — no init
+      # container needed, the image ships its own `mc`.
+      MINIO_DEFAULT_BUCKETS: 'ig-media,oei-media,test-media,archive-masters'
+    ports:
+      - '9000:9000' # S3 API — S3_ENDPOINT=http://localhost:9000
+      - '9001:9001' # console
+    volumes:
+      - minio-data:/bitnami/minio/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://127.0.0.1:9000/minio/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres-data:
+  minio-data:
