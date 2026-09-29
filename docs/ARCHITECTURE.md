@@ -183,8 +183,10 @@ migrated, and holds, offers and price-on-request become draft orders and apps.
 
 Every channel — web checkout, accepted offer, staff hold, institutional invoice,
 a manual showroom sale — reserves through **one service**,
-`domain/reservations/reserve.ts` (`reserve`, `extend`, `release`, `convert`,
-`reverse`; its signature is contract C8), and nothing else writes a reservation.
+`domain/reservations/reserve.ts` (`reserve` for one target, `reserveAll` for
+several at once — a bag at "Continue to payment" — `extend`, `release`,
+`convert` and `reverse` taking ids in bulk; its signature is contract C8), and
+nothing else writes a reservation.
 
 - **A scalar key, not a relation.** Payload stores polymorphic relationships in
   a `_rels` table, which has no column to index. So `reserve()` writes a
@@ -193,19 +195,23 @@ a manual showroom sale — reserves through **one service**,
 - **The index guards sold items too.** For exclusive targets (unique items and
   numbered edition units) a partial unique index on `target_key WHERE status IN
   ('active', 'converted')` makes a second reservation impossible while one is
-  live **or after the sale**. A refund or an accepted return moves the row
-  `converted → reversed`, which releases the item. A second checkout gets a typed
-  conflict, never an order. The index is declared through the Postgres adapter's
-  `afterSchemaInit` / `extendTable` hook (a drizzle `uniqueIndex().on().where()`),
-  so migrations **and** a dev push both carry it — a raw-SQL index would be
-  dropped by a dev push and let concurrency tests pass without it.
+  live **or after the sale**. Only an order cancelled after payment, or an
+  accepted return, moves the row `converted → reversed`, releasing the item — a
+  **refund alone never does**: a refund issued at the provider (in its own
+  dashboard, never in the admin) leaves the item sold until staff cancel the
+  order or accept a return. A second checkout gets a typed conflict, never an
+  order. The index is declared through the Postgres adapter's `afterSchemaInit`
+  / `extendTable` hook (a drizzle `uniqueIndex().on().where()`), so migrations
+  **and** a dev push both carry it — a raw-SQL index would be dropped by a dev
+  push and let concurrency tests pass without it.
 - **Counted stock:** `UPDATE stock_levels SET reserved = reserved + $q WHERE id =
   $1 AND on_hand - reserved >= $q` — the row count is the answer.
 - **Expiry happens inside the next reservation.** `reserve()` first moves any
   expired `active` rows for its target to `expired` (and returns their quantity to
   `stock_levels.reserved`) in the same transaction, so an expired-but-unswept
   lock can never block a buyer. The minute sweeper is housekeeping, not
-  correctness.
+  correctness — it takes its rows with `FOR UPDATE SKIP LOCKED`, so it never
+  waits behind a buyer.
 - **The lock outlives the payment window.** A checkout lock starts at 15 minutes
   when the buyer continues to payment; when the buyer picks a method it is
   **extended** to that method's session lifetime plus a margin
@@ -214,6 +220,19 @@ a manual showroom sale — reserves through **one service**,
   it are **authorised, then captured only while the reservation is live**;
   cash-at-retail methods are never offered for unique items. No payment completes
   against an expired reservation without going through the late-payment path.
+- **One isolation level, one lock order, so no two writers deadlock or abort
+  each other.** Every domain write runs READ COMMITTED (`DOMAIN_TX_ISOLATION`)
+  — never REPEATABLE READ or SERIALIZABLE, where the same race raises a
+  serialization failure instead of waiting — and takes rows in one fixed order:
+  the dedupe row (`idempotency_keys`, `payment_events` or
+  `payment_events_unmatched`), the request being answered, the order, its
+  payment attempts, their refunds, reservations by `target_key`, stock levels
+  by `(variant, location)`, then counters, the document sequence last
+  (`domain/contracts/transactions.ts` `LOCK_ORDER`). Named timeouts —
+  `lock_timeout`, `statement_timeout`, a provider call's own budget, an idle
+  ceiling that outlasts it, and a whole-transaction ceiling that outlasts all
+  three — are set with `SET LOCAL` as each transaction begins, so a server
+  default can never undercut them.
 - **Payment and sale in one transaction.** A verified webhook's dedupe row, the
   payment, the reservation's conversion and the order's move to `paid` are
   written in **one** transaction; if any step fails, all roll back — including
@@ -222,7 +241,10 @@ a manual showroom sale — reserves through **one service**,
 - **Late payment:** a payment that arrives after its reservation expired is
   re-reserved and sold to that buyer if the item is still available, and
   otherwise refunded automatically (or its authorisation voided) with the reason
-  in words, the same minute.
+  in words, the same minute. A second payment settling on an order another
+  attempt already paid is given back whole the same way
+  (`duplicate-payment-refused`), and the order and its own payment stand
+  untouched.
 - **Availability is a state machine too** (COMMERCE.md §6): an item is
   `available`, `reserved`, `sold` or `withdrawn`, derived from reservations and
   product status — never a field an admin types.
@@ -396,13 +418,22 @@ because Next analyses it statically.
 REST API (`/api/media/file/…` and the admin's lookups); the route-parity check
 fails if an engine route's first segment equals a collection slug, `payload-jobs`
 or `graphql`. A write that a cookie authenticates — the cart, the customer
-session, order access, each `HttpOnly`, `Secure` and `SameSite=Lax` — is refused
-unless it comes from the site itself (`Origin` or `Sec-Fetch-Site`; C13
-`sameOrigin`), and no credential travels in a URL beyond a page's own capability
-(a payment link's or a quote's token) and the one-hop links an email carries
-(order access, an application's status, set-password and reset, email
-verification, one-click unsubscribe), each of which but the unsubscribe moves its
-token into a cookie and answers 303 to a clean page. **A form works without
+session, order access, a want list's own access, each `HttpOnly`, `Secure` and
+`SameSite=Lax` — is refused unless it comes from the site itself (`Origin` or
+`Sec-Fetch-Site`; C13 `sameOrigin`), and no credential travels in a URL beyond
+a page's own capability (a payment link's or a quote's token) and the one-hop
+links an email carries (order access, an application's status, set-password
+and reset, email verification, a want list's confirm and account access,
+one-click unsubscribe), each of which but the unsubscribe moves its token into
+a cookie and answers 303 to a clean page. **The want-lists area** (C10
+`wantList`, C13's `want-lists` routes) reads this exactly like an order: its
+confirmation and every alert carry the list's token, which the link stores in
+`WANT_LIST_ACCESS`'s cookie before it answers 303 to the want-list page, so the
+token itself never enters the page's HTML or its scripts. RFC 8058's one-click
+unsubscribe is the sole exception, for a want-list alert exactly as for the
+newsletter: the one POST the same-origin check still admits from outside the
+site, because it is the mail client's own action and carries its token in the
+URL by design — the only page-level credential that ever does. **A form works without
 JavaScript** (C13 `FORM_RESULT`): a script's post gets JSON; an HTML form post
 answers 303 See Other to its page (a `returnTo` the handler checks against C10),
 and its outcome waits on the server under an `HttpOnly` cookie holding an opaque
@@ -445,7 +476,12 @@ Security headers from the app (tested); the **CSP is built per request in the
 proxy from brand config** — its analytics and payment-provider origins are
 runtime values, because `NEXT_PUBLIC_*` variables and a build-time CSP would bake
 one brand's (or no brand's) settings into a shared build; hashes or
-`strict-dynamic`, not nonces. Rate limits on auth, forms, offers and checkout,
+`strict-dynamic`, not nonces. **`img-src` allows the configured sister's media
+host too** (`brand.sisters[].baseUrl`'s origin): a sister link renders the other
+brand's derivative images straight from where they are, never copied into this
+brand's bucket or re-derived (BRANDS.md §5, C12 `SnapshotImage`), so a build
+that forgets the sister's host would fail silently as a blocked image, not a
+missing one. Rate limits on auth, forms, offers and checkout,
 webhook signature verification with replay protection, hosted payment fields or
 redirects only (PCI SAQ-A), PII minimised on orders shown in the admin list
 views, admin on a public path with lockout and rate-limited sign-in (NOW!'s

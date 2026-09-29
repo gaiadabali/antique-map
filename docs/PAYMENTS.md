@@ -59,12 +59,15 @@ type PaymentGateway = {
   }): { chargeCurrency: CurrencyCode
         methods: { method: PaymentMethod            // granular: 'va-bca', 'gopay', 'card' … each in one C1 family
                    sessionTtl: Duration              // PER METHOD — how long it can take; drives extend()
+                   presentation: SessionResult['kind']  // what createSession() will return: told before choosing
                    authCapture: boolean
                    refunds: 'full' | 'partial' | 'manual-only'
                    cap: Money | null }[] } | null
 
   /** attemptId is OUR reference: committed before this call, echoed back on every event. The
-   *  DOMAIN stores the returned SessionResult and replays it on retry — the adapter keeps no state. */
+   *  DOMAIN stores the returned SessionResult and replays it on retry — the adapter keeps no state.
+   *  charge is C5's minor units; an adapter whose provider counts differently (IDR in hundredths)
+   *  converts on the way in and on the way out — never in the domain, never twice. */
   createSession(input: {
     attemptId: string; orderRef: string; charge: Money; display: Money | null; fx: FxSnapshot | null
     method: PaymentMethod | null; customer: Contact; lines: LineSummary[]
@@ -140,6 +143,20 @@ The caps are **data** (`payments/src/limits.ts`, sourced and dated), because
 they change — QRIS moved to IDR 10 m under PADG 3/2025. A method that would fail
 at the provider is never shown.
 
+**Each option the page offers (C6 `PaymentOptionView`) says, before the buyer
+chooses:** its `family` — C1's grouping (card, e-wallet, VA, retail, paylater,
+bank-transfer, express-wallet, PayPal, QRIS, PayNow, iDEAL, SEPA…), which is how
+the page groups the methods rather than listing every granular one flat — its
+`presentation` (C7 `MethodCapability.presentation`: the `SessionResult` kind
+`createSession()` will return — a redirect, an embedded card form, a virtual
+account to pay from a bank app, a QR, or settled off-platform), and its
+`sessionTtl` — "pay within 15 minutes" is true because the domain reads it to
+size `extend()` (rule 4). Once a session starts, `PaymentStarted.dailyCapWarning`
+is set when the amount is above the daily transfer limit many buyers' banks set
+for that method — a VA or a bank transfer, checked against the dated limits
+beside the caps above — so the payment-pending page warns before a transfer
+fails at the buyer's own bank, not at the provider's.
+
 | Method | Cap per transaction | Refund |
 | ------ | ------------------- | ------ |
 | QRIS | IDR 10 m | issuer-dependent, often full only, 7-day window |
@@ -156,17 +173,33 @@ large VA payment says so rather than letting it fail mysteriously.
 ## 4. Webhooks, idempotency, reconciliation
 
 ```
-POST /api/x/webhooks/payments/{provider}
-  → adapter.parseWebhook()          signature verified on the RAW body; failure → 401 + alert
+POST /api/x/webhooks/payments/{provider}/{seller}
+  → adapter.parseWebhook()          signature verified on the RAW body, with this seller's secret;
+                                    failure → 401 + alert
   → adapter.retrieve()              where the provider advises it (Midtrans): confirm the status
                                     from the provider's API before trusting the notification
-  → domain.applyPaymentEvent()      ONE transaction, in this order:
-        1. INSERT payment_events (provider, provider_event_id) ON CONFLICT DO NOTHING RETURNING id
-           no row → it is a duplicate → commit the no-op → 200
-        2. payment state + reservation conversion + order state + domain_events (outbox)
+  → domain.applyPaymentEvent()      ONE transaction (a short one precedes it for an authorised
+                                    event only, to secure the reservation before any capture):
+        1. find the attempt by our attemptRef, else by (provider, sellerId, providerRef) — none, or
+           one of another seller: recorded in payment_events_unmatched, alerted, dedupe key NOT
+           consumed (→ unknown-attempt), so it still applies once the attempt turns up
+        2. INSERT payment_events (provider, seller_id, provider_event_id, attempt_id)
+           ON CONFLICT DO NOTHING RETURNING id — no row → duplicate → commit the no-op → 200
+        3. lock the order, then the attempt (FOR UPDATE), and classify: a move the table has →
+           apply; ranked at or below the attempt → ignored-stale; ranked above (early) →
+           retrieve() and apply the provider's state first, then the event → caught-up
+        4. apply: payment state + reservation conversion + order state + domain_events (outbox)
         any failure → ROLLBACK (the dedupe row goes too) → 5xx → the provider retries
   → 200
 ```
+
+Secrets, and so this route, are **per seller**: two sellers on one provider
+never share a dedupe key space (`payment_events`'s unique key is `provider,
+seller_id, provider_event_id`). `applyPaymentEvent()` answers one of eight
+outcomes — `applied` · `caught-up` · `duplicate` · `late-payment-resolved` ·
+`duplicate-payment-refused` · `ignored-stale` · `unknown-attempt` · `flagged`
+(C8 `ApplyPaymentEventOutcome`) — the handler answers 200 for every one of
+them; only a throw answers 5xx, so the provider retries.
 
 - `applyPaymentEvent` and the payment state machine belong to the **domain**
   (`@engine/domain`); the payments lane owns only the adapters, routing and the
