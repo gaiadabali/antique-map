@@ -156,6 +156,9 @@ export default defineConfig([
     // Repeats boundary 2's patterns: a later config replaces a rule's options.
     name: 'boundary 3: view-models imports types only',
     files: ['engine/packages/view-models/**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}'],
+    // Its tests run the fixtures (vitest, CURRENCY_EXPONENT) and ship to no consumer; boundary
+    // 2 still applies to them.
+    ignores: ['engine/packages/view-models/test/**'],
     rules: {
       '@typescript-eslint/no-restricted-imports': [
         'error',
