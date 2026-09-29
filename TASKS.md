@@ -413,12 +413,13 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [ ] **3.3 Tooling follow-ups from 3.1: a valid brand scaffold and a dev link-key ring** · needs: 3.1
   - **Lane** HAR · **Agent** devops · **Wave** W2
-  - **Owns** `engine/tooling/brand-create/**`, `engine/tooling/worktree/**`, `engine/tooling/tasks-lint/**`, `.env.example`
+  - **Owns** `engine/tooling/brand-create/**`, `engine/tooling/worktree/**`, `engine/tooling/tasks-lint/**`, `.env.example`, root `package.json` (the `verify` script only)
   - **Read** 3.1's report (Follow-ups F3, F5; the Log line of 2026-09-30); BRANDS.md §6; DEPLOYMENT.md §8; C1 (`config/src/schema*`) and C6 `links`
   - _Requirements: 1.7, 19.7_
   - [ ] 3.3.a `brand:create`'s scaffold satisfies C1's rupiah rule (an `ID` market in IDR, an IDR rounding ladder and buffer, the seller charging IDR), `createBrand` validates with `validateBrandConfig()` from `@engine/config/validate` rather than the schema alone, and the CLI's "does not exist yet — 3.1" message goes
   - [ ] 3.3.b `worktree:env` writes a fresh random `LINK_TOKEN_KEYS` ring (one current `dev` key of 32 random bytes) into `.env.local` when absent; `.env.example` documents `LINK_TOKEN_KEYS`, `LOADERS_SOURCE` and the provider `*_MODE` variables bootCheck reads
   - [ ] 3.3.d `tasks-lint` accepts the board's own status suffixes on a task line — `— 🔄 N·Wk`, `— ⛔ <reason>`, `— ✂️ cut: <reason>` — as well as `— ✅ date sha` (today only ✅ parses, so a dispatched task fails `needs-resolvable`)
+  - [ ] 3.3.e `pnpm verify` runs the gates DISPATCH.md says it does — `check:filesize`, `lint:brand-literals`, `check:routes`, `check:generated`, `tasks:lint` — after format, lint, types and unit (today it runs only the last four, so a merge can pass `verify` with a gate red)
   - [ ] 3.3.c **Check:** `pnpm brand:create` for each storefront scaffolds a brand that passes `validateBrandConfigs()` (a test); a new worktree's `.env.local` carries a ring that `bootCheck()` accepts, and re-running `worktree:env` keeps it; a task line marked 🔄, ⛔ or ✂️ lints clean (a test); `pnpm verify` green.
 
 - [ ] **3.4 Contract follow-ups from the 3.1 reviews (v1.2)** · needs: 3.1
