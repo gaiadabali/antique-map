@@ -18,7 +18,9 @@ import type { Assert, Equals } from './type-assertions'
  * `proposal` is the one amount a client ever sends, and it is a bid, not a price: in the market
  * currency of the buyer's ship-to (anything else is `invalid`), judged on the server against the
  * private floor — below it the offer is declined at once, courteously — and charged only if staff
- * accept it, through an `offer` hold and a payment link.
+ * accept it, through an `offer` hold and a payment link. Posted without JavaScript it is one text
+ * field, `proposal` — major units in ASCII digits, the currency taken from the ship-to — that C13's
+ * decoder converts by the currency's exponent (`FORM_DECODING`); a script sends the Money itself.
  */
 export type OfferSubmitRequest = {
   readonly productId: ProductPublicId

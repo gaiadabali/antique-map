@@ -55,6 +55,9 @@ export const SURFACE_ROUTES = {
   partnership: { internal: 'partnership', module: 'accounts.retailers' },
   // A guest's saved items, kept on the device (D35): the shop's wishlist, with no account.
   wishlist: { internal: 'wishlist', module: 'retention.deviceWishlist' },
+  // Where every want-list alert link leads, to save the subject its query names, and where an
+  // address's emails land (C13 `WANT_LIST_ACCESS`) to confirm or stop its list (D39).
+  wantList: { internal: 'want-list', module: 'retention.emailWantList' },
   notFound: { internal: null },
   gone: { internal: null },
   error: { internal: null },

@@ -8,10 +8,14 @@
  * at compile time, that no request can carry a price.
  *
  * Without JavaScript (C13): an HTML form post answers 303 back to its page, and the answer waits
- * on the server, briefly, under a cookie that holds only an opaque id. Every answer here is plain
- * JSON (proved below), so any can wait that way. One that carries a token — an order lookup's, a
- * quote's, a pay link's, a return's, an enquiry's — waits like a secret: short-lived, read once,
- * bound to the browser that posted, never logged. `retailer.apply`'s is the same for everyone.
+ * on the server under C13's `FORM_RESULT`, whose cookie holds only an opaque id. Every answer here
+ * is plain JSON (proved below), so any can wait that way. It waits for at most
+ * `FORM_RESULT.maxAgeSeconds`, bound to the browser that posted, and is deleted once the response
+ * that shows it has been sent — never on first read, so a second render or a prefetch in that
+ * request still finds it. One that carries a token — an order lookup's, a quote's, a pay link's, a
+ * return's, an enquiry's — waits like a secret besides: never logged, and never rendered, since the
+ * page shows the answer and not its token (a lookup's lives on in its own cookie). `retailer.apply`'s
+ * and an address's `wantList.subscribe` answer are the same for everyone.
  */
 import type { Money } from '../money/contract'
 import type {
@@ -28,21 +32,26 @@ import type {
 import type * as Cart from './cart'
 import type * as Checkout from './checkout'
 import type * as Leads from './leads'
+import type * as Paying from './paying'
 import type { IsServerPriced, LineInput } from './requests'
 import type { ApiResult, ProblemCode, ProblemOf } from './results'
 import type * as Retailers from './retailers'
 import type { JsonValue } from './scalars'
 import type * as Services from './services'
+import type * as WantLists from './want-lists'
 import type { Assert, Equals } from './type-assertions'
 
 export type * from './after-sale'
 export type * from './cart'
 export type * from './checkout'
 export type * from './leads'
+export type * from './orders'
+export type * from './paying'
 export type * from './requests'
 export type * from './results'
 export type * from './retailers'
 export type * from './services'
+export type * from './want-lists'
 /** The wire vocabulary other contracts share (C7, C12): instants, durations, raw webhooks. */
 export type * from './scalars'
 
@@ -101,19 +110,15 @@ export type CommerceApi = {
     'not-found' | Priced
   >
   readonly 'payment.start': Op<
-    Checkout.PaymentStartRequest,
-    Checkout.PaymentStarted,
+    Paying.PaymentStartRequest,
+    Paying.PaymentStarted,
     'not-found' | 'method-unavailable' | Priced
   >
-  readonly 'payment.status': Op<
-    Checkout.PaymentStatusRequest,
-    Checkout.PaymentStatusView,
-    'not-found'
-  >
-  readonly 'payLink.get': Op<Checkout.PayLinkGetRequest, Checkout.PayLinkView, 'not-found'>
+  readonly 'payment.status': Op<Paying.PaymentStatusRequest, Paying.PaymentStatusView, 'not-found'>
+  readonly 'payLink.get': Op<Paying.PayLinkGetRequest, Paying.PayLinkView, 'not-found'>
   readonly 'payLink.start': Op<
-    Checkout.PayLinkStartRequest,
-    Checkout.PaymentStarted,
+    Paying.PayLinkStartRequest,
+    Paying.PaymentStarted,
     'not-found' | 'method-unavailable' | Priced
   >
   readonly 'offer.submit': Op<
@@ -166,6 +171,20 @@ export type CommerceApi = {
   readonly 'quote.reorder': Op<Retailers.QuoteReorderRequest, QuoteView, 'not-found'>
   readonly 'quote.get': Op<QuoteGetRequest, QuoteView, 'not-found'>
   readonly 'quote.accept': Op<QuoteAcceptRequest, QuoteView, 'not-found' | Priced>
+  readonly 'wantList.subscribe': Op<
+    WantLists.WantListSubscribeRequest,
+    WantLists.WantListSubscribeReceipt,
+    'not-found'
+  >
+  readonly 'wantList.confirm': Op<
+    WantLists.WantListConfirmRequest,
+    WantLists.WantListView,
+    'not-found'
+  >
+  readonly 'wantList.unsubscribe': Op<
+    WantLists.WantListUnsubscribeRequest,
+    WantLists.WantListUnsubscribeReceipt
+  >
 }
 
 export type CommerceOperation = keyof CommerceApi

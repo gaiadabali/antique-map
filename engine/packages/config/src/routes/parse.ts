@@ -168,6 +168,17 @@ function segmentSurface(
       if (!section || more.length > 0) return NOT_FOUND
       return match('account', locale, one === undefined ? {} : { section }, path(section))
     }
+    case 'wantList': {
+      if (one !== undefined) return NOT_FOUND
+      const all = reader(search)
+      const [watch] = all('watch')
+      const like = Number(all('like')[0])
+      const params: HrefParams['wantList'] = {
+        ...(watch ? { watch } : {}),
+        ...(Number.isSafeInteger(like) && like > 0 ? { like } : {}),
+      }
+      return match('wantList', locale, params, query({ watch: params.watch, like: params.like }))
+    }
     case 'design':
     case 'order':
     case 'pay':

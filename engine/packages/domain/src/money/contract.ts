@@ -59,8 +59,11 @@ export type {
  *   payloads. Never a float, never a string, never a BigInt across the wire. Stored as `bigint`
  *   with `CHECK (amount BETWEEN 0 AND MONEY_AMOUNT_MAX)` and read with drizzle's
  *   `bigint({ mode: 'number' })` (../contracts/storage.ts, for SCH).
- * - Minor units follow ISO 4217: IDR has exponent 0 (Rp 95.000 is `95000`); USD, SGD, EUR, AUD
- *   and GBP have 2 (USD 10.00 is `1000`). Read `CURRENCY_EXPONENT`; never assume 100.
+ * - Minor units follow `CURRENCY_EXPONENT` (C1) — the engine's exponents, not ISO 4217's
+ *   everywhere: IDR is 0 here (Rp 95.000 is `95000`) though ISO lists 2, while USD, SGD, EUR,
+ *   AUD and GBP are 2 as in ISO (USD 10.00 is `1000`). Read the exponent; never assume 100. A
+ *   provider that counts in other units (IDR in hundredths) is converted by its C7 adapter, both
+ *   ways, at its own boundary — never in the domain, never twice.
  * - `amount` is never negative. A deduction — a discount, a refund, a gift-card application — is
  *   a non-negative amount in a field named for the deduction, so a sign is never lost or doubled.
  * - Arithmetic only within one `currency`. Changing currency is an FX conversion, rounded at the
@@ -97,6 +100,16 @@ type PriceBase = {
  * - `market-currency` — the charge is already in the market's currency.
  * - `converted` — the seller charges in another currency, and `estimate` is the charge converted
  *   into the market's currency: "≈ €1,020 — charged in USD 1,100".
+ *
+ * An estimate claims no more precision than a day's rate supports: it is converted at the
+ * `fx-conversion` point half-even to a WHOLE major unit of its currency (`amount` a multiple of
+ * 10^exponent), and shown without fraction digits after "≈". The charge is exact to the minor unit.
+ *
+ * Display (`formatMoney`, `@engine/i18n`, TASKS.md 3.1.b) fixes the fraction digits itself —
+ * `CURRENCY_EXPONENT[currency]` for an amount, none for an estimate — and never takes the
+ * runtime's ICU default for the currency, which differs between Node and browsers (some give IDR
+ * two): the server's render and the browser's would disagree, and hydration would fail. A
+ * component never formats, rounds or sums a Money itself.
  */
 export type PriceSet =
   | (PriceBase & { readonly basis: 'sole-currency'; readonly estimate: null })
@@ -139,8 +152,10 @@ export type FxSnapshot = {
  * - `line-discount` — half-even to the minor unit.
  * - `order-discount-allocation` — largest remainder, so the lines sum to the order figure exactly.
  * - `tax-per-line` — half-even on the line's tax base; an order's tax is the sum of its lines.
- * - `fx-conversion` — half-even. Where the result is a market unit price, `market-unit-price`
- *   follows it: the one sanctioned sequence of two roundings, and both are recorded.
+ * - `fx-conversion` — half-even: to the minor unit for a figure that is charged, to a whole
+ *   major unit for a display estimate (`PriceSet.estimate`, never stored). Where the result is a
+ *   market unit price, `market-unit-price` follows it: the one sanctioned sequence of two
+ *   roundings, and both are recorded.
  * - `partial-refund-allocation` — largest remainder across the refunded lines.
  */
 export type RoundingMethodAt = {

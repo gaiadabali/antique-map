@@ -188,7 +188,7 @@ export const cartUniqueHeld: CartVM = {
       problems: [
         { code: 'unavailable', lineId: 'g2', state: 'held', heldUntil: '2026-09-25T02:15:00.000Z' },
       ],
-      remedy: { kind: 'wantList', href: '/account/want-lists?like=1001' },
+      remedy: { kind: 'wantList', href: '/alerts?like=1001' },
     }),
   ],
   checkouts: [

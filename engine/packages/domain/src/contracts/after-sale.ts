@@ -12,9 +12,8 @@ import type {
   TradeMinimumShortfall,
   TradeMinimumWaiver,
 } from '../money/contract'
-import type { OrderStatus } from '../order/machine'
-import type { PaymentStatus } from '../payment/machine'
-import type { OrderedLineView, SellerIdentity } from './checkout'
+import type { SellerIdentity } from './checkout'
+import type { OrderSummaryView } from './orders'
 import type {
   ContactInput,
   InstitutionInput,
@@ -28,52 +27,13 @@ import type { IdempotencyKey, PricedTotals, PricingToken } from './results'
 import type { IsoDate, IsoInstant } from './scalars'
 import type { Accepts, Assert, Equals } from './type-assertions'
 
-/** A stored order's figures as the buyer reads them: no token, because nothing is committed. */
-export type OrderTotalsView = Omit<PricedTotals, 'token'>
-
-/** A courier's progress, normalised across carriers (C7 shipping events map onto it). */
-export type ShipmentStatus =
-  | 'label-created'
-  | 'ready-for-pickup'
-  | 'picked-up'
-  | 'in-transit'
-  | 'out-for-delivery'
-  | 'delivered'
-  | 'collected'
-  | 'exception'
-  | 'returned-to-sender'
-
-export type ShipmentView = {
-  readonly carrier: string | null
-  readonly service: string | null
-  readonly trackingNumber: string | null
-  readonly trackingUrl: string | null
-  readonly status: ShipmentStatus
-  readonly events: readonly {
-    readonly at: IsoInstant
-    readonly status: ShipmentStatus
-    readonly description: string
-  }[]
-  /** A pickup's collection code (also shown as a QR). */
-  readonly pickupCode: string | null
-}
-
-/** An ordered line (as snapshotted), and whether a return can be asked for it. */
-export type OrderLineView = OrderedLineView & { readonly returnable: boolean }
-
-export type OrderSummaryView = {
-  readonly number: string
-  readonly placedAt: IsoInstant
-  readonly status: OrderStatus
-  /** The attempt that paid the order; before one has, the latest attempt's status. */
-  readonly payment: PaymentStatus
-  readonly seller: SellerIdentity
-  readonly lines: readonly OrderLineView[]
-  readonly totals: OrderTotalsView
-  readonly shipments: readonly ShipmentView[]
-}
-
-/** Guest tracking. A wrong number and a wrong email answer the same `not-found`; rate-limited. */
+/**
+ * Guest tracking. A wrong number and a wrong email answer the same `not-found`; rate-limited. A
+ * form posts `orderNumber`, `email` and `whatsapp` — the fields are named for this request, and
+ * C13's decoder reads the one left blank as `null`. Neither given is `invalid` on `email`
+ * (`required`), and both given on `whatsapp` (`not-allowed`): a rule across fields reports on a
+ * field the form has (`FieldError`).
+ */
 export type OrderLookupRequest = { readonly orderNumber: string } & (
   | { readonly email: string; readonly whatsapp: null }
   | { readonly email: null; readonly whatsapp: string }
@@ -197,6 +157,18 @@ export type QuoteTradeView = {
 }
 export type QuoteWaiverView = Pick<TradeMinimumWaiver, 'at' | 'shortfall'>
 
+/**
+ * Who a quote is for, as issued — printed on its PDF, and shown on its page only to whoever opens
+ * it (its token, or the partner's session: C10 `quote` is `sensitive`). A partner's comes from its
+ * record (`taxId` its NPWP or tax number, for the tax-invoice export); a field not given is null.
+ */
+export type QuoteBuyerView = {
+  readonly name: string | null
+  readonly organisation: string | null
+  readonly taxId: string | null
+  readonly poNumber: string | null
+}
+
 export type QuoteView = {
   readonly token: string
   readonly kind: 'proforma' | 'quote'
@@ -207,6 +179,7 @@ export type QuoteView = {
    */
   readonly number: string | null
   readonly seller: SellerIdentity
+  readonly buyer: QuoteBuyerView
   readonly lines: readonly QuoteLineView[]
   /** Null while staff prepare a requested quote. */
   readonly totals: PricedTotals | null

@@ -16,6 +16,7 @@ import type {
   PaymentStarted,
   PaymentStatusRequest,
   QuoteAcceptRequest,
+  QuoteBuyerView,
   QuoteView,
 } from '@engine/domain/api'
 
@@ -92,12 +93,8 @@ export type QuoteVM = {
   /** The seller's gapless proforma number (COMMERCE.md §12); `null` until issued. */
   number: string | null
   seller: SellerIdentityVM
-  buyer: {
-    name: string | null
-    organisation: string | null
-    taxId: string | null
-    poNumber: string | null
-  }
+  /** Who it is for, as issued (C6 `QuoteView.buyer`): shown only to whoever opens the quote. */
+  buyer: QuoteBuyerView
   /**
    * A unique line of a proforma is held (`invoice`) until `heldUntil`. On a retailer's quote
    * `unitPrice` is the trade price, beside the list price it started from (`retailUnitPrice`).

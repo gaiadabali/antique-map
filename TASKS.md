@@ -18,7 +18,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
-| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 0/4 | 3/22 | 0 | `█░░░░░░░░░`  14% |
+| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 🔄 in progress | 0/4 | 5/22 | 0 | `██░░░░░░░░`  23% |
 | **3** Config spine and Payload boot | Foundation | 2 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/1 | 0/7 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **3/160** | **27/712** | **46** | `░░░░░░░░░░`   4% |
+| **All** | 44 phases | | | **3/160** | **29/712** | **46** | `░░░░░░░░░░`   4% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -374,8 +374,8 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Owns** the contract files of 1.2 (`engine/packages/**` contract files, `engine/packages/CONTRACTS.md`) and the doc sections they change
   - **Read** `.claude/specs/indies-platform/reviews/1.2-arc-d-senior-fe.md`, `1.2l-senior-fe.md`, `1.2l-senior-be.md`, `1.2-arc-d-fix-report.md`, `1.2-arc-p-fix-report.md`
   - _Requirements: 1.2_
-  - [ ] 2.4.a the should-fix rows 3–17 of the senior-fe review of the domain contracts (order-line snapshot, `QuoteView.buyer`, payment-option UX fields, money display and the exponent note, form decoding and idempotency keys, buyer-facing order status, analytics props the page can know, lead counting, C12 per-market prices and the shop → gallery prints feed)
-  - [ ] 2.4.b D39's want-list contract (C6 subscribe intent with double opt-in, C2 VM, C1 module variant) and C6 `api.ts`'s "read once" wording aligned with C13 `FORM_RESULT`
+  - [x] 2.4.a the should-fix rows 3–17 of the senior-fe review of the domain contracts (order-line snapshot, `QuoteView.buyer`, payment-option UX fields, money display and the exponent note, form decoding and idempotency keys, buyer-facing order status, analytics props the page can know, lead counting, C12 per-market prices and the shop → gallery prints feed)
+  - [x] 2.4.b D39's want-list contract (C6 subscribe intent with double opt-in, C2 VM, C1 module variant) and C6 `api.ts`'s "read once" wording aligned with C13 `FORM_RESULT`
   - [ ] 2.4.c doc sync: "For Business"/wholesale remnants (22.3.d, 31.1, COMMERCE §3, CONTENT-MODEL, PLAN, C6 `EnquiryTopic`), ANALYTICS §2 (`item.unsaved`, retailer events), COMPLIANCE §7 (application retention, counsel to confirm), DESIGN-SYSTEM §3–4, DEPLOYMENT §8, ARCHITECTURE §6, PAYMENTS §4, CONTENT-MODEL §4–5, design.md sketches, and the task checks the fix reports list
   - [ ] 2.4.d **Check:** every contract bumped to v1.1 with a CONTRACTS.md changelog entry; `pnpm verify` green; one senior-fe and one senior-be pass sign it off.
 

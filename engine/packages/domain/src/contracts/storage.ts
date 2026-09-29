@@ -115,6 +115,9 @@ export const ATTEMPT_WRITE_ONCE_COLUMNS = ['provider_ref'] as const
 // `(consumer, event_id)`.
 // `idempotency_keys`: primary key `(scope, key)` and the stored response, inserted `ON CONFLICT DO
 // NOTHING` inside the request's own transaction, so a rolled-back request leaves no key behind.
+// `scope` is the operation and the caller it binds (C6 `IdempotencyKey`: the customer, else the
+// cart, else none); a sha256 of the decoded request sits beside the response, and a stored key
+// met with another caller or another hash answers `invalid`, never the stored response.
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────
 

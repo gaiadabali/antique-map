@@ -10,8 +10,9 @@
  * carry the token that commits them. The purchase panel cannot pair a state with a price or
  * an action it rules out. The account's pages are exactly C10's sections, and C1's FX buffer
  * is C5's to the character. A hidden field is never asked for, a tick box posts `'true'`, and
- * a request-time part never enters a cached read. The partner rules (D31–D36) are
- * `retailer-check.ts`'s.
+ * a request-time part never enters a cached read — nor a post's outcome a streamed one. A buyer
+ * reads an order's status, never a payment's, and a page's poll never holds a lookup token. The
+ * partner rules (D31–D36) are `retailer-check.ts`'s.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { CurrencyCode, MoneyConfig } from '@engine/config/schema'
@@ -20,7 +21,7 @@ import type { FxSnapshot } from '@engine/domain/money'
 
 import type { CardVM } from './cards'
 import type { CachedPart, LineIntent, Money, PriceVM, Streamed } from './common'
-import type { AppliedCodeVM, ReorderIntentVM, TotalsVM } from './commerce'
+import type { AppliedCodeVM, OrderSummaryVM, ReorderIntentVM, TotalsVM } from './commerce'
 import type {
   AccountOfferVM,
   AccountSectionVM,
@@ -28,12 +29,13 @@ import type {
   AccountVM,
 } from './surfaces/account'
 import type { CartCheckoutVM, CartLineVM } from './surfaces/cart'
-import type { CheckoutVM } from './surfaces/checkout'
+import type { CheckoutProblemVM, CheckoutVM } from './surfaces/checkout'
 import type { CheckboxFieldVM, FormVM, HiddenFieldVM } from './surfaces/form'
 import type { GiftCardAmountVM } from './surfaces/gift-card'
-import type { OrderPaymentVM } from './surfaces/order'
+import type { PaymentPollVM } from './surfaces/order'
 import type { PayVM, QuoteVM } from './surfaces/pay'
 import type { PartnershipVM } from './surfaces/partnership'
+import type { WantListPageVM, WantListVM } from './surfaces/want-list'
 import type {
   HeldByOtherVM,
   HeldForMeVM,
@@ -60,10 +62,12 @@ type Intents =
   | NonNullable<PayVM['intents']>['start']
   | NonNullable<NonNullable<PayVM['intents']>['poll']>
   | NonNullable<QuoteVM['intents']>
-  | Extract<OrderPaymentVM, { state: 'pending' }>['poll']
+  | PaymentPollVM
   | NonNullable<AccountOfferVM['respond']>
   | NonNullable<AccountViewingVM['cancel']>
   | ReorderIntentVM
+  | NonNullable<WantListVM['confirm']>
+  | WantListVM['stop']
 
 // No intent carries a price a client could send back as authoritative.
 type _NoIntentCarriesAPrice = Assert<Equals<IsServerPriced<Intents>, true>>
@@ -105,9 +109,22 @@ type _RequestTimeStreams = Assert<
 type _ResultIsNotStreamed = Assert<
   Equals<Extract<FormVM['result'] | PartnershipVM['result'], Streamed<unknown>>, never>
 >
+// Everything on the want-list page is resolved: an email's link must work without JavaScript.
+type _WantListPageDoesNotStream = Assert<
+  Equals<Extract<WantListPageVM[keyof WantListPageVM], Streamed<unknown>>, never>
+>
 type _FormsAreCached = Assert<
   Equals<Extract<keyof CachedPart<PartnershipVM>, 'visitor'>, 'visitor'>
 >
+
+// A conflict comes back as a post's outcome: its alternatives are resolved with it, never streamed.
+type Conflict = Extract<CheckoutProblemVM, { code: 'reservation-conflict' }>
+type _ConflictDoesNotStream = Assert<
+  Equals<Extract<Conflict['alternatives'], Streamed<unknown>>, never>
+>
+
+// A buyer reads the order's standing (C6 `BuyerOrderStatus`), never an attempt's machine state.
+type _NoPaymentStateOnARow = Assert<Equals<Extract<keyof OrderSummaryVM<null>, 'payment'>, never>>
 
 // C1 ⇄ C5: a brand's FX buffer is what an order's FxSnapshot records — a percent, as a decimal string.
 type ConfigBuffer = NonNullable<MoneyConfig['fx']['bufferPct'][CurrencyCode]>
@@ -115,6 +132,11 @@ type _BufferIsC5s = Assert<Equals<ConfigBuffer, FxSnapshot['bufferPct']>>
 
 // The purchase panel's impossible pairs do not compile; its possible ones do.
 type Accepts<T, U extends T> = U
+type _NoTokenInAPagePoll = Accepts<
+  PaymentPollVM,
+  // @ts-expect-error — a lookup token stays in its cookie: a page's poll says `lookup-cookie`
+  { attemptId: 'att'; scope: { kind: 'order'; access: { kind: 'lookup'; lookupToken: 'lk' } } }
+>
 type NoActions = { primary: null; secondary: readonly [] }
 type Fixed = { kind: 'fixed'; price: PriceVM }
 type Buy = { action: 'buy'; line: LineIntent }

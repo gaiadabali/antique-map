@@ -15,6 +15,7 @@
     "./machines/retailer": "./src/retailers/machine.ts",
     "./reservations": "./src/reservations/contract.ts",
     "./retailers": "./src/contracts/retailers.ts",
+    "./want-lists": "./src/contracts/want-lists.ts",
     "./transactions": "./src/contracts/transactions.ts",
     "./storage": "./src/contracts/storage.ts",
     "./events": "./src/contracts/domain-events.ts"

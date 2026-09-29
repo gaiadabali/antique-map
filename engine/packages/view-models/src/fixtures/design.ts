@@ -17,6 +17,7 @@ export const design: DesignVM = {
   original: streamed({
     kind: 'original',
     sister: { name: 'Fixture Gallery', href: 'https://gallery.example.test', syncedAt: NOW },
+    workUid: 'FIX-000001',
     original: {
       title: 'The Isle of Contoh by Hendrik Voorbeeld, 1718',
       href: 'https://gallery.example.test/product/1001-isle-of-contoh-voorbeeld-1718',

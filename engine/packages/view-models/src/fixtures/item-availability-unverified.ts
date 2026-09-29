@@ -11,4 +11,5 @@ export const itemAvailabilityUnverified: ItemVM = originalItem({
   reason: 'unverified',
   price: null,
   actions: { primary: enquire, secondary: [whatsapp] },
+  analytics: { priceBand: 'none', status: null },
 })
