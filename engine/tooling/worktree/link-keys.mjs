@@ -9,7 +9,8 @@
 // emailed from this worktree's database verify against it. A blank
 // `LINK_TOKEN_KEYS=` line (a copied .env.example) is not a ring and is filled.
 import { randomBytes } from 'node:crypto'
-import { createRequire } from 'node:module'
+import { readFileSync } from 'node:fs'
+import { createRequire, stripTypeScriptTypes } from 'node:module'
 import { dirname, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -25,18 +26,29 @@ const MAX_DRAWS = 64
  * C1's own `parseLinkTokenKeys()` (`@engine/config/boot-check`), so a generated ring is judged
  * by exactly the rules bootCheck() applies — v1.2's stepped runs and repeated blocks, and
  * whatever a later version adds — never by a copy of them here (TASKS.md 3.5.e). This file
- * runs under plain `node` (the `worktree:env` CLI), which strips types but cannot follow the
- * package index's extensionless imports, so it loads the one leaf module that holds the rule,
- * `link-keys.ts`, beside the index the package's `exports` names; that module imports nothing.
+ * runs under plain `node` (the `worktree:env` CLI), which cannot follow the package index's
+ * extensionless imports, so it loads the one leaf module that holds the rule, `link-keys.ts`,
+ * beside the index the package's `exports` names; that module imports nothing. Node strips
+ * its types itself from 22.18; on the floor `engines.node` allows (22.13, CI's pin) it does
+ * not, so the source is stripped with `module.stripTypeScriptTypes()` and imported from a
+ * data URL instead.
  */
-const { parseLinkTokenKeys } = await import(
-  pathToFileURL(
-    join(
-      dirname(createRequire(import.meta.url).resolve('@engine/config/boot-check')),
-      'link-keys.ts',
-    ),
-  ).href
+const LINK_KEYS_SOURCE = join(
+  dirname(createRequire(import.meta.url).resolve('@engine/config/boot-check')),
+  'link-keys.ts',
 )
+
+async function loadLinkKeyRules() {
+  try {
+    return await import(pathToFileURL(LINK_KEYS_SOURCE).href)
+  } catch (error) {
+    if (error?.code !== 'ERR_UNKNOWN_FILE_EXTENSION') throw error
+    const javascript = stripTypeScriptTypes(readFileSync(LINK_KEYS_SOURCE, 'utf8'))
+    return import(`data:text/javascript;base64,${Buffer.from(javascript).toString('base64')}`)
+  }
+}
+
+const { parseLinkTokenKeys } = await loadLinkKeyRules()
 
 /**
  * A fresh one-key ring, `dev:<43 base64url characters>`: 32 random bytes, drawn again until
