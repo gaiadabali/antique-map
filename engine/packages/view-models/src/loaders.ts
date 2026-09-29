@@ -101,7 +101,13 @@ export type Loaders = {
   /** The session or the order-access cookie opens it, never the number alone (C13). */
   order: (p: At & { number: string }) => Promise<Found<OrderVM>>
   account: (p: At & { section: AccountSection }) => Promise<Found<AccountVM>>
-  form: (p: At & { kind: FormKind; item?: number; topic?: string }) => Promise<Found<FormVM>>
+  /**
+   * `hold` and `quote` for an item they cannot serve answer `null`. Where `accounts.retailers` is
+   * on, `quote` answers `redirectTo` the Partnership page for anyone but a signed-in partner (D36).
+   */
+  form: (
+    p: At & { kind: FormKind; item?: number; variant?: number; topic?: string },
+  ) => Promise<Found<FormVM>>
   pay: (p: At & { token: string }) => Promise<Found<PayVM>>
   quote: (p: At & { token: string }) => Promise<Found<QuoteVM>>
   orderLookup: (p: At) => Promise<OrderLookupVM>
@@ -109,8 +115,11 @@ export type Loaders = {
   partnership: (p: At) => Promise<PartnershipVM | null>
   /** `null` where `retention.deviceWishlist` is off: the page 404s. */
   wishlist: (p: At) => Promise<WishlistVM | null>
-  /** `null` where `retention.emailWantList` is off: the page 404s. At most one subject. */
-  wantList: (p: At & { watch?: string; like?: number }) => Promise<WantListPageVM | null>
+  /**
+   * `null` where `retention.emailWantList` is off: the page 404s. One subject at most; a `watch`
+   * spelled other than its listing's canonical path answers `redirectTo` the canonical URL.
+   */
+  wantList: (p: At & HrefParams['wantList']) => Promise<Found<WantListPageVM>>
   /**
    * For `not-found.tsx`, which gets no params: `path` and `locale` come from the proxy's
    * request headers (C13 `PROXY_REQUEST_HEADERS`). A removed item's path answers `GoneVM` —

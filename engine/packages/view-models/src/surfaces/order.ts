@@ -148,8 +148,10 @@ export type OrderVM = {
   returns: { href: string } | null
   /**
    * Set only on a paid order's confirmation (`context: 'confirmation'`) — so a pending or a lapsed
-   * order never reports revenue, and one reopened later never reports it again (GA4 also dedupes
-   * by `transactionId`); `null` otherwise. A payment that lands while the page polls sets it then.
+   * order never reports revenue, and one reopened later never reports it again; `null` otherwise.
+   * A payment that lands while the page polls: the poll's answer carries no conversion, so on its
+   * `next: 'paid'` the page renders again from its loader (`router.refresh()`), which sets it.
+   * `transactionId` is GA4's `transaction_id` and Meta's `eventID`, so each dedupes a reload.
    */
   conversion: ConversionVM | null
   seo: SeoVM

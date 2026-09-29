@@ -49,10 +49,12 @@ type Declined = Extract<PendingRetailerVM, { status: 'declined' }>
 /**
  * A post's outcome on this page, resolved: the application's (`received` — one answer whoever
  * applied, a new business, one waiting or a partner — or its failure, every entry kept), or a
- * sign-in that came back, its email kept.
+ * sign-in that came back, its email kept. Never `refused`: nothing but a field or a rate turns an
+ * application back, so its answer can admit nothing about who applied.
  */
 export type PartnershipResultVM =
-  FormResultVM | { kind: 'signInFailed'; email: string | null; error: SignInErrorVM }
+  | Exclude<FormResultVM, { kind: 'refused' }>
+  | { kind: 'signInFailed'; email: string | null; error: SignInErrorVM }
 
 /** What this visitor is, streamed over the cached forms; `null` for anyone else. */
 export type PartnershipAccessVM =

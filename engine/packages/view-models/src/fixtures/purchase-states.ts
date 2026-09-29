@@ -13,7 +13,7 @@ import { card, line, money, price } from './_shared'
 const fixed = { kind: 'fixed', price: price(money(480000, 'USD')) } as const
 const buy = { action: 'buy', line: line(1001) } as const
 const offer = { action: 'offer', href: '/make-an-offer?item=1001' } as const
-const reserve = { action: 'reserve', href: '/enquire?item=1001&topic=hold' } as const
+const reserve = { action: 'reserve', href: '/hold?item=1001' } as const
 
 export const purchaseStates = {
   available: {

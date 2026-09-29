@@ -33,6 +33,9 @@ export const DOMAIN_ANALYTICS_EVENTS = [
   'enquiry.received',
   'consignment.received',
   'appointment.booked',
+  // A quote asked for — a partner's brief or reorder on the shop, an institution's on the gallery:
+  // the B2B lead the Leads dashboard counts beside the gallery's.
+  'quote.requested',
   // Demand the stock does not meet (ANALYTICS.md §3): the want lists kept — an address's once it
   // confirmed, an account's once saved (D39).
   'wantList.started',
@@ -75,7 +78,16 @@ export type DomainAnalyticsProps = {
   readonly 'enquiry.received': { readonly topic: EnquiryTopic; readonly productId: number | null }
   readonly 'consignment.received': NoProps
   readonly 'appointment.booked': { readonly locationId: string }
-  /** A saved search (`want-list`) or an item alert, and who keeps it — never the query or the address. */
+  /** Who asked — an approved partner or a guest — and whether it came as lines or a brief. */
+  readonly 'quote.requested': {
+    readonly from: 'partner' | 'guest'
+    readonly as: 'lines' | 'brief' | 'reorder'
+  }
+  /**
+   * A saved search or an item alert, and who keeps it — never the query or the address. `kind` is
+   * C8's `subject` in C11's words, as `alert.created` has them: `listing` is `want-list`, `like` is
+   * `item-alert`.
+   */
   readonly 'wantList.started': {
     readonly kind: 'want-list' | 'item-alert'
     readonly holder: 'account' | 'email'

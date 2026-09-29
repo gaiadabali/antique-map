@@ -14,7 +14,7 @@ export const itemPriceOnRequest: ItemVM = originalItem({
     primary: { action: 'requestPrice', href: '/enquire?item=1001&topic=price-request' },
     secondary: [
       { action: 'viewing', href: '/book-a-visit?item=1001' },
-      { action: 'proforma', href: '/trade?item=1001' },
+      { action: 'proforma', href: '/request-a-quote?item=1001' },
       whatsapp,
     ],
   },
@@ -29,7 +29,7 @@ export const itemPriceRevealed: ItemVM = originalItem({
   state: { kind: 'available' },
   actions: {
     primary: { action: 'viewing', href: '/book-a-visit?item=1001' },
-    secondary: [{ action: 'proforma', href: '/trade?item=1001' }, whatsapp],
+    secondary: [{ action: 'proforma', href: '/request-a-quote?item=1001' }, whatsapp],
   },
   insuredShipping: { kind: 'quote' },
   analytics: { priceBand: 'on-request', status: 'available' },

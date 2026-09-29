@@ -7,6 +7,14 @@
  * SessionResult, NormalizedPaymentEvent, ProviderState, refunds; provider ids are C1's) — so this
  * package depends on the domain and never the reverse. An adapter never writes an order, and never
  * reads a price from anywhere but the attempt it was handed.
+ *
+ * Every Money that crosses an adapter, either way, is in C5's minor units — `SessionInput`'s
+ * charge, display and lines, `MethodCapability.cap`, `capture()`'s amount, `RefundRequest.amount`,
+ * and coming back a normalised event's figures and `ProviderState`'s. The adapter converts at its
+ * own boundary, both ways, where its provider counts otherwise (IDR in hundredths), and never
+ * rounds: a figure that is no whole number of the engine's minor units comes back as C7
+ * `InexactMoney`, as the provider wrote it, and is flagged, never paid (C8 applyPaymentEvent()).
+ * The providerEventId rules are `./contract/event-ids`.
  */
 import type {
   CountryCode,
@@ -14,7 +22,7 @@ import type {
   PaymentMethodFamily,
   SellerConfig,
 } from '@engine/config/schema'
-import type { Duration, EventIdRule, PaymentOptionView, RawWebhook } from '@engine/domain/api'
+import type { Duration, PaymentOptionView, RawWebhook } from '@engine/domain/api'
 import type {
   NormalizedPaymentEvent,
   PaymentLookup,
@@ -29,8 +37,11 @@ import type {
 } from '@engine/domain/machines/payment'
 import type { FxSnapshot, Money } from '@engine/domain/money'
 
+export * from './contract/event-ids'
+
 export type {
   BankDetails,
+  InexactMoney,
   LocalisedText,
   NormalizedPaymentEvent,
   PaymentEventBody,
@@ -39,6 +50,7 @@ export type {
   PaymentLookup,
   PaymentMethodId,
   PaymentProviderId,
+  ProviderMoney,
   ProviderState,
   RefundIdempotencyKey,
   RefundRequest,
@@ -100,6 +112,12 @@ export type MethodCapability<AuthCapture extends boolean = boolean> = {
    * account hours. The domain extends the checkout lock to this plus a margin (extend()).
    */
   readonly sessionTtl: Duration
+  /**
+   * The shortest session the provider accepts (Stripe Checkout's 30 minutes, a VA's own floor). A
+   * session is never cut below it: where what is left before the lock's ceiling or the hold's end
+   * cannot hold it, routing leaves the method out, and a start answers `window-too-short`.
+   */
+  readonly minSessionTtl: Duration
   /** The session kind `createSession()` returns for it: what C6's `PaymentOptionView` tells. */
   readonly presentation: SessionResult['kind']
   /** Authorise now, capture while the reservation is live — only where the gateway can capture. */
@@ -209,53 +227,6 @@ export type PaymentGateway =
       /** Expire an unpaid session (a VA, a QR) when the order is cancelled. */
       cancel?(lookup: PaymentLookup): Promise<void>
     })
-
-// ─── The providerEventId rule, per adapter ───────────────────────────────────────────────────
-
-/** A payment notification's fields, named for what they mean; each adapter maps its own paths. */
-export type StateHashField =
-  | 'payment-id'
-  | 'status'
-  | 'fraud-status'
-  | 'status-code'
-  | 'amount'
-  | 'refunded-total'
-  | 'refund-id'
-
-/**
- * How an adapter derives a webhook's `providerEventId` — with the provider and the seller, the
- * dedupe key unique in `engine.payment_events` (PAYMENTS.md §2). Events the reconciler builds and
- * staff entries carry their own prefixes (`retrieve:`, `staff:`), so no rule below can collide.
- */
-export type ProviderEventIdRule = EventIdRule<StateHashField>
-
-export const PROVIDER_EVENT_ID_RULES = {
-  stripe: { kind: 'provider-event-id', source: 'Event.id (evt_…)' },
-  paypal: { kind: 'provider-event-id', source: 'webhook event id (WH-…)' },
-  // PAYMENTS.md §2: transaction_id | transaction_status | fraud_status | status_code, so "pending"
-  // and the later "settlement" never dedupe each other — plus the cumulative refunded amount,
-  // because two partial refunds share every other field and the second would be swallowed.
-  midtrans: {
-    kind: 'state-hash',
-    fields: ['payment-id', 'status', 'fraud-status', 'status-code', 'refunded-total'],
-  },
-  // Only if chosen (Phase 9): PAY confirms against recorded sandbox fixtures whether a native
-  // event id exists; until then the state hash, which is always safe.
-  xendit: { kind: 'state-hash', fields: ['payment-id', 'status', 'amount', 'refunded-total'] },
-  doku: { kind: 'state-hash', fields: ['payment-id', 'status', 'amount', 'refunded-total'] },
-  manual: { kind: 'staff-entry' },
-  'bank-transfer': { kind: 'staff-entry' },
-} as const satisfies { readonly [P in PaymentProviderId]: ProviderEventIdRule }
-
-/**
- * Events the reconciler builds from `retrieve()` (source `retrieve`) key on the state they report,
- * as `retrieve:` + the hash, so re-reading an unchanged state every ten minutes dedupes instead of
- * piling up.
- */
-export const RECONCILIATION_EVENT_ID_RULE = {
-  kind: 'state-hash',
-  fields: ['payment-id', 'status', 'amount', 'refunded-total'],
-} as const satisfies ProviderEventIdRule
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────
 

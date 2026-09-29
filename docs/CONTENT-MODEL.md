@@ -199,10 +199,13 @@ outcome (`ApplyPaymentEventOutcome`) and a hash of its redacted payload;
 apart so it never consumes a dedupe key: the normalised event itself, so it
 can be re-driven once its attempt turns up, first/last seen, a count);
 **`domain_events`** (the outbox, COMMERCE.md §6); `idempotency_keys` (primary key
-`scope, key` — the operation and its caller, C6 `IdempotencyKey` — the stored
-response, and a sha256 of the decoded request beside it, so the same key with
-another request or another caller answers `invalid`, never the stored
-response); `fx_rates`, `search_documents` (with per-market price columns), a
+`operation, key` — the caller kept outside it, so another caller's reuse meets
+the row rather than starting afresh — with `caller_ref`, a sha256 of the decoded
+request, the stored response with its tokens left out (re-derived on replay) and
+`created_at`: the same key from another caller or with another request answers
+`invalid`, never the stored response; swept `IDEMPOTENCY_KEY_RETENTION`, 7 days,
+after `created_at`, and indexed on `created_at` and on `caller_ref` for the sweep
+and an erasure, C6 `IdempotencyKey`); `fx_rates`, `search_documents` (with per-market price columns), a
 per-seller `document_sequences`, `inventory_movements`, `analytics_events` (+
 rollups), `sister_sync_log`.
 
@@ -212,21 +215,29 @@ rollups), `sister_sync_log`.
   normalised), name, `type` (`collector` · `institution` · `trade` · `retail`),
   organisation, tax id, phone/WhatsApp, locale, preferred market, price list
   (trade), consents (per purpose, with timestamp and policy version),
-  `legacyId`, `claimedAt` (migrated accounts), staff notes.
+  `legacyId`, `claimedAt` (migrated accounts), staff notes; a `ref` and a
+  `token_version` for the links that name it (an application's status link,
+  C6 `links`), and a pending password link's nonce **hash** and expiry — the
+  one link kept at all, single-use, because it sets a credential (C13
+  `PASSWORD_LINK`).
 - **addresses** — per customer, shaped per country (Indonesia down to
   sub-district + courier area id).
 - **saved-items** (wishlist) — customer, product, note; a saved item that sells
   becomes a want-list suggestion.
 - **want-lists** — a saved search or "tell me when another example arrives"
   (D39): a customer **or** an email address (never both), status (`pending` ·
-  `active`), a hashed access token, its subject (a listing's public path, or
+  `active`), a `ref` (a random UUID) and a `token_version` — no token and no hash
+  of one: every link to it is derived as its email is sent (C6 `links`) — its
+  subject (a listing's public path, or
   the product it watches another example of), a budget in its own market
   currency, frequency (`instant` · `daily`), consent (alerts; marketing email,
   separate), `lastNotifiedAt`. Stopping erases the row whole — its address, its
-  query and its consent — and a `pending` row never confirmed is purged after
-  `WANT_LIST_PENDING_DAYS` (7).
+  query and its consent — a `pending` row never confirmed is purged after
+  `WANT_LIST_PENDING_DAYS` (7), and at most `WANT_LIST_PENDING_PER_ADDRESS` (10)
+  of one address's rows wait at once.
 - **subscribers** — newsletter without an account: double opt-in, source,
-  status, tokens, legacy flag (KOI).
+  status, a `ref` and a `token_version` (its confirm and stop links derived, never
+  stored, C6 `links`), legacy flag (KOI).
 - **reviews** (emporium) — product, verified order, rating, text, photos,
   moderation status.
 - **users** (staff) — roles below.

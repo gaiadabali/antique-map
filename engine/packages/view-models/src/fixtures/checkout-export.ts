@@ -126,6 +126,7 @@ export const checkoutExport: CheckoutVM = {
   intents: {
     continue: { checkoutId: 'chk_fixture_nl', acceptedPricing: token('tok_fixture_nl_3') },
     pay: { checkoutId: 'chk_fixture_nl', acceptedPricing: token('tok_fixture_nl_3') },
+    proforma: null,
   },
   seo: { ...seo('Checkout', '/checkout'), noindex: true },
 }
@@ -153,13 +154,15 @@ export const checkoutPriceChanged: CheckoutVM = {
     subtotal: 95000,
     shipping: 9200,
     taxRegime: 'SG-GST',
-    estimate: money(95950, 'EUR'),
+    // An estimate is a whole major unit (C5): €960, never €959.50.
+    estimate: money(96000, 'EUR'),
   }),
   payment: { ...checkoutExport.payment, session: null },
   problem: { code: 'price-changed' },
   intents: {
     continue: { checkoutId: 'chk_fixture_nl', acceptedPricing: token('tok_fixture_nl_4') },
     pay: { checkoutId: 'chk_fixture_nl', acceptedPricing: token('tok_fixture_nl_4') },
+    proforma: null,
   },
 }
 
@@ -169,4 +172,25 @@ export const checkoutLockExpired: CheckoutVM = {
   lock: null,
   payment: { ...checkoutExport.payment, session: null },
   problem: { code: 'expired', restartAt: 'item', href: '/product/1006-contoh-straits' },
+}
+
+/**
+ * A library buying for its collection, named at the contact step: the payment step also offers
+ * "Proforma instead" (C6 `quote.proforma`), from this checkout's own entries — never posted again.
+ */
+export const checkoutInstitution: CheckoutVM = {
+  ...checkoutExport,
+  contact: {
+    ...checkoutExport.contact,
+    values: {
+      ...checkoutExport.contact.values,
+      fullName: 'A. Librarian',
+      email: 'acquisitions@library.example.test',
+      institution: { organisation: 'Example University Library', taxId: null, poNumber: 'PO-4471' },
+    },
+  },
+  intents: {
+    ...checkoutExport.intents,
+    proforma: { checkoutId: 'chk_fixture_nl', acceptedPricing: token('tok_fixture_nl_3') },
+  },
 }

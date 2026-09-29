@@ -59,8 +59,10 @@ export function authUrl(operation: AuthOperation): string {
 /**
  * An applicant's read-only view of its application, without a password (D31; C2
  * `PartnershipAccessVM`). The acknowledgement email carries `link?token=…`
- * (`auth.applicationLink`): a random token, stored hashed, living 30 days from the
- * acknowledgement or from a decline, and void from approval on — the partner then signs in.
+ * (`auth.applicationLink`): a derived capability link (C6 `links`, purpose `application`) NTF
+ * computes as it sends the email — stored nowhere, valid 30 days from the latest acknowledgement or
+ * decline, void from approval on (the partner then signs in), its version bumped at each
+ * acknowledgement so the newest email's link supersedes the older.
  * The link stores it in `cookie` (HttpOnly, Secure, SameSite=Lax, Path=/, as long-lived as the
  * token) and answers 303 to the clean Partnership page, whose loader reads the standing there,
  * never a term or a price; a handler logs the link's path without `?token=`. No write accepts
@@ -74,9 +76,13 @@ export const APPLICATION_ACCESS = {
 
 /**
  * The one-hop links that set a password (`auth.passwordLink`): approval's (D31), a reset's, a
- * migrated buyer's claim. `link?token=…` stores the token in `cookie` (HttpOnly, Secure,
- * SameSite=Lax, Path=/) — an expired one too, so the page can say so and offer another — and
- * answers 303 to the account's clean `setPassword` page (C10), whose form posts
+ * migrated buyer's claim — the one link that is NOT derived (C6 `links`), because it sets a
+ * credential and must not be forgeable from one key. As NTF sends the email it asks the auth
+ * service for a random 256-bit nonce, and the service keeps only its hash and expiry on the
+ * customer record until the link consumes it (a new link replaces an unused one): NTF writes no
+ * record, and the outbox row still carries no token. `link?token=…` stores the token in `cookie`
+ * (HttpOnly, Secure, SameSite=Lax, Path=/) — an expired one too, so the page can say so and offer
+ * another — and answers 303 to the account's clean `setPassword` page (C10), whose form posts
  * `auth.setPassword`. A reset's link lives an hour, approval's and a claim's seven days; each
  * is used once, and a handler logs its path without `?token=`.
  */

@@ -140,7 +140,12 @@ runbook in `manual/`. Marketing opt-in is always a separate, unticked
 checkbox; a want-list alert is consented to at the same **double opt-in**
 that confirms the address (D39), and stopping the alert erases the list
 whole — its address, its query and its consent together — so nothing of it
-remains for the record of processing to still cover.
+remains for the record of processing to still cover. No emailed or addressed
+link's token is kept at rest (C6 `links`: derived when needed, never stored),
+so a copy of the database opens no one's order, application or alert; and a
+request's stored idempotent answer — which can hold a buyer's contact or a tax
+id — is kept 7 days (`IDEMPOTENCY_KEY_RETENTION`), then swept, and erased at
+once with the rest of its caller's data.
 
 ## 8. Rights in the images
 

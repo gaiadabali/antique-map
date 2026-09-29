@@ -115,14 +115,16 @@ export function parsePublicPath(
   if (kind) {
     if (rest.length > 0) return NOT_FOUND
     const all = reader(search)
-    const item = Number(all('item')[0])
+    const [item, variant] = [positive(all('item')[0]), positive(all('variant')[0])]
     const [topic] = all('topic')
     const params: HrefParams['form'] = {
       kind,
-      ...(Number.isSafeInteger(item) && item > 0 ? { item } : {}),
+      ...(item ? { item } : {}),
+      ...(variant ? { variant } : {}),
       ...(topic ? { topic } : {}),
     }
-    return match('form', locale, params, `/${kind}${query({ item: params.item, topic })}`)
+    const q = query({ item: params.item, variant: params.variant, topic })
+    return match('form', locale, params, `/${kind}${q}`)
   }
   const named = namedFacets(routes, locale, parts)
   if (named) {
@@ -172,12 +174,11 @@ function segmentSurface(
       if (one !== undefined) return NOT_FOUND
       const all = reader(search)
       const [watch] = all('watch')
-      const like = Number(all('like')[0])
-      const params: HrefParams['wantList'] = {
-        ...(watch ? { watch } : {}),
-        ...(Number.isSafeInteger(like) && like > 0 ? { like } : {}),
-      }
-      return match('wantList', locale, params, query({ watch: params.watch, like: params.like }))
+      const like = positive(all('like')[0])
+      // Two subjects are no page: one subject, one URL.
+      if (watch && like) return NOT_FOUND
+      const params: HrefParams['wantList'] = watch ? { watch } : like ? { like } : {}
+      return match('wantList', locale, params, query({ watch, like: like ?? undefined }))
     }
     case 'design':
     case 'order':
@@ -249,6 +250,12 @@ function decodeAll(parts: string[]): string[] | null {
   } catch {
     return null
   }
+}
+
+/** A positive safe integer from a query value, else null. */
+function positive(value: string | undefined): number | null {
+  const n = Number(value)
+  return value !== undefined && Number.isSafeInteger(n) && n > 0 ? n : null
 }
 
 const isLocaleCode = (value: string): value is LocaleCode =>

@@ -16,6 +16,9 @@ const forms = {
   offer: 'make-an-offer',
   consignment: 'sell-to-us',
   appointment: 'book-a-visit',
+  // Module-gated kinds (2.4.e): "Reserve" and a quote or proforma for one item.
+  hold: 'hold',
+  quote: 'request-a-quote',
 }
 const en = {
   browse: 'browse',
@@ -105,6 +108,9 @@ const cases: { [S in LinkSurface]?: HrefParams[S][] } = {
     { kind: 'enquiry' },
     { kind: 'offer', item: 1706 },
     { kind: 'enquiry', topic: 'framing', item: 3 },
+    { kind: 'hold', item: 1001 },
+    { kind: 'quote', item: 1001 },
+    { kind: 'quote', item: 7001, variant: 70011 },
   ],
   pay: [{ token: 'tok_abc' }],
   quote: [{ token: 'q_1' }],
@@ -145,6 +151,14 @@ describe('C10 canonical forms and rewrites', () => {
       '/browse?technique=a&technique=b',
     )
     expect(href('order', { number: 'SG-000123' }, 'id')).toBe('/id/pesanan/SG-000123')
+  })
+  it("writes the C2 fixtures' purchase-panel links", () => {
+    // view-models may not import href() (boundary 3), so its fixtures spell these out.
+    expect(href('form', { kind: 'hold', item: 1001 }, 'en')).toBe('/hold?item=1001')
+    expect(href('form', { kind: 'quote', item: 1001 }, 'en')).toBe('/request-a-quote?item=1001')
+    expect(href('form', { kind: 'quote', item: 7001, variant: 70011 }, 'en')).toBe(
+      '/request-a-quote?item=7001&variant=70011',
+    )
   })
   it('rewrites to internal routes carrying the canonical query', () => {
     const p = parsePublicPath(
@@ -197,6 +211,9 @@ describe('C10 canonical forms and rewrites', () => {
     ]) {
       expect(parsePublicPath(config, path).kind, path).toBe('notFound')
     }
+    // A want list takes one subject, so one subject has one URL (C10 `wantList`).
+    const both = new URLSearchParams('watch=/antique-maps&like=1706')
+    expect(parsePublicPath(config, '/want-list', both).kind).toBe('notFound')
   })
   it('parses a listing query, dropping what is not canonical', () => {
     expect(

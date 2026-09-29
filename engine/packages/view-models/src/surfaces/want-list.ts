@@ -11,10 +11,10 @@
  * its `wantLists` section (`./account`).
  */
 import type {
+  WantListAccess,
   WantListConfirmRequest,
   WantListFrequency,
   WantListStatus,
-  WantListUnsubscribeRequest,
 } from '@engine/domain/api'
 
 import type { IsoDateTime, MessageVM, Money, SeoVM } from '../common'
@@ -34,8 +34,12 @@ export type WantListVM = {
   lastNotifiedAt: IsoDateTime | null
   /** "Confirm this alert" — an address's pending list only: posts C6 `wantList.confirm`. */
   confirm: WantListConfirmRequest | null
-  /** "Stop this alert": posts C6 `wantList.unsubscribe`, by the account or the page's cookie. */
-  stop: WantListUnsubscribeRequest
+  /**
+   * "Stop this alert": posts C6 `wantList.unsubscribe`, by the account or the page's cookie —
+   * never by the token, which stays in its cookie (C13 `WANT_LIST_ACCESS`) and so never enters
+   * the page's HTML (`commerce-check.ts`).
+   */
+  stop: { access: Exclude<WantListAccess, { kind: 'token' }> }
 }
 
 /**
@@ -55,8 +59,10 @@ export type WantListPageVM = {
   surface: 'wantList'
   title: string
   /**
-   * Saving what the URL names (`?watch=` a listing's path, `?like=` an item); `null` when it names
-   * nothing, or nothing that can be watched.
+   * Saving what the URL names (`?watch=` a listing's canonical path, `?like=` an item); `null` when
+   * it names nothing, or nothing that can be watched. A `watch` that is not its listing's canonical
+   * path (C10 `href()` of what it parses to) is answered `redirectTo` the canonical want-list URL,
+   * so one listing has one want-list page.
    */
   subscribe: WantListFormVM | null
   /**

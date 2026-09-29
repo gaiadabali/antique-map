@@ -73,12 +73,20 @@ const NOT_SEGMENT: readonly Surface[] = ['home', 'page', 'form', 'notFound', 'go
 const isSegmentSurface = (s: Surface): s is SegmentSurface => !NOT_SEGMENT.includes(s)
 export const SEGMENT_SURFACES = SURFACES.filter(isSegmentSurface)
 
-/** The `Form` surface's kinds, each at its own localised segment. */
+/**
+ * The `Form` surface's kinds, each at its own localised segment, and the C6 operation each posts:
+ * `enquiry.submit`, `offer.submit`, `consignment.submit`, `appointment.book`; `hold` —
+ * `hold.request`, for an item; `quote` — `quote.request`, for an item (a configured `variant` of
+ * it) or as a brief, from a guest where `accounts.retailers` is off and only from a signed-in
+ * partner where it is on (D36). A proforma is the checkout's, not a form (C6 `quote.proforma`).
+ */
 export const FORM_KINDS = {
   enquiry: {},
   offer: { module: 'purchase.offers' },
   consignment: { module: 'services.consignment' },
   appointment: { module: 'services.appointments' },
+  hold: { module: 'purchase.holds' },
+  quote: { module: 'purchase.invoices' },
 } as const satisfies Record<string, { module?: ModuleKey }>
 export type FormKind = keyof typeof FORM_KINDS
 

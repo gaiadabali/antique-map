@@ -18,8 +18,8 @@ each contract is one module, re-exported from the entry named below.
 | C3 | Token contract and the brand-overridable subset | `@engine/ui/tokens/contract` | `ui/src/tokens/contract.ts` | UXG, UXE (app defaults), WEB (token pipeline, TASKS.md 11.2) | UXG, UXE, BRD, ADM | v1.1 |
 | C4 | Content blocks: the frozen list and prop shapes | `@engine/view-models` | `view-models/src/blocks.ts`, `blocks-check.ts` | SCH (Payload blocks), UXG and UXE (renderers) | SCH, UXG, UXE, WEB | v1.1 |
 | C5 | Money: `Money`, `PriceSet`, rounding points, the pricing step | `@engine/domain/money` | `domain/src/money/contract.ts`, `domain/src/contracts/{pricing,price-sources}.ts`; shared by C5–C8: `domain/src/contracts/{scalars,type-assertions,storage}.ts` (`@engine/domain/storage`) | DOM | DOM, PAY, WEB, apps, C2 | v1.1 |
-| C6 | Commerce API: requests, responses, problems | `@engine/domain/api`; values at `@engine/domain/retailers`, `@engine/domain/want-lists` | `domain/src/contracts/{api,cart,checkout,paying,orders,leads,services,after-sale,retailers,want-lists,requests,results}.ts` | DOM (handlers in `http/src/commerce/**`) | apps, WEB, C2, C13 | v1.1 |
-| C7 | Provider interfaces and normalised events | `@engine/payments/contract`, `@engine/shipping/contract`, `@engine/fulfilment/contract` | `{payments,shipping,fulfilment}/src/contract.ts`, `domain/src/contracts/payment-vocabulary.ts` | PAY, LOG | PAY, LOG, DOM | v1.1 |
+| C6 | Commerce API: requests, responses, problems, capability links | `@engine/domain/api`; values at `@engine/domain/retailers`, `@engine/domain/want-lists`, `@engine/domain/links` | `domain/src/contracts/{api,cart,checkout,paying,orders,leads,links,services,after-sale,retailers,want-lists,requests,results}.ts` | DOM (handlers in `http/src/commerce/**`) | apps, WEB, C2, C13 | v1.1 |
+| C7 | Provider interfaces and normalised events | `@engine/payments/contract`, `@engine/shipping/contract`, `@engine/fulfilment/contract` | `{payments,shipping,fulfilment}/src/contract.ts`, `payments/src/contract/**`, `domain/src/contracts/payment-vocabulary.ts` | PAY, LOG | PAY, LOG, DOM | v1.1 |
 | C8 | State machines, `reserve()`, `applyPaymentEvent()`, domain events | `@engine/domain/machines/*`, `@engine/domain/reservations`, `@engine/domain/transactions`, `@engine/domain/events` | `domain/src/*/machine.ts`, `domain/src/reservations/contract.ts`, `domain/src/contracts/{machine-types,reservation-types,transactions,domain-events,apply-payment-event}.ts` | DOM | DOM, PAY, ADM, NTF, WEB, C2 | v1.1 |
 | C9 | Media artefacts: derivatives, IIIF, masters, print files | `@engine/media/contract` | `media/src/contract.ts` | MED | MED, WEB, UXG, UXE, MIG, SIS, LOG, C11 | v1.1 |
 | C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.1 |
@@ -99,7 +99,9 @@ so it is breaking and also needs a redirect.
   a tick box posts `'true'` (`commerce-check.ts`). What such a visitor must act on beyond a form
   — a post's outcome, the list an email's link opened — is resolved, never streamed. A buyer
   reads an order's C6 `BuyerOrderStatus`, never a payment's state, and a page never holds a
-  lookup token. Only an approved partner signs in, so only its view model carries
+  token — not a lookup's, not a want list's (`_NoTokenInAPagePoll`, `_NoTokenInAPageStop`). A
+  post the operation refuses comes back as `FormResultVM` `refused`, with its problem's sentence.
+  Only an approved partner signs in, so only its view model carries
   trade terms or a reorder, and the Partnership page holds no term or price in any state
   (`retailer-check.ts`, D31–D36).
 - **C3.** A new token needs a value in both apps (`AppTokens` is total) and its contrast
@@ -110,9 +112,13 @@ so it is breaking and also needs a redirect.
   change.
 - **C5–C8.** The money rules of CONVENTIONS.md §3 hold. The exponent is the engine's
   (`CURRENCY_EXPONENT`, IDR 0), and a provider's other units are converted in its C7 adapter
-  alone; an estimate is whole major units, and `formatMoney` fixes the fraction digits itself. A
+  alone, never rounding — a figure that is no whole minor unit is `InexactMoney`, flagged, never
+  paid; an estimate is whole major units, and `formatMoney` fixes the fraction digits itself. A
   machine table changes only together with its tests, and nothing outside the domain writes a
-  status or a reservation.
+  status or a reservation. Every token an email or a page's address carries is a derived
+  capability link (C6 `links`: an HMAC of the record's `ref` and `token_version`), stored nowhere
+  and never in an outbox row (C8 `IsPiiFree` refuses a credential's name) — a set-password link,
+  single-use and hashed, alone excepted.
 - **C9.** Keys are content-addressed and versioned. A pipeline change raises
   `DERIVATIVE_VERSION` and never overwrites a key. `masterKey()` is what C12 snapshots
   reference.
@@ -121,14 +127,17 @@ so it is breaking and also needs a redirect.
   a live root segment. A surface or form kind a module switches on needs a segment only while
   its module is on, and `href()` refuses one without. No page URL carries a credential: an
   order opens with the session or the order-access cookie (C13 `ORDER_ACCESS`), never with its
-  number alone, and a `sensitive` page is answered with `Referrer-Policy: no-referrer`.
+  number alone, and a `sensitive` page is answered with `Referrer-Policy: no-referrer`. A page
+  that takes a subject takes one (`wantList`: `watch` or `like`), so one subject has one URL, and
+  every write a page offers has a form kind or a surface that posts it.
 - **C11.** Add events; never rename one (ANALYTICS.md). A beacon prop comes from the page's own
   view model; what only the server knows — the session, the anonymous id, the market —
   `/api/x/collect` stamps. What the business counts — revenue, leads, the want lists kept — is
   counted from the domain's events, never the beacon.
 - **C12.** A snapshot or a feed carries published fields only. `physical`, costs and consignors
   never leave the origin brand. Prices travel per market, as the selling brand shows them, and
-  every URL is absolute.
+  every URL is absolute. A copy only moves forward: what is no newer than it holds is
+  acknowledged and dropped.
 - **C13.** Every app mounts every route. A new route needs a mount file in both apps
   (route parity); a new C6 operation needs an address in `COMMERCE_OPERATIONS`, and an auth
   or forms operation its row in `AUTH_OPERATIONS` or `FORM_OPERATIONS`, with the module
@@ -137,11 +146,12 @@ so it is breaking and also needs a redirect.
   page's own capability (a pay-link or quote token) and a one-hop email link do, and each
   one-hop link moves its token into a cookie. An HTML form post answers 303 to its page and
   its outcome waits under `FORM_RESULT`, whose cookie holds an opaque id and never personal
-  data; every form post is read by `FORM_DECODING`, and an amount is never guessed at. RFC 8058's
-  one-click unsubscribe is the one POST that carries its token in its URL. Auth answers every
-  email alike. A provider webhook route names the seller whose secret
-  verifies it. The proxy rewrites, and sets only `PROXY_REQUEST_HEADERS` and C10's
-  `sensitive` answer headers.
+  data; every form post is read by `FORM_DECODING`, driven by its operation's schema, and an
+  amount is never guessed at. RFC 8058's one-click unsubscribe is the one POST that carries its
+  token in its URL, on `ONE_CLICK_UNSUBSCRIBE`'s terms: that token alone, no cookie read, 200.
+  Auth answers every email alike. A provider webhook route names the seller whose secret
+  verifies it. The proxy rewrites, and sets only `PROXY_REQUEST_HEADERS`, C10's `sensitive`
+  answer headers and the per-request `Content-Security-Policy`.
 
 ## Changelog
 
@@ -280,3 +290,66 @@ so it is breaking and also needs a redirect.
     context is the Partnership page.
 
   Announced to every lane in each contract's "Consumed by" column; none consumes them yet.
+- **2026-09-29**: **v1.1 sign-off fixes** (TASKS.md 2.4.e): the senior-be and senior-fe
+  sign-offs of v1.1 (`reviews/2.4-senior-be.md`, `reviews/2.4-senior-fe.md`), both blockers and
+  every should-fix, amended into v1.1 rather than bumped: v1.1 was not yet signed, and no lane
+  consumes it.
+  - **Capability links (senior-be B1).** The new `domain/src/contracts/links.ts` (C6). Every
+    token an email or a page's address carries is derived: an HMAC of the record's `ref` and
+    `token_version` under `LINK_TOKEN_KEYS`, stored nowhere. NTF derives each email's token as it
+    sends it, so the outbox carries none; C8's `IsPiiFree` now refuses a credential's name
+    (`_TokenRejected`). This settles the want list's token, `APPLICATION_ACCESS`, the
+    newsletter's, the order-access link and C6's record tokens alike. `PASSWORD_LINK` stays a
+    single-use nonce kept as a hash, because it sets a credential. The reasoning (derived rather
+    than a token table) is in `links.ts`. `storage.ts` gives every such record `ref` and
+    `token_version`.
+  - **C2 (senior-fe B1):** `WantListVM.stop` excludes a token (`_NoTokenInAPageStop`).
+  - **C6:**
+    - `idempotency_keys` keys on `(operation, key)`, with the caller and the request's hash
+      compared on a conflict; kept 7 days (`IDEMPOTENCY_KEY_RETENTION`), no token in a stored
+      answer (be S1, S2).
+    - A session is never cut below its method's floor, answering `window-too-short` (be S3).
+    - A payment attempt has a lease (`PAYMENT_ATTEMPT_LEASE`), and a retry inside it waits (be S4).
+    - `BuyerOrderStatus` is a total table, with `ShipmentOnItsWay`, `ShipmentAtPickup` and
+      `ShipmentNotYetGone` partitioning `ShipmentStatus` (be S5, fe S2).
+    - `WANT_LIST_PENDING_PER_ADDRESS` (be S8).
+    - `quote.proforma` is the checkout's ("Proforma instead"), and stays open to any buyer
+      (fe F1, be N6).
+    - A signed-in buyer's contact is ignored (be N4).
+  - **C7:**
+    - `MethodCapability.minSessionTtl` (be S3).
+    - Every `Money` across an adapter is in C5's units, and a figure that is no whole minor unit
+      is `InexactMoney`, flagged by `applyPaymentEvent()` (be S6).
+    - The providerEventId rules move to `payments/src/contract/event-ids.ts`, and state hashes
+      read raw figures.
+  - **C8:**
+    - The order machine's fulfilment rows cover a digital gift card.
+    - `DomainSweeps.idempotencyKeys` deletes keys past their retention (be S2).
+  - **C10:**
+    - `FORM_KINDS` gains `hold` (posting `hold.request`) and `quote` (posting `quote.request`;
+      D36's audience), and forms take a `variant` (fe F1).
+    - `wantList` takes one subject, and two answer `notFound` (fe S6).
+    - The round-trip test covers both new kinds, a variant and two subjects, and pins the literal
+      links C2's fixtures spell out (view-models may not import `href()`).
+  - **C13:**
+    - `ONE_CLICK_UNSUBSCRIBE` states the RFC 8058 exemption exactly (be S7, fe S5).
+    - `FORM_DECODING` is schema-driven, with five ambiguities settled and the money grammar
+      pinned (fe S3, be N1, fe N6).
+    - The proxy's headers include the CSP (fe S8).
+  - **C2:**
+    - `FormResultVM` gains `refused`, though the Partnership page never refuses (fe S4).
+    - The conversion comes from the loader after a poll, with Meta's `eventID` (fe S7).
+    - A checkout's `intents.proforma` (fe F1).
+    - Appointment slots are resolved, never streamed.
+    - `OptionLabelVM.axis` may be `null` (fe N1).
+    - Fixtures:
+      - €960, not €959.50 (be S9);
+      - a guest's quote link is `null`, with a partner's variant (be S10, fe S1);
+      - the hold and quote pages replace `/enquire?…topic=hold` and `/trade` (fe F1);
+      - every want-list result (fe N5).
+  - **C11:** `quote.requested` among the lead records, and `wantList.started`'s vocabulary mapped
+    (be N3, N2).
+  - **C12:** a copy only moves forward, and an FX refresh stamps `asOf` (be S11); `http://` only
+    in development (be N5, fe N2).
+  - The v1.1 entry's "no C10 segment remained" was the route map's truth, not the fixtures'
+    (be S10).

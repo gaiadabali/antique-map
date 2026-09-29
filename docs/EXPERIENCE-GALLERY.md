@@ -237,9 +237,10 @@ page) · a "Similar to sell?" micro-block linking to consignment.
   viewer's market currency, stored with it), delivered **within 15 minutes or
   in a daily digest**, the subscriber's choice. A signed-in collector's saves at
   once; a guest leaves an email with no account, which starts watching only
-  once confirmed — a **double opt-in** link the confirmation email carries, so
-  the same courteous, admits-nothing answer goes out whoever asks and however
-  often (D39).
+  once confirmed — a **double opt-in**: the confirmation email's link opens the
+  want-list page, whose button confirms it (a mail scanner following the link
+  confirms nothing), and the same courteous, admits-nothing answer goes out
+  whoever asks and however often (D39).
 
 ## 9. Trust pages — the gap competitors fill and this site does not
 
@@ -267,7 +268,10 @@ All in the CMS as pages, all linked from the purchase panel:
 camera directly, accepts HEIC, shows per-file progress and retries on weak
 networks, and ends with a "what happens next" timeline; the framing quote has its
 own short flow; institutions can turn a **cart of several items into a proforma**
-(PO field, PDF, and a "pay this proforma" page — the `Quote` surface).
+at the checkout's payment step ("Proforma instead"), or ask for one on a single
+item — even one on request — through the quote form (PO field, PDF, and a "pay
+this proforma" page — the `Quote` surface); "Reserve" has its own short form, a
+request for a staff hold.
 
 ## 10. Accounts and retention
 

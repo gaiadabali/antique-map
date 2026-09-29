@@ -21,8 +21,10 @@
  * (`ORDER_ACCESS.link`, `WANT_LIST_ACCESS.link`, the auth routes' GET links — `APPLICATION_ACCESS`,
  * `PASSWORD_LINK`, email verification — and one-click unsubscribe) are the only other credentials
  * in a URL, and each but the unsubscribe moves its token into a cookie and answers 303 to a clean
- * page. RFC 8058's one-click unsubscribe — a want list's (`wantList.unsubscribe`), the
- * newsletter's — is the one POST that carries its token in its URL, from the mail client. Every
+ * page. Every such token is a derived capability link (C6 `links`), stored nowhere and never in an
+ * outbox row, but `PASSWORD_LINK`'s single-use nonce. RFC 8058's one-click unsubscribe — a want
+ * list's (`wantList.unsubscribe`), the newsletter's — is the one POST that carries its token in its
+ * URL, from the mail client, on `ONE_CLICK_UNSUBSCRIBE`'s terms. Every
  * operation a page calls is a GET or a POST (`FormMethod`), so a form reaches it without
  * JavaScript and comes back to its page through `FORM_RESULT`. The files hold
  * type imports of other packages only, and route parity reads them with the workspace's
@@ -150,7 +152,9 @@ export const PROXY_REQUEST_HEADERS = { publicPath: 'x-public-path', locale: 'x-l
  * Everything but `/api/…` (Payload and the routes above), Next's `/_next/…` and brand
  * assets reaches the proxy: pages, `/admin` (English by default), legacy prefixes (brand
  * config, so knowable only at runtime) and `ROOT_REWRITES`. The proxy only rewrites and sets
- * headers — `PROXY_REQUEST_HEADERS`, and C10's `sensitive` answer headers; it never touches
- * the database.
+ * headers — `PROXY_REQUEST_HEADERS` on the request; on the answer, C10's `sensitive` headers and
+ * the `Content-Security-Policy` it builds per request from the brand's config (its analytics,
+ * payment and sister origins, ARCHITECTURE.md §13), since one build serves several brands and a
+ * CSP in `next.config` would bake one in; it never touches the database.
  */
 export const PROXY_MATCHER = ['/((?!api/|_next/|brand-assets/).*)'] as const

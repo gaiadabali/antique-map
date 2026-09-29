@@ -60,7 +60,8 @@ const purchase: VariantsPurchaseVM = {
   actions: {
     addToBag: true,
     whatsapp: 'https://wa.me/6281200000001?text=A-0042',
-    quote: '/trade?design=A-0042',
+    // A guest on a shop whose accounts are its partners': a quote is a partner's alone (D36).
+    quote: null,
   },
   preview: {
     flat: image('flat-7001', 1200, 960, 'The harbour of Contoh, flat'),
@@ -142,5 +143,25 @@ export const itemVariantsSelected: ItemVM = {
       stock: { kind: 'madeToOrder', leadDays: { min: 3, max: 5 } },
       line: line(7001, 70011, selection),
     },
+  }),
+}
+
+/**
+ * The same selection, seen by a signed-in partner where `accounts.retailers` is on: "Turn this into
+ * a quote" leads to the `quote` form for this product and variant (C10 `href('form', …)`).
+ */
+export const itemVariantsForPartner: ItemVM = {
+  ...itemVariants,
+  purchase: streamed({
+    ...purchase,
+    selection,
+    selected: {
+      variantId: 70011,
+      sku: 'A0042-FRM-45-NTK-ACR',
+      price: idr(1250000),
+      stock: { kind: 'madeToOrder', leadDays: { min: 3, max: 5 } },
+      line: line(7001, 70011, selection),
+    },
+    actions: { ...purchase.actions, quote: '/request-a-quote?item=7001&variant=70011' },
   }),
 }

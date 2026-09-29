@@ -138,6 +138,7 @@ export const checkoutId: CheckoutVM = {
   intents: {
     continue: { checkoutId: 'chk_fixture_id', acceptedPricing: token('tok_fixture_id_1') },
     pay: { checkoutId: 'chk_fixture_id', acceptedPricing: token('tok_fixture_id_1') },
+    proforma: null,
   },
   seo: { ...seo('Checkout', '/checkout'), noindex: true },
 }

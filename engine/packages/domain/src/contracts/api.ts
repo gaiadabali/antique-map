@@ -15,7 +15,8 @@
  * request still finds it. One that carries a token — an order lookup's, a quote's, a pay link's, a
  * return's, an enquiry's — waits like a secret besides: never logged, and never rendered, since the
  * page shows the answer and not its token (a lookup's lives on in its own cookie). `retailer.apply`'s
- * and an address's `wantList.subscribe` answer are the same for everyone.
+ * and an address's `wantList.subscribe` answer are the same for everyone. Every token an answer or
+ * an email carries is a derived capability link (`./links`): stored nowhere, derived when needed.
  */
 import type { Money } from '../money/contract'
 import type {
@@ -45,6 +46,7 @@ export type * from './after-sale'
 export type * from './cart'
 export type * from './checkout'
 export type * from './leads'
+export type * from './links'
 export type * from './orders'
 export type * from './paying'
 export type * from './requests'

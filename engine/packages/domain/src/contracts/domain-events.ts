@@ -180,12 +180,17 @@ export type PiiKey =
   | 'nik'
   | 'taxNumber'
   | 'taxId'
+/**
+ * Nor a credential: a row is kept and replayed, so a token in it would be a link anyone reading
+ * the outbox could open. A consumer derives the token it needs from the row's ids (C6 `links`).
+ */
+export type CredentialKey = 'token' | `${string}Token` | 'secret' | `${string}Secret` | 'nonce'
 type AllTrue<R> = false extends R[keyof R] ? false : true
-/** `true` when no key of `T`, at any depth, is a `PiiKey`. */
+/** `true` when no key of `T`, at any depth, is a `PiiKey` or a `CredentialKey`. */
 export type IsPiiFree<T> = T extends readonly (infer E)[]
   ? IsPiiFree<E>
   : T extends object
-    ? [Extract<keyof T, PiiKey>] extends [never]
+    ? [Extract<keyof T, PiiKey | CredentialKey>] extends [never]
       ? AllTrue<{ [K in keyof T]-?: IsPiiFree<T[K]> }>
       : false
     : true
@@ -212,6 +217,10 @@ type _WantListDataCoversTheEvents = Assert<
   Equals<keyof WantListEventData, Extract<DomainEventName, `wantList.${string}`>>
 >
 type _WantListDataIsPiiFree = Assert<IsPiiFree<WantListEventData>>
+type _TokenRejected = Assert<
+  // @ts-expect-error — a link's token is a credential: NTF derives it, the row never carries it
+  IsPiiFree<WantListEventData['wantList.requested'] & { readonly accessToken: string }>
+>
 type _NpwpRejected = Assert<
   // @ts-expect-error — a tax number is personal data: it never enters the outbox
   IsPiiFree<RetailerEventData['retailer.applied'] & { readonly npwp: string }>

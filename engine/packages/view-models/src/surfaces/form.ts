@@ -1,8 +1,9 @@
 /**
  * @contract C2 — view models: forms · owner: ARC · consumers: WEB, UXG, UXE
  *
- * One engine for enquiry · offer · consignment · appointment (C10 `FORM_KINDS`,
- * DESIGN-SYSTEM.md §2): the fields are data the loader builds from the kind, the brand's
+ * One engine for enquiry · offer · consignment · appointment · hold · quote (C10 `FORM_KINDS`,
+ * each posting its own C6 operation; DESIGN-SYSTEM.md §2): the fields are data the loader builds
+ * from the kind, the brand's
  * modules and the item (`./form-fields`), so an app renders a list rather than hard-coding a
  * form. The form posts to its C13 route with JavaScript or without; what is sent is stored and
  * put on the staff desk, and the page says when a person will reply (EXPERIENCE-GALLERY.md
@@ -14,7 +15,7 @@ import type { CurrencyCode } from '@engine/config/schema'
 import type { AppointmentSlotsView, ConsignmentPhoto, EnquiryTopic } from '@engine/domain/api'
 
 import type { BlockVM } from '../blocks'
-import type { MessageVM, PriceVM, SeoVM, Streamed } from '../common'
+import type { MessageVM, PriceVM, SeoVM } from '../common'
 import type { ItemRefVM } from '../commerce'
 import type { FormFieldVM, FormResultVM } from './form-fields'
 
@@ -40,10 +41,14 @@ export type FormVM = {
   nextSteps: readonly MessageVM[]
   /** The bid's currency is the ship-to market's; offers are non-binding (D22); the floor never ships. */
   offer: { currency: CurrencyCode; asking: PriceVM | null; binding: false } | null
-  /** Each location with its time zone; slots stream; the wishlist becomes the pull list. */
+  /**
+   * Each location with its time zone, and the wishlist as the pull list. The slots are the form's
+   * own choices, so they are resolved with the page at request time, never streamed: a visitor
+   * without JavaScript must see them to book one.
+   */
   appointment: {
     locations: readonly { id: string; name: string; timeZone: string }[]
-    slots: Streamed<AppointmentSlotsView> | null
+    slots: AppointmentSlotsView | null
     pullList: readonly ItemRefVM[]
   } | null
   /** The phone camera directly, HEIC accepted, per-file progress, retried on weak networks. */

@@ -32,11 +32,13 @@ export type PricingToken = string & { readonly __pricingToken: 'opaque, server-i
  * submission), minted per attempt: by a script when it sends, or by the page each time it renders
  * a form (a hidden field) — at request time, never inside a `'use cache'` function or component,
  * whose output every visitor shares, so two visitors would share one key. The view models never
- * carry one. The server binds a key to its caller — the session's customer, else the cart cookie,
- * else the request's own content — and a repeat by that caller with the same request returns the
- * first result (for a payment, the stored SessionResult: PAYMENTS.md §1 rule 6); the same key from
- * another caller or with another request is `invalid` (`idempotencyKey`, `mismatch`), and never
- * returns what the first caller was answered (C13 `FORM_DECODING`, ./storage.ts).
+ * carry one. A key is unique per operation, and the server binds it to its caller — the
+ * session's customer, else the cart cookie, else the request's own content alone: a repeat by that
+ * caller with the same request returns the first result (for a payment, the stored SessionResult:
+ * PAYMENTS.md §1 rule 6); the same key from another caller or with another request is `invalid`
+ * (`idempotencyKey`, `mismatch`), never what the first caller was answered — a guest who signs in
+ * mid-flow is another caller, and the re-rendered page mints a new key. Keys and their answers
+ * live `IDEMPOTENCY_KEY_RETENTION` (C13 `FORM_DECODING`, ./storage.ts).
  */
 export type IdempotencyKey = string
 
@@ -116,12 +118,20 @@ export type Problem =
       /** For `minimum-spend`: how much more qualifies, in the cart's currency. */
       readonly shortBy: Money | null
     }
-  /** The method cannot take this payment: "try another method". */
+  /**
+   * The method cannot take this payment: "try another method". `window-too-short`: what is left
+   * before the lock's ceiling or the hold's end is less than the method's shortest session (C7
+   * `minSessionTtl`), which is never cut below its floor.
+   */
   | {
       readonly code: 'method-unavailable'
       readonly method: PaymentMethodId
       readonly reason:
-        'amount-cap' | 'not-for-unique-items' | 'provider-unavailable' | 'not-offered'
+        | 'amount-cap'
+        | 'not-for-unique-items'
+        | 'provider-unavailable'
+        | 'not-offered'
+        | 'window-too-short'
     }
   /** A lock, link, quote or counter-offer ran out; the buyer starts again from `restartAt`. */
   | { readonly code: 'expired'; readonly restartAt: 'cart' | 'item' | 'link' }

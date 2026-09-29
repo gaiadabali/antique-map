@@ -32,8 +32,9 @@ export type PaymentOptionView = {
   readonly presentation: PaymentPresentation
   /**
    * How long the buyer has once it starts ("pay within 15 minutes"): the method's session
-   * lifetime, cut to end before the lock or hold behind it. The deadline itself arrives with
-   * `PaymentStarted.expiresAt`.
+   * lifetime, cut to end before the lock or hold behind it — never below the method's floor (C7
+   * `minSessionTtl`): a method whose floor no longer fits before that end is not offered at all.
+   * The deadline itself arrives with `PaymentStarted.expiresAt`.
    */
   readonly sessionTtl: Duration
   /** QRIS, e-wallets and virtual accounts confirm automatically; a transfer is confirmed by staff. */
@@ -52,9 +53,14 @@ export type PaymentOptionView = {
  *    yet know. From here every reservation the attempt pays for carries the order's `order_id`;
  * 2. `createSession()`, outside any transaction;
  * 3. stores the SessionResult on the attempt and as the answer to `idempotencyKey`.
- * The same key replays the stored session. If the session was never stored (a crash between 2
- * and 3), the retry voids that attempt and creates another — a provider reference is never used
- * twice. Choosing another method keeps the bag and cancels the previous session.
+ * The same key replays the stored session. While step 2 may still be running — for
+ * `PAYMENT_ATTEMPT_LEASE` (C8 ./transactions.ts) from the attempt's commit — the same key answers
+ * `rate-limited`, its `retryAfterSeconds` the lease's remainder, so a second click never voids a
+ * live attempt, and the page asks again (without JavaScript, its result page offers to). Past the
+ * lease with no session stored, it was a crash between 2 and 3: the retry voids that attempt and
+ * creates another — a provider reference is never used twice. Choosing another method keeps the
+ * bag and cancels the previous session. A method whose floor (C7 `minSessionTtl`) no longer fits
+ * before the lock's ceiling or the hold's end answers `method-unavailable` (`window-too-short`).
  */
 export type PaymentStartRequest = {
   readonly checkoutId: string

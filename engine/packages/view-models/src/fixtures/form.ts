@@ -1,5 +1,5 @@
 /**
- * @contract C2 — fixtures `form` (enquiry, offer, consignment, appointment, invalid) · owner: ARC
+ * @contract C2 — fixtures `form` (enquiry, offer, consignment, appointment, hold, quote, invalid, refused) · owner: ARC
  *
  * One engine, four kinds: fields are data named by their C6 request paths. The offer states
  * that it is non-binding and bids in the ship-to market's currency; the consignment takes
@@ -8,9 +8,9 @@
  * every entry and names every failing field at once.
  */
 import type { FormVM } from '../surfaces/form'
-import { ISLE, SHOWROOM } from './_commerce'
+import { ISLE, PRINT, SHOWROOM } from './_commerce'
 import { contactFields, entry, hidden, optional } from './_forms'
-import { money, price, seo, streamed } from './_shared'
+import { money, price, seo } from './_shared'
 
 const contact = (returnTo: string) => [
   ...contactFields().map((each) => (each.input === 'hidden' ? each : { ...each, required: false })),
@@ -88,13 +88,14 @@ export const formAppointment: FormVM = {
   reply: null,
   appointment: {
     locations: [{ id: 'showroom', name: SHOWROOM.name, timeZone: 'Asia/Makassar' }],
-    slots: streamed({
+    // Resolved with the page, never streamed: they are the form's own choices.
+    slots: {
       timeZone: 'Asia/Makassar',
       slots: [
         { start: '2026-10-03T03:00:00.000Z', end: '2026-10-03T04:00:00.000Z' },
         { start: '2026-10-03T06:00:00.000Z', end: '2026-10-03T07:00:00.000Z' },
       ],
-    }),
+    },
     pullList: [ISLE],
   },
   seo: { ...seo('Book a viewing', '/book-a-visit'), noindex: false },
@@ -110,4 +111,78 @@ export const formInvalid: FormVM = {
     ],
     values: { 'contact.fullName': 'Anna Voorbeeld', 'contact.email': 'anna@example' },
   },
+}
+
+/** "Reserve": a staff hold on this item (C6 `hold.request`) — the panel's own page for it. */
+export const formHold: FormVM = {
+  ...formEnquiry,
+  kind: 'hold',
+  title: 'Ask us to hold it',
+  topic: null,
+  fields: [
+    ...contact('/hold?item=1001'),
+    hidden('productId', '1001'),
+    optional('message', 'textarea'),
+  ],
+  action: '/api/x/commerce/holds',
+  reply: { code: 'holdReplyWithinHours', params: { hours: 24 } },
+  seo: { ...seo('Ask us to hold it', '/hold'), noindex: true },
+}
+
+/** Sent without JavaScript while someone else took it: refused, said plainly, entries kept. */
+export const formRefused: FormVM = {
+  ...formHold,
+  result: {
+    kind: 'refused',
+    code: 'reservation-conflict',
+    message: { code: 'heldByAnotherMeanwhile' },
+  },
+}
+
+const institution = [
+  entry('institution.organisation', 'text', { group: 'institution', autocomplete: 'organization' }),
+  optional('institution.taxId', 'text', { group: 'institution' }),
+  optional('institution.poNumber', 'text', { group: 'institution' }),
+]
+
+/**
+ * A quote for this item (C6 `quote.request`, one line), from a guest institution where
+ * `accounts.retailers` is off — the panel's "Proforma for institutions": staff issue it.
+ */
+export const formQuote: FormVM = {
+  ...formEnquiry,
+  kind: 'quote',
+  title: 'Ask for a quote or a proforma',
+  subject: { ...ISLE, price: null },
+  topic: null,
+  fields: [
+    hidden('lines.0.productId', '1001'),
+    hidden('lines.0.quantity', '1'),
+    ...institution,
+    ...contact('/request-a-quote?item=1001'),
+    optional('message', 'textarea'),
+    optional('neededBy', 'date'),
+  ],
+  action: '/api/x/commerce/quotes',
+  reply: { code: 'quoteReplyWithinDays', params: { days: 2 } },
+  seo: { ...seo('Ask for a quote', '/request-a-quote'), noindex: true },
+}
+
+/**
+ * "Turn this into a quote" for a signed-in partner where `accounts.retailers` is on (D36): its
+ * session is the contact and its record the business, so the form asks only how many and when.
+ */
+export const formQuotePartner: FormVM = {
+  ...formQuote,
+  subject: { ...PRINT, price: null },
+  fields: [
+    hidden('lines.0.productId', '7001'),
+    hidden('lines.0.variantId', '70011'),
+    entry('lines.0.quantity', 'text', { inputMode: 'numeric', value: '40' }),
+    optional('message', 'textarea'),
+    optional('neededBy', 'date'),
+    hidden('returnTo', '/request-a-quote?item=7001&variant=70011'),
+  ],
+  consents: [],
+  reply: { code: 'quoteReplyWithinDays', params: { days: 2 } },
 }

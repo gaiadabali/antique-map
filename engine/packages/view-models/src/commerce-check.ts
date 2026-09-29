@@ -132,6 +132,11 @@ type _BufferIsC5s = Assert<Equals<ConfigBuffer, FxSnapshot['bufferPct']>>
 
 // The purchase panel's impossible pairs do not compile; its possible ones do.
 type Accepts<T, U extends T> = U
+type _NoTokenInAPageStop = Accepts<
+  WantListVM['stop'],
+  // @ts-expect-error — a list's token stays in its cookie: a page stops by the cookie or the account
+  { access: { kind: 'token'; token: 'tok' } }
+>
 type _NoTokenInAPagePoll = Accepts<
   PaymentPollVM,
   // @ts-expect-error — a lookup token stays in its cookie: a page's poll says `lookup-cookie`

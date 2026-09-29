@@ -170,8 +170,9 @@ in under 100 ms without a reload on the reference device. Three views: **Flat**,
 **On a wall** (three wall colours), **To scale** (a 1.7 m person and a 2 m sofa
 with dimension lines). On a phone the preview stays pinned above a pull-up options
 panel. The chosen options live in the URL, so a configuration can be sent on
-WhatsApp or turned into a business quote ("Turn this into a quote" → the `Quote`
-surface). Impossible combinations are disabled **with the reason shown**. The
+WhatsApp or, by a signed-in partner, turned into a quote ("Turn this into a
+quote" → the quote form, then the `Quote` surface; §9, D36 — a guest sees no
+such action, and applies as a partner instead). Impossible combinations are disabled **with the reason shown**. The
 preview is decoration over a text summary of the selection (DESIGN-SYSTEM.md §9);
 the price change is announced politely; swatches carry names and ≥ 24 px targets.
 

@@ -1,5 +1,5 @@
 /**
- * @contract C2 — fixtures `want-list` (by email, received, for an account, pending, active, gone) · owner: ARC
+ * @contract C2 — fixtures `want-list` (by email, received, sent back, rate-limited, for an account, pending, active, confirmed, stopped, gone, expired) · owner: ARC
  *
  * One page for every alert link (D39): a guest saving "maps of Pulau Contoh under US$2,000" with
  * an email to confirm, and that post received — the same answer for any address; a signed-in
@@ -107,3 +107,36 @@ export const wantListActive: WantListPageVM = {
 
 /** A link to a list never confirmed in time, or stopped: nothing to show but how to start again. */
 export const wantListGone: WantListPageVM = { ...wantListPending, opened: { kind: 'gone' } }
+
+/** Sent back without JavaScript: the address malformed, every entry kept. */
+export const wantListInvalid: WantListPageVM = {
+  ...wantListSubscribe,
+  result: {
+    kind: 'invalid',
+    fields: [{ path: 'contact.email', reason: 'format' }],
+    values: { 'contact.email': 'anna@example' },
+  },
+}
+
+export const wantListRateLimited: WantListPageVM = {
+  ...wantListSubscribe,
+  result: { kind: 'rateLimited', retryAfterSeconds: 300 },
+}
+
+/** Its button pressed: the list is on. */
+export const wantListConfirmed: WantListPageVM = {
+  ...wantListActive,
+  result: { kind: 'received', reply: { code: 'wantListConfirmed' } },
+}
+
+/** Stopped: erased, so the link that opened the page names nothing now. */
+export const wantListStopped: WantListPageVM = {
+  ...wantListGone,
+  result: { kind: 'received', reply: { code: 'wantListStopped' } },
+}
+
+/** Confirming a list that lapsed meanwhile: refused, and said so. */
+export const wantListLinkExpired: WantListPageVM = {
+  ...wantListGone,
+  result: { kind: 'refused', code: 'not-found', message: { code: 'wantListLinkExpired' } },
+}

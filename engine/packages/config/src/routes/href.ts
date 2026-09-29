@@ -55,18 +55,22 @@ export type HrefParams = {
   /** The number alone opens nothing: the session or the order-access cookie does (C13). */
   order: { number: string }
   account: { section?: AccountSection }
-  form: { kind: FormKind; item?: number; topic?: string }
+  /** `variant`: the configured form of `item` a quote asks about. */
+  form: { kind: FormKind; item?: number; variant?: number; topic?: string }
   pay: { token: string }
   quote: { token: string }
   orderLookup: NoParams
   partnership: NoParams
   wishlist: NoParams
   /**
-   * At most one subject: `watch`, the public path of the browse or search page to watch, or
-   * `like`, the public id of an item another example of which to wait for; `{}`, the bare page an
-   * email's link lands on.
+   * One subject at most, so one URL per subject: `watch`, the canonical public path of the browse
+   * or search page to watch (the loader redirects any other spelling of it), or `like`, the public
+   * id of an item another example of which to wait for; `{}`: the bare page an email's link opens.
    */
-  wantList: { watch?: string; like?: number }
+  wantList:
+    | { watch?: never; like?: never }
+    | { watch: string; like?: never }
+    | { like: number; watch?: never }
 }
 /** What `href()` reads from a brand config. */
 export type HrefConfig = { routes: RouteMap; locales: { default: LocaleCode } }
@@ -77,7 +81,9 @@ type Intersect<U> = (U extends unknown ? (u: U) => void : never) extends (i: inf
   ? I
   : never
 /** Every surface's params in one optional bag, for the implementation only. */
-type Params = Partial<Intersect<HrefParams[LinkSurface]>>
+type Params = Partial<
+  Intersect<HrefParams[Exclude<LinkSurface, 'wantList'>]> & { watch: string; like: number }
+>
 type Context = { routes: RouteMap; segments: LocaleSegments; locale: LocaleCode; p: Params }
 
 /**
@@ -144,7 +150,7 @@ function partsOf(context: Context, surface: LinkSurface): [string[], string] {
     case 'form': {
       const kind = p.kind ?? 'enquiry'
       const segment = present(segments.forms[kind], `form ${kind}`, context.locale)
-      return [[segment], searchOf({ item: p.item, topic: p.topic })]
+      return [[segment], searchOf({ item: p.item, variant: p.variant, topic: p.topic })]
     }
     case 'item':
       return [[segments.item, p.slug ? `${p.publicId}-${p.slug}` : `${p.publicId}`], '']
@@ -199,3 +205,13 @@ function searchOf(query: Record<string, string | number | readonly string[] | un
   )
   return pairs.length > 0 ? `?${pairs.join('&')}` : ''
 }
+
+// ─── Type-level tests ────────────────────────────────────────────────────────────────────────
+
+type Accepts<T, U extends T> = U
+type _OneSubjectOrNone = Accepts<HrefParams['wantList'], { like: 3 }>
+type _TwoSubjectsRefused = Accepts<
+  HrefParams['wantList'],
+  // @ts-expect-error — two subjects are no page: one subject, one URL
+  { watch: '/browse'; like: 3 }
+>

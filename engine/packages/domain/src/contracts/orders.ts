@@ -31,6 +31,17 @@ export type ShipmentStatus =
   | 'exception'
   | 'returned-to-sender'
 
+/**
+ * How the buyer-facing status reads a shipment — a partition of `ShipmentStatus`, proved total
+ * below: on its way (it has left, whatever became of it since), at a pickup, or not yet gone.
+ */
+export type ShipmentOnItsWay = Exclude<
+  ShipmentStatus,
+  'label-created' | 'ready-for-pickup' | 'collected'
+>
+export type ShipmentAtPickup = Extract<ShipmentStatus, 'ready-for-pickup' | 'collected'>
+export type ShipmentNotYetGone = Extract<ShipmentStatus, 'label-created'>
+
 export type ShipmentView = {
   readonly carrier: string | null
   readonly service: string | null
@@ -91,20 +102,24 @@ export type OrderedLineView = {
 export type OrderLineView = OrderedLineView & { readonly returnable: boolean }
 
 /**
- * An order's standing as its buyer reads it. The domain derives it — one function, for a C6 answer
- * and a C2 loader alike — from the order's status (C8), the attempt that paid it (before one has,
- * the latest) and its shipments; the first rule that holds wins:
+ * An order's standing as its buyer reads it: one pure function, for a C6 answer and a C2 loader
+ * alike, of the order's status (C8), the attempt that paid it (before one has, the latest) and its
+ * shipments — total over all three. Whatever the stage, first:
  * - `cancelled` — the order is cancelled (a refund after payment shows in the payment's part);
- * - `refunded` — the attempt that paid it is refunded in full;
- * - `awaiting-payment` — `pending_payment`, whatever its attempt is doing: a failed or expired
+ * - `refunded` — that attempt is refunded in full (a late payment refused reads so too).
+ * Otherwise, by the order's status:
+ * - `pending_payment` → `awaiting-payment`, whatever its attempt is doing: a failed or expired
  *   attempt is the page's retry state, never the order's;
- * - `not-paid` — `abandoned`: the money never came, and the items went back on sale;
- * - `paid` — `paid`: nothing dispatched or ready yet;
- * - `shipped` — `fulfilling`, a shipment on its way;
- * - `ready-for-pickup` — `fulfilling`, a pickup ready and nothing shipped;
- * - `completed` — every line delivered or collected.
- * A dispute, won or lost, changes nothing a buyer reads — the order stands and staff are alerted
- * (C8) — and a partial refund keeps the stage, shown in the payment's part.
+ * - `abandoned` → `not-paid`: the money never came, and the items went back on sale;
+ * - `paid` → `paid`: nothing has left yet;
+ * - `fulfilling` → `shipped` when any shipment is `ShipmentOnItsWay` (a delivery exception and a
+ *   return to sender included: it did leave); else `ready-for-pickup` when a pickup is ready; else
+ *   `paid` (labels printed, or a pickup collected while another line waits);
+ * - `completed` → `completed`.
+ * An order with nothing to ship — a digital gift card — takes the same rows: `paid` until its last
+ * card is sent, when C8 completes it. A dispute, won or lost, changes nothing a buyer reads (the
+ * order stands, staff are alerted), and a partial refund keeps the stage, shown in the payment's
+ * part.
  */
 export type BuyerOrderStatus =
   | 'awaiting-payment'
@@ -133,3 +148,10 @@ type _NoDisputeForTheBuyer = Assert<
   Equals<Extract<BuyerOrderStatus, Extract<PaymentStatus, `dispute${string}`>>, never>
 >
 type _NoAttemptStateOnTheSummary = Assert<Equals<Extract<keyof OrderSummaryView, 'payment'>, never>>
+// Every courier status falls in exactly one of the three the status reads.
+type _ShipmentsPartitioned = Assert<
+  Equals<ShipmentOnItsWay | ShipmentAtPickup | ShipmentNotYetGone, ShipmentStatus>
+>
+type _PartsDisjoint = Assert<
+  Equals<Extract<ShipmentOnItsWay, ShipmentAtPickup | ShipmentNotYetGone>, never>
+>
