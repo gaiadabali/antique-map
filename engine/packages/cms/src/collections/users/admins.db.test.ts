@@ -6,7 +6,16 @@
  * drops the database afterwards. Without that variable it skips — a setup state; a server that
  * is named and refuses is a failure (CONVENTIONS.md §8).
  */
-import { buildConfig, getPayload, handleEndpoints, ValidationError, type Payload } from 'payload'
+import {
+  buildConfig,
+  commitTransaction,
+  createLocalReq,
+  getPayload,
+  handleEndpoints,
+  initTransaction,
+  ValidationError,
+  type Payload,
+} from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { migrations } from '../../migrations'
@@ -149,6 +158,46 @@ describe.skipIf(!server)('the admin guards on a migrated database', () => {
     expect(await admins()).toBe(1)
     await setRoles('a@test.example', ['admin'])
     await setRoles('b@test.example', ['admin'])
+  })
+
+  it('never deadlocks a held save of an admin’s roles against a demotion of the same admin (R1)', async () => {
+    // T1 keeps A an admin (and renames A) inside a transaction held open; T2 then demotes A (B
+    // stays an admin, so both are allowed). Before R1, T1's hook took no lock: T1 held A's rows
+    // and asked for the admins lock only at COMMIT (the deferred trigger), while T2 held that lock
+    // from its hook and waited for A's rows — opposite orders; Postgres aborted T1 (40P01). Payload's
+    // commitTransaction swallows a failed COMMIT, so the proof is a marker row T1 wrote.
+    const a = await idOf('a@test.example')
+    const req = await createLocalReq({}, payload)
+    await initTransaction(req)
+    await payload.update({
+      collection: 'users',
+      id: a,
+      data: { roles: ['admin', 'editor'] },
+      req,
+    })
+    const db = payload.db as unknown as {
+      sessions: Record<string, { db: unknown }>
+      execute: (args: { db: unknown; raw: string }) => Promise<unknown>
+    }
+    await db.execute({
+      db: db.sessions[String(await req.transactionID)]!.db,
+      raw: `INSERT INTO idempotency_keys (operation, key, request_sha256) VALUES ('r1', 'held', '${'0'.repeat(64)}')`,
+    })
+    const demotion = payload.update({ collection: 'users', id: a, data: { roles: ['editor'] } })
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    await commitTransaction(req)
+    await expect(demotion).resolves.toBeTruthy()
+    const marker = await pool.query(`SELECT count(*) AS n FROM idempotency_keys WHERE key = 'held'`)
+    expect(Number(marker.rows[0]!.n)).toBe(1)
+    expect(await admins()).toBe(1)
+    await setRoles('a@test.example', ['admin'])
+    expect(await admins()).toBe(2)
+  })
+
+  it('refuses TRUNCATE of users_roles, directly or cascaded from users (R2)', async () => {
+    await expect(pool.query('TRUNCATE users_roles')).rejects.toThrow(/never truncated/)
+    await expect(pool.query('TRUNCATE users CASCADE')).rejects.toThrow(/never truncated/)
+    expect(await admins()).toBe(2)
   })
 
   it('makes one admin of three racing first-registers; the losers are refused (S2)', async () => {

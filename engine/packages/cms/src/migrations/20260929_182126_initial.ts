@@ -593,8 +593,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   // write, two demotions racing). Deferred to COMMIT, because Payload rewrites a user's roles as
   // delete-then-insert; and it takes the hooks' own advisory lock first (ADMINS_LOCK_KEY,
   // collections/users/guards.ts), so two committing transactions are checked one after the other
-  // and the second sees the first's demotion. A dev-pushed database lacks it: triggers are not
-  // drizzle schema, so its test runs against a migrated database.
+  // and the second sees the first's demotion. Because it fires for any save that rewrites an
+  // admin's roles, every such write takes the lock before its row locks (the hooks), never only at
+  // COMMIT after them — or two writers deadlock (senior-db re-review, R1). A dev-pushed database
+  // lacks it: triggers are not drizzle schema, so its test runs against a migrated database.
   await db.execute(sql`
     CREATE FUNCTION "users_keep_an_admin"() RETURNS trigger LANGUAGE plpgsql AS $keep_an_admin$
     BEGIN
@@ -614,12 +616,32 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
       WHEN (OLD."value" = 'admin')
       EXECUTE FUNCTION "users_keep_an_admin"();
   `)
+
+  // Added by hand (senior-db re-review of 3.2, R2): TRUNCATE fires no row trigger, so it would
+  // empty users_roles past the one above. A statement-level trigger refuses it outright (also
+  // when a TRUNCATE of users cascades here); staff are removed with DELETE, which the hooks and
+  // the constraint trigger judge.
+  await db.execute(sql`
+    CREATE FUNCTION "users_roles_refuse_truncate"() RETURNS trigger LANGUAGE plpgsql AS $refuse$
+    BEGIN
+      RAISE EXCEPTION 'users_roles is never truncated: delete staff so the last admin stays one'
+        USING ERRCODE = 'check_violation';
+    END
+    $refuse$;
+    CREATE TRIGGER "users_roles_no_truncate"
+      BEFORE TRUNCATE ON "users_roles"
+      FOR EACH STATEMENT
+      EXECUTE FUNCTION "users_roles_refuse_truncate"();
+  `)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   // The hand-written trigger and its function first; the extensions stay, since a database may
   // have had them before this migration (template1).
-  await db.execute(sql`DROP FUNCTION IF EXISTS "users_keep_an_admin"() CASCADE`)
+  await db.execute(sql`
+    DROP FUNCTION IF EXISTS "users_keep_an_admin"() CASCADE;
+    DROP FUNCTION IF EXISTS "users_roles_refuse_truncate"() CASCADE;
+  `)
   await db.execute(sql`
    DROP TABLE "users_roles" CASCADE;
   DROP TABLE "users_sessions" CASCADE;

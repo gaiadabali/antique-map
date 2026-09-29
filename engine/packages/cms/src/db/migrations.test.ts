@@ -66,6 +66,10 @@ describe('the migration set', () => {
     // The trigger and the hooks serialise on one key; if they drifted, two commits could race.
     expect(text).toContain(`PERFORM pg_advisory_xact_lock(${ADMINS_LOCK_KEY});`)
     expect(text).toContain('DROP FUNCTION IF EXISTS "users_keep_an_admin"() CASCADE')
+    // TRUNCATE fires no row trigger: a statement-level one refuses it (R2), and down() drops it.
+    expect(text).toContain('BEFORE TRUNCATE ON "users_roles"')
+    expect(text).toContain('FOR EACH STATEMENT')
+    expect(text).toContain('DROP FUNCTION IF EXISTS "users_roles_refuse_truncate"() CASCADE')
   })
 })
 

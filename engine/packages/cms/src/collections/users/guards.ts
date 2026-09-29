@@ -109,10 +109,13 @@ export const keepAnAdminOnUpdate: CollectionBeforeChangeHook<UserDoc> = async ({
   originalDoc,
   req,
 }) => {
-  if (operation !== 'update' || !('roles' in data)) return data
-  if (!holdsAdmin(originalDoc?.roles) || holdsAdmin(data.roles)) return data
-  const id = originalDoc?.id
+  if (operation !== 'update' || !('roles' in data) || !holdsAdmin(originalDoc?.roles)) return data
+  // Any save of an admin's roles, keeping admin or not: Payload rewrites them delete-then-insert,
+  // so the deferred trigger fires and takes this lock at COMMIT. Taken here first — before the row
+  // locks the save acquires — so two writers never wait on each other in opposite orders (R1).
   await lockAdmins(req)
+  if (holdsAdmin(data.roles)) return data
+  const id = originalDoc?.id
   if ((await countAdmins(req, id === undefined ? [] : [id])) === 0) throw lastAdminError(req, id)
   return data
 }
@@ -144,13 +147,11 @@ export const keepAnAdminInBulk: CollectionBeforeOperationHook = async ({
   const bulk = args as { id?: Id; where?: Where; data?: { roles?: unknown } }
   if (bulk.id !== undefined || bulk.where === undefined) return args
   if (operation !== 'delete' && operation !== 'update') return args
-  if (
-    operation === 'update' &&
-    (!bulk.data || !('roles' in bulk.data) || holdsAdmin(bulk.data.roles))
-  ) {
-    return args
-  }
+  if (operation === 'update' && (!bulk.data || !('roles' in bulk.data))) return args
+  // Before any row lock, for the same reason as a single save (R1): a bulk write of roles may
+  // rewrite an admin's, and the deferred trigger would otherwise take the lock last.
   await lockAdmins(req)
+  if (operation === 'update' && holdsAdmin(bulk.data?.roles)) return args
   const { docs } = await req.payload.find({
     collection: USERS_SLUG,
     where: bulk.where,

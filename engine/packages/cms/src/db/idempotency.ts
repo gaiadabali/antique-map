@@ -32,7 +32,13 @@ import {
   type PgTableFn,
 } from '@payloadcms/db-postgres/drizzle/pg-core'
 
-/** `text COLLATE "C"`: drizzle 0.45 has no collation on its own text columns. */
+/**
+ * `text COLLATE "C"`: drizzle 0.45 has no collation on its own text columns. The collation does
+ * not round-trip through drizzle-kit's introspection (it reads the column back as plain `text`),
+ * so a dev push re-emits `SET DATA TYPE text COLLATE "C"` on every boot — and on a pushed database
+ * re-adds the unique constraint — harmlessly (senior-db re-review of 3.2, R3). Migrations diff
+ * snapshot against snapshot, never against the database, so `migrate:create` is unaffected.
+ */
 const byteOrderText = customType<{ data: string }>({ dataType: () => 'text COLLATE "C"' })
 
 export const IDEMPOTENCY_KEYS_TABLE = 'idempotency_keys'

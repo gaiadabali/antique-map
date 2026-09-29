@@ -165,6 +165,27 @@ describe('the last admin', () => {
     )
   })
 
+  it('takes the admins lock for any save of an admin’s roles, even one keeping admin (R1)', async () => {
+    const { req, execute, count } = fakeReq([0])
+    const data = { roles: ['admin', 'editor'] }
+    expect(await call(keepAnAdminOnUpdate, { data, operation: 'update', originalDoc, req })).toBe(
+      data,
+    )
+    expect(execute).toHaveBeenCalledWith({
+      db: 'the-transaction',
+      raw: `SELECT pg_advisory_xact_lock(${ADMINS_LOCK_KEY})`,
+    })
+    expect(count).not.toHaveBeenCalled()
+    const editor = fakeReq([0])
+    await call(keepAnAdminOnUpdate, {
+      data: { roles: ['manager'] },
+      operation: 'update',
+      originalDoc: { id: 3, roles: ['editor'] },
+      req: editor.req,
+    })
+    expect(editor.execute).not.toHaveBeenCalled()
+  })
+
   it('is not consulted for an update that leaves roles alone', async () => {
     const { req, count } = fakeReq([0])
     await call(keepAnAdminOnUpdate, {
