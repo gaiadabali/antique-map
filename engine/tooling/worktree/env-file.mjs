@@ -2,7 +2,8 @@
 // keeps its value unless the caller forces it, every other line (comments,
 // secrets a person added by hand, blank lines) is kept byte for byte, and
 // missing keys are appended. This module only ever writes the keys it is
-// given (PORT, DB_SUFFIX), never a secret.
+// given: PORT, DB_SUFFIX and, through link-keys.mjs, a locally generated dev
+// LINK_TOKEN_KEYS ring — never a secret it was handed.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 const KEY_LINE = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/

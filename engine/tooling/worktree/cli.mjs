@@ -10,8 +10,10 @@
 //     Writes .env.local in the worktree you are in (e.g. one the Agent tool
 //     made with isolation: "worktree").
 //
-// .env.local gets PORT and DB_SUFFIX only. An existing key with a different
-// value is kept unless --force is passed; nothing else in the file is touched.
+// .env.local gets PORT, DB_SUFFIX and — when it has none — a fresh development
+// LINK_TOKEN_KEYS ring (link-keys.mjs, TASKS.md 3.3.b). An existing PORT or
+// DB_SUFFIX with a different value is kept unless --force is passed; an existing
+// ring is always kept; nothing else in the file is touched.
 import { existsSync } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
 
@@ -24,6 +26,7 @@ import {
   worktreeDirName,
 } from './allocate.mjs'
 import { readEnvFile, writeEnvFile } from './env-file.mjs'
+import { ensureLinkTokenKeys, LINK_KEY_VARIABLE } from './link-keys.mjs'
 import { addWorktree, listWorktrees, otherClaims, pathKey, topLevel } from './git.mjs'
 
 const USAGE = `usage:
@@ -33,11 +36,13 @@ const USAGE = `usage:
   <phase>   the TASKS.md phase number (1-60)
   <lane>    a PARALLEL-TRACKS.md §1 lane (HAR, SCH, ...) or a split such as ARC-P
   --base    the ref a new branch starts from (default: main)
-  --force   overwrite PORT / DB_SUFFIX in .env.local when they differ`
+  --force   overwrite PORT / DB_SUFFIX in .env.local when they differ
+            (an existing LINK_TOKEN_KEYS ring is never overwritten)`
 
 const HEADER = [
-  '# Local settings for this worktree (gitignored). PORT and DB_SUFFIX were',
-  '# written by `pnpm worktree:env`; add secrets by hand, never commit them.',
+  '# Local settings for this worktree (gitignored). PORT, DB_SUFFIX and a dev',
+  '# LINK_TOKEN_KEYS ring were written by `pnpm worktree:env`; add other secrets',
+  '# by hand, never commit them.',
 ]
 
 class UsageError extends Error {}
@@ -67,7 +72,7 @@ function parseArgs(argv) {
   return args
 }
 
-/** Writes PORT and DB_SUFFIX into `target`'s .env.local; returns what it wrote. */
+/** Writes PORT, DB_SUFFIX and (when absent) a dev link-key ring into `target`'s .env.local. */
 function writeWorktreeEnv({ target, phase, lane, force = false, log = console.log }) {
   const claims = otherClaims(target, target)
   const suffix = dbSuffix(phase, lane)
@@ -90,6 +95,13 @@ function writeWorktreeEnv({ target, phase, lane, force = false, log = console.lo
       outcome[key] === 'kept' ? ' (existing value differs, kept; --force overwrites)' : ''
     log(`  ${key}=${value}  ${outcome[key]}${note}`)
   }
+  // The ring is a secret: its outcome is logged, its value never is.
+  outcome[LINK_KEY_VARIABLE] = ensureLinkTokenKeys(file)
+  const ringNote =
+    outcome[LINK_KEY_VARIABLE] === 'added'
+      ? 'a fresh dev ring (one current key, 32 random bytes)'
+      : 'an existing ring is never overwritten'
+  log(`  ${LINK_KEY_VARIABLE}=…  ${outcome[LINK_KEY_VARIABLE]}: ${ringNote}`)
   // A kept value was not allocated here, so it may clash; say so rather than guess.
   const final = readEnvFile(file)
   for (const claim of claims) {
