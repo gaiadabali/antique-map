@@ -48,6 +48,9 @@ describe('findUncoveredRequirements', () => {
     sandbox = mkdtempSync(join(tmpdir(), 'req-'))
     writeFixtureRequirements(sandbox)
     const tasks = [{ requirements: ['1.1', '2.1'] }]
-    expect(findUncoveredRequirements(sandbox, tasks)).toEqual({ uncovered: ['1.2'], available: true })
+    expect(findUncoveredRequirements(sandbox, tasks)).toEqual({
+      uncovered: ['1.2'],
+      available: true,
+    })
   })
 })

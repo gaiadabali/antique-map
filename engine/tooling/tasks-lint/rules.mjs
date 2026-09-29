@@ -19,7 +19,10 @@ export function checkUniqueIds(model, tasks) {
   const findings = []
   const seen = new Map()
   const record = (id, line) => {
-    if (seen.has(id)) findings.push(finding('unique-ids', `"${id}" is declared twice (first at line ${seen.get(id)})`, line))
+    if (seen.has(id))
+      findings.push(
+        finding('unique-ids', `"${id}" is declared twice (first at line ${seen.get(id)})`, line),
+      )
     else seen.set(id, line)
   }
   for (const task of tasks) {
@@ -43,15 +46,29 @@ export function checkNeedsResolvable(model, tasks) {
     for (const token of task.needs) {
       const result = expandNeedsToken(token)
       if (result.error) {
-        findings.push(finding('needs-resolvable', `${task.id} needs "${token}" ${result.error}`, task.line))
+        findings.push(
+          finding('needs-resolvable', `${task.id} needs "${token}" ${result.error}`, task.line),
+        )
         continue
       }
       if (result.phase !== undefined && !phaseNumbers.has(result.phase)) {
-        findings.push(finding('needs-resolvable', `${task.id} needs "phase ${result.phase}", which does not exist`, task.line))
+        findings.push(
+          finding(
+            'needs-resolvable',
+            `${task.id} needs "phase ${result.phase}", which does not exist`,
+            task.line,
+          ),
+        )
       }
       for (const id of result.ids ?? []) {
         if (!ids.has(id)) {
-          findings.push(finding('needs-resolvable', `${task.id} needs "${id}", which does not exist`, task.line))
+          findings.push(
+            finding(
+              'needs-resolvable',
+              `${task.id} needs "${id}", which does not exist`,
+              task.line,
+            ),
+          )
         }
       }
     }
@@ -75,7 +92,9 @@ function resolvedTaskIds(task) {
  * because phase 1 is already an ancestor of everything through the chain.
  */
 function transitiveClosures(phases) {
-  const declaredOf = new Map(phases.map((p) => [p.number, new Set(p.needs.filter((n) => n !== '—').map(Number))]))
+  const declaredOf = new Map(
+    phases.map((p) => [p.number, new Set(p.needs.filter((n) => n !== '—').map(Number))]),
+  )
   const closure = new Map()
   const resolve = (n, seen = new Set()) => {
     if (closure.has(n)) return closure.get(n)
@@ -100,9 +119,21 @@ export function checkPhaseNeedsMatchTasks(model, tasks) {
     const declared = new Set(phase.needs.filter((n) => n !== '—').map((n) => Number(n)))
     for (const n of declared) {
       if (!phaseNumbers.has(n)) {
-        findings.push(finding('phase-needs', `phase ${phase.number} declares needs ${n}, which does not exist`, phase.line))
+        findings.push(
+          finding(
+            'phase-needs',
+            `phase ${phase.number} declares needs ${n}, which does not exist`,
+            phase.line,
+          ),
+        )
       } else if (!(n < phase.number)) {
-        findings.push(finding('phase-needs', `phase ${phase.number} declares needs ${n}, not earlier-numbered`, phase.line))
+        findings.push(
+          finding(
+            'phase-needs',
+            `phase ${phase.number} declares needs ${n}, not earlier-numbered`,
+            phase.line,
+          ),
+        )
       }
     }
     const reachable = closures.get(phase.number) ?? new Set()
@@ -140,7 +171,13 @@ export function checkNoSameWaveDependency(model, tasks) {
       const depTaskId = id.split('.').slice(0, 2).join('.')
       const dep = taskById(tasks, depTaskId)
       if (dep && dep.phaseNumber === task.phaseNumber && dep.wave === task.wave) {
-        findings.push(finding('no-same-wave-dependency', `${task.id} (wave ${task.wave}) depends on ${dep.id}, in the same wave`, task.line))
+        findings.push(
+          finding(
+            'no-same-wave-dependency',
+            `${task.id} (wave ${task.wave}) depends on ${dep.id}, in the same wave`,
+            task.line,
+          ),
+        )
       }
     }
   }
@@ -181,11 +218,23 @@ export function checkPhaseLimits(model) {
   const findings = []
   for (const phase of model.phases) {
     if (phase.tasks.length > 8) {
-      findings.push(finding('phase-limits', `phase ${phase.number} has ${phase.tasks.length} tasks, more than 8`, phase.line))
+      findings.push(
+        finding(
+          'phase-limits',
+          `phase ${phase.number} has ${phase.tasks.length} tasks, more than 8`,
+          phase.line,
+        ),
+      )
     }
     const waves = new Set(phase.tasks.map((t) => t.wave).filter(Boolean))
     if (waves.size > 3) {
-      findings.push(finding('phase-limits', `phase ${phase.number} has ${waves.size} waves, more than 3`, phase.line))
+      findings.push(
+        finding(
+          'phase-limits',
+          `phase ${phase.number} has ${waves.size} waves, more than 3`,
+          phase.line,
+        ),
+      )
     }
   }
   return findings
@@ -197,7 +246,9 @@ export function checkEndsInCheck(model, tasks) {
   for (const task of tasks) {
     const last = task.subtasks.at(-1)
     if (!last || !last.isCheck) {
-      findings.push(finding('ends-in-check', `${task.id} does not end in a **Check:** subtask`, task.line))
+      findings.push(
+        finding('ends-in-check', `${task.id} does not end in a **Check:** subtask`, task.line),
+      )
     }
   }
   return findings
@@ -207,7 +258,9 @@ export function checkEndsInCheck(model, tasks) {
 export function checkRequirementsCovered(repoRoot, tasks) {
   const { uncovered, available } = findUncoveredRequirements(repoRoot, tasks)
   if (!available) return []
-  return uncovered.map((id) => finding('requirements-covered', `requirement ${id} is not claimed by any task`, null))
+  return uncovered.map((id) =>
+    finding('requirements-covered', `requirement ${id} is not claimed by any task`, null),
+  )
 }
 
 export const ALL_RULES = [

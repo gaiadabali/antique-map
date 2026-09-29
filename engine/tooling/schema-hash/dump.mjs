@@ -68,7 +68,11 @@ export function listAllDatabases({ cwd } = {}) {
     "SELECT datname FROM pg_database WHERE datistemplate = false AND datname <> 'postgres' ORDER BY 1",
   ]
   try {
-    const out = execFileSync('docker', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
+    const out = execFileSync('docker', args, {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim()
     return out === '' ? [] : out.split('\n')
   } catch (error) {
     const detail = error.stderr ? String(error.stderr).trim() : error.message

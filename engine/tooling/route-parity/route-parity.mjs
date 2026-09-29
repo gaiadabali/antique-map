@@ -32,7 +32,9 @@ export async function checkRouteParity(repoRoot, opts = {}) {
     }
     const { slugs: collectionSlugs, available } = discoverCollectionSlugs(repoRoot)
     if (!available) {
-      degraded.push('collection-slug collisions: nothing to check yet — engine/packages/cms/src/collections does not exist (Payload boot is 3.2+); reserved-word collisions (payload-jobs, graphql) are still checked')
+      degraded.push(
+        'collection-slug collisions: nothing to check yet — engine/packages/cms/src/collections does not exist (Payload boot is 3.2+); reserved-word collisions (payload-jobs, graphql) are still checked',
+      )
     }
     for (const collision of findReservedSegmentCollisions(routes, collectionSlugs)) {
       violations.push({ kind: 'reserved-segment-collision', ...collision })
@@ -41,7 +43,9 @@ export async function checkRouteParity(repoRoot, opts = {}) {
     // Per-app invariants — need a scaffolded `src/app` (phase 4).
     const apps = discoverScaffoldedApps(repoRoot, appsAbsDir)
     if (apps.length === 0) {
-      degraded.push('app mounts and proxy matcher: nothing to check yet — no app under engine/apps/* has a src/app tree (phase 4, App shells, has not landed)')
+      degraded.push(
+        'app mounts and proxy matcher: nothing to check yet — no app under engine/apps/* has a src/app tree (phase 4, App shells, has not landed)',
+      )
     }
     for (const app of apps) {
       const appDir = join(appsAbsDir, app)
@@ -56,7 +60,12 @@ export async function checkRouteParity(repoRoot, opts = {}) {
       if (appMatcher === null) {
         degraded.push(`proxy matcher for ${app}: nothing to check yet — no src/proxy.ts`)
       } else if (!matchersEqual(appMatcher, proxyMatcher)) {
-        violations.push({ kind: 'proxy-matcher-mismatch', app, expected: proxyMatcher, actual: appMatcher })
+        violations.push({
+          kind: 'proxy-matcher-mismatch',
+          app,
+          expected: proxyMatcher,
+          actual: appMatcher,
+        })
       }
     }
 

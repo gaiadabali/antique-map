@@ -18,7 +18,11 @@ if (!slug || !storefront) {
 }
 
 try {
-  const { brandDir, infra, checkedAgainstSchema } = await createBrand(process.cwd(), { slug, storefront, name })
+  const { brandDir, infra, checkedAgainstSchema } = await createBrand(process.cwd(), {
+    slug,
+    storefront,
+    name,
+  })
   console.log(`brand:create: scaffolded ${brandDir}`)
   console.log(`  database: ${infra.database}   bucket: ${infra.bucket}`)
   console.log(
@@ -26,7 +30,10 @@ try {
       ? '  validated against the C1 brandConfigSchema (validateBrandConfigs() does not exist yet — 3.1)'
       : '  NOT validated: engine/packages/config/src/schema.ts does not exist',
   )
-  console.log('  next: add a .gaiadeploy.yml target, provider secrets in Infisical, and pnpm db:fresh --brand ' + slug)
+  console.log(
+    '  next: add a .gaiadeploy.yml target, provider secrets in Infisical, and pnpm db:fresh --brand ' +
+      slug,
+  )
   process.exit(0)
 } catch (error) {
   if (error instanceof BrandCreateError) {

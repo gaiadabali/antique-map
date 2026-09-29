@@ -45,7 +45,9 @@ export async function createBrand(repoRoot, { slug, storefront, name }) {
     throw new BrandCreateError(`"${slug}" is not a valid kebab-case slug`)
   }
   if (!STOREFRONTS.includes(storefront)) {
-    throw new BrandCreateError(`storefront must be one of ${STOREFRONTS.join(', ')}, got "${storefront}"`)
+    throw new BrandCreateError(
+      `storefront must be one of ${STOREFRONTS.join(', ')}, got "${storefront}"`,
+    )
   }
   const brandDir = join(repoRoot, slug)
   if (existsSync(brandDir)) {
@@ -66,14 +68,23 @@ export async function createBrand(repoRoot, { slug, storefront, name }) {
     return {
       checked: true,
       success: result.success,
-      issues: result.success ? [] : result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      issues: result.success
+        ? []
+        : result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
     }
   })
 
   if (!validation.success) {
     rmSync(brandDir, { recursive: true, force: true })
-    throw new BrandCreateError(`scaffolded config failed validation:\n${validation.issues.join('\n')}`)
+    throw new BrandCreateError(
+      `scaffolded config failed validation:\n${validation.issues.join('\n')}`,
+    )
   }
 
-  return { brandDir, config, infra: scaffoldInfraNames(slug), checkedAgainstSchema: validation.checked }
+  return {
+    brandDir,
+    config,
+    infra: scaffoldInfraNames(slug),
+    checkedAgainstSchema: validation.checked,
+  }
 }

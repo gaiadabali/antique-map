@@ -13,7 +13,9 @@ if (gaps.length > 0) {
 }
 
 if (violations.length === 0) {
-  console.log(`lint-brand-literals: ok, no brand literal under engine/ (${terms.length} banned term(s) checked)`)
+  console.log(
+    `lint-brand-literals: ok, no brand literal under engine/ (${terms.length} banned term(s) checked)`,
+  )
   process.exit(0)
 }
 

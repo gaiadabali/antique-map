@@ -4,10 +4,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { allTasks, parseTasksMd } from './parse.mjs'
-import {
-  ALL_RULES,
-  checkRequirementsCovered,
-} from './rules.mjs'
+import { ALL_RULES, checkRequirementsCovered } from './rules.mjs'
 import { checkWaveReadiness } from './wave.mjs'
 
 const args = process.argv.slice(2)

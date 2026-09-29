@@ -15,10 +15,16 @@ afterEach(() => {
 describe('runConfigDrift — the mechanism, proven on a fixture generator (2.2.g)', () => {
   it('reports a gap when the committed file does not exist yet', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'cd-'))
-    const generator = { name: 'fixture', committedPath: 'generated.txt', regenerate: async () => 'fresh content\n' }
+    const generator = {
+      name: 'fixture',
+      committedPath: 'generated.txt',
+      regenerate: async () => 'fresh content\n',
+    }
     const result = await runConfigDrift(sandbox, [generator])
     expect(result.violations).toEqual([])
-    expect(result.degraded).toEqual(['fixture: nothing to check yet — generated.txt does not exist'])
+    expect(result.degraded).toEqual([
+      'fixture: nothing to check yet — generated.txt does not exist',
+    ])
   })
 
   it('reports a gap when regenerate() itself cannot run yet (its prerequisite is missing)', async () => {
@@ -31,7 +37,9 @@ describe('runConfigDrift — the mechanism, proven on a fixture generator (2.2.g
       },
     }
     const result = await runConfigDrift(sandbox, [generator])
-    expect(result.degraded).toEqual(['fixture: nothing to check yet — no generator command wired up yet'])
+    expect(result.degraded).toEqual([
+      'fixture: nothing to check yet — no generator command wired up yet',
+    ])
   })
 
   it('regenerate → diff → fail on drift, then pass once the committed file matches again — the planted violation (2.2.i)', async () => {

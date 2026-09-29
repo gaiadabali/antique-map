@@ -4,7 +4,9 @@ import { expandNeedsToken, stripOwnerNote } from './needs.mjs'
 
 describe('stripOwnerNote', () => {
   it('drops a trailing owner-input clause', () => {
-    expect(stripOwnerNote('19.2.a · 👤 a Midtrans sandbox merchant account and keys')).toBe('19.2.a')
+    expect(stripOwnerNote('19.2.a · 👤 a Midtrans sandbox merchant account and keys')).toBe(
+      '19.2.a',
+    )
     expect(stripOwnerNote('17.1')).toBe('17.1')
   })
 })
@@ -23,7 +25,7 @@ describe('expandNeedsToken', () => {
     expect(expandNeedsToken('1.2.a–1.2.d')).toEqual({ ids: ['1.2.a', '1.2.b', '1.2.c', '1.2.d'] })
   })
 
-  it('resolves 10.3\'s own idiom without erroring', () => {
+  it("resolves 10.3's own idiom without erroring", () => {
     expect(expandNeedsToken("each wave's merge")).toEqual({ ids: [], intraPhaseNote: true })
   })
 

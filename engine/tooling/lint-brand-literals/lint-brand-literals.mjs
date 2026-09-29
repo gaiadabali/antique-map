@@ -16,16 +16,7 @@ const EXCLUDED_SEGMENTS = new Set([
   'playwright-report',
 ])
 
-const SCANNED_EXTENSIONS = new Set([
-  '.ts',
-  '.tsx',
-  '.js',
-  '.jsx',
-  '.mjs',
-  '.cjs',
-  '.css',
-  '.json',
-])
+const SCANNED_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.css', '.json'])
 
 function isExcludedPath(relPath) {
   const segments = relPath.split(/[\\/]/)

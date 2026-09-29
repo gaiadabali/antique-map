@@ -42,11 +42,15 @@ export function diffMethods(expected, present) {
   const presentSet = new Set(present)
   return {
     missing: expected.filter((m) => !presentSet.has(m)),
-    extra: present.filter((m) => !expectedSet.has(m) && ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(m)),
+    extra: present.filter(
+      (m) => !expectedSet.has(m) && ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(m),
+    ),
   }
 }
 
 /** `true` when two matcher arrays are the same literal list, in order. */
 export function matchersEqual(a, b) {
-  return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i])
+  return (
+    Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i])
+  )
 }

@@ -36,12 +36,16 @@ export async function runConfigDrift(repoRoot, generators) {
       continue
     }
     if (fresh === null) {
-      degraded.push(`${generator.name}: nothing to check yet — its generator is not wired up (see generators.mjs)`)
+      degraded.push(
+        `${generator.name}: nothing to check yet — its generator is not wired up (see generators.mjs)`,
+      )
       continue
     }
     const committed = readCommitted(repoRoot, generator.committedPath)
     if (committed === null) {
-      degraded.push(`${generator.name}: nothing to check yet — ${generator.committedPath} does not exist`)
+      degraded.push(
+        `${generator.name}: nothing to check yet — ${generator.committedPath} does not exist`,
+      )
       continue
     }
     if (committed !== fresh) {

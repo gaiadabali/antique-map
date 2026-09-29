@@ -16,16 +16,20 @@ afterEach(() => {
 
 describe('createBrand', () => {
   it('rejects a bad slug or storefront before writing anything', async () => {
-    await expect(createBrand(repoRoot, { slug: 'Bad_Slug', storefront: 'gallery' })).rejects.toThrow(BrandCreateError)
-    await expect(createBrand(repoRoot, { slug: 'fixture-x', storefront: 'nope' })).rejects.toThrow(BrandCreateError)
+    await expect(
+      createBrand(repoRoot, { slug: 'Bad_Slug', storefront: 'gallery' }),
+    ).rejects.toThrow(BrandCreateError)
+    await expect(createBrand(repoRoot, { slug: 'fixture-x', storefront: 'nope' })).rejects.toThrow(
+      BrandCreateError,
+    )
   })
 
   it('refuses to overwrite an existing brand folder', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'bc-'))
     await createBrand(sandbox, { slug: 'fixture-atlas', storefront: 'gallery' })
-    await expect(createBrand(sandbox, { slug: 'fixture-atlas', storefront: 'gallery' })).rejects.toThrow(
-      /already exists/,
-    )
+    await expect(
+      createBrand(sandbox, { slug: 'fixture-atlas', storefront: 'gallery' }),
+    ).rejects.toThrow(/already exists/)
   })
 
   it('scaffolds site/, content/seed/ and a draft brand.config.json, unchecked when no schema exists', async () => {
@@ -54,7 +58,9 @@ describe('createBrand', () => {
       "import { z } from 'zod'\nexport const brandConfigSchema = z.strictObject({ mustHave: z.literal('nope') })\n",
     )
     const slug = 'fixture-atlas'
-    await expect(createBrand(sandbox, { slug, storefront: 'gallery' })).rejects.toThrow(BrandCreateError)
+    await expect(createBrand(sandbox, { slug, storefront: 'gallery' })).rejects.toThrow(
+      BrandCreateError,
+    )
     expect(existsSync(join(sandbox, slug))).toBe(false) // rolled back, not left half-written
   })
 

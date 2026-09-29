@@ -15,7 +15,10 @@ afterEach(() => {
 function makeFile(root, relPath, lines) {
   const abs = join(root, relPath)
   mkdirSync(join(abs, '..'), { recursive: true })
-  writeFileSync(abs, Array.from({ length: lines }, (_, i) => `const x${i} = ${i}`).join('\n') + '\n')
+  writeFileSync(
+    abs,
+    Array.from({ length: lines }, (_, i) => `const x${i} = ${i}`).join('\n') + '\n',
+  )
   return abs
 }
 

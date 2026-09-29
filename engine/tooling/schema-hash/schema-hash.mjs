@@ -14,17 +14,19 @@ import { dumpSchema, listAllDatabases } from './dump.mjs'
  * which is already deterministic for one schema.
  */
 export function normalizeSchema(raw) {
-  return raw
-    .split('\n')
-    .filter((line) => !line.startsWith('--'))
-    // pg_dump 18 also wraps the dump in `\restrict <random-token>` /
-    // `\unrestrict <random-token>` psql meta-commands (not `--` comments) —
-    // a fresh random token every run, on schema that has not changed at all.
-    .filter((line) => !/^\\(un)?restrict\b/.test(line))
-    .map((line) => line.trimEnd())
-    .join('\n')
-    .replace(/\n{2,}/g, '\n')
-    .trim()
+  return (
+    raw
+      .split('\n')
+      .filter((line) => !line.startsWith('--'))
+      // pg_dump 18 also wraps the dump in `\restrict <random-token>` /
+      // `\unrestrict <random-token>` psql meta-commands (not `--` comments) —
+      // a fresh random token every run, on schema that has not changed at all.
+      .filter((line) => !/^\\(un)?restrict\b/.test(line))
+      .map((line) => line.trimEnd())
+      .join('\n')
+      .replace(/\n{2,}/g, '\n')
+      .trim()
+  )
 }
 
 export function sha256(text) {
@@ -44,7 +46,11 @@ export function hashDatabase(database, opts) {
 export function compareSchemas(databases, opts) {
   const targets = databases && databases.length > 0 ? databases : listAllDatabases(opts)
   if (targets.length < 2) {
-    return { hashes: targets.map((database) => hashDatabase(database, opts)), allEqual: true, nothingToCompare: true }
+    return {
+      hashes: targets.map((database) => hashDatabase(database, opts)),
+      allEqual: true,
+      nothingToCompare: true,
+    }
   }
   const hashes = targets.map((database) => hashDatabase(database, opts))
   const distinct = new Set(hashes.map((h) => h.hash))

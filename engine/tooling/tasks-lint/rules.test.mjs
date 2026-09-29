@@ -70,11 +70,13 @@ describe('checkNeedsResolvable', () => {
 })
 
 describe('checkPhaseNeedsMatchTasks', () => {
-  it('flags a task needing a phase not reachable through the heading\'s declared chain', () => {
-    const doc = fixtureDoc().replace('· needs 1 · ~1d', '· needs — · ~1d').replace('**2.1 Third** · needs: 1.1', '**2.1 Third** · needs: phase 1')
+  it("flags a task needing a phase not reachable through the heading's declared chain", () => {
+    const doc = fixtureDoc()
+      .replace('· needs 1 · ~1d', '· needs — · ~1d')
+      .replace('**2.1 Third** · needs: 1.1', '**2.1 Third** · needs: phase 1')
     const model = parseTasksMd(doc)
     const findings = checkPhaseNeedsMatchTasks(model, allTasks(model))
-    expect(findings.some((f) => f.message.includes("not reachable through"))).toBe(true)
+    expect(findings.some((f) => f.message.includes('not reachable through'))).toBe(true)
   })
 
   it('is clean when the heading already declares the phase its task needs', () => {
@@ -95,7 +97,8 @@ describe('checkPhaseLimits', () => {
   it('flags more than 8 tasks in a phase', () => {
     const many = Array.from(
       { length: 9 },
-      (_, i) => `- [ ] **1.${i + 1} Task** · needs: —\n  - **Wave** W1\n  - **Owns** \`fixture/t${i}/**\`\n  - [ ] 1.${i + 1}.a **Check:** ok\n`,
+      (_, i) =>
+        `- [ ] **1.${i + 1} Task** · needs: —\n  - **Wave** W1\n  - **Owns** \`fixture/t${i}/**\`\n  - [ ] 1.${i + 1}.a **Check:** ok\n`,
     ).join('\n')
     const model = parseTasksMd(`## Phase 1 — Many · Foundation · needs — · ~1d\n\n${many}`)
     expect(checkPhaseLimits(model).some((f) => f.message.includes('more than 8'))).toBe(true)

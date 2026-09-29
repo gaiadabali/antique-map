@@ -11,7 +11,9 @@ for (const note of degraded) {
 }
 
 if (violations.length === 0) {
-  console.log(`check-generated: ok, no drift (${REAL_GENERATORS.length - degraded.length} generator(s) actually ran)`)
+  console.log(
+    `check-generated: ok, no drift (${REAL_GENERATORS.length - degraded.length} generator(s) actually ran)`,
+  )
   process.exit(0)
 }
 

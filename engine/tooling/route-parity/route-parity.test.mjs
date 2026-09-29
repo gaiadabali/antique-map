@@ -15,14 +15,19 @@ afterEach(() => {
 })
 
 /** A tiny fixture manifest — three routes, one deliberately shadowing `graphql`. */
-function writeFixtureManifest(dir, { includeShadowingRoute = false, matcher = ["/((?!api/).*)"] } = {}) {
+function writeFixtureManifest(
+  dir,
+  { includeShadowingRoute = false, matcher = ['/((?!api/).*)'] } = {},
+) {
   mkdirSync(dir, { recursive: true })
   const routes = [
     "{ path: '/api/health', handler: '@engine/http/health', methods: ['GET'] }",
     "{ path: '/api/x/commerce/cart/[[...path]]', handler: '@engine/http/commerce/cart', methods: ['GET', 'POST'] }",
   ]
   if (includeShadowingRoute) {
-    routes.push("{ path: '/api/x/graphql/[...path]', handler: '@engine/http/graphql', methods: ['GET'] }")
+    routes.push(
+      "{ path: '/api/x/graphql/[...path]', handler: '@engine/http/graphql', methods: ['GET'] }",
+    )
   }
   const file = join(dir, 'manifest.ts')
   writeFileSync(
@@ -33,12 +38,19 @@ function writeFixtureManifest(dir, { includeShadowingRoute = false, matcher = ["
   return file
 }
 
-function writeFixtureApp(appsDir, name, { mountedRoutes = [], matcher = ["/((?!api/).*)"], noProxy = false } = {}) {
+function writeFixtureApp(
+  appsDir,
+  name,
+  { mountedRoutes = [], matcher = ['/((?!api/).*)'], noProxy = false } = {},
+) {
   const appDir = join(appsDir, name)
   for (const { path, exports } of mountedRoutes) {
     const routeFile = join(appDir, 'src', 'app', ...path.split('/').filter(Boolean), 'route.ts')
     mkdirSync(join(routeFile, '..'), { recursive: true })
-    writeFileSync(routeFile, exports.map((m) => `export const ${m} = () => new Response('ok')`).join('\n') + '\n')
+    writeFileSync(
+      routeFile,
+      exports.map((m) => `export const ${m} = () => new Response('ok')`).join('\n') + '\n',
+    )
   }
   mkdirSync(join(appDir, 'src', 'app'), { recursive: true }) // ensures discoverScaffoldedApps sees it even with 0 routes
   if (!noProxy) {
@@ -66,10 +78,15 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
   it('flags an engine route shadowing a reserved segment, and clears once removed', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const clean = writeFixtureManifest(sandbox)
-    const before = await checkRouteParity(repoRoot, { manifestAbsPath: clean, appsAbsDir: join(sandbox, 'apps') })
+    const before = await checkRouteParity(repoRoot, {
+      manifestAbsPath: clean,
+      appsAbsDir: join(sandbox, 'apps'),
+    })
     expect(before.violations).toEqual([])
 
-    const shadowed = writeFixtureManifest(join(sandbox, 'shadowed'), { includeShadowingRoute: true })
+    const shadowed = writeFixtureManifest(join(sandbox, 'shadowed'), {
+      includeShadowingRoute: true,
+    })
     const violated = await checkRouteParity(repoRoot, {
       manifestAbsPath: shadowed,
       appsAbsDir: join(sandbox, 'apps'),
@@ -88,7 +105,11 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
     })
     const violated = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
     expect(violated.violations).toEqual([
-      expect.objectContaining({ kind: 'missing-route-file', app: 'fixture-storefront', path: '/api/x/commerce/cart/[[...path]]' }),
+      expect.objectContaining({
+        kind: 'missing-route-file',
+        app: 'fixture-storefront',
+        path: '/api/x/commerce/cart/[[...path]]',
+      }),
     ])
 
     writeFixtureApp(appsAbsDir, 'fixture-storefront', {
@@ -117,7 +138,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
     ])
   })
 
-  it('flags a proxy without the manifest\'s literal matcher, and clears once it matches', async () => {
+  it("flags a proxy without the manifest's literal matcher, and clears once it matches", async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const manifestAbsPath = writeFixtureManifest(sandbox, { matcher: ['/((?!api/).*)'] })
     const appsAbsDir = join(sandbox, 'apps')
@@ -130,7 +151,12 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
     })
     const violated = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
     expect(violated.violations).toEqual([
-      { kind: 'proxy-matcher-mismatch', app: 'fixture-storefront', expected: ['/((?!api/).*)'], actual: ['/different-matcher'] },
+      {
+        kind: 'proxy-matcher-mismatch',
+        app: 'fixture-storefront',
+        expected: ['/((?!api/).*)'],
+        actual: ['/different-matcher'],
+      },
     ])
 
     writeFixtureApp(appsAbsDir, 'fixture-storefront', {

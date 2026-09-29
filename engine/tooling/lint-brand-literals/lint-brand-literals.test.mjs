@@ -81,9 +81,11 @@ describe('lintBrandLiterals — the planted violation (2.2.i)', () => {
     mkdirSync(join(root, 'engine', 'packages', 'cms', 'src', 'migrations'), { recursive: true })
     writeFileSync(
       join(root, 'engine', 'packages', 'cms', 'src', 'migrations', '0001_init.ts'),
-      "-- fixture-atlas\n",
+      '-- fixture-atlas\n',
     )
-    mkdirSync(join(root, 'engine', 'packages', 'domain', 'src', '__fixtures__'), { recursive: true })
+    mkdirSync(join(root, 'engine', 'packages', 'domain', 'src', '__fixtures__'), {
+      recursive: true,
+    })
     writeFileSync(
       join(root, 'engine', 'packages', 'domain', 'src', '__fixtures__', 'catalogue.ts'),
       "export const title = 'fixture-atlas map'\n",

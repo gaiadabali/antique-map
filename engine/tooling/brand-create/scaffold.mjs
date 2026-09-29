@@ -43,12 +43,13 @@ const EN_SEGMENTS = {
 
 /** `{ slug, name, storefront }` → a scaffolded `BrandConfigInput` — draft, one seller, one market, minimal modules. */
 export function scaffoldBrandConfig({ slug, name, storefront }) {
-  const prefix = slug
-    .split('-')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 4) || 'BR'
+  const prefix =
+    slug
+      .split('-')
+      .map((w) => w[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 4) || 'BR'
   return {
     draft: true,
     slug,
