@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { loadBrandConfig } from '../../../config/src/loader/index'
+import { loadBrandConfig } from '@engine/config/loader'
 import { createProxy, proxy } from './route'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url))
@@ -46,7 +46,15 @@ describe('the proxy’s answer — the protocol NextResponse.rewrite()/.next() w
 })
 
 describe('the proxy never touches the database', () => {
-  /** Every module the proxy's entry reaches, followed through relative imports. */
+  /** `@engine/config/<entry>` → its source file, through the package's own exports map. */
+  const configDir = join(REPO_ROOT, 'engine', 'packages', 'config')
+  const configExports = (
+    JSON.parse(readFileSync(join(configDir, 'package.json'), 'utf8')) as {
+      exports: Record<string, string>
+    }
+  ).exports
+
+  /** Every module the proxy's entry reaches, followed through relative and config imports. */
   function importGraph(): { files: string[]; packages: Set<string> } {
     const files: string[] = []
     const packages = new Set<string>()
@@ -59,6 +67,9 @@ describe('the proxy never touches the database', () => {
         if (typeOnly) continue // erased at build: never loaded at runtime
         if (!specifier.startsWith('.')) {
           packages.add(specifier)
+          const entry = /^@engine\/config(\/.+)$/.exec(specifier)?.[1]
+          const target = entry === undefined ? undefined : configExports[`.${entry}`]
+          if (target) visit(join(configDir, target))
           continue
         }
         const base = resolve(dirname(file), specifier)
@@ -81,6 +92,7 @@ describe('the proxy never touches the database', () => {
     const { files, packages } = importGraph()
     expect(files.length).toBeGreaterThan(5)
     const allowed = [
+      '@engine/config/loader',
       '@engine/config/routes',
       '@engine/config/schema',
       'node:fs',
@@ -88,7 +100,8 @@ describe('the proxy never touches the database', () => {
       'zod',
     ]
     expect([...packages].filter((name) => !allowed.includes(name))).toEqual([])
-    expect(packages).toContain('@engine/config/routes') // the graph really was followed
+    expect(packages).toContain('@engine/config/routes') // the graph really was followed…
+    expect(files.some((file) => /[\\/]loader[\\/]load\.ts$/.test(file))).toBe(true) // …into the loader
     for (const file of files) {
       expect(readFileSync(file, 'utf8'), file).not.toMatch(
         /\b(?:payload|pg|postgres|drizzle|DATABASE_URL)\b['"]/,

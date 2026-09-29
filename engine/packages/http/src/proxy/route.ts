@@ -9,9 +9,7 @@
  * brand config it reads is the file, loaded once per process. Nothing runs at import: the
  * build has no brand, and the config is read on the first request.
  */
-// TODO(orchestrator, 3.1 follow-up): import from '@engine/config/loader' once
-// @engine/config's package.json exports it; this relative path reaches the same module.
-import { loadBrandConfig } from '../../../config/src/loader/index'
+import { loadBrandConfig } from '@engine/config/loader'
 import {
   decideProxy,
   type ContentSecurityPolicy,

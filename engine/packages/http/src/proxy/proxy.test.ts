@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { loadBrandConfig } from '../../../config/src/loader/index'
+import { loadBrandConfig } from '@engine/config/loader'
 import { PROXY_REQUEST_HEADERS } from '../manifest'
 import { createProxy, decideProxy, NOT_FOUND_PATH } from './route'
 
