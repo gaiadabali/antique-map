@@ -1,6 +1,11 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import type { AdminViewConfig, Plugin, TaskConfig } from 'payload'
 import { describe, expect, it } from 'vitest'
 
+import { DRAFTED_ACCESS } from '../access/published'
 import {
   COLLECTION_SLUGS,
   GLOBAL_SLUGS,
@@ -92,5 +97,49 @@ describe('the frozen slug list', () => {
     expect(
       uploadCollectionSlugs({ collections: [{ slug: 'media', upload: true, fields: [] }] }),
     ).toEqual(['media'])
+  })
+})
+
+describe('one folder per frozen slug (3.2.g)', () => {
+  const collectionsDir = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    '../collections',
+  )
+
+  it('gives every slug its own collections/<slug>/index.ts, its slug written literally', () => {
+    for (const slug of COLLECTION_SLUGS) {
+      const file = path.join(collectionsDir, slug, 'index.ts')
+      expect(fs.existsSync(file), file).toBe(true)
+      expect(fs.readFileSync(file, 'utf8')).toMatch(new RegExp(`slug: '${slug}'`))
+    }
+  })
+
+  it('refuses a registry out of the frozen order, or short of a slug', () => {
+    const all = registeredCollections()
+    expect(() => registeredCollections([all[1]!, all[0]!, ...all.slice(2)])).toThrow(/position 0/)
+    expect(() => registeredCollections(all.slice(1))).toThrow(/38 collections for 39/)
+  })
+})
+
+describe('drafts need staff-only draft access (S4)', () => {
+  const drafted = { slug: 'works', fields: [], versions: { drafts: true } }
+
+  it('refuses a drafts collection or global without read and readVersions', () => {
+    const all = registeredCollections()
+    const bare = [...all.slice(0, 12), drafted, ...all.slice(13)]
+    expect(() => registeredCollections(bare)).toThrow(/access\.read \/ access\.readVersions/)
+    const readOnly = { ...drafted, access: { read: DRAFTED_ACCESS.read } }
+    expect(() => registeredCollections([...all.slice(0, 12), readOnly, ...all.slice(13)])).toThrow(
+      /readVersions/,
+    )
+    expect(() =>
+      registeredGlobals([{ slug: 'homepage', fields: [], versions: { drafts: true } }]),
+    ).toThrow(/global "homepage"/)
+  })
+
+  it('accepts DRAFTED_ACCESS', () => {
+    const all = registeredCollections()
+    const ok = { ...drafted, access: { ...DRAFTED_ACCESS } }
+    expect(registeredCollections([...all.slice(0, 12), ok, ...all.slice(13)])[12]).toBe(ok)
   })
 })

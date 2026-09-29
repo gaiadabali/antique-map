@@ -8,9 +8,8 @@
  * - it never asks Payload's "create a blank migration?" question (a rename or a drop, which
  *   drizzle-kit still asks about, is not a wave migration's business: migrations are additive
  *   first, and a destructive step is written by hand in a later release — DEPLOYMENT.md §4.1);
- * - it imports the two argument types as types: Payload's template imports them as values,
- *   which `verbatimModuleSyntax` refuses (and a bundler honouring it would keep, as an import of
- *   an export that does not exist);
+ * - it imports the two argument types as types, and opens `up()` with a lock timeout
+ *   (`./migration-template`);
  * - it formats what it wrote with the repository's Prettier, so `format:check` passes on the
  *   file exactly as generated and nobody edits a generated file to make it pass.
  */
@@ -20,7 +19,7 @@ import path from 'node:path'
 import * as prettier from 'prettier'
 
 import { finish, schemaPayload } from './cli'
-import { typeOnlyImports } from './migration-template'
+import { finishMigrationSource } from './migration-template'
 import { pendingMigrationStatements } from './schema-diff'
 
 const name = process.argv.slice(2).find((arg) => !arg.startsWith('-'))
@@ -58,6 +57,7 @@ function mtime(dir: string, file: string): number {
 async function finishFile(file: string): Promise<void> {
   const options = await prettier.resolveConfig(file)
   const source = fs.readFileSync(file, 'utf8')
-  const typed = file.endsWith('.ts') ? typeOnlyImports(source) : source
+  const typed =
+    file.endsWith('.ts') && !file.endsWith('index.ts') ? finishMigrationSource(source) : source
   fs.writeFileSync(file, await prettier.format(typed, { ...options, filepath: file }))
 }

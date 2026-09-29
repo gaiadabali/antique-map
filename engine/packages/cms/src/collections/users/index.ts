@@ -5,8 +5,9 @@
  *
  * - **Roles**: C1's seven `STAFF_ROLES`, several per person (a small team wears two hats), new
  *   accounts `contributor` — the least that lets someone work. Only an admin changes a role.
- * - **First user**: Payload's create-first-user screen makes an admin (`./guards`), and the last
- *   admin can neither lose the role nor be deleted.
+ * - **First user**: Payload's create-first-user screen makes an admin, a losing racer is refused,
+ *   and the last admin can neither lose the role nor be deleted — one document or in bulk
+ *   (`./guards`, and the initial migration's constraint trigger on `users_roles`).
  * - **Lockout**: five failed sign-ins lock the account for fifteen minutes; an admin can unlock
  *   it sooner (ARCHITECTURE.md §13: the admin sits on a public path).
  * - Staff see and edit themselves; an admin sees and manages everyone.
@@ -14,7 +15,12 @@
 import type { Access, CollectionConfig } from 'payload'
 
 import { hasRole, isAdmin, isStaffUser, type USERS_SLUG } from '../../access/roles'
-import { firstUserIsAdmin, keepAnAdminOnDelete, keepAnAdminOnUpdate } from './guards'
+import {
+  firstUserIsAdmin,
+  keepAnAdminInBulk,
+  keepAnAdminOnDelete,
+  keepAnAdminOnUpdate,
+} from './guards'
 import { rolesField } from './roles-field'
 
 export const MAX_LOGIN_ATTEMPTS = 5
@@ -65,6 +71,7 @@ export const Users: CollectionConfig = {
     rolesField,
   ],
   hooks: {
+    beforeOperation: [keepAnAdminInBulk],
     beforeChange: [firstUserIsAdmin, keepAnAdminOnUpdate],
     beforeDelete: [keepAnAdminOnDelete],
   },

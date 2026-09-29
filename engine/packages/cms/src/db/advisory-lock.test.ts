@@ -77,6 +77,28 @@ describe('the migration advisory lock', () => {
     expect(released).toEqual([false])
   })
 
+  it('treats a lost lock connection as fatal, and stops listening once released', async () => {
+    const listeners = new Set<(error: Error) => void>()
+    const client: LockClient = {
+      query: async (text) => ({ rows: text.includes('try') ? [{ locked: true }] : [] }),
+      release: () => {},
+      on: (_event, listener) => listeners.add(listener),
+      off: (_event, listener) => listeners.delete(listener),
+    }
+    const lost: string[] = []
+    await withAdvisoryLock(
+      { connect: async () => client },
+      '3',
+      async () => {
+        for (const listener of listeners) listener(new Error('terminating connection'))
+      },
+      () => {},
+      (error) => lost.push(error.message),
+    )
+    expect(lost).toEqual(['terminating connection'])
+    expect(listeners.size).toBe(0)
+  })
+
   it('destroys the connection when unlocking fails, so Postgres releases the lock', async () => {
     const { pool, released } = fakePool({ unlockFails: true })
     await withAdvisoryLock(pool, '1', async () => 'done')

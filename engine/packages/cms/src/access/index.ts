@@ -5,7 +5,7 @@ export { activeBrand, brandFrom } from './brand'
 export { rolesOnlyField, STAFF_ONLY_ACCESS, staffOnly } from './fields'
 export { siteOrigin, trustedOrigins } from './origins'
 export { hiddenUnlessModule, moduleEnabled, whenModule, type BrandReader } from './modules'
-export { PUBLISHED_ONLY, publishedOrStaff } from './published'
+export { DRAFTED_ACCESS, PUBLISHED_ONLY, publishedOrStaff } from './published'
 export {
   adminOnlyField,
   DEFAULT_STAFF_ROLE,

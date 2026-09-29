@@ -1,13 +1,14 @@
 import { sql, type MigrateDownArgs, type MigrateUpArgs } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  await db.execute(sql`SET LOCAL lock_timeout = '5s'`)
   // Added by hand to the generated migration (TASKS.md 3.2.c): the gazetteer and search need
   // unaccent and pg_trgm (ARCHITECTURE.md §8), and drizzle-kit does not manage extensions. Both
-  // are trusted extensions, so the database's owning role creates them without a superuser.
-  // `IF NOT EXISTS`: a database made by `db:fresh` inherits both from template1 already.
+  // are trusted extensions, so the database's owning role creates them without a superuser;
+  // `IF NOT EXISTS` because a database made by `db:fresh` inherits both from template1.
   await db.execute(sql`
-    CREATE EXTENSION IF NOT EXISTS "unaccent";
-    CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+    CREATE EXTENSION IF NOT EXISTS "unaccent" WITH SCHEMA public;
+    CREATE EXTENSION IF NOT EXISTS "pg_trgm" WITH SCHEMA public;
   `)
   await db.execute(sql`
    CREATE TYPE "public"."_locales" AS ENUM('en', 'id', 'nl');
@@ -390,15 +391,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   );
   
   CREATE TABLE "idempotency_keys" (
-  	"operation" text NOT NULL,
-  	"key" text NOT NULL,
-  	"caller_ref" text,
+  	"operation" text COLLATE "C" NOT NULL,
+  	"key" text COLLATE "C" NOT NULL,
+  	"caller_ref" text COLLATE "C",
   	"request_sha256" text NOT NULL,
-  	"response" jsonb NOT NULL,
+  	"response" jsonb,
   	"created_at" timestamp (3) with time zone DEFAULT now() NOT NULL,
-  	CONSTRAINT "idempotency_keys_pkey" PRIMARY KEY("operation","key"),
+  	CONSTRAINT "idempotency_keys_operation_key_unique" UNIQUE("operation","key"),
   	CONSTRAINT "idempotency_keys_request_sha256_hex" CHECK ("request_sha256" ~ '^[0-9a-f]{64}$'),
-  	CONSTRAINT "idempotency_keys_key_not_blank" CHECK (length("key") > 0)
+  	CONSTRAINT "idempotency_keys_key_length" CHECK (length("key") BETWEEN 1 AND 128),
+  	CONSTRAINT "idempotency_keys_operation_length" CHECK (length("operation") BETWEEN 1 AND 64)
   );
   
   ALTER TABLE "users_roles" ADD CONSTRAINT "users_roles_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
@@ -584,11 +586,40 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_migrations_updated_at_idx" ON "payload_migrations" USING btree ("updated_at");
   CREATE INDEX "payload_migrations_created_at_idx" ON "payload_migrations" USING btree ("created_at");
   CREATE INDEX "idempotency_keys_created_at_idx" ON "idempotency_keys" USING btree ("created_at");
-  CREATE INDEX "idempotency_keys_caller_ref_idx" ON "idempotency_keys" USING btree ("caller_ref");`)
+  CREATE INDEX "idempotency_keys_caller_ref_idx" ON "idempotency_keys" USING btree ("caller_ref") WHERE "caller_ref" IS NOT NULL;`)
+
+  // Added by hand (senior-db review of 3.2, B1): the database refuses any transaction that leaves
+  // users and no admin — the backstop for a path the users hooks never see (raw SQL, a bulk
+  // write, two demotions racing). Deferred to COMMIT, because Payload rewrites a user's roles as
+  // delete-then-insert; and it takes the hooks' own advisory lock first (ADMINS_LOCK_KEY,
+  // collections/users/guards.ts), so two committing transactions are checked one after the other
+  // and the second sees the first's demotion. A dev-pushed database lacks it: triggers are not
+  // drizzle schema, so its test runs against a migrated database.
+  await db.execute(sql`
+    CREATE FUNCTION "users_keep_an_admin"() RETURNS trigger LANGUAGE plpgsql AS $keep_an_admin$
+    BEGIN
+      PERFORM pg_advisory_xact_lock(-9011197146015594413);
+      IF EXISTS (SELECT 1 FROM "users")
+        AND NOT EXISTS (SELECT 1 FROM "users_roles" WHERE "value" = 'admin') THEN
+        RAISE EXCEPTION 'the last admin cannot lose the admin role or be deleted'
+          USING ERRCODE = 'check_violation';
+      END IF;
+      RETURN NULL;
+    END
+    $keep_an_admin$;
+    CREATE CONSTRAINT TRIGGER "users_roles_keep_an_admin"
+      AFTER UPDATE OR DELETE ON "users_roles"
+      DEFERRABLE INITIALLY DEFERRED
+      FOR EACH ROW
+      WHEN (OLD."value" = 'admin')
+      EXECUTE FUNCTION "users_keep_an_admin"();
+  `)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
-  // The extensions stay: a database may have had them before this migration (template1).
+  // The hand-written trigger and its function first; the extensions stay, since a database may
+  // have had them before this migration (template1).
+  await db.execute(sql`DROP FUNCTION IF EXISTS "users_keep_an_admin"() CASCADE`)
   await db.execute(sql`
    DROP TABLE "users_roles" CASCADE;
   DROP TABLE "users_sessions" CASCADE;
