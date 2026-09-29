@@ -3,6 +3,13 @@
 # lanes is by database name suffix (engine/tooling/db) and bucket prefix, not by
 # separate containers. Never `latest`: every image is pinned to a tag that was
 # verified pullable when this file was written.
+#
+# A fixed project name: every worktree is its own directory, and `docker
+# compose` otherwise derives the project name (and so the container set) from
+# the directory it is run in — two worktrees would each get their own
+# Postgres instead of sharing one. `engine/tooling/db/psql.mjs` passes this
+# same name explicitly, so any worktree reaches the one running stack.
+name: indies-platform-dev
 services:
   postgres:
     image: postgres:18.0

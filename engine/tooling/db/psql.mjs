@@ -6,6 +6,11 @@ import { execFileSync } from 'node:child_process'
 
 const DEFAULT_USER = process.env.POSTGRES_USER ?? 'postgres'
 const COMPOSE_FILE = process.env.DOCKER_COMPOSE_FILE ?? 'docker-compose.dev.yml'
+// Matches docker-compose.dev.yml's top-level `name:` — pinned so every
+// worktree's `docker compose` reaches the one shared stack regardless of
+// which directory it runs from (a project name otherwise defaults to the
+// current directory's name, which is different in every worktree).
+const PROJECT = process.env.COMPOSE_PROJECT_NAME ?? 'indies-platform-dev'
 const SERVICE = 'postgres'
 
 export class PsqlError extends Error {}
@@ -14,6 +19,8 @@ export class PsqlError extends Error {}
 export function psql(database, sql, { cwd } = {}) {
   const args = [
     'compose',
+    '-p',
+    PROJECT,
     '-f',
     COMPOSE_FILE,
     'exec',
