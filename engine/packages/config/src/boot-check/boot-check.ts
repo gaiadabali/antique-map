@@ -12,6 +12,7 @@
  * probe (TASKS.md 3.2, 4.1).
  */
 import { loadBrand, type LoadOptions } from '../loader/load'
+import { describeError } from '../loader/redact'
 import type { BrandConfig } from '../schema'
 import { deploymentEnvironment } from './environment'
 import { collectFindings, type BootFinding, type DeploymentEnvironment } from './findings'
@@ -73,10 +74,9 @@ export async function checkDatabase(probe: DatabaseProbe): Promise<BootFinding[]
       },
     ]
   } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error)
     // A driver's message can quote the connection string; its credentials never reach the log.
-    const safe = reason.replace(/\b([a-z][a-z0-9+.-]*:\/\/)[^\s@/]*@/gi, '$1…@')
-    return [{ subject: 'DATABASE_URL', message: `the database did not answer: ${safe}` }]
+    const message = `the database did not answer: ${describeError(error)}`
+    return [{ subject: 'DATABASE_URL', message }]
   }
 }
 

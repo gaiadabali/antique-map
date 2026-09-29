@@ -4,12 +4,18 @@
  * over the file's floors (`getBrandConfig`). None of it touches a database.
  */
 export {
-  editorialOverridesSchema,
   getBrandConfig,
   mergeEditorialGlobals,
-  type EditorialOverrides,
   type GlobalsLog,
   type MergedBrandConfig,
 } from './globals'
+export {
+  EDITORIAL_PARTS,
+  parseEditorialGlobals,
+  type EditorialOverrides,
+  type EditorialPart,
+  type ParsedGlobals,
+} from './globals-parts'
 export { loadBrand, loadBrandConfig, type LoadedBrand, type LoadOptions } from './load'
 export { BrandConfigError, resolveBrandPaths, type BrandEnv, type BrandPaths } from './paths'
+export { describeError, redactCredentials } from './redact'

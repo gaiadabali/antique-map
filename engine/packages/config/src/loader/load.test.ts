@@ -134,4 +134,23 @@ describe('loadBrandConfig() — BRAND, BRAND_ROOT, TEST_STOREFRONT (3.1.a)', () 
     expect(() => load('emporium')).toThrow(/checked against the emporium app's supports/)
     expect(() => load('gallery')).not.toThrow()
   })
+
+  it('keys the memo by the supports’ modules too, and freezes what it shares', () => {
+    const gallery = C1_STATED_SUPPORTS.gallery
+    const narrower = {
+      storefront: 'gallery' as const,
+      modules: gallery.modules.filter((key) => key !== 'purchase.offers'),
+    }
+    const options = { env: testEnv('gallery'), cwd: REPO_ROOT }
+    const config = loadBrandConfig({ ...options, supports: gallery })
+    // Same storefront, fewer modules: a fresh check, not the wider app's memoised answer.
+    expect(() => loadBrandConfig({ ...options, supports: narrower })).toThrow(
+      /modules\['purchase\.offers'\]: is on, but the gallery app cannot render it/,
+    )
+    expect(Object.isFrozen(config)).toBe(true)
+    expect(Object.isFrozen(config.identity.navigation.header)).toBe(true)
+    expect(() => {
+      ;(config.modules as Record<string, boolean>)['purchase.offers'] = false
+    }).toThrow(TypeError)
+  })
 })

@@ -60,13 +60,12 @@ function checkRupiah({ money, sellers }: BrandConfig, report: Report): void {
       `must be "IDR" for market "${market.id}" (${RUPIAH})`,
     )
   }
-  // The seller an Indonesian delivery routes to: one that lists "ID" itself, or failing that,
-  // one serving "*" — either way it charges rupiah.
-  const explicit = sellers.filter((seller) => serves(seller, 'ID'))
-  const routed = explicit.length > 0 ? explicit : sellers.filter((seller) => serves(seller, '*'))
-  for (const seller of routed) {
-    if (seller.charge.includes('IDR')) continue
-    const why = explicit.length > 0 ? 'serves "ID"' : 'serves "*" and no seller serves "ID" itself'
+  // Every seller that can be routed an Indonesian delivery charges rupiah. Routing goes by stock
+  // location as well as destination (COMMERCE.md §2), so a "*" seller gets Indonesian orders
+  // for its own stock even beside a seller listing "ID" itself (D29: Singapore stock to Jakarta).
+  for (const seller of sellers) {
+    if (!(serves(seller, 'ID') || serves(seller, '*')) || seller.charge.includes('IDR')) continue
+    const why = serves(seller, 'ID') ? 'serves "ID"' : 'serves "*", Indonesia included'
     report(
       ['sellers', sellers.indexOf(seller), 'charge'],
       `must include "IDR": seller "${seller.id}" ${why} (${RUPIAH})`,

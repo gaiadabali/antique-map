@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 
 import { testEnv } from '../validate/testing/fixtures'
 import { assertBootable, BootCheckError, checkDatabase, runBootCheck } from './index'
-import { REPO_ROOT, secret } from './testing'
+import { redactCredentials } from '../loader/redact'
+import { bootCheck } from './index'
+import { deployableConfig, fullEnv, REPO_ROOT, secret } from './testing'
 
 const NOW = new Date('2026-09-29T12:00:00Z')
 /** What a workstation running the synthetic brand has (.env.example plus a link-key ring). */
@@ -96,5 +98,48 @@ describe('runBootCheck() — at process start', () => {
       expect(message).toContain('✗ DATABASE_URL: is not set')
       expect(message).toContain('✗ LINK_TOKEN_KEYS: is not set')
     }
+  })
+})
+
+describe('bootCheck() — review fixes (3.1)', () => {
+  const config = deployableConfig()
+  const check = (env: Record<string, string | undefined>) => bootCheck({ env, config, now: NOW })
+
+  it('judges a production build with no SITE_URL as production, and refuses it', () => {
+    const report = check({ ...fullEnv(config, 'production'), SITE_URL: undefined })
+    expect(report.environment).toBe('production')
+    expect(report.problems.map((problem) => problem.subject)).toContain('SITE_URL')
+  })
+
+  it('requires an absolute BRAND_ROOT on a deployed host, never a searched-for one', () => {
+    for (const [value, message] of [
+      [undefined, /is not set/],
+      ['./test', /must be an absolute path/],
+    ] as const) {
+      const report = check({ ...fullEnv(config, 'staging'), BRAND_ROOT: value })
+      expect(report.problems.find((problem) => problem.subject === 'BRAND_ROOT')?.message).toMatch(
+        message,
+      )
+    }
+    expect(check({ ...fullEnv(config, 'local'), BRAND_ROOT: './test' }).ok).toBe(true)
+  })
+
+  it('passes on a retired key past its overlap as a warning', () => {
+    const env = {
+      ...fullEnv(config, 'production'),
+      LINK_TOKEN_KEYS: 'k2:' + secret(2) + ',k1:' + secret(1) + ':2025-01-01',
+    }
+    const report = check(env)
+    expect(report.ok).toBe(true)
+    expect(report.warnings.map((warning) => warning.subject)).toEqual(['LINK_TOKEN_KEYS'])
+  })
+
+  it('redacts credentials up to the last @, a password holding one included', () => {
+    expect(
+      redactCredentials('failed: postgres://u:p@ss@host:5432/db and https://a@b.example/x'),
+    ).toBe('failed: postgres://…@host:5432/db and https://…@b.example/x')
+    expect(redactCredentials('mailto-free text: desk@example.com')).toBe(
+      'mailto-free text: desk@example.com',
+    )
   })
 })

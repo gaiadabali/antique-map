@@ -18,6 +18,8 @@ export { deploymentEnvironment } from './environment'
 export { DEPLOYMENT_ENVIRONMENTS, type BootFinding, type DeploymentEnvironment } from './findings'
 export {
   LINK_KEY_MIN_BYTES,
+  LINK_KEY_MIN_DISTINCT_BYTES,
+  LINK_KEY_OVERLAP_DAYS,
   parseLinkTokenKeys,
   type LinkKeyRing,
   type LinkKeyRingResult,

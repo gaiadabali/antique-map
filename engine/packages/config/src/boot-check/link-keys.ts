@@ -8,8 +8,9 @@
  *
  * A `kid` is 1–12 characters of a–z and 0–9 and is never used twice; a secret is base64url of
  * at least 32 random bytes — never one byte repeated, which is what C6's test vectors' key is
- * (32 × 0x0b), so a ring copied from the vectors never starts anywhere; a retirement day is
- * never in the future. The parsed ring is what the links module (TASKS.md 18.2.g) derives and
+ * (32 × 0x0b), so a ring copied from the vectors never starts anywhere; never fewer than 16
+ * distinct byte values (a pattern) and never all printable text (a password, base64-encoded);
+ * a retirement day is never in the future. The parsed ring is what the links module (TASKS.md 18.2.g) derives and
  * verifies with. No message ever carries a secret.
  */
 
@@ -31,13 +32,32 @@ export type LinkKeyRing = {
 }
 
 export type LinkKeyRingResult =
-  | { readonly ok: true; readonly ring: LinkKeyRing; readonly problems: readonly [] }
-  | { readonly ok: false; readonly ring: null; readonly problems: readonly string[] }
+  | {
+      readonly ok: true
+      readonly ring: LinkKeyRing
+      readonly problems: readonly []
+      /** Harmless but worth a look: a retired key past its overlap can leave the ring. */
+      readonly warnings: readonly string[]
+    }
+  | {
+      readonly ok: false
+      readonly ring: null
+      readonly problems: readonly string[]
+      readonly warnings: readonly string[]
+    }
 
 const KID = /^[a-z0-9]{1,12}$/
 const BASE64URL = /^[A-Za-z0-9_-]+={0,2}$/
 const DAY = /^(\d{4})-(\d{2})-(\d{2})$/
 export const LINK_KEY_MIN_BYTES = 32
+/** Fewer distinct byte values than this is a pattern, not randomness (32 random bytes have ~30). */
+export const LINK_KEY_MIN_DISTINCT_BYTES = 16
+/**
+ * C6 `LINK_TOKEN.keyOverlapDays`, mirrored: config imports no other package. A retired key
+ * verifies this long, then refuses; past it, it is only clutter in the ring.
+ */
+export const LINK_KEY_OVERLAP_DAYS = 400
+const DAY_MS = 86_400_000
 
 export function parseLinkTokenKeys(
   value: string | undefined,
@@ -49,6 +69,7 @@ export function parseLinkTokenKeys(
     ])
   }
   const problems: string[] = []
+  const warnings: string[] = []
   const keys: LinkTokenKey[] = []
   const seenKids = new Set<string>()
   const seenSecrets = new Set<string>()
@@ -81,6 +102,12 @@ export function parseLinkTokenKeys(
     const day = checkDay(retiredOn, today)
     if (day) return void problems.push(`${named}: ${day}`)
     keys.push({ kid, status: 'retired', secret, retiredOn })
+    const age = Math.floor((Date.parse(today) - Date.parse(retiredOn)) / DAY_MS)
+    if (age > LINK_KEY_OVERLAP_DAYS) {
+      warnings.push(
+        `${named}: retired ${age} days ago, past the ${LINK_KEY_OVERLAP_DAYS}-day overlap: it verifies nothing now and can be removed`,
+      )
+    }
   })
 
   const current = keys.filter((key) => key.status === 'current')
@@ -94,12 +121,12 @@ export function parseLinkTokenKeys(
     )
   }
   const [only] = current
-  if (problems.length > 0 || !only) return fail(problems)
-  return { ok: true, ring: { current: only, keys }, problems: [] }
+  if (problems.length > 0 || !only) return fail(problems, warnings)
+  return { ok: true, ring: { current: only, keys }, problems: [], warnings }
 }
 
-function fail(problems: string[]): LinkKeyRingResult {
-  return { ok: false, ring: null, problems }
+function fail(problems: string[], warnings: string[] = []): LinkKeyRingResult {
+  return { ok: false, ring: null, problems, warnings }
 }
 
 /** The secret's bytes, or why they are refused. */
@@ -114,6 +141,13 @@ function decodeSecret(encoded: string): Uint8Array | string {
   }
   if (bytes.every((byte) => byte === bytes[0])) {
     return 'the secret is one byte repeated — a test key (C6 LINK_TOKEN_VECTORS uses one), never a real one'
+  }
+  const distinct = new Set(bytes).size
+  if (distinct < LINK_KEY_MIN_DISTINCT_BYTES) {
+    return `the secret has ${distinct} distinct byte values, fewer than ${LINK_KEY_MIN_DISTINCT_BYTES}: a pattern, not random bytes`
+  }
+  if (bytes.every((byte) => byte >= 0x20 && byte <= 0x7e)) {
+    return 'the secret decodes to printable text — a password encoded, not random bytes (openssl rand -base64 32)'
   }
   return new Uint8Array(bytes)
 }

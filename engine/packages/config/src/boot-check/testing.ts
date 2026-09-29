@@ -80,6 +80,7 @@ export function fullEnv(
   return {
     NODE_ENV: environment === 'local' ? 'development' : 'production',
     BRAND: 'test',
+    BRAND_ROOT: '/srv/site/test',
     SITE_URL: site,
     DATABASE_URL: 'postgres://app:pw@localhost:5432/test_gallery',
     PAYLOAD_SECRET: `payload-${STRONG}`,

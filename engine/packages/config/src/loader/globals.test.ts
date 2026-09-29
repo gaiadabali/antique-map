@@ -66,7 +66,74 @@ describe('the CMS-global merge seam — file as the floor (BRANDS.md §3)', () =
       invalid.log,
     )
     expect(merged.config).toBe(file)
-    expect(invalid.lines[0]).toMatch(/the CMS globals are not valid \(contact\.email: /)
+    expect(invalid.lines[0]).toMatch(/the CMS global's contact is not valid \(contact\.email: /)
+
+    const notAnObject = logged()
+    expect((await mergeEditorialGlobals(file, () => 'menu', notAnObject.log)).config).toBe(file)
+    expect(notAnObject.lines[0]).toMatch(/the CMS globals are not an object/)
+  })
+
+  it('reads a Payload-shaped document: unknown keys stripped, nulls unset, each part on its own', async () => {
+    const { lines, log } = logged()
+    const payloadDoc = {
+      id: 7,
+      globalType: 'brandSettings',
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-29T00:00:00.000Z',
+      contact: { email: 'not an email', whatsapp: null, phone: null }, // refused, alone
+      social: { instagram: 'https://instagram.example/gallery', facebook: null, tiktok: '' },
+      announcement: { en: 'Closed on Sunday', id: 'Tutup hari Minggu', nl: null },
+      navigation: {
+        header: [
+          {
+            id: '66f1a',
+            surface: 'search',
+            slug: null,
+            label: { en: 'Search', id: 'Cari', nl: null },
+          },
+        ],
+        footer: null,
+      },
+    }
+    const merged = await mergeEditorialGlobals(file, () => payloadDoc, log)
+    expect(merged.source).toBe('cms')
+    expect(merged.config.identity.contact).toEqual(file.identity.contact) // the bad part's floor
+    expect(merged.config.identity.social.instagram).toBe('https://instagram.example/gallery')
+    expect(merged.config.identity.announcement).toEqual({
+      en: 'Closed on Sunday',
+      id: 'Tutup hari Minggu',
+    })
+    expect(merged.config.identity.navigation.header).toEqual([
+      { surface: 'search', label: { en: 'Search', id: 'Cari' } },
+    ]) // the valid menu survives the bad e-mail address
+    expect(merged.config.identity.navigation.footer).toEqual(file.identity.navigation.footer)
+    expect(lines).toEqual([
+      expect.stringMatching(
+        /^brand config: the CMS global's contact is not valid \(contact\.email: /,
+      ),
+    ])
+  })
+
+  it('opens an editor’s social link only over https', async () => {
+    for (const url of ['javascript:alert(1)', 'http://instagram.example/x', 'data:text/html,hi']) {
+      const { lines, log } = logged()
+      const merged = await mergeEditorialGlobals(file, () => ({ social: { instagram: url } }), log)
+      expect(merged.config.identity.social.instagram, url).toBe(file.identity.social.instagram)
+      expect(lines[0], url).toMatch(/the CMS global's social is not valid \(social\.instagram: /)
+    }
+  })
+
+  it('logs each reason once per process, while every call still reports it', async () => {
+    const { lines, log } = logged()
+    const down = () => {
+      throw new Error('connect failed for postgres://app:p@ss@db.internal:5432/ig_db')
+    }
+    const first = await mergeEditorialGlobals(file, down, log)
+    const second = await mergeEditorialGlobals(file, down, log)
+    expect(lines).toEqual([
+      "brand config: the CMS globals could not be read (connect failed for postgres://…@db.internal:5432/ig_db); serving the brand file's floor",
+    ]) // once, and the password (with its @) never reaches the log
+    expect(second.fallbacks).toEqual(first.fallbacks)
   })
 
   it('keeps a floor for every empty global — an empty menu never empties the masthead', async () => {
@@ -99,7 +166,7 @@ describe('the CMS-global merge seam — file as the floor (BRANDS.md §3)', () =
     expect(merged.config.identity.announcement?.en).toBe('Open late on Friday')
     expect(lines).toHaveLength(1)
     expect(lines[0]).toContain(
-      'the CMS global\'s navigation is unusable (identity.navigation.header[0].surface: links to "partnership", whose module "accounts.retailers" is off',
+      'the CMS global\'s navigation.header is unusable (identity.navigation.header[0].surface: links to "partnership", whose module "accounts.retailers" is off',
     )
   })
 

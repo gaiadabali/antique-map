@@ -5,6 +5,8 @@
  * buyer can pay. A development default such as `dev-only-not-a-secret` (`.env.example`) or
  * MinIO's `minioadmin` is refused on a deployed host.
  */
+import { isAbsolute } from 'node:path'
+
 import type { BrandConfig } from '../schema'
 import { read, type DeploymentEnvironment, type Findings } from './findings'
 import { parseLinkTokenKeys } from './link-keys'
@@ -53,6 +55,17 @@ export function checkPlatform(
   for (const name of ALWAYS) {
     if (read(env, name) === undefined) findings.refuse(name, 'is not set (DEPLOYMENT.md §8)')
   }
+  const brandRoot = read(env, 'BRAND_ROOT')
+  if (environment !== 'local' && (brandRoot === undefined || !isAbsolute(brandRoot))) {
+    // Unset or relative, the loader searches upwards from the working directory, as far as the
+    // filesystem root: fine on a workstation, never on a host, which names the folder it ships.
+    findings.refuse(
+      'BRAND_ROOT',
+      brandRoot === undefined
+        ? 'is not set: a deployed process names the brand folder its artifact ships (DEPLOYMENT.md §8)'
+        : 'must be an absolute path on a deployed host, never one searched for',
+    )
+  }
   for (const name of DEPLOYED) {
     if (read(env, name) === undefined)
       findings.require(name, 'is not set (DEPLOYMENT.md §8)', environment)
@@ -98,6 +111,7 @@ export function checkPlatform(
 
   const ring = parseLinkTokenKeys(read(env, 'LINK_TOKEN_KEYS'), now)
   for (const problem of ring.problems) findings.refuse('LINK_TOKEN_KEYS', problem)
+  for (const warning of ring.warnings) findings.warn('LINK_TOKEN_KEYS', warning)
 
   if (config.sisters.length > 0) {
     const [sister] = config.sisters

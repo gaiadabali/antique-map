@@ -81,4 +81,28 @@ describe('LINK_TOKEN_KEYS — a well-formed ring (C6 links)', () => {
     expect(text).not.toContain(secret)
     expect(refused(`toolongkid1234:${secret}`)).toMatch(/its kid is not/)
   })
+
+  it('refuses a pattern and a password dressed as a key', () => {
+    const alternating = Buffer.from(
+      Array.from({ length: 32 }, (_, i) => (i % 2 === 0 ? 0xaa : 0x55)),
+    )
+    expect(refused('a:' + alternating.toString('base64url'))).toMatch(
+      /has 2 distinct byte values, fewer than 16/,
+    )
+    const password = Buffer.from('password'.repeat(4)).toString('base64url')
+    expect(refused('a:' + password)).toMatch(/fewer than 16/)
+    const phrase = Buffer.from('correct horse battery staple, 42!').toString('base64url')
+    expect(refused('a:' + phrase)).toMatch(/decodes to printable text/)
+  })
+
+  it('warns, and only warns, of a retired key past the overlap', () => {
+    const result = parseLinkTokenKeys('b:' + key(2) + ',a:' + key(1) + ':2025-08-01', NOW)
+    expect(result.ok).toBe(true)
+    expect(result.warnings).toEqual([
+      expect.stringMatching(/entry 2 \(kid "a"\): retired 424 days ago, past the 400-day overlap/),
+    ])
+    expect(
+      parseLinkTokenKeys('b:' + key(2) + ',a:' + key(1) + ':2026-01-01', NOW).warnings,
+    ).toEqual([])
+  })
 })

@@ -152,7 +152,14 @@ const cases: Case[] = [
     'the catch-all seller that cannot charge IDR',
     'emporium',
     (c) => (c.sellers[0].charge = ['USD']),
-    'sellers[0].charge: must include "IDR": seller "id" serves "*" and no seller serves "ID" itself',
+    'sellers[0].charge: must include "IDR": seller "id" serves "*", Indonesia included',
+  ],
+  [
+    // Routing is by stock location too: Singapore stock to Jakarta is the "*" seller's (D29).
+    'a "*" seller beside an "ID" seller that cannot charge IDR',
+    'gallery',
+    (c) => (c.sellers[0].charge = ['USD', 'EUR', 'SGD', 'AUD', 'GBP']),
+    'sellers[0].charge: must include "IDR": seller "sg" serves "*", Indonesia included',
   ],
   [
     'a derived currency with no ladder',

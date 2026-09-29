@@ -32,12 +32,24 @@ const memo = new Map<string, LoadedBrand>()
 /** The config and where it came from. Throws `BrandConfigError` naming the file and each field. */
 export function loadBrand(options: LoadOptions = {}): LoadedBrand {
   const paths = resolveBrandPaths(options.env ?? process.env, options.cwd ?? process.cwd())
-  const key = `${paths.configFile}\u0000${options.supports?.storefront ?? ''}`
+  const { supports } = options
+  const key = [paths.configFile, supports?.storefront ?? '', ...(supports?.modules ?? [])].join(
+    '\u0000',
+  )
   const cached = options.fresh ? undefined : memo.get(key)
   if (cached) return cached
-  const loaded = { config: readBrandConfig(paths, options.supports), paths }
+  // One object serves every request of the process, so nobody may change it under the others.
+  const loaded = deepFreeze({ config: readBrandConfig(paths, supports), paths })
   memo.set(key, loaded)
   return loaded
+}
+
+function deepFreeze<T>(value: T): T {
+  if (typeof value === 'object' && value !== null && !Object.isFrozen(value)) {
+    Object.freeze(value)
+    for (const each of Object.values(value)) deepFreeze(each)
+  }
+  return value
 }
 
 /** The brand config this process runs on, defaults applied. */
