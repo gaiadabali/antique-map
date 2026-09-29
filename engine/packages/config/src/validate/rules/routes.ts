@@ -6,8 +6,10 @@
  */
 import {
   FORM_KINDS,
+  hasSurface,
   SEGMENT_SURFACES,
   SURFACE_ROUTES,
+  surfaceModules,
   type FormKind,
   type RouteTarget,
 } from '../../routes'
@@ -79,11 +81,17 @@ function checkNavigation(config: BrandConfig, report: Report): void {
           report([...path, 'slug'], 'a "page" link needs the slug of its CMS page')
         return
       }
-      const module = gate(SURFACE_ROUTES[item.surface])
-      if (module && !hasModule(config, module)) {
+      // `hasSurface()` reads a surface two modules share too: the account area, while either
+      // account module is on (C10 v1.2).
+      if (!hasSurface(config, item.surface)) {
+        const modules = surfaceModules(item.surface)
+        const which =
+          modules.length === 1
+            ? `whose module "${modules[0]}" is off`
+            : `whose modules ${modules.map((each) => `"${each}"`).join(' and ')} are all off`
         report(
           [...path, 'surface'],
-          `links to "${item.surface}", whose module "${module}" is off, so the link would lead nowhere`,
+          `links to "${item.surface}", ${which}, so the link would lead nowhere`,
         )
       }
     })

@@ -94,9 +94,16 @@ export const commerceConfigSchema = z.strictObject({
 })
 export type CommerceConfig = z.infer<typeof commerceConfigSchema>
 
+/**
+ * Couriers: the brand's `shipping` lists every one it uses, and each seller ships with its own
+ * subset of them (`sellers[].shipping`, all of them when it names none) — rate sources and
+ * secrets are per seller (COMMERCE.md §8, DEPLOYMENT.md §8).
+ */
 export const shippingConfigSchema = z.strictObject({
   providers: z.array(z.enum(SHIPPING_PROVIDERS)).min(1),
 })
+export type ShippingConfig = z.infer<typeof shippingConfigSchema>
+/** Fulfilment providers are the brand's, never a seller's (DEPLOYMENT.md §8). */
 export const fulfilmentConfigSchema = z.strictObject({
   providers: z.array(z.enum(FULFILMENT_PROVIDERS)).min(1),
 })

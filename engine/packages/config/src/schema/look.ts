@@ -10,9 +10,40 @@ import { z } from 'zod'
 export const STOREFRONTS = ['gallery', 'emporium'] as const
 export type Storefront = (typeof STOREFRONTS)[number]
 
+/**
+ * What `/brand-assets/…` serves (C13 `BRAND_ASSET_URL`, TASKS.md 4.1.f), by extension, with the
+ * type it is served as: a brand names only these, and the route answers 404 for any other file in
+ * the folder (3.4 senior-fe #2). An SVG is served under `Content-Security-Policy: default-src
+ * 'none'`, and every file with `X-Content-Type-Options: nosniff`.
+ */
+export const BRAND_ASSET_TYPES = {
+  '.avif': 'image/avif',
+  '.ico': 'image/x-icon',
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.webmanifest': 'application/manifest+json',
+  '.webp': 'image/webp',
+  '.woff2': 'font/woff2',
+} as const
+export type BrandAssetExtension = keyof typeof BRAND_ASSET_TYPES
+
+/** The extension of an asset path, lower-cased, when the route serves it; else `null`. */
+export function brandAssetExtension(path: string): BrandAssetExtension | null {
+  const extension = /\.[^./]+$/.exec(path)?.[0].toLowerCase() ?? ''
+  return Object.hasOwn(BRAND_ASSET_TYPES, extension) ? (extension as BrandAssetExtension) : null
+}
+
 const assetPathSchema = z
   .string()
-  .regex(/^(?!.*\.\.)\w[\w./-]*$/, 'a relative path inside <brand>/site/assets')
+  .regex(/^(?!.*\.\.)\w[\w./-]*$/, {
+    message: 'a relative path inside <brand>/site/assets',
+    abort: true,
+  })
+  .refine((path) => brandAssetExtension(path) !== null, {
+    message: `a file the brand-assets route serves: ${Object.keys(BRAND_ASSET_TYPES).join(', ')}`,
+    abort: true,
+  })
 const hexSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/, 'a #rrggbb colour')
 
 /**

@@ -14,10 +14,12 @@ COMPLIANCE.md.
 
 1. **Priced on the server, every time.** Requests carry ids and quantities only.
    Totals are recomputed at every checkout step and again when the payment
-   attempt is created. The one place a price is *computed* in the browser is the
-   configurator's display, from a price table the server sent with the page for
-   that destination — display only; adding to the bag re-prices on the server,
-   and a difference is shown, never charged silently (`PriceChanged`).
+   attempt is created. The one place a price *changes* in the browser is the
+   configurator's display, looked up in a price table the server sent with the
+   page for that destination — one row per variant, its `Money` beside the
+   server's display string, so the browser neither sums nor formats
+   (CONVENTIONS.md §6) — display only; adding to the bag re-prices on the
+   server, and a difference is shown, never charged silently (`PriceChanged`).
 2. **Snapshots, not references,** on everything that has been sold: a line's
    title, its chosen options with the labels the buyer read (never re-read from
    the product), stock number, the reproduction label, its image by C9 asset id
@@ -111,8 +113,9 @@ currency, prices, price facets and duties everywhere on the site follow from it
   never charged, never summed into a total, never sent back by a client.
   `formatMoney` (`@engine/i18n`, CONVENTIONS.md §3) fixes an amount's fraction
   digits to `CURRENCY_EXPONENT` itself and never takes the runtime's ICU
-  default, which differs between Node and the browser (some give IDR two) and
-  would fail hydration if the server and the browser disagreed.
+  default, which differs between runtimes (some browsers give IDR two); symbols
+  and spacing still differ, so it runs on the server only and a Client
+  Component shows the string it made (CONVENTIONS.md §6).
 - **"From" prices** on tiles are the cheapest *valid* variant for this market and
   destination, never a variant that cannot ship there.
 
@@ -304,7 +307,7 @@ no longer available rather than that the offer was turned down.
 Nothing else may change a status field, and every change is written as a
 compare-and-set (`WHERE id = $1 AND status = $from`, exactly one row). Every
 transition emits a **domain event** (`order.paid`, `offer.accepted`,
-`hold.expiring`…) written to an **outbox** (`engine.domain_events`) **in the same
+`hold.expiring`…) written to an **outbox** (`domain_events`) **in the same
 transaction** as the change, and dispatched at least once afterwards to
 notifications, analytics, sister sync and cache invalidation — so a crash after
 commit loses nothing and a rolled-back transaction sends nothing.

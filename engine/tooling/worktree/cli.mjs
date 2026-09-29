@@ -11,9 +11,10 @@
 //     made with isolation: "worktree").
 //
 // .env.local gets PORT, DB_SUFFIX and — when it has none — a fresh development
-// LINK_TOKEN_KEYS ring (link-keys.mjs, TASKS.md 3.3.b). An existing PORT or
+// LINK_TOKEN_KEYS ring (link-keys.mjs, TASKS.md 3.3.b) and
+// LOCAL_PRODUCTION_BUILD=1 (local-build.mjs, 3.5.g). An existing PORT or
 // DB_SUFFIX with a different value is kept unless --force is passed; an existing
-// ring is always kept; nothing else in the file is touched.
+// ring or LOCAL_PRODUCTION_BUILD is always kept; nothing else is touched.
 import { existsSync } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
 
@@ -27,6 +28,7 @@ import {
 } from './allocate.mjs'
 import { readEnvFile, writeEnvFile } from './env-file.mjs'
 import { ensureLinkTokenKeys, LINK_KEY_VARIABLE } from './link-keys.mjs'
+import { ensureLocalProductionBuild, LOCAL_BUILD_VARIABLE } from './local-build.mjs'
 import { addWorktree, listWorktrees, otherClaims, pathKey, topLevel } from './git.mjs'
 
 const USAGE = `usage:
@@ -37,12 +39,13 @@ const USAGE = `usage:
   <lane>    a PARALLEL-TRACKS.md §1 lane (HAR, SCH, ...) or a split such as ARC-P
   --base    the ref a new branch starts from (default: main)
   --force   overwrite PORT / DB_SUFFIX in .env.local when they differ
-            (an existing LINK_TOKEN_KEYS ring is never overwritten)`
+            (an existing LINK_TOKEN_KEYS ring or LOCAL_PRODUCTION_BUILD
+            is never overwritten)`
 
 const HEADER = [
-  '# Local settings for this worktree (gitignored). PORT, DB_SUFFIX and a dev',
-  '# LINK_TOKEN_KEYS ring were written by `pnpm worktree:env`; add other secrets',
-  '# by hand, never commit them.',
+  '# Local settings for this worktree (gitignored). PORT, DB_SUFFIX, a dev',
+  '# LINK_TOKEN_KEYS ring and LOCAL_PRODUCTION_BUILD=1 were written by',
+  '# `pnpm worktree:env`; add other secrets by hand, never commit them.',
 ]
 
 class UsageError extends Error {}
@@ -102,6 +105,14 @@ function writeWorktreeEnv({ target, phase, lane, force = false, log = console.lo
       ? 'a fresh dev ring (one current key, 32 random bytes)'
       : 'an existing ring is never overwritten'
   log(`  ${LINK_KEY_VARIABLE}=…  ${outcome[LINK_KEY_VARIABLE]}: ${ringNote}`)
+  outcome[LOCAL_BUILD_VARIABLE] = ensureLocalProductionBuild(file)
+  const buildNote =
+    outcome[LOCAL_BUILD_VARIABLE] === 'added'
+      ? 'a production build on a loopback SITE_URL runs as local here'
+      : 'an existing value is never overwritten'
+  log(
+    `  ${LOCAL_BUILD_VARIABLE}=${currentLocalBuild(file)}  ${outcome[LOCAL_BUILD_VARIABLE]}: ${buildNote}`,
+  )
   // A kept value was not allocated here, so it may clash; say so rather than guess.
   const final = readEnvFile(file)
   for (const claim of claims) {
@@ -113,6 +124,11 @@ function writeWorktreeEnv({ target, phase, lane, force = false, log = console.lo
     }
   }
   return { file, port, suffix, outcome }
+}
+
+/** The value now in the file (not a secret, so it may be logged). */
+function currentLocalBuild(file) {
+  return readEnvFile(file).get(LOCAL_BUILD_VARIABLE)
 }
 
 function createWorktree({ phase, lane, base, force, cwd }) {

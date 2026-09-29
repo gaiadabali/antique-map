@@ -68,15 +68,18 @@ and defeats the point. Don't.
   boundary (Postgres `bigint` columns are read through a guard, never as a
   string, never as a `BigInt` across the wire). Rp 1.25 billion is far inside
   the range. **The exponent is the engine's, not ISO 4217's** — read
-  `CURRENCY_EXPONENT` from `@engine/config/schema`, never `@engine/domain/money`
+  `CURRENCY_EXPONENT` from `@engine/config/constants` (zod-free, so client code
+  may; `@engine/config/schema` re-exports it), never `@engine/domain/money`
   (which imports it and asserts against it, but never redeclares it), and never
   hard-code 100: IDR is 0 here though ISO lists two, USD/SGD/EUR/AUD/GBP are 2
   as ISO has them. A provider that counts in other units (IDR in hundredths)
   converts both ways in its own adapter — never in the domain, never twice.
   `formatMoney` (`@engine/i18n`) pins an amount's fraction digits to the
-  exponent itself, never the runtime's ICU default, so the server's render and
-  the browser's agree; a display **estimate** carries no fraction digits at all
-  — it is a whole major unit, never charged, never summed (COMMERCE.md §3).
+  exponent itself, never the runtime's ICU default, so a price's precision never
+  depends on where it was formatted — its symbol and spacing still may, which is
+  why a Client Component gets the server's string (§6); a display **estimate**
+  carries no fraction digits at all — it is a whole major unit, never charged,
+  never summed (COMMERCE.md §3).
 - **Prices are computed on the server, every time.** The browser sends product
   ids, variant ids and quantities — never a price, a total, a discount amount or
   a shipping cost (KOI `lib/commerce/pricing.ts` rule). A basket that arrives
@@ -129,7 +132,25 @@ configurator, the cart drawer, facet panel interactions, the search box, the
 consent banner, and preference toggles.
 
 Props to a Client Component are serialised into the HTML: pass what it renders,
-never a whole document or dictionary.
+never a whole document or dictionary. **Money, dates and dimensions arrive
+preformatted** — the server calls the formatter and passes the string — since
+only the fraction digits are pinned, and symbols, spaces and month names still
+differ between the server's ICU and the browser's (§3). The ICU-dependent
+formatters — `formatMoney` / `formatPrice`, `formatCalendarDate` and
+`formatDimensions` — never run in a Client Component; `formatDate` (a fuzzy
+date's words) is deterministic, and its string is passed all the same. **A price
+shown after an interaction** — the configurator's as options change
+(DESIGN-SYSTEM.md §7), a bag drawer's total — ships as the server's display
+strings beside the `Money` (one row per variant, looked up, never summed), or
+comes back formatted in the action's answer. **Links arrive as props**, built by
+`href()` on the server: a Client Component never imports `@engine/config/routes`,
+`@engine/config/schema` or `zod` (`createHref` alone pulls in C1's schema, ~28 KB
+gzip of the 150 KB budget), and never derives state from `usePathname()`, which
+sees the public path, not the canonical state C10 rewrote it to. **A listing's
+state comes from the page's server `searchParams`**, the canonical query C10
+rewrote to, never from `useSearchParams()`, which sees the public URL — whose
+named facets sit in its path, not its query — so the facet panel takes its state
+as props.
 
 Every component answers one question. If its props need a comment to explain a
 combination, it is two components.

@@ -180,6 +180,7 @@
       "tax": { "regime": "SG-GST", "registered": false },
       "charge": ["USD", "EUR", "SGD", "AUD", "IDR"],
       "payments": ["stripe", "bank-transfer"],
+      "shipping": { "providers": ["dhl-express", "quote", "collect"] },
       "methodOrder": ["card", "express-wallet", "paynow", "bank-transfer"],
       "cardCeiling": { "amount": 1000000, "currency": "USD" },
       "insuredThreshold": { "amount": 100000, "currency": "USD" },

@@ -11,10 +11,16 @@ import {
 const route = (path, methods = ['GET']) => ({ path, methods })
 
 describe('firstSegment', () => {
-  it('reads the first static segment after /api/x/, /api/ or /', () => {
-    expect(firstSegment('/api/x/commerce/cart/[[...path]]')).toBe('commerce')
+  it('reads the first segment after /api/ — where Payload reads a collection slug (C13)', () => {
+    expect(firstSegment('/api/x/commerce/cart/[[...path]]')).toBe('x')
+    expect(firstSegment('/api/x/media/[...path]')).toBe('x')
     expect(firstSegment('/api/health')).toBe('health')
-    expect(firstSegment('/brand-assets/[...path]')).toBe('brand-assets')
+    expect(firstSegment('/api/graphql')).toBe('graphql')
+  })
+
+  it('is null outside /api/ and for a dynamic first segment', () => {
+    expect(firstSegment('/brand-assets/[...path]')).toBeNull()
+    expect(firstSegment('/api/[...slug]')).toBeNull()
   })
 })
 
@@ -23,17 +29,26 @@ describe('findReservedSegmentCollisions — the planted violation (2.2.i)', () =
     const clean = [route('/api/x/commerce/cart/[[...path]]'), route('/api/health')]
     expect(findReservedSegmentCollisions(clean)).toEqual([])
 
-    const shadowing = [...clean, route('/api/x/graphql/[...path]')]
+    const shadowing = [...clean, route('/api/graphql/[...path]')]
     expect(findReservedSegmentCollisions(shadowing)).toEqual([
-      { path: '/api/x/graphql/[...path]', segment: 'graphql' },
+      { path: '/api/graphql/[...path]', segment: 'graphql' },
     ])
   })
 
-  it('flags a route shadowing a discovered collection slug', () => {
-    const routes = [route('/api/x/works/[...path]')]
+  it('flags a route shadowing a discovered collection slug, never one under /api/x/', () => {
+    const routes = [route('/api/works/[...path]'), route('/api/x/works/[...path]')]
     expect(findReservedSegmentCollisions(routes, [])).toEqual([])
     expect(findReservedSegmentCollisions(routes, ['works'])).toEqual([
-      { path: '/api/x/works/[...path]', segment: 'works' },
+      { path: '/api/works/[...path]', segment: 'works' },
+    ])
+  })
+
+  it('flags every /api/x/ route once a collection is named x, and /api/health for health', () => {
+    const routes = [route('/api/x/a'), route('/api/x/b'), route('/api/health')]
+    expect(findReservedSegmentCollisions(routes, ['x', 'health'])).toEqual([
+      { path: '/api/x/a', segment: 'x' },
+      { path: '/api/x/b', segment: 'x' },
+      { path: '/api/health', segment: 'health' },
     ])
   })
 })

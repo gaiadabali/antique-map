@@ -250,5 +250,12 @@
     "sister.links": true,
     "ai.cataloguing": true
   },
-  "sisters": []
+  "sisters": [
+    {
+      "slug": "test-gallery",
+      "name": "Test Gallery",
+      "role": "archive-origin",
+      "baseUrl": "https://gallery.test.example"
+    }
+  ]
 }

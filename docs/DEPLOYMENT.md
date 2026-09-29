@@ -73,8 +73,9 @@ push to main
   → per .gaiadeploy.yml target: unpack its `subdir`, symlink `current`, pm2 reload <site user>
   → the new process boots and reads shared/.env
   → health check https://<domain>/api/health — it calls getPayload(), which initialises
-    Payload and applies pending migrations (web process only, RUN_MIGRATIONS=1, under a
-    Postgres advisory lock); on failure, roll back and reload
+    Payload and applies pending migrations (web process only: RUN_MIGRATIONS=1 in a
+    production build — Payload migrates on boot only when NODE_ENV=production, which
+    `next start` sets — under a Postgres advisory lock); on failure, roll back and reload
 ```
 
 `.gaiadeploy.yml`, using the pipeline's monorepo support (`subdir`, added
@@ -109,8 +110,13 @@ The same rules as KOI, applied to two databases:
 0. **One migration set, two databases.** Each brand's web process applies the
    same pending migrations when its first health check initialises Payload —
    one process per database, under an advisory lock, never a worker.
-   `pnpm db:schema-hash --all` in CI and after every deploy proves the schemas are
-   identical.
+   `RUN_MIGRATIONS=1` hands Payload the bundled set, and Payload applies it on
+   boot only in a production build (`NODE_ENV=production`, which `next start`
+   sets): a dev server never migrates on boot, whatever it is given, so a
+   workstation's database is migrated by `pnpm --filter @engine/cms migrate`,
+   which `db:fresh` runs, and the boot check warns of `RUN_MIGRATIONS=1` on a dev
+   server. `pnpm db:schema-hash --all` in CI and after every deploy proves the
+   schemas are identical.
 1. **Additive first.** Add, backfill, switch reads, and drop only in a later
    release. A failed migration rolls back its transaction, the process fails to
    boot, the health check fails, and the agent rolls back to a release that
@@ -123,8 +129,11 @@ The same rules as KOI, applied to two databases:
 4. `payload migrate:create` against a migrated database must report "No schema
    changes detected" before and after — or the snapshot chain has drifted.
 5. **Payload dev "push" is off** (`push: false`). Schema reaches every database
-   through migrations only. KOI lost time to a dev server generating a migration
-   that carried another session's schema change.
+   anyone shares through migrations only. The one exception is a schema author's
+   own suffixed database, pushed with `PAYLOAD_DEV_PUSH=1` (PARALLEL-TRACKS.md
+   §3.2) — never a production build. No table declares a composite primary key,
+   which drizzle-kit 0.31.7 cannot introspect. KOI lost time to a dev server
+   generating a migration that carried another session's schema change.
 
 ## 5. Scheduled jobs
 
@@ -182,23 +191,76 @@ runbook records how long it actually took.
 BRAND                       indies-gallery | old-east-indies | test
 BRAND_ROOT                  path to the brand folder shipped in the artifact (config, copy, assets)
 TEST_STOREFRONT             CI only: gallery | emporium — which test config to load
-DATABASE_URL                PAYLOAD_SECRET              SITE_URL (runtime, from brand config)
+DATABASE_URL                PAYLOAD_SECRET
+SITE_URL                    the origin this process serves: https://<its domain> on a host; the boot
+                            check reads the environment from it (below)
+LOCAL_PRODUCTION_BUILD      1 in a worktree's .env.local and in CI only: a production build at a
+                            loopback SITE_URL runs as local; never in a host's shared/.env
 RUN_MIGRATIONS              1 in the web process only
 S3_ENDPOINT  S3_BUCKET  S3_ACCESS_KEY_ID  S3_SECRET_ACCESS_KEY  MEDIA_PUBLIC_URL
 MASTERS_BUCKET  MASTERS_ACCESS_KEY_ID  MASTERS_SECRET_ACCESS_KEY   (OEI's key: print-files/ write only)
 SMTP_HOST/PORT/USER/PASS    SMTP_FROM_ADDRESS  SMTP_FROM_NAME
 PAYMENT_<SELLER>_<PROVIDER>_*   per seller, per enabled provider, per environment (PAYMENTS.md §8)
-SHIPPING_<SELLER>_<PROVIDER>_*  per seller, like payments — a shipping webhook is per seller too
+SHIPPING_<SELLER>_<PROVIDER>_*  per seller, for each of its own couriers (sellers[].shipping, all of the
+                                brand's when it names none) — a shipping webhook is per seller too
 FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
+<PREFIX>_MODE               sandbox | live, for a provider whose keys cannot say which (below)
 WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
+SISTER_BASE_URL             the sister's origin this process syncs with: required in production (the
+                            sister's production site, never sisters[0].baseUrl, which is its staging
+                            site); staging may leave it unset; a workstation may name a local sister
+                            at http://localhost:<port>; ignored, with a warning, by a brand with none
 REVALIDATE_SECRET  CRON_SECRET
 LINK_TOKEN_KEYS             the capability links' key ring (C6 links), one per brand and per environment,
                             never shared: comma-separated kid:secret (the one current key),
                             kid:secret:YYYY-MM-DD (retired that UTC day; verifies LINK_TOKEN.keyOverlapDays
-                            more) and kid:revoked (refuses at once: a leak); secrets base64url, ≥ 32 random
-                            bytes; a kid is never reused; a restart applies a change
+                            more) and kid:revoked (refuses at once: a leak); secrets base64url — never
+                            standard base64's "+" or "/" — of ≥ 32 random bytes, made with
+                            node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"
+                            and never a pattern: a counter, a stride, zeros padding a short key, a block
+                            repeated; a kid is never reused; a restart applies a change
 LEGACY_DATA_DIR             workstations only: where the old site's raw extracts live
 ```
+
+**Which environment a process is in** is read from `SITE_URL` against the
+brand's `domains` (C1), never from `NODE_ENV` alone, because staging runs
+production builds (§1). The brand's production domain or an alias is
+**production**, its staging domain **staging**, and a dev server **local**. A
+production build is local only where it says so: at a loopback origin
+(`localhost`, `*.localhost`, `127.0.0.1`, `[::1]`) **and** with
+`LOCAL_PRODUCTION_BUILD=1` — how a worktree and CI open a production build on
+their own port, with draft configs and sandbox keys, the boot report warning all
+the same. A worktree's `.env.local` and CI's jobs set it; a host's `shared/.env`
+never does, and on a brand's own domain it is ignored. Every other production
+build — a loopback one without it, any other host, no usable `SITE_URL` — is
+refused and judged production, so the strictest rules apply to whatever it is:
+a staging host provisioned from `.env.example`, whose `SITE_URL` is loopback and
+whose secrets are development defaults, cannot start as a workstation would
+(TASKS.md 3.4, senior-be #1). `0.0.0.0` is a bind address, never an origin, and
+always production. Every host's `shared/.env` sets `SITE_URL=https://<its
+domain>`, and `/api/health` should report the environment judged, so the release
+flow's check at the brand's domain (§3) sees what the process decided (a
+follow-up for TASKS.md 4.1.b).
+
+**Provider secrets**, by the names the adapters read — declared in
+`@engine/config`'s `boot-check/provider-secrets.ts`, the seller and provider ids
+upper-cased with `-` as `_` (`SHIPPING_SG_DHL_EXPRESS_API_KEY`):
+
+| Provider | Variables | Sandbox or live |
+| --- | --- | --- |
+| payments (per seller) | PAYMENTS.md §8: `stripe`, `midtrans`, `xendit`, `paypal`, `doku` | the keys, or `PAYMENT_<SELLER>_<PROVIDER>_MODE` |
+| `biteship` (per seller) | `SHIPPING_<SELLER>_BITESHIP_API_KEY`, `_WEBHOOK_SECRET` | `SHIPPING_<SELLER>_BITESHIP_MODE` |
+| `dhl-express` (per seller) | `SHIPPING_<SELLER>_DHL_EXPRESS_API_KEY`, `_API_SECRET`, `_ACCOUNT_NUMBER` | `SHIPPING_<SELLER>_DHL_EXPRESS_MODE` |
+| `prodigi`, `gelato` (per brand, v2) | `FULFILMENT_PRODIGI_API_KEY`, `FULFILMENT_GELATO_API_KEY` | `FULFILMENT_<PROVIDER>_MODE` |
+| `bank-transfer`, `manual`, `flat`, `quote`, `collect`, `own-stock`, `local-production` | none | — |
+
+A seller needs its own payment providers' secrets and its own couriers' — the
+brand's couriers when it names none (C1 `sellers[].shipping`) — and no other: a
+Singapore seller shipping its own stock by DHL Express needs no Biteship key. A
+`*_MODE` is `sandbox` or `live` and nothing else. A missing secret refuses a
+deployed process and only warns a workstation; a key of the wrong kind refuses
+anywhere — production runs on live keys, staging and local on sandbox keys — and
+so does a seller whose keys for one provider mix the two.
 
 **No `NEXT_PUBLIC_*` per brand.** Those are inlined at `next build`, and one
 gallery build serves several brands (and the artifact is built with none), so GA4

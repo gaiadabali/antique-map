@@ -24,7 +24,7 @@ export type StateHashField =
 
 /**
  * How an adapter derives a webhook's `providerEventId` — with the provider and the seller, the
- * dedupe key unique in `engine.payment_events` (PAYMENTS.md §2). Events the reconciler builds and
+ * dedupe key unique in `payment_events` (PAYMENTS.md §2). Events the reconciler builds and
  * staff entries carry their own prefixes (`retrieve:`, `staff:`), so no rule below can collide.
  */
 export type ProviderEventIdRule = EventIdRule<StateHashField>

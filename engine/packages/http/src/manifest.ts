@@ -5,9 +5,16 @@
  * (ARCHITECTURE.md §11). An app mounts a route with one file, `src/app{path}/route.ts`,
  * exporting exactly `methods` — `export { GET, POST } from '@engine/http/commerce/cart'`.
  * Route parity (TASKS.md 2.2.d) fails CI on a missing file, a missing or extra method, a
- * first segment after `/api/` equal to a collection slug, `payload-jobs` or `graphql`, or a
- * matcher that differs from `PROXY_MATCHER`. Engine routes live under `/api/x/` so none
- * shadows Payload's REST API; `/api/health` and `/brand-assets/…` are the named exceptions.
+ * matcher that differs from `PROXY_MATCHER`, or a route whose first segment after `/api/` —
+ * `x` for every engine route, `health` for the health route — equals a collection slug,
+ * `payload-jobs` or `graphql`: Payload's catch-all REST mount reads a collection from that
+ * segment and a static route there wins, so no collection may be named `x` or `health`.
+ * Engine routes live under `/api/x/` so none shadows Payload's REST API; `/api/health` and
+ * `/brand-assets/…` (outside `/api/`, compared with nothing) are the named exceptions.
+ * Payload's own mounts, in each app's `(payload)` group, are its admin (`admin/[[...segments]]`)
+ * and that REST API (`api/[...slug]`) alone: GraphQL is off (`graphQL.disable` — the loaders read
+ * through the Local API and the sister API is REST), so no app mounts `api/graphql` or its
+ * playground, and `graphql` stays a reserved first segment should it ever be switched on.
  * Every app mounts every route whatever the brand's modules: a handler whose `module` is off
  * answers 404 — so does an operation whose module is off, at a sub-path of a mounted route —
  * and parity never depends on config. The parts: the commerce API and its addresses
@@ -30,6 +37,7 @@
  * type imports of other packages only, and route parity reads them with the workspace's
  * TypeScript runner.
  */
+import type { RootFile } from '@engine/config/routes'
 import type { ModuleKey } from '@engine/config/schema'
 
 import { AUTH_ROUTE_AUTH, AUTH_ROUTE_METHODS } from './manifest/auth'
@@ -83,7 +91,8 @@ const commerceRoutes = Object.entries(COMMERCE_AREAS).map(([area, spec]: [string
 export const ENGINE_ROUTES: readonly EngineRoute[] = [
   // Platform
   route('/api/health', 'WEB', 'public', GET), // app, DB, storage, queue lag; initialises Payload
-  route('/brand-assets/[...path]', 'WEB', 'public', GET), // BRAND_ROOT assets, immutable
+  // BRAND_ROOT assets — `immutable` only at a versioned URL (`BRAND_ASSET_URL`), never a root file
+  route('/brand-assets/[...path]', 'WEB', 'public', GET),
   route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
   route('/api/x/legacy/[...path]', 'WEB', 'public', GET), // legacy URLs: 301 · 404 · 410
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // invalidate(tags) from outside a request
@@ -124,7 +133,19 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
 /**
  * Root files the proxy rewrites to engine routes, so each keeps its conventional public
  * URL (a sitemap may list only URLs at or below its own path). `:favicon` is the brand's
- * `assets.favicon` (C1), read at runtime. The proxy applies these before C10's parser.
+ * `assets.favicon` (C1), read at runtime. The proxy applies these before C10's parser, and their
+ * `from` patterns are exactly C10's `ROOT_FILES`, so no route-map segment or legacy rule is one.
+ *
+ * iOS asks for a home-screen icon at the root whatever a page links — `/apple-touch-icon.png`
+ * and, older or sized, `-precomposed`, `-180x180`, `-180x180-precomposed` (one pattern takes every
+ * suffix) — and crawlers probe `/site.webmanifest`. Each is answered from the brand's assets
+ * folder by the file of that name (`apple-touch-icon.png`, 180 × 180, serving them all;
+ * `site.webmanifest`), and one a brand lacks is a plain 404 from the brand-assets route, never the
+ * designed not-found page and its loader (3.1 senior-fe #12, 3.4 senior-fe #7). A page links its
+ * icons and manifest through `generateMetadata()` (`icons`, `manifest`) from the brand's assets —
+ * never Next's file conventions (`app/icon.*`, `app/apple-icon.*`, `app/favicon.ico`,
+ * `app/manifest.ts`), which are made once per build, not per brand. Every file here keeps an
+ * unversioned public URL, so none is served `immutable`.
  */
 export const ROOT_REWRITES = [
   { from: '/robots.txt', to: '/api/x/robots' },
@@ -132,7 +153,31 @@ export const ROOT_REWRITES = [
   { from: '/sitemap-:name.xml', to: '/api/x/sitemap/:name' },
   { from: '/.well-known/:path*', to: '/api/x/well-known/:path*' },
   { from: '/favicon.ico', to: '/brand-assets/:favicon' },
-] as const
+  { from: '/apple-touch-icon.png', to: '/brand-assets/apple-touch-icon.png' },
+  { from: '/apple-touch-icon-:size.png', to: '/brand-assets/apple-touch-icon.png' },
+  { from: '/site.webmanifest', to: '/brand-assets/site.webmanifest' },
+] as const satisfies readonly { from: RootFile; to: string }[]
+
+/**
+ * A brand file's public URL and how it is cached (TASKS.md 4.1.f, 3.4 senior-fe #2). A page links
+ * the logo, a font, the OG base at `/brand-assets/<path>?v=<version>`, `<version>` the first 8
+ * hex digits of the file's SHA-256, minted where the shell's view model is built (C2 `ShellVM`
+ * carries every brand-asset URL a page links; no template writes one). The route answers
+ * `versioned` only when `v` is the file's current version; with no `v` — a root file, whose
+ * public URL is fixed — or another one — a page cached before the file changed — `unversioned`,
+ * with a strong `ETag` (the full SHA-256) and a 304 on `If-None-Match`. It serves only C1's
+ * `BRAND_ASSET_TYPES`, each with its type and `X-Content-Type-Options: nosniff`, an SVG under
+ * `Content-Security-Policy: default-src 'none'`, and never a path outside the brand's assets
+ * folder: a `..`, an absolute path or a link out is a 404.
+ */
+export const BRAND_ASSET_URL = {
+  path: '/brand-assets/',
+  version: { param: 'v', hexDigits: 8 },
+  cacheControl: {
+    versioned: 'public, max-age=31536000, immutable',
+    unversioned: 'public, max-age=300',
+  },
+} as const
 
 /**
  * The request headers the proxy sets on every request it rewrites — overwriting whatever a

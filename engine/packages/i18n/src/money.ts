@@ -13,7 +13,7 @@
  * A display estimate (`PriceSet.estimate`, C5) is a whole major unit and shows no fraction
  * digits at all; one that is not whole is a bug upstream and throws rather than rounding.
  */
-import { CURRENCY_EXPONENT, type CurrencyCode, type LocaleCode } from '@engine/config/schema'
+import { CURRENCY_EXPONENT, type CurrencyCode, type LocaleCode } from '@engine/config/constants'
 
 import { formattingTag } from './locales'
 

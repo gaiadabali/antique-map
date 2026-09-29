@@ -12,8 +12,8 @@ gallery lives on.
 
 | Layer | What | Where | Consent |
 | ----- | ---- | ----- | ------- |
-| **Domain events** | server-side facts: order paid, offer accepted, hold expired, refund issued | written by `@engine/domain` to the outbox `engine.domain_events` **in the same transaction as the change**, then dispatched by the jobs queue to analytics, email and the sister webhook (COMMERCE.md §13) | none needed — they are business records, not tracking |
-| **First-party beacon** | page and interaction events | `POST /api/x/collect` → `engine.analytics_events` (monthly partitions) | **cookieless until consent**: a per-session hashed id only; a persistent anonymous id after analytics consent |
+| **Domain events** | server-side facts: order paid, offer accepted, hold expired, refund issued | written by `@engine/domain` to the outbox `domain_events` **in the same transaction as the change**, then dispatched by the jobs queue to analytics, email and the sister webhook (COMMERCE.md §13) | none needed — they are business records, not tracking |
+| **First-party beacon** | page and interaction events | `POST /api/x/collect` → `analytics_events` (monthly partitions) | **cookieless until consent**: a per-session hashed id only; a persistent anonymous id after analytics consent |
 | **GA4 + Meta Pixel** | ad attribution, audiences | client tags, loaded only after marketing consent | marketing consent, per EU/Indonesian rules (COMPLIANCE.md §7) |
 
 The GA4 measurement id and the Meta Pixel id are **runtime brand config**
@@ -168,7 +168,7 @@ that 500'd behind a green test).
 
 ## 4. Retention
 
-Raw events 14 months, then rolled up into `engine.analytics_rollups` (per day ×
+Raw events 14 months, then rolled up into `analytics_rollups` (per day ×
 event × entity × locale × device class: count and sessions) **before** anything
 is dropped. Domain events and orders follow the retention the accountant and
 COMPLIANCE.md require, not the analytics window.

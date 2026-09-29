@@ -142,4 +142,45 @@ describe('bootCheck() — review fixes (3.1)', () => {
       'mailto-free text: desk@example.com',
     )
   })
+
+  it('redacts a password in a URL query and in a libpq keyword/value string (3.1 qa)', () => {
+    const cases: [string, string][] = [
+      [
+        'postgres://db.internal/ig?sslmode=require&password=hunter2&connect_timeout=5',
+        'postgres://db.internal/ig?sslmode=require&password=…&connect_timeout=5',
+      ],
+      [
+        'postgres://app@db.internal/ig?password=hunter2#x',
+        'postgres://…@db.internal/ig?password=…#x',
+      ],
+      [
+        'host=db.internal port=5432 user=app password=hunter2 dbname=ig',
+        'host=db.internal port=5432 user=app password=… dbname=ig',
+      ],
+      ["host=db password = 'hunter 2 \\' quoted' dbname=ig", 'host=db password = … dbname=ig'],
+      ["password='hunter2 cut off", 'password=…'],
+      ['PGPASSWORD=hunter2 sslpassword=hunter3', 'PGPASSWORD=… sslpassword=…'],
+      ['invalid option "password=hunter2"', 'invalid option "password=…"'],
+      // 3.4 senior-be #3: a raw "/" in a URL's password, a double-quoted pair, a JSON body.
+      ['postgres://app:Zx9/k+Qw==@db.internal/ig', 'postgres://…@db.internal/ig'],
+      ['host=db password="hunter 2" dbname=ig', 'host=db password=… dbname=ig'],
+      ['{"user":"app","password":"hunter\\"2"}', '{"user":"app","password":"…"}'],
+    ]
+    for (const [text, redacted] of cases) {
+      expect(redactCredentials(text)).toBe(redacted)
+      expect(redactCredentials(text)).not.toContain('hunter')
+    }
+    // Words about a password, with no value, are left as they are.
+    const plain = 'password authentication failed for user "app"'
+    expect(redactCredentials(plain)).toBe(plain)
+  })
+
+  it('refuses an unreachable database whose error quotes a libpq string, without its password', async () => {
+    const [finding] = await checkDatabase(async () => {
+      throw new Error('could not connect: host=db.internal user=app password=hunter2 dbname=ig')
+    })
+    expect(finding?.message).toBe(
+      'the database did not answer: could not connect: host=db.internal user=app password=… dbname=ig',
+    )
+  })
 })

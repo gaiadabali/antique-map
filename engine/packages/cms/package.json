@@ -1,0 +1,43 @@
+{
+  "name": "@engine/cms",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The one Payload config (TASKS.md 3.2): brand-independent, instantiated once per brand process against that brand's database. Collections, access helpers, the engine-table DDL seam (db/), the job/view/plugin registries and the one migration set. SCH's, except admin/** (ADM).",
+  "type": "module",
+  "exports": {
+    "./payload.config": "./src/payload.config.ts",
+    "./access": "./src/access/index.ts",
+    "./registries": "./src/registries/index.ts",
+    "./db/probe": "./src/db/probe.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "payload": "payload",
+    "generate:types": "payload generate:types && prettier --write --log-level warn payload-types.ts",
+    "generate:importmap": "payload run src/registries/import-map.ts",
+    "migrate": "payload migrate",
+    "migrate:create": "payload run src/db/generate-migration.ts",
+    "migrate:status": "payload migrate:status",
+    "schema:check": "payload run src/db/schema-check.ts"
+  },
+  "dependencies": {
+    "@engine/config": "workspace:*",
+    "@payloadcms/db-postgres": "3.90.2",
+    "@payloadcms/email-nodemailer": "3.90.2",
+    "@payloadcms/storage-s3": "3.90.2",
+    "graphql": "16.11.0",
+    "payload": "3.90.2"
+  },
+  "peerDependencies": {
+    "next": ">=16.3.3 <17.0.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3",
+    "next": "16.3.6",
+    "prettier": "3.9.9",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

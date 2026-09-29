@@ -11,7 +11,7 @@ import { z } from 'zod'
 
 import { routeTargetSchema } from '../routes'
 import { localisedTextSchema } from './locales'
-import { idSchema } from './primitives'
+import { httpsOriginSchema, httpsUrlSchema, idSchema } from './primitives'
 
 export const domainsSchema = z.strictObject({
   /** `null` until the owner decides (and always for the synthetic `test` brand). */
@@ -34,7 +34,8 @@ export const identitySchema = z.strictObject({
     whatsapp: z.e164().nullable().default(null),
     phone: z.e164().nullable().default(null),
   }),
-  social: z.partialRecord(z.enum(SOCIAL_NETWORKS), z.url()).default({}),
+  /** Rendered as links in every page: https only, so never `javascript:` or plain http. */
+  social: z.partialRecord(z.enum(SOCIAL_NETWORKS), httpsUrlSchema).default({}),
   announcement: localisedTextSchema.nullable().default(null),
   navigation: z
     .strictObject({ header: z.array(navItemSchema), footer: z.array(navItemSchema) })
@@ -48,12 +49,21 @@ export type IdentityConfig = z.infer<typeof identitySchema>
  * config, so no brand name sits in engine code. Its secrets are `SISTER_API_KEY` and
  * `SISTER_WEBHOOK_SECRET` (DEPLOYMENT.md §8), which `bootCheck()` requires whenever a sister
  * is configured; one sister per brand, so a second is a contract change that keys them by slug.
+ * A sister is another brand: its `slug` is never the brand's own (3.4 senior-be #12).
  */
 export const sisterSchema = z.strictObject({
   slug: idSchema,
   name: z.string().min(1),
   /** What the sister is to this brand: the origin of works, or an outlet for prints. */
   role: z.enum(['archive-origin', 'merch-outlet']),
-  baseUrl: z.url(),
+  /**
+   * The sister's **staging** site, as an https origin (`https://shop.example.com`). One committed
+   * origin cannot serve two environments, so each host names the sister it syncs with in
+   * `SISTER_BASE_URL` — which production requires, and never this one — and `bootCheck()` checks
+   * it (`boot-check/sister.ts`, 3.4 senior-be #6); `sisterBaseUrl()` is what the sister client
+   * reads, and the CSP allows. Never plain http: C12's local sister in development is named by a
+   * workstation's `SISTER_BASE_URL` on loopback, never by a committed config.
+   */
+  baseUrl: httpsOriginSchema,
 })
 export type SisterConfig = z.infer<typeof sisterSchema>

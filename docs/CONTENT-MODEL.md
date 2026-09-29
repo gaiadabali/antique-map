@@ -20,7 +20,11 @@ the fields its view model needs (ARCHITECTURE.md §12).
 
 Collections relate to each other across tasks that run in parallel, so every
 slug exists from the Foundation stage as a **stub** in a registry the SCH lead owns (TASKS.md
-3.2.e); tasks fill in fields, never invent slugs. Slugs are kebab-case:
+3.2.e): hidden in the admin, readable by admins only, writable by nobody — a table
+with an id and timestamps in the first migration, which the owning task's wave
+widens with columns, additively. Each slug has its own folder,
+`collections/<slug>/`, that its task fills in (PARALLEL-TRACKS.md §1); tasks fill in
+fields, never invent slugs. Slugs are kebab-case:
 
 `users` · `customers` · `addresses` · `saved-items` · `want-lists` ·
 `subscribers` · `reviews` · `makers` · `places` · `terms` · `sources` ·
@@ -196,20 +200,25 @@ consignment — has a `ref` (a random UUID), a `token_version` and a
 `links_anchor_at`: the latest instant its link was issued, from which its window
 runs (C6 `LINK_WINDOW_DAYS`). No column holds a token or a hash of one.
 
-Engine tables (schema `engine`, created by the same migrations — written by the
-SCH lead only — never edited by hand): `payment_events` (unique `provider,
+Engine tables (in `public`, beside Payload's tables and under these plain names —
+never an `engine` schema — created by the same migrations, written by the SCH lead
+only, never edited by hand; none declares a composite primary key, which
+drizzle-kit cannot introspect — a key of several columns is a unique constraint over
+NOT NULL columns): `payment_events` (unique `provider,
 seller_id, provider_event_id` — secrets, and so webhook routes, are per
 seller, C13 `/api/x/webhooks/payments/[provider]/[seller]`), a matched event's
 outcome (`ApplyPaymentEventOutcome`) and a hash of its redacted payload;
 `payment_events_unmatched` (an event for no attempt this seller knows, kept
 apart so it never consumes a dedupe key: the normalised event itself, so it
 can be re-driven once its attempt turns up, first/last seen, a count);
-**`domain_events`** (the outbox, COMMERCE.md §6); `idempotency_keys` (primary key
-`operation, key` — the caller kept outside it, so another caller's reuse meets
-the row rather than starting afresh — with `caller_ref`, a sha256 of the decoded
-request, the stored response with its tokens left out (re-derived on replay) and
-`created_at`: the same key from another caller or with another request answers
-`invalid`, never the stored response; swept `IDEMPOTENCY_KEY_RETENTION`, 7 days,
+**`domain_events`** (the outbox, COMMERCE.md §6); `idempotency_keys` (unique
+`operation, key` over NOT NULL columns — the caller kept outside it, so another
+caller's reuse meets the row rather than starting afresh — with `caller_ref`, a
+sha256 of the decoded request, the response — written by the same transaction
+after the dedupe insert, so nullable until it commits — with its tokens left out
+(re-derived on replay) and `created_at`: the same key from another caller or with
+another request answers `invalid`, never the stored response; swept
+`IDEMPOTENCY_KEY_RETENTION`, 7 days,
 after `created_at`, and indexed on `created_at` and on `caller_ref` for the sweep
 and an erasure, C6 `IdempotencyKey`); `fx_rates`, `search_documents` (with per-market price columns), a
 per-seller `document_sequences`, `inventory_movements`, `analytics_events` (+

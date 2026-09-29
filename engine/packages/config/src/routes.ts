@@ -3,18 +3,23 @@
  *
  * Public URLs (ARCHITECTURE.md §11): the default locale unprefixed, others prefixed; each
  * surface at one localised first segment, CMS pages at their own slug, named browse URLs
- * from facet vocabularies (`/antique-maps/java/batavia`), legacy prefixes handed to
- * `/api/x/legacy/…`. `href()` (`./routes/href`) builds them; `parsePublicPath()`
- * (`./routes/parse`) is its inverse — what the proxy (PLT) runs to rewrite a public URL to
- * its app route, whose query carries the page's whole canonical state — and answers
- * `notFound` for an internal path asked for directly, so no page exists at two addresses.
- * The surface, form and account tables are `./routes/surfaces`; this file is the schema.
+ * from facet vocabularies (`/antique-maps/java/batavia`), an old site's URLs — legacy prefixes
+ * and exact legacy paths — handed to `/api/x/legacy/…` (`./routes/legacy`). `href()`
+ * (`./routes/href`) builds them; `parsePublicPath()` (`./routes/parse`) is its inverse — what
+ * the proxy (PLT) runs to rewrite a public URL to its app route, whose query carries the page's
+ * whole canonical state — and answers `notFound` for an internal path asked for directly, or a
+ * segment spelt otherwise than `href()` spells it (`./routes/segments`), so no page exists at two
+ * addresses. The surface, form and account tables are `./routes/surfaces`, and what the proxy
+ * answers before the route map is read — C13's root files, the claimed first segments —
+ * `./routes/root-files`; this file is the schema.
  */
 import { z } from 'zod'
 
 import { facetKeySchema, sortKeySchema } from './schema/facets'
 import { LOCALE_CODES, localeCodeSchema } from './schema/locales'
 import type { ModuleKey } from './schema/modules'
+import { LEGACY_PATH, LEGACY_PREFIX, legacyIssues } from './routes/legacy'
+import { CLAIMED_SEGMENTS } from './routes/root-files'
 import {
   FORM_KINDS,
   RESERVED_SEGMENTS,
@@ -25,7 +30,10 @@ import {
 } from './routes/surfaces'
 
 export * from './routes/href'
+export { legacyTarget, type LegacyRoutes } from './routes/legacy'
 export * from './routes/parse'
+export * from './routes/root-files'
+export { decodeSegments } from './routes/segments'
 export * from './routes/surfaces'
 
 const segmentSchema = z
@@ -71,9 +79,10 @@ export const facetRoutesSchema = z.strictObject({
   vocabularies: z.partialRecord(facetKeySchema, vocabularySchema).default({}),
 })
 
-const legacyPrefixSchema = z
+const legacyPrefixSchema = z.string().regex(LEGACY_PREFIX, 'a path prefix such as "/category/"')
+const legacyPathSchema = z
   .string()
-  .regex(/^\/[A-Za-z0-9._~-]+(?:\/[A-Za-z0-9._~-]+)*\/$/, 'a path prefix such as "/category/"')
+  .regex(LEGACY_PATH, 'an exact path such as "/about-us", with no trailing "/"')
 
 export const routeMapSchema = z
   .strictObject({
@@ -88,13 +97,19 @@ export const routeMapSchema = z
         search: sortKeySchema.default('relevance'),
       })
       .prefault({}),
-    /** Rewritten by the proxy to `/api/x/legacy/…`, which answers 301, 404 or 410. */
+    /** Every path under each: rewritten by the proxy to `/api/x/legacy/…` (301, 404 or 410). */
     legacyPrefixes: z.array(legacyPrefixSchema).default([]),
+    /**
+     * Exact old-site paths — a static page that moved (`/about-us`, `/terms-conditions`) —
+     * rewritten like a prefix. A page kept at its old address is live, never listed (MIGRATION.md §6).
+     */
+    legacyPaths: z.array(legacyPathSchema).default([]),
   })
   .superRefine((routes, ctx) => {
     // A root segment resolves to exactly one thing — a surface, a form or a named-facet
-    // value — and never a reserved path. The pages validator (SCH) checks CMS page slugs
-    // against the same set, and against the legacy prefixes' first segments.
+    // value — and never a reserved path, nor one the proxy answers first (`CLAIMED_SEGMENTS`).
+    // The pages validator (SCH) checks CMS page slugs against the same sets, and against the
+    // legacy prefixes' first segments and the one-segment legacy paths.
     const everyRoot = new Set<string>(RESERVED_SEGMENTS)
     for (const locale of LOCALE_CODES) {
       const segments = routes[locale]
@@ -102,7 +117,7 @@ export const routeMapSchema = z
       const { forms, ...surfaces } = segments
       const facet = routes.facets.path[0]
       const vocabulary = facet ? (routes.facets.vocabularies[facet]?.[locale] ?? {}) : {}
-      const seen = new Set<string>(RESERVED_SEGMENTS)
+      const seen = new Set<string>([...RESERVED_SEGMENTS, ...CLAIMED_SEGMENTS])
       const all = [surfaces, forms, vocabulary].flatMap((m) => Object.values<string | undefined>(m))
       for (const segment of all.filter((each) => each !== undefined)) {
         if (seen.has(segment)) {
@@ -113,15 +128,11 @@ export const routeMapSchema = z
         everyRoot.add(segment)
       }
     }
-    // A legacy prefix never shadows a live root segment in any locale (`/product/` is the item
+    // A legacy rule never shadows a live root segment in any locale (`/product/` is the item
     // page's own segment on the gallery, so it can never be legacy): there is no precedence.
-    routes.legacyPrefixes.forEach((prefix, i) => {
-      const first = prefix.split('/')[1] ?? ''
-      if (everyRoot.has(first.toLowerCase())) {
-        const message = `legacy prefix "${prefix}" shadows the live root segment "${first}"`
-        ctx.addIssue({ code: 'custom', path: ['legacyPrefixes', i], message })
-      }
-    })
+    for (const { path, message } of legacyIssues(routes, everyRoot)) {
+      ctx.addIssue({ code: 'custom', path, message })
+    }
   })
 export type RouteMap = z.infer<typeof routeMapSchema>
 

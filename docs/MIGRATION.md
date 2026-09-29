@@ -216,6 +216,51 @@ itself never touches the database (ARCHITECTURE.md §11). The verification scrip
 requests **every** legacy URL — from the owner's export and the URL inventory —
 **against the new site** and asserts 200 or one 301 to 200; the migration is not done until the failure count is zero.
 
+**The static pages, by decision (TASKS.md 3.4.c).** A legacy prefix ends in `/`
+(C10), so it cannot name `/about-us`, and the proxy may not ask the database
+which slugs moved. Each of the ~15 rows of the hand map therefore takes one of
+two paths:
+
+- **It keeps its URL** — the default, as for the product URLs: the new site
+  serves the same address, as a CMS page with the old slug (`/about-us`, `/faq`,
+  `/privacy-policy`) or as a surface whose segment is the same (`/newsletter`,
+  `/sell-to-us` — the consignment form — and `/account/*`). No rule, no redirect.
+- **It moves** — its old path goes into the brand's `routes.legacyPaths` (C10
+  v1.2: exact paths, no trailing `/`, such as `/catalogue` for the catalogues'
+  new `/catalogues`, `/s` for search, `/new-additions` for the browse page by
+  newest), which the proxy rewrites to `/api/x/legacy/…` exactly as it does a
+  prefix, its query kept; the `redirects` row holds the target, and the handler
+  answers 301.
+
+The two never compete: CI refuses a legacy path that shadows a live root segment
+or sits under a legacy prefix, and the pages validator (SCH, TASKS.md 9.3)
+refuses a CMS slug that is a one-segment legacy path. Rejected: letting the page
+route or the designed not-found page look up `redirects` for an unknown slug —
+it queries the database for every mistyped URL, and a redirect decided while a
+page streams cannot answer 301.
+
+**How a legacy URL is matched (C10, 3.4 reviews).** Exactly, on the path as the
+browser sent it — case and percent-encoding included — its query carried along.
+No rule names a `.` or `..` segment (the URL parser removes them before a
+request is made), a root file (C13 `ROOT_REWRITES`: robots, the sitemaps, the
+icons, the manifest) or a first segment Next or the proxy claims (`_next`,
+`not-found`, `.well-known`): each would never be reached, and CI refuses it.
+
+- **A trailing `/` or a doubled `//`** is answered by Next itself, a 308 to the
+  path without it, before the proxy runs (measured on 16.3.6; C10 refuses both
+  too): an inventory URL `/about-us/` goes 308 → `/about-us` → 301 → the new page. The URL gate (TASKS.md 37.1.b) counts
+  Next's 308 as normalisation and still requires the one 301 after it.
+- **An old item link works whatever its slug spells** — `%27`, `(…)`, a
+  lower-case escape, a `+`: its id picks the item and the route answers 301 to
+  the current URL (C10's one exception to strict segments; a `%2F` or a
+  non-canonical id is still not found). The 4.1.e spike proves
+  `permanentRedirect()` with an encoded slug: a `Location` encoded twice would
+  loop.
+- **The handler (36.4) takes a `Location` only from a root-relative `redirects`
+  row** — matching `^/(?![/\\])`, never `//host` or `/\host`, which a browser
+  reads as another site. A request such as `/category/%2F%2Fevil.com` reaches it
+  as asked for, and is a 404 unless a row names it.
+
 ## 7. Domain — do not move it in the same release
 
 `antiquemapsindonesia.com` holds the rankings. **The platform migration keeps it

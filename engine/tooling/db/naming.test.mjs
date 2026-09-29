@@ -5,6 +5,7 @@ import {
   databaseName,
   parseBrandSlug,
   parseDatabaseName,
+  parseStorefront,
   parseSuffix,
 } from './naming.mjs'
 
@@ -87,5 +88,40 @@ describe('parseDatabaseName', () => {
     expect(parseDatabaseName('postgres', brands)).toBeNull()
     expect(parseDatabaseName('unrelated_db', brands)).toBeNull()
     expect(parseDatabaseName('test', brands)).toBeNull()
+  })
+})
+
+describe('a brand with one config per storefront (3.5.c)', () => {
+  it('names one database per storefront, after the suffix', () => {
+    expect(databaseName('test', 'p3_har_g', 'gallery')).toBe('test_p3_har_g_gallery')
+    expect(databaseName('test', 'p3_har_g', 'emporium')).not.toBe(
+      databaseName('test', 'p3_har_g', 'gallery'),
+    )
+    expect(databaseName('test', 'p3_har_g', null)).toBe('test_p3_har_g')
+  })
+
+  it('validates a --storefront value’s shape', () => {
+    expect(parseStorefront('gallery')).toBe('gallery')
+    expect(() => parseStorefront('')).toThrow(ArgError)
+    expect(() => parseStorefront('Gallery')).toThrow(ArgError)
+    expect(() => parseStorefront('gal_lery')).toThrow(ArgError)
+    expect(() => parseStorefront(undefined)).toThrow(ArgError)
+  })
+
+  it('recovers the storefront from a name when told the brand’s storefronts', () => {
+    const storefrontsOf = (brand) => (brand === 'test' ? ['emporium', 'gallery'] : [])
+    expect(parseDatabaseName('test_p3_har_g_gallery', ['test'], storefrontsOf)).toEqual({
+      brand: 'test',
+      suffix: 'p3_har_g',
+      storefront: 'gallery',
+    })
+    expect(parseDatabaseName('test_p3_sch', ['test'], storefrontsOf)).toEqual({
+      brand: 'test',
+      suffix: 'p3_sch',
+    })
+    expect(parseDatabaseName('test_gallery', ['test'], storefrontsOf)).toEqual({
+      brand: 'test',
+      suffix: 'gallery',
+    })
   })
 })

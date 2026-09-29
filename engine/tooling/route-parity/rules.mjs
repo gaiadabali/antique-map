@@ -5,19 +5,26 @@
 /** Payload's own reserved namespaces — shadowed regardless of any collection (ARCHITECTURE.md §11). */
 export const RESERVED_SEGMENTS = ['payload-jobs', 'graphql']
 
-/** The first segment after `/api/x/`, `/api/` or `/` — mirrors `handlerOf()`'s own split. */
+/**
+ * The segment Payload's REST API would read as a collection: the first one after `/api/`
+ * (C13: "a first segment after `/api/` equal to a collection slug, `payload-jobs` or
+ * `graphql`"). Payload's catch-all is `/api/[...slug]`, so `/api/x/media/…` is under `x`, which
+ * no collection may be named, and never shadows `/api/media/…`; `/api/health` is under `health`.
+ * `null` for a route outside `/api/` (`/brand-assets/…`), which cannot shadow the REST API.
+ * (Not `handlerOf()`'s split, which also strips `/api/x/`: that names a handler, not a shadow.)
+ */
 export function firstSegment(path) {
-  const rest = path.replace(/^\/api\/x\/|^\/api\/|^\//, '')
-  const segment = rest.split('/').find((s) => s !== '' && !s.startsWith('['))
-  return segment ?? ''
+  if (!path.startsWith('/api/')) return null
+  const [segment = ''] = path.slice('/api/'.length).split('/')
+  return segment === '' || segment.startsWith('[') ? null : segment
 }
 
-/** An engine route whose first segment is `payload-jobs`, `graphql`, or (once discoverable) a collection slug. */
+/** An engine route whose first segment after `/api/` is `payload-jobs`, `graphql` or a collection slug. */
 export function findReservedSegmentCollisions(routes, collectionSlugs = []) {
   const reserved = new Set([...RESERVED_SEGMENTS, ...collectionSlugs])
   return routes
-    .filter((route) => reserved.has(firstSegment(route.path)))
     .map((route) => ({ path: route.path, segment: firstSegment(route.path) }))
+    .filter(({ segment }) => segment !== null && reserved.has(segment))
 }
 
 /** Two engine routes that mount the same literal path — a manifest authoring error, not a per-app one. */

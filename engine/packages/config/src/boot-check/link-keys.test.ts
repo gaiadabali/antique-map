@@ -1,11 +1,16 @@
+import { execFileSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+
 import { describe, expect, it } from 'vitest'
 
-import { parseLinkTokenKeys } from './index'
+import { LINK_KEY_COMMAND, parseLinkTokenKeys } from './index'
 
 const NOW = new Date('2026-09-29T12:00:00Z')
-/** 32 distinct bytes, base64url: a well-formed secret. */
-const key = (seed: number) =>
-  Buffer.from(Array.from({ length: 32 }, (_, i) => (i * 7 + seed) % 256)).toString('base64url')
+/** 32 bytes that look random (a hash of the seed), base64url: a well-formed secret. */
+const bytesOf = (seed: number) => createHash('sha256').update(`link-key-${seed}`).digest()
+const key = (seed: number) => bytesOf(seed).toString('base64url')
+const encode = (bytes: number[] | Buffer) => Buffer.from(bytes).toString('base64url')
 /** C6 `LINK_TOKEN_VECTORS.key.secret` — 32 × 0x0b — copied, since config imports no other package. */
 const VECTORS_TEST_KEY = 'CwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCws'
 
@@ -95,6 +100,49 @@ describe('LINK_TOKEN_KEYS — a well-formed ring (C6 links)', () => {
     expect(refused('a:' + phrase)).toMatch(/decodes to printable text/)
   })
 
+  it('refuses a counter, a stride, a padded key and a block repeated (3.1 qa)', () => {
+    const run = /bytes in a row stepping by one constant/
+    // 0x00 … 0x1f: 32 distinct bytes, none printable — what the 3.1 rule let through.
+    const counter = Array.from({ length: 32 }, (_, i) => i)
+    expect(refused('a:' + encode(counter))).toMatch(/has 32 bytes in a row stepping/)
+    expect(refused('a:' + encode([...counter].reverse()))).toMatch(run)
+    expect(refused('a:' + encode(counter.map((i) => (i * 7 + 3) % 256)))).toMatch(run)
+    // A counter running into a random tail, and a short random key padded out with zeros.
+    expect(refused('a:' + encode([...counter.slice(0, 8), ...bytesOf(1).subarray(8)]))).toMatch(
+      /has 8 bytes in a row/,
+    )
+    expect(refused('a:' + encode([...bytesOf(2).subarray(0, 20), ...Array(12).fill(0)]))).toMatch(
+      /has 12 bytes in a row/,
+    )
+    // A 20-byte key written twice to pass the 32-byte floor.
+    const half = bytesOf(3).subarray(0, 20)
+    expect(refused('a:' + encode([...half, ...half]))).toMatch(/is a 20-byte block repeated/)
+  })
+
+  it('refuses standard base64 with the command that makes base64url, and accepts what it makes', () => {
+    // A key with "+" or "/" is standard base64 (openssl rand -base64 32): one secret, two spellings.
+    const standard = Buffer.from(bytesOf(7))
+      .toString('base64')
+      .replace(/[A-Za-z]/, '+')
+    expect(refused('a:' + standard)).toMatch(
+      /the secret is not base64url but standard base64 \("\+" or "\/"\): .*node -e "console\.log\(require\('node:crypto'\)\.randomBytes\(32\)\.toString\('base64url'\)\)"/,
+    )
+    const made = execFileSync(process.execPath, ['-e', LINK_KEY_COMMAND.slice(9, -1)], {
+      encoding: 'utf8',
+    }).trim()
+    expect(made).toMatch(/^[A-Za-z0-9_-]{43}$/)
+    expect(parseLinkTokenKeys(`a:${made}`, NOW).problems).toEqual([])
+  })
+
+  it('accepts random bytes, whose runs are short', () => {
+    for (let seed = 0; seed < 200; seed++) {
+      expect(parseLinkTokenKeys(`a:${key(seed)}`, NOW).problems, `seed ${seed}`).toEqual([])
+    }
+    // Seven bytes stepping by one constant is below the line.
+    const seven = [...Array.from({ length: 7 }, (_, i) => i * 3), ...bytesOf(4).subarray(7)]
+    expect(parseLinkTokenKeys('a:' + encode(seven), NOW).ok).toBe(true)
+  })
+
   it('warns, and only warns, of a retired key past the overlap', () => {
     const result = parseLinkTokenKeys('b:' + key(2) + ',a:' + key(1) + ':2025-08-01', NOW)
     expect(result.ok).toBe(true)
@@ -104,5 +152,14 @@ describe('LINK_TOKEN_KEYS — a well-formed ring (C6 links)', () => {
     expect(
       parseLinkTokenKeys('b:' + key(2) + ',a:' + key(1) + ':2026-01-01', NOW).warnings,
     ).toEqual([])
+  })
+})
+
+describe('@engine/config/link-keys', () => {
+  it('imports nothing, so plain node loads it for worktree:env (3.5 F4)', () => {
+    const source = readFileSync(new URL('./link-keys.ts', import.meta.url), 'utf8')
+    expect(source).not.toMatch(/^\s*(?:import|export)\b[^\n]*\bfrom\s*['"]/m)
+    // (`LINK_KEY_COMMAND`'s `require()` is text for a shell, never run here.)
+    expect(source).not.toMatch(/\bimport\s*[('"]/)
   })
 })

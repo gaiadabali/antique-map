@@ -22,7 +22,7 @@ paths.
 | **ARC** architecture | `docs/**` planning docs, `.claude/specs/**` (orchestrator), contract files marked `@contract` | architect (never implements) |
 | **HAR** harness | `package.json` · `pnpm-workspace.yaml` · `tsconfig.base.json` · `eslint.config.mjs` · `.prettierrc.json` · `vitest.workspace.ts` · `playwright.config.ts` · `lighthouserc*.json` · `docker-compose.dev.yml` · `.env.example` · `.gaiadeploy.yml` · `.github/**` · `engine/tooling/**` · `scripts/**` · each app's `next.config.ts`, `tsconfig.json`, `package.json` | devops |
 | **PLT** platform spine | `engine/packages/config/**` · `engine/packages/i18n/**` · `engine/packages/http/src/proxy/**` (locale, route-map and redirect resolution each app's `src/proxy.ts` re-exports) | senior-be |
-| **SCH** schema & CMS | `engine/packages/cms/src/{payload.config.ts,collections,globals,fields,blocks,hooks,access,validators,migrations,seed,registries,db}/**` — the registries (jobs, admin views, plugins) and **all engine-table DDL** (`engine.*` tables, partial indexes, FTS config, declared through the Postgres adapter's `afterSchemaInit` so migrations carry them) | senior-db + senior-be |
+| **SCH** schema & CMS | `engine/packages/cms/src/{payload.config.ts,collections,globals,fields,blocks,hooks,access,validators,migrations,seed,registries,db}/**` — the registries (collections, jobs, admin views, plugins) and **all engine-table DDL** (engine tables — in `public`, beside Payload's, under plain names — partial indexes, FTS config, declared through the Postgres adapter's `afterSchemaInit` so migrations carry them) | senior-db + senior-be |
 | **ADM** admin tooling | `engine/packages/cms/src/admin/**` (custom views, admin components, admin CSS) | senior-fe / senior-uiux |
 | **DOM** commerce domain | `engine/packages/domain/**` — pricing, `reserve()`, **`applyPaymentEvent()`**, every state machine (order, payment, reservation, availability, offer), the outbox writer · `engine/packages/http/src/commerce/**` | senior-be |
 | **PAY** payments | `engine/packages/payments/**` (stateless adapters: sessions, signature checks, `retrieve()`, event-id derivation) · `engine/packages/http/src/webhooks/payments/**` (the thin handler: parse → retrieve → `domain.applyPaymentEvent()`) | senior-integrator |
@@ -70,7 +70,7 @@ ADM's. Tests follow their code: unit tests live in each package's `test/` and
 belong to that package's lane; a lane may add e2e specs under
 `tests/e2e/<lane>/**`, which it owns. The rest of `tests/**` is QA's.
 
-### Registries — how a lane adds a job, an admin view or a plugin without editing SCH's files
+### Registries — how a lane adds a collection, a job, an admin view or a plugin without editing SCH's files
 
 Payload wants one config with every job, admin view and plugin in it. Each
 package exports its own list from a barrel it owns — `@engine/media/jobs`,
@@ -80,13 +80,31 @@ entry to **its own barrel**; only a package's *first* job or view needs a line i
 the registry, which SCH adds on request. A registry entry names its owner lane in
 a comment, and a duplicate slug fails the config-validation test.
 
+**Collections are in the config before anyone builds them.** Every slug
+CONTENT-MODEL.md freezes is registered from the Foundation stage as a **stub** —
+hidden in the admin, readable by admins only, writable by nobody: a table with an
+id and timestamps — because collections point at each other across tasks that run
+in parallel, and a `relationTo` naming a collection the config lacks fails at boot.
+Each frozen slug has its own folder, `collections/<slug>/`, whose `index.ts`
+exports its config — the stub until the task that owns the slug fills it in — and
+`registries/collections.ts` imports every one of them, so it never changes when a
+collection is built: a task edits its own folder, which is what its **Owns**
+name, and never the registry. A new slug is a CONTENT-MODEL.md change first.
+
 Engine tables that are not Payload collections (`payment_events`,
-`domain_events`, `fx_rates`, `search_documents`, `document_sequences`,
-`inventory_movements`, `analytics_events`, `sister_sync_log`) and indexes Payload
-cannot express (the reservation partial unique index, FTS and trigram indexes)
-are **SCH's DDL**, declared in `db/` through the adapter's `afterSchemaInit` so
-they land in the wave's one migration. The lane that uses a table specifies it
-in its task; SCH writes it.
+`domain_events`, `idempotency_keys`, `fx_rates`, `search_documents`,
+`document_sequences`, `inventory_movements`, `analytics_events`,
+`sister_sync_log`) and indexes Payload cannot express (the reservation partial
+unique index, FTS and trigram indexes) are **SCH's DDL**, declared in `db/`
+through the adapter's `afterSchemaInit` so they land in the wave's one migration.
+They live in `public`, the adapter's schema, beside Payload's tables and under
+exactly those plain names — never an `engine` schema, which Payload's
+`migrate:fresh` would leave standing and a push would not see — and the seam
+refuses an engine table whose name a Payload table already has
+(`db/engine-tables.ts`). Each area's tables are one `db/` file its task owns
+(`db/inventory.ts`, `db/payments.ts` …); the seam imports each, and, as for a
+registry, only an area's first file needs a line there, which SCH adds on request.
+The lane that uses a table specifies it in its task; SCH writes it.
 
 ## 2. Files nobody owns, and how they change
 
@@ -114,15 +132,28 @@ in its task; SCH writes it.
    (`pnpm db:fresh --brand <slug> --suffix <lane>`) and its own `PORT`.
 2. **Schema is authored in parallel; migrations are generated single-threaded.**
    Several SCH agents may write collection files at once when their files are
-   disjoint. Inside its own worktree an agent may use Payload's dev push
-   (`PAYLOAD_DEV_PUSH=1`) against **its own suffixed database only**, and it
-   **never commits a generated migration**. After the wave merges, the **SCH
+   disjoint. An agent that changes no schema never pushes: `pnpm db:fresh`
+   migrates its database with the committed set, and its dev server boots on
+   that. A **schema author** sees its work on **its own suffixed database only**,
+   through Payload's dev push (`PAYLOAD_DEV_PUSH=1`, never in a production build),
+   which pushes the whole schema, engine tables and their indexes included.
+   drizzle-kit 0.31.7 cannot introspect a composite primary key — `42P02`, and
+   Payload does not start on a database that holds one (senior-db, 3.2 S1) — so no
+   table declares one: a key of several columns is a unique constraint over NOT NULL
+   columns, and the engine-table seam refuses anything else. Should a push still
+   fail on a database that has tables, push onto an empty one — `pnpm db:fresh
+   --brand <slug> --suffix <lane> --no-migrate` — and seed afresh. What only a
+   migration carries — a trigger, raw SQL — is missing from a pushed database, so
+   its test runs on a migrated one. The agent **never commits a generated
+   migration**. After the wave merges, the **SCH
    lead** runs `migrate:create` once, in a clean worktree, producing the wave's
-   single migration — then `generate:types`, then the schema-hash check across
-   all three brand databases. KOI lost time to a dev server generating a
-   migration that carried another session's schema; this is the fix. A non-SCH
-   lane needing a field asks SCH through the orchestrator; it never adds one
-   itself. Migrations are additive first (DEPLOYMENT.md §4).
+   single migration — then `generate:types` (the one
+   `engine/packages/cms/payload-types.ts`, which both apps and every package read),
+   then the schema-hash check across every brand database, the synthetic brand's
+   two included. KOI lost time to a dev server generating a migration that carried
+   another session's schema; this is the fix. A non-SCH lane needing a field asks
+   SCH through the orchestrator; it never adds one itself. Migrations are additive
+   first (DEPLOYMENT.md §4).
 3. **Claim exactly one task.** Never start a task whose dependencies are not
    done. If a task needs a file another in-flight task owns, stop, mark it
    `blocked` in the report, and say why — do not edit it.

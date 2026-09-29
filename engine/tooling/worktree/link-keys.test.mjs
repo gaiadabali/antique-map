@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { randomBytes } from 'node:crypto'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -12,6 +13,31 @@ import { ensureLinkTokenKeys, generateDevRing, LINK_KEY_VARIABLE } from './link-
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url))
 const CLI = fileURLToPath(new URL('./cli.mjs', import.meta.url))
+
+const ringOf = (bytes) => `dev:${Buffer.from(bytes).toString('base64url')}`
+
+/** 32 random bytes that C1's parser accepts (a refusal is ~10^-12 a draw). */
+function randomAccepted() {
+  for (;;) {
+    const bytes = randomBytes(32)
+    if (parseLinkTokenKeys(ringOf(bytes)).ok) return bytes
+  }
+}
+
+/** `bytes` with a run of `length` bytes stepping by a random constant written at a random place. */
+function steppedRunIn(bytes, length = 8) {
+  const copy = Buffer.from(bytes)
+  const [start, first, step] = randomBytes(3)
+  const at = start % (copy.length - length + 1)
+  for (let i = 0; i < length; i += 1) copy[at + i] = (first + i * (step || 1)) % 256
+  return copy
+}
+
+/** A random 16-byte block, written twice. */
+function repeatedBlock() {
+  const block = randomBytes(16)
+  return Buffer.concat([block, block])
+}
 
 let sandbox
 afterEach(() => {
@@ -34,7 +60,7 @@ function worktreeEnv(cwd, ...args) {
 describe('generateDevRing()', () => {
   it('is one current "dev" key of 32 bytes, base64url, which parseLinkTokenKeys() accepts', () => {
     const ring = generateDevRing()
-    expect(ring).toMatch(/^dev:[A-Za-z0-9_-]{43}$/)
+    expect(ring).toMatch(/^dev:[A-Za-z0-9_-]{43}$/) // base64url only: no +, / or = padding (C1 v1.2)
     const parsed = parseLinkTokenKeys(ring)
     expect(parsed.problems).toEqual([])
     expect(parsed.ok).toBe(true)
@@ -44,20 +70,54 @@ describe('generateDevRing()', () => {
   })
 
   it('is fresh each time', () => {
-    const rings = new Set(Array.from({ length: 20 }, () => generateDevRing()))
-    expect(rings.size).toBe(20)
+    const rings = new Set(Array.from({ length: 500 }, () => generateDevRing()))
+    expect(rings.size).toBe(500)
+    // Every one base64url only, and accepted by C1 v1.2 (which refuses standard base64).
+    for (const ring of rings) {
+      expect(ring).not.toMatch(/[+/=]/)
+      expect(parseLinkTokenKeys(ring).ok).toBe(true)
+    }
   })
 
   it('never emits bytes parseLinkTokenKeys() refuses as not random — it draws again', () => {
+    // One draw of each kind C1 v1.2 refuses, then a random one it accepts (3.4.f, 3.5.e).
+    const accepted = randomAccepted()
     const draws = [
       Buffer.alloc(32, 0x0b), // one byte repeated: C6's test-vector key
-      Buffer.from(Array.from({ length: 32 }, (_, i) => i % 8)), // a pattern
+      Buffer.from(Array.from({ length: 32 }, (_, i) => i % 8)), // few distinct bytes
       Buffer.from('a'.repeat(16) + 'bcdefghijklmnopq'), // printable text
-      Buffer.from(Array.from({ length: 32 }, (_, i) => (i * 37 + 200) % 256)),
+      Buffer.from(Array.from({ length: 32 }, (_, i) => i)), // a counter, 0x00…0x1f
+      Buffer.from(Array.from({ length: 32 }, (_, i) => (i * 37 + 200) % 256)), // a stride
+      steppedRunIn(randomAccepted()), // random bytes with one stepped run spliced in
+      Buffer.concat([randomBytes(16), Buffer.alloc(16)]), // zeros padding a short key
+      repeatedBlock(), // a 16-byte random block written twice
+      accepted,
     ]
+    const refused = draws.slice(0, -1)
+    for (const bytes of refused) expect(parseLinkTokenKeys(ringOf(bytes)).ok).toBe(false)
+
     const ring = generateDevRing(() => draws.shift())
     expect(draws).toHaveLength(0)
+    expect(ring).toBe(ringOf(accepted))
     expect(parseLinkTokenKeys(ring).ok).toBe(true)
+  })
+
+  it('gives up, naming no secret, when every draw is refused', () => {
+    expect(() => generateDevRing(() => Buffer.alloc(32, 0x0b))).toThrow(
+      /all refused by parseLinkTokenKeys\(\): the random source is broken/,
+    )
+  })
+
+  it('refuses whatever parseLinkTokenKeys() refuses — it applies C1, not a copy', () => {
+    // Every refused 32-byte draw is drawn again; every accepted one is kept as is.
+    for (let i = 0; i < 200; i += 1) {
+      const bytes = i % 2 === 0 ? randomBytes(32) : steppedRunIn(randomBytes(32), 4 + (i % 6))
+      const verdict = parseLinkTokenKeys(ringOf(bytes)).ok
+      const next = randomAccepted()
+      const queue = [bytes, next]
+      const ring = generateDevRing(() => queue.shift())
+      expect(ring).toBe(ringOf(verdict ? bytes : next))
+    }
   })
 })
 

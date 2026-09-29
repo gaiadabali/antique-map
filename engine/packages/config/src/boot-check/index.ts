@@ -14,12 +14,14 @@ export {
   type BootReport,
   type DatabaseProbe,
 } from './boot-check'
-export { deploymentEnvironment } from './environment'
+export { deploymentEnvironment, LOCAL_PRODUCTION_BUILD } from './environment'
 export { DEPLOYMENT_ENVIRONMENTS, type BootFinding, type DeploymentEnvironment } from './findings'
 export {
+  LINK_KEY_COMMAND,
   LINK_KEY_MIN_BYTES,
   LINK_KEY_MIN_DISTINCT_BYTES,
   LINK_KEY_OVERLAP_DAYS,
+  LINK_KEY_STEPPED_RUN,
   parseLinkTokenKeys,
   type LinkKeyRing,
   type LinkKeyRingResult,
@@ -32,3 +34,4 @@ export {
   secretPrefix,
   SHIPPING_SECRETS,
 } from './provider-secrets'
+export { checkSister, SISTER_BASE_URL, sisterBaseUrl } from './sister'

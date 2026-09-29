@@ -7,7 +7,13 @@
  */
 import { z } from 'zod'
 
-import { SOCIAL_NETWORKS, localisedTextSchema, navItemSchema, type NavItem } from '../schema'
+import {
+  httpsUrlSchema,
+  SOCIAL_NETWORKS,
+  localisedTextSchema,
+  navItemSchema,
+  type NavItem,
+} from '../schema'
 
 export const EDITORIAL_PARTS = [
   'contact',
@@ -18,8 +24,11 @@ export const EDITORIAL_PARTS = [
 ] as const
 export type EditorialPart = (typeof EDITORIAL_PARTS)[number]
 
-/** A link an editor types opens only over https: never `javascript:`, never plain http. */
-const httpsUrl = z.url({ protocol: /^https$/ })
+/**
+ * A link an editor types takes C1's rule for the file's own (`httpsUrlSchema`): `https://` on a
+ * public domain, no credentials — never `javascript:`, plain http, an IP address or `localhost`.
+ */
+const httpsUrl = httpsUrlSchema
 
 const navRows = z.array(z.object(navItemSchema.shape))
 
