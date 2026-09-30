@@ -1,0 +1,4 @@
+{
+  "extends": "../../tooling/tsconfig/package.tsconfig.json",
+  "compilerOptions": { "types": ["node"] }
+}
