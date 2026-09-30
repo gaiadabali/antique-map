@@ -25,46 +25,52 @@ jobs:
   artifact:
     name: Build the deploy artifact
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     outputs:
       name: ${{ steps.pack.outputs.name }}
-      built: ${{ steps.apps.outputs.exists }}
+    # The release smoke boots each brand's subdir from the packed tarball, which needs a migrated
+    # database per brand (the admin initialises Payload). The builds themselves never see it: they
+    # run with DATABASE_URL and PAYLOAD_SECRET unset (CONVENTIONS.md §12).
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      POSTGRES_USER: postgres
+      PGPASSWORD: postgres
+      DB_SUFFIX: release
+      NEXT_TELEMETRY_DISABLED: '1'
+    services:
+      postgres:
+        image: postgres:18.0
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # pnpm from packageManager through pnpm/action-setup, never Node's bundled corepack (whose
+      # signature keys node 22.13.0 no longer trusts), then a frozen install.
       - uses: ./.github/actions/setup-pnpm-node
-      - uses: ./.github/actions/apps-exist
-        id: apps
-
-      # Phase 4 (App shells) has not landed — `engine/apps/*` are empty
-      # directories, so there is nothing to build yet. A push to `production`
-      # is not expected before then; this keeps an early or accidental push
-      # from failing red with no actionable cause.
-      - name: Skip notice
-        if: steps.apps.outputs.exists != 'true'
-        run: |
-          echo "::notice::No deploy artifact built — engine/apps/{gallery,emporium} not scaffolded yet (phase 4). This job will build for real once both exist; nothing is published this run."
 
       - name: Build gallery (no database env — the artifact never touches a database)
-        if: steps.apps.outputs.exists == 'true'
         run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm --filter ./engine/apps/gallery run build
 
       - name: Build emporium (no database env)
-        if: steps.apps.outputs.exists == 'true'
         run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm --filter ./engine/apps/emporium run build
 
-      # One tarball, two brand subdirs (DEPLOYMENT.md §3) — the standalone
-      # server plus its `.next/static`/`public` (Next's tracing does not
-      # follow files that are only ever served, KOI's finding), `sharp`/`@img`
-      # copied in beside the server (native addon, not traced by `output:
-      # standalone` either), and the brand's own `site/` folder (config,
-      # copy, assets — BRAND_ROOT at runtime).
+      # One tarball, two brand subdirs (DEPLOYMENT.md §3): each standalone server with its
+      # `.next/static`/`public` (Next's tracing does not follow files that are only served),
+      # sharp and its @img/* binaries beside the server (a native addon no traced module names),
+      # and the brand's own folder at brand/site/ — BRAND_ROOT=<current>/brand on the host.
       - name: Assemble indies-gallery/ and old-east-indies/
-        if: steps.apps.outputs.exists == 'true'
-        run: bash .github/scripts/assemble-artifact.sh
+        run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
 
       - name: Package
         id: pack
-        if: steps.apps.outputs.exists == 'true'
         run: |
           set -euo pipefail
           sha="${GITHUB_SHA::7}"
@@ -73,10 +79,24 @@ jobs:
           echo "name=$name" >> "$GITHUB_OUTPUT"
           tar -czf "${name}.tar.gz" -C "$RUNNER_TEMP/artifact" indies-gallery old-east-indies
           sha256sum "${name}.tar.gz" > "${name}.sha256"
+          sha256sum -c "${name}.sha256"
           ls -lh "${name}.tar.gz"
+          cat "${name}.sha256"
+
+      - name: Postgres client
+        run: sudo apt-get install -y postgresql-client
+
+      - name: db:fresh — the smoke's ig and oei databases (created and migrated)
+        run: |
+          pnpm db:fresh --brand indies-gallery --suffix "$DB_SUFFIX"
+          pnpm db:fresh --brand old-east-indies --suffix "$DB_SUFFIX"
+
+      # The tarball, extracted as a host extracts it, boots each brand: home 200 with its name,
+      # /admin/login 200, sharp loading — before anything is published (TASKS.md 4.4.f).
+      - name: Release smoke — each subdir boots from the tarball
+        run: bash .github/scripts/smoke-artifact.sh "${{ steps.pack.outputs.name }}.tar.gz"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: steps.apps.outputs.exists == 'true'
         with:
           name: deploy
           path: |
@@ -88,7 +108,6 @@ jobs:
   publish:
     name: Publish deploy/production release
     needs: artifact
-    if: needs.artifact.outputs.built == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

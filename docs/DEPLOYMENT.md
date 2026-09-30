@@ -189,7 +189,12 @@ runbook records how long it actually took.
 
 ```
 BRAND                       indies-gallery | old-east-indies | test
-BRAND_ROOT                  path to the brand folder shipped in the artifact (config, copy, assets)
+BRAND_ROOT                  the brand folder, the one holding site/: <current>/brand on a host — the release
+                            ships brand/site/ beside engine/apps/<app>/server.js (assemble-artifact.sh)
+HOSTNAME                    0.0.0.0 on a host and in CI: the address `node server.js` binds, never an origin.
+                            Never a loopback IP — at 127.0.0.1 every proxy rewrite looks external to Next and
+                            the page hangs (TASKS.md 4.4.g) — and never left to the shell, which exports the
+                            machine's name as HOSTNAME
 TEST_STOREFRONT             CI only: gallery | emporium — which test config to load
 DATABASE_URL                PAYLOAD_SECRET
 SITE_URL                    the origin this process serves: https://<its domain> on a host; the boot
