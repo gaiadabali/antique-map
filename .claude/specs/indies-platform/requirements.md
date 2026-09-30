@@ -31,7 +31,7 @@ while their data and identities stay apart.
 
 1. WHEN a brand process starts THEN the system SHALL load the brand named by `BRAND` and connect only to that brand's database.
 2. The system SHALL provide two storefront apps, `gallery` and `emporium`, that share every engine package and differ only in UI and route tree.
-3. IF any source file under `engine/` — code, styles or JSON that a build compiles, bundles or serves; Markdown documentation such as an app's `PRODUCT.md` may name the brand it serves (D41) — contains a brand slug, brand name or brand domain as a literal THEN CI SHALL fail.
+3. IF any source file under `engine/` — code, styles or JSON that a build compiles, bundles or serves; Markdown documentation such as an app's `PRODUCT.md` may name the brand it serves (D44) — contains a brand slug, brand name or brand domain as a literal THEN CI SHALL fail.
 4. WHEN CI runs THEN the system SHALL build the synthetic `test` brand on both storefront apps and run the full e2e suite against it.
 5. WHEN migrations run THEN the system SHALL apply one migration set to every brand database AND CI SHALL fail if the schema hashes differ.
 6. IF a storefront app does not mount every handler listed in the HTTP manifest THEN CI SHALL fail.
