@@ -1,0 +1,68 @@
+/* The spike page's layout: roles only, C3 tokens (../styles/tokens.css). */
+.spike-meta {
+  color: var(--c-ink-soft);
+  font-family: var(--font-numeric);
+  font-size: var(--t-small);
+  overflow-wrap: anywhere;
+}
+
+.spike-result {
+  padding: var(--space-3) var(--space-4);
+  background: var(--c-surface);
+  border-left: var(--rule-strong) solid var(--c-positive);
+}
+
+.spike-form,
+.purchase-panel,
+.spike-bag,
+.spike-controls {
+  margin: var(--space-5) 0;
+  font-family: var(--font-ui);
+}
+
+.spike-form select,
+.spike-form button,
+.spike-bag button,
+.spike-controls button {
+  min-height: 44px;
+  font: inherit;
+}
+
+/* Reserved height: the streamed part replaces the placeholder without moving the page. */
+.purchase-panel {
+  min-height: 7.5rem;
+  padding: var(--space-4);
+  background: var(--c-surface);
+  border: var(--rule-hair) solid var(--c-rule);
+}
+
+.purchase-panel h2,
+.spike-bag h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--t-title);
+}
+
+.spike-bag ul {
+  padding: 0;
+  list-style: none;
+}
+
+.spike-bag li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: var(--rule-hair) solid var(--c-rule);
+}
+
+.spike-inline-form {
+  display: inline;
+}
+
+.spike-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
