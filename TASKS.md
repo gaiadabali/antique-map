@@ -22,7 +22,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 0/4 | 6/23 | 1 | `███░░░░░░░`  26% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 2/15 | 3 | `█░░░░░░░░░`  13% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 4/17 | 3 | `██░░░░░░░░`  24% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **20/173** | **129/799** | **47** | `██░░░░░░░░`  16% |
+| **All** | 44 phases | | | **20/173** | **131/801** | **47** | `██░░░░░░░░`  16% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -202,6 +202,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D32** | What a retail partner gets at launch | an application approved by staff; a trade price tier and a minimum order as data; orders placed as quotes through the order builder (24.5) and paid by bank transfer or pay link; no self-serve wholesale cart until the trade portal (v2.7) | owner | 28.5 |
 | **D29** | The Singapore seller selling Singapore-held stock to an Indonesian address | priced and charged in **IDR** (the rupiah rule governs what the buyer sees), card or bank transfer, import duties the buyer's (DAP) | tax adviser | 17.3, 25.1 |
 | **D45** | Proforma (`invoice`) holds for institutions: capped, or staff approve before the hold starts (COMMERCE.md §7, F13) | **staff approve first** — the hold starts on approval | owner (interview G5) | 18.1, 19.1 |
+| **D46** | Who produces the configurator's room plates (6.2.c: six master plates) | a freelance 3D artist renders them to `docs/design/imagery/room-scenes.md`; no AI-generated or stock interiors | owner (budget) | 22.7 |
 
 ### Owner actions (not questions)
 
@@ -621,7 +622,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 ## Phase 6 — Briefs, image direction and voice · Design · needs 4 · ~3d
 
 **Goal:** what each brand is for and who it serves, the photography it will stand on, and how it speaks in both languages.
-**Done when:** the product briefs and the 6.1.c journeys are written and approved; the capture standards exist and the pilot shoot is delivered; each brand has a native-reviewed EN/ID voice and lexicon.
+**Done when:** the product briefs and the 6.1.c journeys are written and approved; the capture standards exist and the owner's pilot set is delivered (D19); each brand has a native-reviewed EN/ID voice and lexicon.
 **Waves:** W1 — 6.1, 6.2, 6.3
 
 **Why the Design stage is long.** A research recommendation is the category default —
@@ -650,9 +651,11 @@ run beside the build line rather than in it.
   - **Owns** `docs/design/imagery/**`
   - **Read** DESIGN-SYSTEM.md §11, CONTENT-MODEL.md (image roles), MIGRATION.md §9, the drafted PRODUCT.md files
   - _Requirements: 4.5, 6.12, 7.12_
-  - [ ] 6.2.a capture standards per brand: lighting and colour temperature, a colour target in every frame, the raking-light angle, minimum ppi, backgrounds, mat and shadow, **retouching limits (never restore a defect on an original)**, the studio/lifestyle split (gallery: studio, object, raking light, no people; shop: sun, hands, rooms, packaging, the showroom), and how synthetic mockups are labelled
+  - [x] 6.2.a capture standards per brand: lighting and colour temperature, a colour target in every frame, the raking-light angle, minimum ppi, backgrounds, mat and shadow, **retouching limits (never restore a defect on an original)**, the studio/lifestyle split (gallery: studio, object, raking light, no people; shop: sun, hands, rooms, packaging, the showroom), and how synthetic mockups are labelled
   - [ ] 6.2.b 👤 the owner supplies the pilot set (D19 — no photographer): six gallery items — including one **typical migrated item** at real data quality — and the Denpasar showroom, shot to 6.2.a's guide where the owner can; each image checked against the intake spec, and any gap named per image
-  - [ ] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
+  - [x] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
+  - [ ] 6.2.e ARC → SCH, before 8.3 and 9.1 (6.2's Found 1–6): CONTENT-MODEL.md and C9 give `products` image roles (flat · detail · in-room · lifestyle · scale · packaging · showroom) and `locations` images; a `media.role` value list and `media.provenance` (photograph · composite · rendered · ai-generated); on `masters`, object ppi, the object's box, role and capture tier; a restoration note on `designs`; a publish guard refusing a synthetic image as an original's primary; `primary` a crop of `recto`, never its own photograph; the print ceiling computed from the object's pixels or the design crop, not the master's long edge (ARCHITECTURE.md §7, MIGRATION.md §9, 15.4.c); one shared room-plate set with its geometry (22.7); and a key for pilot masters before OA3 arrives
+  - [ ] 6.2.f fill the pilot request's four placeholders and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it
   - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the owner's pilot set is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
 
 - [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1

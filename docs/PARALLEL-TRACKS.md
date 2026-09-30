@@ -302,7 +302,7 @@ floor and the money rules quietly stop being observed (KOI). So:
 Some tasks cannot be finished by an agent, and the plan says so rather than
 letting them block silently. They are marked **👤 owner** in `TASKS.md`:
 
-- booking the photographer and the pilot shoot, the native Indonesian copywriter,
+- the owner's pilot photographs (D19 — no photographer), the native Indonesian copywriter,
   the Indonesian designers for the cultural review, and the buyers for the
   prototype test and usability runs (the Design, Gallery and Shop stages),
 - picking the shared base and each brand's accents (phase 13), and signing off the
