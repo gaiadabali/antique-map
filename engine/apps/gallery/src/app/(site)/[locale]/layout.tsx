@@ -3,7 +3,8 @@
  * before anything else, so nothing under it prerenders at `next build`: a prerendered shell would need the
  * database at build or bake a brand-less masthead into every brand's HTML. The brand is read here,
  * per request, from `BRAND` — one build serves each brand its own masthead. Icons and the web
- * manifest are linked through `generateMetadata()` from the brand's assets, never Next's file
+ * manifest are linked through `generateMetadata()` from `ShellVM.assets` (C2 v1.3: `favicon`,
+ * `touchIcon`, `manifest`, none linked for a file the brand does not ship), never Next's file
  * conventions (`app/icon.*`, `app/manifest.ts`), which one build would bake in for every brand
  * (C13 `ROOT_REWRITES`).
  *
@@ -23,7 +24,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { currentBrand } from '../../../shell/brand'
-import { brandIcons, loadShell } from '../../../shell/load-shell'
+import { loadShell } from '../../../shell/load-shell'
 import { shellMessages } from '../../../shell/messages'
 import { SiteShell } from '../../../shell/site-shell'
 
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
   const { locale } = await params
   if (!isSupportedLocale((await currentBrand()).config, locale)) return {}
   const shell = await loadShell(locale)
-  const { touchIcon, manifest } = await brandIcons()
+  const { touchIcon = null, manifest = null } = shell.assets
   return {
     title: { default: shell.brand.name, template: `%s · ${shell.brand.name}` },
     metadataBase: new URL(shell.brand.origin),
