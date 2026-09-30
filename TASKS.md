@@ -20,7 +20,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
-| **4** App shells and the Cache Components spike | Foundation | 3 | · not started | 0/2 | 0/12 | 0 | `░░░░░░░░░░`   0% |
+| **4** App shells and the Cache Components spike | Foundation | 3 | 🔄 in progress | 0/2 | 0/12 | 0 | `░░░░░░░░░░`   0% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | · not started | 0/3 | 0/10 | 2 | `░░░░░░░░░░`   0% |
@@ -157,6 +157,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 4·W1 | 4.1 App shells, health route, Cache Components spike | senior-fe | `antique-map-p4-web` / `feat/p4-web` | 2026-09-30 | the `production`-push clause of 4.1.g waits for the owner's OK after merge (Helios polls that branch) |
+| 4·W1 | 4.2 The client-safe gate | medior | `antique-map-p4-har` / `feat/p4-har` | 2026-09-30 | |
 
 ## Decisions for the owner
 
@@ -456,7 +458,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 **Done when:** both apps serve their brand and `test` in EN and ID with Payload at `/admin`, `/api/health` green and route parity passing; the spike's verdict is recorded in ARCHITECTURE.md §9; the client-safe gate runs in `pnpm verify`.
 **Waves:** W1 — 4.1, 4.2
 
-- [ ] **4.1 Storefront app shells, the health route and the Cache Components spike** · needs: 1.2, phase 3
+- [ ] **4.1 Storefront app shells, the health route and the Cache Components spike** · needs: 1.2, phase 3 — 🔄 4·W1
   - **Lane** WEB (mount files, `@engine/http`) + UXG + UXE (app scaffolds) · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/gallery/**`, `engine/apps/emporium/**`, `engine/packages/http/src/{index.ts,health,brand-assets,legacy,cron}/**`, `docs/spikes/cache-components.md`
   - **Read** ARCHITECTURE.md §9–11, DESIGN-SYSTEM.md §2, BRANDS.md §2, KOI AGENTS.md (Next 16 differs from training data — read `node_modules/next/dist/docs/`)
@@ -469,7 +471,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 4.1.f `/brand-assets/[...path]` in `@engine/http`: serves the brand's assets folder under `BRAND_ROOT` — logo, favicon, OG base, fonts, the touch icon and the web manifest — only C1's `BRAND_ASSET_TYPES`, each with its type (`.webmanifest` → `application/manifest+json`, `.woff2` → `font/woff2`), `X-Content-Type-Options: nosniff`, an SVG under `Content-Security-Policy: default-src 'none'`, and a 404 for anything else or any path outside the folder (`..`, an absolute path, a link out); caching per C13 `BRAND_ASSET_URL` — `immutable` only when `?v=` is the file's current version (the first 8 hex digits of its SHA-256), else `max-age=300` with a strong `ETag` and a 304 on `If-None-Match` — and the helper that mints a versioned URL for `ShellVM`; the legacy handler stub at `/api/x/legacy/[...path]` (404 until 36.4)
   - [ ] 4.1.g **Check:** both apps run for their brand and for `test`, render the brand name and logo from config with placeholder tokens in EN and ID, mount Payload at `/admin` and sign in there against two different databases (3.2.f, moved here), serve `/api/health` (app, DB, storage — and it initialises Payload, applying migrations under the lock in a production build with `RUN_MIGRATIONS=1`), serve brand files at `/brand-assets/…`, and route parity passes; **the spike's verdict is recorded** in ARCHITECTURE.md §9 — Cache Components confirmed, or the fallback adopted whole; and a push to `production` publishes a `deploy/production-*` release whose tarball holds `indies-gallery/` and `old-east-indies/` standalone builds, each with its brand `site/` folder and `sharp`, and a `.sha256` — `.github/scripts/assemble-artifact.sh` checked against the real standalone output first (moved from 2.3.d).
 
-- [ ] **4.2 The client-safe gate** · needs: phase 3
+- [ ] **4.2 The client-safe gate** · needs: phase 3 — 🔄 4·W1
   - **Lane** HAR · **Agent** medior · **Wave** W1
   - **Owns** `engine/tooling/tsconfig/package.tsconfig.json`, the `compilerOptions.types` line of `engine/packages/{config,cms,http,i18n}/tsconfig.json`, `engine/tooling/client-safe/**`, the `check:client-safe` script and its step in `pnpm verify`, `engine/packages/i18n/test/client-safe.test.ts`, `.github/workflows/ci.yml` (the `lighthouse` job's `env` only)
   - **Read** CONVENTIONS.md §6, DESIGN-SYSTEM.md §7, CONTRACTS.md (C1 `@engine/config/constants`)
@@ -2421,6 +2423,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-30 — **phase 4 opened** — 4·W1 dispatched: 4.1 (senior-fe, lane WEB, `feat/p4-web`) and 4.2 (medior, lane HAR, `feat/p4-har`); tasks-lint green for the wave, no shared **Owns**. The release clause of 4.1.g (a push to `production`, which Helios's poller reads) is held for the owner's OK after the merge; the agent proves the artifact locally with `assemble-artifact.sh`. Reviewer: senior-fe for 4.1.
 - 2026-09-30 — ✅ **phase 3** — the config spine and the Payload boot. Each brand's config loads and a broken one is refused naming the field (3.1, qa: 16 planted breakages); `bootCheck()` refuses a missing secret, a malformed link-key ring, a sandbox key in production and a loopback production build without the opt-in (3.1, 3.4); `/admin` signed in against the ig and oei databases through a production build made with no database, and `schema-hash` is equal across all four (3.2, qa); contracts at v1.2 (3.4); the generators, migrate hook and route parity see the CMS (3.5). CI green at 58bf19f (run 36656199326), the four databases migrated on Linux and the real-database tests run there. The `/admin`-in-both-apps and `/api/health` clauses of 3.2 moved to 4.1.g. Follow-ups carried: 4.2.e (no ancestor `@types` on a workstation), 4.2.d (Lighthouse opt-in), the login rate limit (41.1, senior-db N8 and qa), a first-admin CLI or seed before a deployed database is reachable (SCH), DOM to confirm `idempotency_keys.response` nullable (17.1/18.2). The owner to check GitHub billing: run 36587076650 never started. **Phase 4 can open**; phase 6 and 7 wait on it and on OA9.
 - 2026-09-30 — ✅ 3.2, 3.4, 3.5 (58bf19f) — merged at baff54b, the `URL` type fix at 58bf19f; see the phase line above.
 - 2026-09-30 — 3·W2 merged (baff54b: 3.2 f26bb0b, 3.4 ce4370c, 3.5 c14070e) and pushed to GitHub with the owner's OK. qa drove every Check on `main`: 3.2, 3.4 and 3.5.d pass. CI run 36638663926: e2e green (four migrated databases, real-database tests), Static checks **red** on `@engine/ui` typecheck — `URL` has no type on Linux through `config/src/schema/primitives.ts` (lib ES2023, no Node types; a hoisted `@types/node` hides it on Windows) → back to ARC. The run before it (3200c7a) never started: GitHub reported the account's billing (payments failed or spending limit) — the owner to check. qa found: concurrent failed logins for one user sometimes answer 400 instead of 401 (Payload rewrites `sessions` delete-then-insert) — for 41.1's login rate limit.
