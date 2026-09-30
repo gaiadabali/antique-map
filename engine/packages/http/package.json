@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@engine/cache": "workspace:*",
+    "@engine/cms": "workspace:*",
     "@engine/config": "workspace:*",
     "@engine/domain": "workspace:*"
   },
