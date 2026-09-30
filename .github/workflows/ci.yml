@@ -112,6 +112,10 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # It serves a production build at localhost:4200, which C1 v1.2's bootCheck() judges
+    # production at a loopback SITE_URL unless the build opts in (TASKS.md 4.2.d, 3.5's report).
+    env:
+      LOCAL_PRODUCTION_BUILD: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node

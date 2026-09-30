@@ -1,7 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "//": "The per-package template. A package's tsconfig.json is one line: { \"extends\": \"../../tooling/tsconfig/package.tsconfig.json\" } (apps add jsx, the DOM lib and the Next plugin). ${configDir} is the directory of the tsconfig.json that extends this, so include/exclude land in the package, not here. Add \"typecheck\": \"tsc --noEmit\" to the package's scripts: the root `pnpm typecheck` runs every package's.",
+  "//types": "\"types\": [] so no ancestor folder's node_modules/@types (a stray one in the user folder, say) leaks into a workstation's type-check and hides a missing Node type that CI then finds (TASKS.md 4.2.e). A package that declares @types/node in its package.json adds \"compilerOptions\": { \"types\": [\"node\"] }; one that does not sees no Node globals, on Windows as on Linux.",
   "extends": "../../../tsconfig.base.json",
+  "compilerOptions": { "types": [] },
   "include": ["${configDir}/src", "${configDir}/test"],
   "exclude": ["${configDir}/node_modules", "${configDir}/dist"]
 }
