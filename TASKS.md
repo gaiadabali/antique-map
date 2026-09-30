@@ -160,7 +160,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 4·W1 | 4.1 App shells, health route, Cache Components spike | senior-fe | `antique-map-p4-web` / `feat/p4-web` | 2026-09-30 | the `production`-push clause of 4.1.g waits for the owner's OK after merge (Helios polls that branch) |
 | 4·W1 | 4.2 The client-safe gate | medior | `antique-map-p4-har` / `feat/p4-har` | 2026-09-30 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
-| 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d waits on the owner's OK |
+| 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d back with its agent (D43) |
 
 ## Decisions for the owner
 
@@ -229,6 +229,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D43** | **The two archived `oldeastindies.com/sitemap.xml` captures may be read** through Wayback playback on web.archive.org (two requests; nothing sent to the old site) — 7.3.d. | 2026-09-30 |
 | **D41** | **The gallery's old public pages may be read**, read-only and rate-limited (about one request every two seconds, robots.txt respected, no login, no form, no write), as MIGRATION.md §3's fallback while the export (OA9) is outstanding; raw output stays in `LEGACY_DATA_DIR`, outside git. | 2026-09-30 |
 | **D42** | **Until the export (OA9) arrives, 7.1 works on a mock dump** — a synthetic Laravel-shaped MySQL dump committed as a fixture — so the restore, the schema notes and the extraction are proven; the real restore closes 7.1.a when the dump is handed over. | 2026-09-30 |
 | **D39** | **The shop's want list is an email alert, no account:** a shopper saves a search with an email (double opt-in); alerts arrive by email with an unsubscribe link. Needs an additive contract change (C6 subscribe intent, C2 VM, C1 module variant) — a minor version per CONTRACTS.md, landed with the want-list task. | 2026-09-29 |
@@ -599,7 +600,7 @@ run beside the build line rather than in it.
   - _Requirements: 16.6_
   - [ ] 7.3.a URL discovery (CDX + Search Console export 👤)
   - [x] 7.3.c the Wayback CDX half now — every archived `oldeastindies.com` path inventoried — and an importer for the Search Console CSV (OA11), tested on a synthetic CSV, ready for the owner's export
-  - [ ] 7.3.d the two archived `/sitemap.xml` captures (2024-06-24, 2024-08-08) read through Wayback playback on web.archive.org — never the old site — as a third source, since the CDX index holds only 4 Squarespace product paths; needs the owner's OK (a playback read, not the CDX API that D41-era consent covered)
+  - [ ] 7.3.d the two archived `/sitemap.xml` captures (2024-06-24, 2024-08-08) read through Wayback playback on web.archive.org — never the old site — as a third source, since the CDX index holds only 4 Squarespace product paths; the owner's OK is D43
   - [ ] 7.3.b **Check:** every Squarespace path from the Search Console export and the Wayback CDX index is inventoried in `old-east-indies/content/legacy/`, and nothing was done to the old site.
 
 ---
