@@ -502,7 +502,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [ ] **4.4 The release script and CI against the real apps** · needs: 4.1, 4.2 — 🔄 4·W2
   - **Lane** HAR · **Agent** devops · **Wave** W2
-  - **Owns** `.github/**`, `playwright.config.ts`, `lighthouserc*.json`, root `.gitignore`, `.prettierignore`, `.env.example`, `engine/tooling/config-drift/**`, the root `package.json` scripts except `check:brands` (4.7's), the `BRAND_ROOT` and `HOSTNAME` lines of DEPLOYMENT.md §8
+  - **Owns** `.github/**`, `playwright.config.ts`, `lighthouserc*.json`, root `.gitignore`, `.prettierignore`, `.env.example`, `engine/tooling/config-drift/**`, the root `package.json` scripts, the `BRAND_ROOT` and `HOSTNAME` lines of DEPLOYMENT.md §8
   - **Read** 4.1's report (Contracts 2, Follow-ups), `.github/scripts/assemble-artifact.sh`, `release.yml`, `e2e.yml`, `ci.yml`, DEPLOYMENT.md §3, §8
   - _Requirements: 19.7, 19.9_
   - [ ] 4.4.a `assemble-artifact.sh` against the real standalone output: `sharp` copied from the pnpm store (`readlink -f` of the app's `node_modules/sharp`, with `@img/*` and `detect-libc`), the brand folder at `<release>/brand/site/`, so a host's `BRAND_ROOT` is `<current>/brand` (`.env.example`, DEPLOYMENT.md §8); the "UNVERIFIED" header goes
@@ -533,7 +533,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [ ] **4.7 Tooling hardening from phase 4: the client-safe gate and real `supports`** · needs: 4.1, 4.2 — 🔄 4·W2
   - **Lane** HAR · **Agent** medior (Hermes) · **Wave** W2
-  - **Owns** `engine/tooling/client-safe/**`, `engine/tooling/brand-create/**`, and the brand-validation tooling that `check:brands` names (a new `engine/tooling/check-brands/**` if none exists, with the `check:brands` line of the root `package.json` scripts and its step in `pnpm verify`)
+  - **Owns** `engine/tooling/client-safe/**`, `engine/tooling/brand-create/**`, and the brand-validation tooling that `check:brands` names (a new `engine/tooling/check-brands/**` if none exists) — never the root scripts file, which is 4.4's this wave: the orchestrator adds the `check:brands` script and its `verify` step when it merges 4.7 after 4.4
   - **Read** qa's 4.1/4.2 report (the Log line of 2026-09-30, F2); `engine/apps/{gallery,emporium}/src/supports.ts`; `engine/packages/config/src/validate/**`; 3.3's Log line (the `supports` follow-up)
   - _Requirements: 1.7, 19.1_
   - [ ] 4.7.a `check:client-safe` refuses bare Node built-ins as well as `node:*` (`builtinModules` — `crypto`, `path`, … — which Next polyfills into client bundles), and fails closed, naming the import, on a dynamic `import()` whose specifier it cannot resolve (a variable or a template with an expression) — each with a planted test
