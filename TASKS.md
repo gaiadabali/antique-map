@@ -162,6 +162,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W2 | 5.4 Gates for the v1.3 contracts | medior | `antique-map-p5-har-gates` / `feat/p5-har-gates` | 2026-10-01 | branched from the 5.3 merge (5a253f0) while its gate runs; rebased on `main` before merge |
 | 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
+| 6·W1 | 6.1.g + 6.2.e ARC's doc and content-model corrections | architect | `antique-map-p6-arc` / `feat/p6-arc` | 2026-10-01 | before phases 8–9 |
+| 6·W1 | 6.3 Voice and lexicon (6.3.a, 6.3.b) | senior-uiux | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | 6.3.c waits on 👤 OA4 |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -658,7 +660,7 @@ run beside the build line rather than in it.
   - [ ] 6.2.f fill the pilot request's four placeholders and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it
   - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the owner's pilot set is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
 
-- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1
+- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W1
   - **Lane** UXG + UXE + BRD · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/{gallery,emporium}/voice.md`, `engine/apps/*/src/messages/keys.ts` (the keys), `indies-gallery/site/copy/**`, `old-east-indies/site/copy/**`, `test/site/copy/**` (the values)
   - **Read** DESIGN-SYSTEM.md §10, BRANDS.md §2, NOW! docs/DESIGN-SYSTEM.md §6 (copy), the drafted PRODUCT.md files
