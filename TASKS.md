@@ -157,7 +157,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 5·W1 | 5.1 Staging on Helios (5.1.a only — the script, no Helios access) | devops | `antique-map-p5-har` / `feat/p5-har` | 2026-09-30 | ⛔ 👤 OA8 for 5.1.b–d |
+| 5·W1 | 5.1 Staging on Helios (5.1.a only — the script, no Helios access) | devops | `antique-map-p5-har` / `feat/p5-har` | 2026-09-30 | OA8 given; the orchestrator reviews the script, then runs 5.1.b–d; D12 RustFS, D13 Mailpit on staging |
 | 5·W1 | 5.3 The proxy's v1.3 answers | senior-be | `antique-map-p5-plt` / `feat/p5-plt` | 2026-09-30 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
@@ -181,8 +181,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D9** | The design: which shared base and which accents per brand (the Design stage) | **no default** — the shape is answered (one shared base, distinct accents; see Answered); the owner still picks the base candidate and the accents in 13.1, with their draft as the lead candidate | owner | 13.1 |
 | **D10** | Grading scale wording | VG+ · VG · G+ · G · Fair · As-is with A–D equivalents | curator | 8.2, 34.2 |
 | **D11** | Returns policy text per seller | none published until drafted — the engine supports returns on every line | counsel | 20.4, 42.3, 43.3 |
-| **D12** | Object storage provider | Cloudflare R2 | owner (account) | 5.1 |
-| **D13** | Transactional email for each brand's domain | the brand's Google Workspace SMTP with SPF/DKIM/DMARC; a transactional provider if it has none | owner (DNS) | 5.1, 20.3 |
+| **D13** | Transactional email for each brand's domain **in production** (staging answered: mocked — see Answered) | the brand's Google Workspace SMTP with SPF/DKIM/DMARC; a transactional provider if it has none | owner (DNS) | 20.3 |
 | **D14** | WhatsApp notifications provider — **needed before phase 27 opens**, because viewing reminders, payment instructions and order updates are promised on WhatsApp | if unanswered by then: click-to-chat only, every notification goes by email, and no copy promises a WhatsApp message | owner | 27.2 — before phase 27 opens |
 | **D15** | Legacy passwords | no import; "claim your account" email (bcrypt rehash-on-login is a one-day option) | owner | 28.1, 36.3 |
 | **D16** | AI cataloguing model provider | a production model behind the `ai.cataloguing` flag, human-verified; Ollama Cloud for development only (not a production dependency) | owner | 23.5 |
@@ -212,7 +211,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **OA5** | Two or three Indonesian designers or buyers for the shop's cultural review | 12.2.a |
 | **OA6** | Buyers for the prototype test and the usability runs — about 10 + 10 people (D21) | 13.2, 35.2, 32.2 |
 | **OA7** | A commercial font licence, if a commercial face is chosen | 14.1.f |
-| **OA8** | Go-ahead to provision staging on Helios; DNS for `ig.gaiada.com` and `oei.gaiada.com`; the object-storage account; Infisical entries | 5.1.b |
+| **OA8** | ✅ 2026-09-30 — go-ahead to provision staging on Helios (the provision script runs once the orchestrator has reviewed it and its dry-run; no second confirmation), DNS for `ig.gaiada.com` and `oei.gaiada.com`; object storage per D12; Infisical entries | 5.1.b |
 | **OA9** | **The export of the old catalogue** — a MySQL dump and the product-images folder, from whoever hosts the old site. We never log in to it. | 7.1.a |
 | **OA10** | **The item register** — stock location and export status for every original (D24) | 36.3 |
 | **OA11** | A Search Console export for `oldeastindies.com` | 7.3.a |
@@ -229,6 +228,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D12** | **Object storage is RustFS** (self-hosted, S3-compatible) — `@payloadcms/storage-s3` unchanged, an endpoint change (DEPLOYMENT.md §2). Staging runs it on Helios, bound to loopback. ⚠ Helios's disk was at 93% (DEPLOYMENT.md §2): where RustFS lives for the full archive (37.2's staging rehearsal, production) is to confirm before 37.2. | 2026-09-30 |
+| **D13 (staging)** | **Staging mail is simulated:** a Mailpit catcher on Helios, loopback-only; nothing is delivered. The production sender (D13) stays open. | 2026-09-30 |
 | **D43** | **The two archived `oldeastindies.com/sitemap.xml` captures may be read** through Wayback playback on web.archive.org (two requests; nothing sent to the old site) — 7.3.d. | 2026-09-30 |
 | **D41** | **The gallery's old public pages may be read**, read-only and rate-limited (about one request every two seconds, robots.txt respected, no login, no form, no write), as MIGRATION.md §3's fallback while the export (OA9) is outstanding; raw output stays in `LEGACY_DATA_DIR`, outside git. | 2026-09-30 |
 | **D42** | **Until the export (OA9) arrives, 7.1 works on a mock dump** — a synthetic Laravel-shaped MySQL dump committed as a fixture — so the restore, the schema notes and the extraction are proven; the real restore closes 7.1.a when the dump is handed over. | 2026-09-30 |
