@@ -49,11 +49,14 @@ export function BagSection(props: {
       <ul>
         {lines.map((line) => (
           <li key={line.id}>
-            {line.title}{' '}
+            <span id={`bag-line-${line.id}`}>{line.title}</span>{' '}
             <form action={removeBagLine} className="spike-inline-form" data-form="bag-remove">
               <input type="hidden" name="returnTo" value={returnTo} />
               <input type="hidden" name="line" value={line.id} />
-              <button type="submit">{t('spike.bag.remove')}</button>
+              {/* The visible "Remove" is the start of its name, then the line it removes. */}
+              <button type="submit" aria-label={t('spike.bag.removeLine', { title: line.title })}>
+                {t('spike.bag.remove')}
+              </button>
             </form>
           </li>
         ))}

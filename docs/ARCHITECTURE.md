@@ -343,6 +343,16 @@ spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-componen
   under which Next renders the whole page per request with blocking metadata: a
   404 is a 404 and a slug change a real permanent redirect (308, Next's status for
   `permanentRedirect()`). Caching is per read, never per page.
+  What it costs, measured by the 4.1 review (senior-fe #1): the body still streams,
+  but **no prerendered or ISR page is ever served** — free today, every shell being
+  empty, and ruled out for good; **every `generateMetadata` gates the first byte**
+  for every visitor, so it reads only cached data; **every router prefetch is a full
+  render** with the page's reads, so storefront links are plain `<a>` or
+  `<Link prefetch={false}>`, and a render never consumes a post's result on a
+  prefetch; and **the nonce CSP depends on it** (a served shell would carry no
+  nonce). The shell bypass is Next's implementation, not a documented promise, so
+  `engine/apps/gallery/e2e/status.spec.ts` asserts the 404s and permanent
+  redirects on a production build, and fails the day a Next release changes it.
 - **Content is cached; runtime data streams.** Loaders for content use
   `'use cache'` + `cacheTag` (the process serves one brand, so the brand is part
   of every key by construction); cookies, headers, search params, availability,

@@ -1,54 +1,43 @@
 /**
- * A brand file's version and its versioned URL (C13 `BRAND_ASSET_URL`): the first 8 hex digits of
- * the file's SHA-256. `brandAssetUrl()` is what builds the shell's view model (C2 `ShellVM`
- * carries every brand-asset URL a page links) — never a template — so a page cached before a file
- * changed keeps asking for the old version, which the route answers `unversioned`, and never
- * pins the new bytes under the old name for a year.
+ * A brand file's versioned URL (C13 `BRAND_ASSET_URL`): `?v=` is the first 8 hex digits of the
+ * file's SHA-256. The shell's view model is built from these (C2 `ShellVM` carries every
+ * brand-asset URL a page links) — never a template.
  *
- * A file changes only with a deploy of the brand folder, which restarts the process, but the
- * digest is keyed by the file's size and modification time too, so a file replaced in place is
- * read again rather than served under a stale version.
+ * Minted once per process and path (senior-fe #11): a brand file changes only with a deploy of the
+ * brand folder, which restarts the process, so a render does no filesystem work for its links.
+ * Should a file be replaced in place regardless, the route still serves its new bytes — only as
+ * `unversioned` (five minutes, an `ETag`) for the old `?v=`, never pinned for a year under it.
  */
-import { createHash } from 'node:crypto'
-import { readFileSync, statSync } from 'node:fs'
-
 import { BRAND_ASSET_URL } from '../manifest'
+import { readAsset } from './read'
 import { resolveBrandAsset } from './resolve'
 
-export type AssetContent = {
-  readonly bytes: Buffer
-  /** The full SHA-256, hex: the strong `ETag`. */
-  readonly sha256: string
-  /** Its first `BRAND_ASSET_URL.version.hexDigits` digits: the `?v=`. */
-  readonly version: string
-}
+const minted = new Map<string, string | null>()
 
-const contents = new Map<string, { readonly stamp: string; readonly content: AssetContent }>()
-
-/** The file's bytes and digests, read once per change of size or modification time. */
-export function readAsset(file: string): AssetContent {
-  const stat = statSync(file)
-  const stamp = `${stat.size}:${stat.mtimeMs}`
-  const known = contents.get(file)
-  if (known?.stamp === stamp) return known.content
-  const bytes = readFileSync(file)
-  const sha256 = createHash('sha256').update(bytes).digest('hex')
-  const content = { bytes, sha256, version: sha256.slice(0, BRAND_ASSET_URL.version.hexDigits) }
-  contents.set(file, { stamp, content })
-  return content
+/** `/brand-assets/<path>` in `encodeURIComponent`'s one spelling per segment, as C10 writes paths. */
+function bareUrl(path: string): string {
+  return BRAND_ASSET_URL.path + path.split('/').map(encodeURIComponent).join('/')
 }
 
 /**
- * `/brand-assets/<path>?v=<version>` for a file in `assetsDir`; the bare `/brand-assets/<path>`
- * when there is no such file to version (a brand that has not shipped it yet — the route answers
- * 404, and the page still names what it wanted). Each segment is written in `encodeURIComponent`'s
- * one spelling, as C10 writes every path.
+ * `/brand-assets/<path>?v=<version>`, or `null` when the brand has no such file to serve — the
+ * resolver's and the reader's answer, never a guess from the URL's shape.
+ */
+export function versionedBrandAssetUrl(assetsDir: string, path: string): string | null {
+  const key = `${assetsDir}\u0000${path}`
+  if (minted.has(key)) return minted.get(key) ?? null
+  const asset = resolveBrandAsset(assetsDir, path.split('/'))
+  const content = asset === null ? null : readAsset(asset.file)
+  const url =
+    content === null ? null : `${bareUrl(path)}?${BRAND_ASSET_URL.version.param}=${content.version}`
+  minted.set(key, url)
+  return url
+}
+
+/**
+ * The versioned URL, or the bare one when the brand has not shipped the file yet: the page still
+ * names what it wanted, and the route answers 404.
  */
 export function brandAssetUrl(assetsDir: string, path: string): string {
-  const segments = path.split('/')
-  const url =
-    BRAND_ASSET_URL.path + segments.map((segment) => encodeURIComponent(segment)).join('/')
-  const asset = resolveBrandAsset(assetsDir, segments)
-  if (asset === null) return url
-  return `${url}?${BRAND_ASSET_URL.version.param}=${readAsset(asset.file).version}`
+  return versionedBrandAssetUrl(assetsDir, path) ?? bareUrl(path)
 }

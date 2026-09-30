@@ -18,6 +18,7 @@ export const SPIKE_MESSAGES = defineMessages({
   'spike.bag.title': 'Your bag',
   'spike.bag.empty': 'Your bag is empty.',
   'spike.bag.remove': 'Remove',
+  'spike.bag.removeLine': 'Remove {title}',
   'spike.bag.removed': 'Removed No. {id} from your bag.',
   'spike.bag.unchanged': 'That line was not in your bag.',
   'spike.controls.title': 'Spike controls',

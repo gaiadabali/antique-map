@@ -6,6 +6,8 @@
  */
 import { createHash, timingSafeEqual } from 'node:crypto'
 
+import { plain } from '../legacy/respond'
+
 type Env = Readonly<Record<string, string | undefined>>
 
 const digest = (value: string) => createHash('sha256').update(value).digest()
@@ -19,22 +21,6 @@ export function refuseCron(request: Request, env: Env = process.env): Response |
     return plain(401, 'unauthorised', { 'WWW-Authenticate': 'Bearer' })
   }
   return null
-}
-
-export function plain(
-  status: number,
-  text: string,
-  headers: Record<string, string> = {},
-): Response {
-  return new Response(text, {
-    status,
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'no-store',
-      'X-Content-Type-Options': 'nosniff',
-      ...headers,
-    },
-  })
 }
 
 /**

@@ -8,11 +8,10 @@
  *
  * Remove this, and repoint each mount at `handlerOf(path)`, as each lane lands its handler.
  */
-import { notFound } from '../not-found'
+import { atRequestTime, notFound } from '../respond'
 
 export async function GET(request: Request): Promise<Response> {
-  // Read the request, so no mount of this is prerendered and a 404 baked into the build.
-  void request.headers.get('host')
+  atRequestTime(request) // no mount of this is prerendered, no 404 baked into the build
   return notFound()
 }
 

@@ -41,4 +41,19 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+const withAdmin = withPayload(nextConfig, { devBundleServerPackages: false })
+const payloadHeaders = withAdmin.headers
+
+/**
+ * `withPayload` sends `Accept-CH`, `Critical-CH` and `Vary: Sec-CH-Prefers-Color-Scheme` on every
+ * path (`/:path*`) for the admin's colour theme. On the storefront `Critical-CH` makes Chromium
+ * request every first visit twice, and the `Vary` splits each `immutable` brand asset in a shared
+ * cache (4.1 reviews: senior-fe #3, senior-be #11). The admin keeps them; nothing else gets them.
+ */
+export default {
+  ...withAdmin,
+  headers: async () =>
+    ((await payloadHeaders?.()) ?? []).map((rule) =>
+      rule.source === '/:path*' ? { ...rule, source: '/admin/:path*' } : rule,
+    ),
+} satisfies NextConfig

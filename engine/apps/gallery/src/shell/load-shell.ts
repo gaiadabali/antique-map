@@ -7,7 +7,8 @@
  * renders each brand's own masthead (ARCHITECTURE.md §9).
  */
 import { hasModule, MODULE_KEYS, type BrandConfig, type LocaleCode } from '@engine/config/schema'
-import { brandAssetUrl } from '@engine/http/brand-assets'
+import { brandAssetUrl, versionedBrandAssetUrl } from '@engine/http/brand-assets'
+import { BRAND_ASSET_URL, ROOT_REWRITES } from '@engine/http/manifest'
 import type { ShellVM } from '@engine/view-models'
 import { SHELL_FIXTURES } from '@engine/view-models/fixtures'
 
@@ -59,15 +60,25 @@ export async function loadShell(locale: LocaleCode): Promise<ShellVM> {
 }
 
 /**
+ * The brand file a root URL is answered from (C13 `ROOT_REWRITES`: `/apple-touch-icon.png` →
+ * `/brand-assets/apple-touch-icon.png`), so the names live in the contract, not here.
+ */
+function rootFileAsset(from: (typeof ROOT_REWRITES)[number]['from']): string {
+  const row = ROOT_REWRITES.find((each) => each.from === from)
+  if (!row?.to.startsWith(BRAND_ASSET_URL.path)) throw new Error(`no brand file answers ${from}`)
+  return row.to.slice(BRAND_ASSET_URL.path.length)
+}
+
+/**
  * The touch icon and the web manifest, at their versioned URLs, for `generateMetadata()` — a page
  * links them through its metadata, never Next's file conventions, which are one build's (C13
- * `ROOT_REWRITES`). `null` for a file the brand has not shipped: no link to a 404.
+ * `ROOT_REWRITES`). `null` for a file the brand has not shipped: no link to a 404. (C2 `ShellVM`
+ * is to carry both — `assets.touchIcon`, `assets.manifest` — proposed to ARC in 4.1.)
  */
 export async function brandIcons(): Promise<{ touchIcon: string | null; manifest: string | null }> {
   const { paths } = await currentBrand()
-  const versioned = (path: string) => {
-    const url = brandAssetUrl(paths.assetsDir, path)
-    return url.includes('?') ? url : null
+  return {
+    touchIcon: versionedBrandAssetUrl(paths.assetsDir, rootFileAsset('/apple-touch-icon.png')),
+    manifest: versionedBrandAssetUrl(paths.assetsDir, rootFileAsset('/site.webmanifest')),
   }
-  return { touchIcon: versioned('apple-touch-icon.png'), manifest: versioned('site.webmanifest') }
 }

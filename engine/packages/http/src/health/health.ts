@@ -11,7 +11,8 @@
  * each check and whether it passed, never a finding's text: a missing secret's name is for the
  * process log (`formatBootReport`), not for anyone who asks.
  */
-import type { BootReport, DeploymentEnvironment } from '@engine/config/boot-check'
+import type { BootReport, DatabaseProbe, DeploymentEnvironment } from '@engine/config/boot-check'
+import { describeError } from '@engine/config/loader'
 
 export type CheckResult = {
   readonly ok: boolean
@@ -20,8 +21,12 @@ export type CheckResult = {
 }
 
 export type HealthPorts = {
-  /** `runBootCheck()`, with the database probe once the database answers. */
-  readonly boot: (database: DatabaseCheck | null) => Promise<BootReport>
+  /**
+   * `runBootCheck()`, given the database probe: the port's own once the database answers, or one
+   * that rethrows the port's error, so the boot check's `checkDatabase()` turns the cause into a
+   * finding with its credentials redacted — logged, never in the body (senior-be #1).
+   */
+  readonly boot: (database: DatabaseProbe | null) => Promise<BootReport>
   /** Initialises Payload (`getPayload()`) and probes its pool; `null` when it cannot be reached. */
   readonly database: () => Promise<DatabaseCheck>
   readonly storage: (environment: DeploymentEnvironment) => CheckResult
@@ -32,7 +37,7 @@ export type HealthPorts = {
 
 /** The database check, and the probe the boot check re-uses (READ COMMITTED, ARCHITECTURE.md §6). */
 export type DatabaseCheck = CheckResult & {
-  readonly probe?: () => Promise<{ readonly transactionIsolation: string }>
+  readonly probe?: DatabaseProbe
 }
 
 export type HealthBody = {
@@ -50,10 +55,10 @@ export type HealthBody = {
 export async function checkHealth(
   ports: HealthPorts,
 ): Promise<{ status: number; body: HealthBody }> {
-  const database = await settle(ports.database)
-  const boot = await ports.boot(database.ok ? database : null)
+  const database = await settleDatabase(ports.database)
+  const boot = await settleBoot(ports.boot, database.probe ?? null)
   ports.log(boot)
-  const storage = ports.storage(boot.environment)
+  const storage = await settle(async () => ports.storage(boot.environment))
   const queue = database.ok ? await settle(ports.queue) : { ok: false, detail: 'no-database' }
   const checks = {
     app: { ok: true },
@@ -71,6 +76,37 @@ export async function checkHealth(
   return {
     status: ok ? 200 : 503,
     body: { status: ok ? 'ok' : 'fail', environment: boot.environment, checks },
+  }
+}
+
+/**
+ * A database port that throws is a failed check whose cause is kept — as a probe that rethrows it,
+ * for the boot check to redact and report — never swallowed and never a failed health route.
+ */
+async function settleDatabase(port: () => Promise<DatabaseCheck>): Promise<DatabaseCheck> {
+  try {
+    return await port()
+  } catch (error) {
+    return { ok: false, detail: 'error', probe: () => Promise.reject(error) }
+  }
+}
+
+/** A boot check that throws fails closed: judged production, refused, its cause redacted. */
+async function settleBoot(
+  boot: HealthPorts['boot'],
+  probe: DatabaseProbe | null,
+): Promise<BootReport> {
+  try {
+    return await boot(probe)
+  } catch (error) {
+    const finding = { subject: 'boot check', message: `threw: ${describeError(error)}` }
+    return {
+      ok: false,
+      environment: 'production',
+      loadersSource: 'payload',
+      problems: [finding],
+      warnings: [],
+    }
   }
 }
 

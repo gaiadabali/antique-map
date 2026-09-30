@@ -1,38 +1,62 @@
 /**
  * `/brand-assets/…` (C13 `BRAND_ASSET_URL`, TASKS.md 4.1.f): only C1's types, each with its type,
- * `nosniff`, an SVG sandboxed, nothing outside the folder, `immutable` only at the current version.
+ * `nosniff`, an SVG sandboxed, nothing outside the folder — nor a link inside it to what the URL
+ * could not name — and `immutable` only at the current version.
  */
 import { createHash } from 'node:crypto'
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { BRAND_ASSET_URL } from '../manifest'
-import { serveBrandAsset } from './serve'
-import { brandAssetUrl } from './version'
+import { serveBrandAsset, SVG_POLICY } from './serve'
 
 let root: string
 let assets: string
 const SVG = '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
 const sha = (text: string) => createHash('sha256').update(text).digest('hex')
 
+/**
+ * Whether this host lets an unprivileged process make a file symlink (Windows without Developer
+ * Mode does not; Linux, and so CI, does). Only the one case that needs a file link depends on it.
+ */
+function canLinkFiles(): boolean {
+  const probe = join(tmpdir(), `brand-assets-link-${process.pid}.png`)
+  try {
+    symlinkSync(probe, probe, 'file')
+    unlinkSync(probe)
+    return true
+  } catch {
+    return false
+  }
+}
+const FILE_LINKS = canLinkFiles()
+
 beforeAll(() => {
   root = mkdtempSync(join(tmpdir(), 'brand-assets-'))
   assets = join(root, 'site', 'assets')
   mkdirSync(join(assets, 'fonts'), { recursive: true })
+  mkdirSync(join(assets, '.private'))
   mkdirSync(join(root, 'outside'))
   writeFileSync(join(assets, 'logo.svg'), SVG)
   writeFileSync(join(assets, 'favicon.ico'), 'ico')
   writeFileSync(join(assets, 'site.webmanifest'), '{"name":"x"}')
   writeFileSync(join(assets, 'fonts', 'display.woff2'), 'woff2')
   writeFileSync(join(assets, 'notes.txt'), 'not an asset type')
+  writeFileSync(join(assets, '.env'), 'SECRET=1')
   writeFileSync(join(assets, '.hidden.svg'), SVG)
+  writeFileSync(join(assets, '.private', 'p.png'), 'PRIVATE')
   writeFileSync(join(root, 'outside', 'secret.svg'), SVG)
   writeFileSync(join(root, 'site', 'brand.config.json'), '{}')
-  // A folder link out of the assets: a junction needs no privilege on Windows, a symlink elsewhere.
+  // Folder links: a junction needs no privilege on Windows, and is a symlink elsewhere.
   symlinkSync(join(root, 'outside'), join(assets, 'out'), 'junction')
+  symlinkSync(join(assets, '.private'), join(assets, 'pub'), 'junction') // inside, to a hidden folder
+  if (FILE_LINKS) {
+    symlinkSync(join(assets, 'notes.txt'), join(assets, 'notes.png'), 'file') // another type
+    symlinkSync(join(assets, '.env'), join(assets, 'env.png'), 'file') // a dotfile
+  }
 })
 
 afterAll(() => rmSync(root, { recursive: true, force: true }))
@@ -59,10 +83,14 @@ describe('what the route serves', () => {
     expect(response.status).toBe(200)
     expect(response.headers.get('content-type')).toBe(type)
     expect(response.headers.get('x-content-type-options')).toBe('nosniff')
+    expect(Number(response.headers.get('content-length'))).toBe(
+      (await response.arrayBuffer()).byteLength,
+    )
   })
 
-  it('serves an SVG under default-src none, so a script in it never runs', () => {
-    expect(get('logo.svg').headers.get('content-security-policy')).toBe("default-src 'none'")
+  it('serves an SVG sandboxed: no script, no load, its own styles, an opaque origin', () => {
+    expect(SVG_POLICY).toBe("default-src 'none'; style-src 'unsafe-inline'; sandbox")
+    expect(get('logo.svg').headers.get('content-security-policy')).toBe(SVG_POLICY)
     expect(get('favicon.ico').headers.get('content-security-policy')).toBeNull()
   })
 
@@ -71,6 +99,8 @@ describe('what the route serves', () => {
     ['a missing file', 'nothing.svg'],
     ['a folder', 'fonts'],
     ['a dotfile', '.hidden.svg'],
+    ['a file in a hidden folder', '.private/p.png'],
+    ['a link inside the folder to a hidden folder', 'pub/p.png'],
     ['a parent segment', '../brand.config.json'],
     ['an encoded parent segment', '%2E%2E/brand.config.json'],
     ['a dot segment', './logo.svg'],
@@ -85,6 +115,14 @@ describe('what the route serves', () => {
     expect(response.status).toBe(404)
     expect(response.headers.get('x-content-type-options')).toBe('nosniff')
     expect(response.headers.get('cache-control')).toBe('no-store')
+  })
+
+  // Only these two need a file link, which this host may not allow an unprivileged process to make.
+  it.runIf(FILE_LINKS).each([
+    ['a link to a file of another type', 'notes.png'],
+    ['a link to a dotfile', 'env.png'],
+  ])('answers 404 for %s', (_, path) => {
+    expect(get(path).status).toBe(404)
   })
 })
 
@@ -106,40 +144,19 @@ describe('how it is cached (C13 BRAND_ASSET_URL)', () => {
   })
 
   it.each([`"${sha(SVG)}"`, `W/"${sha(SVG)}"`, `"other", "${sha(SVG)}"`, '*'])(
-    'answers 304 to If-None-Match %s',
+    'answers 304 to If-None-Match %s, with its validators and no body',
     async (tag) => {
       const response = get('logo.svg', { 'if-none-match': tag })
       expect(response.status).toBe(304)
+      expect(response.headers.get('etag')).toBe(`"${sha(SVG)}"`)
+      expect(response.headers.get('cache-control')).toBe(BRAND_ASSET_URL.cacheControl.unversioned)
+      expect(response.headers.get('x-content-type-options')).toBe('nosniff')
+      expect(response.headers.get('content-length')).toBeNull()
       expect(await response.text()).toBe('')
     },
   )
 
   it('answers 200 to an ETag that is not the file’s', () => {
     expect(get('logo.svg', { 'if-none-match': '"stale"' }).status).toBe(200)
-  })
-})
-
-describe('brandAssetUrl() — the versioned URL the shell links', () => {
-  it('mints ?v= from the first 8 hex digits of the SHA-256', () => {
-    expect(brandAssetUrl(assets, 'logo.svg')).toBe(
-      `/brand-assets/logo.svg?v=${sha(SVG).slice(0, 8)}`,
-    )
-  })
-
-  it('gives the bare URL for a file the brand has not shipped', () => {
-    expect(brandAssetUrl(assets, 'og.png')).toBe('/brand-assets/og.png')
-  })
-
-  it('follows a file replaced in place', () => {
-    writeFileSync(join(assets, 'favicon.ico'), 'ico, redrawn and longer')
-    expect(brandAssetUrl(assets, 'favicon.ico')).toBe(
-      `/brand-assets/favicon.ico?v=${sha('ico, redrawn and longer').slice(0, 8)}`,
-    )
-  })
-
-  it('writes each segment in encodeURIComponent’s one spelling', () => {
-    expect(brandAssetUrl(assets, 'fonts/Display Face.woff2')).toBe(
-      '/brand-assets/fonts/Display%20Face.woff2',
-    )
   })
 })

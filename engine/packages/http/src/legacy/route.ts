@@ -4,10 +4,9 @@
  * answered 301, 404 or 410 from the `redirects` collection. That reader is TASKS.md 36.4's; until
  * it lands every legacy URL is a plain 404, never a guess and never the designed page's loader.
  */
-import { notFound } from './not-found'
+import { atRequestTime, notFound } from './respond'
 
 export async function GET(request: Request): Promise<Response> {
-  // Read the request, so nothing is prerendered: 36.4's answers are per URL, at request time.
-  void request.headers.get('host')
+  atRequestTime(request) // 36.4's answers are per URL, at request time
   return notFound()
 }

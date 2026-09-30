@@ -7,7 +7,8 @@
  * reported as blocked. Until it lands an authorised call answers 503 `not-wired`, never a false
  * success; the port is `QueuePort` (`payload.jobs.run({ limit })`).
  */
-import { plain, refuseCron } from '../auth'
+import { plain } from '../../legacy/respond'
+import { refuseCron } from '../auth'
 import { perRunLimit, type QueuePort } from './queue'
 
 /** `payload.jobs.run` once `@engine/http` may reach Payload; `null` until then. */
@@ -22,5 +23,8 @@ export async function POST(request: Request): Promise<Response> {
   if (queue === null) return plain(503, 'the jobs queue is not wired (TASKS.md 4.1 follow-up)')
   const limit = perRunLimit(new URL(request.url), process.env)
   const { ran } = await queue({ limit })
-  return Response.json({ ran, limit }, { headers: { 'Cache-Control': 'no-store' } })
+  return Response.json(
+    { ran, limit },
+    { headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } },
+  )
 }

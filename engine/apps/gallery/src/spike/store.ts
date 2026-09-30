@@ -33,8 +33,20 @@ export function readState(): SpikeState {
   }
 }
 
+/** A kept outcome lives ten minutes (C13 `FORM_RESULT`); the file never holds more than this many. */
+const RESULT_TTL_MS = 10 * 60 * 1000
+const MAX_RESULTS = 200
+
+/** Drops outcomes past their ten minutes, then the oldest beyond the cap (senior-fe #3). */
+function pruned(results: SpikeState['results'], now: number): SpikeState['results'] {
+  const live = Object.entries(results).filter(([, entry]) => now - entry.at <= RESULT_TTL_MS)
+  live.sort(([, a], [, b]) => b.at - a.at)
+  return Object.fromEntries(live.slice(0, MAX_RESULTS))
+}
+
 export function writeState(change: (state: SpikeState) => SpikeState): SpikeState {
-  const next = change(readState())
+  const changed = change(readState())
+  const next = { ...changed, results: pruned(changed.results, Date.now()) }
   const target = file()
   writeFileSync(`${target}.tmp`, JSON.stringify(next))
   renameSync(`${target}.tmp`, target)

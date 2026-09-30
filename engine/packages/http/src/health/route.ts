@@ -5,19 +5,11 @@
  * `health` (route parity). Never cached: every answer is this moment's.
  */
 import { checkHealth } from './health'
+import { atRequestTime } from '../legacy/respond'
 import { defaultHealthPorts } from './ports'
 
-/**
- * Reads the request before anything else: under Cache Components a `GET` that never reads its
- * request is prerendered — run once by `next build` and its answer baked in — and this one reaches
- * the database (the 4.1.e spike saw the boot check run at build before this line existed).
- */
-function requestTime(request: Request): void {
-  void request.headers.get('host')
-}
-
 export async function GET(request: Request): Promise<Response> {
-  requestTime(request)
+  atRequestTime(request) // first: once wired, this reaches the database, which a build never does
   const { status, body } = await checkHealth(defaultHealthPorts())
   return Response.json(body, {
     status,

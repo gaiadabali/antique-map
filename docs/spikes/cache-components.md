@@ -17,17 +17,25 @@ with `DATABASE_URL`, `PAYLOAD_SECRET`, `BRAND`, `BRAND_ROOT` unset), served with
 this worktree's ports 4206–4209. `src/spike/check.mjs` re-runs every HTTP-level proof below:
 
 ```sh
-SPIKE_CONTROLS=1 SPIKE_PANEL_DELAY_MS=1500 BRAND=test TEST_STOREFRONT=gallery … next start -p 4206
+SPIKE_ROUTES=1 SPIKE_CONTROLS=1 SPIKE_PANEL_DELAY_MS=1500 BRAND=test TEST_STOREFRONT=gallery … next start -p 4206
 node engine/apps/gallery/src/spike/check.mjs http://localhost:4206
 ```
+
+The spike is off unless `SPIKE_ROUTES=1` (and `SPIKE_CONTROLS=1` for the controls), which the
+gallery's `boot.ts` refuses on any host the boot check does not judge local: off, the fixture
+item route is the designed 404 and every spike action refuses (4.1 review, senior-fe #3). What
+outlives the spike is the item route's one-address rule, `src/item/canonical.ts`, and the status
+guard `engine/apps/gallery/e2e/status.spec.ts` (Playwright, on a production build).
 
 ## 1. The build touches no database, brand or secret — and what that took
 
 `next build` of both apps, with the Payload admin mounted (`(payload)/admin/[[...segments]]`, the
 REST `api/[...slug]`, no GraphQL route) and every C13 route mounted, succeeds with no database,
-brand or secret. The only prerendered route is Next's own `/_not-found`; the admin is a partial
-prerender (Payload's `RootLayout` wraps itself in `<Suspense fallback={null}>` when
-`cacheComponents` is on); every storefront route and route handler is dynamic (`ƒ`).
+brand or secret. The only fully static route is Next's own `/_not-found` (○). The admin, the item
+route and the `[...missing]` catch-all are listed as partial prerenders (◐), each with an empty
+shell — Payload's `RootLayout` wraps itself in `<Suspense fallback={null}>` when `cacheComponents`
+is on — and every other storefront route and every route handler is dynamic (`ƒ`). No shell is
+ever served (§2).
 
 Three build failures on the way, each a rule the apps now follow:
 
@@ -76,11 +84,12 @@ disable streaming metadata") makes every user agent one. Measured after the chan
 | `GET /en/not-found` | 200, postponed | **404** |
 | `GET /nope` (a page slug with no page) | 404 | 404 |
 | `GET /product/1706-caf%C3%A9-java` | — | **308**, `Location` set (§3) |
-| the same, with **no `User-Agent` header** | — | 200 + meta refresh: still the shell |
+| the same, with **no `User-Agent` header** | — | 200, still the shell — and no meta refresh either: the redirect exists only in the RSC payload, so without JavaScript it never happens (senior-fe #5). `/nope` and `/product/9999-x` are 200 too |
 
 The last row is the one gap: a request without a `User-Agent` still takes the shell path. Browsers
-and crawlers send one; the fix is for the proxy to set one when it is missing (a PLT change to C13's
-proxy headers — Follow-ups). Caching is unaffected: it is per read (`'use cache'`), never per page.
+and crawlers send one; the fix is for the proxy to set a non-empty one when it is missing (Next
+treats `''` as none) — a PLT change to C13's proxy headers, routed to ARC. `e2e/status.spec.ts`
+holds the assertion, waiting on `E2E_EXPECT_UA_FIX=1`. Caching is unaffected: it is per read (`'use cache'`), never per page.
 
 ## 3. The item route: one 200 address, one permanent redirect
 
@@ -140,8 +149,14 @@ the `shipTo` cookie and the fake availability source inside `<Suspense>`.
 **Without JavaScript**, in Chromium with `javaScriptEnabled: false`: the page body and forms render,
 the panel stays on its placeholder (a streamed part is swapped in by script), and the ship-to form
 and a bag-line removal each post, answer **303**, and come back with the result in the page body,
-shown once (screens `ig-item-js-off-*`). The writes are Server Actions — POST forms that answer 303
-without JavaScript; the engine's own forms will post to C13's `/api/x/` handlers (DOM's) and answer
+shown once (screens `ig-item-js-off-*`). A router prefetch of the page (`RSC: 1`, `Next-Router-Prefetch: 1`) is a
+full render under §2, so it must not consume a post's result: it sees the result and leaves it,
+and the visitor's own request shows it (`check.mjs`; senior-fe #4). Carrying the result's id in
+the 303's URL instead would survive a reload too, but cannot reach the item page: Next replaces a
+rewritten request's query with the destination's (`resolve-routes.js`: `parsedUrl =
+parseUrl(destination)`), and the proxy passes none for an item — the same reason a stale-slug
+redirect cannot keep an old link's query. Both are for ARC (C10, C13). The writes are Server
+Actions — POST forms that answer 303 without JavaScript; the engine's own forms will post to C13's `/api/x/` handlers (DOM's) and answer
 303 the same way, their outcome kept under an opaque id (C13 `FORM_RESULT`), as the spike's is.
 
 ## 6. One gallery build, two brands
@@ -165,7 +180,8 @@ JavaScript on:
 | `'self' 'strict-dynamic' 'sha256-…'` | 13 violations, not hydrated, panel stuck | 9 | 14 |
 | `'self'` | 5 violations (every inline script), not hydrated, panel stuck | 2 | 3 |
 
-Hashes cannot hold: Next's inline scripts carry the page's RSC payload, which changes with what the
+Nor can Subresource Integrity (`experimental.sri`) stand in: it hashes the files a build emits,
+never the inline scripts a request renders (senior-fe #9). Hashes cannot hold: Next's inline scripts carry the page's RSC payload, which changes with what the
 request shows — the same page with `shipTo=NL` and `shipTo=ID` gave different hashes for its flight
 script — and the proxy must set the policy before the page renders. **Adopted: a fresh nonce per
 request**, set by the proxy on the answer and on the request; every page renders per request (§2),
@@ -204,6 +220,17 @@ createProxy({
 - **Admin under Cache Components:** sign-in, the first-user flow and the dashboard work at 390 px on
   both databases; with the nonce CSP, `/admin/login` has no violation.
 
+## After the 4.1 reviews
+
+- The body no longer awaits availability unless the controls are on, so the first flush never
+  waits on it (senior-fe #7); the panel sits in an `aria-live` region; a shown result takes
+  focus; each bag line's button is named for its line; kept results are pruned after ten minutes
+  and capped; a `returnTo` is checked after URL normalisation too (`/	/evil.com` → `//evil.com`).
+- A request that bypassed the proxy (no `x-public-path`) is refused, never redirected to itself.
+- `withPayload`'s `Accept-CH`, `Critical-CH` and `Vary` now apply to `/admin/:path*` only: on the
+  storefront `Critical-CH` made Chromium request every first visit twice (senior-fe #3,
+  senior-be #11).
+
 ## For ARC — where the docs and the spike disagree
 
 1. CONVENTIONS.md §12, AGENTS.md and TASKS.md 4.1.a: "no route segment config anywhere" — the
@@ -216,3 +243,12 @@ createProxy({
 4. MIGRATION.md §6, C10: a lower-case escape is normalised by Next before the proxy and served 200.
 5. TASKS.md 4.1.e: "comparing the slug as Next hands it" — Next hands two spellings; the route
    compares the public path with `href()` instead (§3).
+6. CONVENTIONS.md §12 and AGENTS.md: "anything reading cookies, headers, the ship-to market or
+   availability sits inside `<Suspense>`" — what the first flush must carry (a form, its current
+   value, a post's result, the canonical check) is read in the page body; only slow or live reads
+   stream (senior-fe #6).
+7. C10 / C13: a rewritten item request loses its query (§5), so neither a result id in the URL nor
+   an old link's query on the redirect reaches the page.
+8. ARCHITECTURE.md §9: availability "never enters a shared cache", yet it is tagged for
+   `{ expire: 0 }`; the spike caches it with `cacheLife('max')` — a backstop lifetime is ARC's call
+   (senior-fe #8).

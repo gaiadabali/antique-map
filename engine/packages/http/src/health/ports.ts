@@ -33,8 +33,7 @@ const notWired = async (): Promise<DatabaseCheck & CheckResult> => ({
 
 export function defaultHealthPorts(env: Env = process.env): HealthPorts {
   return {
-    boot: (database) =>
-      database?.probe ? runBootCheck({ env, database: database.probe }) : runBootCheck({ env }),
+    boot: (database) => (database ? runBootCheck({ env, database }) : runBootCheck({ env })),
     database: notWired,
     storage: storageCheck(env),
     queue: notWired,

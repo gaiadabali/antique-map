@@ -5,7 +5,6 @@
  * the pattern C13 `FORM_RESULT` prescribes for the engine's `/api/x/` handlers, which will be DOM's.
  * `returnTo` must be one of this brand's public page addresses (C10), never another site.
  */
-import { parsePublicPath } from '@engine/config/routes'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -15,20 +14,25 @@ import { BAG_COOKIE, bagLines } from './bag'
 import { keepFormResult } from './form-result'
 import { availabilityTag, itemTag } from './reads'
 import { SHIP_TO_COOKIE, shipToOptions } from './ship-to'
+import { spikeControlsOn, spikeRoutesOn } from './flags'
+import { safeReturnTo } from './return-to'
 import { writeState } from './store'
 
 const YEAR = 60 * 60 * 24 * 365
 
 async function returnTo(form: FormData): Promise<string> {
-  const target = String(form.get('returnTo') ?? '/')
   const { config } = await currentBrand()
-  // Root-relative only: `//host` and `/\host` are other sites to a browser (MIGRATION.md §6).
-  const url = /^\/(?![/\\])/.test(target) ? new URL(target, 'http://x') : null
-  const ok = url !== null && parsePublicPath(config, url.pathname).kind === 'surface'
-  return ok ? `${url.pathname}${url.search}` : '/'
+  return safeReturnTo(String(form.get('returnTo') ?? '/'), config)
+}
+
+/** Every spike write refuses unless the spike is on (`./flags`): off, its route is not there. */
+function refuseUnless(on: boolean): void {
+  if (!on)
+    throw new Error('the spike is off (SPIKE_ROUTES=1, and SPIKE_CONTROLS=1, on a workstation)')
 }
 
 export async function setShipTo(form: FormData): Promise<void> {
+  refuseUnless(spikeRoutesOn())
   const { config } = await currentBrand()
   const country = String(form.get('country') ?? '')
   const option = shipToOptions(config).find((each) => each.country === country)
@@ -44,6 +48,7 @@ export async function setShipTo(form: FormData): Promise<void> {
 }
 
 export async function removeBagLine(form: FormData): Promise<void> {
+  refuseUnless(spikeRoutesOn())
   const line = Number(form.get('line'))
   const lines = await bagLines()
   const kept = lines.filter((id) => id !== line)
@@ -59,7 +64,7 @@ export async function removeBagLine(form: FormData): Promise<void> {
 
 /** Stands in for a sale or a release — what the domain's outbox will invalidate (`{ expire: 0 }`). */
 export async function setAvailability(form: FormData): Promise<void> {
-  if (process.env.SPIKE_CONTROLS !== '1') throw new Error('spike controls are off')
+  refuseUnless(spikeControlsOn())
   const id = String(Number(form.get('item')))
   const to = form.get('to') === 'sold' ? 'sold' : 'available'
   writeState((state) => ({ ...state, availability: { ...state.availability, [id]: to } }))
@@ -69,7 +74,7 @@ export async function setAvailability(form: FormData): Promise<void> {
 
 /** Stands in for an editor's publish — what a Payload `afterChange` hook will invalidate (`'max'`). */
 export async function editRecord(form: FormData): Promise<void> {
-  if (process.env.SPIKE_CONTROLS !== '1') throw new Error('spike controls are off')
+  refuseUnless(spikeControlsOn())
   const id = String(Number(form.get('item')))
   writeState((state) => ({
     ...state,

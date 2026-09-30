@@ -9,9 +9,10 @@
  */
 import { resolveBrandPaths } from '@engine/config/loader'
 
-import { notFound, serveBrandAsset } from './serve'
+import { notFound } from '../legacy/respond'
+import { serveBrandAsset } from './serve'
 
-export { brandAssetUrl } from './version'
+export { brandAssetUrl, versionedBrandAssetUrl } from './version'
 
 type Context = { readonly params: Promise<{ path: string[] }> }
 

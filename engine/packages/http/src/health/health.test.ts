@@ -3,12 +3,22 @@
  * failed check, never leaks a finding's text, and — until `@engine/http` may reach Payload —
  * answers 503 `not-wired` rather than a health it never checked.
  */
+import { fileURLToPath } from 'node:url'
+
 import type { BootReport } from '@engine/config/boot-check'
 import { describe, expect, it } from 'vitest'
 
 import { checkHealth, type HealthPorts } from './health'
 import { defaultHealthPorts, storageCheck } from './ports'
 import { GET } from './route'
+
+/** The synthetic brand as a workstation runs it, for the real boot check. */
+const TEST_BRAND_ENV = {
+  BRAND: 'test',
+  BRAND_ROOT: fileURLToPath(new URL('../../../../../test', import.meta.url)),
+  TEST_STOREFRONT: 'gallery',
+  SITE_URL: 'http://localhost:4206',
+}
 
 const report = (over: Partial<BootReport> = {}): BootReport => ({
   ok: true,
@@ -62,7 +72,7 @@ describe('checkHealth()', () => {
     await checkHealth(
       ports({
         database: async () => ({ ok: true, probe }),
-        boot: async (database) => ((given = database?.probe), report()),
+        boot: async (database) => ((given = database), report()),
       }),
     )
     expect(given).toBe(probe)
@@ -83,6 +93,40 @@ describe('checkHealth()', () => {
     expect(body.checks.queue).toEqual({ ok: false, detail: 'no-database' })
     expect(queued).toBe(false)
     expect(JSON.stringify(body)).not.toContain('hunter2')
+  })
+
+  it('logs the database error’s cause, redacted, and keeps it out of the body (senior-be #1)', async () => {
+    const logged: BootReport[] = []
+    const { body } = await checkHealth({
+      ...defaultHealthPorts(TEST_BRAND_ENV),
+      database: async () => {
+        throw new Error('connect ECONNREFUSED postgres://user:hunter2@db:5432/ig')
+      },
+      log: (r) => logged.push(r),
+    })
+    const finding = logged[0]?.problems.find(
+      (problem) => problem.subject === 'DATABASE_URL' && /did not answer/.test(problem.message),
+    )
+    expect(finding?.message).toMatch(/did not answer: .*ECONNREFUSED/)
+    expect(finding?.message).not.toContain('hunter2')
+    expect(body.checks.boot).toMatchObject({ ok: false, detail: 'refused' })
+    expect(JSON.stringify(body)).not.toMatch(/ECONNREFUSED|hunter2|postgres:/)
+  })
+
+  it('fails closed, and still answers, when a port throws', async () => {
+    const { status, body } = await checkHealth(
+      ports({
+        boot: async () => {
+          throw new Error('BRAND_ROOT unreadable')
+        },
+        storage: () => {
+          throw new Error('bucket?')
+        },
+      }),
+    )
+    expect(status).toBe(503)
+    expect(body.environment).toBe('production')
+    expect(body.checks.storage).toEqual({ ok: false, detail: 'error' })
   })
 })
 

@@ -2,7 +2,7 @@
 // docs/spikes/cache-components.md). It behaves as a browser with JavaScript off: it reads the
 // HTML as it streams, posts the page's own forms, follows the 303, reads the answer.
 //
-//   SPIKE_CONTROLS=1 SPIKE_PANEL_DELAY_MS=1500 <start the gallery for a brand on PORT>
+//   SPIKE_ROUTES=1 SPIKE_CONTROLS=1 SPIKE_PANEL_DELAY_MS=1500 <start the gallery for a brand on PORT>
 //   node engine/apps/gallery/src/spike/check.mjs http://localhost:PORT
 //
 // Exits 1 on the first failed assertion; prints one line per check.
@@ -180,6 +180,24 @@ async function postsWithoutJavaScript() {
   const shipTo = await postForm(CAFE, html, 'ship-to', { country: 'NL' })
   assert.equal(shipTo.status, 303, 'ship-to answers 303')
   assert.equal(shipTo.headers.get('location'), CAFE)
+  // A router prefetch renders the page in full, but must leave the result for the visitor (fe #4).
+  // Next answers an RSC request without its `_rsc` query with a 307 to add it: follow, as the router does.
+  const prefetch = await globalThis.fetch(base + CAFE, {
+    headers: {
+      cookie: cookieHeader(),
+      'user-agent': 'spike-check',
+      rsc: '1',
+      'next-router-prefetch': '1',
+      'sec-fetch-dest': 'empty', // what a browser adds to the router's fetch()
+    },
+  })
+  assert.equal(prefetch.status, 200)
+  assert.equal(
+    prefetch.headers.get('content-type')?.split(';')[0],
+    'text/x-component',
+    'an RSC answer',
+  )
+  assert.match(await prefetch.text(), /Shipping to NL/, 'the prefetch sees the result')
   ;({ html } = await stream(shipTo.headers.get('location')))
   assert.match(
     html,
@@ -187,7 +205,9 @@ async function postsWithoutJavaScript() {
     'the result is in the body',
   )
   assert.match(html, /priced in EUR for delivery to NL/, 'the panel reads the new ship-to')
-  log('ok  ship-to posted without JavaScript: 303, the result in the body, the panel in EUR')
+  log(
+    'ok  ship-to posted without JavaScript: 303; a prefetch left the result; the result in the body, the panel in EUR',
+  )
 
   const removed = await postForm(CAFE, html, 'bag-remove')
   assert.equal(removed.status, 303, 'bag-line removal answers 303')

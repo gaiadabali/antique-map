@@ -9,7 +9,8 @@
  * browser's own spelling, overwriting any a client sent), never a spelling of the param: Next
  * 16.3.6 hands this page `idSlug` still percent-encoded and `generateMetadata` the same segment
  * decoded once (the 4.1.e spike), so any comparison of the param — or a decode of it — would
- * redirect a canonical address to itself or open a second one. The param only picks the id.
+ * redirect a canonical address to itself or open a second one. The param only picks the id; the
+ * rule is `src/item/canonical.ts`, which outlives this spike page.
  *
  * What renders where (ARCHITECTURE.md §9, §11): the record is a `'use cache'` read tagged
  * `item:<id>`; the page body — the title, a post's result, the ship-to form, the bag and its forms —
@@ -24,14 +25,15 @@ import { isSupportedLocale } from '@engine/i18n'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { notFound, permanentRedirect } from 'next/navigation'
-import { Suspense } from 'react'
+import { cache, Suspense } from 'react'
 
+import { canonicalRedirect, parsePublicId } from '../../../../../item/canonical'
 import { currentBrand } from '../../../../../shell/brand'
 import { brandHref } from '../../../../../shell/links'
 import { bagLines } from '../../../../../spike/bag'
+import { spikeControlsOn, spikeRoutesOn } from '../../../../../spike/flags'
 import { BagSection, ShipToForm, SpikeControls } from '../../../../../spike/forms'
 import { takeFormResult } from '../../../../../spike/form-result'
-import { parsePublicId } from '../../../../../spike/id-slug'
 import { SPIKE_ITEMS } from '../../../../../spike/items'
 import { JsIndicator } from '../../../../../spike/js-indicator'
 import { spikeMessages } from '../../../../../spike/messages'
@@ -42,18 +44,31 @@ import { currentShipTo, shipToOptions } from '../../../../../spike/ship-to'
 
 type Props = PageProps<'/[locale]/item/[idSlug]'>
 
-async function resolve({ params }: Props) {
-  const { locale, idSlug } = await params
+/**
+ * The item and its canonical address, once per request for the metadata and the page alike
+ * (React `cache`). Off unless the spike is on (`SPIKE_ROUTES=1`, a workstation's or CI's): the
+ * fixture items never reach a host (senior-fe #3).
+ */
+const resolveItem = cache(async (locale: string, publicId: number | null) => {
+  if (!spikeRoutesOn()) notFound()
   const { config } = await currentBrand()
   if (!isSupportedLocale(config, locale)) notFound()
-  const publicId = parsePublicId(idSlug)
   const record = publicId === null ? null : await getItemRecord(publicId, locale)
   if (record === null) notFound()
   const href = await brandHref()
   const canonical = href('item', { publicId: record.publicId, slug: record.slug }, locale)
-  const publicPath = (await headers()).get(PROXY_REQUEST_HEADERS.publicPath)
-  if (publicPath !== canonical) permanentRedirect(canonical)
+  const redirectTo = canonicalRedirect(
+    (await headers()).get(PROXY_REQUEST_HEADERS.publicPath),
+    canonical,
+  )
+  if (redirectTo !== null) permanentRedirect(redirectTo)
   return { config, locale, record, canonical }
+})
+
+async function resolve({ params }: Props) {
+  const { locale, idSlug } = await params
+  // Keyed by the id, not the segment: the page and its metadata get two spellings of the segment.
+  return resolveItem(locale, parsePublicId(idSlug))
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -63,12 +78,15 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function ItemPage(props: Props) {
   const { config, locale, record, canonical } = await resolve(props)
+  const controls = spikeControlsOn()
+  // Availability is the panel's, which streams; the body reads it only for the spike's controls,
+  // so with them off the first flush never waits on it (senior-fe #7).
   const [{ t }, shipTo, lines, result, availability] = await Promise.all([
     spikeMessages(locale),
     currentShipTo(config),
     bagLines(),
     takeFormResult(),
-    getAvailability(record.publicId),
+    controls ? getAvailability(record.publicId) : null,
   ])
   const titles = new Map(SPIKE_ITEMS.map((item) => [item.publicId, item.title[locale]]))
   return (
@@ -82,27 +100,32 @@ export default async function ItemPage(props: Props) {
         })}
       </p>
       {result === null ? null : (
-        <p role="status" className="spike-result">
+        // Present at load, so a live region alone would not be announced: focus moves to it once
+        // the page is interactive (senior-fe #14); without JavaScript it is read in order.
+        <p role="status" className="spike-result" tabIndex={-1} autoFocus>
           {resultText(result, t, shipToOptions(config))}
         </p>
       )}
       <ShipToForm t={t} options={shipToOptions(config)} current={shipTo} returnTo={canonical} />
-      <Suspense fallback={<PurchasePanelPlaceholder label={t('spike.panel.checking')} />}>
-        <PurchasePanel publicId={record.publicId} locale={locale} />
-      </Suspense>
+      {/* The live region wraps the boundary, so the streamed panel is announced when it lands. */}
+      <div aria-live="polite">
+        <Suspense fallback={<PurchasePanelPlaceholder label={t('spike.panel.checking')} />}>
+          <PurchasePanel publicId={record.publicId} locale={locale} />
+        </Suspense>
+      </div>
       <BagSection
         t={t}
         lines={lines.map((id) => ({ id, title: titles.get(id) ?? String(id) }))}
         returnTo={canonical}
       />
-      {process.env.SPIKE_CONTROLS === '1' ? (
+      {availability === null ? null : (
         <SpikeControls
           t={t}
           id={record.publicId}
           availability={availability}
           returnTo={canonical}
         />
-      ) : null}
+      )}
       <JsIndicator off={t('spike.js.off')} on={t('spike.js.on')} />
     </article>
   )
