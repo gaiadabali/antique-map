@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Synthetic fixture: the shape of an old product page, trimmed; invented content, no personal data. Do not run a formatter over it (the viewer's list must stay JSON with escaped slashes, as the old pages print it). -->
+<html>
+  <head><title>Mock chart</title></head>
+  <body>
+    <div class="modal"><div class="mb-3"><h1>Sign in</h1></div></div>
+    <div class="row">
+      <div class="col-md-7 content ph-0">
+        <div class="box border shadow-sm"><div id="openseadragon1"></div></div>
+        <div class="box border">
+          <div class="title bg-dark text-light mb-2">Nieuwe Pascaert van Oost Indien (mock long title)</div>
+          <p>A mock description.&nbsp;</p><p>( Ref: Tooley, R.V. (Australia) 1268. )</p>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="sideinfo border shadow-sm">
+          <div class="col-12 bg-dark"><div class="txt">Mock Maker</div></div>
+          <div class="row">
+            <div class="col-12 d-block d-md-none bg-dark"><div class="txt">Title</div></div>
+            <div class="col-12 col-md-12"><div class="txt">Mock chart - Year 1689</div></div>
+          </div>
+          <div class="row">
+            <div class="col-12 col-lg-6 order-1 bg-dark"><div class="txt">Publication Place / Date</div></div>
+            <div class="col-12 col-lg-6 order-3 bg-dark"><div class="txt">Image Dimensions</div></div>
+            <div class="col-12 col-lg-6 order-2"><div class="txt">Leiden / 1689</div></div>
+            <div class="col-12 col-lg-6 order-4"><div class="txt">450 x 380 mm</div></div>
+          </div>
+          <div class="row">
+            <div class="col-12 col-lg-6 order-1 bg-dark"><div class="txt">Color</div></div>
+            <div class="col-12 col-lg-6 order-3 bg-dark"><div class="txt">Condition</div></div>
+            <div class="col-12 col-lg-6 order-2"><div class="txt"></div></div>
+            <div class="col-12 col-lg-6 order-4"><div class="txt">G+ / Study image carefully</div></div>
+          </div>
+          <div class="row">
+            <div class="col-12 col-lg-6 order-1 bg-dark"><div class="txt">Product Price</div></div>
+            <div class="col-12 col-lg-6 order-3 bg-dark"><div class="txt">Product Number</div></div>
+            <div class="col-12 col-lg-6 order-2"><div class="txt"> On Request </div></div>
+            <div class="col-12 col-lg-6 order-4"><div class="txt"> SKU #M.Dav5 </div></div>
+          </div>
+        </div>
+        <div class="mt-3" id="add-to-cart"><a href="#price-request" class="btn">Request Price</a></div>
+        <a href="https://old-store.example/sell-to-us">Sell To Us</a>
+        <a href="mailto:?subject=Mock&amp;body=https://old-store.example/product/101-mock-chart-year-1689">Email a Friend</a>
+        <form id="request101" action="https://old-store.example/account/request?id=101" method="POST"></form>
+      </div>
+    </div>
+    <script src="https://old-store.example/vendor/openseadragon/openseadragon.min.js"></script>
+    <script>
+      function onEnquirySubmit() { $.post("https:\/\/old-store.example\/product\/101\/enquire", {}); }
+      var viewer = OpenSeadragon({
+        id: 'openseadragon1',
+        tileSources: [{"type":"image","url":"https:\/\/old-store.example\/storage\/products\/101-501.jpg"},{"type":"image","url":"https:\/\/old-store.example\/storage\/products\/101-502.jpg"}]
+      });
+    </script>
+  </body>
+</html>
