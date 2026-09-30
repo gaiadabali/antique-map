@@ -260,7 +260,7 @@ migrated one — are part of the Commerce stage's gate (TASKS.md 21.2).
 
 | Tier | What | Where |
 | ---- | ---- | ----- |
-| **Masters** | original scans (TIFF/JPEG), colour profile, checksum | private `archive-masters` bucket; a plain `masters` collection holds the record (storage key, pixels, ppi, colour profile, checksum, owning brand) — **not** a Payload upload collection |
+| **Masters** | every capture as received (RAW, TIFF, JPEG), colour profile, checksum — a work's under its uid, one with no work yet (the owner's pilot set) or none at all (a showroom photograph, a room plate's render) under `masters/intake/<brand>/<batch>/` (C9 `intakeMasterKey()`), a work's capture filed under its uid once the work exists | private `archive-masters` bucket; a plain `masters` collection holds the record (storage key, the frame's pixels, colour profile, checksum, owning brand, and what the intake measured: the object's box in the frame, object ppi, role, provenance, capture tier, verdict — CONTENT-MODEL.md §6) — **not** a Payload upload collection |
 | **Print files** | colour-managed, cropped design files for reproduction | the same private bucket under a `print-files/` prefix — the only prefix the shop's key may write |
 | **Derivatives** | AVIF + WebP at 320 / 640 / 1024 / 1600 / 2400 px + blur placeholder | public brand bucket behind Cloudflare, immutable cache |
 | **Deep zoom — public** | static **IIIF Level 0** tiles (`sharp().tile({ layout: 'iiif3' })`, 512 px) capped at the configured public resolution, plus an IIIF Presentation 3 manifest per work | public brand bucket (`iiif/<assetId>/…`) |
@@ -282,12 +282,21 @@ No image server to run: static tiles behind a CDN answer every zoom request.
 The viewer is OpenSeadragon, loaded **on intent** (first tap or hover on the
 image, or idle after LCP) so it never costs the PDP's JavaScript budget.
 
-**Print-size ceiling.** A reproduction variant is offered only if the master
+**Print-size ceiling.** A reproduction variant is offered only if what is printed
 supports it at the product type's minimum resolution — **240 ppi** by default
-(D26). The current site's images are 3543 × 2840 px: about **300 mm** on the long
-edge at 300 ppi (≈ A4), **375 mm at 240 ppi**, 450 mm at 200 ppi. So larger sizes
-wait on true master scans (MIGRATION.md §9). The ceiling is computed from the
-master's pixels, stored on the design, and enforced when variants are generated.
+(D26). What is printed is the design's crop of its master — for a whole-sheet
+design, the object's box in that master — so the ceiling is **the crop's own long
+edge in the master's pixels** at the minimum ppi (C9 `printCeilingOf()`), stored on
+the design and enforced when variants are generated and published (TASKS.md 15.4).
+It is **never the master file's long edge**, which also holds the background, the
+colour card and the ruler, and never the print file's pixel count, which a
+resample could inflate. The current site's images are 3543 × 2840 px frames: the
+frame's long edge would claim 375 mm at 240 ppi, but a sheet spanning 3300 px of it
+prints to about **349 mm**, and a smaller sheet or a tighter crop to less. So the
+legacy images are an upper bound, not an answer, and larger sizes wait on true
+master scans (MIGRATION.md §9). The intake records each capture's **object ppi** —
+the object's pixels over its real size — and at 240 or more the shop can print the
+work at its own size (`docs/design/imagery/intake-spec.md` §4).
 
 ## 8. Search
 
