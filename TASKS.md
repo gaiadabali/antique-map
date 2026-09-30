@@ -21,7 +21,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 1/4 | 12/24 | 1 | `█████░░░░░`  50% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 1/4 | 13/24 | 1 | `█████░░░░░`  54% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **21/173** | **142/809** | **47** | `██░░░░░░░░`  18% |
+| **All** | 44 phases | | | **21/173** | **143/809** | **47** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -616,7 +616,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.4.d a test compares the two apps' `next.config.ts` on what the storefront's guarantees rest on — `cacheComponents`, `htmlLimitedBots`, `output`, `poweredByHeader`, and `withPayload`'s client hints on `/admin/:path*` alone — and asserts both `(site)/[locale]/layout.tsx` export `instant = false` (PARALLEL-TRACKS.md §1)
   - [x] 5.4.e the one e2e folder (PARALLEL-TRACKS.md §1): the status spec moves from `engine/apps/gallery/e2e/` to `tests/e2e/status/` and 4.4's smoke from `.github/e2e/` to `tests/e2e/smoke/`, each Playwright project's `testDir` following; CI runs the status spec with `E2E_EXPECT_UA_FIX=1` (5.3), its app-independent cases (a path that names no page, a not-found route, an unsupported locale prefix, robots, the admin-only client hints) against an emporium server too, and — behind `E2E_EXPECT_NOT_FOUND_BODY=1`, set when 22.4.e lands — a non-empty `<main>` in a 404's body; the status spec names a path that names no page (`/nope/deeper`) beside `/nope`, whose 404 is the CMS page's (5.3's Found #1); and `instance.test.ts` and `route-parity.test.mjs` no longer time out under a loaded machine (qa's phase 4 gate L2)
   - [x] 5.4.f `.env.example`'s `HOSTNAME` comment follows DEPLOYMENT.md §3: `localhost` on a host with `--dns-result-order=ipv4first` (so it binds 127.0.0.1 behind nginx), `0.0.0.0` only in CI, never a loopback IP — and `next dev`/`next start` take `-H`, which hangs at a loopback address too
-  - [ ] 5.4.h qa's gate on `main` (eb762a9) — FAIL: the resolve hook never runs where Vite externalizes a bare specifier, so a relative path into `cms/src`, a `#` subpath import and a mount's side-effect `import 'payload'` all pass (B1); the fences miss a relative path leaving a package and `import x = require()` (S2); the link, form, prefetch and segment rules miss `next/link.js`, `next/dist/esm/…`, aliased or computed `prefetch` and `export const { dynamic } = …` (S3); 5.4.d compares named fields only — it becomes byte-identical configs with an explicit allowlist, `trailingSlash` required, the apps discovered (S4); `brand-create` and `schema-hash` still time out under load (L5); the no-User-Agent case sends an empty header (L6). Each fixed with a planted test
+  - [x] 5.4.h qa's gate on `main` (eb762a9) — FAIL: the resolve hook never runs where Vite externalizes a bare specifier, so a relative path into `cms/src`, a `#` subpath import and a mount's side-effect `import 'payload'` all pass (B1); the fences miss a relative path leaving a package and `import x = require()` (S2); the link, form, prefetch and segment rules miss `next/link.js`, `next/dist/esm/…`, aliased or computed `prefetch` and `export const { dynamic } = …` (S3); 5.4.d compares named fields only — it becomes byte-identical configs with an explicit allowlist, `trailingSlash` required, the apps discovered (S4); `brand-create` and `schema-hash` still time out under load (L5); the no-User-Agent case sends an empty header (L6). Each fixed with a planted test
   - [ ] 5.4.g **Check:** each planted violation of 5.4.a–d fails its gate naming the file and passes once removed; CI's status run passes its no-User-Agent case on both apps; `pnpm verify` green.
 
 ---
@@ -876,7 +876,7 @@ run beside the build line rather than in it.
   - _Requirements: 19.2_
   - [ ] 11.1.a Overlay primitives — dialog, sheet, drawer, toast — with focus trap, focus return and an inert background
   - [ ] 11.1.b Disclosure, tabs, combobox and radio group
-  - [ ] 11.1.c Form fields (label, hint, error), price, skip link, visually-hidden, and the storefront link — `next/link` with `prefetch={false}`, whose props omit `prefetch`: the storefront's one import of `next/link` (CONVENTIONS.md §12) — and narrow 5.4.c's `no-next-link` exception (today the glob `engine/packages/ui/src/primitives/**/*{link,Link}*`, in `engine/tooling/next-config-parity/eslint-rules.mjs`) to the primitive's one file
+  - [ ] 11.1.c Form fields (label, hint, error), price, skip link, visually-hidden, and the storefront link — `next/link` with `prefetch={false}`, whose props omit `prefetch`: the storefront's one import of `next/link` (CONVENTIONS.md §12) — and narrow 5.4.c's `no-next-link` exception (today the glob `engine/packages/ui/src/primitives/**/*{link,Link}*`, in `engine/tooling/next-config-parity/eslint-rules.mjs`) to the primitive's one file — the primitive lives at exactly `engine/packages/ui/src/primitives/link.tsx`, the one path 5.4.c's `no-next-link` exempts
   - [ ] 11.1.d Component tests for every interaction state and keyboard path
   - [ ] 11.1.e **Check:** dialog, sheet, drawer, tabs, disclosure, combobox, radio group, toast, form fields, price, skip link, visually-hidden and the storefront link (never prefetching) are keyboard-complete and screen-reader-labelled, unstyled and token-driven, with component tests for their interaction states.
 

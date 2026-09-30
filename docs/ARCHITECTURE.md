@@ -703,10 +703,18 @@ recommendation from the 4.1 review (item 5), adopted with its conditions.
    factory, `healthRoute(load = () => import('./payload-ports'))` — or `vi.mock`s the
    module; 4.6 picks one (4.3's senior-be review #13).
 3. **Fenced — behaviourally, and by ESLint (HAR, TASKS.md 5.4).** Route parity loads
-   every mount under a resolve hook that refuses `payload`, `@payloadcms/*` and
-   `@engine/cms`, so a static path to Payload fails CI however indirect — through
-   `@engine/loaders`, say, or any future package that depends on cms (4.3's
-   senior-be review #3). And ESLint, under `engine/packages/http/src/**`: only a
+   every mount under a guard that refuses `payload`, `@payloadcms/*` and
+   `@engine/cms` by specifier **and by resolved file** — a Vite plugin plus a
+   Node-level ESM resolve hook and CommonJS resolver wrap, since Vite hands an
+   externalised bare specifier straight to Node — so a static path to Payload fails
+   CI however indirect: through `@engine/loaders`, say, any future package that
+   depends on cms, a relative path into `cms/src`, a `#` subpath import, `require()`
+   or `createRequire` (4.3's senior-be review #3; 5.4's qa gate B1). **Its known
+   limits**, which no load of a mount can see: a path that runs only when a handler
+   is called (a computed `import()` inside a function — the lazy path, by design);
+   code loaded outside Node's resolvers (`fs` + `eval`/`vm`/`new Function`, a
+   worker or child process, `process.dlopen`); and, in a long-lived process, a
+   module already linked before the guard went up — the CLI starts fresh. And ESLint, under `engine/packages/http/src/**`: only a
    `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms` by value,
    statically or by `import()` (`import type` is free, so a pure port can name
    `Payload`); no module but a test imports a `payload-*` module statically; and the
