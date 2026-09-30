@@ -22,7 +22,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 1/4 | 13/23 | 1 | `██████░░░░`  57% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 4/17 | 3 | `██░░░░░░░░`  24% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 6/19 | 3 | `███░░░░░░░`  32% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **21/173** | **138/801** | **47** | `██░░░░░░░░`  17% |
+| **All** | 44 phases | | | **21/173** | **140/803** | **47** | `██░░░░░░░░`  17% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -643,7 +643,7 @@ run beside the build line rather than in it.
   - [ ] 6.1.b 👤 owner interview (≤ 15 questions per brand); fold answers in
   - [x] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
   - [ ] 6.1.e an Indonesian version of `docs/design/journeys/owner-interview.md` before it is sent (client material comes in both languages — project-notes.md), reviewed by a native speaker (the D20 copywriter when there is one)
-  - [ ] 6.1.f after OA2: fold each answer in at its `(open — pending the owner interview, OA2 · Gn/Sn)` mark, update each journey's "Open until the owner answers" and its defaults, and route any answer that changes EXPERIENCE-*.md to ARC
+  - [ ] 6.1.f after OA2: fold each answer in at its `(open — pending the owner interview, OA2 · Gn/Sn)` mark, update each journey's "Open until the owner answers" and its defaults, and route any answer that changes EXPERIENCE-*.md to ARC; ask too whether the gallery states a position on the VOC and the colonial archive (the shop's is stated; the gallery's PRODUCT.md has none — 6.3), and confirm British spelling for both brands
   - [ ] 6.1.g ARC's doc corrections from 6.1's review: requirements.md 7.8 names Partnership, not "For Business" (D36); EXPERIENCE-SHOP.md's intro drops "the one sister element" (D9 shares the whole base); EXPERIENCE-GALLERY.md §1 names only the client's four institutions until G10 answers; §3, §5, §9 mark the lifetime guarantee a default (RESEARCH.md §2, D11); and how a shop buyer abroad sees and pays prices at launch settled across COMMERCE.md §3 and PAYMENTS.md §6, phase 32's Done when following
   - [ ] 6.1.d **Check:** each PRODUCT.md follows the impeccable product schema with no invented facts and the owner's answers folded in, and 6–8 journeys per brand exist, each naming its surfaces, states, channel handoffs and the moment that decides trust.
 
@@ -661,12 +661,14 @@ run beside the build line rather than in it.
 
 - [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W1
   - **Lane** UXG + UXE + BRD · **Agent** senior-uiux · **Wave** W1
-  - **Owns** `docs/design/{gallery,emporium}/voice.md`, `engine/apps/*/src/messages/keys.ts` (the keys), `indies-gallery/site/copy/**`, `old-east-indies/site/copy/**`, `test/site/copy/**` (the values)
+  - **Owns** `docs/design/{gallery,emporium}/voice.md`, `engine/apps/*/src/messages/**` (the keys: `keys.ts` composing `lexicon/*.ts`, widened 2026-10-01 for the 300-line rule), `indies-gallery/site/copy/**`, `old-east-indies/site/copy/**`, `test/site/copy/**` (the values)
   - **Read** DESIGN-SYSTEM.md §10, BRANDS.md §2, NOW! docs/DESIGN-SYSTEM.md §6 (copy), the drafted PRODUCT.md files
   - _Requirements: 18.8_
-  - [ ] 6.3.a voice principles and register per brand
-  - [ ] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
+  - [x] 6.3.a voice principles and register per brand
+  - [x] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
   - [ ] 6.3.c 👤 native Indonesian copywriter review
+  - [ ] 6.3.e HAR: a copy-completeness gate — `@engine/i18n/copy`'s `checkCopy()` wired into `check-brands` for every brand × the app that renders it × `locales.supported`, the `test` brand checked against the union of both apps' keys; a planted missing key and a planted placeholder mismatch each fail it (none exists today, so 6.3.b's coverage is unguarded)
+  - [ ] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`)
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for the gallery; the shop's to confirm — likely *kamu*), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
 
 ---
