@@ -1,0 +1,14 @@
+{
+  "shell.skipToContent": "Naar de inhoud",
+  "shell.homeLink": "{brand}, home",
+  "shell.languages": "Taal",
+  "shell.locale.en": "English",
+  "shell.locale.id": "Bahasa Indonesia",
+  "shell.locale.nl": "Nederlands",
+  "shell.contact": "Contact",
+  "home.title": "{brand}",
+  "home.lede": "De winkel wordt gebouwd. Wat u ziet is het geraamte.",
+  "notFound.title": "Pagina niet gevonden",
+  "notFound.body": "Op dit adres staat niets.",
+  "notFound.home": "Naar de startpagina"
+}

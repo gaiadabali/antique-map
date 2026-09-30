@@ -1,0 +1,15 @@
+{
+  "$comment": "Placeholder Indonesian — for the copywriter's review (D20)",
+  "shell.skipToContent": "Langsung ke konten",
+  "shell.homeLink": "{brand}, beranda",
+  "shell.languages": "Bahasa",
+  "shell.locale.en": "English",
+  "shell.locale.id": "Bahasa Indonesia",
+  "shell.locale.nl": "Nederlands",
+  "shell.contact": "Kontak",
+  "home.title": "{brand}",
+  "home.lede": "Toko daring ini sedang dibangun. Yang Anda lihat baru kerangkanya.",
+  "notFound.title": "Halaman tidak ditemukan",
+  "notFound.body": "Tidak ada apa pun di alamat ini.",
+  "notFound.home": "Kembali ke beranda"
+}
