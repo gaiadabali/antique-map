@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+// A stand-in for pm2 inside the test container: start / describe / jlist / save / startup, with
+// the state in ~/.pm2shim.json. `start` runs each app of the ecosystem file detached, with its
+// node_args, cwd and env, so the holding server really listens. Test-only; never on a host.
+const fs = require('node:fs')
+const path = require('node:path')
+const { spawn } = require('node:child_process')
+const home = process.env.HOME
+const stateFile = path.join(home, '.pm2shim.json')
+const load = () => (fs.existsSync(stateFile) ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : [])
+const alive = (pid) => {
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch {
+    return false
+  }
+}
+const [cmd, ...rest] = process.argv.slice(2)
+if (cmd === 'start') {
+  const { apps } = require(path.resolve(rest[0]))
+  const state = load()
+  fs.mkdirSync(path.join(home, '.pm2/logs'), { recursive: true })
+  for (const app of apps) {
+    const log = fs.openSync(path.join(home, '.pm2/logs', app.name + '-out.log'), 'a')
+    const child = spawn(process.execPath, [...app.node_args.split(' '), app.script], {
+      cwd: app.cwd,
+      env: { ...process.env, ...app.env },
+      detached: true,
+      stdio: ['ignore', log, log],
+    })
+    child.unref()
+    state.push({ name: app.name, pid: child.pid, exec_mode: app.exec_mode + '_mode', instances: app.instances, script: app.script })
+  }
+  fs.writeFileSync(stateFile, JSON.stringify(state))
+} else if (cmd === 'describe') {
+  const p = load().find((a) => a.name === rest[0])
+  process.exit(p && alive(p.pid) ? 0 : 1)
+} else if (cmd === 'jlist') {
+  const list = load().map((a) => ({
+    name: a.name,
+    pm2_env: { exec_mode: a.exec_mode, instances: a.instances, status: alive(a.pid) ? 'online' : 'stopped', restart_time: 0, pm_exec_path: a.script },
+  }))
+  console.log(JSON.stringify(list))
+} else if (cmd === 'save') {
+  process.exit(0)
+} else if (cmd === 'startup') {
+  const user = rest[rest.indexOf('-u') + 1]
+  fs.writeFileSync(`/etc/systemd/system/pm2-${user}.service`, `[Unit]\nDescription=PM2 ${user} (shim)\n`)
+  fs.mkdirSync('/run/shim', { recursive: true })
+  fs.writeFileSync(`/run/shim/pm2-${user}.service.enabled`, '')
+} else {
+  console.error('shim pm2: unsupported: ' + process.argv.slice(2).join(' '))
+  process.exit(1)
+}

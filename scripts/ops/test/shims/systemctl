@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# A stand-in for systemctl inside the test container, which has no systemd: it keeps each
+# unit's enabled/active state in /run/shim and runs a service's ExecStart (with its User= and
+# Environment= lines) in the background, so RustFS and Mailpit really serve during the test.
+# Test-only; never installed on a host.
+set -euo pipefail
+S=/run/shim
+mkdir -p "$S"
+quiet=0
+args=()
+for a in "$@"; do
+  case "$a" in --quiet | -q) quiet=1 ;; --now) now=1 ;; *) args+=("$a") ;; esac
+done
+cmd="${args[0]:-}"
+unit="${args[1]:-}"
+unit_file() { printf '/etc/systemd/system/%s' "$unit"; }
+alive() { [ -f "$S/$unit.pid" ] && kill -0 "$(cat "$S/$unit.pid")" 2>/dev/null; }
+start() {
+  case "$unit" in *.timer | pm2-*)
+    touch "$S/$unit.active"
+    return 0
+    ;;
+  esac
+  alive && return 0
+  local f exec user envs=()
+  f="$(unit_file)"
+  [ -f "$f" ] || {
+    echo "shim: no unit $unit" >&2
+    return 5
+  }
+  exec="$(sed -n 's/^ExecStart=//p' "$f")"
+  user="$(sed -n 's/^User=//p' "$f")"
+  while IFS= read -r e; do envs+=("$e"); done < <(sed -n 's/^Environment=//p' "$f")
+  # shellcheck disable=SC2086 # ExecStart is split into words as systemd would
+  setsid runuser -u "${user:-root}" -- env "${envs[@]}" $exec >>"$S/$unit.log" 2>&1 </dev/null &
+  echo $! >"$S/$unit.pid"
+}
+stop() {
+  if alive; then pkill -P "$(cat "$S/$unit.pid")" 2>/dev/null || true; kill "$(cat "$S/$unit.pid")" 2>/dev/null || true; fi
+  rm -f "$S/$unit.pid" "$S/$unit.active"
+}
+case "$cmd" in
+  daemon-reload) exit 0 ;;
+  enable)
+    touch "$S/$unit.enabled"
+    [ "${now:-0}" = 1 ] && start
+    exit 0
+    ;;
+  start) start ;;
+  restart)
+    stop
+    sleep 1
+    start
+    ;;
+  stop) stop ;;
+  is-enabled)
+    if [ -f "$S/$unit.enabled" ]; then [ "$quiet" = 1 ] || echo enabled; exit 0; fi
+    [ "$quiet" = 1 ] || echo disabled
+    exit 1
+    ;;
+  is-active)
+    if alive || [ -f "$S/$unit.active" ]; then [ "$quiet" = 1 ] || echo active; exit 0; fi
+    [ "$quiet" = 1 ] || echo inactive
+    exit 3
+    ;;
+  *)
+    echo "shim systemctl: unsupported: $*" >&2
+    exit 1
+    ;;
+esac
