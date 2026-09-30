@@ -23,7 +23,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **4** App shells and the Cache Components spike | Foundation | 3 | 🔄 in progress | 0/2 | 4/12 | 0 | `███░░░░░░░`  33% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
-| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
+| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 1/14 | 2 | `█░░░░░░░░░`   7% |
 | **8** Makers, places, terms, works and media | Catalogue | 3 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **12/165** | **81/749** | **47** | `█░░░░░░░░░`  11% |
+| **All** | 44 phases | | | **12/165** | **82/750** | **47** | `█░░░░░░░░░`  11% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -160,7 +160,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 4·W1 | 4.1 App shells, health route, Cache Components spike | senior-fe | `antique-map-p4-web` / `feat/p4-web` | 2026-09-30 | the `production`-push clause of 4.1.g waits for the owner's OK after merge (Helios polls that branch) |
 | 4·W1 | 4.2 The client-safe gate | medior | `antique-map-p4-har` / `feat/p4-har` | 2026-09-30 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
-| 7·W1 | 7.3 Old East Indies legacy URL discovery | medior | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | CDX half now; the Search Console half waits on OA11 |
+| 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d waits on the owner's OK |
 
 ## Decisions for the owner
 
@@ -598,7 +598,8 @@ run beside the build line rather than in it.
   - **Read** MIGRATION.md §10
   - _Requirements: 16.6_
   - [ ] 7.3.a URL discovery (CDX + Search Console export 👤)
-  - [ ] 7.3.c the Wayback CDX half now — every archived `oldeastindies.com` path inventoried — and an importer for the Search Console CSV (OA11), tested on a synthetic CSV, ready for the owner's export
+  - [x] 7.3.c the Wayback CDX half now — every archived `oldeastindies.com` path inventoried — and an importer for the Search Console CSV (OA11), tested on a synthetic CSV, ready for the owner's export
+  - [ ] 7.3.d the two archived `/sitemap.xml` captures (2024-06-24, 2024-08-08) read through Wayback playback on web.archive.org — never the old site — as a third source, since the CDX index holds only 4 Squarespace product paths; needs the owner's OK (a playback read, not the CDX API that D41-era consent covered)
   - [ ] 7.3.b **Check:** every Squarespace path from the Search Console export and the Wayback CDX index is inventoried in `old-east-indies/content/legacy/`, and nothing was done to the old site.
 
 ---
@@ -2430,6 +2431,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-30 — 7.3 merged to `main` (d2a3d05, branch cffb561); the gate green on the merge (the real-stack schema-hash test timed out once at 22 s under the 7.1 agent's Docker load and passed alone in 13.5 s — a timeout to raise, HAR). 7.3.c ticked: 311 distinct paths from 1,561 Wayback captures (product 229, category 38, page 10, blog 10, asset 3, system 21), five CDX query variants agree (0 missing), every request to web.archive.org only, raw responses in `LEGACY_DATA_DIR`; the Search Console importer passes 9 tests on synthetic exports. Found: the domain ran **two** platforms before Linktree — a SIRCLO store (2020-09 → 2021-12, `/products/<slug>`, 225 paths) and Squarespace (2022-11 → 2024-09, only 4 product paths archived) — so OA11 is the main source for the Squarespace era, not a supplement (MIGRATION.md §10 to say so). 7.3.a and the Check wait on OA11; 7.3.d (the archived sitemaps) added, waiting on the owner's OK. Follow-ups: wire `legacy-urls` into `@engine/migrate` once 7.1 lands (vitest `include` must cover `src/**/*.test.mjs`); legacy prefixes `/products/`, `/our-collection/`, `/lookbook/`, `/framed-art-works`, `/mounted-art-prints` for the redirect map (36.x).
 - 2026-09-30 — **phase 7 opened** (needs phase 2 ✅; open phases 4 and 7) — 7·W1 dispatched: 7.1 (senior-integrator, lane MIG-A, `feat/p7-mig-a`) and 7.3 (medior, lane MIG-B, `feat/p7-mig-b`). OA9 (the export) and OA11 (Search Console) are not in hand: the owner answered D41 (the public read may run, gently) and D42 (a mock dump until the export arrives). Added 7.1.e (the `@engine/migrate` scaffold, which no task owned) and 7.1.f (the mock dump), and 7.3.c (the CDX half now, the GSC importer ready). 7.1.a and 7.3.a stay open on the owner.
 - 2026-09-30 — 4.2 merged to `main` (ae719b7, branch d8e8829); `pnpm verify` green on the merge (`check:client-safe` now a step). 4.2.a, b, d, e ticked: the walker moved to `engine/tooling/client-safe/` and refuses zod, the server entries of `@engine/config`, `node:*`, Payload and `@engine/cms`, naming the chain; planted direct, relative, workspace and dynamic-import violations fail then pass; `LOCAL_PRODUCTION_BUILD=1` on the lighthouse job; `"types": []` in the template and `["node"]` in config, cms, http, i18n — typecheck green on Windows and in `node:22.13.0`. 4.2.c waits for the apps (4.1). Found: node 22.13.0's bundled corepack fails npm's signature check (`npm i -g corepack@latest` first) — for 5.1/DEPLOYMENT. Follow-ups: a named `Client-safe gate` step in `ci.yml`'s static job (HAR); a bundle-level check for third-party deps that bundle zod or Node built-ins (after 22); consider refusing `@engine/config/link-keys` in client code.
 - 2026-09-30 — **phase 4 opened** — 4·W1 dispatched: 4.1 (senior-fe, lane WEB, `feat/p4-web`) and 4.2 (medior, lane HAR, `feat/p4-har`); tasks-lint green for the wave, no shared **Owns**. The release clause of 4.1.g (a push to `production`, which Helios's poller reads) is held for the owner's OK after the merge; the agent proves the artifact locally with `assemble-artifact.sh`. Reviewer: senior-fe for 4.1.
