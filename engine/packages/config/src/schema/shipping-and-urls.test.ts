@@ -4,6 +4,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest'
 
 import { parseEditorialGlobals } from '../loader/globals-parts'
+import { parseUrl } from './url'
 import { testBrandConfig } from '../validate/testing/fixtures'
 import {
   brandConfigSchema,
@@ -104,6 +105,17 @@ describe('C1 — the URLs a config names are https only', () => {
         url,
       ).toEqual(['social'])
     }
+  })
+
+  it('reads a URL with the WHATWG parser, typed without Node’s or the DOM’s types (3.4 CI)', () => {
+    expect(parseUrl('https://Shop.Example.com:443/a?b#c')).toMatchObject({
+      origin: 'https://shop.example.com',
+      hostname: 'shop.example.com',
+      protocol: 'https:',
+    })
+    expect(parseUrl('https://app:secret@example.com')).toMatchObject({ username: 'app' })
+    for (const bad of ['', 'not a url', 'https://', '//example.com'])
+      expect(parseUrl(bad)).toBeNull()
   })
 
   it('takes a sister’s base as a bare https origin, a port allowed', () => {

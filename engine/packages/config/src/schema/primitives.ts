@@ -9,6 +9,7 @@
 import { z } from 'zod'
 
 import { CURRENCY_CODES, CURRENCY_EXPONENT, type CurrencyCode } from '../constants'
+import { parseUrl } from './url'
 
 export { CURRENCY_CODES, CURRENCY_EXPONENT, type CurrencyCode }
 export const currencyCodeSchema = z.enum(CURRENCY_CODES)
@@ -46,7 +47,7 @@ const NON_PUBLIC_NAME = /(?:^|\.)(?:localhost|local|internal|invalid)$/i
  */
 export const httpsUrlSchema = z.url({ error: HTTPS_URL_MESSAGE, abort: true }).refine(
   (value) => {
-    const url = URL.parse(value)
+    const url = parseUrl(value)
     return (
       url !== null &&
       value.startsWith('https://') &&
@@ -66,7 +67,7 @@ export const httpsUrlSchema = z.url({ error: HTTPS_URL_MESSAGE, abort: true }).r
  * a CSP source names.
  */
 export const httpsOriginSchema = httpsUrlSchema.refine(
-  (value) => URL.parse(value)?.origin === value,
+  (value) => parseUrl(value)?.origin === value,
   'an https origin such as "https://shop.example.com": no path, query or trailing "/", in lower case, a name that is not ASCII in punycode (https://xn--…)',
 )
 

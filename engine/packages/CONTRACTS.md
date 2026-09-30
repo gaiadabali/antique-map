@@ -82,7 +82,10 @@ so it is breaking and also needs a redirect.
   never redeclare them. What a browser bundle may need — `LOCALE_CODES` and
   `CURRENCY_EXPONENT` — is declared in the zod-free `@engine/config/constants`, which `schema/*`
   re-exports; client code imports that entry, and nothing it holds may reach zod
-  (`i18n/test/client-safe.test.ts`). A seller ships with its own subset of the brand's couriers
+  (`i18n/test/client-safe.test.ts`). The schema, the constants and C10's routes are type-checked
+  by packages with lib ES2023 alone — no Node types, no DOM — so none of them names a global only
+  those declare (`URL`, `Buffer`, `process`, `console`): a WHATWG parser the schema needs is
+  reached through `globalThis`, typed with the parts it reads (`schema/url.ts`). A seller ships with its own subset of the brand's couriers
   (`sellers[].shipping`), resolved in the parsed config, so its secrets are its own couriers'. A
   URL a config names is https, on a public domain name, with no credentials; a sister's is a bare
   origin — its staging site, since each host names the sister it syncs with in `SISTER_BASE_URL`
@@ -562,3 +565,10 @@ so it is breaking and also needs a redirect.
     (the stale hydration claims swept), MIGRATION.md §6 (how a legacy URL is matched), DEPLOYMENT.md
     §8 (`LOCAL_PRODUCTION_BUILD`, `SISTER_BASE_URL`, the base64url command), ARCHITECTURE.md §11
     (route parity) and §13 (the sister's origin in the CSP), BRANDS.md §3.
+- **2026-09-30**: **C1 v1.2, a fix** (CI run 36638663926, after the phase 3 merge): the schema's URL
+  rules called the `URL` global, which only Node's types and the DOM's declare, so every package
+  that type-checks the schema without them — `@engine/ui`, `domain`, `view-models`, `sister`,
+  `payments`, `shipping`, `fulfilment`, `analytics` — failed on Linux, while a stray `@types/node`
+  above the repository hid it on Windows. The schema now parses through `schema/url.ts`, a typed
+  accessor for the WHATWG parser on `globalThis`, and the rule above records why. No shape
+  changes; every package type-checks with only the `@types` it declares.
