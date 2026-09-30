@@ -22,7 +22,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 1/4 | 13/23 | 1 | `██████░░░░`  57% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 8/19 | 3 | `████░░░░░░`  42% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/23 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **21/173** | **142/808** | **47** | `██░░░░░░░░`  18% |
+| **All** | 44 phases | | | **21/173** | **143/808** | **47** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -162,7 +162,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
-| 6·W1 | 6.3.e the copy-completeness gate | medior | `antique-map-p6-copy-gate` / `feat/p6-copy-gate` | 2026-10-01 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -668,7 +667,7 @@ run beside the build line rather than in it.
   - [x] 6.3.a voice principles and register per brand
   - [x] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
   - [ ] 6.3.c 👤 native Indonesian copywriter review
-  - [ ] 6.3.e HAR: a copy-completeness gate — `@engine/i18n/copy`'s `checkCopy()` wired into `check-brands` for every brand × the app that renders it × `locales.supported`, the `test` brand checked against the union of both apps' keys; a planted missing key and a planted placeholder mismatch each fail it (none exists today, so 6.3.b's coverage is unguarded)
+  - [x] 6.3.e HAR: a copy-completeness gate — `@engine/i18n/copy`'s `checkCopy()` wired into `check-brands` for every brand × the app that renders it × `locales.supported`, the `test` brand checked against the union of both apps' keys; a planted missing key and a planted placeholder mismatch each fail it (none exists today, so 6.3.b's coverage is unguarded)
   - [ ] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`); and C9 v1.4's labels: `SYNTHETIC_LABEL`, each `PRINT_RESTORATIONS` step, the new image roles, "≈ … — charged in Rp …" with the note that the card issuer or PayPal may convert again (D47), and the room plate's caption with its wall width
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for the gallery; the shop's to confirm — likely *kamu*), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
 
