@@ -16,6 +16,7 @@ APPS=(gallery emporium)
 
 # Shared services on this host (all loopback; every port verified free at run time).
 RUSTFS_PORT=4032
+RUSTFS_CONSOLE_PORT=4033
 MAILPIT_SMTP_PORT=4034
 MAILPIT_UI_PORT=4035
 
@@ -94,8 +95,9 @@ distinct_specs() {
     [ "${a[$i]}" != "${b[$i]}" ] || die "gallery and emporium share '${a[$i]}': one of each per brand"
   done
   for i in "${a[1]}" "${b[1]}"; do
-    case "$i" in "$RUSTFS_PORT" | "$MAILPIT_SMTP_PORT" | "$MAILPIT_UI_PORT")
-      die "app port $i is also a service port (RustFS $RUSTFS_PORT, Mailpit $MAILPIT_SMTP_PORT/$MAILPIT_UI_PORT)" ;;
+    case "$i" in "$RUSTFS_PORT" | "$RUSTFS_CONSOLE_PORT" | "$MAILPIT_SMTP_PORT" | "$MAILPIT_UI_PORT")
+      die "app port $i is also a service port (RustFS $RUSTFS_PORT/$RUSTFS_CONSOLE_PORT, Mailpit $MAILPIT_SMTP_PORT/$MAILPIT_UI_PORT)" ;;
+
     esac
   done
 }

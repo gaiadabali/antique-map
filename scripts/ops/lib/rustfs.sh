@@ -1,11 +1,17 @@
 # shellcheck shell=bash
 # RustFS, the object storage (D12, answered 2026-09-30): one pinned binary, its own system user,
-# a data directory, and a systemd unit on 127.0.0.1 alone. The console stays off; everything
-# (S3, the admin API, /health) is one loopback port that nothing outside the host reaches.
+# and a systemd unit on 127.0.0.1 alone. The binary is the release's x86_64 musl zip (static, no
+# glibc dependency), pinned by version and by the SHA-256 GitHub publishes; the extracted
+# binary's own hash is kept beside it and checked on every run.
 #
-# The binary is the release's x86_64 musl zip (statically linked, so no glibc dependency),
-# pinned by version and by the SHA-256 GitHub publishes for it; the extracted binary's own hash
-# is kept beside it and checked on every run.
+# Its data lives in a fixed-size ext4 image mounted at the data directory (should-fix 4): on a
+# host shared with other live sites, RustFS can fill its own image and never `/`. The image is
+# preallocated (fallocate), so its space is taken once, up front, and counted against the disk
+# floor before it is made; it is never resized or reformatted by this script.
+#
+# The console: RustFS 1.0.0 serves it on [::]:9001 — every interface — unless told otherwise
+# (measured: RUSTFS_CONSOLE_ENABLE unset opened 0.0.0.0/[::]:9001). The unit sets it off, and
+# its address to loopback as well, in case a later version reads the flag differently.
 
 RUSTFS_VERSION=1.0.0
 RUSTFS_ZIP=rustfs-linux-x86_64-musl-v1.0.0.zip
@@ -14,14 +20,37 @@ RUSTFS_URL="https://github.com/rustfs/rustfs/releases/download/$RUSTFS_VERSION/$
 RUSTFS_USER=indies-rustfs
 RUSTFS_HOME=/var/lib/indies-rustfs
 RUSTFS_DATA=$RUSTFS_HOME/data
+RUSTFS_IMAGE=$RUSTFS_HOME/data.img
+RUSTFS_SIZE_GB=50
 RUSTFS_BIN_DIR=/opt/indies/rustfs-$RUSTFS_VERSION
 RUSTFS_CONF=/etc/indies/rustfs
 RUSTFS_UNIT=indies-rustfs.service
 RUSTFS_CHANGED=0
 
+# The mount unit's name is its path, systemd-escaped: /var/lib/indies-rustfs/data →
+# var-lib-indies\x2drustfs-data.mount.
+rustfs_mount_unit() {
+  local p="${RUSTFS_DATA#/}"
+  p="${p//-/\\x2d}"
+  printf '%s.mount' "${p//\//-}"
+}
+
 rustfs_preflight() {
   check_port "$RUSTFS_PORT" "$RUSTFS_USER" "RustFS"
+  check_port "$RUSTFS_CONSOLE_PORT" "$RUSTFS_USER" "RustFS console (kept off; its address is loopback only)"
   [ "$(uname -m)" = x86_64 ] || fail "RustFS: the pinned build is x86_64; this host is $(uname -m)"
+  if [ ! -e "$RUSTFS_IMAGE" ] && [ -d "$RUSTFS_DATA" ] && ! mountpoint -q "$RUSTFS_DATA" &&
+    [ -n "$(ls -A "$RUSTFS_DATA" 2>/dev/null)" ]; then
+    fail "RustFS: $RUSTFS_DATA holds data but is no mounted image: move it aside by hand first"
+  fi
+  if [ -e "$RUSTFS_IMAGE" ]; then
+    local size=$(($(stat -c %s "$RUSTFS_IMAGE") / 1073741824))
+    [ "$size" = "$RUSTFS_SIZE_GB" ] ||
+      warn "RustFS: $RUSTFS_IMAGE is $size GiB, not the ${RUSTFS_SIZE_GB} GiB asked for: never resized by this script"
+  fi
+  if { [ ! -s "$RUSTFS_CONF/access-key" ] || [ ! -s "$RUSTFS_CONF/secret-key" ]; } && [ -e "$RUSTFS_IMAGE" ]; then
+    fail "RustFS: its data image exists but its root credentials in $RUSTFS_CONF do not: restore them (Infisical); they are never regenerated over existing data"
+  fi
 }
 
 # fetch_verified URL SHA256 DEST — download once into the cache; refuse a wrong hash.
@@ -38,13 +67,12 @@ fetch_verified() {
 }
 
 install_rustfs_binary() {
-  local zip=/var/cache/indies/$RUSTFS_ZIP tmp
-  install -d -m 755 /var/cache/indies "$RUSTFS_BIN_DIR"
+  local zip=/var/cache/indies/$RUSTFS_ZIP tmp="$ROOT_TMP/rustfs"
+  install -d -m 755 -o root -g root /var/cache/indies "$RUSTFS_BIN_DIR"
   fetch_verified "$RUSTFS_URL" "$RUSTFS_ZIP_SHA256" "$zip"
-  tmp="$(mktemp -d)"
+  install -d -m 700 "$tmp"
   python3 -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extract("rustfs", sys.argv[2])' "$zip" "$tmp"
   install -m 755 -o root -g root "$tmp/rustfs" "$RUSTFS_BIN_DIR/rustfs"
-  rm -rf "$tmp"
   "$RUSTFS_BIN_DIR/rustfs" --version | head -n 1 | grep -q "rustfs $RUSTFS_VERSION"
   sha256sum "$RUSTFS_BIN_DIR/rustfs" | cut -d' ' -f1 >"$RUSTFS_BIN_DIR/rustfs.sha256"
 }
@@ -55,16 +83,47 @@ rustfs_binary_ok() {
 }
 
 # The root credentials are made on the host, once, into root-only files RustFS reads itself
-# (RUSTFS_*_KEY_FILE): never in the repo, the unit, the environment or a log. Only this script's
-# admin calls use them; each site gets its own scoped key (s3admin.sh).
+# (RUSTFS_*_KEY_FILE): never in the repo, the unit, the environment or a log. Written to temp
+# files and renamed, so a crash never leaves half a key. Only this script's admin calls use
+# them; each site gets its own scoped key (s3admin.sh). 18 and 40 characters: inside the S3
+# limits (an access key of at most 20, a secret of 40).
 write_root_credentials() (
   umask 077
-  # 18 and 40 characters: inside the S3 limits (an access key of at most 20, a secret of 40).
-  printf 'indies%s' "$(head -c 6 /dev/urandom | od -An -tx1 | tr -d ' \n')" >"$RUSTFS_CONF/access-key"
-  head -c 20 /dev/urandom | od -An -tx1 | tr -d ' \n' >"$RUSTFS_CONF/secret-key"
-  chown "root:$RUSTFS_USER" "$RUSTFS_CONF/access-key" "$RUSTFS_CONF/secret-key"
-  chmod 640 "$RUSTFS_CONF/access-key" "$RUSTFS_CONF/secret-key"
+  local f
+  printf 'indies%s' "$(random_hex 6)" >"$RUSTFS_CONF/.access-key.new"
+  random_hex 20 >"$RUSTFS_CONF/.secret-key.new"
+  for f in access-key secret-key; do
+    chown "root:$RUSTFS_USER" "$RUSTFS_CONF/.$f.new"
+    chmod 640 "$RUSTFS_CONF/.$f.new"
+    mv -f "$RUSTFS_CONF/.$f.new" "$RUSTFS_CONF/$f"
+  done
 )
+
+# The image: preallocated, formatted once, never again (mkfs only runs on a file it just made).
+make_rustfs_image() {
+  install -m 600 -o root -g root /dev/null "$RUSTFS_IMAGE.new"
+  fallocate -l "${RUSTFS_SIZE_GB}G" "$RUSTFS_IMAGE.new"
+  mkfs.ext4 -q -F -m 0 -L indies-rustfs "$RUSTFS_IMAGE.new"
+  mv "$RUSTFS_IMAGE.new" "$RUSTFS_IMAGE"
+}
+
+rustfs_mount() {
+  cat <<INI
+# RustFS's data: a fixed ${RUSTFS_SIZE_GB} GiB ext4 image, so object storage can never fill /
+# on this shared host (scripts/ops/helios-provision.sh).
+[Unit]
+Description=RustFS data for the Indies sites (a ${RUSTFS_SIZE_GB} GiB image)
+
+[Mount]
+What=$RUSTFS_IMAGE
+Where=$RUSTFS_DATA
+Type=ext4
+Options=loop,nodev,nosuid,noexec
+
+[Install]
+WantedBy=multi-user.target
+INI
+}
 
 rustfs_unit() {
   cat <<INI
@@ -74,6 +133,7 @@ rustfs_unit() {
 Description=RustFS object storage for the Indies sites (127.0.0.1:$RUSTFS_PORT)
 After=network-online.target
 Wants=network-online.target
+RequiresMountsFor=$RUSTFS_DATA
 
 [Service]
 User=$RUSTFS_USER
@@ -83,10 +143,13 @@ Environment=RUSTFS_VOLUMES=$RUSTFS_DATA
 Environment=RUSTFS_ACCESS_KEY_FILE=$RUSTFS_CONF/access-key
 Environment=RUSTFS_SECRET_KEY_FILE=$RUSTFS_CONF/secret-key
 Environment=RUSTFS_CONSOLE_ENABLE=false
+Environment=RUSTFS_CONSOLE_ADDRESS=127.0.0.1:$RUSTFS_CONSOLE_PORT
 ExecStart=$RUSTFS_BIN_DIR/rustfs server
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536
+MemoryMax=2G
+CPUQuota=200%
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
@@ -99,7 +162,7 @@ INI
 }
 
 ensure_rustfs() {
-  say "RustFS $RUSTFS_VERSION on 127.0.0.1:$RUSTFS_PORT (data $RUSTFS_DATA)"
+  say "RustFS $RUSTFS_VERSION on 127.0.0.1:$RUSTFS_PORT (data: a ${RUSTFS_SIZE_GB} GiB image at $RUSTFS_DATA)"
   ensure_dir /etc/indies 755 root:root
   ensure_system_user "$RUSTFS_USER" "$RUSTFS_HOME"
   ensure_dir /opt/indies 755 root:root
@@ -110,17 +173,42 @@ ensure_rustfs() {
       install_rustfs_binary
     RUSTFS_CHANGED=1
   fi
-  if dry && ! id -u "$RUSTFS_USER" >/dev/null 2>&1; then
-    act "create $RUSTFS_HOME, $RUSTFS_DATA (700 $RUSTFS_USER) and $RUSTFS_CONF (750 root:$RUSTFS_USER)" true
+  ensure_dir "$RUSTFS_HOME" 755 root:root
+  # The mount point is root's until the image is mounted over it; then its root is RustFS's.
+  mountpoint -q "$RUSTFS_DATA" || ensure_dir "$RUSTFS_DATA" 755 root:root
+  if [ -e "$RUSTFS_IMAGE" ]; then
+    ok "$RUSTFS_IMAGE exists ($(($(stat -c %s "$RUSTFS_IMAGE") / 1073741824)) GiB; never reformatted)"
   else
-    ensure_dir "$RUSTFS_HOME" 750 "$RUSTFS_USER:$RUSTFS_USER"
-    ensure_dir "$RUSTFS_DATA" 700 "$RUSTFS_USER:$RUSTFS_USER"
+    act "preallocate and format $RUSTFS_IMAGE (ext4, ${RUSTFS_SIZE_GB} GiB, taken from / now)" make_rustfs_image
+  fi
+  local mount_unit
+  mount_unit="$(rustfs_mount_unit)"
+  PUT_CHANGED=0
+  rustfs_mount | put_file "/etc/systemd/system/$mount_unit" 644 root:root
+  [ "$PUT_CHANGED" = 0 ] || UNITS_CHANGED=1
+  daemon_reload_if_needed
+  if dry && [ "$PUT_CHANGED" = 1 ]; then
+    act "enable and start $mount_unit, then make its root $RUSTFS_USER's (700)" true
+  else
+    ensure_enabled_active "$mount_unit"
+    if mountpoint -q "$RUSTFS_DATA"; then
+      ensure_mode "$RUSTFS_DATA" 700 "$RUSTFS_USER:$RUSTFS_USER"
+    elif dry; then
+      act "make $RUSTFS_DATA's root $RUSTFS_USER's (700) once mounted" true
+    else
+      fail "$RUSTFS_DATA is not mounted after starting $mount_unit"
+    fi
+
+  fi
+  if dry && ! id -u "$RUSTFS_USER" >/dev/null 2>&1; then
+    act "create $RUSTFS_CONF (750 root:$RUSTFS_USER)" true
+  else
     ensure_dir "$RUSTFS_CONF" 750 "root:$RUSTFS_USER"
   fi
   if [ -s "$RUSTFS_CONF/access-key" ] && [ -s "$RUSTFS_CONF/secret-key" ]; then
     ok "RustFS root credentials exist in $RUSTFS_CONF (640 root:$RUSTFS_USER; never printed)"
   else
-    act "generate RustFS root credentials into $RUSTFS_CONF/{access-key,secret-key} (never printed)" \
+    act "generate RustFS root credentials into $RUSTFS_CONF/{access-key,secret-key} (atomic; never printed)" \
       write_root_credentials
     RUSTFS_CHANGED=1
   fi

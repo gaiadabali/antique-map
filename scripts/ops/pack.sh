@@ -14,6 +14,13 @@ ENTRY="$OPS_DIR/helios-provision.sh"
 pack() {
   local rev
   rev="$(git -C "$OPS_DIR" rev-parse --short HEAD 2>/dev/null || printf 'unknown')"
+  # A tree with uncommitted changes under scripts/ops is labelled, so a sha that was reviewed
+  # can never be confused with one packed from edits nobody saw.
+  if [ -n "$(git -C "$OPS_DIR" status --porcelain -- . 2>/dev/null)" ]; then
+    rev="$rev-dirty"
+    echo "pack.sh: WARNING: scripts/ops has uncommitted changes; packed as $rev" >&2
+  fi
+
   # Everything before the module block, minus the line that finds lib/ on disk.
   sed -n '1,/^# >>> modules/p' "$ENTRY" | sed '$d' | grep -v '^OPS_DIR='
   printf '# --- packed by scripts/ops/pack.sh at %s: the modules follow, inlined ---\n' "$rev"

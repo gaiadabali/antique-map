@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-// A stand-in for pm2 inside the test container: start / describe / jlist / save / startup, with
-// the state in ~/.pm2shim.json. `start` runs each app of the ecosystem file detached, with its
-// node_args, cwd and env, so the holding server really listens. Test-only; never on a host.
+// A stand-in for pm2 inside the test container. Like the real one, EVERY command first makes
+// sure a daemon runs for the user — ~/.pm2/rpc.sock and a live ~/.pm2/pm2.pid — so a probe that
+// runs pm2 at all is visible to the test as a change. `start` runs each app of the ecosystem file
+// detached with its node_args, cwd and env; `save` writes ~/.pm2/dump.pm2. Test-only.
 const fs = require('node:fs')
 const path = require('node:path')
 const { spawn } = require('node:child_process')
-const home = process.env.HOME
-const stateFile = path.join(home, '.pm2shim.json')
-const load = () => (fs.existsSync(stateFile) ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : [])
+const home = process.env.PM2_HOME || path.join(process.env.HOME, '.pm2')
+const stateFile = path.join(home, 'shim-state.json')
+const pidFile = path.join(home, 'pm2.pid')
 const alive = (pid) => {
   try {
     process.kill(pid, 0)
@@ -16,13 +17,25 @@ const alive = (pid) => {
     return false
   }
 }
+fs.mkdirSync(path.join(home, 'logs'), { recursive: true })
+const daemonPid = fs.existsSync(pidFile) ? Number(fs.readFileSync(pidFile, 'utf8')) : 0
+if (!daemonPid || !alive(daemonPid)) {
+  const d = spawn(
+    process.execPath,
+    ['-e', `const fs=require('fs');try{fs.unlinkSync(${JSON.stringify(path.join(home, 'rpc.sock'))})}catch{};require('net').createServer().listen(${JSON.stringify(path.join(home, 'rpc.sock'))});fs.writeFileSync(${JSON.stringify(pidFile)},String(process.pid))`],
+    { detached: true, stdio: 'ignore' },
+  )
+  d.unref()
+  for (let i = 0; i < 50 && !fs.existsSync(pidFile); i++) require('node:child_process').execSync('sleep 0.1')
+}
+const load = () => (fs.existsSync(stateFile) ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : [])
 const [cmd, ...rest] = process.argv.slice(2)
 if (cmd === 'start') {
   const { apps } = require(path.resolve(rest[0]))
-  const state = load()
-  fs.mkdirSync(path.join(home, '.pm2/logs'), { recursive: true })
+  const state = load().filter((a) => !apps.some((b) => b.name === a.name))
+
   for (const app of apps) {
-    const log = fs.openSync(path.join(home, '.pm2/logs', app.name + '-out.log'), 'a')
+    const log = fs.openSync(path.join(home, 'logs', app.name + '-out.log'), 'a')
     const child = spawn(process.execPath, [...app.node_args.split(' '), app.script], {
       cwd: app.cwd,
       env: { ...process.env, ...app.env },
@@ -43,12 +56,7 @@ if (cmd === 'start') {
   }))
   console.log(JSON.stringify(list))
 } else if (cmd === 'save') {
-  process.exit(0)
-} else if (cmd === 'startup') {
-  const user = rest[rest.indexOf('-u') + 1]
-  fs.writeFileSync(`/etc/systemd/system/pm2-${user}.service`, `[Unit]\nDescription=PM2 ${user} (shim)\n`)
-  fs.mkdirSync('/run/shim', { recursive: true })
-  fs.writeFileSync(`/run/shim/pm2-${user}.service.enabled`, '')
+  fs.writeFileSync(path.join(home, 'dump.pm2'), JSON.stringify(load().map((a) => ({ name: a.name, pm_exec_path: a.script })), null, 2))
 } else {
   console.error('shim pm2: unsupported: ' + process.argv.slice(2).join(' '))
   process.exit(1)

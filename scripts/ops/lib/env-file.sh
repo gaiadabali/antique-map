@@ -21,11 +21,12 @@ SMTP_FROM_NAME=\"$S_LABEL\""
     sister_line="# SISTER_BASE_URL stays unset on staging: sisters[0].baseUrl, the committed origin, is the
 # sister's staging site (DEPLOYMENT.md §8). Production sets it to the sister's production site."
     mail_block="# Mail: staging sends nothing out. Mailpit on this host catches every message (D13);
-# read them through an SSH tunnel to 127.0.0.1:$MAILPIT_UI_PORT.
+# read them through an SSH tunnel to 127.0.0.1:$MAILPIT_UI_PORT. SMTP_PASS is Mailpit's own
+# credential, generated on this host (root reads it in $MAILPIT_CONF/smtp-password).
 SMTP_HOST=127.0.0.1
 SMTP_PORT=$MAILPIT_SMTP_PORT
-SMTP_USER=
-SMTP_PASS=
+SMTP_USER=$MAILPIT_SMTP_USER
+SMTP_PASS=@SMTP_PASS@
 SMTP_FROM_ADDRESS=no-reply@$S_DOMAIN
 SMTP_FROM_NAME=\"$S_LABEL (staging)\""
   fi
@@ -81,7 +82,7 @@ EOF
 # The values a host's .env must hold as written (an error when they differ), and what it must
 # never hold. Read-only: the operator fixes the file.
 env_preflight() {
-  if [ ! -f "$S_ENV" ]; then
+  if ! user_exists_path "$S_ENV"; then
     note "$S_ENV is missing: it will be written from the skeleton"
     return 0
   fi
@@ -97,10 +98,14 @@ env_preflight() {
     have="$(env_get "$S_ENV" "$key")"
     [ "$have" = "$want" ] || fail "$S_ENV: $key is '${have}', not '$want'"
   done
-  if [ -n "$(env_get "$S_ENV" LOCAL_PRODUCTION_BUILD)" ]; then
+  if user_read "$S_ENV" | grep -Eq '^[[:space:]]*(export[[:space:]]+)?LOCAL_PRODUCTION_BUILD[[:space:]]*=[[:space:]]*[^[:space:]]'; then
     fail "$S_ENV sets LOCAL_PRODUCTION_BUILD: never on a host (DEPLOYMENT.md §8) — remove the line"
-  elif env_has "$S_ENV" LOCAL_PRODUCTION_BUILD; then
+  elif user_read "$S_ENV" | grep -Eq '^[[:space:]]*(export[[:space:]]+)?LOCAL_PRODUCTION_BUILD'; then
     warn "$S_ENV has an empty LOCAL_PRODUCTION_BUILD line: remove it"
+  fi
+  if mailpit_wanted && [ -r "$MAILPIT_CONF/smtp-password" ] &&
+    [ "$(env_get "$S_ENV" SMTP_PASS)" != "$(cat "$MAILPIT_CONF/smtp-password")" ]; then
+    warn "$S_ENV: SMTP_PASS is not Mailpit's ($MAILPIT_CONF/smtp-password): staging mail will be refused"
   fi
   have="$(env_get "$S_ENV" HOSTNAME)"
   case "$have" in
@@ -128,29 +133,29 @@ env_preflight() {
 
 ensure_env_file() {
   say "$S_APP: $S_ENV"
-  ensure_dir "$S_HOME/shared" 750 "$S_USER:$S_USER"
-  if [ -f "$S_ENV" ]; then
+  user_dir "$S_HOME/shared" 750
+  if user_exists_path "$S_ENV"; then
     ok "$S_ENV exists: never rewritten (checked above)"
-    ensure_mode "$S_ENV" 600 "$S_USER:$S_USER"
+    user_mode "$S_ENV" 600
   else
-    local content
+    local content smtp=''
     content="$(env_skeleton)"$'\n'
-    act "write $S_ENV from the skeleton (600 $S_USER; every secret blank)" \
-      write_file "$S_ENV" 600 "$S_USER:$S_USER" "$content"
-    if dry; then preview "$content"; fi
+    if mailpit_wanted; then
+      [ -r "$MAILPIT_CONF/smtp-password" ] && smtp="$(cat "$MAILPIT_CONF/smtp-password")"
+      if dry; then preview "${content//@SMTP_PASS@/<Mailpit SMTP password, generated on this host>}"; fi
+    elif dry; then
+      preview "${content//@SMTP_PASS@/}"
+    fi
+    act "write $S_ENV from the skeleton (600, as $S_USER; every app secret blank)" \
+      user_write "$S_ENV" 600 "${content//@SMTP_PASS@/$smtp}"
   fi
   report_blank_secrets
 }
 
 report_blank_secrets() {
-  [ -f "$S_ENV" ] || return 0
+  user_exists_path "$S_ENV" || return 0
   local blank
-  blank="$(awk -F= '/^[A-Z][A-Z0-9_]*=/ { v = substr($0, index($0, "=") + 1); if (v == "" || v == "\"\"") printf "%s ", $1 }' "$S_ENV")"
-  # Mailpit takes no credentials, so staging's blank SMTP_USER and SMTP_PASS are not secrets owed.
-  if [ "$ENVIRONMENT" = staging ]; then
-    blank="${blank//SMTP_USER /}"
-    blank="${blank//SMTP_PASS /}"
-  fi
+  blank="$(user_read "$S_ENV" | awk -F= '/^[A-Z][A-Z0-9_]*=/ { v = substr($0, index($0, "=") + 1); if (v == "" || v == "\"\"") printf "%s ", $1 }')"
   if [ -z "$(env_db_password)" ]; then blank="${blank}DATABASE_URL(password) "; fi
   [ -z "$blank" ] || note "blank in $S_ENV (fill from Infisical): $blank"
 }

@@ -14,10 +14,22 @@
 #
 # Idempotent: every step compares before it changes anything, and a second run prints
 # "changes: 0". --dry-run prints every change as "WOULD …" (with the bytes of each file it would
-# write) and makes none. It never rewrites an existing shared/.env, never touches nginx or
-# another site, and never restarts a running app. Checks that fail stop an apply run before
-# its first change. Secrets: none in this repo; the .env skeletons leave every secret blank, and
-# the next run gives Postgres and RustFS whatever the operator put there from Infisical.
+# write) and makes none; neither it nor --report starts a pm2 daemon or tries a login. Checks
+# that fail stop an apply run before its first change.
+#
+# What it never does: rewrite an existing shared/.env; restart a running app; touch another
+# site; follow a symlink in a site's home (it refuses one, and writes there only as the site
+# user); run a site user's binaries as root; alter a Postgres role it did not create (its own are
+# COMMENT 'indies-provision'). It does not touch nginx — EXCEPT with --create-sites, where
+# CloudPanel's clpctl writes the new site's vhost and reloads the host's shared nginx.
+#
+# CloudPanel's cron UI rewrites a site's crontab: if the managed block goes, --report says so
+# (an ERROR), and re-running the script puts it back.
+#
+# Secrets: none in this repo. The .env skeletons leave every app secret blank; the next run
+# gives Postgres (as a SCRAM verifier) and RustFS whatever the operator put there from
+# Infisical. Infrastructure credentials — RustFS's root key, Mailpit's passwords — are made on
+# the host into root-only files under /etc/indies and never printed.
 #
 # Options:
 #   --env staging|production   required. production also needs --gallery, --emporium and
@@ -27,9 +39,12 @@
 #   --only gallery|emporium    one site (the shared services are still checked)
 #   --gallery|--emporium USER:PORT:DATABASE:ROLE:DOMAIN   override a site's spec
 #   --bucket-suffix -SUFFIX    appended to every bucket name (production)
-#   --rustfs-port N  --mailpit-smtp-port N  --mailpit-ui-port N   (defaults 4032, 4034, 4035)
+#   --pg-port N                the Postgres cluster (default 5432; required when several exist)
+#   --rustfs-port N  --rustfs-console-port N  --mailpit-smtp-port N  --mailpit-ui-port N
+#                              (defaults 4032, 4033, 4034, 4035)
+#   --rustfs-size-gb N         the RustFS data image, made once (default 50)
 #   --min-free-gb N  --min-free-pct N   refuse below either (defaults 20 GiB and 15%)
-#   --create-sites             add a missing CloudPanel Node.js site with clpctl
+#   --create-sites             add a missing CloudPanel Node.js site with clpctl (touches nginx)
 #   --vhost-dir DIR            where CloudPanel keeps vhosts (default /etc/nginx/sites-enabled)
 #   --probe-public             the report also requests https://<domain>/api/health
 #   --quiet-preview            a dry run lists changes without the file bytes
@@ -40,6 +55,8 @@ OPS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # >>> modules (pack.sh inlines these in this order)
 # shellcheck source=lib/common.sh
 . "$OPS_DIR/lib/common.sh"
+# shellcheck source=lib/home.sh
+. "$OPS_DIR/lib/home.sh"
 # shellcheck source=lib/sites.sh
 . "$OPS_DIR/lib/sites.sh"
 # shellcheck source=lib/preflight.sh
@@ -79,7 +96,10 @@ parse_args() {
       --only) ONLY="${2:-}" && shift ;;
       --gallery | --emporium) OVERRIDE[${1#--}]="${2:-}" && shift ;;
       --bucket-suffix) BUCKET_SUFFIX="${2:-}" && shift ;;
+      --pg-port) PG_PORT="${2:-}" PG_PORT_EXPLICIT=1 && shift ;;
       --rustfs-port) RUSTFS_PORT="${2:-}" && shift ;;
+      --rustfs-console-port) RUSTFS_CONSOLE_PORT="${2:-}" && shift ;;
+      --rustfs-size-gb) RUSTFS_SIZE_GB="${2:-}" && shift ;;
       --mailpit-smtp-port) MAILPIT_SMTP_PORT="${2:-}" && shift ;;
       --mailpit-ui-port) MAILPIT_UI_PORT="${2:-}" && shift ;;
       --min-free-gb) MIN_FREE_GB="${2:-}" && shift ;;
@@ -97,9 +117,11 @@ parse_args() {
     shift
   done
   local n
-  for n in "$RUSTFS_PORT" "$MAILPIT_SMTP_PORT" "$MAILPIT_UI_PORT" "$MIN_FREE_GB" "$MIN_FREE_PCT"; do
+  for n in "$PG_PORT" "$RUSTFS_PORT" "$RUSTFS_CONSOLE_PORT" "$RUSTFS_SIZE_GB" "$MAILPIT_SMTP_PORT" \
+    "$MAILPIT_UI_PORT" "$MIN_FREE_GB" "$MIN_FREE_PCT"; do
     [[ "$n" =~ ^[0-9]+$ ]] || die "not a number: '$n'"
   done
+  [ "$RUSTFS_SIZE_GB" -ge 1 ] || die "--rustfs-size-gb is at least 1"
 }
 
 summary() {
@@ -115,6 +137,7 @@ summary() {
 main() {
   parse_args "$@"
   set_profile
+  root_tmp_init
   printf 'helios-provision %s — %s%s on %s\n' "$STAMP" "$ENVIRONMENT" \
     "$(dry && printf ' (dry run: nothing changes)')" "$(hostname)"
 
@@ -141,6 +164,7 @@ main() {
     for app in $(selected_apps); do
       load_site "$app"
       ensure_cloudpanel_site
+      resolve_site_path
       ensure_env_file
       ensure_database
       ensure_storage_site
@@ -153,6 +177,7 @@ main() {
   host_report
   for app in $(selected_apps); do
     load_site "$app"
+    resolve_site_path
     site_report
   done
   summary

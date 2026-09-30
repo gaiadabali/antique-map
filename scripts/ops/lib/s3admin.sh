@@ -58,7 +58,16 @@ print(code)
 PY
 }
 
-s3_cleanup() { [ -z "$S3_TMP" ] || rm -rf "$S3_TMP"; }
+# s3_blind WHAT — RustFS is not answering: a dry run plans the step; an apply run fails it and
+# prints no DO for a step it did not take (should-fix 8).
+s3_blind() {
+  if dry; then
+    act "$1" true
+  else
+    fail "RustFS is not answering on 127.0.0.1:$RUSTFS_PORT: skipped — $1"
+  fi
+}
+
 
 # s3_start — ready the signer if RustFS answers; a dry run before RustFS exists plans blind.
 s3_start() {
@@ -67,9 +76,8 @@ s3_start() {
     [ ! -r "$RUSTFS_CONF/secret-key" ]; then
     return 0
   fi
-  S3_TMP="$(mktemp -d)"
-  chmod 700 "$S3_TMP"
-  trap s3_cleanup EXIT
+  S3_TMP="$ROOT_TMP/s3"
+  install -d -m 700 "$S3_TMP"
   s3_py >"$S3_TMP/s3.py"
   S3_LIVE=1
 }
@@ -110,7 +118,7 @@ policy_public_read() {
 ensure_bucket() {
   local bucket="$1" kind="$2" code
   if [ "$S3_LIVE" = 0 ]; then
-    act "create bucket $bucket ($kind)" true
+    s3_blind "create bucket $bucket ($kind)"
     return 0
   fi
   code="$(s3 GET "/$bucket?location")"
@@ -138,7 +146,7 @@ ensure_bucket() {
 ensure_canned_policy() {
   local name="$1"
   if [ "$S3_LIVE" = 0 ]; then
-    act "create RustFS policy $name: $2" true
+    s3_blind "create RustFS policy $name: $2"
     return 0
   fi
   printf '%s' "$2" >"$S3_TMP/policy-$name.json"
@@ -159,7 +167,7 @@ s3_set_user() {
 # ensure_key ACCESS_KEY POLICY ENV_VAR BUCKET — the site's key, with the secret from shared/.env.
 ensure_key() {
   local key="$1" policy="$2" var="$3" bucket="$4" secret='' code
-  [ -f "$S_ENV" ] && secret="$(env_get "$S_ENV" "$var")"
+  user_exists_path "$S_ENV" && secret="$(env_get "$S_ENV" "$var")"
   if [ -z "$secret" ]; then
     note "RustFS key $key waits for $var in $S_ENV (40 letters and digits from Infisical), then a re-run"
     return 0
@@ -169,7 +177,7 @@ ensure_key() {
     return 0
   fi
   if [ "$S3_LIVE" = 0 ]; then
-    act "create RustFS key $key with the secret in $var, attached to $policy" true
+    s3_blind "create RustFS key $key with the secret in $var, attached to $policy"
     return 0
   fi
   if [ "$(s3 GET "/rustfs/admin/v3/user-info?accessKey=$key")" != 200 ]; then

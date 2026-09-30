@@ -4,13 +4,13 @@
 # (§6 wants 30 days off-box). An executable /etc/indies/backup-offbox, when the owner adds one,
 # is handed each finished dump and fails the run if it fails, so the timer shows the failure.
 
-BACKUP_DIR=/var/backups/indies
+BACKUP_DIR=$BACKUP_ROOT
 BACKUP_LIST=/etc/indies/backup-databases
 BACKUP_RETAIN_DAYS=7
 BACKUP_MIN_FREE_PCT=10
 BACKUP_AT='19:40:00 UTC' # 03:40 in Bali, after the other sites' dumps on this host
 
-# shellcheck disable=SC2154 # LIST, DIR, RETAIN, MIN_FREE: the installed script sets them
+# shellcheck disable=SC2153,SC2154 # LIST, DIR, RETAIN, MIN_FREE, PGPORT: the installed script sets them
 indies_db_backup_main() {
   local db out avail total failed=0
   umask 077
@@ -25,7 +25,7 @@ indies_db_backup_main() {
     mkdir -p "$DIR/$db"
     out="$DIR/$db/$db-$(date -u +%Y%m%dT%H%M%SZ).dump"
     # A dump holds customers' addresses and every draft: root-only, and never half-written.
-    if runuser -u postgres -- pg_dump --format=custom "$db" >"$out.partial" &&
+    if runuser -u postgres -- pg_dump --port="$PGPORT" --format=custom "$db" >"$out.partial" &&
       [ -s "$out.partial" ] && pg_restore --list "$out.partial" >/dev/null; then
       mv "$out.partial" "$out"
       if [ -x /etc/indies/backup-offbox ] && ! /etc/indies/backup-offbox "$out"; then
@@ -61,7 +61,7 @@ ensure_backups() {
     printf '#!/usr/bin/env bash\n'
     printf '# Written by scripts/ops/helios-provision.sh: edit that, not this.\n'
     printf 'set -uo pipefail\n'
-    printf 'LIST=%s\nDIR=%s\nRETAIN=%s\nMIN_FREE=%s\n' "$BACKUP_LIST" "$BACKUP_DIR" "$BACKUP_RETAIN_DAYS" "$BACKUP_MIN_FREE_PCT"
+    printf 'LIST=%s\nDIR=%s\nRETAIN=%s\nMIN_FREE=%s\nPGPORT=%s\n' "$BACKUP_LIST" "$BACKUP_DIR" "$BACKUP_RETAIN_DAYS" "$BACKUP_MIN_FREE_PCT" "$PG_PORT"
     declare -f indies_db_backup_main
     printf 'indies_db_backup_main\n'
   } | put_file /usr/local/sbin/indies-db-backup 750 root:root
@@ -70,7 +70,7 @@ ensure_backups() {
   cat <<INI | put_file /etc/systemd/system/indies-db-backup.service 644 root:root
 [Unit]
 Description=Nightly dump of the Indies brand databases (local; scripts/ops/helios-provision.sh)
-After=postgresql.service
+After=postgresql.service postgresql@$PG_MAJOR-main.service
 
 [Service]
 Type=oneshot
