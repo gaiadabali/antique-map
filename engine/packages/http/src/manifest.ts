@@ -26,7 +26,11 @@
  * `payload` dependency of its own — from a `payload-*.ts` module it loads with `import()` after it
  * has read its request (TASKS.md 4.3.a, ARCHITECTURE.md §15): so a mount, route parity's runner, a
  * unit test and `next build` load a handler without loading Payload, and `@engine/cms` never
- * imports `@engine/http`.
+ * imports `@engine/http`. Content reaches a handler the same way, through its own `payload-*.ts`
+ * module, never through `@engine/loaders` (which reaches cms statically), and the loaders import
+ * nothing of `@engine/http` but this manifest; route parity loads every mount under a hook that
+ * refuses `payload`, `@payloadcms/*` and `@engine/cms`, so a static path to Payload fails CI
+ * however indirect.
  *
  * Handlers log a request's path without its query string. A lookupToken or a payment's scope
  * never travels in a URL (`ORDER_ACCESS`; `payment.status` is a POST). A pay-link or quote
@@ -105,6 +109,20 @@ export function unbuiltHandlerOf(path: string): string {
   return byPath[path] ?? UNBUILT_HANDLER.specifier
 }
 
+/**
+ * `POST /api/x/revalidate` — how `invalidate(tags)` (`@engine/cache`, ARCHITECTURE.md §9) expires
+ * tags from outside a Next request: a `payload jobs:run` worker, a seed or an import run on the
+ * host. The handler (WEB, TASKS.md 4.6.f) takes `Authorization: Bearer <REVALIDATE_SECRET>`,
+ * compared in constant time as the cron routes compare theirs (503 while it is unset, 401 when it
+ * is wrong), and a JSON body `{ "tags": [...] }` of at most `maxTags` tags within `maxBodyBytes`,
+ * each one a tag `@engine/cache`'s builders make: anything else is a 400 and expires nothing. Each
+ * tag's profile comes from its builder — editorial `'max'`, availability and price
+ * `{ expire: 0 }` — never from the request, so no caller can make an availability tag go
+ * stale-while-revalidate. It answers 204 `no-store`. Inside a request nothing posts:
+ * `invalidate()` expires the tags itself, after the response, once the write has committed.
+ */
+export const REVALIDATE_REQUEST = { maxTags: 256, maxBodyBytes: 64 * 1024 } as const
+
 const COOKIE_AUTH: readonly RouteAuth[] = ['public', 'customer', 'token']
 
 function route(
@@ -133,7 +151,7 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   route('/brand-assets/[...path]', 'WEB', 'public', GET),
   route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
   route('/api/x/legacy/[...path]', 'WEB', 'public', GET), // legacy URLs: 301 · 404 · 410
-  route('/api/x/revalidate', 'WEB', 'revalidate', POST), // invalidate(tags) from outside a request
+  route('/api/x/revalidate', 'WEB', 'revalidate', POST), // `REVALIDATE_REQUEST`: invalidate(tags) from outside a request
   // customer accounts: `AUTH_OPERATIONS`, each 404 without its module
   route('/api/x/auth/[...path]', 'WEB', AUTH_ROUTE_AUTH, AUTH_ROUTE_METHODS),
   route('/api/x/privacy/[...path]', 'WEB', ['customer', 'token'], GET_POST), // export · erase

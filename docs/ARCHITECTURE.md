@@ -344,8 +344,10 @@ spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-componen
   under which Next renders the whole page per request with blocking metadata: a
   404 is a 404 and a slug change a real permanent redirect (308, Next's status for
   `permanentRedirect()`). Caching is per read, never per page. Next counts a request
-  with no `User-Agent` as no bot and serves it the shell's 200, so the proxy sets one
-  on such a request (C13 `PROXY_USER_AGENT`). And the proxy answers its own
+  with no `User-Agent` as no bot at all, so for it a 404, a permanent redirect and
+  the proxy's own not-found status are all lost — on a route the build lists as ƒ as
+  on one it lists as ◐ (4.3's senior-fe review #12) — so the proxy sets one on such
+  a request (C13 `PROXY_USER_AGENT`). And the proxy answers its own
   not-found — a path that names no page — with a 404 on its rewrite (C13
   `PROXY_NOT_FOUND_STATUS`), which Next keeps through a normal render, so the
   not-found route renders the designed page in its own body without JavaScript,
@@ -355,46 +357,68 @@ spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-componen
   but **no prerendered or ISR page is ever served** — free today, every shell being
   empty, and ruled out for good; **every `generateMetadata` gates the first byte**
   for every visitor, so it reads only cached data; **every router prefetch is a full
-  render** with the page's reads, so storefront links are plain `<a>` or
-  `<Link prefetch={false}>` (the destination-side `prefetch = 'force-disabled'` was
-  rejected: a second segment config, and it still prefetches the route's metadata),
-  and only the visitor's own document navigation consumes a post's result (C13
-  `FORM_RESULT`); and **the nonce CSP depends on it** (a served shell would carry no
+  render** with the page's reads, so a storefront link is an `<a>` or the link
+  primitive (TASKS.md 11.1.c: `next/link` with `prefetch={false}`), and `next/form`
+  and `router.prefetch()`, which prefetch too, are fenced (TASKS.md 5.4). The
+  destination-side `prefetch = 'force-disabled'` was rejected: a second segment
+  config, and it still prefetches the route's metadata. Only the visitor's own
+  document navigation consumes a post's result (C13 `FORM_RESULT`); and **the nonce
+  CSP depends on it** (a served shell would carry no
   nonce). The shell bypass is Next's implementation, not a documented promise, so
   the status spec (`engine/apps/gallery/e2e/status.spec.ts`, moving to
   `tests/e2e/`) asserts the 404s and permanent redirects on a production build, and
   fails the day a Next release changes it.
 - **Content is cached; what the first flush must carry is read in the page body;
-  only slow or live reads stream.** Loaders for content use `'use cache'` +
-  `cacheTag` + `cacheLife` (the process serves one brand, so the brand is part of
-  every key by construction). Per-visitor data — cookies, headers, the ship-to
-  market, the cart, the account — never enters a shared cache. What a visitor
-  without JavaScript must see and use — a form, its current value, a post's result,
-  the canonical check — is read at request time in the page's own body, since a
-  streamed part stays hidden until a script swaps it in; slow or live reads —
-  availability, a live price, cart totals — run inside `<Suspense>`, and a streamed
-  part carries no form (the spike, §5). The purchase panel's dynamic part streams
-  into a placeholder of reserved height ("Checking availability…"); no purchase
-  control renders until availability is known (DESIGN-SYSTEM.md §7).
+  only slow reads that no form depends on stream.** Loaders for content use
+  `'use cache'` + `cacheTag` + `cacheLife` (the process serves one brand, so the
+  brand is part of every key by construction). Per-visitor data — cookies,
+  headers, the ship-to market, the cart, the account — never enters a shared cache.
+  What a visitor without JavaScript must see and use — a form, its current value, a
+  post's result, the canonical check, **and the purchase panel**, whose live
+  availability decides which purchase forms it shows — is read at request time in
+  the page's own body, since a streamed part stays hidden until a script swaps it
+  in (the spike, §5). So buying works without JavaScript (4.3's senior-fe review #1
+  found the earlier wording streamed the panel, leaving no way to buy without a
+  script), and "no purchase control before availability is known"
+  (DESIGN-SYSTEM.md §7) holds by construction. Only slow reads no form depends on —
+  related works, reviews, a courier's live quote, a remote rate — stream inside
+  `<Suspense>` into a placeholder of reserved height, and a streamed part carries no
+  form.
 - **The availability that decides a purchase is read live, never cached**
   (TASKS.md 4.3.c; the spike cached it under `cacheLife('max')`, correct only while
   every writer invalidates). It changes with no write to announce it — a checkout
   lock or a hold lapses at its `expiresAt` — so no tag could expire a cached copy in
-  time; it is one indexed read, inside the panel's `<Suspense>`, where its latency
-  delays nothing else. A status merely shown from cached content (a listing card's
-  *Sold*, a catalogue's *on hold*) is tagged `availability:<id>`, expired at once by
-  every write and bounded by a one-minute backstop,
-  `cacheLife({ stale: 30, revalidate: 30, expire: 60 })`, so a missed invalidation
-  or a lapsed lock heals by itself (senior-fe #8); no purchase control acts on it,
-  and `reserve()` refuses a sold item whatever a page showed.
-- **Invalidation:** editorial content with `revalidateTag(tag, 'max')`
-  (stale-while-revalidate), availability and price tags with
-  `revalidateTag(tag, { expire: 0 })`. The single-argument form is deprecated.
-  Code that runs outside a request (jobs, webhooks' after-commit dispatch) calls
-  one `invalidate(tags)` helper, which posts to an internal revalidate route
-  (`REVALIDATE_SECRET`). The helper and the tag builders live in a leaf package,
-  `@engine/cache`, outside `@engine/http` (which reaches Payload through
-  `@engine/cms`), so Payload's hooks call it without cms ever importing http (§15).
+  time. It is one indexed read in the page body, bounded by a short timeout after
+  which the panel resolves `unverified` (C2), so a slow database never holds the
+  first byte for long. Every cached scope that shows an availability status (a
+  listing card's *Sold*, a catalogue's *on hold*) tags it `availability:<id>`,
+  expired at once by every write, and declares as its own `cacheLife` the one-minute
+  backstop `@engine/cache` exports (`AVAILABILITY_STATUS_LIFE`,
+  `{ stale: 30, revalidate: 30, expire: 60 }`), because an explicit outer
+  `cacheLife` wins over an inner one: a status read nested in a `'max'` listing would
+  keep the listing's lifetime (4.3's senior-fe review #2). A missed invalidation or a
+  lapsed lock then heals by itself; no purchase control acts on a cached status, and
+  `reserve()` refuses a sold item whatever a page showed. A `cacheTag()` call takes
+  at most 128 tags, so a scope tagging every card of a long page batches its calls.
+- **Invalidation runs after the write commits.** Editorial content with
+  `revalidateTag(tag, 'max')` (stale-while-revalidate), availability and price tags
+  with `revalidateTag(tag, { expire: 0 })`; the single-argument form is deprecated.
+  One helper does it, `@engine/cache`'s `invalidate(tags)`, built in a leaf package
+  before its first caller (TASKS.md 4.8), with the tag builders beside it. Payload
+  runs `afterChange` before it commits (4.3's senior-be review #2), so a revalidation
+  fired there could cache the old row as fresh. So `invalidate()` never revalidates
+  on the spot: **inside a Next request** — a Payload REST or admin call, a route
+  handler, a Server Action — it schedules `revalidateTag` with `after()`, which runs
+  once the response has been sent, after Payload has committed (Next runs `after()`
+  callbacks under its own revalidation flush, `after-context.js`); **outside a
+  request** — a `payload jobs:run` worker, a seed, an import — the caller puts a
+  collector on Payload's `req.context` and flushes it once its operation returns,
+  an import once per batch, by a post to `/api/x/revalidate` (C13
+  `REVALIDATE_REQUEST`, TASKS.md 4.6.f), which expires each tag at its builder's
+  profile. The mode is explicit: an out-of-request caller that forgets its collector
+  gets `after()`'s error outside a request, never a silent stale page. The helper
+  lives outside `@engine/http` (which reaches Payload through `@engine/cms`), so
+  Payload's hooks call it without cms ever importing http (§15).
 - **The admin lives under the same flag** — Payload's Cache Components support is
   still "initial" (≥ 3.81) — so **phase 4 proved it** (TASKS.md 4.1): a production
   build with the admin mounted and no database, brand or secrets, then one
@@ -593,10 +617,23 @@ in production, so fixture content can never ship.
 a path the proxy never sees — `/brand-assets/%E0%A4%A.svg`, `/api/x/legacy/%C0%AE…`
 — gets Next's own bare 500, logged nowhere, before any engine code runs (4.1
 review, senior-be #12); under the proxy's matcher the same path is the proxy's
-not-found. Nothing leaks and nothing changes, so the engine does not answer it,
-but a scanner can trip the 5xx-rate alert (DEPLOYMENT.md §7): the alert sets apart
-a 500 whose request path does not percent-decode, as scanner noise, and never pages
-on it (TASKS.md 41.2.c).
+not-found. So does a rewrite that carries an undecodable segment into a dynamic
+route's param (`/<locale>/item/1706-%FF`, measured by 4.3's senior-fe review #4),
+which is why C10 never carries one: an old item link whose slug does not decode
+reaches the item route with a fixed slug no item has (TASKS.md 22.7.d). Nothing
+leaks and nothing changes, so the engine does not answer these, but a scanner can
+trip the 5xx-rate alert: DEPLOYMENT.md §7 counts a 500 under `/brand-assets/` or
+`/api/x/` whose path holds a `%` as its own series — a rule an alert can evaluate —
+never paging on it and never dropping it (TASKS.md 41.2.c).
+
+**A capability in a path stays out of every log.** A C10 `sensitive` page — a pay
+link's, a quote's — carries its token in its own path, so an access log, an error
+report or a header dump never records that path beyond the surface's segment: not
+the URL, and not the proxy's `x-public-path` copy of it. Error reporting also scrubs
+`x-public-search`, which the proxy sets on the item route alone (C13, 4.3's
+senior-be review #6). A handler under a path the proxy never sees (`/api/…`,
+`/brand-assets/…`) never reads the proxy's request headers: there, any such header
+is the client's own.
 
 ## 14. Things we deliberately are not using
 
@@ -639,41 +676,64 @@ recommendation from the 4.1 review (item 5), adopted with its conditions.
 **Conditions — each one enforced:**
 
 1. **One Payload.** SCH exports `@engine/cms/instance` (TASKS.md 4.8): `cms()`, the
-   workspace's only `getPayload({ config })`, and the adapter's pool for
-   `@engine/cms/db/probe`, typed where the adapter is built. So `payload` is declared
+   workspace's only server-route `getPayload({ config })`, and `cmsPool(payload)`,
+   the adapter's pool typed as `@engine/cms/db/probe`'s `databaseProbe()` takes it
+   (`Pick<LockPool, 'connect'>` — a cast, since `Payload['db']` is the generic adapter,
+   so it fails loudly when `pool.connect` is no function). So `payload` is declared
    and pinned by cms alone, and http declares `"@engine/cms": "workspace:*"`: a
    second copy of `payload` would split `getPayload`'s cache — two instances, two
-   pools, migrations raced.
+   pools, migrations raced. cms's peers (`next`, `react`, `react-dom`) follow it into
+   http's install; if pnpm reports them unmet, they become http devDependencies.
 2. **Lazily, after the request.** A handler's `route.ts` never imports cms. It reads
    its request first (`atRequestTime(request)`), then `await import('./payload-…')`.
    So `next build`'s page-data pass, route parity's runner — which imports every
    mount — and a handler's unit test never evaluate the Payload config, and the
-   pure ports (`checkHealth`, `perRunLimit`) stay testable without it.
-3. **Fenced, by ESLint (HAR, TASKS.md 5.4).** Under `engine/packages/http/src/**`
-   only a `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms`,
-   statically or by `import()`, and no module imports a `payload-*` module
-   statically; so the proxy, the manifest, brand assets, the legacy handler and the
-   placeholder can never reach Payload. The manifest imports other packages as types
-   only.
+   pure ports (`checkHealth`, `perRunLimit`) stay testable without it. A test that
+   calls the route itself takes the port loader as an argument — the route exports a
+   factory, `healthRoute(load = () => import('./payload-ports'))` — or `vi.mock`s the
+   module; 4.6 picks one (4.3's senior-be review #13).
+3. **Fenced — behaviourally, and by ESLint (HAR, TASKS.md 5.4).** Route parity loads
+   every mount under a resolve hook that refuses `payload`, `@payloadcms/*` and
+   `@engine/cms`, so a static path to Payload fails CI however indirect — through
+   `@engine/loaders`, say, or any future package that depends on cms (4.3's
+   senior-be review #3). And ESLint, under `engine/packages/http/src/**`: only a
+   `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms` by value,
+   statically or by `import()` (`import type` is free, so a pure port can name
+   `Payload`); no module but a test imports a `payload-*` module statically; and the
+   manifest imports other packages as types only, its tests excepted. So the proxy,
+   the manifest, brand assets, the legacy handler and the placeholder can never
+   reach Payload. **Content reaches a handler through its own `payload-*.ts`
+   module, never through `@engine/loaders`**, and the loaders import nothing of
+   `@engine/http` but its manifest (C13's names, such as `FORM_RESULT`'s cookie — a
+   leaf of constants and types): a page reads the proxy's headers and passes them to
+   a loader (C2's `asked`), so no cycle forms between the two.
 4. **No cycle.** `@engine/cms` never imports `@engine/http` (ESLint over
    `engine/packages/cms/**`). So `invalidate(tags)`, which cms hooks call, lives in
-   neither: it lives in a leaf package, `@engine/cache` — the cache-tag builders and
-   `invalidate(tags)` (in a Next request `revalidateTag`, else a post to
-   `/api/x/revalidate`), importing `next/cache` and no engine package but C1's types —
-   which cms, the loaders, the handlers and any package's job import alike without a
-   cycle. Nothing in `@engine/loaders` or `@engine/http` could be that home: cms would
-   import it back. SCH builds it with its first caller (TASKS.md 8.2) and adds a tag
-   builder at another lane's request, as it does a registry entry.
+   neither: it lives in a leaf package, `@engine/cache` — the cache-tag builders, the
+   status backstop (`AVAILABILITY_STATUS_LIFE`) and `invalidate(tags)`, which runs
+   after the commit (§9: `after()` inside a request, a collector the caller flushes
+   outside one) — importing `next` (a peerDependency, and a devDependency, as cms
+   declares it) and no engine package but C1's types. cms, the loaders, the handlers
+   and any package's job import it alike without a cycle, and an ESLint rule keeps
+   it a leaf. Nothing in `@engine/loaders` or `@engine/http` could be that home: cms
+   would import it back. SCH builds it **before its first caller**, in phase 4
+   (TASKS.md 4.8; 4.3's senior-be review #1: at 8.2 it came after 9.1, 11.3 and 18.2
+   needed it), and adds a tag builder at another lane's request, as it does a
+   registry entry. The route it posts to from outside a request, `/api/x/revalidate`
+   (C13 `REVALIDATE_REQUEST`), is WEB's and lands in 4.6.
 5. **Client-safe, unchanged.** `check:client-safe` already refuses `payload`,
    `@payloadcms/*` and `@engine/cms` wherever a `'use client'` module reaches them,
    following static and dynamic imports; no `@engine/http` subpath was ever
    client-safe (brand assets reach `node:fs`).
 6. **The build never touches a database** (CONVENTIONS.md §12): condition 2 and the
-   request read first. 4.6.c proves it by building with `DATABASE_URL` unset and
-   outbound connections refused.
+   request read first. An unset `DATABASE_URL` does not prove it — `pg` falls back to
+   `PGHOST` and to `localhost:5432`, a workstation's own Postgres (4.3's senior-be
+   review #4) — so 4.6.c and 4.8.d point `DATABASE_URL` and `PGHOST` at a sentinel
+   listener that must accept no connection, or build with no network at all.
 
-**The files TASKS.md 4.6 changes**, and no others (the apps' mount files stay as they
-are):
+**The files of the Payload wiring**, which TASKS.md 4.6 changes for 4.6.a–c (its
+4.6.d moves the placeholder, 4.6.e the apps' shell fields, 4.6.f builds the
+revalidate route):
 
 | File | Change |
 | --- | --- |
@@ -686,6 +746,7 @@ are):
 | `engine/packages/http/src/cron/cron.test.ts` | the above, without a database |
 
 And SCH's, before it (4.8): `engine/packages/cms/src/instance.ts` and the
-`"./instance"` entry of `engine/packages/cms/package.json`'s `exports`. With cms
-reached, http's type-check covers the cms files it imports, so `instance.ts` imports
-the config and nothing an admin component needs.
+`"./instance"` entry of `engine/packages/cms/package.json`'s `exports`, and the new
+leaf package `engine/packages/cache/**`. With cms reached, http's type-check covers
+the cms files it imports, so `instance.ts` imports the config and nothing an admin
+component needs.

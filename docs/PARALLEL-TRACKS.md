@@ -22,7 +22,7 @@ paths.
 | **ARC** architecture | `docs/**` planning docs, `.claude/specs/**` (orchestrator), contract files marked `@contract` | architect (never implements) |
 | **HAR** harness | `package.json` · `pnpm-workspace.yaml` · `tsconfig.base.json` · `eslint.config.mjs` · `.prettierrc.json` · `vitest.workspace.ts` · `playwright.config.ts` · `lighthouserc*.json` · `docker-compose.dev.yml` · `.env.example` · `.gaiadeploy.yml` · `.github/**` · `engine/tooling/**` · `scripts/**` · each app's `next.config.ts`, `tsconfig.json`, `package.json` | devops |
 | **PLT** platform spine | `engine/packages/config/**` · `engine/packages/i18n/**` · `engine/packages/http/src/proxy/**` (locale, route-map and redirect resolution each app's `src/proxy.ts` re-exports) | senior-be |
-| **SCH** schema & CMS | `engine/packages/cms/src/{payload.config.ts,instance.ts,collections,globals,fields,blocks,hooks,access,validators,migrations,seed,registries,db}/**` · `engine/packages/cache/**` (the cache-tag builders and `invalidate(tags)`, a leaf every lane imports — ARCHITECTURE.md §15) — the registries (collections, jobs, admin views, plugins) and **all engine-table DDL** (engine tables — in `public`, beside Payload's, under plain names — partial indexes, FTS config, declared through the Postgres adapter's `afterSchemaInit` so migrations carry them) | senior-db + senior-be |
+| **SCH** schema & CMS | `engine/packages/cms/src/{payload.config.ts,instance.ts,collections,globals,fields,blocks,hooks,access,validators,migrations,seed,registries,db}/**` · `engine/packages/cache/**` (the cache-tag builders, the status backstop and `invalidate(tags)` — a leaf every lane imports, built in TASKS.md 4.8; ARCHITECTURE.md §15) — the registries (collections, jobs, admin views, plugins) and **all engine-table DDL** (engine tables — in `public`, beside Payload's, under plain names — partial indexes, FTS config, declared through the Postgres adapter's `afterSchemaInit` so migrations carry them) | senior-db + senior-be |
 | **ADM** admin tooling | `engine/packages/cms/src/admin/**` (custom views, admin components, admin CSS) | senior-fe / senior-uiux |
 | **DOM** commerce domain | `engine/packages/domain/**` — pricing, `reserve()`, **`applyPaymentEvent()`**, every state machine (order, payment, reservation, availability, offer), the outbox writer · `engine/packages/http/src/{commerce,cron/sweeps,cron/outbox}/**` | senior-be |
 | **PAY** payments | `engine/packages/payments/**` (stateless adapters: sessions, signature checks, `retrieve()`, event-id derivation) · `engine/packages/http/src/webhooks/payments/**` (the thin handler: parse → retrieve → `domain.applyPaymentEvent()`) · `engine/packages/http/src/cron/reconcile/**` | senior-integrator |
@@ -69,9 +69,14 @@ never in http. The mount files stay WEB's: the task that lands a handler lists i
 **How a handler reaches Payload** (TASKS.md 4.3.a, ARCHITECTURE.md §15). `@engine/http`
 depends on `@engine/cms` — never on `payload` itself — and a handler that reads the
 database loads its Payload-backed ports from a `payload-*.ts` module in its own folder,
-with `import()`, after it has read its request. SCH's `@engine/cms/instance` is the
-process's one `getPayload()`, and `@engine/cms` never imports `@engine/http`; ESLint
-fences both edges (HAR).
+with `import()`, after it has read its request — content included, never through
+`@engine/loaders`, and the loaders import nothing of `@engine/http` but its manifest
+(C13). SCH's
+`@engine/cms/instance` is the process's one `getPayload()`, and `@engine/cms` never
+imports `@engine/http`; route parity's resolve hook and ESLint fence these edges
+(HAR, 5.4). `@engine/cache` (SCH's, built in 4.8, before any caller) is the one home
+of the cache tags and of `invalidate(tags)`, which runs after the write commits; the
+route it posts to from outside a request, `/api/x/revalidate`, is WEB's.
 
 **One e2e folder: `tests/e2e/`** (TASKS.md 4.3.d) — where every Playwright project in
 `playwright.config.ts` takes its specs from; outside `engine/`, so a spec may name a real

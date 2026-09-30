@@ -213,8 +213,9 @@ the address asked for is not the current one — no lookup table involved. That 
 engines treat as they treat a 301 (the 4.1.e spike §3). The route reads only the id
 from its param, since Next hands the same segment still encoded to the page and
 decoded once to its metadata, and its loader compares the **public path the proxy
-passed on** (C13 `PROXY_REQUEST_HEADERS.publicPath`) with `href()`'s spelling, byte
-for byte (DESIGN-SYSTEM.md §2):
+passed on** (C13 `PROXY_REQUEST_HEADERS.publicPath`, handed to C2's `Loaders.item` as
+`asked` by the page) with `href()`'s spelling, byte for byte, outside its cached read
+(DESIGN-SYSTEM.md §2):
 exactly one address answers 200, the redirect's `Location` is encoded once (twice
 would loop), and it carries on the query the old link had
 (`PROXY_REQUEST_HEADERS.publicSearch` — a rewritten request loses its query, so this
@@ -277,8 +278,11 @@ icons, the manifest) or a first segment Next or the proxy claims (`_next`,
 - **A slug part that does not decode as UTF-8** — `%FF`, a Latin-1 `caf%E9`, raw
   bytes in the request line — is not found today (404 from the proxy: C10 cannot
   read the segment). C10's next minor version sends it to the item route by its id
-  like any other odd slug, so it gets the one 308 (TASKS.md 22.7); the URL gate lists
-  any such URL of the inventory until then (4.1 review, senior-fe #12).
+  with a fixed ASCII slug no item has — never the bytes as asked, which Next cannot
+  decode into the route's param and answers with a bare 500 (measured by 4.3's
+  senior-fe review #4) — so it gets the one 308, its query kept (TASKS.md 22.7.d); the
+  status spec probes it, and the URL gate lists any such URL of the inventory until
+  then (4.1 review, senior-fe #12).
 - **The handler (36.4) takes a `Location` only from a root-relative `redirects`
   row** — matching `^/(?![/\\])`, never `//host` or `/\host`, which a browser
   reads as another site. A request such as `/category/%2F%2Fevil.com` reaches it

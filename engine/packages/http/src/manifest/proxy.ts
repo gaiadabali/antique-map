@@ -13,20 +13,28 @@
 
 /**
  * The request headers the proxy sets on every request it passes on, overwriting whatever a
- * client sent:
+ * client sent. Only a page reads them: a handler under a path the matcher leaves out (`/api/…`,
+ * `/brand-assets/…`) never does, because a client reaches it without the proxy and any such header
+ * there is the client's own. Error reporting scrubs `x-public-search` and, on a C10 `sensitive`
+ * page — whose path is a capability (a pay link's or a quote's token) — `x-public-path` beyond the
+ * surface's own segment, exactly as it scrubs that page's URL (ARCHITECTURE.md §13):
  * - `publicPath`: the public path as the browser spelt it (`URL.pathname`). The item route's
  *   one-address rule compares it with `href()`'s spelling byte for byte (MIGRATION.md §6), since
  *   Next hands the route's own param in two spellings; and a page that gets no params
  *   (`not-found.tsx`, `error.tsx`) knows what was asked for, so the not-found loader tells a
  *   removed item (Gone) from a legacy slug to search for (C2 `Loaders.notFound`).
- * - `publicSearch`: the public query as the browser sent it (`URL.search`: `''` or `?…`). Next
- *   replaces a rewritten request's query with the destination's, and C10's internal URL carries a
- *   page's canonical state alone, so for a page this is the one place the visitor's own query
- *   survives the rewrite (a legacy URL's rides in the legacy handler's own URL). A page never
- *   reads its state from it — that is its `searchParams`, C10's canonical
- *   query — and it has one use: a permanent redirect carries it on, so a stale item slug's 308
- *   keeps an old link's `utm_*` or an ad's click id (TASKS.md 33.3). Like any query string it is
- *   never logged.
+ * - `publicSearch`: the public query as the browser sent it (`URL.search`: `''` or `?…`), set on
+ *   the item route's rewrite alone and `''` on every other request, where a client's copy is still
+ *   dropped (4.3's senior-be review #6: set everywhere, it would copy any query — a capability's
+ *   included — into a header every page could read). Next replaces a rewritten request's query
+ *   with the destination's, and C10's internal URL carries a page's canonical state alone, so this
+ *   is the one place an item request's own query survives the rewrite (a legacy URL's rides in the
+ *   legacy handler's own URL). The item page never reads its state from it — that is its
+ *   `searchParams`, C10's canonical query — and it has one use: the item's permanent redirect
+ *   carries it on, so a stale slug's 308 keeps an old link's `utm_*` or an ad's click id (C2
+ *   `Loaders.item`'s `asked`, TASKS.md 33.3). It never holds Next's own `_rsc`: Next strips its
+ *   internal search params before the proxy runs (`stripInternalSearchParams`), which holds only
+ *   while `skipProxyUrlNormalize` stays off, as it does. Like any query string it is never logged.
  * - `locale`: the locale the proxy routed to.
  * - `contentSecurityPolicy`: the answer's own `Content-Security-Policy`, copied onto the request,
  *   because Next takes the nonce for its scripts from the request's CSP header. The CSP uses a
@@ -87,9 +95,12 @@ export const PROXY_NOT_FOUND_STATUS = 404
  * database.
  *
  * It writes a rewrite as an absolute URL on the request's own origin, the only form Next's adapter
- * takes. So a host never binds a loopback IP literal (`HOSTNAME=127.0.0.1`): Next renames `127.x`
- * and `[::1]` to `localhost` when it re-reads the rewrite but builds its own URL from the raw
- * `HOSTNAME`, so every rewrite looks external, is proxied to itself, and every page hangs — whatever
- * origin the proxy wrote (4.1's qa F1; DEPLOYMENT.md §8 pins `HOSTNAME`).
+ * takes. So a server never binds a loopback IP literal (`HOSTNAME=127.0.0.1`, or `-H 127.0.0.1`
+ * for `next start`): Next renames `127.x` and `[::1]` to `localhost` when it re-reads the rewrite
+ * but builds its own URL from the raw host, so every rewrite looks external and is proxied to
+ * itself — and the proxy's own not-found, rewritten again, loops — so every page hangs, whatever
+ * origin the proxy wrote (4.1's qa F1; measured again in 4.3). A host binds `localhost` pinned to
+ * IPv4 (`--dns-result-order=ipv4first`), which listens on 127.0.0.1 alone and keeps both URLs'
+ * host `localhost` (DEPLOYMENT.md §3); the boot check refuses a loopback literal (TASKS.md 5.3.d).
  */
 export const PROXY_MATCHER = ['/((?!api/|_next/|brand-assets/).*)'] as const

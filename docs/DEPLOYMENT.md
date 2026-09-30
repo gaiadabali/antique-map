@@ -85,20 +85,43 @@ with the brand folder beside it (`assemble-artifact.sh`). So each target's pm2 p
 for the gallery app, `uoei` for the emporium — runs, from its `current` release:
 
 ```
-node <current>/engine/apps/<app>/server.js        <app>: gallery for uig, emporium for uoei
+script     <current>/engine/apps/<app>/server.js       <app>: gallery for uig, emporium for uoei
+node_args  --dns-result-order=ipv4first                so `localhost` binds 127.0.0.1 (below)
+exec_mode  fork                                        one process per brand, never cluster
+instances  1
 
-HOSTNAME=0.0.0.0               the address server.js binds (§8): set, never left to the shell
+HOSTNAME=localhost             the address server.js binds (§8): set, never left to the shell
 PORT=<the site's port>         §2's app port; server.js falls back to 3000 without it
 BRAND_ROOT=<current>/brand     the folder holding site/: brand.config.json, copy/, assets/
 ```
 
 and `shared/.env` supplies the rest (§2, §8). That `server.js` sets `NODE_ENV=production`
-itself; `next start` never runs on a host. A `HOSTNAME` that is a loopback IP literal
-(`127.0.0.1`, `::1`) makes every storefront page hang with nothing logged: Next renames the
-loopback host to `localhost` when it re-reads the proxy's rewrite but builds its own URL from
-the raw `HOSTNAME`, so every rewrite looks external and is proxied to itself — which no choice
-of origin in the proxy fixes (4.4.g), so the boot check refuses such a `HOSTNAME` (TASKS.md
-5.3.d, C13 `PROXY_MATCHER`).
+itself; `next start` never runs on a host.
+
+**One process, in fork mode.** 4.6's single-flight jobs run, §7's in-process rate limits
+and the health check's ~5 s memo are exact only with one process per brand; a pm2 or
+CloudPanel template running `-i max` or cluster mode would break all three without a word,
+so the entry pins `exec_mode: 'fork'` and `instances: 1`.
+
+**Bound behind nginx, on loopback alone.** The app port is reached only through nginx,
+which terminates TLS and sets `X-Forwarded-For`, on which the rate limits key — a direct
+hit could forge it. So a host never binds `0.0.0.0`, which would put 4030 and 4031 on the
+public interface (4.3's senior-be review #8), and never a loopback IP literal
+(`127.0.0.1`, `::1`): at one of those, Next renames the host to `localhost` when it re-reads
+the proxy's rewrite but builds its own URL from the raw address, so every rewrite looks
+external, is proxied to itself, and every storefront page hangs with nothing logged — which
+no choice of origin in the proxy fixes (4.4.g), so the boot check refuses one (TASKS.md
+5.3.d, C13 `PROXY_MATCHER`). The host binds **`localhost`, pinned to IPv4**: measured in
+4.3 on Next 16.3.6, `localhost` alone listened on `[::1]` only, where an nginx upstream at
+`127.0.0.1` is refused (a 502); with `--dns-result-order=ipv4first` it listened on
+`127.0.0.1` alone, answered through `127.0.0.1` and `localhost`, and did not hang, since
+both of Next's URLs then say `localhost`. nginx's upstream is `http://127.0.0.1:<port>`,
+which 5.1 confirms in the site's CloudPanel vhost. 5.1 verifies the bind on Helios:
+`ss -ltnp` shows the port on `127.0.0.1` only, a page answers
+through nginx, and `curl http://<public-ip>:4030` from outside is refused — the host
+firewall (CloudPanel's allows 22, 80 and 443) is 5.1's to confirm, with the owner's
+go-ahead (👤). CI's servers, on an ephemeral runner with no nginx, bind `0.0.0.0`
+(`start-server.sh`).
 
 `.gaiadeploy.yml`, using the pipeline's monorepo support (`subdir`, added
 2026-08-19 for exactly this):
@@ -194,9 +217,22 @@ runbook records how long it actually took.
 ## 7. Health, monitoring, security
 
 - `/api/health` returns app, database, storage, job-queue lag and payment
-  provider reachability. Alloy on the box watches it; alert on p95 > 1 s, 5xx
-  rate, disk > 80%, pm2 restart loop, job-queue lag > 10 min, **any webhook
-  signature failure**.
+  provider reachability; the lag and the providers are reported and never gate
+  its status, because a failed health check rolls a deploy back (§3). Alloy on
+  the box watches it; alert on p95 > 1 s, 5xx rate, disk > 80%, pm2 restart
+  loop, job-queue lag > 10 min, **any webhook signature failure**.
+- **The 5xx rate sets one series apart** (TASKS.md 4.3, 41.2.c): a `500` whose
+  path is under `^/(brand-assets|api/x)/` and contains `%` is Next's own answer to
+  a path it cannot decode, before any engine code runs (ARCHITECTURE.md §13) — no
+  brand asset or engine API path carries a `%` of its own, since brand-asset
+  segments are checked and legacy URLs are logged under their public path. The
+  rule is evaluable as written (a status, a prefix and a character, no decoding),
+  and those 500s are counted as their own series — ticketed past a rate, never
+  paging and never dropped, so a Next change that 500s every `%` path still shows —
+  while every other 500 still counts toward the paging rate. nginx may answer a
+  malformed escape (`%A.`) with its own 400 first, leaving only well-formed escapes
+  of invalid UTF-8 (`%C0%AE`, `%FF`) to reach Next; 41.2.c measures that through
+  CloudPanel's nginx.
 - Security headers and the CSP are sent by the app
   (`engine/packages/http/src/security/`), never by the CloudPanel vhost, which
   regenerates its nginx config (KOI). The CSP is **built per request** from brand

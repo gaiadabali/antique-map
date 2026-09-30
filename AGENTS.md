@@ -39,11 +39,14 @@ in `indies-gallery/`, `old-east-indies/` and `test/` — never code.
   redirect keeps its status. The brand is read after `connection()`, and an engine
   `GET` route handler reads its request first, or the build runs it. What the first
   flush must carry — a form, its current value, a post's result, the canonical
-  check — is read in the page body; only slow or live reads (availability, a live
-  price, cart totals) stream inside `<Suspense>`, and a streamed part holds no form.
-  Cached reads are `'use cache'` + `cacheTag` + `cacheLife`, invalidated through
-  `invalidate(tags)`; the availability that decides a purchase is read live, never
-  cached. Storefront links never prefetch: `<a>` or `<Link prefetch={false}>`.
+  check, and the purchase panel with its live availability — is read in the page
+  body, so buying works without JavaScript; only slow reads no form depends on
+  (related works, reviews) stream inside `<Suspense>`, and a streamed part holds no
+  form. A route reads only the locale and ids from `params`, and slugs from C10's
+  parse of the public path. Cached reads are `'use cache'` + `cacheTag` +
+  `cacheLife`, invalidated after commit through `@engine/cache`'s
+  `invalidate(tags)`; the availability that decides a purchase is never cached.
+  Storefront links never prefetch: an `<a>`, or the link primitive (TASKS.md 11.1).
 - **Public reads are published-only and projected.** Loaders and the sister API
   call Payload with `overrideAccess: false`, filter `_status: 'published'` and
   `select` only the fields the view model needs. The Local API's default

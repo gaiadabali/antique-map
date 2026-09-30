@@ -37,25 +37,36 @@ import { ItemSurface } from '@/surfaces/item/item-surface'
 
 export default async function Page({ params }: PageProps<'/[locale]/item/[idSlug]'>) {
   const { locale, idSlug } = await params
-  const result = await loadItem({ locale, publicId: parsePublicId(idSlug) }) // published, projected
+  const publicId = parsePublicId(idSlug)             // the id alone: ASCII digits, or null
+  if (publicId === null) notFound()
+  const asked = await askedAddress()                 // the proxy's x-public-path, x-public-search
+  const result = await loadItem({ locale, publicId, asked }) // published, projected
   if (!result) notFound()                            // a miss only the database can decide
   if ('redirectTo' in result) permanentRedirect(result.redirectTo)  // not the one address: a 308
-  return <ItemSurface vm={result.vm} />                              // the app's own design
+  const purchase = await result.vm.purchase          // in the first flush: its forms work without JS
+  return <ItemSurface vm={result.vm} purchase={purchase} />          // the app's own design
 }
 ```
 
 The route reads only the id from its segment: Next hands the page that segment
 still encoded and `generateMetadata` the same one decoded, so no spelling of it is
-compared. The loader decides the redirect from the **public path the proxy passed
-on** (C13 `PROXY_REQUEST_HEADERS.publicPath`) against `href()`'s spelling, byte for
-byte, and keeps the old link's query (`publicSearch`) — the rule of
-`engine/apps/gallery/src/item/canonical.ts`, which phase 11 moves into the loader
-as C2's `Loaders.item` takes the id alone (MIGRATION.md §6; TASKS.md 11.3).
+compared. The page reads the address the visitor asked for from the proxy's headers
+(`askedAddress()`, which refuses a request with no public path) and passes it to the
+loader, which stays pure: C2's `Loaders.item` takes `{ locale, publicId, asked }`
+(v1.3, TASKS.md 4.3.f). The loader's cached read is keyed by `(locale, publicId)`
+alone; it compares `asked.path` with `href()`'s spelling byte for byte **outside**
+its `'use cache'` read — never a cache argument, since each spelling a visitor chooses
+would be a new entry — and on a mismatch answers `redirectTo` the current address with
+`asked.search` appended, so an old link's query survives its 308. That is the rule of
+`engine/apps/gallery/src/item/canonical.ts`, which the loader inherits (MIGRATION.md
+§6; TASKS.md 11.3). A route with a slug takes it the same way, decoded, from C10's
+parse of `asked.path`, never from `params` (CONVENTIONS.md §12).
 
 Routes carry **no segment config** — the `(site)` layout's `instant = false` is the
 one there is (ARCHITECTURE.md §9). What the first flush must carry — a form, its
-current value, a post's result, the canonical check — is read in the page's own
-body; only slow or live reads (availability, a live price, cart totals) stream
+current value, a post's result, the canonical check, and the purchase panel, whose
+live availability decides its forms — is read in the page's own body, so buying works
+without JavaScript; only slow reads no form depends on (related works, reviews) stream
 inside `<Suspense>`, and a streamed part holds no form (CONVENTIONS.md §12).
 
 | Surface | View model | Notes |
@@ -104,8 +115,14 @@ are answered differently:
   through a normal render, and that route's page renders the designed NotFound
   surface in its own body — it never calls `notFound()`. The answer is a 404 whose
   HTML holds the brand's shell, `lang`, the surface and its search form, all working
-  without a script (measured: 404, full body, where `notFound()` gave an empty one).
-  Its metadata says `noindex`.
+  without a script (measured: 404, full body, where `notFound()` gave an empty one;
+  confirmed by 4.3's senior-fe review). Under a 404 status Next takes the metadata
+  from the `not-found.tsx` boundary's `generateMetadata`, never from a page's, so the
+  NotFound title and description — localised — are that boundary's, the not-found
+  page exports none, and Next adds `noindex` itself. The 404 depends on the proxy's
+  User-Agent and status (TASKS.md 5.3), which a page cannot set; a client navigation
+  to such a path costs two requests (an RSC 404, then a document load), which is
+  acceptable. The status spec asserts the body too, not only the status.
 - **A miss only the database can decide** — an item id that is no product, a draft, a
   removed item's Gone — calls `notFound()` from its page: crawlers get the 404 and
   `noindex`, and the `not-found.tsx` boundary renders the same NotFound or Gone surface

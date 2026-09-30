@@ -64,10 +64,15 @@ export const FORM_DECODING = {
  * rewritten request's query with the destination's, so it could not reach the page anyway.
  *
  * The page's loader reads it at request time and the page renders it in its own body (C2
- * `FormResultVM`), only on the page it returns to — the render's public path (C13
- * `PROXY_REQUEST_HEADERS.publicPath`) is its `returnTo`'s. It is consumed only by the request the
- * 303 sends the browser to: a document navigation, `Sec-Fetch-Dest: document` with no `Sec-Purpose`
- * or `Purpose` naming a prefetch or a prerender (a request without Fetch Metadata counts as one).
+ * `FormResultVM`), only on the page it returns to, compared by path alone: the render's public path
+ * (C13 `PROXY_REQUEST_HEADERS.publicPath`) is its `returnTo`'s path, whatever either's query — the
+ * 303 carries `returnTo` whole, so a search or a filtered listing returns to its own state. It is
+ * consumed only by the request the 303 sends the browser to: a document navigation,
+ * `Sec-Fetch-Dest: document` with no `Sec-Purpose` or `Purpose` naming a prefetch or a prerender (a
+ * request without Fetch Metadata counts as one: a browser that holds this `Secure` cookie sends
+ * Fetch Metadata, and failing the other way would show a failed post's entries again on every
+ * reload). Fetch Metadata is the only signal a page has — Next hides its own `RSC` and
+ * `Next-Router-*` headers from `headers()` — so no one reads those instead.
  * Every other render reads it and leaves it — a router prefetch or an RSC navigation
  * (`Sec-Fetch-Dest: empty`; under `htmlLimitedBots` each is a full render, ARCHITECTURE.md §9), a
  * speculative load, another tab on another page — so none can take it before the visitor sees it

@@ -22,7 +22,7 @@ each contract is one module, re-exported from the entry named below.
 | C7 | Provider interfaces and normalised events | `@engine/payments/contract`, `@engine/shipping/contract`, `@engine/fulfilment/contract` | `{payments,shipping,fulfilment}/src/contract.ts`, `payments/src/contract/**`, `domain/src/contracts/payment-vocabulary.ts` | PAY, LOG | PAY, LOG, DOM | v1.1 |
 | C8 | State machines, `reserve()`, `applyPaymentEvent()`, domain events | `@engine/domain/machines/*`, `@engine/domain/reservations`, `@engine/domain/transactions`, `@engine/domain/events` | `domain/src/*/machine.ts`, `domain/src/reservations/contract.ts`, `domain/src/contracts/{machine-types,reservation-types,transactions,domain-events,apply-payment-event}.ts` | DOM | DOM, PAY, ADM, NTF, WEB, C2 | v1.1 |
 | C9 | Media artefacts: derivatives, IIIF, masters, print files | `@engine/media/contract` | `media/src/contract.ts` | MED | MED, WEB, UXG, UXE, MIG, SIS, LOG, C11 | v1.1 |
-| C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.2 |
+| C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.3 |
 | C11 | Analytics events: names and props | `@engine/analytics/events` | `analytics/src/events.ts`, `analytics/src/events/**` | SEO | every surface, DOM (the outbox) | v1.1 |
 | C12 | Sister archive API: work snapshot, the prints feed, webhooks both ways | `@engine/sister/contract` | `sister/src/contract.ts`, `sister/src/contract/**` | SIS | SIS, SCH, apps | v1.1 |
 | C13 | HTTP handler manifest, the proxy's headers and answers, and its matcher | `@engine/http/manifest` | `http/src/manifest.ts`, `http/src/manifest/**` | WEB and the handler lanes (DOM, PAY, LOG, MED, SRC, SIS, SEO); PLT (the proxy) | WEB, UXG, UXE, PLT, HAR (route parity) | v1.3 |
@@ -125,7 +125,13 @@ so it is breaking and also needs a redirect.
   A post the operation refuses comes back as `FormResultVM` `refused`, with its problem's
   sentence. The shell carries every brand-asset URL a page links, each at its versioned address
   (C13 `BRAND_ASSET_URL`) and never written by a template; the touch icon and the web manifest are
-  `null` where the brand ships none, so no page links a 404.
+  `null` where the brand ships none, so no page links a 404. A loader's inputs are decoded: a slug
+  or a place path comes from C10's parse of the public path, never a raw `params` segment, and a
+  loader reads no proxy header and imports nothing of `@engine/http` but its manifest (C13) — the
+  page passes the address asked for in (`Loaders.item`'s `asked`), and a loader's cached read is
+  keyed by its own inputs, never by that address. The page awaits in its body every part the first
+  flush carries: a post's result, and the item's `purchase`, whose live availability decides its
+  forms.
   Only an approved partner signs in, so only its view model carries
   trade terms or a reorder, and the Partnership page holds no term or price in any state
   (`retailer-check.ts`, D31–D36).
@@ -183,10 +189,15 @@ so it is breaking and also needs a redirect.
   without which it answers 404. A mount names `handlerOf(path)`, or `unbuiltHandlerOf(path)` only
   while that handler has no module, and both apps name the same one: the lane that lands a handler
   repoints both apps' mounts in the same change. A route's `owner` is the lane whose folder,
-  `http/src/<area>/**`, holds its handler. A handler reaches Payload through `@engine/cms` alone,
-  from a `payload-*.ts` module it loads with `import()` after reading its request, and a `GET`
-  handler reads its request before anything else, or `next build` runs it; `@engine/cms` never
-  imports `@engine/http`. A write a cookie can authenticate is refused from another
+  `http/src/<area>/**`, holds its handler. A handler reaches Payload — and content — through
+  `@engine/cms` alone, from a `payload-*.ts` module it loads with `import()` after reading its
+  request, never through `@engine/loaders`; route parity loads every mount under a hook that
+  refuses Payload, so no static path reaches it. A `GET` handler reads its request before
+  anything else, or `next build` runs it; `@engine/cms` never imports `@engine/http`. A handler
+  under a path the proxy never sees reads none of the proxy's request headers. `invalidate(tags)`
+  posts to `/api/x/revalidate` only from outside a request, on `REVALIDATE_REQUEST`'s terms: a
+  bearer secret, tags `@engine/cache` makes, each expired at its builder's profile. A write a
+  cookie can authenticate is refused from another
   origin (`sameOrigin`); a lookupToken or a payment's scope never rides in a URL — only a
   page's own capability (a pay-link or quote token) and a one-hop email link do, and each
   one-hop link moves its token into a cookie. An HTML form post answers 303 to its page and
@@ -202,8 +213,9 @@ so it is breaking and also needs a redirect.
   manifest through its metadata, never Next's file conventions, which are one build's. A brand
   file is linked at its versioned URL (`BRAND_ASSET_URL`) and served `immutable` only when the
   version is the file's; the touch icon and the manifest are the files `BRAND_ROOT_ASSETS` names.
-  The proxy rewrites, and sets only `PROXY_REQUEST_HEADERS` (the public path and query, the
-  locale, the CSP), `PROXY_USER_AGENT` on a request that has none, C10's `sensitive` answer
+  The proxy rewrites, and sets only `PROXY_REQUEST_HEADERS` (the public path, the public query on
+  the item route's rewrite alone, the locale, the CSP — error reporting scrubs the query, and a
+  `sensitive` page's path beyond its surface), `PROXY_USER_AGENT` on a request that has none, C10's `sensitive` answer
   headers and the per-request `Content-Security-Policy` — a fresh nonce each time, made by one
   builder (41.1.a) and copied onto the request, where Next looks for the nonce; and it answers its
   own not-found `PROXY_NOT_FOUND_STATUS`, so the not-found route renders the designed page itself.
@@ -592,13 +604,15 @@ so it is breaking and also needs a redirect.
   above the repository hid it on Windows. The schema now parses through `schema/url.ts`, a typed
   accessor for the WHATWG parser on `globalThis`, and the rule above records why. No shape
   changes; every package type-checks with only the `@types` it declares.
-- **2026-09-30**: **v1.3 of C2 and C13** (TASKS.md 4.3): the contract follow-ups of 4.1 — its
+- **2026-09-30**: **v1.3 of C2, C10 and C13** (TASKS.md 4.3): the contract follow-ups of 4.1 — its
   report, its Cache Components spike (`docs/spikes/cache-components.md`) and its reviews
   (`reviews/4.1-senior-{fe,be}.md`), each Next behaviour below measured on 16.3.6. Every change is
   additive: the new `ShellVM` fields are optional, every new C13 name is new, `PROXY_REQUEST_HEADERS`
   and `PROXY_MATCHER` keep their names and values in their new file, and `FORM_RESULT` keeps its
   shape, its rule tightened where no lane has built yet. Nothing breaks. C2 goes from v1.1 to
-  v1.3 by the release rule above; C10 stays at v1.2, its wording amended; the rest are unchanged.
+  v1.3 by the release rule above; C10 goes to v1.3 too, its documented status having changed
+  (4.3's senior-be review #14); the rest are unchanged. The one change breaking in shape, C2's
+  `Loaders.item` input (below, "amended by its sign-offs"), breaks no lane.
   - **C2:**
     - `ShellVM.assets.touchIcon` and `.manifest`: the home-screen icon and the web manifest at
       their versioned URLs, for a page's metadata, `null` where the brand ships none. Optional
@@ -629,10 +643,11 @@ so it is breaking and also needs a redirect.
     - The header: a handler reaches Payload through `@engine/cms` alone, from a `payload-*.ts`
       module loaded with `import()` after it reads its request (4.3.a, ARCHITECTURE.md §15);
       `EngineRoute.owner` owns the handler's folder, `http/src/<area>/**`.
-  - **C10, v1.2 amended — wording only, no behaviour:** an old item link's redirect is a 308; a
-    lower-case escape is one URI with the upper-case one (RFC 3986 §6.2.2.1), which Next hands the
-    proxy upper-cased; a slug part that does not decode as UTF-8 (`%FF`, a Latin-1 `caf%E9`) is not
-    found today, and C10's next minor version carries it by its id (TASKS.md 22.7).
+  - **C10 v1.3 — its wording and documented status, no behaviour:** an old item link's redirect
+    is a 308; a lower-case escape is one URI with the upper-case one (RFC 3986 §6.2.2.1), which
+    Next hands the proxy upper-cased; a slug part that does not decode as UTF-8 (`%FF`, a Latin-1
+    `caf%E9`) is not found today, and C10's next minor version sends it by its id with a fixed slug
+    no item has (TASKS.md 22.7.d).
   - **Decided with it, in the docs of record:** how `/api/health` and the jobs route reach Payload,
     and that `invalidate(tags)` lives in a leaf package, `@engine/cache`, so cms never imports http
     (ARCHITECTURE.md §15, PARALLEL-TRACKS.md §1); the Cache Components rules the spike added —
@@ -649,3 +664,46 @@ so it is breaking and also needs a redirect.
   each lane now does is 4.3's report: the apps' shells read the new `ShellVM` fields; PLT's proxy
   sets `publicSearch` and `PROXY_USER_AGENT` and answers its not-found 404; WEB moves the
   placeholder to `@engine/http/unbuilt`; HAR's route parity checks the placeholder policy.
+- **2026-09-30**: **v1.3 amended by its sign-offs** (TASKS.md 4.3's fix round;
+  `reviews/4.3-senior-{be,fe}.md`, both "sign off with should-fix"). Still v1.3: nothing has
+  landed on `main`, and no lane consumes any of it.
+  - **C2 — `Loaders.item` takes `{ locale, publicId, asked }` (4.3.f).** A change **breaking in
+    shape** — an input removed (`slug`) and one added (`asked: AskedAddress`, the public path and
+    query the page reads from the proxy's headers). **Breaks: none** — `LoadItem` has no
+    implementer (11.3 is unbuilt) and no caller — so by "What counts as a change" it is a minor
+    change, as v1.1's reshaped fields were, and C2 stays v1.3. Why: Next hands the route's segment
+    still encoded to the page and decoded to its metadata, so the slug can be compared by nobody;
+    the page passing `asked` in keeps the loader pure and testable with a plain object, keeps
+    `@engine/loaders` off `@engine/http` but its manifest, and the item's cached read keyed by
+    `(locale, publicId)` alone — the address asked for is compared outside it, never a cache
+    argument (senior-fe #8, senior-be #5). Also: a loader's inputs are decoded text from C10's parse
+    of the public path, never a raw `params` segment (senior-fe #3); the page awaits in its body
+    what the first flush carries, the item's `purchase` included (senior-fe #1); the not-found
+    boundary names the 404's metadata (senior-fe #5). A type test pins the new input.
+  - **C13:**
+    - `REVALIDATE_REQUEST` (new): the terms on which `invalidate(tags)` posts to
+      `/api/x/revalidate` from outside a request — a bearer `REVALIDATE_SECRET` compared in
+      constant time, at most `maxTags` tags each of `@engine/cache`'s making, each expired at its
+      builder's profile, 204 `no-store` (senior-be #1).
+    - `PROXY_REQUEST_HEADERS.publicSearch` is set on the item route's rewrite alone, `''`
+      everywhere else; error reporting scrubs it, and a `sensitive` page's path beyond its
+      surface; a handler under a path the proxy never sees reads none of these headers (senior-be
+      #6); `_rsc` never reaches it while `skipProxyUrlNormalize` stays off (senior-fe #10).
+    - `FORM_RESULT` compares a result's page by path alone, and records why Fetch Metadata is the
+      only signal (senior-fe #11 and its "agreed" note).
+    - The header: content reaches a handler through its own `payload-*.ts` module, never
+      `@engine/loaders`, and route parity loads every mount under a hook refusing Payload
+      (senior-be #3); the matcher's note gives the bind that works — `localhost` pinned to IPv4.
+  - **C10:** v1.3 (above), and `parse.ts` says a non-decoding slug will travel with a fixed slug,
+    never its bytes, which Next answers with a 500 (senior-fe #4).
+  - **In the docs of record:** `@engine/cache` built in 4.8 before any caller, its invalidation run
+    after the commit (`after()` in a request, a flushed collector outside one), the revalidate
+    route in 4.6 (ARCHITECTURE.md §9, §15; senior-be #1, #2); the purchase panel in the first flush
+    (CONVENTIONS.md §12, AGENTS.md, ARCHITECTURE.md §9); the status backstop on every cached scope
+    that shows one, and the 128-tag limit (senior-fe #2); a route reading only ASCII from its
+    params (senior-fe #3); the link primitive, `next/form` and `router.prefetch()` fenced
+    (senior-fe #6); the one segment config guarded (senior-fe #7); a sentinel, not an unset
+    variable, to prove no connection (senior-be #4); the bind behind nginx, one process in fork
+    mode (DEPLOYMENT.md §3; senior-be #8, measured); the 5xx series as an evaluable rule
+    (DEPLOYMENT.md §7; senior-be #9); a capability path kept out of every log (ARCHITECTURE.md §13;
+    senior-be #6); D41 cited for the Markdown exemption (CONVENTIONS.md §1).

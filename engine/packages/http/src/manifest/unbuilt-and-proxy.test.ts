@@ -10,6 +10,7 @@ import {
   PROXY_NOT_FOUND_STATUS,
   PROXY_REQUEST_HEADERS,
   PROXY_USER_AGENT,
+  REVALIDATE_REQUEST,
   ROOT_REWRITES,
   UNBUILT_HANDLER,
   unbuiltHandlerOf,
@@ -74,5 +75,17 @@ describe('C13 — what the proxy sets beyond its rewrite', () => {
 
   it('answers its own not-found with a 404 on the rewrite', () => {
     expect(PROXY_NOT_FOUND_STATUS).toBe(404)
+  })
+})
+
+describe('C13 — the revalidate route invalidate(tags) posts to from outside a request', () => {
+  it('is a mounted POST behind its own secret, with bounded bodies', () => {
+    const route = ENGINE_ROUTES.find((each) => each.path === '/api/x/revalidate')
+    expect(route).toMatchObject({ methods: ['POST'], auth: ['revalidate'], owner: 'WEB' })
+    // No cookie authenticates it, so the same-origin check does not apply: the bearer is its credential.
+    expect(route?.sameOrigin).toBe(false)
+    expect(Number.isSafeInteger(REVALIDATE_REQUEST.maxTags)).toBe(true)
+    expect(REVALIDATE_REQUEST.maxTags).toBeGreaterThan(0)
+    expect(REVALIDATE_REQUEST.maxBodyBytes).toBeGreaterThan(0)
   })
 })

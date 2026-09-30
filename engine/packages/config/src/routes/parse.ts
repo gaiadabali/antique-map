@@ -162,7 +162,9 @@ export function parsePublicPath(
  * request is served at the one address, 200 (the 4.1.e spike §3). Handed one directly, this parser
  * reads it as another spelling. A slug part that does not decode as UTF-8 — `%FF`, a Latin-1
  * `caf%E9`, raw bytes — fails `readSegments()` first and is not found: C10's next minor version
- * carries it to the item route by its id too (TASKS.md 22.7; MIGRATION.md §6).
+ * sends it to the item route by its id with a fixed ASCII slug no item has, never the bytes as
+ * asked, which Next cannot decode into the route's param and would answer with a bare 500
+ * (TASKS.md 22.7; MIGRATION.md §6; 4.3's senior-fe review #4).
  */
 function oldItemLink(config: ParseConfig, read: readonly ReadSegment[]): ParsedPath | null {
   const [first] = read
