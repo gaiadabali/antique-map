@@ -20,14 +20,14 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
-| **4** App shells and the Cache Components spike | Foundation | 3 | 🔄 in progress | 5/7 | 24/32 | 0 | `████████░░`  75% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
+| **4** App shells and the Cache Components spike | Foundation | 3 | 🔄 in progress | 5/8 | 24/40 | 0 | `██████░░░░`  60% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/4 | 0/22 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
-| **8** Makers, places, terms, works and media | Catalogue | 3 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
-| **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
+| **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
@@ -38,7 +38,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | · not started | 0/4 | 0/24 | 1 | `░░░░░░░░░░`   0% |
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/2 | 0/12 | 1 | `░░░░░░░░░░`   0% |
-| **22** App foundations and surfaces from fixtures | Design systems | 3, 11, 14 | · not started | 0/7 | 0/34 | 1 | `░░░░░░░░░░`   0% |
+| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/36 | 1 | `░░░░░░░░░░`   0% |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/27 | 2 | `░░░░░░░░░░`   0% |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **17/170** | **103/770** | **47** | `█░░░░░░░░░`  13% |
+| **All** | 44 phases | | | **17/173** | **103/793** | **47** | `█░░░░░░░░░`  13% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -103,11 +103,11 @@ A phase opens when every phase in its **Needs** column is ✅, lowest number fir
 | **1** Repository, contracts and agent workspace | Foundation | — | 2 | 3 | ~1.5d |  |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | 2 | 3 | ~1.5d |  |
 | **3** Config spine and Payload boot | Foundation | 2 | 2 | 2 | ~1d |  |
-| **4** App shells and the Cache Components spike | Foundation | 3 | 3 | 7 | ~2d |  |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 2 | 2 | ~0.5d | **M0** |
+| **4** App shells and the Cache Components spike | Foundation | 3 | 3 | 8 | ~2.5d |  |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 3 | 4 | ~2d | **M0** |
 | **6** Briefs, image direction and voice | Design | 4 | 1 | 3 | ~3d |  |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 2 | 3 | ~2d |  |
-| **8** Makers, places, terms, works and media | Catalogue | 3 | 2 | 3 | ~2d |  |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 2 | 3 | ~2d |  |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | 2 | 4 | ~3d |  |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | 2 | 4 | ~2.5d |  |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | 2 | 4 | ~3d |  |
@@ -121,7 +121,7 @@ A phase opens when every phase in its **Needs** column is ✅, lowest number fir
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | 3 | 4 | ~3d |  |
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | 1 | 5 | ~3d |  |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | 2 | 2 | ~1.5d | **M2** |
-| **22** App foundations and surfaces from fixtures | Design systems | 11, 14 | 3 | 6 | ~5d | **M1** |
+| **22** App foundations and surfaces from fixtures | Design systems | 5, 11, 14 | 3 | 6 | ~5d | **M1** |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | 3 | 6 | ~4.5d |  |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | 1 | 5 | ~3.5d |  |
 | **25** Payment adapters 👤 | Integrations | 19 | 1 | 3 | ~3.5d |  |
@@ -457,11 +457,11 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 ---
 
-## Phase 4 — App shells and the Cache Components spike · Foundation · needs 3 · ~0.5d
+## Phase 4 — App shells and the Cache Components spike · Foundation · needs 3 · ~2.5d
 
 **Goal:** both storefront apps booting from brand config, and the spike that proves the item page's caching model before anything is built on it.
 **Done when:** both apps serve their brand and `test` in EN and ID with Payload at `/admin`, `/api/health` green and route parity passing; the spike's verdict is recorded in ARCHITECTURE.md §9; the client-safe gate runs in `pnpm verify`.
-**Waves:** W1 — 4.1, 4.2 · W2 — 4.3, 4.4, 4.5, 4.7 · W3 — 4.6
+**Waves:** W1 — 4.1, 4.2 · W2 — 4.3, 4.4, 4.5, 4.7, 4.8 · W3 — 4.6
 
 - [x] **4.1 Storefront app shells, the health route and the Cache Components spike** · needs: 1.2, phase 3 — ✅ 2026-09-30 f82f315
   - **Lane** WEB (mount files, `@engine/http`) + UXG + UXE (app scaffolds) · **Agent** senior-fe · **Wave** W1
@@ -489,13 +489,14 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 - [ ] **4.3 Contract and doc follow-ups from 4.1 (v1.3)** · needs: 4.1 — 🔄 4·W2
   - **Lane** ARC · **Agent** architect · **Wave** W2
-  - **Owns** the contract files of C2 (`engine/packages/view-models/src/shell.ts` and its fixture `engine/packages/view-models/src/fixtures/shell.ts`) and C13 (`engine/packages/http/src/manifest{.ts,/**}`), `engine/packages/CONTRACTS.md`, `AGENTS.md` (the Cache Components rule only), and the doc sections named below
+  - **Owns** the contract files of C2 (`engine/packages/view-models/src/shell.ts` and its fixture `engine/packages/view-models/src/fixtures/shell.ts`; `engine/packages/view-models/src/loaders.ts` for 4.3.f) and C13 (`engine/packages/http/src/manifest{.ts,/**}`), `engine/packages/CONTRACTS.md`, `AGENTS.md` (the Cache Components rule only), and the doc sections named below
   - **Read** 4.1's report (the Log line of 2026-09-30), `docs/spikes/cache-components.md`, `.claude/specs/indies-platform/reviews/4.1-senior-{fe,be}.md`; CONVENTIONS.md §1, §12; ARCHITECTURE.md §9, §13; MIGRATION.md §6; DESIGN-SYSTEM.md §2; PARALLEL-TRACKS.md §1
   - _Requirements: 1.2, 19.4_
   - [ ] 4.3.a decide how `/api/health` and `/api/x/cron/jobs` reach Payload — `@engine/http` depending on `payload` and `@engine/cms`, or each app injecting a Payload-backed port — under the ESLint boundaries and the client-safe gate; record it in ARCHITECTURE.md and PARALLEL-TRACKS.md §1, with the exact files 4.6 changes. senior-be recommends http → `@engine/cms` (boundary 1 forbids `@engine/cms` in an app's `api/health` and `instrumentation.ts`), on conditions: SCH exports a `getPayload` getter from cms so http declares no `payload` (else pinned exactly); the Payload ports loaded by a lazy `import()` inside the handlers; a lint rule keeping Payload out of `http/src/{proxy,manifest,brand-assets,legacy}`; cms never imports http (`invalidate(tags)` lives outside http)
   - [ ] 4.3.b C2 `ShellVM.assets` gains `touchIcon` and `manifest` (C13 says the shell carries every brand-asset URL a page links); C13: what the proxy sets when a request has no `User-Agent` (a prerendered shell otherwise loses a 404 or redirect status); the policy for C13 mounts whose lane has not built its handler (4.1's shared `@engine/http/legacy/unbuilt` 404, or stubs in each lane's folder) and whether route parity asserts `handlerOf(path)` (or a tooling check that no mount stays on the placeholder once its handler exists); a C13 rule that a one-shot post result survives a router prefetch (every prefetch is a full render under `htmlLimitedBots`) and a convention that storefront links are `<a>` or `<Link prefetch={false}>` (senior-fe #4); the `FORM_RESULT` carrier — 4.1 consumes a result only on a document load (`Sec-Fetch-Dest`, `Sec-Purpose`), because a result id in the 303's URL cannot survive: Next replaces a rewritten request's query with the destination's — so C10/C13 decide whether an item request's query is carried through the rewrite, which also decides whether a stale-slug redirect keeps an old link's query; the placeholder's name (`@engine/http/unbuilt` rather than `legacy/unbuilt`)
   - [ ] 4.3.c doc sync with the spike: the one sanctioned segment config (`export const instant = false` on `(site)/[locale]/layout.tsx`) and `htmlLimitedBots` in AGENTS.md and CONVENTIONS.md §12; a route handler reads its request or it runs at build; `permanentRedirect()` answers **308**, not 301 (MIGRATION.md §6, and the text of 37.1.b); lower-case percent-escapes are one URI with upper-case (RFC 3986 §6.2.2.1) — drop them from the odd spellings (MIGRATION.md §6, C10); per-request nonces, not hashes (ARCHITECTURE.md §13); CONVENTIONS.md §12 and AGENTS.md's "runtime reads inside `<Suspense>`" rewritten for the item page, whose first-flush forms read the cookie and a header outside it (senior-fe #6); availability's cache — never in a shared cache, or tagged with a short `cacheLife` backstop (ARCHITECTURE.md §9 says both; senior-fe #8 recommends the backstop)
   - [ ] 4.3.d settle the rest of 4.1's **Found**: the apps' `PRODUCT.md` brand names vs CONVENTIONS.md §1 (the lint skips `.md`); a JavaScript-off NotFound/Gone body (DESIGN-SYSTEM.md §2 — a request-time `notFound()` sends an empty `<body>`), Next 16.3.6's own behaviour, also without `lang` (senior-fe: the proxy's not-founds served as server-rendered HTML by a route handler, or a documented blank page without JavaScript), routed to a 22.x subtask; Latin-1 and raw UTF-8 slugs answering 404 from the proxy instead of 308 (C10); a malformed percent-escape under `/brand-assets/` or `/api/x/` answering Next's bare 500 (senior-be #12, for the 5xx alert); each app's `next.config.ts`, `tsconfig.json`, `package.json` — HAR's (PARALLEL-TRACKS.md §1) or the app lane's; the e2e folder (`e2e/` vs `tests/e2e/`)
+  - [ ] 4.3.f C2 v1.3, amended in 4.3's fix round: `Loaders.item` takes `{ locale, publicId, asked }` — `asked` the public path and query the page reads from the proxy's headers (C13 `PROXY_REQUEST_HEADERS`) — and no `slug`, which Next hands the route in two spellings; the cached read keyed by `(locale, publicId)` alone, `asked` compared outside it; a change breaking in shape that breaks no lane (no implementer, 11.3 unbuilt), with its changelog line
   - [ ] 4.3.e **Check:** C2 and C13 at v1.3 with a CONTRACTS.md changelog entry; every **Found** item of 4.1's report answered in the doc that owns it; `pnpm verify` green; one senior-fe and one senior-be pass sign it off.
 
 - [x] **4.4 The release script and CI against the real apps** · needs: 4.1, 4.2 — ✅ 2026-09-30 d2c5786
@@ -519,14 +520,17 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 4.5.b English and Indonesian values in `site/copy/{en,id}.json` for every key the shells use today (the Indonesian marked for the copywriter's review, D20)
   - [x] 4.5.c **Check:** with each brand's committed `site/` as `BRAND_ROOT`, both apps show the brand's logo, favicon and manifest (each asset 200 with its type) and the Indonesian pages show Indonesian copy, at 390 px and 1280 px on a production build; `validateBrandConfigs()` and `pnpm verify` green.
 
-- [ ] **4.6 Wire `/api/health` and the jobs route to Payload** · needs: 4.3, 4.4
-  - **Lane** WEB · **Agent** senior-fe · **Wave** W3
-  - **Owns** the files 4.3.a names for the wiring (at least `engine/packages/http/src/{health,cron}/**`; `engine/packages/http/package.json` or the apps' mount files if 4.3.a says so)
-  - **Read** 4.3.a's decision, `.claude/specs/indies-platform/reviews/4.1-senior-be.md`, DEPLOYMENT.md §3–§5
+- [ ] **4.6 Wire `/api/health` and the jobs route to Payload** · needs: 4.3, 4.4, 4.8
+  - **Lane** WEB (+ UXG/UXE for 4.6.e's shell files) · **Agent** senior-fe · **Wave** W3
+  - **Owns** the files ARCHITECTURE.md §15 names (4.3.a) — `engine/packages/http/package.json` (the `@engine/cms` and `@engine/cache` dependencies, and their peers `next`, `react`, `react-dom` as devDependencies if pnpm reports them unmet; `pnpm-lock.yaml` as the side effect), `engine/packages/http/src/{health,cron/jobs,revalidate}/**`, `engine/packages/http/src/cron/{auth.ts,cron.test.ts}`; for the placeholder (4.6.d) `engine/packages/http/src/{legacy,unbuilt,shared,brand-assets}/**` and every placeholder mount, `engine/apps/*/src/app/api/x/**/route.ts`; for the shell (4.6.e) `engine/apps/*/src/shell/load-shell.ts` and `engine/apps/*/src/app/(site)/[locale]/layout.tsx`
+  - **Read** ARCHITECTURE.md §9 (invalidation after commit) and §15 (4.3.a's decision), C13 v1.3 (`UNBUILT_HANDLER`, `BRAND_ROOT_ASSETS`, `REVALIDATE_REQUEST`), `.claude/specs/indies-platform/reviews/4.1-senior-be.md`, `reviews/4.3-senior-be.md` #1, #4, #13, DEPLOYMENT.md §3–§5
   - _Requirements: 1.1, 19.4, 19.9_
-  - [ ] 4.6.a `/api/health` checks the database and storage through `getPayload()` and reports the queue, as 4.3.a decides — queue lag **reported, never gating** the status (a failed health check rolls a deploy back; DEPLOYMENT.md §7 makes lag an alert), counted with `runJobs`' own filter (no `hasError` or future `waitUntil` jobs); the database probed once per check, behind a ~5 s single-flight memo; `/api/x/cron/jobs` runs every queue (`allQueues: true`) with the per-run limit, single-flight in the process, a throw logged and answered 500 (senior-be #3–#5)
+  - [ ] 4.6.a `/api/health` checks the database and storage through `@engine/cms/instance`'s `cms()` (4.8), from `health/payload-ports.ts` loaded with `import()` after the request is read (ARCHITECTURE.md §15) — its unit tests never load Payload: the route exports a factory taking the port loader, or they `vi.mock` it — and reports the queue — queue lag **reported, never gating** the status (a failed health check rolls a deploy back; DEPLOYMENT.md §7 makes lag an alert), counted with `runJobs`' own filter (no `hasError` or future `waitUntil` jobs); the database probed once per check, behind a ~5 s single-flight memo; `/api/x/cron/jobs` runs every queue (`allQueues: true`) with the per-run limit, from `cron/jobs/payload-queue.ts` loaded the same way, single-flight in the process, a throw logged and answered 500 (senior-be #3–#5)
   - [ ] 4.6.b the e2e smoke (`.github/e2e/smoke.spec.ts`, 4.4.b) and the release smoke (`.github/scripts/smoke-artifact.sh`) assert `/api/health` 200 on every server (HAR's files — 4.6 proposes the lines or the orchestrator adds them at merge)
-  - [ ] 4.6.c **Check:** on a production build with `RUN_MIGRATIONS=1`, two processes racing on one empty database — one migrates under the advisory lock, one waits and applies nothing, one `payload_migrations` row — and `/api/health` then answers 200 (app, database, storage, environment); `cron/jobs` answers 503 unset, 401 without the bearer and runs the queue with it; the build touches no database; the client-safe gate still passes (4.1.g, moved here).
+  - [ ] 4.6.d the placeholder moves to C13 v1.3's `UNBUILT_HANDLER`: `engine/packages/http/src/legacy/unbuilt/**` to `engine/packages/http/src/unbuilt/**` (`@engine/http/unbuilt`, and `@engine/http/unbuilt/robots`, still failing closed), the shared plain answers (`plain`, `notFound`, `atRequestTime`) out of `legacy/respond.ts` into `engine/packages/http/src/shared/respond.ts`, and every placeholder mount in both apps repointed at `unbuiltHandlerOf(path)`, its comment naming the handler that replaces it
+  - [ ] 4.6.e the apps move to C2 v1.3's shell fields: each app's `src/shell/load-shell.ts` sets `assets.touchIcon` and `assets.manifest` — `versionedBrandAssetUrl(paths.assetsDir, BRAND_ROOT_ASSETS.touchIcon)` and `.manifest`, `null` where the brand ships none — and each `(site)/[locale]/layout.tsx`'s `generateMetadata()` links `icons.apple` and `manifest` from `shell.assets`; `brandIcons()` and `rootFileAsset()` go
+  - [ ] 4.6.f `/api/x/revalidate` (`@engine/http/revalidate`, C13 `REVALIDATE_REQUEST`): POST only; `REVALIDATE_SECRET` as a bearer, compared in constant time like `cron/auth.ts` (503 unset, 401 wrong); a JSON body of at most `maxTags` tags, each checked against `@engine/cache`'s grammar (400, nothing expired, on any other); each tag's profile from its builder, never the request, expired through `invalidate()` in its in-request mode; `no-store` 204; both apps' mounts repointed in the same change
+  - [ ] 4.6.c **Check:** on a production build with `RUN_MIGRATIONS=1`, two processes racing on one empty database — one migrates under the advisory lock, one waits and applies nothing, one `payload_migrations` row — and `/api/health` then answers 200 (app, database, storage, environment); `cron/jobs` answers 503 unset, 401 without the bearer and runs the queue with it; the build touches no database — built with `DATABASE_URL` and `PGHOST` at a sentinel listener that accepts no connection (an unset variable lets `pg` reach `localhost:5432`); every C13 mount loads, in a one-off run the report shows, under a resolve hook that refuses `payload`, `@payloadcms/*` and `@engine/cms`, and none is refused (5.4.a makes the hook route parity's for good); every placeholder mount names `unbuiltHandlerOf(path)` and route parity passes; each app links its touch icon and manifest from `ShellVM.assets`, and none for a brand that ships none; on a production build with `SPIKE_ROUTES=1`, with the spike record's edition changed in its store and nothing revalidated, a post of its `item:<id>` tag (4.8's builder; the spike already tags so) to `/api/x/revalidate` expires it through `after()` — the next request may still show the old edition (`'max'` serves stale while it regenerates), the one after shows the new — and its `availability:<id>` tag expires at once, whatever the body asks, while a wrong bearer answers 401 and an unknown tag 400, expiring nothing; the client-safe gate still passes (4.1.g, moved here).
 
 
 - [x] **4.7 Tooling hardening from phase 4: the client-safe gate and real `supports`** · needs: 4.1, 4.2 — ✅ 2026-09-30 7141961
@@ -538,35 +542,69 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 4.7.b `createBrand` and a `check:brands` step validate each brand against the app that renders it with that app's real `engine/apps/<app>/src/supports.ts` (the apps' own `supports.test.ts` stays), so a module an app cannot render fails the scaffold and the gate (3.3's follow-up, moved from 4.4.e)
   - [x] 4.7.c **Check:** planted `import 'crypto'`, `import p from 'path'` and `import(variable)` in a `'use client'` module each fail `check:client-safe` with their chain and pass once removed; `pnpm brand:create` for each storefront still validates, and a config turning on a module its app does not support fails `check:brands` naming the module; `pnpm verify` green.
 
+- [ ] **4.8 The process's one Payload, and the cache tags: `@engine/cms/instance`, `@engine/cache`** · needs: 3.2
+  - **Lane** SCH · **Agent** senior-be · **Wave** W2 (dispatched once 4.3 has merged: it builds against ARCHITECTURE.md §9 and §15)
+  - **Owns** `engine/packages/cms/src/instance.ts`, `engine/packages/cms/src/instance.test.ts`, the `exports` field of `engine/packages/cms/package.json`, `engine/packages/cache/**` (a new package; `pnpm-lock.yaml` as its install's side effect)
+  - **Read** ARCHITECTURE.md §9 (invalidation after commit), §15 (4.3.a); C13 `REVALIDATE_REQUEST`; `engine/packages/cms/src/{payload.config.ts,db/probe.ts,db/adapter.ts,db/cli.ts}`; `.claude/specs/indies-platform/reviews/4.1-senior-be.md` item 5, `reviews/4.3-senior-be.md` #1, #2, #4, #12
+  - _Requirements: 1.1, 19.4, 19.12_
+  - [ ] 4.8.a `instance.ts`: `cms(): Promise<Payload>` — `getPayload({ config })` over `./payload.config`, the one call a server route makes (cms's own CLI and tests keep theirs) — with `type Payload` re-exported, and `cmsPool(payload): Pick<LockPool, 'connect'>`, exactly `@engine/cms/db/probe`'s `databaseProbe()` parameter, a cast that throws when `payload.db.pool?.connect` is no function; importing the module opens nothing, and only `cms()`'s first call connects (and, in the web process of a production build with `RUN_MIGRATIONS=1`, migrates)
+  - [ ] 4.8.b `"./instance": "./src/instance.ts"` in cms's `exports`, so `@engine/http` declares `@engine/cms` and never `payload` (4.6)
+  - [ ] 4.8.c `@engine/cache`, a leaf package — `next` a peerDependency (and a devDependency at the apps' exact version, as cms declares it), C1's types its one engine import: the cache-tag builders the loaders tag reads with and the hooks expire (`item:<publicId>`, `availability:<publicId>`, `price:<publicId>`, `work:<workUid>`, one per content kind known today, each with its expiry — editorial `'max'`, availability and price `{ expire: 0 }` — and the grammar the revalidate route checks); `AVAILABILITY_STATUS_LIFE` (`{ stale: 30, revalidate: 30, expire: 60 }`), the backstop every cached scope that shows a status declares; and `invalidate(tags)`, which revalidates only after the write commits: inside a Next request it schedules `revalidateTag` with `after()`; outside one the caller puts a collector on Payload's `req.context` and flushes it once its operation returns (dropping it on a throw), by a post on C13 `REVALIDATE_REQUEST`'s terms — an explicit mode, never a probe of Next's internals
+  - [ ] 4.8.d **Check:** a test imports `@engine/cms/instance` with `DATABASE_URL` and `PGHOST` at a sentinel listener, and the listener accepts no connection; against a `db:fresh` database `cms()` twice resolves one instance and `databaseProbe(cmsPool(payload))()` answers READ COMMITTED; no module under `engine/packages/**` but cms's CLI and tests calls `getPayload(`; `@engine/cache`'s tests cover each builder's grammar and profile, a collector that flushes only when told, and `invalidate()` outside a request without a collector throwing rather than doing nothing; its only imports are `next` and C1's types, and the lockfile still resolves one `next`; `pnpm verify` green. (The production-build proofs are 4.6.f's, for the revalidate route and `after()`, and 33.3.e's, for a hook's save.)
+
 ---
 
-## Phase 5 — Staging and the foundation gate 👤 · Foundation · needs 4 · ~0.5d
+## Phase 5 — Staging and the foundation gate 👤 · Foundation · needs 4 · ~2d
 
 **Goal:** both shells on staging from a CI-built release, and the gate over the whole Foundation stage.
 **Done when:** `pnpm dev --brand indies-gallery` and `--brand old-east-indies` serve two differently themed shells in EN and ID from two databases; `/admin` logs in on both; `test` runs on both apps; the Cache Components spike's verdict is recorded; every gate fails on a planted violation; both staging hostnames serve a CI-built release.
-**Waves:** W1 — 5.1 · W2 — 5.2 · closes **M0**
+**Waves:** W1 — 5.1, 5.3 · W2 — 5.4 · W3 — 5.2 · closes **M0**
 
 - [ ] **5.1 Staging on Helios 👤** · needs: 2.3, 4.1
   - **Lane** HAR · **Agent** devops · **Wave** W1
   - **Owns** `scripts/ops/**`
-  - **Read** DEPLOYMENT.md §2, §9; KOI docs/ops/helios-koi-setup.sh; memory: Helios writes need the owner's go-ahead each time
+  - **Read** DEPLOYMENT.md §2, §3 (the pm2 entry and the bind), §9; KOI docs/ops/helios-koi-setup.sh; memory: Helios writes need the owner's go-ahead each time
   - _Requirements: 19.7, 19.8, 19.9_
-  - [ ] 5.1.a `scripts/ops/helios-provision.sh` (idempotent, shellchecked): site users `uig`/`uoei`, ports (verify free), databases and roles, `shared/.env` skeletons (with `BRAND_ROOT`, `SITE_URL=https://<its domain>`, `RUN_MIGRATIONS=1` and, in production, `SISTER_BASE_URL` — never `LOCAL_PRODUCTION_BUILD`, DEPLOYMENT.md §8), pm2 ecosystem, crontab for the jobs-queue route and the sweepers (DEPLOYMENT.md §5) — the jobs line only once 4.6 has landed, or it answers 503 1,440 times a day (senior-be, 4.1) — backup timers
+  - [ ] 5.1.a `scripts/ops/helios-provision.sh` (idempotent, shellchecked): site users `uig`/`uoei`, ports (verify free), databases and roles, `shared/.env` skeletons (with `BRAND_ROOT`, `SITE_URL=https://<its domain>`, `RUN_MIGRATIONS=1` and, in production, `SISTER_BASE_URL` — never `LOCAL_PRODUCTION_BUILD`, DEPLOYMENT.md §8), pm2 ecosystem (DEPLOYMENT.md §3: `node <current>/engine/apps/<app>/server.js`, `exec_mode: 'fork'`, `instances: 1`, `node_args: --dns-result-order=ipv4first`, `HOSTNAME=localhost`, nginx's upstream `http://127.0.0.1:<port>`), crontab for the jobs-queue route and the sweepers (DEPLOYMENT.md §5) — the jobs line only once 4.6 has landed, or it answers 503 1,440 times a day (senior-be, 4.1) — backup timers
   - [ ] 5.1.b 👤 owner approves and runs it; DNS for both staging hostnames; object-storage buckets and keys; Infisical entries
   - [ ] 5.1.c first release deployed; rollback rehearsed; results recorded in `docs/DEPLOYMENT.md`
-  - [ ] 5.1.d **Check:** `ig.gaiada.com` and `oei.gaiada.com` serve the shells from a CI-built release, health checks are green, and one rollback has been rehearsed.
+  - [ ] 5.1.d **Check:** `ig.gaiada.com` and `oei.gaiada.com` serve the shells from a CI-built release, health checks are green, and one rollback has been rehearsed; each app listens on `127.0.0.1` alone (`ss -ltnp`), and its port refuses a connection from outside (`curl http://<public-ip>:4030`), the host firewall confirmed with the owner's go-ahead.
 
-- [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1
-  - **Lane** QA · **Agent** qa · **Wave** W2
+- [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4
+  - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/foundation.md`
   - **Read** the **Done when** of phases 1–5
   - _Requirements: 1.1–1.8_
   - [ ] 5.2.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
   - [ ] 5.2.b Drive every clause of the **Done when** of phases 1–5 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/foundation.md`
-  - [ ] 5.2.c A planted violation for every gate (a 301-line file, a brand literal, a drifted schema, a missing route, a shadowing route, a non-literal matcher, config drift, a stale import map, an overlapping wave) — each fails, then passes once removed
+  - [ ] 5.2.c A planted violation for every gate (a 301-line file, a brand literal, a drifted schema, a missing route, a shadowing route, a non-literal matcher, config drift, a stale import map, an overlapping wave, a mount left on the placeholder once its handler exists, Payload reached from an `@engine/http` module that is no `payload-*.ts`, a route segment config outside the `(site)` layout, the two apps' `next.config.ts` apart) — each fails, then passes once removed
   - [ ] 5.2.d Screenshots of both shells in English and Indonesian and both admins, on staging; the Cache Components spike write-up reviewed
   - [ ] 5.2.e File every failure as a subtask of the task that owns it, and re-run the clause after the fix
   - [ ] 5.2.f **Check:** every clause of the **Done when** of phases 1–5 is evidenced in `docs/gates/foundation.md`, with no failure left open.
+
+- [ ] **5.3 The proxy's v1.3 answers: a missing User-Agent, the item's query, its not-found's 404** · needs: 4.3
+  - **Lane** PLT · **Agent** senior-be · **Wave** W1
+  - **Owns** `engine/packages/http/src/proxy/**`, `engine/packages/config/src/boot-check/**`
+  - **Read** C13 v1.3 (`engine/packages/http/src/manifest/proxy.ts`); ARCHITECTURE.md §9, §11, §13; DESIGN-SYSTEM.md §2 (NotFound and Gone without JavaScript); DEPLOYMENT.md §3; `reviews/4.3-senior-be.md` #6, #7
+  - _Requirements: 1.2, 19.4_
+  - [ ] 5.3.a a request whose `User-Agent` is missing or empty gets C13 `PROXY_USER_AGENT` on the request passed on; a client's own is never replaced
+  - [ ] 5.3.b the proxy's not-found — every decision rewritten to `/<locale>/not-found` — answers with C13 `PROXY_NOT_FOUND_STATUS` on its rewrite (`toResponse`); every other decision keeps the status Next's render gives it
+  - [ ] 5.3.c `PROXY_REQUEST_HEADERS.publicSearch` on the item route's rewrite alone — the public URL's `search`, `''` when it has none — and `''` on every other request, a client's copy dropped everywhere; a unit test that Next's `_rsc` never reaches it (`skipProxyUrlNormalize` stays off)
+  - [ ] 5.3.d `bootCheck()` refuses, in every environment, a `HOSTNAME` that is a loopback IP: normalised the way Next reads it (``new URL(`http://${host}`).hostname``, bracketing a bare IPv6), then tested as Next tests it (`127.` plus three octets, or `[::1]`), so `127.0.0.1`, `127.1`, `2130706433`, `0x7f.0.0.1` and `::1` are refused and `localhost`, `0.0.0.0` and a host name pass; the finding names the standalone `server.js`, which binds `HOSTNAME`, and says `next dev`/`next start` take `-H`, which hangs at a loopback address too (4.1's qa F1, 4.4.g; DEPLOYMENT.md §3)
+  - [ ] 5.3.e **Check:** unit tests for each (`proxy.test.ts`, `respond.test.ts`, the boot check's); on a production build, a request with no `User-Agent` gets 404 for `/nope` and 308 for a stale slug of the spike's fixture item (`SPIKE_ROUTES=1`), a browser's gets 404 for `/nope` through the rewrite's status, and a stale slug's 308 keeps its query while a query on any other page never reaches `x-public-search`; the status spec's no-User-Agent case passes with `E2E_EXPECT_UA_FIX=1`; a start with `HOSTNAME=127.1` is refused; `pnpm verify` green.
+
+- [ ] **5.4 Gates for the v1.3 contracts** · needs: 4.6, 5.3
+  - **Lane** HAR · **Agent** medior · **Wave** W2
+  - **Owns** `engine/tooling/route-parity/**`, `eslint.config.mjs` (its boundary rules), `engine/tooling/next-config-parity/**`, `.github/workflows/e2e.yml` (the status run's env), `playwright.config.ts`, `.env.example` (its `HOSTNAME` comment), and the e2e moves: `tests/e2e/{smoke,status}/**`, `.github/e2e/**`, `engine/apps/gallery/e2e/**`
+  - **Read** C13 v1.3 (`manifest.ts` `UNBUILT_HANDLER`, `manifest/proxy.ts`); ARCHITECTURE.md §15; CONVENTIONS.md §12; PARALLEL-TRACKS.md §1; DEPLOYMENT.md §3; `reviews/4.3-senior-{be,fe}.md`
+  - _Requirements: 1.6, 19.4_
+  - [ ] 5.4.a route parity: a mount's re-export specifier is `handlerOf(path)` or C13's `unbuiltHandlerOf(path)`; it names the placeholder only while `engine/packages/http/src/<area>/route.ts` for `handlerOf(path)` does not exist; both apps name the same specifier for each route; and the runner loads every C13 mount (`ENGINE_ROUTES`, not Payload's own `(payload)` routes) under a resolve hook that refuses `payload`, `@payloadcms/*` and `@engine/cms`, so a static path to Payload fails however indirect — each rule proven by a planted violation
+  - [ ] 5.4.b ESLint (ARCHITECTURE.md §15, CONVENTIONS.md §12): under `engine/packages/http/src/**` only a `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms` by value, statically or by `import()` (`import type` stays free); no module but a test imports or re-exports a `payload-*` module statically; nothing under `engine/packages/cms/**` imports `@engine/http`; nothing under `engine/packages/http/**` imports `@engine/loaders`, and nothing under `engine/packages/loaders/**` imports `@engine/http` but `@engine/http/manifest`; `engine/packages/http/src/manifest{.ts,/**}` imports other packages as types only, its tests excepted; `engine/packages/cache/**` imports nothing of the engine's but C1's types; and under `engine/apps/*/src/app/**` outside `(payload)`, no route segment config is exported (`dynamic`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, `maxDuration`, `prefetch`, `instant`, `dynamicParams`, `generateStaticParams`) but `instant = false` and `generateStaticParams` in `(site)/[locale]/layout.tsx` — each proven by a planted violation
+  - [ ] 5.4.c ESLint: in every file that renders storefront JSX — `engine/apps/*/src/**` outside `(payload)`, and every package but `cms` — only the link primitive under `engine/packages/ui/src/primitives/` (11.1.c) imports `next/link`; `next/form` is imported nowhere (its `<Form>` prefetches its action by default; a storefront form is a plain `<form>`, which works without JavaScript); and `useRouter().prefetch()` is called nowhere — so no storefront link or form prefetches (CONVENTIONS.md §12)
+  - [ ] 5.4.d a test compares the two apps' `next.config.ts` on what the storefront's guarantees rest on — `cacheComponents`, `htmlLimitedBots`, `output`, `poweredByHeader`, and `withPayload`'s client hints on `/admin/:path*` alone — and asserts both `(site)/[locale]/layout.tsx` export `instant = false` (PARALLEL-TRACKS.md §1)
+  - [ ] 5.4.e the one e2e folder (PARALLEL-TRACKS.md §1): the status spec moves from `engine/apps/gallery/e2e/` to `tests/e2e/status/` and 4.4's smoke from `.github/e2e/` to `tests/e2e/smoke/`, each Playwright project's `testDir` following; CI runs the status spec with `E2E_EXPECT_UA_FIX=1` (5.3), its app-independent cases (a path that names no page, a not-found route, an unsupported locale prefix, robots, the admin-only client hints) against an emporium server too, and — behind `E2E_EXPECT_NOT_FOUND_BODY=1`, set when 22.4.e lands — a non-empty `<main>` in a 404's body
+  - [ ] 5.4.f `.env.example`'s `HOSTNAME` comment follows DEPLOYMENT.md §3: `localhost` on a host with `--dns-result-order=ipv4first` (so it binds 127.0.0.1 behind nginx), `0.0.0.0` only in CI, never a loopback IP — and `next dev`/`next start` take `-H`, which hangs at a loopback address too
+  - [ ] 5.4.g **Check:** each planted violation of 5.4.a–d fails its gate naming the file and passes once removed; CI's status run passes its no-User-Agent case on both apps; `pnpm verify` green.
 
 ---
 
@@ -656,7 +694,7 @@ run beside the build line rather than in it.
 
 ---
 
-## Phase 8 — Makers, places, terms, works and media · Catalogue · needs 3 · ~2d
+## Phase 8 — Makers, places, terms, works and media · Catalogue · needs 3, 4 · ~2d
 
 **Goal:** the discovery vocabulary, the works collection and the media and masters collections.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
@@ -673,7 +711,7 @@ run beside the build line rather than in it.
   - [ ] 8.1.d gazetteer seed data file (`test/content/seed/gazetteer.json` shape, reused by every brand): the place hierarchy of EXPERIENCE-GALLERY.md §2 and the historical names of ARCHITECTURE.md §8
   - [ ] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
 
-- [ ] **8.2 Works** · needs: 8.1, 8.3
+- [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
   - **Owns** `engine/packages/cms/src/collections/works/**`, `validators/work-*.ts`, `hooks/work-*.ts`
   - **Read** CONTENT-MODEL.md §1, §9; COMPLIANCE.md §1, §8
@@ -682,8 +720,8 @@ run beside the build line rather than in it.
   - [ ] 8.2.b pure validators: date order and precision, positive dimensions, image ≤ sheet
   - [ ] 8.2.c publish guard (title, object type, date, primary place or maker, primary image with alt, grade for originals, verified AI fields) — a blank location or export status **never blocks publishing**; it makes the item enquiry-only (Req 16.8)
   - [ ] 8.2.d field-level access for `physical`; read-only guard for synced fields on copies; `publishedOrStaff` read access
-  - [ ] 8.2.e `afterChange` / `afterDelete` → `invalidate(tags)` for the work and everything that lists it
-  - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits.
+  - [ ] 8.2.e `afterChange` / `afterDelete` → `@engine/cache`'s `invalidate(tags)` (4.8) for the work and everything that lists it, run after the commit: `after()` inside a request, the caller's collector outside one (ARCHITECTURE.md §9)
+  - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
 - [ ] **8.3 Media and masters** · needs: 3.2
   - **Lane** MED · **Agent** senior-be · **Wave** W1
@@ -704,7 +742,7 @@ run beside the build line rather than in it.
 **Done when:** in the gallery admin a unique product is created from a work; in the shop admin a design, a product type and a product with variants; a story with blocks and a page publish; all appear in the API.
 **Waves:** W1 — 9.1, 9.3, 9.4 · W2 — 9.2
 
-- [ ] **9.1 Products** · needs: 8.1, 8.3
+- [ ] **9.1 Products** · needs: 8.1, 8.3, 4.8
   - **Lane** SCH · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/products/**`, `validators/product-*.ts`, `hooks/product-*.ts`
   - **Read** CONTENT-MODEL.md §1, COMMERCE.md §3–4, §7
@@ -713,7 +751,7 @@ run beside the build line rather than in it.
   - [ ] 9.1.b `publicId` sequence starting above the highest legacy id; slug derivation (NOW! S1 rule: never re-derive on edit)
   - [ ] 9.1.c publish guard (pricing mode, price unless on request, shipping profile, tax class, a routable seller — **or**, for a unique item whose work has no location or export status, publish as enquiry-only — rights for reproductions)
   - [ ] 9.1.d guard: originals can never have channel `marketplace`
-  - [ ] 9.1.e `afterChange` → `invalidate(tags)`: editorial tags stale-while-revalidate, the product's price and availability tags expired immediately (Req 19.12)
+  - [ ] 9.1.e `afterChange` → `@engine/cache`'s `invalidate(tags)` (4.8), after the commit: editorial tags stale-while-revalidate, the product's price and availability tags expired immediately (Req 19.12)
   - [ ] 9.1.f **Check:** `publicId` is a unique integer sequence that accepts preserved legacy ids; slugs derive once and never re-derive; `status` is only `available · not-for-sale · archived` — *on hold* and *sold* are derived from reservations (C8 availability), never stored; public read is `publishedOrStaff`; the publish guard is tested.
 
 - [ ] **9.2 Merchandise schema: designs, product types, variants, locations, stock** · needs: 8.2, 9.1
@@ -815,9 +853,9 @@ run beside the build line rather than in it.
   - _Requirements: 19.2_
   - [ ] 11.1.a Overlay primitives — dialog, sheet, drawer, toast — with focus trap, focus return and an inert background
   - [ ] 11.1.b Disclosure, tabs, combobox and radio group
-  - [ ] 11.1.c Form fields (label, hint, error), price, skip link and visually-hidden
+  - [ ] 11.1.c Form fields (label, hint, error), price, skip link, visually-hidden, and the storefront link — `next/link` with `prefetch={false}`, whose props omit `prefetch`: the storefront's one import of `next/link` (CONVENTIONS.md §12)
   - [ ] 11.1.d Component tests for every interaction state and keyboard path
-  - [ ] 11.1.e **Check:** dialog, sheet, drawer, tabs, disclosure, combobox, radio group, toast, form fields, price, skip link and visually-hidden are keyboard-complete and screen-reader-labelled, unstyled and token-driven, with component tests for their interaction states.
+  - [ ] 11.1.e **Check:** dialog, sheet, drawer, tabs, disclosure, combobox, radio group, toast, form fields, price, skip link, visually-hidden and the storefront link (never prefetching) are keyboard-complete and screen-reader-labelled, unstyled and token-driven, with component tests for their interaction states.
 
 - [ ] **11.2 Token pipeline, runtime overrides and the contrast gate** · needs: 1.2.c, 3.1.a
   - **Lane** WEB · **Agent** senior-fe · **Wave** W1
@@ -829,16 +867,17 @@ run beside the build line rather than in it.
   - [ ] 11.2.c A failing palette is rejected whole: the app's default tokens render and the reason is logged (unit tests)
   - [ ] 11.2.d **Check:** brand overrides are injected at runtime, `--c-ink-soft` is derived against the deepest surface, and a unit test proves a failing palette is rejected whole.
 
-- [ ] **11.3 Loader interface with a fixture source** · needs: 1.2.b, 4.1.e
+- [ ] **11.3 Loader interface with a fixture source** · needs: 1.2.b, 4.1.e, 4.8
   - **Lane** WEB · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/packages/loaders/**`
   - **Read** DESIGN-SYSTEM.md §2–3, ARCHITECTURE.md §9, §12, the spike write-up
   - _Requirements: 1.2, 3.11_
-  - [ ] 11.3.a `loadX(params)` per surface returning its VM; `loadItem` returns `{ vm } | { redirectTo } | null`
+  - [ ] 11.3.a `loadX(params)` per surface returning its VM; `loadItem({ locale, publicId, asked })` returns `{ vm } | { redirectTo } | null` (C2 4.3.f): its cached read keyed by `(locale, publicId)` alone, `asked.path` compared with `href()`'s spelling byte for byte outside it, `redirectTo` carrying `asked.search` — the rule of 4.1's `engine/apps/gallery/src/item/canonical.ts`, carried in with its tests; every slug or path input decoded text from C10's parse of the public path, never a raw `params` segment; a loader that both a page and its `generateMetadata` call deduplicated per request with React `cache()`, and brand-asset URLs taken from the memoised minting (4.1 senior-fe #10, #11); the shell's loader sets `ShellVM.assets.touchIcon` and `.manifest` (C13 `BRAND_ROOT_ASSETS`, `null` where the brand ships none) — both required by then: ARC tightens them at 4.6's merge, once 4.6.e's apps set them
   - [ ] 11.3.b The fixture source behind `LOADERS_SOURCE=fixtures` — the boot check refuses it in production
   - [ ] 11.3.c The one Payload read helper — always `overrideAccess: false`, `_status: 'published'` and a `select` — and a lint rule failing any other Local API call in `loaders/`
   - [ ] 11.3.d Stubbed Payload sources per surface, ready for the storefront stages
-  - [ ] 11.3.e **Check:** every surface has a `loadX(params)` returning its VM (`loadItem` returns `{ vm } | { redirectTo } | null`), backed by fixtures when `LOADERS_SOURCE=fixtures` (dev and component tests — the boot check refuses it in production), with the Payload source stubbed for the storefront stages behind one read helper that **always** passes `overrideAccess: false`, `_status: 'published'` and a `select` for published content (a lint rule fails any other Local API call in `loaders/`); a caller-scoped surface — cart, checkout, order, pay, quote, order-lookup, and now `wantList` — reads instead by the caller's own session or access cookie, never a public id (a `wantList` whose `watch` is not its listing's canonical path redirects to the canonical URL; the `quote` form, where `accounts.retailers` is on, redirects anyone but a signed-in partner to the Partnership page), and its request-time parts (a form, a post's result, on the want-list page the list an email's link opened) are resolved and rendered in the page's own body, never behind a nested `<Suspense>`, so a visitor with no JavaScript still sees them.
+  - [ ] 11.3.f availability (ARCHITECTURE.md §9): the purchase panel's read is live, never `'use cache'`, one indexed read the page awaits in its body behind a short timeout that resolves `unverified`, so its forms reach the first flush; every cached scope that shows an availability status declares `@engine/cache`'s `AVAILABILITY_STATUS_LIFE` as its own `cacheLife` and tags `availability:<id>`, batching `cacheTag()` calls of at most 128 tags each
+  - [ ] 11.3.e **Check:** every surface has a `loadX(params)` returning its VM (`loadItem` returns `{ vm } | { redirectTo } | null`: two spellings of one item's address read one cache entry, and every spelling but `href()`'s answers `redirectTo` carrying the asked query; a timed-out availability read gives the purchase panel `unverified`; a status-showing cached scope declares `AVAILABILITY_STATUS_LIFE`), backed by fixtures when `LOADERS_SOURCE=fixtures` (dev and component tests — the boot check refuses it in production), with the Payload source stubbed for the storefront stages behind one read helper that **always** passes `overrideAccess: false`, `_status: 'published'` and a `select` for published content (a lint rule fails any other Local API call in `loaders/`); a caller-scoped surface — cart, checkout, order, pay, quote, order-lookup, and now `wantList` — reads instead by the caller's own session or access cookie, never a public id (a `wantList` whose `watch` is not its listing's canonical path redirects to the canonical URL; the `quote` form, where `accounts.retailers` is on, redirects anyone but a signed-in partner to the Partnership page), and its request-time parts (a form, a post's result, on the want-list page the list an email's link opened) are resolved and rendered in the page's own body, never behind a nested `<Suspense>`, so a visitor with no JavaScript still sees them.
 
 - [ ] **11.4 State matrix fixtures** · needs: 1.2.b, 11.3
   - **Lane** WEB · **Agent** senior-fe · **Wave** W2
@@ -1125,7 +1164,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 18.1.d The sweeper route `/api/x/cron/sweeps` (C13; it runs C8 `DomainSweeps`) — housekeeping only; among its sweeps, the daily delete of idempotency keys older than `IDEMPOTENCY_KEY_RETENTION` (7 days, C8 `DomainSweeps.idempotencyKeys`)
   - [ ] 18.1.e **Check:** `reserve()` — `reserve` · `reserveAll` · `extend` · `release` · `convert` · `reverse` — is the only writer and always writes the scalar `targetKey`; inside its transaction it first expires stale active rows **for that target**, so correctness never waits on the sweeper; 50 parallel reservations of one unique item yield exactly one success and 49 typed conflicts (test); `reserveAll` reserves several targets under one savepoint, all or nothing, rolling back only its own work on any conflict (test); **a converted (sold) item refuses every new reservation at the database** (test, including a direct insert); `extend` lengthens a checkout lock to the chosen method's `sessionTtl` + margin within the configured ceiling; stocked quantity races never oversell; an expired active row reads as available; the sweeper claims its rows with `FOR UPDATE SKIP LOCKED` and is otherwise housekeeping only; it deletes idempotency keys older than `IDEMPOTENCY_KEY_RETENTION` and keeps younger ones (test).
 
-- [ ] **18.2 State machines and the outbox** · needs: 1.2.g, 17.1
+- [ ] **18.2 State machines and the outbox** · needs: 1.2.g, 17.1, 4.8
   - **Lane** DOM · **Agent** senior-be (DOM-D), reviewed by senior-db · **Wave** W1
   - **Owns** `engine/packages/domain/src/{machines,outbox,availability}/**` (not `availability/machine.ts`, which is C8), `engine/packages/http/src/cron/outbox/**`, `engine/packages/domain/src/links/**`
   - **Read** COMMERCE.md §6, §13, ANALYTICS.md §1
@@ -1133,7 +1172,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 18.2.a The machine runner enforcing the C8 tables for order, payment, reservation and offer — an illegal transition throws
   - [ ] 18.2.b The outbox writer: each transition's event into `domain_events` in the same transaction
   - [ ] 18.2.c Availability as a pure function of product status and live reservations, never stored
-  - [ ] 18.2.d The dispatcher job: at-least-once delivery with event ids and backoff, to email, analytics, the sister webhook and `invalidate(tags)`
+  - [ ] 18.2.d The dispatcher job: at-least-once delivery with event ids and backoff, to email, analytics, the sister webhook and `@engine/cache`'s `invalidate(tags)` (4.8), flushed once per dispatched batch after it commits
   - [ ] 18.2.e A rollback test proving an event never leaves a rolled-back transaction
   - [ ] 18.2.g The capability-link module (C6 `links`), the one implementation that NTF, the handlers and the loaders call. `deriveLink(purpose, ref, version)` and `verifyLink(purpose, token)` use HMAC-SHA256 over the input C6 `links` pins byte for byte, under the key its `kid` names in `LINK_TOKEN_KEYS` (one current key; retired ones by day; `revoked` ones), truncated to `LINK_TOKEN.macBytes` and compared in constant time; a retired `kid` verifies for `LINK_TOKEN.keyOverlapDays` after its day, a revoked one never. The purpose's state rule and its `LINK_WINDOW_DAYS` window are checked on the record after the MAC, and issuing a link moves the record's `links_anchor_at` — bumping `token_version` first if the window had already run out.
   - [ ] 18.2.f **Check:** one machine runner enforces the C8 tables for order, payment, reservation and offer — an illegal transition throws — and **writes each transition's domain event to `domain_events` in the same transaction**; availability is a pure function of product status and live reservations, never stored; a dispatcher job (run by the jobs queue) delivers each event **at least once** with its id to its consumers (email, analytics, sister webhook, cache invalidation) and retries with backoff; a test rolls back a transaction and proves its event never leaves; `deriveLink()` reproduces C6 `LINK_TOKEN_VECTORS`, and `verifyLink()` refuses, alike, a token of another purpose, an older `token_version`, a `kid` past its overlap, revoked or unknown, a token not in its canonical form (an uppercase `ref`), a lapsed window, and a flipped bit; a link issued after its window lapsed carries a new `token_version`, so the lapsed one stays dead (test).
@@ -1298,7 +1337,7 @@ state machines and `applyPaymentEvent()` above all.
 
 ---
 
-## Phase 22 — App foundations and surfaces from fixtures · Design systems · needs 3, 11, 14 · ~5d
+## Phase 22 — App foundations and surfaces from fixtures · Design systems · needs 3, 5, 11, 14 · ~5d
 
 **Goal:** each app's shell and blocks in its picked direction, a brief for every surface, every surface built from fixtures, and the gate over the Design systems stage.
 **Done when:** changing a brand's token overrides re-skins every component and a failing palette is rejected; every surface has an approved brief; both `/style-guide` pages render every component, block and state at 360/768/1440 px with axe clean and budgets met; the design gate passes.
@@ -1339,15 +1378,16 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 22.3.c cross-cutting behaviours, designed: switching ship-to (which moves currency) and locale; the language banner's place; the WhatsApp handoff (DESIGN-SYSTEM.md §12)
   - [ ] 22.3.d **Check:** every surface not comped in the Design stage has an impeccable `shape` brief naming its mode (Experience · Operate · Read · Persuade), its states and its content rules, with `concept-seed --scope surface` run for the open ones — including 404/410/500, the payment-pending page, the bag's edge cases, `Pay`, `Quote`, `OrderLookup`, `WantList`, the trust pages, Partnership and the design page.
 
-- [ ] **22.4 Surface skeletons from fixtures in both apps** · needs: 11.3, 22.1–22.3, 22.7
+- [ ] **22.4 Surface skeletons from fixtures in both apps** · needs: 11.3, 22.1–22.3, 22.7, 5.3
   - **Lane** UXG + UXE · **Agent** medior (one per app) · **Wave** W2
   - **Owns** `engine/apps/*/src/app/(site)/[locale]/**` route folders and `src/surfaces/*/` skeletons (not the layout, not `style-guide`)
   - **Read** DESIGN-SYSTEM.md §2, the surface briefs from 22.3
   - _Requirements: 1.2, 18.1_
   - [ ] 22.4.a Gallery: a route folder and a skeleton for every supported surface, rendering its fixture view model to its surface brief
   - [ ] 22.4.b Shop: the same for every shop surface
-  - [ ] 22.4.c Landmarks and heading order per surface, and route-map resolution in both locales (an e2e smoke test)
-  - [ ] 22.4.d **Check:** every surface the app supports renders its fixture view model following its surface brief, with correct landmarks and heading order, and routes resolve through the route map in both locales.
+  - [ ] 22.4.c Landmarks and heading order per surface, and route-map resolution in both locales (an e2e smoke test), with a non-ASCII slug among them, so a page and its `generateMetadata` resolve one record (CONVENTIONS.md §12)
+  - [ ] 22.4.e NotFound without JavaScript (DESIGN-SYSTEM.md §2): `(site)/[locale]/not-found/page.tsx` renders the designed NotFound surface in its own body — never `notFound()` — for the proxy's not-founds, which arrive with C13 `PROXY_NOT_FOUND_STATUS` (5.3), and exports no metadata: the localised title and description are the `not-found.tsx` boundary's `generateMetadata`, the one Next reads under a 404; that boundary renders the same surface, or Gone, for a miss only the database decides; `[...missing]` keeps `notFound()`
+  - [ ] 22.4.d **Check:** every surface the app supports renders its fixture view model following its surface brief, with correct landmarks and heading order, and routes resolve through the route map in both locales; with JavaScript off, a path that names no page answers 404 and `noindex` on both apps with the brand's shell, `lang`, the NotFound surface, its title and its search form, which the status spec asserts (`E2E_EXPECT_NOT_FOUND_BODY=1`).
 
 - [ ] **22.5 Accessibility and performance baseline** · needs: 22.1, 22.2
   - **Lane** QA · **Agent** qa · **Wave** W2
@@ -1375,9 +1415,10 @@ state machines and `applyPaymentEvent()` above all.
   - **Owns** `engine/packages/config/src/{schema,routes}{.ts,/**}` (C1, C10), `engine/packages/view-models/src/surfaces/purchase-variants.ts` and its fixtures (C2), `engine/packages/CONTRACTS.md`
   - **Read** `.claude/specs/indies-platform/reviews/3.4-senior-fe.md` (#3, #9); CONVENTIONS.md §6; DESIGN-SYSTEM.md §7; EXPERIENCE-SHOP.md §5; COMMERCE.md §1
   - _Requirements: 7.2, 19.1_
-  - [ ] 22.7.a C10 v1.3: the product-type axes move to C1 (`AXIS_KEYS`; C2's `AxisKey` imports it — config is the leaf); `HrefParams['design']` and `['item']` (a variant product at the gallery) take the selection (axis → value), `href()` writes it as the query in `AXIS_KEYS` order, and `parsePublicPath()` carries it — one value per axis, value-shaped, unknown keys dropped — into the internal URL's query, since Next replaces a rewritten request's query and the GET form's selection otherwise never reaches the server render; the loader redirects a selection the product type does not take to its canonical URL (3.4 senior-fe #9)
-  - [ ] 22.7.b C2 v1.2: every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
-  - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
+  - [ ] 22.7.a C10's next minor version (v1.4 after 4.3's v1.3): the product-type axes move to C1 (`AXIS_KEYS`; C2's `AxisKey` imports it — config is the leaf); `HrefParams['design']` and `['item']` (a variant product at the gallery) take the selection (axis → value), `href()` writes it as the query in `AXIS_KEYS` order, and `parsePublicPath()` carries it — one value per axis, value-shaped, unknown keys dropped — into the internal URL's query, since Next replaces a rewritten request's query and the GET form's selection otherwise never reaches the server render; the loader redirects a selection the product type does not take to its canonical URL (3.4 senior-fe #9)
+  - [ ] 22.7.b C2's next minor version (v1.4 after 4.3's v1.3): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
+  - [ ] 22.7.d C10: an old item link whose slug part does not decode as UTF-8 — `%FF`, a Latin-1 `caf%E9`, raw UTF-8 bytes in the request line — reaches the item route by its canonical id with a fixed ASCII slug no item has (C10 names it), never the bytes as asked, which Next cannot decode into the route's param and answers with a bare 500; so it gets the one 308, its query kept (MIGRATION.md §6; 4.1 senior-fe #12, 4.3 senior-fe #4)
+  - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; `/product/1706-caf%E9` and `/product/1706-%FF` parse to item 1706 with the fixed slug (`strict-paths.test.ts`), and on a production build the status spec sees each answer 308, never 500 (two cases in `tests/e2e/status/`, HAR's file: proposed in the report, added at merge); the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
 
 ---
 
@@ -1892,11 +1933,11 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Owns** `engine/apps/gallery/src/surfaces/item/**` (not `item/purchase/**`, 34.1's) + the item route folder `app/(site)/[locale]/item/[idSlug]/**`
   - **Read** EXPERIENCE-GALLERY.md §5–6, §8, DESIGN-SYSTEM.md §2
   - _Requirements: 4.5, 4.6, 6.1, 6.8, 6.10_
-  - [ ] 33.3.a The item route: `permanentRedirect()` on `redirectTo`, `notFound()` on null
+  - [ ] 33.3.a The item route: the id from its segment (`null` → `notFound()`), the address asked for from the proxy's headers, then `loadItem({ locale, publicId, asked })`; `permanentRedirect()` — a 308 — on its `redirectTo`, `notFound()` on null, whose designed body needs JavaScript (DESIGN-SYSTEM.md §2); the purchase panel awaited in the page body, so its forms work without JavaScript; the status spec's item cases move from the spike's fixtures to real items (HAR's file: proposed in the report, added at merge)
   - [ ] 33.3.b The title block with the designed hook-title fallback; media with the viewer on intent; the static scale view; the primary image as LCP
   - [ ] 33.3.c The record: collation (and the book variant for volumes), condition linked to the scale, references, provenance, stock number
   - [ ] 33.3.d Context (essay, maker, locator map, related) and utilities (wishlist/alert, share, print, factsheet PDF, sister prints, the consign block)
-  - [ ] 33.3.e **Check:** the item route calls `permanentRedirect()` on a `redirectTo` and `notFound()` on null; the title block (with the designed hook-title fallback), media with the viewer on intent, the static scale view, the record (collation — and the book variant for volumes — condition linked to the scale, references, provenance, stock number), context (essay, maker, locator map, related) and utilities (wishlist/alert, share, print, factsheet PDF, sister prints, consign block) render from real data; the primary image is the LCP.
+  - [ ] 33.3.e **Check:** the item route calls `permanentRedirect()` (a 308, its `Location` encoded once and carrying the old link's query) on a `redirectTo` and `notFound()` on null; with JavaScript off, the purchase panel's forms post; an editor's save of the work in the admin shows on the item page by the second request after it, and on every one after (the first may be served stale while `'max'` regenerates) — a regeneration that read the row before its commit would keep the old text (invalidation after the commit, ARCHITECTURE.md §9); the title block (with the designed hook-title fallback), media with the viewer on intent, the static scale view, the record (collation — and the book variant for volumes — condition linked to the scale, references, provenance, stock number), context (essay, maker, locator map, related) and utilities (wishlist/alert, share, print, factsheet PDF, sister prints, consign block) render from real data; the primary image is the LCP.
 
 - [ ] **33.4 Makers, places, sources, curations, catalogues, exhibitions and stories** · needs: 22.4
   - **Lane** UXG · **Agent** senior-uiux (UXG-C) · **Wave** W1
@@ -2020,7 +2061,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 16.1, 16.4, 16.8, 19.2_
   - [ ] 36.3.a 👤 the owner's item register — location and export status per stock number (D24)
   - [ ] 36.3.b register importer with a mismatch report (unknown stock numbers, conflicting rows)
-  - [ ] 36.3.c the batch loader and the off-box tiling run
+  - [ ] 36.3.c the batch loader and the off-box tiling run — the loader collects its cache tags on Payload's `req.context` and flushes them once per committed batch (`@engine/cache`), never per row
   - [ ] 36.3.d **Check:** works and products upsert idempotently by legacy id in batches of 500 with a dry-run diff, as drafts, with `publicId = legacy id` and stock numbers preserved; **the item register** sets each original's stock location and export status by stock number — an original with no row keeps both blank and publishes enquiry-only, and the report lists them; images are tiled **off-box** by `pnpm media:tile` (15.2.b) straight to the bucket, each with the **deterministic alt-text baseline** built from its record (CONTENT-MODEL.md §6) so the publish guard can pass; customers are created with a random, unusable password for the claim flow; subscribers keep recorded consent; legacy orders import read-only; wishlists become saved items or want-lists.
 
 - [ ] **36.4 Redirects and the legacy handler** · needs: 4.1.f, 9.3, 36.1
@@ -2031,14 +2072,14 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 36.4.a Rules for categories and query parameters → facet URLs, static pages and `/storage/products/*.jpg`
   - [ ] 36.4.b The rules in the `redirects` collection, answered by the legacy handler at `/api/x/legacy/…` under `'use cache'` + `cacheTag`, matched on the raw path exactly as asked for, with a `Location` only from a root-relative row (`^/(?![/\\])`) — a request such as `/category/%2F%2Fevil.com` is a 404 unless a row names it (MIGRATION.md §6)
   - [ ] 36.4.c 404 for an unknown legacy path, 410 for a removed item; product URLs need no rule (33.3)
-  - [ ] 36.4.d **Check:** product URLs need no rule — the item route resolves them by public id and 301s a changed slug (33.3); categories and query parameters map to facet URLs, static pages and `/storage/products/*.jpg` redirect; rules live in the `redirects` collection and are answered by the legacy handler at `/api/x/legacy/…` under `'use cache'` + `cacheTag` (the proxy only rewrites to it and never touches the database); an unknown legacy path answers 404, a removed item 410.
+  - [ ] 36.4.d **Check:** product URLs need no rule — the item route resolves them by public id and answers a changed slug with one 308 (33.3); categories and query parameters map to facet URLs, static pages and `/storage/products/*.jpg` redirect; rules live in the `redirects` collection and are answered by the legacy handler at `/api/x/legacy/…` under `'use cache'` + `cacheTag` (the proxy only rewrites to it and never touches the database); an unknown legacy path answers 404, a removed item 410.
 
 ---
 
 ## Phase 37 — Verification, the staging rehearsal and the migration gate 👤 · Migration · needs 5, 36 · ~2d
 
 **Goal:** the verification report, the URL gate, the rehearsal on staging, and the gate over the Migration stage.
-**Done when:** a rehearsal import on staging loads every item with images tiled and no unexplained discrepancy; every original has a location and export status from the register or publishes enquiry-only; every legacy URL, counted, resolves with 200 or one 301; the curator has signed the mapping; a delta import is proven on a second run.
+**Done when:** a rehearsal import on staging loads every item with images tiled and no unexplained discrepancy; every original has a location and export status from the register or publishes enquiry-only; every legacy URL, counted, resolves with 200 or one permanent redirect (the legacy handler's 301, the item route's 308) to a 200; the curator has signed the mapping; a delta import is proven on a second run.
 **Waves:** W1 — 37.1 · W2 — 37.2 · W3 — 37.3
 
 - [ ] **37.1 Verification report and the URL gate** · needs: 36.3, 36.4
@@ -2046,9 +2087,9 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Owns** `engine/packages/migrate/src/report/**`, `tests/migration/**`
   - _Requirements: 16.5_
   - [ ] 37.1.a The report: counts per legacy category vs new facets, items without images, parse failures, price parity
-  - [ ] 37.1.b The URL gate: every legacy URL from the export and the URL inventory requested **against the new site on staging** — 200, or one 301 to a 200
+  - [ ] 37.1.b The URL gate: every legacy URL from the export and the URL inventory requested **against the new site on staging** — 200, or one permanent redirect to a 200: the legacy handler's 301 or the item route's 308, after at most one of Next's own 308s that only drops a trailing `/` or collapses a `//` (MIGRATION.md §6)
   - [ ] 37.1.c Zero failures before the gate
-  - [ ] 37.1.d **Check:** the report shows counts per legacy category vs new facets, items without images, parse failures and price parity, and requesting **every** legacy URL against the new site on staging returns 200 or a single 301 to 200, with zero failures.
+  - [ ] 37.1.d **Check:** the report shows counts per legacy category vs new facets, items without images, parse failures and price parity, and requesting **every** legacy URL against the new site on staging returns 200 or a single permanent redirect (301 or 308, after at most one normalising 308) to 200, with zero failures.
 
 - [ ] **37.2 👤 Rehearsal on staging and the delta import** · needs: 5.1, 37.1 · 👤 the Helios go-ahead for the staging import
   - **Lane** MIG + HAR · **Agent** senior-integrator, devops · **Wave** W2
@@ -2207,7 +2248,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** HAR + WEB · **Agent** senior-be, devops · **Wave** W1
   - **Owns** `engine/packages/http/src/security/**`
   - _Requirements: 19.5, 19.6_
-  - [ ] 41.1.a The one CSP builder: per request from brand config (its payment and analytics origins, and the sister's from `sisterBaseUrl()` — the host's `SISTER_BASE_URL`, else the committed staging origin, C1), called by the proxy (3.1), which sets it on the answer and copies it onto the request (C13 `PROXY_REQUEST_HEADERS`), with hashes or nonces as 4.1.e decided; security headers with tests
+  - [ ] 41.1.a The one CSP builder: per request from brand config (its payment and analytics origins, and the sister's from `sisterBaseUrl()` — the host's `SISTER_BASE_URL`, else the committed staging origin, C1), called by the proxy (3.1), which sets it on the answer and copies it onto the request (C13 `PROXY_REQUEST_HEADERS`), with a fresh nonce per request (`'nonce-…' 'strict-dynamic'`: 4.1.e found hashes cannot hold, since Next's inline scripts carry each request's RSC payload — ARCHITECTURE.md §13), and the `style-src` line decided (React renders `style` attributes, which a nonce cannot cover); security headers with tests
   - [ ] 41.1.b Rate limits (auth, forms, offers, checkout, order lookup); webhook replay protection; admin lockout
   - [ ] 41.1.c Dependency and secret scanning in CI; the OWASP Top 10 checklist
   - [ ] 41.1.d **Check:** the CSP is **built per request** from brand config by the one builder (payment-provider, analytics and sister origins only; adding a provider needs a restart, not a rebuild), the request carrying the same header the answer does, security headers ship with tests, rate limits cover auth/forms/offers/checkout/order lookup, webhook replay protection and admin lockout are tested, dependency and secret scanning run in CI, and an OWASP Top 10 checklist is complete; card data never reaches our servers.
@@ -2217,8 +2258,8 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 19.7, 19.8, 19.9_
   - [ ] 41.2.a the shop's production target
   - [ ] 41.2.b the gallery's production target — provisioned early and kept dark for 42.7
-  - [ ] 41.2.c backups, the restore drill and monitoring for both
-  - [ ] 41.2.d **Check:** both production targets are provisioned with the owner's go-ahead, nightly dumps and storage replication run, a timed restore drill of one brand is recorded, and alerts (p95, 5xx, disk 80%, restart loop, job lag, outbox lag, webhook signature failures) fire in a test.
+  - [ ] 41.2.c backups, the restore drill and monitoring for both — the 5xx rate sets apart, as its own series, a `500` whose path is under `^/(brand-assets|api/x)/` and contains `%` (DEPLOYMENT.md §7: Next's own answer to a path it cannot decode, ARCHITECTURE.md §13), ticketed past a rate and never paging; measured through CloudPanel's nginx, which may answer a malformed escape with its own 400 first
+  - [ ] 41.2.d **Check:** both production targets are provisioned with the owner's go-ahead, nightly dumps and storage replication run, a timed restore drill of one brand is recorded, and alerts (p95, 5xx, disk 80%, restart loop, job lag, outbox lag, webhook signature failures) fire in a test, while a planted `500` on an undecodable `/brand-assets/` path lands in its own series and pages no one, and a real `500` elsewhere still pages.
 
 ---
 
@@ -2483,6 +2524,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-30 — 4.3's fix round (04ce164) answered all 39 findings of both sign-offs (27 of senior-be's, 12+ of senior-fe's, table in its report); its 56 task-text edits applied here: new **4.8** (SCH, 4·W2 — `@engine/cms/instance` and `@engine/cache`, invalidation after commit), 4.6 gains d–f (the placeholder's move, C2's shell fields, `/api/x/revalidate`) and needs 4.8; new **5.3** (PLT: `PROXY_USER_AGENT`, the not-found's 404, `publicSearch` on the item rewrite, a loopback `HOSTNAME` refused after URL-normalising) and **5.4** (HAR: the v1.3 gates — mount specifiers, the transitive Payload fence, no prefetch, one segment config, the e2e folder); 8.2, 9.1, 11.3, 18.2 need 4.8; 22.4 needs 5.3; the 308 wording in 36–37; nonces in 41.1.a; the 5xx carve-out in 41.2. The purchase panel is now awaited in the page body (buying works without JavaScript); Helios binds `HOSTNAME=localhost` with `--dns-result-order=ipv4first`, one fork-mode process behind nginx. The decision on requirement 1.3 renumbered **D44** (D41–D43 were taken by phase 7). Not yet owned: retiring the spike's routes, `engine/apps/gallery/src/item/canonical.ts` and the `pending` purchase fixture once the item route calls the loader (→ 33.3, UX to decide the fixture).
 - 2026-09-30 — ✅ 4.5 (8f63ade), ✅ 4.7 (7141961) — merged to `main`, `pnpm verify` green on each merge (849 tests; `check:brands` now a verify step), CI run 36691521654 green at 8f63ade with the e2e smoke asserting live brand-asset headers on five production servers. 4.5: placeholder `logo.svg`, `favicon.ico`, `og.png`, `apple-touch-icon.png`, `site.webmanifest` per brand (own colour each), EN/ID shell copy (and `nl` for `test`), `checkCopy()` empty for every brand; on production builds all four app/brand pairs show the logo, serve each root file with its type, and show Indonesian copy on the Indonesian page, at 390 and 1280 px (16 screens; the repo smoke 40/40). At its merge the orchestrator changed `i18n/test/locales-messages.test.ts`, which asserted empty copy folders, to assert the default for a key the brand's copy lacks. 4.7: `check:client-safe` refuses bare Node built-ins and fails closed on an `import()` it cannot resolve; `check:brands` validates each committed config against its app's real `supports.ts`, and `brand:create` uses them; the root script and verify step added at merge (4.4 owned the root `package.json` this wave). Follow-ups (HAR): `check:brands` as a named step in CI's static job (replacing its "TODO 3.1" step); longer timeouts for route-parity's, client-safe's whole-repo and brand-create's CLI tests, which time out on a loaded workstation; the shared `test` logo reads "Test Storefront".
 - 2026-09-30 — ✅ 4.4 (d2c5786) — the release script and CI run the real apps: CI green on `main` (run 36685866936) after a Lighthouse fix (1f50aab: `preset: mobile` is not a Lighthouse 12.6 value; the budgets had never asserted — Lighthouse 12.6 dropped `budgetsPath` — now lhci assertions; simulated throttling, as DESIGN-SYSTEM §7 says, since `devtools` measured the runner's CPU: TBT 209–236 ms vs 118–189 ms; the placeholder shell already uses ~160 of the 200 ms TBT budget). `production` pushed with the owner's go-ahead: `deploy/production-20260930T075511Z-d2c5786` published and verified (checksum OK, both subdirs with brand config and `server.js`). Helios boots it only once 5.1 provisions `uig`/`uoei` — senior-be (4.3 review #8): bind behind nginx, not a public `0.0.0.0`, one process in fork mode. The **Hermes trial is paused** by the owner (Hermes failed on a config bug before starting 4.5): 4.5 → junior, 4.7 → medior, dispatched from the same briefs. senior-be signed 4.3 off with should-fix (`reviews/4.3-senior-be.md`).
 - 2026-09-30 — 4.3 reported done on `feat/p4-arc` (9055b3c; `pnpm verify` green, 818 tests): C2 and C13 at v1.3 (additive — `ShellVM.assets.touchIcon`/`.manifest`; C13's `PROXY_USER_AGENT`, `PROXY_NOT_FOUND_STATUS`, `publicSearch`, `UNBUILT_HANDLER`, `BRAND_ROOT_ASSETS`), C10 wording amended; 27 decisions recorded — http → `@engine/cms` only through a new `@engine/cms/instance` (ARCHITECTURE §15), `@engine/cache` as a leaf for `invalidate(tags)`, the proxy's own not-founds rewritten with 404 to a page that renders the designed surface (measured: works without JavaScript), the query carried as `x-public-search`, `FORM_RESULT` stays a cookie, no storefront prefetch, a live purchase-deciding availability read, `bootCheck()` refusing a loopback `HOSTNAME`, the pm2 entry in DEPLOYMENT §3. It proposes 37 board edits and new tasks **4.8** (SCH, the cms instance), **5.3** (PLT, the proxy's v1.3 answers) and **5.4** (HAR, v1.3 gates) — held until the sign-offs (senior-fe, senior-be, dispatched). For the owner: requirement 1.3's "any file under `engine/`" narrowed to source files (Markdown is documentation).
