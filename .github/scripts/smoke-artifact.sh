@@ -40,9 +40,10 @@ for pair in indies-gallery:gallery old-east-indies:emporium; do
   home="$(curl -s -m 30 -w '\n%{http_code}' "http://localhost:$port/")"
   home_code="${home##*$'\n'}"
   admin_code="$(curl -s -m 60 -o /dev/null -w '%{http_code}' "http://localhost:$port/admin/login")"
+  health_code="$(curl -s -m 120 -o /dev/null -w '%{http_code}' "http://localhost:$port/api/health")"
   if grep -qF "$name" <<< "$home"; then has_name=yes; else has_name=no; fi
-  echo "$brand: / $home_code (brand name \"$name\" in the page: $has_name), /admin/login $admin_code"
-  if [ "$home_code" != 200 ] || [ "$has_name" != yes ] || [ "$admin_code" != 200 ]; then
+  echo "$brand: / $home_code (brand name \"$name\" in the page: $has_name), /admin/login $admin_code, /api/health $health_code"
+  if [ "$home_code" != 200 ] || [ "$has_name" != yes ] || [ "$admin_code" != 200 ] || [ "$health_code" != 200 ]; then
     echo "::error::$brand did not boot from the tarball as a host would run it"
     cat "$SERVERS_DIR/smoke-$brand.log"
     failed=1

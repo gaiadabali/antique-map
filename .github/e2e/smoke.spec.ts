@@ -137,3 +137,18 @@ test('/brand-assets/ serves nothing outside the brand’s assets or of another t
     expect((await request.get(path)).status(), path).toBe(404)
   }
 })
+
+test('/api/health answers 200 with app, database, storage and the environment', async ({
+  request,
+}) => {
+  const response = await request.get('/api/health')
+  expect(response.status()).toBe(200)
+  expect(response.headers()['cache-control']).toBe('no-store')
+  const body = await response.json()
+  // `degraded` is still a 200: the queue is reported, never gating (TASKS.md 4.6.a).
+  expect(['ok', 'degraded']).toContain(body.status)
+  expect(body.environment).toBe('local')
+  for (const check of ['app', 'boot', 'database', 'storage']) {
+    expect(body.checks[check].ok, check).toBe(true)
+  }
+})
