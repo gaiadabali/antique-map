@@ -1,0 +1,85 @@
+/**
+ * The configurator, stock and badges, the showroom and the visitor, gifts, gift cards and the
+ * Partnership.
+ * Keys and neutral defaults only — the words are the brand’s (`../keys.ts`).
+ */
+import { defineMessages } from '@engine/i18n'
+
+export const SHOP_KEYS = defineMessages({
+  // the configurator (C2 AxisKey; EXPERIENCE-SHOP.md §5; room-scenes.md §8)
+  'configurator.axis.format': 'Format',
+  'configurator.axis.size': 'Size',
+  'configurator.axis.paper': 'Paper',
+  'configurator.axis.frame': 'Frame',
+  'configurator.axis.mount': 'Mount',
+  'configurator.axis.glazing': 'Glazing',
+  'configurator.axis.colour': 'Colour',
+  'configurator.axis.apparelSize': 'Size',
+  'configurator.none': 'None',
+  'configurator.optionFrom': 'from {price}',
+  'configurator.unavailable': 'Not available — {reason}',
+  'configurator.maxSize': 'Larger sizes are not offered: the scan cannot print them sharply.',
+  'configurator.outerSize': 'Outer size {size}',
+  'configurator.summary': 'Your choice: {options}',
+  'configurator.priceUpdated': 'Price updated: {price}',
+  'configurator.view.flat': 'Flat',
+  'configurator.view.onWall': 'On a wall',
+  'configurator.view.toScale': 'To scale',
+  'configurator.wallColour': 'Wall colour: {colour}',
+  'configurator.scaleProps': 'Shown beside a {person} person and a {sofa} sofa',
+  'configurator.previewCaption':
+    'Preview — a digital illustration, to scale. Colours vary by screen. Wall shown: {width} wide.',
+  'configurator.previewCaptionFlat': 'Preview — a digital illustration. Colours vary by screen.',
+  // stock and badges (C2 VariantStockVM, Badge)
+  'stock.inShowroom': 'In the showroom now',
+  'stock.inStock': 'In stock',
+  'stock.lowCount': 'Only {count} left',
+  'stock.soldOut': 'Sold out',
+  'badge.hero': 'Featured',
+  'badge.printed-in-bali': 'Printed in Bali',
+  'badge.limited-edition': 'Limited edition',
+  'badge.new': 'New',
+  'badge.in-showroom': 'In the showroom now',
+  // the showroom QR mode and the visitor's three paths (EXPERIENCE-SHOP.md §4, §7)
+  'showroom.title': 'You’re in the showroom',
+  'showroom.pickUpNow': 'Pick it up now',
+  'showroom.takeIt': 'Buy it here and take it',
+  'showroom.sendHome': 'Buy it here and send it home',
+  'showroom.beforeVisit': 'Message us on WhatsApp before you visit',
+  'visiting.title': 'Just visiting?',
+  'visiting.deliverBefore': 'Deliver to my hotel or villa before I leave',
+  'visiting.pickup': 'Collect it at the showroom',
+  'visiting.sendHome': 'Send it home',
+  // gifts (EXPERIENCE-SHOP.md §7; S10 open)
+  'gift.note': 'Gift note',
+  'gift.notePreview': 'Preview the note',
+  'gift.hidePrices': 'Hide prices on the packing slip',
+  'gift.wrap': 'Gift wrap',
+  'gift.adds': 'Adds {price}',
+  'gift.arriveBy': 'Arrive by',
+  'gift.cannotArrive': 'It cannot arrive by {date}. The earliest is {earliest}.',
+  'gift.trackingToBuyer': 'Tracking goes to you, not the recipient.',
+  // digital gift cards (C2 GiftCardVM)
+  'giftCard.title': 'Gift card',
+  'giftCard.amount': 'Amount',
+  'giftCard.recipientName': 'Recipient’s name',
+  'giftCard.sendOn': 'Send on',
+  'giftCard.channel.email': 'By email',
+  'giftCard.channel.whatsapp': 'On WhatsApp',
+  'giftCard.checkBalance': 'Check a balance',
+  'giftCard.balance': 'Balance {amount}, valid until {date}',
+  'giftCard.invalid': 'That gift card code is not recognised.',
+  // the Partnership (D31, D36) and a partner's account (D32, D34, D37, D40) — Anda
+  'partnership.title': 'Partnership',
+  'partnership.apply': 'Apply to become a partner',
+  'partnership.submit': 'Send application',
+  'partnership.signIn': 'Partner sign-in',
+  'partnership.declined': 'We cannot offer a partnership at the moment.',
+  'partnership.forGuests': 'Buying for a business? Apply as a partner for quotes.',
+  'partner.tier': 'Your trade tier: {tier}',
+  'partner.minimum.amount': 'Minimum order {amount}',
+  'partner.minimum.pieces': 'Minimum {pieces} pieces per design',
+  'partner.reorder': 'Reorder',
+  'partner.setPassword': 'Set your password',
+  'partner.linkExpired': 'This link has expired. Use Forgot password for a new one.',
+})
