@@ -413,7 +413,7 @@ spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-componen
   callbacks under its own revalidation flush, `after-context.js`); **outside a
   request** — a `payload jobs:run` worker, a seed, an import — the caller puts a
   collector on Payload's `req.context` and flushes it once its operation returns
-  (a throw, a rolled-back save, drops it), an import once per batch, by a post to
+  (a throw keeps its tags — a `disableTransaction` save or a hook's nested write commits before a later throw, and expiring an unchanged tag costs one recompute), an import once per batch, a jobs run once the run returns (`batch.context()` on its `req`), by a post on loopback (`REVALIDATE_ORIGIN`) to
   `/api/x/revalidate` (C13
   `REVALIDATE_REQUEST`, TASKS.md 4.6.f), which expires each tag at its builder's
   profile. The mode is explicit: an out-of-request caller that forgets its collector

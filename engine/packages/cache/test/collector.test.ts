@@ -76,23 +76,23 @@ describe('a batch flushes only when told', () => {
 })
 
 describe('an operation that throws', () => {
-  it('drops its own tags — a rolled-back save changed nothing — and rethrows', async () => {
+  it('keeps its tags and rethrows: a throw does not prove nothing committed', async () => {
     const { posts, fetch } = recorder()
     const batch = invalidationBatch({ target, fetch })
     await batch.operation((context) => save(context, itemTag(1)))
-    const failure = new Error('rolled back')
+    const failure = new Error('a later hook failed')
     await expect(
       batch.operation(async (context) => {
         await save(context, itemTag(2), availabilityTag(2))
-        throw failure // a later hook fails: Payload kills the transaction
+        throw failure
       }),
     ).rejects.toBe(failure)
-    expect(batch.pending).toEqual(['item:1'])
+    expect(batch.pending).toEqual(['item:1', 'item:2', 'availability:2'])
     await batch.flush()
-    expect(posts.map((post) => post.tags)).toEqual([['item:1']])
+    expect(posts.map((post) => post.tags)).toEqual([['item:1', 'item:2', 'availability:2']])
   })
 
-  it('a synchronous throw is dropped the same way', async () => {
+  it('a synchronous throw keeps them the same way', async () => {
     const batch = invalidationBatch({ target, fetch: recorder().fetch })
     await expect(
       batch.operation((context) => {
@@ -100,7 +100,18 @@ describe('an operation that throws', () => {
         throw new Error('no')
       }),
     ).rejects.toThrow('no')
-    expect(batch.pending).toEqual([])
+    expect(batch.pending).toEqual(['item:3'])
+  })
+
+  it('keeps nothing before the operation has returned or thrown', async () => {
+    const batch = invalidationBatch({ target, fetch: recorder().fetch })
+    let during: readonly string[] = ['unread']
+    await batch.operation(async (context) => {
+      await save(context, itemTag(4))
+      during = batch.pending // a concurrent flush now would post nothing of this one
+    })
+    expect(during).toEqual([])
+    expect(batch.pending).toEqual(['item:4'])
   })
 })
 
@@ -111,7 +122,7 @@ describe('a hook after its operation returned', () => {
     await batch.operation((context) => {
       leaked = context
     })
-    expect(() => invalidate([itemTag(4)], leaked)).toThrow(/operation has already returned/)
+    expect(() => invalidate([itemTag(5)], leaked)).toThrow(/operation has already returned/)
   })
 })
 
@@ -123,7 +134,7 @@ describe('operations and Payload contexts', () => {
     expect(batch.pending).toEqual(['item:5'])
   })
 
-  it('runs concurrent operations apart: one throwing drops only its own', async () => {
+  it('runs concurrent operations apart, each kept as it ends', async () => {
     const batch = invalidationBatch({ target, fetch: recorder().fetch })
     const results = await Promise.allSettled([
       batch.operation((context) => save(context, itemTag(6))),
@@ -134,7 +145,7 @@ describe('operations and Payload contexts', () => {
       batch.operation((context) => save(context, itemTag(8))),
     ])
     expect(results.map((result) => result.status)).toEqual(['fulfilled', 'rejected', 'fulfilled'])
-    expect(batch.pending).toEqual(['item:6', 'item:8'])
+    expect([...batch.pending].sort()).toEqual(['item:6', 'item:7', 'item:8'])
   })
 })
 

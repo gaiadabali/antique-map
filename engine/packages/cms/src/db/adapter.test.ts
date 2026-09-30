@@ -13,6 +13,8 @@ import {
   buildDatabaseAdapter,
   devPushRequested,
   LOCKED_MIGRATION_METHODS,
+  POOL_CONNECT_TIMEOUT_MS,
+  QUERY_TIMEOUT_MS,
   runsMigrationsOnBoot,
   withMigrationLock,
   type BundledMigration,
@@ -52,8 +54,18 @@ describe('the database adapter', () => {
 
   it('reads the connection from DATABASE_URL, and opens nothing while being built', () => {
     const adapter = adapterFor({ DATABASE_URL: 'postgres://u:p@db.invalid:5432/x' })
-    expect(adapter.poolOptions).toEqual({ connectionString: 'postgres://u:p@db.invalid:5432/x' })
+    expect(adapter.poolOptions).toEqual({
+      connectionString: 'postgres://u:p@db.invalid:5432/x',
+      connectionTimeoutMillis: POOL_CONNECT_TIMEOUT_MS,
+      query_timeout: QUERY_TIMEOUT_MS,
+    })
     expect(adapter.pool).toBeUndefined()
+  })
+
+  it('bounds a pool connect and a query, and never creates a database it cannot find', () => {
+    expect(POOL_CONNECT_TIMEOUT_MS).toBe(5_000)
+    expect(QUERY_TIMEOUT_MS).toBe(60_000)
+    expect(adapterFor({}).disableCreateDatabase).toBe(true)
   })
 
   it('declares the engine tables in afterSchemaInit, so migrations carry them', () => {
@@ -62,9 +74,11 @@ describe('the database adapter', () => {
 
   it('runs every migrate() under the migration lock', async () => {
     const queries: string[] = []
+    const timeouts: unknown[] = []
     const client = {
-      query: async (text: string) => {
-        queries.push(text)
+      query: async (query: { text: string; query_timeout?: number }) => {
+        queries.push(query.text)
+        timeouts.push(query.query_timeout)
         return { rows: [{ locked: true }] }
       },
       release: () => {},
@@ -85,13 +99,15 @@ describe('the database adapter', () => {
       '-- migrations run here',
       'SELECT pg_advisory_unlock($1::bigint)',
     ])
+    // The lock waits as long as another process migrates: its queries are exempt from the bound.
+    expect(timeouts).toEqual([2_147_483_647, 2_147_483_647])
     expect(MIGRATION_LOCK_KEY).toMatch(/^-?\d+$/)
   })
 
   it('locks migrate:down, :fresh, :refresh and :reset too, re-entrantly', async () => {
     const queries: string[] = []
     const client = {
-      query: async (text: string) => {
+      query: async ({ text }: { text: string }) => {
         queries.push(text.split(' ')[1]!)
         return { rows: [{ locked: true }] }
       },

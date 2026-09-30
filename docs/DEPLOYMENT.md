@@ -275,6 +275,9 @@ SISTER_BASE_URL             the sister's origin this process syncs with: require
                             site); staging may leave it unset; a workstation may name a local sister
                             at http://localhost:<port>; ignored, with a warning, by a brand with none
 REVALIDATE_SECRET  CRON_SECRET
+REVALIDATE_ORIGIN           http://127.0.0.1:<PORT> on a host (§2's app port): where a worker, a seed or an import posts
+                            cache invalidations (/api/x/revalidate), the web process on loopback; the IP literal, never
+                            localhost. Unset on a workstation (a loopback SITE_URL serves); https only off loopback
 LINK_TOKEN_KEYS             the capability links' key ring (C6 links), one per brand and per environment,
                             never shared: comma-separated kid:secret (the one current key),
                             kid:secret:YYYY-MM-DD (retired that UTC day; verifies LINK_TOKEN.keyOverlapDays

@@ -1,6 +1,6 @@
 /**
  * How a flushed collector reaches the process that holds the cache (C13 `REVALIDATE_REQUEST`,
- * ARCHITECTURE.md §9): `POST /api/x/revalidate` on this brand's origin, with
+ * ARCHITECTURE.md §9): `POST /api/x/revalidate` on the web process's origin (`./target`), with
  * `Authorization: Bearer <REVALIDATE_SECRET>` and a JSON body `{ "tags": [...] }` of at most
  * `maxTags` tags within `maxBodyBytes`. The route (WEB, TASKS.md 4.6.f) checks each tag against
  * `parseCacheTag()`, expires it at its kind's profile — never one the body names — and answers
@@ -21,34 +21,6 @@ export const REVALIDATE_ROUTE = Object.freeze({
 
 /** Where a flush posts: the brand's origin and the bearer secret the route compares. */
 export type RevalidateTarget = { readonly origin: string; readonly secret: string }
-
-type Env = Readonly<Record<string, string | undefined>>
-
-/**
- * The target from the process's environment: `SITE_URL` (the origin this brand serves,
- * DEPLOYMENT.md §8) and `REVALIDATE_SECRET`. Throws naming what is missing, never a value — a
- * worker that cannot post must fail, not skip its invalidation.
- */
-export function revalidateTargetFrom(env: Env = process.env): RevalidateTarget {
-  const site = env.SITE_URL?.trim()
-  const secret = env.REVALIDATE_SECRET?.trim()
-  const missing = [site ? null : 'SITE_URL', secret ? null : 'REVALIDATE_SECRET'].filter(Boolean)
-  if (missing.length > 0) {
-    throw new Error(
-      `invalidate(): cannot post to ${REVALIDATE_ROUTE.path}: ${missing.join(', ')} unset`,
-    )
-  }
-  let origin: URL
-  try {
-    origin = new URL(site!)
-  } catch {
-    throw new Error(`invalidate(): SITE_URL is not a URL, so there is nowhere to post`)
-  }
-  if (origin.protocol !== 'https:' && origin.protocol !== 'http:') {
-    throw new Error(`invalidate(): SITE_URL is not an http(s) origin`)
-  }
-  return { origin: origin.origin, secret: secret! }
-}
 
 const bodyOf = (tags: readonly string[]) => JSON.stringify({ tags })
 /** `{"tags":[` and `]}`: a body's bytes besides its tags and their commas. */

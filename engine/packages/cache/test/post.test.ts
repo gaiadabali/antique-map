@@ -96,34 +96,69 @@ describe('bodies', () => {
 })
 
 describe('revalidateTargetFrom()', () => {
-  it('posts to SITE_URL’s origin with REVALIDATE_SECRET, both trimmed', () => {
+  const S = { REVALIDATE_SECRET: ' s ' }
+
+  it('posts to REVALIDATE_ORIGIN, a loopback origin, with the secret, both trimmed', () => {
     expect(
       revalidateTargetFrom({
-        SITE_URL: ' https://shop.example/some/path ',
-        REVALIDATE_SECRET: ' s ',
+        ...S,
+        REVALIDATE_ORIGIN: ' http://127.0.0.1:4030 ',
+        SITE_URL: 'https://shop.example',
       }),
-    ).toEqual({ origin: 'https://shop.example', secret: 's' })
-    expect(
-      revalidateTargetFrom({ SITE_URL: 'http://localhost:4199', REVALIDATE_SECRET: 'dev' }),
-    ).toEqual({ origin: 'http://localhost:4199', secret: 'dev' })
+    ).toEqual({ origin: 'http://127.0.0.1:4030', secret: 's' })
+    expect(revalidateTargetFrom({ ...S, REVALIDATE_ORIGIN: 'http://[::1]:4030/x' })).toEqual({
+      origin: 'http://[::1]:4030',
+      secret: 's',
+    })
+    // An off-box tool: the public origin, over https only.
+    expect(revalidateTargetFrom({ ...S, REVALIDATE_ORIGIN: 'https://shop.example' }).origin).toBe(
+      'https://shop.example',
+    )
   })
 
-  it('refuses when either is missing, naming the variable and never a value', () => {
-    expect(() => revalidateTargetFrom({ REVALIDATE_SECRET: 'hunter2' })).toThrow(/SITE_URL unset$/)
-    expect(() => revalidateTargetFrom({ SITE_URL: 'https://shop.example' })).toThrow(
+  it('falls back to SITE_URL only while it is loopback: a workstation', () => {
+    for (const SITE_URL of [
+      'http://localhost:4199',
+      'http://127.0.0.1:4199',
+      'http://app.localhost:3000',
+    ]) {
+      expect(revalidateTargetFrom({ ...S, SITE_URL }).origin, SITE_URL).toBe(
+        new URL(SITE_URL).origin,
+      )
+    }
+    expect(() => revalidateTargetFrom({ ...S, SITE_URL: 'https://shop.example' })).toThrow(
+      /REVALIDATE_ORIGIN unset, and SITE_URL is not loopback/,
+    )
+    expect(() => revalidateTargetFrom({ ...S })).toThrow(/REVALIDATE_ORIGIN unset/)
+  })
+
+  it('never sends the bearer over plain http off loopback', () => {
+    for (const REVALIDATE_ORIGIN of [
+      'http://shop.example',
+      'http://10.0.0.5:4030',
+      'http://0.0.0.0:4030',
+    ]) {
+      expect(() => revalidateTargetFrom({ ...S, REVALIDATE_ORIGIN }), REVALIDATE_ORIGIN).toThrow(
+        /REVALIDATE_ORIGIN is plain http off loopback/,
+      )
+    }
+  })
+
+  it('refuses what is missing or malformed, naming the variable and never a value', () => {
+    expect(() => revalidateTargetFrom({ REVALIDATE_ORIGIN: 'http://127.0.0.1:1' })).toThrow(
       /REVALIDATE_SECRET unset$/,
     )
-    expect(() => revalidateTargetFrom({ SITE_URL: ' ', REVALIDATE_SECRET: ' ' })).toThrow(
-      /SITE_URL, REVALIDATE_SECRET unset$/,
-    )
-    for (const SITE_URL of ['not a url', 'ftp://shop.example', 'file:///etc/passwd']) {
+    expect(() =>
+      revalidateTargetFrom({ REVALIDATE_ORIGIN: 'http://127.0.0.1:1', REVALIDATE_SECRET: ' ' }),
+    ).toThrow(/REVALIDATE_SECRET unset$/)
+    for (const REVALIDATE_ORIGIN of ['not a url', 'ftp://127.0.0.1', 'file:///etc/passwd']) {
       let message = ''
       try {
-        revalidateTargetFrom({ SITE_URL, REVALIDATE_SECRET: 'hunter2' })
+        revalidateTargetFrom({ REVALIDATE_ORIGIN, REVALIDATE_SECRET: 'hunter2' })
       } catch (error) {
         message = String(error)
       }
-      expect(message, SITE_URL).toMatch(/SITE_URL is not/)
+      expect(message, REVALIDATE_ORIGIN).toMatch(/REVALIDATE_ORIGIN is not/)
       expect(message).not.toContain('hunter2')
     }
   })
