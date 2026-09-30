@@ -1,0 +1,21 @@
+{
+  "domain": "example-shop.test",
+  "endpoint": "https://web.archive.org/cdx/search/cdx",
+  "fields": ["original", "timestamp", "statuscode", "mimetype"],
+  "queries": [
+    {
+      "id": "domain",
+      "url": "example-shop.test",
+      "matchType": "domain",
+      "pages": 2,
+      "fetchedAt": { "0": "2026-09-30T00:00:00.000Z", "1": "2026-09-30T00:00:02.000Z" }
+    },
+    {
+      "id": "www-prefix",
+      "url": "www.example-shop.test/",
+      "matchType": "prefix",
+      "pages": 1,
+      "fetchedAt": { "0": "2026-09-30T00:00:04.000Z" }
+    }
+  ]
+}
