@@ -13,7 +13,7 @@ jobs:
   e2e:
     name: End-to-end
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     # A bare Postgres 18 service container (no docker-compose stack behind
     # it) — the image's own docker-entrypoint-initdb.d never runs here
     # (GitHub Actions `services:` supports no volume mounts), so the
@@ -26,17 +26,22 @@ jobs:
     # transport (engine/tooling/db/transport.mjs) instead of `docker compose
     # exec` — there is no compose project here for `exec` to reach.
     #
-    # LOCAL_PRODUCTION_BUILD=1: this job builds both apps and serves the
-    # production builds on loopback ports for Playwright, which bootCheck()
-    # judges local only with it (DEPLOYMENT.md §8, TASKS.md 3.5.g) — without
-    # it they are judged production and refuse to start on sandbox keys and
-    # draft configs. Only CI and a worktree's .env.local set it; never a host.
+    # DB_SUFFIX names the four databases (`<brand>_ci`, `test_ci_<storefront>`).
+    #
+    # LOCAL_PRODUCTION_BUILD=1: this job serves the production builds on
+    # loopback ports for Playwright, which bootCheck() judges local only with
+    # it (DEPLOYMENT.md §8, TASKS.md 3.5.g) — without it they are judged
+    # production and refuse to start on sandbox keys and draft configs. Only
+    # CI and a worktree's .env.local set it; never a host. start-server.sh
+    # sets it on each server again, from an empty environment.
     env:
       LOCAL_PRODUCTION_BUILD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
       PGHOST: 127.0.0.1
       PGPORT: '5432'
       POSTGRES_USER: postgres
       PGPASSWORD: postgres
+      DB_SUFFIX: ci
     services:
       postgres:
         image: postgres:18.0
@@ -52,8 +57,6 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node
-      - uses: ./.github/actions/apps-exist
-        id: apps
 
       # pg_dump must be >= the server's major version (18) — schema-hash's
       # normaliser already strips the `\restrict`/`\unrestrict` wrapper pg_dump
@@ -67,7 +70,7 @@ jobs:
           sudo apt-get install -y postgresql-client-18
 
       # ig, oei, and the synthetic `test` brand once per storefront config
-      # (CONVENTIONS.md §1): `--storefront` names `test_ci_<storefront>`.
+      # (CONVENTIONS.md §1): `--storefront` names `test_<suffix>_<storefront>`.
       # Each call creates the database, then migrates it (TASKS.md 3.5.c):
       # `pnpm --filter @engine/cms migrate` — the committed migration set,
       # under the advisory lock, with BRAND (and TEST_STOREFRONT) as that
@@ -77,22 +80,26 @@ jobs:
       # migration fails the step. The seed hook is still a no-op (10.2).
       - name: db:fresh — ig, oei, test-gallery, test-emporium (created and migrated)
         run: |
-          pnpm db:fresh --brand indies-gallery --suffix ci
-          pnpm db:fresh --brand old-east-indies --suffix ci
-          pnpm db:fresh --brand test --storefront gallery --suffix ci
-          pnpm db:fresh --brand test --storefront emporium --suffix ci
+          pnpm db:fresh --brand indies-gallery --suffix "$DB_SUFFIX"
+          pnpm db:fresh --brand old-east-indies --suffix "$DB_SUFFIX"
+          pnpm db:fresh --brand test --storefront gallery --suffix "$DB_SUFFIX"
+          pnpm db:fresh --brand test --storefront emporium --suffix "$DB_SUFFIX"
 
       # 2.1.d's and 3.2.f's CI clause, proven the same way the local Check
-      # is: one schema across every database the stack has (schema-hash
-      # --all's own comparison, 2.2.c) — four migrated databases, so a
-      # migration that applied differently anywhere fails here.
+      # is: one schema across the four migrated databases (schema-hash
+      # --all's own comparison, 2.2.c), so a migration that applied
+      # differently anywhere fails here. Named, so the step compares exactly
+      # this job's databases.
       - name: schema-hash --all
-        run: pnpm schema-hash --all
+        run: >-
+          pnpm schema-hash --all
+          "indies_gallery_$DB_SUFFIX" "old_east_indies_$DB_SUFFIX"
+          "test_${DB_SUFFIX}_gallery" "test_${DB_SUFFIX}_emporium"
 
       # 2.1.d's CI clause, stated in the log: every database has both extensions.
       - name: unaccent and pg_trgm in every database
         run: |
-          for db in indies_gallery_ci old_east_indies_ci test_ci_gallery test_ci_emporium; do
+          for db in "indies_gallery_$DB_SUFFIX" "old_east_indies_$DB_SUFFIX" "test_${DB_SUFFIX}_gallery" "test_${DB_SUFFIX}_emporium"; do
             found=$(psql -U "$POSTGRES_USER" -d "$db" -tAc "select string_agg(extname, ',' order by extname) from pg_extension where extname in ('pg_trgm','unaccent')")
             echo "$db: $found"
             [ "$found" = "pg_trgm,unaccent" ] || { echo "::error::$db lacks unaccent or pg_trgm"; exit 1; }
@@ -110,37 +117,61 @@ jobs:
         run: pnpm exec vitest run --project packages .db.test
 
       - name: Build both apps (no database env — like the deploy artifact)
-        if: steps.apps.outputs.exists == 'true'
         run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm build
 
-      - name: Skip notice (build)
-        if: steps.apps.outputs.exists != 'true'
-        run: echo "::notice::Build skipped — engine/apps/{gallery,emporium} not scaffolded yet (phase 4)."
+      # The release's own tree (release.yml runs the same script), so every push to main
+      # proves the artifact a `production` push would publish boots and serves.
+      - name: Assemble the release tree
+        run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
+
+      # The four brand/storefront pairs as a host runs them (start-server.sh: `node server.js`
+      # from an empty environment, HOSTNAME=0.0.0.0, a PAYLOAD_SECRET and a `ci:` LINK_TOKEN_KEYS
+      # ring generated per server), plus a fifth gallery with the spike's fixture routes on for
+      # status.spec.ts — SPIKE_ROUTES is allowed only where the boot check judges the host local,
+      # which LOCAL_PRODUCTION_BUILD=1 at a loopback SITE_URL is. The real brands boot from their
+      # own brand/ in the release; `test` from its repo folder, which no release ships.
+      - name: Start the servers (ig, oei, test-gallery, test-emporium, spike)
+        run: |
+          set -euo pipefail
+          start=.github/scripts/start-server.sh
+          art="$RUNNER_TEMP/artifact"
+          bash $start ig "$art/indies-gallery" gallery 4200 "indies_gallery_$DB_SUFFIX" indies-gallery "$art/indies-gallery/brand"
+          bash $start oei "$art/old-east-indies" emporium 4201 "old_east_indies_$DB_SUFFIX" old-east-indies "$art/old-east-indies/brand"
+          bash $start test-gallery "$art/indies-gallery" gallery 4202 "test_${DB_SUFFIX}_gallery" test test TEST_STOREFRONT=gallery
+          bash $start test-emporium "$art/old-east-indies" emporium 4203 "test_${DB_SUFFIX}_emporium" test test TEST_STOREFRONT=emporium
+          bash $start spike "$art/indies-gallery" gallery 4204 "test_${DB_SUFFIX}_gallery" test test TEST_STOREFRONT=gallery SPIKE_ROUTES=1
 
       - name: Playwright browsers
-        if: steps.apps.outputs.exists == 'true'
         run: pnpm exec playwright install --with-deps chromium
 
-      # 2.3.a's eight projects: {ig, oei, test-gallery, test-emporium} ×
-      # {desktop, mobile} (playwright.config.ts). Each app serves two of the
-      # four brand/storefront pairs on its own port — E2E_*_URL points
-      # Playwright at whichever port each app was started on in this job.
-      - name: Playwright (8 projects)
-        if: steps.apps.outputs.exists == 'true'
+      # playwright.config.ts: the smoke (.github/e2e/smoke.spec.ts) on {ig, oei, test-gallery,
+      # test-emporium} × {desktop, mobile}, and status.spec.ts on the spike server. E2E_EXPECT_CSP
+      # stays unset until 41.1.a, E2E_EXPECT_UA_FIX until the proxy sets a missing User-Agent
+      # (4.3.b): their cases are `fixme` until then.
+      - name: Playwright (smoke × 8 projects, status on the spike server)
         env:
           E2E_GALLERY_URL: http://localhost:4200
           E2E_EMPORIUM_URL: http://localhost:4201
           E2E_TEST_GALLERY_URL: http://localhost:4202
           E2E_TEST_EMPORIUM_URL: http://localhost:4203
+          E2E_SPIKE_URL: http://localhost:4204
         run: pnpm test:e2e
 
-      - name: Skip notice (Playwright)
-        if: steps.apps.outputs.exists != 'true'
-        run: echo "::notice::Playwright skipped — no app to serve yet (phase 4)."
+      - name: Server logs
+        if: always()
+        run: |
+          for log in "$RUNNER_TEMP"/servers/*.log; do
+            [ -e "$log" ] || continue
+            echo "::group::$(basename "$log")"
+            cat "$log"
+            echo "::endgroup::"
+          done
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: failure() && steps.apps.outputs.exists == 'true'
+        if: failure()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            ${{ runner.temp }}/servers/*.log
           retention-days: 7

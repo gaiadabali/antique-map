@@ -10,6 +10,9 @@ npm-debug.log*
 
 # Build output and caches
 .next/
+# Written by `next typegen`/`next build` in each app (PARALLEL-TRACKS.md §2: generated, edited by
+# nobody). Untracked but visible, a second `pnpm verify` fails `format:check` on it (TASKS.md 4.4.d).
+**/next-env.d.ts
 dist/
 coverage/
 *.tsbuildinfo
