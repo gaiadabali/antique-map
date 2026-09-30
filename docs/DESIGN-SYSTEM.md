@@ -200,20 +200,22 @@ second, loader third — through ARC. Reaching past the fixture for a document i
 how the lanes quietly re-couple.
 
 **Two part-shapes carry the resolved/streamed split into the type system.** A
-`Streamed<T>` is a part read at request time and streamed into a `<Suspense>`
-boundary (ARCHITECTURE.md §9) — never produced inside a cached read — and it
-**never rejects**: a failed read resolves to its designed fallback (`null`, an
-empty list, `enquiryOnly` / `unverified` for a purchase panel), so no error
-boundary ever stands in for a panel; a fixture passes `Promise.resolve(…)`, or
-`pending()` for the reserved-height "Checking availability…" state. A
+`Streamed<T>` is a part read at request time, which the page streams into a
+`<Suspense>` boundary or awaits in its own body (ARCHITECTURE.md §9) — never
+produced inside a cached read — and it **never rejects**: a failed read
+resolves to its designed fallback (`null`, an empty list, `enquiryOnly` /
+`unverified` for a purchase panel), so no error boundary ever stands in for a
+panel; a fixture passes `Promise.resolve(…)`, or `pending()` for a streamed
+band's reserved-height state. The item's `purchase`, typed `Streamed`, is
+awaited in the page body (§2), so it never shows one. A
 `CachedPart<T>` is a view model with every `Streamed` property, at any depth,
 left out — what a loader's `'use cache'` + `cacheTag` read may return in
 phase one, before phase two adds the request-time parts. **What a visitor
 without JavaScript must see or act on is resolved, never streamed**: a form,
-its post's outcome (`FormResultVM`, C13 `FORM_RESULT`), and the list an
-email's link opened are all awaited at request time and rendered in the
-page's own body — never inside a nested `<Suspense>` a script would be needed
-to reveal.
+its post's outcome (`FormResultVM`, C13 `FORM_RESULT`), the purchase panel
+and its forms, and the list an email's link opened are all awaited at request
+time and rendered in the page's own body — never inside a nested `<Suspense>`
+a script would be needed to reveal.
 
 Each page's `SeoVM` also carries `contentLocale`: the locale its main content
 is really in, which may differ from the page's own when it falls back to
@@ -360,10 +362,11 @@ app, subset for Latin with Indonesian and Dutch diacritics, and checked against
 real original titles (long s `ſ`, ligatures, accents); a CJK plan for the later
 Chinese locale is written into DESIGN.md, not improvised.
 
-**Availability never flashes.** Content shells are cached while availability is
-dynamic (ARCHITECTURE.md §9), so the purchase panel reserves its height and reads
-"Checking availability…" until the dynamic part resolves; **no purchase control
-renders before availability is known** — a sold map must never flash "Buy".
+**Availability never flashes.** Content is cached while availability is read
+live (ARCHITECTURE.md §9), and the page awaits the purchase panel in its body, so
+the panel arrives in the first flush with availability known — or, when the read
+times out, as `enquiryOnly` / `unverified`; **no purchase control renders before
+availability is known** — a sold map must never flash "Buy".
 
 ## 8. Motion
 

@@ -40,7 +40,7 @@ app's root, which no build reads — name the brand the app serves today, as a
 decision record may. The rule they must keep is the one the lint cannot see:
 nothing a build reads imports or embeds Markdown, so no brand's words reach a
 bundle through one. The owner agreed this reading of requirement 1.3 — source,
-not docs — as D41 (TASKS.md, Answered; 4.3.d).
+not docs — as D44 (TASKS.md, Answered; 4.3.d).
 
 ### The synthetic third brand runs every build
 

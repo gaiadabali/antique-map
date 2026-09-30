@@ -683,6 +683,10 @@ so it is breaking and also needs a redirect.
   - **C2, next:** `ShellVM.assets.touchIcon` and `.manifest` become required at 4.6's merge, once
     4.6.e's apps set both — a minor change that touches producers only, so `undefined` stops
     meaning "the app links it itself" (senior-be #14, senior-fe #9).
+  - **C2, C1 and C11 wording, no shape change:** `common.ts` (`Streamed`), `surfaces/item.ts` and
+    `surfaces/purchase.ts` say the item's `purchase` is awaited in the page body, its availability
+    read bounded by a timeout that resolves `unverified`; C1 `PurchaseBand` and C11's beacon
+    header no longer call the panel streamed (senior-fe #1).
   - **C13:**
     - `REVALIDATE_REQUEST` (new): the terms on which `invalidate(tags)` posts to
       `/api/x/revalidate` from outside a request — a bearer `REVALIDATE_SECRET` compared in
@@ -709,4 +713,4 @@ so it is breaking and also needs a redirect.
     variable, to prove no connection (senior-be #4); the bind behind nginx, one process in fork
     mode (DEPLOYMENT.md §3; senior-be #8, measured); the 5xx series as an evaluable rule
     (DEPLOYMENT.md §7; senior-be #9); a capability path kept out of every log (ARCHITECTURE.md §13;
-    senior-be #6); D41 cited for the Markdown exemption (CONVENTIONS.md §1).
+    senior-be #6); D44 cited for the Markdown exemption (CONVENTIONS.md §1).

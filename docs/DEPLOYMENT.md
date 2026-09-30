@@ -249,10 +249,11 @@ runbook records how long it actually took.
 BRAND                       indies-gallery | old-east-indies | test
 BRAND_ROOT                  the brand folder, the one holding site/: <current>/brand on a host — the release
                             ships brand/site/ beside engine/apps/<app>/server.js (assemble-artifact.sh)
-HOSTNAME                    0.0.0.0 on a host and in CI: the address `node server.js` binds, never an origin.
-                            Never a loopback IP — at 127.0.0.1 every proxy rewrite looks external to Next and
-                            the page hangs (TASKS.md 4.4.g) — and never left to the shell, which exports the
-                            machine's name as HOSTNAME
+HOSTNAME                    localhost on a host, where pm2 runs node with --dns-result-order=ipv4first so it
+                            binds 127.0.0.1 alone, behind nginx (§3); 0.0.0.0 in CI. The address
+                            `node server.js` binds, never an origin. Never a loopback IP — at 127.0.0.1 every
+                            proxy rewrite looks external to Next and the page hangs (TASKS.md 4.4.g, 5.3.d) —
+                            and never left to the shell, which exports the machine's name as HOSTNAME
 TEST_STOREFRONT             CI only: gallery | emporium — which test config to load
 DATABASE_URL                PAYLOAD_SECRET
 SITE_URL                    the origin this process serves: https://<its domain> on a host; the boot
