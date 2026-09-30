@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// `pnpm brand:create <slug> --storefront gallery|emporium [--name "<Name>"]` — TASKS.md 2.2.h, 3.3.a.
+// `pnpm brand:create <slug> --storefront gallery|emporium [--name "<Name>"]` — TASKS.md 2.2.h, 3.3.a, 4.7.b.
 import { BrandCreateError, createBrand } from './brand-create.mjs'
 
 const args = process.argv.slice(2)
@@ -21,7 +21,9 @@ try {
   const { brandDir, infra } = await createBrand(process.cwd(), { slug, storefront, name })
   console.log(`brand:create: scaffolded ${brandDir}`)
   console.log(`  database: ${infra.database}   bucket: ${infra.bucket}`)
-  console.log('  validated with validateBrandConfig() (@engine/config/validate, C1)')
+  console.log(
+    `  validated with validateBrandConfig() (@engine/config/validate, C1) against the ${storefront} app's supports`,
+  )
   console.log(
     '  next: add a .gaiadeploy.yml target, provider secrets in Infisical, and pnpm db:fresh --brand ' +
       slug,
