@@ -144,17 +144,20 @@ jobs:
       - name: Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      # playwright.config.ts: the smoke (.github/e2e/smoke.spec.ts) on {ig, oei, test-gallery,
-      # test-emporium} × {desktop, mobile}, and status.spec.ts on the spike server. E2E_EXPECT_CSP
-      # stays unset until 41.1.a, E2E_EXPECT_UA_FIX until the proxy sets a missing User-Agent
-      # (4.3.b): their cases are `fixme` until then.
-      - name: Playwright (smoke × 8 projects, status on the spike server)
+      # playwright.config.ts: the smoke (tests/e2e/smoke/) on {ig, oei, test-gallery,
+      # test-emporium} × {desktop, mobile}; the status spec (tests/e2e/status/) on the spike server
+      # (status-gallery) and its @any-app cases on test-emporium (status-emporium). The proxy sets a
+      # missing User-Agent since 5.3, so E2E_EXPECT_UA_FIX=1 runs the no-User-Agent cases on both
+      # apps. E2E_EXPECT_NOT_FOUND_BODY stays unset until 22.4.e (a 404's non-empty <main>),
+      # E2E_EXPECT_CSP until 41.1.a: their cases are `fixme` until then.
+      - name: Playwright (smoke × 8 projects, status on the spike gallery and an emporium)
         env:
           E2E_GALLERY_URL: http://localhost:4200
           E2E_EMPORIUM_URL: http://localhost:4201
           E2E_TEST_GALLERY_URL: http://localhost:4202
           E2E_TEST_EMPORIUM_URL: http://localhost:4203
           E2E_SPIKE_URL: http://localhost:4204
+          E2E_EXPECT_UA_FIX: '1'
         run: pnpm test:e2e
 
       - name: Server logs

@@ -7,10 +7,15 @@
  * a page for its status; this spec does, on a production build. It outlives the spike: the item
  * addresses it asks for are the fixture route's until phase 33 gives them real items.
  *
- * Needs: a production build of this app on `baseURL` (the Playwright project's, e.g.
- * `E2E_GALLERY_URL`), serving any gallery brand with `SPIKE_ROUTES=1` (the fixture item route —
- * allowed only where the boot check judges the host local). `E2E_EXPECT_CSP=1` once the proxy sets
- * the nonce CSP (41.1.a); `E2E_EXPECT_UA_FIX=1` once the proxy sets a missing User-Agent (C13).
+ * Two Playwright projects run it (playwright.config.ts). `status-gallery`, on a gallery production
+ * build with `SPIKE_ROUTES=1` (the fixture item route — allowed only where the boot check judges
+ * the host local), runs every case. `status-emporium`, on an emporium production build, runs the
+ * cases tagged `@any-app` — a path that names no page, a not-found route, an unsupported locale
+ * prefix, robots and the admin-only client hints — which no app may answer differently.
+ *
+ * `E2E_EXPECT_UA_FIX=1` since the proxy sets a missing User-Agent (C13 `PROXY_USER_AGENT`, 5.3);
+ * `E2E_EXPECT_NOT_FOUND_BODY=1` once the not-found page renders the designed surface (22.4.e);
+ * `E2E_EXPECT_CSP=1` once the proxy sets the nonce CSP (41.1.a). Unset, their cases are `fixme`.
  */
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
@@ -19,16 +24,58 @@ const BROWSER_UA =
   'Mozilla/5.0 (Linux; Android 14; SM-A155F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36'
 const CAFE = '/product/1706-caf%C3%A9-de-java' // a slug outside ASCII: encoded once in its URL
 const BALI = '/product/1726-bali'
+const STALE_BALI = '/product/1726-old-bali'
+const ANY_APP = { tag: '@any-app' }
+
+/**
+ * Paths no app has a page for: `/nope` is a CMS page's address (C10, one segment), whose 404 is
+ * the page's `notFound()`; `/nope/deeper` names no page at all, so it is the proxy's not-found
+ * rewrite, answered 404 by its status (5.3's Found #1); `/en/not-found` is the not-found route
+ * asked for by name; `/de/…` a locale prefix no brand supports.
+ */
+const NOT_FOUND = ['/nope', '/nope/deeper', '/en/not-found', '/de/product/1726-bali']
+const NO_PAGE = ['/nope', '/nope/deeper']
 
 const ask = (request: APIRequestContext, path: string, headers: Record<string, string> = {}) =>
   request.get(path, { maxRedirects: 0, headers: { 'user-agent': BROWSER_UA, ...headers } })
+/** A request with no User-Agent at all — Next counts it as no bot, so the proxy must set one. */
+const askWithoutAgent = (request: APIRequestContext, path: string) =>
+  request.get(path, { maxRedirects: 0, headers: { 'user-agent': '' } })
+const expectUaFix = () =>
+  test.fixme(process.env.E2E_EXPECT_UA_FIX !== '1', 'the proxy does not set a missing User-Agent')
 
-test.describe('status codes', () => {
-  for (const path of ['/nope', '/en/not-found', '/de/product/1726-bali', '/en/item/1726-bali']) {
+test.describe('status codes, on any app', ANY_APP, () => {
+  for (const path of NOT_FOUND) {
     test(`${path} answers 404`, async ({ request }) => {
       expect((await ask(request, path)).status()).toBe(404)
     })
+
+    test(`${path} answers 404 with the designed page in its <main>`, async ({ request }) => {
+      test.fixme(
+        process.env.E2E_EXPECT_NOT_FOUND_BODY !== '1',
+        'the not-found page renders its designed surface from 22.4.e',
+      )
+      const response = await ask(request, path)
+      expect(response.status()).toBe(404)
+      const main = /<main\b[^>]*>([\s\S]*?)<\/main>/.exec(await response.text())?.[1] ?? ''
+      expect(main.replace(/<[^>]*>/g, '').trim(), 'the text of the 404’s <main>').not.toBe('')
+    })
   }
+
+  for (const path of NO_PAGE) {
+    test(`${path} with no User-Agent still answers 404 (the proxy sets one — C13, 5.3)`, async ({
+      request,
+    }) => {
+      expectUaFix()
+      expect((await askWithoutAgent(request, path)).status()).toBe(404)
+    })
+  }
+})
+
+test.describe('status codes, on the spike gallery', () => {
+  test('/en/item/1726-bali answers 404', async ({ request }) => {
+    expect((await ask(request, '/en/item/1726-bali')).status()).toBe(404)
+  })
 
   test('the canonical item address answers 200', async ({ request }) => {
     expect((await ask(request, CAFE)).status()).toBe(200)
@@ -49,6 +96,21 @@ test.describe('status codes', () => {
     })
   }
 
+  test("a stale slug's permanent redirect keeps its query (5.3.e)", async ({ request }) => {
+    const response = await ask(request, `${STALE_BALI}?utm_source=mail`)
+    expect(response.status()).toBe(308)
+    expect(response.headers()['location']).toBe(`${BALI}?utm_source=mail`)
+  })
+
+  test('a stale slug with no User-Agent is still a permanent redirect (C13, 5.3)', async ({
+    request,
+  }) => {
+    expectUaFix()
+    const response = await askWithoutAgent(request, STALE_BALI)
+    expect(response.status()).toBe(308)
+    expect(response.headers()['location']).toBe(BALI)
+  })
+
   for (const path of [`${BALI}/`, '/product//1726-bali']) {
     test(`${path} is Next's own 308, before the proxy`, async ({ request }) => {
       const response = await ask(request, path)
@@ -56,20 +118,9 @@ test.describe('status codes', () => {
       expect(response.headers()['x-middleware-rewrite']).toBeUndefined()
     })
   }
-
-  test('a request with no User-Agent still answers 404 (the proxy sets one — C13, 4.3)', async ({
-    request,
-  }) => {
-    test.fixme(
-      process.env.E2E_EXPECT_UA_FIX !== '1',
-      'the proxy does not set a missing User-Agent yet',
-    )
-    const response = await request.get('/nope', { maxRedirects: 0, headers: { 'user-agent': '' } })
-    expect(response.status()).toBe(404)
-  })
 })
 
-test.describe('headers', () => {
+test.describe('headers, on any app', ANY_APP, () => {
   test('robots fails closed until SEO builds it', async ({ request }) => {
     const response = await ask(request, '/robots.txt')
     expect(response.status()).toBe(200)
