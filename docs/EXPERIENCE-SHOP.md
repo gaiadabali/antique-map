@@ -22,9 +22,10 @@ research direction entering as at most one candidate**, a **cultural review by
 Indonesian designers and buyers**, and a written position on what the chosen
 world celebrates (the archipelago, the craft of printmaking) and what it avoids
 (the colonial gaze). Nothing above binds the outcome — and since 2026-09-28 the
-shop shares the gallery's base system and differs in its accents (D9's shape,
-see EXPERIENCE-GALLERY.md); the cultural review applies to those accents; the typewriter-style Archive
-No. tag shared with the gallery is the one sister element already agreed.
+shop shares the gallery's whole base system — layout, components, buttons and type,
+the typewriter-style Archive No. tag among its components — and differs only in its
+accents, palette and signature details (D9's shape, see EXPERIENCE-GALLERY.md); the
+cultural review applies to those accents.
 
 **Two cautions carried into the design:**
 - **Hofker is likely in copyright until 2051** (COMPLIANCE.md §8). The Bali Hotel
@@ -75,7 +76,8 @@ Tenggara, Papua, Singapore/Malaya · before 1700 · 1700s · 1800s · 1900–194
 the same gazetteer as the gallery.
 
 **Gifts:** by price (under Rp 150k / 500k / 1.5m; under €25 / €50 for export
-markets) · by recipient · by occasion (oleh-oleh, housewarming, wedding, Lebaran,
+markets, read against the day's estimate — D47's default, COMMERCE.md §3) · by
+recipient · by occasion (oleh-oleh, housewarming, wedding, Lebaran,
 Imlek, Christmas, Sinterklaas, corporate).
 
 **Filters** (bottom sheet on mobile): type · format · size range · orientation ·
@@ -104,9 +106,15 @@ price (the cheapest variant that can ship to this destination) · frame swatches
 
 Top to bottom, mobile first:
 
-1. **Images** — framed on a wall first, then the flat artwork, a deep zoom of the
-   scan (the detail is the selling point), close-ups, a scale shot, the gift
-   wrap. AR "view on your wall" is v2.
+1. **Images** — in the product's image order (C9 `PRODUCT_IMAGE_ROLES`,
+   CONTENT-MODEL.md §1): framed on a wall first (`in-room`), then the flat artwork
+   (`flat`), a deep zoom of the scan (the design's image — the detail is the
+   selling point), close-ups (`detail`), in hands and in use (`lifestyle`), a scale
+   shot (`scale`), the gift wrap and the parcel (`packaging`), the product in the
+   showroom (`showroom`). A digital mockup says so on the image, at the start of
+   its alt text and in the filmstrip, and leads only until a photograph of the
+   product in a room or flat exists (`docs/design/imagery/retouching-and-labelling.md`
+   §5–6). AR "view on your wall" is v2.
 2. **Title block** — "Bali Hotel, Denpasar — Giclée print", the artist or
    mapmaker and year, the **Archive No.**, the **Reproduction** label, one badge
    (Hero · Printed in Bali · In the showroom now · Limited edition), and a price
@@ -177,10 +185,16 @@ preview is decoration over a text summary of the selection (DESIGN-SYSTEM.md §9
 the price change is announced politely; swatches carry names and ≥ 24 px targets.
 
 **Pricing** — one price table per product family shared by all artworks, times
-the artwork multiplier; separate market price lists (IDR for Indonesia;
-USD/EUR/AUD/SGD built from production + duties-paid shipping) rounded to clean
-price points, tax included (COMMERCE.md §3). Bundles: print + frame, wall sets
-10–15% off, "3 for 2" cards.
+the artwork multiplier, tax included — **in rupiah for every destination at
+launch** (D47's default, COMMERCE.md §3). The shop's one seller is an Indonesian PT
+(D2), which charges rupiah, so a buyer abroad sees each price as an estimate in
+their market's currency beside the exact rupiah it is charged — "≈ €46 — charged in
+Rp 812.000" — pays by card in that rupiah amount, or by PayPal, which takes no
+rupiah, in the US dollars the payment step shows before the choice. Separate market
+price lists (USD/EUR/AUD/SGD, built from production plus duties-paid shipping, at
+clean price points) wait for a seller that can charge those currencies — the v2
+Singapore seller (§11). Bundles: print + frame, wall sets 10–15% off, "3 for 2"
+cards.
 
 ## 6. Design pages — one image, many products
 
@@ -245,7 +259,12 @@ may collect. A print that arrives damaged is replaced on a photo claim.
 
 - **The showroom is a stock location**: "In the showroom now" badge and filter,
   click & collect, and (v2) buy in the showroom and ship home, printed near the
-  buyer with duties paid. QR codes on the walls open each product page.
+  buyer with duties paid. QR codes on the walls open each product page. Its own
+  photographs — the street and the entrance, a wide view, each wall, the counter,
+  a few vignettes, the making (`docs/design/imagery/shop-guide.md` §5) — are the
+  location's images (CONTENT-MODEL.md §2), photographs only, never a mockup; the
+  visit band and a pickup's instructions lead with the entrance, so a visitor
+  recognises it on arrival.
 - **Instagram:** an `/ig` page on the shop's own domain replaces the Linktree —
   recent posts, each linked to its products. One Meta catalogue feed drives
   Instagram product tags **and** the WhatsApp catalogue, so the Drive PDFs can
@@ -302,7 +321,8 @@ with size/frame options; the configurator with live preview, scale view and live
 price; the story and "own the original" blocks; collections, filters, gifts;
 gift wrap, notes and digital gift cards; the bag drawer with progress bar,
 upsells and vouchers; Midtrans methods for Indonesia, cards and PayPal for
-export; currency by destination; courier rates, same-day and showroom pickup;
+export; currency by destination — rupiah everywhere, with an estimate in the
+buyer's currency abroad (D47's default); courier rates, same-day and showroom pickup;
 WhatsApp chat, and order updates on WhatsApp once the provider is chosen (D14 —
 by email until then); the showroom as a stock location; the Meta
 catalogue feed; welcome offer; reviews; the budgets.

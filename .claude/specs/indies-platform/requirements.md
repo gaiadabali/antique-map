@@ -79,7 +79,7 @@ while their data and identities stay apart.
 1. WHEN an image is uploaded THEN the system SHALL generate AVIF and WebP derivatives at 320, 640, 1024, 1600 and 2400 px and a blur placeholder.
 2. WHEN a work image is uploaded THEN a background job SHALL generate static IIIF Level 0 tiles and update the work's IIIF manifest.
 3. The system SHALL store master scans in a private bucket AND serve them only through short-lived presigned URLs to authorised staff and fulfilment providers.
-4. The system SHALL compute a design's print-size ceiling from its master's pixels and the product type's minimum ppi AND refuse variants that exceed it.
+4. The system SHALL compute a design's print-size ceiling from the pixels of its crop of the master — for a whole-sheet design, the object's own pixels, never the master file's long edge, which also holds the background, the colour card and the ruler — at the product type's minimum ppi, AND refuse variants that exceed it.
 5. WHEN a visitor shows intent on an item image THEN the viewer SHALL load AND deep-zoom recto, verso and details with keyboard and touch controls.
 6. The primary item image SHALL be a crawlable `<img>` with alt text and SHALL be the page's LCP element.
 7. IF the visitor prefers reduced motion THEN zoom transitions SHALL be cuts.
@@ -130,7 +130,7 @@ while their data and identities stay apart.
 5. The product page SHALL show a delivery promise for the current ship-to destination.
 6. The product page SHALL show the original's status at the gallery (available with price, enquire, or sold).
 7. The shop SHALL provide design pages listing every product made from one design.
-8. The shop SHALL provide an `/ig` page, a showroom page with "In the showroom now" stock, a For Business enquiry and gift cards.
+8. The shop SHALL provide an `/ig` page, a showroom page with "In the showroom now" stock, a Partnership page — the one programme every business buyer applies through, with no separate "For Business" path (D36) — and gift cards.
 9. The bag SHALL show a free-shipping progress bar, relevant upsells and a voucher field.
 10. The shop SHALL let a guest look up and track an order by order number plus email or WhatsApp number, AND SHALL give pickup orders a pickup code with hours and location.
 11. WHILE a payment awaits a virtual-account or QRIS transfer THEN the order page SHALL show the exact amount, the VA number with a copy action, per-bank steps, an expiry countdown and the bank-cap warning, offer save-to-gallery and e-wallet deep links for QR, AND switch to paid automatically.

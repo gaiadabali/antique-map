@@ -330,7 +330,7 @@ exported for manual handling.
 | Curator review of the category → facet mapping | §2, bulk publish | ~1 hour |
 | **The item register**: for every stock number, where the object physically is (Singapore, Jakarta, elsewhere) and its export status | any sale — an item without a row publishes enquiry-only (COMPLIANCE.md §1) | a spreadsheet; the largest single input the owner gives |
 | Condition-grade scale they use (`G+`, `VG`…) with definitions | the PDP condition legend | 15 min |
-| High-resolution master scans (where they exist) | large OEI print sizes — today's 3543 px web images allow about 37 cm on the long edge at 240 ppi (≈ A4 at 300 ppi), ARCHITECTURE.md §7 | ongoing |
+| High-resolution master scans (where they exist) | large OEI print sizes — today's 3543 × 2840 px web images allow at most about 37 cm on the long edge at 240 ppi, and only where the sheet fills the frame edge to edge: the ceiling is computed from the sheet's own pixels or a design's crop of them, never the file's long edge (ARCHITECTURE.md §7), so a sheet spanning 3300 px of one prints to about 35 cm. Each legacy image is assessed at import, never rejected — its object's long edge measured and, where the dimensions are known, its object ppi (`docs/design/imagery/intake-spec.md` §8) | ongoing |
 | Newsletter platform export (subscribers + consent) | §5 | 15 min |
 | Pointing `antiquemapsindonesia.com`, `indiesgallery.com` and `oldeastindies.com` at the new sites at launch (the owner's registrar and DNS) | cutover | minutes, on the day |
 | Old East Indies' product list (spreadsheet or the WhatsApp catalogue export) and any Squarespace export | §10 | 1 hour |

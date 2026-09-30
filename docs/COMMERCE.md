@@ -82,7 +82,40 @@ currency, prices, price facets and duties everywhere on the site follow from it
   (the rupiah rule; COMPLIANCE.md §1) — on item pages, tiles, price facets,
   curations, the bag and the sister links alike. Export destinations → the
   market's currency, with a converted estimate allowed where the seller charges
-  in another currency ("≈ €1,020 — charged in USD 1,100").
+  in another currency ("≈ €1,020 — charged in USD 1,100"). A market is priced and
+  charged in its own currency only where the routed seller charges it (C1
+  `sellers[].charge`); otherwise the seller's charge currency is the exact figure
+  and the market's is the estimate beside it.
+- **A buyer abroad at the shop, at launch — D47's default, until the owner and the
+  adviser answer.** The shop's one seller is an Indonesian PT (D2): its gateway
+  charges rupiah, cards from abroad included (COMPLIANCE.md §1–2), and PayPal, its
+  one method in another currency, takes no rupiah at all. So:
+  - **one price list, in rupiah, for every destination.** The seller prices and
+    charges IDR alone (`charge: ["IDR"]`); there is no hand-set EUR, AUD, SGD or USD
+    list until a seller that can charge those currencies exists (the v2 Singapore
+    seller, EXPERIENCE-SHOP.md §11). Exports are zero-rated where PPN applies (§9);
+  - **the exact figure is the rupiah** — every price, total and document — and a
+    card is charged exactly that rupiah total;
+  - **the "≈" figure is the market's currency** — euros for the eurozone, Australian
+    and Singapore dollars, US dollars elsewhere — a display-only estimate of the
+    rupiah at the day's reference rate with no buffer, in whole units, always beside
+    the rupiah it estimates: "≈ €46 — charged in Rp 812.000" (C5 `PriceSet`
+    `converted`: `charge` in IDR, `estimate` in EUR). Price facets and price-named
+    gift presets for an export market read that estimate ("under €25"), refreshed
+    with the rate — display only, like the estimate itself;
+  - **PayPal charges US dollars**: at the payment step the order's rupiah total is
+    converted once, at the day's rate plus the brand's USD buffer (C1
+    `money.fx.bufferPct`, which covers PayPal's own conversion when the PT withdraws
+    to rupiah), half-even to the cent at the `fx-conversion` point. That dollar
+    figure is exact: the PayPal option shows it before the buyer chooses it
+    ("PayPal — USD 51.20"), and the payment attempt stores it as its charge with its
+    FX snapshot, the order staying in rupiah (PAYMENTS.md §6). The figure the option
+    showed is the figure charged: a rate that moved in between answers `PriceChanged`
+    with the new figure, never a silent charge. A refund of that payment is the
+    refunded rupiah converted at the attempt's own rate — never the day's — and never
+    more than the attempt took;
+  - the payment step says, in one line, that the card issuer or PayPal may convert
+    again into the buyer's own currency at its own rate.
 - **Market price lists** — a market is a currency plus its rules:
 
   | Source | Used for | How |

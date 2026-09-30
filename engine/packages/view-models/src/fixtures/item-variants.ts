@@ -93,7 +93,8 @@ export const itemVariants: ItemVM = {
     primary: image('wall-7001', 1600, 1067, 'The giclée print framed on a white wall', 'in-room'),
     images: [
       image('wall-7001', 1600, 1067, 'The giclée print framed on a white wall', 'in-room'),
-      image('flat-7001', 1200, 960, 'The harbour of Contoh, flat', 'primary'),
+      // A product's own roles (C9 v1.4 `PRODUCT_IMAGE_ROLES`), in page order: `primary` is no role.
+      image('flat-7001', 1200, 960, 'The harbour of Contoh, flat', 'flat'),
       image('detail-7001', 1600, 1600, 'Detail of the harbour mouth', 'detail'),
     ],
     manifest: null,
