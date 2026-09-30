@@ -144,3 +144,91 @@ describe("@engine/cache imports nothing of the engine's but C1's types (5.4.b)",
     expect(await fencesAt(path, code)).toEqual([])
   })
 })
+
+describe(
+  'a path spelled out, require() and import = require() are fenced too (qa S2)',
+  LOADED,
+  () => {
+    it.each([
+      // a relative path out of the package reaches what the package name would
+      [
+        'engine/packages/cms/src/x.ts',
+        "import { POST } from '../../http/src/revalidate/route'\n",
+        'cms-no-http',
+      ],
+      [
+        `${HTTP}/sitemap/route.ts`,
+        "import { loadItem } from '../../../loaders/src/index'\n",
+        'http-no-loaders',
+      ],
+      [
+        'engine/packages/loaders/src/item.ts',
+        "import { GET } from '../../http/src/health/route'\n",
+        'loaders-http-manifest-only',
+      ],
+      [
+        `${HTTP}/manifest/x.ts`,
+        "export * from '../../../config/src/schema'\n",
+        'manifest-types-only',
+      ],
+      [
+        `${HTTP}/legacy/route.ts`,
+        "import { cms } from '../../../cms/src/instance'\n",
+        'payload-by-value',
+      ],
+      [
+        `${HTTP}/legacy/route.ts`,
+        "import '../../../../../node_modules/payload/dist/index.js'\n",
+        'payload-by-value',
+      ],
+      [
+        'engine/packages/cache/src/tags.ts',
+        "import { x } from '../../../tooling/db/cli.mjs'\n",
+        'cache-leaf',
+      ],
+      // require(), createRequire(…)() and TypeScript's import = require()
+      [`${HTTP}/legacy/route.ts`, "const payload = require('payload')\n", 'payload-by-value'],
+      [
+        `${HTTP}/legacy/route.ts`,
+        "const p = createRequire(import.meta.url)('@engine/cms')\n",
+        'payload-by-value',
+      ],
+      [`${HTTP}/legacy/route.ts`, "import payload = require('payload')\n", 'payload-by-value'],
+      [
+        'engine/packages/cms/src/x.ts',
+        "import http = require('@engine/http/health')\n",
+        'cms-no-http',
+      ],
+      [
+        `${HTTP}/health/route.ts`,
+        "const ports = require('./payload-ports')\n",
+        'payload-module-static',
+      ],
+      [`${HTTP}/og/route.ts`, "const l = require('@engine/loaders')\n", 'http-no-loaders'],
+      [
+        'engine/packages/loaders/src/item.ts',
+        "import h = require('@engine/http')\n",
+        'loaders-http-manifest-only',
+      ],
+      [
+        `${HTTP}/manifest.ts`,
+        "import s = require('@engine/config/schema')\n",
+        'manifest-types-only',
+      ],
+      ['engine/packages/cache/src/tags.ts', "const d = require('@engine/domain')\n", 'cache-leaf'],
+    ])('refuses %s: %s', async (path, code, rule) => {
+      expect(await fencesAt(path, code)).toEqual([`fences/${rule}`])
+    })
+
+    it.each([
+      [
+        'engine/packages/loaders/src/forms.ts',
+        "import { FORM_RESULT } from '../../http/src/manifest'\n",
+      ],
+      [`${HTTP}/manifest/forms.ts`, "import { GET } from '../manifest/types'\n"], // its own package
+      [`${HTTP}/legacy/route.ts`, "import type Payload = require('payload')\n"],
+    ])('passes %s: %s', async (path, code) => {
+      expect(await fencesAt(path, code)).toEqual([])
+    })
+  },
+)
