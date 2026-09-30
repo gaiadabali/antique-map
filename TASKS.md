@@ -157,6 +157,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 4·W2 | 4.8 `@engine/cms/instance` and `@engine/cache` | senior-be | `antique-map-p4-sch` / `feat/p4-sch` | 2026-09-30 | review: senior-db (after-commit ordering) |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -541,7 +542,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 4.7.b `createBrand` and a `check:brands` step validate each brand against the app that renders it with that app's real `engine/apps/<app>/src/supports.ts` (the apps' own `supports.test.ts` stays), so a module an app cannot render fails the scaffold and the gate (3.3's follow-up, moved from 4.4.e)
   - [x] 4.7.c **Check:** planted `import 'crypto'`, `import p from 'path'` and `import(variable)` in a `'use client'` module each fail `check:client-safe` with their chain and pass once removed; `pnpm brand:create` for each storefront still validates, and a config turning on a module its app does not support fails `check:brands` naming the module; `pnpm verify` green.
 
-- [ ] **4.8 The process's one Payload, and the cache tags: `@engine/cms/instance`, `@engine/cache`** · needs: 3.2
+- [ ] **4.8 The process's one Payload, and the cache tags: `@engine/cms/instance`, `@engine/cache`** · needs: 3.2 — 🔄 4·W2
   - **Lane** SCH · **Agent** senior-be · **Wave** W2 (dispatched once 4.3 has merged: it builds against ARCHITECTURE.md §9 and §15)
   - **Owns** `engine/packages/cms/src/instance.ts`, `engine/packages/cms/src/instance.test.ts`, the `exports` field of `engine/packages/cms/package.json`, `engine/packages/cache/**` (a new package; `pnpm-lock.yaml` as its install's side effect)
   - **Read** ARCHITECTURE.md §9 (invalidation after commit), §15 (4.3.a); C13 `REVALIDATE_REQUEST`; `engine/packages/cms/src/{payload.config.ts,db/probe.ts,db/adapter.ts,db/cli.ts}`; `.claude/specs/indies-platform/reviews/4.1-senior-be.md` item 5, `reviews/4.3-senior-be.md` #1, #2, #4, #12
