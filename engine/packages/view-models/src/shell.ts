@@ -30,11 +30,25 @@ export type ShellVM = {
   defaultLocale: LocaleCode
   /** The switcher's choices; each page's own alternates come from its `SeoVM`. */
   locales: readonly LocaleCode[]
-  /** Served from `/brand-assets/…` (C13); fonts load through a runtime `@font-face`. */
+  /**
+   * Every brand-asset URL a page links, each at its versioned address under `/brand-assets/`
+   * (C13 `BRAND_ASSET_URL`: `?v=` the file's version), minted where the shell's view model is
+   * built and never written by a template. A page links its icons and manifest through its
+   * metadata (`icons`, `manifest`), never Next's file conventions, which are one build's; fonts
+   * load through a runtime `@font-face`.
+   */
   assets: {
     logo: string
     mark: string | null
     favicon: string
+    /**
+     * The home-screen icon (C13 `BRAND_ROOT_ASSETS.touchIcon`), for the metadata's `icons.apple`;
+     * `null` when the brand ships none, so no page links a 404 (v1.3). Absent only in the apps'
+     * interim shell of TASKS.md 4.1, which links it by itself; the shell's loader (11.3) sets it.
+     */
+    touchIcon?: string | null
+    /** The web manifest (C13 `BRAND_ROOT_ASSETS.manifest`), for the metadata's `manifest`; as `touchIcon`. */
+    manifest?: string | null
     ogImage: string
     fonts: readonly { family: string; src: string; weight: string; style: 'normal' | 'italic' }[]
   }

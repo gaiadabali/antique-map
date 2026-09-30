@@ -31,12 +31,19 @@ in `indies-gallery/`, `old-east-indies/` and `test/` — never code.
   Never commit a migration your dev server generated.
 - **Never hand-edit generated files** (`payload-types.ts`, `importMap.js`,
   `next-env.d.ts`) or `pnpm-lock.yaml`.
-- **The build never touches a database.** The apps use **Cache Components**: no
-  route segment config (`dynamic`, `revalidate` — `force-dynamic` does not exist
-  here), the `(site)` layout awaits `connection()`, anything reading cookies,
-  headers, search params, the ship-to market or availability sits inside
-  `<Suspense>`, and cached reads are `'use cache'` + `cacheTag` invalidated
-  through `invalidate(tags)` (CONVENTIONS.md §12).
+- **The build never touches a database.** The apps use **Cache Components**
+  (CONVENTIONS.md §12). The one route segment config is `export const instant =
+  false` on the `(site)/[locale]` layout — never `dynamic` or `revalidate`
+  (`force-dynamic` does not exist here) — and each app's `next.config.ts` sets
+  `htmlLimitedBots: /.*/`, so every page renders in full per request and a 404 or a
+  redirect keeps its status. The brand is read after `connection()`, and an engine
+  `GET` route handler reads its request first, or the build runs it. What the first
+  flush must carry — a form, its current value, a post's result, the canonical
+  check — is read in the page body; only slow or live reads (availability, a live
+  price, cart totals) stream inside `<Suspense>`, and a streamed part holds no form.
+  Cached reads are `'use cache'` + `cacheTag` + `cacheLife`, invalidated through
+  `invalidate(tags)`; the availability that decides a purchase is read live, never
+  cached. Storefront links never prefetch: `<a>` or `<Link prefetch={false}>`.
 - **Public reads are published-only and projected.** Loaders and the sister API
   call Payload with `overrideAccess: false`, filter `_status: 'published'` and
   `select` only the fields the view model needs. The Local API's default

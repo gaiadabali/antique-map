@@ -14,7 +14,7 @@ each contract is one module, re-exported from the entry named below.
 | # | Contract | Entry | Files | Implemented by | Consumed by | Version |
 | - | -------- | ----- | ----- | -------------- | ----------- | ------- |
 | C1 | Brand config schema, module registry, catalogue and listing vocabularies | `@engine/config/schema`; zod-free locales and currencies at `@engine/config/constants` | `config/src/schema.ts`, `config/src/schema/**`, `config/src/constants/**` | PLT (loader, `validateBrandConfigs()`, `bootCheck()`), BRD (brand folders) | every lane | v1.2 |
-| C2 | Surfaces and view models, loader signatures, typed fixtures | `@engine/view-models`, `@engine/view-models/fixtures` | `view-models/src/**` (except `blocks*.ts`) | WEB (`@engine/loaders`; state fixtures, TASKS.md 11.4) | WEB, UXG, UXE, SEO, DOM, NTF | v1.1 |
+| C2 | Surfaces and view models, loader signatures, typed fixtures | `@engine/view-models`, `@engine/view-models/fixtures` | `view-models/src/**` (except `blocks*.ts`) | WEB (`@engine/loaders`; state fixtures, TASKS.md 11.4) | WEB, UXG, UXE, SEO, DOM, NTF | v1.3 |
 | C3 | Token contract and the brand-overridable subset | `@engine/ui/tokens/contract` | `ui/src/tokens/contract.ts` | UXG, UXE (app defaults), WEB (token pipeline, TASKS.md 11.2) | UXG, UXE, BRD, ADM | v1.1 |
 | C4 | Content blocks: the frozen list and prop shapes | `@engine/view-models` | `view-models/src/blocks.ts`, `blocks-check.ts` | SCH (Payload blocks), UXG and UXE (renderers) | SCH, UXG, UXE, WEB | v1.1 |
 | C5 | Money: `Money`, `PriceSet`, rounding points, the pricing step | `@engine/domain/money` | `domain/src/money/contract.ts`, `domain/src/contracts/{pricing,price-sources}.ts`; shared by C5–C8: `domain/src/contracts/{scalars,type-assertions,storage}.ts` (`@engine/domain/storage`) | DOM | DOM, PAY, WEB, apps, C2 | v1.2 |
@@ -25,7 +25,7 @@ each contract is one module, re-exported from the entry named below.
 | C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.2 |
 | C11 | Analytics events: names and props | `@engine/analytics/events` | `analytics/src/events.ts`, `analytics/src/events/**` | SEO | every surface, DOM (the outbox) | v1.1 |
 | C12 | Sister archive API: work snapshot, the prints feed, webhooks both ways | `@engine/sister/contract` | `sister/src/contract.ts`, `sister/src/contract/**` | SIS | SIS, SCH, apps | v1.1 |
-| C13 | HTTP handler manifest and the proxy matcher | `@engine/http/manifest` | `http/src/manifest.ts`, `http/src/manifest/**` | WEB and the handler lanes (DOM, PAY, LOG, MED, SRC, SIS, SEO) | WEB, UXG, UXE, HAR (route parity) | v1.2 |
+| C13 | HTTP handler manifest, the proxy's headers and answers, and its matcher | `@engine/http/manifest` | `http/src/manifest.ts`, `http/src/manifest/**` | WEB and the handler lanes (DOM, PAY, LOG, MED, SRC, SIS, SEO); PLT (the proxy) | WEB, UXG, UXE, PLT, HAR (route parity) | v1.3 |
 
 Paths are under `engine/packages/`. The dependency order is fixed: `config` is the leaf
 and imports no engine package; `domain` builds on it; the view models, the manifest and
@@ -39,6 +39,11 @@ A change is **breaking** for a lane if that lane's code must change for the work
 compile or to behave correctly. Otherwise it is **additive**. The version says which:
 additive raises the minor number, breaking raises the major. Every changelog line names
 the lanes it breaks.
+
+A version names the contract release that last changed the contract, so the contracts move
+together and a contract may skip a number: v1.2 changed C1, C5, C10 and C13 alone, and C2, which
+next changed in v1.3, went from v1.1 to v1.3. A release names in its changelog entry every
+contract it changes; the others keep their version.
 
 Some examples. A new C1 field with a default, a new module key (off unless a brand turns
 it on) and a new C11 event are additive. So is a new optional field in a C2 view model for
@@ -118,7 +123,9 @@ so it is breaking and also needs a redirect.
   by its session (`_NoTokenInAPagePoll`, `_NoTokenInAPageStop`, `_NoPayLinkTokenInTheOrderPoll`,
   `_NoLookupTokenInThePayPoll`, `_NoTokenInTheAccountsOffers`, `_NoTokenInTheAccountsViewings`).
   A post the operation refuses comes back as `FormResultVM` `refused`, with its problem's
-  sentence.
+  sentence. The shell carries every brand-asset URL a page links, each at its versioned address
+  (C13 `BRAND_ASSET_URL`) and never written by a template; the touch icon and the web manifest are
+  `null` where the brand ships none, so no page links a 404.
   Only an approved partner signs in, so only its view model carries
   trade terms or a reorder, and the Partnership page holds no term or price in any state
   (`retailer-check.ts`, D31–D36).
@@ -150,7 +157,9 @@ so it is breaking and also needs a redirect.
   empty and never with a `/` inside, so `href()` throws on a path element that is empty or holds
   a `/`. The one exception is an item's `{id}-{slug}` segment, whose slug part an old link may spell
   any way: it reaches the item route by its canonical id with a slug no item has, and the route
-  answers 301. An old site's URL is a legacy prefix or an exact legacy path, and neither shadows a
+  answers one permanent redirect (`permanentRedirect()`, a 308). A lower-case escape is no second
+  spelling: RFC 3986 makes it one URI with the upper-case one, and Next upper-cases it before the
+  proxy runs. An old site's URL is a legacy prefix or an exact legacy path, and neither shadows a
   live root segment nor is one the proxy answers first (`ROOT_FILES`, `CLAIMED_SEGMENTS`) nor
   holds a dot segment; a page kept at its old address is live and listed in neither. A surface or form kind a module switches on
   needs a segment only while its module is on, and `href()` refuses one without; the account
@@ -171,13 +180,20 @@ so it is breaking and also needs a redirect.
 - **C13.** Every app mounts every route. A new route needs a mount file in both apps
   (route parity); a new C6 operation needs an address in `COMMERCE_OPERATIONS`, and an auth
   or forms operation its row in `AUTH_OPERATIONS` or `FORM_OPERATIONS`, with the module
-  without which it answers 404. A write a cookie can authenticate is refused from another
+  without which it answers 404. A mount names `handlerOf(path)`, or `unbuiltHandlerOf(path)` only
+  while that handler has no module, and both apps name the same one: the lane that lands a handler
+  repoints both apps' mounts in the same change. A route's `owner` is the lane whose folder,
+  `http/src/<area>/**`, holds its handler. A handler reaches Payload through `@engine/cms` alone,
+  from a `payload-*.ts` module it loads with `import()` after reading its request, and a `GET`
+  handler reads its request before anything else, or `next build` runs it; `@engine/cms` never
+  imports `@engine/http`. A write a cookie can authenticate is refused from another
   origin (`sameOrigin`); a lookupToken or a payment's scope never rides in a URL — only a
   page's own capability (a pay-link or quote token) and a one-hop email link do, and each
   one-hop link moves its token into a cookie. An HTML form post answers 303 to its page and
   its outcome waits under `FORM_RESULT`, whose cookie holds an opaque id and never personal
-  data; every form post is read by `FORM_DECODING`, driven by its operation's schema, and an
-  amount is never guessed at. RFC 8058's one-click unsubscribe is the one POST that carries its
+  data, and whose id never rides in a URL; the outcome shows only on the page it returns to and is
+  consumed only by a document navigation, so a prefetch never takes it. Every form post is read by
+  `FORM_DECODING`, driven by its operation's schema, and an amount is never guessed at. RFC 8058's one-click unsubscribe is the one POST that carries its
   token in its URL, on `ONE_CLICK_UNSUBSCRIBE`'s terms: that token alone, no cookie read, 200.
   Auth answers every email alike. A provider webhook route names the seller whose secret
   verifies it. A file a browser asks for at the root — robots, sitemaps, `.well-known`, the
@@ -185,11 +201,15 @@ so it is breaking and also needs a redirect.
   `from` one of C10's `ROOT_FILES`, never the designed not-found page; a page links its icons and
   manifest through its metadata, never Next's file conventions, which are one build's. A brand
   file is linked at its versioned URL (`BRAND_ASSET_URL`) and served `immutable` only when the
-  version is the file's. The proxy rewrites, and sets only
-  `PROXY_REQUEST_HEADERS`, C10's `sensitive` answer headers and the per-request
-  `Content-Security-Policy`, which one builder makes (41.1.a) and the proxy copies onto the
-  request too, where Next looks for a nonce. An account's offer or viewing is answered by its
-  session, and its `.ics` served by session.
+  version is the file's; the touch icon and the manifest are the files `BRAND_ROOT_ASSETS` names.
+  The proxy rewrites, and sets only `PROXY_REQUEST_HEADERS` (the public path and query, the
+  locale, the CSP), `PROXY_USER_AGENT` on a request that has none, C10's `sensitive` answer
+  headers and the per-request `Content-Security-Policy` — a fresh nonce each time, made by one
+  builder (41.1.a) and copied onto the request, where Next looks for the nonce; and it answers its
+  own not-found `PROXY_NOT_FOUND_STATUS`, so the not-found route renders the designed page itself.
+  A page reads its state from its canonical query, never from the public one, which only a
+  permanent redirect carries on. An account's offer or viewing is answered by its session, and
+  its `.ics` served by session.
 
 ## Changelog
 
@@ -572,3 +592,59 @@ so it is breaking and also needs a redirect.
   above the repository hid it on Windows. The schema now parses through `schema/url.ts`, a typed
   accessor for the WHATWG parser on `globalThis`, and the rule above records why. No shape
   changes; every package type-checks with only the `@types` it declares.
+- **2026-09-30**: **v1.3 of C2 and C13** (TASKS.md 4.3): the contract follow-ups of 4.1 — its
+  report, its Cache Components spike (`docs/spikes/cache-components.md`) and its reviews
+  (`reviews/4.1-senior-{fe,be}.md`), each Next behaviour below measured on 16.3.6. Every change is
+  additive: the new `ShellVM` fields are optional, every new C13 name is new, `PROXY_REQUEST_HEADERS`
+  and `PROXY_MATCHER` keep their names and values in their new file, and `FORM_RESULT` keeps its
+  shape, its rule tightened where no lane has built yet. Nothing breaks. C2 goes from v1.1 to
+  v1.3 by the release rule above; C10 stays at v1.2, its wording amended; the rest are unchanged.
+  - **C2:**
+    - `ShellVM.assets.touchIcon` and `.manifest`: the home-screen icon and the web manifest at
+      their versioned URLs, for a page's metadata, `null` where the brand ships none. Optional
+      only because 4.1's interim shell (`engine/apps/*/src/shell/load-shell.ts`) builds `assets`
+      without them; the shell's loader (11.3) always sets both (senior-fe, 4.1 review).
+    - The shell fixtures give every asset a versioned URL, and the shop's ships no touch icon.
+  - **C13:**
+    - `manifest/proxy.ts`, a new part: `PROXY_REQUEST_HEADERS` and `PROXY_MATCHER` move there, still
+      re-exported from `@engine/http/manifest`; `PROXY_REQUEST_HEADERS.publicSearch`
+      (`x-public-search`), the public query, which a permanent redirect carries on and a page never
+      reads its state from, since Next replaces a rewritten request's query and C10's internal URL
+      holds the canonical state alone; `PROXY_USER_AGENT` (`engine-proxy (no user-agent)`), set on
+      a request that has none, without which Next serves the prerendered shell's 200 (a
+      `notFound()` page answered 200 without a User-Agent, 404 with this one);
+      `PROXY_NOT_FOUND_STATUS` (404), the status of the proxy's own not-found rewrite, which Next
+      keeps through a normal render, so the not-found route renders the designed page in its own
+      body without JavaScript (measured: 404, the shell, `lang` and a form, where `notFound()`
+      gives an empty `<body>`); and why a host never binds a loopback IP literal (4.1's qa F1).
+    - `UNBUILT_HANDLER` and `unbuiltHandlerOf()`: the placeholder a mount names while its handler
+      is unbuilt — `@engine/http/unbuilt`, and `@engine/http/unbuilt/robots`, which fails closed —
+      and the policy route parity checks: `handlerOf(path)`, or the placeholder only while that
+      handler has no module, the same in both apps (senior-fe #16, senior-be #2).
+    - `BRAND_ROOT_ASSETS`: the touch icon's and the manifest's file names, which `ROOT_REWRITES`
+      now points at, its values unchanged (senior-fe #11).
+    - `FORM_RESULT`: the id never rides in a URL; an outcome shows only on the page it returns to,
+      and only a document navigation consumes it, so a prefetch or an RSC navigation — each a full
+      render under `htmlLimitedBots` — never takes it (senior-fe #4).
+    - The header: a handler reaches Payload through `@engine/cms` alone, from a `payload-*.ts`
+      module loaded with `import()` after it reads its request (4.3.a, ARCHITECTURE.md §15);
+      `EngineRoute.owner` owns the handler's folder, `http/src/<area>/**`.
+  - **C10, v1.2 amended — wording only, no behaviour:** an old item link's redirect is a 308; a
+    lower-case escape is one URI with the upper-case one (RFC 3986 §6.2.2.1), which Next hands the
+    proxy upper-cased; a slug part that does not decode as UTF-8 (`%FF`, a Latin-1 `caf%E9`) is not
+    found today, and C10's next minor version carries it by its id (TASKS.md 22.7).
+  - **Decided with it, in the docs of record:** how `/api/health` and the jobs route reach Payload,
+    and that `invalidate(tags)` lives in a leaf package, `@engine/cache`, so cms never imports http
+    (ARCHITECTURE.md §15, PARALLEL-TRACKS.md §1); the Cache Components rules the spike added —
+    `instant = false` on the `(site)` layout alone, `htmlLimitedBots`, a route handler reading its
+    request, first-flush forms in the page body, storefront links that never prefetch, and
+    availability that decides a purchase read live, never cached (AGENTS.md, CONVENTIONS.md §12,
+    ARCHITECTURE.md §9); per-request nonces (§13); the item route's 308 and the URL gate
+    (MIGRATION.md §6); the not-found page without JavaScript (DESIGN-SYSTEM.md §2); brand names in
+    an app's Markdown (CONVENTIONS.md §1); who owns each `@engine/http` area, each app's config
+    files, and the e2e folder (PARALLEL-TRACKS.md §1).
+
+  Announced to every lane in C2's and C13's "Consumed by" columns, PLT newly among C13's. What
+  each lane now does is 4.3's report: the apps' shells read the new `ShellVM` fields; PLT's proxy
+  sets `publicSearch` and `PROXY_USER_AGENT` and answers its not-found 404; WEB moves the
+  placeholder to `@engine/http/unbuilt`; HAR's route parity checks the placeholder policy.

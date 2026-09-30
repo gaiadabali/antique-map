@@ -55,15 +55,27 @@ export const FORM_DECODING = {
  * and gets the operation's answer. An HTML form post — sent without JavaScript, `Accept:
  * text/html` — answers 303 See Other to its `returnTo`: a hidden field holding the page's
  * public path, taken only if it parses as one of this site's pages (C10 `parsePublicPath`),
- * else the home page. The outcome waits on the server as a form result — the answer, and for a
- * failed post every entry kept — named by an opaque id in `cookie` (HttpOnly, Secure,
- * SameSite=Lax, Path=/). The cookie holds that id alone: never an entry, an NPWP or any other
- * personal data. The page's loader awaits it at request time and the page renders it in its
- * own body (C2 `FormResultVM`). It is deleted once the response showing it has been sent, or
- * after `maxAgeSeconds` — never on first read, so a second render or a prefetch in the same
- * request finds it still there. `received` is the same for everyone who posts that form, so it
- * names no one and admits nothing about an account. A tick box posts `'true'` when ticked and
- * nothing when not; the decoder reads the absence as `false` (`FORM_DECODING`).
+ * else the home page. The outcome waits on the server as a form result — the answer, for a
+ * failed post every entry kept, and the public path it returns to — named by an opaque id in
+ * `cookie` (HttpOnly, Secure, SameSite=Lax, Path=/). The cookie holds that id alone: never an
+ * entry, an NPWP or any other personal data. The id never rides in a URL (v1.3, TASKS.md 4.3.b):
+ * a URL is shared, logged and kept in history while a failed post's entries are what the visitor
+ * typed; a query would be a second address of every page a form returns to; and Next replaces a
+ * rewritten request's query with the destination's, so it could not reach the page anyway.
+ *
+ * The page's loader reads it at request time and the page renders it in its own body (C2
+ * `FormResultVM`), only on the page it returns to — the render's public path (C13
+ * `PROXY_REQUEST_HEADERS.publicPath`) is its `returnTo`'s. It is consumed only by the request the
+ * 303 sends the browser to: a document navigation, `Sec-Fetch-Dest: document` with no `Sec-Purpose`
+ * or `Purpose` naming a prefetch or a prerender (a request without Fetch Metadata counts as one).
+ * Every other render reads it and leaves it — a router prefetch or an RSC navigation
+ * (`Sec-Fetch-Dest: empty`; under `htmlLimitedBots` each is a full render, ARCHITECTURE.md §9), a
+ * speculative load, another tab on another page — so none can take it before the visitor sees it
+ * (4.1 senior-fe #4; the spike measured a prefetch leaving it). It is deleted once consumed, or
+ * after `maxAgeSeconds`, so a reload after it was shown shows the page without it. `received` is
+ * the same for everyone who posts that form, so it names no one and admits nothing about an
+ * account. A tick box posts `'true'` when ticked and nothing when not; the decoder reads the
+ * absence as `false` (`FORM_DECODING`).
  */
 export const FORM_RESULT = { cookie: 'form_result', maxAgeSeconds: 600 } as const
 

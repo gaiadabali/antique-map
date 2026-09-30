@@ -151,11 +151,18 @@ export function parsePublicPath(
 
 /**
  * An old link to an item — `/product/{id}-{anything}` (MIGRATION.md §6) — whose slug part is not
- * in `href()`'s spelling (`%27`, `(…)`, a lower-case hex, a `+`), every segment before it canonical.
+ * in `href()`'s spelling (`%27`, `(…)`, `%61` for `a`, a `+`), every segment before it canonical.
  * It reaches the item route by its id with its slug as asked for, which contains a character no
- * slug has, so it never matches and the route answers a permanent redirect to the current URL:
- * never a second 200 address, never a lost link (3.4 senior-fe #1). The id itself must be canonical,
- * and a segment that picks a surface or a locale always is.
+ * slug has, so it never matches and the route answers a permanent redirect — `permanentRedirect()`,
+ * a 308 — to the current URL: never a second 200 address, never a lost link (3.4 senior-fe #1).
+ * The id itself must be canonical, and a segment that picks a surface or a locale always is.
+ *
+ * A lower-case escape is no odd spelling in practice: RFC 3986 §6.2.2.1 makes `%c3%a9` the same
+ * URI as `%C3%A9`, and Next upper-cases an escape's hex digits before the proxy runs, so such a
+ * request is served at the one address, 200 (the 4.1.e spike §3). Handed one directly, this parser
+ * reads it as another spelling. A slug part that does not decode as UTF-8 — `%FF`, a Latin-1
+ * `caf%E9`, raw bytes — fails `readSegments()` first and is not found: C10's next minor version
+ * carries it to the item route by its id too (TASKS.md 22.7; MIGRATION.md §6).
  */
 function oldItemLink(config: ParseConfig, read: readonly ReadSegment[]): ParsedPath | null {
   const [first] = read

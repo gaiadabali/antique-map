@@ -52,7 +52,7 @@ describe('C10 — a segment is read only in href()’s own spelling', () => {
     // current slug, never a second 200 address, so the slug reaches the route as it was asked.
     for (const [path, slug] of [
       ['/product/1706-b%61li-island', 'b%61li-island'],
-      ['/product/1706-caf%c3%a9', 'caf%c3%a9'],
+      ['/product/1706-caf%c3%a9', 'caf%c3%a9'], // the parser's own reading: Next upper-cases it first
       ['/product/1706-a,b', 'a,b'],
       ['/product/1706-van-t%27hoff', 'van-t%27hoff'],
       ['/product/1706-(bali)+java', '(bali)+java'],

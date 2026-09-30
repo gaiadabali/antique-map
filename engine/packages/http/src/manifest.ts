@@ -1,5 +1,5 @@
 /**
- * @contract C13 — the HTTP handler manifest · owner: ARC · consumers: WEB, UXG, UXE, HAR, handler lanes
+ * @contract C13 — the HTTP handler manifest · owner: ARC · consumers: WEB, UXG, UXE, PLT, HAR, handler lanes
  *
  * Every engine route an app mounts, and the proxy matcher every app declares
  * (ARCHITECTURE.md §11). An app mounts a route with one file, `src/app{path}/route.ts`,
@@ -17,9 +17,16 @@
  * playground, and `graphql` stays a reserved first segment should it ever be switched on.
  * Every app mounts every route whatever the brand's modules: a handler whose `module` is off
  * answers 404 — so does an operation whose module is off, at a sub-path of a mounted route —
- * and parity never depends on config. The parts: the commerce API and its addresses
+ * and parity never depends on config. Until its lane builds it, a route's mount names the
+ * placeholder (`UNBUILT_HANDLER`). The parts: the commerce API and its addresses
  * (`./manifest/commerce`), customer accounts (`./manifest/auth`), form posts and saved items
- * (`./manifest/forms`).
+ * (`./manifest/forms`), and what the proxy sets and answers (`./manifest/proxy`).
+ *
+ * A handler that reads the database reaches Payload through `@engine/cms` alone — never a
+ * `payload` dependency of its own — from a `payload-*.ts` module it loads with `import()` after it
+ * has read its request (TASKS.md 4.3.a, ARCHITECTURE.md §15): so a mount, route parity's runner, a
+ * unit test and `next build` load a handler without loading Payload, and `@engine/cms` never
+ * imports `@engine/http`.
  *
  * Handlers log a request's path without its query string. A lookupToken or a payment's scope
  * never travels in a URL (`ORDER_ACCESS`; `payment.status` is a POST). A pay-link or quote
@@ -55,6 +62,7 @@ import {
 export * from './manifest/auth'
 export * from './manifest/commerce'
 export * from './manifest/forms'
+export * from './manifest/proxy'
 export * from './manifest/types'
 
 /**
@@ -66,6 +74,35 @@ export function handlerOf(path: string): string {
   const rest = path.replace(/^\/api\/x\/|^\/api\/|^\//, '')
   const area = rest.split('/').filter((segment) => segment !== '' && !segment.startsWith('['))
   return `@engine/http/${area.join('/')}`
+}
+
+/**
+ * The placeholder a mount re-exports while its route's handler is unbuilt (TASKS.md 4.3.b; 4.1
+ * mounted 34 routes per app on it). A handler is its owning lane's to build, in its own folder,
+ * and until it is, the mount names this with a comment naming the handler that replaces it: WEB's
+ * module (`http/src/unbuilt/`), never a C13 route and never another route's handler — a plain
+ * `no-store` 404 for every method, which reads its request first, so no mount is prerendered, and
+ * never its body, so a write reaches nothing: what a route with nothing behind it answers, as one
+ * whose module is off does. One route waits otherwise (`byPath`): robots fails closed —
+ * `User-agent: *`, `Disallow: /` — since a crawler reads a 404 as "allow everything" and staging is
+ * public (4.1 senior-be #2).
+ *
+ * The policy, which route parity checks (HAR): a mount names `handlerOf(path)`, or — only while
+ * `handlerOf(path)` has no module (`src/<area>/route.ts`) — `unbuiltHandlerOf(path)`; and every app
+ * names the same one. So the lane that lands a handler repoints both apps' mounts in the same
+ * change, and a mount left on the placeholder once its handler exists fails CI rather than
+ * answering 404 in production (4.1 senior-fe #16). A stub a lane keeps at `handlerOf(path)` — the
+ * cron routes', which authenticate like the real ones — is that lane's own file, not a placeholder.
+ */
+export const UNBUILT_HANDLER = {
+  specifier: '@engine/http/unbuilt',
+  byPath: { '/api/x/robots': '@engine/http/unbuilt/robots' },
+} as const satisfies { specifier: string; byPath: Readonly<Record<string, string>> }
+
+/** The placeholder a mount at `path` names while `handlerOf(path)` is unbuilt. */
+export function unbuiltHandlerOf(path: string): string {
+  const byPath: Readonly<Record<string, string>> = UNBUILT_HANDLER.byPath
+  return byPath[path] ?? UNBUILT_HANDLER.specifier
 }
 
 const COOKIE_AUTH: readonly RouteAuth[] = ['public', 'customer', 'token']
@@ -90,7 +127,8 @@ const commerceRoutes = Object.entries(COMMERCE_AREAS).map(([area, spec]: [string
 
 export const ENGINE_ROUTES: readonly EngineRoute[] = [
   // Platform
-  route('/api/health', 'WEB', 'public', GET), // app, DB, storage, queue lag; initialises Payload
+  // app, DB, storage, queue lag (reported, never gating); initialises Payload through @engine/cms
+  route('/api/health', 'WEB', 'public', GET),
   // BRAND_ROOT assets — `immutable` only at a versioned URL (`BRAND_ASSET_URL`), never a root file
   route('/brand-assets/[...path]', 'WEB', 'public', GET),
   route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
@@ -125,10 +163,23 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   route('/api/x/sister/[...path]', 'SIS', 'sister', GET_POST, 'sister.links'), // archive API, work.*
   route('/api/x/collect', 'SEO', 'public', POST), // the beacon: paths only, query strings stripped
   route('/api/x/sitemap/[[...path]]', 'SEO', 'public', GET), // index and per-locale sitemaps
-  route('/api/x/robots', 'SEO', 'public', GET), // per environment: staging disallows all
+  // per environment: staging disallows all; until SEO builds it, `UNBUILT_HANDLER.byPath` does too
+  route('/api/x/robots', 'SEO', 'public', GET),
   route('/api/x/feeds/[...path]', 'SEO', 'public', GET), // merchant and catalogue feeds
   route('/api/x/og/[...path]', 'SEO', 'public', GET), // request-time Open Graph images
 ]
+
+/**
+ * The brand files a root URL is answered from, by the name every brand folder gives them: the
+ * home-screen icon (a 180 × 180 PNG) and the web manifest — the favicon is C1's `assets.favicon`,
+ * which may be any served type. `ROOT_REWRITES` points at them, and the shell's loader links each at
+ * its versioned URL (C2 `ShellVM.assets.touchIcon`, `.manifest`), or `null` when the brand ships
+ * none (v1.3, TASKS.md 4.3.b; 4.1 senior-fe #11: the names live here, never in an app).
+ */
+export const BRAND_ROOT_ASSETS = {
+  touchIcon: 'apple-touch-icon.png',
+  manifest: 'site.webmanifest',
+} as const
 
 /**
  * Root files the proxy rewrites to engine routes, so each keeps its conventional public
@@ -139,13 +190,13 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
  * iOS asks for a home-screen icon at the root whatever a page links — `/apple-touch-icon.png`
  * and, older or sized, `-precomposed`, `-180x180`, `-180x180-precomposed` (one pattern takes every
  * suffix) — and crawlers probe `/site.webmanifest`. Each is answered from the brand's assets
- * folder by the file of that name (`apple-touch-icon.png`, 180 × 180, serving them all;
- * `site.webmanifest`), and one a brand lacks is a plain 404 from the brand-assets route, never the
- * designed not-found page and its loader (3.1 senior-fe #12, 3.4 senior-fe #7). A page links its
- * icons and manifest through `generateMetadata()` (`icons`, `manifest`) from the brand's assets —
- * never Next's file conventions (`app/icon.*`, `app/apple-icon.*`, `app/favicon.ico`,
- * `app/manifest.ts`), which are made once per build, not per brand. Every file here keeps an
- * unversioned public URL, so none is served `immutable`.
+ * folder by the file `BRAND_ROOT_ASSETS` names (the touch icon serving them all), and one a brand
+ * lacks is a plain 404 from the brand-assets route, never the designed not-found page and its
+ * loader (3.1 senior-fe #12, 3.4 senior-fe #7). A page links its icons and manifest through
+ * `generateMetadata()` (`icons`, `manifest`) from C2 `ShellVM.assets` — never Next's file
+ * conventions (`app/icon.*`, `app/apple-icon.*`, `app/favicon.ico`, `app/manifest.ts`), which are
+ * made once per build, not per brand. Every file here keeps an unversioned public URL, so none is
+ * served `immutable`.
  */
 export const ROOT_REWRITES = [
   { from: '/robots.txt', to: '/api/x/robots' },
@@ -153,14 +204,15 @@ export const ROOT_REWRITES = [
   { from: '/sitemap-:name.xml', to: '/api/x/sitemap/:name' },
   { from: '/.well-known/:path*', to: '/api/x/well-known/:path*' },
   { from: '/favicon.ico', to: '/brand-assets/:favicon' },
-  { from: '/apple-touch-icon.png', to: '/brand-assets/apple-touch-icon.png' },
-  { from: '/apple-touch-icon-:size.png', to: '/brand-assets/apple-touch-icon.png' },
-  { from: '/site.webmanifest', to: '/brand-assets/site.webmanifest' },
+  { from: '/apple-touch-icon.png', to: `/brand-assets/${BRAND_ROOT_ASSETS.touchIcon}` },
+  { from: '/apple-touch-icon-:size.png', to: `/brand-assets/${BRAND_ROOT_ASSETS.touchIcon}` },
+  { from: '/site.webmanifest', to: `/brand-assets/${BRAND_ROOT_ASSETS.manifest}` },
 ] as const satisfies readonly { from: RootFile; to: string }[]
 
 /**
  * A brand file's public URL and how it is cached (TASKS.md 4.1.f, 3.4 senior-fe #2). A page links
- * the logo, a font, the OG base at `/brand-assets/<path>?v=<version>`, `<version>` the first 8
+ * the logo, a font, the OG base, the touch icon and the manifest at
+ * `/brand-assets/<path>?v=<version>`, `<version>` the first 8
  * hex digits of the file's SHA-256, minted where the shell's view model is built (C2 `ShellVM`
  * carries every brand-asset URL a page links; no template writes one). The route answers
  * `versioned` only when `v` is the file's current version; with no `v` — a root file, whose
@@ -178,37 +230,3 @@ export const BRAND_ASSET_URL = {
     unversioned: 'public, max-age=300',
   },
 } as const
-
-/**
- * The request headers the proxy sets on every request it rewrites — overwriting whatever a
- * client sent — so a page that gets no params (`not-found.tsx`, `error.tsx`) still knows the
- * public path asked for and its locale: the not-found loader tells a removed item (Gone) from
- * a legacy slug to search for (C2 `Loaders.notFound`). And the answer's own
- * `Content-Security-Policy`, copied onto the request: Next takes a nonce from the request's CSP
- * header, so if the CSP uses nonces (the 4.1.e spike decides, and confirms this against the
- * installed docs) Next's scripts carry the one the answer allows; with hashes the copy is inert.
- * Either way no client's own header survives.
- */
-export const PROXY_REQUEST_HEADERS = {
-  publicPath: 'x-public-path',
-  locale: 'x-locale',
-  contentSecurityPolicy: 'content-security-policy',
-} as const
-
-/**
- * The literal each app's `src/proxy.ts` declares — Next reads `config.matcher` statically,
- * so it is copied, never imported, and route parity compares the copy with this:
- *
- *   export { proxy } from '@engine/http/proxy'
- *   export const config = { matcher: ['/((?!api/|_next/|brand-assets/).*)'] }
- *
- * Everything but `/api/…` (Payload and the routes above), Next's `/_next/…` and brand
- * assets reaches the proxy: pages, `/admin` (English by default), legacy prefixes (brand
- * config, so knowable only at runtime) and `ROOT_REWRITES`. The proxy only rewrites and sets
- * headers — `PROXY_REQUEST_HEADERS` on the request; on the answer, C10's `sensitive` headers and
- * the `Content-Security-Policy`, built per request from the brand's config (its analytics,
- * payment and sister origins, ARCHITECTURE.md §13) by the one CSP builder, 41.1.a's, since one
- * build serves several brands and a CSP in `next.config` would bake one in; it never touches the
- * database.
- */
-export const PROXY_MATCHER = ['/((?!api/|_next/|brand-assets/).*)'] as const
