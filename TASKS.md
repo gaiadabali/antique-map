@@ -157,6 +157,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 4·W2 | 4.3 Contract and doc follow-ups (v1.3) | architect | `antique-map-p4-arc` / `feat/p4-arc` | 2026-09-30 | sign-offs (senior-fe, senior-be) after its report |
+| 4·W2 | 4.4 Release script and CI | devops | `antique-map-p4-har-ci` / `feat/p4-har-ci` | 2026-09-30 | orchestrator pushes `main`, then `production` (owner OK given) |
+| 4·W2 | 4.5 Placeholder brand assets and shell copy | Hermes (brief) | `antique-map-p4-brd` / `feat/p4-brd` | 2026-09-30 | brief `~/.claude/hermes/handoff/antique-map/4.5.brief.md`; the owner runs it |
+| 4·W2 | 4.7 Tooling hardening | Hermes (brief) | `antique-map-p4-har-tools` / `feat/p4-har-tools` | 2026-09-30 | brief `4.7.brief.md`, after 4.5 (one Hermes session at a time) |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -485,7 +489,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 4.2.e type-check as CI does on every platform: `"types": []` in `engine/tooling/tsconfig/package.tsconfig.json` and `"types": ["node"]` in the packages that declare `@types/node` (config, cms, http, i18n), so an ancestor folder's `@types` never leaks in on a workstation (the leak behind 3.4's red CI and 2.3's first four runs); `pnpm typecheck` green on Windows and in a `node:22.13.0` container
   - [x] 4.2.c **Check:** `pnpm verify` runs `check:client-safe`; each planted violation fails it with its import chain and passes once removed; the i18n root entry and every `'use client'` module in the apps pass. — merged ae719b7; qa on `main` at f82f315: the gate ok over the apps; plants of `@engine/cms`, zod through a relative helper, a dynamic `import('@engine/config/schema')`, `export * from 'zod'`, `@engine/http/brand-assets` (→ `node:crypto`/`fs`) and a relative reach of the Payload config each failed with their chain and passed once removed; a type-only Payload import passes; typecheck green on Windows and in `node:22.13.0`.
 
-- [ ] **4.3 Contract and doc follow-ups from 4.1 (v1.3)** · needs: 4.1
+- [ ] **4.3 Contract and doc follow-ups from 4.1 (v1.3)** · needs: 4.1 — 🔄 4·W2
   - **Lane** ARC · **Agent** architect · **Wave** W2
   - **Owns** the contract files of C2 (`engine/packages/view-models/src/shell.ts` and its fixture `engine/packages/view-models/src/fixtures/shell.ts`) and C13 (`engine/packages/http/src/manifest{.ts,/**}`), `engine/packages/CONTRACTS.md`, `AGENTS.md` (the Cache Components rule only), and the doc sections named below
   - **Read** 4.1's report (the Log line of 2026-09-30), `docs/spikes/cache-components.md`, `.claude/specs/indies-platform/reviews/4.1-senior-{fe,be}.md`; CONVENTIONS.md §1, §12; ARCHITECTURE.md §9, §13; MIGRATION.md §6; DESIGN-SYSTEM.md §2; PARALLEL-TRACKS.md §1
@@ -496,7 +500,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 4.3.d settle the rest of 4.1's **Found**: the apps' `PRODUCT.md` brand names vs CONVENTIONS.md §1 (the lint skips `.md`); a JavaScript-off NotFound/Gone body (DESIGN-SYSTEM.md §2 — a request-time `notFound()` sends an empty `<body>`), Next 16.3.6's own behaviour, also without `lang` (senior-fe: the proxy's not-founds served as server-rendered HTML by a route handler, or a documented blank page without JavaScript), routed to a 22.x subtask; Latin-1 and raw UTF-8 slugs answering 404 from the proxy instead of 308 (C10); a malformed percent-escape under `/brand-assets/` or `/api/x/` answering Next's bare 500 (senior-be #12, for the 5xx alert); each app's `next.config.ts`, `tsconfig.json`, `package.json` — HAR's (PARALLEL-TRACKS.md §1) or the app lane's; the e2e folder (`e2e/` vs `tests/e2e/`)
   - [ ] 4.3.e **Check:** C2 and C13 at v1.3 with a CONTRACTS.md changelog entry; every **Found** item of 4.1's report answered in the doc that owns it; `pnpm verify` green; one senior-fe and one senior-be pass sign it off.
 
-- [ ] **4.4 The release script and CI against the real apps** · needs: 4.1, 4.2
+- [ ] **4.4 The release script and CI against the real apps** · needs: 4.1, 4.2 — 🔄 4·W2
   - **Lane** HAR · **Agent** devops · **Wave** W2
   - **Owns** `.github/**`, `playwright.config.ts`, `lighthouserc*.json`, root `.gitignore`, `.prettierignore`, `.env.example`, `engine/tooling/config-drift/**`, the root `package.json` scripts except `check:brands` (4.7's), the `BRAND_ROOT` and `HOSTNAME` lines of DEPLOYMENT.md §8
   - **Read** 4.1's report (Contracts 2, Follow-ups), `.github/scripts/assemble-artifact.sh`, `release.yml`, `e2e.yml`, `ci.yml`, DEPLOYMENT.md §3, §8
@@ -508,7 +512,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 4.4.g a server bound to a loopback IP hangs every storefront page (`HOSTNAME=127.0.0.1`: Next renames `127.x` to `localhost`, so the proxy's rewrite looks external and is proxied — qa F1): pin `HOSTNAME` in DEPLOYMENT.md §8, `.env.example` and the release smoke (`0.0.0.0`, or `localhost`), and tell PLT whether the rewrite's origin should come from Next's own URL
   - [ ] 4.4.f **Check:** the tarball built from `main` by the release steps in `node:22.13.0` holds `indies-gallery/` and `old-east-indies/`, each with `brand/site/brand.config.json`, `server.js`, `.next/static` and a loadable `sharp`, and each boots from it (home 200, `/admin/login` 200); CI green on `main` with the e2e smoke and Lighthouse running for real; then, **with the owner's go-ahead (👤 — Helios polls `production`; given 2026-09-30)**, a push to `production` publishes a `deploy/production-*` release and its `.sha256` (4.1.g, moved here).
 
-- [ ] **4.5 Placeholder brand assets and shell copy** · needs: 4.1
+- [ ] **4.5 Placeholder brand assets and shell copy** · needs: 4.1 — 🔄 4·W2
   - **Lane** BRD · **Agent** junior · **Wave** W2
   - **Owns** `indies-gallery/site/{assets,copy}/**`, `old-east-indies/site/{assets,copy}/**`, `test/site/{assets,copy}/**`
   - **Read** BRANDS.md §2–§4, C1 `BRAND_ASSET_TYPES`, the apps' message keys (`engine/apps/*/src/shell/messages.ts`), 4.1's report (the Check's caveat)
@@ -527,7 +531,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 4.6.c **Check:** on a production build with `RUN_MIGRATIONS=1`, two processes racing on one empty database — one migrates under the advisory lock, one waits and applies nothing, one `payload_migrations` row — and `/api/health` then answers 200 (app, database, storage, environment); `cron/jobs` answers 503 unset, 401 without the bearer and runs the queue with it; the build touches no database; the client-safe gate still passes (4.1.g, moved here).
 
 
-- [ ] **4.7 Tooling hardening from phase 4: the client-safe gate and real `supports`** · needs: 4.1, 4.2
+- [ ] **4.7 Tooling hardening from phase 4: the client-safe gate and real `supports`** · needs: 4.1, 4.2 — 🔄 4·W2
   - **Lane** HAR · **Agent** medior (Hermes) · **Wave** W2
   - **Owns** `engine/tooling/client-safe/**`, `engine/tooling/brand-create/**`, and the brand-validation tooling that `check:brands` names (a new `engine/tooling/check-brands/**` if none exists, with the `check:brands` line of the root `package.json` scripts and its step in `pnpm verify`)
   - **Read** qa's 4.1/4.2 report (the Log line of 2026-09-30, F2); `engine/apps/{gallery,emporium}/src/supports.ts`; `engine/packages/config/src/validate/**`; 3.3's Log line (the `supports` follow-up)
