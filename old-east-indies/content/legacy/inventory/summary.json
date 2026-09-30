@@ -1,18 +1,20 @@
 {
-  "total": 311,
+  "total": 673,
   "byKind": {
-    "product": 229,
-    "category": 38,
-    "page": 10,
+    "product": 503,
+    "category": 125,
+    "page": 11,
     "blog": 10,
     "asset": 3,
     "system": 21
   },
   "bySource": {
-    "cdx": 311
+    "cdx": 303,
+    "cdx|sitemap": 8,
+    "sitemap": 362
   },
   "byHost": {
-    "@": 311
+    "@": 673
   },
   "cdx": {
     "endpoint": "https://web.archive.org/cdx/search/cdx",
@@ -63,6 +65,29 @@
   },
   "gsc": {
     "exports": []
+  },
+  "sitemap": {
+    "captures": [
+      {
+        "timestamp": "20240624134228",
+        "original": "https://www.oldeastindies.com/sitemap.xml",
+        "parent": null,
+        "type": "urlset",
+        "file": "20240624134228-www.oldeastindies.com_sitemap.xml",
+        "entries": 370,
+        "accepted": 370
+      },
+      {
+        "timestamp": "20240808221041",
+        "original": "https://www.oldeastindies.com/sitemap.xml",
+        "parent": null,
+        "type": "urlset",
+        "file": "20240808221041-www.oldeastindies.com_sitemap.xml",
+        "entries": 370,
+        "accepted": 370
+      }
+    ],
+    "unarchivedChildren": []
   },
   "rejected": {}
 }
