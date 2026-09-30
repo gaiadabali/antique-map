@@ -21,8 +21,8 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 0/4 | 4/23 | 1 | `██░░░░░░░░`  17% |
-| **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 0/4 | 6/23 | 1 | `███░░░░░░░`  26% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **20/173** | **125/796** | **47** | `██░░░░░░░░`  16% |
+| **All** | 44 phases | | | **20/173** | **127/796** | **47** | `██░░░░░░░░`  16% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -159,6 +159,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 5·W1 | 5.1 Staging on Helios (5.1.a only — the script, no Helios access) | devops | `antique-map-p5-har` / `feat/p5-har` | 2026-09-30 | OA8 given; the orchestrator reviews the script, then runs 5.1.b–d; D12 RustFS, D13 Mailpit on staging |
 | 5·W1 | 5.3 The proxy's v1.3 answers | senior-be | `antique-map-p5-plt` / `feat/p5-plt` | 2026-09-30 | |
+| 5·W2 | 5.4 Gates for the v1.3 contracts | medior | `antique-map-p5-har-gates` / `feat/p5-har-gates` | 2026-10-01 | branched from the 5.3 merge (5a253f0) while its gate runs; rebased on `main` before merge |
+| 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -595,10 +597,10 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.3.b the proxy's not-found — every decision rewritten to `/<locale>/not-found` — answers with C13 `PROXY_NOT_FOUND_STATUS` on its rewrite (`toResponse`); every other decision keeps the status Next's render gives it
   - [x] 5.3.c `PROXY_REQUEST_HEADERS.publicSearch` on the item route's rewrite alone — the public URL's `search`, `''` when it has none — and `''` on every other request, a client's copy dropped everywhere; a unit test that Next's `_rsc` never reaches it (`skipProxyUrlNormalize` stays off)
   - [x] 5.3.d `bootCheck()` refuses, in every environment, a `HOSTNAME` that is a loopback IP: normalised the way Next reads it (``new URL(`http://${host}`).hostname``, bracketing a bare IPv6), then tested as Next tests it (`127.` plus three octets, or `[::1]`), so `127.0.0.1`, `127.1`, `2130706433`, `0x7f.0.0.1` and `::1` are refused and `localhost`, `0.0.0.0` and a host name pass; the finding names the standalone `server.js`, which binds `HOSTNAME`, and says `next dev`/`next start` take `-H`, which hangs at a loopback address too (4.1's qa F1, 4.4.g; DEPLOYMENT.md §3)
-  - [ ] 5.3.f `/api/health` with only the database down reports the database failure alone — not also `boot: refused`, and no "boot check refused to start" log line on a process that booted (`config/src/boot-check/boot-check.ts:120`; qa's phase 4 gate L1)
-  - [ ] 5.3.e **Check:** unit tests for each (`proxy.test.ts`, `respond.test.ts`, the boot check's); on a production build, a request with no `User-Agent` gets 404 for `/nope` and `/nope/deeper` and 308 for a stale slug of the spike's fixture item (`SPIKE_ROUTES=1`), a browser's gets 404 for `/nope/deeper` (a path that names no page — one segment is a CMS page's address under C10, whose 404 is the page's `notFound()`) through the rewrite's status, and a stale slug's 308 keeps its query while a query on any other page never reaches `x-public-search`; the status spec's no-User-Agent case passes with `E2E_EXPECT_UA_FIX=1`; a start with `HOSTNAME=127.1` is refused; `pnpm verify` green.
+  - [x] 5.3.f `/api/health` with only the database down reports the database failure alone — not also `boot: refused`, and no "boot check refused to start" log line on a process that booted (`config/src/boot-check/boot-check.ts:120`; qa's phase 4 gate L1)
+  - [x] 5.3.e **Check:** unit tests for each (`proxy.test.ts`, `respond.test.ts`, the boot check's); on a production build, a request with no `User-Agent` gets 404 for `/nope` and `/nope/deeper` and 308 for a stale slug of the spike's fixture item (`SPIKE_ROUTES=1`), a browser's gets 404 for `/nope/deeper` (a path that names no page — one segment is a CMS page's address under C10, whose 404 is the page's `notFound()`) through the rewrite's status, and a stale slug's 308 keeps its query while a query on any other page never reaches `x-public-search`; the status spec's no-User-Agent case passes with `E2E_EXPECT_UA_FIX=1`; a start with `HOSTNAME=127.1` is refused; `pnpm verify` green.
 
-- [ ] **5.4 Gates for the v1.3 contracts** · needs: 4.6, 5.3
+- [ ] **5.4 Gates for the v1.3 contracts** · needs: 4.6, 5.3 — 🔄 5·W2
   - **Lane** HAR · **Agent** medior · **Wave** W2
   - **Owns** `engine/tooling/route-parity/**`, `eslint.config.mjs` (its boundary rules), `engine/tooling/next-config-parity/**`, `.github/workflows/e2e.yml` (the status run's env), `playwright.config.ts`, `.env.example` (its `HOSTNAME` comment), and the e2e moves: `tests/e2e/{smoke,status}/**`, `.github/e2e/**`, `engine/apps/gallery/e2e/**`
   - **Read** C13 v1.3 (`manifest.ts` `UNBUILT_HANDLER`, `manifest/proxy.ts`); ARCHITECTURE.md §15; CONVENTIONS.md §12; PARALLEL-TRACKS.md §1; DEPLOYMENT.md §3; `reviews/4.3-senior-{be,fe}.md`
@@ -627,7 +629,7 @@ component, and the only honest test of a direction is a real buyer on a real
 phone (DESIGN-SYSTEM.md §11, §13). Its phases wait mostly on the owner, so they
 run beside the build line rather than in it.
 
-- [ ] **6.1 Product briefs and journeys** · needs: 1.3.b
+- [ ] **6.1 Product briefs and journeys** · needs: 1.3.b — 🔄 6·W1
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `engine/apps/gallery/PRODUCT.md`, `engine/apps/emporium/PRODUCT.md`, `PRODUCT.md`, `docs/design/journeys/**`
   - **Read** the drafted PRODUCT.md files, EXPERIENCE-GALLERY.md, EXPERIENCE-SHOP.md, RESEARCH.md §1, §3
