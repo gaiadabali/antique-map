@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 import { loadBrandConfig } from '@engine/config/loader'
-import { PROXY_REQUEST_HEADERS } from '../manifest'
+import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
 import { createProxy, decideProxy, notFoundPath } from './route'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url))
@@ -156,5 +156,98 @@ describe('the proxy — rewrites only, the default locale unprefixed (ARCHITECTU
     expect(decision.setRequest['content-security-policy']).toBe("default-src 'self'; x-locale en")
     // Both are still removed first; the builder's policy is then set on the request.
     expect(decision.removeRequest).toContain('content-security-policy-report-only')
+  })
+})
+
+/** A path of every kind the proxy decides: a surface, the item, legacy, a root file, the app, a miss. */
+const EVERY_KIND = [
+  '/product/1706-bali',
+  '/old-maps/java',
+  '/pay/abc',
+  '/category/12-java?s=sold',
+  '/robots.txt',
+  '/admin',
+  '/style-guide',
+  '/nope',
+  '/nope/deeper',
+  '/en/item/1706',
+] as const
+
+describe('the proxy — C13 v1.3: the User-Agent, the not-found’s status, the item’s query (5.3)', () => {
+  it('supplies PROXY_USER_AGENT on every request with none, or an empty one', () => {
+    for (const path of EVERY_KIND) {
+      for (const headers of [{}, { 'user-agent': '' }, { 'user-agent': '   ' }] as Record<
+        string,
+        string
+      >[]) {
+        expect(decide(path, headers).setRequest['user-agent'], path).toBe(PROXY_USER_AGENT)
+      }
+    }
+    expect(PROXY_USER_AGENT).toBe('engine-proxy (no user-agent)')
+  })
+
+  it('never replaces a client’s own User-Agent, whatever it says', () => {
+    for (const path of EVERY_KIND) {
+      for (const agent of ['Mozilla/5.0 (X11; Linux x86_64)', 'curl/8.9.1', 'x']) {
+        expect(decide(path, { 'user-agent': agent }).setRequest, path).not.toHaveProperty(
+          'user-agent',
+        )
+      }
+    }
+  })
+
+  it('answers every not-found decision with PROXY_NOT_FOUND_STATUS, and no other with a status', () => {
+    // `/nope` is not among them: one segment is a CMS page's address (C10 `page`), which only the
+    // database can find missing — its route calls `notFound()` under the status Next's render gives.
+    const notFound = [
+      '/nope/deeper',
+      '/en/item/1706',
+      '/de/product/1',
+      '/not-found',
+      '/id/not-found',
+    ]
+    for (const path of notFound) {
+      expect(decide(path), path).toMatchObject({ why: 'not-found', status: PROXY_NOT_FOUND_STATUS })
+    }
+    // A page whose module is off is the proxy's not-found too.
+    const noInvoices = { ...gallery, modules: { ...gallery.modules, 'purchase.invoices': false } }
+    expect(decide('/quote/abc', {}, noInvoices)).toMatchObject({ why: 'not-found', status: 404 })
+    expect(decide('/quote/abc').status).toBeNull()
+    expect(decide('/nope')).toMatchObject({ to: '/en/page/nope', status: null })
+    for (const path of EVERY_KIND.filter((path) => !notFound.includes(path))) {
+      expect(decide(path).status, path).toBeNull() // the status Next's render gives it stands
+    }
+  })
+
+  it('copies the public query into x-public-search on the item route’s rewrite alone', () => {
+    const search = PROXY_REQUEST_HEADERS.publicSearch
+    expect(decide('/product/1706-old?utm_source=mail&gclid=a%20b').setRequest[search]).toBe(
+      '?utm_source=mail&gclid=a%20b',
+    )
+    expect(decide('/id/produk/1706?fbclid=x').setRequest[search]).toBe('?fbclid=x')
+    // No query, or a bare `?`, is `''` — URL.search's own spelling of none.
+    expect(decide('/product/1706-bali').setRequest[search]).toBe('')
+    expect(decide('/product/1706-bali?').setRequest[search]).toBe('')
+    // A client's copy never survives, on the item route or anywhere else.
+    const forged = { [search]: '?token=forged' }
+    expect(decide('/product/1706?a=1', forged).setRequest[search]).toBe('?a=1')
+    expect(decide('/product/1706', forged).setRequest[search]).toBe('')
+  })
+
+  it('sets x-public-search to "" on every other request, a capability’s query included', () => {
+    const search = PROXY_REQUEST_HEADERS.publicSearch
+    for (const path of [
+      '/pay/abc?token=secret',
+      '/orders/TSG-1?access=secret',
+      '/id/cari?q=celebes',
+      '/old-maps/java?page=2',
+      '/category/12-java?s=sold',
+      '/robots.txt?x=1',
+      '/admin?next=/admin/account',
+      '/nope?q=1',
+      '/en/item/1706?utm_source=mail', // an internal path asked for directly is not the item route
+    ]) {
+      expect(decide(path, { [search]: '?forged=1' }).setRequest[search], path).toBe('')
+    }
   })
 })

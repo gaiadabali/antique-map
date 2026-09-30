@@ -5,9 +5,9 @@
  *   export { proxy } from '@engine/http/proxy'
  *   export const config = { matcher: ['/((?!api/|_next/|brand-assets/).*)'] }
  *
- * It rewrites and sets headers, nothing else (`./decide`): no redirect, no database — the
- * brand config it reads is the file, loaded once per process. Nothing runs at import: the
- * build has no brand, and the config is read on the first request.
+ * It rewrites, sets headers and its own not-found's status, nothing else (`./decide`, C13): no
+ * redirect, no database — the brand config it reads is the file, loaded once per process.
+ * Nothing runs at import: the build has no brand, and the config is read on the first request.
  */
 import { loadBrandConfig } from '@engine/config/loader'
 import { decideProxy, type DecideOptions, type ProxyConfig, type ProxyDecision } from './decide'
