@@ -18,6 +18,22 @@
  *   first (`./advisory-lock`).
  * - **Engine tables** Payload cannot express are declared in `afterSchemaInit` (`./engine-tables`),
  *   so the one migration set carries them (PARALLEL-TRACKS.md §1).
+ * - **Bounded waits** (the independent senior-db review of 4.8, S3). A pool connect — a new
+ *   connection, or a free client when every one is out — gives up after `POOL_CONNECT_TIMEOUT_MS`,
+ *   and a query after `QUERY_TIMEOUT_MS`, so a full pool or a black-holed connection answers
+ *   `/api/health` with an error rather than never. pg's own default for both is "wait forever".
+ *   The query bound is the web process's ceiling for one statement, a migration's included, so a
+ *   backfill that would run longer is batched; the migration lock's own wait is exempt, since it
+ *   lasts as long as another process's migration (`withMigrationLock`). A domain transaction sets
+ *   tighter server-side timeouts of its own (ARCHITECTURE.md §6).
+ * - **One client is always out.** Payload's first connect (`connectWithReconnect`,
+ *   `@payloadcms/db-postgres/dist/connect.js`) checks a client out to prove the database answers
+ *   and to hang its reconnect-on-`ECONNRESET` listener on it, and never releases it: that client is
+ *   the adapter's liveness watch, so at most `max - 1` (pg's default `max` is 10) serve queries.
+ * - **Never a database it cannot find** (S4). Payload would `CREATE DATABASE` a `DATABASE_URL`
+ *   that names none and boot on it empty — a typo migrated into an empty shop whose health check
+ *   is green. `disableCreateDatabase` makes it refuse; `pnpm db:fresh` and a host's provisioning
+ *   create the databases themselves.
  */
 import { postgresAdapter, type PostgresAdapter } from '@payloadcms/db-postgres'
 import type { DatabaseAdapterObj } from 'payload'
@@ -49,12 +65,24 @@ export function devPushRequested(env: DatabaseEnv): boolean {
   return env.PAYLOAD_DEV_PUSH === '1' && env.NODE_ENV !== 'production'
 }
 
+/** How long a pool connect waits, for a new connection or a free client. */
+export const POOL_CONNECT_TIMEOUT_MS = 5_000
+/** How long one query waits for its answer: the longest statement a process may run. */
+export const QUERY_TIMEOUT_MS = 60_000
+/** setTimeout's largest delay: the migration lock's wait, bounded by nothing short of it. */
+const UNBOUNDED_MS = 2_147_483_647
+
 export function buildDatabaseAdapter(
   options: DatabaseAdapterOptions,
 ): DatabaseAdapterObj<PostgresAdapter> {
   const { env, migrationDir, migrations } = options
   const adapter = postgresAdapter({
-    pool: { connectionString: env.DATABASE_URL },
+    pool: {
+      connectionString: env.DATABASE_URL,
+      connectionTimeoutMillis: POOL_CONNECT_TIMEOUT_MS,
+      query_timeout: QUERY_TIMEOUT_MS,
+    },
+    disableCreateDatabase: true,
     push: devPushRequested(env),
     migrationDir,
     ...(runsMigrationsOnBoot(env) ? { prodMigrations: [...migrations] } : {}),
@@ -86,6 +114,11 @@ export function withMigrationLock(
     ...adapterObj,
     init: (args) => {
       const adapter = adapterObj.init(args)
+      // A failed connect rejects the adapter's `initializing` promise with no reason, and nothing
+      // in Payload awaits it: under Next that is a log line, in a plain Node process (a seed, an
+      // import, `payload jobs:run`) an unhandled rejection that kills it before the caller's own
+      // catch can retry (review N1). Observed here; whoever awaits it still sees the rejection.
+      void (adapter as { initializing?: Promise<unknown> }).initializing?.catch(() => undefined)
       let holding = false
       const log = (message: string) =>
         adapter.payload.logger.info({ msg: `[migrations] ${message}` })
@@ -96,7 +129,7 @@ export function withMigrationLock(
         const locked = async (...methodArgs: unknown[]) => {
           if (holding) return bound(...methodArgs)
           return withAdvisoryLock(
-            adapter.pool as unknown as LockPool,
+            unboundedQueries(adapter.pool as unknown as LockPool),
             MIGRATION_LOCK_KEY,
             async () => {
               holding = true
@@ -112,6 +145,27 @@ export function withMigrationLock(
         Object.assign(adapter, { [method]: locked })
       }
       return adapter
+    },
+  }
+}
+
+/**
+ * `pool`, its clients' queries exempt from `QUERY_TIMEOUT_MS`: the migration lock waits in
+ * `pg_advisory_lock` for as long as another process migrates. A client-side timeout there would
+ * also leave the session queued for the lock and hand it back to the pool, to take the lock later
+ * with nobody to release it.
+ */
+export function unboundedQueries(pool: LockPool): LockPool {
+  return {
+    async connect() {
+      const client = await pool.connect()
+      return {
+        query: (text, values) =>
+          client.query({ text, values, query_timeout: UNBOUNDED_MS } as never),
+        release: (error) => client.release(error),
+        on: client.on?.bind(client),
+        off: client.off?.bind(client),
+      }
     },
   }
 }

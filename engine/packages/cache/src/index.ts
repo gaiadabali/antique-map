@@ -22,20 +22,21 @@ export {
 } from './tags'
 export { AVAILABILITY_STATUS_LIFE, CACHE_TAG_BATCH, cacheTags } from './read'
 export { invalidate } from './invalidate'
+export { COLLECTOR_KEY, type RequestContext } from './collector'
 export {
-  COLLECTOR_KEY,
   invalidationBatch,
   type BatchOptions,
+  type CollectingRequest,
   type InvalidationBatch,
-  type RequestContext,
-} from './collector'
+  type OperationOptions,
+} from './batch'
 export {
   postTags,
   REVALIDATE_ROUTE,
   REVALIDATE_TIMEOUT_MS,
   RevalidatePostError,
   revalidateBodies,
-  revalidateTargetFrom,
   type PostOptions,
   type RevalidateTarget,
 } from './post'
+export { isLoopbackHost, revalidateTargetFrom } from './target'
