@@ -7,7 +7,8 @@
 //   2. packages never import an app,
 //   3. view-models has no runtime dependencies (type imports only; its
 //      package.json declares no dependencies).
-// Each is proven by a planted violation in the 0.1 report.
+// Each is proven by a planted violation in the 0.1 report. The engine fences
+// after them (TASKS.md 5.4.b–c) are each proven by one in the 5.4 report.
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -19,6 +20,9 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import prettier from 'eslint-config-prettier/flat'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
+
+import { RENDERING_RULES } from './engine/tooling/next-config-parity/eslint-rules.mjs'
+import { PAYLOAD_FENCES } from './engine/tooling/route-parity/eslint-fences.mjs'
 
 const root = dirname(fileURLToPath(import.meta.url))
 const CODE = ['**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}']
@@ -102,6 +106,48 @@ const boundaries = {
   },
 }
 
+// The engine fences (TASKS.md 5.4.b–c): the rules live beside the gates they back — route parity
+// (ARCHITECTURE.md §15's package fences) and next.config parity (CONVENTIONS.md §12's rendering
+// rules); the files each one covers are named here. `import type` passes every import fence.
+const fences = { meta: { name: 'engine-fences' }, rules: { ...PAYLOAD_FENCES, ...RENDERING_RULES } }
+const HTTP = 'engine/packages/http/src'
+const APP = 'engine/apps/*/src/app'
+const code = (dir) => `${dir}/**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}`
+const TESTS = ['**/*.test.*', '**/test/**']
+const fenced = (rule, files, ignores = [], options = []) => ({
+  name: `fence: ${rule}${options.length ? ' (the locale layout)' : ''}`,
+  files,
+  ignores,
+  plugins: { fences },
+  rules: { [`fences/${rule}`]: ['error', ...options] },
+})
+const fenceConfigs = [
+  // 5.4.b — how engine routes reach Payload (ARCHITECTURE.md §15).
+  fenced('payload-by-value', [code(HTTP)], [`${HTTP}/**/payload-*.ts`]),
+  fenced('payload-module-static', [code(HTTP)], TESTS),
+  fenced('cms-no-http', [code('engine/packages/cms')]),
+  fenced('http-no-loaders', [code('engine/packages/http')]),
+  fenced('loaders-http-manifest-only', [code('engine/packages/loaders')]),
+  fenced('manifest-types-only', [`${HTTP}/manifest.ts`, code(`${HTTP}/manifest`)], TESTS),
+  // Its tests excepted: leaf.test.ts reads C1's schema to prove the leaf.
+  fenced('cache-leaf', [code('engine/packages/cache')], TESTS),
+  // 5.4.b — one route segment config (CONVENTIONS.md §12).
+  fenced('segment-config', [code(APP)], [`${APP}/(payload)/**`]),
+  fenced('segment-config', [`${APP}/\\(site\\)/\\[locale\\]/layout.tsx`], [], [{ layout: true }]),
+  // 5.4.c — no storefront link or form prefetches (CONVENTIONS.md §12).
+  fenced(
+    'no-next-link',
+    [code('engine/apps/*/src'), code('engine/packages')],
+    [
+      `${APP}/(payload)/**`,
+      'engine/packages/cms/**',
+      'engine/packages/ui/src/primitives/**/*{link,Link}*.{ts,tsx}',
+    ],
+  ),
+  fenced('no-next-form', [code('engine')]),
+  fenced('no-router-prefetch', [code('engine')]),
+]
+
 export default defineConfig([
   includeIgnoreFile(join(root, '.gitignore'), 'gitignored paths'),
   globalIgnores(
@@ -173,6 +219,8 @@ export default defineConfig([
     language: 'json/json',
     rules: { 'boundaries/no-runtime-dependencies': 'error' },
   },
+
+  ...fenceConfigs,
 
   prettier,
 ])
