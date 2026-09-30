@@ -189,7 +189,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D16** | AI cataloguing model provider | a production model behind the `ai.cataloguing` flag, human-verified; Ollama Cloud for development only (not a production dependency) | owner | 23.5 |
 | **D17** | Staging tier after launch | staging stays on Helios `.gaiada.com`; Delphi `staging` branch only if wanted | owner | 44.2 |
 | **D18** | Default locale per brand (served unprefixed) | English for both; Indonesian at `/id/…` | owner | 3.1 |
-| **D19** | Photographer and the pilot shoot (the Design stage) | **no default** — the Design stage cannot finish its comps on today's single web JPEGs | owner (booking, budget) | 6.2 |
 | **D20** | Native Indonesian copywriter | **no default** — the lexicon and the launch copy review need one | owner | 6.3 |
 | **D21** | Buyers for the prototype test and usability runs (≈ 10 + 10 people) | collectors from the gallery's client list; shoppers recruited through the shop's Instagram | owner (introductions) | 13.2, 35.2, 32.2 |
 | **D22** | Offers at launch | **non-binding offers** in v1: accept / counter / decline in the admin; an accepted offer becomes a hold and a private pay link. Binding offers (a contract on acceptance) are v2 | owner | 19.1 |
@@ -208,7 +207,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | --- | --- | --- |
 | **OA1** | ✅ 2026-09-28 — `gaiadabali/antique-map` (private, internal), deploy account `web-gaiada` (admin); `main` pushed | 1.1.f |
 | **OA2** | The owner interview — at most 15 questions per brand | 6.1.b |
-| **OA3** | Book a photographer and the pilot shoot (D19) | 6.2.b |
+| **OA3** | Hand over the pilot image set: six gallery items (one a typical migrated item at today's quality) and the Denpasar showroom — the owner's own photographs (D19) | 6.2.b |
 | **OA4** | A native Indonesian copywriter for the lexicon and the launch copy (D20) | 6.3.c, 42.6, 43.6 |
 | **OA5** | Two or three Indonesian designers or buyers for the shop's cultural review | 12.2.a |
 | **OA6** | Buyers for the prototype test and the usability runs — about 10 + 10 people (D21) | 13.2, 35.2, 32.2 |
@@ -230,6 +229,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D19** | **No photographer is booked:** every item is the owner's own property, and the owner supplies its photographs to sell it. 6.2's capture standards become the owner's photography guide and the intake spec; its pilot set is the owner's images. | 2026-10-01 |
+| **OA-Helios** | **Standing go-ahead for Helios:** the orchestrator may do what the project needs on Helios (staging provisioning, deploys, reads) — given by the owner in session. Production cutover, DNS for the brands' own domains and live credentials still follow their own 👤 items. | 2026-10-01 |
 | **D12** | **Object storage is RustFS** (self-hosted, S3-compatible) — `@payloadcms/storage-s3` unchanged, an endpoint change (DEPLOYMENT.md §2). Staging runs it on Helios, bound to loopback. ⚠ Helios's disk was at 93% (DEPLOYMENT.md §2): where RustFS lives for the full archive (37.2's staging rehearsal, production) is to confirm before 37.2. | 2026-09-30 |
 | **D13 (staging)** | **Staging mail is simulated:** a Mailpit catcher on Helios, loopback-only; nothing is delivered. The production sender (D13) stays open. | 2026-09-30 |
 | **D43** | **The two archived `oldeastindies.com/sitemap.xml` captures may be read** through Wayback playback on web.archive.org (two requests; nothing sent to the old site) — 7.3.d. | 2026-09-30 |
@@ -639,15 +640,15 @@ run beside the build line rather than in it.
   - [ ] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
   - [ ] 6.1.d **Check:** each PRODUCT.md follows the impeccable product schema with no invented facts and the owner's answers folded in, and 6–8 journeys per brand exist, each naming its surfaces, states, channel handoffs and the moment that decides trust.
 
-- [ ] **6.2 👤 Image direction, capture standards and the pilot shoot** · needs: 1.3.b
+- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/imagery/**`
   - **Read** DESIGN-SYSTEM.md §11, CONTENT-MODEL.md (image roles), MIGRATION.md §9, the drafted PRODUCT.md files
   - _Requirements: 4.5, 6.12, 7.12_
   - [ ] 6.2.a capture standards per brand: lighting and colour temperature, a colour target in every frame, the raking-light angle, minimum ppi, backgrounds, mat and shadow, **retouching limits (never restore a defect on an original)**, the studio/lifestyle split (gallery: studio, object, raking light, no people; shop: sun, hands, rooms, packaging, the showroom), and how synthetic mockups are labelled
-  - [ ] 6.2.b 👤 book a photographer; pilot shoot of six gallery items — including one **typical migrated item** at real data quality — and one day in the Denpasar showroom
+  - [ ] 6.2.b 👤 the owner supplies the pilot set (D19 — no photographer): six gallery items — including one **typical migrated item** at real data quality — and the Denpasar showroom, shot to 6.2.a's guide where the owner can; each image checked against the intake spec, and any gap named per image
   - [ ] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
-  - [ ] 6.2.d **Check:** each brand has capture standards, a photographer has shot the pilot set, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
+  - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the owner's pilot set is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
 
 - [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1
   - **Lane** UXG + UXE + BRD · **Agent** senior-uiux · **Wave** W1
