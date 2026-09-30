@@ -8,14 +8,16 @@ import { pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 import {
+  discoverApps,
   exportsInstantFalse,
   guaranteesOf,
   judgeGuarantees,
   REQUIRED,
+  textDifferences,
 } from './next-config-parity.mjs'
 
 const repoRoot = process.cwd()
-const APPS = ['gallery', 'emporium']
+const APPS = discoverApps(repoRoot) // every engine/apps/* with a next.config.ts (qa S4)
 const configFile = (app) => `engine/apps/${app}/next.config.ts`
 const layoutFile = (app) => `engine/apps/${app}/src/app/(site)/[locale]/layout.tsx`
 const FILES = Object.fromEntries(APPS.map((app) => [app, configFile(app)]))
@@ -28,13 +30,25 @@ async function loadGuarantees(app) {
 }
 
 describe("the apps' next.config.ts (5.4.d)", LOADED, () => {
+  it('are found on disk: at least the two storefronts', () => {
+    expect(APPS.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('are one file, but the allowlisted lines (none today)', () => {
+    const texts = Object.fromEntries(
+      APPS.map((app) => [app, readFileSync(join(repoRoot, configFile(app)), 'utf8')]),
+    )
+    expect(textDifferences(texts, FILES)).toEqual([])
+  })
+
   it('agree on cacheComponents, htmlLimitedBots, output, poweredByHeader and the client hints', async () => {
     const byApp = Object.fromEntries(
       await Promise.all(APPS.map(async (app) => [app, await loadGuarantees(app)])),
     )
     expect(judgeGuarantees(byApp, FILES)).toEqual([])
-    expect(byApp.gallery).toMatchObject(REQUIRED)
-    expect(byApp.gallery.clientHints).toEqual([
+    const first = byApp[APPS[0]]
+    expect(first).toMatchObject(REQUIRED)
+    expect(first.clientHints).toEqual([
       { source: '/admin/:path*', hints: expect.arrayContaining(['accept-ch', 'critical-ch']) },
     ])
   })
@@ -99,5 +113,38 @@ describe('the planted violations (5.4.d)', () => {
         "engine/apps/emporium/next.config.ts: no client hints on /admin/:path* (the admin's theme needs them)",
       ]),
     )
+  })
+})
+
+describe('text drift between the configs (qa S4)', () => {
+  const BASE = "const nextConfig = {\n  output: 'standalone',\n  poweredByHeader: false,\n}\n"
+  const files = { a: 'engine/apps/a/next.config.ts', b: 'engine/apps/b/next.config.ts' }
+  const drifted = (line) =>
+    BASE.replace('  poweredByHeader: false,\n', `  poweredByHeader: false,\n${line}\n`)
+
+  it.each([
+    ['a trailingSlash', '  trailingSlash: true,'],
+    ['a cacheLife profile', '  cacheLife: { item: { stale: 60, revalidate: 60, expire: 3600 } },'],
+  ])('flags %s in one app, naming both files and the line', (_, line) => {
+    expect(textDifferences({ a: BASE, b: drifted(line) }, files)).toEqual([
+      `engine/apps/b/next.config.ts differs from engine/apps/a/next.config.ts at line 4: ${line.trim()} (engine/apps/a/next.config.ts line 4: })`,
+    ])
+  })
+
+  it('passes a line the allowlist names, and nothing else', () => {
+    const allowed = [{ line: /^\s*trailingSlash: /, why: 'a planted exemption' }]
+    const slash = drifted('  trailingSlash: true,')
+    expect(textDifferences({ a: BASE, b: slash }, files, allowed)).toEqual([])
+    expect(
+      textDifferences({ a: BASE, b: drifted('  cacheLife: {},') }, files, allowed),
+    ).toHaveLength(1)
+  })
+
+  it('reads trailingSlash: true as a broken guarantee', async () => {
+    const facts = await guaranteesOf({ ...REQUIRED, htmlLimitedBots: /.*/, trailingSlash: true })
+    expect(judgeGuarantees({ a: facts }, files)).toEqual([
+      'engine/apps/a/next.config.ts: trailingSlash is true, not false',
+      "engine/apps/a/next.config.ts: no client hints on /admin/:path* (the admin's theme needs them)",
+    ])
   })
 })

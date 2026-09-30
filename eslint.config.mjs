@@ -121,6 +121,8 @@ const fenced = (rule, files, ignores = [], options = []) => ({
   plugins: { fences },
   rules: { [`fences/${rule}`]: ['error', ...options] },
 })
+const STOREFRONT = [code('engine/apps/*/src'), code('engine/packages')]
+const NOT_STOREFRONT = [`${APP}/(payload)/**`, 'engine/packages/cms/**']
 const fenceConfigs = [
   // 5.4.b — how engine routes reach Payload (ARCHITECTURE.md §15).
   fenced('payload-by-value', [code(HTTP)], [`${HTTP}/**/payload-*.ts`]),
@@ -135,17 +137,14 @@ const fenceConfigs = [
   fenced('segment-config', [code(APP)], [`${APP}/(payload)/**`]),
   fenced('segment-config', [`${APP}/\\(site\\)/\\[locale\\]/layout.tsx`], [], [{ layout: true }]),
   // 5.4.c — no storefront link or form prefetches (CONVENTIONS.md §12).
-  fenced(
-    'no-next-link',
-    [code('engine/apps/*/src'), code('engine/packages')],
-    [
-      `${APP}/(payload)/**`,
-      'engine/packages/cms/**',
-      'engine/packages/ui/src/primitives/**/*{link,Link}*.{ts,tsx}',
-    ],
-  ),
+  // Storefront code: the apps outside (payload), every package but cms. The link primitive
+  // (TASKS.md 11.1.c) is the one file that imports next/link, by this path.
+  fenced('no-next-link', STOREFRONT, [
+    ...NOT_STOREFRONT,
+    'engine/packages/ui/src/primitives/link.tsx',
+  ]),
+  fenced('no-router-prefetch', STOREFRONT, NOT_STOREFRONT),
   fenced('no-next-form', [code('engine')]),
-  fenced('no-router-prefetch', [code('engine')]),
 ]
 
 export default defineConfig([

@@ -11,9 +11,22 @@ export const SEGMENT_CONFIG = new Set([
   ...['prefetch', 'instant', 'dynamicParams', 'generateStaticParams'],
 ])
 
+/** Every name a binding pattern binds: `{ dynamic }`, `[runtime]`, `{ a: { revalidate } }` … */
+function boundNames(pattern) {
+  if (!pattern) return []
+  if (pattern.type === 'Identifier') return [pattern.name]
+  if (pattern.type === 'AssignmentPattern') return boundNames(pattern.left)
+  if (pattern.type === 'RestElement') return boundNames(pattern.argument)
+  if (pattern.type === 'ArrayPattern') return pattern.elements.flatMap(boundNames)
+  if (pattern.type === 'ObjectPattern')
+    return pattern.properties.flatMap((each) => boundNames(each.value ?? each))
+  return []
+}
+
 /**
  * No file exports route segment config — but, with `{ layout: true }` (the locale layout alone),
- * `export const instant = false` as that literal and `generateStaticParams`.
+ * `export const instant = false` as that literal and `generateStaticParams`. A destructured
+ * export (`export const { dynamic } = config`) is never allowed (qa's 5.4 gate, S3).
  */
 const segmentConfig = {
   meta: problem(
@@ -27,8 +40,10 @@ const segmentConfig = {
     const instantFalse = (node) =>
       node.id.name === 'instant' && node.parent.kind === 'const' && node.init?.value === false
     return {
-      'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator': (node) =>
-        check(node, node.id.name, instantFalse(node)),
+      'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator': (node) => {
+        if (node.id.type === 'Identifier') return check(node, node.id.name, instantFalse(node))
+        for (const name of boundNames(node.id)) check(node, name, false)
+      },
       'ExportNamedDeclaration > FunctionDeclaration': (node) =>
         check(node, node.id?.name, node.id?.name === 'generateStaticParams'),
       ExportSpecifier: (node) => {
@@ -39,29 +54,43 @@ const segmentConfig = {
   },
 }
 
-/** `<anything>.prefetch()` — the router's, however it is named — and `{ prefetch } = useRouter()`. */
+/**
+ * Any `.prefetch` or `['prefetch']` member, called or not, and any `prefetch` key a destructuring
+ * pattern reads — so an aliased or namespaced `useRouter`, a router destructured from a variable
+ * and a method pulled off without a call are all caught (qa's 5.4 gate, S3). A JSX
+ * `prefetch={false}` attribute and an object literal's `prefetch:` key are not members.
+ */
 const routerPrefetch = {
   meta: problem(
     `No storefront code prefetches: under htmlLimitedBots a prefetch is a full render (${WHY}).`,
   ),
-  create: (context) => ({
-    'CallExpression > MemberExpression.callee[property.name="prefetch"]': (node) =>
-      report(context, node),
-    'VariableDeclarator[init.callee.name="useRouter"] Property[key.name="prefetch"]': (node) =>
-      report(context, node),
-  }),
+  create: (context) => {
+    const found = (node) => report(context, node)
+    return {
+      'MemberExpression[computed=false][property.name="prefetch"]': found,
+      'MemberExpression[computed=true][property.value="prefetch"]': found,
+      'ObjectPattern > Property[key.name="prefetch"]': found,
+      'ObjectPattern > Property[key.value="prefetch"]': found,
+    }
+  },
 }
+
+/** `next/<name>`, `next/<name>.js`, and its `next/dist/(esm/)client/(app-dir/)` copies. */
+const nextModule = (name) =>
+  new RegExp(`^next/(?:dist/(?:esm/)?client/(?:app-dir/)?)?${name}(?:\\.js)?$`)
+const NEXT_LINK = nextModule('link')
+const NEXT_FORM = nextModule('form')
 
 /** The rules, by name. */
 export const RENDERING_RULES = {
   'segment-config': segmentConfig,
   'no-router-prefetch': routerPrefetch,
   'no-next-link': fence({
-    banned: (source) => /^next\/(?:link|dist\/client\/(?:app-dir\/)?link(?:\.js)?)$/.test(source),
-    why: `a storefront link is an <a> or the link primitive (engine/packages/ui/src/primitives/, TASKS.md 11.1.c), which never prefetches (${WHY}).`,
+    banned: (target) => NEXT_LINK.test(target),
+    why: `a storefront link is an <a> or the link primitive (engine/packages/ui/src/primitives/link.tsx, TASKS.md 11.1.c), which never prefetches (${WHY}).`,
   }),
   'no-next-form': fence({
-    banned: (source) => /^next\/(?:form|dist\/client\/form(?:\.js)?)$/.test(source),
+    banned: (target) => NEXT_FORM.test(target),
     why: `next/form's <Form> prefetches its action: a storefront form is a plain <form>, which works without JavaScript (${WHY}).`,
   }),
 }

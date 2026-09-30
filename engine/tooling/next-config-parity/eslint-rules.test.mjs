@@ -113,3 +113,59 @@ describe('no next/form and no router prefetch, anywhere (5.4.c)', LOADED, () => 
     expect(await fencesAt(`${SITE}/page.tsx`, code)).toEqual([])
   })
 })
+
+describe('the fences hold however the import or the prefetch is spelled (qa S3)', LOADED, () => {
+  const CARD = 'engine/packages/ui/src/cards/item-card.tsx'
+  it.each([
+    [CARD, "import Link from 'next/link.js'\n", 'no-next-link'],
+    [CARD, "import Link from 'next/dist/esm/client/app-dir/link.js'\n", 'no-next-link'],
+    [CARD, "import Link from 'next/dist/client/link'\n", 'no-next-link'],
+    [CARD, "const Link = require('next/link')\n", 'no-next-link'],
+    [
+      'engine/packages/ui/src/primitives/other-link.tsx',
+      "import Link from 'next/link'\n",
+      'no-next-link',
+    ],
+    [
+      'engine/packages/ui/src/primitives/Link.tsx',
+      "import Link from 'next/link'\n",
+      'no-next-link',
+    ],
+    [CARD, "import Form from 'next/form.js'\n", 'no-next-form'],
+    [CARD, "import Form from 'next/dist/esm/client/form.js'\n", 'no-next-form'],
+  ])('refuses %s: %s', async (path, code, rule) => {
+    expect(await fencesAt(path, code)).toEqual([`fences/${rule}`])
+  })
+
+  it.each([
+    'import * as nav from "next/navigation"\nnav.useRouter().prefetch("/en")\n', // namespaced
+    'import { useRouter as r } from "next/navigation"\nconst go = r()\ngo.prefetch("/en")\n', // aliased
+    'const router = props.router\nconst { prefetch } = router\n', // destructured from a variable
+    'const pre = useRouter().prefetch\n', // pulled off, never called here
+    'const pre = useRouter()["prefetch"]\n', // computed
+    'const { ["prefetch"]: pre } = useRouter()\n',
+  ])('refuses %s', async (code) => {
+    const found = await fencesAt(`${SITE}/page.tsx`, code)
+    expect(found.length).toBeGreaterThan(0)
+    expect(new Set(found)).toEqual(new Set(['fences/no-router-prefetch']))
+  })
+
+  it('passes a JSX prefetch={false} and an object literal key', async () => {
+    const code = 'export const a = <A prefetch={false} />\nexport const o = { prefetch: false }\n'
+    expect(await fencesAt(`${SITE}/page.tsx`, code)).toEqual([])
+  })
+
+  it.each([
+    'export const { dynamic } = config\n',
+    'export const [runtime] = config\n',
+    'export const { a: { revalidate } } = config\n',
+  ])('refuses a destructured segment config export: %s', async (code) => {
+    expect(await fencesAt(`${SITE}/page.tsx`, code)).toEqual(['fences/segment-config'])
+  })
+
+  it('refuses a destructured instant, even on the locale layout', async () => {
+    expect(await fencesAt(LAYOUTS[0], 'export const { instant } = { instant: false }\n')).toEqual([
+      'fences/segment-config',
+    ])
+  })
+})
