@@ -17,6 +17,8 @@
  * `E2E_EXPECT_NOT_FOUND_BODY=1` once the not-found page renders the designed surface (22.4.e);
  * `E2E_EXPECT_CSP=1` once the proxy sets the nonce CSP (41.1.a). Unset, their cases are `fixme`.
  */
+import { request as httpRequest } from 'node:http'
+
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
 /** A browser's user agent: the full request-time render is what Next gives every agent here. */
@@ -38,9 +40,22 @@ const NO_PAGE = ['/nope', '/nope/deeper']
 
 const ask = (request: APIRequestContext, path: string, headers: Record<string, string> = {}) =>
   request.get(path, { maxRedirects: 0, headers: { 'user-agent': BROWSER_UA, ...headers } })
-/** A request with no User-Agent at all — Next counts it as no bot, so the proxy must set one. */
-const askWithoutAgent = (request: APIRequestContext, path: string) =>
+/** A request whose User-Agent is empty: Next counts it as no bot, so the proxy must set one. */
+const askWithEmptyAgent = (request: APIRequestContext, path: string) =>
   request.get(path, { maxRedirects: 0, headers: { 'user-agent': '' } })
+/**
+ * A request with no User-Agent header at all (qa's 5.4 gate, L6). Playwright's request context
+ * always sends one, so this is Node's own `http`, which adds none and follows no redirect.
+ */
+const askWithNoAgent = (baseURL: string | undefined, path: string) =>
+  new Promise<{ status: number; location?: string }>((resolve, reject) => {
+    const sent = httpRequest(new URL(path, baseURL), { method: 'GET' }, (response) => {
+      response.resume()
+      resolve({ status: response.statusCode ?? 0, location: response.headers.location })
+    })
+    sent.on('error', reject)
+    sent.end()
+  })
 const expectUaFix = () =>
   test.fixme(process.env.E2E_EXPECT_UA_FIX !== '1', 'the proxy does not set a missing User-Agent')
 
@@ -63,11 +78,16 @@ test.describe('status codes, on any app', ANY_APP, () => {
   }
 
   for (const path of NO_PAGE) {
-    test(`${path} with no User-Agent still answers 404 (the proxy sets one — C13, 5.3)`, async ({
-      request,
+    test(`${path} with no User-Agent header still answers 404 (the proxy sets one — C13, 5.3)`, async ({
+      baseURL,
     }) => {
       expectUaFix()
-      expect((await askWithoutAgent(request, path)).status()).toBe(404)
+      expect((await askWithNoAgent(baseURL, path)).status).toBe(404)
+    })
+
+    test(`${path} with an empty User-Agent still answers 404`, async ({ request }) => {
+      expectUaFix()
+      expect((await askWithEmptyAgent(request, path)).status()).toBe(404)
     })
   }
 })
@@ -102,11 +122,18 @@ test.describe('status codes, on the spike gallery', () => {
     expect(response.headers()['location']).toBe(`${BALI}?utm_source=mail`)
   })
 
-  test('a stale slug with no User-Agent is still a permanent redirect (C13, 5.3)', async ({
+  test('a stale slug with no User-Agent header is still a permanent redirect (C13, 5.3)', async ({
+    baseURL,
+  }) => {
+    expectUaFix()
+    expect(await askWithNoAgent(baseURL, STALE_BALI)).toEqual({ status: 308, location: BALI })
+  })
+
+  test('a stale slug with an empty User-Agent is still a permanent redirect', async ({
     request,
   }) => {
     expectUaFix()
-    const response = await askWithoutAgent(request, STALE_BALI)
+    const response = await askWithEmptyAgent(request, STALE_BALI)
     expect(response.status()).toBe(308)
     expect(response.headers()['location']).toBe(BALI)
   })

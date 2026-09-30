@@ -133,7 +133,7 @@ describe('the scaffold and C1 (3.3.a)', () => {
     })
     const { brandDir } = await createBrand(sandbox, { slug: 'fixture-cli', storefront: 'gallery' })
     expect(existsSync(join(brandDir, 'site', 'brand.config.json'))).toBe(true)
-  }, 60_000)
+  }, 180_000) // it starts the Vite runner: slow under a loaded machine (qa 5.4 L5)
 })
 
 describe('the scaffold against its app’s real supports (4.7.b)', () => {
