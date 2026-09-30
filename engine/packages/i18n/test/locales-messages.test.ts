@@ -98,7 +98,7 @@ describe('messages — keys from the app, values from the brand’s copy', () =>
     expect(en.t('item.price.estimate', {})).toBe('≈ {estimate}, charged in {charge}') // unfilled stays visible
   })
 
-  it('serves the app’s defaults when the brand has no copy yet — the committed copy folders are empty', () => {
+  it('serves the app’s default for a key the brand’s committed copy lacks', () => {
     let checked = 0
     for (const slug of readdirSync(REPO_ROOT)) {
       // brand:create's test scaffolds (and removes) a throwaway brand here while the suite runs.
@@ -106,7 +106,6 @@ describe('messages — keys from the app, values from the brand’s copy', () =>
       const dir = join(REPO_ROOT, slug, 'site', 'copy')
       if (!existsSync(dir)) continue
       checked += 1
-      expect(readdirSync(dir).filter((file) => file.endsWith('.json'))).toEqual([])
       const messages = loadMessages({
         defaults: appMessages,
         copyDir: dir,
