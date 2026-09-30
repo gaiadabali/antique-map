@@ -22,10 +22,10 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 1/4 | 13/23 | 1 | `██████░░░░`  57% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 6/19 | 3 | `███░░░░░░░`  32% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 8/19 | 3 | `████░░░░░░`  42% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/23 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
@@ -33,12 +33,12 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
 | **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
-| **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | · not started | 0/4 | 0/24 | 1 | `░░░░░░░░░░`   0% |
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/2 | 0/12 | 1 | `░░░░░░░░░░`   0% |
-| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/36 | 1 | `░░░░░░░░░░`   0% |
+| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/37 | 1 | `░░░░░░░░░░`   0% |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/27 | 2 | `░░░░░░░░░░`   0% |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **21/173** | **140/803** | **47** | `██░░░░░░░░`  17% |
+| **All** | 44 phases | | | **21/173** | **142/808** | **47** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -198,13 +198,14 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D23** | Print-on-demand abroad at launch | **not at launch** — export orders ship from Bali stock or local production, DAP; Prodigi / Gelato switch on in v2 behind the existing router | owner | 26.3 |
 | **D24** | The item register — who compiles location and export status for every original, and by when | the gallery's staff, by the staging rehearsal (37.2); an original without a row publishes **enquiry-only** and sells nowhere online | owner (staff time) | 36.3 |
 | **D25** | Dark production import of the gallery before the shop launches | yes, whenever the shop launches first — its sister links and original prices come from the gallery's archive API | owner (Helios go-ahead) | 42.7 |
-| **D26** | Minimum print resolution for reproductions | **240 ppi** (≈ 37 cm long edge from today's 3543 px images); a product type may demand more | owner + print partner | 9.2, 15.4 |
+| **D26** | Minimum print resolution for reproductions | **240 ppi** — the ceiling is computed from the design's crop, or the object's box for a whole sheet, never the file's long edge (C9 v1.4 `printCeilingOf()`; a 3543 px frame whose sheet spans 3300 px gives 349 mm); a product type may demand more | owner + print partner | 9.2, 15.4 |
 | **D27** | FX source for derived prices | ECB reference rates, refreshed daily, plus the per-market buffer; each order stores the rate it used | accountant | 17.2 |
 | **D28** | Newsletter sender | a bulk-sending provider for the newsletter and alerts (Workspace SMTP caps daily sends and would put transactional mail at risk); transactional mail stays per D13 | owner (account) | 29.2 |
 | **D32** | What a retail partner gets at launch | an application approved by staff; a trade price tier and a minimum order as data; orders placed as quotes through the order builder (24.5) and paid by bank transfer or pay link; no self-serve wholesale cart until the trade portal (v2.7) | owner | 28.5 |
 | **D29** | The Singapore seller selling Singapore-held stock to an Indonesian address | priced and charged in **IDR** (the rupiah rule governs what the buyer sees), card or bank transfer, import duties the buyer's (DAP) | tax adviser | 17.3, 25.1 |
 | **D45** | Proforma (`invoice`) holds for institutions: capped, or staff approve before the hold starts (COMMERCE.md §7, F13) | **staff approve first** — the hold starts on approval | owner (interview G5) | 18.1, 19.1 |
 | **D46** | Who produces the configurator's room plates (6.2.c: six master plates) | a freelance 3D artist renders them to `docs/design/imagery/room-scenes.md`; no AI-generated or stock interiors | owner (budget) | 22.7 |
+| **D47** | How the shop prices and charges a buyer abroad at launch | one rupiah price list everywhere; the PT charges IDR — a card is charged the exact rupiah total; the market's currency shows only as an "≈" estimate beside it (day's rate, no buffer); PayPal, which takes no rupiah, is charged the rupiah total converted once to USD at the payment step (day's rate + the USD buffer, half-even to the cent), shown before the choice and stored on the attempt; no hand-set EUR/AUD/SGD/USD lists until a seller that charges them exists (COMMERCE.md §3, PAYMENTS.md §6) | owner + tax adviser (may the PT take USD by PayPal for export?) | 17.2, 17.3, 19.2, 25.2, 30.1, 32 |
 
 ### Owner actions (not questions)
 
@@ -645,7 +646,7 @@ run beside the build line rather than in it.
   - [x] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
   - [ ] 6.1.e an Indonesian version of `docs/design/journeys/owner-interview.md` before it is sent (client material comes in both languages — project-notes.md), reviewed by a native speaker (the D20 copywriter when there is one)
   - [ ] 6.1.f after OA2: fold each answer in at its `(open — pending the owner interview, OA2 · Gn/Sn)` mark, update each journey's "Open until the owner answers" and its defaults, and route any answer that changes EXPERIENCE-*.md to ARC; ask too whether the gallery states a position on the VOC and the colonial archive (the shop's is stated; the gallery's PRODUCT.md has none — 6.3), and confirm British spelling for both brands
-  - [ ] 6.1.g ARC's doc corrections from 6.1's review: requirements.md 7.8 names Partnership, not "For Business" (D36); EXPERIENCE-SHOP.md's intro drops "the one sister element" (D9 shares the whole base); EXPERIENCE-GALLERY.md §1 names only the client's four institutions until G10 answers; §3, §5, §9 mark the lifetime guarantee a default (RESEARCH.md §2, D11); and how a shop buyer abroad sees and pays prices at launch settled across COMMERCE.md §3 and PAYMENTS.md §6, phase 32's Done when following
+  - [x] 6.1.g ARC's doc corrections from 6.1's review: requirements.md 7.8 names Partnership, not "For Business" (D36); EXPERIENCE-SHOP.md's intro drops "the one sister element" (D9 shares the whole base); EXPERIENCE-GALLERY.md §1 names only the client's four institutions until G10 answers; §3, §5, §9 mark the lifetime guarantee a default (RESEARCH.md §2, D11); and how a shop buyer abroad sees and pays prices at launch settled across COMMERCE.md §3 and PAYMENTS.md §6, phase 32's Done when following
   - [ ] 6.1.d **Check:** each PRODUCT.md follows the impeccable product schema with no invented facts and the owner's answers folded in, and 6–8 journeys per brand exist, each naming its surfaces, states, channel handoffs and the moment that decides trust.
 
 - [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b — 🔄 6·W1
@@ -656,7 +657,7 @@ run beside the build line rather than in it.
   - [x] 6.2.a capture standards per brand: lighting and colour temperature, a colour target in every frame, the raking-light angle, minimum ppi, backgrounds, mat and shadow, **retouching limits (never restore a defect on an original)**, the studio/lifestyle split (gallery: studio, object, raking light, no people; shop: sun, hands, rooms, packaging, the showroom), and how synthetic mockups are labelled
   - [ ] 6.2.b 👤 the owner supplies the pilot set (D19 — no photographer): six gallery items — including one **typical migrated item** at real data quality — and the Denpasar showroom, shot to 6.2.a's guide where the owner can; each image checked against the intake spec, and any gap named per image
   - [x] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
-  - [ ] 6.2.e ARC → SCH, before 8.3 and 9.1 (6.2's Found 1–6): CONTENT-MODEL.md and C9 give `products` image roles (flat · detail · in-room · lifestyle · scale · packaging · showroom) and `locations` images; a `media.role` value list and `media.provenance` (photograph · composite · rendered · ai-generated); on `masters`, object ppi, the object's box, role and capture tier; a restoration note on `designs`; a publish guard refusing a synthetic image as an original's primary; `primary` a crop of `recto`, never its own photograph; the print ceiling computed from the object's pixels or the design crop, not the master's long edge (ARCHITECTURE.md §7, MIGRATION.md §9, 15.4.c); one shared room-plate set with its geometry (22.7); and a key for pilot masters before OA3 arrives
+  - [x] 6.2.e ARC → SCH, before 8.3 and 9.1 (6.2's Found 1–6): CONTENT-MODEL.md and C9 give `products` image roles (flat · detail · in-room · lifestyle · scale · packaging · showroom) and `locations` images; a `media.role` value list and `media.provenance` (photograph · composite · rendered · ai-generated); on `masters`, object ppi, the object's box, role and capture tier; a restoration note on `designs`; a publish guard refusing a synthetic image as an original's primary; `primary` a crop of `recto`, never its own photograph; the print ceiling computed from the object's pixels or the design crop, not the master's long edge (ARCHITECTURE.md §7, MIGRATION.md §9, 15.4.c); one shared room-plate set with its geometry (22.7); and a key for pilot masters before OA3 arrives
   - [ ] 6.2.f fill the pilot request's four placeholders and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it
   - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the owner's pilot set is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
 
@@ -752,6 +753,8 @@ run beside the build line rather than in it.
   - [ ] 8.3.b `masters` as a plain collection: a presigned PUT straight to the private bucket (never through the app server), checksum recorded on completion, no public URL
   - [ ] 8.3.c Bucket policies: the shop's credentials write only under `print-files/`; local MinIO policies mirror production
   - [ ] 8.3.d Upload size limits and allowed types
+  - [ ] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
+  - [ ] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
   - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 ---
@@ -772,6 +775,7 @@ run beside the build line rather than in it.
   - [ ] 9.1.c publish guard (pricing mode, price unless on request, shipping profile, tax class, a routable seller — **or**, for a unique item whose work has no location or export status, publish as enquiry-only — rights for reproductions)
   - [ ] 9.1.d guard: originals can never have channel `marketplace`
   - [ ] 9.1.e `afterChange` → `@engine/cache`'s `invalidate(tags)` (4.8), after the commit: editorial tags stale-while-revalidate, the product's price and availability tags expired immediately (Req 19.12)
+  - [ ] 9.1.g `products.images` `{media, caption}` with `roleAllowed('product')` and `provenanceAllowed('product')` on save, an `original` product has none, and no image from a `fix-owner` master publishes (C9 v1.4, 6.2.e)
   - [ ] 9.1.f **Check:** `publicId` is a unique integer sequence that accepts preserved legacy ids; slugs derive once and never re-derive; `status` is only `available · not-for-sale · archived` — *on hold* and *sold* are derived from reservations (C8 availability), never stored; public read is `publishedOrStaff`; the publish guard is tested.
 
 - [ ] **9.2 Merchandise schema: designs, product types, variants, locations, stock** · needs: 8.2, 9.1
@@ -780,7 +784,7 @@ run beside the build line rather than in it.
   - **Read** CONTENT-MODEL.md §2, COMMERCE.md §4, §8, ARCHITECTURE.md §7
   - _Requirements: 3.1, 4.4, 7.2, 12.4_
   - [ ] 9.2.a designs (work, crop, print file stored under `print-files/` in the masters bucket, aspect, derived print ceiling, story, archive number)
-  - [ ] 9.2.b product types (axes and options, price table per market, constraints, minimum ppi — 240 by default, D26 — fulfilment routes, shipping profile, HS code, materials, mockup scenes)
+  - [ ] 9.2.b product types (axes and options, price table per market, constraints, minimum ppi — 240 by default, D26 — fulfilment routes, shipping profile, HS code, materials, the room view (`roomView`, over the shared `room-plates` global — C9 v1.4))
   - [ ] 9.2.c variants (options, SKU pattern, market prices, weight/dimensions, fulfilment mapping)
   - [ ] 9.2.d locations and stock levels; `inventory_movements` append-only table declared in `db/inventory.ts`
   - [ ] 9.2.e **Check:** a product type with axes, a price table and constraints saves; a variant cannot exceed its design's print ceiling (enforced again in 15.4); `stockLevels.reserved` is not editable in the admin; `inventory_movements` exists as an engine table in the wave migration.
@@ -1059,7 +1063,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.3, 4.4_
   - [ ] 15.4.a The presigned-PUT upload flow into the private bucket, recording pixels, ppi, colour profile and checksum
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
-  - [ ] 15.4.c The print ceiling per design, computed from its master at the product type's minimum ppi, stored and shown
+  - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
   - [ ] 15.4.e **Check:** masters are uploaded by presigned PUT straight to the private bucket and record pixels, ppi, colour profile and checksum; presigned read URLs expire and are logged; the shop's key is refused outside `print-files/` (a test against MinIO policies); a design's print ceiling is computed from its master at the product type's minimum ppi (240 by default: a 3543 px long edge → 375 mm) and stored; a test proves an over-ceiling variant is refused on save and on publish.
 
@@ -1142,6 +1146,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 17.2.a money module, rounding points, allocation + property tests
   - [ ] 17.2.b FX: rate source port (ECB reference rates by default, D27), daily refresh job, snapshots
   - [ ] 17.2.c market price resolution + "From" price for a destination
+  - [ ] 17.2.e D47's contracts first (ARC, opus): C6 `PaymentOptionView.charge`, C2 `PaymentOptionVM` and C7 `SessionInput.charge` show PayPal's own USD charge on an IDR order; a C1 minor version lets an estimate-only market skip the ladder and buffer; the shop's and `test`'s emporium configs follow (`charge: ["IDR"]`, eu/au/sg/row estimate markets); `commerce-check` proves a PayPal option on an IDR order carries a USD charge while the totals stay IDR
   - [ ] 17.2.d **Check:** safe-integer money arithmetic with the **engine's own exponents** (not ISO 4217's — a guard rejects any non-safe-integer at every boundary), the **named rounding points** with their methods — half-even, and largest-remainder allocation so parts sum to the whole (COMMERCE.md §3) — the **five price sources** (explicit, product-type table × multiplier, derived — FX + buffer + market price point — an accepted offer's agreed price, an issued quote's or proforma's line), "From" prices and the FX snapshot are pure and **property-tested** (no float, no rounding outside a named point, totals reproducible).
 
 - [ ] **17.3 Seller routing, destination and the rupiah rule** · needs: 3.1.a, 17.2
@@ -1436,8 +1441,9 @@ state machines and `applyPaymentEvent()` above all.
   - **Read** `.claude/specs/indies-platform/reviews/3.4-senior-fe.md` (#3, #9); CONVENTIONS.md §6; DESIGN-SYSTEM.md §7; EXPERIENCE-SHOP.md §5; COMMERCE.md §1
   - _Requirements: 7.2, 19.1_
   - [ ] 22.7.a C10's next minor version (v1.4 after 4.3's v1.3): the product-type axes move to C1 (`AXIS_KEYS`; C2's `AxisKey` imports it — config is the leaf); `HrefParams['design']` and `['item']` (a variant product at the gallery) take the selection (axis → value), `href()` writes it as the query in `AXIS_KEYS` order, and `parsePublicPath()` carries it — one value per axis, value-shaped, unknown keys dropped — into the internal URL's query, since Next replaces a rewritten request's query and the GET form's selection otherwise never reaches the server render; the loader redirects a selection the product type does not take to its canonical URL (3.4 senior-fe #9)
-  - [ ] 22.7.b C2's next minor version (v1.4 after 4.3's v1.3): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
+  - [ ] 22.7.b C2's next minor version (v1.5 — 6.2.e took v1.4): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
   - [ ] 22.7.d C10: an old item link whose slug part does not decode as UTF-8 — `%FF`, a Latin-1 `caf%E9`, raw UTF-8 bytes in the request line — reaches the item route by its canonical id with a fixed ASCII slug no item has (C10 names it), never the bytes as asked, which Next cannot decode into the route's param and answers with a bare 500; so it gets the one 308, its query kept (MIGRATION.md §6; 4.1 senior-fe #12, 4.3 senior-fe #4)
+  - [ ] 22.7.e C2 v1.5 carries what 6.2.e found missing: `ImageVM.syntheticLabel` (not a boolean), a design's restoration steps on `ItemVM`, `PreviewVM` plates shaped on C9 `RoomPlate` (both framings × both crops); and C12 v1.5 `WorkSnapshot.master.objectBox`, its wording corrected
   - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; `/product/1706-caf%E9` and `/product/1706-%FF` parse to item 1706 with the fixed slug (`strict-paths.test.ts`), and on a production build the status spec sees each answer 308, never 500 (two cases in `tests/e2e/status/`, HAR's file: proposed in the report, added at merge); the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
 
 ---
@@ -1597,8 +1603,8 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 11.1, 11.7_
   - [ ] 25.2.a Orders v2 approve and capture
   - [ ] 25.2.b Webhooks and refunds
-  - [ ] 25.2.c Never offered for IDR; `minSessionTtl` declared per method; the contract suite
-  - [ ] 25.2.d **Check:** Orders v2 approve/capture, webhooks and refunds pass the contract suite; PayPal is never offered for IDR.
+  - [ ] 25.2.c Never charges rupiah: on an IDR order PayPal is charged the one USD conversion D47 defines (shown before the choice, stored on the attempt with its FX snapshot, `PriceChanged` if the rate moves, refunds at the attempt's rate); `minSessionTtl` declared per method; the contract suite
+  - [ ] 25.2.d **Check:** Orders v2 approve/capture, webhooks and refunds pass the contract suite; PayPal never charges rupiah, and an IDR order's PayPal charge is D47's stored USD conversion.
 
 - [ ] **25.3 Xendit or DOKU adapter — only if chosen (D3)** · needs: 19.2 · 👤 the owner's choice (D3)
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W1
@@ -1844,7 +1850,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 31 — Shop: stories, the bag and checkout, order tracking · Shop · needs 21, 22 · ~3.5d
 
 **Goal:** the shop's buying half on real data, built to its briefs.
-**Done when:** the shop's design pages, stories, For Business, `/ig`, showroom and gift-card pages render on real data; a bag checks out in the sandbox in IDR only — by QRIS, or by VA following the payment-pending page; a guest tracks the order and a showroom pickup is confirmed.
+**Done when:** the shop's design pages, stories, the Partnership page (D36), `/ig`, showroom and gift-card pages render on real data; a bag checks out in the sandbox in IDR only — by QRIS, or by VA following the payment-pending page; a guest tracks the order and a showroom pickup is confirmed.
 **Waves:** W1 — 31.1, 31.2 · W2 — 31.3
 
 - [ ] **31.1 Design pages, stories, the quote page, `/ig`, showroom, gift cards** · needs: 21.1, 22.4
@@ -1885,7 +1891,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 32 — Shop: polish, buyers and the shop gate 👤 · Shop · needs 30, 31 · ~3.5d
 
 **Goal:** the shop end to end, run by real buyers, and the gate over the Shop stage.
-**Done when:** the 6.1.c shop journeys pass on a phone **inside the Instagram in-app browser** — a visitor opens a collection, configures the largest giclée the seed scan allows (≈ 37 cm on the long edge at 240 ppi, D26) with a teak frame and mount, sees it to scale, adds gift wrap and a voucher, pays by QRIS (or VA, following the payment-pending page) in the sandbox in IDR only, and tracks the order as a guest; a tourist switches ship-to to the Netherlands and sees euro prices and a duties estimate; a showroom QR opens the in-showroom mode; budgets pass; axe is clean; real buyers have run the journeys; the design gate passes.
+**Done when:** the 6.1.c shop journeys pass on a phone **inside the Instagram in-app browser** — a visitor opens a collection, configures the largest giclée the seed scan allows (its ceiling from the design's crop at 240 ppi, D26, C9 `printCeilingOf()`) with a teak frame and mount, sees it to scale, adds gift wrap and a voucher, pays by QRIS (or VA, following the payment-pending page) in the sandbox in IDR only, and tracks the order as a guest; a tourist switches ship-to to the Netherlands and sees each price as a euro estimate beside the exact rupiah (D47's default) and a duties estimate; a showroom QR opens the in-showroom mode; budgets pass; axe is clean; real buyers have run the journeys; the design gate passes.
 **Waves:** W1 — 32.1 · W2 — 32.2 · W3 — 32.3
 
 - [ ] **32.1 Shop polish and end-to-end** · needs: 30.2–30.4, phase 31
