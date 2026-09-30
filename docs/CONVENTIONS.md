@@ -266,8 +266,8 @@ remember:
   `permanentRedirect()` would reach the page only as a meta tag. Next counts a
   request with no `User-Agent` as no bot at all, so for it a 404, a permanent
   redirect and the proxy's own not-found status are all lost; the proxy sets one
-  (C13 `PROXY_USER_AGENT`). The status spec (`engine/apps/gallery/e2e/status.spec.ts`,
-  moving to `tests/e2e/`) fails the day a Next release changes this.
+  (C13 `PROXY_USER_AGENT`). The status spec (`tests/e2e/status/status.spec.ts`,
+  on both apps) fails the day a Next release changes this.
 - **Nothing reads the brand at build.** The brand read awaits `connection()`
   itself (the app's `currentBrand()`): Next renders a layout and its page
   concurrently, so the layout's own `connection()` does not hold the page back.

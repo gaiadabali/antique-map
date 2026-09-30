@@ -365,8 +365,8 @@ spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-componen
   document navigation consumes a post's result (C13 `FORM_RESULT`); and **the nonce
   CSP depends on it** (a served shell would carry no
   nonce). The shell bypass is Next's implementation, not a documented promise, so
-  the status spec (`engine/apps/gallery/e2e/status.spec.ts`, moving to
-  `tests/e2e/`) asserts the 404s and permanent redirects on a production build, and
+  the status spec (`tests/e2e/status/status.spec.ts`, run on
+  both apps) asserts the 404s and permanent redirects on a production build, and
   fails the day a Next release changes it.
 - **Content is cached; what the first flush must carry is read in the page body;
   only slow reads that no form depends on stream.** Loaders for content use
