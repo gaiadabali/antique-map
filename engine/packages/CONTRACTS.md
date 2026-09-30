@@ -642,7 +642,8 @@ so it is breaking and also needs a redirect.
     ARCHITECTURE.md §9); per-request nonces (§13); the item route's 308 and the URL gate
     (MIGRATION.md §6); the not-found page without JavaScript (DESIGN-SYSTEM.md §2); brand names in
     an app's Markdown (CONVENTIONS.md §1); who owns each `@engine/http` area, each app's config
-    files, and the e2e folder (PARALLEL-TRACKS.md §1).
+    files, and the e2e folder (PARALLEL-TRACKS.md §1); what pm2 runs and why a host never binds a
+    loopback IP literal (DEPLOYMENT.md §3).
 
   Announced to every lane in C2's and C13's "Consumed by" columns, PLT newly among C13's. What
   each lane now does is 4.3's report: the apps' shells read the new `ShellVM` fields; PLT's proxy

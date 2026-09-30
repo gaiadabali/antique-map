@@ -75,8 +75,30 @@ push to main
   → health check https://<domain>/api/health — it calls getPayload(), which initialises
     Payload and applies pending migrations (web process only: RUN_MIGRATIONS=1 in a
     production build — Payload migrates on boot only when NODE_ENV=production, which
-    `next start` sets — under a Postgres advisory lock); on failure, roll back and reload
+    the standalone server.js sets — under a Postgres advisory lock); on failure, roll back
+    and reload
 ```
+
+**What pm2 runs** (TASKS.md 4.4, 4.3). The release is Next's standalone output, which nests
+the server under the app's workspace path (`outputFileTracingRoot` is the repository root),
+with the brand folder beside it (`assemble-artifact.sh`). So each target's pm2 process — `uig`
+for the gallery app, `uoei` for the emporium — runs, from its `current` release:
+
+```
+node <current>/engine/apps/<app>/server.js        <app>: gallery for uig, emporium for uoei
+
+HOSTNAME=0.0.0.0               the address server.js binds (§8): set, never left to the shell
+PORT=<the site's port>         §2's app port; server.js falls back to 3000 without it
+BRAND_ROOT=<current>/brand     the folder holding site/: brand.config.json, copy/, assets/
+```
+
+and `shared/.env` supplies the rest (§2, §8). That `server.js` sets `NODE_ENV=production`
+itself; `next start` never runs on a host. A `HOSTNAME` that is a loopback IP literal
+(`127.0.0.1`, `::1`) makes every storefront page hang with nothing logged: Next renames the
+loopback host to `localhost` when it re-reads the proxy's rewrite but builds its own URL from
+the raw `HOSTNAME`, so every rewrite looks external and is proxied to itself — which no choice
+of origin in the proxy fixes (4.4.g), so the boot check refuses such a `HOSTNAME` (TASKS.md
+5.3.d, C13 `PROXY_MATCHER`).
 
 `.gaiadeploy.yml`, using the pipeline's monorepo support (`subdir`, added
 2026-08-19 for exactly this):
