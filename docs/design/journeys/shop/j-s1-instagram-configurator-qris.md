@@ -5,7 +5,9 @@ post of a framed map, lands on the product inside Instagram's own browser, confi
 framed giclée for her living room, and pays by QRIS — all on her phone, without leaving
 Instagram if she can.
 
-**Rests on:** D31 (guests only), D26 (240 ppi: the largest size from the scan),
+**Rests on:** D31 (guests only), D26 (240 ppi: the largest size is the design's print
+ceiling — from its crop, or the object's box for a whole sheet, never the file's long
+edge; C9 v1.4 `printCeilingOf()`, CONTENT-MODEL.md §2),
 EXPERIENCE-SHOP.md §4 (the product page), §5 (the configurator: a GET form that works
 without JavaScript; the preview on intent; impossible combinations disabled with the
 reason), §7 (the bag drawer; checkout for an Indonesian destination; payment pending;
@@ -15,13 +17,17 @@ COMPLIANCE.md §1 (QRIS ≤ IDR 10 m), PAYMENTS.md §6 (OEI: Midtrans), DESIGN-S
 
 **Used by:** 13.2 (steps marked **P**: the configurator), 32.1.a e2e (inside the Instagram,
 WhatsApp and TikTok in-app browsers), 32.2 usability (at least three sessions start in
-Instagram), phase 32 **Done when** (the largest giclée the seed scan allows, teak frame
-and mount, to scale, gift wrap and a voucher, QRIS in IDR, tracked as a guest).
+Instagram), phase 32 **Done when** (the largest giclée the seed scan allows — its ceiling
+from the design's crop at 240 ppi, D26, C9 `printCeilingOf()` — teak frame and mount, to
+scale, gift wrap and a voucher, QRIS in IDR, tracked as a guest).
 
 ## Before the session
 
-- On staging: a product made from a seed scan whose resolution allows ≈ 37 cm on the
-  long edge at 240 ppi; product-type tables with **test** prices (S2); a voucher code;
+- On staging: a product made from a seed design whose print ceiling is ≈ 37 cm — its
+  crop's long edge in the master's pixels at 240 ppi (C9 `printCeilingOf()`; for a
+  whole-sheet design, the object's box), not the scan file's long edge, which also holds
+  the background, the card and the ruler; product-type tables with **test** prices (S2);
+  a voucher code;
   gift wrap switched on only if S10 confirms it (else skip that step and note it).
 - An Instagram post (a test account) or, failing that, a link opened from an Instagram
   direct message, so the page opens **in Instagram's in-app browser**.
@@ -37,7 +43,7 @@ and mount, to scale, gift wrap and a voucher, QRIS in IDR, tracked as a guest).
 | # | Surface (route) | The participant can | States to exercise |
 | - | --------------- | ------------------- | ------------------ |
 | 1 | `Ig` (`ig`) or a product tag → `Item` (`item`) | land on the product: images (framed on a wall first), title, **Reproduction** label, **Archive No.**, "From Rp …" | the page is inside Instagram's webview; the primary image is the LCP; the price reads "From" until options are chosen |
-| 2 **P** | `Item` › configurator | choose Format (Giclée), Size (the largest offered), Paper, Frame (natural teak), Mount (6 cm), Glazing | sizes above the scan's 240 ppi ceiling are absent; glass glazing disabled **with the reason** ("glass only for pickup or delivery within Bali") when ship-to is outside Bali; mount only with a frame; JavaScript off → radio groups in a GET form, the page reloads with the choice |
+| 2 **P** | `Item` › configurator | choose Format (Giclée), Size (the largest offered), Paper, Frame (natural teak), Mount (6 cm), Glazing | sizes above the design's print ceiling (its crop at 240 ppi, C9 `printCeilingOf()`) are absent; glass glazing disabled **with the reason** ("glass only for pickup or delivery within Bali") when ship-to is outside Bali; mount only with a frame; JavaScript off → radio groups in a GET form, the page reloads with the choice |
 | 3 **P** | `Item` › preview | switch Flat · On a wall (three wall colours) · **To scale** (a 1.7 m person, a 2 m sofa) | the preview loads on intent and updates in under 100 ms on the reference device; the text summary is the truth, the preview decoration; the price change is announced politely |
 | 4 **P** | `Item` › price and delivery promise | read the live price and the promise ("Made to order, ships in N days" — S7) and the shipping estimate for her district | the promise reads the holiday calendar (Nyepi, Lebaran); no day count is shown until the data has one (S7 default); "No COD — pay by QRIS or VA, confirmed instantly" |
 | 5 | `Item` › sticky buy bar | add to bag; optionally "Ask on WhatsApp" with the product and chosen options prefilled | the configuration lives in the URL, so a WhatsApp link restores it exactly |
@@ -66,7 +72,9 @@ options tell her the shop knows its craft rather than letting her order the impo
 ## Success criteria
 
 - Unaided: she configures the largest size, a teak frame and a mount, and views it to
-  scale (steps 2–3).
+  scale (steps 2–3). No size offered exceeds the design's print ceiling from its crop
+  (≈ 37 cm on the seed design) — never a ceiling computed from the scan file's long
+  edge.
 - Unaided: she pays by QRIS from the same phone (steps 8–10) without leaving for a
   desktop.
 - The price she saw in the configurator equals the bag's re-priced total, or the

@@ -29,12 +29,14 @@ spec wins and the guide is corrected.
 
 ## The image roles
 
-A work's images carry one role each (CONTENT-MODEL.md §1; C9 `IMAGE_ROLES`, in
-filmstrip order). Every gallery shot in this folder maps to one of them:
+A work's images carry one role each, set once at intake on the media record
+(`media.role`), as CONTENT-MODEL.md §1 (works' `images`) and §6 (`media`) and C9 v1.4
+`WORK_IMAGE_ROLES` define, in manifest and filmstrip order (C9 `orderImages()`).
+Every gallery shot in this folder maps to one of them:
 
 | Role | The shot | Required? (gallery) |
 | ---- | -------- | ------------------- |
-| `primary` | not a separate photograph: the recto, cropped for the page | always (derived) |
+| *primary* | **not a role** — a designation: the first photographed `recto`, cropped outside the sheet, never into it (C9 `primaryImageIndex()`; no media record carries `primary`) | always (derived) |
 | `recto` | the whole front of the sheet, flat, colour card and ruler beside it | always |
 | `verso` | the whole back | always — "blank" is information too |
 | `detail` | a close-up nearer than the recto: cartouche, title, imprint, colour, and **every defect the condition report names** | at least one; one per named defect |
@@ -47,12 +49,19 @@ filmstrip order). Every gallery shot in this folder maps to one of them:
 Requirement 6.12: the gallery's 200 most important items have at least a recto, a
 verso and one detail shot to these standards at launch.
 
-**The shop's product images have no roles yet.** CONTENT-MODEL.md §1 gives
-`products` no images field and `media.role` no value list. This folder uses these
-names for the shop — `flat` · `detail` · `in-room` · `lifestyle` · `scale` ·
-`packaging` · `showroom` — and proposes them as a CONTENT-MODEL change (a follow-up
-for ARC and SCH before 8.3 and 9.1 are built; this lane does not edit that file).
-Requirement 7.12 needs `flat`, `in-room` and `detail` for every launch product.
+**The shop's product images** carry the roles CONTENT-MODEL.md §1 (products'
+`images`) and C9 v1.4 `PRODUCT_IMAGE_ROLES` define, in the product page's order:
+`in-room` · `flat` · `detail` · `lifestyle` · `scale` · `packaging` · `showroom`. A
+product page leads with its first photographed `in-room` or `flat` image, and with a
+labelled mockup only until one exists (C9 `primaryImageIndex()`). A location's own
+photographs (the showroom) are role `showroom`, each with an area — `street` ·
+`entrance` · `wide` · `wall` · `counter` · `vignette` · `making` — as CONTENT-MODEL.md
+§2 (Stock, `locations`) and C9 `LOCATION_IMAGE_ROLES` and `LOCATION_IMAGE_AREAS`
+define. A configurator room plate is role `room-plate` (room-scenes.md). How each
+image was made is `media.provenance` — `photograph` · `composite` · `rendered` ·
+`ai-generated` (CONTENT-MODEL.md §6, C9 `MEDIA_PROVENANCES`; retouching-and-labelling.md
+§4). Requirement 7.12 needs `flat`, `in-room` and `detail` for every launch product
+(a launch report, not a publish guard).
 
 ## Assumptions (not facts — the pilot and the owner interview confirm or correct them)
 
@@ -80,19 +89,19 @@ Requirement 7.12 needs `flat`, `in-room` and `detail` for every launch product.
 | ------- | ----- |
 | 6.2.a capture standards per brand, as the owner's guide + the intake spec | written here |
 | 6.2.b the owner's pilot set, checked against the intake spec | ⛔ 👤 OA3 — the request is [pilot-set-request.md](pilot-set-request.md) |
-| 6.2.c the configurator's room scenes | written: [room-scenes.md](room-scenes.md); producing the plates needs an owner decision (who makes them) |
+| 6.2.c the configurator's room scenes | written: [room-scenes.md](room-scenes.md); who produces the plates is D46 (default: a freelance 3D artist; the owner confirms) |
 
 ## Follow-ups this folder depends on (outside its lane — routed, not done)
 
 | # | For | What |
 | - | --- | ---- |
-| 1 | ARC → SCH, before 8.3 and 9.1 | CONTENT-MODEL: images with roles on `products` (the shop's roles above) and images on `locations` (the showroom); a value list for `media.role`; `media.provenance` (photograph · composite · rendered · ai-generated) beside `aiGenerated`; on `masters`, ppi defined as **object ppi** plus the object's box, the role and the capture tier; a restoration note on `designs`; a publish guard refusing a synthetic image as an original's primary |
-| 2 | ARC | the print ceiling is computed from the object's or the design crop's pixels, never the master file's long edge (intake-spec.md §9) |
-| 3 | ARC, with 22.7 | where the plates' geometry lives (room-scenes.md §9) — one shared set for every wall-art product type |
-| 4 | ARC / MED, before OA3 arrives | a key for pilot masters: C9's `masterKey()` needs a `workUid`, which pilot items do not have yet |
+| 1 | ✅ ARC (6.2.e), SCH builds it in 8.3, 9.1 | done, as CONTENT-MODEL.md / C9 v1.4 define: products' and works' `images` (§1), locations' `images` (§2, Stock), `designs.restoration` (§2, C9 `PRINT_RESTORATIONS`), `media.role` and `media.provenance` — which replaces the old `aiGenerated` flag (§6, C9 `MEDIA_ROLES`, `MEDIA_PROVENANCES`) — the `masters` intake fields: object ppi, `objectBox`, role, provenance, capture tier and the `intake` group (§6, C9 `IntakeEntry`), and the publish guards (§9, C9 `roleAllowed()`, `provenanceAllowed()`, `primaryImageIndex()`) |
+| 2 | ✅ ARC (6.2.e), MED builds it in 15.4.c | done, as CONTENT-MODEL.md §2 (`designs.printCeiling`) and C9 v1.4 `printCeilingOf()` define: from the design's crop — the object's box for a whole sheet — never the file's long edge (D26; intake-spec.md §9) |
+| 3 | ✅ ARC (6.2.e), with 22.7 | done, as CONTENT-MODEL.md §2 (product types' `roomView`) and §6 (the `room-plates` global) and C9 v1.4 `RoomPlate` define: one shared set for every wall-art product type (room-scenes.md §9) |
+| 4 | ✅ ARC (6.2.e), MED files it in 8.3, 15.4 | done, as CONTENT-MODEL.md §6 (masters, "A capture is filed once") and C9 v1.4 `intakeMasterKey()` define: `masters/intake/<brand>/<batch>/<sha256>.<ext>`, with the batch's manifest at `intakeManifestKey()`; filed to `masterKey(workUid, …)` once the work exists (intake-spec.md §9) |
 | 5 | MED | a checking script for intake-spec.md §3's mechanical checks, before the migration's bulk tiling (36.3); a test that public derivatives carry no metadata (15.1) |
 | 6 | 6.3 (lexicon) | keys and native-reviewed values for the synthetic labels, the restoration line, "photographed in its mat" and the configurator caption |
-| 7 | the owner (new decision) | who produces the configurator plates (room-scenes.md §10) |
+| 7 | the owner (D46) | who produces the configurator plates (room-scenes.md §10) |
 | 8 | the owner (a later request) | photographs of the real frame mouldings and mount boards, before 24.1 and 30.4 |
 | 9 | this lane, later | a shot list for books, atlases and albums |
 | 10 | 6.3 / OA4 | Indonesian versions of the owner-facing files, for staff |

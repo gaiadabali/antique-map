@@ -14,7 +14,7 @@ is true of a **reproduction** and must never be true of a photograph of an
 | | Rule A — an original's photographs | Rule B — a reproduction master |
 | --- | --- | --- |
 | The file | the capture master in `masters/` and every work image made from it | the design's print file in `print-files/` — a **derived copy**, never the capture master overwritten |
-| Image roles | every work role: `primary` · `recto` · `verso` · `detail` · `raking` · `transmitted` · `framed` · `in-room` · `scale` — on the gallery's works **and** on the shop's provenance copies of them | the design's print file, and the shop's product images that show the reproduction (its own roles, README.md): `flat` · `detail` · `in-room` · `lifestyle` · `scale` · `packaging` |
+| Image roles | every work role (C9 `WORK_IMAGE_ROLES`): `recto` · `verso` · `detail` · `raking` · `transmitted` · `framed` · `in-room` · `scale` — and the primary, which is the first photographed recto, not a role of its own (C9 `primaryImageIndex()`) — on the gallery's works **and** on the shop's provenance copies of them | the design's print file, and the shop's product images that show the reproduction (C9 `PRODUCT_IMAGE_ROLES`, CONTENT-MODEL.md §1): `in-room` · `flat` · `detail` · `lifestyle` · `scale` · `packaging` |
 | Defects | **shown, never restored** — raking and transmitted light exist to reveal them | may be restored, **within the limits of §2 and disclosed** |
 | Where it shows | the gallery's item page and viewer; the shop's "The original" block | the shop's product page, the product itself |
 
@@ -66,7 +66,8 @@ what a collector would conclude about condition, it is not made.
 
 **Old images.** An image from the old site may already have been retouched; nobody
 here can tell for certain. If the owner knows an old image was cleaned up, it is
-flagged `retouched-legacy` at intake and the item goes on the re-shoot list; it may
+flagged `retouched-legacy` at intake (the master's `intake.retouching`, C9
+`RETOUCHING_STATES`; otherwise `unknown`) and the item goes on the re-shoot list; it may
 stay on the page meanwhile, with the condition report as the authority.
 
 ## 2. Rule B — reproduction masters (the shop's print files)
@@ -98,8 +99,9 @@ on every card and page (DESIGN-SYSTEM.md §10), and says what was done.
 
 **Disclosed — always, in three places:**
 
-1. **On the design record**: what was done, in a restoration note (a field designs do
-   not have yet — a follow-up for ARC and SCH, README.md);
+1. **On the design record**: what was done, in its `restoration` note — steps from
+   C9 `PRINT_RESTORATIONS` and a localised note, as CONTENT-MODEL.md §2 (designs)
+   defines;
 2. **On the product page**, beside the Reproduction label: a line such as "Digitally
    restored for print: foxing and fold lines removed" — the wording is the lexicon's
    (task 6.3) — so the owner's "we correct foxing, tears and fading" becomes a claim
@@ -122,21 +124,27 @@ option, colour or size that is not sold; making a product look larger than it is
 
 ## 4. What counts as synthetic
 
-Every image carries one of four provenance values. The first is a photograph; the
-other three are **synthetic** and are labelled.
+Every image carries one of four provenance values — `media.provenance`, required,
+no default, declared at intake (intake-spec.md H4) and set on the master and its media
+alike, as CONTENT-MODEL.md §6 and C9 v1.4 `MEDIA_PROVENANCES` define. The first is a
+photograph; the other three are **synthetic** (C9 `isSynthetic()`) and are labelled.
 
 | Provenance | What it is | Example |
 | ---------- | ---------- | ------- |
 | `photograph` | a camera photograph of the real object or product, with only the corrections above | a recto; a tote on a shoulder |
 | `composite` | a real photograph with something placed into it digitally | a print file placed into a photographed room |
-| `rendered` | a scene made in 3D or drawn, with or without a real image placed into it | the configurator's room plates |
+| `rendered` | a scene made in 3D or drawn, with or without a real image placed into it | the configurator's rendered room plates |
 | `ai-generated` | any part of the image made by an AI model | an AI room, an AI model wearing a tote |
 
-`ai-generated` also sets the media record's existing `aiGenerated` flag
-(CONTENT-MODEL.md §6). The other three values need a field `media` does not have yet
-— proposed as a follow-up (README.md).
+`media.provenance` replaces the old `aiGenerated` flag, whose meaning is its last
+value, `ai-generated` (CONTENT-MODEL.md §6).
 
 ## 5. Where synthetic images may appear
+
+On every save C9 `provenanceAllowed()` enforces the image rows below and C9
+`primaryImageIndex()` the primary (CONTENT-MODEL.md §9); the same guard keeps a
+location's photographs (the showroom) never synthetic, and a room plate's own media
+`rendered` or a `photograph` (C9 `RoomPlate`).
 
 | Where | Gallery | Shop |
 | ----- | ------- | ---- |
@@ -157,7 +165,11 @@ does not make.
 - **In the alt text:** the alt starts with the label word ("Digital mockup: …").
 - **In the caption and the filmstrip**, where the image has one.
 - **In the admin:** the media record shows its provenance; a synthetic image cannot
-  be set as an original's primary image (a publish guard, proposed as a follow-up).
+  be an original's primary image — C9 `primaryImageIndex()` takes only a photographed
+  recto, and a work without one fails its publish guard (CONTENT-MODEL.md §9).
+
+The label word is C9 `SYNTHETIC_LABEL`'s — `digital-mockup` for `composite` and
+`rendered`, `ai-generated` for `ai-generated` — in the lexicon's words (6.3).
 
 **Draft wording** — for the lexicon (task 6.3) and its native Indonesian review; not
 final copy:
