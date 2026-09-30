@@ -2,6 +2,7 @@
  * `/api/health`'s answer (TASKS.md 4.1.b, 4.6.a): it reports the environment the boot check judged,
  * fails on a failed gating check, never on the queue, and never leaks a finding's text.
  */
+import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 
 import type { BootReport } from '@engine/config/boot-check'
@@ -17,6 +18,15 @@ const TEST_BRAND_ENV = {
   TEST_STOREFRONT: 'gallery',
   SITE_URL: 'http://localhost:4206',
 }
+
+/** The same, with everything the boot check requires set, so a database outage is its only problem. */
+const COMPLETE_ENV = {
+  ...TEST_BRAND_ENV,
+  DATABASE_URL: 'postgres://app@localhost:5432/test_gallery',
+  PAYLOAD_SECRET: 'x'.repeat(40),
+  LINK_TOKEN_KEYS: `k1:${createHash('sha256').update('health-test').digest().toString('base64url')}`,
+}
+const REFUSED_DB = 'connect ECONNREFUSED postgres://user:hunter2@db:5432/ig'
 
 const report = (over: Partial<BootReport> = {}): BootReport => ({
   ok: true,
@@ -104,11 +114,9 @@ describe('checkHealth()', () => {
 
   it('logs the database error’s cause, redacted, and keeps it out of the body (senior-be #1)', async () => {
     const logged: BootReport[] = []
-    const failing = unloadedPayloadPorts(
-      new Error('connect ECONNREFUSED postgres://user:hunter2@db:5432/ig'),
-    )
+    const failing = unloadedPayloadPorts(new Error(REFUSED_DB))
     const { body } = await checkHealth({
-      ...healthPorts(failing, TEST_BRAND_ENV),
+      ...healthPorts(failing, COMPLETE_ENV),
       log: (r) => logged.push(r),
     })
     const finding = logged[0]?.problems.find(
@@ -116,8 +124,45 @@ describe('checkHealth()', () => {
     )
     expect(finding?.message).toMatch(/did not answer: .*ECONNREFUSED/)
     expect(finding?.message).not.toContain('hunter2')
-    expect(body.checks.boot).toMatchObject({ ok: false, detail: 'refused' })
     expect(JSON.stringify(body)).not.toMatch(/ECONNREFUSED|hunter2|postgres:/)
+  })
+
+  it('reports a database outage as the database’s failure alone, never a refused boot (5.3.f)', async () => {
+    const logged: BootReport[] = []
+    const { status, body } = await checkHealth({
+      ...healthPorts(unloadedPayloadPorts(new Error(REFUSED_DB)), COMPLETE_ENV),
+      log: (r) => logged.push(r),
+    })
+    expect(status).toBe(503)
+    expect(body.status).toBe('fail')
+    expect(body.checks.boot).toEqual({ ok: true, problems: 0, warnings: expect.any(Number) })
+    expect(body.checks.database).toEqual({ ok: false, detail: 'error' })
+    expect(logged[0]?.problems).toEqual([expect.objectContaining({ outage: true })])
+  })
+
+  it('still reports a configuration fault beside the outage as refused, counting the fault alone', async () => {
+    const { PAYLOAD_SECRET: _unset, ...missingSecret } = COMPLETE_ENV
+    const { status, body } = await checkHealth(
+      healthPorts(unloadedPayloadPorts(new Error(REFUSED_DB)), missingSecret),
+    )
+    expect(status).toBe(503)
+    expect(body.checks.boot).toMatchObject({ ok: false, problems: 1, detail: 'refused' })
+    expect(body.checks.database).toEqual({ ok: false, detail: 'error' })
+  })
+
+  it('fails the database closed when the boot check saw an outage its port did not', async () => {
+    const outage = {
+      subject: 'DATABASE_URL',
+      message: 'the database did not answer',
+      outage: true as const,
+    }
+    const { status, body } = await checkHealth(
+      ports({ boot: async () => report({ ok: false, problems: [outage] }) }),
+    )
+    expect(status).toBe(503)
+    expect(body.checks.boot).toMatchObject({ ok: true, problems: 0 })
+    expect(body.checks.database).toEqual({ ok: false, detail: 'unreachable' })
+    expect(body.checks.queue).toEqual({ ok: false, detail: 'no-database' })
   })
 
   it('fails closed, and still answers, when a port throws', async () => {
