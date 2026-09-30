@@ -23,9 +23,12 @@ run them later — proposed as a follow-up for MED, before the migration's bulk 
 - **Object ppi** — pixels per inch **at the object's real size**: object long edge (px)
   ÷ the object's long edge in inches. Measured from the ruler in the frame, and
   cross-checked against the catalogue's dimensions. It is **never** read from the
-  file's DPI tag, which cameras set arbitrarily (often 72).
+  file's DPI tag, which cameras set arbitrarily (often 72). Recorded as the master's
+  `objectPpi` beside its `objectBox` (CONTENT-MODEL.md §6; C9 `objectPpi()`, `PixelBox`).
 - **Reference frame** — a photo with the colour card taken at the start of a scene, for
-  the shop's life shots, where the card cannot stay in every frame.
+  the shop's life shots, where the card cannot stay in every frame. Handed over as
+  `ref` (handover.md §2) and kept under the master role `reference` — never published
+  (C9 `MasterRole`).
 - **Legacy image** — an image that already exists (the old site's, the owner's older
   files), assessed but not held to this spec (§8).
 
@@ -39,6 +42,11 @@ Each image gets one verdict — **the worst finding wins**.
 | **Fix — us** | a shortcoming we correct at intake without the owner | we rename, rotate, convert or crop outside the object; the owner is told, nothing asked |
 | **Fix — owner** | a good file with one specific shortcoming only a re-take cures | used for design work meanwhile, **not published under its role** until re-taken; one sentence says what to change |
 | **Reject** | unusable, or it breaks an honesty rule | not used and not kept; the reason, and how to avoid it next time |
+
+The master records a kept file's verdict as C9 `INTAKE_VERDICTS` define
+(CONTENT-MODEL.md §6): Pass and Fix — us are `pass` (Fix — us with its note), Fix —
+owner is `fix-owner` (nothing made from it publishes under its role, §9 there), a
+legacy image is `legacy` (§8); a Reject is not kept, so it has no record.
 
 **Anything that breaks an honesty rule is a reject, whatever its quality** — a
 retouched defect on an original, a person in a gallery shot, a synthetic image
@@ -65,7 +73,7 @@ passed off as a photograph. The rules are retouching-and-labelling.md.
 | H1 | Not retouched (rule A) | the condition report's named defects are visible; no clone or smoothing patterns at 100%; the Software tag | nothing touched on the object | — | — | any correction the retouching rules forbid |
 | H2 | People (gallery) | anyone or any hand in the frame | none | — | — | a person or hand in a gallery shot |
 | H3 | Consent (shop) | a recognisable face | none, or consent on file | — | a face without consent on file — held until it arrives | — |
-| H4 | Provenance declared | photograph · composite · rendered · ai-generated | declared and true | — | undeclared — held until declared | declared a photograph but synthetic |
+| H4 | Provenance declared | `media.provenance`: photograph · composite · rendered · ai-generated (CONTENT-MODEL.md §6, C9 `MEDIA_PROVENANCES`), and one the role allows on its subject (C9 `provenanceAllowed()`) | declared and true | — | undeclared — held until declared | declared a photograph but synthetic |
 
 ## 4. By image role — the gallery
 
@@ -81,9 +89,9 @@ ceiling is smaller than the sheet.
 | `raking` | as the recto, or frame ≥ 2400 px for a raking detail | as the recto | every frame | one light, 10–20° above the surface, from one side; relief visible; other lights off |
 | `transmitted` | frame ≥ 2400 px | ≥ 150 | exempt — the ruler in the frame | no front light; never a mounted photograph |
 | `framed` | frame ≥ 2400 px | — | every frame | the whole frame, square on; no room, lamp or person reflected in the glazing |
-| `in-room` | frame ≥ 2400 px | — | a reference frame | no people; provenance declared; synthetic labelled; never the primary |
+| `in-room` | frame ≥ 2400 px | — | a reference frame | no people; provenance declared; synthetic labelled (`composite` or `rendered`, never `ai-generated` on a work); never the primary |
 | `scale` | frame ≥ 2400 px | — | every frame | ruler and an A4 sheet fully visible |
-| `primary` | — | — | — | not handed over: a crop of the passing recto; never synthetic, never a detail |
+| *primary* | — | — | — | not a role and not handed over: C9 `primaryImageIndex()` picks the first photographed, passing `recto`, cropped outside the sheet; never synthetic, never a detail, never a photograph of its own |
 
 Where a row says only "frame ≥ 2400 px", 1600–2399 px is fix — owner and below
 1600 px is reject.
@@ -107,7 +115,10 @@ one `detail`. The per-item summary (§7) says whether the item has it.
 
 ## 6. By image role — the shop
 
-The shop's roles are proposed, not yet in CONTENT-MODEL.md (README.md).
+The shop's roles as CONTENT-MODEL.md §1 (products' `images`) and C9 v1.4
+`PRODUCT_IMAGE_ROLES` define; a location's photographs are role `showroom` with an
+area (CONTENT-MODEL.md §2, C9 `LOCATION_IMAGE_ROLES`, `LOCATION_IMAGE_AREAS`) and are
+always photographs (C9 `provenanceAllowed()`).
 
 | Role | Frame long edge | Colour card | Also |
 | ---- | --------------- | ----------- | ---- |
@@ -121,8 +132,10 @@ The shop's roles are proposed, not yet in CONTENT-MODEL.md (README.md).
 
 ## 7. What the owner receives
 
-One line per image, one summary per item, in the handover folder's `_intake` report —
-an invented example:
+One line per image, one summary per item, in the handover folder's `_intake` report.
+The same judgements are recorded per file as a C9 `IntakeEntry` in the batch's
+`IntakeManifest`, kept beside the files at `intakeManifestKey()` (CONTENT-MODEL.md §6)
+— an invented example of the report:
 
 ```
 M-9999_recto_01.cr3   Pass   6100 px on the sheet · 329 ppi · reproduction-ready · ΔE00 2.9
@@ -136,18 +149,23 @@ M-9999                launch set: yes (recto, verso, 3 details) · raking: yes �
 The old site's images (sampled at 3543 × 2840 px, one per item, MIGRATION.md §1) are
 what 2,090 items will launch with. They are **assessed, never rejected** at migration:
 each records its object long edge, object ppi where the dimensions are known, a print
-ceiling **from its object pixels**, "colour unverified — no card", and "retouching
-unknown" — or `retouched-legacy` if the owner knows it was cleaned
-(retouching-and-labelling.md §1). The pilot's typical migrated item is assessed this
+ceiling **from its object's box** (C9 `printCeilingOf()`), "colour unverified — no
+card", and retouching `unknown` — or `retouched-legacy` if the owner knows it was cleaned
+(retouching-and-labelling.md §1; C9 `RETOUCHING_STATES`) — under the verdict `legacy`.
+The pilot's typical migrated item is assessed this
 way, so the comps are drawn on the quality most pages will really have.
 
 ## 9. After a pass
 
-1. **The file as received** goes to the private masters bucket
-   (`masters/<workUid>/<checksum>.<ext>`, C9), recording what CONTENT-MODEL.md §6 asks
-   — pixels, ppi (**object ppi**, §1), colour profile, checksum — and, proposed as a
-   follow-up, the role, the provenance, the capture tier and the object's box in
-   the frame.
+1. **The file as received** goes to the private masters bucket, recording what
+   CONTENT-MODEL.md §6 asks of a `masters` record — frame pixels, colour profile,
+   checksum (SHA-256), and the intake's `role`, `provenance`, `objectBox`, `objectPpi`
+   (**object ppi**, §1), `captureTier` and `intake` group (C9 `IntakeEntry`). A capture
+   received before its work exists — the pilot set, a migration batch not yet loaded —
+   lands at `masters/intake/<brand>/<batch>/<sha256>.<ext>` (C9 `intakeMasterKey()`),
+   and is filed once to `masters/<workUid>/<sha256>.<ext>` (C9 `masterKey()`) when its
+   work exists; a capture of no work (a showroom photograph, a room plate's render)
+   keeps its intake key.
 2. **The processed image** — colour-corrected from the card, straightened, cropped
    outside the object — becomes the media upload the derivatives and tiles are made
    from (C9). The capture master is never overwritten; a print file for the shop is a
@@ -155,5 +173,8 @@ way, so the comps are drawn on the quality most pages will really have.
 3. **Nothing public carries the file's metadata** — no GPS, no serial numbers, no
    editing history. The derivatives and tiles are written without it (a test proposed
    for MED).
-4. **The print ceiling comes from the object's pixels or the design's crop**, never
-   from the file's long edge, which includes the background and the card.
+4. **The print ceiling comes from the design's crop — the object's box for a whole
+   sheet** — at 240 ppi (D26), as CONTENT-MODEL.md §2 (`designs.printCeiling`) and C9
+   v1.4 `printCeilingOf()` define; never from the file's long edge, which includes the
+   background, the card and the ruler (a 3543 px frame whose sheet spans 3300 px gives
+   349 mm, not 375).

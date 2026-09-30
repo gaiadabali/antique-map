@@ -19,8 +19,11 @@ It is the input to 30.4.b (the preview) and 24.1.c (the wizard's mockups).
 
 ## 2. How many plates
 
-**Six master plates: three wall colours × two framings.** Each is delivered in two
-crops (§9), so the preview has twelve images to choose from, in the C9 ladder's widths.
+**Six master plates: three wall colours × two framings** (C9 `ROOM_FRAMINGS`: `near`,
+`wide`). Each is delivered in two crops (§9; C9 `ROOM_CROPS`: `landscape`, `square`),
+so the preview has twelve images to choose from, in the C9 ladder's widths. Each
+plate's `maxOuterLongEdgeCm` is its framing's limit below, and C9 `framingFor()` picks
+the framing with the smallest limit a print fits under.
 
 | Framing | Wall width shown | Used when the framed outer long edge is | Why |
 | ------- | ---------------- | --------------------------------------- | --- |
@@ -82,6 +85,7 @@ out of scope at launch.
 | Lens (full-frame equivalent) | 40 mm (35–50 mm accepted) | 40 mm |
 | Distance to the wall (at 40 mm) | ≈ 2.0 m | ≈ 3.6 m |
 | The art box | 75 × 75 cm, **centred at 145 cm** — a gallery hang | 125 × 125 cm, its **bottom 22 cm above the sofa back** — larger art grows upward |
+| Anchor mode (C9 `ROOM_ANCHORS`) | `centre` — the art's centre on the anchor | `bottom` — the middle of the art's bottom edge on the anchor |
 
 A longer lens from further away keeps the furniture in front of the wall closer to the
 wall's scale; a wide lens exaggerates it. Tilt is never used; a render may shift its
@@ -133,20 +137,30 @@ Every plate is `rendered` or, if photographed with a print placed into it, `comp
 
 ## 9. Files and data
 
-- **Master:** 6000 × 4000 px (3:2), 16-bit TIFF, embedded profile, kept privately.
-  At the wall plane: near ≈ 33 px/cm, wide ≈ 19 px/cm.
-- **Crops:** 3:2 (desktop) and 1:1 (the phone's pinned preview), both keeping the art
-  box with a margin; the same scale, different offsets.
+- **Master:** 6000 × 4000 px (3:2), 16-bit TIFF, embedded profile, kept privately —
+  a capture of no work, so it keeps its intake key, `masters/intake/<brand>/<batch>/…`
+  (C9 `intakeMasterKey()`, CONTENT-MODEL.md §6). At the wall plane: near ≈ 33 px/cm,
+  wide ≈ 19 px/cm.
+- **Crops:** `landscape` 3:2 (desktop) and `square` 1:1 (the phone's pinned preview),
+  both keeping the art box with a margin; the same scale, different offsets. Each crop
+  is a `media` record of role `room-plate`, and its geometry is measured on that file:
+  a crop re-rendered or re-uploaded is left out of the set until re-measured.
 - **Previews:** AVIF and WebP in the C9 ladder's widths, so one image loader serves
   them; a pilot target of ≤ 150 KB for the 1600 px AVIF, to be confirmed in 30.4.
-- **Data per plate** (a proposal — where it lives is ARC's decision, below): framing;
-  wall colour (name, hex, L\*a\*b\*); crop boxes; pixels per cm at the wall; the
-  anchor point and mode (centred / bottom + gap); the art box; light direction and
-  shadow parameters; props with sizes; provenance; the caption's lexicon key.
+- **Data per plate**, as CONTENT-MODEL.md §6 (the `room-plates` global) and C9 v1.4
+  `RoomPlate` define: `key` (`<framing>-<wall>`), `framing`, `maxOuterLongEdgeCm`,
+  `wallWidthCm`, `wall` `{ name, hex, lab }`, `anchorMode` (`centre` · `bottom`), one
+  `crops[]` entry per crop — `crop`, its media's `assetId`, `widthPx` × `heightPx`,
+  `pxPerCm` at the wall plane, the `anchor` point and the `artBox`, all in that crop's
+  own pixels (C9 `RoomPlateCrop`) — `lightFrom`, `shadow` `{ offsetXPerCm,
+  offsetYPerCm, blurPerCm, opacity }`, `props[]` with sizes, and `provenance`. The
+  caption's lexicon key is 6.3's (TASKS.md 6.3.f).
 
-CONTENT-MODEL.md §2 gives product types `mockupScenes` (→ media), but a media record
-holds none of this geometry, and all wall-art product types share the same six plates.
-Both are follow-ups for ARC, with C2's configurator view model (TASKS.md 22.7).
+The set is **one shared global for every wall-art product type**: a type opts in with
+`roomView` (CONTENT-MODEL.md §2) and has no plates of its own — the earlier per-type
+`mockupScenes` is gone. The preview (C2 `PreviewVM`, TASKS.md 22.7, 30.4) and the
+wizard's mockups (24.1.c) both place a print with C9 `framingFor()` and `placeArt()`,
+so a mockup and the live preview hang it at the same place.
 
 ## 10. Photographed or rendered
 
@@ -161,10 +175,11 @@ Both are follow-ups for ARC, with C2's configurator view model (TASKS.md 22.7).
 A seventh, **photographed** plate of a showroom wall — real place, real light — would
 add trust later. It is optional in the pilot request.
 
-**Who makes them is open.** D19 covers the owner's photographs of items; nobody is
-booked to model rooms or retouch plates. Proposed as an owner decision: a freelance 3D
-artist renders the six (recommended); or the owner photographs one room to §5–§6 and
-it is recoloured; or launch with the near plates only.
+**Who makes them is D46** (open, the owner's budget). D19 covers the owner's
+photographs of items; nobody is booked to model rooms or retouch plates. D46's default:
+a freelance 3D artist renders the six (recommended); the alternatives are the owner
+photographing one room to §5–§6 and recolouring it, or launching with the near plates
+only.
 
 ## 11. Frames and mounts are photographed, not drawn
 
@@ -185,4 +200,7 @@ comp is never judged on plate quality.
 - Nothing overlaps the art box; no artwork, logo or text anywhere in the plate.
 - The three colours of one framing differ **only** in the wall — the props and light
   do not move when a buyer switches colour.
-- Its provenance recorded and its caption key set.
+- Its provenance recorded (`rendered` or `photograph`, C9 `provenanceAllowed()`) and
+  its caption key set.
+- Each crop's `pxPerCm`, `anchor` and `artBox` measured on the crop's own file, the art
+  box inside the image (C9 `boxFits()`, CONTENT-MODEL.md §9).

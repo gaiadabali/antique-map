@@ -11,14 +11,19 @@ address separate from the buyer's, a note preview, a packing slip with prices hi
 target delivery date; digital gift cards sent to the recipient by email or WhatsApp on a
 chosen date, and a balance-check page), COMMERCE.md §8 (DAP duties shown before payment;
 at launch export ships from Bali, D23; the holiday calendar), DESIGN-SYSTEM.md §2
-(`GiftCard`), D31 (guest), D2 (the charged currency).
+(`GiftCard`), D31 (guest), D2 and D47 (the charged currency — D47's default for a
+buyer abroad: one rupiah price list, a card charged the exact rupiah, the market's
+currency only an "≈" estimate beside it, PayPal charged one USD conversion shown before
+the choice; COMMERCE.md §3).
 
 **Used by:** 32.1.a e2e, 32.2 usability (the gift-buyer session), phase 32 **Done when**
 (gift wrap).
 
 ## Before the session
 
-- On staging: a framed product; the Australia market list (test prices, S2); gift note
+- On staging: a framed product; the one rupiah price list (test prices, S2) with
+  Australia as an estimate-only market (the day's AUD rate for the "≈" figure; the USD
+  rate and buffer for PayPal — D47's default); gift note
   and hide-prices on; gift wrap only if S10 confirms it; the digital gift card product
   (`commerce.giftCards`); the holiday calendar holding one date inside the three weeks.
 - DHL Express sandbox or the flat table for Australia; the mail catcher open (the
@@ -34,12 +39,12 @@ at launch export ships from Bali, D23; the holiday calendar), DESIGN-SYSTEM.md �
 
 | # | Surface (route) | The participant can | States to exercise |
 | - | --------------- | ------------------- | ------------------ |
-| 1 | `Browse` › Gifts (by recipient, occasion, price) | find gift ideas; "under €50"-style presets per market currency | ship-to set to Australia changes the presets and prices; "From" prices only for variants that can ship there |
+| 1 | `Browse` › Gifts (by recipient, occasion, price) | find gift ideas; "under A$50"-style presets, which read the "≈" estimate (display only) | ship-to set to Australia changes the presets and adds the "≈ A$" estimate beside each rupiah price; "From" prices only for variants that can ship there |
 | 2 | `Item` › configurator › Gift | add a gift note, **hide prices**, optionally wrapping | each gift option is a priced line and says so; wrap per line or per order, and says which |
 | 3 | `Item` › delivery promise | read whether it can arrive **by the date** | made to order + international transit + the holiday calendar; a date that cannot be met is said plainly, with a faster option or a **digital gift card** suggested |
-| 4 | `Cart` | see the gift options on the line | the free-shipping bar recomputes in the market currency |
+| 4 | `Cart` | see the gift options on the line | the totals stay in rupiah with the "≈ A$" beside them; the free-shipping bar recomputes for the destination |
 | 5 | `Checkout` › Delivery | enter **her mother's address separately** from her own; a target delivery date; **preview the gift note** | the recipient's address in Australian shape; the packing slip with prices hidden |
-| 6 | `Checkout` › Shipping method, Payment | see shipping and **duties estimated, paid by the recipient on arrival (DAP)**, before paying | the duty line is explicit because the recipient is not the buyer; the currency charged is named |
+| 6 | `Checkout` › Shipping method, Payment | see shipping and **duties estimated, paid by the recipient on arrival (DAP)**, before paying | the duty line is explicit because the recipient is not the buyer; the currency charged is named — the card the exact rupiah, PayPal its USD charge, shown before she picks it (D47's default) |
 | 7 | `Order` and email | see the order; tracking goes to **the buyer**, not the recipient | the surprise is kept: no email to the recipient unless chosen |
 
 **Alternate path — a digital gift card:** `GiftCard` (`gift-card`) → choose an amount →
