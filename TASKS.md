@@ -21,7 +21,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/4 | 0/22 | 1 | `░░░░░░░░░░`   0% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 0/4 | 0/22 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
@@ -157,6 +157,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 5·W1 | 5.1 Staging on Helios (5.1.a only — the script, no Helios access) | devops | `antique-map-p5-har` / `feat/p5-har` | 2026-09-30 | ⛔ 👤 OA8 for 5.1.b–d |
+| 5·W1 | 5.3 The proxy's v1.3 answers | senior-be | `antique-map-p5-plt` / `feat/p5-plt` | 2026-09-30 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -561,7 +563,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 **Done when:** `pnpm dev --brand indies-gallery` and `--brand old-east-indies` serve two differently themed shells in EN and ID from two databases; `/admin` logs in on both; `test` runs on both apps; the Cache Components spike's verdict is recorded; every gate fails on a planted violation; both staging hostnames serve a CI-built release.
 **Waves:** W1 — 5.1, 5.3 · W2 — 5.4 · W3 — 5.2 · closes **M0**
 
-- [ ] **5.1 Staging on Helios 👤** · needs: 2.3, 4.1
+- [ ] **5.1 Staging on Helios 👤** · needs: 2.3, 4.1 — 🔄 5·W1
   - **Lane** HAR · **Agent** devops · **Wave** W1
   - **Owns** `scripts/ops/**`
   - **Read** DEPLOYMENT.md §2, §3 (the pm2 entry and the bind), §9; KOI docs/ops/helios-koi-setup.sh; memory: Helios writes need the owner's go-ahead each time
@@ -583,7 +585,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 5.2.e File every failure as a subtask of the task that owns it, and re-run the clause after the fix
   - [ ] 5.2.f **Check:** every clause of the **Done when** of phases 1–5 is evidenced in `docs/gates/foundation.md`, with no failure left open.
 
-- [ ] **5.3 The proxy's v1.3 answers: a missing User-Agent, the item's query, its not-found's 404** · needs: 4.3
+- [ ] **5.3 The proxy's v1.3 answers: a missing User-Agent, the item's query, its not-found's 404** · needs: 4.3 — 🔄 5·W1
   - **Lane** PLT · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/http/src/proxy/**`, `engine/packages/config/src/boot-check/**`
   - **Read** C13 v1.3 (`engine/packages/http/src/manifest/proxy.ts`); ARCHITECTURE.md §9, §11, §13; DESIGN-SYSTEM.md §2 (NotFound and Gone without JavaScript); DEPLOYMENT.md §3; `reviews/4.3-senior-be.md` #6, #7
