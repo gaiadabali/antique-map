@@ -20,7 +20,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
-| **4** App shells and the Cache Components spike | Foundation | 3 | 🔄 in progress | 0/2 | 0/12 | 0 | `░░░░░░░░░░`   0% |
+| **4** App shells and the Cache Components spike | Foundation | 3 | 🔄 in progress | 0/2 | 4/12 | 0 | `███░░░░░░░`  33% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/2 | 0/10 | 1 | `░░░░░░░░░░`   0% |
 | **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | · not started | 0/3 | 0/10 | 2 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **12/165** | **77/746** | **47** | `█░░░░░░░░░`  10% |
+| **All** | 44 phases | | | **12/165** | **81/746** | **47** | `█░░░░░░░░░`  11% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -476,10 +476,10 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Owns** `engine/tooling/tsconfig/package.tsconfig.json`, the `compilerOptions.types` line of `engine/packages/{config,cms,http,i18n}/tsconfig.json`, `engine/tooling/client-safe/**`, the `check:client-safe` script and its step in `pnpm verify`, `engine/packages/i18n/test/client-safe.test.ts`, `.github/workflows/ci.yml` (the `lighthouse` job's `env` only)
   - **Read** CONVENTIONS.md §6, DESIGN-SYSTEM.md §7, CONTRACTS.md (C1 `@engine/config/constants`)
   - _Requirements: 19.1_
-  - [ ] 4.2.a `check:client-safe`: the walker of `engine/packages/i18n/test/client-safe.test.ts` (static and dynamic imports, `@engine/*` packages under the browser conditions), moved into the tool and imported back by that test, run over every module under `engine/` whose first statement is `'use client'`; it fails on a reach of `zod`, `@engine/config/{schema,routes,loader,validate,boot-check}`, `node:*`, `payload`, `@payloadcms/*` or `@engine/cms`, naming the import chain
-  - [ ] 4.2.b a CI test plants each violation — direct, through a relative import, through a workspace package, through a dynamic `import()` — and sees it fail, then pass once removed
-  - [ ] 4.2.d `ci.yml`'s `lighthouse` job sets `env: LOCAL_PRODUCTION_BUILD: '1'` (it serves a production build at `localhost:4200`, which C1 v1.2 judges production without the opt-in — 3.5's report)
-  - [ ] 4.2.e type-check as CI does on every platform: `"types": []` in `engine/tooling/tsconfig/package.tsconfig.json` and `"types": ["node"]` in the packages that declare `@types/node` (config, cms, http, i18n), so an ancestor folder's `@types` never leaks in on a workstation (the leak behind 3.4's red CI and 2.3's first four runs); `pnpm typecheck` green on Windows and in a `node:22.13.0` container
+  - [x] 4.2.a `check:client-safe`: the walker of `engine/packages/i18n/test/client-safe.test.ts` (static and dynamic imports, `@engine/*` packages under the browser conditions), moved into the tool and imported back by that test, run over every module under `engine/` whose first statement is `'use client'`; it fails on a reach of `zod`, `@engine/config/{schema,routes,loader,validate,boot-check}`, `node:*`, `payload`, `@payloadcms/*` or `@engine/cms`, naming the import chain
+  - [x] 4.2.b a CI test plants each violation — direct, through a relative import, through a workspace package, through a dynamic `import()` — and sees it fail, then pass once removed
+  - [x] 4.2.d `ci.yml`'s `lighthouse` job sets `env: LOCAL_PRODUCTION_BUILD: '1'` (it serves a production build at `localhost:4200`, which C1 v1.2 judges production without the opt-in — 3.5's report)
+  - [x] 4.2.e type-check as CI does on every platform: `"types": []` in `engine/tooling/tsconfig/package.tsconfig.json` and `"types": ["node"]` in the packages that declare `@types/node` (config, cms, http, i18n), so an ancestor folder's `@types` never leaks in on a workstation (the leak behind 3.4's red CI and 2.3's first four runs); `pnpm typecheck` green on Windows and in a `node:22.13.0` container
   - [ ] 4.2.c **Check:** `pnpm verify` runs `check:client-safe`; each planted violation fails it with its import chain and passes once removed; the i18n root entry and every `'use client'` module in the apps pass.
 
 ---
@@ -2423,6 +2423,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-09-30 — 4.2 merged to `main` (ae719b7, branch d8e8829); `pnpm verify` green on the merge (`check:client-safe` now a step). 4.2.a, b, d, e ticked: the walker moved to `engine/tooling/client-safe/` and refuses zod, the server entries of `@engine/config`, `node:*`, Payload and `@engine/cms`, naming the chain; planted direct, relative, workspace and dynamic-import violations fail then pass; `LOCAL_PRODUCTION_BUILD=1` on the lighthouse job; `"types": []` in the template and `["node"]` in config, cms, http, i18n — typecheck green on Windows and in `node:22.13.0`. 4.2.c waits for the apps (4.1). Found: node 22.13.0's bundled corepack fails npm's signature check (`npm i -g corepack@latest` first) — for 5.1/DEPLOYMENT. Follow-ups: a named `Client-safe gate` step in `ci.yml`'s static job (HAR); a bundle-level check for third-party deps that bundle zod or Node built-ins (after 22); consider refusing `@engine/config/link-keys` in client code.
 - 2026-09-30 — **phase 4 opened** — 4·W1 dispatched: 4.1 (senior-fe, lane WEB, `feat/p4-web`) and 4.2 (medior, lane HAR, `feat/p4-har`); tasks-lint green for the wave, no shared **Owns**. The release clause of 4.1.g (a push to `production`, which Helios's poller reads) is held for the owner's OK after the merge; the agent proves the artifact locally with `assemble-artifact.sh`. Reviewer: senior-fe for 4.1.
 - 2026-09-30 — ✅ **phase 3** — the config spine and the Payload boot. Each brand's config loads and a broken one is refused naming the field (3.1, qa: 16 planted breakages); `bootCheck()` refuses a missing secret, a malformed link-key ring, a sandbox key in production and a loopback production build without the opt-in (3.1, 3.4); `/admin` signed in against the ig and oei databases through a production build made with no database, and `schema-hash` is equal across all four (3.2, qa); contracts at v1.2 (3.4); the generators, migrate hook and route parity see the CMS (3.5). CI green at 58bf19f (run 36656199326), the four databases migrated on Linux and the real-database tests run there. The `/admin`-in-both-apps and `/api/health` clauses of 3.2 moved to 4.1.g. Follow-ups carried: 4.2.e (no ancestor `@types` on a workstation), 4.2.d (Lighthouse opt-in), the login rate limit (41.1, senior-db N8 and qa), a first-admin CLI or seed before a deployed database is reachable (SCH), DOM to confirm `idempotency_keys.response` nullable (17.1/18.2). The owner to check GitHub billing: run 36587076650 never started. **Phase 4 can open**; phase 6 and 7 wait on it and on OA9.
 - 2026-09-30 — ✅ 3.2, 3.4, 3.5 (58bf19f) — merged at baff54b, the `URL` type fix at 58bf19f; see the phase line above.
