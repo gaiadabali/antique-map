@@ -6,12 +6,18 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const COMMENTS = /\/\*[\s\S]*?\*\/|\/\/[^\n]*/g
-const FROM = /\bfrom\s*(['"])([^'"]+)\1/g
+/** `… from 'x'`, a side-effect `import 'x'`, and `import('x')` / `require('x')` (qa's 5.4 gate, B1). */
+const SPECIFIERS = [
+  /\bfrom\s*(['"])([^'"]+)\1/g,
+  /\bimport\s*(['"])([^'"]+)\1/g,
+  /\b(?:import|require)\s*\(\s*(['"`])([^'"`]+)\1\s*\)/g,
+]
 
-/** Every module specifier a mount's `import … from`/`export … from` names, comments stripped. */
+/** Every module specifier a mount names, comments stripped: a mount re-exports one, and only it. */
 export function mountSpecifiers(file) {
   const code = readFileSync(file, 'utf8').replace(COMMENTS, '')
-  return [...new Set([...code.matchAll(FROM)].map((match) => match[2]))]
+  const found = SPECIFIERS.flatMap((pattern) => [...code.matchAll(pattern)])
+  return [...new Set(found.sort((a, b) => a.index - b.index).map((match) => match[2]))]
 }
 
 /** The module `@engine/http/<area>` resolves to (`@engine/http`'s `./*` export: `src/<area>/route.ts`). */
