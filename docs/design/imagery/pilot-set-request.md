@@ -1,5 +1,7 @@
 # Request to the owner — the pilot photographs
 
+*Bahasa Indonesia:* [pilot-set-request.id.md](pilot-set-request.id.md)
+
 **For:** the owner of Indies Gallery and Old East Indies · **From:** the design team ·
 **Prepared:** 1 October 2026 · **Status:** not yet sent (TASKS.md OA3, 6.2.b)
 
