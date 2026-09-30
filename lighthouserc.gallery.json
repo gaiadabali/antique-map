@@ -4,8 +4,7 @@
       "url": ["http://localhost:4200/", "http://localhost:4200/product/1706-caf%C3%A9-de-java"],
       "numberOfRuns": 3,
       "settings": {
-        "formFactor": "mobile",
-        "throttlingMethod": "devtools"
+        "formFactor": "mobile"
       }
     },
     "assert": {
