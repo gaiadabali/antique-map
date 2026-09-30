@@ -57,9 +57,12 @@ const resolveItem = cache(async (locale: string, publicId: number | null) => {
   if (record === null) notFound()
   const href = await brandHref()
   const canonical = href('item', { publicId: record.publicId, slug: record.slug }, locale)
+  const asked = await headers()
+  // The public query rides on the redirect from the proxy's header, never from `searchParams`.
   const redirectTo = canonicalRedirect(
-    (await headers()).get(PROXY_REQUEST_HEADERS.publicPath),
+    asked.get(PROXY_REQUEST_HEADERS.publicPath),
     canonical,
+    asked.get(PROXY_REQUEST_HEADERS.publicSearch),
   )
   if (redirectTo !== null) permanentRedirect(redirectTo)
   return { config, locale, record, canonical }

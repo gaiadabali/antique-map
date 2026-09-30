@@ -9,6 +9,12 @@
  * - **The address is canonical when the public path the proxy passed on is, byte for byte, the one
  *   `href()` spells.** Anything else answers one permanent redirect to it: an old link's slug, an
  *   encoded or odd spelling, a missing slug.
+ * - **The redirect carries the item's public query on** (C13 `PROXY_REQUEST_HEADERS.publicSearch`,
+ *   which the proxy sets on the item route's rewrite alone, `''` when there is none), so a stale
+ *   slug's 308 keeps an old link's `utm_*` or an ad's click id (TASKS.md 5.3). It is read from the
+ *   request header, never `searchParams` — the rewrite replaced the query with the canonical
+ *   state's — and it never decides whether the address is canonical: only the path does, so
+ *   `/product/1726-bali?utm_source=x` is a 200, not a redirect to itself.
  */
 
 /** The public id, or `null` when the segment names none (a leading zero, no digits, too large). */
@@ -28,9 +34,24 @@ export class MissingPublicPathError extends Error {
  * route cannot tell which address was asked for: it refuses (senior-fe #10), never redirecting the
  * canonical address to itself in a loop.
  */
-export function canonicalRedirect(publicPath: string | null, canonical: string): string | null {
+export function canonicalRedirect(
+  publicPath: string | null,
+  canonical: string,
+  publicSearch: string | null = '',
+): string | null {
   if (publicPath === null || publicPath === '') {
     throw new MissingPublicPathError('the proxy passed no x-public-path: the request bypassed it')
   }
-  return publicPath === canonical ? null : canonical
+  return publicPath === canonical ? null : `${canonical}${carriedQuery(publicSearch)}`
+}
+
+/**
+ * The query a redirect carries: `URL.search` as the proxy copied it — `?` and printable ASCII, a
+ * WHATWG serialisation being percent-encoded — or nothing. Anything else did not come from the
+ * proxy's `URL.search` (no fragment, no space, no control character), so it is dropped rather
+ * than written into a `Location`.
+ */
+function carriedQuery(publicSearch: string | null): string {
+  // `?`, then printable ASCII but `#` (0x21–0x7e without 0x23).
+  return publicSearch !== null && /^\?[\x21\x22\x24-\x7e]+$/.test(publicSearch) ? publicSearch : ''
 }
