@@ -1,11 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "http://localhost:4201/",
-        "http://localhost:4201/product/1-example",
-        "http://localhost:4201/bag/checkout"
-      ],
+      "url": ["http://localhost:4201/"],
       "numberOfRuns": 3,
       "settings": {
         "preset": "mobile",

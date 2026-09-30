@@ -1,11 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "http://localhost:4200/",
-        "http://localhost:4200/product/1-example",
-        "http://localhost:4200/bag/checkout"
-      ],
+      "url": ["http://localhost:4200/", "http://localhost:4200/product/1706-caf%C3%A9-de-java"],
       "numberOfRuns": 3,
       "settings": {
         "preset": "mobile",

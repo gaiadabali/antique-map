@@ -5,3 +5,6 @@ docs/design/input/
 # `pnpm check:generated`: formatting it would make every regeneration a diff
 # (PARALLEL-TRACKS.md §2, TASKS.md 3.5.c).
 **/importMap.js
+
+# Written by `next typegen`/`next build` in each app; gitignored too (TASKS.md 4.4.d).
+**/next-env.d.ts
