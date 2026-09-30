@@ -7,6 +7,8 @@
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { dirname, extname, join, resolve } from 'node:path'
 
+import { dynamicImports } from './scan.mjs'
+
 /** `import …`, `export … from`, a bare `import 'x'`; `import type`/`export type` are erased. */
 const STATEMENTS =
   /(?:^|\n)\s*(?:import|export)\s+(type\s+)?(?:[^'";]*?\sfrom\s+)?['"]([^'"]+)['"]/g
@@ -20,7 +22,15 @@ const CODE_EXTENSIONS = ['.ts', '.tsx', '.mts', '.js', '.jsx', '.mjs']
 /** `./x.js` in TypeScript source names `./x.ts` (or `.tsx`) under bundler resolution. */
 const TS_FOR_JS = { '.js': ['.ts', '.tsx'], '.jsx': ['.tsx'], '.mjs': ['.mts'] }
 
-/** The specifiers a file imports at runtime, each with how: `static` or `dynamic`. */
+/** Why a dynamic `import()` of an expression fails the gate (TASKS.md 4.7.a). */
+export const UNRESOLVABLE =
+  'its argument is not a string, so no walk can tell what it loads — name the module in a string literal'
+
+/**
+ * The specifiers a file imports at runtime, each with how: `static` or `dynamic`. A dynamic
+ * `import()` of anything but a plain string comes back too, as `{ expression }` — its argument's
+ * source, which is also its `specifier` — so the walk reports it rather than skip it.
+ */
 export function importsOf(file) {
   const source = readFileSync(file, 'utf8')
   const statics = [...source.matchAll(STATEMENTS)]
@@ -30,12 +40,25 @@ export function importsOf(file) {
     specifier: a ?? b ?? c ?? '',
     kind: 'dynamic',
   }))
-  return [...statics, ...dynamics]
+  // The pattern over the raw text stays (it errs toward following); the scan adds what it
+  // misses — `import('x', { with: … })` — and every argument that is not a string.
+  const unresolved = []
+  for (const found of dynamicImports(source)) {
+    if ('expression' in found) {
+      const { expression } = found
+      unresolved.push({ specifier: expression, kind: 'dynamic', expression })
+    } else if (!dynamics.some(({ specifier }) => specifier === found.specifier)) {
+      dynamics.push({ specifier: found.specifier, kind: 'dynamic' })
+    }
+  }
+  return [...statics, ...dynamics, ...unresolved]
 }
 
-/** The specifiers alone, static then dynamic. */
+/** The specifiers alone, static then dynamic; an `import()` of an expression names none. */
 export function specifiersOf(file) {
-  return importsOf(file).map(({ specifier }) => specifier)
+  return importsOf(file)
+    .filter((each) => each.expression === undefined)
+    .map(({ specifier }) => specifier)
 }
 
 const isFile = (path) => existsSync(path) && statSync(path).isFile()
@@ -151,7 +174,8 @@ export function directReach(entry, seen = new Set()) {
  * Walks from `entry` and returns every place it reaches a specifier `forbidden` names, each with
  * its import chain — the steps from the entry to the import, as `{ file, specifier, kind }` — and
  * the rule's reason. A forbidden `@engine/*` entry is reported, not entered. An import the walk
- * cannot follow is reported too (`reason: null`, `error`): unseen is not safe.
+ * cannot follow is reported too (`reason: null`, `error`): unseen is not safe — a dynamic
+ * `import()` of an expression among them, with the `expression` it could not read.
  */
 export function findReaches(entry, forbidden) {
   const found = []
@@ -159,7 +183,12 @@ export function findReaches(entry, forbidden) {
   const visit = (file, chain) => {
     if (seen.has(file)) return
     seen.add(file)
-    for (const { specifier, kind } of importsOf(file)) {
+    for (const { specifier, kind, expression } of importsOf(file)) {
+      if (expression !== undefined) {
+        const step = [...chain, { file, specifier, kind, expression }]
+        found.push({ chain: step, specifier, reason: null, error: UNRESOLVABLE, expression })
+        continue
+      }
       const step = [...chain, { file, specifier, kind }]
       const reason = forbidden(specifier)
       if (reason !== null) {

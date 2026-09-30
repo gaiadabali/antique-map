@@ -3,6 +3,7 @@ import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { loadSupports } from '../check-brands/supports.mjs'
 import { scaffoldBrandConfig, scaffoldInfraNames } from './scaffold.mjs'
 import { withTsRunner } from './ts-runner.mjs'
 
@@ -38,25 +39,30 @@ function writeBrandFolder(repoRoot, slug, name, config) {
 
 /**
  * Loads `validateBrandConfig()` from `@engine/config/validate` — the package entry, resolved
- * the way this workspace package resolves its devDependency — through the headless-Vite TS
- * runner, so the plain-Node CLI runs the real C1 rules with no build step.
+ * the way this workspace package resolves its devDependency — and each storefront app's own
+ * `supports` (`engine/apps/<app>/src/supports.ts`, the loader `check:brands` uses), through the
+ * headless-Vite TS runner, so the plain-Node CLI runs the real C1 rules against the real apps
+ * with no build step.
  */
 export async function loadValidation() {
   const entry = createRequire(import.meta.url).resolve('@engine/config/validate')
   return withTsRunner(TOOLING_REPO_ROOT, async (loadModule) => {
     const { validateBrandConfig, formatIssue } = await loadModule(entry)
-    return { validateBrandConfig, formatIssue }
+    const { supports } = await loadSupports(loadModule)
+    return { validateBrandConfig, formatIssue, supports }
   })
 }
 
 /**
  * Scaffolds `<slug>/site/` for a new brand. The config is checked whole by
  * `validateBrandConfig()` (C1's schema and every rule it gives `validateBrandConfigs()`,
- * the rupiah rule included) BEFORE anything is written, so a bad scaffold never lands.
- * `modules ⊆ supports` is left to `validateBrandConfigs()` in CI, which has each app's
- * declaration (TASKS.md 4.1.c); the scaffold switches no module on.
- * `options.validation` — `{ validateBrandConfig, formatIssue }` — replaces the loaded module
- * (a test imports it directly, or plants a violation with it).
+ * the rupiah rule included) BEFORE anything is written, so a bad scaffold never lands — and
+ * checked against the chosen storefront app's real `supports` (TASKS.md 4.7.b), so a module
+ * that app cannot render fails here as it would fail `check:brands`. A storefront whose app
+ * declares no supports fails too: unchecked is not supported.
+ * `options.validation` — `{ validateBrandConfig, formatIssue }` — and `options.supports` —
+ * `{ [storefront]: AppSupports }` — replace what is loaded (a test imports them directly, or
+ * plants a violation with them); whichever is missing is loaded.
  */
 export async function createBrand(repoRoot, { slug, storefront, name }, options = {}) {
   if (!SLUG_PATTERN.test(slug)) {
@@ -74,8 +80,15 @@ export async function createBrand(repoRoot, { slug, storefront, name }, options 
   const brandName = name ?? titleCase(slug)
   const config = scaffoldBrandConfig({ slug, name: brandName, storefront })
 
-  const { validateBrandConfig, formatIssue } = options.validation ?? (await loadValidation())
-  const result = validateBrandConfig(config, { expect: { slug, storefront: null } })
+  const loaded = options.validation && options.supports ? {} : await loadValidation()
+  const { validateBrandConfig, formatIssue } = options.validation ?? loaded
+  const supports = (options.supports ?? loaded.supports)[storefront]
+  if (!supports) {
+    throw new BrandCreateError(
+      `the ${storefront} app declares no supports (engine/apps/<app>/src/supports.ts) to check the scaffold's modules against`,
+    )
+  }
+  const result = validateBrandConfig(config, { supports, expect: { slug, storefront: null } })
   if (!result.ok) {
     const issues = result.issues.map(formatIssue)
     throw new BrandCreateError(`scaffolded config failed validation:\n${issues.join('\n')}`)
