@@ -161,6 +161,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.3 The proxy's v1.3 answers | senior-be | `antique-map-p5-plt` / `feat/p5-plt` | 2026-09-30 | |
 | 5·W2 | 5.4 Gates for the v1.3 contracts | medior | `antique-map-p5-har-gates` / `feat/p5-har-gates` | 2026-10-01 | branched from the 5.3 merge (5a253f0) while its gate runs; rebased on `main` before merge |
 | 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
+| 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -640,7 +641,7 @@ run beside the build line rather than in it.
   - [ ] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
   - [ ] 6.1.d **Check:** each PRODUCT.md follows the impeccable product schema with no invented facts and the owner's answers folded in, and 6–8 journeys per brand exist, each naming its surfaces, states, channel handoffs and the moment that decides trust.
 
-- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b
+- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b — 🔄 6·W1
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/imagery/**`
   - **Read** DESIGN-SYSTEM.md §11, CONTENT-MODEL.md (image roles), MIGRATION.md §9, the drafted PRODUCT.md files
