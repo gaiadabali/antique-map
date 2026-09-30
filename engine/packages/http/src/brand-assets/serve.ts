@@ -13,7 +13,7 @@
  *   `./read`), cached by nobody: a file the brand ships later must not be hidden behind a
  *   remembered miss.
  */
-import { notFound } from '../legacy/respond'
+import { notFound } from '../shared/respond'
 import { BRAND_ASSET_URL } from '../manifest'
 import { readAsset } from './read'
 import { resolveBrandAsset } from './resolve'

@@ -4,11 +4,13 @@
  * consent parts — with the brand's identity laid over it from config at request time: its name,
  * storefront, origin, locales, modules, contact and analytics ids, and every brand-asset URL at its
  * versioned address (C13 `BRAND_ASSET_URL`), minted here and never in a template. So one build
- * renders each brand's own masthead (ARCHITECTURE.md §9).
+ * renders each brand's own masthead (ARCHITECTURE.md §9). The home-screen icon and the web manifest
+ * are the files C13 `BRAND_ROOT_ASSETS` names — the ones the root URLs answer from — each `null`
+ * when the brand ships none, so no page links a 404 (C2 v1.3 `ShellVM.assets`, TASKS.md 4.6.e).
  */
 import { hasModule, MODULE_KEYS, type BrandConfig, type LocaleCode } from '@engine/config/schema'
 import { brandAssetUrl, versionedBrandAssetUrl } from '@engine/http/brand-assets'
-import { BRAND_ASSET_URL, ROOT_REWRITES } from '@engine/http/manifest'
+import { BRAND_ROOT_ASSETS } from '@engine/http/manifest'
 import type { ShellVM } from '@engine/view-models'
 import { SHELL_FIXTURES } from '@engine/view-models/fixtures'
 
@@ -43,6 +45,8 @@ export async function loadShell(locale: LocaleCode): Promise<ShellVM> {
       logo: asset(config.assets.logo),
       mark: config.assets.mark === null ? null : asset(config.assets.mark),
       favicon: asset(config.assets.favicon),
+      touchIcon: versionedBrandAssetUrl(paths.assetsDir, BRAND_ROOT_ASSETS.touchIcon),
+      manifest: versionedBrandAssetUrl(paths.assetsDir, BRAND_ROOT_ASSETS.manifest),
       ogImage: asset(config.assets.ogImage),
       fonts: config.assets.fonts.map((font) => ({ ...font, src: asset(font.src) })),
     },
@@ -56,29 +60,5 @@ export async function loadShell(locale: LocaleCode): Promise<ShellVM> {
       phone: config.identity.contact.phone,
     },
     analytics: config.analytics,
-  }
-}
-
-/**
- * The brand file a root URL is answered from (C13 `ROOT_REWRITES`: `/apple-touch-icon.png` →
- * `/brand-assets/apple-touch-icon.png`), so the names live in the contract, not here.
- */
-function rootFileAsset(from: (typeof ROOT_REWRITES)[number]['from']): string {
-  const row = ROOT_REWRITES.find((each) => each.from === from)
-  if (!row?.to.startsWith(BRAND_ASSET_URL.path)) throw new Error(`no brand file answers ${from}`)
-  return row.to.slice(BRAND_ASSET_URL.path.length)
-}
-
-/**
- * The touch icon and the web manifest, at their versioned URLs, for `generateMetadata()` — a page
- * links them through its metadata, never Next's file conventions, which are one build's (C13
- * `ROOT_REWRITES`). `null` for a file the brand has not shipped: no link to a 404. (C2 `ShellVM`
- * is to carry both — `assets.touchIcon`, `assets.manifest` — proposed to ARC in 4.1.)
- */
-export async function brandIcons(): Promise<{ touchIcon: string | null; manifest: string | null }> {
-  const { paths } = await currentBrand()
-  return {
-    touchIcon: versionedBrandAssetUrl(paths.assetsDir, rootFileAsset('/apple-touch-icon.png')),
-    manifest: versionedBrandAssetUrl(paths.assetsDir, rootFileAsset('/site.webmanifest')),
   }
 }

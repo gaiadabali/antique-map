@@ -1,19 +1,17 @@
 /**
- * The health route's ports as this package can build them today.
- *
- * `database` and `queue` are **not wired**: they need `getPayload()` and the one Payload config,
- * and `@engine/http` does not yet declare `payload` or `@engine/cms` as dependencies — a change to
- * `engine/packages/http/package.json` outside TASKS.md 4.1's paths, reported as blocked. Until
- * then both answer `not-wired`, so `/api/health` answers 503 and no deploy can pass its health
- * check on a route that never reached the database. Wiring them is one file: a port that calls
- * `getPayload({ config })`, probes `payload.db.pool` with `@engine/cms/db/probe`, and reads the
- * queue's oldest pending job.
+ * The health route's ports. The boot check, storage and the log are this package's own; the
+ * database and the queue are Payload's, built by `./payload-ports` — which the route loads with
+ * `import()` once it has read its request (ARCHITECTURE.md §15), so this module, the route and
+ * their tests never load Payload.
  */
 import { formatBootReport, runBootCheck, type BootReport } from '@engine/config/boot-check'
 
-import type { CheckResult, DatabaseCheck, HealthPorts } from './health'
+import type { HealthPorts } from './health'
 
 type Env = Readonly<Record<string, string | undefined>>
+
+/** What `./payload-ports` supplies. */
+export type PayloadHealthPorts = Pick<HealthPorts, 'database' | 'queue'>
 
 /** Media goes to the brand's bucket, never the host's disk (DEPLOYMENT.md §2): configured, or local. */
 export function storageCheck(env: Env): HealthPorts['storage'] {
@@ -26,17 +24,23 @@ export function storageCheck(env: Env): HealthPorts['storage'] {
   }
 }
 
-const notWired = async (): Promise<DatabaseCheck & CheckResult> => ({
-  ok: false,
-  detail: 'not-wired',
-})
+/**
+ * Payload's ports when their module could not be loaded at all — the config failed to evaluate,
+ * say: the database check fails with that cause, which the boot check redacts and logs.
+ */
+export function unloadedPayloadPorts(error: unknown): PayloadHealthPorts {
+  const fail = async (): Promise<never> => {
+    throw error
+  }
+  return { database: fail, queue: fail }
+}
 
-export function defaultHealthPorts(env: Env = process.env): HealthPorts {
+export function healthPorts(payload: PayloadHealthPorts, env: Env = process.env): HealthPorts {
   return {
     boot: (database) => (database ? runBootCheck({ env, database }) : runBootCheck({ env })),
-    database: notWired,
+    database: payload.database,
     storage: storageCheck(env),
-    queue: notWired,
+    queue: payload.queue,
     log: logBootReport,
   }
 }

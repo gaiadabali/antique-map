@@ -267,6 +267,12 @@ importers:
 
   engine/packages/http:
     dependencies:
+      '@engine/cache':
+        specifier: workspace:*
+        version: link:../cache
+      '@engine/cms':
+        specifier: workspace:*
+        version: link:../cms
       '@engine/config':
         specifier: workspace:*
         version: link:../config

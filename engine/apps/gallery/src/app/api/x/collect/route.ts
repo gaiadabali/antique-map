@@ -1,1 +1,1 @@
-export { POST } from '@engine/http/legacy/unbuilt' // until SEO builds @engine/http/collect
+export { POST } from '@engine/http/unbuilt' // until SEO builds @engine/http/collect

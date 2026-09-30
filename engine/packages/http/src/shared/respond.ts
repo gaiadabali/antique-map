@@ -1,7 +1,7 @@
 /**
  * The plain answers every WEB handler in this package shares (senior-be #16: one of each). They
- * live beside the legacy stub, the first handler that needed them, until `@engine/http` has a
- * shared module of its own (its package exports only `./manifest` and `./<area>` routes).
+ * lived beside the legacy stub — the first handler that needed them — until 4.6.d gave the package
+ * its shared module (TASKS.md 4.6.d, C13 v1.3's `UNBUILT_HANDLER` work).
  */
 
 /** A plain-text answer that no cache keeps and no browser sniffs. */
