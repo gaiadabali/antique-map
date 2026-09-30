@@ -12,8 +12,18 @@
  * answer `degraded`, still 200, since a failed health check rolls a deploy back. The answer is
  * public, so it names each check and whether it passed, never a finding's text: a missing
  * secret's name is for the process log (`formatBootReport`), not for anyone who asks.
+ *
+ * A database that does not answer is the database check's failure alone: the boot check marks it
+ * an outage, not a refusal (`isRefused()`), so `boot` stays ok and counts only the configuration's
+ * problems — a refused start is never reported for a process that booted (qa's phase 4 gate L1,
+ * TASKS.md 5.3.f). A configuration fault beside an outage is still `refused`.
  */
-import type { BootReport, DatabaseProbe, DeploymentEnvironment } from '@engine/config/boot-check'
+import {
+  isRefused,
+  type BootReport,
+  type DatabaseProbe,
+  type DeploymentEnvironment,
+} from '@engine/config/boot-check'
 import { describeError } from '@engine/config/loader'
 
 import type { QueueCheck } from './queue'
@@ -70,16 +80,21 @@ export async function checkHealth(
   const boot = await settleBoot(ports.boot, database.probe ?? null)
   ports.log(boot)
   const storage = await settle(async () => ports.storage(boot.environment))
-  const queue = database.ok ? await settle(ports.queue) : { ok: false, detail: 'no-database' }
+  const refused = isRefused(boot)
+  const outages = boot.problems.filter((problem) => problem.outage === true).length
+  // Fails closed: an outage the boot check saw fails the database even if its port said ok.
+  const databaseResult =
+    database.ok && outages > 0 ? { ok: false, detail: 'unreachable' } : publicResult(database)
+  const queue = databaseResult.ok ? await settle(ports.queue) : { ok: false, detail: 'no-database' }
   const checks = {
     app: { ok: true },
     boot: {
-      ok: boot.ok,
-      problems: boot.problems.length,
+      ok: !refused,
+      problems: boot.problems.length - outages,
       warnings: boot.warnings.length,
-      ...(boot.ok ? {} : { detail: 'refused' }),
+      ...(refused ? { detail: 'refused' } : {}),
     },
-    database: publicResult(database),
+    database: databaseResult,
     storage,
     queue,
   }
