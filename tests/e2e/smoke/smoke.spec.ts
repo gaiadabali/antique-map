@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path'
 
 import { expect, test, type APIRequestContext, type TestInfo } from '@playwright/test'
 
-import type { SmokeMetadata } from '../../playwright.config'
+import type { SmokeMetadata } from '../../../playwright.config'
 
 type BrandFacts = {
   readonly name: string

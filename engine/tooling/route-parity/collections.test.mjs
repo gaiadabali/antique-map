@@ -60,7 +60,7 @@ describe('discoverCollectionSlugs — built collections and the frozen list (3.5
         segment: 'fixture-stub',
       },
     ])
-  })
+  }, 60_000) // it starts a Vite server: 5 s is too short on a loaded machine (qa's phase 4 L2)
 
   it('reads the registry alone, before any collection folder exists', () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))

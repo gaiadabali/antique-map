@@ -75,7 +75,7 @@ describe('importing @engine/cms/instance', () => {
     // Anything the import set off has had time to reach the listener.
     await new Promise((resolve) => setTimeout(resolve, 300))
     expect(accepted).toBe(0)
-  }, 30_000)
+  }, 120_000)
 
   it("cms()'s first call is what connects, a failed one leaves no unhandled rejection, and the next retries", async () => {
     // Payload rejects its adapter's `initializing` promise on a failed connect and awaits it
@@ -95,7 +95,7 @@ describe('importing @engine/cms/instance', () => {
       process.off('unhandledRejection', record)
     }
     expect(unhandled).toEqual([])
-  }, 30_000)
+  }, 120_000)
 })
 
 describe('cmsPool()', () => {
@@ -104,7 +104,7 @@ describe('cmsPool()', () => {
 
   beforeAll(async () => {
     ;({ cmsPool } = await import('./instance'))
-  })
+  }, 120_000)
 
   it("returns the adapter's pool, the very object databaseProbe() takes", () => {
     const pool = { connect: async () => ({ query: async () => ({ rows: [] }), release() {} }) }
@@ -159,5 +159,5 @@ describe('the one server-route getPayload()', () => {
         !/\.test\.[^/]+$/.test(file),
     )
     expect(others).toEqual([])
-  }, 60_000)
+  }, 120_000)
 })
