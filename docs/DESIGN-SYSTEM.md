@@ -37,16 +37,37 @@ import { ItemSurface } from '@/surfaces/item/item-surface'
 
 export default async function Page({ params }: PageProps<'/[locale]/item/[idSlug]'>) {
   const { locale, idSlug } = await params
-  const result = await loadItem({ locale, ...parseIdSlug(idSlug) })  // published only, projected
-  if (!result) notFound()
-  if ('redirectTo' in result) permanentRedirect(result.redirectTo)  // the slug changed: 301 by id
-  return <ItemSurface vm={result.vm} />                              // the app's own design
+  const publicId = parsePublicId(idSlug)             // the id alone: ASCII digits, or null
+  if (publicId === null) notFound()
+  const asked = await askedAddress()                 // the proxy's x-public-path, x-public-search
+  const result = await loadItem({ locale, publicId, asked }) // published, projected
+  if (!result) notFound()                            // a miss only the database can decide
+  if ('redirectTo' in result) permanentRedirect(result.redirectTo)  // not the one address: a 308
+  const purchase = await result.vm.purchase          // in the first flush: its forms work without JS
+  return <ItemSurface vm={result.vm} purchase={purchase} />          // the app's own design
 }
 ```
 
-Routes carry **no segment config** (Cache Components forbids it — ARCHITECTURE.md
-§9); anything reading cookies, headers, the ship-to market or availability does so
-inside `<Suspense>`.
+The route reads only the id from its segment: Next hands the page that segment
+still encoded and `generateMetadata` the same one decoded, so no spelling of it is
+compared. The page reads the address the visitor asked for from the proxy's headers
+(`askedAddress()`, which refuses a request with no public path) and passes it to the
+loader, which stays pure: C2's `Loaders.item` takes `{ locale, publicId, asked }`
+(v1.3, TASKS.md 4.3.f). The loader's cached read is keyed by `(locale, publicId)`
+alone; it compares `asked.path` with `href()`'s spelling byte for byte **outside**
+its `'use cache'` read — never a cache argument, since each spelling a visitor chooses
+would be a new entry — and on a mismatch answers `redirectTo` the current address with
+`asked.search` appended, so an old link's query survives its 308. That is the rule of
+`engine/apps/gallery/src/item/canonical.ts`, which the loader inherits (MIGRATION.md
+§6; TASKS.md 11.3). A route with a slug takes it the same way, decoded, from C10's
+parse of `asked.path`, never from `params` (CONVENTIONS.md §12).
+
+Routes carry **no segment config** — the `(site)` layout's `instant = false` is the
+one there is (ARCHITECTURE.md §9). What the first flush must carry — a form, its
+current value, a post's result, the canonical check, and the purchase panel, whose
+live availability decides its forms — is read in the page's own body, so buying works
+without JavaScript; only slow reads no form depends on (related works, reviews) stream
+inside `<Suspense>`, and a streamed part holds no form (CONVENTIONS.md §12).
 
 | Surface | View model | Notes |
 | ------- | ---------- | ----- |
@@ -78,7 +99,38 @@ inside `<Suspense>`.
 | `OrderLookup` | `OrderLookupVM` | guest order tracking by order number + email or WhatsApp number, with the courier timeline |
 | `Partnership` | `PartnershipVM` | the shop's one programme for every business buyer — shops, hotels, villas, cafés, companies (D31, D36; module `accounts.retailers`) — reached from the home hero's highlight and the header: what a partner gets, and a last section with the one application and partner sign-in, cached so both work without JavaScript. Over them streams what this visitor has: a sent application (one answer for all), a post sent back, an application waiting on staff, a declined one (with the form to apply again), or the way into a signed-in partner's area. It never shows a trade price |
 | `Wishlist` | `WishlistVM` | the shop's saved items, kept on the guest's device with no account (D35, module `retention.deviceWishlist`): the list streams, each card's heart removes its item, and the page says where the list lives |
-| `NotFound` · `Gone` · `Error` | `NotFoundVM` · `GoneVM` · `ErrorVM` | designed, not defaulted: a legacy `/product/{id}-{slug}` miss turns the slug into a prefilled search with similar works; an item removed from inventory renders the Gone design with a 404, noindex, and leaves the sitemap — a page cannot answer 410, so a real `410` comes only from the legacy handler (`/api/x/legacy/…`) for a rule that says so (sold items are **not** gone — they stay live); a 500 page with WhatsApp contact. The not-found loader tells a removed item from a miss by the public path the proxy passes on (C13) |
+| `NotFound` · `Gone` · `Error` | `NotFoundVM` · `GoneVM` · `ErrorVM` | designed, not defaulted: a legacy `/product/{id}-{slug}` miss turns the slug into a prefilled search with similar works; an item removed from inventory renders the Gone design with a 404, noindex, and leaves the sitemap — a page cannot answer 410, so a real `410` comes only from the legacy handler (`/api/x/legacy/…`) for a rule that says so (sold items are **not** gone — they stay live); a 500 page with WhatsApp contact. The not-found loader tells a removed item from a miss by the public path the proxy passes on (C13). Without JavaScript: below |
+
+**NotFound and Gone without JavaScript** (TASKS.md 4.3.d, measured on Next 16.3.6).
+A request-time `notFound()` is answered with Next's recovery document —
+`<html id="__next_error__">` with an empty `<body>` and no `lang` — and the designed
+page is built in the browser from the RSC payload, so without JavaScript it is blank;
+that is Next's behaviour with or without Cache Components. So the two kinds of miss
+are answered differently:
+
+- **A path that names no page** — most of them: an unknown or misspelt path, a page
+  whose module is off, an internal path asked for directly — is the proxy's own
+  not-found, decided without the database. The proxy rewrites it to
+  `/<locale>/not-found` **with a 404** (C13 `PROXY_NOT_FOUND_STATUS`), which Next keeps
+  through a normal render, and that route's page renders the designed NotFound
+  surface in its own body — it never calls `notFound()`. The answer is a 404 whose
+  HTML holds the brand's shell, `lang`, the surface and its search form, all working
+  without a script (measured: 404, full body, where `notFound()` gave an empty one;
+  confirmed by 4.3's senior-fe review). Under a 404 status Next takes the metadata
+  from the `not-found.tsx` boundary's `generateMetadata`, never from a page's, so the
+  NotFound title and description — localised — are that boundary's, the not-found
+  page exports none, and Next adds `noindex` itself. The 404 depends on the proxy's
+  User-Agent and status (TASKS.md 5.3), which a page cannot set; a client navigation
+  to such a path costs two requests (an RSC 404, then a document load), which is
+  acceptable. The status spec asserts the body too, not only the status.
+- **A miss only the database can decide** — an item id that is no product, a draft, a
+  removed item's Gone — calls `notFound()` from its page: crawlers get the 404 and
+  `noindex`, and the `not-found.tsx` boundary renders the same NotFound or Gone surface
+  from the RSC payload, which needs JavaScript. Accepted: a page can set a 404 only
+  through `notFound()`, and a route handler rendering the surface instead could not
+  use the app's components or styles (packages never import apps). The catch-all for a
+  surface this app has not built yet (`[...missing]`) calls `notFound()` too; by
+  launch, every surface a brand's modules switch on exists.
 
 `Order` includes the **payment-pending** state, the most important page in an
 Indonesian checkout: the exact amount, the VA number with a copy button,
@@ -148,20 +200,22 @@ second, loader third — through ARC. Reaching past the fixture for a document i
 how the lanes quietly re-couple.
 
 **Two part-shapes carry the resolved/streamed split into the type system.** A
-`Streamed<T>` is a part read at request time and streamed into a `<Suspense>`
-boundary (ARCHITECTURE.md §9) — never produced inside a cached read — and it
-**never rejects**: a failed read resolves to its designed fallback (`null`, an
-empty list, `enquiryOnly` / `unverified` for a purchase panel), so no error
-boundary ever stands in for a panel; a fixture passes `Promise.resolve(…)`, or
-`pending()` for the reserved-height "Checking availability…" state. A
+`Streamed<T>` is a part read at request time, which the page streams into a
+`<Suspense>` boundary or awaits in its own body (ARCHITECTURE.md §9) — never
+produced inside a cached read — and it **never rejects**: a failed read
+resolves to its designed fallback (`null`, an empty list, `enquiryOnly` /
+`unverified` for a purchase panel), so no error boundary ever stands in for a
+panel; a fixture passes `Promise.resolve(…)`, or `pending()` for a streamed
+band's reserved-height state. The item's `purchase`, typed `Streamed`, is
+awaited in the page body (§2), so it never shows one. A
 `CachedPart<T>` is a view model with every `Streamed` property, at any depth,
 left out — what a loader's `'use cache'` + `cacheTag` read may return in
 phase one, before phase two adds the request-time parts. **What a visitor
 without JavaScript must see or act on is resolved, never streamed**: a form,
-its post's outcome (`FormResultVM`, C13 `FORM_RESULT`), and the list an
-email's link opened are all awaited at request time and rendered in the
-page's own body — never inside a nested `<Suspense>` a script would be needed
-to reveal.
+its post's outcome (`FormResultVM`, C13 `FORM_RESULT`), the purchase panel
+and its forms, and the list an email's link opened are all awaited at request
+time and rendered in the page's own body — never inside a nested `<Suspense>`
+a script would be needed to reveal.
 
 Each page's `SeoVM` also carries `contentLocale`: the locale its main content
 is really in, which may differ from the page's own when it falls back to
@@ -308,10 +362,11 @@ app, subset for Latin with Indonesian and Dutch diacritics, and checked against
 real original titles (long s `ſ`, ligatures, accents); a CJK plan for the later
 Chinese locale is written into DESIGN.md, not improvised.
 
-**Availability never flashes.** Content shells are cached while availability is
-dynamic (ARCHITECTURE.md §9), so the purchase panel reserves its height and reads
-"Checking availability…" until the dynamic part resolves; **no purchase control
-renders before availability is known** — a sold map must never flash "Buy".
+**Availability never flashes.** Content is cached while availability is read
+live (ARCHITECTURE.md §9), and the page awaits the purchase panel in its body, so
+the panel arrives in the first flush with availability known — or, when the read
+times out, as `enquiryOnly` / `unverified`; **no purchase control renders before
+availability is known** — a sold map must never flash "Buy".
 
 ## 8. Motion
 

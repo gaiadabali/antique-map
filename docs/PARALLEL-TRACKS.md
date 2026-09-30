@@ -22,20 +22,20 @@ paths.
 | **ARC** architecture | `docs/**` planning docs, `.claude/specs/**` (orchestrator), contract files marked `@contract` | architect (never implements) |
 | **HAR** harness | `package.json` · `pnpm-workspace.yaml` · `tsconfig.base.json` · `eslint.config.mjs` · `.prettierrc.json` · `vitest.workspace.ts` · `playwright.config.ts` · `lighthouserc*.json` · `docker-compose.dev.yml` · `.env.example` · `.gaiadeploy.yml` · `.github/**` · `engine/tooling/**` · `scripts/**` · each app's `next.config.ts`, `tsconfig.json`, `package.json` | devops |
 | **PLT** platform spine | `engine/packages/config/**` · `engine/packages/i18n/**` · `engine/packages/http/src/proxy/**` (locale, route-map and redirect resolution each app's `src/proxy.ts` re-exports) | senior-be |
-| **SCH** schema & CMS | `engine/packages/cms/src/{payload.config.ts,collections,globals,fields,blocks,hooks,access,validators,migrations,seed,registries,db}/**` — the registries (collections, jobs, admin views, plugins) and **all engine-table DDL** (engine tables — in `public`, beside Payload's, under plain names — partial indexes, FTS config, declared through the Postgres adapter's `afterSchemaInit` so migrations carry them) | senior-db + senior-be |
+| **SCH** schema & CMS | `engine/packages/cms/src/{payload.config.ts,instance.ts,collections,globals,fields,blocks,hooks,access,validators,migrations,seed,registries,db}/**` · `engine/packages/cache/**` (the cache-tag builders, the status backstop and `invalidate(tags)` — a leaf every lane imports, built in TASKS.md 4.8; ARCHITECTURE.md §15) — the registries (collections, jobs, admin views, plugins) and **all engine-table DDL** (engine tables — in `public`, beside Payload's, under plain names — partial indexes, FTS config, declared through the Postgres adapter's `afterSchemaInit` so migrations carry them) | senior-db + senior-be |
 | **ADM** admin tooling | `engine/packages/cms/src/admin/**` (custom views, admin components, admin CSS) | senior-fe / senior-uiux |
-| **DOM** commerce domain | `engine/packages/domain/**` — pricing, `reserve()`, **`applyPaymentEvent()`**, every state machine (order, payment, reservation, availability, offer), the outbox writer · `engine/packages/http/src/commerce/**` | senior-be |
-| **PAY** payments | `engine/packages/payments/**` (stateless adapters: sessions, signature checks, `retrieve()`, event-id derivation) · `engine/packages/http/src/webhooks/payments/**` (the thin handler: parse → retrieve → `domain.applyPaymentEvent()`) | senior-integrator |
-| **LOG** logistics | `engine/packages/shipping/**` · `engine/packages/fulfilment/**` · `engine/packages/http/src/webhooks/fulfilment/**` | senior-integrator / medior |
+| **DOM** commerce domain | `engine/packages/domain/**` — pricing, `reserve()`, **`applyPaymentEvent()`**, every state machine (order, payment, reservation, availability, offer), the outbox writer · `engine/packages/http/src/{commerce,cron/sweeps,cron/outbox}/**` | senior-be |
+| **PAY** payments | `engine/packages/payments/**` (stateless adapters: sessions, signature checks, `retrieve()`, event-id derivation) · `engine/packages/http/src/webhooks/payments/**` (the thin handler: parse → retrieve → `domain.applyPaymentEvent()`) · `engine/packages/http/src/cron/reconcile/**` | senior-integrator |
+| **LOG** logistics | `engine/packages/shipping/**` · `engine/packages/fulfilment/**` · `engine/packages/http/src/webhooks/{fulfilment,shipping}/**` | senior-integrator / medior |
 | **MED** media | `engine/packages/media/**` · `engine/packages/http/src/media/**` | senior-be |
 | **SRC** search | `engine/packages/search/**` · `engine/packages/http/src/search/**` | senior-db |
-| **WEB** storefront core | `engine/packages/{view-models,loaders,ui}/**` · `engine/packages/http/src/{index.ts,health,cron,forms,legacy,brand-assets,auth,privacy}/**` (the manifest itself, C13, is ARC's) · every app's `src/app/api/x/**` and `src/app/(payload)/**` mount files and `src/proxy.ts` (one-line re-exports plus a **literal** `matcher`, parity-checked against C13) | senior-fe |
+| **WEB** storefront core | `engine/packages/{view-models,loaders,ui}/**` · `engine/packages/http/src/{index.ts,health,cron/jobs,forms,legacy,brand-assets,auth,privacy,well-known,revalidate,unbuilt,shared}/**`, `engine/packages/http/src/cron/{auth.ts,cron.test.ts}` and `engine/packages/http/package.json` (the manifest itself, C13, is ARC's) · every app's `src/app/api/**`, `src/app/brand-assets/**` and `src/app/(payload)/**` mount files and `src/proxy.ts` (one-line re-exports plus a **literal** `matcher`, parity-checked against C13) | senior-fe |
 | **UXG** gallery app | `engine/apps/gallery/**` — except the files WEB and HAR own above | senior-uiux + medior |
 | **UXE** emporium app | `engine/apps/emporium/**` — except the files WEB and HAR own above | senior-uiux + medior |
 | **NTF** notifications & documents | `engine/packages/mail/**` (email + WhatsApp templates, senders) · `engine/packages/documents/**` (PDF confirmation, proforma, certificate of authenticity, commercial invoice, packing slip) | medior |
 | **SIS** sister sync | `engine/packages/sister/**` · `engine/packages/http/src/sister/**` | senior-integrator |
 | **MIG** migration | `engine/packages/migrate/**` · `indies-gallery/content/legacy/**` | senior-integrator + medior |
-| **SEO** SEO & analytics | `engine/packages/seo/**` · `engine/packages/analytics/**` · `engine/packages/http/src/{collect,feeds,sitemap}/**` | medior / senior-fe |
+| **SEO** SEO & analytics | `engine/packages/seo/**` · `engine/packages/analytics/**` · `engine/packages/http/src/{collect,feeds,sitemap,robots,og}/**` | medior / senior-fe |
 | **BRD** brand config | `indies-gallery/site/**` · `old-east-indies/site/**` · `test/site/**` · brand `content/seed/**` | medior (with owner input) |
 | **QA** quality gate | `tests/e2e/**` · `tests/contract/**` · `tests/load/**` (except lane folders below) · `docs/gates/**` (each phase gate's evidence file) | qa |
 | **DOC** manuals | `manual/**` | junior / medior |
@@ -46,6 +46,44 @@ file in the repo has exactly one owner.
 
 `next.config.ts` is HAR's, but `withPayload()` wraps it, so SCH has a plausible
 reason to reach for it. **SCH asks; it does not edit.**
+
+**Each app's `next.config.ts`, `tsconfig.json` and `package.json` are HAR's**
+(TASKS.md 4.3.d); 4.1 wrote them under the scaffold's one-time grant. The settings
+the storefront's guarantees rest on — `cacheComponents: true`, `htmlLimitedBots:
+/.*/`, `output: 'standalone'`, `withPayload`'s client hints on `/admin` alone — are
+the same in both apps, and a HAR test says so. A lane adds a `workspace:*` engine
+dependency to an app with `pnpm add --filter <app>`, as a side effect and nothing
+more; a third-party dependency, a script or a config setting is HAR's to add on
+request.
+
+**Who owns an `@engine/http` area** (TASKS.md 4.3.b). `engine/packages/http/src/<area>/**`
+— the handler of a C13 route — belongs to that route's `owner` in `ENGINE_ROUTES`, which
+the rows above spell out; the rest of the package is the manifest (ARC, C13), `proxy/**`
+(PLT), and `unbuilt/**` (the placeholder a mount names while its handler is unbuilt,
+C13 `UNBUILT_HANDLER`), `shared/**` and `package.json` (WEB). A handler lane adds only
+the `workspace:*` dependency its handler imports to http's `package.json`, with `pnpm
+add --filter @engine/http`; a third-party library belongs in the lane's own package,
+never in http. The mount files stay WEB's: the task that lands a handler lists in its
+**Owns** the two mounts it repoints from the placeholder, in the same change.
+
+**How a handler reaches Payload** (TASKS.md 4.3.a, ARCHITECTURE.md §15). `@engine/http`
+depends on `@engine/cms` — never on `payload` itself — and a handler that reads the
+database loads its Payload-backed ports from a `payload-*.ts` module in its own folder,
+with `import()`, after it has read its request — content included, never through
+`@engine/loaders`, and the loaders import nothing of `@engine/http` but its manifest
+(C13). SCH's
+`@engine/cms/instance` is the process's one `getPayload()`, and `@engine/cms` never
+imports `@engine/http`; route parity's resolve hook and ESLint fence these edges
+(HAR, 5.4). `@engine/cache` (SCH's, built in 4.8, before any caller) is the one home
+of the cache tags and of `invalidate(tags)`, which runs after the write commits; the
+route it posts to from outside a request, `/api/x/revalidate`, is WEB's.
+
+**One e2e folder: `tests/e2e/`** (TASKS.md 4.3.d) — where every Playwright project in
+`playwright.config.ts` takes its specs from; outside `engine/`, so a spec may name a real
+brand (CONVENTIONS.md §1). A lane's specs live in `tests/e2e/<area>/`, owned by the task
+that writes them; the rest is QA's. Nothing else holds a spec: 4.1's status spec
+(`engine/apps/gallery/e2e/`) and 4.4's smoke (`.github/e2e/`, where 4.4 put it because it
+owned `.github/**`) move to `tests/e2e/status/` and `tests/e2e/smoke/` (TASKS.md 5.4).
 
 ### A directory can hold several agents' work — ownership follows the subdirectory
 
@@ -68,7 +106,8 @@ editing `src/components/button.tsx` in one wave is the collision this prevents.
 Likewise `engine/packages/cms/src/`: `collections/**` is SCH's, `admin/**` is
 ADM's. Tests follow their code: unit tests live in each package's `test/` and
 belong to that package's lane; a lane may add e2e specs under
-`tests/e2e/<lane>/**`, which it owns. The rest of `tests/**` is QA's.
+`tests/e2e/<area>/**` (`status`, `design-system` …), which the task that writes
+them owns. The rest of `tests/**` is QA's.
 
 ### Registries — how a lane adds a collection, a job, an admin view or a plugin without editing SCH's files
 

@@ -10,11 +10,13 @@ Optimise for the reader. Most rules here were inherited from Kingdom of Indonesi
 
 ### No brand literal in engine code
 
-No file under `engine/` — packages **and** storefront apps — may contain a
+No source file under `engine/` — the code, styles and JSON of packages **and**
+storefront apps: anything a build compiles, bundles or serves — may contain a
 brand's slug, name or domain as a literal:
 `indies-gallery`, `old-east-indies`, `Indies Gallery`, `Old East Indies`,
 `antiquemapsindonesia`, `oldeastindies`. Enforced by `pnpm lint:brand-literals`
-in CI (the NOW! `lint:site-literals` pattern, ARCHITECTURE.md §2).
+in CI (the NOW! `lint:site-literals` pattern, ARCHITECTURE.md §2), which scans
+`.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.css` and `.json`.
 
 ```ts
 if (brand.slug === 'indies-gallery') { … }        // ✗ fails CI
@@ -32,6 +34,13 @@ cannot be, that is a design bug in the config schema, not a licence to branch.
 Excluded from the scan, deliberately: `indies-gallery/**`, `old-east-indies/**`,
 `test/**` (they *are* the brands), generated migrations, test fixtures that carry
 real catalogue text, and `.env*` files, whose values are per-deployment data.
+**Markdown is documentation, not source**, and is not scanned: an app's
+`PRODUCT.md` and `DESIGN.md` — the design context the Design stage reads at the
+app's root, which no build reads — name the brand the app serves today, as a
+decision record may. The rule they must keep is the one the lint cannot see:
+nothing a build reads imports or embeds Markdown, so no brand's words reach a
+bundle through one. The owner agreed this reading of requirement 1.3 — source,
+not docs — as D44 (TASKS.md, Answered; 4.3.d).
 
 ### The synthetic third brand runs every build
 
@@ -232,27 +241,106 @@ is not a failure.**
 
 The deploy artifact is built in CI with no `DATABASE_URL` and no
 `PAYLOAD_SECRET`. Nothing prerenders from the CMS at build time. CI's e2e build
-unsets both variables to catch regressions.
+unsets both variables to catch regressions — and a check that must prove no
+connection is opened points `DATABASE_URL` (and `PGHOST`) at a sentinel listener
+that must accept none, or builds with no network at all, because an unset
+`DATABASE_URL` is not an absent database: `pg` then falls back to `PGHOST` and to
+`localhost:5432`, a workstation's own Postgres.
 
-The apps run with **Cache Components** (ARCHITECTURE.md §9), which changes the
-rules you may remember:
+The apps run with **Cache Components** (ARCHITECTURE.md §9), confirmed by the
+phase 4 spike (`docs/spikes/cache-components.md`), which changes the rules you may
+remember:
 
-- **No route segment config** — no `export const dynamic`, `revalidate` or
-  `fetchCache`; Cache Components rejects them at build. `force-dynamic` does not
-  exist here.
-- The `(site)` root layout awaits `connection()`, so nothing under it prerenders
-  at build — that is what keeps the build away from the database.
-- Anything that reads `cookies()`, `headers()`, `searchParams`, the ship-to
-  market or live availability does it **inside a `<Suspense>` boundary**, so the
-  cached shell streams first and the runtime part follows.
-- Cacheable reads are functions marked `'use cache'` with `cacheTag(...)` and a
-  `cacheLife` profile. Invalidation goes through one helper, `invalidate(tags)`,
-  called from Payload `afterChange`/`afterDelete` hooks and domain events:
-  editorial tags use `revalidateTag(tag, 'max')` (stale-while-revalidate);
-  **availability and price tags expire immediately** (`{ expire: 0 }`), because a
-  sold map must never be served as available from cache.
-- If the Cache Components spike (TASKS.md 4.1) fails, the documented fallback in
-  ARCHITECTURE.md §9 replaces this list — not a mixture of both.
+- **One route segment config, in one place.** `export const instant = false` on
+  `(site)/[locale]/layout.tsx` — Cache Components' own opt-out, without which a
+  `connection()` outside `<Suspense>` fails the build — and none anywhere else: no
+  `dynamic`, `revalidate` or `fetchCache` (Cache Components rejects them at build;
+  `force-dynamic` does not exist here), and no `prefetch`, `runtime`,
+  `preferredRegion`, `maxDuration` or other `instant`, which it would accept. That
+  layout alone exports `generateStaticParams`: its root parameter, `[locale]`, lists
+  every engine locale (brand-independent; it prerenders nothing). An ESLint rule
+  and a parity test hold this (TASKS.md 5.4).
+- **Every page renders in full per request.** Each app's `next.config.ts` sets
+  `htmlLimitedBots: /.*/`. Next 16.3 otherwise serves a route's prerendered shell —
+  even an empty one — under the status it had at build, so a `notFound()` or a
+  `permanentRedirect()` would reach the page only as a meta tag. Next counts a
+  request with no `User-Agent` as no bot at all, so for it a 404, a permanent
+  redirect and the proxy's own not-found status are all lost; the proxy sets one
+  (C13 `PROXY_USER_AGENT`). The status spec (`engine/apps/gallery/e2e/status.spec.ts`,
+  moving to `tests/e2e/`) fails the day a Next release changes this.
+- **Nothing reads the brand at build.** The brand read awaits `connection()`
+  itself (the app's `currentBrand()`): Next renders a layout and its page
+  concurrently, so the layout's own `connection()` does not hold the page back.
+- **A route handler reads its request first.** A `GET` handler that never reads
+  its request (or awaits `connection()`) is prerendered — `next build` runs it to
+  bake its answer — so every engine `GET` reads it before anything else
+  (`atRequestTime(request)`), a placeholder's too. A handler reaches Payload, and
+  content, only through a `payload-*.ts` module it `import()`s after that — never
+  through `@engine/loaders` (C13; ARCHITECTURE.md §15) — so the build, route parity
+  and a unit test load it without Payload.
+- **A route reads only ASCII from its params.** Next hands a page a segment still
+  percent-encoded and its `generateMetadata` the same segment decoded once, for
+  every param (the 4.1.e spike §3; 4.3's senior-fe review #3). So a route takes
+  from `params` only what is ASCII by construction — the locale, a numeric id —
+  and any other input, a slug or a place path, from C10's parse of the public path
+  the proxy passed on (`parsePublicPath()` over `x-public-path`), decoded once. It
+  never hands a raw `params` segment to a loader and never compares one.
+- **What the first flush must carry is read in the page body; only slow reads
+  that no form depends on stream.** A form, its current value (from a cookie), a
+  post's result (C13 `FORM_RESULT`), the canonical check (a request header) — and
+  **the purchase panel**, whose live availability decides which purchase forms it
+  shows — are read at request time in the page's own body, so a visitor without
+  JavaScript sees them and can buy: a streamed part stays hidden until a script
+  swaps it in. The availability read is one indexed read, bounded by a short
+  timeout after which the panel resolves to `unverified` (C2), so a slow database
+  never holds the first byte for long. Only slow reads no form depends on —
+  related works, reviews, a courier's live quote, a remote rate — run inside
+  `<Suspense>`, whose fallback reserves their space, and a streamed part never
+  holds a form or a post's result. `generateMetadata` reads cached data only: it
+  gates every visitor's first byte.
+- **Cacheable reads** are functions marked `'use cache'` with `cacheTag(...)` and
+  an explicit `cacheLife`, their tags built by `@engine/cache` and never written by
+  hand. A `cacheTag()` call takes at most 128 tags — Next drops the rest with only a
+  console warning — so a scope that tags every card of a long page batches its
+  calls. Invalidation goes through one helper, `@engine/cache`'s
+  `invalidate(tags)`, called from Payload `afterChange`/`afterDelete` hooks and
+  domain events, and it runs **after the write commits**: Payload runs
+  `afterChange` before it commits, so inside a request `invalidate()` schedules the
+  revalidation with `after()`, which runs once the response has been sent; outside
+  one, the caller hands it a collector and flushes it once its operation returns,
+  dropping it on a throw — an import once per batch. Editorial tags use
+  `revalidateTag(tag, 'max')`
+  (stale-while-revalidate); **availability and price tags expire immediately**
+  (`{ expire: 0 }`).
+- **The availability that decides a purchase is never cached**: it changes with
+  no write to announce it — a checkout lock or a hold lapses at its `expiresAt`,
+  which no tag can expire. Every cached scope that shows an availability status — a
+  card's *Sold*, a catalogue's *on hold* — tags it `availability:<id>`, expired
+  immediately by every write, and declares as **its own** `cacheLife` the
+  one-minute backstop `@engine/cache` exports, `AVAILABILITY_STATUS_LIFE`
+  (`{ stale: 30, revalidate: 30, expire: 60 }`), so a missed invalidation or a
+  lapsed lock heals by itself: an
+  explicit outer `cacheLife` wins over any inner one, so a status read nested in a
+  `'max'` listing would otherwise keep the listing's lifetime. No purchase control
+  acts on a cached status, and `reserve()` refuses a sold item regardless.
+- **Storefront links never prefetch.** Under `htmlLimitedBots` a router prefetch
+  is a full render with the page's reads — a 48-card grid in view would be 48
+  renders — so a storefront link is an `<a>` or the link primitive (TASKS.md
+  11.1.c), which renders `next/link` with `prefetch={false}` and takes no
+  `prefetch` prop. `next/form`'s `<Form>`, which prefetches its action by default,
+  and `useRouter().prefetch()` are fenced like a bare `next/link` (TASKS.md 5.4). A
+  render that is not the visitor's own document navigation never consumes a post's
+  result (C13 `FORM_RESULT`).
+- **The build rules the spike found.** `instrumentation.ts` is compiled for the
+  Edge runtime too, so Node-only code sits in a module it `import()`s only when
+  `process.env.NEXT_RUNTIME === 'nodejs'`, and never while `next build` runs; a
+  module-level read of a runtime path (`readFileSync`) carries
+  `/*turbopackIgnore: true*/`, or Turbopack traces the whole project into the
+  standalone output; and `withPayload`'s client hints (`Accept-CH`, `Critical-CH`,
+  `Vary`) stay on `/admin/:path*` — on the storefront, `Critical-CH` makes Chromium
+  load every first visit twice.
+- The fallback in ARCHITECTURE.md §9 (Cache Components off) was not needed and is
+  not adopted; the two models are never mixed.
 
 ## 13. Secrets
 

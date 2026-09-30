@@ -53,8 +53,10 @@ disagree, the doc wins and this digest is corrected.**
 12. Webhooks are deduplicated **inside** the transaction that applies them —
     because a dedupe row committed before a crash would swallow the retry.
 13. Next 16 Cache Components, proven by a spike in phase 4 with one documented
-    fallback — content cached by tag, availability and the ship-to market
-    streamed at request time, availability tags expired immediately.
+    fallback — content cached by tag; availability and the ship-to market read
+    at request time — the purchase panel's availability in the page body, so
+    buying works without JavaScript — availability tags expired immediately,
+    every invalidation after its write commits.
 14. Public reads are published-only and projected (`overrideAccess: false`,
     `_status: 'published'`, `select`) — because the Local API's default would
     leak drafts, costs and consignors to any page that forgot.
@@ -263,7 +265,7 @@ interface SearchPort {
 }
 
 // loaders — apps call these, never Payload; published-only and projected
-function loadItem(params: { locale: Locale; publicId: number; slug: string }):
+function loadItem(params: { locale: Locale; publicId: number; asked: { path: string; search: string } }):
   Promise<{ vm: ItemVM } | { redirectTo: string } | null>
 ```
 

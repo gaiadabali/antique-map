@@ -32,6 +32,10 @@ export type EngineRoute = {
   /** The `@engine/http` subpath the route file re-exports; `src/<area>/route.ts` in the package. */
   readonly handler: string
   readonly methods: readonly HttpMethod[]
+  /**
+   * The lane that builds the handler and owns its folder, `http/src/<area>/**` — this column, not
+   * a list elsewhere, decides who owns an `@engine/http` area (PARALLEL-TRACKS.md §1).
+   */
   readonly owner: Lane
   readonly auth: readonly RouteAuth[]
   /**

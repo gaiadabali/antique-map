@@ -3,7 +3,8 @@
  * The root layout for a fictional gallery brand: runtime identity, assets, validated token
  * overrides, analytics ids (loaded only after consent), the ship-to selector, the sister strip.
  * And the shop's: shoppers buy as guests, so no account entry — Partnership is the way in (D31,
- * D36) — and their saved items live on the device, behind the header's heart (D35).
+ * D36) — and their saved items live on the device, behind the header's heart (D35). Every asset is
+ * at its versioned URL (C13 `BRAND_ASSET_URL`); the shop ships no touch icon yet, so it links none.
  */
 import type { ShellVM } from '../shell'
 import { ORIGIN, SELLER_ID, SELLER_SG, SISTER_ORIGIN, streamed } from './_shared'
@@ -14,14 +15,16 @@ export const shell: ShellVM = {
   defaultLocale: 'en',
   locales: ['en', 'id'],
   assets: {
-    logo: '/brand-assets/logo.svg',
-    mark: '/brand-assets/mark.svg',
-    favicon: '/brand-assets/favicon.ico',
-    ogImage: '/brand-assets/og.png',
+    logo: '/brand-assets/logo.svg?v=3f1c9a2e',
+    mark: '/brand-assets/mark.svg?v=8b04d6c1',
+    favicon: '/brand-assets/favicon.ico?v=c2a7e519',
+    touchIcon: '/brand-assets/apple-touch-icon.png?v=5e9f0b37',
+    manifest: '/brand-assets/site.webmanifest?v=a41d7c08',
+    ogImage: '/brand-assets/og.png?v=9d3e2f64',
     fonts: [
       {
         family: 'Fixture Serif',
-        src: '/brand-assets/fonts/fixture-serif.woff2',
+        src: '/brand-assets/fonts/fixture-serif.woff2?v=07b8e1ac',
         weight: '400',
         style: 'normal',
       },
@@ -83,6 +86,7 @@ export const shell: ShellVM = {
 export const shellShop: ShellVM = {
   ...shell,
   brand: { name: 'Sample Emporium', storefront: 'emporium', origin: SISTER_ORIGIN },
+  assets: { ...shell.assets, touchIcon: null },
   modules: [
     'accounts.retailers',
     'retention.deviceWishlist',
