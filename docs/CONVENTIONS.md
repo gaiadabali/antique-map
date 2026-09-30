@@ -307,8 +307,9 @@ remember:
   domain events, and it runs **after the write commits**: Payload runs
   `afterChange` before it commits, so inside a request `invalidate()` schedules the
   revalidation with `after()`, which runs once the response has been sent; outside
-  one, the caller hands it a collector and flushes it once its operation returns —
-  an import once per batch. Editorial tags use `revalidateTag(tag, 'max')`
+  one, the caller hands it a collector and flushes it once its operation returns,
+  dropping it on a throw — an import once per batch. Editorial tags use
+  `revalidateTag(tag, 'max')`
   (stale-while-revalidate); **availability and price tags expire immediately**
   (`{ expire: 0 }`).
 - **The availability that decides a purchase is never cached**: it changes with

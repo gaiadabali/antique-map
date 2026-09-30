@@ -45,6 +45,8 @@ export type ShellVM = {
      * The home-screen icon (C13 `BRAND_ROOT_ASSETS.touchIcon`), for the metadata's `icons.apple`;
      * `null` when the brand ships none, so no page links a 404 (v1.3). Absent only in the apps'
      * interim shell of TASKS.md 4.1, which links it by itself; the shell's loader (11.3) sets it.
+     * Both fields become required at 4.6's merge, once 4.6.e's apps set them (a minor change,
+     * producers only: 4.3's reviews, senior-be #14 and senior-fe #9).
      */
     touchIcon?: string | null
     /** The web manifest (C13 `BRAND_ROOT_ASSETS.manifest`), for the metadata's `manifest`; as `touchIcon`. */

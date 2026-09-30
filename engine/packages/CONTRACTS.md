@@ -680,6 +680,9 @@ so it is breaking and also needs a redirect.
     of the public path, never a raw `params` segment (senior-fe #3); the page awaits in its body
     what the first flush carries, the item's `purchase` included (senior-fe #1); the not-found
     boundary names the 404's metadata (senior-fe #5). A type test pins the new input.
+  - **C2, next:** `ShellVM.assets.touchIcon` and `.manifest` become required at 4.6's merge, once
+    4.6.e's apps set both — a minor change that touches producers only, so `undefined` stops
+    meaning "the app links it itself" (senior-be #14, senior-fe #9).
   - **C13:**
     - `REVALIDATE_REQUEST` (new): the terms on which `invalidate(tags)` posts to
       `/api/x/revalidate` from outside a request — a bearer `REVALIDATE_SECRET` compared in

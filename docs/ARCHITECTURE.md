@@ -412,8 +412,9 @@ spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-componen
   once the response has been sent, after Payload has committed (Next runs `after()`
   callbacks under its own revalidation flush, `after-context.js`); **outside a
   request** — a `payload jobs:run` worker, a seed, an import — the caller puts a
-  collector on Payload's `req.context` and flushes it once its operation returns,
-  an import once per batch, by a post to `/api/x/revalidate` (C13
+  collector on Payload's `req.context` and flushes it once its operation returns
+  (a throw, a rolled-back save, drops it), an import once per batch, by a post to
+  `/api/x/revalidate` (C13
   `REVALIDATE_REQUEST`, TASKS.md 4.6.f), which expires each tag at its builder's
   profile. The mode is explicit: an out-of-request caller that forgets its collector
   gets `after()`'s error outside a request, never a silent stale page. The helper
