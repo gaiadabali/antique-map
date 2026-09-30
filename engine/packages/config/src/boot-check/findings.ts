@@ -17,6 +17,13 @@ export type BootFinding = {
   /** The environment variable or config field at fault: `LINK_TOKEN_KEYS`, `sellers[0].draft`. */
   readonly subject: string
   readonly message: string
+  /**
+   * A service the process needs did not answer — the database, today. An outage fails the report
+   * (`ok` is false, so a health check fails) but is not a configuration the check refuses: a
+   * process whose only problems are outages booted, and is reported as unavailable, never as a
+   * refused start (`isRefused()`; qa's phase 4 gate L1, TASKS.md 5.3.f).
+   */
+  readonly outage?: true
 }
 
 export type Findings = {
