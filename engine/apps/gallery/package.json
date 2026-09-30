@@ -1,0 +1,36 @@
+{
+  "name": "@engine/app-gallery",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The storefront for one-of-one catalogues (BRANDS.md §2): UI, the route tree and the Payload admin mount. A brand chooses it in brand.storefront; its identity arrives from config at runtime, never at build.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@engine/cms": "workspace:*",
+    "@engine/config": "workspace:*",
+    "@engine/http": "workspace:*",
+    "@engine/i18n": "workspace:*",
+    "@engine/view-models": "workspace:*",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/storage-s3": "3.90.2",
+    "@payloadcms/ui": "3.90.2",
+    "graphql": "16.11.0",
+    "next": "16.3.6",
+    "payload": "3.90.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@engine/ui": "workspace:*",
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,60 @@
+/*
+ * Placeholder values for every C3 token (engine/packages/ui/src/tokens/contract.ts), so the shell
+ * renders before the design exists. Deliberately neutral — greys, system faces, no accent worth
+ * keeping — because nothing is designed by default in code (design decision 10): the Design stage
+ * picks the real values (DESIGN.md, TASKS.md 14.1) and the token pipeline replaces this file
+ * (11.2). Every text pairing clears WCAG 2.2 AA; `tokens.test.ts` proves each token is defined.
+ */
+:root {
+  --c-ground: #f4f4f2;
+  --c-surface: #ffffff;
+  --c-surface-deep: #e8e8e5;
+  --c-ink: #1c1c1c;
+  --c-ink-soft: #4d4d4b;
+  --c-rule: #8a8a86;
+  --c-accent: #1f2f40;
+  --c-accent-ink: #ffffff;
+  --c-focus: #3b82d6;
+  --c-positive: #2e6b3a;
+  --c-caution: #8a5a00;
+  --c-critical: #a3261f;
+  --c-viewer: #121212;
+  --c-viewer-ink: #f2f2f2;
+  --c-scrim: rgb(18 18 18 / 0.6);
+
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-text: Georgia, 'Times New Roman', serif;
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-numeric: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --t-hero: clamp(2.25rem, 1.6rem + 3vw, 3.5rem);
+  --t-display: clamp(1.75rem, 1.4rem + 1.8vw, 2.5rem);
+  --t-title: clamp(1.25rem, 1.1rem + 0.8vw, 1.625rem);
+  --t-lede: 1.1875rem;
+  --t-body: 1rem;
+  --t-small: 0.875rem;
+  --t-micro: 0.75rem;
+
+  --measure: 66ch;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+
+  --radius-control: 2px;
+  --radius-card: 2px;
+  --rule-hair: 1px;
+  --rule-strong: 2px;
+  --focus-width: 3px;
+
+  --dur-in: 320ms;
+  --dur-out: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --reveal-distance: 8px;
+}

@@ -317,17 +317,32 @@ lead):
 ## 9. Rendering and caching
 
 The model is **Next 16 Cache Components** (`cacheComponents: true`), used the way
-its rules require — checked against the 16.3 docs:
+its rules require — checked against the 16.3 docs, and **confirmed by the phase 4
+spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-components.md`):
 
-- **No route-segment config anywhere.** With Cache Components on, a segment that
+- **No route-segment config but one.** With Cache Components on, a segment that
   exports `dynamic`, `revalidate` or `fetchCache` fails the build, and
   `generateStaticParams` returning `[]` is an error. (This replaces KOI's
-  `force-dynamic` rule, which belongs to the older model.)
+  `force-dynamic` rule, which belongs to the older model.) The one exception is
+  Cache Components' own: the `(site)` root layout exports `instant = false`, since
+  a `connection()` outside `<Suspense>` otherwise fails the build (the spike, §1).
+  Its root parameter, `[locale]`, lists every engine locale in
+  `generateStaticParams` — brand-independent, and prerendering nothing.
 - **The brand is read only at request time.** The `(site)` root layout awaits
   `connection()`, so no static shell is prerendered at `next build` — a
   prerendered shell would either need the database at build or bake a brand-less
   masthead into the HTML (NOW!'s incident, BRANDS.md §3). The artifact is still
-  built with no database and no secrets.
+  built with no database and no secrets. Next renders a layout and its page
+  concurrently, so the brand read itself awaits `connection()` (the app's
+  `currentBrand()`), and an engine `GET` handler reads its request before anything
+  else — one that never does is run at `next build` to bake its answer.
+- **Every page renders in full per request.** Next 16.3 serves a Cache Components
+  route's prerendered shell — even an empty one — with the status it had at build,
+  so a `notFound()` or `permanentRedirect()` resumed after it could only become a
+  meta tag. Each app's `next.config.ts` sets `htmlLimitedBots: /.*/`, the setting
+  under which Next renders the whole page per request with blocking metadata: a
+  404 is a 404 and a slug change a real permanent redirect (308, Next's status for
+  `permanentRedirect()`). Caching is per read, never per page.
 - **Content is cached; runtime data streams.** Loaders for content use
   `'use cache'` + `cacheTag` (the process serves one brand, so the brand is part
   of every key by construction); cookies, headers, search params, availability,
@@ -342,12 +357,19 @@ its rules require — checked against the 16.3 docs:
   one `invalidate(tags)` helper, which posts to an internal revalidate route
   (`REVALIDATE_SECRET`).
 - **The admin lives under the same flag** — Payload's Cache Components support is
-  still "initial" (≥ 3.81) — so **phase 4 proves it** (TASKS.md 4.1): a production
+  still "initial" (≥ 3.81) — so **phase 4 proved it** (TASKS.md 4.1): a production
   build with the admin mounted and no database, brand or secrets, then one
   gallery build serving the `test` brand and Indies Gallery with different
-  mastheads. **Fallback if the spike fails:** Cache Components off, request-time
-  rendering throughout (KOI's model), with content caching through
-  `unstable_cache`-style tagged helpers — decided once, in phase 4, never mixed.
+  mastheads. **Verdict: Cache Components confirmed** — both builds made with no
+  database, brand or secret and the admin mounted; one gallery build served both
+  brands; `revalidateTag(tag, { expire: 0 })` never served availability stale over
+  six flips while `'max'` served the record stale once; the page body and every
+  form arrived in the first flush and only the panel streamed; the admin signed in
+  on two databases. The fallback — Cache Components off, request-time rendering
+  throughout (KOI's model), content cached through `unstable_cache`-style tagged
+  helpers — was not needed and is not adopted; the two are never mixed. The CSP
+  the proxy sets uses **per-request nonces**: hashes cannot hold, since Next's
+  inline scripts carry each request's RSC payload (the spike, §7; §13).
 - **Currency follows the ship-to destination, never the IP or the language.** One
   `shipTo` cookie (defaulted from Cloudflare's `CF-IPCountry`, changed by the
   ship-to selector) plus the routed seller decide the market; a display currency
