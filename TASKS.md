@@ -161,9 +161,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W2 | 5.4 Gates for the v1.3 contracts | medior | `antique-map-p5-har-gates` / `feat/p5-har-gates` | 2026-10-01 | branched from the 5.3 merge (5a253f0) while its gate runs; rebased on `main` before merge |
 | 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
-| 6·W1 | 6.1.g + 6.2.e ARC's doc and content-model corrections | architect | `antique-map-p6-arc` / `feat/p6-arc` | 2026-10-01 | before phases 8–9 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
 | 6·W1 | 6.3.e the copy-completeness gate | medior | `antique-map-p6-copy-gate` / `feat/p6-copy-gate` | 2026-10-01 | |
+| 6·W1 | align the imagery docs and J-S1/J-S2 to C9 v1.4 and D47 (6.2.e / 6.1.g follow-up) | junior | `antique-map-p6-align` / `feat/p6-align` | 2026-10-01 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -670,7 +670,7 @@ run beside the build line rather than in it.
   - [x] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
   - [ ] 6.3.c 👤 native Indonesian copywriter review
   - [ ] 6.3.e HAR: a copy-completeness gate — `@engine/i18n/copy`'s `checkCopy()` wired into `check-brands` for every brand × the app that renders it × `locales.supported`, the `test` brand checked against the union of both apps' keys; a planted missing key and a planted placeholder mismatch each fail it (none exists today, so 6.3.b's coverage is unguarded)
-  - [ ] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`)
+  - [ ] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`); and C9 v1.4's labels: `SYNTHETIC_LABEL`, each `PRINT_RESTORATIONS` step, the new image roles, "≈ … — charged in Rp …" with the note that the card issuer or PayPal may convert again (D47), and the room plate's caption with its wall width
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for the gallery; the shop's to confirm — likely *kamu*), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
 
 ---
