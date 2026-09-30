@@ -710,8 +710,9 @@ recommendation from the 4.1 review (item 5), adopted with its conditions.
    CI however indirect: through `@engine/loaders`, say, any future package that
    depends on cms, a relative path into `cms/src`, a `#` subpath import, `require()`
    or `createRequire` (4.3's senior-be review #3; 5.4's qa gate B1). **Its known
-   limits**, which no load of a mount can see: a path that runs only when a handler
-   is called (a computed `import()` inside a function — the lazy path, by design);
+   limits**, which no load of a mount can see: any computed specifier — inside a
+   function (the lazy path, by design) or evaluated at load with its refusal caught
+   by the module itself (`try { await import(s) } catch {}`);
    code loaded outside Node's resolvers (`fs` + `eval`/`vm`/`new Function`, a
    worker or child process, `process.dlopen`); and, in a long-lived process, a
    module already linked before the guard went up — the CLI starts fresh. And ESLint, under `engine/packages/http/src/**`: only a
