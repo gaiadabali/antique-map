@@ -2,8 +2,6 @@
 import { describe, expect, it } from 'vitest'
 
 import { GET } from './route'
-import { GET as robots } from './unbuilt/robots/route'
-import { GET as unbuiltGet, POST as unbuiltPost } from './unbuilt/route'
 
 const request = (path: string, method = 'GET') => new Request(`http://localhost${path}`, { method })
 
@@ -18,20 +16,4 @@ describe('/api/x/legacy/[...path]', () => {
       expect(response.headers.get('content-type')).toMatch(/^text\/plain/)
     },
   )
-})
-
-describe('the placeholder mount target', () => {
-  it('answers 404 to a GET and a POST alike', async () => {
-    expect((await unbuiltGet(request('/api/x/search'))).status).toBe(404)
-    expect((await unbuiltPost()).status).toBe(404)
-  })
-})
-
-describe('the robots placeholder (senior-be #2)', () => {
-  it('fails closed: every crawler is disallowed until SEO builds robots', async () => {
-    const response = await robots(request('/api/x/robots'))
-    expect(response.status).toBe(200)
-    expect(response.headers.get('content-type')).toBe('text/plain; charset=utf-8')
-    expect(await response.text()).toBe('User-agent: *\nDisallow: /\n')
-  })
 })

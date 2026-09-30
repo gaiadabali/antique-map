@@ -1,1 +1,1 @@
-export { POST } from '@engine/http/legacy/unbuilt' // until LOG builds @engine/http/webhooks/fulfilment
+export { POST } from '@engine/http/unbuilt' // until LOG builds @engine/http/webhooks/fulfilment

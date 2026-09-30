@@ -1,1 +1,1 @@
-export { GET } from '@engine/http/legacy/unbuilt' // until MED builds @engine/http/media
+export { GET } from '@engine/http/unbuilt' // until MED builds @engine/http/media
