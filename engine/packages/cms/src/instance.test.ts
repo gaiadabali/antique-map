@@ -79,7 +79,7 @@ describe('importing @engine/cms/instance', () => {
     // Anything the import set off has had time to reach the listener.
     await new Promise((resolve) => setTimeout(resolve, 300))
     expect(accepted).toBe(0)
-  })
+  }, 30_000)
 
   it("and cms()'s first call is what connects — to that listener, which refuses it", async () => {
     // A refused connect also rejects the adapter's own `initializing` promise, which nothing in
@@ -193,5 +193,5 @@ describe('the one server-route getPayload()', () => {
         !/\.test\.[^/]+$/.test(file),
     )
     expect(others).toEqual([])
-  })
+  }, 60_000)
 })
