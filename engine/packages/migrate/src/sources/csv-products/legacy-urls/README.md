@@ -1,13 +1,14 @@
 # Legacy URL discovery
 
 Inventories every URL a brand's old hosted-store domain ever served, so the new
-storefront's redirect map can answer each one (MIGRATION.md §6, §10). Two
-sources, both copies — **nothing is ever requested from the old site**:
+storefront's redirect map can answer each one (MIGRATION.md §6, §10). Three
+sources, all copies — **nothing is ever requested from the old site**:
 
-| Source | What it is | Status |
-| ------ | ---------- | ------ |
-| `cdx` | the Wayback Machine's CDX index — every archived capture of the domain | read by `fetch-cdx` |
-| `gsc` | a Google Search Console export the owner hands over | read by `import-gsc` |
+| Source    | What it is                                                                                                                         | Status                   |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `cdx`     | the Wayback Machine's CDX index — every archived capture of the domain                                                             | read by `fetch-cdx`      |
+| `sitemap` | the domain's `/sitemap.xml` as the Wayback Machine archived it, read through playback (`web.archive.org/web/<timestamp>id_/<url>`) | read by `fetch-sitemaps` |
+| `gsc`     | a Google Search Console export the owner hands over                                                                                | read by `import-gsc`     |
 
 The domain is data: it lives in the brand's `content/legacy/discovery.json` and
 is never written in this code (CONVENTIONS.md §1).
@@ -18,6 +19,7 @@ Run from the repo root with plain `node` (no build step, Node built-ins only):
 
 ```sh
 node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-cdx  --site <brand>/content/legacy/discovery.json
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-sitemaps --site <brand>/content/legacy/discovery.json
 node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs import-gsc --site <brand>/content/legacy/discovery.json --file Pages.csv --from 2025-05-01 --to 2026-08-31
 node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs build      --site <brand>/content/legacy/discovery.json
 ```
@@ -46,6 +48,22 @@ captures; `build` **fails** if a variant ever sees a path the domain match does
 not, rather than under-count. Captures are fetched uncollapsed, because first and
 last capture and every status are the point.
 
+## Archived sitemaps (`sitemap.mjs`)
+
+`fetch-sitemaps` reads the CDX cache and requests only the `/sitemap.xml`
+captures the index holds as 200, in the raw `id_` playback form, through the same
+polite fetch. Redirects are followed by hand, and each hop must stay on
+`web.archive.org`. When a capture is a `<sitemapindex>`, a child is requested
+only if the index archived it, at the 200 capture nearest its parent. A child the
+index never archived is listed in the manifest as not archived, and is never
+requested. Raw XML goes to `<dataDir>/sitemap/`, with a `manifest.json`, and a
+cached file that parses is not requested again.
+
+The parser reads each `<url>`'s own `<loc>` and `<lastmod>`: never an
+`<image:loc>`, with CDATA and entities decoded. A listed path gains the source
+`sitemap`. Its `lastmod` (in UTC) is its evidence date; without one, the capture
+that listed it dates it.
+
 ## Normalisation (`normalise-path.mjs`)
 
 Scheme, host, `www.`, port and fragment are dropped; doubled and trailing
@@ -63,20 +81,20 @@ by reason only.
 URL shapes (`/<collection>/p/<slug>` is a Squarespace product, `/products/<slug>`
 the Indonesian store builders' shape, a collection with a `/p/` child is a store,
 one with a dated child a blog …). The `rule` column names the shape that
-decided; what a shape cannot tell, the brand's `kindOverrides` settles
-(`rule = override`).
+decided; what a shape cannot tell, the brand's `kindOverrides` settles for the
+path and everything under it (`rule = override`).
 
 ## The Search Console CSV the importer expects
 
 **Performance → Search results → Pages tab → Export → Download CSV**, unzipped:
 `Pages.csv` with the columns
 
-| Column | Required | Used for |
-| ------ | -------- | -------- |
-| `Top pages` (or `Page`, `URL`; Indonesian UI `Halaman teratas`) | yes | the URL |
-| `Clicks` (`Klik`) | no | `gsc_clicks` — ranks the redirect work |
-| `Impressions` (`Tayangan`) | no | `gsc_impressions` |
-| `CTR`, `Position` | no | ignored |
+| Column                                                          | Required | Used for                               |
+| --------------------------------------------------------------- | -------- | -------------------------------------- |
+| `Top pages` (or `Page`, `URL`; Indonesian UI `Halaman teratas`) | yes      | the URL                                |
+| `Clicks` (`Klik`)                                               | no       | `gsc_clicks` — ranks the redirect work |
+| `Impressions` (`Tayangan`)                                      | no       | `gsc_impressions`                      |
+| `CTR`, `Position`                                               | no       | ignored                                |
 
 The page-indexing export (**Indexing → Pages → a reason → Export**: `URL`,
 `Last crawled`) is read too; `Last crawled` dates the row. A byte-order mark,
@@ -88,8 +106,9 @@ columns expected.
 
 ## Tests
 
-Colocated `*.test.mjs` (Vitest) over synthetic fixtures in `fixtures/` — a CDX
-cache and three Search Console exports for `example-shop.test`. They run today
+Colocated `*.test.mjs` (Vitest) over synthetic fixtures in `fixtures/` for
+`example-shop.test`: a CDX cache, three Search Console exports, and a sitemap
+`urlset` and `sitemapindex`. They run today
 under the root config's `packages` project:
 
 ```sh

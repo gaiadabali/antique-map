@@ -36,7 +36,10 @@ describe('committed legacy URL inventories', () => {
         expect(row).toHaveLength(INVENTORY_COLUMNS.length)
         expect(KINDS).toContain(row[at('kind')])
         expect(row[at('path')]).toMatch(/^\/(?![/\\])/) // root-relative, never //host
-        expect(['cdx', 'gsc', 'cdx|gsc']).toContain(row[at('sources')])
+        const sources = (row[at('sources')] ?? '').split('|')
+        expect(sources.length).toBeGreaterThan(0)
+        expect(sources).toEqual([...new Set(sources)].sort())
+        sources.forEach((source) => expect(['cdx', 'gsc', 'sitemap']).toContain(source))
       }
       const summary = JSON.parse(readFileSync(join(dir, 'inventory', 'summary.json'), 'utf8'))
       expect(summary.total).toBe(rows.length)

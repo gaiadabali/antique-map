@@ -117,6 +117,18 @@ export function createInventory() {
   }
 
   /**
+   * One `<url>` of an archived sitemap. Its `lastmod`, when present, is the
+   * row's evidence date; otherwise the capture that listed it is.
+   * @param {Normalised} url
+   * @param {{ capturedAt: string, lastmod: string | null }} listing both ISO, UTC
+   */
+  function addListing(url, { capturedAt, lastmod }) {
+    const entry = entryFor(url)
+    entry.sources.add('sitemap')
+    seen(entry, lastmod ?? capturedAt)
+  }
+
+  /**
    * @param {Record<string, string>} [kindOverrides]
    * @returns {Array<Record<string, string | number>>} sorted: main host first, then by path
    */
@@ -143,7 +155,7 @@ export function createInventory() {
     }))
   }
 
-  return { addCapture, addSearch, rows, size: () => entries.size }
+  return { addCapture, addSearch, addListing, rows, size: () => entries.size }
 }
 
 /** @param {Array<Record<string, string | number>>} rows */

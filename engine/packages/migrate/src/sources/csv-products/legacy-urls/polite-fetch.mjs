@@ -10,6 +10,8 @@ import { URL } from 'node:url'
 export const MIN_INTERVAL_FLOOR_MS = 1000
 
 const RETRYABLE = new Set([429, 500, 502, 503, 504])
+const REDIRECTS = new Set([301, 302, 303, 307, 308])
+const MAX_REDIRECTS = 3
 
 /** @param {string | null} header */
 function retryAfterMs(header) {
@@ -63,8 +65,15 @@ export function createPoliteFetch(options) {
     lastStart = now()
   }
 
-  /** @param {string} url */
-  async function getText(url) {
+  /**
+   * Redirects are followed by hand, so each hop passes the host allowlist:
+   * a playback that redirected to the original site would be refused, not
+   * followed.
+   * @param {string} url
+   * @param {number} [hops]
+   * @returns {Promise<string>}
+   */
+  async function getText(url, hops = 0) {
     const host = new URL(url).hostname.toLowerCase()
     if (!allowed.has(host)) throw new Error(`refusing to request ${host}: not an allowed host`)
     for (let attempt = 1; ; attempt += 1) {
@@ -73,8 +82,12 @@ export function createPoliteFetch(options) {
       let response
       try {
         response = await fetchImpl(url, {
-          headers: { 'user-agent': userAgent, accept: 'application/json, text/plain' },
+          headers: {
+            'user-agent': userAgent,
+            accept: 'application/json, application/xml, text/plain',
+          },
           signal: globalThis.AbortSignal.timeout(timeoutMs),
+          redirect: 'manual',
         })
       } catch (error) {
         if (attempt >= maxAttempts) throw error
@@ -83,6 +96,12 @@ export function createPoliteFetch(options) {
         continue
       }
       if (response.ok) return await response.text()
+      const location = response.headers.get('location')
+      if (REDIRECTS.has(response.status) && location !== null) {
+        if (hops >= MAX_REDIRECTS) throw new Error(`too many redirects from ${url}`)
+        log(`  HTTP ${response.status} → ${location}`)
+        return getText(new URL(location, url).toString(), hops + 1)
+      }
       if (!RETRYABLE.has(response.status) || attempt >= maxAttempts) {
         throw new Error(`HTTP ${response.status} for ${url}`)
       }

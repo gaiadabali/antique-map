@@ -2,6 +2,7 @@
 // Legacy URL discovery for a brand's old domain (MIGRATION.md §10).
 //
 //   node <this file> fetch-cdx  --site <brand>/content/legacy/discovery.json [--refresh] [--interval-ms 1500]
+//   node <this file> fetch-sitemaps --site …   (the archived sitemaps, via Wayback playback)
 //   node <this file> import-gsc --site … --file Pages.csv [--from YYYY-MM-DD --to YYYY-MM-DD]
 //   node <this file> build      --site …
 //
@@ -16,11 +17,12 @@ import process from 'node:process'
 import { parseArgs } from 'node:util'
 
 import { buildInventory, writeInventory } from './build.mjs'
-import { CDX_HOST, fetchCdx } from './cdx.mjs'
+import { CDX_HOST, fetchCdx, readCdxCache } from './cdx.mjs'
 import { importGscFile } from './gsc.mjs'
 import { createPoliteFetch } from './polite-fetch.mjs'
+import { fetchSitemaps } from './sitemap.mjs'
 
-const USAGE = `usage: cli.mjs <fetch-cdx | import-gsc | build> --site <discovery.json> [options]
+const USAGE = `usage: cli.mjs <fetch-cdx | fetch-sitemaps | import-gsc | build> --site <discovery.json> [options]
   --data-dir <dir>      raw cache (default LEGACY_DATA_DIR)
   --out <dir>           inventory folder (default <site dir>/inventory)
   --refresh             fetch-cdx: fetch every page again instead of resuming
@@ -74,20 +76,34 @@ async function main() {
   }
   const outDir = values.out ?? join(dirname(sitePath), 'inventory')
 
-  if (command === 'fetch-cdx') {
+  if (command === 'fetch-cdx' || command === 'fetch-sitemaps') {
     const polite = createPoliteFetch({
       allowedHosts: [CDX_HOST],
       userAgent: USER_AGENT,
       minIntervalMs: Number(values['interval-ms']),
       log: (line) => console.log(line),
     })
-    await fetchCdx({
-      domain,
-      dataDir,
-      getText: polite.getText,
-      refresh: values.refresh,
-      log: (line) => console.log(line),
-    })
+    if (command === 'fetch-cdx') {
+      await fetchCdx({
+        domain,
+        dataDir,
+        getText: polite.getText,
+        refresh: values.refresh,
+        log: (line) => console.log(line),
+      })
+    } else {
+      const cdxRows = readCdxCache(dataDir).rowsByQuery.get('domain')
+      if (cdxRows === undefined)
+        throw new Error('fetch-sitemaps reads the CDX cache: run fetch-cdx first')
+      const manifest = await fetchSitemaps({
+        domain,
+        dataDir,
+        cdxRows,
+        getText: polite.getText,
+        log: (line) => console.log(line),
+      })
+      manifest.unarchived.forEach(({ loc }) => console.log(`  not archived, not requested: ${loc}`))
+    }
     console.log(`${polite.requests.length} request(s), all to ${CDX_HOST}:`)
     polite.requests.forEach((url) => console.log(`  ${url}`))
   } else if (command === 'import-gsc') {

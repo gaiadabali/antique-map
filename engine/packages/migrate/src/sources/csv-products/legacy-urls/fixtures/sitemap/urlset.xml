@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://www.example-shop.test/home</loc>
+    <changefreq>daily</changefreq>
+    <lastmod>2023-11-17</lastmod>
+    <image:image>
+      <image:loc>https://images.cdn.test/content/v1/harbour.png</image:loc>
+      <image:title>Home</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.example-shop.test/shop/p/harbour-map-1849</loc>
+    <lastmod>2024-05-23T08:15:00+07:00</lastmod>
+  </url>
+  <url>
+    <loc><![CDATA[https://www.example-shop.test/shop?category=Maps&format=json]]></loc>
+  </url>
+  <url>
+    <loc>https://www.example-shop.test/shop?tag=bali&amp;format=rss</loc>
+    <lastmod>not a date</lastmod>
+  </url>
+  <url>
+    <loc>https://elsewhere.test/page</loc>
+  </url>
+  <url>
+    <lastmod>2024-01-01</lastmod>
+  </url>
+</urlset>

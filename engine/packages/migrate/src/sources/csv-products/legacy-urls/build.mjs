@@ -7,8 +7,9 @@ import { join } from 'node:path'
 import { readCdxCache } from './cdx.mjs'
 import { KINDS } from './classify-path.mjs'
 import { readGscCache } from './gsc.mjs'
-import { createInventory, inventoryCsv } from './inventory.mjs'
+import { cdxTimestampToIso, createInventory, inventoryCsv } from './inventory.mjs'
 import { normaliseUrl } from './normalise-path.mjs'
+import { lastmodToIso, readSitemapCache } from './sitemap.mjs'
 
 /** @param {Record<string, number>} counts @param {string} key */
 function bump(counts, key) {
@@ -78,6 +79,26 @@ export function buildInventory({ domain, dataDir, kindOverrides = {} }) {
     exports.push({ name, from: meta.from, to: meta.to, rows: records.length, accepted })
   }
 
+  const sitemaps = []
+  const { manifest: sitemapManifest, sitemaps: cached } = readSitemapCache(dataDir)
+  for (const { file, timestamp, original, parent, sitemap } of cached) {
+    let accepted = 0
+    if (sitemap.type === 'urlset') {
+      for (const { loc, lastmod } of sitemap.entries) {
+        const url = normaliseUrl(loc, domain)
+        if (!url.ok) {
+          bump(rejected, `sitemap:${url.reason}`)
+          continue
+        }
+        const capturedAt = cdxTimestampToIso(timestamp)
+        inventory.addListing(url, { capturedAt, lastmod: lastmodToIso(lastmod) })
+        accepted += 1
+      }
+    }
+    const capture = { timestamp, original, parent, type: sitemap.type }
+    sitemaps.push({ ...capture, file, entries: sitemap.entries.length, accepted })
+  }
+
   const rows = inventory.rows(kindOverrides)
   /** @type {Record<string, number>} */
   const byKind = Object.fromEntries(KINDS.map((kind) => [kind, 0]))
@@ -107,6 +128,7 @@ export function buildInventory({ domain, dataDir, kindOverrides = {} }) {
       queries,
     },
     gsc: { exports },
+    sitemap: { captures: sitemaps, unarchivedChildren: sitemapManifest?.unarchived ?? [] },
     rejected,
   }
   return { rows, summary }

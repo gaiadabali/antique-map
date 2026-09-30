@@ -82,4 +82,30 @@ describe('createPoliteFetch', () => {
       createPoliteFetch({ ...busy.options, maxAttempts: 2 }).getText(`https://${CDX_HOST}/x`),
     ).rejects.toThrow(/HTTP 503/)
   })
+
+  it('follows a redirect only while it stays on the archive', async () => {
+    const onArchive = harness([
+      {
+        status: 302,
+        headers: { location: '/web/20240624134229id_/https://www.example-shop.test/x' },
+      },
+      { status: 200, body: 'moved' },
+    ])
+    const polite = createPoliteFetch(onArchive.options)
+    await expect(polite.getText(`https://${CDX_HOST}/web/20240624134228id_/x`)).resolves.toBe(
+      'moved',
+    )
+    expect(polite.requests[1]).toBe(
+      `https://${CDX_HOST}/web/20240624134229id_/https://www.example-shop.test/x`,
+    )
+
+    const offArchive = harness([
+      { status: 302, headers: { location: 'https://www.example-shop.test/x' } },
+    ])
+    const refused = createPoliteFetch(offArchive.options)
+    await expect(refused.getText(`https://${CDX_HOST}/web/1id_/x`)).rejects.toThrow(
+      /not an allowed host/,
+    )
+    expect(offArchive.starts).toHaveLength(1) // the old site was never asked
+  })
 })

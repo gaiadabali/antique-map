@@ -41,7 +41,7 @@ const ASSET_EXTENSION =
 const ASSET_MIMETYPE =
   /^(image|font|audio|video)\/|^application\/(pdf|javascript|zip)|^text\/(css|javascript)/
 const PRODUCT_SEGMENTS = new Set(['product', 'products'])
-const STORE_SEGMENTS = new Set(['shop', 'store', 'collections'])
+const STORE_SEGMENTS = new Set(['shop', 'store', 'collection', 'collections'])
 const BLOG_SEGMENTS = new Set(['blog', 'journal', 'news', 'stories', 'lookbook'])
 const LISTING_SEGMENTS = new Set(['category', 'tag', 'categories', 'tags'])
 const YEAR = /^\d{4}$/
@@ -111,8 +111,20 @@ export function classifyPath(entry, roles) {
 }
 
 /**
+ * An override names a path and everything under it: a store page's own
+ * sub-listings (`/prints/by-region`) are listings too.
+ * @param {string} path @param {Record<string, string>} overrides
+ */
+function overrideFor(path, overrides) {
+  for (let prefix = path; prefix !== ''; prefix = prefix.slice(0, prefix.lastIndexOf('/'))) {
+    if (overrides[prefix] !== undefined) return overrides[prefix]
+  }
+  return undefined
+}
+
+/**
  * Classifies every entry, the brand's overrides (`{ "/path": "kind" }`, main
- * host only) winning over the shapes.
+ * host only, the path and everything under it) winning over the shapes.
  * @param {ClassifyInput[]} entries
  * @param {Record<string, string>} [overrides]
  * @returns {Classification[]} in the order of `entries`
@@ -123,7 +135,8 @@ export function classifyAll(entries, overrides = {}) {
   }
   const roles = collectionRoles(entries)
   return entries.map((entry) => {
-    const override = entry.host === '@' && entry.query === '' ? overrides[entry.path] : undefined
+    const override =
+      entry.host === '@' && entry.query === '' ? overrideFor(entry.path, overrides) : undefined
     return override === undefined
       ? classifyPath(entry, roles)
       : { kind: override, rule: 'override' }
