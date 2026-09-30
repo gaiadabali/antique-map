@@ -1,0 +1,14 @@
+{
+  "shell.skipToContent": "Skip to content",
+  "shell.homeLink": "{brand}, home",
+  "shell.languages": "Language",
+  "shell.locale.en": "English",
+  "shell.locale.id": "Bahasa Indonesia",
+  "shell.locale.nl": "Nederlands",
+  "shell.contact": "Contact",
+  "home.title": "{brand}",
+  "home.lede": "The shop is being built. What you see is its frame.",
+  "notFound.title": "Page not found",
+  "notFound.body": "There is nothing at this address.",
+  "notFound.home": "Go to the home page"
+}
