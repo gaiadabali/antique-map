@@ -3,6 +3,7 @@
 export { checkClientSafe, formatViolation } from './check.mjs'
 export { findClientModules, isClientModule } from './discover.mjs'
 export { forbiddenReason, RULES } from './rules.mjs'
+export { dynamicImports } from './scan.mjs'
 export {
   BROWSER_CONDITIONS,
   directReach,
@@ -13,4 +14,5 @@ export {
   resolvePackage,
   runtimeReach,
   specifiersOf,
+  UNRESOLVABLE,
 } from './walk.mjs'

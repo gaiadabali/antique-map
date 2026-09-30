@@ -1,7 +1,14 @@
 // What a Client Component may never reach (TASKS.md 4.2.a; CONVENTIONS.md §5–§6;
 // DESIGN-SYSTEM.md §7). Each rule names why, so a failure explains itself.
+import { builtinModules } from 'node:module'
 
 const CONFIG_SERVER_ENTRIES = ['schema', 'routes', 'loader', 'validate', 'boot-check']
+
+/**
+ * The built-ins a bare name reaches (`crypto`, `path`, `fs/promises`, `_http_agent`, …). The
+ * `node:`-only ones (`node:test`, `node:sea`) are left out: bare, those names are npm packages.
+ */
+const BARE_BUILTINS = builtinModules.filter((name) => !name.startsWith('node:'))
 
 /** A package name and everything under it: `zod` and `zod/v4`, never `zodiac`. */
 const within = (specifier, name) => specifier === name || specifier.startsWith(`${name}/`)
@@ -19,6 +26,11 @@ export const RULES = [
   {
     test: (s) => s.startsWith('node:'),
     reason: 'a Node built-in: nothing a browser bundle can load',
+  },
+  {
+    test: (s) => BARE_BUILTINS.some((name) => within(s, name)),
+    reason:
+      'a Node built-in, bare: nothing a browser bundle can load (Next ships a polyfill instead)',
   },
   {
     test: (s) => within(s, 'payload') || s.startsWith('@payloadcms/') || within(s, '@engine/cms'),
