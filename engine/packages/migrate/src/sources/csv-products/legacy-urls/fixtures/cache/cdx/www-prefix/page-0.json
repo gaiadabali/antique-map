@@ -1,0 +1,6 @@
+[
+  ["original", "timestamp", "statuscode", "mimetype"],
+  ["https://www.example-shop.test/", "20221101000000", "200", "text/html"],
+  ["https://www.example-shop.test/shop/p/harbour-map-1849", "20221105120000", "200", "text/html"],
+  ["https://www.example-shop.test/about/", "20230304000000", "200", "text/html"]
+]
