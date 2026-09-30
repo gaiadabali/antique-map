@@ -6,17 +6,19 @@
  * modes runs is the caller's explicit choice, never a probe of Next's internals:
  *
  * - **A collector on the context** (`./collector`) — outside a Next request: the tags join the
- *   caller's operation, posted by its batch's `flush()` once the operation has returned.
+ *   caller's batch (`./batch`), posted by its `flush()` once the caller's writes have returned.
  * - **None** — inside a Next request (a Payload REST or admin call, a route handler, a Server
  *   Action): `after()` schedules `revalidateTag(tag, <its kind's expiry>)` for once the response
  *   has been sent, after the write has committed; Next runs `after()` callbacks under its own
  *   revalidation flush. Outside a request `after()` throws, so a caller that forgot its collector
- *   gets an error — a failed save — and never a silently stale page.
+ *   gets an error — a failed save — and never a silently stale page. In a Server Action the
+ *   action's own response, and its re-render, go out before `after()` runs, so a cached status in
+ *   that render can be one render stale; the availability that decides a purchase is read live.
  */
 import { revalidateTag } from 'next/cache'
 import { after } from 'next/server'
 
-import { stageOf, type RequestContext } from './collector'
+import { collectorOf, type RequestContext } from './collector'
 import { requireCacheTag, tagExpiry, type CacheTag } from './tags'
 
 /**
@@ -29,9 +31,9 @@ export function invalidate(
   context?: Readonly<RequestContext> | null,
 ): void {
   const checked = [...new Set(tags.map(requireCacheTag))]
-  const stage = stageOf(context)
-  if (stage) {
-    stage.add(checked)
+  const collector = collectorOf(context)
+  if (collector) {
+    collector.add(checked)
     return
   }
   after(() => {

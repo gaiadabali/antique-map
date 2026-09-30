@@ -2,12 +2,10 @@
  * `@engine/cms/instance` (TASKS.md 4.8.d). Importing it opens nothing — proven with
  * `DATABASE_URL`, `PGHOST` and `PGPORT` at a sentinel listener that must accept no connection,
  * since an unset `DATABASE_URL` is not an absent database: `pg` falls back to `PGHOST` and to
- * `localhost:5432`, a workstation's own Postgres (CONVENTIONS.md §12). Against a `db:fresh`
- * database, named by `CMS_TEST_DATABASE_URL` (e.g. `pnpm db:fresh --brand test --storefront
- * gallery`, then postgres://postgres:postgres@localhost:5432/test_<suffix>_gallery), `cms()`
- * resolves one instance and its pool answers READ COMMITTED; without that variable that part
- * skips — a setup state (CONVENTIONS.md §8). And no module under `engine/packages/**` but cms's
- * CLI, this instance and tests calls `getPayload(`.
+ * `localhost:5432`, a workstation's own Postgres (CONVENTIONS.md §12). `cms()`'s first call is
+ * what connects; a failed one leaves no unhandled rejection, and the next call retries. No module
+ * under `engine/packages/**` but cms's CLI, this instance and tests calls `getPayload(`. What
+ * needs a real database is `instance.db.test.ts`'s.
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import { createServer, type Server, type Socket } from 'node:net'
@@ -16,8 +14,6 @@ import { fileURLToPath } from 'node:url'
 
 import ts from 'typescript'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-
-import { databaseProbe } from './db/probe'
 
 type Instance = typeof import('./instance')
 
@@ -81,19 +77,24 @@ describe('importing @engine/cms/instance', () => {
     expect(accepted).toBe(0)
   }, 30_000)
 
-  it("and cms()'s first call is what connects — to that listener, which refuses it", async () => {
-    // A refused connect also rejects the adapter's own `initializing` promise, which nothing in
-    // Payload awaits; observe it here so the run reports only this test's outcome.
-    const { default: configPromise } = await import('./payload.config')
-    const config = await configPromise
-    const init = config.db.init
-    config.db.init = (args) => {
-      const adapter = init(args)
-      ;(adapter as { initializing?: Promise<unknown> }).initializing?.catch(() => undefined)
-      return adapter
+  it("cms()'s first call is what connects, a failed one leaves no unhandled rejection, and the next retries", async () => {
+    // Payload rejects its adapter's `initializing` promise on a failed connect and awaits it
+    // nowhere; `db/adapter` observes it, or a plain Node process would die here (review N1).
+    const unhandled: unknown[] = []
+    const record = (reason: unknown) => unhandled.push(reason)
+    process.on('unhandledRejection', record)
+    try {
+      await expect(instance.cms()).rejects.toThrow(/cannot connect to Postgres/)
+      const afterFirst = accepted
+      expect(afterFirst).toBeGreaterThan(0)
+      // Nothing is cached from a failed first call: the second connects again.
+      await expect(instance.cms()).rejects.toThrow(/cannot connect to Postgres/)
+      expect(accepted).toBeGreaterThan(afterFirst)
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    } finally {
+      process.off('unhandledRejection', record)
     }
-    await expect(instance.cms()).rejects.toThrow(/cannot connect to Postgres/)
-    expect(accepted).toBeGreaterThan(0)
+    expect(unhandled).toEqual([])
   }, 30_000)
 })
 
@@ -115,41 +116,6 @@ describe('cmsPool()', () => {
       expect(() => cmsPool(as(db))).toThrow(/payload\.db\.pool\.connect is not a function/)
     }
   })
-})
-
-const database = process.env.CMS_TEST_DATABASE_URL
-
-describe.skipIf(!database)('on a db:fresh database', () => {
-  let instance: Instance
-  let payload: Awaited<ReturnType<Instance['cms']>> | undefined
-
-  beforeAll(async () => {
-    useEnv({
-      ...QUIET,
-      DATABASE_URL: database,
-      PGHOST: undefined,
-      PGPORT: undefined,
-      PAYLOAD_SECRET: SECRET,
-    })
-    instance = await importInstance()
-  })
-
-  afterAll(async () => {
-    await payload?.destroy()
-  }, 30_000)
-
-  it('cms() twice — at once, then again — resolves one instance', async () => {
-    const [first, second] = await Promise.all([instance.cms(), instance.cms()])
-    payload = first
-    expect(second).toBe(first)
-    expect(await instance.cms()).toBe(first)
-  }, 60_000)
-
-  it('databaseProbe(cmsPool(payload))() answers READ COMMITTED', async () => {
-    payload ??= await instance.cms()
-    const probe = databaseProbe(instance.cmsPool(payload))
-    expect(await probe()).toEqual({ transactionIsolation: 'read committed' })
-  }, 30_000)
 })
 
 describe('the one server-route getPayload()', () => {
