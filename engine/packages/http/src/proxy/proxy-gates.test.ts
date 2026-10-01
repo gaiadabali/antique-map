@@ -34,12 +34,28 @@ describe('the proxy — a page whose module is off is not found, whatever the ro
       ['/quote/abc', 'purchase.invoices', '/en/quote/abc'],
       ['/id/cerita/kapal', 'content.journal', '/id/story/kapal'],
       ['/make-an-offer?item=1706', 'purchase.offers', '/en/form/offer?item=1706'],
-      ['/account/want-lists', 'retention.wantList', '/en/account/wantLists'],
-      ['/nl/account/holds', 'purchase.holds', '/nl/account/holds'],
+      ['/my-account/want-lists', 'retention.wantList', '/en/account/wantLists'],
+      ['/nl/mijn-account/holds', 'purchase.holds', '/nl/account/holds'],
     ]
-    for (const [path, module, open] of cases) {
-      expect(decide(path).to, `${path} with ${module} on`).toBe(open)
-      expect(decide(path, without(module)), `${path} with ${module} off`).toMatchObject({
+    // The gallery launches with no offers, holds or buyer accounts (D50, D54): each case turns
+    // its module — and the account area — on, then off again with everything else left on.
+    const open: ProxyConfig = {
+      ...gallery,
+      modules: {
+        ...gallery.modules,
+        'accounts.buyers': true,
+        'purchase.offers': true,
+        'purchase.holds': true,
+        'retention.wantList': true,
+      },
+    }
+    const closing = (key: ModuleKey): ProxyConfig => ({
+      ...open,
+      modules: { ...open.modules, [key]: false },
+    })
+    for (const [path, module, to] of cases) {
+      expect(decide(path, open).to, `${path} with ${module} on`).toBe(to)
+      expect(decide(path, closing(module)), `${path} with ${module} off`).toMatchObject({
         why: 'not-found',
         to: path.startsWith('/id/')
           ? '/id/not-found'
@@ -51,9 +67,11 @@ describe('the proxy — a page whose module is off is not found, whatever the ro
   })
 
   it('keeps every other page open', () => {
-    const config = without('purchase.invoices')
+    const off = without('purchase.invoices')
+    // The account area opens with a buyer's account, which the gallery launches without (D54).
+    const config: ProxyConfig = { ...off, modules: { ...off.modules, 'accounts.buyers': true } }
     expect(decide('/product/1706', config).why).toBe('surface')
-    expect(decide('/account/orders', config).to).toBe('/en/account/orders')
+    expect(decide('/my-account/orders', config).to).toBe('/en/account/orders')
   })
 })
 

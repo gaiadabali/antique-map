@@ -17,8 +17,7 @@
       ],
       "footer": [
         { "surface": "orderLookup", "label": { "en": "Track an order", "id": "Lacak pesanan" } },
-        { "surface": "partnership", "label": { "en": "Partnership", "id": "Kemitraan" } },
-        { "surface": "giftCard", "label": { "en": "Gift cards", "id": "Kartu hadiah" } }
+        { "surface": "partnership", "label": { "en": "Partnership", "id": "Kemitraan" } }
       ]
     }
   },
@@ -93,23 +92,16 @@
   "ids": { "workUidPrefix": "OEI", "stockNumberPattern": null },
   "money": {
     "base": "IDR",
-    "markets": [
-      { "id": "id", "destinations": ["ID"], "currency": "IDR" },
-      { "id": "row", "destinations": ["*"], "currency": "USD" }
-    ],
+    "markets": [{ "id": "id", "destinations": ["ID"], "currency": "IDR" }],
     "rounding": {
       "IDR": [
         { "upTo": 100000, "step": 5000 },
         { "upTo": 1000000, "step": 10000 },
         { "upTo": 10000000, "step": 50000 },
         { "upTo": null, "step": 100000 }
-      ],
-      "USD": [
-        { "upTo": 10000, "step": 100 },
-        { "upTo": null, "step": 500 }
       ]
     },
-    "fx": { "source": "ecb-reference", "bufferPct": { "USD": "3" } }
+    "fx": { "source": "ecb-reference", "bufferPct": {} }
   },
   "sellers": [
     {
@@ -121,11 +113,11 @@
         "registration": "NIB 0000000000000 (placeholder)",
         "address": []
       },
-      "serves": { "stockLocations": ["denpasar"], "destinations": ["*"] },
+      "serves": { "stockLocations": ["denpasar"], "destinations": ["ID"] },
       "tax": { "regime": "ID-PPN", "registered": false },
-      "charge": ["IDR", "USD"],
-      "payments": ["midtrans", "paypal", "bank-transfer"],
-      "methodOrder": ["qris", "ewallet", "va", "card", "paypal", "bank-transfer"],
+      "charge": ["IDR"],
+      "payments": ["midtrans", "bank-transfer"],
+      "methodOrder": ["qris", "ewallet", "va", "card", "bank-transfer"],
       "cardCeiling": null,
       "insuredThreshold": null,
       "duties": "DAP",
@@ -133,7 +125,7 @@
     }
   ],
   "commerce": {
-    "inventoryModels": ["stocked", "made-to-order", "service"],
+    "inventoryModels": ["stocked", "service"],
     "ttl": {},
     "purchaseTiers": [],
     "trade": {
@@ -149,12 +141,13 @@
       "waiver": null
     }
   },
-  "shipping": { "providers": ["biteship", "dhl-express", "flat", "collect"] },
+  "shipping": { "providers": ["biteship", "flat", "collect"] },
   "fulfilment": { "providers": ["own-stock", "local-production"] },
   "analytics": { "ga4Id": null, "metaPixelId": null },
   "modules": {
     "catalogue.variants": true,
     "catalogue.productTypes": true,
+    "purchase.checkout": true,
     "purchase.invoices": true,
     "media.deepZoom": true,
     "media.roomView": true,
@@ -172,8 +165,8 @@
     "retention.reviews": true,
     "retention.backInStock": true,
     "retention.abandonedCart": true,
-    "commerce.giftCards": true,
-    "commerce.giftWrap": true,
+    "commerce.giftCards": false,
+    "commerce.giftWrap": false,
     "commerce.discounts": true,
     "commerce.bundles": true,
     "fulfilment.pod": false,

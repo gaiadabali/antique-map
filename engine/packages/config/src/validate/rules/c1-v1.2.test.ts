@@ -71,17 +71,22 @@ describe('validateBrandConfig() — C1 v1.2 rules', () => {
 
   it('refuses a menu link to the account area when neither account module is on (be #5)', () => {
     const linked = (raw: Raw) =>
-      raw.identity.navigation.footer.push({ surface: 'account', label: { en: 'Account' } })
-    expect(issuesOf('gallery', linked)).toEqual([])
+      raw.identity.navigation.footer.push({
+        surface: 'account',
+        label: { en: 'Account', id: 'Akun' },
+      })
+    // The shop's approved partners sign in (D31), so its account area is there to link to.
+    expect(issuesOf('emporium', linked)).toEqual([])
     expect(
-      issuesOf('gallery', (raw) => {
+      issuesOf('emporium', (raw) => {
         linked(raw)
-        raw.modules['accounts.buyers'] = false
-        // Nothing that needs an account stays on.
-        raw.modules['retention.wishlist'] = false
-        raw.modules['retention.wantList'] = false
+        raw.modules['accounts.retailers'] = false
       }),
-    ).toEqual([
+    ).toContain(
+      'identity.navigation.footer[3].surface: links to "account", whose modules "accounts.buyers" and "accounts.retailers" are all off, so the link would lead nowhere',
+    )
+    // The gallery signs no one in (D54): the link is refused as the config stands.
+    expect(issuesOf('gallery', linked)).toEqual([
       'identity.navigation.footer[2].surface: links to "account", whose modules "accounts.buyers" and "accounts.retailers" are all off, so the link would lead nowhere',
     ])
   })

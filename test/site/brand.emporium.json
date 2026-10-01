@@ -219,6 +219,7 @@
     "catalogue.unique": true,
     "catalogue.variants": true,
     "catalogue.productTypes": true,
+    "purchase.checkout": true,
     "purchase.offers": true,
     "purchase.holds": true,
     "purchase.requestPrice": true,

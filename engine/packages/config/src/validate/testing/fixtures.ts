@@ -14,14 +14,27 @@ import type { SupportsByApp } from '../committed'
 export const REPO_ROOT = fileURLToPath(new URL('../../../../../../', import.meta.url))
 
 /**
- * Each app's supports as C1 states them today (`schema/modules.ts`, `AppSupports`): the
- * gallery renders every module but `accounts.retailers`; the emporium every module but
- * `accounts.buyers`, `retention.wishlist` and `retention.wantList`. The apps' own `supports`
- * files (TASKS.md 4.1.c) replace this once they exist.
+ * Each app's supports as its `supports` file states them (TASKS.md 4.1.c, 6.5.d): the gallery
+ * renders every module but `accounts.retailers`, the buying-online ones — `purchase.checkout`,
+ * `purchase.offers` and `purchase.holds` (enquiry-only, D50) — and the account ones —
+ * `accounts.buyers`, `retention.wishlist` and `retention.wantList` (no gallery sign-in, D54); the
+ * emporium every module but `accounts.buyers`, `retention.wishlist` and `retention.wantList`.
+ * The config package imports no app, so its tests read this copy; keep it in step with the files.
  */
 const omit = (...keys: ModuleKey[]) => MODULE_KEYS.filter((key) => !keys.includes(key))
 export const C1_STATED_SUPPORTS = {
-  gallery: { storefront: 'gallery', modules: omit('accounts.retailers') },
+  gallery: {
+    storefront: 'gallery',
+    modules: omit(
+      'accounts.retailers',
+      'purchase.checkout',
+      'purchase.offers',
+      'purchase.holds',
+      'accounts.buyers',
+      'retention.wishlist',
+      'retention.wantList',
+    ),
+  },
   emporium: {
     storefront: 'emporium',
     modules: omit('accounts.buyers', 'retention.wishlist', 'retention.wantList'),

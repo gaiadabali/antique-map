@@ -92,15 +92,28 @@ describe('C13 — the proxy applies C10 v1.2', () => {
       ...gallery,
       modules: { ...gallery.modules, 'accounts.buyers': false, 'accounts.retailers': false },
     }
-    for (const path of ['/account', '/account/orders', '/account/set-password', '/id/akun'])
+    // The gallery spells its closed area `my-account`: `/account/…` is the old site's (36.4.e).
+    for (const path of [
+      '/my-account',
+      '/my-account/orders',
+      '/my-account/set-password',
+      '/id/akun',
+    ])
       expect(decide(path, accountless), path).toMatchObject({ kind: 'rewrite', why: 'not-found' })
     // Either module opens it: the gallery's buyers, or a shop's partners.
-    expect(decide('/account/orders')).toMatchObject({ why: 'surface', to: '/en/account/orders' })
+    const buyers: ProxyConfig = {
+      ...accountless,
+      modules: { ...accountless.modules, 'accounts.buyers': true },
+    }
+    expect(decide('/my-account/orders', buyers)).toMatchObject({
+      why: 'surface',
+      to: '/en/account/orders',
+    })
     const partners: ProxyConfig = {
       ...accountless,
       modules: { ...accountless.modules, 'accounts.retailers': true },
     }
-    expect(decide('/account', partners)).toMatchObject({
+    expect(decide('/my-account', partners)).toMatchObject({
       why: 'surface',
       to: '/en/account/overview',
     })

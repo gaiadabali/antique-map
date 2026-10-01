@@ -70,6 +70,8 @@ describe('validateBrandConfigs() — every committed config (CI)', () => {
   it('rejects a broken committed config with a readable message naming the file and the field', () => {
     const repo = copyOfTheBrands()
     const config = testBrandConfig('gallery')
+    config.modules['accounts.buyers'] = true
+    config.modules['retention.wantList'] = true
     config.modules['retention.emailWantList'] = false
     writeFileSync(join(repo, 'test', 'site', 'brand.gallery.json'), JSON.stringify(config, null, 2))
     const report = validateBrandConfigs({ repoRoot: repo, supports: C1_STATED_SUPPORTS })

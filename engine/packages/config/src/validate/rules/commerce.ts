@@ -1,6 +1,6 @@
 /**
  * The commerce rules of `validateBrandConfigs()` (C1's header list): reservation TTLs in the
- * order C8's machines assume, one document sequence per seller, no provider listed twice, and a
+ * order C8's machines assume (an invoice's reminder within its default term, v1.5), one document sequence per seller, no provider listed twice, and a
  * seller's own couriers drawn from the brand's.
  */
 import type { BrandConfig, SellerConfig } from '../../schema'
@@ -22,6 +22,13 @@ export function checkCommerce(
     report(
       at('holdDefaultHours'),
       `${ttl.holdDefaultHours} must not pass holdMaxHours (${ttl.holdMaxHours})`,
+    )
+  }
+  // An invoice's reminder goes out before its default term lapses (D45, C1 v1.5).
+  if (ttl.invoiceNoticeHours >= ttl.invoiceHoldDays * 24) {
+    report(
+      at('invoiceNoticeHours'),
+      `${ttl.invoiceNoticeHours} must be below invoiceHoldDays in hours (${ttl.invoiceHoldDays * 24}): the reminder goes out before the invoice's term lapses (D45)`,
     )
   }
   if (ttl.checkoutLockMinutes > ttl.checkoutLockMaxHours * 60) {

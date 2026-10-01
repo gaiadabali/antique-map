@@ -31,7 +31,8 @@ const CONVERSATION = {
 
 describe('C1 v1.5 — commerce.uniquePrices', () => {
   it('defaults to "shown", so a config that never names it keeps its prices published', () => {
-    const result = parse(() => {})
+    // The synthetic gallery names "on-request" (D50): a config that leaves it out is the case.
+    const result = parse((raw) => delete raw.commerce.uniquePrices)
     expect(result.success).toBe(true)
     if (result.success) expect(result.data.commerce.uniquePrices).toBe('shown')
   })
