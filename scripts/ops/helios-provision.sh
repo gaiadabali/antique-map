@@ -8,6 +8,7 @@
 #   bash scripts/ops/pack.sh | ssh helios 'bash -s -- --env staging --dry-run'   # review first
 #   bash scripts/ops/pack.sh | ssh helios 'bash -s -- --env staging'             # then apply
 #   bash scripts/ops/pack.sh | ssh helios 'bash -s -- --env staging --report'    # read-only
+#   bash scripts/ops/pack.sh | ssh helios 'bash -s -- --env staging --verify-restart'
 #
 # pack.sh inlines lib/*.sh into one stream, so nothing is copied onto the host. From a checkout
 # on the host, `bash scripts/ops/helios-provision.sh …` runs the same code.
@@ -22,6 +23,13 @@
 # user); run a site user's binaries as root; alter a Postgres role it did not create (its own are
 # COMMENT 'indies-provision'). It does not touch nginx — EXCEPT with --create-sites, where
 # CloudPanel's clpctl writes the new site's vhost and reloads the host's shared nginx.
+#
+# --replace-site OLD_DOMAIN removes a CloudPanel site this script made under an old host name,
+# only when its home still holds nothing but what this script and CloudPanel made (replace.sh):
+# clpctl site:delete deletes the site user and its home; the Postgres database stays.
+#
+# pm2 is pinned (PM2_VERSION, pm2.sh): when a site user has no trusted pm2, it is installed
+# into the user's own nvm tree, by the user's own npm, as the user.
 #
 # CloudPanel's cron UI rewrites a site's crontab: if the managed block goes, --report says so
 # (an ERROR), and re-running the script puts it back.
@@ -45,6 +53,11 @@
 #   --rustfs-size-gb N         the RustFS data image, made once (default 50)
 #   --min-free-gb N  --min-free-pct N   refuse below either (defaults 20 GiB and 15%)
 #   --create-sites             add a missing CloudPanel Node.js site with clpctl (touches nginx)
+#   --replace-site OLD_DOMAIN  (repeatable; needs --create-sites) delete the site user's old
+#                              CloudPanel site first — refused unless its home is pristine
+#   --verify-restart           restart this script's units one at a time and check each comes
+#                              back (pm2 from dump.pm2, RustFS and its mount, Mailpit), the cron
+#                              blocks and boot-time enablement; changes nothing else (verify.sh)
 #   --vhost-dir DIR            where CloudPanel keeps vhosts (default /etc/nginx/sites-enabled)
 #   --probe-public             the report also requests https://<domain>/api/health
 #   --quiet-preview            a dry run lists changes without the file bytes
@@ -65,6 +78,8 @@ OPS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$OPS_DIR/lib/database.sh"
 # shellcheck source=lib/env-file.sh
 . "$OPS_DIR/lib/env-file.sh"
+# shellcheck source=lib/pm2.sh
+. "$OPS_DIR/lib/pm2.sh"
 # shellcheck source=lib/runtime.sh
 . "$OPS_DIR/lib/runtime.sh"
 # shellcheck source=lib/cron.sh
@@ -77,8 +92,14 @@ OPS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$OPS_DIR/lib/s3admin.sh"
 # shellcheck source=lib/mailpit.sh
 . "$OPS_DIR/lib/mailpit.sh"
+# shellcheck source=lib/replace.sh
+. "$OPS_DIR/lib/replace.sh"
+# shellcheck source=lib/verify.sh
+. "$OPS_DIR/lib/verify.sh"
 # shellcheck source=lib/report.sh
 . "$OPS_DIR/lib/report.sh"
+# shellcheck source=lib/inventory.sh
+. "$OPS_DIR/lib/inventory.sh"
 # <<< modules
 
 usage() {
@@ -105,6 +126,8 @@ parse_args() {
       --min-free-gb) MIN_FREE_GB="${2:-}" && shift ;;
       --min-free-pct) MIN_FREE_PCT="${2:-}" && shift ;;
       --create-sites) CREATE_SITES=1 ;;
+      --replace-site) REPLACE_SITES+=("${2:-}") && shift ;;
+      --verify-restart) VERIFY_RESTART=1 ;;
       --vhost-dir) VHOST_DIR="${2:-}" && shift ;;
       --probe-public) PROBE_PUBLIC=1 ;;
       --quiet-preview) QUIET_PREVIEW=1 ;;
@@ -122,6 +145,20 @@ parse_args() {
     [[ "$n" =~ ^[0-9]+$ ]] || die "not a number: '$n'"
   done
   [ "$RUSTFS_SIZE_GB" -ge 1 ] || die "--rustfs-size-gb is at least 1"
+  for n in "${REPLACE_SITES[@]}"; do
+    [[ "$n" =~ ^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$ ]] || die "--replace-site '$n' is not a domain"
+  done
+  if [ "${#REPLACE_SITES[@]}" -gt 0 ] && [ "$CREATE_SITES" != 1 ]; then
+    die "--replace-site needs --create-sites: the new site is made under the same site user"
+  fi
+  if [ "$VERIFY_RESTART" = 1 ]; then
+    if [ "$DRY_RUN" = 1 ] || [ "$REPORT_ONLY" = 1 ]; then
+      die "--verify-restart restarts services: never with --dry-run or --report"
+    fi
+    if [ "${#REPLACE_SITES[@]}" -gt 0 ] || [ "$CREATE_SITES" = 1 ]; then
+      die "--verify-restart runs alone: not with --create-sites or --replace-site"
+    fi
+  fi
 }
 
 summary() {
@@ -132,6 +169,7 @@ summary() {
     printf '   changes: %s\n' "$CHANGES"
   fi
   printf '   warnings: %s   errors: %s\n' "$WARNINGS" "$ERRORS"
+  if [ "$VERIFY_RESTART" = 1 ]; then printf '   verify-restart: %s passed, %s failed\n' "$VERIFY_PASS" "$VERIFY_FAIL"; fi
 }
 
 main() {
@@ -144,6 +182,7 @@ main() {
   host_preflight
   rustfs_preflight
   mailpit_preflight
+  replace_map
   local app
   for app in $(selected_apps); do
     load_site "$app"
@@ -151,7 +190,13 @@ main() {
     runtime_preflight
   done
 
-  if [ "$REPORT_ONLY" = 0 ]; then
+  if [ "$VERIFY_RESTART" = 1 ]; then
+    if [ "$ERRORS" -gt 0 ]; then
+      summary
+      die "$ERRORS check(s) failed: --verify-restart restarted nothing"
+    fi
+    verify_restart
+  elif [ "$REPORT_ONLY" = 0 ]; then
     if [ "$ERRORS" -gt 0 ] && ! dry; then
       summary
       die "$ERRORS check(s) failed: nothing was changed. Fix them, or --dry-run to see the plan."
@@ -163,8 +208,14 @@ main() {
     ensure_storage_shared
     for app in $(selected_apps); do
       load_site "$app"
+      replace_site || continue
       ensure_cloudpanel_site
       resolve_site_path
+      if [ "$REPLACE_PLANNED" = 1 ]; then
+        note "$S_APP: once replaced, the home is new and empty: shared/.env, the holding release, pm2 $PM2_VERSION and its unit, ~/bin and the crontab are made as on a first run (a dry run after the replacement shows them byte for byte)"
+        ensure_database
+        continue
+      fi
       ensure_env_file
       ensure_database
       ensure_storage_site
@@ -174,6 +225,7 @@ main() {
     ensure_backups
   fi
 
+  [ "$REPORT_ONLY" = 0 ] || inventory_report
   host_report
   for app in $(selected_apps); do
     load_site "$app"

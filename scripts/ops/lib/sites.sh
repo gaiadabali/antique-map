@@ -2,13 +2,16 @@
 # Who serves which brand, and where (DEPLOYMENT.md §2). A site is one storefront app, `gallery`
 # or `emporium`, and its spec is USER:PORT:DATABASE:ROLE:DOMAIN.
 #
-# Staging is DEPLOYMENT.md §2's table as written. Production is new site users, databases and
+# Staging is DEPLOYMENT.md §2's users, ports and databases on the host names the owner chose on
+# 2026-10-01: indies-gallery.gaiada.com and old-east-indies.gaiada.com (the first run's ig. and
+# oei. sites go with --replace-site, replace.sh). Production is new site users, databases and
 # ports at cutover (§1), which no doc names yet, so a production run is refused until both specs
 # are passed explicitly (--gallery, --emporium) together with a bucket suffix, so production's
 # buckets can never be staging's.
 
 declare -A SPEC=()
 declare -A OVERRIDE=()
+declare -A REPLACE_OF=() # app -> the old CloudPanel domain --replace-site removes (replace.sh)
 ENVIRONMENT=''
 BUCKET_SUFFIX=''
 ONLY=''
@@ -49,8 +52,8 @@ masters_bucket() { printf 'archive-masters%s' "$BUCKET_SUFFIX"; }
 set_profile() {
   case "$ENVIRONMENT" in
     staging)
-      SPEC[gallery]='uig:4030:ig_db:ig:ig.gaiada.com'
-      SPEC[emporium]='uoei:4031:oei_db:oei:oei.gaiada.com'
+      SPEC[gallery]='uig:4030:ig_db:ig:indies-gallery.gaiada.com'
+      SPEC[emporium]='uoei:4031:oei_db:oei:old-east-indies.gaiada.com'
       ;;
     production)
       if [ -z "${OVERRIDE[gallery]:-}" ] || [ -z "${OVERRIDE[emporium]:-}" ]; then
@@ -97,7 +100,6 @@ distinct_specs() {
   for i in "${a[1]}" "${b[1]}"; do
     case "$i" in "$RUSTFS_PORT" | "$RUSTFS_CONSOLE_PORT" | "$MAILPIT_SMTP_PORT" | "$MAILPIT_UI_PORT")
       die "app port $i is also a service port (RustFS $RUSTFS_PORT/$RUSTFS_CONSOLE_PORT, Mailpit $MAILPIT_SMTP_PORT/$MAILPIT_UI_PORT)" ;;
-
     esac
   done
 }
@@ -123,6 +125,7 @@ load_site() {
   S_MEDIA_BUCKET="$(media_bucket_of "$1")"
   S_MEDIA_KEY="$S_USER-media"
   S_MASTERS_KEY="$S_USER-masters"
+  S_REPLACE="${REPLACE_OF[$1]:-}"
   local sister
   sister="$(sister_of "$1")"
   IFS=: read -r _ _ _ _ S_SISTER_DOMAIN <<<"${SPEC[$sister]}"

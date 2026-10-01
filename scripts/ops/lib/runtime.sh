@@ -99,24 +99,6 @@ WantedBy=multi-user.target
 INI
 }
 
-runtime_preflight() {
-  id -u "$S_USER" >/dev/null 2>&1 || return 0
-  resolve_site_path
-  if [ -z "$SITE_NODE_BIN" ]; then
-    fail "no trusted node + pm2 for $S_USER: neither $S_HOME/.nvm/versions/node/*/bin nor a root-owned /usr/local/bin or /usr/bin holds both (install pm2 for the site user, e.g. runuser -l $S_USER -c 'npm install -g pm2')"
-    return 0
-  fi
-  local node
-  node="$(site_run node -p process.versions.node 2>/dev/null || true)"
-  if [ -z "$node" ]; then
-    fail "$SITE_NODE_BIN/node does not run as $S_USER"
-  elif version_ge "$node" "$MIN_NODE"; then
-    ok "node $node and pm2 from $SITE_NODE_BIN, run as $S_USER only"
-  else
-    fail "node $node for $S_USER: the engine needs $MIN_NODE or later (package.json engines)"
-  fi
-}
-
 # pm2_has_process — only asks pm2 when its daemon already runs: any pm2 command starts one.
 pm2_has_process() {
   pm2_daemon_live && site_run pm2 describe "$S_USER" >/dev/null 2>&1
@@ -146,6 +128,7 @@ ensure_runtime() {
   PUT_CHANGED=0
   ecosystem_cjs | user_put "$S_HOME/ecosystem.config.cjs" 644
   local eco_changed="$PUT_CHANGED"
+  ensure_pm2
   if [ -z "$SITE_NODE_BIN" ]; then
     fail "no trusted pm2 for $S_USER: the pm2 steps are skipped"
     return 0

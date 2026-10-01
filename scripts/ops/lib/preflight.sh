@@ -147,22 +147,25 @@ site_preflight() {
   if id -u "$S_USER" >/dev/null 2>&1; then
     ok "site user $S_USER exists (uid $(id -u "$S_USER"))"
     home_link_check
+    [ -z "$S_REPLACE" ] || replace_preflight
   elif [ "$CREATE_SITES" = 1 ]; then
     command -v clpctl >/dev/null 2>&1 || fail "--create-sites needs CloudPanel's clpctl on PATH"
     note "no site user $S_USER yet: --create-sites adds the CloudPanel Node.js site"
+    [ -z "$S_REPLACE" ] || fail "--replace-site $S_REPLACE refused: its vhost names $S_USER, and there is no such user"
   else
     fail "no site user $S_USER: add the CloudPanel Node.js site ($S_DOMAIN, app port $S_PORT, site user $S_USER) or re-run with --create-sites"
   fi
   check_port "$S_PORT" "$S_USER" "$S_APP"
   vhost_check
   db_preflight
-  env_preflight
+  # A home --replace-site deletes is checked by replace_preflight; the new one gets the skeleton.
+  [ -n "$S_REPLACE" ] || env_preflight
 }
 
 vhost_check() {
   local conf="$VHOST_DIR/$S_DOMAIN.conf" others
   if [ ! -f "$conf" ]; then
-    if [ "$CREATE_SITES" = 1 ] && ! id -u "$S_USER" >/dev/null 2>&1; then
+    if [ "$CREATE_SITES" = 1 ] && { [ -n "$S_REPLACE" ] || ! id -u "$S_USER" >/dev/null 2>&1; }; then
       note "vhost $conf: CloudPanel writes it when --create-sites adds the site"
     else
       fail "no CloudPanel vhost at $conf (--vhost-dir if CloudPanel keeps them elsewhere)"
@@ -173,14 +176,14 @@ vhost_check() {
     fail "vhost $conf does not proxy to http://127.0.0.1:$S_PORT (DEPLOYMENT.md §3): $(grep -Eo 'proxy_pass[^;]*' "$conf" | sort -u | paste -sd' ' -)"
   fi
   others="$(grep -lE "(127\.0\.0\.1|localhost|0\.0\.0\.0|\[::1\]):$S_PORT([^0-9]|$)" "$VHOST_DIR"/* 2>/dev/null |
-    grep -vxF "$conf" || true)"
+    grep -vxF -e "$conf" -e "$VHOST_DIR/$S_REPLACE.conf" || true)"
   [ -z "$others" ] || fail "port $S_PORT is already an upstream of another vhost: $others"
 }
 
 # ensure_cloudpanel_site — only with --create-sites, only when the site user is missing. This
 # DOES touch nginx: clpctl writes the site's vhost and reloads the host's shared nginx.
 ensure_cloudpanel_site() {
-  id -u "$S_USER" >/dev/null 2>&1 && return 0
+  if id -u "$S_USER" >/dev/null 2>&1 && [ "$REPLACE_PLANNED" != 1 ]; then return 0; fi
   [ "$CREATE_SITES" = 1 ] || return 0
   act "add the CloudPanel Node.js site $S_DOMAIN (site user $S_USER, app port $S_PORT, Node $NODE_MAJOR_FOR_SITES) — clpctl writes its vhost and reloads the shared nginx — then lock its password" \
     create_cloudpanel_site
