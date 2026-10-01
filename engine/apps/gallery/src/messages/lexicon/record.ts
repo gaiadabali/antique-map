@@ -2,7 +2,8 @@
  * The record: the labels of the item page's collation block, the definition list collectors
  * expect (EXPERIENCE-GALLERY.md §5) — one per field of C2 `RecordVM`, `BookPartVM` and
  * `ConditionVM` and the item's references and provenance (view-models/src/surfaces/item.ts),
- * named by the field (`record.publication.publisher`). The values beside them are data.
+ * named by the field (`record.publication.publisher`). The values beside them are data, but for
+ * the colouring, a contract's list named by its code (`colouring.${colouring}`).
  * Keys and neutral defaults only — the words are the brand’s (`../keys.ts`).
  */
 import { defineMessages } from '@engine/i18n'
@@ -22,6 +23,13 @@ export const RECORD_KEYS = defineMessages({
   'record.publication.state': 'State',
   'record.technique': 'Technique',
   'record.colour': 'Colouring',
+  // its value, by code (C2 Colouring, view-models/src/common.ts:214; TASKS.md 6.3.i)
+  'colouring.publishers': 'Publisher’s colour',
+  'colouring.original-hand': 'Original hand colour',
+  'colouring.old-hand': 'Old hand colour',
+  'colouring.later': 'Later colour',
+  'colouring.printed': 'Printed in colour',
+  'colouring.uncoloured': 'Uncoloured',
   // C2 DimensionsVM: mm and inches come from the formatter
   'record.dimensions': 'Dimensions',
   'record.dimensions.image': 'Image',

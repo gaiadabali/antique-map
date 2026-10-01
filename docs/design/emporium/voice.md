@@ -9,13 +9,14 @@ themselves live in the brand folder, as the values of the app's message keys
   module per area in `messages/lexicon/`
 - **the shop's values:** `old-east-indies/site/copy/en.json`, `id.json`
 
-**Status.** English: drafted from the briefs, for the owner's review with the owner
-interview (OA2). Indonesian: **drafted, awaiting native review** — no native
-Indonesian writer has reviewed it yet (TASKS.md 6.3.c, 👤 OA4, D20). The Indonesian
-register below is a **proposal, to confirm (owner S15 + native review)**. Where an
-answer from the owner interview would change a word, the line names the question
-(S1–S15, `docs/design/journeys/owner-interview.md`) and the copy keeps its
-placeholder until then.
+**Status.** English: drafted from the briefs; British spelling confirmed by the owner
+(2026-10-01). Indonesian: **drafted, awaiting native review** — no native Indonesian
+writer has reviewed it yet (TASKS.md 6.3.c, 👤 OA4, D20). The Indonesian register is
+**decided: *Anda*** (the owner's answer to S15, 1 October 2026,
+`docs/design/journeys/owner-answers.md`; TASKS.md Decisions › Voice); every `id.json`
+value is in it since 6.3.g. Where an answer from the owner interview would change a word,
+the line names the question (S1–S15, `docs/design/journeys/owner-interview.md`) and the
+copy keeps its placeholder until then.
 
 ---
 
@@ -24,48 +25,52 @@ placeholder until then.
 Tourists in Bali and Jakarta, expats furnishing a home, the Indonesian diaspora and
 the Dutch-Indisch community, gift buyers for oleh-oleh, Lebaran, Imlek, Christmas and
 Sinterklaas — shopping as guests, mostly from Instagram on a phone (PRODUCT.md ›
-Users; S9 open). And business buyers — shops, hotels, villas, cafés, companies — who
-all come through the one Partnership programme (D31, D36). They want something with
-meaning that is easy to buy, easy to carry and certain to arrive.
+Users), with showroom walk-ins the main buyers today (S9). And business buyers — shops,
+hotels, villas, cafés, companies — who all come through the one Partnership programme
+(D31, D36). They want something with meaning that is easy to buy, easy to carry and
+certain to arrive.
 
 ## 2. The register
 
 **English.** A friendly shopkeeper who knows the archive: warm, short, spoken, and
 exact about money and delivery. "Warmer and more playful than the gallery; the same
 family" (PRODUCT.md › Positioning). Playful in stories and headings, never in a
-price, a label or an error. British spelling, as the gallery — **proposed**, to
-confirm with the owner (no S-question asks it). Sentence case everywhere (NOW! DESIGN-SYSTEM.md §6).
+price, a label or an error. **British spelling** (*colour*, *catalogue*, *centimetres*,
+*organisation*), as the gallery — confirmed by the owner, 1 October 2026
+(`owner-answers.md` › Also answered). Sentence case everywhere (NOW! DESIGN-SYSTEM.md §6).
 
-**Indonesian — *kamu* (proposed; to confirm: owner S15 + native review).**
+**Indonesian — *Anda* (decided: the owner's answer to S15, 2026-10-01).**
 
-Why *kamu*:
+The owner chose *Anda* over the interview's default *kamu*, and kept the stance:
+celebrate the maps and the islands, no VOC imagery (§4). So the whole shop — the
+storefront, the bag and checkout, the Partnership, a partner's account and quotes — speaks
+one register; the Partnership exception the *kamu* draft carried is gone.
 
-1. **It is the owner interview's own default** (S15: "If we don't hear back: 'kamu', a
-   warm and playful tone"), so the copy is written in the register the site will
-   launch with unless the owner says otherwise.
-2. **It fits the brief.** The shop is "warmer and more playful than the gallery"
-   and "phone and WhatsApp native" (Product Principle 3). *Kamu* is the register
-   of Indonesian lifestyle shops and of the Instagram and WhatsApp conversations
-   these buyers already have; *Anda* can read as formal, even distant, there.
-3. **It separates the sisters without a second design.** The two sites share one base
-   (D9); the gallery's *Anda* and the shop's *kamu* are part of how each sounds like
-   itself.
-4. **It is short.** *Kamu* labels are shorter on a 390 px screen, where the shop is
-   designed first.
+*Anda* can still be friendly. The warmth that *kamu* carried moves into everything else:
+short sentences, spoken words, the shop talking as *kami*, a light *ya* where a person
+would say it ("Tanya kami, ya."), and the buyer's own loanwords. It is *Anda* the way a
+good Bali shop's staff say it across the counter — polite, quick and warm — not the
+*Anda* of a form from the tax office.
 
-The risks the review must weigh: older buyers and some of the Dutch-Indisch
-community may find *kamu* too familiar; and a business buyer expects *Anda*. So the
-proposal has one exception, to confirm with it: **the Partnership surfaces and a
-partner's account, quotes and trade terms use *Anda*** — a hotel's purchasing
-manager is addressed as a business, not a shopper. The values follow this proposal:
-`partnership.*`, `partner.*`, `quote.*` and the partner notes (`message.applicationReplyDays`,
-`message.quote*`, `message.resetLinkSent`) are in *Anda*; everything else is in *kamu*.
+**How the shop's *Anda* differs from the gallery's** (`docs/design/gallery/voice.md` §2):
 
-Either way: *kamu* is lower-case; no *lo/gue*, no *kak* on the page (it may appear in
-staff's own WhatsApp replies — that is theirs); no English where an Indonesian word
-is current, but the buyer's own loanwords stay (*checkout* → *pembayaran*, but
-*voucher*, *e-wallet*, *QRIS*). The shop's "bag" is *keranjang* in Indonesian — the
-word every Indonesian shop uses — not *tas*, which would read as a handbag.
+| | The gallery | The shop |
+| - | ----------- | -------- |
+| tone | *bahasa baku*, a well-run Jakarta gallery's letter: courteous, formal, exact | everyday polite Indonesian, spoken: warm, short, a little playful in headings and empty states |
+| sentences | full sentences, formal connectives (*agar*, *apabila*, *telah*) | short, spoken connectives (*supaya*, *kalau*, *sudah*, *begitu*) |
+| particles and colloquial words | none | sparingly: *ya*, *lagi*, *cek*, *nanti*, *ongkir*, *chat* — never in a price, a total or a payment step |
+| loanwords | the collector's (*proforma*, *passe-partout*, *giclée*), else Indonesian (*tautan*, *pemberitahuan*, *kedaluwarsa*) | the buyer's (*link*, *voucher*, *e-wallet*, *QRIS*, *showroom*, *chat*) where they are what people say |
+| the buyer, in the buyer's own words | *saya* | *saya* |
+| an alert, a link | *pemberitahuan*, *tautan* | *kabar*, *link* |
+
+Rules for both: *Anda* is capitalised; never *kamu*, *aku*, *-mu* or *-ku*; no *lo/gue*,
+no *kak* on the page (it may appear in staff's own WhatsApp replies — that is theirs); no
+*Bapak/Ibu* on the page. No English where an Indonesian word is current, but the buyer's
+own loanwords stay (*checkout* → *pembayaran*, but *voucher*, *e-wallet*, *QRIS*). The
+shop's "bag" is *keranjang* in Indonesian — the word every Indonesian shop uses — not
+*tas*, which would read as a handbag. The Partnership and a partner's pages are the most
+businesslike corner of the shop: *Anda* without *ya* or *lagi*, as a supplier writes to a
+hotel's purchasing manager.
 
 ## 3. Principles
 
@@ -110,8 +115,8 @@ step or an error. No emoji in the interface.
 
 | | English | Indonesian |
 | - | ------- | ---------- |
-| Do | "Your bag is empty — the archive isn't." | "Keranjangmu masih kosong — arsipnya tidak." |
-| Don't | "Yay!! 🎉 Great choice bestie!" | "Yeay!! 🎉 Pilihan kamu keren banget, bestie!" |
+| Do | "Your bag is empty — the archive isn't." | "Keranjang Anda masih kosong — arsipnya tidak." |
+| Don't | "Yay!! 🎉 Great choice bestie!" | "Yeay!! 🎉 Pilihannya keren banget, bestie!" |
 
 ### 3.5 Money and delivery are exact
 
@@ -132,7 +137,7 @@ Error Handling; NOW! DESIGN-SYSTEM.md §6).
 | | English | Indonesian |
 | - | ------- | ---------- |
 | Do | "Glass is only for pickup or delivery within Bali — choose acrylic to send it further" | "Kaca hanya untuk ambil sendiri atau pengiriman di Bali — pilih akrilik untuk dikirim lebih jauh" |
-| Don't | "Invalid option." · "You selected the wrong glazing." | "Opsi tidak valid." · "Kamu salah memilih kaca." |
+| Don't | "Invalid option." · "You selected the wrong glazing." | "Opsi tidak valid." · "Anda salah memilih kaca." |
 
 ### 3.7 No invented urgency, no invented offers
 
@@ -167,9 +172,14 @@ celebrates the archipelago and the craft of printmaking and avoids the colonial 
 For copy, that means: the subject of a line is the islands, the map, the maker's
 craft or the buyer's home — never the Company, its trade or its "golden age"; "VOC"
 appears only as a fact of the record (a publisher, a date, a subject), never as a
-selling point; no *tempo doeloe* sentiment, no "exotic", no "the Orient". The
-owner's own words on the stance are **open (S15)**; their answer folds in here and
-may change this section.
+selling point; no *tempo doeloe* sentiment, no "exotic", no "the Orient".
+
+**The owner's answer (S15, 2026-10-01): "no VOC imagery".** It confirms this section
+and adds nothing to unwind: no VOC monogram, ship or Company emblem as decoration, a
+pattern, packaging or a heading's ornament — the VOC appears on the shop only where an
+item itself shows it (a map's cartouche, a print's subject), and then the copy names it
+as the record does. The gallery now takes the same stance (its voice.md §4), so the
+sisters say one thing about the colonial archive.
 
 ## 5. Placeholders, plurals and prefilled messages
 
@@ -209,9 +219,10 @@ The lexicon's core terms, one choice each, so a word means one thing everywhere.
 | a price for a partner | quote | penawaran harga | `quote.*`, `action.quote` |
 | paid | Paid | Lunas | `order.status.paid` |
 
-**First person.** A control the buyer "says" is in *aku* on a *kamu* site ("Kirimi aku…",
-"Aku setuju…", "Antar ke vilaku…"); a message the buyer sends on WhatsApp is in *saya* (§5).
-In the *Anda* surfaces (Partnership, partner account, quotes) the buyer is *saya*.
+**First person.** The shop addresses the buyer as *Anda*; whatever the buyer "says" — a
+control, a consent, a prefilled WhatsApp message (§5) — is in *saya*, on every surface:
+"Kirimi saya…", "Saya setuju…", "Antar ke hotel atau vila saya sebelum saya pulang", "Cari
+pesanan saya". Never *aku* or *-ku*.
 
 ## 7. What the lexicon covers
 
@@ -245,10 +256,31 @@ component looks its label up by the value it holds:
 | enquiry topics | C6 `EnquiryTopic` | `enquiry.topic`, `enquiry.topic.<topic>` |
 | returns | C6 `ReturnReason`, `ReturnRequestView.status` | `return.reason.<reason>` (the buyer's own words: *saya*), `return.status.<status>` |
 
-**Register of these values.** The owner's answer to S15 sets the shop's Indonesian register
-to *Anda* (stance unchanged: the maps and the islands, no VOC imagery). Every Indonesian
-value 6.3.f adds is written in *Anda*; the values 6.3.b wrote in *kamu*, and §2 above, move
-in a separate follow-up.
+**The lists 6.3.i adds.**
+
+| List | Contract (file:line) | Keys |
+| ---- | -------------------- | ---- |
+| a place's role | C2 `PlaceRole` (view-models/src/common.ts:201) | `place.role.<role>` |
+| the listing's controls | C2 `ListingBase` (view-models/src/surfaces/listing.ts:63–72), `FacetVM` range (:31–36) | `listing.filters`, `listing.sortBy`, `listing.apply`, `listing.clearAll`, `listing.showResults.one/.other` (`{count}`), `listing.min`, `listing.max` |
+| the index pages' titles | C2 `DirectorySurface` (view-models/src/surfaces/listing.ts:101) — all of them; the modules decide which show | `directory.<surface>` |
+| a curation's kind | C2 `CollectionVM.kind` (view-models/src/surfaces/discovery.ts:81) | `collection.kind.<kind>` |
+| the profile's buyer type | C2 `ProfileVM.type` (view-models/src/surfaces/account.ts:54) | `profile.type.<type>` — a partner is `trade`: *Mitra* |
+| the analytics consent | C2 `ConsentVM.purpose` (account.ts:61) | `consent.analytics`, beside `consent.marketingEmail` and `consent.marketingWhatsapp` |
+| where in the showroom a photograph was taken | C9 `LOCATION_IMAGE_AREAS` (media/src/contract/roles.ts:78) | `image.area.<area>` |
+
+**The form fields (6.3.h).** A C2 field's `name` is its key (form-fields.ts:5–7): the label
+is `<name>` (`contact.email`, `business.shopType`, `lines.0.quantity`, `consent.application`),
+its hint `<name>Hint` where the app gives one (`contact.whatsappHint`,
+`business.taxNumberHint`, `business.messageHint`, `neededByHint`), a fieldset's legend its
+`group` (`business`, `contact`, `consent`), and a select's options `<name>.<value>`
+(`business.shopType.hotel`). The NPWP's hint is `message.fieldRequiredWhen` ("Required for
+businesses in {value}"), `{value}` the region `Intl.DisplayNames` names. The shop's numbers
+are Indonesian first, so the WhatsApp hint says a number starting 08 is fine — the server
+adds +62 (C6, requests.ts:55).
+
+**Register of these values.** Every Indonesian value is in *Anda* (S15): 6.3.f's were written
+in it, and 6.3.g rewrote the 54 that 6.3.b had written in *kamu*, *-mu* or *aku*, each keeping
+its meaning and its placeholders.
 
 A return's reason and status are labels, not a promise: damage and returns wait on S12 (§8)
 and no line here states a policy.
@@ -275,17 +307,19 @@ No line pre-empts an owner answer; each waits as a placeholder or is not written
 | S10 gifts | `gift.*` render only with `commerce.giftWrap` and priced lines | gift note and hidden prices only |
 | S12 damage and returns | only `order.reportProblem`; no promise written | — |
 | S13 offers | `cart.freeShipping*` render only with a threshold | no free-shipping line |
-| S15 register and stance | §2 and §4 of this file | *kamu*, warm and playful, no VOC imagery |
+| ~~S15 register and stance~~ | **answered 2026-10-01: *Anda*, and no VOC imagery** — §2 and §4 follow it; every `id.json` value is in *Anda* (6.3.g) | — |
 
 ## 9. For the native review (OA4)
 
 Awaiting review; no line in `id.json` has been reviewed by a native writer. The
 questions this draft most needs answered:
 
-1. *Kamu* for the shop, *Anda* for the Partnership and partner pages: does the switch read
-   as care for a business buyer, or as two voices?
-2. On a *kamu* site, is *aku* right for the buyer's own controls ("Kirimi aku…",
-   "Aku setuju…"), or should they avoid a pronoun?
+1. *Anda* on every page (the owner's S15), with the warmth carried by short spoken
+   sentences, *kami*, and a light *ya*: does it read friendly — a good shop across the
+   counter — or as formal as the gallery? Where it reads stiff, which lines?
+2. The buyer's own controls in *saya* ("Kirimi saya…", "Saya setuju…", "Antar ke hotel
+   atau vila saya sebelum saya pulang", "Cari pesanan saya"): natural, or should they avoid
+   a pronoun ("Setuju dengan ketentuan penjualan", "Antar sebelum tanggal pulang")?
 3. *Keranjang* for the English "bag" — agreed, or is *tas belanja* ever better?
 4. *Ongkir* in totals and delivery lines, or *ongkos kirim* in full in the checkout?
 5. *Kabar* for an alert ("Dapatkan kabar lewat email") — clear, or *notifikasi*?
@@ -294,11 +328,13 @@ questions this draft most needs answered:
 7. *Dibuat sesuai pesanan* for "Made to order", or *Pre-order* / *Dibuat setelah dipesan*?
 8. *Tersimpan* for the saved list, *Simpan* for the heart — or *Favorit*?
 9. "Tanya via WhatsApp", "Chat kami di WhatsApp": natural, or *Hubungi via WhatsApp*?
-10. The colloquial touches (*lagi*, *ya*, *biar*, *nanti*): the right amount, or too much for
-    a shop that is also a heritage brand?
+10. The colloquial touches next to *Anda* (*ya*, *lagi*, *cek*, *nanti*, *chat*; "Tanya kami,
+    ya."): the right amount, or do they clash with *Anda* in a shop that is also a heritage
+    brand? (6.3.g turned the one *biar* into *supaya*.)
 11. The VOC stance in Indonesian copy (§4): any words to avoid beyond *tempo doeloe*,
     *eksotis*, *zaman keemasan*?
-12. "Lagi liburan di Bali?" for the visitor's paths — warm, or presumptuous for an expat?
+12. "Lagi liburan di Bali?" for the visitor's paths, now on an *Anda* site — still warm, or
+    should it read "Sedang berlibur di Bali?"; and is it presumptuous for an expat?
 13. *Kemitraan* and *mitra* for the Partnership — or keep *Partnership* as a name?
 14. The restoration steps (*bintik dan noda dihilangkan*, *lubang ngengat diisi*, *lembar
     atau state digabung jadi satu desain*): clear to a buyer, and is *state* understood?

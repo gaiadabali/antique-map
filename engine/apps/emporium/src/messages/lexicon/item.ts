@@ -69,6 +69,15 @@ export const ITEM_KEYS = defineMessages({
   'image.role.scale': 'To scale',
   'image.role.packaging': 'Packaging',
   'image.role.showroom': 'In the showroom',
+  // where in a location a photograph was taken, in the visit page's order (C9
+  // LOCATION_IMAGE_AREAS, media/src/contract/roles.ts:78; TASKS.md 6.3.i)
+  'image.area.street': 'Street',
+  'image.area.entrance': 'Entrance',
+  'image.area.wide': 'Inside',
+  'image.area.wall': 'Wall',
+  'image.area.counter': 'Counter',
+  'image.area.vignette': 'Close-up',
+  'image.area.making': 'Making',
   'sister.separate': '{sister} is a separate shop with its own account',
   'sister.original': 'The original is at {sister}',
   'sister.originalOnHold': 'The original is on hold at {sister}',

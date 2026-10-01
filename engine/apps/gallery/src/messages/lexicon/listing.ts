@@ -1,8 +1,10 @@
 /**
  * Browse and search: facet and sort names, object types, and the maker line's roles and certainty
- * (TASKS.md 6.3.f). Each list is a contract's, spelt as its codes, so a component looks a label
- * up by the value it holds: `facet.${key}`, `sort.${key}`, `objectType.${type}`,
- * `maker.role.${role}`, `maker.certainty.${certainty}`.
+ * (TASKS.md 6.3.f); a place's role, the listing's own controls, the index pages' titles and a
+ * curation's kind (6.3.i). Each list is a contract's, spelt as its codes, so a component looks a
+ * label up by the value it holds: `facet.${key}`, `sort.${key}`, `objectType.${type}`,
+ * `maker.role.${role}`, `maker.certainty.${certainty}`, `place.role.${role}`,
+ * `directory.${surface}`, `collection.kind.${kind}`.
  * Keys and neutral defaults only — the words are the brand’s (`../keys.ts`).
  */
 import { defineMessages } from '@engine/i18n'
@@ -71,4 +73,33 @@ export const LISTING_KEYS = defineMessages({
   'maker.certainty.attributed': 'Attributed to {name}',
   'maker.certainty.after': 'After {name}',
   'maker.certainty.workshop': 'Workshop of {name}',
+  // the places a work names, by their role (C2 PlaceRole, view-models/src/common.ts:201)
+  'place.role.depicts': 'Shows',
+  'place.role.published-at': 'Published in',
+  'place.role.photographed-at': 'Photographed in',
+  // the listing's own controls (C2 ListingBase, view-models/src/surfaces/listing.ts:63–72, and
+  // FacetVM's range, :31–36): the count is the listing's `total`
+  'listing.filters': 'Filters',
+  'listing.sortBy': 'Sort by',
+  'listing.apply': 'Apply',
+  'listing.clearAll': 'Clear all',
+  'listing.showResults.one': 'Show {count} result',
+  'listing.showResults.other': 'Show {count} results',
+  'listing.min': 'Min',
+  'listing.max': 'Max',
+  // the index pages' titles (C2 DirectorySurface, view-models/src/surfaces/listing.ts:101): which
+  // a brand shows follows from its modules (config/src/routes/surfaces.ts), so the app names each
+  'directory.maker': 'Makers',
+  'directory.place': 'Places',
+  'directory.collection': 'Collections',
+  'directory.source': 'Sources',
+  'directory.exhibition': 'Exhibitions',
+  'directory.location': 'Locations',
+  'directory.story': 'Stories',
+  'directory.catalogue': 'Catalogues',
+  'directory.newsletterArchive': 'Newsletter archive',
+  // a curation's kind (C2 CollectionVM.kind, view-models/src/surfaces/discovery.ts:81)
+  'collection.kind.collection': 'Collection',
+  'collection.kind.gift-guide': 'Gift guide',
+  'collection.kind.wall-set': 'Wall set',
 })

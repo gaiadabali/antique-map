@@ -1,6 +1,8 @@
 /**
  * The account and after the order: section names, what waits on the buyer, enquiry topics,
- * returns and consignments (TASKS.md 6.3.f). Each list is a contract's, spelt as its codes.
+ * returns and consignments (TASKS.md 6.3.f); the profile's buyer type, the analytics consent, a
+ * viewing's purpose and a consignment photo's role (6.3.i). Each list is a contract's, spelt as
+ * its codes.
  * Keys and neutral defaults only — the words are the brand’s (`../keys.ts`).
  */
 import { defineMessages } from '@engine/i18n'
@@ -52,4 +54,21 @@ export const ACCOUNT_KEYS = defineMessages({
   'consignment.status.offer-made': 'Offer made',
   'consignment.status.accepted': 'Agreed',
   'consignment.status.declined': 'Declined',
+  // the profile's buyer type (C2 ProfileVM.type, view-models/src/surfaces/account.ts:54; 6.3.i)
+  'profile.type.collector': 'Collector',
+  'profile.type.institution': 'Institution',
+  'profile.type.trade': 'Trade',
+  'profile.type.retail': 'Private buyer',
+  // the privacy section's third purpose (C2 ConsentVM.purpose, account.ts:61); the other two are
+  // `consent.marketingEmail` and `consent.marketingWhatsapp` (./conversations)
+  'consent.analytics': 'Measure how I use the site (optional)',
+  // what a viewing is for (C6 AppointmentPurpose, domain/src/contracts/services.ts:73)
+  'viewing.purpose.viewing': 'Viewing',
+  'viewing.purpose.consultation': 'Consultation',
+  // what each "Sell to us" photo shows (C6 ConsignmentPhoto.role, services.ts:39; C2 FormVM
+  // `uploads.roles`)
+  'consignment.photo.item': 'The whole work',
+  'consignment.photo.title': 'The title',
+  'consignment.photo.verso': 'The back',
+  'consignment.photo.detail': 'A detail',
 })

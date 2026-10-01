@@ -31,12 +31,17 @@ voice earns trust by being exact.
 ## 2. The register
 
 **English.** A good dealer's letter: courteous, plain and exact. Full sentences in
-running text, short noun phrases on controls. British spelling, matching the
-project's documents and the Singapore market (*colour*, *catalogue*,
-*centimetres*) — **proposed**, for the owner to confirm (no G-question asks it). Sentence case
-everywhere (NOW! DESIGN-SYSTEM.md §6).
+running text, short noun phrases on controls. **British spelling**, matching the
+project's documents and the Singapore market (*colour*, *catalogue*, *centimetres*,
+*organisation*) — confirmed by the owner for both sites, 1 October 2026
+(`docs/design/journeys/owner-answers.md` › Also answered). Sentence case everywhere
+(NOW! DESIGN-SYSTEM.md §6).
 
-**Indonesian — *Anda* (decided, TASKS.md 6.3.d).** Formal and warm, never stiff:
+**Indonesian — *Anda* (decided, TASKS.md 6.3.d).** Both sisters now speak *Anda* — the shop
+too, by the owner's answer to S15 — so what tells them apart is everything around the
+pronoun: the gallery's is *bahasa baku*, formal connectives and no colloquial word; the
+shop's is spoken, short and lightly colloquial (the comparison is in
+`docs/design/emporium/voice.md` §2). Formal and warm, never stiff:
 *bahasa baku* as a well-run Jakarta gallery writes it, not officialese and not
 chat. *Anda* is capitalised. No *kamu*, no *kak*, no slang, no *Bapak/Ibu* on the
 page. Keep the collector's established terms where Indonesian collectors use them
@@ -138,16 +143,21 @@ The copy carries a `{placeholder}` and the page fills it — or the line is not 
 
 ## 4. The colonial archive and the VOC
 
-**The gallery's brief states no stance on the VOC or the colonial archive**
-(`engine/apps/gallery/PRODUCT.md`; the stance in EXPERIENCE-SHOP.md and the shop's
-PRODUCT.md is the shop's own). This file therefore sets none. What already applies
-is §3.1–3.2 and §3.7: where the record names the VOC — a publisher, a subject term
-(CONTENT-MODEL.md §2), the "VOC era 1602–1799" date chip (EXPERIENCE-GALLERY.md
-§4) — the copy states it as the record does, and names places as the record and
-today both name them.
+**The owner's answer (2026-10-01, `owner-answers.md` › VOC): the same as the shop — no VOC
+imagery beyond the items themselves.** The gallery celebrates the maps, the islands and the
+craft of the engravers and photographers; the Company is never its hero, its emblem or its
+mood. So:
 
-Whether the gallery wants a written position of its own is a question for the owner;
-it is not among G1–G15, so it is proposed as a follow-up to the interview (6.1.f).
+- **No VOC imagery of the gallery's own.** No VOC monogram, ship or Company emblem as
+  decoration, a pattern, a heading's ornament, packaging or a certificate's design. The VOC
+  is seen only where a work itself shows it — a cartouche, a title, a subject.
+- **The record states the VOC as a fact, never as a selling point** (§3.1–3.2, §3.7): a
+  publisher, a subject term (CONTENT-MODEL.md §2), the "VOC era 1602–1799" date chip
+  (EXPERIENCE-GALLERY.md §4) are named as the record names them, beside today's place names.
+- **No colonial nostalgia as a voice**: no *tempo doeloe*, no "golden age", no "exotic", no
+  "the Orient" — the same words the shop avoids (`docs/design/emporium/voice.md` §4).
+
+The gallery's PRODUCT.md takes the stance in 6.1.f; this section is its copy rule.
 
 ## 5. Placeholders, plurals and prefilled messages
 
@@ -230,6 +240,29 @@ component looks its label up by the value it holds:
 | returns | C6 `ReturnReason`, `ReturnRequestView.status` | `return.reason.<reason>`, `return.status.<status>` |
 | a consignment's timeline | C6 `ConsignmentStatus` | `consignment.status.<status>` |
 
+**The lists 6.3.i adds.**
+
+| List | Contract (file:line) | Keys |
+| ---- | -------------------- | ---- |
+| colouring | C2 `Colouring` (view-models/src/common.ts:214) | `colouring.<code>`, beside the record's `record.colour` |
+| a place's role | C2 `PlaceRole` (view-models/src/common.ts:201) | `place.role.<role>` |
+| the listing's controls | C2 `ListingBase` (view-models/src/surfaces/listing.ts:63–72), `FacetVM` range (:31–36) | `listing.filters`, `listing.sortBy`, `listing.apply`, `listing.clearAll`, `listing.showResults.one/.other` (`{count}`), `listing.min`, `listing.max` |
+| the index pages' titles | C2 `DirectorySurface` (view-models/src/surfaces/listing.ts:101) — all of them; the modules decide which show | `directory.<surface>` |
+| a curation's kind | C2 `CollectionVM.kind` (view-models/src/surfaces/discovery.ts:81) | `collection.kind.<kind>` |
+| the profile's buyer type | C2 `ProfileVM.type` (view-models/src/surfaces/account.ts:54) | `profile.type.<type>` |
+| the analytics consent | C2 `ConsentVM.purpose` (account.ts:61) | `consent.analytics`, beside `consent.marketingEmail` and `consent.marketingWhatsapp` |
+| what a viewing is for | C6 `AppointmentPurpose` (domain/src/contracts/services.ts:73) | `viewing.purpose.<purpose>` |
+| what a "Sell to us" photo shows | C6 `ConsignmentPhoto.role` (services.ts:39) | `consignment.photo.<role>` |
+| where in a location a photograph was taken | C9 `LOCATION_IMAGE_AREAS` (media/src/contract/roles.ts:78) | `image.area.<area>` |
+
+**The form fields (6.3.h).** A C2 field's `name` is its key (form-fields.ts:5–7): the label
+is `<name>` (`contact.email`, `institution.taxId`, `proposal`, `photos`), its hint
+`<name>Hint` where the app gives one (`contact.whatsappHint`, `institution.taxIdHint`,
+`proposalHint` with the bid's `{currency}`, `photosHint.one/.other` with the upload limits'
+`{count}` and `{size}`), and a fieldset's legend its `group` (`contact`, `institution`,
+`consent`). The gallery's buyers are international, so its WhatsApp hint asks for the country
+code; the shop's says a number starting 08 is fine.
+
 A return's reason and status are labels, not a promise: the gallery's returns policy waits
 on G6 (§8) and no line here states one.
 
@@ -254,8 +287,12 @@ No line pre-empts an owner answer; each waits as a placeholder or is not written
 | G13 facts about the gallery | `message.notAllOnline` carries `{held}` | the figure is data |
 | G14 factsheet price | `action.factsheet` names no price | — |
 
-Whether the gallery wants a stated position on the VOC and the colonial archive (§4) is a
-new question, proposed for the interview.
+The owner answered the interview on 2026-10-01 (`docs/design/journeys/owner-answers.md`):
+the VOC stance (§4) and British spelling (§2) are folded in here. The answers that change
+what the gallery sells — **D50, enquiry-only: no cart, no reserve button, no online offer,
+no price shown on any original** (G3, G4, G8, G14), the hold until an invoice is due (G5) —
+change the purchase lines' keys, and ARC decides them first (TASKS.md 6.4). Until then the
+rows above stay as they are and no key is cut.
 
 ## 9. For the native review (OA4)
 

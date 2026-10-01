@@ -1,6 +1,7 @@
 /**
  * The partner's account, the Partnership application's shop types, enquiry topics and returns
- * (TASKS.md 6.3.f). Each list is a contract's, spelt as its codes.
+ * (TASKS.md 6.3.f); the profile's buyer type and the analytics consent (6.3.i). Each list is a
+ * contract's, spelt as its codes.
  * Keys and neutral defaults only — the words are the brand’s (`../keys.ts`).
  */
 import { defineMessages } from '@engine/i18n'
@@ -48,4 +49,12 @@ export const ACCOUNT_KEYS = defineMessages({
   'return.status.received': 'Received by us',
   'return.status.refunded': 'Refunded',
   'return.status.closed': 'Closed',
+  // the profile's buyer type (C2 ProfileVM.type, view-models/src/surfaces/account.ts:54; 6.3.i)
+  'profile.type.collector': 'Collector',
+  'profile.type.institution': 'Institution',
+  'profile.type.trade': 'Trade',
+  'profile.type.retail': 'Private buyer',
+  // the privacy section's third purpose (C2 ConsentVM.purpose, account.ts:61); the other two are
+  // `consent.marketingEmail` and `consent.marketingWhatsapp` (./conversations)
+  'consent.analytics': 'Measure how I use the site (optional)',
 })
