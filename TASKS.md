@@ -24,7 +24,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/23 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -162,6 +162,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.f) | agent worktree | 2026-10-01 | 6.3.f in flight — keys from the contracts' value lists (C2, C9 v1.4, domain, config); any list no contract holds yet waits on phase 8; ⛔ 👤 OA4 native review (6.3.c), OA2 answers |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
+| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | senior-db | agent worktree (SCH) | 2026-10-01 | phase 8 opened; schema author — dev push on its own suffixed DB, no migration committed (10.3.a after the merge) |
+| 8·W1 | 8.3 Media and masters | senior-be | agent worktree (MED) | 2026-10-01 | granted `cms/src/registries/storage.ts` this wave (SCH's, no other W1 task owns it) for the media/masters storage wiring |
 
 ## Decisions for the owner
 
@@ -745,7 +747,7 @@ run beside the build line rather than in it.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
 **Waves:** W1 — 8.1, 8.3 · W2 — 8.2
 
-- [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2
+- [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{makers,places,terms,sources}/**`, their validators
   - **Read** CONTENT-MODEL.md §3, ARCHITECTURE.md §8, EXPERIENCE-GALLERY.md §2
@@ -768,7 +770,7 @@ run beside the build line rather than in it.
   - [ ] 8.2.e `afterChange` / `afterDelete` → `@engine/cache`'s `invalidate(tags)` (4.8) for the work and everything that lists it, run after the commit: `after()` inside a request, the caller's collector outside one (ARCHITECTURE.md §9)
   - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
-- [ ] **8.3 Media and masters** · needs: 3.2
+- [ ] **8.3 Media and masters** · needs: 3.2 — 🔄 8·W1
   - **Lane** MED · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{media,masters}/**` (by agreement with SCH), `engine/packages/media/src/storage/**`
   - **Read** ARCHITECTURE.md §7, CONTENT-MODEL.md §6, KOI CONTENT-MODEL Media
