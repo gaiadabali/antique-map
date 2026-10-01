@@ -12,7 +12,6 @@
  *   `FuzzyDateVM`; the "circa" is in the review reason, for a person.
  * - `NormalisedRecord['sizes']` is C2's `DimensionsVM` without `framed`: the old store recorded
  *   no framed size, so the loader adds `framed: null`.
- * - `Money['currency']` is any `string` here, C5's is a `CurrencyCode`: see the last block.
  */
 import type {
   DatePrecision as C2DatePrecision,
@@ -57,8 +56,6 @@ type _Amount = Assert<Equals<Money['amount'], C5Money['amount']>>
 type _Keys = Assert<Equals<keyof Money, keyof C5Money>>
 type _OnRequest = Assert<Equals<Extract<PriceValue, { mode: 'on-request' }>['base'], null>>
 
-// The currency is the one drift, kept visible: a normalised price's currency is any code the
-// tables know, C5's only an engine `CurrencyCode`. Narrowing it needs `CURRENCY_EXPONENT` at
-// run time (TASKS.md 7.4.b); when it is narrowed, this expectation fails and becomes an Assert.
-// @ts-expect-error — a normalised Money is not yet a C5 Money
+// A currency is C1's CurrencyCode, as C5's is: parseTables accepts no other (tables.ts).
+type _Currency = Assert<Equals<Money['currency'], C5Money['currency']>>
 type _Money = Assert<Same<Money, C5Money>>

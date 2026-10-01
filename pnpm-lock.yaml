@@ -301,6 +301,9 @@ importers:
 
   engine/packages/migrate:
     dependencies:
+      '@engine/config':
+        specifier: workspace:*
+        version: link:../config
       '@engine/view-models':
         specifier: workspace:*
         version: link:../view-models

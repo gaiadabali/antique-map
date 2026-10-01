@@ -6,9 +6,12 @@
  * The value shapes mirror the engine's contracts rather than inventing new
  * ones — `FuzzyDate` is C2's `FuzzyDateVM`, a size is C2's `SizeVM` in
  * millimetres, a price is C5's `Money` in integer minor units with
- * CONTENT-MODEL.md's pricing modes. They are restated here, structurally,
- * because this package takes no dependency on the view models or the domain.
+ * CONTENT-MODEL.md's pricing modes. They are restated here, structurally, so
+ * the CLIs run under Node's type stripping with no engine package loaded at
+ * run time (imports from the engine are type-only, and erased);
+ * `test/contracts.test-d.ts` holds them to C2 and C5 at compile time.
  */
+import type { CurrencyCode } from '@engine/config/constants'
 
 /** At or above this a reading goes into the field; below it, into the review file. */
 export const CONFIDENT = 0.9
@@ -103,8 +106,8 @@ export type ConditionValue = {
   readonly notes: string | null
 }
 
-/** C5 `Money`: a safe integer of minor units. */
-export type Money = { readonly amount: number; readonly currency: string }
+/** C5 `Money`: a safe integer of minor units, in one of the engine's currencies (C1). */
+export type Money = { readonly amount: number; readonly currency: CurrencyCode }
 
 /** CONTENT-MODEL.md §2 `pricing` — the two modes the old store had. */
 export type PriceValue =

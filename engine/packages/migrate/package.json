@@ -21,6 +21,7 @@
     "@types/node": "26.6.3"
   },
   "dependencies": {
+    "@engine/config": "workspace:*",
     "@engine/view-models": "workspace:*",
     "node-html-parser": "9.0.4"
   }
