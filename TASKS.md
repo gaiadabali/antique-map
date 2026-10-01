@@ -21,7 +21,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 2/6 | 24/37 | 1 | `███████░░░`  65% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 3/6 | 30/37 | 1 | `████████░░`  81% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **22/175** | **154/822** | **47** | `██░░░░░░░░`  19% |
+| **All** | 44 phases | | | **23/175** | **160/822** | **47** | `██░░░░░░░░`  19% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -161,7 +161,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
-| 5·W2 | 5.6 The foundation gate's local failures | medior | `antique-map-p5-har-fixes` / `feat/p5-har-fixes` | 2026-10-01 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -633,17 +632,17 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.5.e a CI step after the artifact build scans every `api/x/**` route's synchronously loaded chunks through their source maps and fails if one bundles `engine/packages/cms` or `payload` (qa's `route-chunks.mjs` from the third gate as the start)
   - [x] 5.5.f **Check:** each of qa's missed forms in 5.4's third gate is planted and fails its gate naming the file, then passes once removed; the CI chunk scan fails on the `react-server` plant and passes on clean `main`; `pnpm verify` green.
 
-- [ ] **5.6 The foundation gate's local failures** · needs: 5.3 — 🔄 5·W2
+- [x] **5.6 The foundation gate's local failures** · needs: 5.3 — ✅ 2026-10-01 ed89edf
   - **Lane** HAR · **Agent** medior · **Wave** W2
   - **Owns** `engine/tooling/dev/**`, `engine/tooling/brand-literals/**` (or wherever 2.2.b's gate lives), `engine/tooling/tasks-lint/**`, `engine/tooling/client-safe/**` (its tests' timeouts), `tests/e2e/a11y/**`, both apps' `next.config.ts` (`agentRules` only, keeping 5.4.d's one-file parity), `README.md` (the dev command)
   - **Read** `docs/gates/foundation.md` (F1, F3–F5, F7, M1, each with its reproduction)
   - _Requirements: 1.1, 1.3, 1.6_
-  - [ ] 5.6.a F1 — `pnpm dev --brand <slug> [--storefront gallery|emporium]` exists (README.md:60 documents it): it picks the app from the brand config, sets `BRAND`/`BRAND_ROOT` and the worktree's port, and runs `next dev`
-  - [ ] 5.6.b F3 — the brand-literal gate also refuses each brand's `domains.aliases[]` and the legacy domains (`oldeastindies.com`, `antiquemapsindonesia.com`, `indiesgallery.com`) under `engine/`
-  - [ ] 5.6.c F4 — `tasks:lint --phase N --wave K` fails on an Owns overlap inside that wave, as the full lint does (PARALLEL-TRACKS.md §5)
-  - [ ] 5.6.d F5 — `next dev` writes no untracked `AGENTS.md`/`CLAUDE.md` into an app (`agentRules: false` in both configs, or ignored); F7 — the client-safe test and the two 5.4 ESLint tests get load-proof timeouts
-  - [ ] 5.6.e M1 — an a11y spec in `tests/e2e/a11y/` runs axe on every shell page of every brand at 390 and 1280 px and is clean (`playwright.config.ts`'s promise; its project added through the e2e owner when it next touches the config)
-  - [ ] 5.6.f **Check:** each reproduction in `docs/gates/foundation.md` for F1, F3, F4, F5, F7 and M1 now passes, and a planted alias or legacy domain under `engine/` fails the brand-literal gate; `pnpm verify` green.
+  - [x] 5.6.a F1 — `pnpm dev --brand <slug> [--storefront gallery|emporium]` exists (README.md:60 documents it): it picks the app from the brand config, sets `BRAND`/`BRAND_ROOT` and the worktree's port, and runs `next dev`
+  - [x] 5.6.b F3 — the brand-literal gate also refuses each brand's `domains.aliases[]` and the legacy domains (`oldeastindies.com`, `antiquemapsindonesia.com`, `indiesgallery.com`) under `engine/`
+  - [x] 5.6.c F4 — `tasks:lint --phase N --wave K` fails on an Owns overlap inside that wave, as the full lint does (PARALLEL-TRACKS.md §5)
+  - [x] 5.6.d F5 — `next dev` writes no untracked `AGENTS.md`/`CLAUDE.md` into an app (`agentRules: false` in both configs, or ignored); F7 — the client-safe test and the two 5.4 ESLint tests get load-proof timeouts
+  - [x] 5.6.e M1 — an a11y spec in `tests/e2e/a11y/` runs axe on every shell page of every brand at 390 and 1280 px and is clean (`playwright.config.ts`'s promise; its project added through the e2e owner when it next touches the config)
+  - [x] 5.6.f **Check:** each reproduction in `docs/gates/foundation.md` for F1, F3, F4, F5, F7 and M1 now passes, and a planted alias or legacy domain under `engine/` fails the brand-literal gate; `pnpm verify` green.
 
 ---
 
