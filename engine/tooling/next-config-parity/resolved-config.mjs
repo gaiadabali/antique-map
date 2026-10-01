@@ -1,9 +1,11 @@
 // qa's 5.4 re-gate, L3 — two text-identical `next.config.ts` can still resolve differently: an
 // imported per-app file, or a branch on `import.meta.url`. So each app's loaded config is also
-// compared, as Next would see it, against the first app's: `headers()`, `rewrites()` and
-// `redirects()` evaluated, a RegExp by its source, any other function by its text.
+// compared, as Next would see it, against the first app's: `headers()`, `rewrites()`,
+// `redirects()` and `generateBuildId()` evaluated (a closure's value is not in its text, qa's
+// third gate L2), a RegExp by its source, any other function by its text. Each app's config is
+// loaded in its own process, from its own folder (`./load-config.mjs`).
 
-const EVALUATED = new Set(['headers', 'rewrites', 'redirects'])
+const EVALUATED = new Set(['headers', 'rewrites', 'redirects', 'generateBuildId'])
 
 /** A plain, comparable copy of a loaded config (its default export). */
 export async function resolvedConfigOf(config) {

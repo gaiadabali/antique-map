@@ -1,12 +1,14 @@
 // qa's 5.4 re-gate, L3 — each app's loaded config, resolved as Next sees it, equals the first
-// app's; then each way two text-identical files can still differ, planted.
+// app's; then each way two text-identical files can still differ, planted. qa's third gate, L2:
+// each config loads in its own child process, `cwd` its folder and its env files loaded, by
+// Next's own loader, and `generateBuildId()` is evaluated.
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { pathToFileURL } from 'node:url'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
+import { loadResolvedConfig } from './load-config.mjs'
 import { discoverApps } from './next-config-parity.mjs'
 import { resolvedConfigOf, resolvedDifferences } from './resolved-config.mjs'
 
@@ -14,8 +16,10 @@ const repoRoot = process.cwd()
 const APPS = discoverApps(repoRoot)
 const configFile = (app) => `engine/apps/${app}/next.config.ts`
 const FILES = Object.fromEntries(APPS.map((app) => [app, configFile(app)]))
-/** Loading a config loads withPayload: generous on a loaded machine. */
+/** Loading a config starts a process and loads withPayload: generous on a loaded machine. */
 const LOADED = { timeout: 60_000 }
+/** A fixture outside the repository resolves `next` from a real app. */
+const nextFrom = join(repoRoot, 'engine', 'apps', APPS[0])
 
 let sandbox
 afterEach(() => {
@@ -23,15 +27,13 @@ afterEach(() => {
   sandbox = undefined
 })
 
-const load = async (file) => (await import(pathToFileURL(file).href)).default
-
-describe("the apps' loaded configs resolve the same (qa L3)", LOADED, () => {
-  it('headers(), rewrites() and redirects() evaluated', async () => {
+describe("the apps' loaded configs resolve the same (qa L3, L2)", LOADED, () => {
+  it('each in its own process and folder; headers(), rewrites(), redirects() evaluated', async () => {
     const byApp = Object.fromEntries(
       await Promise.all(
         APPS.map(async (app) => [
           app,
-          await resolvedConfigOf(await load(join(repoRoot, configFile(app)))),
+          await loadResolvedConfig(join(repoRoot, 'engine', 'apps', app)),
         ]),
       ),
     )
@@ -40,55 +42,70 @@ describe("the apps' loaded configs resolve the same (qa L3)", LOADED, () => {
   })
 })
 
-describe('two text-identical configs that still differ (qa L3)', LOADED, () => {
-  // One config text, two app folders: what differs is beside it, or where it lives.
+describe('two text-identical configs that still differ (qa L3, L2)', LOADED, () => {
+  // One config text, two app folders: what differs is beside it, or where it is loaded from.
   const TEXT =
     "import extra from './extra'\n" +
+    'const perApp = { id: process.env.FIXTURE_BUILD_ID }\n' +
     'export default {\n' +
     '  ...extra,\n' +
     "  compress: !import.meta.url.includes('/two/'),\n" +
+    "  poweredByHeader: process.cwd().endsWith('emporium'),\n" +
+    '  generateBuildId: async () => perApp.id,\n' +
     "  headers: async () => [{ source: '/admin/:path*', headers: [{ key: 'Vary', value: extra.vary }] }],\n" +
     '}\n'
-  const files = { one: 'engine/apps/one/next.config.ts', two: 'engine/apps/two/next.config.ts' }
+  const ONE = 'engine/apps/one/next.config.ts'
+  const TWO = 'engine/apps/two/next.config.ts'
+  const files = { one: ONE, two: TWO }
 
-  /** Writes TEXT and each app's extra.ts into a folder (`folders[app]`, else the app's name). */
-  async function resolve(extras, folders = {}) {
+  /**
+   * Writes TEXT, each app's `extra.ts` and `.env` into a folder (`folders[app]`, else the app's
+   * name), and loads each in its own child process, `cwd` that folder.
+   */
+  async function resolve(apps, folders = {}) {
     sandbox = mkdtempSync(join(tmpdir(), 'nc-resolved-'))
     const byApp = {}
-    for (const [app, extra] of Object.entries(extras)) {
+    for (const [app, { vary, env }] of Object.entries(apps)) {
       const dir = join(sandbox, folders[app] ?? app)
       mkdirSync(dir)
       writeFileSync(join(dir, 'next.config.ts'), TEXT)
-      writeFileSync(join(dir, 'extra.ts'), `export default ${JSON.stringify(extra)}\n`)
-      byApp[app] = await resolvedConfigOf(await load(join(dir, 'next.config.ts')))
+      writeFileSync(join(dir, 'extra.ts'), `export default ${JSON.stringify({ vary })}\n`)
+      writeFileSync(join(dir, '.env'), `FIXTURE_BUILD_ID=${env}\n`)
+      byApp[app] = await loadResolvedConfig(dir, { nextFrom })
     }
     return resolvedDifferences(byApp, files)
   }
 
-  const ONE = 'engine/apps/one/next.config.ts'
-  const TWO = 'engine/apps/two/next.config.ts'
-  const extra = (vary) => ({ vary, trailingSlash: false })
+  const SAME = { vary: 'Sec-CH-Prefers-Color-Scheme', env: 'same' }
+  // Folder names on which every branch agrees: only what a case plants differs.
+  const AGREE = { one: 'a', two: 'b' }
 
   it('flags a difference that comes in through an imported per-app file alone', async () => {
-    // Folders named so the import.meta.url branch agrees: only extra.ts differs.
-    const problems = await resolve(
-      { one: extra('Sec-CH-Prefers-Color-Scheme'), two: extra('Accept-Encoding') },
-      { one: 'a', two: 'b' },
-    )
+    const problems = await resolve({ one: SAME, two: { ...SAME, vary: 'Accept' } }, AGREE)
     expect(problems).toEqual([
       `${TWO} resolves differently from ${ONE} at headers.headers()[0].headers[0].value, vary`,
     ])
   })
 
   it('flags a difference that comes in through a branch on import.meta.url alone', async () => {
-    const same = extra('Sec-CH-Prefers-Color-Scheme')
-    const problems = await resolve({ one: same, two: same })
+    const problems = await resolve({ one: SAME, two: SAME }, { one: 'a', two: 'two' })
     expect(problems).toEqual([`${TWO} resolves differently from ${ONE} at compress`])
   })
 
+  it('flags a branch on process.cwd(): each app loads from its own folder (qa L2)', async () => {
+    const problems = await resolve({ one: SAME, two: SAME }, { one: 'gallery', two: 'emporium' })
+    expect(problems).toEqual([`${TWO} resolves differently from ${ONE} at poweredByHeader`])
+  })
+
+  it("flags a generateBuildId closure over the app's own env file (qa L2)", async () => {
+    const problems = await resolve({ one: SAME, two: { ...SAME, env: 'other' } }, AGREE)
+    expect(problems).toEqual([
+      `${TWO} resolves differently from ${ONE} at generateBuildId.generateBuildId()`,
+    ])
+  })
+
   it('passes two configs that resolve the same', async () => {
-    const same = extra('Sec-CH-Prefers-Color-Scheme')
-    expect(await resolve({ one: same, two: same }, { one: 'a', two: 'b' })).toEqual([])
+    expect(await resolve({ one: SAME, two: SAME }, AGREE)).toEqual([])
   })
 
   it('compares a function other than headers() by its text, and passes what is the same', () => {
