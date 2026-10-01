@@ -156,6 +156,11 @@ jobs:
       - name: Build both apps (no database env)
         run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm build
 
+      # Next's own bundle as the gate (TASKS.md 5.5.e, ARCHITECTURE.md §15): no engine route's
+      # synchronously loaded chunks hold engine/packages/cms or Payload; a lazy import() may.
+      - name: Engine routes bundle no Payload (both apps)
+        run: node engine/tooling/bundle-scan/cli.mjs
+
       - name: Assemble the release tree
         run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
 
