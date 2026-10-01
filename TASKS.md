@@ -24,7 +24,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 19/38 | 4 | `█████░░░░░`  50% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/5 | 10/31 | 1 | `███░░░░░░░`  32% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 16/31 | 1 | `█████░░░░░`  52% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **31/180** | **208/875** | **49** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **32/180** | **214/875** | **49** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -163,7 +163,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
 | 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (fix round done, df2518d) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | review signed off with should-fix, all fixed; merged with 8.3 in `antique-map-p8-sch-lead` (31933a1) awaiting the SCH lead |
 | 8·W1 | 8.3 Media and masters | — (fix round done, 5a7ab6f) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | review signed off with should-fix, all fixed; 8.3.h + 10.3.a with the SCH lead (senior-db, `feat/p8-sch-lead`) |
-| 8·W1 | 8.4 What 8.1's and 8.3's reviews decided, in the docs and C9 | architect | agent worktree (ARC) | 2026-10-01 | from the two reviews' ARC items |
 
 ## Decisions for the owner
 
@@ -838,17 +837,17 @@ run beside the build line rather than in it.
   - [ ] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers)
   - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
-- [ ] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — 🔄 8·W1
+- [x] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — ✅ 2026-10-01 9396e35
   - **Lane** ARC · **Agent** architect · **Wave** W1
   - **Owns** `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT}.md`, `docs/EXPERIENCE-GALLERY.md` §2, `engine/packages/media/src/{contract.ts,contract/**}` and `engine/packages/media/test/{keys,roles}.test.ts` (C9), `engine/packages/CONTRACTS.md` (C9's row and changelog), `docs/PARALLEL-TRACKS.md` §1 (the cms tests line)
   - **Read** the two reviews (`.claude/specs/indies-platform/reviews/8.1-senior-be.md`, `8.3-senior-integrator.md`), CONTRACTS.md (versioning), ARCHITECTURE.md §7, CONTENT-MODEL.md §3, §6, DEPLOYMENT.md §2, §8
   - _Requirements: 4.3, 4.6_
-  - [ ] 8.4.a C9 minor version: `iiifFullKey` names a private `iiif-full/` prefix in the brand's own media bucket (both brands — the outlet's masters key writes only `print-files/`), with its changelog entry; `isPublicMediaKey` stays false for it
-  - [ ] 8.4.b a synthetic image's label is added at render from `provenance` (lexicon `image.syntheticAlt.*`), never stored in `alt`: CONTENT-MODEL.md §6 and C9 reworded ("rendered alt text"), so a cataloguer cannot delete it
-  - [ ] 8.4.c `media` is read by the loaders only (Local API): public REST and GraphQL reads of `media` are refused — ARCHITECTURE.md §7, CONTENT-MODEL.md §6
-  - [ ] 8.4.d DEPLOYMENT.md §2/§8: a media bucket is public only under `derivatives/` and `iiif/`, uploads private under `uploads/`; the bucket policies are applied from `@engine/media`'s plan files with each host's keys from its secrets; a CDN never bypasses the bucket policy; the masters bucket's CORS admits the admin origin; the archive's delete-capable key is separate from the web process's; worktrees may use the plan's scoped keys locally
-  - [ ] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
-  - [ ] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
+  - [x] 8.4.a C9 minor version: `iiifFullKey` names a private `iiif-full/` prefix in the brand's own media bucket (both brands — the outlet's masters key writes only `print-files/`), with its changelog entry; `isPublicMediaKey` stays false for it
+  - [x] 8.4.b a synthetic image's label is added at render from `provenance` (lexicon `image.syntheticAlt.*`), never stored in `alt`: CONTENT-MODEL.md §6 and C9 reworded ("rendered alt text"), so a cataloguer cannot delete it
+  - [x] 8.4.c `media` is read by the loaders only (Local API): public REST and GraphQL reads of `media` are refused — ARCHITECTURE.md §7, CONTENT-MODEL.md §6
+  - [x] 8.4.d DEPLOYMENT.md §2/§8: a media bucket is public only under `derivatives/` and `iiif/`, uploads private under `uploads/`; the bucket policies are applied from `@engine/media`'s plan files with each host's keys from its secrets; a CDN never bypasses the bucket policy; the masters bucket's CORS admits the admin origin; the archive's delete-capable key is separate from the web process's; worktrees may use the plan's scoped keys locally
+  - [x] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
+  - [x] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
 
 - [ ] **8.5 Staging storage holds 8.3's layout before 8.3 reaches staging** · needs: 8.3, 8.4
   - **Lane** HAR (ops) · **Agent** devops · **Wave** W2 · on Helios under the standing go-ahead (OA-Helios); a new DNS name is 👤
@@ -2666,6 +2665,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — ✅ **8.4** (9396e35) — the decisions of 8.1's and 8.3's independent reviews, in the docs and C9 v1.6 (additive: keys byte-identical; `renderedAlt`, `opensWithLabel`, `SyntheticLabelWords` added): the full-resolution pyramid private under `iiif-full/` in each brand's own media bucket; a synthetic image's label added at render from provenance, never stored in `alt`; `media` read on the server only (public REST refused, GraphQL off); DEPLOYMENT §2/§8's object-storage rules (public only `derivatives/` and `iiif/`, plans per host, two keys per process, the archive's delete key off the web process, masters CORS); `MAKER_ROLES`/`DATE_PRECISIONS` named in CONTENT-MODEL §3 (C1 move → 22.7.f); Beyond Indonesia a root region; ARCHITECTURE §2 says RustFS. Its Found placed: staging buckets public whole-bucket → new **8.5** (before 8.3 deploys); 8.3.i, 15.2.d, 22.7.f, 36.1.e.
 - 2026-10-01 — **The board syncs itself.** `scripts/progress.mjs` (now `scripts/board/{sync,table,run}.mjs`) closes every task whose subtasks are all ticked (`- [x] … — ✅ <today> <HEAD sha>`, its 🔄/⛔ dropped), removes its **Now** rows and rebuilds the table. It runs from the git pre-commit hook on any commit that includes TASKS.md (a post-commit hook keeps the index right after `git commit TASKS.md -m …`), from a Claude Code PostToolUse hook after any edit to TASKS.md (`.claude/settings.json`), and by hand as `pnpm tasks:sync` / `pnpm tasks:tick <ids…>`; `pnpm verify` runs `tasks:check`, which fails on a stale board. Hooks install on `pnpm install` (`core.hooksPath=.githooks`); an agent worktree's copy is never rewritten. New lint rule: a ticked task with an open subtask. 21 tests in `scripts/board/`, the hooks driven end to end in a throwaway repository. Rules 3 and 4 above, DISPATCH.md, PARALLEL-TRACKS.md §3 and CONVENTIONS.md updated.
 - 2026-10-01 — **D54: no collector accounts on the gallery** (the developer: "this is simply buy and sell") — sign-in for the shop's retailers only; want-lists by email; the old customers import as staff-side records with no claim flow. New 6.4.h; 6.4's board diff now covers phases 29 and 36 too. The developer keeps the 44 phases and runs them one at a time (quota) — no consolidation pass.
 - 2026-10-01 — ✅ **phase 7** — the old catalogue and the shop's URL discovery, on simulation and seed (D53). Evidence on `main`: the restore harness on the mock dump (`restore.integration.test.ts`, 15 tables, 240 rows) with its schema notes; the read-only public read (D41) — 1,823 products (1,607 listed, 216 sold), 2,289 images, 7,665 URLs inventoried, paths only; the normalisers over all 1,823 records with a fixture test per MIGRATION.md §4 case and the review file (2,323 rows, raw beside proposal); the shop's 673 legacy paths from the Wayback CDX index and the archived sitemaps (D43), the Search Console importer proven on a synthetic export; nothing done to either old site beyond GETs (the enquiry-address incident logged under 7.1). 7.1.a and 7.3.a closed as simulated; the real dump (OA9) and Search Console export (OA11) go through the built harness in 36.3.e and 36.2.c. Phase 7's slot is free.
