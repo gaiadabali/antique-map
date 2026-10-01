@@ -4,8 +4,7 @@
 // runs pm2 at all is visible to the test as a change. `start` runs each app of the ecosystem file
 // detached with its node_args, cwd and env; `save` writes ~/.pm2/dump.pm2 (the apps' full specs);
 // `resurrect` starts what dump.pm2 lists and is not running; `kill` stops the apps and the
-// daemon. Test-only: the image installs it where Helios's group-writable global pm2 sits, and
-// the nvm npm shim copies it into a user's nvm tree as "pm2@<version>".
+// daemon. Test-only: the image installs it where Helios's system pm2 sits (/usr/lib/node_modules).
 const fs = require('node:fs')
 const path = require('node:path')
 const { spawn, execSync } = require('node:child_process')
@@ -29,6 +28,8 @@ if (cmd === 'kill') {
   for (const a of load()) if (alive(a.pid)) process.kill(a.pid, 'SIGTERM')
   if (daemonPid() && alive(daemonPid())) process.kill(daemonPid(), 'SIGTERM')
   for (const f of [pidFile, sock, stateFile]) fs.rmSync(f, { force: true })
+  // Test hook: the deploy poller starting something right after the kill (the replace race).
+  if (fs.existsSync('/tmp/poller-race')) spawn('sleep', ['600'], { detached: true, stdio: 'ignore' }).unref()
   process.exit(0)
 }
 fs.mkdirSync(path.join(home, 'logs'), { recursive: true })

@@ -43,7 +43,7 @@ grep -vq '^127\.0\.0\.1:' /tmp/listen && die "something listens beyond loopback"
 mountpoint -q /var/lib/indies-rustfs/data && [ "$(stat -c %s /var/lib/indies-rustfs/data.img)" = $((2 * 1073741824)) ] || die "RustFS image"
 [ "$(stat -c '%a %U' /var/lib/indies-rustfs/data)" = "700 indies-rustfs" ] || die "RustFS data root"
 [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4030/api/health)" = 503 ] || die "holding server"
-grep -q '^User=uig$' /etc/systemd/system/pm2-uig.service && grep -q "^ExecStart=/home/uig/.nvm/versions/node/$NVM/bin/pm2 resurrect$" /etc/systemd/system/pm2-uig.service || die "pm2 unit"
+grep -q '^User=uig$' /etc/systemd/system/pm2-uig.service && grep -q '^ExecStart=/usr/bin/pm2 resurrect$' /etc/systemd/system/pm2-uig.service || die "pm2 unit"
 [ ! -e /root/.pm2 ] || die "a root pm2 daemon was left"
 grep -q '"name": "uig"' /home/uig/.pm2/dump.pm2 || die "dump.pm2"
 grep -q "max_memory_restart: '1536M'" /home/uig/ecosystem.config.cjs && grep -q "HOSTNAME: 'localhost'" /home/uig/ecosystem.config.cjs || die "ecosystem"
@@ -189,12 +189,17 @@ run --env staging --report >"$(log inventory)" 2>&1 || { cat "$(log inventory)";
 unchanged "$before" "--report changed the host"
 for m in 'user    present  uig (uid' 'user    present  indies-rustfs' 'unit    present  /etc/systemd/system/pm2-uoei.service (644 root:root' \
   'port    held     4030' 'port    free     4033' 'file    present  /etc/indies/rustfs/secret-key (640 root:indies-rustfs' \
-  "home    present  /home/uig/.nvm/versions/node/$NVM/bin/pm2 — pm2 6.0.14 (pinned 6.0.14)" 'cron    present  uoei' \
+  'pm2     host     /usr/bin/pm2 — pm2 7.0.1, the host' 'cron    present  uoei' \
   'db      present  ig_db (owner ig' 'bucket  present  archive-masters (private)' 'key     present  RustFS key uig-media' \
   'dir     present  /var/lib/indies-rustfs/data (700 indies-rustfs:indies-rustfs)'; do
   grep -qF "$m" "$(log inventory)" || die "the inventory does not show: $m"
 done
 pass "--report's inventory: $(sed -n '/^== inventory/,/^== report/p' "$(log inventory)" | grep -c '^   [a-z]') entries; host unchanged"
+sed -i 's/"version":"7.0.1"/"version":"6.0.0"/' /usr/lib/node_modules/pm2/package.json
+run --env staging --report >"$(log pm2-6)" 2>&1 || true
+sed -i 's/"version":"6.0.0"/"version":"7.0.1"/' /usr/lib/node_modules/pm2/package.json
+grep -q 'WARN   pm2 6.0.0 at /usr/bin/pm2, not 7.x as KOI and the poller run' "$(log pm2-6)" || die "a pm2 that is not 7.x was not warned about"
+pass "a system pm2 that is not 7.x is a warning"
 
 printf '\n--- the report of the converged run ---\n'
 sed -n '/^== report: shared/,$p' "$(log apply4)" | grep -v '^          |'

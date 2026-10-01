@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# A stand-in for the npm in a site user's nvm tree, inside the test container. It does only what
-# helios-provision.sh asks of it — `install --global --prefix P … pm2@V` — by copying the pm2
-# shim into P/lib/node_modules/pm2 with a package.json saying V and linking P/bin/pm2, as npm
-# lays it out. It refuses to run as root, and logs who ran it with what to /tmp/npm-shim.log.
-# /tmp/npm-offline makes it fail as an unreachable registry would. Test-only.
+# A stand-in for the npm in a site user's nvm tree, inside the test container. helios-provision.sh
+# installs no pm2 (the host's /usr/bin/pm2 is the one), so nothing should run this: every call is
+# logged to /tmp/npm-shim.log, which the test asserts stays empty. Were it run with
+# `install --global --prefix P … pm2@V`, it would lay the pm2 shim out as npm does. Test-only.
 set -euo pipefail
 printf 'uid=%s user=%s args=%s\n' "$(id -u)" "$(id -un)" "$*" >>/tmp/npm-shim.log
 [ "$(id -u)" != 0 ] || {
