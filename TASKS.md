@@ -22,7 +22,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 11/31 | 3 | `████░░░░░░`  35% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/23 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **26/175** | **167/825** | **46** | `██░░░░░░░░`  20% |
+| **All** | 44 phases | | | **26/176** | **169/837** | **46** | `██░░░░░░░░`  20% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -105,7 +105,7 @@ A phase opens when every phase in its **Needs** column is ✅, lowest number fir
 | **3** Config spine and Payload boot | Foundation | 2 | 2 | 2 | ~1d |  |
 | **4** App shells and the Cache Components spike | Foundation | 3 | 3 | 8 | ~2.5d |  |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | 3 | 4 | ~2d | **M0** |
-| **6** Briefs, image direction and voice | Design | 4 | 1 | 3 | ~3d |  |
+| **6** Briefs, image direction and voice | Design | 4 | 2 | 4 | ~3d |  |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 2 | 3 | ~2d |  |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 2 | 3 | ~2d |  |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | 2 | 4 | ~3d |  |
@@ -157,9 +157,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 6·W1 | 6.1 Product briefs and journeys | — (merged 6a10f3a, 5b269dc) | `antique-map-p6-ux` | 2026-10-01 | ⛔ 👤 OA2 — your interview answers (`docs/design/journeys/owner-interview.md`, Indonesian `.id.md`); 6.1.e's native review (D20) |
-| 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.f's Indonesian guides) | agent worktree | 2026-10-01 | ⛔ 👤 OA3 — your pilot photographs (`docs/design/imagery/pilot-set-request.md`); 6.2.f: the guides' `.id.md` in flight, then the placeholders and Bapak/Ibu (yours) and the send |
-| 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.f) | agent worktree | 2026-10-01 | 6.3.f in flight — keys from the contracts' value lists (C2, C9 v1.4, domain, config); any list no contract holds yet waits on phase 8; ⛔ 👤 OA4 native review (6.3.c), OA2 answers |
+| 6·W1 | 6.1 Product briefs and journeys | senior-uiux (6.1.f) | agent worktree | 2026-10-01 | OA2 answered (`owner-answers.md`); 6.1.f folding the answers in; ⛔ 👤 6.1.e's native review (D20) |
+| 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.h) | agent worktree | 2026-10-01 | guides' `.id.md` merged (19f69e6); 6.2.h aligning the request; ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g) |
+| 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.g–i) | agent worktree | 2026-10-01 | 6.3.f merged (3e28ed2); 6.3.g–i in flight (the shop to *Anda*, field labels, the remaining lists); 6.3.j HAR next; ⛔ 👤 OA4 native review (6.3.c) |
+| 6·W2 | 6.4 Replan from the owner's answers | architect | agent worktree | 2026-10-01 | D50 (gallery enquiry-only), S3 (shop Indonesia-only), the docs and contracts the answers change; returns a board diff |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 | 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | senior-db | agent worktree (SCH) | 2026-10-01 | phase 8 opened; schema author — dev push on its own suffixed DB, no migration committed (10.3.a after the merge) |
@@ -192,18 +193,14 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D18** | Default locale per brand (served unprefixed) | English for both; Indonesian at `/id/…` | owner | 3.1 |
 | **D20** | Native Indonesian copywriter | **no default** — the lexicon and the launch copy review need one | owner | 6.3 |
 | **D21** | Buyers for the prototype test and usability runs (≈ 10 + 10 people) | collectors from the gallery's client list; shoppers recruited through the shop's Instagram | owner (introductions) | 13.2, 35.2, 32.2 |
-| **D22** | Offers at launch | **non-binding offers** in v1: accept / counter / decline in the admin; an accepted offer becomes a hold and a private pay link. Binding offers (a contract on acceptance) are v2 | owner | 19.1 |
 | **D23** | Print-on-demand abroad at launch | **not at launch** — export orders ship from Bali stock or local production, DAP; Prodigi / Gelato switch on in v2 behind the existing router | owner | 26.3 |
 | **D24** | The item register — who compiles location and export status for every original, and by when | the gallery's staff, by the staging rehearsal (37.2); an original without a row publishes **enquiry-only** and sells nowhere online | owner (staff time) | 36.3 |
 | **D25** | Dark production import of the gallery before the shop launches | yes, whenever the shop launches first — its sister links and original prices come from the gallery's archive API | owner (Helios go-ahead) | 42.7 |
 | **D26** | Minimum print resolution for reproductions | **240 ppi** — the ceiling is computed from the design's crop, or the object's box for a whole sheet, never the file's long edge (C9 v1.4 `printCeilingOf()`; a 3543 px frame whose sheet spans 3300 px gives 349 mm); a product type may demand more | owner + print partner | 9.2, 15.4 |
 | **D27** | FX source for derived prices | ECB reference rates, refreshed daily, plus the per-market buffer; each order stores the rate it used | accountant | 17.2 |
 | **D28** | Newsletter sender | a bulk-sending provider for the newsletter and alerts (Workspace SMTP caps daily sends and would put transactional mail at risk); transactional mail stays per D13 | owner (account) | 29.2 |
-| **D32** | What a retail partner gets at launch | an application approved by staff; a trade price tier and a minimum order as data; orders placed as quotes through the order builder (24.5) and paid by bank transfer or pay link; no self-serve wholesale cart until the trade portal (v2.7) | owner | 28.5 |
 | **D29** | The Singapore seller selling Singapore-held stock to an Indonesian address | priced and charged in **IDR** (the rupiah rule governs what the buyer sees), card or bank transfer, import duties the buyer's (DAP) | tax adviser | 17.3, 25.1 |
-| **D45** | Proforma (`invoice`) holds for institutions: capped, or staff approve before the hold starts (COMMERCE.md §7, F13) | **staff approve first** — the hold starts on approval | owner (interview G5) | 18.1, 19.1 |
 | **D46** | Who produces the configurator's room plates (6.2.c: six master plates) | a freelance 3D artist renders them to `docs/design/imagery/room-scenes.md`; no AI-generated or stock interiors | owner (budget) | 22.7 |
-| **D47** | How the shop prices and charges a buyer abroad at launch | one rupiah price list everywhere; the PT charges IDR — a card is charged the exact rupiah total; the market's currency shows only as an "≈" estimate beside it (day's rate, no buffer); PayPal, which takes no rupiah, is charged the rupiah total converted once to USD at the payment step (day's rate + the USD buffer, half-even to the cent), shown before the choice and stored on the attempt; no hand-set EUR/AUD/SGD/USD lists until a seller that charges them exists (COMMERCE.md §3, PAYMENTS.md §6) | owner + tax adviser (may the PT take USD by PayPal for export?) | 17.2, 17.3, 19.2, 25.2, 30.1, 32 |
 | **D48** | Payment and courier providers before the client hands over sandbox accounts (OA14) | **simulated**: `<PREFIX>_MODE=simulate` on staging and local — no credential read, the boot report warns, production refuses it; each adapter (19.3, 25.x, 26.x) ships a simulator for that mode, and the real sandbox keys replace the `simulate` line when they arrive (owner, 2026-10-01; DEPLOYMENT.md §8) | owner | 19.3, 25.1–25.3, 26.1–26.2 |
 
 ### Owner actions (not questions)
@@ -211,7 +208,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | # | Action | Needed by |
 | --- | --- | --- |
 | **OA1** | ✅ 2026-09-28 — `gaiadabali/antique-map` (private, internal), deploy account `web-gaiada` (admin); `main` pushed | 1.1.f |
-| **OA2** | The owner interview — at most 15 questions per brand | 6.1.b |
+| **OA2** | ✅ 2026-10-01 — the owner interview, answered in session (`docs/design/journeys/owner-answers.md`); still owed from it: the showroom hours (S4), the online WhatsApp number and hours (S6), the welcome code's value (S13), "Katalog Bali 2026" again (S1), the price list (S2) | 6.1.b |
 | **OA3** | Hand over the pilot image set: six gallery items (one a typical migrated item at today's quality) and the Denpasar showroom — the owner's own photographs (D19) | 6.2.b |
 | **OA4** | A native Indonesian copywriter for the lexicon and the launch copy (D20) | 6.3.c, 42.6, 43.6 |
 | **OA5** | Two or three Indonesian designers or buyers for the shop's cultural review | 12.2.a |
@@ -234,6 +231,12 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D50** | **The gallery is enquiry-only** (owner interview G3, G4, 2026-10-01; supersedes D30): no cart, no reserve button, no online offers, and **no price shown on any original** — every original leads to a call or WhatsApp to negotiate (Singapore). Once a price is agreed, **staff issue an invoice and the buyer pays it online through the site's gateway**; the piece shows "On hold" until the invoice is due (G5), and ships only when paid in full, shipping and duties the buyer's (G11). Merchandise (the shop) keeps its checkout. ARC replans the gallery's commerce — 6.4. | 2026-10-01 |
+| **D45** | **An invoice holds its piece until the invoice's due date**, set by the staff who issue it; released automatically if unpaid (G5). The hold starts when staff issue the invoice — staff-approved by construction. | 2026-10-01 |
+| **D22** | **No online offers on the gallery** (moot after D50): a price is negotiated by phone or WhatsApp and paid by invoice. The shop has no offers either. | 2026-10-01 |
+| **D47** | **The shop sells within Indonesia only at launch** (S3): no checkout to an address abroad, so no "≈" foreign estimate and no PayPal USD charge at launch. D47's rupiah-first mechanism (COMMERCE.md §3, PAYMENTS.md §6) stays the design for when export opens; journeys J-S2 and J-S5 and phase 32's Done when change — 6.4. | 2026-10-01 |
+| **D32** | **Partner terms are case by case** (S5): the Partnership page publishes no fixed discount or minimum; staff negotiate each partner, and the trade tier and minimum stay data the admin sets per partner (D33, D37 unchanged). | 2026-10-01 |
+| **Voice** | **The shop speaks *Anda*, not *kamu*** (S15), with no VOC imagery; **the gallery takes the same stance on the VOC** (no VOC imagery beyond the items); **British spelling** on both sites; the admin in **both languages for every staff member** (G15). | 2026-10-01 |
 | **D49** | **Staging secrets stay host-only on Helios** (each site's `shared/.env` and `/etc/indies/*`, 600); Infisical arrives with production provisioning (41.2): **one project per brand** — `indies-gallery` and `old-east-indies` — each with `staging` and `production` environments, keys under their `.env` names. | 2026-10-01 |
 | **D19** | **No photographer is booked:** every item is the owner's own property, and the owner supplies its photographs to sell it. 6.2's capture standards become the owner's photography guide and the intake spec; its pilot set is the owner's images. | 2026-10-01 |
 | **OA-Helios** | **Standing go-ahead for Helios:** the orchestrator may do what the project needs on Helios (staging provisioning, deploys, reads) — given by the owner in session. Production cutover, DNS for the brands' own domains and live credentials still follow their own 👤 items. | 2026-10-01 |
@@ -251,7 +254,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D34** | **An ended partnership deactivates the retailer's account** — it can no longer sign in; its orders and history stay with the owner (the products are the owner's; partners help sell them). No former-partner area. | 2026-09-28 |
 | **D35** | **The shop's wishlist lives on the guest's device** (no account), and every wishlist action is tracked for marketing — within the consent rules of ANALYTICS.md §1 (see D38). | 2026-09-28 |
 | **D36** | **One Partnership programme for every business buyer** — retail shops, hotels, villas, cafés and companies alike apply as partners; there is no separate "For Business" path or header item on the shop. | 2026-09-28 |
-| **D30** | **The gallery keeps online sales** (reserve, checkout, offers and pay links as planned). The design project note of 11 Sept 2026 recorded "no transactions, enquiry by email form only"; the owner confirmed that note is superseded. | 2026-09-28 |
+| **D30** | ~~**The gallery keeps online sales**~~ — **superseded by D50 (2026-10-01).** (reserve, checkout, offers and pay links as planned). The design project note of 11 Sept 2026 recorded "no transactions, enquiry by email form only"; the owner confirmed that note is superseded. | 2026-09-28 |
 | **D31** | **Old East Indies: shoppers buy as guests; accounts are for retailers only**, through a Partnership page (a highlight in the home hero and a **Partnership** header item; sign-up or sign-in at the page's last section). The client's decision of 11 Sept 2026, confirmed. Changes 28.1, 28.2, 29.3; adds 28.5 and 1.2.l. | 2026-09-28 |
 | **D9 (shape)** | **One shared base, distinct accents:** both sites share layout, components, buttons and type — **Cormorant Garamond + Karla**, which the client asked to keep — and differ in palette and signature details (C3's overridable subset). References: Etalage and Everart, mixed, not copied. The owner's draft (`docs/design/input/claude-design-2026-09/`) is the lead candidate, draft input only. Phases 12–14 reworded. | 2026-09-28 |
 
@@ -652,7 +655,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 **Goal:** what each brand is for and who it serves, the photography it will stand on, and how it speaks in both languages.
 **Done when:** the product briefs and the 6.1.c journeys are written and approved; the capture standards exist and the owner's pilot set is delivered (D19); each brand has a native-reviewed EN/ID voice and lexicon.
-**Waves:** W1 — 6.1, 6.2, 6.3
+**Waves:** W1 — 6.1, 6.2, 6.3 · W2 — 6.4
 
 **Why the Design stage is long.** A research recommendation is the category default —
 "Print Room" is what a premium dealer site already looks like; a Deco travel
@@ -668,7 +671,7 @@ run beside the build line rather than in it.
   - **Read** the drafted PRODUCT.md files, EXPERIENCE-GALLERY.md, EXPERIENCE-SHOP.md, RESEARCH.md §1, §3
   - _Requirements: 6.1, 7.1_
   - [x] 6.1.a impeccable `init` against the drafts; list the questions only the owner can answer
-  - [ ] 6.1.b 👤 owner interview (≤ 15 questions per brand); fold answers in
+  - [x] 6.1.b 👤 owner interview (≤ 15 questions per brand); fold answers in — answered in session 2026-10-01 (`docs/design/journeys/owner-answers.md`, 121e784); the folding is 6.1.f
   - [x] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
   - [ ] 6.1.e an Indonesian version of `docs/design/journeys/owner-interview.md` before it is sent (client material comes in both languages — project-notes.md), reviewed by a native speaker (the D20 copywriter when there is one) — drafted 2026-10-01 (`owner-interview.id.md`, `owner-interview-toko.id.md`, `pilot-set-request.id.md`); the native review is what remains
   - [ ] 6.1.f after OA2: fold each answer in at its `(open — pending the owner interview, OA2 · Gn/Sn)` mark, update each journey's "Open until the owner answers" and its defaults, and route any answer that changes EXPERIENCE-*.md to ARC; ask too whether the gallery states a position on the VOC and the colonial archive (the shop's is stated; the gallery's PRODUCT.md has none — 6.3), and confirm British spelling for both brands
@@ -684,7 +687,9 @@ run beside the build line rather than in it.
   - [ ] 6.2.b 👤 the owner supplies the pilot set (D19 — no photographer): six gallery items — including one **typical migrated item** at real data quality — and the Denpasar showroom, shot to 6.2.a's guide where the owner can; each image checked against the intake spec, and any gap named per image
   - [x] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
   - [x] 6.2.e ARC → SCH, before 8.3 and 9.1 (6.2's Found 1–6): CONTENT-MODEL.md and C9 give `products` image roles (flat · detail · in-room · lifestyle · scale · packaging · showroom) and `locations` images; a `media.role` value list and `media.provenance` (photograph · composite · rendered · ai-generated); on `masters`, object ppi, the object's box, role and capture tier; a restoration note on `designs`; a publish guard refusing a synthetic image as an original's primary; `primary` a crop of `recto`, never its own photograph; the print ceiling computed from the object's pixels or the design crop, not the master's long edge (ARCHITECTURE.md §7, MIGRATION.md §9, 15.4.c); one shared room-plate set with its geometry (22.7); and a key for pilot masters before OA3 arrives
-  - [ ] 6.2.f fill the pilot request's four placeholders (`{owner's name}`, `{our address}`, `{date}`, `{sender}`) in both the English and the Indonesian version, choose Bapak or Ibu, give the guides it attaches (gallery-guide, shop-guide, the shot lists, handover) Indonesian versions too, and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it
+  - [ ] 6.2.f fill the pilot request's four placeholders (`{owner's name}`, `{our address}`, `{date}`, `{sender}`) in both the English and the Indonesian version, choose Bapak or Ibu, give the guides it attaches (gallery-guide, shop-guide, the shot lists, handover) Indonesian versions too, and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it — the guides' Indonesian versions merged 2026-10-01 (19f69e6), "Bapak" chosen (121e784); the four placeholders and the send remain
+  - [ ] 6.2.g 👤 the native review (D20, OA4) of the seven guides' `.id.md` drafts, together with 6.1.e's
+  - [ ] 6.2.h align both versions of the pilot request with the guides — a colour card in every frame except transmitted light and life shots (one reference frame per scene), a reference frame per showroom room (intake-spec.md §6), the stock-number folder rule (handover.md §2–§3) — and add the `showroom_making` shots now that S14 is yes
   - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the owner's pilot set is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
 
 - [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W1
@@ -696,8 +701,24 @@ run beside the build line rather than in it.
   - [x] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
   - [ ] 6.3.c 👤 native Indonesian copywriter review
   - [x] 6.3.e HAR: a copy-completeness gate — `@engine/i18n/copy`'s `checkCopy()` wired into `check-brands` for every brand × the app that renders it × `locales.supported`, the `test` brand checked against the union of both apps' keys; a planted missing key and a planted placeholder mismatch each fail it (none exists today, so 6.3.b's coverage is unguarded)
-  - [ ] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`); and C9 v1.4's labels: `SYNTHETIC_LABEL`, each `PRINT_RESTORATIONS` step, the new image roles, "≈ … — charged in Rp …" with the note that the card issuer or PayPal may convert again (D47), and the room plate's caption with its wall width
-  - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for the gallery; the shop's to confirm — likely *kamu*), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
+  - [x] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`); and C9 v1.4's labels: `SYNTHETIC_LABEL`, each `PRINT_RESTORATIONS` step, the new image roles, "≈ … — charged in Rp …" with the note that the card issuer or PayPal may convert again (D47), and the room plate's caption with its wall width — merged 2026-10-01 (3e28ed2): gallery 374 → 518 keys, shop 394 → 504, `check:brands` green on every brand × app × locale; the `technique` list waits on phase 8's schema
+  - [ ] 6.3.g the shop's register to *Anda* (S15): the 54 old-east-indies `id` values in *kamu*/*-mu*/*aku* (6.3.f's report lists them) and the emporium voice.md (§2, §6's first person, §8's S15 row, §9 questions 1–2, 10, 12); and both voice docs' VOC stance (the gallery's matches the shop's) and British spelling
+  - [ ] 6.3.h field labels and hints, keyed by each C2 `EntryFieldVM.name` (`form-fields.ts`): `contact.*`, `business.*` (the `business.shopType` select's own label), `institution.*`, `proposal`, `description`, `photos`, `neededBy`, `lines.0.quantity`, `consent.application`, the fieldset legends, and `fieldRequiredWhen`
+  - [ ] 6.3.i the lists the contracts define that are still unkeyed — `Colouring`, `PlaceRole`, `ProfileVM.type`, `ConsentVM.purpose` analytics, `AppointmentPurpose`, `LOCATION_IMAGE_AREAS`, the consignment upload roles, `DirectorySurface` titles, `CollectionVM.kind` — and the listing chrome (Filters, Sort by, Apply, Clear all, Show {count} results, min/max)
+  - [ ] 6.3.j HAR: `@engine/i18n/copy`'s `pluralFormOf` reads a code named `other` (`objectType.other`, `return.reason.other`, `business.shopType.other`) as a plural form, so a stray `objectType.one` would pass the gate; a planted one fails it
+  - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
+
+- [ ] **6.4 Replan from the owner's answers** · needs: 6.1.b — 🔄 6·W2
+  - **Lane** ARC · **Agent** architect · **Wave** W2
+  - **Owns** `docs/{EXPERIENCE-GALLERY,EXPERIENCE-SHOP,COMMERCE,PAYMENTS,ANALYTICS,COMPLIANCE,CONTENT-MODEL}.md`, `.claude/specs/indies-platform/{requirements,design}.md`, the contract files (C1–C13, ARC's)
+  - **Read** `docs/design/journeys/owner-answers.md`, TASKS.md Decisions D50, D45, D22, D47, D32 and Voice, the journeys, 6.3.f's contract notes (6.4.d)
+  - _Requirements: 6.1, 7.1_
+  - [ ] 6.4.a D50 — the gallery enquiry-only: EXPERIENCE-GALLERY.md (the purchase panel's modes, no shown price, the invoice-and-pay path, the hold until the invoice is due), COMMERCE.md and PAYMENTS.md (the staff-issued invoice paid through the gateway — 24.5's order builder or a pay link — and what of reserve, cart and offers the gallery no longer uses), requirements.md's affected criteria, and C1/C2's purchase actions for an original
+  - [ ] 6.4.b S3 and S7 — the shop sells within Indonesia at launch and from stock: EXPERIENCE-SHOP.md, COMMERCE.md §3, PAYMENTS.md §6 (PayPal at launch or not), the configurator's framed options against "everything in stock"
+  - [ ] 6.4.c G10, G12, G13, S4, S5, S6, S12, S13 — what the docs promise: no institution named, first-party analytics in the admin dashboard (and whether GA4/Meta still fire after consent — a question back to the owner if the answer is not plain), the showroom's hours, pickup and QRIS, case-by-case partner terms, a separate online WhatsApp number, no refunds but a damaged print replaced, free shipping over Rp 500.000 and a welcome code
+  - [ ] 6.4.d 6.3.f's contract notes: C2 `MessageVM` names `message.<code>`; `DeliveryPromiseVM.holiday` names `holidayDelay` `{holiday, date}`; whether a controlled list's label lives in the view model (`TermVM`, `FacetOptionVM.label`) or the app's lexicon — pick one; `lifeDates` keeps "c." for a circa date
+  - [ ] 6.4.e a proposed board diff for the orchestrator — which tasks and Done-when lines in phases 18, 19, 24, 32, 34, 35, 39 and 40 change, are cut (✂️) or are added, with ids; agents never edit TASKS.md
+  - [ ] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report.
 
 ---
 
@@ -2579,6 +2600,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — **OA2 answered** (`docs/design/journeys/owner-answers.md`): the gallery becomes **enquiry-only** — no price shown, no cart, reserve or online offer; staff invoice an agreed price and the buyer pays it through the site's gateway (**D50, superseding D30**; D45, D22 answered); the shop sells **within Indonesia only at launch** and from stock (D47), partner terms case by case (D32), *Anda* (S15). New task **6.4** (ARC) replans the docs and contracts and returns a board diff; 6.1.b ticked. **6.3.f** merged (3e28ed2) — the contracts' value lists keyed, `pnpm verify` green on main; follow-ups 6.3.g–j. **6.2.f**'s Indonesian guides merged (19f69e6); follow-ups 6.2.g–h. `docs/gates/foundation/staging-drive.json` prettier-formatted (c8b9141, data unchanged) — `format:check` was red on main.
 - 2026-10-01 — ✅ **phase 5** and **M0** — both brand shells live on staging from a CI-built release, admin signing in on both. The foundation gate (5.2, qa, `docs/gates/foundation.md` with 50 screenshots and drive logs) evidences every Done-when clause of phases 1–5: `pnpm verify` 1322 passed on a fresh clone; CI and release green; `pnpm dev --brand` ×2 serving differently branded EN/ID shells from two databases; `https://indies-gallery.gaiada.com` and `https://old-east-indies.gaiada.com` on `1eddcaf`, 8 shell pages axe 0 at 390/1280, both admins signed in; every gate fails on a planted violation, 5.4's included; F1–F7 and M1 resolved. 5.5 passed in the same run (each of its six missed forms caught; the bundle scan fails on the react-server plant and is clean on main). Lows filed: N1, N3 → 41.1.e; N2 → 37.2.e; N4 and F6 → 23.1.e.
 - 2026-10-01 — ✅ **5.2** (4f09f74) and ✅ **5.5** (04d7e89) — see phase 5 above.
 - 2026-10-01 — ✅ **5.1** (488fff3) — staging live on Helios: `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` serve the CI-built release `1eddcaf` (deployed by gaiada-poll from PR #3), `/api/health` ok in staging with database, storage and queue green, EN and ID, each admin signing in on its own site and 401 on the other; the provision script (`scripts/ops`, reviewed twice adversarially, five live-run fixes) applied idempotently — RustFS on a capped 50 GiB image (D12), Mailpit (D13), loopback ports refused from outside behind ufw; `--verify-restart` 14/14; rollback rehearsed both ways, after fixing the shared `gaiada-deploy --rollback` for subdir targets (backup kept); providers simulated (D48); secrets host-only (D49). Record: docs/ops/helios-staging.md.
