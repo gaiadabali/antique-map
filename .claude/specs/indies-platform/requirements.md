@@ -314,7 +314,7 @@ while their data and identities stay apart.
 5. Consent records SHALL store purpose, timestamp and policy version.
 6. The system SHALL provide a record-of-processing export and data-subject export and deletion.
 7. Payment methods SHALL respect the per-transaction legal caps of each channel.
-8. Every user-facing string SHALL come from the brand's EN/ID lexicon AND the Indonesian copy SHALL be reviewed by a native writer before launch.
+8. Every user-facing string SHALL come from the brand's EN/ID lexicon ~~AND the Indonesian copy SHALL be reviewed by a native writer before launch~~. *(Second clause superseded 2026-10-01 by D20: no native review — the Indonesian copy ships as the team drafted it, in* Anda *for both brands, and the launch copy reads (TASKS.md 42.6, 43.6) are done without a native writer.)*
 
 ### Requirement 19 — Performance, accessibility, security and operations
 
