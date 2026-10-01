@@ -24,7 +24,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 17/37 | 4 | `█████░░░░░`  46% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 2/5 | 16/23 | 2 | `███████░░░`  70% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/18 | 0 | `███████░░░`  67% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/19 | 0 | `██████░░░░`  63% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **28/178** | **201/853** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **28/178** | **201/854** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -811,7 +811,7 @@ run beside the build line rather than in it.
 
 - [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
-  - **Owns** `engine/packages/cms/src/collections/works/**`, `validators/work-*.ts`, `hooks/work-*.ts`
+  - **Owns** `engine/packages/cms/src/collections/works/**`, `validators/work-*.ts`, `hooks/work-*.ts`, and a `beforeDelete` hook in each of `collections/{makers,places,terms,sources}/` (8.2.g)
   - **Read** CONTENT-MODEL.md §1, §9; COMPLIANCE.md §1, §8
   - _Requirements: 3.1, 3.2, 3.3, 3.7, 3.8, 3.9, 3.10, 3.11_
   - [ ] 8.2.a fields and groups (collation, dimensions in mm, condition with the grade as a `terms(grade)` reference, references, provenance, images with roles, master, rights, **physical with no defaults** — location and export status stay blank until the item register sets them — origin, cataloguing, the `book` group for books and atlases, legacy, seo); the print ceiling lives on designs, not works
@@ -819,6 +819,7 @@ run beside the build line rather than in it.
   - [ ] 8.2.c publish guard (title, object type, date, primary place or maker, primary image with alt, grade for originals, verified AI fields) — a blank location or export status **never blocks publishing**; it makes the item enquiry-only (Req 16.8)
   - [ ] 8.2.d field-level access for `physical`; read-only guard for synced fields on copies; `publishedOrStaff` read access
   - [ ] 8.2.e `afterChange` / `afterDelete` → `@engine/cache`'s `invalidate(tags)` (4.8) for the work and everything that lists it, run after the commit: `after()` inside a request, the caller's collector outside one (ARCHITECTURE.md §9)
+  - [ ] 8.2.g a reference-safe delete: a maker, place, term or source a work still references is refused with "still used by N works" — Payload's relationship tables would otherwise drop the credit silently (8.1 review, senior-be)
   - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
 - [ ] **8.3 Media and masters** · needs: 3.2 — 🔄 8·W1
