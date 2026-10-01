@@ -227,8 +227,35 @@ area in `messages/lexicon/`; the values in `old-east-indies/site/copy/{en,id}.js
 | every error | `problem.*`, `notice.*`, `codeInvalid.*`, `payment.unavailable.*`, `payment.failed.*`, `checkout.problem.*`, `field.*`, `form.*`, `signIn.*`, `error.*`, `gone.*`, `giftCard.invalid` |
 | every empty state | `empty.*`, `cart.empty`, `wishlist.empty`, `wishlist.emptyElsewhere` |
 | every prefilled WhatsApp message | `whatsapp.*` |
-| the image labels (retouching-and-labelling.md §4–§6, room-scenes.md §8) | `image.*`, `configurator.previewCaption`, `configurator.previewCaptionFlat`, the restoration line `label.restored` |
-| the loaders' notes (C2 `MessageVM` codes) | `message.<code>` |
+| the image labels (retouching-and-labelling.md §4–§6, room-scenes.md §8) | `image.synthetic.<label>` and `image.syntheticAlt.<label>` by C9 `SYNTHETIC_LABEL`; `image.role.<role>` (C9 `PRODUCT_IMAGE_ROLES`, `LOCATION_IMAGE_ROLES`); the room plate's caption `configurator.previewCaption`, its `{width}` the plate's `wallWidthCm`, and `configurator.previewCaptionFlat`; the restoration line `label.restored`, filled with the steps `restoration.<step>` (C9 `PRINT_RESTORATIONS`) |
+| the loaders' notes (C2 `MessageVM` codes) | `message.<code>` — every code the C2 fixtures use that the shop renders, `holidayDelay` included |
+| the converted estimate (D47) | `price.converted` ("≈ {estimate} — charged in {price}", the rupiah total) and its note `price.convertedNote`: the card issuer or PayPal may convert again |
+
+**The contracts' value lists (6.3.f).** Each key spells the contract's own code, so a
+component looks its label up by the value it holds:
+
+| List | Contract | Keys |
+| ---- | -------- | ---- |
+| facet names | C1 `FACET_KEYS` (all of them: which a listing shows follows from its modules and data) | `facet.<key>`, `facet.price.includeOnRequest` |
+| sort orders | C1 `SORT_KEYS` | `sort.<key>` |
+| object types (the original's) | C1 `OBJECT_TYPES` | `objectType.<type>` |
+| maker roles and certainty | C2 `MakerRole`, `Certainty` | `maker.role.<role>`, `maker.certainty.<certainty>` (carries `{name}`) |
+| a partner's sections | C10 `ACCOUNT_SECTIONS`, as the partner's nav shows them | `account.section.<section>` — *Anda* |
+| the Partnership's shop types | C6 `RETAILER_SHOP_TYPES` | `business.shopType.<type>` — *Anda* |
+| enquiry topics | C6 `EnquiryTopic` | `enquiry.topic`, `enquiry.topic.<topic>` |
+| returns | C6 `ReturnReason`, `ReturnRequestView.status` | `return.reason.<reason>` (the buyer's own words: *saya*), `return.status.<status>` |
+
+**Register of these values.** The owner's answer to S15 sets the shop's Indonesian register
+to *Anda* (stance unchanged: the maps and the islands, no VOC imagery). Every Indonesian
+value 6.3.f adds is written in *Anda*; the values 6.3.b wrote in *kamu*, and §2 above, move
+in a separate follow-up.
+
+A return's reason and status are labels, not a promise: damage and returns wait on S12 (§8)
+and no line here states a policy.
+
+**Restoration steps** are lower-case fragments that `label.restored` joins into one list
+("Digitally restored for print: foxing and stains removed, tears closed"), so each reads
+in the middle of a sentence and never alone.
 
 **Channels (D14).** Until a WhatsApp provider is chosen, no copy promises a WhatsApp
 message: order updates go by email, and the `message.whatsappWhenPaid` note says "we'll
@@ -273,3 +300,11 @@ questions this draft most needs answered:
     *eksotis*, *zaman keemasan*?
 12. "Lagi liburan di Bali?" for the visitor's paths — warm, or presumptuous for an expat?
 13. *Kemitraan* and *mitra* for the Partnership — or keep *Partnership* as a name?
+14. The restoration steps (*bintik dan noda dihilangkan*, *lubang ngengat diisi*, *lembar
+    atau state digabung jadi satu desain*): clear to a buyer, and is *state* understood?
+15. The shop types: *Toko suvenir atau oleh-oleh*, *Toko kado*, *Butik hotel*, *Concept
+    store* — the words a Bali business owner would pick from a list?
+16. The sort names (*Harga: terendah ke tertinggi*, *Tahun karya asli: tertua ke terbaru*):
+    natural in a sort menu, or shorter (*Harga terendah*, *Paling lama*)?
+17. *Penerbit kartu Anda atau PayPal dapat mengonversi tagihan ini lagi…* for D47's note —
+    clear that the shop's own charge is exact and only a later conversion may differ?
