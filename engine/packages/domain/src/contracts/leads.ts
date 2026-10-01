@@ -40,7 +40,8 @@ export type OfferResponse =
  * How a caller proves an offer is theirs, as `OrderAccess` does for an order: the account's session
  * and the offer's id — its `ref` (./storage.ts), which opens nothing without that session — so a
  * signed-in page holds no token (C2 `AccountOfferVM`); or the token its emails carry (`./links`,
- * purpose `offer`), for a buyer who is not signed in.
+ * purpose `offer`), for a buyer who is not signed in. `account` exists only where a brand signs
+ * buyers in, and no brand takes offers at launch (D22, D50, D54); a handler refuses it elsewhere.
  */
 export type OfferAccess =
   | { readonly kind: 'account'; readonly offerId: string }

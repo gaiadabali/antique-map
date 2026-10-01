@@ -789,8 +789,9 @@ so it is breaking and also needs a redirect.
 - **2026-10-01**: **v1.5 of C1, C2, C6, C8, C10, C11 and C13** (TASKS.md 6.4): the owner's
   interview answers (OA2) — the gallery enquiry-only (D50, superseding D30), an invoice holding
   its piece until its due date (D45), the shop within Indonesia only and from stock (S3, S7) — the
-  developer's input to 6.4 (the invoice on the brand's own pay page, one stock pool), and 6.3.f's
-  and 6.3.g–i's notes. C3–C5, C7, C9 and C12 keep their versions: C12's `OriginalListing` already
+  developer's input to 6.4 (the invoice on the brand's own pay page, one stock pool: D51, D52; no
+  collector accounts on the gallery: D54), and 6.3.f's and 6.3.g–i's notes. C3–C5, C7, C9 and C12
+  keep their versions: C12's `OriginalListing` already
   carries an original `on-request` with no price, and C9 gains no video (CONTENT-MODEL.md §6).
   - **C1:**
     - `commerce.uniquePrices` (`UNIQUE_PRICES`: `shown`, the default, or `on-request`): with
@@ -805,6 +806,11 @@ so it is breaking and also needs a redirect.
       needing a phone, and `invoiceNoticeHours` below the default term — PLT implements them.
   - **C10, C13:** the `cart` and `checkout` surfaces and commerce areas need `purchase.checkout`;
     `pay`, `order` and `order-lookup` stay open (the gallery's invoice is paid on its pay link).
+    D54: C13 `APPOINTMENT_ACCESS` — the confirmation's one-hop link moves the appointment's token
+    into a cookie and answers 303 to the `appointment` form page, which reschedules or cancels
+    that viewing (C10's `form` doc); the auth catch-all answers 404 for every operation on a brand
+    with neither account module, and a claim link goes out only where `accounts.buyers` is on;
+    C10's `wishlist` (the device's) is the gallery's too.
   - **C2:**
     - `PurchaseActionVM` gains `call` (`href` `tel:…`, `number` as printed);
     - `heldForMe` may show `onRequest` (the figure is the invoice's); `queued` names no hours, and
@@ -820,26 +826,36 @@ so it is breaking and also needs a redirect.
       `<name>Hint`, legend by the bare group, `message.fieldRequiredWhen` `{value}`;
       `ProfileVM.type` `trade` is no D36 partner; `ConsentVM` `analytics` governs only the
       persistent first-party id (G12);
-    - fixtures: the gallery's launch states (`purchaseStates.conversation…`, `invoice…`),
-      `item-enquiry-led`, `item-invoice-held`, `listing-on-request`, `pay-invoice` and its
-      transfer-pending, paid, expired and voided states, `order-invoice`.
+    - fixtures: the gallery's launch states (`purchaseStates.conversation…`,
+      `invoiceHeldByOther`), `item-enquiry-led`, `item-invoice-held`, `listing-on-request`,
+      `pay-invoice` and its transfer-pending, paid, expired and voided states, `order-invoice`;
+    - D54 — no viewer relation at the gallery: `heldForMe`, `inMyCheckout` and `myOffer` need a
+      buyer's session, which no brand has at launch, so no launch fixture shows one;
+      `ShellVM.cart` is `null` without `purchase.checkout` and `ShellVM.account` `null` on a brand
+      with no accounts; the `shell` fixture is the gallery's launch shell — no bag, no account
+      entry, the wishlist on the device (`/wishlist`), its phone for Call — and `shell-shop`
+      keeps its bag; the account surfaces are rendered by no app at launch.
   - **C6:** `PriceRequestResult.queued` names no hours; D45 answers `quote.proforma`'s unique
     lines (held only once staff issue it); a proforma issued on an agreed price is `accepted`;
     `PayLinkView.invoice` and its page as the brand's own; a `like` want list alerts when its piece
-    is available again (an invoice lapsing).
+    is available again (an invoice lapsing). D54: `OfferAccess` and `AppointmentAccess`'s
+    `account` kind exists only where a brand signs buyers in — none at launch — so a gallery
+    booker changes a viewing by its confirmation's token, and a booking's pull list is the
+    device's wishlist.
   - **C8:** `EXPIRING_NOTICE_EVENTS.invoice` (`invoiceHold.expiring`, in `NoticeDomainEvent`) and
     `noticeExpiring({ kind, lead, limit })`, one call per kind; the order machine's `reach-payment`
     also opens an order when staff issue an invoice; `ReserveInput.ttl` for an invoice is the time
     to its due date.
   - **C11:** `call.clicked` (`context`: `item` · `footer`).
 
-  **Breaks:** in shape, C2's reshaped fields, C6's queued answer and `PayLinkView.invoice`, and
-  C8's `noticeExpiring` input — but no lane has built on them (the loaders, the handlers, the
-  domain's reserve() and the apps' item and pay pages are unbuilt), so each is a minor version, as
-  v1.1's were. **One behaviour lands with BRD:** behind `purchase.checkout`, a brand whose config
+  **Breaks:** in shape, C2's reshaped fields (`ShellVM.cart` now nullable among them), C6's queued
+  answer and `PayLinkView.invoice`, and C8's `noticeExpiring` input — but no lane has built on
+  them (the loaders, the handlers, the domain's reserve(), the apps' item and pay pages and their
+  shells' bag are unbuilt), so each is a minor version, as v1.1's were. **One behaviour lands with BRD:** behind `purchase.checkout`, a brand whose config
   does not turn it on has no bag — so the shop's and the synthetic emporium's configs add
   `"purchase.checkout": true` in the same merge (TASKS.md 6.4's report lists the edits), and the
   gallery's config never does. Announced to every lane in each contract's "Consumed by" column.
   The docs follow in the same change: COMMERCE.md §2–§5, §7–§13, PAYMENTS.md §1, §3, §5–§7,
   EXPERIENCE-GALLERY.md, EXPERIENCE-SHOP.md, ANALYTICS.md, COMPLIANCE.md, CONTENT-MODEL.md,
-  requirements.md and design.md; BRANDS.md §3–§4 and DESIGN-SYSTEM.md are routed in 6.4's report.
+  requirements.md and design.md; BRANDS.md §3–§4, DESIGN-SYSTEM.md, ARCHITECTURE.md §12 and
+  MIGRATION.md §5–§6 (D54) are routed in 6.4's report.

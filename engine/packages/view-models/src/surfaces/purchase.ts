@@ -14,7 +14,9 @@
  * v1.5 (D50): where a brand's unique prices are on request (C1 `commerce.uniquePrices`, the
  * gallery) no unique panel carries a figure in any state — its price is `onRequest`, `queued` or
  * `hidden` — the conversation leads (WhatsApp, `call`), and a piece is held by the invoice staff
- * issue: `heldByOther` until its due date, `heldForMe` with `pay` for the invoice's own buyer.
+ * issue: `heldByOther` until its due date, for every visitor. The invoice's buyer pays through
+ * the invoice's own link: the gallery signs no one in (D54), so no viewer relation — `heldForMe`,
+ * `inMyCheckout`, `myOffer` — is produced at launch; they stay for a brand that signs buyers in.
  */
 import type { CountryCode, PurchaseAction, PurchaseBand } from '@engine/config/schema'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
@@ -98,8 +100,9 @@ type Price<K extends UniquePriceVM['kind']> = Extract<UniquePriceVM, { kind: K }
  */
 export type HeldByOtherVM = { kind: 'heldByOther'; until: IsoDateTime | null }
 /**
- * A staff hold, an accepted offer, or an invoice or proforma for this viewer — the gallery's sale
- * (D50): `pay` leads, Buy never shows.
+ * A staff hold, an accepted offer, or an invoice or proforma for this viewer, known by the
+ * viewer's session — where a brand signs buyers in, none at launch (D54): `pay` leads, Buy never
+ * shows.
  */
 export type HeldForMeVM = {
   kind: 'heldForMe'

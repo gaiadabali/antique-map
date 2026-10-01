@@ -269,7 +269,7 @@ them; only a throw answers 5xx, so the provider retries.
   when its hold ends (D45). Starting a payment supersedes that hold with the order's
   checkout lock, lasting at least as long, so a declined card never costs the buyer
   the piece; the method's session is sized to finish before it (rule 4).
-- **The pay page is ours, never the gateway's** (the developer, 2026-10-01). A staff-sent
+- **The pay page is ours, never the gateway's** (D51, the developer, 2026-10-01). A staff-sent
   link opens the brand's own `/pay/{token}` page in the brand's design — for the
   gallery, the invoice itself (COMMERCE.md §7) — with the gateway's embedded element
   inside it (Stripe's Payment Element; Midtrans's for an IDR invoice) and bank transfer

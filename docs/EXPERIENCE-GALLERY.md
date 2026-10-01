@@ -24,6 +24,8 @@ direction may enter as at most one candidate**. Nothing above binds the outcome.
 
 **Decided 2026-10-01 (D50, the owner interview G3–G5, superseding D30): the gallery is enquiry-only.** No price is shown on any original — every one reads "Price on request" — and there is no bag, no checkout, no reserve button and no online offer. Every original leads to a conversation: a call or WhatsApp with the gallery in Singapore, where the price is negotiated. Once it is agreed, staff issue an **invoice**, which holds the piece until its due date and which the buyer pays online through the site's gateway, or by bank transfer; the piece ships when it is paid in full, shipping and duties the buyer's (§5, COMMERCE.md §7). The shop keeps its checkout. The gallery's brand config says all of this — `commerce.uniquePrices: "on-request"`, `purchase.checkout`, `purchase.offers` and `purchase.holds` off, one purchase tier led by WhatsApp — and the engine keeps every capability the shop or a future brand uses.
 
+**Decided 2026-10-01 (D54, following D50 and D51): no collector accounts.** The gallery is simply buy and sell, so it has **no sign-up, no sign-in and no account area** — `accounts.buyers` is off. A buyer reaches an invoice by its link in the WhatsApp chat or the email, an order by its email's link or the order lookup (its number and email), a want-list by its confirmation email, and a viewing by its confirmation's link or on WhatsApp. The wishlist stays on the visitor's device (`retention.deviceWishlist`, as the shop's, D35), so a designer's shortlist and a viewing's pull list need no account. A request to see, correct or erase one's data goes to the gallery by email and is done by staff (COMPLIANCE.md §7). The old site's customers become staff-side records — no account and no "claim your account" email (MIGRATION.md §5).
+
 ---
 
 ## 1. Who it serves, in order
@@ -45,10 +47,11 @@ direction may enter as at most one candidate**. Nothing above binds the outcome.
 ## 2. Information architecture
 
 **Header:** logo · Maps & Charts · Prints · Photographs · Books · Places ·
-Makers · Stories · Catalogues — with a utility row: search · ship-to · wishlist ·
-account · WhatsApp. There is **no basket** (D50: the gallery has no bag), and the
-ship-to names a country, never a currency — no price is shown — because it still
-decides export gating: a `domestic-only` original seen from abroad says so (§5).
+Makers · Stories · Catalogues — with a utility row: search · ship-to · wishlist
+(on this device) · WhatsApp · Call. There is **no basket** (D50: the gallery has no
+bag) and **no account entry** (D54: no one signs in), and the ship-to names a
+country, never a currency — no price is shown — because it still decides export
+gating: a `domestic-only` original seen from abroad says so (§5).
 
 **Footer:** Visit (locations, by appointment) · Sell to us · Guarantee &
 returns · Authentication · Condition grades · Shipping & insurance · Framing &
@@ -170,15 +173,16 @@ Parry numbers first) · provenance · stock number.
 **The purchase panel — a conversation, never a checkout (D50).** It shows no price
 and sells nothing by itself: it starts the conversation in which the price is
 agreed, and holds the piece once staff have issued its invoice (COMMERCE.md §7).
-Its states are the item's status × **the viewer's relation to the item**
-(DESIGN-SYSTEM.md §3) × export status × ship-to × signed in, designed before they
-are built (TASKS.md 34.1.a):
+Its states are the item's status × export status × ship-to, designed before they
+are built (TASKS.md 34.1.a). There is no viewer relation to design for
+(DESIGN-SYSTEM.md §3's "held for me", "in my checkout", "my offer pending"): no one
+signs in (D54), there is no checkout and no offer, so every visitor reads the same
+panel — the invoice's buyer included, who pays through the invoice's own link:
 
 | Status | What every visitor reads | Leads with |
 | ------ | ------------------------ | ---------- |
 | available | "Price on request" | WhatsApp, prefilled with the stock number and title in the page's language · Call the gallery (its Singapore number shown, a tap on a phone) — then Request price · Enquire · Book a viewing · Proforma for institutions |
 | held — an invoice is out | "On hold until {due date}" | the same conversation, and "Tell me if it becomes available" |
-| held for me — signed in, my invoice | "Held for you until {due date}" | Pay (the invoice's link) |
 | sold | "Sold" — nothing else: no price, no buyer named (G10) | "Own a print of this map" and the available example (§8) |
 | no recorded location or export status | "Price on request" | Enquire · WhatsApp · Book a viewing — the enquiry-only panel (COMMERCE.md §2) |
 
@@ -219,7 +223,8 @@ paid in full (G11).
 - **Related:** same maker · same place · same source work · other states · sold
   examples.
 
-**Utilities** — wishlist and "tell me when another example arrives" · share
+**Utilities** — wishlist (kept on this device, no account: D54) and "tell me when
+another example arrives" · share
 (WhatsApp first) · print description · factsheet PDF (designers present these:
 the piece, "Price on request", the gallery's contact and the date it was printed —
 no price, G14) ·
@@ -285,8 +290,9 @@ page) · a "Similar to sell?" micro-block linking to consignment.
   browse page ("Alert me about new maps of Bali"), delivered **within 15 minutes or
   in a daily digest**, the subscriber's choice. They take **no budget** here, since
   no price is shown (D50); a brand whose prices are shown keeps one, in the viewer's
-  market currency. A signed-in collector's saves at
-  once; a guest leaves an email with no account, which starts watching only
+  market currency. Every list — a saved search, "Tell me if it becomes available",
+  "Tell me when another example arrives" — is an **email's**, since no one signs in
+  (D54): the visitor leaves an email address, and the list starts watching only
   once confirmed — a **double opt-in**: the confirmation email's link opens the
   want-list page, whose button confirms it (a mail scanner following the link
   confirms nothing), and the same courteous, admits-nothing answer goes out
@@ -317,8 +323,9 @@ All in the CMS as pages, all linked from the purchase panel:
   (G10).
 - **Visit** — Singapore and Jakarta, by appointment only (G2), a map, and booking.
   Viewing slots show their time zone explicitly (Singapore UTC+8, Jakarta WIB
-  UTC+7), confirm by email with an `.ics`, remind on WhatsApp, and can be
-  rescheduled.
+  UTC+7), confirm by email with an `.ics` attached, remind on WhatsApp, and can be
+  rescheduled or cancelled through the confirmation's own link — or on WhatsApp —
+  never through an account (D54).
 - **FAQ** — replacing today's "work in progress" page.
 
 **Forms that behave like the gallery, not like a CMS:** consignment uses the phone
@@ -332,10 +339,23 @@ number and the PDF the finance office pays from, bank transfer beside the card �
 "Proforma for institutions" promises that, never a PDF at once. There is no
 "Reserve" form: a piece is held when its invoice is issued (D45).
 
-## 10. Accounts and retention
+## 10. Retention, without accounts
 
-- Wishlist → **viewing pull list**: booking a viewing sends the wishlist to the
-  gallery so the pieces are out of the drawer.
+**No accounts (D54).** The gallery has no sign-up, no sign-in and no account area:
+each thing a buyer comes back to has its own way back, and none needs a password.
+
+| What | How the buyer reaches it again |
+| ---- | ------------------------------ |
+| an invoice | its link, in the WhatsApp chat or the email it came in |
+| an order, its certificate and invoice PDFs | the order email's link, or the order lookup — its number and the buyer's email |
+| a want-list or an item alert | its confirmation email, and every alert, open the want-list page |
+| a viewing | its confirmation's link (reschedule, cancel; the `.ics` attached to the email), or WhatsApp |
+| a price request, an enquiry, a consignment | the reply, by email or WhatsApp, within the reply promise (G9) |
+| the wishlist | this device — the heart in the header, as at the shop (D35) |
+| one's data — a copy, a correction, an erasure | an email to the gallery; staff do it in the admin (COMPLIANCE.md §7) |
+
+- Wishlist → **viewing pull list**: booking a viewing sends the pieces saved on this
+  device to the gallery, so they are out of the drawer.
 - Want-lists and item alerts, each with its stop button. There is no separate
   unsubscribe landing page: every alert email and its own confirmation open
   the **same want-list page**, which moves the list's token into a cookie on
@@ -344,12 +364,12 @@ number and the PDF the finance office pays from, bank transfer beside the card �
   RFC 8058's one-click unsubscribe, the single POST a mail client sends
   straight from its own "unsubscribe" action, carrying the token in the URL
   itself rather than the page.
-- Orders with **certificate and invoice downloads**.
-- The gallery's conversations, in one place: **invoices** — each an order awaiting
-  payment, "Held for you until {due date}", leading to its pay page — price requests,
-  viewings (reschedule, cancel, `.ics`), and consignments with their status timeline.
-  An invoice reaches its buyer by its own link, signed in or not; there are no offers
-  or holds to list (D50).
+- Orders with **certificate and invoice downloads**, on the order page its email's
+  link opens; there are no offers or holds to list (D50).
+- An old link to the previous site's account pages (`/account/…`) is answered with a
+  page that says the gallery keeps no accounts and how to reach an order, an invoice
+  or an alert — never a mirror of an account area and never a bare 404 (MIGRATION.md
+  §6).
 - A legacy `/product/{id}-{slug}` that no longer resolves turns its slug into a
   prefilled search with similar works; an item removed from inventory shows
   the designed Gone page — a 404, noindex and out of the sitemap, since a page
@@ -359,7 +379,8 @@ number and the PDF the finance office pays from, bank transfer beside the card �
   issue, curated order, one story), sent fortnightly and archived as HTML; a
   WhatsApp broadcast opt-in sits beside it.
 - v2: "My Collection" — register pieces you own (bought here or not), as
-  raremaps does; shareable sets.
+  raremaps does; shareable sets — the first thing that would need an account again
+  (D54).
 
 ## 11. SEO
 
@@ -390,7 +411,8 @@ price answered by a person, Enquire, Book a viewing, Proforma for institutions;
 **staff-issued invoices** that hold the piece until their due date (D45), paid
 online through the seller's gateway (cards, PayNow, iDEAL/SEPA) or by bank
 transfer, shipped once paid in full (G11); "On hold until"; the working sort and
-facet set (no price facet); sold archive with notify-me; wishlist and want-lists;
+facet set (no price facet); sold archive with notify-me; the wishlist on the device
+and want-lists by email — no accounts (D54); the guest order lookup;
 all trust pages; the Parry certificate page; Singapore and Jakarta viewing
 booking; the generated newsletter; consignment with photo upload; place and maker
 pages; stories; **web-native catalogue pages** with live availability; Old East
@@ -404,7 +426,10 @@ The domain and the contracts keep them behind config (`commerce.uniquePrices`,
 none of their flows at launch — its purchase panel maps every C2 state, as an
 exhaustive map must, but the bag, checkout, offer and reserve screens are not
 built — and its `supports.ts` refuses those three modules, so bringing them back to
-the gallery is a build (TASKS.md phase 34), not only a switch.
+the gallery is a build (TASKS.md phase 34), not only a switch. **Collector
+accounts** (D54) are not at launch either, the same way: `accounts.buyers`,
+`retention.wishlist` and `retention.wantList` (an account's lists) are refused by
+the app, whose account area is not built.
 
 **v2:** binding offers (an accepted offer is a contract to buy); the catalogue
 as a printable PDF; reserve with deposit; instalments; in-room and AR views (the

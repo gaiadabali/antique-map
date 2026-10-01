@@ -140,6 +140,14 @@ this (COMMERCE.md §8).
   counsel's to confirm**; a purge job then removes it, and it is included in
   the 28.4 export/erase flow and the record of processing like any other
   personal data.
+- **The gallery keeps customer records, not accounts** (D54, 2026-10-01): no
+  buyer signs in, so a buyer's request to see, correct or erase their data comes
+  by email and staff carry it out in the admin (28.4) after checking it is theirs —
+  the email address on the record, answered there. The old site's customers import
+  as such records (MIGRATION.md §5), with no account and no "claim your account"
+  email; with no unclaimed account to purge, how long a record with no order, no
+  consent and no recent contact is kept is **counsel's to confirm**, and a purge job
+  then applies it.
 
 The engine provides: consent records with policy version and timestamp per
 purpose (marketing email, WhatsApp, analytics, **want-list alerts** —
@@ -158,7 +166,8 @@ so a copy of the database opens no one's order, application or alert. A link to
 a page that shows personal data — an order's address, a quote's buyer, an
 enquiry's message — stops working a set window after its latest email
 (`LINK_WINDOW_DAYS`: 30 or 90 days), so an old or forwarded email no longer opens
-it; the account still does, by session. And a
+it; the order lookup (its number and the buyer's email) still does — and, where a
+brand has accounts (the shop's retailers), the account, by session. And a
 request's stored idempotent answer — which can hold a buyer's contact or a tax
 id — is kept 7 days (`IDEMPOTENCY_KEY_RETENTION`), then swept, and erased at
 once with the rest of its caller's data.

@@ -8,9 +8,9 @@
  * (`services.consignment`). Statuses are C6/C8's own; the buyer's answers go through C6 by the
  * account's session and each record's id, never with a price the page showed — and never with a
  * token: the page holds none, in an intent or a URL, but a payment link's own address (`payHref`,
- * C13); the emailed links carry theirs. v1.5 (D50): the gallery at launch has no offers or holds
- * to list — its modules are off — and a buyer's invoice is an order awaiting payment, in the
- * account's orders, its order page leading to its pay link.
+ * C13); the emailed links carry theirs. v1.5 (D50, D54): no brand renders this at launch — the
+ * gallery has no offers or holds to list and no accounts at all, so each of its conversations
+ * comes back by its own email or WhatsApp; it stays for a brand that signs buyers in.
  */
 import type {
   AppointmentAccess,

@@ -72,6 +72,13 @@ disagree, the doc wins and this digest is corrected.**
 17. The shop sells within Indonesia, and from stock, at launch (S3, S7) — the
     rupiah rule holds on every page, PayPal is not offered, and D47's export design
     waits, built by configuration when the owner opens export.
+18. The gallery has no customer accounts (D54, 2026-10-01): no sign-up, sign-in or
+    account area; an invoice, an order, an alert and a viewing each come back by
+    their own link (an order also by the lookup), the wishlist stays on the device,
+    and the old site's customers become staff-side records with no claim flow —
+    because the gallery is simply buy and sell, and an account no buyer needs is
+    a password to keep safe and a page to build for nothing. Customer sign-in
+    stays for the shop's approved retailers (D31).
 
 ## Architecture
 
@@ -360,7 +367,7 @@ erDiagram
     ORDERS ||--o{ PAYMENT_ATTEMPTS : "paid by"
     PAYMENT_ATTEMPTS ||--o{ REFUNDS : "refunded by"
     ORDERS ||--o{ SHIPMENTS : "ships as"
-    CUSTOMERS |o--o{ WANT_LISTS : "saves (or held by an email alone, no account, D39)"
+    CUSTOMERS |o--o{ WANT_LISTS : "saves (or held by an email alone — at launch always, D39, D54)"
     CUSTOMERS ||--o{ SAVED_ITEMS : "wishes"
 ```
 

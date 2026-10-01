@@ -208,15 +208,4 @@ export const purchaseStates = {
     actions: { primary: whatsapp, secondary: [call, enquire] },
     analytics: { priceBand: 'on-request', status: 'reserved' },
   },
-  /** This signed-in buyer's own invoice: Pay leads, the figure is on the invoice, not here. */
-  invoiceHeldForMe: {
-    ...uniqueBase,
-    price: onRequest,
-    state: { kind: 'heldForMe', reason: 'invoice', until: '2026-10-09T17:00:00+08:00' },
-    actions: {
-      primary: { action: 'pay', href: '/pay/tok_invoice_fixture' },
-      secondary: [whatsapp, call],
-    },
-    analytics: { priceBand: 'on-request', status: 'reserved' },
-  },
 } satisfies Record<string, PurchaseVM>

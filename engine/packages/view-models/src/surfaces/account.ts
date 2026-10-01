@@ -8,8 +8,9 @@
  * (`./account-entry`). Customers are never staff (ARCHITECTURE.md §12): their session has its
  * own cookie. Who may hold an account is the brand's modules (C1): buyers (`accounts.buyers`)
  * and partners by application (`accounts.retailers`); a shop with only the second offers no
- * shopper sign-up anywhere (D31), and only its approved partners sign in (D34). Private, per
- * request, never cached.
+ * shopper sign-up anywhere (D31), and only its approved partners sign in (D34). At launch that
+ * shop is the only brand with accounts: the gallery has none (D54, v1.5), so a buyer's area is
+ * built by no app yet. Private, per request, never cached.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { LocaleCode } from '@engine/config/schema'

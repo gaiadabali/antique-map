@@ -68,12 +68,16 @@ export type ShellVM = {
   social: readonly { network: 'instagram' | 'facebook' | 'tiktok' | 'youtube'; href: string }[]
   /** The legal identities the footer names — every seller of record the brand has. */
   sellers: readonly SellerIdentityVM[]
-  /** The sister strip: a separate shop with its own account, and the link says so. */
+  /** The sister strip: a separate business that sells its own way, and the link says so. */
   sister: { name: string; href: string; role: 'archive-origin' | 'merch-outlet' } | null
   analytics: { ga4Id: string | null; metaPixelId: string | null }
   /** From the `shipTo` cookie (defaulted from the visitor's country). */
   shipTo: Streamed<ShipToVM>
-  cart: Streamed<{ count: number }>
+  /**
+   * The header's bag: its count, or `null` without `purchase.checkout` — the gallery, which has
+   * no bag (D50, C1 v1.5), so its header shows none (v1.5).
+   */
+  cart: Streamed<{ count: number } | null>
   /**
    * The header's saved items: the device's count and the Wishlist page with
    * `retention.deviceWishlist` (D35), the account's wishlist with `retention.wishlist`; `null`
@@ -81,9 +85,9 @@ export type ShellVM = {
    */
   wishlist: Streamed<{ count: number; href: string } | null>
   /**
-   * The header's account entry — `null` where this visitor has none to see: a shop whose only
-   * accounts are retailers', to anyone not signed in as one (the Partnership item is the way
-   * in, D31).
+   * The header's account entry — `null` where this visitor has none to see: a brand with no
+   * accounts at all (the gallery, D54), or a shop whose only accounts are retailers', to anyone
+   * not signed in as one (the Partnership item is the way in, D31).
    */
   account: Streamed<{
     audience: 'buyer' | 'retailer'

@@ -65,7 +65,8 @@ export const SURFACE_ROUTES = {
   orderLookup: { internal: 'order-lookup' },
   // The partner programme and its sign-up/sign-in (D31, D36): every business buyer applies here.
   partnership: { internal: 'partnership', module: 'accounts.retailers' },
-  // A guest's saved items, kept on the device (D35): the shop's wishlist, with no account.
+  // A guest's saved items, kept on the device (D35): the shop's wishlist, with no account — and,
+  // since the gallery has none either (D54, v1.5), the gallery's: a viewing's pull list too.
   wishlist: { internal: 'wishlist', module: 'retention.deviceWishlist' },
   // Where every want-list alert link leads, to save the subject its query names, and where an
   // address's emails land (C13 `WANT_LIST_ACCESS`) to confirm or stop its list (D39).
@@ -104,7 +105,9 @@ export const SEGMENT_SURFACES = SURFACES.filter(isSegmentSurface)
 /**
  * The `Form` surface's kinds, each at its own localised segment, and the C6 operation each posts:
  * `enquiry.submit`, `offer.submit`, `consignment.submit`, `appointment.book` — or, given an
- * `appointment` the session owns, `appointment.change` to reschedule it; `hold` —
+ * `appointment` the session owns or C13 `APPOINTMENT_ACCESS`'s cookie names (the confirmation's
+ * link: the gallery's one way, since it signs no one in, D54; v1.5), `appointment.change` to
+ * reschedule or cancel it; `hold` —
  * `hold.request`, for an item; `quote` — `quote.request`, for an item (a configured `variant` of
  * it) or as a brief, from a guest where `accounts.retailers` is off and only from a signed-in
  * partner where it is on (D36). A proforma is the checkout's, not a form (C6 `quote.proforma`).

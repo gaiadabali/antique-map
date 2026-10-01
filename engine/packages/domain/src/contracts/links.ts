@@ -5,7 +5,8 @@
  *
  * A capability link is a URL whose token is the credential: a payment link's or a quote's page, a
  * record a C6 answer hands back by token, and every one-hop link an email carries (C13
- * `ORDER_ACCESS`, `APPLICATION_ACCESS`, `WANT_LIST_ACCESS`, the newsletter's). Its token is
+ * `ORDER_ACCESS`, `APPOINTMENT_ACCESS`, `APPLICATION_ACCESS`, `WANT_LIST_ACCESS`, the
+ * newsletter's). Its token is
  * DERIVED — never stored, never carried by a row — and every byte of it is fixed here:
  *
  *   token   = kid "." ref "." mac

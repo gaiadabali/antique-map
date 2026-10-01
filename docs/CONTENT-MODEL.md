@@ -226,7 +226,7 @@ at the shop's launch, whose stock is one pool at the showroom and all of it in s
 | **offers** | product, contact / customer, amount (Money), message, history of counters, status, `expiresAt`, resulting reservation + payment link | engine capability; no brand takes offers at launch (D22, D50) — the slug stays, hidden while `purchase.offers` is off |
 | **enquiries** | `topic`: `general` · `price-request` · `condition` · `shipping-quote` · `framing` · `export` (C6 `EnquiryTopic`) — no trade topic: every business buyer applies as a partner (D36); product, contact, message, attachments, status, assignee | **stored, not merely forwarded** (KOI) |
 | **consignments** | "sell to us": contact, description, photos (item, titles, verso), condition notes, status (`received` · `reviewing` · `offer-made` · `accepted` · `declined`) | |
-| **appointments** | location, slot, contact, purpose (viewing — with a pull list from the wishlist), status | |
+| **appointments** | location, slot, contact, purpose (viewing — with a pull list: the pieces saved on the booker's device, posted with the booking, D35, D54), status | changed through its confirmation's link or by staff, never an account (D54) |
 | **invoices** | proforma / final, number per seller, customer (an institution, a collector), PO number, lines — each unique line's agreed figure (C5 `AgreedPrice`, source `quote`), insured shipping as quoted, duties where the seller ships DDP — currency, bank details **on the document only**, **due date**, status (`requested` · `issued` · `accepted` · `paid` · `expired` · `cancelled`), its `invoice` reservations, the order it places (`pending_payment` from issue), its payment link, PDF, issued by (staff user) | **the gallery's one way to sell an original** (D50): staff issue it from the order builder on a phone once a price is agreed; its page is the brand's own `/pay/{token}` (COMMERCE.md §7); it holds its unique lines through `reserve()` until the due date (D45), and lapses by itself if unpaid. Wire details are never on a public page (fraud) |
 | **discounts** · **gift-cards** | COMMERCE.md §10 | gift-card ledger is append-only |
 
@@ -262,11 +262,17 @@ rollups), `sister_sync_log`.
 
 ## 5. People
 
-- **customers** (auth) — separate from staff, always (KOI): email (unique,
+- **customers** (auth) — separate from staff, always (KOI). **Only the shop's
+  approved retailers sign in at launch** (D31, D54): the gallery has no buyer
+  accounts, so its customers — collectors and institutions, and the old site's,
+  imported (MIGRATION.md §5) — are staff-side records that hold a buyer's details,
+  invoices, orders and consents and never a usable password (Payload's required one
+  is random and unusable, and no link ever sets another). Fields: email (unique,
   normalised), name, `type` (`collector` · `institution` · `trade` · `retail`),
   organisation, tax id, phone/WhatsApp, locale, preferred market, price list
   (trade), consents (per purpose, with timestamp and policy version),
-  `legacyId`, `claimedAt` (migrated accounts), staff notes; a `ref`, a
+  `legacyId`, `claimedAt` (a claimed account, where a brand has buyer accounts;
+  none at launch), staff notes; a `ref`, a
   `token_version` and a `links_anchor_at` for the links that name it (an
   application's status link, whose window runs from its latest email, C6
   `links`), and a pending password link's nonce **hash** and expiry — the
@@ -275,9 +281,12 @@ rollups), `sister_sync_log`.
 - **addresses** — per customer, shaped per country (Indonesia down to
   sub-district + courier area id).
 - **saved-items** (wishlist) — customer, product, note; a saved item that sells
-  becomes a want-list suggestion.
+  becomes a want-list suggestion. An account's wishlist (`retention.wishlist`):
+  **no brand at launch** — both brands keep the wishlist on the visitor's device
+  (`retention.deviceWishlist`, D35, D54), which writes no row at all.
 - **want-lists** — a saved search or "tell me when another example arrives"
-  (D39): a customer **or** an email address (never both), status (`pending` ·
+  (D39): a customer **or** an email address (never both) — at launch always an
+  email address, since no buyer signs in (D54) — status (`pending` ·
   `active`), a `ref` (a random UUID) and a `token_version` — no token and no hash
   of one: every link to it is derived as its email is sent (C6 `links`) — its
   subject (a listing's public path, or
@@ -457,7 +466,8 @@ the REST API, the seed and the migration importer all pass the same gates.
   with a private asking price (D50), including a sold item with an available
   `sameEdition` alternative, a work with an uncertain attribution and a circa
   date, one held in Jakarta with `domestic-only` export status, a photograph with
-  a verso, and an issued invoice holding one piece until its due date.
+  a verso, and an issued invoice holding one piece until its due date — its
+  customer a staff-side record, with no account (D54).
 - **Old East Indies**: 3 designs (one Hofker line **flagged rights-pending**, and one
   with a restoration note), 4 product types, ~40 variants, **every one stocked** in
   the one pool at the showroom (S7, COMMERCE.md §4), the showroom with its

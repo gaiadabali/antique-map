@@ -114,7 +114,7 @@ while their data and identities stay apart.
 8. WHEN reproductions of a work exist in the sister shop THEN the item page SHALL link to those exact products.
 9. The gallery SHALL provide consignment submissions with photo upload and viewing appointments.
 10. Existing legacy product URLs SHALL resolve unchanged.
-11. The purchase panel SHALL render a designed state for every combination of price tier, item status, the viewer's relation to the item (held for me, in my checkout, my offer pending), export status and ship-to destination, AND SHALL NOT render a purchase control before availability is known. *(2026-10-01, D50: at the gallery the relations "in my checkout" and "my offer pending" cannot occur — it has no checkout and takes no offers — and "held for me" is the buyer's own invoice.)*
+11. The purchase panel SHALL render a designed state for every combination of price tier, item status, the viewer's relation to the item (held for me, in my checkout, my offer pending), export status and ship-to destination, AND SHALL NOT render a purchase control before availability is known. *(2026-10-01, D50, D54: at the gallery no viewer relation can occur — it has no checkout, takes no offers and signs no one in — so every visitor, the invoice's buyer included, sees the same state for an item's status, export status and ship-to.)*
 12. WHEN the gallery launches THEN its 200 most important items SHALL have at least a recto, a verso and one detail image shot to the capture standards.
 13. The gallery SHALL show no price on any original — on its pages, cards, facets, sorts, want-lists, factsheet, social images, structured data, feeds, the sister shop's "own the original" and analytics events — AND a price request SHALL be answered by a person within the reply promise the page states, never revealed in place (D50, G4, G9; brand config `commerce.uniquePrices: "on-request"`, 2026-10-01).
 14. WHEN staff and a buyer agree a price THEN staff SHALL issue an invoice from the order builder that holds each unique piece through `reserve()` until the invoice's due date AND reaches the buyer as a private link through which they pay online by the seller's gateway or by bank transfer; IF it is unpaid at its due date THEN the hold SHALL lapse and the piece SHALL be available again (D50, D45, 2026-10-01).
@@ -231,13 +231,14 @@ while their data and identities stay apart.
 
 #### Acceptance Criteria
 
-1. Customers SHALL be a separate authentication collection from staff users.
-2. Gallery customers SHALL manage orders with their documents, wishlist, want-lists, addresses, profile and consents, AND request data export or deletion. Old East Indies SHALL offer shoppers guest checkout only, with accounts for approved retailers alone — applied for from a Partnership page, approved by staff, holding orders, quotes, documents and the trade terms (D31, 2026-09-28).
+1. Customers SHALL be a separate authentication collection from staff users. *(2026-10-01, D54: at launch only the shop's approved retailers sign in; the gallery's customers are staff-side records — 13.8.)*
+2. ~~Gallery customers SHALL manage orders with their documents, wishlist, want-lists, addresses, profile and consents, AND request data export or deletion. Old East Indies SHALL offer shoppers guest checkout only, with accounts for approved retailers alone — applied for from a Partnership page, approved by staff, holding orders, quotes, documents and the trade terms (D31, 2026-09-28).~~ **Superseded 2026-10-01** by 13.8 (D54: the gallery is simply buy and sell, so it has no collector accounts; the shop's half stands unchanged in 13.8).
 3. WHEN a newly published item matches a want-list THEN the system SHALL notify its owner within 15 minutes or in a daily digest, per their choice.
 4. Newsletter sign-ups SHALL use double opt-in AND the gallery's digest SHALL be generated from inventory published since the previous issue.
 5. The system SHALL send transactional email and WhatsApp deep links for every order, offer, hold and enquiry event.
 6. Abandoned-bag emails SHALL be sent only to buyers who consented.
 7. The shop SHALL support reviews by verified buyers with moderation, back-in-stock alerts and a welcome offer.
+8. The gallery SHALL have no customer sign-up, sign-in or account area (D54, 2026-10-01): a buyer SHALL reach an invoice by its link, an order and its documents by its email's link or the order lookup (its number and the buyer's email), a want-list or item alert by its confirmation email (D39), and a viewing by its confirmation's link; the wishlist SHALL be kept on the visitor's device (D35); AND a request to export, correct or erase one's data SHALL be taken by email and carried out by staff. Old East Indies SHALL offer shoppers guest checkout only, with accounts for approved retailers alone — applied for from a Partnership page, approved by staff, holding orders, quotes, documents and the terms agreed with each partner (D31, S5).
 
 ### Requirement 14 — Admin tooling
 
@@ -277,11 +278,12 @@ while their data and identities stay apart.
 1. The importer SHALL load legacy items idempotently by legacy id as drafts, preserving stock numbers AND using legacy ids as public ids.
 2. Normalisers SHALL parse dates, dimensions, condition, prices and references, AND send low-confidence values to a review queue with the raw value beside the proposal.
 3. Legacy categories SHALL map to facet selections through a curator-reviewed mapping file.
-4. Customers SHALL import with a random, unusable password and a claim flow (no legacy hash is imported), AND subscribers SHALL import with their recorded consent.
+4. ~~Customers SHALL import with a random, unusable password and a claim flow (no legacy hash is imported), AND subscribers SHALL import with their recorded consent.~~ **Superseded 2026-10-01** by 16.9 (D54: the gallery has no accounts to claim).
 5. Every legacy URL gathered from the owner's export and the URL inventory SHALL resolve on the new site with 200 or a single 301 to a 200, verified by count before cutover.
 6. Old East Indies' legacy Squarespace URLs SHALL redirect by map to their new products or collections, AND the new gallery item pages SHALL link to the exact products made from each work (the old "Buy Reproduction" links, which all point at one home page, redirect like any other URL).
 7. The importer SHALL support a delta import by `updated_at` for cutover.
 8. IF an original has no stock location or export status from the owner's item register THEN it SHALL publish enquiry-only AND SHALL NOT be sellable online until both are set.
+9. Customers SHALL import as staff-side customer records — name, email, addresses and their legacy orders — with no password hash, no account and no "claim your account" email, AND the old site's `/account/*` paths SHALL answer with one designed page that says the gallery keeps no accounts, never a mirror of an account area, AND subscribers SHALL import with their recorded consent (D54, 2026-10-01).
 
 ### Requirement 17 — SEO, analytics and feeds
 

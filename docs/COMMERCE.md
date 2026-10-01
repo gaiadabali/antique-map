@@ -216,7 +216,7 @@ engine for when the owner offers them.
 
 **Stock locations** are data: the gallery's Singapore storage and Jakarta gallery,
 which route an original's seller (§2), and the shop's. **The shop's stock is one pool
-at launch** (decided 2026-10-01, the developer's input to TASKS.md 6.4): every
+at launch** (D52, 2026-10-01, the developer's input to TASKS.md 6.4): every
 merchandise unit counts as one quantity per variant, in **one** shop location — the
 Denpasar showroom, where online orders are packed and collected (pickup, S4) and
 walk-ins buy (a showroom sale against the same pool, TASKS.md 24.4.c). `stock_levels`
@@ -225,8 +225,9 @@ migration while launch reads one row per variant; there are no transfers between
 locations, and no "In the showroom now" badge or filter — with one pool, every unit in
 stock is in the showroom, so "in stock" says it. The merchandise also sells through
 hundreds of partner shops across Bali, which report sales and restocking over WhatsApp
-as today; who owns the stock on a shop's shelf — wholesale, consignment, a branch — is
-the point-of-sale phase's (backlog), not launch's.
+as today, staff correcting the pool in the admin; who owns the stock on a shop's
+shelf — wholesale, consignment, a branch — is the point-of-sale phase's (TASKS.md
+backlog v2.19), not launch's.
 
 **Reservation kinds**
 
@@ -289,7 +290,7 @@ app does not at launch: its `supports.ts` refuses the module (TASKS.md phase 34)
 **Cart.** Guest carts identified by a hashed token cookie; merged into the
 account on sign-in where a brand's buyers sign in and buy online (at launch none: the
 shop's shoppers are guests and its partners order by quote, D31–D32, and the gallery
-has no cart); 30-day expiry for guests. Lines hold product, variant,
+has no cart and no buyer accounts, D50, D54); 30-day expiry for guests. Lines hold product, variant,
 quantity and configuration (for configured prints, the option set). **A cart
 never reserves** — only checkout does. A unique item in someone else's checkout
 shows "On hold — check back in 15 minutes" and offers the want-list. A unique
@@ -357,7 +358,8 @@ transition keeps always goes back under a deterministic refund key (PAYMENTS.md
 (`awaiting-payment` · `not-paid` · `paid` · `shipped` · `ready-for-pickup` ·
 `completed` · `cancelled` · `refunded`), the one status every buyer-facing
 answer shows: a lookup, a checkout's or a pay link's order, the payment poll,
-the account's order detail. One pure function derives it from the order's own
+an order email's page, and — where a brand has accounts — the account's order
+detail. One pure function derives it from the order's own
 status, the attempt that paid it (or the latest, before one has) and its
 shipments (C6 `orders.ts`), total over all three, so a dispute — won or lost —
 and a refused duplicate payment never reach a buyer: they change what staff
@@ -455,7 +457,7 @@ arrival), the buyer and, for an institution, its PO number, and a **due date** s
    reservations, as everywhere (§4). A piece already held or sold is a typed conflict
    the builder shows, and nothing is issued;
 3. **places its order** (`pending_payment`, the order machine's `reach-payment` by
-   staff), snapshotting every figure (§1), so the buyer's account and the order lookup
+   staff), snapshotting every figure (§1), so its email's link and the order lookup
    find it from the start;
 4. numbers the invoice from the seller's gapless proforma series and renders its PDF,
    the transfer details on the PDF only (§12);
@@ -466,7 +468,7 @@ arrival), the buyer and, for an institution, its PO number, and a **due date** s
 Staff then **share the link into the buyer's WhatsApp chat** from the same phone — a
 `wa.me` share, no WhatsApp API needed (D14 is untouched) — or it goes by email.
 
-**The invoice is our own page.** The buyer opens it at the gallery's **`/pay/{token}`**,
+**The invoice is our own page (D51).** The buyer opens it at the gallery's **`/pay/{token}`**,
 in the gallery's design — never a page the gateway hosts (no Stripe Invoicing or
 Payment Links): the `Pay` surface **is** the invoice, the bridge from the chat. It shows
 the invoice's number, the piece with its stock number, the agreed figure, shipping and
@@ -481,12 +483,14 @@ instructions, and "payment must be received and confirmed"; **paid**; and **expi
 with the ways to reach the gallery, never a bare gateway error (PAYMENTS.md §5). An
 institution's proforma is the same page: the PDF is what its finance office pays from.
 An invoice issued on a price already agreed is **accepted** from the start: nothing is
-left to accept. A signed-in buyer also finds it in Account › orders, awaiting payment,
-its order page leading to the same link.
+left to accept. The gallery has no accounts (D54): the buyer comes back to the
+invoice by its link, in the chat or the email, and to its order by the order lookup
+(its number and the buyer's email), awaiting payment, the order page leading to the
+same link.
 
-**The hold until the due date (D45).** From issue every other visitor reads **"On hold
-until {due date}"**; a signed-in buyer whose invoice it is reads "Held for you until
-{due date}", and Pay. **The buyer is reminded before the due date** —
+**The hold until the due date (D45).** From issue every visitor reads **"On hold
+until {due date}"** — the buyer too, who pays through the invoice's link: with no
+sign-in there is no "held for you" (D54). **The buyer is reminded before the due date** —
 `invoiceHold.expiring`, `invoiceNoticeHours` ahead (C1, 48 hours by default), by email
 (by WhatsApp once D14 is answered) — and staff see invoices nearing their date on the
 desk. Paying moves the hold the usual way: `payLink.start` supersedes the invoice hold
@@ -519,9 +523,10 @@ reservation" holds unchanged: the invoice hold is `reserve()`'s `invoice` kind.
 "price realised" where unique prices are on request — available alternatives, and
 "Tell me when another example arrives". Every such link, and every saved-search alert
 from browse or search, leads to the one **want-list page** (C10 `wantList`), which
-saves it to a signed-in buyer's account at once or, for anyone else, to the email
-address they give, confirmed by double opt-in before the first alert goes out (C6
-`wantList.*`, D39).
+saves it to the email address the visitor gives, confirmed by double opt-in before
+the first alert goes out (C6 `wantList.*`, D39) — at the gallery always, since no
+one signs in there (D54); a brand with buyer accounts saves a signed-in buyer's at
+once.
 
 ### For a brand that lists its prices (engine capability, not at launch)
 
@@ -658,8 +663,9 @@ does (D11), and the shop publishes only the damaged-print replacement until then
 damaged print's replacement is staff's zero-priced order from the order builder
 (TASKS.md 24.5), the claim's return closed with no refund. The engine
 supports — as a domain of its own (TASKS.md 20.4), not only admin screens — a
-buyer's return request per order line with reason and photos (from the account or
-the order lookup), staff approval, return shipping instructions, inspection,
+buyer's return request per order line with reason and photos (from the order
+lookup or the order email's page — an account's too, where a brand has one), staff
+approval, return shipping instructions, inspection,
 restock (location) or write-off, the reservation's `converted → reversed` for a
 returned original, and the refund (PAYMENTS.md §5). Returns of originals route to the
 seller's stock location — **never re-import an antique into Indonesia to accept
@@ -697,7 +703,7 @@ cannot move (ANALYTICS.md §2–§3). At the gallery a sale is counted from the
 invoice: `proforma.issued` when staff issue it, `invoiceHold.expired` when it
 lapses unpaid, `order.paid` when it is paid. A
 want list emits `wantList.requested` when it is asked for, `wantList.started`
-once it is confirmed or saved to an account — what the demand dashboard counts
+once it is confirmed (or saved to an account, where a brand has them) — what the demand dashboard counts
 as a kept want-list — `wantList.repeated` when an address already watching a
 subject is asked again, and `wantList.stopped` when it is erased; none of the
 four names the address or the query, which stay on the list itself for a

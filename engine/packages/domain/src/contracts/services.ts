@@ -76,7 +76,10 @@ export type AppointmentBookRequest = {
   readonly locationId: string
   readonly slotStart: IsoInstant
   readonly purpose: AppointmentPurpose
-  /** The viewing pull list: pieces from the wishlist, brought out of the drawer in advance. */
+  /**
+   * The viewing pull list: pieces from the wishlist, brought out of the drawer in advance — at
+   * launch the wishlist kept on the booker's device (D35, D54), whose ids the booking form posts.
+   */
   readonly pullList: readonly ProductPublicId[]
   readonly contact: LeadContactInput
   readonly idempotencyKey: IdempotencyKey
@@ -87,6 +90,9 @@ export type AppointmentBookRequest = {
  * the appointment's id — its `ref` (./storage.ts), which opens nothing without that session — so
  * a signed-in page holds no token (C2 `AccountViewingVM`); or the token its confirmation carries
  * (email, WhatsApp; `./links`, purpose `appointment`), for a booker who is not signed in.
+ * `account` exists only where a brand signs buyers in — none at launch: the gallery has no
+ * accounts (D54), so its viewings are changed through their confirmation's link, or by staff
+ * after a WhatsApp message; a handler refuses `account` where `accounts.buyers` is off.
  */
 export type AppointmentAccess =
   | { readonly kind: 'account'; readonly appointmentId: string }
@@ -108,8 +114,9 @@ export type AppointmentView = {
   readonly timeZone: string
   /**
    * The `.ics` for a signed-in booker: C13's `appointments` `ics`, read by the session, its URL
-   * naming the appointment and never a token. `null` for a guest, whose confirmation email
-   * attaches its `.ics` instead: no calendar URL ever carries a token.
+   * naming the appointment and never a token. `null` for a guest — every gallery booker, since it
+   * signs no one in (D54) — whose confirmation email attaches its `.ics` instead: no calendar URL
+   * ever carries a token.
    */
   readonly icsUrl: string | null
 }

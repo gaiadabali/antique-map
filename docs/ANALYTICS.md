@@ -121,8 +121,9 @@ institution's request: who asked and how, never who they are) · `retailer.appli
 `retailer.declined` (the shop's partner funnel, D31: applications — first and
 again — and staff's decisions, with the hours they took; never the applicant's
 name, NPWP or contact) · `wantList.started` (a saved search or item alert kept
-— an address's once confirmed, an account's once saved, D39; what the demand
-dashboard counts as unmet demand, §3).
+— an address's once confirmed, D39, or an account's once saved where a brand has
+buyer accounts, none at launch, D54; what the demand dashboard counts as unmet
+demand, §3).
 
 The two refund events reverse revenue, so the domain emits them only for the
 payment that paid the order: giving back a late or a duplicate payment is the
@@ -131,7 +132,8 @@ refund of revenue that was never counted.
 
 **People and performance**
 `newsletter.subscribed` · `newsletter.confirmed` · `account.created` ·
-`account.signedIn` · `consent.updated` · `vitals.reported` (LCP/INP/CLS per
+`account.signedIn` (at launch the shop's partners alone sign in: the gallery has no
+accounts, D54) · `consent.updated` · `vitals.reported` (LCP/INP/CLS per
 surface and device class — field data, not just lab)
 
 ### Mapping to GA4 and Meta (consented only)

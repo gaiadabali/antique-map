@@ -166,7 +166,8 @@ Top to bottom, mobile first:
    now sold" with similar originals, naming no buyer (G10). The link respects
    export status: a `domestic-only` original seen from abroad says where it can be
    viewed. The link says what it is — "Indies Gallery is our sister gallery: a
-   separate shop with its own account".
+   separate business, where an original is bought by talking to the gallery, never
+   in this bag".
 9. Specifications (collapsed).
 10. **More with this image** — the same design on other products, a matching
     frame, a wall set.
