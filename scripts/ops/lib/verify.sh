@@ -50,7 +50,7 @@ smtp_greets() {
   timeout 5 bash -c 'exec 3<>"/dev/tcp/127.0.0.1/$1" && head -c 3 <&3' _ "$MAILPIT_SMTP_PORT" 2>/dev/null |
     grep -qx 220
 }
-pm2_online() { pm2_daemon_live && pm2_summary | grep -q "^$S_USER [a-z_]* instances=[0-9]* online "; }
+pm2_online() { pm2_daemon_live && pm2_summary | grep -q "^$S_USER [a-z_]* instances=[^ ]* online "; }
 pm2_daemon_gone() { ! pm2_daemon_live; }
 pm2_pid() { user_read "$S_HOME/.pm2/pm2.pid" | tr -dc 0-9; }
 
