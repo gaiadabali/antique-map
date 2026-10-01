@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-09-30T05:59:48.050Z",
+  "origin": "https://antiquemapsindonesia.com",
+  "sitemapFound": false,
+  "stoppedEarly": false,
+  "urls": 7665,
+  "byKind": {
+    "page": 20,
+    "listing:category": 883,
+    "product": 1823,
+    "asset": 15,
+    "image": 4111,
+    "listing:maker": 813
+  },
+  "byStatus": {
+    "200": 4919,
+    "never": 3,
+    "not-fetched": 2743
+  },
+  "products": {
+    "discovered": 1823,
+    "fetched": 1823
+  },
+  "images": {
+    "originalsFetched": 2289,
+    "variantsSeen": 1822
+  },
+  "categories": 98,
+  "droppedFromCommittedCopy": 0
+}

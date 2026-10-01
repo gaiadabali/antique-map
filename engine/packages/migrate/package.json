@@ -2,7 +2,7 @@
   "name": "@engine/migrate",
   "version": "0.0.0",
   "private": true,
-  "description": "Legacy migration: source adapters (a restored MySQL dump, a read-only public read, a product spreadsheet), then normalisers, the loader, redirects and the report. Source-shaped, never brand-shaped: every store-specific value arrives as data from the brand's content/legacy/ folder or the command line (MIGRATION.md \u00a74).",
+  "description": "Legacy migration: source adapters (a restored MySQL dump, a read-only public read, a product spreadsheet), then normalisers, the loader, redirects and the report. Source-shaped, never brand-shaped: every store-specific value arrives as data from the brand's content/legacy/ folder or the command line (MIGRATION.md §4).",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "legacy:mysql": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/sources/laravel-catalogue/cli.ts",
-    "legacy:public-read": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/sources/public-read/cli.ts"
+    "legacy:public-read": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/sources/public-read/cli.ts",
+    "legacy-urls": "cd ../../.. && node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs"
   },
   "devDependencies": {
     "@types/node": "26.6.3"
