@@ -53,7 +53,9 @@ same artifact is the escape hatch — it never runs migrations.
 KOI keeps uploads in `shared/uploads`. That does not scale to this catalogue:
 ~9,500 works × several images × derivatives × IIIF tiles is tens to hundreds of
 GB, and Helios's disk hit **93%** in September 2026. Media goes to **S3-compatible
-object storage** (Cloudflare R2 by default: no egress fees, CDN in front) through
+object storage** — **RustFS**, self-hosted (D12, 2026-09-30; staging runs it on
+Helios bound to loopback, and where it lives for the full archive is to be
+confirmed before 37.2 — this disk is why) — through
 `@payloadcms/storage-s3`; local dev uses MinIO (the `bitnamilegacy/minio` image,
 since `minio/minio` no longer allows an anonymous pull, §1); switching provider
 is an endpoint change.

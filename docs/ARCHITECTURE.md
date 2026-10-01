@@ -260,7 +260,7 @@ migrated one — are part of the Commerce stage's gate (TASKS.md 21.2).
 
 | Tier | What | Where |
 | ---- | ---- | ----- |
-| **Masters** | original scans (TIFF/JPEG), colour profile, checksum | private `archive-masters` bucket; a plain `masters` collection holds the record (storage key, pixels, ppi, colour profile, checksum, owning brand) — **not** a Payload upload collection |
+| **Masters** | every capture as received (RAW, TIFF, JPEG), colour profile, checksum — a work's under its uid, one with no work yet (the owner's pilot set) or none at all (a showroom photograph, a room plate's render) under `masters/intake/<brand>/<batch>/` (C9 `intakeMasterKey()`), a work's capture filed under its uid once the work exists | private `archive-masters` bucket; a plain `masters` collection holds the record (storage key, the frame's pixels, colour profile, checksum, owning brand, and what the intake measured: the object's box in the frame, object ppi, role, provenance, capture tier, verdict — CONTENT-MODEL.md §6) — **not** a Payload upload collection |
 | **Print files** | colour-managed, cropped design files for reproduction | the same private bucket under a `print-files/` prefix — the only prefix the shop's key may write |
 | **Derivatives** | AVIF + WebP at 320 / 640 / 1024 / 1600 / 2400 px + blur placeholder | public brand bucket behind Cloudflare, immutable cache |
 | **Deep zoom — public** | static **IIIF Level 0** tiles (`sharp().tile({ layout: 'iiif3' })`, 512 px) capped at the configured public resolution, plus an IIIF Presentation 3 manifest per work | public brand bucket (`iiif/<assetId>/…`) |
@@ -282,12 +282,21 @@ No image server to run: static tiles behind a CDN answer every zoom request.
 The viewer is OpenSeadragon, loaded **on intent** (first tap or hover on the
 image, or idle after LCP) so it never costs the PDP's JavaScript budget.
 
-**Print-size ceiling.** A reproduction variant is offered only if the master
+**Print-size ceiling.** A reproduction variant is offered only if what is printed
 supports it at the product type's minimum resolution — **240 ppi** by default
-(D26). The current site's images are 3543 × 2840 px: about **300 mm** on the long
-edge at 300 ppi (≈ A4), **375 mm at 240 ppi**, 450 mm at 200 ppi. So larger sizes
-wait on true master scans (MIGRATION.md §9). The ceiling is computed from the
-master's pixels, stored on the design, and enforced when variants are generated.
+(D26). What is printed is the design's crop of its master — for a whole-sheet
+design, the object's box in that master — so the ceiling is **the crop's own long
+edge in the master's pixels** at the minimum ppi (C9 `printCeilingOf()`), stored on
+the design and enforced when variants are generated and published (TASKS.md 15.4).
+It is **never the master file's long edge**, which also holds the background, the
+colour card and the ruler, and never the print file's pixel count, which a
+resample could inflate. The current site's images are 3543 × 2840 px frames: the
+frame's long edge would claim 375 mm at 240 ppi, but a sheet spanning 3300 px of it
+prints to about **349 mm**, and a smaller sheet or a tighter crop to less. So the
+legacy images are an upper bound, not an answer, and larger sizes wait on true
+master scans (MIGRATION.md §9). The intake records each capture's **object ppi** —
+the object's pixels over its real size — and at 240 or more the shop can print the
+work at its own size (`docs/design/imagery/intake-spec.md` §4).
 
 ## 8. Search
 
@@ -365,8 +374,8 @@ spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-componen
   document navigation consumes a post's result (C13 `FORM_RESULT`); and **the nonce
   CSP depends on it** (a served shell would carry no
   nonce). The shell bypass is Next's implementation, not a documented promise, so
-  the status spec (`engine/apps/gallery/e2e/status.spec.ts`, moving to
-  `tests/e2e/`) asserts the 404s and permanent redirects on a production build, and
+  the status spec (`tests/e2e/status/status.spec.ts`, run on
+  both apps) asserts the 404s and permanent redirects on a production build, and
   fails the day a Next release changes it.
 - **Content is cached; what the first flush must carry is read in the page body;
   only slow reads that no form depends on stream.** Loaders for content use
@@ -694,10 +703,24 @@ recommendation from the 4.1 review (item 5), adopted with its conditions.
    factory, `healthRoute(load = () => import('./payload-ports'))` — or `vi.mock`s the
    module; 4.6 picks one (4.3's senior-be review #13).
 3. **Fenced — behaviourally, and by ESLint (HAR, TASKS.md 5.4).** Route parity loads
-   every mount under a resolve hook that refuses `payload`, `@payloadcms/*` and
-   `@engine/cms`, so a static path to Payload fails CI however indirect — through
-   `@engine/loaders`, say, or any future package that depends on cms (4.3's
-   senior-be review #3). And ESLint, under `engine/packages/http/src/**`: only a
+   every mount under a guard that refuses `payload`, `@payloadcms/*` and
+   `@engine/cms` by specifier **and by resolved file** — a Vite plugin plus a
+   Node-level ESM resolve hook and CommonJS resolver wrap, since Vite hands an
+   externalised bare specifier straight to Node — so a static path to Payload fails
+   CI however indirect: through `@engine/loaders`, say, any future package that
+   depends on cms, a relative path into `cms/src`, a `#` subpath import, `require()`
+   or `createRequire` (4.3's senior-be review #3; 5.4's qa gate B1). It resolves with
+   the conditions Next gives a node route handler (`react-server` first) and loads
+   every branch an engine package's `exports` or `imports` names; and an engine
+   package may declare no export condition at all unless route parity's commented
+   `ALLOWED_EXPORT_CONDITIONS` names it (empty today), so no branch can send Next's
+   build somewhere the check did not look (5.4's re-gate). **Its known
+   limits**, which no load of a mount can see: any computed specifier — inside a
+   function (the lazy path, by design) or evaluated at load with its refusal caught
+   by the module itself (`try { await import(s) } catch {}`);
+   code loaded outside Node's resolvers (`fs` + `eval`/`vm`/`new Function`, a
+   worker or child process, `process.dlopen`); and, in a long-lived process, a
+   module already linked before the guard went up — the CLI starts fresh. And ESLint, under `engine/packages/http/src/**`: only a
    `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms` by value,
    statically or by `import()` (`import type` is free, so a pure port can name
    `Payload`); no module but a test imports a `payload-*` module statically; and the

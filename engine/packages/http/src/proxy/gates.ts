@@ -1,6 +1,6 @@
 /**
  * The proxy's small readers (`./decide`): C13's root-file patterns, the module a parsed page
- * needs, the reserved not-found segment, and a request's cookies. Pure.
+ * needs, the reserved not-found segment, and a request's User-Agent and cookies. Pure.
  */
 import {
   ACCOUNT_SECTIONS,
@@ -20,11 +20,14 @@ import {
 import { ROOT_REWRITES } from '../manifest'
 
 /**
- * The internal not-found route's segment, under each locale: `/<locale>/not-found`, whose page
- * (`(site)/[locale]/not-found/page.tsx`, TASKS.md 4.1) calls `notFound()`, so the site's own
- * designed 404 renders — in the `(site)` layout, with its masthead, reading `x-public-path` —
- * rather than Next's bare default, which two root layouts would give. No public URL reaches it
- * except as a rewrite: asked for directly, in any locale, it is itself not found.
+ * The internal not-found route's segment, under each locale: `/<locale>/not-found`. The proxy
+ * rewrites every path that names no page here with C13's `PROXY_NOT_FOUND_STATUS`, which Next
+ * keeps through a normal render, so the route's page (`(site)/[locale]/not-found/page.tsx`) can
+ * render the designed NotFound surface in its own body — the `(site)` layout, its masthead,
+ * `lang`, a search form, without JavaScript — rather than call `notFound()`, whose answer is
+ * Next's empty recovery document (DESIGN-SYSTEM.md §2; the page's switch is TASKS.md 22.4.e). No
+ * public URL reaches it except as a rewrite: asked for directly, in any locale, it is itself not
+ * found.
  */
 export const NOT_FOUND_SEGMENT = 'not-found'
 
@@ -96,6 +99,14 @@ function compile(pattern: string): RegExp {
     compiled.set(pattern, regex)
   }
   return regex
+}
+
+/**
+ * The request carries a `User-Agent` of its own. Missing and empty are one to Next
+ * (`req.headers['user-agent'] || ''`), and a value of blanks is empty once HTTP trims it.
+ */
+export function hasUserAgent(headers: Headers): boolean {
+  return (headers.get('user-agent') ?? '').trim() !== ''
 }
 
 export function hasCookie(headers: Headers, name: string): boolean {

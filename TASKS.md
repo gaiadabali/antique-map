@@ -21,11 +21,11 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | · not started | 0/4 | 0/22 | 1 | `░░░░░░░░░░`   0% |
-| **6** Briefs, image direction and voice | Design | 4 | · not started | 0/3 | 0/12 | 3 | `░░░░░░░░░░`   0% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 1/4 | 14/25 | 1 | `██████░░░░`  56% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/22 | 0 | `░░░░░░░░░░`   0% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/23 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
@@ -33,12 +33,12 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
 | **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
-| **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | · not started | 0/4 | 0/24 | 1 | `░░░░░░░░░░`   0% |
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/2 | 0/12 | 1 | `░░░░░░░░░░`   0% |
-| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/36 | 1 | `░░░░░░░░░░`   0% |
+| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/37 | 1 | `░░░░░░░░░░`   0% |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/27 | 2 | `░░░░░░░░░░`   0% |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **20/173** | **121/795** | **47** | `██░░░░░░░░`  15% |
+| **All** | 44 phases | | | **21/173** | **144/810** | **47** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -157,6 +157,11 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 5·W1 | 5.1 Staging on Helios (5.1.a only — the script, no Helios access) | devops | `antique-map-p5-har` / `feat/p5-har` | 2026-09-30 | OA8 given; the orchestrator reviews the script, then runs 5.1.b–d; D12 RustFS, D13 Mailpit on staging |
+| 5·W2 | 5.4 Gates for the v1.3 contracts | medior | `antique-map-p5-har-gates` / `feat/p5-har-gates` | 2026-10-01 | branched from the 5.3 merge (5a253f0) while its gate runs; rebased on `main` before merge |
+| 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
+| 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
+| 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -179,25 +184,26 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D9** | The design: which shared base and which accents per brand (the Design stage) | **no default** — the shape is answered (one shared base, distinct accents; see Answered); the owner still picks the base candidate and the accents in 13.1, with their draft as the lead candidate | owner | 13.1 |
 | **D10** | Grading scale wording | VG+ · VG · G+ · G · Fair · As-is with A–D equivalents | curator | 8.2, 34.2 |
 | **D11** | Returns policy text per seller | none published until drafted — the engine supports returns on every line | counsel | 20.4, 42.3, 43.3 |
-| **D12** | Object storage provider | Cloudflare R2 | owner (account) | 5.1 |
-| **D13** | Transactional email for each brand's domain | the brand's Google Workspace SMTP with SPF/DKIM/DMARC; a transactional provider if it has none | owner (DNS) | 5.1, 20.3 |
+| **D13** | Transactional email for each brand's domain **in production** (staging answered: mocked — see Answered) | the brand's Google Workspace SMTP with SPF/DKIM/DMARC; a transactional provider if it has none | owner (DNS) | 20.3 |
 | **D14** | WhatsApp notifications provider — **needed before phase 27 opens**, because viewing reminders, payment instructions and order updates are promised on WhatsApp | if unanswered by then: click-to-chat only, every notification goes by email, and no copy promises a WhatsApp message | owner | 27.2 — before phase 27 opens |
 | **D15** | Legacy passwords | no import; "claim your account" email (bcrypt rehash-on-login is a one-day option) | owner | 28.1, 36.3 |
 | **D16** | AI cataloguing model provider | a production model behind the `ai.cataloguing` flag, human-verified; Ollama Cloud for development only (not a production dependency) | owner | 23.5 |
 | **D17** | Staging tier after launch | staging stays on Helios `.gaiada.com`; Delphi `staging` branch only if wanted | owner | 44.2 |
 | **D18** | Default locale per brand (served unprefixed) | English for both; Indonesian at `/id/…` | owner | 3.1 |
-| **D19** | Photographer and the pilot shoot (the Design stage) | **no default** — the Design stage cannot finish its comps on today's single web JPEGs | owner (booking, budget) | 6.2 |
 | **D20** | Native Indonesian copywriter | **no default** — the lexicon and the launch copy review need one | owner | 6.3 |
 | **D21** | Buyers for the prototype test and usability runs (≈ 10 + 10 people) | collectors from the gallery's client list; shoppers recruited through the shop's Instagram | owner (introductions) | 13.2, 35.2, 32.2 |
 | **D22** | Offers at launch | **non-binding offers** in v1: accept / counter / decline in the admin; an accepted offer becomes a hold and a private pay link. Binding offers (a contract on acceptance) are v2 | owner | 19.1 |
 | **D23** | Print-on-demand abroad at launch | **not at launch** — export orders ship from Bali stock or local production, DAP; Prodigi / Gelato switch on in v2 behind the existing router | owner | 26.3 |
 | **D24** | The item register — who compiles location and export status for every original, and by when | the gallery's staff, by the staging rehearsal (37.2); an original without a row publishes **enquiry-only** and sells nowhere online | owner (staff time) | 36.3 |
 | **D25** | Dark production import of the gallery before the shop launches | yes, whenever the shop launches first — its sister links and original prices come from the gallery's archive API | owner (Helios go-ahead) | 42.7 |
-| **D26** | Minimum print resolution for reproductions | **240 ppi** (≈ 37 cm long edge from today's 3543 px images); a product type may demand more | owner + print partner | 9.2, 15.4 |
+| **D26** | Minimum print resolution for reproductions | **240 ppi** — the ceiling is computed from the design's crop, or the object's box for a whole sheet, never the file's long edge (C9 v1.4 `printCeilingOf()`; a 3543 px frame whose sheet spans 3300 px gives 349 mm); a product type may demand more | owner + print partner | 9.2, 15.4 |
 | **D27** | FX source for derived prices | ECB reference rates, refreshed daily, plus the per-market buffer; each order stores the rate it used | accountant | 17.2 |
 | **D28** | Newsletter sender | a bulk-sending provider for the newsletter and alerts (Workspace SMTP caps daily sends and would put transactional mail at risk); transactional mail stays per D13 | owner (account) | 29.2 |
 | **D32** | What a retail partner gets at launch | an application approved by staff; a trade price tier and a minimum order as data; orders placed as quotes through the order builder (24.5) and paid by bank transfer or pay link; no self-serve wholesale cart until the trade portal (v2.7) | owner | 28.5 |
 | **D29** | The Singapore seller selling Singapore-held stock to an Indonesian address | priced and charged in **IDR** (the rupiah rule governs what the buyer sees), card or bank transfer, import duties the buyer's (DAP) | tax adviser | 17.3, 25.1 |
+| **D45** | Proforma (`invoice`) holds for institutions: capped, or staff approve before the hold starts (COMMERCE.md §7, F13) | **staff approve first** — the hold starts on approval | owner (interview G5) | 18.1, 19.1 |
+| **D46** | Who produces the configurator's room plates (6.2.c: six master plates) | a freelance 3D artist renders them to `docs/design/imagery/room-scenes.md`; no AI-generated or stock interiors | owner (budget) | 22.7 |
+| **D47** | How the shop prices and charges a buyer abroad at launch | one rupiah price list everywhere; the PT charges IDR — a card is charged the exact rupiah total; the market's currency shows only as an "≈" estimate beside it (day's rate, no buffer); PayPal, which takes no rupiah, is charged the rupiah total converted once to USD at the payment step (day's rate + the USD buffer, half-even to the cent), shown before the choice and stored on the attempt; no hand-set EUR/AUD/SGD/USD lists until a seller that charges them exists (COMMERCE.md §3, PAYMENTS.md §6) | owner + tax adviser (may the PT take USD by PayPal for export?) | 17.2, 17.3, 19.2, 25.2, 30.1, 32 |
 
 ### Owner actions (not questions)
 
@@ -205,12 +211,12 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | --- | --- | --- |
 | **OA1** | ✅ 2026-09-28 — `gaiadabali/antique-map` (private, internal), deploy account `web-gaiada` (admin); `main` pushed | 1.1.f |
 | **OA2** | The owner interview — at most 15 questions per brand | 6.1.b |
-| **OA3** | Book a photographer and the pilot shoot (D19) | 6.2.b |
+| **OA3** | Hand over the pilot image set: six gallery items (one a typical migrated item at today's quality) and the Denpasar showroom — the owner's own photographs (D19) | 6.2.b |
 | **OA4** | A native Indonesian copywriter for the lexicon and the launch copy (D20) | 6.3.c, 42.6, 43.6 |
 | **OA5** | Two or three Indonesian designers or buyers for the shop's cultural review | 12.2.a |
 | **OA6** | Buyers for the prototype test and the usability runs — about 10 + 10 people (D21) | 13.2, 35.2, 32.2 |
 | **OA7** | A commercial font licence, if a commercial face is chosen | 14.1.f |
-| **OA8** | Go-ahead to provision staging on Helios; DNS for `ig.gaiada.com` and `oei.gaiada.com`; the object-storage account; Infisical entries | 5.1.b |
+| **OA8** | ✅ 2026-09-30 — go-ahead to provision staging on Helios (the provision script runs once the orchestrator has reviewed it and its dry-run; no second confirmation), DNS for `ig.gaiada.com` and `oei.gaiada.com`; object storage per D12; Infisical entries | 5.1.b |
 | **OA9** | **The export of the old catalogue** — a MySQL dump and the product-images folder, from whoever hosts the old site. We never log in to it. | 7.1.a |
 | **OA10** | **The item register** — stock location and export status for every original (D24) | 36.3 |
 | **OA11** | A Search Console export for `oldeastindies.com` | 7.3.a |
@@ -227,6 +233,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D19** | **No photographer is booked:** every item is the owner's own property, and the owner supplies its photographs to sell it. 6.2's capture standards become the owner's photography guide and the intake spec; its pilot set is the owner's images. | 2026-10-01 |
+| **OA-Helios** | **Standing go-ahead for Helios:** the orchestrator may do what the project needs on Helios (staging provisioning, deploys, reads) — given by the owner in session. Production cutover, DNS for the brands' own domains and live credentials still follow their own 👤 items. | 2026-10-01 |
+| **D12** | **Object storage is RustFS** (self-hosted, S3-compatible) — `@payloadcms/storage-s3` unchanged, an endpoint change (DEPLOYMENT.md §2). Staging runs it on Helios, bound to loopback. ⚠ Helios's disk was at 93% (DEPLOYMENT.md §2): where RustFS lives for the full archive (37.2's staging rehearsal, production) is to confirm before 37.2. | 2026-09-30 |
+| **D13 (staging)** | **Staging mail is simulated:** a Mailpit catcher on Helios, loopback-only; nothing is delivered. The production sender (D13) stays open. | 2026-09-30 |
 | **D43** | **The two archived `oldeastindies.com/sitemap.xml` captures may be read** through Wayback playback on web.archive.org (two requests; nothing sent to the old site) — 7.3.d. | 2026-09-30 |
 | **D41** | **The gallery's old public pages may be read**, read-only and rate-limited (about one request every two seconds, robots.txt respected, no login, no form, no write), as MIGRATION.md §3's fallback while the export (OA9) is outstanding; raw output stays in `LEGACY_DATA_DIR`, outside git. | 2026-09-30 |
 | **D42** | **Until the export (OA9) arrives, 7.1 works on a mock dump** — a synthetic Laravel-shaped MySQL dump committed as a fixture — so the restore, the schema notes and the extraction are proven; the real restore closes 7.1.a when the dump is handed over. | 2026-09-30 |
@@ -561,7 +571,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 **Done when:** `pnpm dev --brand indies-gallery` and `--brand old-east-indies` serve two differently themed shells in EN and ID from two databases; `/admin` logs in on both; `test` runs on both apps; the Cache Components spike's verdict is recorded; every gate fails on a planted violation; both staging hostnames serve a CI-built release.
 **Waves:** W1 — 5.1, 5.3 · W2 — 5.4 · W3 — 5.2 · closes **M0**
 
-- [ ] **5.1 Staging on Helios 👤** · needs: 2.3, 4.1
+- [ ] **5.1 Staging on Helios 👤** · needs: 2.3, 4.1 — 🔄 5·W1
   - **Lane** HAR · **Agent** devops · **Wave** W1
   - **Owns** `scripts/ops/**`
   - **Read** DEPLOYMENT.md §2, §3 (the pm2 entry and the bind), §9; KOI docs/ops/helios-koi-setup.sh; memory: Helios writes need the owner's go-ahead each time
@@ -583,28 +593,31 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 5.2.e File every failure as a subtask of the task that owns it, and re-run the clause after the fix
   - [ ] 5.2.f **Check:** every clause of the **Done when** of phases 1–5 is evidenced in `docs/gates/foundation.md`, with no failure left open.
 
-- [ ] **5.3 The proxy's v1.3 answers: a missing User-Agent, the item's query, its not-found's 404** · needs: 4.3
+- [x] **5.3 The proxy's v1.3 answers: a missing User-Agent, the item's query, its not-found's 404** · needs: 4.3 — ✅ 2026-10-01 a2c60d1
   - **Lane** PLT · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/http/src/proxy/**`, `engine/packages/config/src/boot-check/**`
   - **Read** C13 v1.3 (`engine/packages/http/src/manifest/proxy.ts`); ARCHITECTURE.md §9, §11, §13; DESIGN-SYSTEM.md §2 (NotFound and Gone without JavaScript); DEPLOYMENT.md §3; `reviews/4.3-senior-be.md` #6, #7
   - _Requirements: 1.2, 19.4_
-  - [ ] 5.3.a a request whose `User-Agent` is missing or empty gets C13 `PROXY_USER_AGENT` on the request passed on; a client's own is never replaced
-  - [ ] 5.3.b the proxy's not-found — every decision rewritten to `/<locale>/not-found` — answers with C13 `PROXY_NOT_FOUND_STATUS` on its rewrite (`toResponse`); every other decision keeps the status Next's render gives it
-  - [ ] 5.3.c `PROXY_REQUEST_HEADERS.publicSearch` on the item route's rewrite alone — the public URL's `search`, `''` when it has none — and `''` on every other request, a client's copy dropped everywhere; a unit test that Next's `_rsc` never reaches it (`skipProxyUrlNormalize` stays off)
-  - [ ] 5.3.d `bootCheck()` refuses, in every environment, a `HOSTNAME` that is a loopback IP: normalised the way Next reads it (``new URL(`http://${host}`).hostname``, bracketing a bare IPv6), then tested as Next tests it (`127.` plus three octets, or `[::1]`), so `127.0.0.1`, `127.1`, `2130706433`, `0x7f.0.0.1` and `::1` are refused and `localhost`, `0.0.0.0` and a host name pass; the finding names the standalone `server.js`, which binds `HOSTNAME`, and says `next dev`/`next start` take `-H`, which hangs at a loopback address too (4.1's qa F1, 4.4.g; DEPLOYMENT.md §3)
-  - [ ] 5.3.e **Check:** unit tests for each (`proxy.test.ts`, `respond.test.ts`, the boot check's); on a production build, a request with no `User-Agent` gets 404 for `/nope` and 308 for a stale slug of the spike's fixture item (`SPIKE_ROUTES=1`), a browser's gets 404 for `/nope` through the rewrite's status, and a stale slug's 308 keeps its query while a query on any other page never reaches `x-public-search`; the status spec's no-User-Agent case passes with `E2E_EXPECT_UA_FIX=1`; a start with `HOSTNAME=127.1` is refused; `pnpm verify` green.
+  - [x] 5.3.a a request whose `User-Agent` is missing or empty gets C13 `PROXY_USER_AGENT` on the request passed on; a client's own is never replaced
+  - [x] 5.3.b the proxy's not-found — every decision rewritten to `/<locale>/not-found` — answers with C13 `PROXY_NOT_FOUND_STATUS` on its rewrite (`toResponse`); every other decision keeps the status Next's render gives it
+  - [x] 5.3.c `PROXY_REQUEST_HEADERS.publicSearch` on the item route's rewrite alone — the public URL's `search`, `''` when it has none — and `''` on every other request, a client's copy dropped everywhere; a unit test that Next's `_rsc` never reaches it (`skipProxyUrlNormalize` stays off)
+  - [x] 5.3.d `bootCheck()` refuses, in every environment, a `HOSTNAME` that is a loopback IP: normalised the way Next reads it (``new URL(`http://${host}`).hostname``, bracketing a bare IPv6), then tested as Next tests it (`127.` plus three octets, or `[::1]`), so `127.0.0.1`, `127.1`, `2130706433`, `0x7f.0.0.1` and `::1` are refused and `localhost`, `0.0.0.0` and a host name pass; the finding names the standalone `server.js`, which binds `HOSTNAME`, and says `next dev`/`next start` take `-H`, which hangs at a loopback address too (4.1's qa F1, 4.4.g; DEPLOYMENT.md §3)
+  - [x] 5.3.f `/api/health` with only the database down reports the database failure alone — not also `boot: refused`, and no "boot check refused to start" log line on a process that booted (`config/src/boot-check/boot-check.ts:120`; qa's phase 4 gate L1)
+  - [x] 5.3.e **Check:** unit tests for each (`proxy.test.ts`, `respond.test.ts`, the boot check's); on a production build, a request with no `User-Agent` gets 404 for `/nope` and `/nope/deeper` and 308 for a stale slug of the spike's fixture item (`SPIKE_ROUTES=1`), a browser's gets 404 for `/nope/deeper` (a path that names no page — one segment is a CMS page's address under C10, whose 404 is the page's `notFound()`) through the rewrite's status, and a stale slug's 308 keeps its query while a query on any other page never reaches `x-public-search`; the status spec's no-User-Agent case passes with `E2E_EXPECT_UA_FIX=1`; a start with `HOSTNAME=127.1` is refused; `pnpm verify` green.
 
-- [ ] **5.4 Gates for the v1.3 contracts** · needs: 4.6, 5.3
+- [ ] **5.4 Gates for the v1.3 contracts** · needs: 4.6, 5.3 — 🔄 5·W2
   - **Lane** HAR · **Agent** medior · **Wave** W2
   - **Owns** `engine/tooling/route-parity/**`, `eslint.config.mjs` (its boundary rules), `engine/tooling/next-config-parity/**`, `.github/workflows/e2e.yml` (the status run's env), `playwright.config.ts`, `.env.example` (its `HOSTNAME` comment), and the e2e moves: `tests/e2e/{smoke,status}/**`, `.github/e2e/**`, `engine/apps/gallery/e2e/**`
   - **Read** C13 v1.3 (`manifest.ts` `UNBUILT_HANDLER`, `manifest/proxy.ts`); ARCHITECTURE.md §15; CONVENTIONS.md §12; PARALLEL-TRACKS.md §1; DEPLOYMENT.md §3; `reviews/4.3-senior-{be,fe}.md`
   - _Requirements: 1.6, 19.4_
-  - [ ] 5.4.a route parity: a mount's re-export specifier is `handlerOf(path)` or C13's `unbuiltHandlerOf(path)`; it names the placeholder only while `engine/packages/http/src/<area>/route.ts` for `handlerOf(path)` does not exist; both apps name the same specifier for each route; and the runner loads every C13 mount (`ENGINE_ROUTES`, not Payload's own `(payload)` routes) under a resolve hook that refuses `payload`, `@payloadcms/*` and `@engine/cms`, so a static path to Payload fails however indirect — each rule proven by a planted violation
-  - [ ] 5.4.b ESLint (ARCHITECTURE.md §15, CONVENTIONS.md §12): under `engine/packages/http/src/**` only a `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms` by value, statically or by `import()` (`import type` stays free); no module but a test imports or re-exports a `payload-*` module statically; nothing under `engine/packages/cms/**` imports `@engine/http`; nothing under `engine/packages/http/**` imports `@engine/loaders`, and nothing under `engine/packages/loaders/**` imports `@engine/http` but `@engine/http/manifest`; `engine/packages/http/src/manifest{.ts,/**}` imports other packages as types only, its tests excepted; `engine/packages/cache/**` imports nothing of the engine's but C1's types; and under `engine/apps/*/src/app/**` outside `(payload)`, no route segment config is exported (`dynamic`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, `maxDuration`, `prefetch`, `instant`, `dynamicParams`, `generateStaticParams`) but `instant = false` and `generateStaticParams` in `(site)/[locale]/layout.tsx` — each proven by a planted violation
-  - [ ] 5.4.c ESLint: in every file that renders storefront JSX — `engine/apps/*/src/**` outside `(payload)`, and every package but `cms` — only the link primitive under `engine/packages/ui/src/primitives/` (11.1.c) imports `next/link`; `next/form` is imported nowhere (its `<Form>` prefetches its action by default; a storefront form is a plain `<form>`, which works without JavaScript); and `useRouter().prefetch()` is called nowhere — so no storefront link or form prefetches (CONVENTIONS.md §12)
-  - [ ] 5.4.d a test compares the two apps' `next.config.ts` on what the storefront's guarantees rest on — `cacheComponents`, `htmlLimitedBots`, `output`, `poweredByHeader`, and `withPayload`'s client hints on `/admin/:path*` alone — and asserts both `(site)/[locale]/layout.tsx` export `instant = false` (PARALLEL-TRACKS.md §1)
-  - [ ] 5.4.e the one e2e folder (PARALLEL-TRACKS.md §1): the status spec moves from `engine/apps/gallery/e2e/` to `tests/e2e/status/` and 4.4's smoke from `.github/e2e/` to `tests/e2e/smoke/`, each Playwright project's `testDir` following; CI runs the status spec with `E2E_EXPECT_UA_FIX=1` (5.3), its app-independent cases (a path that names no page, a not-found route, an unsupported locale prefix, robots, the admin-only client hints) against an emporium server too, and — behind `E2E_EXPECT_NOT_FOUND_BODY=1`, set when 22.4.e lands — a non-empty `<main>` in a 404's body
-  - [ ] 5.4.f `.env.example`'s `HOSTNAME` comment follows DEPLOYMENT.md §3: `localhost` on a host with `--dns-result-order=ipv4first` (so it binds 127.0.0.1 behind nginx), `0.0.0.0` only in CI, never a loopback IP — and `next dev`/`next start` take `-H`, which hangs at a loopback address too
+  - [x] 5.4.a route parity: a mount's re-export specifier is `handlerOf(path)` or C13's `unbuiltHandlerOf(path)`; it names the placeholder only while `engine/packages/http/src/<area>/route.ts` for `handlerOf(path)` does not exist; both apps name the same specifier for each route; and the runner loads every C13 mount (`ENGINE_ROUTES`, not Payload's own `(payload)` routes) under a resolve hook that refuses `payload`, `@payloadcms/*` and `@engine/cms`, so a static path to Payload fails however indirect — each rule proven by a planted violation
+  - [x] 5.4.b ESLint (ARCHITECTURE.md §15, CONVENTIONS.md §12): under `engine/packages/http/src/**` only a `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms` by value, statically or by `import()` (`import type` stays free); no module but a test imports or re-exports a `payload-*` module statically; nothing under `engine/packages/cms/**` imports `@engine/http`; nothing under `engine/packages/http/**` imports `@engine/loaders`, and nothing under `engine/packages/loaders/**` imports `@engine/http` but `@engine/http/manifest`; `engine/packages/http/src/manifest{.ts,/**}` imports other packages as types only, its tests excepted; `engine/packages/cache/**` imports nothing of the engine's but C1's types; and under `engine/apps/*/src/app/**` outside `(payload)`, no route segment config is exported (`dynamic`, `revalidate`, `fetchCache`, `runtime`, `preferredRegion`, `maxDuration`, `prefetch`, `instant`, `dynamicParams`, `generateStaticParams`) but `instant = false` and `generateStaticParams` in `(site)/[locale]/layout.tsx` — each proven by a planted violation
+  - [x] 5.4.c ESLint: in every file that renders storefront JSX — `engine/apps/*/src/**` outside `(payload)`, and every package but `cms` — only the link primitive under `engine/packages/ui/src/primitives/` (11.1.c) imports `next/link`; `next/form` is imported nowhere (its `<Form>` prefetches its action by default; a storefront form is a plain `<form>`, which works without JavaScript); and `useRouter().prefetch()` is called nowhere — so no storefront link or form prefetches (CONVENTIONS.md §12)
+  - [x] 5.4.d a test compares the two apps' `next.config.ts` on what the storefront's guarantees rest on — `cacheComponents`, `htmlLimitedBots`, `output`, `poweredByHeader`, and `withPayload`'s client hints on `/admin/:path*` alone — and asserts both `(site)/[locale]/layout.tsx` export `instant = false` (PARALLEL-TRACKS.md §1)
+  - [x] 5.4.e the one e2e folder (PARALLEL-TRACKS.md §1): the status spec moves from `engine/apps/gallery/e2e/` to `tests/e2e/status/` and 4.4's smoke from `.github/e2e/` to `tests/e2e/smoke/`, each Playwright project's `testDir` following; CI runs the status spec with `E2E_EXPECT_UA_FIX=1` (5.3), its app-independent cases (a path that names no page, a not-found route, an unsupported locale prefix, robots, the admin-only client hints) against an emporium server too, and — behind `E2E_EXPECT_NOT_FOUND_BODY=1`, set when 22.4.e lands — a non-empty `<main>` in a 404's body; the status spec names a path that names no page (`/nope/deeper`) beside `/nope`, whose 404 is the CMS page's (5.3's Found #1); and `instance.test.ts` and `route-parity.test.mjs` no longer time out under a loaded machine (qa's phase 4 gate L2)
+  - [x] 5.4.f `.env.example`'s `HOSTNAME` comment follows DEPLOYMENT.md §3: `localhost` on a host with `--dns-result-order=ipv4first` (so it binds 127.0.0.1 behind nginx), `0.0.0.0` only in CI, never a loopback IP — and `next dev`/`next start` take `-H`, which hangs at a loopback address too
+  - [x] 5.4.h qa's gate on `main` (eb762a9) — FAIL: the resolve hook never runs where Vite externalizes a bare specifier, so a relative path into `cms/src`, a `#` subpath import and a mount's side-effect `import 'payload'` all pass (B1); the fences miss a relative path leaving a package and `import x = require()` (S2); the link, form, prefetch and segment rules miss `next/link.js`, `next/dist/esm/…`, aliased or computed `prefetch` and `export const { dynamic } = …` (S3); 5.4.d compares named fields only — it becomes byte-identical configs with an explicit allowlist, `trailingSlash` required, the apps discovered (S4); `brand-create` and `schema-hash` still time out under load (L5); the no-User-Agent case sends an empty header (L6). Each fixed with a planted test
+  - [x] 5.4.i qa's re-gate (adbc0b0) — FAIL on one new blocker: route parity resolved with Vite's conditions, not Next's, so a `react-server`/`production` `exports` condition put Payload in a mount's production bundle past every gate; fixed by resolving with Next's route-handler conditions and loading every conditional branch, plus a gate that refuses conditional `exports` in engine packages; and its LOWs — hook timeouts under load, a deep compare of each app's loaded config, `no-router-prefetch` across `engine/**`, and `createRequire` held in a variable
   - [ ] 5.4.g **Check:** each planted violation of 5.4.a–d fails its gate naming the file and passes once removed; CI's status run passes its no-User-Agent case on both apps; `pnpm verify` green.
 
 ---
@@ -612,7 +625,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 ## Phase 6 — Briefs, image direction and voice · Design · needs 4 · ~3d
 
 **Goal:** what each brand is for and who it serves, the photography it will stand on, and how it speaks in both languages.
-**Done when:** the product briefs and the 1.1.c journeys are written and approved; the capture standards exist and the pilot shoot is delivered; each brand has a native-reviewed EN/ID voice and lexicon.
+**Done when:** the product briefs and the 6.1.c journeys are written and approved; the capture standards exist and the owner's pilot set is delivered (D19); each brand has a native-reviewed EN/ID voice and lexicon.
 **Waves:** W1 — 6.1, 6.2, 6.3
 
 **Why the Design stage is long.** A research recommendation is the category default —
@@ -623,34 +636,41 @@ component, and the only honest test of a direction is a real buyer on a real
 phone (DESIGN-SYSTEM.md §11, §13). Its phases wait mostly on the owner, so they
 run beside the build line rather than in it.
 
-- [ ] **6.1 Product briefs and journeys** · needs: 1.3.b
+- [ ] **6.1 Product briefs and journeys** · needs: 1.3.b — 🔄 6·W1
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `engine/apps/gallery/PRODUCT.md`, `engine/apps/emporium/PRODUCT.md`, `PRODUCT.md`, `docs/design/journeys/**`
   - **Read** the drafted PRODUCT.md files, EXPERIENCE-GALLERY.md, EXPERIENCE-SHOP.md, RESEARCH.md §1, §3
   - _Requirements: 6.1, 7.1_
-  - [ ] 6.1.a impeccable `init` against the drafts; list the questions only the owner can answer
+  - [x] 6.1.a impeccable `init` against the drafts; list the questions only the owner can answer
   - [ ] 6.1.b 👤 owner interview (≤ 15 questions per brand); fold answers in
-  - [ ] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
+  - [x] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
+  - [ ] 6.1.e an Indonesian version of `docs/design/journeys/owner-interview.md` before it is sent (client material comes in both languages — project-notes.md), reviewed by a native speaker (the D20 copywriter when there is one) — drafted 2026-10-01 (`owner-interview.id.md`, `owner-interview-toko.id.md`, `pilot-set-request.id.md`); the native review is what remains
+  - [ ] 6.1.f after OA2: fold each answer in at its `(open — pending the owner interview, OA2 · Gn/Sn)` mark, update each journey's "Open until the owner answers" and its defaults, and route any answer that changes EXPERIENCE-*.md to ARC; ask too whether the gallery states a position on the VOC and the colonial archive (the shop's is stated; the gallery's PRODUCT.md has none — 6.3), and confirm British spelling for both brands
+  - [x] 6.1.g ARC's doc corrections from 6.1's review: requirements.md 7.8 names Partnership, not "For Business" (D36); EXPERIENCE-SHOP.md's intro drops "the one sister element" (D9 shares the whole base); EXPERIENCE-GALLERY.md §1 names only the client's four institutions until G10 answers; §3, §5, §9 mark the lifetime guarantee a default (RESEARCH.md §2, D11); and how a shop buyer abroad sees and pays prices at launch settled across COMMERCE.md §3 and PAYMENTS.md §6, phase 32's Done when following
   - [ ] 6.1.d **Check:** each PRODUCT.md follows the impeccable product schema with no invented facts and the owner's answers folded in, and 6–8 journeys per brand exist, each naming its surfaces, states, channel handoffs and the moment that decides trust.
 
-- [ ] **6.2 👤 Image direction, capture standards and the pilot shoot** · needs: 1.3.b
+- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b — 🔄 6·W1
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/imagery/**`
   - **Read** DESIGN-SYSTEM.md §11, CONTENT-MODEL.md (image roles), MIGRATION.md §9, the drafted PRODUCT.md files
   - _Requirements: 4.5, 6.12, 7.12_
-  - [ ] 6.2.a capture standards per brand: lighting and colour temperature, a colour target in every frame, the raking-light angle, minimum ppi, backgrounds, mat and shadow, **retouching limits (never restore a defect on an original)**, the studio/lifestyle split (gallery: studio, object, raking light, no people; shop: sun, hands, rooms, packaging, the showroom), and how synthetic mockups are labelled
-  - [ ] 6.2.b 👤 book a photographer; pilot shoot of six gallery items — including one **typical migrated item** at real data quality — and one day in the Denpasar showroom
-  - [ ] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
-  - [ ] 6.2.d **Check:** each brand has capture standards, a photographer has shot the pilot set, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
+  - [x] 6.2.a capture standards per brand: lighting and colour temperature, a colour target in every frame, the raking-light angle, minimum ppi, backgrounds, mat and shadow, **retouching limits (never restore a defect on an original)**, the studio/lifestyle split (gallery: studio, object, raking light, no people; shop: sun, hands, rooms, packaging, the showroom), and how synthetic mockups are labelled
+  - [ ] 6.2.b 👤 the owner supplies the pilot set (D19 — no photographer): six gallery items — including one **typical migrated item** at real data quality — and the Denpasar showroom, shot to 6.2.a's guide where the owner can; each image checked against the intake spec, and any gap named per image
+  - [x] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
+  - [x] 6.2.e ARC → SCH, before 8.3 and 9.1 (6.2's Found 1–6): CONTENT-MODEL.md and C9 give `products` image roles (flat · detail · in-room · lifestyle · scale · packaging · showroom) and `locations` images; a `media.role` value list and `media.provenance` (photograph · composite · rendered · ai-generated); on `masters`, object ppi, the object's box, role and capture tier; a restoration note on `designs`; a publish guard refusing a synthetic image as an original's primary; `primary` a crop of `recto`, never its own photograph; the print ceiling computed from the object's pixels or the design crop, not the master's long edge (ARCHITECTURE.md §7, MIGRATION.md §9, 15.4.c); one shared room-plate set with its geometry (22.7); and a key for pilot masters before OA3 arrives
+  - [ ] 6.2.f fill the pilot request's four placeholders (`{owner's name}`, `{our address}`, `{date}`, `{sender}`) in both the English and the Indonesian version, choose Bapak or Ibu, give the guides it attaches (gallery-guide, shop-guide, the shot lists, handover) Indonesian versions too, and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it
+  - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the owner's pilot set is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
 
-- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1
+- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W1
   - **Lane** UXG + UXE + BRD · **Agent** senior-uiux · **Wave** W1
-  - **Owns** `docs/design/{gallery,emporium}/voice.md`, `engine/apps/*/src/messages/keys.ts` (the keys), `indies-gallery/site/copy/**`, `old-east-indies/site/copy/**`, `test/site/copy/**` (the values)
+  - **Owns** `docs/design/{gallery,emporium}/voice.md`, `engine/apps/*/src/messages/**` (the keys: `keys.ts` composing `lexicon/*.ts`, widened 2026-10-01 for the 300-line rule), `indies-gallery/site/copy/**`, `old-east-indies/site/copy/**`, `test/site/copy/**` (the values)
   - **Read** DESIGN-SYSTEM.md §10, BRANDS.md §2, NOW! docs/DESIGN-SYSTEM.md §6 (copy), the drafted PRODUCT.md files
   - _Requirements: 18.8_
-  - [ ] 6.3.a voice principles and register per brand
-  - [ ] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
+  - [x] 6.3.a voice principles and register per brand
+  - [x] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
   - [ ] 6.3.c 👤 native Indonesian copywriter review
+  - [x] 6.3.e HAR: a copy-completeness gate — `@engine/i18n/copy`'s `checkCopy()` wired into `check-brands` for every brand × the app that renders it × `locales.supported`, the `test` brand checked against the union of both apps' keys; a planted missing key and a planted placeholder mismatch each fail it (none exists today, so 6.3.b's coverage is unguarded)
+  - [ ] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`); and C9 v1.4's labels: `SYNTHETIC_LABEL`, each `PRINT_RESTORATIONS` step, the new image roles, "≈ … — charged in Rp …" with the note that the card issuer or PayPal may convert again (D47), and the room plate's caption with its wall width
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for the gallery; the shop's to confirm — likely *kamu*), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
 
 ---
@@ -733,6 +753,8 @@ run beside the build line rather than in it.
   - [ ] 8.3.b `masters` as a plain collection: a presigned PUT straight to the private bucket (never through the app server), checksum recorded on completion, no public URL
   - [ ] 8.3.c Bucket policies: the shop's credentials write only under `print-files/`; local MinIO policies mirror production
   - [ ] 8.3.d Upload size limits and allowed types
+  - [ ] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
+  - [ ] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
   - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 ---
@@ -753,6 +775,7 @@ run beside the build line rather than in it.
   - [ ] 9.1.c publish guard (pricing mode, price unless on request, shipping profile, tax class, a routable seller — **or**, for a unique item whose work has no location or export status, publish as enquiry-only — rights for reproductions)
   - [ ] 9.1.d guard: originals can never have channel `marketplace`
   - [ ] 9.1.e `afterChange` → `@engine/cache`'s `invalidate(tags)` (4.8), after the commit: editorial tags stale-while-revalidate, the product's price and availability tags expired immediately (Req 19.12)
+  - [ ] 9.1.g `products.images` `{media, caption}` with `roleAllowed('product')` and `provenanceAllowed('product')` on save, an `original` product has none, and no image from a `fix-owner` master publishes (C9 v1.4, 6.2.e)
   - [ ] 9.1.f **Check:** `publicId` is a unique integer sequence that accepts preserved legacy ids; slugs derive once and never re-derive; `status` is only `available · not-for-sale · archived` — *on hold* and *sold* are derived from reservations (C8 availability), never stored; public read is `publishedOrStaff`; the publish guard is tested.
 
 - [ ] **9.2 Merchandise schema: designs, product types, variants, locations, stock** · needs: 8.2, 9.1
@@ -761,7 +784,7 @@ run beside the build line rather than in it.
   - **Read** CONTENT-MODEL.md §2, COMMERCE.md §4, §8, ARCHITECTURE.md §7
   - _Requirements: 3.1, 4.4, 7.2, 12.4_
   - [ ] 9.2.a designs (work, crop, print file stored under `print-files/` in the masters bucket, aspect, derived print ceiling, story, archive number)
-  - [ ] 9.2.b product types (axes and options, price table per market, constraints, minimum ppi — 240 by default, D26 — fulfilment routes, shipping profile, HS code, materials, mockup scenes)
+  - [ ] 9.2.b product types (axes and options, price table per market, constraints, minimum ppi — 240 by default, D26 — fulfilment routes, shipping profile, HS code, materials, the room view (`roomView`, over the shared `room-plates` global — C9 v1.4))
   - [ ] 9.2.c variants (options, SKU pattern, market prices, weight/dimensions, fulfilment mapping)
   - [ ] 9.2.d locations and stock levels; `inventory_movements` append-only table declared in `db/inventory.ts`
   - [ ] 9.2.e **Check:** a product type with axes, a price table and constraints saves; a variant cannot exceed its design's print ceiling (enforced again in 15.4); `stockLevels.reserved` is not editable in the admin; `inventory_movements` exists as an engine table in the wave migration.
@@ -854,7 +877,7 @@ run beside the build line rather than in it.
   - _Requirements: 19.2_
   - [ ] 11.1.a Overlay primitives — dialog, sheet, drawer, toast — with focus trap, focus return and an inert background
   - [ ] 11.1.b Disclosure, tabs, combobox and radio group
-  - [ ] 11.1.c Form fields (label, hint, error), price, skip link, visually-hidden, and the storefront link — `next/link` with `prefetch={false}`, whose props omit `prefetch`: the storefront's one import of `next/link` (CONVENTIONS.md §12)
+  - [ ] 11.1.c Form fields (label, hint, error), price, skip link, visually-hidden, and the storefront link — `next/link` with `prefetch={false}`, whose props omit `prefetch`: the storefront's one import of `next/link` (CONVENTIONS.md §12) — and narrow 5.4.c's `no-next-link` exception (today the glob `engine/packages/ui/src/primitives/**/*{link,Link}*`, in `engine/tooling/next-config-parity/eslint-rules.mjs`) to the primitive's one file — the primitive lives at exactly `engine/packages/ui/src/primitives/link.tsx`, the one path 5.4.c's `no-next-link` exempts
   - [ ] 11.1.d Component tests for every interaction state and keyboard path
   - [ ] 11.1.e **Check:** dialog, sheet, drawer, tabs, disclosure, combobox, radio group, toast, form fields, price, skip link, visually-hidden and the storefront link (never prefetching) are keyboard-complete and screen-reader-labelled, unstyled and token-driven, with component tests for their interaction states.
 
@@ -1040,7 +1063,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.3, 4.4_
   - [ ] 15.4.a The presigned-PUT upload flow into the private bucket, recording pixels, ppi, colour profile and checksum
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
-  - [ ] 15.4.c The print ceiling per design, computed from its master at the product type's minimum ppi, stored and shown
+  - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
   - [ ] 15.4.e **Check:** masters are uploaded by presigned PUT straight to the private bucket and record pixels, ppi, colour profile and checksum; presigned read URLs expire and are logged; the shop's key is refused outside `print-files/` (a test against MinIO policies); a design's print ceiling is computed from its master at the product type's minimum ppi (240 by default: a 3543 px long edge → 375 mm) and stored; a test proves an over-ceiling variant is refused on save and on publish.
 
@@ -1123,6 +1146,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 17.2.a money module, rounding points, allocation + property tests
   - [ ] 17.2.b FX: rate source port (ECB reference rates by default, D27), daily refresh job, snapshots
   - [ ] 17.2.c market price resolution + "From" price for a destination
+  - [ ] 17.2.e D47's contracts first (ARC, opus): C6 `PaymentOptionView.charge`, C2 `PaymentOptionVM` and C7 `SessionInput.charge` show PayPal's own USD charge on an IDR order; a C1 minor version lets an estimate-only market skip the ladder and buffer; the shop's and `test`'s emporium configs follow (`charge: ["IDR"]`, eu/au/sg/row estimate markets); `commerce-check` proves a PayPal option on an IDR order carries a USD charge while the totals stay IDR
   - [ ] 17.2.d **Check:** safe-integer money arithmetic with the **engine's own exponents** (not ISO 4217's — a guard rejects any non-safe-integer at every boundary), the **named rounding points** with their methods — half-even, and largest-remainder allocation so parts sum to the whole (COMMERCE.md §3) — the **five price sources** (explicit, product-type table × multiplier, derived — FX + buffer + market price point — an accepted offer's agreed price, an issued quote's or proforma's line), "From" prices and the FX snapshot are pure and **property-tested** (no float, no rounding outside a named point, totals reproducible).
 
 - [ ] **17.3 Seller routing, destination and the rupiah rule** · needs: 3.1.a, 17.2
@@ -1387,7 +1411,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 22.4.a Gallery: a route folder and a skeleton for every supported surface, rendering its fixture view model to its surface brief
   - [ ] 22.4.b Shop: the same for every shop surface
   - [ ] 22.4.c Landmarks and heading order per surface, and route-map resolution in both locales (an e2e smoke test), with a non-ASCII slug among them, so a page and its `generateMetadata` resolve one record (CONVENTIONS.md §12)
-  - [ ] 22.4.e NotFound without JavaScript (DESIGN-SYSTEM.md §2): `(site)/[locale]/not-found/page.tsx` renders the designed NotFound surface in its own body — never `notFound()` — for the proxy's not-founds, which arrive with C13 `PROXY_NOT_FOUND_STATUS` (5.3), and exports no metadata: the localised title and description are the `not-found.tsx` boundary's `generateMetadata`, the one Next reads under a 404; that boundary renders the same surface, or Gone, for a miss only the database decides; `[...missing]` keeps `notFound()`
+  - [ ] 22.4.e NotFound without JavaScript (DESIGN-SYSTEM.md §2): `(site)/[locale]/not-found/page.tsx` renders the designed NotFound surface in its own body — never `notFound()` — for the proxy's not-founds, which arrive with C13 `PROXY_NOT_FOUND_STATUS` (5.3), and exports no metadata: the localised title and description are the `not-found.tsx` boundary's `generateMetadata`, the one Next reads under a 404; that boundary renders the same surface, or Gone, for a miss only the database decides; `[...missing]` keeps `notFound()` — and set `E2E_EXPECT_NOT_FOUND_BODY: '1'` in `.github/workflows/e2e.yml`'s Playwright env, so the status spec's non-empty-`<main>` cases run (5.4.e)
   - [ ] 22.4.d **Check:** every surface the app supports renders its fixture view model following its surface brief, with correct landmarks and heading order, and routes resolve through the route map in both locales; with JavaScript off, a path that names no page answers 404 and `noindex` on both apps with the brand's shell, `lang`, the NotFound surface, its title and its search form, which the status spec asserts (`E2E_EXPECT_NOT_FOUND_BODY=1`).
 
 - [ ] **22.5 Accessibility and performance baseline** · needs: 22.1, 22.2
@@ -1417,8 +1441,9 @@ state machines and `applyPaymentEvent()` above all.
   - **Read** `.claude/specs/indies-platform/reviews/3.4-senior-fe.md` (#3, #9); CONVENTIONS.md §6; DESIGN-SYSTEM.md §7; EXPERIENCE-SHOP.md §5; COMMERCE.md §1
   - _Requirements: 7.2, 19.1_
   - [ ] 22.7.a C10's next minor version (v1.4 after 4.3's v1.3): the product-type axes move to C1 (`AXIS_KEYS`; C2's `AxisKey` imports it — config is the leaf); `HrefParams['design']` and `['item']` (a variant product at the gallery) take the selection (axis → value), `href()` writes it as the query in `AXIS_KEYS` order, and `parsePublicPath()` carries it — one value per axis, value-shaped, unknown keys dropped — into the internal URL's query, since Next replaces a rewritten request's query and the GET form's selection otherwise never reaches the server render; the loader redirects a selection the product type does not take to its canonical URL (3.4 senior-fe #9)
-  - [ ] 22.7.b C2's next minor version (v1.4 after 4.3's v1.3): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
+  - [ ] 22.7.b C2's next minor version (v1.5 — 6.2.e took v1.4): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
   - [ ] 22.7.d C10: an old item link whose slug part does not decode as UTF-8 — `%FF`, a Latin-1 `caf%E9`, raw UTF-8 bytes in the request line — reaches the item route by its canonical id with a fixed ASCII slug no item has (C10 names it), never the bytes as asked, which Next cannot decode into the route's param and answers with a bare 500; so it gets the one 308, its query kept (MIGRATION.md §6; 4.1 senior-fe #12, 4.3 senior-fe #4)
+  - [ ] 22.7.e C2 v1.5 carries what 6.2.e found missing: `ImageVM.syntheticLabel` (not a boolean), a design's restoration steps on `ItemVM`, `PreviewVM` plates shaped on C9 `RoomPlate` (both framings × both crops); and C12 v1.5 `WorkSnapshot.master.objectBox`, its wording corrected; and ARC settles three room-plate questions from the imagery alignment: whether a plate photographed with a print placed in it is `composite` (C9 allows only `rendered` or `photograph`), whether room-scenes.md §10's recoloured-wall fallback is still a `photograph`, and whether the plate caption is one lexicon key or a per-plate field
   - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; `/product/1706-caf%E9` and `/product/1706-%FF` parse to item 1706 with the fixed slug (`strict-paths.test.ts`), and on a production build the status spec sees each answer 308, never 500 (two cases in `tests/e2e/status/`, HAR's file: proposed in the report, added at merge); the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
 
 ---
@@ -1578,8 +1603,8 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 11.1, 11.7_
   - [ ] 25.2.a Orders v2 approve and capture
   - [ ] 25.2.b Webhooks and refunds
-  - [ ] 25.2.c Never offered for IDR; `minSessionTtl` declared per method; the contract suite
-  - [ ] 25.2.d **Check:** Orders v2 approve/capture, webhooks and refunds pass the contract suite; PayPal is never offered for IDR.
+  - [ ] 25.2.c Never charges rupiah: on an IDR order PayPal is charged the one USD conversion D47 defines (shown before the choice, stored on the attempt with its FX snapshot, `PriceChanged` if the rate moves, refunds at the attempt's rate); `minSessionTtl` declared per method; the contract suite
+  - [ ] 25.2.d **Check:** Orders v2 approve/capture, webhooks and refunds pass the contract suite; PayPal never charges rupiah, and an IDR order's PayPal charge is D47's stored USD conversion.
 
 - [ ] **25.3 Xendit or DOKU adapter — only if chosen (D3)** · needs: 19.2 · 👤 the owner's choice (D3)
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W1
@@ -1825,7 +1850,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 31 — Shop: stories, the bag and checkout, order tracking · Shop · needs 21, 22 · ~3.5d
 
 **Goal:** the shop's buying half on real data, built to its briefs.
-**Done when:** the shop's design pages, stories, For Business, `/ig`, showroom and gift-card pages render on real data; a bag checks out in the sandbox in IDR only — by QRIS, or by VA following the payment-pending page; a guest tracks the order and a showroom pickup is confirmed.
+**Done when:** the shop's design pages, stories, the Partnership page (D36), `/ig`, showroom and gift-card pages render on real data; a bag checks out in the sandbox in IDR only — by QRIS, or by VA following the payment-pending page; a guest tracks the order and a showroom pickup is confirmed.
 **Waves:** W1 — 31.1, 31.2 · W2 — 31.3
 
 - [ ] **31.1 Design pages, stories, the quote page, `/ig`, showroom, gift cards** · needs: 21.1, 22.4
@@ -1866,7 +1891,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 32 — Shop: polish, buyers and the shop gate 👤 · Shop · needs 30, 31 · ~3.5d
 
 **Goal:** the shop end to end, run by real buyers, and the gate over the Shop stage.
-**Done when:** the 1.1.c shop journeys pass on a phone **inside the Instagram in-app browser** — a visitor opens a collection, configures the largest giclée the seed scan allows (≈ 37 cm on the long edge at 240 ppi, D26) with a teak frame and mount, sees it to scale, adds gift wrap and a voucher, pays by QRIS (or VA, following the payment-pending page) in the sandbox in IDR only, and tracks the order as a guest; a tourist switches ship-to to the Netherlands and sees euro prices and a duties estimate; a showroom QR opens the in-showroom mode; budgets pass; axe is clean; real buyers have run the journeys; the design gate passes.
+**Done when:** the 6.1.c shop journeys pass on a phone **inside the Instagram in-app browser** — a visitor opens a collection, configures the largest giclée the seed scan allows (its ceiling from the design's crop at 240 ppi, D26, C9 `printCeilingOf()`) with a teak frame and mount, sees it to scale, adds gift wrap and a voucher, pays by QRIS (or VA, following the payment-pending page) in the sandbox in IDR only, and tracks the order as a guest; a tourist switches ship-to to the Netherlands and sees each price as a euro estimate beside the exact rupiah (D47's default) and a duties estimate; a showroom QR opens the in-showroom mode; budgets pass; axe is clean; real buyers have run the journeys; the design gate passes.
 **Waves:** W1 — 32.1 · W2 — 32.2 · W3 — 32.3
 
 - [ ] **32.1 Shop polish and end-to-end** · needs: 30.2–30.4, phase 31
@@ -1997,7 +2022,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 35 — Gallery: polish, buyers and the gallery gate 👤 · Gallery · needs 34 · ~3.5d
 
 **Goal:** the gallery end to end, run by real buyers, and the gate over the Gallery stage.
-**Done when:** the 1.1.c gallery journeys pass on a phone — a visitor lands on a place page, filters Java maps under USD 2,000, zooms an item's verso, requests the price or reserves or buys it in the sandbox and gets the confirmation; an institution turns a cart into a proforma; a sold item shows its available alternative and "own a print of this map" and takes an alert — budgets pass on home, browse and item; axe is clean; real buyers have run the journeys; the design gate passes.
+**Done when:** the 6.1.c gallery journeys pass on a phone — a visitor lands on a place page, filters Java maps under USD 2,000, zooms an item's verso, requests the price or reserves or buys it in the sandbox and gets the confirmation; an institution turns a cart into a proforma; a sold item shows its available alternative and "own a print of this map" and takes an alert — budgets pass on home, browse and item; axe is clean; real buyers have run the journeys; the design gate passes.
 **Waves:** W1 — 35.1 · W2 — 35.2 · W3 — 35.3
 
 - [ ] **35.1 Gallery polish and end-to-end** · needs: 33.2–33.4, phase 34
@@ -2525,6 +2550,8 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — ✅ **5.3** (a2c60d1; branch 7792967, 1bb4fad, a2b6fb0, 097b843) — the proxy supplies `PROXY_USER_AGENT` when a request has none, answers its own not-found with `PROXY_NOT_FOUND_STATUS`, and passes `x-public-search` on the item route alone; a stale slug's 308 keeps its query; the boot check refuses a loopback `HOSTNAME`; a database outage is not a refused boot, in the log or `/api/health` (5.3.f, qa's phase 4 L1). Gate on the merge: `pnpm verify` 1020 passed. qa on `main`: PASS, no blocker or should-fix — both apps, no-UA and empty-UA, hostile queries (CRLF, `//evil.com`, `#`, 12k/20k) never an open redirect or header injection, `HOSTNAME=127.1`/`2130706433`/`0x7f.0.0.1` refused on Linux, status spec 14 passed, admin sign-in at 1280/393, six mutations each caught by the tests. Low: C13's `publicSearch` doc says "as the browser sent it" but Next re-encodes the query (ARC to reword); DEPLOYMENT.md §3 should say the boot check refuses after the bind (under pm2 a restart loop, fail-closed); Next's `x-middleware-rewrite` exposes internal paths (awareness).
+- 2026-09-30 — ✅ **phase 4** — app shells and the Cache Components spike. qa on merged `main` at 664b82f (CI green at ee5f7e4, run 36733869757): the build with a sentinel at `DATABASE_URL` saw 0 connections and holds no brand string; four production servers (ig, oei, test on both apps) each render name, logo, favicon, touch icon and manifest from their brand folder (bytes and `?v=` checked against the files) and Indonesian copy on the Indonesian page, 16 pages at 390/1280 px with axe 0 and no overflow; one gallery build (one BUILD_ID) serves two mastheads; `/admin` first user and sign-in on ig and oei, each brand's credentials 401 on the other; `/api/health` 200 on every server, and 503 with nothing leaked for a stopped, refusing, blackholed or wrong-password database or a missing one (not created); two processes racing `RUN_MIGRATIONS=1` left one `payload_migrations` row; route parity 41; the spike's verdict in ARCHITECTURE §9; `pnpm verify` with the database tests 1005 passed and planted client-safe violations each failing with their chain; revalidate and cron answering as specified, stale-then-fresh on `item:`, at once on `availability:`; robots `Disallow: /`; the status and smoke specs 61 passed; JS-off posts. Low findings: L1 health reporting `boot: refused` when only the database is down (→ 5.3.f), L2 two tests timing out under heavy load (HAR, 5.4). qa recommends pushing `main` → `production` before 5.1 stages anything (production is at d2c5786, 50 commits behind: no brand assets, no health wiring) — the owner's go-ahead per push. Phase 5 is orchestrated by another session (opened at 4ee594b).
 - 2026-09-30 — ✅ 4.6 (664b82f) — `/api/health` and `/api/x/cron/jobs` reach Payload only through `@engine/cms/instance`, loaded lazily after the request is read: one READ COMMITTED probe and a migrations count, each bounded to 2.5 s, single-flight with a 5 s memo; the queue counted with `runJobs`' filter and reported, never gating (`degraded` is a 200); jobs single-flight with 409 `busy`; `/api/x/revalidate` checks the bearer before the body, caps it at 64 KiB however it arrives, validates each tag and expires through `after()`; the placeholder at `@engine/http/unbuilt` (66 mounts, robots failing closed); the shell's touch icon and manifest from `ShellVM.assets`. Proven on production builds of the merged tree by the implementer and again by an independent senior-be review (`reviews/4.6-senior-be.md`, **sign off with should-fix**): a migration race leaving one `payload_migrations` row, a build with a sentinel at `DATABASE_URL` seeing 0 connections, 82/82 mounts loading under a hook refusing Payload, stale-then-fresh on `item:` and fresh-at-once on `availability:`. At merge the orchestrator added 4.6.b's lines (health 200 in `.github/e2e/smoke.spec.ts` and `smoke-artifact.sh`) and fixed review #1 — `databaseProbe()` now releases a failed connection with its error, so pg destroys it rather than pooling a stalled one (`cms/src/db/probe.test.ts`); `pnpm verify` with the database tests 1005 passed. Routed: #2 (the deploy agent's health timeout vs a long migration) → 5.1.c, #3 (crontab accepting 409) → 5.1.a; nits — an empty database reported `error` rather than `unmigrated` (42P01), a throw in the success branch giving Next's bare 500, the public body's counts, `jobs.run` without `sequential` (MED, with the first heavy task), distinct revalidate refusal reasons for the outbox. ARC at a later merge: C2 `ShellVM.assets.touchIcon`/`.manifest` required; DEPLOYMENT §7 on `checks.queue.lagSeconds`.
 - 2026-09-30 — ✅ 4.8 (46cf426) — its fix round (cb7e4b0, 6d5ebb8) answered the independent senior-db review: pool connect 5 s / query 60 s bounds (the advisory-lock wait exempt — a single migration statement over 60 s now fails, so long backfills batch), `disableCreateDatabase`, the `initializing` rejection observed, a thrown operation's tags kept, a `req` with an open transaction refused and no collector left on its context, `batch.context()` for a jobs run, `REVALIDATE_ORIGIN` for the loopback flush (`.env.example`, DEPLOYMENT §8, 5.1.a); the real-database proofs in `instance.db.test.ts` (create, update, rollback, `disableTransaction`, a nested write, a held pool, a missing database) now run in CI's e2e step. `pnpm verify` with the database tests: 947 passed; CI run 36723640064 green. Held: `databaseProbe()` releasing its client with the error (SCH, `db/probe.ts`); Payload reporting a failed `COMMIT` as success (S6, SCH before 10.x).
 - 2026-09-30 — The independent senior-db review of 4.8 (`reviews/4.8-senior-db-independent.md`): **sign off with should-fix** — the self-authored review's "sign off" should have read so. Correct: `cms()`, `cmsPool()`, the tags, the bounds, the in-request `after()` path. Found against real Payload 3.90.2: a committed write followed by a throw drops its tags (S1); a `req` passed to `operation()` keeps tags before commit and poisons its context, so a jobs run cannot work (S2); no pool connect or query timeout (S3); a missing database is created and boots green (S4); a failed first connect kills a bare Node process (N1); flush over loopback via `REVALIDATE_ORIGIN` (S5); the database test never runs in CI (T1). **4.8 reopened** with 4.8.e–f, back to its implementer; it lands with or before 4.6. Held: a failed `COMMIT` reported as success by Payload (S6 — the last-admin trigger fires at `COMMIT`, so a refused save would show "saved"; SCH to test it through Payload before 10.x); 5.1.a creates brand roles without `CREATEDB`.

@@ -81,9 +81,8 @@ route it posts to from outside a request, `/api/x/revalidate`, is WEB's.
 **One e2e folder: `tests/e2e/`** (TASKS.md 4.3.d) — where every Playwright project in
 `playwright.config.ts` takes its specs from; outside `engine/`, so a spec may name a real
 brand (CONVENTIONS.md §1). A lane's specs live in `tests/e2e/<area>/`, owned by the task
-that writes them; the rest is QA's. Nothing else holds a spec: 4.1's status spec
-(`engine/apps/gallery/e2e/`) and 4.4's smoke (`.github/e2e/`, where 4.4 put it because it
-owned `.github/**`) move to `tests/e2e/status/` and `tests/e2e/smoke/` (TASKS.md 5.4).
+that writes them; the rest is QA's. Nothing else holds a spec: 4.1's status spec and 4.4's
+smoke live in `tests/e2e/status/` and `tests/e2e/smoke/` (moved there by TASKS.md 5.4).
 
 ### A directory can hold several agents' work — ownership follows the subdirectory
 
@@ -302,7 +301,7 @@ floor and the money rules quietly stop being observed (KOI). So:
 Some tasks cannot be finished by an agent, and the plan says so rather than
 letting them block silently. They are marked **👤 owner** in `TASKS.md`:
 
-- booking the photographer and the pilot shoot, the native Indonesian copywriter,
+- the owner's pilot photographs (D19 — no photographer), the native Indonesian copywriter,
   the Indonesian designers for the cultural review, and the buyers for the
   prototype test and usability runs (the Design, Gallery and Shop stages),
 - picking the shared base and each brand's accents (phase 13), and signing off the

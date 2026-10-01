@@ -75,7 +75,7 @@ describe.skipIf(!stackUp)(
           // best-effort cleanup
         }
       }
-    })
+    }, 60_000) // two DROP DATABASEs through docker: slow under load (qa 5.4 re-gate, L1)
 
     it('hashes two identical schemas equal, then drifted, then equal again', () => {
       for (const db of [dbA, dbB]) {
@@ -98,17 +98,17 @@ describe.skipIf(!stackUp)(
       psql(dbB, 'ALTER TABLE t DROP COLUMN extra')
       const after = compareSchemas([dbA, dbB])
       expect(after.allEqual).toBe(true)
-    }, 20000)
+    }, 120_000) // two databases, three dumps: slow under a loaded machine (qa 5.4 L5)
 
     it('reports "nothing to compare" for a single database', () => {
       const { nothingToCompare } = compareSchemas([dbA])
       expect(nothingToCompare).toBe(true)
-    })
+    }, 60_000)
 
     it('hashDatabase is stable across two dumps of the same schema', () => {
       const first = hashDatabase(dbA)
       const second = hashDatabase(dbA)
       expect(first.hash).toBe(second.hash)
-    })
+    }, 60_000)
   },
 )

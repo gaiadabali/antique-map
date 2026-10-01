@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { writeFixtureApp, writeFixtureManifest } from './fixtures.mjs'
+import { writeFixtureApp, writeFixtureHttp, writeFixtureManifest } from './fixtures.mjs'
 import { checkRouteParity } from './route-parity.mjs'
 
 const repoRoot = process.cwd()
@@ -15,7 +15,10 @@ afterEach(() => {
   sandbox = undefined
 })
 
-describe('checkRouteParity — degrades explicitly with no scaffolded apps', () => {
+// Each case starts a Vite server: 5 s is too short on a loaded machine (qa's phase 4 gate, L2).
+const LOADED = { timeout: 60_000 }
+
+describe('checkRouteParity — degrades explicitly with no scaffolded apps', LOADED, () => {
   it('reports the manifest-only checks and degrades the per-app ones', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const manifestAbsPath = writeFixtureManifest(sandbox)
@@ -44,7 +47,7 @@ describe('checkRouteParity — degrades explicitly with no scaffolded apps', () 
     expect(result.collectionSlugs.length).toBeGreaterThan(1) // the stubs count (3.5.a)
   })
 })
-describe('checkRouteParity — the planted violations (2.2.i)', () => {
+describe('checkRouteParity — the planted violations (2.2.i)', LOADED, () => {
   it('flags an engine route shadowing a reserved segment, and clears once removed', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const clean = writeFixtureManifest(sandbox)
@@ -70,10 +73,11 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const manifestAbsPath = writeFixtureManifest(sandbox)
     const appsAbsDir = join(sandbox, 'apps')
+    const http = writeFixtureHttp(sandbox)
     writeFixtureApp(appsAbsDir, 'fixture-storefront', {
       mountedRoutes: [{ path: '/api/health', exports: ['GET'] }], // cart route missing
     })
-    const violated = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
+    const violated = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir, ...http })
     expect(violated.violations).toEqual([
       expect.objectContaining({
         kind: 'missing-route-file',
@@ -88,7 +92,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
         { path: '/api/x/commerce/cart/[[...path]]', exports: ['GET', 'POST'] },
       ],
     })
-    const after = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
+    const after = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir, ...http })
     expect(after.violations).toEqual([])
   })
 
@@ -96,13 +100,14 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const manifestAbsPath = writeFixtureManifest(sandbox)
     const appsAbsDir = join(sandbox, 'apps')
+    const http = writeFixtureHttp(sandbox)
     writeFixtureApp(appsAbsDir, 'fixture-storefront', {
       mountedRoutes: [
         { path: '/api/health', exports: ['GET'] },
         { path: '/api/x/commerce/cart/[[...path]]', exports: ['GET'] }, // missing POST
       ],
     })
-    const result = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
+    const result = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir, ...http })
     expect(result.violations).toEqual([
       expect.objectContaining({ kind: 'method-mismatch', missing: ['POST'], extra: [] }),
     ])
@@ -112,6 +117,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const manifestAbsPath = writeFixtureManifest(sandbox, { matcher: ['/((?!api/).*)'] })
     const appsAbsDir = join(sandbox, 'apps')
+    const http = writeFixtureHttp(sandbox)
     writeFixtureApp(appsAbsDir, 'fixture-storefront', {
       mountedRoutes: [
         { path: '/api/health', exports: ['GET'] },
@@ -119,7 +125,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
       ],
       matcher: ['/different-matcher'],
     })
-    const violated = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
+    const violated = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir, ...http })
     expect(violated.violations).toEqual([
       {
         kind: 'proxy-matcher-mismatch',
@@ -136,7 +142,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
       ],
       matcher: ['/((?!api/).*)'],
     })
-    const after = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
+    const after = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir, ...http })
     expect(after.violations).toEqual([])
   })
 
@@ -144,6 +150,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
     sandbox = mkdtempSync(join(tmpdir(), 'rp-'))
     const manifestAbsPath = writeFixtureManifest(sandbox)
     const appsAbsDir = join(sandbox, 'apps')
+    const http = writeFixtureHttp(sandbox)
     writeFixtureApp(appsAbsDir, 'fixture-storefront', {
       mountedRoutes: [
         { path: '/api/health', exports: ['GET'] },
@@ -151,7 +158,7 @@ describe('checkRouteParity — the planted violations (2.2.i)', () => {
       ],
       noProxy: true,
     })
-    const result = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir })
+    const result = await checkRouteParity(repoRoot, { manifestAbsPath, appsAbsDir, ...http })
     expect(result.violations).toEqual([])
     expect(result.degraded.some((d) => d.includes('no src/proxy.ts'))).toBe(true)
   })

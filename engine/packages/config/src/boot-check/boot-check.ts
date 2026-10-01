@@ -7,7 +7,9 @@
  *
  * `bootCheck()` itself is pure — an environment and a config in, a report out. `runBootCheck()`
  * loads the brand first, and takes an optional database probe for the checks that need one
- * (reachable; READ COMMITTED, which `reserve()`'s lock order assumes — ARCHITECTURE.md §6).
+ * (reachable; READ COMMITTED, which `reserve()`'s lock order assumes — ARCHITECTURE.md §6). A
+ * database that does not answer is an outage, not a refusal: the report fails, but it says the
+ * database is unavailable, never that the boot check refused to start (`isRefused()`, 5.3.f).
  * This package imports no database driver: the caller, which owns the connection, passes the
  * probe (TASKS.md 3.2, 4.1).
  */
@@ -16,6 +18,7 @@ import { describeError } from '../loader/redact'
 import type { BrandConfig } from '../schema'
 import { deploymentEnvironment } from './environment'
 import { collectFindings, type BootFinding, type DeploymentEnvironment } from './findings'
+import { checkHostname } from './hostname'
 import { checkPlatform, type LoadersSource } from './platform'
 import { checkProviderSecrets } from './provider-secrets'
 
@@ -51,6 +54,7 @@ export function bootCheck(input: BootCheckInput): BootReport {
   const findings = collectFindings()
   const { env, config } = input
   const environment = deploymentEnvironment(env, config, findings)
+  checkHostname(env, findings)
   if (input.perStorefront && environment !== 'local') {
     findings.refuse(
       'BRAND',
@@ -75,8 +79,9 @@ export async function checkDatabase(probe: DatabaseProbe): Promise<BootFinding[]
     ]
   } catch (error) {
     // A driver's message can quote the connection string; its credentials never reach the log.
+    // An outage, not a refusal: the configuration may be sound and the database merely down.
     const message = `the database did not answer: ${describeError(error)}`
-    return [{ subject: 'DATABASE_URL', message }]
+    return [{ subject: 'DATABASE_URL', message, outage: true }]
   }
 }
 
@@ -109,15 +114,27 @@ export async function runBootCheck(
   )
 }
 
+/**
+ * The report refuses this configuration: a problem that is not an outage. A report whose only
+ * problems are outages (the database did not answer) fails, but the process booted.
+ */
+export function isRefused(bootReport: BootReport): boolean {
+  return bootReport.problems.some((problem) => problem.outage !== true)
+}
+
 /** Throws `BootCheckError` — whose message lists every problem — unless the report is clean. */
 export function assertBootable(bootReport: BootReport): void {
   if (!bootReport.ok) throw new BootCheckError(bootReport)
 }
 
 export function formatBootReport(bootReport: BootReport): string {
+  const passed = `boot check passed (${bootReport.environment}, loaders from ${bootReport.loadersSource})`
+  const unavailable = [...new Set(bootReport.problems.map((problem) => problem.subject))]
   const head = bootReport.ok
-    ? `boot check passed (${bootReport.environment}, loaders from ${bootReport.loadersSource})`
-    : `boot check refused to start (${bootReport.environment}): ${bootReport.problems.length} problem(s)`
+    ? passed
+    : isRefused(bootReport)
+      ? `boot check refused to start (${bootReport.environment}): ${bootReport.problems.length} problem(s)`
+      : `${passed}, but ${unavailable.join(', ')} is unavailable: an outage, not a refused start`
   const lines = (label: string, findings: readonly BootFinding[]) =>
     findings.map((finding) => `  ${label} ${finding.subject}: ${finding.message}`)
   return [head, ...lines('✗', bootReport.problems), ...lines('!', bootReport.warnings)].join('\n')

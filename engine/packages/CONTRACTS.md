@@ -14,14 +14,14 @@ each contract is one module, re-exported from the entry named below.
 | # | Contract | Entry | Files | Implemented by | Consumed by | Version |
 | - | -------- | ----- | ----- | -------------- | ----------- | ------- |
 | C1 | Brand config schema, module registry, catalogue and listing vocabularies | `@engine/config/schema`; zod-free locales and currencies at `@engine/config/constants` | `config/src/schema.ts`, `config/src/schema/**`, `config/src/constants/**` | PLT (loader, `validateBrandConfigs()`, `bootCheck()`), BRD (brand folders) | every lane | v1.2 |
-| C2 | Surfaces and view models, loader signatures, typed fixtures | `@engine/view-models`, `@engine/view-models/fixtures` | `view-models/src/**` (except `blocks*.ts`) | WEB (`@engine/loaders`; state fixtures, TASKS.md 11.4) | WEB, UXG, UXE, SEO, DOM, NTF | v1.3 |
+| C2 | Surfaces and view models, loader signatures, typed fixtures | `@engine/view-models`, `@engine/view-models/fixtures` | `view-models/src/**` (except `blocks*.ts`) | WEB (`@engine/loaders`; state fixtures, TASKS.md 11.4) | WEB, UXG, UXE, SEO, DOM, NTF | v1.4 |
 | C3 | Token contract and the brand-overridable subset | `@engine/ui/tokens/contract` | `ui/src/tokens/contract.ts` | UXG, UXE (app defaults), WEB (token pipeline, TASKS.md 11.2) | UXG, UXE, BRD, ADM | v1.1 |
 | C4 | Content blocks: the frozen list and prop shapes | `@engine/view-models` | `view-models/src/blocks.ts`, `blocks-check.ts` | SCH (Payload blocks), UXG and UXE (renderers) | SCH, UXG, UXE, WEB | v1.1 |
 | C5 | Money: `Money`, `PriceSet`, rounding points, the pricing step | `@engine/domain/money` | `domain/src/money/contract.ts`, `domain/src/contracts/{pricing,price-sources}.ts`; shared by C5–C8: `domain/src/contracts/{scalars,type-assertions,storage}.ts` (`@engine/domain/storage`) | DOM | DOM, PAY, WEB, apps, C2 | v1.2 |
 | C6 | Commerce API: requests, responses, problems, capability links | `@engine/domain/api`; values at `@engine/domain/retailers`, `@engine/domain/want-lists`, `@engine/domain/links` | `domain/src/contracts/{api,cart,checkout,paying,orders,leads,links,services,after-sale,retailers,want-lists,requests,results}.ts` | DOM (handlers in `http/src/commerce/**`) | apps, WEB, C2, C13 | v1.1 |
 | C7 | Provider interfaces and normalised events | `@engine/payments/contract`, `@engine/shipping/contract`, `@engine/fulfilment/contract` | `{payments,shipping,fulfilment}/src/contract.ts`, `payments/src/contract/**`, `domain/src/contracts/payment-vocabulary.ts` | PAY, LOG | PAY, LOG, DOM | v1.1 |
 | C8 | State machines, `reserve()`, `applyPaymentEvent()`, domain events | `@engine/domain/machines/*`, `@engine/domain/reservations`, `@engine/domain/transactions`, `@engine/domain/events` | `domain/src/*/machine.ts`, `domain/src/reservations/contract.ts`, `domain/src/contracts/{machine-types,reservation-types,transactions,domain-events,apply-payment-event}.ts` | DOM | DOM, PAY, ADM, NTF, WEB, C2 | v1.1 |
-| C9 | Media artefacts: derivatives, IIIF, masters, print files | `@engine/media/contract` | `media/src/contract.ts` | MED | MED, WEB, UXG, UXE, MIG, SIS, LOG, C11 | v1.1 |
+| C9 | Media artefacts: derivatives, IIIF, masters and intake keys, print files; image roles and provenance; what the intake measures and the print ceiling; the room plates | `@engine/media/contract` | `media/src/contract.ts`, `media/src/contract/**` | MED | MED, WEB, UXG, UXE, MIG, SIS, LOG, SCH, ADM, C2, C11 | v1.4 |
 | C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.3 |
 | C11 | Analytics events: names and props | `@engine/analytics/events` | `analytics/src/events.ts`, `analytics/src/events/**` | SEO | every surface, DOM (the outbox) | v1.1 |
 | C12 | Sister archive API: work snapshot, the prints feed, webhooks both ways | `@engine/sister/contract` | `sister/src/contract.ts`, `sister/src/contract/**` | SIS | SIS, SCH, apps | v1.1 |
@@ -156,7 +156,14 @@ so it is breaking and also needs a redirect.
   an engine table's alike, never an `engine` schema — so the domain's SQL names them unqualified.
 - **C9.** Keys are content-addressed and versioned. A pipeline change raises
   `DERIVATIVE_VERSION` and never overwrites a key. `masterKey()` is what C12 snapshots
-  reference.
+  reference: a capture with no work yet — the owner's pilot set — or none at all lands under
+  `intakeMasterKey()`, and a work's is filed under `masterKey()` once its work exists, the one
+  move a master makes. An image's role and provenance are set once, at intake, on the master and
+  on its media, never on the row that places it; `primary` is no image's role — a page's primary
+  is `primaryImageIndex()`'s — and what may be synthetic where is `provenanceAllowed()`'s. A print
+  ceiling is `printCeilingOf()` a design's crop in its master's pixels, never a file's long edge. A
+  room plate's geometry is in its crop's own pixels, and a print is hung on it through `placeArt()`
+  alone, by the preview and the mockups alike.
 - **C10.** Segments are public URLs, and the default locale stays unprefixed. `href()` and
   `parsePublicPath()` stay inverses, so one state has one URL: a segment is read only in the
   spelling `href()` writes (`encodeURIComponent`), never another percent-encoding of it, never
@@ -714,3 +721,62 @@ so it is breaking and also needs a redirect.
     mode (DEPLOYMENT.md §3; senior-be #8, measured); the 5xx series as an evaluable rule
     (DEPLOYMENT.md §7; senior-be #9); a capability path kept out of every log (ARCHITECTURE.md §13;
     senior-be #6); D44 cited for the Markdown exemption (CONVENTIONS.md §1).
+- **2026-10-01**: **v1.4 of C9 and C2** (TASKS.md 6.2.e, before SCH builds `media`, `masters`,
+  `works`, `products` and `locations` in 8.2, 8.3, 9.1 and 9.2): the content-model gaps 6.2's
+  imagery work found (`docs/design/imagery/README.md`, follow-ups 1–4). Every change is additive —
+  new names, a union that only widens, v1.1's keys and arithmetic unchanged — and no lane has built
+  on C9 yet, so nothing breaks. C9 goes from v1.1 to v1.4 by the release rule above.
+  - **C9** — split into `contract.ts` (the keys) and `contract/{roles,masters,room-plates}.ts`,
+    every name re-exported from `@engine/media/contract` as before:
+    - **Roles.** `IMAGE_ROLES` keeps v1.1's nine, in order, and appends a product's and a
+      location's — `flat`, `lifestyle`, `packaging`, `showroom` — so `ImageRole`, and with it C2's
+      `ImageVM.role` and C11's `item.zoomed.imageRole`, can say what a product's image is.
+      `WORK_IMAGE_ROLES` (manifest order), `CONDITION_ROLES`, `PRODUCT_IMAGE_ROLES` (the product
+      page's order: `in-room`, `flat`, `detail`, `lifestyle`, `scale`, `packaging`, `showroom`),
+      `LOCATION_IMAGE_ROLES` and `LOCATION_IMAGE_AREAS`, and `MEDIA_ROLES` — `media.role`'s value
+      list: every role but `primary`, plus `room-plate` and `editorial` — with `ROLES_BY_SUBJECT`
+      and `roleAllowed()`. `primary` is a designation, no image's role, and leaves at the next major
+      version.
+    - **Provenance.** `MEDIA_PROVENANCES` (`photograph`, `composite`, `rendered`, `ai-generated` —
+      it replaces KOI's `aiGenerated` flag), `isSynthetic()`, `SYNTHETIC_LABEL` and
+      `provenanceAllowed()`: on a work only a labelled in-room view may be synthetic and nothing is
+      AI-generated; a location's photographs are real; a product's images may be anything,
+      labelled; a room plate is rendered or photographed.
+    - **The primary and page order.** `primaryImageIndex()` — a work's first photographed recto,
+      never a photograph of its own, a detail or a synthetic image; a product's first photographed
+      in-room or flat image, a labelled mockup until one exists — and `orderImages()`, which the
+      manifest, the loaders and the sister snapshot share.
+    - **Masters.** `intakeMasterKey()` (`masters/intake/<brand>/<batch>/<sha256>.<ext>`, which checks
+      every segment) and `intakeManifestKey()` for the owner's pilot set, which arrives before any
+      work — and before the `masters` collection — exists (OA3); a work's capture is filed under
+      `masterKey()` once its work exists, so C12's snapshots still name a `masterKey()`.
+      `masterKey()`'s `checksum` is documented as the file's SHA-256 in 64 lower-case hex digits,
+      the form `intakeMasterKey()` checks and filing carries over.
+      `PixelBox`, `PixelPoint` and `boxFits()`; `MasterRole`, `CAPTURE_TIERS`, `INTAKE_VERDICTS`
+      with `publishableVerdict()`, `RETOUCHING_STATES`, `objectPpi()`, and `IntakeEntry` /
+      `IntakeManifest`, the record a `masters` row is made from.
+    - **The print ceiling.** `MIN_PRINT_PPI` and `printCeilingMm()` move to `contract/masters.ts`
+      unchanged in value and arithmetic, and say what their input is: the long edge of what is
+      printed — a design's crop, the object's box for a whole sheet — never the master file's
+      long edge. `printCeilingOf()` reads a region. The v1.1 comment's "3543 px at 240 ppi →
+      375 mm" was the frame, not the sheet (ARCHITECTURE.md §7, MIGRATION.md §9 follow).
+    - **Restoration.** `PRINT_RESTORATIONS`, a design's disclosed restoration note.
+    - **Room plates.** `RoomPlate`, `RoomPlateCrop`, `ROOM_FRAMINGS`, `ROOM_CROPS`, `ROOM_ANCHORS`,
+      `framingFor()` and `placeArt()`: one shared set, held by the new `room-plates` global
+      (CONTENT-MODEL.md §6), which the preview (22.7, 30.4) and the wizard's mockups (24.1.c) place
+      a print on alike.
+  - **C2** — no shape of its own changes; `ImageVM.role` widens with C9's `ImageRole`, and two
+    fixtures take the roles: the reproduction's flat image is `flat`, never `primary`
+    (`item-variants`), and the original's primary is its recto under the role `recto` (`_item`).
+    C11's `item.zoomed.imageRole` widens with it too; C11's file does not change and it stays at
+    v1.1.
+  - **In the docs of record:** CONTENT-MODEL.md (§1 works' and products' images, §2 designs'
+    restoration and crop, product types' `roomView`, locations' images, §6 media, masters, the
+    `room-plates` global and the pilot set, §9 the guards, §10 the seed); ARCHITECTURE.md §7;
+    MIGRATION.md §9; requirements.md 4.4; EXPERIENCE-GALLERY.md §5 and EXPERIENCE-SHOP.md §4, §8.
+
+  Announced to every lane in C9's and C2's "Consumed by" columns, SCH and ADM newly among C9's.
+  What each lane now builds: SCH, the fields and guards CONTENT-MODEL.md names (8.2, 8.3, 9.1,
+  9.2) and the `room-plates` global's stub; MED, the intake keys and filing (8.3, 15.4) and the
+  ceiling from the crop (15.4.c); WEB, `primaryImageIndex()` and `orderImages()` in the loaders;
+  ARC, C2's `PreviewVM` carrying `RoomPlate` (22.7).

@@ -3,23 +3,31 @@
 // whole by `validateBrandConfigs()` (C1, `@engine/config/validate`) against the app that renders
 // it, with that app's real `engine/apps/<app>/src/supports.ts`. The apps' own `supports.test.ts`
 // check the same from inside each app; this is the one gate that sees every brand at once.
+// It then checks each brand's copy against the app's message keys (TASKS.md 6.3.e, ./copy.mjs).
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
+import { join } from 'node:path'
 
+import { checkBrandsCopy, loadCopyKeys } from './copy.mjs'
 import { ENGINE_REPO_ROOT, loadSupports } from './supports.mjs'
 import { withTsRunner } from './ts-runner.mjs'
 
+/** `@engine/i18n/copy`'s source, loaded by path: no tooling package depends on `@engine/i18n`. */
+const I18N_COPY = join(ENGINE_REPO_ROOT, 'engine', 'packages', 'i18n', 'src', 'copy.ts')
+
 /**
  * Loads what the gate checks with: `validateBrandConfigs()` and `formatIssue()` from the package
- * entry (resolved the way this workspace package resolves its devDependency) and each app's
- * `supports`, through one headless-Vite TS runner.
+ * entry (resolved the way this workspace package resolves its devDependency), each app's
+ * `supports`, `checkCopy()` and each app's copy keys, through one headless-Vite TS runner.
  */
 export async function loadBrandChecks() {
   const entry = createRequire(import.meta.url).resolve('@engine/config/validate')
   return withTsRunner(ENGINE_REPO_ROOT, async (loadModule) => {
     const { validateBrandConfigs, formatIssue } = await loadModule(entry)
     const { supports, apps } = await loadSupports(loadModule)
-    return { validateBrandConfigs, formatIssue, supports, apps }
+    const { checkCopy } = await loadModule(I18N_COPY)
+    const keys = await loadCopyKeys(loadModule, apps)
+    return { validateBrandConfigs, formatIssue, supports, apps, checkCopy, keys }
   })
 }
 
@@ -35,11 +43,13 @@ function storefrontIn(file) {
 
 /**
  * Checks every brand config under `repoRoot` with `checks` (from `loadBrandChecks()`, or a
- * test's own). Returns `{ ok, passed, problems, results }`: one `passed` line per clean file,
- * naming the app whose supports it was checked against, and one `problems` line per issue,
- * naming the brand, the file and the field.
+ * test's own), then each clean config's copy folder. Returns `{ ok, passed, problems, results }`:
+ * one `passed` line per clean file, naming the app whose supports it was checked against, and
+ * one per clean copy folder, naming the app × locales it was checked for; one `problems` line
+ * per issue, naming the brand, the file and the field (a copy issue: the app, locale and key).
  */
-export function checkBrands(repoRoot, { validateBrandConfigs, formatIssue, supports, apps = {} }) {
+export function checkBrands(repoRoot, checks) {
+  const { validateBrandConfigs, formatIssue, supports, apps = {} } = checks
   const report = validateBrandConfigs({ repoRoot, supports })
   const passed = []
   const problems = report.results.length === 0 ? ['no brand config found (no <brand>/site/)'] : []
@@ -53,5 +63,8 @@ export function checkBrands(repoRoot, { validateBrandConfigs, formatIssue, suppo
     const against = app ? `engine/apps/${app}/src/supports.ts` : 'its app’s supports'
     passed.push(`${result.name} (${result.brand}, against ${against})`)
   }
+  const copy = checkBrandsCopy(report.results, checks)
+  passed.push(...copy.passed.map((line) => `copy ${line}`))
+  problems.push(...copy.problems)
   return { ok: report.ok && problems.length === 0, passed, problems, results: report.results }
 }

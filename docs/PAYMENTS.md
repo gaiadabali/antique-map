@@ -268,8 +268,28 @@ supports all of these; the table is what each brand's config starts with.
 | ------ | -------------------- | --------------- | ----- |
 | **IG · Singapore** | `stripe` (cards, Apple/Google Pay, PayNow, iDEAL/SEPA) · `bank-transfer` (proforma, USD/EUR/SGD) · `paypal` (optional) | USD by default; EUR/SGD/AUD where priced | Stripe Invoicing / Payment Links for inquire → pay; above ~USD 5–10k steer to bank transfer |
 | **IG · Indonesia** (if Jakarta stock is sold domestically) | `midtrans` (Mandiri/BNI/BRI VA for high value, cards in IDR) · `bank-transfer` (IDR) | IDR only | |
-| **OEI · Indonesia** | `midtrans` (QRIS, GoPay, ShopeePay, OVO, DANA, VA, cards, Alfamart/Indomaret, Akulaku/Kredivo) · `bank-transfer` (trade/B2B) · `paypal` (international buyers, USD) | IDR (PayPal: USD) | the showroom's QRIS on the same Midtrans account |
-| **OEI · Singapore** (optional, v2) | `stripe` | buyer currency | international orders fulfilled by print-on-demand abroad |
+| **OEI · Indonesia** | `midtrans` (QRIS, GoPay, ShopeePay, OVO, DANA, VA, cards, Alfamart/Indomaret, Akulaku/Kredivo) · `bank-transfer` (trade/B2B) · `paypal` (international buyers, USD) | IDR for every price, total and card charge; PayPal alone in USD, converted from the rupiah total at the payment step (D47's default, below) | the showroom's QRIS on the same Midtrans account |
+| **OEI · Singapore** (optional, v2) | `stripe` | buyer currency | international orders fulfilled by print-on-demand abroad; export markets then get price lists of their own |
+
+**The shop's buyer abroad, at launch — D47's default** (COMMERCE.md §3). The
+Indonesian PT prices and charges in rupiah (`charge: ["IDR"]`), for Indonesian and
+export destinations alike:
+
+| What the buyer sees | Exact or "≈" | Where it comes from |
+| ------------------- | ------------ | ------------------- |
+| the rupiah price and total | **exact** — what a card is charged, foreign cards included, and what every document and the tax export read | the one IDR price list |
+| the market's currency — EUR, AUD, SGD or USD by ship-to | **"≈"**, display only, whole units, never charged | the rupiah at the day's reference rate, no buffer (C5 `PriceSet` `converted`) |
+| PayPal's charge, in USD | **exact**, from the payment step on | the order's rupiah total converted once at the day's rate plus the brand's USD buffer, half-even to the cent (`fx-conversion`), shown on the PayPal option before the buyer picks it and stored on the payment attempt as its charge, with its FX snapshot |
+
+So PayPal is offered for a rupiah order, but never asked to charge rupiah:
+`capabilities()` answers `chargeCurrency: 'USD'` for it, the domain converts the
+total once when it starts the attempt, and the attempt's `charge` is that dollar
+figure while the order stays in rupiah. A refund of it is the refunded rupiah at
+the attempt's own rate, never the day's, and never above what the attempt took.
+Which methods a buyer abroad is offered is routing's (§3); the card and PayPal are
+the two these defaults expect. That the PT may take US dollars through PayPal for
+an export sale, and whether PayPal's conversion carries a buffer, are the adviser's
+and the owner's to confirm (D2, D47).
 
 **Fees at the time of research** (for the config's method ordering, not for
 display): Midtrans cards 2.9% + IDR 2,000, VA IDR 4,000, QRIS 0.7%,
