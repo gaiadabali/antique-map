@@ -77,6 +77,15 @@ export const ITEM_KEYS = defineMessages({
   'image.role.in-room': 'In a room',
   'image.role.scale': 'To scale',
   'image.role.showroom': 'In the showroom',
+  // where in a location a photograph was taken, in the visit page's order (C9
+  // LOCATION_IMAGE_AREAS, media/src/contract/roles.ts:78; TASKS.md 6.3.i)
+  'image.area.street': 'Street',
+  'image.area.entrance': 'Entrance',
+  'image.area.wide': 'Inside',
+  'image.area.wall': 'Wall',
+  'image.area.counter': 'Counter',
+  'image.area.vignette': 'Close-up',
+  'image.area.making': 'Making',
   // sister links (BRANDS.md §5; C2 SisterLinkVM)
   'sister.prints': 'Own a print of this map',
   'sister.printsFrom': 'Prints of this map from {sister}',
