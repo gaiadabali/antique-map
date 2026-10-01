@@ -100,6 +100,10 @@ describe('check:brands on this repository', () => {
 
   it('loads each app’s copy keys from its keys.ts and shell messages, as imported directly', () => {
     expect(loaded.keys).toEqual(direct.keys)
+    expect(loaded.lexicon).toEqual({
+      gallery: Object.keys(galleryLexicon),
+      emporium: Object.keys(emporiumLexicon),
+    })
     expect(loaded.keys.gallery['status.onHoldUntil']).toBe('On hold until {date}')
   })
 
@@ -117,6 +121,7 @@ describe('check:brands on this repository', () => {
     expect(passed.map((line) => line.split(' ')[0])).toEqual([
       ...COMMITTED,
       ...COPY.map(() => 'copy'),
+      'overflow', // the synthetic brand's +30% rule (6.3.m, ./overflow.test.mjs)
     ])
     expect(passed).toContain(
       'test/site/brand.emporium.json (test, against engine/apps/emporium/src/supports.ts)',
@@ -133,6 +138,7 @@ describe('check:brands on this repository', () => {
     expect(cli.stdout.trim().split('\n')).toEqual([
       ...COMMITTED.map((file) => expect.stringMatching(new RegExp(`^check-brands: ok ${file} `))),
       ...COPY.map((dir) => expect.stringMatching(new RegExp(`^check-brands: ok copy ${dir} `))),
+      expect.stringMatching(/^check-brands: ok overflow test\/site\/copy /),
     ])
   }, 180_000) // runs the Vite runner: slow under a loaded machine (qa 5.4 re-gate, L1)
 })
