@@ -8,5 +8,10 @@
     { "user": "test-media-writer", "policy": "media-writer", "bucket": "test-media" },
     { "user": "test-masters-origin", "policy": "masters-origin", "brand": "test" },
     { "user": "test-masters-outlet", "policy": "masters-outlet", "brand": "test" }
-  ]
+  ],
+  "mastersCors": {
+    "$comment": "Each storefront's admin origin (its SITE_URL) may send the presigned PUT of a master (DEPLOYMENT.md §2). A worktree's port is allocated per phase and lane, so locally any loopback port is admitted, and nothing else. MinIO's community edition implements no per-bucket CORS (PutBucketCors: NotImplemented; it answers CORS from its server-wide api cors_allow_origin, `*` by default), so on the dev container apply warns and goes on; a host's plan says nothing here, and fails instead (TASKS.md 41.2.e).",
+    "adminOrigins": ["http://localhost:*", "http://127.0.0.1:*"],
+    "ifUnsupported": "warn"
+  }
 }

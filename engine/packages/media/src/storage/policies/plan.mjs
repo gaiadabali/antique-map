@@ -11,7 +11,8 @@
 //   masters-outlet.json     the outlet brand's masters key: reads captures and print files, and
 //                           writes only its own print files, under print-files/<brand>/ (C9
 //                           printFileKey())
-// The masters bucket gets no anonymous access at all: a master has no public URL. No web key may
+// The masters bucket gets no anonymous access at all: a master has no public URL — and a CORS
+// rule admitting each brand's admin origin for the presigned PUT alone (./cors.mjs). No web key may
 // delete a capture: the archive is irreplaceable, and the one deletion it needs — an intake copy
 // once filed and verified (TASKS.md 15.4) — is a job's, with a key of its own when 15.4 asks.
 //
@@ -21,6 +22,8 @@ import { createHmac } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { CORS_NOT_IMPLEMENTED, corsOperation, corsProblems } from './cors.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 
@@ -90,6 +93,7 @@ export function planProblems(plan) {
       problems.push(`${at}.brand: a media-writer is scoped by its bucket, not a brand`)
     }
   }
+  problems.push(...corsProblems(plan.mastersCors))
   return problems
 }
 
@@ -121,7 +125,8 @@ export function secretVariable(user) {
 
 /**
  * The operations a plan applies, in order: bucket policies first, so a bucket is never public in
- * full while its users are being made; then each key policy once; then each user and its policy.
+ * full while its users are being made, and the masters bucket's CORS; then each key policy once;
+ * then each user and its policy.
  * `secretFor(user)` supplies each user's secret.
  */
 export function planOperations(plan, { secretFor, read = loadDocument }) {
@@ -133,6 +138,7 @@ export function planOperations(plan, { secretFor, read = loadDocument }) {
     document: renderPolicy(read(BUCKET_POLICY), { mediaBucket: bucket }),
   }))
   operations.push({ kind: 'bucket-private', bucket: plan.mastersBucket })
+  operations.push(corsOperation(plan))
   const created = new Set()
   for (const entry of plan.users) {
     const name = policyName(entry)
@@ -162,6 +168,8 @@ export function describe(operation) {
       return `bucket ${operation.bucket}: anonymous read of derivatives/ and iiif/ only`
     case 'bucket-private':
       return `bucket ${operation.bucket}: no anonymous access`
+    case 'bucket-cors':
+      return `bucket ${operation.bucket}: CORS admits a signed PUT from ${operation.origins.join(', ')} only`
     case 'key-policy':
       return `policy ${operation.name}`
     case 'user':
@@ -185,6 +193,13 @@ export function mcCommand(operation, target) {
       }
     case 'bucket-private':
       return { args: ['anonymous', 'set', 'none', `${target}/${operation.bucket}`] }
+    case 'bucket-cors':
+      // Replaces the bucket's whole CORS configuration: applying it again changes nothing.
+      return {
+        args: ['cors', 'set', `${target}/${operation.bucket}`, POLICY_FILE],
+        document: operation.document,
+        notImplemented: CORS_NOT_IMPLEMENTED,
+      }
     case 'key-policy':
       return {
         args: ['admin', 'policy', 'create', target, operation.name, POLICY_FILE],

@@ -10,14 +10,14 @@
  * - **To disk, not memory.** `useTempFiles` streams each file to `UPLOAD_TEMP_DIR`, so a request
  *   holds a few kilobytes of memory rather than up to 90 MiB, and several at once cannot exhaust
  *   the process. The folder is under the machine's temp directory — never the repository, never
- *   the release. Payload removes a file once an upload collection's operation ends (and `media`
- *   once the storage plugin has hidden it from Payload, `@engine/cms` `media/temp-files`); a
- *   collection that takes no file discards one sent to it at once (`masters`).
- * - **Nothing left lying.** Payload parses a multipart body for every collection's POST and PATCH,
- *   before access is checked, and removes the file only for an upload collection, so a file sent
- *   to any other collection would stay in the folder. `sweepStaleUploads()` removes whatever has
- *   been there longer than any request may last (`STALE_UPLOAD_MS`); the media and masters
- *   collections run it, and a root clean-up for every collection is SCH's (the 8.3 report).
+ *   the release.
+ * - **Nothing left lying.** Payload parses a multipart body for every collection's and global's
+ *   POST and PATCH, before access is checked, and removes the file only after an upload
+ *   collection's operation, so a file sent anywhere else — or to a request refused before its
+ *   operation — would stay in the folder. `@engine/cms` `hooks/request-temp-files` (TASKS.md 8.3.h)
+ *   wraps every endpoint of the built config to remove its request's files once it has answered,
+ *   and then runs `sweepStaleUploads()`, which removes whatever has been there longer than any
+ *   request may last (`STALE_UPLOAD_MS`) — what a process that died mid-request left.
  */
 import { readdir, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'

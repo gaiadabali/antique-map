@@ -9,9 +9,7 @@
  * A file put there before any record could exist (the pilot set, OA3) has no stored checksum;
  * only the intake import, on the Local API, may then hash it (`context.verifyByHash`).
  */
-import { formatBytes, MASTER_UPLOAD_MAX_BYTES, sweepStaleUploads } from '@engine/media/storage'
-import { rm } from 'node:fs/promises'
-
+import { formatBytes, MASTER_UPLOAD_MAX_BYTES } from '@engine/media/storage'
 import {
   ValidationError,
   type CollectionBeforeChangeHook,
@@ -33,19 +31,16 @@ function refuse(errors: FieldProblem[]): never {
 
 /**
  * A master's bytes never come through the app (`./index`), so a file sent along with a request is
- * dropped before anything else runs — and its temporary copy deleted, since Payload removes one
- * only after an upload collection's operation (`@engine/media/storage` `multipartUploadOptions`).
+ * dropped before anything else runs: no hook sees it and nothing stores it. Its temporary copy is
+ * left on `req.files`, where the clean-up every endpoint runs once it has answered finds and
+ * removes it (`hooks/request-temp-files`, TASKS.md 8.3.h).
  */
-export async function discardSentFile(req: Pick<PayloadRequest, 'file'>): Promise<void> {
-  const path = req.file?.tempFilePath
+export function discardSentFile(req: Pick<PayloadRequest, 'file'>): void {
   req.file = undefined
-  if (!path) return
-  await rm(path, { force: true })
-  await sweepStaleUploads()
 }
 
-export const dropSentFile: CollectionBeforeOperationHook = async ({ args, req }) => {
-  await discardSentFile(req)
+export const dropSentFile: CollectionBeforeOperationHook = ({ args, req }) => {
+  discardSentFile(req)
   return args
 }
 

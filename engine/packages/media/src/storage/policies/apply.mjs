@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Applies a storage plan's bucket and key policies (TASKS.md 8.3.c) through MinIO's client, `mc`,
-// which RustFS answers too (D12; TASKS.md 41.2 confirms it there before relying on it).
+// Applies a storage plan's bucket and key policies (TASKS.md 8.3.c) and the masters bucket's CORS
+// (8.3.i) through MinIO's client, `mc`, which RustFS answers too (D12; TASKS.md 41.2.e confirms
+// it there before relying on it).
 //
 //   pnpm --filter @engine/media storage:policies [--plan <file>] [--mc docker:<container> | <mc>]
 //                                                [--target <mc alias>] [--secrets derive | env]
@@ -16,9 +17,14 @@
 //              env: each user's secret from STORAGE_SECRET_<USER> (a host's, from Infisical)
 //   --dry-run  print what would be applied, and apply nothing
 //
-// Idempotent: re-running replaces each policy document and secret with the plan's. Secrets are
-// passed to mc as arguments and never printed; on a shared host, run it where no other user can
-// read the process list.
+// Idempotent: re-running replaces each policy document, the masters bucket's CORS and each secret
+// with the plan's. Secrets are passed to mc as arguments and never printed; on a shared host, run
+// it where no other user can read the process list.
+//
+// A storage with no per-bucket CORS (MinIO's community edition: `mc cors set` → "not
+// implemented") stops the run, unless the plan says `mastersCors.ifUnsupported: "warn"` and mc is
+// the dev container's — the local plan — when it warns that the masters bucket's CORS is not
+// applied and goes on (./cors.mjs).
 import { spawnSync } from 'node:child_process'
 import console from 'node:console'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -116,7 +122,7 @@ function withDocumentFile(options, document, run) {
   }
 }
 
-function runMc(options, { args, document, alreadyDone, secret }) {
+function runMc(options, { args, document, alreadyDone, notImplemented, secret }) {
   const [command, prefix] = options.mc.startsWith('docker:')
     ? ['docker', ['exec', '-i', options.mc.slice('docker:'.length), 'mc']]
     : [options.mc, []]
@@ -127,7 +133,24 @@ function runMc(options, { args, document, alreadyDone, secret }) {
   // mc's own words, never the arguments, and with the secret struck out: mc echoes an argument
   // it cannot parse.
   const words = secret ? output.replaceAll(secret, '<secret>') : output
-  throw new Error(`mc ${args.slice(0, 3).join(' ')} failed (${status}): ${words}`)
+  const error = new Error(`mc ${args.slice(0, 3).join(' ')} failed (${status}): ${words}`)
+  error.notImplemented = Boolean(notImplemented?.test(output))
+  throw error
+}
+
+/** The masters bucket's CORS, where the storage has none to set: a warning locally, else a stop. */
+function corsUnsupported(options, operation, error) {
+  const what =
+    `${options.target} implements no per-bucket CORS (${error.message}), so ${operation.bucket}'s ` +
+    'CORS is not applied and the storage answers a preflight from its server-wide setting alone'
+  if (operation.ifUnsupported === 'warn' && options.mc.startsWith('docker:')) {
+    console.warn(`  WARNING: ${what} — MinIO's community edition, on a workstation only`)
+    return
+  }
+  throw new Error(
+    `${what}. A host's storage must take it (TASKS.md 41.2.e); only the dev container's plan ` +
+      'may say mastersCors.ifUnsupported: "warn"',
+  )
 }
 
 /** Leaves a user holding the plan's one policy and no other (`stalePolicies()`). */
@@ -152,7 +175,12 @@ function main() {
   for (const operation of operations) {
     console.log(`  ${options.dryRun ? 'would apply' : 'apply'} ${describe(operation)}`)
     if (options.dryRun) continue
-    runMc(options, mcCommand(operation, options.target))
+    try {
+      runMc(options, mcCommand(operation, options.target))
+    } catch (error) {
+      if (operation.kind !== 'bucket-cors' || !error.notImplemented) throw error
+      corsUnsupported(options, operation, error)
+    }
     if (operation.kind === 'attach') detachStale(options, operation)
   }
   console.log(
