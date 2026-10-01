@@ -23,7 +23,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 18/37 | 4 | `█████░░░░░`  49% |
-| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 3/5 | 20/23 | 2 | `█████████░`  87% |
+| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/19 | 0 | `██████░░░░`  63% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
@@ -52,7 +52,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/15 | 1 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
-| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/14 | 3 | `░░░░░░░░░░`   0% |
+| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/16 | 5 | `░░░░░░░░░░`   0% |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **29/178** | **206/854** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **31/178** | **209/856** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -161,8 +161,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
 | 6·W1 | 6.3 Voice and lexicon | medior (6.3.m) | agent worktree | 2026-10-01 | 6.3.j (25828e9) and 6.3.l (a2aaea7) merged; 6.3.m gating the +30% rule in `check-brands`; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
-| 7·W1 | 7.1 The old catalogue export (mock dump + public read) | — (merged 89bf351) | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | ⛔ 👤 OA9 (7.1.a: the real dump's restore); everything else ticked |
-| 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 | 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (reported done, 562d48c) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | trial-merged with 8.3 on 7968cf9 + registry test fix: verify 1674 passed, only the schema drift 10.3.a clears; independent senior-be review to re-run (hit the usage limit) |
 | 8·W1 | 8.3 Media and masters | — (reported done, b8f5181) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | independent senior-integrator review to re-run (hit the usage limit); asks `upload.limits.fileSize` in `payload.config.ts` (SCH) |
 
@@ -215,9 +213,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **OA6** | Buyers for the prototype test and the usability runs — about 10 + 10 people (D21) | 13.2, 35.2, 32.2 |
 | **OA7** | A commercial font licence, if a commercial face is chosen | 14.1.f |
 | **OA8** | ✅ 2026-09-30 — go-ahead to provision staging on Helios (the provision script runs once the orchestrator has reviewed it and its dry-run; no second confirmation), DNS for `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` (renamed from ig/oei.gaiada.com 2026-10-01, the owner's DNS); object storage per D12; Infisical entries | 5.1.b |
-| **OA9** | **The export of the old catalogue** — a MySQL dump and the product-images folder, from whoever hosts the old site. We never log in to it. | 7.1.a |
+| **OA9** | **The export of the old catalogue** — a MySQL dump and the product-images folder, from whoever hosts the old site. We never log in to it. | 36.3.e (7.1.a simulated, D53) |
 | **OA10** | **The item register** — stock location and export status for every original (D24) | 36.3 |
-| **OA11** | A Search Console export for `oldeastindies.com` | 7.3.a |
+| **OA11** | A Search Console export for `oldeastindies.com` | 36.2.c (7.3.a simulated, D53) |
 | **OA12** | The curator's review of the maker clusters and the category → facet mapping (about an hour) | 36.1 |
 | **OA13** | Two observation sessions (a cataloguer, the shop manager), and the same people for the timed tests | 23.1.a, 38.2 |
 | **OA14** | Sandbox accounts: Midtrans, Stripe Singapore, PayPal, Biteship, DHL Express (D3) | 19.3, 25.1, 25.2, 26.1, 26.2 |
@@ -231,6 +229,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D53** | **Until the client's real data arrives, migration runs on simulation and seed** (the developer, 2026-10-01): phase 7 closes on the mock dump (D42) restored, extracted and normalised, and on the Search Console importer run over a synthetic export — the read-only public read (D41) and the archive (D43) stay the real evidence. When the client hands over the MySQL dump and images (OA9) and the Search Console export (OA11), they go through the built harness in phase 36 (36.3.e, 36.2.c). The mock extract is the seed source for anything that needs legacy-shaped rows before then. | 2026-10-01 |
 | **D52** | **Old East Indies' stock is one pool at launch** (the developer, 2026-10-01): all merchandise stock counts as one quantity per variant — no split by shop, location or owner, no transfers between locations, no "In the showroom now" badge. The merchandise sells through **hundreds of shops across Bali**; they report sales and restocking over WhatsApp today and keep doing so at launch, and staff correct the pool in the admin. Showroom pickup of online orders (S4) and a counter sale recorded against the pool (24.4.c) stay. Splitting stock by shop — and who owns a shop's shelf stock (wholesale, consignment, branch) — waits for the **POS phase on our engine** (v2.19). ARC to decide whether `stock_levels` keeps a location key with one shop location configured, so the POS adds locations without a migration — 6.4.g. | 2026-10-01 |
 | **D51** | **The gallery's negotiation runs on WhatsApp, and its invoice is paid on our site** (the developer, 2026-10-01; refines D50): staff build the invoice on a phone (24.5) and send its link into the buyer's WhatsApp chat (`wa.me` share — no WhatsApp API needed); the buyer pays on the gallery's own `/pay/{token}` page, in the gallery's design, with the Stripe Payment Element embedded or bank-transfer instructions — **never a page hosted by Stripe** (Stripe Invoicing / Payment Links are out). The pay page is a designed surface: open with "On hold until {due date}", paid, expired or voided, bank transfer pending — 6.4.g. | 2026-10-01 |
 | **D50** | **The gallery is enquiry-only** (owner interview G3, G4, 2026-10-01; supersedes D30): no cart, no reserve button, no online offers, and **no price shown on any original** — every original leads to a call or WhatsApp to negotiate (Singapore). Once a price is agreed, **staff issue an invoice and the buyer pays it online through the site's gateway**; the piece shows "On hold" until the invoice is due (G5), and ships only when paid in full, shipping and duties the buyer's (G11). Merchandise (the shop) keeps its checkout. ARC replans the gallery's commerce — 6.4. | 2026-10-01 |
@@ -736,12 +735,12 @@ run beside the build line rather than in it.
 **Done when:** the owner's export (or, with the owner's OK, a read-only public read) is restored with its schema documented; dates, dimensions, grades, prices and titles parse with a fixture test per dirty-data case and a review file for the rest; every Squarespace path is inventoried; nothing was done to the old sites.
 **Waves:** W1 — 7.1, 7.3 · W2 — 7.2 · W3 — 7.4, 7.5
 
-- [ ] **7.1 👤 Receive the old catalogue export** · needs: 2.1 — 🔄 7·W1
+- [x] **7.1 👤 Receive the old catalogue export** · needs: 2.1 — ✅ 2026-10-01 89bf351 (simulated, D53)
   - **Lane** MIG · **Agent** senior-integrator (MIG-A) · **Wave** W1
   - **Owns** `engine/packages/migrate/{package.json,tsconfig.json,vitest.config.ts,README.md,src/index.ts}` (the package scaffold), `pnpm-lock.yaml` (through `pnpm install` only), `engine/packages/migrate/src/sources/{laravel-catalogue,public-read}/**`, `indies-gallery/content/legacy/{schema,inventory}/**` (committed notes and the URL inventory; raw extracts stay in `LEGACY_DATA_DIR`, outside git)
   - **Read** MIGRATION.md §1–3
   - _Requirements: 16.1, 16.5_
-  - [ ] 7.1.a 👤 The owner asks whoever hosts the old site for a MySQL dump and the product-images folder, and hands them over — we never log in to, fix or change the old site
+  - [x] 7.1.a 👤 The owner asks whoever hosts the old site for a MySQL dump and the product-images folder, and hands them over — we never log in to, fix or change the old site — **simulated (D53)**: the mock dump (7.1.f) stands in; the real dump goes through in 36.3.e
   - [x] 7.1.b restore + schema discovery notes (tables → collections)
   - [x] 7.1.c A read-only, rate-limited reader of the old site's public pages and sitemap — run only with the owner's OK — that gathers the old URL list for verification
   - [x] 7.1.e the `@engine/migrate` package scaffold (package.json, tsconfig, vitest config, README, `src/index.ts`) in the workspace, `pnpm verify` green with it
@@ -758,15 +757,15 @@ run beside the build line rather than in it.
   - [x] 7.2.c The review file — raw value beside the proposal — for everything below confidence
   - [x] 7.2.d **Check:** dates, dimensions, condition grades, prices, references and titles (hook vs original, SEO suffixes removed) parse from the real extract, with a fixture test per dirty-data case listed in MIGRATION.md, and everything below confidence goes to a review file with raw value beside proposal.
 
-- [ ] **7.3 Old East Indies legacy URL discovery** · needs: 2.1 — 🔄 7·W1
+- [x] **7.3 Old East Indies legacy URL discovery** · needs: 2.1 — ✅ 2026-10-01 4a3168a (Search Console simulated, D53)
   - **Lane** MIG · **Agent** medior (MIG-B) · **Wave** W1
   - **Owns** `engine/packages/migrate/src/sources/csv-products/**`, `old-east-indies/content/legacy/**`
   - **Read** MIGRATION.md §10
   - _Requirements: 16.6_
-  - [ ] 7.3.a URL discovery (CDX + Search Console export 👤)
+  - [x] 7.3.a URL discovery (CDX + Search Console export 👤) — CDX and the archived sitemap real; the Search Console half **simulated (D53)** on a synthetic export; the real one goes through in 36.2.c
   - [x] 7.3.c the Wayback CDX half now — every archived `oldeastindies.com` path inventoried — and an importer for the Search Console CSV (OA11), tested on a synthetic CSV, ready for the owner's export
   - [x] 7.3.d the two archived `/sitemap.xml` captures (2024-06-24, 2024-08-08) read through Wayback playback on web.archive.org — never the old site — as a third source, since the CDX index holds only 4 Squarespace product paths; the owner's OK is D43
-  - [ ] 7.3.b **Check:** every Squarespace path from the Search Console export and the Wayback CDX index is inventoried in `old-east-indies/content/legacy/`, and nothing was done to the old site.
+  - [x] 7.3.b **Check:** every Squarespace path from the Search Console export and the Wayback CDX index is inventoried in `old-east-indies/content/legacy/`, and nothing was done to the old site.
 
 - [x] **7.4 Wire the migrate package** · needs: 7.2, 7.3.c — ✅ 2026-10-01 2014f2c
   - **Lane** MIG · **Agent** junior (MIG-A) · **Wave** W3
@@ -2157,16 +2156,18 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Read** MIGRATION.md §10
   - _Requirements: 16.6_
   - [ ] 36.2.a mapping + CSV importer + redirects
+  - [ ] 36.2.c 👤 the real Search Console export (OA11) through `legacy-urls import-gsc`, the inventory rebuilt and committed (D53)
   - [ ] 36.2.b **Check:** every Squarespace path from Search Console and the Wayback CDX index maps to a product or collection; the old gallery's "Buy Reproduction" target (one home page for every button) redirects like any other URL, since the new item pages link to exact products themselves (27.1); and the owner's product list imports through `csv-products`.
 
 - [ ] **36.3 The loader and the item register** · needs: 9.4, phase 10, 15.1, 15.2, 36.1
   - **Lane** MIG · **Agent** senior-integrator (MIG-B) · **Wave** W2
-  - **Owns** `engine/packages/migrate/src/{load,register}/**`
+  - **Owns** `engine/packages/migrate/src/{load,register}/**`, `indies-gallery/content/legacy/schema/**` (36.3.e)
   - **Read** MIGRATION.md §4–5, §9, COMPLIANCE.md §1, CONTENT-MODEL.md §1, §6
   - _Requirements: 16.1, 16.4, 16.8, 19.2_
   - [ ] 36.3.a 👤 the owner's item register — location and export status per stock number (D24)
   - [ ] 36.3.b register importer with a mismatch report (unknown stock numbers, conflicting rows)
   - [ ] 36.3.c the batch loader and the off-box tiling run — the loader collects its cache tags on Payload's `req.context` and flushes them once per committed batch (`@engine/cache`), never per row
+  - [ ] 36.3.e 👤 the real MySQL dump and images (OA9) through the 7.1 harness — `legacy:mysql restore`, `schema --notes`, `tables`, the SQL extracts from the mock's queries, `extract`, `destroy` — then `legacy:normalise catalogue` over it; the schema notes checked against the real columns (D53)
   - [ ] 36.3.d **Check:** works and products upsert idempotently by legacy id in batches of 500 with a dry-run diff, as drafts, with `publicId = legacy id` and stock numbers preserved; **the item register** sets each original's stock location and export status by stock number — an original with no row keeps both blank and publishes enquiry-only, and the report lists them; images are tiled **off-box** by `pnpm media:tile` (15.2.b) straight to the bucket, each with the **deterministic alt-text baseline** built from its record (CONTENT-MODEL.md §6) so the publish guard can pass; customers are created with a random, unusable password for the claim flow; subscribers keep recorded consent; legacy orders import read-only; wishlists become saved items or want-lists.
 
 - [ ] **36.4 Redirects and the legacy handler** · needs: 4.1.f, 9.3, 36.1
@@ -2632,6 +2633,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — ✅ **phase 7** — the old catalogue and the shop's URL discovery, on simulation and seed (D53). Evidence on `main`: the restore harness on the mock dump (`restore.integration.test.ts`, 15 tables, 240 rows) with its schema notes; the read-only public read (D41) — 1,823 products (1,607 listed, 216 sold), 2,289 images, 7,665 URLs inventoried, paths only; the normalisers over all 1,823 records with a fixture test per MIGRATION.md §4 case and the review file (2,323 rows, raw beside proposal); the shop's 673 legacy paths from the Wayback CDX index and the archived sitemaps (D43), the Search Console importer proven on a synthetic export; nothing done to either old site beyond GETs (the enquiry-address incident logged under 7.1). 7.1.a and 7.3.a closed as simulated; the real dump (OA9) and Search Console export (OA11) go through the built harness in 36.3.e and 36.2.c. Phase 7's slot is free.
 - 2026-10-01 — ✅ 7.4 — merged to `main` (2014f2c, branch 6769232); `pnpm verify` green on `main` at cfa05c3 (1,559 tests; a first run went red with four 60 s timeouts and two `check-brands` errors because two gate runs overlapped — the clean single run is green). `legacy:normalise public-read` on `main` reproduces 7.2's counts exactly (2,323 review rows). `@engine/migrate` exports `./normalise` and every source adapter; C1/C2/C5 shapes checked by `contracts.test-d.ts` (planted drifts fail tsc); the tables' exponents restated as `ENGINE_CURRENCY_EXPONENT`, typed `typeof CURRENCY_EXPONENT` and checked against C1 by `exponents.test.ts`; `dirty-data-crawl.test.ts` names each §4 case 7.5 added. Found: a maker's name in the place slot is **not** caught yet (pinned as "NOT caught yet"; the fix is in `record.ts`/`vocabulary.ts`); lower-case `p.` stock numbers go to review; a tables file setting another currency must restate its exponent. Follow-ups: MIG — send a maker in the place slot to review, update the package README (`./normalise`, `laravel-catalogue`); ARC — make `@engine/config/constants` loadable by plain Node (extensions) so the restated exponents can go, and the circa-range shape; curator — lower-case `p.` (36.1).
 - 2026-10-01 — **The developer's input to 6.4** (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`): **D51** — the gallery's negotiation runs on WhatsApp and its invoice is paid on our own `/pay/{token}` page, never one hosted by Stripe; **D52** — the shop's stock is one pool at launch (hundreds of Bali shops report over WhatsApp; per-shop stock waits for the POS, new v2.19, which absorbs v2.12 ✂️). 6.4 widened: its board diff now covers phases 25, 28, 33 and 38 too, new 6.4.g, its Check names the provider-hosted pay page and several stock locations.
 - 2026-10-01 — 7.4 reported partial (2a14caa): 7.4.a ticked (`./normalise` export, `legacy:normalise`, `src/index.ts`, `csv-products/index.ts` as typed data — `.mjs` cannot be re-exported with `allowJs` false); C2 type checks in `contracts.test-d.ts` fail on planted drift; `legacy:normalise` reproduces 7.2's counts exactly. **Blocked:** `node --experimental-strip-types` cannot load `@engine/config/constants` (its `index.ts` imports `./currencies` without an extension). Orchestrator's call: 7.4.b reworded — the exponents stay in the tables, pinned to `CURRENCY_EXPONENT` by a vitest drift test, and the currency is typed `CurrencyCode` by a type-only import (stripped at run time) — no change to the config package. Found for ARC/HAR: any strip-types CLI that imports an engine package at run time hits the same wall (`.ts` extensions in `config/src/constants`, or a resolver hook, is the general fix). Added 7.4.e (`laravel-catalogue/index.ts`). 7.4.d (fixture tests for §4's new cases) had not reached the agent; sent back with 7.4.b/e.
