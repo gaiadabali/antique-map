@@ -88,7 +88,9 @@ describe('loadBrandConfig() — BRAND, BRAND_ROOT, TEST_STOREFRONT (3.1.a)', () 
 
   it('refuses a broken file with a message naming the file and the field', () => {
     const config = testBrandConfig('gallery')
-    config.modules['accounts.buyers'] = false // retention.wishlist and .wantList need it
+    // The gallery has no buyer accounts (D54): an account wishlist and want lists need one.
+    config.modules['retention.wishlist'] = true
+    config.modules['retention.wantList'] = true
     const root = brandFolder('test', { 'brand.gallery.json': config })
     const load = () =>
       loadBrandConfig({ env: testEnv('gallery', { BRAND_ROOT: join(root, 'test') }), fresh: true })
@@ -139,13 +141,13 @@ describe('loadBrandConfig() — BRAND, BRAND_ROOT, TEST_STOREFRONT (3.1.a)', () 
     const gallery = C1_STATED_SUPPORTS.gallery
     const narrower = {
       storefront: 'gallery' as const,
-      modules: gallery.modules.filter((key) => key !== 'purchase.offers'),
+      modules: gallery.modules.filter((key) => key !== 'retention.deviceWishlist'),
     }
     const options = { env: testEnv('gallery'), cwd: REPO_ROOT }
     const config = loadBrandConfig({ ...options, supports: gallery })
     // Same storefront, fewer modules: a fresh check, not the wider app's memoised answer.
     expect(() => loadBrandConfig({ ...options, supports: narrower })).toThrow(
-      /modules\['purchase\.offers'\]: is on, but the gallery app cannot render it/,
+      /modules\['retention\.deviceWishlist'\]: is on, but the gallery app cannot render it/,
     )
     expect(Object.isFrozen(config)).toBe(true)
     expect(Object.isFrozen(config.identity.navigation.header)).toBe(true)

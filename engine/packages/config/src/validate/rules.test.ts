@@ -23,19 +23,23 @@ const cases: Case[] = [
   [
     'wantList without accounts.buyers',
     'gallery',
-    (c) => (c.modules['accounts.buyers'] = false),
+    (c) => (c.modules['retention.wantList'] = true), // the gallery has no buyer accounts (D54)
     'modules[\'retention.wantList\']: needs "accounts.buyers" on as well: its lists are a buyer account’s (D39)',
   ],
   [
     'wantList without emailWantList',
     'gallery',
-    (c) => (c.modules['retention.emailWantList'] = false),
+    (c) => {
+      c.modules['accounts.buyers'] = true
+      c.modules['retention.wantList'] = true
+      c.modules['retention.emailWantList'] = false
+    },
     'modules[\'retention.wantList\']: needs "retention.emailWantList" on as well',
   ],
   [
     'wishlist beside deviceWishlist',
     'gallery',
-    (c) => (c.modules['retention.deviceWishlist'] = true),
+    (c) => (c.modules['retention.wishlist'] = true), // beside the gallery's device wishlist
     'modules[\'retention.deviceWishlist\']: cannot be on beside "retention.wishlist"',
   ],
   [
@@ -47,14 +51,14 @@ const cases: Case[] = [
   [
     'a tier action whose module is off',
     'gallery',
-    (c) => (c.modules['purchase.offers'] = false),
-    'commerce.purchaseTiers[1].secondary[1]: "offer" opens a flow of "purchase.offers", which is off',
+    (c) => (c.modules['purchase.invoices'] = false),
+    'commerce.purchaseTiers[0].secondary[4]: "proforma" opens a flow of "purchase.invoices", which is off',
   ],
   [
     'a WhatsApp action with no number',
     'gallery',
     (c) => (c.identity.contact.whatsapp = null),
-    'commerce.purchaseTiers[0].secondary[1]: "whatsapp" needs identity.contact.whatsapp',
+    'commerce.purchaseTiers[0].primary: "whatsapp" needs identity.contact.whatsapp',
   ],
   // Routes and text
   [

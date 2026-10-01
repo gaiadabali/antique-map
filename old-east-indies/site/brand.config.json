@@ -141,7 +141,7 @@
       "waiver": null
     }
   },
-  "shipping": { "providers": ["biteship", "dhl-express", "flat", "collect"] },
+  "shipping": { "providers": ["biteship", "flat", "collect"] },
   "fulfilment": { "providers": ["own-stock", "local-production"] },
   "analytics": { "ga4Id": null, "metaPixelId": null },
   "modules": {

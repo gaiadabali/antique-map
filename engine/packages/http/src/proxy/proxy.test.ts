@@ -54,7 +54,8 @@ describe('the proxy — rewrites only, the default locale unprefixed (ARCHITECTU
       '/id/browse?objectType=map&technique=etching&page=2',
     )
     expect(decide('/id/cari?q=celebes').to).toBe('/id/search?q=celebes')
-    expect(decide('/make-an-offer?item=1706').to).toBe('/en/form/offer?item=1706')
+    // The offer form is the emporium's: the gallery takes no online offers (D50).
+    expect(decide('/en/make-an-offer?item=1706', {}, emporium).to).toBe('/en/form/offer?item=1706')
     expect(decide('/about').to).toBe('/en/page/about')
   })
 
