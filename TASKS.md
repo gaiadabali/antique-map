@@ -735,7 +735,7 @@ run beside the build line rather than in it.
 **Done when:** the owner's export (or, with the owner's OK, a read-only public read) is restored with its schema documented; dates, dimensions, grades, prices and titles parse with a fixture test per dirty-data case and a review file for the rest; every Squarespace path is inventoried; nothing was done to the old sites.
 **Waves:** W1 — 7.1, 7.3 · W2 — 7.2 · W3 — 7.4, 7.5
 
-- [x] **7.1 👤 Receive the old catalogue export** · needs: 2.1 — ✅ 2026-10-01 89bf351 (simulated, D53)
+- [x] **7.1 👤 Receive the old catalogue export** · needs: 2.1 — ✅ 2026-10-01 89bf351
   - **Lane** MIG · **Agent** senior-integrator (MIG-A) · **Wave** W1
   - **Owns** `engine/packages/migrate/{package.json,tsconfig.json,vitest.config.ts,README.md,src/index.ts}` (the package scaffold), `pnpm-lock.yaml` (through `pnpm install` only), `engine/packages/migrate/src/sources/{laravel-catalogue,public-read}/**`, `indies-gallery/content/legacy/{schema,inventory}/**` (committed notes and the URL inventory; raw extracts stay in `LEGACY_DATA_DIR`, outside git)
   - **Read** MIGRATION.md §1–3
@@ -757,7 +757,7 @@ run beside the build line rather than in it.
   - [x] 7.2.c The review file — raw value beside the proposal — for everything below confidence
   - [x] 7.2.d **Check:** dates, dimensions, condition grades, prices, references and titles (hook vs original, SEO suffixes removed) parse from the real extract, with a fixture test per dirty-data case listed in MIGRATION.md, and everything below confidence goes to a review file with raw value beside proposal.
 
-- [x] **7.3 Old East Indies legacy URL discovery** · needs: 2.1 — ✅ 2026-10-01 4a3168a (Search Console simulated, D53)
+- [x] **7.3 Old East Indies legacy URL discovery** · needs: 2.1 — ✅ 2026-10-01 4a3168a
   - **Lane** MIG · **Agent** medior (MIG-B) · **Wave** W1
   - **Owns** `engine/packages/migrate/src/sources/csv-products/**`, `old-east-indies/content/legacy/**`
   - **Read** MIGRATION.md §10
