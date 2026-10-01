@@ -57,7 +57,8 @@ const segmentConfig = {
 /**
  * Any `.prefetch` or `['prefetch']` member, called or not, and any `prefetch` key a destructuring
  * pattern reads — so an aliased or namespaced `useRouter`, a router destructured from a variable
- * and a method pulled off without a call are all caught (qa's 5.4 gate, S3). A JSX
+ * and a method pulled off without a call are all caught (qa's 5.4 gate, S3), as are
+ * `Reflect.get(r, 'prefetch')` and `r[k]` for a `const k = 'prefetch'` (its re-gate, L4). A JSX
  * `prefetch={false}` attribute and an object literal's `prefetch:` key are not members.
  */
 const routerPrefetch = {
@@ -66,9 +67,26 @@ const routerPrefetch = {
   ),
   create: (context) => {
     const found = (node) => report(context, node)
+    /** Whether `id` names a `const` bound to the literal 'prefetch' (`const k = 'prefetch'`). */
+    const isPrefetchConst = (id) => {
+      for (let scope = context.sourceCode.getScope(id); scope; scope = scope.upper) {
+        const variable = scope.set.get(id.name)
+        if (!variable) continue
+        const def = variable.defs[0]
+        return def?.node.type === 'VariableDeclarator' && def.parent?.kind === 'const'
+          ? def.node.init?.value === 'prefetch'
+          : false
+      }
+      return false
+    }
     return {
       'MemberExpression[computed=false][property.name="prefetch"]': found,
       'MemberExpression[computed=true][property.value="prefetch"]': found,
+      'MemberExpression[computed=true][property.type="Identifier"]': (node) =>
+        isPrefetchConst(node.property) && found(node),
+      // `Reflect.get(router, 'prefetch')` (qa's 5.4 re-gate, L4)
+      'CallExpression[callee.object.name="Reflect"][callee.property.name="get"]': (node) =>
+        node.arguments[1]?.value === 'prefetch' && found(node),
       'ObjectPattern > Property[key.name="prefetch"]': found,
       'ObjectPattern > Property[key.value="prefetch"]': found,
     }

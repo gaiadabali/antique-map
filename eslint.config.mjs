@@ -143,7 +143,8 @@ const fenceConfigs = [
     ...NOT_STOREFRONT,
     'engine/packages/ui/src/primitives/link.tsx',
   ]),
-  fenced('no-router-prefetch', STOREFRONT, NOT_STOREFRONT),
+  // "called nowhere": all of engine/, the admin included (qa's 5.4 re-gate, L4).
+  fenced('no-router-prefetch', [code('engine')]),
   fenced('no-next-form', [code('engine')]),
 ]
 
