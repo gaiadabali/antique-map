@@ -105,10 +105,18 @@ const status: Project[] = [
   },
 ]
 
+// axe on every shell page of every brand, each width set by the spec itself (TASKS.md 5.6.e).
+const a11y: Project[] = SITES.map(({ name, urlEnv, port, brand }) => ({
+  name: `${name}-a11y`,
+  testDir: './tests/e2e/a11y',
+  metadata: brand,
+  use: { ...desktop, baseURL: urlOf(urlEnv, port) },
+}))
+
 export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  projects: [...smoke, ...status],
+  projects: [...smoke, ...status, ...a11y],
 })
