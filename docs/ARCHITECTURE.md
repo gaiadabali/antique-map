@@ -55,7 +55,8 @@ the reasoning — it is written down so it can be challenged (KOI's rule).
                                          │  sister API + webhooks    │
                                          └──── work snapshots ───────┘   (copy with provenance)
 
-   object storage (R2): ig-media · oei-media (public, CDN) · archive-masters (private, shared)
+   object storage (RustFS, S3-compatible, D12; bucket policies scoped by prefix):
+   ig-media · oei-media (public by prefix, CDN) · archive-masters (private, shared)
    providers per brand: payment gateways · couriers · print-on-demand · SMTP · WhatsApp
 ```
 
@@ -261,18 +262,29 @@ migrated one — are part of the Commerce stage's gate (TASKS.md 21.2).
 | Tier | What | Where |
 | ---- | ---- | ----- |
 | **Masters** | every capture as received (RAW, TIFF, JPEG), colour profile, checksum — a work's under its uid, one with no work yet (the owner's pilot set) or none at all (a showroom photograph, a room plate's render) under `masters/intake/<brand>/<batch>/` (C9 `intakeMasterKey()`), a work's capture filed under its uid once the work exists | private `archive-masters` bucket; a plain `masters` collection holds the record (storage key, the frame's pixels, colour profile, checksum, owning brand, and what the intake measured: the object's box in the frame, object ppi, role, provenance, capture tier, verdict — CONTENT-MODEL.md §6) — **not** a Payload upload collection |
-| **Print files** | colour-managed, cropped design files for reproduction | the same private bucket under a `print-files/` prefix — the only prefix the shop's key may write |
-| **Derivatives** | AVIF + WebP at 320 / 640 / 1024 / 1600 / 2400 px + blur placeholder | public brand bucket behind Cloudflare, immutable cache |
-| **Deep zoom — public** | static **IIIF Level 0** tiles (`sharp().tile({ layout: 'iiif3' })`, 512 px) capped at the configured public resolution, plus an IIIF Presentation 3 manifest per work | public brand bucket (`iiif/<assetId>/…`) |
-| **Deep zoom — full resolution** | the uncapped pyramid for staff and institutions | a **private** prefix, served through an authenticated route or a signed cookie |
+| **Print files** | colour-managed, cropped design files for reproduction | the same private bucket under `print-files/<brand>/` — the only prefix the shop's key may write, and only under its own slug |
+| **Uploads** | the processed image a `media` record holds, at full resolution, possibly still carrying the camera's metadata | the brand's own media bucket under the **private** `uploads/` prefix; Payload's file route serves it to staff alone (the admin's preview), never to the public |
+| **Derivatives** | AVIF + WebP at 320 / 640 / 1024 / 1600 / 2400 px + blur placeholder | the brand's own media bucket under `derivatives/` — public, behind Cloudflare, immutable cache |
+| **Deep zoom — public** | static **IIIF Level 0** tiles (`sharp().tile({ layout: 'iiif3' })`, 512 px) capped at the configured public resolution, plus an IIIF Presentation 3 manifest per work | the brand's own media bucket under `iiif/` (`iiif/<assetId>/…`) — public |
+| **Deep zoom — full resolution** | the uncapped pyramid for staff and institutions | the brand's own media bucket under the **private** `iiif-full/` prefix (C9 `iiifFullKey()`), for both brands — never the masters bucket, where the outlet's key writes only its print files — streamed to staff through the engine's route (C9 `MEDIA_ROUTES.fullTiles`) |
 
 - **Masters are uploaded straight to the bucket** through presigned URLs, never
   through the admin: a large TIFF exceeds Cloudflare's 100 MB request-body limit
   in front of `/admin`. The admin records the result.
 - **A signed manifest would protect nothing** over public full-resolution tiles
   — IIIF Level 0 tile paths are predictable — so full resolution lives in a
-  private prefix. The public bucket's CORS allows the viewer's origins, and each
-  `info.json` `id` is its final public URL (both recorded in C9).
+  private prefix. **A media bucket is public only under `derivatives/` and
+  `iiif/`**, the slash included, so `iiif-full/` and `uploads/` beside them stay
+  private (the bucket policy, DEPLOYMENT.md §2). Its CORS allows the viewer's
+  origins, and each `info.json` `id` is its final public URL (both recorded in C9).
+- **`media` is read on the server alone.** A record has no draft of its own — it
+  is published by whatever places it — so a public list of `media` would name every
+  image, an unpublished work's too, and an image's `assetId` is all its public
+  derivative URL needs. So public REST reads of `media` are refused (GraphQL is
+  off for every collection), and Payload's file route serves its upload to staff
+  alone: a public read reaches an image only through the Local API — a loader, or
+  the sister API — by way of the published record or global that places it, and
+  projects what its view model or snapshot needs (§12).
 - **Provenance copies reference masters by storage key** (the sister snapshot
   carries it, C12) rather than re-uploading them.
 - **Print-on-demand partners get presigned URLs that outlive their fetch

@@ -19,26 +19,26 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | ✅ done | 3/3 | 24/24 | 0 | `██████████` 100% |
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
-| **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
+| **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 29/29 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 19/38 | 4 | `█████░░░░░`  50% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 19/33 | 1 | `██████░░░░`  58% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 2/4 | 12/25 | 0 | `█████░░░░░`  48% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 16/31 | 1 | `█████░░░░░`  52% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
-| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | · not started | 0/4 | 0/24 | 1 | `░░░░░░░░░░`   0% |
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/2 | 0/12 | 1 | `░░░░░░░░░░`   0% |
-| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/37 | 1 | `░░░░░░░░░░`   0% |
+| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/38 | 1 | `░░░░░░░░░░`   0% |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/28 | 2 | `░░░░░░░░░░`   0% |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
@@ -52,16 +52,16 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/15 | 1 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
-| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/16 | 5 | `░░░░░░░░░░`   0% |
+| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/17 | 6 | `░░░░░░░░░░`   0% |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | · not started | 0/4 | 0/15 | 0 | `░░░░░░░░░░`   0% |
-| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/10 | 0 | `░░░░░░░░░░`   0% |
+| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **33/179** | **210/865** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **32/180** | **212/868** | **46** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -157,11 +157,12 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.f done; ⛔ 👤 6.1.e native review (D20), 6.1.i the gallery's phone, viewing addresses and the shop's owed items |
-| 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.f–j, l, m merged; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
+| 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.e cut (D20); ⛔ 👤 6.1.i the gallery's phone and viewing addresses, the shop's owed items |
+| 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
+| 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.c cut (D20); 6.3.k after 6.4 |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
-| 8·W1 | 8.4 What 8.1's and 8.3's reviews decided, in the docs and C9 | architect | agent worktree (ARC) | 2026-10-01 | from the two reviews' ARC items |
+| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (fix round done, df2518d) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | review signed off with should-fix, all fixed; merged with 8.3 in `antique-map-p8-sch-lead` (31933a1) awaiting the SCH lead |
+| 8·W1 | 8.3 Media and masters | — (fix round done, 5a7ab6f) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | review signed off with should-fix, all fixed; 8.3.h + 10.3.a with the SCH lead (senior-db, `feat/p8-sch-lead`) |
 
 ## Decisions for the owner
 
@@ -188,7 +189,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D16** | AI cataloguing model provider | a production model behind the `ai.cataloguing` flag, human-verified; Ollama Cloud for development only (not a production dependency) | owner | 23.5 |
 | **D17** | Staging tier after launch | staging stays on Helios `.gaiada.com`; Delphi `staging` branch only if wanted | owner | 44.2 |
 | **D18** | Default locale per brand (served unprefixed) | English for both; Indonesian at `/id/…` | owner | 3.1 |
-| **D20** | Native Indonesian copywriter | **no default** — the lexicon and the launch copy review need one | owner | 6.3 |
 | **D21** | Buyers for the prototype test and usability runs (≈ 10 + 10 people) | collectors from the gallery's client list; shoppers recruited through the shop's Instagram | owner (introductions) | 13.2, 35.2, 32.2 |
 | **D23** | Print-on-demand abroad at launch | **not at launch** — export orders ship from Bali stock or local production, DAP; Prodigi / Gelato switch on in v2 behind the existing router | owner | 26.3 |
 | **D24** | The item register — who compiles location and export status for every original, and by when | the gallery's staff, by the staging rehearsal (37.2); an original without a row publishes **enquiry-only** and sells nowhere online | owner (staff time) | 36.3 |
@@ -206,8 +206,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | --- | --- | --- |
 | **OA1** | ✅ 2026-09-28 — `gaiadabali/antique-map` (private, internal), deploy account `web-gaiada` (admin); `main` pushed | 1.1.f |
 | **OA2** | ✅ 2026-10-01 — the owner interview, answered in session (`docs/design/journeys/owner-answers.md`); still owed from it: the showroom hours (S4), the online WhatsApp number and hours (S6), the welcome code's value (S13), "Katalog Bali 2026" again (S1), the price list (S2) | 6.1.b |
-| **OA3** | Hand over the pilot image set: six gallery items (one a typical migrated item at today's quality) and the Denpasar showroom — the owner's own photographs (D19) | 6.2.b |
-| **OA4** | A native Indonesian copywriter for the lexicon and the launch copy (D20) | 6.3.c, 42.6, 43.6 |
+| **OA3** | ✂️ not needed (D19 updated 2026-10-01) — the pilot set is the client's existing photos | 6.2.b |
+| **OA4** | ✂️ not needed (D20, 2026-10-01) — no native Indonesian copywriter | — |
 | **OA5** | Two or three Indonesian designers or buyers for the shop's cultural review | 12.2.a |
 | **OA6** | Buyers for the prototype test and the usability runs — about 10 + 10 people (D21) | 13.2, 35.2, 32.2 |
 | **OA7** | A commercial font licence, if a commercial face is chosen | 14.1.f |
@@ -238,8 +238,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D47** | **The shop sells within Indonesia only at launch** (S3): no checkout to an address abroad, so no "≈" foreign estimate and no PayPal USD charge at launch. D47's rupiah-first mechanism (COMMERCE.md §3, PAYMENTS.md §6) stays the design for when export opens; journeys J-S2 and J-S5 and phase 32's Done when change — 6.4. | 2026-10-01 |
 | **D32** | **Partner terms are case by case** (S5): the Partnership page publishes no fixed discount or minimum; staff negotiate each partner, and the trade tier and minimum stay data the admin sets per partner (D33, D37 unchanged). | 2026-10-01 |
 | **Voice** | **The shop speaks *Anda*, not *kamu*** (S15), with no VOC imagery; **the gallery takes the same stance on the VOC** (no VOC imagery beyond the items); **British spelling** on both sites; the admin in **both languages for every staff member** (G15). | 2026-10-01 |
+| **D20** | **No native Indonesian review** (developer, 2026-10-01): the Indonesian copy ships as the team drafted it, in *Anda* for both brands; 6.1.e's, 6.2.g's and 6.3.c's reviews are cut, and the launch copy reads (42.6, 43.6) are done without a native writer. | 2026-10-01 |
 | **D49** | **Staging secrets stay host-only on Helios** (each site's `shared/.env` and `/etc/indies/*`, 600); Infisical arrives with production provisioning (41.2): **one project per brand** — `indies-gallery` and `old-east-indies` — each with `staging` and `production` environments, keys under their `.env` names. | 2026-10-01 |
-| **D19** | **No photographer is booked:** every item is the owner's own property, and the owner supplies its photographs to sell it. 6.2's capture standards become the owner's photography guide and the intake spec; its pilot set is the owner's images. | 2026-10-01 |
+| **D19** | **No photographer is booked:** every item is the owner's own property, and the owner supplies its photographs to sell it. 6.2's capture standards become the owner's photography guide and the intake spec; its pilot set is the owner's images. **Updated 2026-10-01: no pilot shoot either** — the pilot set is the client's existing photos (the gallery's from the old site's public read, D41); no request is sent (6.2.f cut), and the guide stays the reference for new items. | 2026-10-01 |
 | **OA-Helios** | **Standing go-ahead for Helios:** the orchestrator may do what the project needs on Helios (staging provisioning, deploys, reads) — given by the owner in session. Production cutover, DNS for the brands' own domains and live credentials still follow their own 👤 items. | 2026-10-01 |
 | **D12** | **Object storage is RustFS** (self-hosted, S3-compatible) — `@payloadcms/storage-s3` unchanged, an endpoint change (DEPLOYMENT.md §2). Staging runs it on Helios, bound to loopback. ⚠ Helios's disk was at 93% (DEPLOYMENT.md §2): where RustFS lives for the full archive (37.2's staging rehearsal, production) is to confirm before 37.2. | 2026-09-30 |
 | **D13 (staging)** | **Staging mail is simulated:** a Mailpit catcher on Helios, loopback-only; nothing is delivered. The production sender (D13) stays open. | 2026-09-30 |
@@ -674,7 +675,7 @@ run beside the build line rather than in it.
   - [x] 6.1.a impeccable `init` against the drafts; list the questions only the owner can answer
   - [x] 6.1.b 👤 owner interview (≤ 15 questions per brand); fold answers in — answered in session 2026-10-01 (`docs/design/journeys/owner-answers.md`, 121e784); the folding is 6.1.f
   - [x] 6.1.c journeys and scenarios — gallery: a collector from Google on a phone → item → verso zoom → request price → WhatsApp → payment link; an institution → proforma → bank transfer; a designer → factsheet → client; a diaspora buyer → town search. Shop: the Instagram in-app browser → configurator → QRIS; a tourist buying in Bali, shipped home to the Netherlands; a hotel → quote → payment link; a showroom QR walk-in; a gift to a recipient abroad. These become the Gallery and Shop stages' done-criteria and the usability scripts for 13.2, 35.2 and 32.2.
-  - [ ] 6.1.e an Indonesian version of `docs/design/journeys/owner-interview.md` before it is sent (client material comes in both languages — project-notes.md), reviewed by a native speaker (the D20 copywriter when there is one) — drafted 2026-10-01 (`owner-interview.id.md`, `owner-interview-toko.id.md`, `pilot-set-request.id.md`); the native review is what remains
+  - [ ] 6.1.e an Indonesian version of `docs/design/journeys/owner-interview.md` before it is sent (client material comes in both languages — project-notes.md), reviewed by a native speaker (the D20 copywriter when there is one) — drafted 2026-10-01 (`owner-interview.id.md`, `owner-interview-toko.id.md`, `pilot-set-request.id.md`); the native review is what remains — ✂️ cut: no native review (D20, 2026-10-01); the Indonesian stands as drafted
   - [x] 6.1.f after OA2: fold each answer in at its `(open — pending the owner interview, OA2 · Gn/Sn)` mark, update each journey's "Open until the owner answers" and its defaults, and route any answer that changes EXPERIENCE-*.md to ARC; ask too whether the gallery states a position on the VOC and the colonial archive (the shop's is stated; the gallery's PRODUCT.md has none — 6.3), and confirm British spelling for both brands — merged 2026-10-01 (a8d6dee): every open mark answered or narrowed to what the owner still owes; J-G6 retired, J-G8 (the negotiated invoice) added, J-S2/J-S5 abroad halves after launch; 7 live journeys per brand
   - [x] 6.1.g ARC's doc corrections from 6.1's review: requirements.md 7.8 names Partnership, not "For Business" (D36); EXPERIENCE-SHOP.md's intro drops "the one sister element" (D9 shares the whole base); EXPERIENCE-GALLERY.md §1 names only the client's four institutions until G10 answers; §3, §5, §9 mark the lifetime guarantee a default (RESEARCH.md §2, D11); and how a shop buyer abroad sees and pays prices at launch settled across COMMERCE.md §3 and PAYMENTS.md §6, phase 32's Done when following
   - [ ] 6.1.i 👤 the gallery's own facts OA2 did not ask: the number buyers call and its hours, the Singapore and Jakarta viewing addresses and hours; then, as the owner sends the S1 catalogue, S2 price list, S4 hours, S6 number and S13 code value, fold each in at its open mark in the emporium PRODUCT.md and the journeys' "Still owed" lines
@@ -686,14 +687,14 @@ run beside the build line rather than in it.
   - **Read** DESIGN-SYSTEM.md §11, CONTENT-MODEL.md (image roles), MIGRATION.md §9, the drafted PRODUCT.md files
   - _Requirements: 4.5, 6.12, 7.12_
   - [x] 6.2.a capture standards per brand: lighting and colour temperature, a colour target in every frame, the raking-light angle, minimum ppi, backgrounds, mat and shadow, **retouching limits (never restore a defect on an original)**, the studio/lifestyle split (gallery: studio, object, raking light, no people; shop: sun, hands, rooms, packaging, the showroom), and how synthetic mockups are labelled
-  - [ ] 6.2.b 👤 the owner supplies the pilot set (D19 — no photographer): six gallery items — including one **typical migrated item** at real data quality — and the Denpasar showroom, shot to 6.2.a's guide where the owner can; each image checked against the intake spec, and any gap named per image
+  - [ ] 6.2.b the pilot set from the client's existing photos (D19 updated 2026-10-01 — no shoot): six gallery items from the old site's public read (D41, `LEGACY_DATA_DIR`), one of them a **typical migrated item** at today's data quality, each checked against the intake spec with any gap named per image; the shop's existing photos join when the owner forwards them (not blocking — the shop's comps may use the gallery's archive images meanwhile, the gap named)
   - [x] 6.2.c the configurator's room scenes: wall colours, scale props, perspective, pre-composited plates
   - [x] 6.2.e ARC → SCH, before 8.3 and 9.1 (6.2's Found 1–6): CONTENT-MODEL.md and C9 give `products` image roles (flat · detail · in-room · lifestyle · scale · packaging · showroom) and `locations` images; a `media.role` value list and `media.provenance` (photograph · composite · rendered · ai-generated); on `masters`, object ppi, the object's box, role and capture tier; a restoration note on `designs`; a publish guard refusing a synthetic image as an original's primary; `primary` a crop of `recto`, never its own photograph; the print ceiling computed from the object's pixels or the design crop, not the master's long edge (ARCHITECTURE.md §7, MIGRATION.md §9, 15.4.c); one shared room-plate set with its geometry (22.7); and a key for pilot masters before OA3 arrives
-  - [ ] 6.2.f fill the pilot request's four placeholders (`{owner's name}`, `{our address}`, `{date}`, `{sender}`) in both the English and the Indonesian version, choose Bapak or Ibu, give the guides it attaches (gallery-guide, shop-guide, the shot lists, handover) Indonesian versions too, and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it — the guides' Indonesian versions merged 2026-10-01 (19f69e6), "Bapak" chosen (121e784); the four placeholders and the send remain
-  - [ ] 6.2.g 👤 the native review (D20, OA4) of the seven guides' `.id.md` drafts, together with 6.1.e's
+  - [ ] 6.2.f fill the pilot request's four placeholders (`{owner's name}`, `{our address}`, `{date}`, `{sender}`) in both the English and the Indonesian version, choose Bapak or Ibu, give the guides it attaches (gallery-guide, shop-guide, the shot lists, handover) Indonesian versions too, and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it — the guides' Indonesian versions merged 2026-10-01 (19f69e6), "Bapak" chosen (121e784); the four placeholders and the send remain — ✂️ cut: no request is sent — the pilot set is existing photos (D19 updated 2026-10-01); the guides stay as the reference for new items
+  - [ ] 6.2.g 👤 the native review (D20, OA4) of the seven guides' `.id.md` drafts, together with 6.1.e's — ✂️ cut: no native review (D20, 2026-10-01); the Indonesian stands as drafted
   - [x] 6.2.h align both versions of the pilot request with the guides — a colour card in every frame except transmitted light and life shots (one reference frame per scene), a reference frame per showroom room (intake-spec.md §6), the stock-number folder rule (handover.md §2–§3) — and add the `showroom_making` shots now that S14 is yes — merged 2026-10-01 (b7754af); the making happens in the Denpasar showroom (owner, 2026-10-01)
   - [ ] 6.2.i video from the photo day (S14 says "film and photograph"): ARC decides in 6.4 whether video is accepted and whether C9 models it; then handover.md §1 and intake-spec.md §3 F1 follow
-  - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the owner's pilot set is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
+  - [ ] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the pilot set (existing photos) is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing.
 
 - [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W1
   - **Lane** UXG + UXE + BRD · **Agent** senior-uiux · **Wave** W1
@@ -702,7 +703,7 @@ run beside the build line rather than in it.
   - _Requirements: 18.8_
   - [x] 6.3.a voice principles and register per brand
   - [x] 6.3.b the lexicon as app keys + brand values ("Price on request", "On hold until", "Reproduction / Reproduksi", "Made to order"…); the `test` brand gets deliberately long values (+30%) to catch overflow
-  - [ ] 6.3.c 👤 native Indonesian copywriter review
+  - [ ] 6.3.c 👤 native Indonesian copywriter review — ✂️ cut: no native review (D20, 2026-10-01); the Indonesian stands as drafted
   - [x] 6.3.e HAR: a copy-completeness gate — `@engine/i18n/copy`'s `checkCopy()` wired into `check-brands` for every brand × the app that renders it × `locales.supported`, the `test` brand checked against the union of both apps' keys; a planted missing key and a planted placeholder mismatch each fail it (none exists today, so 6.3.b's coverage is unguarded)
   - [x] 6.3.f the keys 6.3.b left out: facet and sort names, account section names, the partner shop types (`business.shopType.<value>`), enquiry topics, return reasons and statuses, account attention items, record labels, object types and maker roles; and C2 adopts `message.<code>` for the fixtures' MessageVM codes (with `message.holidayDelay`); and C9 v1.4's labels: `SYNTHETIC_LABEL`, each `PRINT_RESTORATIONS` step, the new image roles, "≈ … — charged in Rp …" with the note that the card issuer or PayPal may convert again (D47), and the room plate's caption with its wall width — merged 2026-10-01 (3e28ed2): gallery 374 → 518 keys, shop 394 → 504, `check:brands` green on every brand × app × locale; the `technique` list waits on phase 8's schema
   - [x] 6.3.g the shop's register to *Anda* (S15): the 54 old-east-indies `id` values in *kamu*/*-mu*/*aku* (6.3.f's report lists them) and the emporium voice.md (§2, §6's first person, §8's S15 row, §9 questions 1–2, 10, 12); and both voice docs' VOC stance (the gallery's matches the shop's) and British spelling — merged 2026-10-01 (db741cb): 54 values + the test brand's 9 moved to *Anda*, 0 pronoun forms left
@@ -712,7 +713,7 @@ run beside the build line rather than in it.
   - [ ] 6.3.k after 6.4: cut or reword the keys D50, S3, S7 and S12 leave unused (6.3.g–i's report lists them: offers, cart, reserve, checkout, holds, a shown price; `madeToOrder`, refunds, PayPal, the "≈" estimate), and key the fixture fields still unlabelled by name (`message`, `conditionNotes`, `locationId`, `slotStart`, `email`, `password`, `orderNumber`, `whatsapp`, `frequency`, `consent.alerts`) or have C2 map them
   - [x] 6.3.l re-pad the 166 older `test` values to +30% over the longest real brand value, not the app default, so an overflow test fails where a brand would overflow — merged 2026-10-01 (a2aaea7): 292 values (en 133, id 13, nl 146) → 0 short; the 12 shell keys (`shell.*`, `home.*`, `notFound.*`) left as they are, since padding would fill locale names and `{brand}`
   - [x] 6.3.m HAR: `check-brands` enforces the +30% rule, so each `test` lexicon value is at least ceil(1.3 ×) the longest real brand value for its key and locale (nl against the app default and the en values); a planted short value fails it — merged 2026-10-01 (1bfed8d): `overflow.mjs`, the test brand found by its per-storefront configs, the shell keys exempt; main passes (id 710, en 714, nl 575 values measured), a planted short value fails
-  - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
+  - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — owner answers from 6.1.b folded in.
 
 - [ ] **6.4 Replan from the owner's answers** · needs: 6.1.b — 🔄 6·W2
   - **Lane** ARC · **Agent** architect · **Wave** W2
@@ -795,9 +796,9 @@ run beside the build line rather than in it.
 
 **Goal:** the discovery vocabulary, the works collection and the media and masters collections.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
-**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2
+**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2, 8.5 (and 8.3.i)
 
-- [x] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
+- [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{makers,places,terms,sources}/**`, their validators
   - **Read** CONTENT-MODEL.md §3, ARCHITECTURE.md §8, EXPERIENCE-GALLERY.md §2
@@ -806,7 +807,7 @@ run beside the build line rather than in it.
   - [x] 8.1.b places: localised modern name, `historicalNames[]`, type, parent, geo point + bbox; cycle guard
   - [x] 8.1.c terms (subject, mood, room, occasion, recipient) and sources (bibliography)
   - [x] 8.1.d gazetteer seed data file (`test/content/seed/gazetteer.json` shape, reused by every brand): the place hierarchy of EXPERIENCE-GALLERY.md §2 and the historical names of ARCHITECTURE.md §8
-  - [x] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
+  - [ ] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
 
 - [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
@@ -821,7 +822,7 @@ run beside the build line rather than in it.
   - [ ] 8.2.g a reference-safe delete: a maker, place, term or source a work still references is refused with "still used by N works" — Payload's relationship tables would otherwise drop the credit silently (8.1 review, senior-be)
   - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
-- [x] **8.3 Media and masters** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
+- [ ] **8.3 Media and masters** · needs: 3.2 — 🔄 8·W1
   - **Lane** MED · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{media,masters}/**` (by agreement with SCH), `engine/packages/media/src/storage/**`
   - **Read** ARCHITECTURE.md §7, CONTENT-MODEL.md §6, KOI CONTENT-MODEL Media
@@ -832,19 +833,31 @@ run beside the build line rather than in it.
   - [x] 8.3.d Upload size limits and allowed types
   - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
-  - [x] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
+  - [ ] 8.3.h (SCH lead) no request leaves a multipart temp file — 8.3's `useTempFiles: true` made Payload write one for every collection's POST/PATCH before access is checked, deleted only for upload collections (anonymous `/api/users` → 403 left ~94 MB); cleanup on every collection, global and error path, tested over the REST handler
+  - [ ] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers)
+  - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
-- [ ] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — 🔄 8·W1
+- [x] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — ✅ 2026-10-01 9396e35
   - **Lane** ARC · **Agent** architect · **Wave** W1
-  - **Owns** `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT}.md`, `engine/packages/media/src/{contract.ts,contract/**}` (C9), `docs/PARALLEL-TRACKS.md` §1 (the cms tests line)
+  - **Owns** `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT}.md`, `docs/EXPERIENCE-GALLERY.md` §2, `engine/packages/media/src/{contract.ts,contract/**}` and `engine/packages/media/test/{keys,roles}.test.ts` (C9), `engine/packages/CONTRACTS.md` (C9's row and changelog), `docs/PARALLEL-TRACKS.md` §1 (the cms tests line)
   - **Read** the two reviews (`.claude/specs/indies-platform/reviews/8.1-senior-be.md`, `8.3-senior-integrator.md`), CONTRACTS.md (versioning), ARCHITECTURE.md §7, CONTENT-MODEL.md §3, §6, DEPLOYMENT.md §2, §8
   - _Requirements: 4.3, 4.6_
-  - [ ] 8.4.a C9 minor version: `iiifFullKey` names a private `iiif-full/` prefix in the brand's own media bucket (both brands — the outlet's masters key writes only `print-files/`), with its changelog entry; `isPublicMediaKey` stays false for it
-  - [ ] 8.4.b a synthetic image's label is added at render from `provenance` (lexicon `image.syntheticAlt.*`), never stored in `alt`: CONTENT-MODEL.md §6 and C9 reworded ("rendered alt text"), so a cataloguer cannot delete it
-  - [ ] 8.4.c `media` is read by the loaders only (Local API): public REST and GraphQL reads of `media` are refused — ARCHITECTURE.md §7, CONTENT-MODEL.md §6
-  - [ ] 8.4.d DEPLOYMENT.md §2/§8: a media bucket is public only under `derivatives/` and `iiif/`, uploads private under `uploads/`; the bucket policies are applied from `@engine/media`'s plan files with each host's keys from its secrets; a CDN never bypasses the bucket policy; the masters bucket's CORS admits the admin origin; the archive's delete-capable key is separate from the web process's; worktrees may use the plan's scoped keys locally
-  - [ ] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
-  - [ ] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
+  - [x] 8.4.a C9 minor version: `iiifFullKey` names a private `iiif-full/` prefix in the brand's own media bucket (both brands — the outlet's masters key writes only `print-files/`), with its changelog entry; `isPublicMediaKey` stays false for it
+  - [x] 8.4.b a synthetic image's label is added at render from `provenance` (lexicon `image.syntheticAlt.*`), never stored in `alt`: CONTENT-MODEL.md §6 and C9 reworded ("rendered alt text"), so a cataloguer cannot delete it
+  - [x] 8.4.c `media` is read by the loaders only (Local API): public REST and GraphQL reads of `media` are refused — ARCHITECTURE.md §7, CONTENT-MODEL.md §6
+  - [x] 8.4.d DEPLOYMENT.md §2/§8: a media bucket is public only under `derivatives/` and `iiif/`, uploads private under `uploads/`; the bucket policies are applied from `@engine/media`'s plan files with each host's keys from its secrets; a CDN never bypasses the bucket policy; the masters bucket's CORS admits the admin origin; the archive's delete-capable key is separate from the web process's; worktrees may use the plan's scoped keys locally
+  - [x] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
+  - [x] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
+
+- [ ] **8.5 Staging storage holds 8.3's layout before 8.3 reaches staging** · needs: 8.3, 8.4
+  - **Lane** HAR (ops) · **Agent** devops · **Wave** W2 · on Helios under the standing go-ahead (OA-Helios); a new DNS name is 👤
+  - **Owns** `scripts/ops/**` (the storage step), `docs/ops/helios-staging.md`, the hosts' storage plan files outside `engine/` (real brand slugs may not sit under `engine/`)
+  - **Read** DEPLOYMENT.md §2, §8 (8.4's "Object storage" subsection), `engine/packages/media/src/storage/policies/**`, 8.3's review (#5), 8.4's report (Found 4, 5)
+  - _Requirements: 4.3, 4.6_
+  - [ ] 8.5.a A staging plan per brand applied to Helios's RustFS with `--secrets env`: each media bucket public only under `derivatives/` and `iiif/` (today the whole bucket allows anonymous GET — once 8.3 deploys, `uploads/` originals with their EXIF would be public), no anonymous listing; each brand's scoped media and masters keys in its `shared/.env`
+  - [ ] 8.5.b The presigned master PUT reachable from the admin's browser: RustFS behind an HTTPS address the browser can reach (an nginx path on the staging host, or a DNS-only name — 👤 if a new DNS record), `S3_ENDPOINT` set to it, the masters bucket's CORS admitting each admin origin
+  - [ ] 8.5.c RustFS parity on staging (41.2.e's checks, early): a tampered presigned PUT refused (it verifies `x-amz-checksum-sha256`), HEAD with `ChecksumMode` returns `ChecksumSHA256`, prefix-scoped anonymous GET enforced, `apply.mjs`'s `mc` commands answered — or the gap recorded with a fail-closed fallback
+  - [ ] 8.5.d **Check:** on staging, an anonymous GET of an object under `uploads/` and `iiif-full/` is 403 and under `derivatives/` 200; a master uploads from the admin by presigned PUT and a tampered one is refused; the outlet's key is refused outside its own `print-files/<brand>/`; no `main` → `production` push carrying 8.3 goes out before this passes.
 
 ---
 
@@ -1136,6 +1149,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.2_
   - [ ] 15.2.a the tiler (pure, shared by both paths) and the queue job
   - [ ] 15.2.b the off-box CLI with resume, a dry run and a per-item report
+  - [ ] 15.2.d (ARC first) C9: the public pyramid's key carries the resolution cap or a tile version, so lowering `publicZoomMaxPx` never leaves higher tiles public under keys C9 calls immutable (8.4 Found 6)
   - [ ] 15.2.c **Check:** `sharp().tile({ layout: 'iiif3', size: 512 })` writes Level 0 tiles and `info.json` to the brand bucket; **public tiles stop at the configured resolution cap** while the full-resolution pyramid goes to the private `iiif-full/` prefix of the brand's own media bucket (C9, 8.4.a), anonymously 403; the queue job (new uploads, `sharp.concurrency` capped, run by `/api/x/cron/jobs`) is idempotent and retried and the media record shows its status; and `pnpm media:tile` tiles a batch **off-box** — on a workstation or CI runner, straight to the bucket, resumable, updating records through the API — for the migration (36.3).
 
 - [ ] **15.3 IIIF Presentation manifests** · needs: 8.2, 15.2
@@ -1154,7 +1168,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.3, 4.4_
   - [ ] 15.4.a On the presigned-PUT flow 8.3.b built (key, length and SHA-256 signed; checksum recorded): measure and record the stored master's pixels, ppi and colour profile
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
-  - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted
+  - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted; filing runs outside the web process, with the archive's delete-capable key (DEPLOYMENT.md §2)
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
   - [ ] 15.4.e **Check:** masters are uploaded by presigned PUT straight to the private bucket and record pixels, ppi, colour profile and checksum; presigned read URLs expire and are logged; the shop's key is refused outside `print-files/` (a test against MinIO policies); a design's print ceiling is computed from its master at the product type's minimum ppi (240 by default: a 3543 px long edge → 375 mm) and stored; a test proves an over-ceiling variant is refused on save and on publish.
 
@@ -1535,6 +1549,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 22.7.b C2's next minor version (v1.5 — 6.2.e took v1.4): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
   - [ ] 22.7.d C10: an old item link whose slug part does not decode as UTF-8 — `%FF`, a Latin-1 `caf%E9`, raw UTF-8 bytes in the request line — reaches the item route by its canonical id with a fixed ASCII slug no item has (C10 names it), never the bytes as asked, which Next cannot decode into the route's param and answers with a bare 500; so it gets the one 308, its query kept (MIGRATION.md §6; 4.1 senior-fe #12, 4.3 senior-fe #4)
   - [ ] 22.7.e C2 v1.5 carries what 6.2.e found missing: `ImageVM.syntheticLabel` (not a boolean), a design's restoration steps on `ItemVM`, `PreviewVM` plates shaped on C9 `RoomPlate` (both framings × both crops); and C12 v1.5 `WorkSnapshot.master.objectBox`, its wording corrected; and ARC settles three room-plate questions from the imagery alignment: whether a plate photographed with a print placed in it is `composite` (C9 allows only `rendered` or `photograph`), whether room-scenes.md §10's recoloured-wall fallback is still a `photograph`, and whether the plate caption is one lexicon key or a per-plate field
+  - [ ] 22.7.f From 8.4: C12 `SnapshotImage.synthetic: SyntheticLabel | null` (a print listing's mockup keeps its label at the origin) and the renderer composing alt through C9's `renderedAlt()`; C1 declares `MAKER_ROLES` and `DATE_PRECISIONS` once (`config/src/schema/catalogue.ts`), C2, C12, i18n, migrate and cms derive from them
   - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; `/product/1706-caf%E9` and `/product/1706-%FF` parse to item 1706 with the fixed slug (`strict-paths.test.ts`), and on a production build the status spec sees each answer 308, never 500 (two cases in `tests/e2e/status/`, HAR's file: proposed in the report, added at merge); the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
 
 ---
@@ -2162,6 +2177,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 36.1.a Maker strings clustered into makers with aliases (never auto-merged below 0.9)
   - [ ] 36.1.b `categories.json`: every legacy category id mapped to a facet selection
   - [ ] 36.1.c 👤 The curator reviews and signs both (about an hour)
+  - [ ] 36.1.e 👤 The curator settles the gazetteer's gaps (8.4 Found 8): whole-archipelago maps (ARC recommends a leaf root `east-indies`, first in root order, historical names Oost-Indië, Nederlandsch-Indië, Insulinde, India Orientalis) and Southeast Asia, Asia, the world, Europe, Africa, the Americas and Arabia as regions under `beyond-indonesia` — the islands stay roots, so no path moves
   - [ ] 36.1.d **Check:** maker strings cluster into makers with aliases (never auto-merged below 0.9), `categories.json` maps every legacy category id to a facet selection, and the curator has reviewed and signed both (👤, ~1 hour).
 
 - [ ] **36.2 Old East Indies mapping and product import** · needs: 7.3, 9.2
@@ -2373,6 +2389,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.1.b Rate limits (auth, forms, offers, checkout, order lookup); webhook replay protection; admin lockout
   - [ ] 41.1.c Dependency and secret scanning in CI; the OWASP Top 10 checklist
   - [ ] 41.1.e the foundation gate's N1 and N3: CloudPanel's vhost adds its own security headers, so `X-Content-Type-Options` and others go out twice where the app sets them (`curl -sD- https://old-east-indies.gaiada.com/api/health` shows `nosniff, nosniff`) — the provision script drops those `add_header` lines from our vhosts; and route parity refuses a non-literal `config.matcher` statically (today only `next build` catches it)
+  - [ ] 41.1.f nginx `client_max_body_size` small by default and about 100 MB only for `/api/media` and `/admin` (8.3's review: multipart bodies are parsed before access is checked)
   - [ ] 41.1.d **Check:** the CSP is **built per request** from brand config by the one builder (payment-provider, analytics and sister origins only; adding a provider needs a restart, not a rebuild), the request carrying the same header the answer does, security headers ship with tests, rate limits cover auth/forms/offers/checkout/order lookup, webhook replay protection and admin lockout are tested, dependency and secret scanning run in CI, and an OWASP Top 10 checklist is complete; card data never reaches our servers.
 
 - [ ] **41.2 👤 Production provisioning, backups, restore drill, monitoring** · needs: 5.1 · 👤 the Helios go-ahead for each target
@@ -2432,7 +2449,7 @@ photography or copy.
 - [ ] **42.6 👤 Full copy review in both locales — the shop** · needs: 6.3, phase 29, phase 32
   - **Lane** QA + UXG/UXE · **Agent** senior-uiux (with the native Indonesian writer) · **Wave** W1
   - _Requirements: 18.8_
-  - [ ] 42.6.a 👤 The shop: every page, email, WhatsApp template and document read on staging in English and Indonesian against the lexicon and voice, with the native writer; every correction merged
+  - [ ] 42.6.a 👤 The shop: every page, email, WhatsApp template and document read on staging in English and Indonesian against the lexicon and voice (no native writer — D20); every correction merged
   - [ ] 42.6.b **Check:** every page, email, WhatsApp template and document of the brand has been read on staging in English and Indonesian against the lexicon and voice, and every correction is merged.
 
 - [ ] **42.7 👤 The gallery's dark production import** · needs: 27.1, 37.3, 41.2.b · 👤 the Helios go-ahead (D25)
@@ -2496,7 +2513,7 @@ photography or copy.
 - [ ] **43.6 👤 Full copy review in both locales — the gallery** · needs: 6.3, phase 29, phase 35
   - **Lane** QA + UXG/UXE · **Agent** senior-uiux (with the native Indonesian writer) · **Wave** W1
   - _Requirements: 18.8_
-  - [ ] 43.6.a 👤 The gallery: the same read, with the native writer; every correction merged
+  - [ ] 43.6.a 👤 The gallery: the same read (no native writer — D20); every correction merged
   - [ ] 43.6.b **Check:** every page, email, WhatsApp template and document of the brand has been read on staging in English and Indonesian against the lexicon and voice, and every correction is merged.
 
 - [ ] **43.7 👤 Content sprint: hook titles and alt text for the top 500** · needs: 23.3, 23.5, 36.3
@@ -2648,6 +2665,8 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — **D20 answered: no native Indonesian review** — 6.1.e, 6.2.g and 6.3.c cut, OA4 not needed, 42.6/43.6 read without one. **D19 updated: no pilot shoot** — the pilot set is the client's existing photos (the old site's public read), 6.2.f cut (no request sent), OA3 not needed; 6.2.b becomes agent work. The board script now skips a ✂️ subtask (`scripts/board/{table,sync}.mjs`, a test), as rule 7 says, so a task with a cut subtask can close. 6.3.m merged (1bfed8d).
+- 2026-10-01 — ✅ **8.4** (9396e35) — the decisions of 8.1's and 8.3's independent reviews, in the docs and C9 v1.6 (additive: keys byte-identical; `renderedAlt`, `opensWithLabel`, `SyntheticLabelWords` added): the full-resolution pyramid private under `iiif-full/` in each brand's own media bucket; a synthetic image's label added at render from provenance, never stored in `alt`; `media` read on the server only (public REST refused, GraphQL off); DEPLOYMENT §2/§8's object-storage rules (public only `derivatives/` and `iiif/`, plans per host, two keys per process, the archive's delete key off the web process, masters CORS); `MAKER_ROLES`/`DATE_PRECISIONS` named in CONTENT-MODEL §3 (C1 move → 22.7.f); Beyond Indonesia a root region; ARCHITECTURE §2 says RustFS. Its Found placed: staging buckets public whole-bucket → new **8.5** (before 8.3 deploys); 8.3.i, 15.2.d, 22.7.f, 36.1.e.
 - 2026-10-01 — **The board syncs itself.** `scripts/progress.mjs` (now `scripts/board/{sync,table,run}.mjs`) closes every task whose subtasks are all ticked (`- [x] … — ✅ <today> <HEAD sha>`, its 🔄/⛔ dropped), removes its **Now** rows and rebuilds the table. It runs from the git pre-commit hook on any commit that includes TASKS.md (a post-commit hook keeps the index right after `git commit TASKS.md -m …`), from a Claude Code PostToolUse hook after any edit to TASKS.md (`.claude/settings.json`), and by hand as `pnpm tasks:sync` / `pnpm tasks:tick <ids…>`; `pnpm verify` runs `tasks:check`, which fails on a stale board. Hooks install on `pnpm install` (`core.hooksPath=.githooks`); an agent worktree's copy is never rewritten. New lint rule: a ticked task with an open subtask. 21 tests in `scripts/board/`, the hooks driven end to end in a throwaway repository. Rules 3 and 4 above, DISPATCH.md, PARALLEL-TRACKS.md §3 and CONVENTIONS.md updated.
 - 2026-10-01 — **D54: no collector accounts on the gallery** (the developer: "this is simply buy and sell") — sign-in for the shop's retailers only; want-lists by email; the old customers import as staff-side records with no claim flow. New 6.4.h; 6.4's board diff now covers phases 29 and 36 too. The developer keeps the 44 phases and runs them one at a time (quota) — no consolidation pass.
 - 2026-10-01 — ✅ **phase 7** — the old catalogue and the shop's URL discovery, on simulation and seed (D53). Evidence on `main`: the restore harness on the mock dump (`restore.integration.test.ts`, 15 tables, 240 rows) with its schema notes; the read-only public read (D41) — 1,823 products (1,607 listed, 216 sold), 2,289 images, 7,665 URLs inventoried, paths only; the normalisers over all 1,823 records with a fixture test per MIGRATION.md §4 case and the review file (2,323 rows, raw beside proposal); the shop's 673 legacy paths from the Wayback CDX index and the archived sitemaps (D43), the Search Console importer proven on a synthetic export; nothing done to either old site beyond GETs (the enquiry-address incident logged under 7.1). 7.1.a and 7.3.a closed as simulated; the real dump (OA9) and Search Console export (OA11) go through the built harness in 36.3.e and 36.2.c. Phase 7's slot is free.

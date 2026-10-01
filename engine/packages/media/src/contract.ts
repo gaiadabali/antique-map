@@ -1,13 +1,15 @@
 /**
  * @contract C9 — media artefacts · owner: ARC · consumers: MED, WEB, UXG, UXE, MIG, SIS, LOG, SCH, ADM
  *
- * What every image artefact is called and where it lives (ARCHITECTURE.md §7). The brand's
- * public bucket (`MEDIA_BUCKET`, behind the CDN, public URL `MEDIA_PUBLIC_URL`) holds the
- * derivatives and the capped IIIF tiles; the shared private bucket (`MASTERS_BUCKET`) holds
- * masters, print files and the uncapped zoom pyramid. Buckets and hosts come from the
- * environment, never from code. Public keys are content-addressed and versioned, so they
- * are cached immutably: a changed image is a new key, never a stale one. View models carry
- * resolved URLs built with these functions (C2); no component builds a media URL.
+ * What every image artefact is called and where it lives (ARCHITECTURE.md §7, DEPLOYMENT.md §2).
+ * Each brand has its own media bucket (`S3_BUCKET`), public only under `derivatives/` and `iiif/`
+ * — the derivative ladder and the capped IIIF tiles, behind the CDN at `MEDIA_PUBLIC_URL` — and
+ * private everywhere else: its uploads (`uploads/`, the storage plugin's prefix) and its uncapped
+ * zoom pyramid (`iiif-full/`). The shared private bucket (`MASTERS_BUCKET`) holds masters and
+ * print files. Buckets and hosts come from the environment, never from code. Public keys are
+ * content-addressed and versioned, so they are cached immutably: a changed image is a new key,
+ * never a stale one. View models carry resolved URLs built with these functions (C2); no
+ * component builds a media URL.
  *
  * The parts: this file names the keys; `./contract/roles` what an image is and how it was
  * made (its role and provenance, and which image leads a page); `./contract/masters` what the
@@ -52,7 +54,14 @@ export const IIIF_TILE_SIZE = 512
 export function iiifPublicKey(id: AssetId) {
   return `iiif/${id}`
 }
-/** In the private bucket; served only through `MEDIA_ROUTES.fullTiles` to staff. */
+/**
+ * The uncapped pyramid, in the brand's own media bucket under the private `iiif-full/` prefix —
+ * both brands alike, each writing its own with its media key (v1.6; v1.4 named the masters
+ * bucket, where an outlet's key writes only its print files). The bucket's public policy names
+ * `iiif/` with its slash, so nothing under `iiif-full/` is public; it is served only through
+ * `MEDIA_ROUTES.fullTiles`, to staff. The key is v1.1's, unchanged: in a brand's own bucket its
+ * `brand` segment is always that brand's slug.
+ */
 export function iiifFullKey(brand: string, id: AssetId) {
   return `iiif-full/${brand}/${id}`
 }
@@ -67,7 +76,7 @@ export const MEDIA_ROUTES = {
   manifest: (workUid: string) => `/api/x/media/manifest/${encodeURIComponent(workUid)}`,
   /** Staff only: the same manifest over the uncapped pyramid. */
   fullManifest: (workUid: string) => `/api/x/media/manifest/${encodeURIComponent(workUid)}/full`,
-  /** Staff only: streams `iiifFullKey()` from the private bucket. */
+  /** Staff only: streams `iiifFullKey()` from the brand's own media bucket. */
   fullTiles: (id: AssetId) => `/api/x/media/full/${id}`,
 } as const
 
@@ -99,7 +108,7 @@ function kebabSegment(value: string, what: string): string {
  * migration batch not yet loaded — or whose subject is no work: a showroom photograph, a room
  * plate's master. `brand` is the slug of the brand whose subject it is, `batch` the handover it
  * came in (`pilot-2026-10`), `checksum` the SHA-256 of the file as received. Written, like every
- * `masters/` key, with the origin's credentials: an outlet still writes only `print-files/`.
+ * `masters/` key, with the origin's credentials: an outlet writes only its own print files.
  *
  * A work's capture is FILED once its work exists — copied to `masterKey(workUid, …)`, the copy
  * verified by its checksum, the record re-pointed, the intake object deleted: the one move a
@@ -127,9 +136,12 @@ function intakeBatchPrefix(brand: string, batch: string) {
   return `${INTAKE_MASTERS_PREFIX}${kebabSegment(brand, 'brand')}/${kebabSegment(batch, 'batch')}/`
 }
 
-/** The only prefix an outlet brand's storage key may write (a MinIO/R2 policy, tested). */
+/**
+ * Where print files live, and all an outlet brand's masters key may write: under its own slug,
+ * `printFileKey(<its slug>, …)`, and nowhere else (the storage policy, tested; DEPLOYMENT.md §2).
+ */
 export const PRINT_FILES_PREFIX = 'print-files/'
-/** A colour-managed, cropped design file for reproduction. */
+/** A colour-managed, cropped design file for reproduction, under the brand that made it. */
 export function printFileKey(brand: string, designUid: string, checksum: string, ext: string) {
   return `${PRINT_FILES_PREFIX}${brand}/${designUid}/${checksum}.${ext}`
 }

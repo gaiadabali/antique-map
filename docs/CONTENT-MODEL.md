@@ -193,11 +193,22 @@ mount`) · `marketPrices` (explicit, when the table is overridden) · `weight`,
 
 | Collection | Holds | Notes |
 | ---------- | ----- | ----- |
-| **makers** | name, sortName ("BLAEU, Willem Janszoon"), aliases (Valentyn, Valentijn), roles, life dates with precision, nationality, bio (blocks), portrait, `sameAs` (Wikidata, ULAN) | a maker page per maker — raremaps' strongest SEO asset |
+| **makers** | name, sortName ("BLAEU, Willem Janszoon"), aliases (Valentyn, Valentijn), roles (`MAKER_ROLES`, below), life dates with precision (`DATE_PRECISIONS`, below), nationality, bio (blocks), portrait, `sameAs` (Wikidata, ULAN) | a maker page per maker — raremaps' strongest SEO asset |
 | **places** | the **gazetteer**: modern name (localised), `historicalNames[] { name, language, period }` (Batavia, Iava, Celebes, Moluccas…), type, parent, `geo { lat, lng, bbox }`, description | hierarchy two levels deeper than any competitor (Java → Batavia/Jakarta, Buitenzorg/Bogor…); drives search expansion |
 | **terms** | editable vocabularies: `subject`, `mood`, `room`, `occasion`, `recipient`, `grade` (each grade with its definition and A–D equivalent) | objectType and technique are controlled selects because behaviour depends on them |
 | **sources** | the bibliography: short cite (Tooley, Koeman, Parry, Schilder, Suárez, Tibbetts), full citation, year, url | each reference on a work links to its source page |
 | **curations** | `kind`: `collection` · `catalogue` · `exhibition` · `gift-guide` · `wall-set`; title, intro (blocks), hero, members (manual list **or** a saved facet query), dates, `pdf` (catalogues) | "Spice Islands", "Hofker's Bali Hotel", the End-of-Year Catalogue; a price-named curation ("Gifts under $350") stores **a threshold per market**, so an Indonesian-delivery page reads "Hadiah di bawah Rp 5 juta" and never shows dollars |
+
+**The makers' two value lists** are each declared once and imported, never retyped:
+**`MAKER_ROLES`** — `cartographer` · `engraver` · `publisher` · `author` · `artist` ·
+`photographer` · `studio` · `printer`, C2's `MakerRole` and C12's `SnapshotMaker.role` —
+is what a maker is known for and the role a work's credit names (§1 `makers`);
+**`DATE_PRECISIONS`** — `exact` · `circa` · `before` · `after` · `range` · `unknown`,
+C2's `DatePrecision` — is a maker's life dates' precision and a work's `date.precision`
+alike (§1: a date is never implied certain). Both are in `@engine/cms`
+(TASKS.md 8.1: `collections/makers/roles.ts`, `validators/maker-life-dates.ts`), where
+works import them (8.2), until C1 takes them in beside `OBJECT_TYPES` — the home its rule
+gives every catalogue vocabulary — and C2 derives its two types from them.
 
 **Facets** exposed on browse (both brands, per module): object type · place
 (hierarchical, historical names searchable) · maker · date range / century /
@@ -322,7 +333,7 @@ are made from; a **print file** is a design's derived copy for reproduction, the
 file ever restored; an image's **role** says what it is and its **provenance** how it
 was made, both set once at intake, on the master and on its media alike.
 
-- **media** — public uploads: `alt` (localised, **required**), caption, credit,
+- **media** — the images pages show: `alt` (localised, **required**), caption, credit,
   licence, `role` (**required**, C9 `MEDIA_ROLES` — a work's, a product's, a
   location's, `room-plate` or `editorial` — its master's role; never `primary`),
   `provenance` (**required, no default**, C9 `MEDIA_PROVENANCES`: `photograph` ·
@@ -330,12 +341,26 @@ was made, both set once at intake, on the master and on its media alike.
   and never inferred; it replaces KOI's `aiGenerated` flag, its last value),
   `master` (→ masters, staff-only, nullable: the capture it was processed from — an
   editorial upload has none), focal point, derivatives + blur (derived), IIIF status
-  and tile source. A synthetic image shows C9's `SYNTHETIC_LABEL` — "Digital mockup"
-  or "AI-generated image", in the lexicon's words — on the image, at the start of its
-  alt text, in its caption and in the filmstrip, wherever it appears. Alt text has a
-  **deterministic baseline** built from the record ("Engraved map of Bali by
-  François Valentijn, 1726, hand-coloured, recto"; a synthetic image's starts with
-  its label) — not AI, so it can publish — which a cataloguer improves over time;
+  and tile source. `role` and `provenance` are set once, when the record is made,
+  and no edit in the admin or over REST may change either. **The upload itself is
+  never public**: it lands in the brand's media bucket under the private `uploads/`
+  prefix — full resolution, perhaps still with the camera's metadata — and the
+  public sees only its derivatives and capped tiles (ARCHITECTURE.md §7).
+  **A record is read on the server alone**: by staff in the admin, and by the
+  loaders and the sister API on the Local API, each reaching an image through the
+  published record or global that places it. A public REST or GraphQL read of
+  `media` is refused: a record has no draft of its own, so a public list would name
+  an unpublished work's images too. A synthetic image shows C9's `SYNTHETIC_LABEL`
+  — "Digital mockup" or "AI-generated image", in the lexicon's words — on the
+  image, at the start of its **rendered** alt text, in its caption and in the
+  filmstrip, wherever it appears. The label is **added at render, from
+  `provenance`** (`image.synthetic.<label>`, `image.syntheticAlt.<label>`; C9
+  `renderedAlt()`), and **never stored in `alt`**, which describes the image and
+  nothing else: no edit of the alt can remove the label, and an alt that already
+  opens with its words is not labelled twice. Alt text has a **deterministic
+  baseline** built from the record ("Engraved map of Bali by François Valentijn,
+  1726, hand-coloured, recto" — the description alone, a synthetic image's too) —
+  not AI, so it can publish — which a cataloguer improves over time;
   AI-drafted alt stays flagged until verified. The CMS guide carries alt-writing
   guidance for maps and prints (region, cartouche, colour, notable features).
   Without the baseline, the migration's 2,090 items could not publish.
@@ -348,11 +373,14 @@ was made, both set once at intake, on the master and on its media alike.
   pipeline that transcodes, frames and captions a self-hosted video.
 - **masters** — a **plain collection, not an upload collection**, one record per
   private file: `kind` (`capture` — a file as received — or `print-file` — a design's
-  print file under `print-files/`), `storageKey` (C9 `masterKey()` for a work's
+  print file under `print-files/<brand>/`), `storageKey` (C9 `masterKey()` for a work's
   capture, `intakeMasterKey()` for a capture with no work yet or none at all,
   `printFileKey()` for a print file), `checksum` (SHA-256, unique), `widthPx` ×
-  `heightPx` (the whole frame's pixels), colour profile, owning brand, `work` (→
-  works, nullable until filed), `design` (→ designs, a print file's), access log.
+  `heightPx` (the whole frame's pixels), colour profile, owning brand (the brand
+  whose process made the record, which a print file's key names; never changed),
+  `work` (→ works, nullable until filed), `design` (→ designs, a print file's),
+  access log. An outlet records print files only, its own: it names an origin's
+  capture by the key in the sister snapshot (C12), never by a record of its own.
   **What the intake measured, on a capture** (`docs/design/imagery/intake-spec.md`;
   C9 `IntakeEntry`): `role` (C9 `MasterRole` — a media role, or a `reference` frame:
   the grey board, the card alone, a scene's colour reference, kept and never
