@@ -150,6 +150,11 @@ reload silently and the old code keeps serving.
 Rollback is repointing `current` and reloading — seconds, no rebuild. Two
 releases are kept per target.
 
+**Staging on Helios, as built and proven** — the hosts, the poller's health check (`/`, 6 × 5 s,
+20 s each), the first deploys, the restart and rollback rehearsals, and a defect in the shared
+`gaiada-deploy --rollback` for `subdir` targets — is recorded in
+[ops/helios-staging.md](ops/helios-staging.md) (TASKS.md 5.1.c).
+
 ## 4. Migrations
 
 The same rules as KOI, applied to two databases:

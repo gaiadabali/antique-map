@@ -21,7 +21,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 2/6 | 22/37 | 1 | `██████░░░░`  59% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 2/6 | 24/37 | 1 | `███████░░░`  65% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **22/175** | **152/822** | **47** | `██░░░░░░░░`  18% |
+| **All** | 44 phases | | | **22/175** | **154/822** | **47** | `██░░░░░░░░`  19% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -157,7 +157,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 5·W1 | 5.1 Staging on Helios | orchestrator (script by devops, reviewed twice) | `antique-map-p5-har-r2` / `feat/p5-har-r2` (merged 2712b39) | 2026-10-01 | provisioned and idempotent on Helios (indies-gallery / old-east-indies.gaiada.com, loopback only, holding 503); next: production push → first CI-built release, secrets, TLS, --verify-restart, rollback rehearsal |
+| 5·W1 | 5.1 Staging on Helios | orchestrator | merged 2712b39, 7a5b20f | 2026-10-01 | live: both sites healthy on 1eddcaf, restart and rollback rehearsed; ⛔ 👤 Infisical entries (5.1.b) |
 | 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
@@ -578,9 +578,9 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - **Read** DEPLOYMENT.md §2, §3 (the pm2 entry and the bind), §9; KOI docs/ops/helios-koi-setup.sh; memory: Helios writes need the owner's go-ahead each time
   - _Requirements: 19.7, 19.8, 19.9_
   - [x] 5.1.a `scripts/ops/helios-provision.sh` (idempotent, shellchecked): site users `uig`/`uoei`, ports (verify free), databases and roles (no role with `CREATEDB` — 4.8's review S4), `shared/.env` skeletons (with `BRAND_ROOT`, `SITE_URL=https://<its domain>`, `RUN_MIGRATIONS=1`, `REVALIDATE_ORIGIN=http://127.0.0.1:<app port>` (4030 gallery, 4031 emporium — 4.8.e) and, in production, `SISTER_BASE_URL` — never `LOCAL_PRODUCTION_BUILD`, DEPLOYMENT.md §8), pm2 ecosystem (DEPLOYMENT.md §3: `node <current>/engine/apps/<app>/server.js`, `exec_mode: 'fork'`, `instances: 1`, `node_args: --dns-result-order=ipv4first`, `HOSTNAME=localhost`, nginx's upstream `http://127.0.0.1:<port>`), crontab for the jobs-queue route and the sweepers (DEPLOYMENT.md §5) — the jobs line only once 4.6 has landed, or it answers 503 1,440 times a day (senior-be, 4.1), and accepting 200 and 409 (`busy` while a run is in flight — never `curl -f`; 4.6 review #3) — backup timers
-  - [ ] 5.1.b 👤 owner approves and runs it; DNS for both staging hostnames; object-storage buckets and keys; Infisical entries
-  - [ ] 5.1.c first release deployed; rollback rehearsed; results recorded in `docs/DEPLOYMENT.md` — including the deploy agent's health timeout and retries, checked on loopback or with a timeout that outlasts the longest migration (the first `/api/health` runs the migrations and is untimed by design; Cloudflare gives up at 100 s — 4.6 review #2)
-  - [ ] 5.1.d **Check:** `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` serve the shells from a CI-built release, health checks are green, and one rollback has been rehearsed; each app listens on `127.0.0.1` alone (`ss -ltnp`), and its port refuses a connection from outside (`curl http://<public-ip>:4030`), the host firewall confirmed with the owner's go-ahead.
+  - [ ] 5.1.b 👤 owner approves and runs it; DNS for both staging hostnames; object-storage buckets and keys; Infisical entries — done 2026-10-01 but Infisical: the go-ahead (OA8), DNS (the owner's records), RustFS buckets and scoped keys, every secret generated on the host; no Infisical access yet, so the secrets live only in each site's `shared/.env` (docs/ops/helios-staging.md)
+  - [x] 5.1.c first release deployed; rollback rehearsed; results recorded in `docs/DEPLOYMENT.md` — including the deploy agent's health timeout and retries, checked on loopback or with a timeout that outlasts the longest migration (the first `/api/health` runs the migrations and is untimed by design; Cloudflare gives up at 100 s — 4.6 review #2)
+  - [x] 5.1.d **Check:** `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` serve the shells from a CI-built release, health checks are green, and one rollback has been rehearsed; each app listens on `127.0.0.1` alone (`ss -ltnp`), and its port refuses a connection from outside (`curl http://<public-ip>:4030`), the host firewall confirmed with the owner's go-ahead.
 
 - [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4, 5.6
   - **Lane** QA · **Agent** qa · **Wave** W3
