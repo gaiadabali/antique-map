@@ -24,21 +24,21 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 19/38 | 4 | `█████░░░░░`  50% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/4 | 10/26 | 0 | `████░░░░░░`  38% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/5 | 10/31 | 1 | `███░░░░░░░`  32% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
-| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | · not started | 0/4 | 0/24 | 1 | `░░░░░░░░░░`   0% |
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/2 | 0/12 | 1 | `░░░░░░░░░░`   0% |
-| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/37 | 1 | `░░░░░░░░░░`   0% |
+| **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/38 | 1 | `░░░░░░░░░░`   0% |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/28 | 2 | `░░░░░░░░░░`   0% |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
@@ -52,7 +52,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/15 | 1 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
-| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/16 | 5 | `░░░░░░░░░░`   0% |
+| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/17 | 6 | `░░░░░░░░░░`   0% |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **31/179** | **208/867** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **31/180** | **208/875** | **49** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -797,7 +797,7 @@ run beside the build line rather than in it.
 
 **Goal:** the discovery vocabulary, the works collection and the media and masters collections.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
-**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2
+**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2, 8.5 (and 8.3.i)
 
 - [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
@@ -835,11 +835,12 @@ run beside the build line rather than in it.
   - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
   - [ ] 8.3.h (SCH lead) no request leaves a multipart temp file — 8.3's `useTempFiles: true` made Payload write one for every collection's POST/PATCH before access is checked, deleted only for upload collections (anonymous `/api/users` → 403 left ~94 MB); cleanup on every collection, global and error path, tested over the REST handler
+  - [ ] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers)
   - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 - [ ] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — 🔄 8·W1
   - **Lane** ARC · **Agent** architect · **Wave** W1
-  - **Owns** `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT}.md`, `engine/packages/media/src/{contract.ts,contract/**}` (C9), `docs/PARALLEL-TRACKS.md` §1 (the cms tests line)
+  - **Owns** `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT}.md`, `docs/EXPERIENCE-GALLERY.md` §2, `engine/packages/media/src/{contract.ts,contract/**}` and `engine/packages/media/test/{keys,roles}.test.ts` (C9), `engine/packages/CONTRACTS.md` (C9's row and changelog), `docs/PARALLEL-TRACKS.md` §1 (the cms tests line)
   - **Read** the two reviews (`.claude/specs/indies-platform/reviews/8.1-senior-be.md`, `8.3-senior-integrator.md`), CONTRACTS.md (versioning), ARCHITECTURE.md §7, CONTENT-MODEL.md §3, §6, DEPLOYMENT.md §2, §8
   - _Requirements: 4.3, 4.6_
   - [ ] 8.4.a C9 minor version: `iiifFullKey` names a private `iiif-full/` prefix in the brand's own media bucket (both brands — the outlet's masters key writes only `print-files/`), with its changelog entry; `isPublicMediaKey` stays false for it
@@ -848,6 +849,16 @@ run beside the build line rather than in it.
   - [ ] 8.4.d DEPLOYMENT.md §2/§8: a media bucket is public only under `derivatives/` and `iiif/`, uploads private under `uploads/`; the bucket policies are applied from `@engine/media`'s plan files with each host's keys from its secrets; a CDN never bypasses the bucket policy; the masters bucket's CORS admits the admin origin; the archive's delete-capable key is separate from the web process's; worktrees may use the plan's scoped keys locally
   - [ ] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
   - [ ] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
+
+- [ ] **8.5 Staging storage holds 8.3's layout before 8.3 reaches staging** · needs: 8.3, 8.4
+  - **Lane** HAR (ops) · **Agent** devops · **Wave** W2 · on Helios under the standing go-ahead (OA-Helios); a new DNS name is 👤
+  - **Owns** `scripts/ops/**` (the storage step), `docs/ops/helios-staging.md`, the hosts' storage plan files outside `engine/` (real brand slugs may not sit under `engine/`)
+  - **Read** DEPLOYMENT.md §2, §8 (8.4's "Object storage" subsection), `engine/packages/media/src/storage/policies/**`, 8.3's review (#5), 8.4's report (Found 4, 5)
+  - _Requirements: 4.3, 4.6_
+  - [ ] 8.5.a A staging plan per brand applied to Helios's RustFS with `--secrets env`: each media bucket public only under `derivatives/` and `iiif/` (today the whole bucket allows anonymous GET — once 8.3 deploys, `uploads/` originals with their EXIF would be public), no anonymous listing; each brand's scoped media and masters keys in its `shared/.env`
+  - [ ] 8.5.b The presigned master PUT reachable from the admin's browser: RustFS behind an HTTPS address the browser can reach (an nginx path on the staging host, or a DNS-only name — 👤 if a new DNS record), `S3_ENDPOINT` set to it, the masters bucket's CORS admitting each admin origin
+  - [ ] 8.5.c RustFS parity on staging (41.2.e's checks, early): a tampered presigned PUT refused (it verifies `x-amz-checksum-sha256`), HEAD with `ChecksumMode` returns `ChecksumSHA256`, prefix-scoped anonymous GET enforced, `apply.mjs`'s `mc` commands answered — or the gap recorded with a fail-closed fallback
+  - [ ] 8.5.d **Check:** on staging, an anonymous GET of an object under `uploads/` and `iiif-full/` is 403 and under `derivatives/` 200; a master uploads from the admin by presigned PUT and a tampered one is refused; the outlet's key is refused outside its own `print-files/<brand>/`; no `main` → `production` push carrying 8.3 goes out before this passes.
 
 ---
 
@@ -1139,6 +1150,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.2_
   - [ ] 15.2.a the tiler (pure, shared by both paths) and the queue job
   - [ ] 15.2.b the off-box CLI with resume, a dry run and a per-item report
+  - [ ] 15.2.d (ARC first) C9: the public pyramid's key carries the resolution cap or a tile version, so lowering `publicZoomMaxPx` never leaves higher tiles public under keys C9 calls immutable (8.4 Found 6)
   - [ ] 15.2.c **Check:** `sharp().tile({ layout: 'iiif3', size: 512 })` writes Level 0 tiles and `info.json` to the brand bucket; **public tiles stop at the configured resolution cap** while the full-resolution pyramid goes to the private `iiif-full/` prefix of the brand's own media bucket (C9, 8.4.a), anonymously 403; the queue job (new uploads, `sharp.concurrency` capped, run by `/api/x/cron/jobs`) is idempotent and retried and the media record shows its status; and `pnpm media:tile` tiles a batch **off-box** — on a workstation or CI runner, straight to the bucket, resumable, updating records through the API — for the migration (36.3).
 
 - [ ] **15.3 IIIF Presentation manifests** · needs: 8.2, 15.2
@@ -1157,7 +1169,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.3, 4.4_
   - [ ] 15.4.a On the presigned-PUT flow 8.3.b built (key, length and SHA-256 signed; checksum recorded): measure and record the stored master's pixels, ppi and colour profile
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
-  - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted
+  - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted; filing runs outside the web process, with the archive's delete-capable key (DEPLOYMENT.md §2)
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
   - [ ] 15.4.e **Check:** masters are uploaded by presigned PUT straight to the private bucket and record pixels, ppi, colour profile and checksum; presigned read URLs expire and are logged; the shop's key is refused outside `print-files/` (a test against MinIO policies); a design's print ceiling is computed from its master at the product type's minimum ppi (240 by default: a 3543 px long edge → 375 mm) and stored; a test proves an over-ceiling variant is refused on save and on publish.
 
@@ -1538,6 +1550,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 22.7.b C2's next minor version (v1.5 — 6.2.e took v1.4): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
   - [ ] 22.7.d C10: an old item link whose slug part does not decode as UTF-8 — `%FF`, a Latin-1 `caf%E9`, raw UTF-8 bytes in the request line — reaches the item route by its canonical id with a fixed ASCII slug no item has (C10 names it), never the bytes as asked, which Next cannot decode into the route's param and answers with a bare 500; so it gets the one 308, its query kept (MIGRATION.md §6; 4.1 senior-fe #12, 4.3 senior-fe #4)
   - [ ] 22.7.e C2 v1.5 carries what 6.2.e found missing: `ImageVM.syntheticLabel` (not a boolean), a design's restoration steps on `ItemVM`, `PreviewVM` plates shaped on C9 `RoomPlate` (both framings × both crops); and C12 v1.5 `WorkSnapshot.master.objectBox`, its wording corrected; and ARC settles three room-plate questions from the imagery alignment: whether a plate photographed with a print placed in it is `composite` (C9 allows only `rendered` or `photograph`), whether room-scenes.md §10's recoloured-wall fallback is still a `photograph`, and whether the plate caption is one lexicon key or a per-plate field
+  - [ ] 22.7.f From 8.4: C12 `SnapshotImage.synthetic: SyntheticLabel | null` (a print listing's mockup keeps its label at the origin) and the renderer composing alt through C9's `renderedAlt()`; C1 declares `MAKER_ROLES` and `DATE_PRECISIONS` once (`config/src/schema/catalogue.ts`), C2, C12, i18n, migrate and cms derive from them
   - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; `/product/1706-caf%E9` and `/product/1706-%FF` parse to item 1706 with the fixed slug (`strict-paths.test.ts`), and on a production build the status spec sees each answer 308, never 500 (two cases in `tests/e2e/status/`, HAR's file: proposed in the report, added at merge); the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
 
 ---
@@ -2165,6 +2178,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 36.1.a Maker strings clustered into makers with aliases (never auto-merged below 0.9)
   - [ ] 36.1.b `categories.json`: every legacy category id mapped to a facet selection
   - [ ] 36.1.c 👤 The curator reviews and signs both (about an hour)
+  - [ ] 36.1.e 👤 The curator settles the gazetteer's gaps (8.4 Found 8): whole-archipelago maps (ARC recommends a leaf root `east-indies`, first in root order, historical names Oost-Indië, Nederlandsch-Indië, Insulinde, India Orientalis) and Southeast Asia, Asia, the world, Europe, Africa, the Americas and Arabia as regions under `beyond-indonesia` — the islands stay roots, so no path moves
   - [ ] 36.1.d **Check:** maker strings cluster into makers with aliases (never auto-merged below 0.9), `categories.json` maps every legacy category id to a facet selection, and the curator has reviewed and signed both (👤, ~1 hour).
 
 - [ ] **36.2 Old East Indies mapping and product import** · needs: 7.3, 9.2

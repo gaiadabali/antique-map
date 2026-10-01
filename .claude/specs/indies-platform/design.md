@@ -445,7 +445,7 @@ flowchart LR
 
 | Layer | What | Where |
 | ----- | ---- | ----- |
-| **Unit (Vitest)** | pure modules: money (property-based), FX, rounding, tax, pricing pipeline, seller routing, state machines, facet counts, gazetteer expansion, parsers, validators, config validation, URL codec | each package's `test/` |
+| **Unit (Vitest)** | pure modules: money (property-based), FX, rounding, tax, pricing pipeline, seller routing, state machines, facet counts, gazetteer expansion, parsers, validators, config validation, URL codec | beside the code (`src/**/*.test.ts`, `*.db.test.ts`) in cms, config, http and migrate; each package's `test/` elsewhere (PARALLEL-TRACKS.md §1) |
 | **Contract** | every payment, shipping and fulfilment adapter against one suite with recorded sandbox fixtures: signature failure, duplicate, out-of-order, crash after the dedupe insert, pending → settlement, a session outliving its reservation window, late payment after the item sold, refund idempotency | `tests/contract/**` |
 | **Concurrency** | 50 parallel reservations of one unique item → exactly one; a sold item refuses a new reservation, even by direct insert; duplicate webhook → one payment; gapless document numbers under load; discount usage limit under load | `packages/testing/concurrency` + CI Postgres |
 | **Access** | a draft and a private field (`physical`, acquisition cost, consignor) requested through every loader and the sister API come back as neither | e2e + `verify-*` scripts |
