@@ -1,31 +1,59 @@
 /**
  * C9's keys (v1.1's unchanged, v1.4's intake keys added): a master received before its work exists
  * — the owner's pilot set — gets a key it can be filed from, and no caller can steer a key out of
- * its batch.
+ * its batch. v1.6 moves the uncapped pyramid into each brand's own media bucket, key unchanged.
  */
 import { describe, expect, it } from 'vitest'
 
 import {
   derivativeKey,
   iiifFullKey,
+  iiifPublicKey,
   INTAKE_MASTERS_PREFIX,
   intakeManifestKey,
   intakeMasterKey,
   masterKey,
+  PRINT_FILES_PREFIX,
   printFileKey,
 } from '../src/contract'
 
 const SHA = 'ab'.repeat(32)
+const ID = '0123456789abcdef0123456789abcdef'
 
 describe('v1.1 keys, unchanged', () => {
   it('names derivatives, the private pyramid, a work master and a print file as before', () => {
-    const id = '0123456789abcdef0123456789abcdef'
-    expect(derivativeKey(id, 1024, 'webp')).toBe(`derivatives/v1/${id}/1024.webp`)
-    expect(iiifFullKey('brand-a', id)).toBe(`iiif-full/brand-a/${id}`)
+    expect(derivativeKey(ID, 1024, 'webp')).toBe(`derivatives/v1/${ID}/1024.webp`)
+    expect(iiifFullKey('brand-a', ID)).toBe(`iiif-full/brand-a/${ID}`)
     expect(masterKey('AB-000123', SHA, 'tif')).toBe(`masters/AB-000123/${SHA}.tif`)
     expect(printFileKey('brand-b', 'A-0042', SHA, 'tif')).toBe(
       `print-files/brand-b/A-0042/${SHA}.tif`,
     )
+  })
+})
+
+describe('v1.6: where a media bucket is public', () => {
+  // A media bucket's public policy grants exactly these (`@engine/media/storage`'s
+  // `PUBLIC_MEDIA_PREFIXES`, applied by `storage:policies`; DEPLOYMENT.md §2).
+  const PUBLIC_PREFIXES = ['derivatives/', 'iiif/']
+  const isPublic = (key: string) => PUBLIC_PREFIXES.some((prefix) => key.startsWith(prefix))
+
+  it('serves the ladder and the capped tiles from the public prefixes', () => {
+    expect(isPublic(derivativeKey(ID, 2400, 'avif'))).toBe(true)
+    expect(isPublic(`${iiifPublicKey(ID)}/info.json`)).toBe(true)
+  })
+
+  it('keeps the uncapped pyramid private: `iiif-full/` is never `iiif/`, for either brand', () => {
+    for (const brand of ['brand-a', 'brand-b']) {
+      const key = `${iiifFullKey(brand, ID)}/info.json`
+      expect(key.startsWith('iiif-full/')).toBe(true)
+      expect(isPublic(key)).toBe(false)
+    }
+  })
+
+  it('files a print file under the brand that made it, so an outlet’s key can be scoped to it', () => {
+    const key = printFileKey('brand-b', 'A-0042', SHA, 'tif')
+    expect(key.startsWith(`${PRINT_FILES_PREFIX}brand-b/`)).toBe(true)
+    expect(isPublic(key)).toBe(false)
   })
 })
 

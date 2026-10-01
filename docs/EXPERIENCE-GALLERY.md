@@ -71,6 +71,19 @@ Ambon, Ternate & Tidore) · Papua · beyond Indonesia (Singapore, Malaysia &
 the Straits, the Philippines, mainland Southeast Asia, East Asia, the Indian
 Ocean, Australia–Pacific).
 
+**Beyond Indonesia is a root region** (confirmed 2026-10-01, TASKS.md 8.4.e): the
+ninth root, after the eight Indonesian ones — a grouping with no point of its
+own, so the places index stays the archipelago's. Counts roll up to it as to any
+parent, and its slug leads its places' paths (`/places/beyond-indonesia/singapore`).
+The islands stay roots, so a place added later moves no path: everything outside
+the country goes under beyond Indonesia, whose regions above are where the
+gazetteer seed starts, and the curator adds the rest the catalogue needs (36.1 —
+the old site also files maps of Europe, Africa, the Americas and Arabia,
+`indies-gallery/content/legacy/inventory/urls.tsv`). **Open for the curator
+(36.1):** a map of the whole archipelago, or of a whole that holds it — Southeast
+Asia, Asia, the world, each a category on the old site — has no place in this
+tree yet.
+
 ## 3. Home
 
 Bands, ordered by the CMS homepage global (DESIGN-SYSTEM.md §2), never a

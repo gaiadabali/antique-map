@@ -35,8 +35,8 @@ on the `staging` branch if a permanent staging tier is wanted (open decision).
 | Site user / pm2 process | `uig` | `uoei` |
 | App port | 4030 (verify free with `ss -ltn` at provisioning) | 4031 |
 | Database / role | `ig_db` / `ig` | `oei_db` / `oei` |
-| Public media bucket | `ig-media` → `media.<domain>` via Cloudflare (CORS for the viewer's origins) | `oei-media` → `media.<domain>` |
-| Private masters bucket | `archive-masters`: IG's key reads and writes; OEI's key reads masters and writes **only** under `print-files/` | ← |
+| Media bucket | `ig-media` → `media.<domain>` via Cloudflare (CORS for the viewer's origins), public **only** under `derivatives/` and `iiif/` (below) | `oei-media` → `media.<domain>`, the same |
+| Private masters bucket | `archive-masters`, no anonymous access: IG's key reads and writes and **never deletes**; OEI's key reads masters and writes **only** under `print-files/old-east-indies/`; its CORS admits each brand's admin origin (below) | ← |
 | `shared/.env` | `BRAND=indies-gallery`, `BRAND_ROOT`, `DATABASE_URL`, `RUN_MIGRATIONS=1`, per-seller provider secrets | `BRAND=old-east-indies`, … |
 
 **Everything a brand serves is its one Next.js process** — public site, `/admin`,
@@ -58,7 +58,50 @@ Helios bound to loopback, and where it lives for the full archive is to be
 confirmed before 37.2 — this disk is why) — through
 `@payloadcms/storage-s3`; local dev uses MinIO (the `bitnamilegacy/minio` image,
 since `minio/minio` no longer allows an anonymous pull, §1); switching provider
-is an endpoint change.
+is an endpoint change — to one that enforces a bucket policy by prefix (below).
+
+### Object storage: what is public, and who holds which key
+
+- **A media bucket is public only under `derivatives/` and `iiif/`** — the
+  derivative ladder and the capped tiles (C9) — and lists nothing to anyone
+  anonymous. Everything else in it is private: the uploads under `uploads/` (every
+  upload collection's prefix: the full-resolution processed image, perhaps still
+  with the camera's metadata) and the uncapped pyramid under `iiif-full/` (C9
+  `iiifFullKey()`), which the engine streams to staff. The policy names `iiif/`
+  with its slash, so `iiif-full/` never matches it.
+- **A CDN never bypasses the bucket policy.** `media.<domain>` fetches from the
+  bucket anonymously, as any visitor would, so the policy is the only gate: the
+  CDN holds no storage key and serves nothing an anonymous `GET` is refused. A
+  provider whose public access opens a whole bucket or nothing (R2's) cannot hold
+  this layout; moving to one puts the private prefixes in a bucket of their own
+  first — a design change, not an endpoint change.
+- **The policies are data, applied from `@engine/media`'s plan files**
+  (`engine/packages/media/src/storage/`: the policy documents, and a plan per
+  environment) by `pnpm --filter @engine/media storage:policies --plan <file>`,
+  bucket policies first, so no bucket is ever wholly public while its keys are
+  made. On a host, each key's secret comes from that host's own secrets
+  (`--secrets env`: `STORAGE_SECRET_<USER>`, from Infisical), never derived and
+  never written down; staging's and production's plans are TASKS.md 41.2.e.
+  Locally the plan is `plans/local.json`, applied to the dev container with each
+  secret derived from its root secret (`--secrets derive`), so a worktree may run
+  on its brand's scoped keys in `.env.local`, as a host does, rather than the
+  container's root key, `minioadmin` — which the boot check refuses on any host.
+- **Each process holds two keys** (§8): its media key, which reads and writes its
+  own media bucket and nothing else, and its masters key — the origin's reads and
+  writes the archive and deletes nothing; the outlet's reads masters and print
+  files and writes or deletes only under `print-files/<its slug>/`. **The
+  archive's delete-capable key is separate from the web process's**: filing an
+  intake capture deletes its intake copy once the filed copy is verified (TASKS.md
+  15.4.c), so that step runs outside the web process with a key of its own, which
+  no host's `shared/.env` holds. `archive-masters` is versioned, so no key
+  destroys a master by overwriting it either (41.2.e).
+- **A master goes from the admin's browser straight into the masters bucket** by
+  a presigned `PUT` (ARCHITECTURE.md §7). So the masters bucket's CORS admits each
+  brand's admin origin (its `SITE_URL`) for that `PUT` and the headers it signs,
+  and no other origin; and on a host the storage answers that `PUT` at the HTTPS
+  address the presign is signed for (`S3_ENDPOINT`, §8) — never through the CDN,
+  whose request limit is why the file bypasses the app. A storage bound to
+  loopback, as staging's RustFS is today, cannot take it (41.2.e).
 
 ## 3. Release flow
 
@@ -268,8 +311,17 @@ SITE_URL                    the origin this process serves: https://<its domain>
 LOCAL_PRODUCTION_BUILD      1 in a worktree's .env.local and in CI only: a production build at a
                             loopback SITE_URL runs as local; never in a host's shared/.env
 RUN_MIGRATIONS              1 in the web process only
-S3_ENDPOINT  S3_BUCKET  S3_ACCESS_KEY_ID  S3_SECRET_ACCESS_KEY  MEDIA_PUBLIC_URL
-MASTERS_BUCKET  MASTERS_ACCESS_KEY_ID  MASTERS_SECRET_ACCESS_KEY   (OEI's key: print-files/ write only)
+S3_ENDPOINT                 the S3-compatible storage both buckets are on (MinIO locally, RustFS on Helios,
+                            D12); on a host, the HTTPS address an admin's browser puts a master to, which every
+                            presign is signed for — never through the CDN (§2)
+S3_BUCKET  S3_ACCESS_KEY_ID  S3_SECRET_ACCESS_KEY   the brand's media bucket and its media key, which reads and
+                            writes that bucket and no other
+MEDIA_PUBLIC_URL            https://media.<domain>: the CDN in front of the media bucket's public prefixes (§2)
+MASTERS_BUCKET  MASTERS_ACCESS_KEY_ID  MASTERS_SECRET_ACCESS_KEY   the archive and this brand's masters key: the
+                            origin's reads and writes and deletes nothing; the outlet's writes only under
+                            print-files/<its slug>/ (§2). The archive's delete-capable key is in no host's shared/.env
+STORAGE_SECRET_<USER>       storage:policies --secrets env only: a plan user's secret, from the host's secrets, in
+                            the shell that applies the plan (§2) — never in shared/.env
 SMTP_HOST/PORT/USER/PASS    SMTP_FROM_ADDRESS  SMTP_FROM_NAME
 PAYMENT_<SELLER>_<PROVIDER>_*   per seller, per enabled provider, per environment (PAYMENTS.md §8)
 SHIPPING_<SELLER>_<PROVIDER>_*  per seller, for each of its own couriers (sellers[].shipping, all of the
