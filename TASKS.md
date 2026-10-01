@@ -31,7 +31,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
-| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/17 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **35/186** | **227/906** | **45** | `███░░░░░░░`  25% |
+| **All** | 44 phases | | | **35/186** | **227/907** | **45** | `███░░░░░░░`  25% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -164,7 +164,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W3 | 6.6 Journeys and briefs follow D51, D52, D54 | senior-uiux | agent worktree | 2026-10-01 | |
 | 6·W3 | 6.7 The docs outside 6.4's Owns (+ 6.2.j) | architect | agent worktree | 2026-10-01 | 6.2.j folded in: both touch MIGRATION.md |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
-| 8·W2 | 8.5 Staging storage holds 8.3's layout | devops | agent worktree (HAR) | 2026-10-01 | on Helios (OA-Helios); a new DNS name would be 👤; gates the next `production` push |
+| 8·W2 | 8.5 Staging storage holds 8.3's layout | — (reported done, 6c1a1c8) | `worktree-agent-a1eb12599989f6e01` | 2026-10-01 | applied on Helios (backups in `/var/backups/indies/config/8.5-20261001T131439Z/`); four storage secrets rotated after a transcript leak; independent senior-integrator review running |
 | 8·W2 | 8.6 A refusal keeps its plain reason | senior-fe | agent worktree (WEB) | 2026-10-01 | qa D1 — gates the phase's Done when |
 
 ## Decisions for the owner
@@ -1006,7 +1006,7 @@ run beside the build line rather than in it.
   - [ ] 10.3.b wave B migration
   - [ ] 10.3.c wave C migration (incl. the `inventory_movements` engine table)
   - [ ] 10.3.d a verify script creating a work + product through the Local API with hooks (NOW! `verify-*` pattern), then reading them **as the public** (`overrideAccess: false`) to prove a draft and a `physical` field never come back; run in CI
-  - [ ] 10.3.f From 8·W1's SCH lead: the remaining test support (`pushed-database.test-support.ts`, `admins.db.test.ts`, `instance.db.test.ts`) builds with `buildEngineConfig()`; the media, masters and places db tests run on migrated databases now that `wave_a` exists; a compound index's name carries its table (Payload names `(kind, slug)` `kind_slug_idx` — a second collection with the same pair would collide); HAR (on request) caps `*.db.test.ts` file parallelism — CREATE DATABASE checkpoints on a dev Postgres of ~54 databases time out under parallel runs
+  - [ ] 10.3.f From 8·W1's SCH lead: the remaining test support (`pushed-database.test-support.ts`, `admins.db.test.ts`, `instance.db.test.ts`) builds with `buildEngineConfig()`; the media, masters and places db tests run on migrated databases now that `wave_a` exists; a compound index's name carries its table (Payload names `(kind, slug)` `kind_slug_idx` — a second collection with the same pair would collide); HAR (on request) caps `*.db.test.ts` file parallelism — CREATE DATABASE checkpoints on a dev Postgres of ~54 databases time out under parallel runs; `hooks/request-temp-files.test.ts` gets a load-proof timeout for its cold `import('../payload.config')` (times out at 5 s under the full suite — 8.5)
   - [ ] 10.3.e **Check:** each wave has exactly one generated migration, `payload migrate:create` reports "No schema changes detected" after it, the one `engine/packages/cms/payload-types.ts` is regenerated, and `schema-hash --all` is equal.
 
 - [ ] **10.4 Catalogue gate** · needs: phase 8, phase 9, 10.1–10.3
@@ -1225,6 +1225,7 @@ run beside the build line rather than in it.
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
   - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted; filing runs outside the web process, with the archive's delete-capable key (DEPLOYMENT.md §2)
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
+  - [ ] 15.4.f `apply.mjs` hands each user's secret to `mc` on stdin, never in its arguments — on a shared host any user reads a process's argv (Helios has no `hidepid`; 8.5 worked around it with throwaway secrets and the provision step)
   - [ ] 15.4.e **Check:** masters are uploaded by presigned PUT straight to the private bucket and record pixels, ppi, colour profile and checksum; presigned read URLs expire and are logged; the shop's key is refused outside `print-files/` (a test against MinIO policies); a design's print ceiling is computed from its master at the product type's minimum ppi (240 by default: a 3543 px long edge → 375 mm) and stored; a test proves an over-ceiling variant is refused on save and on publish.
 
 ---
@@ -2506,7 +2507,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.2.a the shop's production target — its secrets in Infisical from the start (D49: project `old-east-indies`, environments `staging` and `production`; copy staging's from Helios then)
   - [ ] 41.2.b the gallery's production target — provisioned early and kept dark for 42.7; its secrets in Infisical (D49: project `indies-gallery`, environments `staging` and `production`)
   - [ ] 41.2.c backups, the restore drill and monitoring for both — the 5xx rate sets apart, as its own series, a `500` whose path is under `^/(brand-assets|api/x)/` and contains `%` (DEPLOYMENT.md §7: Next's own answer to a path it cannot decode, ARCHITECTURE.md §13), ticketed past a rate and never paging; measured through CloudPanel's nginx, which may answer a malformed escape with its own 400 first
-  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`; RustFS accepts PutBucketCors on `archive-masters` and refuses an unlisted origin or a non-PUT preflight (`STORAGE_TEST_REQUIRE_BUCKET_CORS=1`), each host plan's `mastersCors` lists its brands' admin origins with no `ifUnsupported` (local MinIO cannot hold a bucket CORS rule — 8.3.i); DEPLOYMENT §2 names `mastersCors`
+  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`; RustFS accepts PutBucketCors on `archive-masters` and refuses an unlisted origin or a non-PUT preflight (`STORAGE_TEST_REQUIRE_BUCKET_CORS=1`), each host plan's `mastersCors` lists its brands' admin origins with no `ifUnsupported` (local MinIO cannot hold a bucket CORS rule — 8.3.i); DEPLOYMENT §2 names `mastersCors`; on staging 8.5 proved RustFS 1.0.0 verifies the checksum, enforces prefix-scoped anonymous GET and answers `mc cors set` — production repeats it with `scripts/ops/storage/production-<brand>.json` (the storage step refuses to run without one); the container test's "WOULD stop uig's idle pm2 daemon" assertion is flaky on `main` too
   - [ ] 41.2.d **Check:** both production targets are provisioned with the owner's go-ahead, nightly dumps and storage replication run, a timed restore drill of one brand is recorded, and alerts (p95, 5xx, disk 80%, restart loop, job lag, outbox lag, webhook signature failures) fire in a test, while a planted `500` on an undecodable `/brand-assets/` path lands in its own series and pages no one, and a real `500` elsewhere still pages.
 
 ---
