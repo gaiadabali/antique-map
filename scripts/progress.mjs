@@ -1,173 +1,74 @@
 #!/usr/bin/env node
-// Recounts the checkboxes in TASKS.md and rewrites the progress table between
-// the <!-- progress:start --> and <!-- progress:end --> markers.
+// Syncs TASKS.md with its checkboxes: ticks what you name, closes every task whose
+// subtasks are all ticked (`- [x] … — ✅ <today> <HEAD sha>`), drops a closed task's
+// **Now** rows, and rebuilds the progress table between the progress markers.
 //
-// The checkboxes are the source of truth; this table is a summary of them.
-// Not a CI gate: a stale table is fixed by running this, never by a red build.
+// It runs by itself — the git pre-commit hook (.githooks/pre-commit) on every commit
+// that includes TASKS.md, and the Claude Code hook (.claude/settings.json) after every
+// edit to it — so the board never lags its boxes. By hand:
 //
-//   node scripts/progress.mjs            rewrite the table in place
-//   node scripts/progress.mjs --print    print the table, change nothing
+//   node scripts/progress.mjs                    sync in place        (pnpm tasks:sync)
+//   node scripts/progress.mjs --tick 7.2.a 7.2.b tick, then sync      (pnpm tasks:tick …)
+//   node scripts/progress.mjs --sha 1a2b3c4      close with this sha instead of HEAD's
+//   node scripts/progress.mjs --check            exit 1 if a sync would change anything
+//   node scripts/progress.mjs --print            print the table, change nothing
 //
-// Line shapes it understands (see "How to update this file" in TASKS.md):
-//   ## Phase 18 — Reservations, state machines and the cart · Commerce · needs 17 · ~2d
-//   - [ ] **18.1 The reservation service** · needs: 17.1 — 🔄 18·W1      task, in flight
-//   - [x] **18.1 The reservation service** · needs: 17.1 — ✅ 2026-10-20 1a2b3c4
-//     - [ ] 18.1.a `reserve()` writing the scalar `targetKey` …          subtask
-//     - [ ] 19.3.a 👤 The owner opens a Midtrans sandbox account …        subtask waiting on the owner
-// A task line containing ⛔ counts as blocked; one containing ✂️ (cut) is not
-// counted at all, and neither are its subtasks. Sections that are not a
-// "## Phase N" heading (the backlog, the log) are not counted.
+// Writes only the main checkout's TASKS.md; --check and --print read any copy.
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
-import { execFileSync } from "node:child_process";
-import { closeSync, openSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { ROOT, computeBoard, runSync, today } from './board/run.mjs'
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const file = join(root, "TASKS.md");
-const lock = join(root, "TASKS.md.lock");
-const START = "<!-- progress:start -->";
-const END = "<!-- progress:end -->";
-const printOnly = process.argv.includes("--print");
+const args = process.argv.slice(2)
+const flag = (name) => args.includes(name)
+const shaAt = args.indexOf('--sha')
+const sha = shaAt === -1 ? undefined : args[shaAt + 1]
+const tickAt = args.indexOf('--tick')
+const tick = []
+for (let i = tickAt + 1; tickAt !== -1 && i < args.length && !args[i].startsWith('--'); i++) {
+  tick.push(args[i])
+}
+const quiet = flag('--quiet')
 
-// The live board is the MAIN checkout's TASKS.md. An agent's worktree has its own
-// copy; rewriting that one hides progress and later collides at merge.
+function fail(message) {
+  console.error(`progress.mjs: ${message}`)
+  process.exit(1)
+}
+
+if (flag('--print')) {
+  const text = readFileSync(join(ROOT, 'TASKS.md'), 'utf8')
+  const { next } = computeBoard(text, { date: today(), sha: sha ?? '0000000' })
+  const start = next.indexOf('<!-- progress:start -->')
+  const end = next.indexOf('<!-- progress:end -->')
+  console.log(next.slice(start + '<!-- progress:start -->'.length, end).trim())
+  process.exit(0)
+}
+
+let result
 try {
-  const git = (arg) =>
-    resolve(root, execFileSync("git", ["rev-parse", arg], { cwd: root, stdio: ["ignore", "pipe", "ignore"] }).toString().trim());
-  if (!printOnly && git("--git-dir") !== git("--git-common-dir")) {
-    console.error("progress.mjs: this is a worktree copy. Run the main checkout's script instead.");
-    process.exit(1);
-  }
-} catch {
-  // not a git checkout yet (task 0.1 runs `git init`): nothing to guard
+  result = runSync({ tick, sha, write: !flag('--check') })
+} catch (error) {
+  fail(error.message)
+}
+if (result.unknown.length > 0) fail(`no such subtask: ${result.unknown.join(', ')}`)
+
+if (flag('--check')) {
+  if (!result.changed) process.exit(0)
+  const why = result.closed.length
+    ? `task(s) ${result.closed.join(', ')} have every subtask ticked but are not closed`
+    : 'the progress table or the Now rows are stale'
+  fail(`TASKS.md is out of sync — ${why}. Run \`pnpm tasks:sync\` in the main checkout.`)
 }
 
-// Several sessions may tick this file; hold a lock across read-modify-write.
-let lockFd = null;
-if (!printOnly) {
-  const deadline = Date.now() + 5000;
-  for (;;) {
-    try {
-      lockFd = openSync(lock, "wx");
-      break;
-    } catch {
-      if (Date.now() > deadline) {
-        console.error(`progress.mjs: ${lock} is held; if no session is running this script, delete it.`);
-        process.exit(1);
-      }
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
-    }
-  }
+if (!quiet || result.changed) {
+  const { total } = result
+  const notes = [
+    result.ticked.length ? `ticked ${result.ticked.join(', ')}` : '',
+    result.already.length ? `already ticked ${result.already.join(', ')}` : '',
+    result.closed.length ? `closed ${result.closed.join(', ')}` : '',
+  ].filter(Boolean)
+  console.log(
+    `progress: ${total.subsDone}/${total.subs} subtasks, ${total.tasksDone}/${total.tasks} tasks, ` +
+      `${total.owner} owner items open${notes.length ? ` — ${notes.join('; ')}` : ''}`,
+  )
 }
-const release = () => {
-  if (lockFd !== null) {
-    closeSync(lockFd);
-    unlinkSync(lock);
-    lockFd = null;
-  }
-};
-
-const text = readFileSync(file, "utf8");
-const lines = text.split(/\r?\n/);
-
-const phases = [];
-let current = null;
-let cut = false; // subtasks under a task marked ✂️ are not counted either
-for (const line of lines) {
-  const heading = line.match(/^## Phase ([0-9]+) — (.+?) · ([^·]+?) · needs ([^·]+?) · (~[^·]+?)\s*$/);
-  if (heading) {
-    current = {
-      id: heading[1],
-      title: heading[2].trim(),
-      stage: heading[3].trim(),
-      needs: heading[4].trim(),
-      tasks: 0,
-      tasksDone: 0,
-      doing: 0,
-      blocked: 0,
-      subs: 0,
-      subsDone: 0,
-      owner: 0,
-    };
-    phases.push(current);
-    continue;
-  }
-  if (/^## /.test(line)) {
-    current = null;
-    continue;
-  }
-  if (!current) continue;
-  const task = line.match(/^- \[( |x)\] \*\*\d+\.\d+ /);
-  if (task) {
-    cut = line.includes("✂️");
-    if (cut) continue;
-    current.tasks += 1;
-    if (task[1] === "x") current.tasksDone += 1;
-    else if (line.includes("⛔")) current.blocked += 1;
-    else if (line.includes("🔄")) current.doing += 1;
-    continue;
-  }
-  const sub = line.match(/^\s+- \[( |x)\] \d+\.\d+\.[a-z]+ /);
-  if (sub && !cut) {
-    current.subs += 1;
-    if (sub[1] === "x") current.subsDone += 1;
-    else if (line.includes("👤")) current.owner += 1;
-  }
-}
-
-const bar = (done, total) => {
-  if (total === 0) return "`░░░░░░░░░░`   0%";
-  const pct = Math.round((done / total) * 100);
-  const filled = Math.round(pct / 10);
-  return "`" + "█".repeat(filled) + "░".repeat(10 - filled) + "` " + String(pct).padStart(3) + "%";
-};
-
-const status = (p) => {
-  if (p.tasks > 0 && p.tasksDone === p.tasks) return "✅ done";
-  if (p.blocked > 0 && p.doing === 0) return "⛔ blocked";
-  if (p.doing > 0 || p.subsDone > 0 || p.tasksDone > 0) return "🔄 in progress";
-  return "· not started";
-};
-
-const total = phases.reduce(
-  (acc, p) => ({
-    tasks: acc.tasks + p.tasks,
-    tasksDone: acc.tasksDone + p.tasksDone,
-    subs: acc.subs + p.subs,
-    subsDone: acc.subsDone + p.subsDone,
-    owner: acc.owner + p.owner,
-  }),
-  { tasks: 0, tasksDone: 0, subs: 0, subsDone: 0, owner: 0 },
-);
-
-const rows = [
-  "| Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |",
-  "| --- | --- | --- | --- | --- | --- | --- | --- |",
-  ...phases.map(
-    (p) =>
-      `| **${p.id}** ${p.title} | ${p.stage} | ${p.needs} | ${status(p)} | ${p.tasksDone}/${p.tasks} | ${p.subsDone}/${p.subs} | ${p.owner} | ${bar(p.subsDone, p.subs)} |`,
-  ),
-  `| **All** | ${phases.length} phases | | | **${total.tasksDone}/${total.tasks}** | **${total.subsDone}/${total.subs}** | **${total.owner}** | ${bar(total.subsDone, total.subs)} |`,
-];
-const table = rows.join("\n");
-
-if (printOnly) {
-  console.log(table);
-  process.exit(0);
-}
-
-const s = text.indexOf(START);
-const e = text.indexOf(END);
-if (s === -1 || e === -1 || e < s) {
-  release();
-  console.error(`TASKS.md is missing the ${START} / ${END} markers.`);
-  process.exit(1);
-}
-const next = text.slice(0, s + START.length) + "\n" + table + "\n" + text.slice(e);
-try {
-  if (next !== text) writeFileSync(file, next);
-} finally {
-  release();
-}
-console.log(`progress: ${total.subsDone}/${total.subs} subtasks, ${total.tasksDone}/${total.tasks} tasks, ${total.owner} owner items open`);

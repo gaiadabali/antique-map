@@ -9,9 +9,9 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run check:filesize && pnpm run lint:brand-literals && pnpm run check:client-safe && pnpm run check:brands && pnpm run check:routes && pnpm run check:generated && pnpm run tasks:lint",
-    "format": "prettier --write --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\" \"!scripts/progress.mjs\"",
-    "format:check": "prettier --check --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\" \"!scripts/progress.mjs\"",
+    "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run check:filesize && pnpm run lint:brand-literals && pnpm run check:client-safe && pnpm run check:brands && pnpm run check:routes && pnpm run check:generated && pnpm run tasks:lint && pnpm run tasks:check",
+    "format": "prettier --write --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\"",
+    "format:check": "prettier --check --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\"",
     "lint": "eslint --max-warnings=0 .",
     "lint:fix": "eslint --fix .",
     "typecheck": "pnpm -r --if-present run typecheck",
@@ -32,6 +32,10 @@
     "check:routes": "node engine/tooling/route-parity/cli.mjs",
     "check:generated": "node engine/tooling/config-drift/cli.mjs",
     "tasks:lint": "node engine/tooling/tasks-lint/cli.mjs",
+    "tasks:sync": "node scripts/progress.mjs",
+    "tasks:tick": "node scripts/progress.mjs --tick",
+    "tasks:check": "node scripts/progress.mjs --check",
+    "prepare": "node scripts/board/install-hooks.mjs",
     "worktree": "node engine/tooling/worktree/cli.mjs",
     "worktree:env": "node engine/tooling/worktree/cli.mjs env"
   },

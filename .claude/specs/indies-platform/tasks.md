@@ -4,8 +4,8 @@ The task list lives in one place: **[`TASKS.md`](../../../TASKS.md)** at the rep
 root. It is the progress board — every phase, task and subtask (each task ending
 in a **Check**), the stages and the running order of the phases (each with its own
 waves), what is in flight now, the owner's
-decisions, and a log — with a progress table rebuilt from its checkboxes by
-`node scripts/progress.mjs`.
+decisions, and a log — with a progress table rebuilt from its checkboxes
+automatically (`scripts/progress.mjs`, run by the git and Claude Code hooks).
 
 It moved there so there is exactly one list to tick: two copies drift, and a
 board nobody trusts stops being read.

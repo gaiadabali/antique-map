@@ -90,9 +90,10 @@ why) / Found (anything contradicting a doc, with doc + section) / Follow-ups
       on merged `main` (a production build, a phone viewport) and log
       `✅ phase N — <evidence>`; then open the next phase whose needs are ✅.
 - [ ] In `TASKS.md` (the main checkout's copy): tick each subtask a report
-      evidences, run `node scripts/progress.mjs`, close a task only when its
-      **Check** passed on merged `main` (`✅ YYYY-MM-DD <sha>`), update **Now**
-      and add a **Log** line; add follow-ups as new subtasks with the next free
+      evidences (`pnpm tasks:tick <ids…>`), ticking a **Check** only once it
+      passed on merged `main` — the board then closes the task (`✅ YYYY-MM-DD
+      <sha>`), drops its **Now** rows and rebuilds the table by itself; add a
+      **Log** line; add follow-ups as new subtasks with the next free
       letter (or new tasks with the next free number); record anything that
       changed a decision in the doc that owns it (CONVENTIONS.md §14).
 

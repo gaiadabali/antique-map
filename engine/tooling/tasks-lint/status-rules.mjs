@@ -45,6 +45,10 @@ export function checkTaskStatus(model, tasks) {
     if (task.checked && !done) report(task, 'is ticked [x] but has no "— ✅ YYYY-MM-DD <sha>"')
     if (!task.checked && done) report(task, 'is marked ✅ but its box is not ticked')
     if (task.checked && isCut(task)) report(task, 'is ticked [x] and ✂️ cut')
+    const open = task.subtasks.filter((s) => !s.checked).map((s) => s.id)
+    if (task.checked && open.length > 0) {
+      report(task, `is ticked [x] but its subtask(s) ${open.join(', ')} are not`)
+    }
 
     const doing = task.statuses.find((s) => s.kind === 'doing' && !s.malformed)
     if (doing) {

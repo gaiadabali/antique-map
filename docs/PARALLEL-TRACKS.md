@@ -201,8 +201,9 @@ The lane that uses a table specifies it in its task; SCH writes it.
    loosened and a file quietly rewritten to satisfy it are the same failure.
 5. **Agents in a parallel wave do not edit `TASKS.md`.** Concurrent writes
    collide. They report (§5); the orchestrator ticks each evidenced subtask in
-   the main checkout's copy, runs `node scripts/progress.mjs`, and closes a task
-   once its **Check** passes on merged `main` (the rule is in `TASKS.md`).
+   the main checkout's copy (`pnpm tasks:tick`), the Check only once it passes on
+   merged `main`; the board closes the task and rebuilds its table by itself
+   (the rule is in `TASKS.md`).
    A solo agent outside a wave may tick its own task.
 6. **Architecture changes go in the docs, not in code first.** A finding that
    invalidates a decision stops the task: mark it `blocked`, write the finding,
