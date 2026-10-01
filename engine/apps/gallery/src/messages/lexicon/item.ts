@@ -31,7 +31,10 @@ export const ITEM_KEYS = defineMessages({
   // price (C2 UniquePriceVM, PriceSet.basis)
   'price.onRequest': 'Price on request',
   'price.from': 'From {price}',
-  'price.converted': '≈ {estimate} — charged as {price}',
+  'price.converted': '≈ {estimate} — charged in {price}',
+  // beside a converted estimate (D47): the charge is exact; a conversion after it is not ours
+  'price.convertedNote':
+    'Your card issuer or PayPal may convert the charge again, at its own rate.',
   'price.queued': 'A specialist will reply within {hours} hours',
   'price.offerOnly': 'Offers invited',
   // purchase actions (C1 PURCHASE_ACTIONS, the variants panel's actions)
@@ -56,12 +59,24 @@ export const ITEM_KEYS = defineMessages({
   'label.reproduction': 'Reproduction',
   'label.archiveNo': 'Archive No. {archiveNo}',
   'label.stockNumber': 'Stock no. {stockNumber}',
-  // imagery (docs/design/imagery/retouching-and-labelling.md §4–§6, room-scenes.md §8)
-  'image.mockup': 'Digital mockup',
-  'image.mockupAlt': 'Digital mockup: {alt}',
-  'image.aiGenerated': 'AI-generated image',
-  'image.aiGeneratedAlt': 'AI-generated image: {alt}',
+  // imagery (docs/design/imagery/retouching-and-labelling.md §4–§6, room-scenes.md §8): a
+  // synthetic image's label by C9 SYNTHETIC_LABEL (`image.synthetic.${label}`), on the image and
+  // in the filmstrip, and at the start of its alt text
+  'image.synthetic.digital-mockup': 'Digital mockup',
+  'image.synthetic.ai-generated': 'AI-generated image',
+  'image.syntheticAlt.digital-mockup': 'Digital mockup: {alt}',
+  'image.syntheticAlt.ai-generated': 'AI-generated image: {alt}',
   'image.inMat': 'Photographed in its mat — margins not shown',
+  // the filmstrip's roles (C9 WORK_IMAGE_ROLES and LOCATION_IMAGE_ROLES, media/src/contract/roles.ts)
+  'image.role.recto': 'Recto',
+  'image.role.verso': 'Verso',
+  'image.role.detail': 'Detail',
+  'image.role.raking': 'Raking light',
+  'image.role.transmitted': 'Transmitted light',
+  'image.role.framed': 'Framed',
+  'image.role.in-room': 'In a room',
+  'image.role.scale': 'To scale',
+  'image.role.showroom': 'In the showroom',
   // sister links (BRANDS.md §5; C2 SisterLinkVM)
   'sister.prints': 'Own a print of this map',
   'sister.printsFrom': 'Prints of this map from {sister}',

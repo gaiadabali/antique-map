@@ -27,9 +27,19 @@ export const WHATSAPP_AND_NOTE_KEYS = defineMessages({
   'message.quoteBeingPrepared': 'Your quote is being prepared: within {days} days.',
   'message.heldByAnotherMeanwhile': 'Another buyer has taken a hold on this work meanwhile.',
   'message.resetLinkSent': 'If that address has an account, a link is on its way.',
+  // delivery promises (C2 DeliveryPromiseVM lines and `holiday`, CartLineVM.delivery)
+  'message.readyAtShowroom': 'Ready at the showroom in {hours} hours',
+  'message.madeToOrder': 'Made to order, ships in {min}–{max} days',
   'message.packedWithin': 'Packed within {days} days',
   'message.shipsFrom': 'Ships from {city}',
+  'message.noCashOnDelivery':
+    'No cash on delivery — pay by QRIS or virtual account, confirmed instantly',
   'message.dutiesOnDelivery': 'Import duties are paid on arrival.',
+  'message.holidayDelay': '{holiday} may slow delivery around {date}.',
+  // a consignment's "what happens next" (C2 FormVM.nextSteps)
+  'message.consignReceived': 'We receive your description and photos.',
+  'message.consignReviewed': 'A specialist reviews them.',
+  'message.consignOffer': 'If we can take it, we make you an offer.',
   // order next steps (MessageVM codes)
   'message.trackingByEmail': 'Tracking details follow by email.',
   'message.payWithinCountdown': 'Pay before the countdown ends.',

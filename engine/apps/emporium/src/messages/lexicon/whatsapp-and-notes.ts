@@ -52,6 +52,7 @@ export const WHATSAPP_AND_NOTE_KEYS = defineMessages({
   'message.wantListStopped': 'This alert is stopped. No more emails will come from it.',
   'message.wantListLinkExpired': 'This link has expired. Set up the alert again to get a new one.',
   'message.wishlistOnThisDevice': 'Saved on this device, in this browser.',
+  'message.notAllOnline': 'Not all {held} works we hold are online. Ask us.',
   'message.available.one': '{count} available',
   'message.available.other': '{count} available',
   'message.works.one': '{count} work',
