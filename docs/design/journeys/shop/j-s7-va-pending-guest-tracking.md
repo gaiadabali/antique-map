@@ -76,6 +76,9 @@ WhatsApp message; where she looks first for her order later (email or the site).
 replaced on a photo), S6 (a separate WhatsApp number for online shoppers), S3 (delivery
 within Indonesia only) — folded in above. S9 answered where buyers come from (the showroom
 first), not how they pay; VA stays the method this journey tests. **Still owed by the
-owner:** the online WhatsApp number and its reply hours (S6). **Still open elsewhere:** a
-replacement claim in place of COMMERCE.md §11's return-and-refund request (TASKS.md
-6.4.c); counsel's wording against Indonesian consumer law (D11).
+owner:** the online WhatsApp number and its reply hours (S6). **Settled by the replan
+(TASKS.md 6.4):** a damaged print's claim ends in a replacement — staff's zero-priced
+order from the order builder (TASKS.md 24.5), the claim closed with no refund — not a
+return and refund (S12; COMMERCE.md §11). **Still open elsewhere:** whether "no refund"
+stands under UU 8/1999 art. 18 — counsel's, not yet confirmed, so no page prints it
+(D11, S12).

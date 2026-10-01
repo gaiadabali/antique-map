@@ -87,5 +87,8 @@ makes her hesitate; whether "partner" reads as meant for hotels.
 **Answered 2026-10-01** ([owner-answers.md](../owner-answers.md)): S5 (case by case — no published terms;
 D32), S7 (everything in stock), S11 (a Bali courier with a "deliver before" date) —
 folded in above. **Still owed by the owner:** the list prices (S2, the price list). Not
-asked: whether the shop installs. **Still open elsewhere:** the Partnership page's copy
-without fixed terms (TASKS.md 6.4.c; the lexicon, 6.3).
+asked: whether the shop installs. **Settled by the replan (TASKS.md 6.4):** the
+Partnership page publishes no discount and no minimum order; each partner's tier and
+minimum are data staff set, changed only by the owner role (S5, D32, D33, D37;
+EXPERIENCE-SHOP.md §9). **Still open elsewhere:** that page's words in the shop's
+lexicon, which are 6.3's and not yet written.

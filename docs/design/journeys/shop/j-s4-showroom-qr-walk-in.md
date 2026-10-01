@@ -106,6 +106,8 @@ S11 (a Bali courier with a "deliver before" date) — folded in above. **Still o
 owner:** the showroom's opening hours (S4); the online WhatsApp number and its reply hours
 (S6), shown for help — the showroom keeps its own number. **Settled by the replan
 (TASKS.md 6.4):** one stock pool at launch, with no showroom-stock badge or filter (D52;
-COMMERCE.md §4, EXPERIENCE-SHOP.md §4, §8). **Still open elsewhere:** 32.2's session plan
-putting this journey in every round (a board change, routed through 6.4.e); splitting
-stock by shop, which waits for the point-of-sale phase (D52, backlog v2.19).
+COMMERCE.md §4, EXPERIENCE-SHOP.md §4, §8); the usability round's plan puts this journey
+in the walk-in's session, run in the showroom (TASKS.md 32.2.a, 32.2.b), and phase 32's
+Done when names it ("a showroom QR opens the in-showroom mode and a walk-in buys there and
+takes the piece"). **Still open elsewhere:** splitting stock by shop, which waits for the
+point-of-sale phase (D52, backlog v2.19).
