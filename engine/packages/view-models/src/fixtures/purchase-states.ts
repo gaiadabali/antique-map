@@ -204,7 +204,7 @@ export const purchaseStates = {
   invoiceHeldByOther: {
     ...uniqueBase,
     price: onRequest,
-    state: { kind: 'heldByOther', until: '2026-10-09T17:00:00+08:00' },
+    state: { kind: 'heldByOther', until: '2026-10-05T17:00:00+08:00' },
     actions: { primary: whatsapp, secondary: [call, enquire] },
     analytics: { priceBand: 'on-request', status: 'reserved' },
   },

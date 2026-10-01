@@ -64,7 +64,8 @@ COMMERCE.md §2) · language · WhatsApp (the online shop's own number, S6) · s
 items (the heart, kept on this device — D35) · bag — no shopper account: shoppers buy as guests and
 track orders by number (D31, TASKS.md 28.5). Saving an item needs no account, and
 each save is tracked under ANALYTICS.md §1's consent rule (D38): counted by the
-cookieless beacon, and sent to GA4 and Meta only after consent. A saved-search
+cookieless beacon — and sent to no third party at launch, since the analytics are
+first-party only (G12). A saved-search
 alert (§10) works the same way with no account behind it: every "alert me"
 link a surface offers leads to the one want-list page, which takes an email
 address instead and confirms it by double opt-in (D39).

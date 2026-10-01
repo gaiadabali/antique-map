@@ -77,16 +77,18 @@ export const ttlSchema = z.strictObject({
   offerHoldHours: z.int().positive().default(48),
   offerCounterHours: z.int().positive().default(72),
   /**
-   * The term the order builder proposes for an invoice's due date. An `invoice` hold lasts until
-   * the due date the issuing staff set (D45) — `reserve()` is called with the time to it — and
+   * The term the order builder proposes for an invoice's due date — three days, the owner's
+   * answer (D45, 2026-10-01; v1.5, was 7). An `invoice` hold lasts until the due date the issuing
+   * staff set, which they may change per invoice — `reserve()` is called with the time to it — and
    * lapses by itself, unpaid; staff re-date it with `extend()` or cancel it with `release()`.
    */
-  invoiceHoldDays: z.int().positive().default(7),
+  invoiceHoldDays: z.int().positive().default(3),
   /**
-   * How long before an invoice's due date its buyer is reminded: `invoiceHold.expiring`, C8
-   * `noticeExpiring`'s lead for the `invoice` kind (D45, v1.5).
+   * How long before an invoice's due date its buyer is reminded — a day, the owner's answer
+   * (D45, 2026-10-01): `invoiceHold.expiring`, C8 `noticeExpiring`'s lead for the `invoice`
+   * kind (v1.5).
    */
-  invoiceNoticeHours: z.int().positive().default(48),
+  invoiceNoticeHours: z.int().positive().default(24),
 })
 export type CommerceTtl = z.infer<typeof ttlSchema>
 

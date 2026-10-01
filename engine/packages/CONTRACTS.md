@@ -793,7 +793,9 @@ so it is breaking and also needs a redirect.
   interview answers (OA2) — the gallery enquiry-only (D50, superseding D30), an invoice holding
   its piece until its due date (D45), the shop within Indonesia only and from stock (S3, S7) — the
   developer's input to 6.4 (the invoice on the brand's own pay page, one stock pool: D51, D52; no
-  collector accounts on the gallery: D54), and 6.3.f's and 6.3.g–i's notes. The number was
+  collector accounts on the gallery: D54), the owner's later answers (first-party analytics only,
+  G12; D45's term of three days with a reminder a day ahead), and 6.3.f's and 6.3.g–i's notes.
+  The number was
   reserved for this release while it was open: 8.4's v1.6, below, merged first and names it. C3–C5,
   C7, C9 and C12 keep their versions in this release: C12's `OriginalListing` already carries an
   original `on-request` with no price, and C9 gains no video (CONTENT-MODEL.md §6).
@@ -805,7 +807,9 @@ so it is breaking and also needs a redirect.
       unless a brand turns it on;
     - `PURCHASE_ACTIONS` gains `call`, a `tel:` link to `identity.contact.phone`;
     - `ttl.invoiceHoldDays` is the term the order builder proposes — an invoice hold lasts to the
-      due date staff set — and `ttl.invoiceNoticeHours` (48) the reminder's lead;
+      due date staff set, which they may change per invoice — and its default is now **3** (was
+      7), with `ttl.invoiceNoticeHours` (**24**) the reminder's lead: the owner's answers to D45's
+      term (2026-10-01), tested in `schema/commerce.test.ts`;
     - the header's `validateBrandConfigs()` list gains `buy` needing `purchase.checkout`, `call`
       needing a phone, and `invoiceNoticeHours` below the default term — PLT implements them.
   - **C10, C13:** the `cart` and `checkout` surfaces and commerce areas need `purchase.checkout`;
@@ -832,7 +836,12 @@ so it is breaking and also needs a redirect.
       persistent first-party id (G12);
     - fixtures: the gallery's launch states (`purchaseStates.conversation…`,
       `invoiceHeldByOther`), `item-enquiry-led`, `item-invoice-held`, `listing-on-request`,
-      `pay-invoice` and its transfer-pending, paid, expired and voided states, `order-invoice`;
+      `pay-invoice` and its transfer-pending, paid, expired and voided states, `order-invoice` —
+      issued on 2 October and due three days later, the proposed term, the transfer's window
+      ending at the due date, and the order opened by its link (`access: 'lookup'`, D54);
+    - G12 (the owner, 2026-10-01): `ShellVM.analytics`' ids are `null` for every brand at
+      launch, and with neither set the banner asks no marketing category (`choice.marketing`
+      stays `false`);
     - D54 — no viewer relation at the gallery: `heldForMe`, `inMyCheckout` and `myOffer` need a
       buyer's session, which no brand has at launch, so no launch fixture shows one;
       `ShellVM.cart` is `null` without `purchase.checkout` and `ShellVM.account` `null` on a brand

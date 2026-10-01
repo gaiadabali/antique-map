@@ -88,3 +88,16 @@ describe('C1 v1.5 — the bag is a module, a call is an action', () => {
     }
   })
 })
+
+describe('C1 v1.5 — the invoice term (D45, the owner, 2026-10-01)', () => {
+  it('proposes a due date three days out and reminds the buyer a day before it', () => {
+    const result = parse(() => {})
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    const { invoiceHoldDays, invoiceNoticeHours } = result.data.commerce.ttl
+    expect(invoiceHoldDays).toBe(3)
+    expect(invoiceNoticeHours).toBe(24)
+    // The reminder leaves the term room to be paid in (C1's header rule, PLT's to enforce).
+    expect(invoiceNoticeHours).toBeLessThan(invoiceHoldDays * 24)
+  })
+})

@@ -6,7 +6,8 @@
  * changes — there is no free currency switcher), cart indicator and sister strip. Brand
  * identity is runtime data read from `BRAND` at request time — never baked into a build —
  * so a third brand on the same app renders its own name, assets and tokens. The analytics
- * ids are runtime values too, loaded only after marketing consent (never NEXT_PUBLIC_*).
+ * ids are runtime values too, loaded only after marketing consent (never NEXT_PUBLIC_*) — and
+ * set by no brand at launch, whose analytics are first-party only (G12).
  */
 import type { LocaleCode, ModuleKey, Storefront, TokenOverrides } from '@engine/config/schema'
 
@@ -70,6 +71,10 @@ export type ShellVM = {
   sellers: readonly SellerIdentityVM[]
   /** The sister strip: a separate business that sells its own way, and the link says so. */
   sister: { name: string; href: string; role: 'archive-origin' | 'merch-outlet' } | null
+  /**
+   * Third-party tag ids — both `null` for every brand at launch: the analytics are first-party
+   * only (G12, v1.5). With neither set, the consent banner offers no marketing-tag category.
+   */
   analytics: { ga4Id: string | null; metaPixelId: string | null }
   /** From the `shipTo` cookie (defaulted from the visitor's country). */
   shipTo: Streamed<ShipToVM>
@@ -97,7 +102,11 @@ export type ShellVM = {
   } | null>
   consent: Streamed<{
     policyVersion: string
-    /** `null` until the visitor has chosen; the beacon stays cookieless until then. */
+    /**
+     * `null` until the visitor has chosen; the beacon stays cookieless until then. `marketing`
+     * is asked only where `analytics` names a tag id — nowhere at launch (G12), so it stays
+     * `false` there.
+     */
     choice: { analytics: boolean; marketing: boolean } | null
   }>
   /** The dismissible banner offering the visitor's language; never a redirect. */

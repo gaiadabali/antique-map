@@ -244,7 +244,7 @@ type BrandConfig = {
   money: { base: CurrencyCode; markets: MarketConfig[]; rounding: RoundingConfig; fx: FxConfig }
   sellers: SellerConfig[]; commerce: CommerceConfig /* inventory models, named TTLs, tiers, uniquePrices */
   modules: ModuleFlags; shipping: ShippingConfig; fulfilment: FulfilmentConfig
-  analytics: { ga4Id: string | null; metaPixelId: string | null }   // runtime, never NEXT_PUBLIC_*
+  analytics: { ga4Id: string | null; metaPixelId: string | null }   // runtime, never NEXT_PUBLIC_*; null at launch (G12)
   tokens?: TokenOverrides; sisters?: SisterConfig[]
 }
 

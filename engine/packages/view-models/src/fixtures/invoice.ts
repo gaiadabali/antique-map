@@ -6,15 +6,16 @@
  * gallery's own `/pay/{token}` page — the Payment Element embedded, bank transfer beside it,
  * never a gateway's page. Its designed states: open ("On hold until" its due date, D45), bank
  * transfer pending, paid, expired (the due date passed and the piece released) and voided (staff
- * cancelled it); and the order it placed at issue, awaiting payment, as a signed-in buyer's
- * account shows it.
+ * cancelled it); and the order it placed at issue, awaiting payment, as its email's link or the
+ * order lookup opens it — the gallery has no accounts (D54). Issued on 2 October, it is due three
+ * days later, the term the order builder proposes (C1 `invoiceHoldDays`, D45).
  */
 import type { OrderVM } from '../surfaces/order'
 import type { PayVM } from '../surfaces/pay'
 import { ISLE, paymentOption, token, totals } from './_commerce'
 import { money, SELLER_SG, seo } from './_shared'
 
-const DUE = '2026-10-09T17:00:00+08:00'
+const DUE = '2026-10-05T17:00:00+08:00'
 const TOKEN = 'tok_invoice_fixture'
 
 export const payInvoice: PayVM = {
@@ -48,7 +49,8 @@ export const payInvoice: PayVM = {
   methods: [
     // The Payment Element, embedded in this page: a card captures at once (PAYMENTS.md §1).
     paymentOption('card', 'stripe', 'card', 'embedded', 30),
-    paymentOption('bank-transfer', 'bank-transfer', 'bank-transfer', 'instructions', 7 * 24 * 60, {
+    // A transfer's window is the time left to the due date, never past it (D45).
+    paymentOption('bank-transfer', 'bank-transfer', 'bank-transfer', 'instructions', 3 * 24 * 60, {
       confirmation: 'manual',
       refunds: 'manual',
     }),
@@ -72,10 +74,10 @@ export const payInvoiceTransferPending: PayVM = {
       reference: 'SGPF-000031',
       virtualAccount: null,
       bank: null,
-      expiresAt: '2026-10-09T09:00:00.000Z',
+      expiresAt: '2026-10-05T09:00:00.000Z',
     },
-    expiresAt: '2026-10-09T09:00:00.000Z',
-    lockExpiresAt: '2026-10-09T09:00:00.000Z',
+    expiresAt: '2026-10-05T09:00:00.000Z',
+    lockExpiresAt: '2026-10-05T09:00:00.000Z',
     dailyCapWarning: false,
   },
   intents: {
@@ -97,12 +99,15 @@ export const payInvoiceExpired: PayVM = {
 /** Staff voided it before its due date. */
 export const payInvoiceVoided: PayVM = { ...payInvoiceExpired, status: 'cancelled' }
 
-/** The order the invoice placed at issue, awaiting payment, as the buyer's account opens it. */
+/**
+ * The order the invoice placed at issue, awaiting payment, as its email's link or the order
+ * lookup opens it (the order-access cookie, C13 `ORDER_ACCESS`): no account at the gallery (D54).
+ */
 export const orderInvoice: OrderVM = {
   surface: 'order',
   number: 'SG-000131',
   placedAt: '2026-10-02T11:05:00+08:00',
-  access: 'account',
+  access: 'lookup',
   context: 'detail',
   status: 'awaiting-payment',
   seller: SELLER_SG,

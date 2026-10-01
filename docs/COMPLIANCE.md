@@ -102,9 +102,14 @@ this (COMMERCE.md §8).
 - **PP 80/2019**: complete seller identity and legality, accurate product, price,
   payment and delivery terms.
 - **UU 8/1999 art. 18** bans standard clauses letting the seller refuse returns or
-  refunds — **no "all sales final"**, including for made-to-order prints. The
-  returns policy is drafted by counsel; the software supports return requests
-  on every order line.
+  refunds, which the research read as **no "all sales final"**, including for
+  made-to-order prints. The returns policy is drafted by counsel; the software
+  supports return requests on every order line.
+- **The gallery's originals are final sales — counsel confirms it is allowed (G6,
+  D11, 2026-10-01).** The gallery promises the **lifetime authenticity guarantee**
+  and takes no change-of-mind return of an original; counsel words both, the
+  guarantee's remedy included. A return request still exists on every order line,
+  for whatever the guarantee or counsel's terms admit.
 - **The shop's returns answer is in tension with art. 18 — for counsel (S12,
   2026-10-01).** The owner's answer is "no refund": no refunds and no change-of-mind
   returns, and a print that arrives damaged replaced on a photo. Read against art. 18
@@ -113,6 +118,8 @@ this (COMMERCE.md §8).
   the shop may state it, and in what words. Until counsel answers, the shop states
   only the damaged-print replacement and no returns line at all, and the engine keeps
   a return request on every order line whatever the wording becomes (COMMERCE.md §11).
+  Counsel's G6 answer reads the same article for the gallery's originals (above);
+  whether it settles the shop's wording too is counsel's to say.
 - **UU 24/2009**: agreements with Indonesian parties in Bahasa Indonesia →
   terms, privacy notice and order documents exist in Indonesian and English.
 - **Permendag 31/2023**: social media may promote, not process payments —
@@ -130,10 +137,14 @@ this (COMMERCE.md §8).
   organisation **(confirm)**.
 - **EU visitors** — GDPR-grade cookie consent: IG sells to the Dutch heritage
   market.
-- **Analytics stays first-party** (G12, 2026-10-01): the owner's own records, in the
-  admin. GA4 and the Meta Pixel load only after marketing consent (D38) — and, until
-  the owner says whether they want them at all, no brand config names their ids, so
-  no visitor's data reaches either (ANALYTICS.md).
+- **Analytics stays first-party** (G12, the owner's answer, 2026-10-01): the owner's
+  own records, in the admin. **No GA4 and no Meta Pixel at launch, even after
+  consent**: no brand config names their ids, so no visitor's data reaches either,
+  and the consent banner has **no marketing-tag category** — it asks only for the
+  analytics consent the first-party beacon's persistent id needs, the beacon itself
+  counting cookieless without it (ANALYTICS.md §1). D38's rule for marketing tags
+  applies again only if a brand later sets an id. Marketing **email** consent is
+  unchanged: its own unticked checkbox wherever an address is given.
 - **A retailer's application is personal data even when it never becomes a
   partner.** One declined or left pending has no order behind it, so it needs
   its own retention period, not the customer record's — **the period is
@@ -224,9 +235,10 @@ Midtrans is the OEI default.
       export status for every item (the migration fills most of it)
 - [ ] Written export determination for any item in Jakarta that may be sold abroad
 - [ ] Fine-art transit insurance policy
-- [ ] Terms: condition, the lifetime authenticity guarantee (G6), returns, duties
-      and taxes; the invoice's terms — its due date, the hold until then (D45), and
-      shipping only once paid in full (G11)
+- [ ] Terms: condition, the lifetime authenticity guarantee (G6), the final sale of
+      an original (no change-of-mind return — counsel confirmed, D11), duties and
+      taxes; the invoice's terms — its due date (three days proposed, staff may
+      change it), the hold until then (D45), and shipping only once paid in full (G11)
 
 **Later**
 

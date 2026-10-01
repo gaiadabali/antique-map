@@ -53,8 +53,8 @@ bag) and **no account entry** (D54: no one signs in), and the ship-to names a
 country, never a currency — no price is shown — because it still decides export
 gating: a `domestic-only` original seen from abroad says so (§5).
 
-**Footer:** Visit (locations, by appointment) · Sell to us · Guarantee &
-returns · Authentication · Condition grades · Shipping & insurance · Framing &
+**Footer:** Visit (locations, by appointment) · Sell to us · Guarantee & terms
+of sale · Authentication · Condition grades · Shipping & insurance · Framing &
 conservation · The certificate (Parry) · Institutions · Newsletter · the sister
 strip ("Prints from our archive at Old East Indies") · seller identity (legal
 name, address, registration) · language.
@@ -206,8 +206,9 @@ will reply — the reply promise beside every enquiry button, the same working d
 Singapore time (G9) — and the lead is logged. No Buy, Reserve or Make an offer
 appears in any state. The rest of the panel:
 - the reassurance row: the Parry certificate with every original (G7); the
-  **lifetime authenticity guarantee** (G6) in counsel's words; returns only once
-  counsel words them (D11) — until then the row holds neither line; **ships from**
+  **lifetime authenticity guarantee** (G6) in counsel's words; **a final sale** —
+  said plainly beside the guarantee, since no original is returned on a change of
+  mind (the owner's answer, counsel confirming it, D11); **ships from**
   (Singapore / Jakarta); shipping, insured and quoted on the invoice (G11); the
   export note when the item is `domestic-only` (COMPLIANCE.md §1);
 - a conservation framing quote link (UV glazing, rag mat, reversible hinges).
@@ -225,7 +226,7 @@ iDEAL or SEPA) and **bank transfer** against the PDF. Its states are designed: o
 — "On hold until {due date}" — bank transfer pending, paid, and expired or voided
 with the ways to reach the gallery (COMMERCE.md §7, PAYMENTS.md §5). From the moment
 the invoice is issued the piece is **on hold until its due date** for everyone else;
-the buyer is reminded two days before it; unpaid by then, the piece is released by
+the buyer is reminded a day before it; unpaid by then, the piece is released by
 itself and the link stops taking payment (D45). It ships only once the invoice is
 paid in full (G11).
 
@@ -315,11 +316,11 @@ page) · a "Similar to sell?" micro-block linking to consignment.
 
 All in the CMS as pages, all linked from the purchase panel:
 
-- **Guarantee & returns** — the **lifetime authenticity guarantee**, the owner's
-  commitment (G6), published in counsel's words (D11). Whether an original may be
-  returned is not answered — G6 named only the guarantee — so the page promises no
-  returns until the owner and counsel decide (the research suggested 14 days, less
-  shipping and insurance; COMMERCE.md §11).
+- **Guarantee & terms of sale** — the **lifetime authenticity guarantee**, the
+  owner's commitment (G6), and the terms of sale: an original is a **final sale**,
+  with no change-of-mind return (the owner's answer, 2026-10-01; counsel confirms it
+  is allowed, D11), the guarantee being the one promise after it — both in counsel's
+  words (COMMERCE.md §11).
 - **Authentication** — "How do you know it's real?": chain lines, watermarks,
   plate marks, verso text; "if doubt remains, we do not offer the item for sale".
 - **Condition grades** — the published scale with definitions and A–D

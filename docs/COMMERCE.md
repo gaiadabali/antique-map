@@ -234,7 +234,7 @@ backlog v2.19), not launch's.
 | Kind | Taken when | TTL (named in C1) | Public status |
 | ---- | ---------- | ----------------- | ------------- |
 | `checkout-lock` | the buyer presses "Continue to payment" (the shop's bag), or starts paying a staff-sent link (the gallery's invoice, §7) | `checkoutLockMinutes` (15), then **extended** to the chosen method's `sessionTtl` + margin; a link's lock lasts at least as long as the hold it supersedes | "On hold" (unique only) |
-| `invoice` | staff issue an invoice — the gallery's one way to sell an original (D50, §7) — or a proforma | to the invoice's **due date**, which staff set (D45); `invoiceHoldDays` (7) is the term the order builder proposes | "On hold until {due date}" |
+| `invoice` | staff issue an invoice — the gallery's one way to sell an original (D50, §7) — or a proforma | to the invoice's **due date**, which staff set (D45) and may change per invoice; `invoiceHoldDays` (3, the owner's answer) is the term the order builder proposes | "On hold until {due date}" |
 | `hold` | staff grant a buyer's reserve request — **no brand at launch** (D50: the gallery has no reserve button; the shop takes no holds) | `holdDefaultHours` (48), at most `holdMaxHours` (72) | "On hold until {date}" |
 | `offer` | an offer is accepted — **no brand at launch** (D22 answered: neither site takes offers) | `offerHoldHours` (48); a counter-offer stays open `offerCounterHours` (72) | "On hold" |
 
@@ -445,7 +445,8 @@ carries the piece at the agreed figure — C5 `AgreedPrice` (source `quote`), en
 a role that may set prices and audited — the insured shipping as quoted (§8), the duties
 where the seller ships DDP (under DAP it states the estimate and that they are paid on
 arrival), the buyer and, for an institution, its PO number, and a **due date** staff set
-(D45; the order builder proposes `invoiceHoldDays`). Issuing it is one transaction that:
+(D45; the order builder proposes three days, `invoiceHoldDays`, and staff may change it per
+invoice — the owner's answer, 2026-10-01). Issuing it is one transaction that:
 
 1. **routes it like a checkout** — `routeSeller()` over its lines and the buyer's
    destination (§2): a piece with no recorded location or export status, or a
@@ -491,7 +492,7 @@ same link.
 **The hold until the due date (D45).** From issue every visitor reads **"On hold
 until {due date}"** — the buyer too, who pays through the invoice's link: with no
 sign-in there is no "held for you" (D54). **The buyer is reminded before the due date** —
-`invoiceHold.expiring`, `invoiceNoticeHours` ahead (C1, 48 hours by default), by email
+`invoiceHold.expiring`, `invoiceNoticeHours` ahead (C1: 24 hours, the owner's answer), by email
 (by WhatsApp once D14 is answered) — and staff see invoices nearing their date on the
 desk. Paying moves the hold the usual way: `payLink.start` supersedes the invoice hold
 with the order's checkout lock, lasting at least as long, and `applyPaymentEvent()`
@@ -648,13 +649,13 @@ date, because they change.
 
 ## 11. Returns and refunds
 
-Policy text per seller comes from counsel — Indonesian law does not allow "all
-sales final" (COMPLIANCE.md §6). The gallery's commitments: a **lifetime
-authenticity guarantee** (the owner's, G6) and the Parry certificate with every
-original (G7), both published in counsel's words (D11). **Whether an original may be
-returned is not answered**: G6 asked it, and the owner named only the guarantee — so
-nothing is promised on any page, and the research's suggestion (14 days, less
-shipping and insurance) stays a suggestion, the owner's and counsel's to decide. The
+Policy text per seller comes from counsel (D11; COMPLIANCE.md §6 records what UU
+8/1999 art. 18 allows). The gallery's commitments: a **lifetime authenticity
+guarantee** (the owner's, G6) and the Parry certificate with every original (G7),
+both published in counsel's words. **An original is a final sale** (the owner's
+answer, 2026-10-01): no change-of-mind return, so no returns window is offered on any
+page — the research's 14 days is dropped — and counsel confirms this is allowed. The
+guarantee is the one promise after the sale, its remedy as counsel words it. The
 shop's answer (S12) is **"no refund": no refunds and no change-of-mind returns, and a
 print that arrives damaged replaced** on a photo. That answer is **in tension with
 Indonesian consumer law** as COMPLIANCE.md §6 records it (UU 8/1999 art. 18 on
@@ -667,8 +668,9 @@ buyer's return request per order line with reason and photos (from the order
 lookup or the order email's page — an account's too, where a brand has one), staff
 approval, return shipping instructions, inspection,
 restock (location) or write-off, the reservation's `converted → reversed` for a
-returned original, and the refund (PAYMENTS.md §5). Returns of originals route to the
-seller's stock location — **never re-import an antique into Indonesia to accept
+returned original — at the gallery only through the guarantee, never a change of
+mind — and the refund (PAYMENTS.md §5). An original that does come back routes to
+the seller's stock location — **never re-import an antique into Indonesia to accept
 a return** without advice (it reopens the export question).
 
 ## 12. Documents

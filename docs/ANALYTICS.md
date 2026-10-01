@@ -1,7 +1,8 @@
 # Analytics, consent and commerce data
 
 **Goal:** first-party behavioural and commerce data that each brand owns
-outright, dashboards inside its own admin, and ad attribution only with consent.
+outright, and dashboards inside its own admin. Ad attribution through third-party
+tags is engine capability, not part of the launch (G12, below).
 The pipeline is KOI's (a beacon into an append-only, partitioned `events` table,
 read by admin dashboards), extended with commerce funnels and the lead flows a
 gallery lives on.
@@ -10,12 +11,15 @@ gallery lives on.
 2026-10-01):** "we need to log all our analytics ourselves and visible in the
 dashboard". Every number the owner reads comes from this pipeline and the domain's
 records, in each brand's admin (§3); nothing depends on an export from, or an
-account at, Google Analytics. **Whether GA4 and the Meta Pixel load at all after a
-visitor's marketing consent** — for ad attribution and audiences, the third layer
-below — **is a question back to the owner** (TASKS.md 6.4). Until it is answered,
-neither brand config names a GA4 or a Meta id, so no third-party tag loads, consent
-or not, and the first two layers are complete without it; D38's rule governs the
-day an id is set.
+account at, Google Analytics. **No GA4 and no Meta Pixel at launch, even after
+consent** (the owner's answer, 2026-10-01): the analytics are first-party only.
+Neither brand config names a GA4 or a Meta id, so no third-party tag loads for
+anyone, and the consent banner offers **no marketing-tag category** — it asks only
+what the first-party beacon needs (the analytics row below). The third layer stays
+in the engine, off: a brand that later wants ad attribution sets the ids in its
+config, and with them the banner gains its marketing category, the CSP its
+origins and D38's rule its subject — a build then (TASKS.md 40.2's cut work), not
+only a switch.
 
 ---
 
@@ -25,13 +29,13 @@ day an id is set.
 | ----- | ---- | ----- | ------- |
 | **Domain events** | server-side facts: order paid, offer accepted, hold expired, refund issued | written by `@engine/domain` to the outbox `domain_events` **in the same transaction as the change**, then dispatched by the jobs queue to analytics, email and the sister webhook (COMMERCE.md §13) | none needed — they are business records, not tracking |
 | **First-party beacon** | page and interaction events | `POST /api/x/collect` → `analytics_events` (monthly partitions) | **cookieless until consent**: a per-session hashed id only, so every visit is counted with no consent at all — which is what G12 asks; **analytics consent** (C2 `ConsentVM` `analytics`) adds only the persistent first-party anonymous id that links a visitor's visits, still kept by the brand alone |
-| **GA4 + Meta Pixel** | ad attribution, audiences | client tags, loaded only after marketing consent — and only where the brand config names an id: none does until the owner answers G12's question (above) | marketing consent, per EU/Indonesian rules (COMPLIANCE.md §7) |
+| **GA4 + Meta Pixel** — not at launch | ad attribution, audiences | client tags, loaded only after marketing consent and only where the brand config names an id — none does: the owner keeps analytics first-party (G12) | marketing consent, per EU/Indonesian rules (COMPLIANCE.md §7) — a banner category that exists only once an id is set |
 
 The GA4 measurement id and the Meta Pixel id are **runtime brand config**
 (`analytics.ga4Id`, `analytics.metaPixelId`, BRANDS.md §3), handed to the page
 through `ShellVM` — never `NEXT_PUBLIC_*`, which would be baked into a build that
 serves more than one brand — and the per-request CSP allows exactly their origins
-(ARCHITECTURE.md §13).
+(ARCHITECTURE.md §13). Both are `null` for both brands at launch (G12).
 
 **The page sends only what it can know; `/api/x/collect` stamps the rest.** A
 beacon event carries its own props from the page's own view model, plus `at`,
@@ -96,7 +100,8 @@ original is sold by conversation and invoice)
 footer — the gallery's Call button, added with C11 v1.5) ·
 `retailerApplication.submitted` (shop type only, never who it is). No brand sends
 `offer.submitted` or `hold.requested` at launch (D22, D50); the names stay. These
-feed GA4's `generate_lead`, Meta's `Lead` and the funnel's steps; the **Leads
+feed the funnel's steps (and GA4's `generate_lead` and Meta's `Lead` once a brand sets a tag
+id — none at launch, G12); the **Leads
 dashboard's own counts** (§3) come from the domain's stored records instead, which
 a blocked script, a failed beacon post or a reload cannot move. A call or a
 WhatsApp chat leaves no record on the site, so its tap is the one lead step only
@@ -136,7 +141,10 @@ refund of revenue that was never counted.
 accounts, D54) · `consent.updated` · `vitals.reported` (LCP/INP/CLS per
 surface and device class — field data, not just lab)
 
-### Mapping to GA4 and Meta (consented only)
+### Mapping to GA4 and Meta (consented only — not at launch, G12)
+
+Kept for the day a brand sets a tag id; no brand does at launch, so nothing below
+fires.
 
 | Ours | GA4 | Meta |
 | ---- | --- | ---- |
@@ -165,6 +173,10 @@ is `10.00` — the one place in the pipeline a minor-unit integer becomes a
 float, and only for the platforms that require one.
 
 ## 3. Dashboards (in each brand's admin)
+
+**These are the analytics** (G12): with no third-party tag at launch, every figure
+the owner reads about traffic, leads and sales is on these screens, from the beacon
+and the domain's records alone — no number waits on, or is checked against, GA4.
 
 One brand per dashboard, labelled as such — a Payload process binds one
 database, so a cross-brand total would be a claim the screen cannot back (NOW!
