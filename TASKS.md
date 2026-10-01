@@ -21,7 +21,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 2/5 | 22/31 | 1 | `███████░░░`  71% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 2/6 | 22/37 | 1 | `██████░░░░`  59% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **22/174** | **152/816** | **47** | `██░░░░░░░░`  19% |
+| **All** | 44 phases | | | **22/175** | **152/822** | **47** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -203,6 +203,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D45** | Proforma (`invoice`) holds for institutions: capped, or staff approve before the hold starts (COMMERCE.md §7, F13) | **staff approve first** — the hold starts on approval | owner (interview G5) | 18.1, 19.1 |
 | **D46** | Who produces the configurator's room plates (6.2.c: six master plates) | a freelance 3D artist renders them to `docs/design/imagery/room-scenes.md`; no AI-generated or stock interiors | owner (budget) | 22.7 |
 | **D47** | How the shop prices and charges a buyer abroad at launch | one rupiah price list everywhere; the PT charges IDR — a card is charged the exact rupiah total; the market's currency shows only as an "≈" estimate beside it (day's rate, no buffer); PayPal, which takes no rupiah, is charged the rupiah total converted once to USD at the payment step (day's rate + the USD buffer, half-even to the cent), shown before the choice and stored on the attempt; no hand-set EUR/AUD/SGD/USD lists until a seller that charges them exists (COMMERCE.md §3, PAYMENTS.md §6) | owner + tax adviser (may the PT take USD by PayPal for export?) | 17.2, 17.3, 19.2, 25.2, 30.1, 32 |
+| **D48** | Payment and courier providers before the client hands over sandbox accounts (OA14) | **simulated**: `<PREFIX>_MODE=simulate` on staging and local — no credential read, the boot report warns, production refuses it; each adapter (19.3, 25.x, 26.x) ships a simulator for that mode, and the real sandbox keys replace the `simulate` line when they arrive (owner, 2026-10-01; DEPLOYMENT.md §8) | owner | 19.3, 25.1–25.3, 26.1–26.2 |
 
 ### Owner actions (not questions)
 
@@ -567,8 +568,8 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 ## Phase 5 — Staging and the foundation gate 👤 · Foundation · needs 4 · ~2d
 
 **Goal:** both shells on staging from a CI-built release, and the gate over the whole Foundation stage.
-**Done when:** `pnpm dev --brand indies-gallery` and `--brand old-east-indies` serve two differently themed shells in EN and ID from two databases; `/admin` logs in on both; `test` runs on both apps; the Cache Components spike's verdict is recorded; every gate fails on a planted violation; both staging hostnames serve a CI-built release.
-**Waves:** W1 — 5.1, 5.3 · W2 — 5.4 · W3 — 5.2, 5.5 · closes **M0**
+**Done when:** `pnpm dev --brand indies-gallery` and `--brand old-east-indies` serve two differently branded (name, logo, favicon, copy — theming is the Design stage's, D9) shells in EN and ID from two databases; `/admin` logs in on both; `test` runs on both apps; the Cache Components spike's verdict is recorded; every gate fails on a planted violation; both staging hostnames serve a CI-built release.
+**Waves:** W1 — 5.1, 5.3 · W2 — 5.4, 5.6 · W3 — 5.2, 5.5 · closes **M0**
 
 - [ ] **5.1 Staging on Helios 👤** · needs: 2.3, 4.1 — 🔄 5·W1
   - **Lane** HAR · **Agent** devops · **Wave** W1
@@ -580,7 +581,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [ ] 5.1.c first release deployed; rollback rehearsed; results recorded in `docs/DEPLOYMENT.md` — including the deploy agent's health timeout and retries, checked on loopback or with a timeout that outlasts the longest migration (the first `/api/health` runs the migrations and is untimed by design; Cloudflare gives up at 100 s — 4.6 review #2)
   - [ ] 5.1.d **Check:** `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` serve the shells from a CI-built release, health checks are green, and one rollback has been rehearsed; each app listens on `127.0.0.1` alone (`ss -ltnp`), and its port refuses a connection from outside (`curl http://<public-ip>:4030`), the host firewall confirmed with the owner's go-ahead.
 
-- [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4
+- [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4, 5.6
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/foundation.md`
   - **Read** the **Done when** of phases 1–5
@@ -630,6 +631,18 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.5.d `conditional-branch-reached` chains drop `engine/apps/` importers as `checkAppMounts` does — qa L5
   - [x] 5.5.e a CI step after the artifact build scans every `api/x/**` route's synchronously loaded chunks through their source maps and fails if one bundles `engine/packages/cms` or `payload` (qa's `route-chunks.mjs` from the third gate as the start)
   - [x] 5.5.f **Check:** each of qa's missed forms in 5.4's third gate is planted and fails its gate naming the file, then passes once removed; the CI chunk scan fails on the `react-server` plant and passes on clean `main`; `pnpm verify` green.
+
+- [ ] **5.6 The foundation gate's local failures** · needs: 5.3
+  - **Lane** HAR · **Agent** medior · **Wave** W2
+  - **Owns** `engine/tooling/dev/**`, `engine/tooling/brand-literals/**` (or wherever 2.2.b's gate lives), `engine/tooling/tasks-lint/**`, `engine/tooling/client-safe/**` (its tests' timeouts), `tests/e2e/a11y/**`, both apps' `next.config.ts` (`agentRules` only, keeping 5.4.d's one-file parity), `README.md` (the dev command)
+  - **Read** `docs/gates/foundation.md` (F1, F3–F5, F7, M1, each with its reproduction)
+  - _Requirements: 1.1, 1.3, 1.6_
+  - [ ] 5.6.a F1 — `pnpm dev --brand <slug> [--storefront gallery|emporium]` exists (README.md:60 documents it): it picks the app from the brand config, sets `BRAND`/`BRAND_ROOT` and the worktree's port, and runs `next dev`
+  - [ ] 5.6.b F3 — the brand-literal gate also refuses each brand's `domains.aliases[]` and the legacy domains (`oldeastindies.com`, `antiquemapsindonesia.com`, `indiesgallery.com`) under `engine/`
+  - [ ] 5.6.c F4 — `tasks:lint --phase N --wave K` fails on an Owns overlap inside that wave, as the full lint does (PARALLEL-TRACKS.md §5)
+  - [ ] 5.6.d F5 — `next dev` writes no untracked `AGENTS.md`/`CLAUDE.md` into an app (`agentRules: false` in both configs, or ignored); F7 — the client-safe test and the two 5.4 ESLint tests get load-proof timeouts
+  - [ ] 5.6.e M1 — an a11y spec in `tests/e2e/a11y/` runs axe on every shell page of every brand at 390 and 1280 px and is clean (`playwright.config.ts`'s promise; its project added through the e2e owner when it next touches the config)
+  - [ ] 5.6.f **Check:** each reproduction in `docs/gates/foundation.md` for F1, F3, F4, F5, F7 and M1 now passes, and a planted alias or legacy domain under `engine/` fails the brand-literal gate; `pnpm verify` green.
 
 ---
 

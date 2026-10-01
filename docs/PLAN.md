@@ -93,7 +93,7 @@ against two databases, the synthetic `test` brand on both apps, and staging
 provisioned on Helios.
 
 **Done when:** `pnpm dev --brand indies-gallery` and `--brand old-east-indies`
-serve two differently themed shells in English and Indonesian from two
+serve two differently branded shells (theming is the Design stage's, D9) in English and Indonesian from two
 databases, `/admin` logs in on both, the `test` brand runs on both apps, the
 spike's verdict is recorded in ARCHITECTURE.md §9, every gate fails on a planted
 violation, and both staging hostnames serve a CI-built release.
