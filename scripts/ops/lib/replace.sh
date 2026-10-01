@@ -198,12 +198,20 @@ backup_replaced() {
 }
 
 # stop_idle_pm2 — the poller's idle pm2 daemon, killed as the user (it runs no app: checked).
+# pm2_leftovers — pids of the poller's hung probe and of a God Daemon for this home.
+pm2_leftovers() {
+  pgrep -u "$S_USER" -xf "node /usr/bin/pm2 describe $S_USER" 2>/dev/null || true
+  pgrep -u "$S_USER" -f "^PM2 v[0-9.]+: God Daemon \(${S_HOME}/\.pm2\)$" 2>/dev/null || true
+}
+
+pm2_all_gone() { pm2_daemon_gone && [ -z "$(pm2_leftovers)" ]; }
+
 stop_idle_pm2() {
   resolve_site_path
   if pm2_daemon_live; then site_run pm2 kill >/dev/null 2>&1 || true; fi
   pkill -u "$S_USER" -xf "node /usr/bin/pm2 describe $S_USER" 2>/dev/null || true
   pkill -u "$S_USER" -f "^PM2 v[0-9.]+: God Daemon \\(${S_HOME}/\\.pm2\\)$" 2>/dev/null || true
-  wait_for 10 pm2_daemon_gone
+  wait_for 10 pm2_all_gone
 }
 
 delete_old_site() {
@@ -224,7 +232,8 @@ replace_site() {
   replace_plan
   act "copy $S_USER's crontab, $S_ENV and the vhost to $BACKUP_ROOT/config/replace-site/$S_REPLACE.$STAMP/ (700 root)" \
     backup_replaced
-  if pm2_daemon_live && ! act "stop $S_USER's idle pm2 daemon (pid $(pm2_pid); pm2 kill, as $S_USER)" stop_idle_pm2; then
+  if { pm2_daemon_live || [ -n "$(pm2_leftovers)" ]; } &&
+    ! act "stop $S_USER's idle pm2 daemon ($(pm2_leftovers | paste -sd, -); pm2 kill as $S_USER, or by its exact command line)" stop_idle_pm2; then
     fail "$S_USER's pm2 daemon did not stop: $S_REPLACE is not deleted"
     return 1
   fi
