@@ -159,7 +159,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.e cut (D20); ⛔ 👤 6.1.i the gallery's phone and viewing addresses, the shop's owed items |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.c cut (D20); 6.3.k after 6.4 |
+| 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5 |
+| 6·W3 | 6.5 Brand configs, app supports and their rules | medior | agent worktree | 2026-10-01 | the gallery's phone a marked placeholder until 6.1.i |
+| 6·W3 | 6.6 Journeys and briefs follow D51, D52, D54 | senior-uiux | agent worktree | 2026-10-01 | |
+| 6·W3 | 6.7 The docs outside 6.4's Owns (+ 6.2.j) | architect | agent worktree | 2026-10-01 | 6.2.j folded in: both touch MIGRATION.md |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
 | 8·W2 | 8.5 Staging storage holds 8.3's layout | devops | agent worktree (HAR) | 2026-10-01 | on Helios (OA-Helios); a new DNS name would be 👤; gates the next `production` push |
 | 8·W2 | 8.6 A refusal keeps its plain reason | senior-fe | agent worktree (WEB) | 2026-10-01 | qa D1 — gates the phase's Done when |
@@ -732,7 +735,7 @@ run beside the build line rather than in it.
   - [x] 6.4.h D54 — no collector accounts on the gallery: requirements 13.1–13.2 and ARCHITECTURE.md §12 (customer auth for the shop's retailers only), EXPERIENCE-GALLERY.md §5, §8, §10 (no account area; the wishlist cut or browser-only; want-lists by email), COMMERCE.md and C6/C10 (no session-scoped `OfferAccess`/`AppointmentAccess` on the gallery; the viewing changed by its link), MIGRATION.md §5 and the redirect map (customers as staff-side records, no claim flow or 12-month purge of unclaimed accounts; `/account/*` answered, not mirrored); the board diff covers 28.1.b–c and 28.1.e (collectors, the claim flow, cart merge), 28.2 (the gallery half), 29, 33.3.d, 34.2.c and 36
   - [x] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, a payment page hosted by the provider, several shop stock locations, a gallery sign-in or account, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report. — merged 2026-10-01 (c73bbb2): every answer reflected or routed (the report's table); greps find no gallery online buying, shown price, offer or account and no shop checkout abroad at launch; contracts C1, C2, C6, C8, C10, C11, C13 at v1.5; `pnpm verify` exit 0 on the merged tree (64b2acd, byte-identical to c73bbb2: 1792 tests, tasks-lint ok); in the shared main checkout two load-sensitive suites timed out and pass in isolation (route-parity's Vite tests; 8.3.h's `request-temp-files.test.ts` at the 5 s default)
 
-- [ ] **6.5 Brand configs, app supports and their rules follow D50, D52, D54, S3, S7 and S10** · needs: 6.4
+- [ ] **6.5 Brand configs, app supports and their rules follow D50, D52, D54, S3, S7 and S10** · needs: 6.4 — 🔄 6·W3
   - **Lane** BRD + UXG + PLT · **Agent** medior · **Wave** W3
   - **Owns** `indies-gallery/site/brand.config.json`, `old-east-indies/site/brand.config.json`, `test/site/brand.gallery.json`, `test/site/brand.emporium.json`, `engine/apps/gallery/src/supports.ts`, `engine/packages/config/src/validate/rules/**`, `engine/packages/config/src/validate/testing/fixtures.ts`
   - **Read** 6.4's report (the board diff's 6.5), C1 v1.5's header (`engine/packages/config/src/schema.ts`), BRANDS.md §4–§6, EXPERIENCE-GALLERY.md (D50, D54), EXPERIENCE-SHOP.md §11
@@ -744,7 +747,7 @@ run beside the build line rather than in it.
   - [ ] 6.5.e PLT: the three rules C1 v1.5's header lists — `buy` only with `purchase.checkout`, `call` only with `identity.contact.phone`, `invoiceNoticeHours` below `invoiceHoldDays` in hours — each with a failing-config test
   - [ ] 6.5.f **Check:** `validateBrandConfigs()` and `pnpm check:brands` pass for every brand; a gallery config with any refused module, or with `buy`, fails (tests); C10 `hasSurface` gives the gallery no cart, checkout or account area and the shop its cart (test); `check-generated` shows no drift.
 
-- [ ] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4
+- [ ] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4 — 🔄 6·W3
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W3
   - **Owns** `docs/design/journeys/**`, `engine/apps/gallery/PRODUCT.md`, `engine/apps/emporium/PRODUCT.md`, `PRODUCT.md`
   - **Read** 6.4's report (Found 7), EXPERIENCE-GALLERY.md §5, §10 (D54), COMMERCE.md §4 (D52) and §7 (D51)
@@ -755,7 +758,7 @@ run beside the build line rather than in it.
   - [ ] 6.6.d Each PRODUCT.md and the journeys README's index: no gallery sign-in or account (D54); first-party analytics (D55) and no returns of originals, still for counsel (D56), wherever a brief states either
   - [ ] 6.6.e **Check:** in the live gallery and shop journeys, a search finds no "Account ›", no gallery sign-in, no "In the showroom now" and no `Quote` surface outside an after-launch half, and each journey's success criteria still hold.
 
-- [ ] **6.7 The docs outside 6.4's Owns** · needs: 6.4
+- [ ] **6.7 The docs outside 6.4's Owns** · needs: 6.4 — 🔄 6·W3
   - **Lane** ARC · **Agent** architect · **Wave** W3
   - **Owns** `docs/ARCHITECTURE.md`, `docs/MIGRATION.md`, `docs/BRANDS.md`, `docs/DESIGN-SYSTEM.md`, `docs/PLAN.md`, `docs/CONVENTIONS.md`
   - **Read** 6.4's report (Found 1–6), TASKS.md Decisions D45 and D50–D56, `engine/packages/CONTRACTS.md` v1.5
