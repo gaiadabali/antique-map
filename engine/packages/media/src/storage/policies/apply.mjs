@@ -31,9 +31,11 @@ import {
   deriveLocalSecret,
   describe,
   mcCommand,
+  mcUserPolicyCommands,
   planOperations,
   POLICY_FILE,
   secretVariable,
+  stalePolicies,
 } from './plan.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -128,6 +130,20 @@ function runMc(options, { args, document, alreadyDone, secret }) {
   throw new Error(`mc ${args.slice(0, 3).join(' ')} failed (${status}): ${words}`)
 }
 
+/** Leaves a user holding the plan's one policy and no other (`stalePolicies()`). */
+function detachStale(options, { user, policy }) {
+  const commands = mcUserPolicyCommands(options.target, user)
+  const [command, prefix] = options.mc.startsWith('docker:')
+    ? ['docker', ['exec', '-i', options.mc.slice('docker:'.length), 'mc']]
+    : [options.mc, []]
+  const info = spawn(command, [...prefix, ...commands.info])
+  if (info.status !== 0) throw new Error(`mc admin user info ${user} failed: ${info.output}`)
+  for (const stale of stalePolicies(info.output, policy)) {
+    console.log(`    detach ${stale} from ${user}`)
+    runMc(options, { args: commands.detach(stale) })
+  }
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2))
   const plan = JSON.parse(readFileSync(options.plan, 'utf8'))
@@ -135,7 +151,9 @@ function main() {
   console.log(`storage:policies: ${operations.length} operation(s) from ${options.plan}`)
   for (const operation of operations) {
     console.log(`  ${options.dryRun ? 'would apply' : 'apply'} ${describe(operation)}`)
-    if (!options.dryRun) runMc(options, mcCommand(operation, options.target))
+    if (options.dryRun) continue
+    runMc(options, mcCommand(operation, options.target))
+    if (operation.kind === 'attach') detachStale(options, operation)
   }
   console.log(
     options.dryRun ? 'storage:policies: dry run, nothing applied' : 'storage:policies: done',

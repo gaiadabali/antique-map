@@ -1,7 +1,7 @@
 /**
  * `media` on a real database and the dev stack's MinIO (TASKS.md 8.3.a, 8.3.d, 8.3.e, 8.3.g),
  * through Payload's REST handler with the brand's scoped media key. Runs when both
- * CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT are set (`./test-stack`), after the local storage
+ * CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT are set (`./test-stack.test-support`), after the local storage
  * policies are applied; otherwise it skips.
  */
 import { createHash } from 'node:crypto'
@@ -10,30 +10,21 @@ import { MEDIA_UPLOAD_MAX_BYTES, UPLOADS_PREFIX } from '@engine/media/storage'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { asRoot, MEDIA_BUCKET, ORIGIN, stackAvailable, startStack, type Stack } from './test-stack'
+import {
+  asRoot,
+  form,
+  JPEG,
+  jpeg,
+  MEDIA_BUCKET,
+  messages,
+  ORIGIN,
+  stackAvailable,
+  startStack,
+  valid,
+  type Stack,
+} from './test-stack.test-support'
 
 const PASSWORD = 'storage-test-password-1'
-// A real 16 × 12 JPEG with the Exif a phone writes: its camera ("TestCam", "Phone 1") and a GPS
-// position (8° 39′ S, 115° 13′ E). Made with sharp's withExif(); anything after its end marker
-// makes each upload's bytes, and so its content address, its own.
-const JPEG = Buffer.from(
-  '/9j/4QFWRXhpZgAASUkqAAgAAAAJAA8BAgAIAAAAigAAABABAgAIAAAAkgAAABIBAwABAAAAAQAAABoBBQABAAAAegAAABsBBQABAAAAggAAACgBAwABAAAAAgAAABMCAwABAAAAAQAAAGmHBAABAAAAmgAAACWIBAABAAAA6AAAAAAAAAA4YwAA6AMAADhjAADoAwAAVGVzdENhbQBQaG9uZSAxAAYAAJAHAAQAAAAwMjEwAZEHAAQAAAABAgMAAKAHAAQAAAAwMTAwAaADAAEAAAD//wAAAqAEAAEAAAAQAAAAA6AEAAEAAAAMAAAAAAAAAAQAAQACAAIAAABTAAAAAgAFAAMAAAAeAQAAAwACAAIAAABFAAAABAAFAAMAAAA2AQAAAAAAAAgAAAABAAAAJwAAAAEAAAAAAAAAAQAAAHMAAAABAAAADQAAAAEAAAAAAAAAAQAAAP/bAEMAEAsMDgwKEA4NDhIREBMYKBoYFhYYMSMlHSg6Mz08OTM4N0BIXE5ARFdFNzhQbVFXX2JnaGc+TXF5cGR4XGVnY//bAEMBERISGBUYLxoaL2NCOEJjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY//AABEIAAwAEAMBIgACEQEDEQH/xAAVAAEBAAAAAAAAAAAAAAAAAAAABP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAE/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AtABJf//Z',
-  'base64',
-)
-const jpeg = (marker: string) => Buffer.concat([JPEG, Buffer.from(marker)])
-const valid = {
-  alt: 'Engraved map of Bali, 1726, hand-coloured, recto',
-  role: 'recto',
-  provenance: 'photograph',
-}
-
-function form(data: object, file?: { bytes: Buffer; name: string; type: string }) {
-  const body = new FormData()
-  body.set('_payload', JSON.stringify(data))
-  if (file) body.set('file', new Blob([new Uint8Array(file.bytes)], { type: file.type }), file.name)
-  return body
-}
-const messages = async (response: Response) => JSON.stringify(await response.json())
 
 describe.skipIf(!stackAvailable)(
   'media, stored in the brand bucket (on Postgres and MinIO)',

@@ -18,7 +18,7 @@
       ]
     },
     {
-      "Sid": "WriteOnlyUnderPrintFiles",
+      "Sid": "WriteOnlyItsOwnPrintFiles",
       "Effect": "Allow",
       "Action": [
         "s3:PutObject",
@@ -26,7 +26,7 @@
         "s3:AbortMultipartUpload",
         "s3:ListMultipartUploadParts"
       ],
-      "Resource": ["arn:aws:s3:::{{mastersBucket}}/print-files/*"]
+      "Resource": ["arn:aws:s3:::{{mastersBucket}}/print-files/{{brand}}/*"]
     }
   ]
 }

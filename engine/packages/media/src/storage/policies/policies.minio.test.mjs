@@ -92,16 +92,26 @@ describe.skipIf(!endpoint)('the applied storage policies, on MinIO', () => {
     for (const { Bucket, Key } of written) await remove(root, Bucket, Key)
   })
 
-  it("the origin's masters key writes and reads captures and print files", async () => {
+  it("the origin's web key writes captures and its own print files, and deletes nothing", async () => {
     expect(await put(origin, MASTERS, capture)).toBe('written')
     expect(await get(origin, MASTERS, capture)).toBe('read')
     expect(await put(origin, MASTERS, printFileKey('test', `${run}-d0`, sha('p0'), 'tif'))).toBe(
       'written',
     )
+    expect(await put(origin, MASTERS, printFileKey('other-brand', 'd-1', sha('p1'), 'tif'))).toBe(
+      'AccessDenied',
+    )
+    // The archive is irreplaceable: its web process cannot erase a capture.
+    expect(await remove(origin, MASTERS, capture)).toBe('AccessDenied')
+    expect(await get(origin, MASTERS, capture)).toBe('read')
   })
 
-  it("the shop's masters key writes only under print-files/ (8.3.c)", async () => {
+  it("the shop's masters key writes only its own print files (8.3.c)", async () => {
     expect(await put(outlet, MASTERS, printFile)).toBe('written')
+    expect(await put(outlet, MASTERS, printFileKey('other-brand', 'd-2', sha('p2'), 'tif'))).toBe(
+      'AccessDenied',
+    )
+    expect(await put(outlet, MASTERS, `print-files/${run}.tif`)).toBe('AccessDenied')
     expect(await put(outlet, MASTERS, masterKey(`${run}-w2`, sha('x'), 'cr3'))).toBe('AccessDenied')
     expect(await put(outlet, MASTERS, `masters/intake/test/${run}/${sha('y')}.cr3`)).toBe(
       'AccessDenied',

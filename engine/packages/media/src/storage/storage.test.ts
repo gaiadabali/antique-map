@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { tmpdir } from 'node:os'
 
 import { S3Client } from '@aws-sdk/client-s3'
 import { describe, expect, it, vi } from 'vitest'
@@ -26,6 +27,9 @@ import {
   MEDIA_UPLOAD_MAX_BYTES,
   MEDIA_UPLOAD_MIME_TYPES,
   mediaStorageTarget,
+  MULTIPART_ENVELOPE_BYTES,
+  multipartUploadOptions,
+  UPLOAD_TEMP_DIR,
   s3ClientConfig,
   s3MastersStore,
   sha256HexToBase64,
@@ -62,9 +66,24 @@ describe('upload limits and types (8.3.d)', () => {
   it('keeps a media upload under the CDN limit in front of /admin, and to web rasters', () => {
     expect(MEDIA_UPLOAD_MAX_BYTES).toBeLessThan(100_000_000 - 4_000_000)
     expect([...MEDIA_UPLOAD_MIME_TYPES].sort()).toEqual(
-      ['image/avif', 'image/jpeg', 'image/png', 'image/tiff', 'image/webp'].sort(),
+      ['image/avif', 'image/jpeg', 'image/png', 'image/webp'].sort(),
     )
     expect(MEDIA_UPLOAD_MIME_TYPES).not.toContain('image/svg+xml')
+    // TIFF is a capture's (DNG and most RAW sniff as TIFF): masters, never media.
+    expect(MEDIA_UPLOAD_MIME_TYPES).not.toContain('image/tiff')
+  })
+
+  it('parses multipart to the media limit, streaming to the OS temp folder, one file a request', () => {
+    const options = multipartUploadOptions()
+    expect(options).toMatchObject({
+      abortOnLimit: true,
+      useTempFiles: true,
+      limits: { fileSize: MEDIA_UPLOAD_MAX_BYTES, files: 1 },
+      requestSizeLimit: MEDIA_UPLOAD_MAX_BYTES + MULTIPART_ENVELOPE_BYTES,
+    })
+    expect(options.requestSizeLimit).toBeLessThan(100_000_000)
+    expect(options.tempFileDir).toBe(UPLOAD_TEMP_DIR)
+    expect(UPLOAD_TEMP_DIR.startsWith(tmpdir())).toBe(true)
   })
 
   it('takes what the handover accepts as a capture, and only rasters or a PDF as a print file', () => {

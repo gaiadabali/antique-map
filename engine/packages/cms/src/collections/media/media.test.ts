@@ -6,6 +6,7 @@ import { STAFF_ROLES } from '../../access/roles'
 import { MEDIA_ACCESS } from './access'
 import { altBaseline } from './alt-baseline'
 import { MEDIA_FIELDS, validateAlt } from './fields'
+import { freezeAfterCreate, mayCorrectIntake } from './frozen'
 import {
   altInDefaultLocaleFirst,
   deriveFromFile,
@@ -30,6 +31,7 @@ describe('the media collection (8.3.a, 8.3.d)', () => {
     expect((Media.upload as { mimeTypes: string[] }).mimeTypes).toEqual([
       ...MEDIA_UPLOAD_MIME_TYPES,
     ])
+    expect((Media.upload as { mimeTypes: string[] }).mimeTypes).not.toContain('image/tiff')
     expect((Media.upload as { imageSizes?: unknown }).imageSizes).toBeUndefined()
   })
 
@@ -67,8 +69,19 @@ describe('the media collection (8.3.a, 8.3.d)', () => {
 })
 
 describe('who reaches an image and its file (8.3.g, Found 10)', () => {
-  it('reads the record publicly, but serves the file — the full-resolution upload — to staff alone', () => {
-    expect(access(MEDIA_ACCESS.read, null)).toBe(true)
+  it('lets the loaders read the record on the Local API, and REST only for staff (finding 2)', () => {
+    const over = (payloadAPI: string, user: unknown, extra: object = {}) =>
+      (MEDIA_ACCESS.read as (a: unknown) => unknown)({ req: { user, payloadAPI }, ...extra })
+    expect(over('local', null)).toBe(true)
+    expect(over('local', { collection: 'customers' })).toBe(true)
+    expect(over('REST', null)).toBe(false)
+    expect(over('REST', { collection: 'customers' })).toBe(false)
+    expect(over('GraphQL', null)).toBe(false)
+    expect(over('REST', staff('contributor'))).toBe(true)
+    expect(over('local', null, { isReadingStaticFile: true })).toBe(false)
+  })
+
+  it('serves the file — the full-resolution upload — to staff alone', () => {
     expect(access(MEDIA_ACCESS.read, null, { isReadingStaticFile: true })).toBe(false)
     expect(
       access(MEDIA_ACCESS.read, { collection: 'customers' }, { isReadingStaticFile: true }),
@@ -184,6 +197,46 @@ describe('the hooks', () => {
     await expect(call(matchItsMaster, { data: ok, req: req(null) })).rejects.toThrow()
     const unlinked = { role: 'editorial', provenance: 'ai-generated' }
     expect(await call(matchItsMaster, { data: unlinked, req: req(null) })).toBe(unlinked)
+  })
+})
+
+describe('what intake set stays set (finding 3)', () => {
+  const freeze = freezeAfterCreate('media', ['role', 'provenance'], mayCorrectIntake)
+  const update = (user: unknown, data: object, payloadAPI = 'REST') =>
+    call(freeze, {
+      operation: 'update',
+      data,
+      originalDoc: { role: 'in-room', provenance: 'ai-generated' },
+      req: { user, payloadAPI },
+    })
+
+  it('refuses a contributor, a cataloguer or an editor who would change a provenance or a role', () => {
+    for (const role of ['contributor', 'cataloguer', 'editor']) {
+      expect(() => update(staff(role), { provenance: 'photograph' })).toThrow()
+      expect(() => update(staff(role), { role: 'recto' })).toThrow()
+      expect(() => update(staff(role), { role: 'recto' }, 'local')).toThrow()
+    }
+  })
+
+  it('lets an admin or a manager correct them, and a script with no user', () => {
+    expect(update(staff('admin'), { provenance: 'photograph' })).toEqual({
+      provenance: 'photograph',
+    })
+    expect(update(staff('manager'), { role: 'recto' })).toEqual({ role: 'recto' })
+    expect(update(null, { provenance: 'composite' }, 'local')).toEqual({ provenance: 'composite' })
+    expect(() => update(null, { provenance: 'composite' })).toThrow()
+  })
+
+  it('lets anyone resend the stored values, and touches a create not at all', () => {
+    const same = { role: 'in-room', provenance: 'ai-generated', alt: 'x' }
+    expect(update(staff('contributor'), same)).toEqual(same)
+    expect(
+      call(freeze, { operation: 'create', data: { provenance: 'photograph' }, req: {} }),
+    ).toEqual({ provenance: 'photograph' })
+  })
+
+  it('is on the collection, before the file is read', () => {
+    expect(Media.hooks?.beforeChange).toHaveLength(2)
   })
 })
 

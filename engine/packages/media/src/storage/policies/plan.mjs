@@ -6,13 +6,17 @@
 //                           iiif/ — the derivative ladder and the capped tiles — and nothing else,
 //                           so an upload's full-resolution original is never served (8.3.g)
 //   media-writer.json       a brand's media key: reads and writes its own media bucket only
-//   masters-origin.json     the origin brand's masters key: reads and writes every master
+//   masters-origin.json     the origin brand's masters key: reads every master, writes captures and
+//                           its own print files (print-files/<brand>/), and deletes nothing
 //   masters-outlet.json     the outlet brand's masters key: reads captures and print files, and
-//                           writes only under print-files/ (C9 PRINT_FILES_PREFIX)
-// The masters bucket gets no anonymous access at all: a master has no public URL.
+//                           writes only its own print files, under print-files/<brand>/ (C9
+//                           printFileKey())
+// The masters bucket gets no anonymous access at all: a master has no public URL. No web key may
+// delete a capture: the archive is irreplaceable, and the one deletion it needs — an intake copy
+// once filed and verified (TASKS.md 15.4) — is a job's, with a key of its own when 15.4 asks.
 //
-// Placeholders are `{{mediaBucket}}` and `{{mastersBucket}}` — never `${…}`, which IAM itself
-// reads as a policy variable.
+// Placeholders are `{{mediaBucket}}`, `{{mastersBucket}}` and `{{brand}}` (a masters key's brand
+// slug) — never `${…}`, which IAM itself reads as a policy variable.
 import { createHmac } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -23,8 +27,8 @@ const here = dirname(fileURLToPath(import.meta.url))
 /** Each key policy a plan's user may hold, and the placeholders its document needs. */
 export const KEY_POLICIES = {
   'media-writer': ['mediaBucket'],
-  'masters-origin': ['mastersBucket'],
-  'masters-outlet': ['mastersBucket'],
+  'masters-origin': ['mastersBucket', 'brand'],
+  'masters-outlet': ['mastersBucket', 'brand'],
 }
 export const BUCKET_POLICY = 'media-public-read'
 
@@ -32,6 +36,7 @@ const BUCKET_NAME = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/
 // MinIO's access keys are 3–20 characters here; a user's name is its access key.
 const USER_NAME = /^[a-z0-9][a-z0-9-]{1,18}[a-z0-9]$/
 const PLACEHOLDER = /\{\{([A-Za-z]+)\}\}/g
+const BRAND_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 /** A policy document from this folder, parsed. */
 export function loadDocument(name) {
@@ -79,14 +84,20 @@ export function planProblems(plan) {
       problems.push(`${at}.bucket: a media-writer names one of mediaBuckets`)
     } else if (entry.policy !== 'media-writer' && entry.bucket !== undefined) {
       problems.push(`${at}.bucket: only a media-writer names a bucket`)
+    } else if (entry.policy !== 'media-writer' && !BRAND_SLUG.test(entry.brand ?? '')) {
+      problems.push(`${at}.brand: a masters key names its brand's slug`)
+    } else if (entry.policy === 'media-writer' && entry.brand !== undefined) {
+      problems.push(`${at}.brand: a media-writer is scoped by its bucket, not a brand`)
     }
   }
   return problems
 }
 
-/** The name a user's policy is created under: one per media bucket for a media writer. */
+/** The name a user's policy is created under: one per media bucket, or per brand for masters. */
 export function policyName(entry) {
-  return entry.policy === 'media-writer' ? `media-writer-${entry.bucket}` : entry.policy
+  return entry.policy === 'media-writer'
+    ? `media-writer-${entry.bucket}`
+    : `${entry.policy}-${entry.brand}`
 }
 
 /**
@@ -127,7 +138,11 @@ export function planOperations(plan, { secretFor, read = loadDocument }) {
     const name = policyName(entry)
     if (created.has(name)) continue
     created.add(name)
-    const vars = { mediaBucket: entry.bucket, mastersBucket: plan.mastersBucket }
+    const vars = {
+      mediaBucket: entry.bucket,
+      mastersBucket: plan.mastersBucket,
+      brand: entry.brand,
+    }
     operations.push({ kind: 'key-policy', name, document: renderPolicy(read(entry.policy), vars) })
   }
   for (const entry of plan.users) {
@@ -187,4 +202,25 @@ export function mcCommand(operation, target) {
       }
   }
   throw new Error(`unknown operation ${operation.kind}`)
+}
+
+/**
+ * The policies a user holds beyond the one the plan gives it, from `mc admin user info --json`:
+ * an attach adds and never replaces, so a policy narrowed or renamed in the plan would otherwise
+ * stay attached beside its successor, with its old grants.
+ */
+export function stalePolicies(userInfoJson, planned) {
+  const held = String(JSON.parse(userInfoJson).policyName ?? '')
+  return held
+    .split(',')
+    .map((name) => name.trim())
+    .filter((name) => name && name !== planned)
+}
+
+/** The `mc` arguments that read a user's policies, and that detach one of them. */
+export function mcUserPolicyCommands(target, user) {
+  return {
+    info: ['admin', 'user', 'info', target, user, '--json'],
+    detach: (policy) => ['admin', 'policy', 'detach', target, policy, '--user', user],
+  }
 }

@@ -17,7 +17,9 @@ import {
   planProblems,
   POLICY_FILE,
   renderPolicy,
+  mcUserPolicyCommands,
   secretVariable,
+  stalePolicies,
 } from './plan.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -41,12 +43,17 @@ describe('the policy documents (8.3.c, 8.3.g)', () => {
     expect(resourcesOf(statement).some((r) => r.includes(UPLOADS_PREFIX))).toBe(false)
   })
 
-  it('lets the outlet write only under print-files/, and read captures and print files', () => {
-    const document = renderPolicy(loadDocument('masters-outlet'), { mastersBucket: 'm' })
-    const writes = statementsOf(document).filter((s) =>
-      s.Action.some((action) => ['s3:PutObject', 's3:DeleteObject'].includes(action)),
-    )
-    expect(writes.flatMap(resourcesOf)).toEqual([`arn:aws:s3:::m/${PRINT_FILES_PREFIX}*`])
+  const writesOf = (document) =>
+    statementsOf(document)
+      .filter((s) => s.Action.some((a) => ['s3:PutObject', 's3:DeleteObject'].includes(a)))
+      .flatMap(resourcesOf)
+
+  it('lets the outlet write only its own print files, and read captures and print files', () => {
+    const document = renderPolicy(loadDocument('masters-outlet'), {
+      mastersBucket: 'm',
+      brand: 'shop',
+    })
+    expect(writesOf(document)).toEqual([`arn:aws:s3:::m/${PRINT_FILES_PREFIX}shop/*`])
     const reads = statementsOf(document).filter((s) => s.Action.includes('s3:GetObject'))
     expect(reads.flatMap(resourcesOf).sort()).toEqual(
       ['arn:aws:s3:::m/masters/*', `arn:aws:s3:::m/${PRINT_FILES_PREFIX}*`].sort(),
@@ -60,11 +67,18 @@ describe('the policy documents (8.3.c, 8.3.g)', () => {
       'arn:aws:s3:::one-media',
       'arn:aws:s3:::one-media/*',
     ])
-    const origin = renderPolicy(loadDocument('masters-origin'), { mastersBucket: 'm' })
-    expect(statementsOf(origin).flatMap(resourcesOf)).toEqual([
-      'arn:aws:s3:::m',
-      'arn:aws:s3:::m/*',
+  })
+
+  it("lets the origin's web key write captures and its own print files, and delete nothing", () => {
+    const origin = renderPolicy(loadDocument('masters-origin'), {
+      mastersBucket: 'm',
+      brand: 'archive',
+    })
+    expect(writesOf(origin)).toEqual([
+      'arn:aws:s3:::m/masters/*',
+      `arn:aws:s3:::m/${PRINT_FILES_PREFIX}archive/*`,
     ])
+    expect(JSON.stringify(origin)).not.toMatch(/DeleteObject/)
   })
 
   it('refuses to render a placeholder it has no value for', () => {
@@ -79,12 +93,13 @@ describe('the policy documents (8.3.c, 8.3.g)', () => {
 })
 
 describe('a plan', () => {
-  it('the local one is valid and mirrors production: per brand a media key and a masters key', () => {
+  it("the local one is valid: a media key per bucket, the synthetic brand's two masters roles", () => {
     expect(planProblems(localPlan)).toEqual([])
     const policiesOf = (prefix) =>
       localPlan.users.filter((u) => u.user.startsWith(prefix)).map((u) => u.policy)
-    expect(policiesOf('oei-')).toEqual(['media-writer', 'masters-outlet'])
-    expect(policiesOf('ig-')).toEqual(['media-writer', 'masters-origin'])
+    expect(policiesOf('oei-')).toEqual(['media-writer'])
+    expect(policiesOf('ig-')).toEqual(['media-writer'])
+    expect(localPlan.users.filter((u) => u.brand).map((u) => u.brand)).toEqual(['test', 'test'])
     expect(policiesOf('test-').sort()).toEqual(['masters-origin', 'masters-outlet', 'media-writer'])
   })
 
@@ -97,6 +112,8 @@ describe('a plan', () => {
           { user: 'ok-user', policy: 'media-writer', bucket: 'elsewhere' },
           { user: 'ok-user', policy: 'masters-outlet', bucket: 'x-media' },
           { user: '-bad', policy: 'superuser' },
+          { user: 'no-brand', policy: 'masters-origin' },
+          { user: 'with-brand', policy: 'media-writer', bucket: 'x-media', brand: 'b' },
         ],
       }),
     ).toEqual([
@@ -108,6 +125,8 @@ describe('a plan', () => {
       'users[1].bucket: only a media-writer names a bucket',
       'users[2].user: 3–20 of a-z, 0-9 and -',
       'users[2].policy: one of media-writer, masters-origin, masters-outlet',
+      "users[3].brand: a masters key names its brand's slug",
+      'users[4].brand: a media-writer is scoped by its bucket, not a brand',
     ])
   })
 
@@ -122,10 +141,10 @@ describe('a plan', () => {
     ])
     expect(operations.filter((o) => o.kind === 'key-policy').map((o) => o.name)).toEqual([
       'media-writer-ig-media',
-      'masters-origin',
       'media-writer-oei-media',
-      'masters-outlet',
       'media-writer-test-media',
+      'masters-origin-test',
+      'masters-outlet-test',
     ])
     expect(operations.filter((o) => o.kind === 'user')).toHaveLength(localPlan.users.length)
     expect(operations.map(describeOperation).join('\n')).not.toMatch(/secret-of/)
@@ -144,6 +163,23 @@ describe('a plan', () => {
         'policy already attached',
       ),
     ).toBe(true)
+  })
+
+  it('takes away whatever a user holds beyond the plan, since an attach only ever adds', () => {
+    const info = JSON.stringify({
+      accessKey: 'u',
+      policyName: 'masters-origin,masters-origin-test',
+    })
+    expect(stalePolicies(info, 'masters-origin-test')).toEqual(['masters-origin'])
+    expect(stalePolicies(JSON.stringify({ policyName: 'p' }), 'p')).toEqual([])
+    expect(stalePolicies(JSON.stringify({}), 'p')).toEqual([])
+    expect(mcUserPolicyCommands('local', 'u').detach('old').slice(0, 5)).toEqual([
+      'admin',
+      'policy',
+      'detach',
+      'local',
+      'old',
+    ])
   })
 
   it('derives a stable local secret per user that mc cannot mistake for a flag', () => {

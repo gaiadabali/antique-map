@@ -1,14 +1,12 @@
 {
-  "$comment": "The workstation's MinIO (docker-compose.dev.yml), mirroring production's layout (DEPLOYMENT.md §2): each brand has a media key that writes only its own public bucket, and a masters key — the origin's reads and writes every master, the outlet's reads masters and writes only under print-files/. The synthetic brand's two storefronts play the two roles. Applied by `pnpm --filter @engine/media storage:policies`; staging and production get a plan of their own with the same policy documents (TASKS.md 41.2).",
+  "$comment": "The workstation's MinIO (docker-compose.dev.yml), mirroring production's layout (DEPLOYMENT.md §2): each brand's media key writes only its own public bucket; the masters keys are the synthetic brand's two storefronts in production's two roles — the origin reads every master, writes captures and its own print files, deletes nothing; the outlet reads masters and writes only print-files/<its slug>/. A masters key names its brand's slug, which no file under engine/ may spell for a real brand (CONVENTIONS.md §1), so the real brands' masters keys belong to each host's own plan (TASKS.md 41.2), applied with --secrets env. Applied by `pnpm --filter @engine/media storage:policies`.",
   "mastersBucket": "archive-masters",
   "mediaBuckets": ["ig-media", "oei-media", "test-media"],
   "users": [
     { "user": "ig-media-writer", "policy": "media-writer", "bucket": "ig-media" },
-    { "user": "ig-masters-origin", "policy": "masters-origin" },
     { "user": "oei-media-writer", "policy": "media-writer", "bucket": "oei-media" },
-    { "user": "oei-masters-outlet", "policy": "masters-outlet" },
     { "user": "test-media-writer", "policy": "media-writer", "bucket": "test-media" },
-    { "user": "test-masters-origin", "policy": "masters-origin" },
-    { "user": "test-masters-outlet", "policy": "masters-outlet" }
+    { "user": "test-masters-origin", "policy": "masters-origin", "brand": "test" },
+    { "user": "test-masters-outlet", "policy": "masters-outlet", "brand": "test" }
   ]
 }

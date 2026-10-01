@@ -8,16 +8,19 @@
       "Resource": ["arn:aws:s3:::{{mastersBucket}}"]
     },
     {
-      "Sid": "ReadAndWriteEveryMaster",
+      "Sid": "ReadEveryMaster",
       "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:AbortMultipartUpload",
-        "s3:ListMultipartUploadParts"
-      ],
+      "Action": ["s3:GetObject"],
       "Resource": ["arn:aws:s3:::{{mastersBucket}}/*"]
+    },
+    {
+      "Sid": "WriteCapturesAndItsOwnPrintFilesDeleteNothing",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"],
+      "Resource": [
+        "arn:aws:s3:::{{mastersBucket}}/masters/*",
+        "arn:aws:s3:::{{mastersBucket}}/print-files/{{brand}}/*"
+      ]
     }
   ]
 }

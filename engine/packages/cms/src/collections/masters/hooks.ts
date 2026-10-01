@@ -9,11 +9,15 @@
  * A file put there before any record could exist (the pilot set, OA3) has no stored checksum;
  * only the intake import, on the Local API, may then hash it (`context.verifyByHash`).
  */
-import { formatBytes, MASTER_UPLOAD_MAX_BYTES } from '@engine/media/storage'
+import { formatBytes, MASTER_UPLOAD_MAX_BYTES, sweepStaleUploads } from '@engine/media/storage'
+import { rm } from 'node:fs/promises'
+
 import {
   ValidationError,
   type CollectionBeforeChangeHook,
+  type CollectionBeforeOperationHook,
   type CollectionBeforeValidateHook,
+  type PayloadRequest,
 } from 'payload'
 
 import { activeBrand } from '../../access/brand'
@@ -25,6 +29,24 @@ type Data = Record<string, unknown>
 
 function refuse(errors: FieldProblem[]): never {
   throw new ValidationError({ collection: SLUG, errors: errors.map((e) => ({ ...e })) })
+}
+
+/**
+ * A master's bytes never come through the app (`./index`), so a file sent along with a request is
+ * dropped before anything else runs — and its temporary copy deleted, since Payload removes one
+ * only after an upload collection's operation (`@engine/media/storage` `multipartUploadOptions`).
+ */
+export async function discardSentFile(req: Pick<PayloadRequest, 'file'>): Promise<void> {
+  const path = req.file?.tempFilePath
+  req.file = undefined
+  if (!path) return
+  await rm(path, { force: true })
+  await sweepStaleUploads()
+}
+
+export const dropSentFile: CollectionBeforeOperationHook = async ({ args, req }) => {
+  await discardSentFile(req)
+  return args
 }
 
 /**
@@ -53,7 +75,7 @@ export const checkConsistency: CollectionBeforeValidateHook = ({ data, originalD
 }
 
 /**
- * What a master is never changes: its kind and its checksum. Its key moves once — a capture filed
+ * What a master is never changes: its kind, its checksum and its owning brand. Its key moves once — a capture filed
  * from its intake key under its work's uid (TASKS.md 15.4) — and only on the Local API, where the
  * filing job runs; a request through the admin or REST never re-points a record at another file.
  */
@@ -65,7 +87,7 @@ export const keepWhatIsFixed: CollectionBeforeChangeHook = ({
 }) => {
   if (operation !== 'update' || !originalDoc) return data
   const errors: FieldProblem[] = []
-  for (const field of ['kind', 'checksum'] as const) {
+  for (const field of ['kind', 'checksum', 'brand'] as const) {
     if (field in data && data[field] !== originalDoc[field]) {
       errors.push({ path: field, message: `A master's ${field} never changes: make a new record.` })
     }

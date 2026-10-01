@@ -5,7 +5,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { verifyInBucket } from './hooks'
 import { Masters } from './index'
 import { parseIntakeManifest } from './intake-manifest'
-import { isOutlet, keyFor, parseUploadRequest, uploadUrlHandler } from './upload-url'
+import { isOutlet } from './attribution'
+import { keyFor, parseUploadRequest, uploadUrlHandler } from './upload-url'
 import { masterProblems } from './validators'
 
 const SHA = 'c'.repeat(64)

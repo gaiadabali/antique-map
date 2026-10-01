@@ -1,4 +1,7 @@
 /**
+ * Test support only — imported by `*.storage.db.test.ts` and never by runtime code; the name keeps
+ * it out of every barrel and out of Vitest's own test files.
+ *
  * A real stack for the storage tests (TASKS.md 8.3.e): a Postgres database of its own on the server
  * `CMS_TEST_POSTGRES_URL` names, its schema pushed from this config (`PAYLOAD_DEV_PUSH=1`: the
  * wave's migration is generated after the merge, PARALLEL-TRACKS.md §3.2), and the dev stack's
@@ -148,3 +151,25 @@ export async function startStack(options: {
     },
   }
 }
+
+// A real 16 × 12 JPEG with the Exif a phone writes: its camera ("TestCam", "Phone 1") and a GPS
+// position (8° 39′ S, 115° 13′ E). Made with sharp's withExif(); anything after its end marker
+// makes each upload's bytes, and so its content address, its own.
+export const JPEG = Buffer.from(
+  '/9j/4QFWRXhpZgAASUkqAAgAAAAJAA8BAgAIAAAAigAAABABAgAIAAAAkgAAABIBAwABAAAAAQAAABoBBQABAAAAegAAABsBBQABAAAAggAAACgBAwABAAAAAgAAABMCAwABAAAAAQAAAGmHBAABAAAAmgAAACWIBAABAAAA6AAAAAAAAAA4YwAA6AMAADhjAADoAwAAVGVzdENhbQBQaG9uZSAxAAYAAJAHAAQAAAAwMjEwAZEHAAQAAAABAgMAAKAHAAQAAAAwMTAwAaADAAEAAAD//wAAAqAEAAEAAAAQAAAAA6AEAAEAAAAMAAAAAAAAAAQAAQACAAIAAABTAAAAAgAFAAMAAAAeAQAAAwACAAIAAABFAAAABAAFAAMAAAA2AQAAAAAAAAgAAAABAAAAJwAAAAEAAAAAAAAAAQAAAHMAAAABAAAADQAAAAEAAAAAAAAAAQAAAP/bAEMAEAsMDgwKEA4NDhIREBMYKBoYFhYYMSMlHSg6Mz08OTM4N0BIXE5ARFdFNzhQbVFXX2JnaGc+TXF5cGR4XGVnY//bAEMBERISGBUYLxoaL2NCOEJjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY//AABEIAAwAEAMBIgACEQEDEQH/xAAVAAEBAAAAAAAAAAAAAAAAAAAABP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAE/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AtABJf//Z',
+  'base64',
+)
+export const jpeg = (marker: string) => Buffer.concat([JPEG, Buffer.from(marker)])
+export const valid = {
+  alt: 'Engraved map of Bali, 1726, hand-coloured, recto',
+  role: 'recto',
+  provenance: 'photograph',
+}
+
+export function form(data: object, file?: { bytes: Buffer; name: string; type: string }) {
+  const body = new FormData()
+  body.set('_payload', JSON.stringify(data))
+  if (file) body.set('file', new Blob([new Uint8Array(file.bytes)], { type: file.type }), file.name)
+  return body
+}
+export const messages = async (response: Response) => JSON.stringify(await response.json())

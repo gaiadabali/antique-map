@@ -9,11 +9,17 @@
  * checks it is there and is the file the checksum names; a file copied in without a stored
  * checksum is hashed — the one path allowed to (`context.verifyByHash`, Local API only).
  *
+ * It runs on the archive's origin, for a batch of its own captures or its sister outlet's
+ * (`./attribution` `importRefusal()`): refused on an outlet, or for a brand it does not keep.
+ *
  * It never files a capture under its work (`masterKey()`): that move, with its checksum-verified
  * copy, is TASKS.md 15.4's.
  */
 import { intakeMasterKey, type IntakeEntry, type IntakeManifest } from '@engine/media/contract'
 import { ValidationError, type Payload } from 'payload'
+
+import { activeBrand } from '../../access/brand'
+import { importRefusal, type Brand } from './attribution'
 
 export type ImportOutcome = {
   readonly checksum: string
@@ -70,7 +76,10 @@ async function existingId(payload: Payload, checksum: string): Promise<number | 
 export async function importIntakeManifest(
   payload: Payload,
   manifest: IntakeManifest,
+  brand: Brand | null = activeBrand(),
 ): Promise<ImportOutcome[]> {
+  const refusal = importRefusal(manifest.brand, brand)
+  if (refusal) throw new Error(refusal)
   const outcomes: ImportOutcome[] = []
   for (const entry of manifest.entries) {
     const storageKey = intakeMasterKey(

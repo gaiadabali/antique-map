@@ -2,7 +2,7 @@
  * `masters` on a real database and the dev stack's MinIO (TASKS.md 8.3.b, 8.3.e, 8.3.f): a master's
  * bytes go straight to the private bucket by presigned PUT, never through the app; the record is
  * made only for the file the bucket holds; it has no public URL; the intake import is idempotent.
- * Runs with CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT set (`../media/test-stack`).
+ * Runs with CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT set (`../media/test-stack.test-support`).
  */
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 
@@ -10,7 +10,13 @@ import { intakeMasterKey, type IntakeManifest } from '@engine/media/contract'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { asRoot, MASTERS_BUCKET, stackAvailable, startStack, type Stack } from '../media/test-stack'
+import {
+  asRoot,
+  MASTERS_BUCKET,
+  stackAvailable,
+  startStack,
+  type Stack,
+} from '../media/test-stack.test-support'
 import { importIntakeManifest } from './intake-import'
 
 const PASSWORD = 'storage-test-password-1'
@@ -168,9 +174,18 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
       { checksum: 'b'.repeat(64) },
       { kind: 'print-file' },
       { storageKey: 'masters/x/y.tif' },
+      { brand: 'test-emporium' },
+      { role: 'verso' },
+      { provenance: 'composite' },
     ]) {
       expect((await api('PATCH', `/api/masters/${id}`, change)).status).toBe(400)
     }
+    // What intake set, an admin may correct; the brand and the checksum, nobody.
+    const owner = await stack.login('owner@storage.test', PASSWORD)
+    expect((await api('PATCH', `/api/masters/${id}`, { role: 'detail' }, owner)).status).toBe(200)
+    expect(
+      (await api('PATCH', `/api/masters/${id}`, { brand: 'test-emporium' }, owner)).status,
+    ).toBe(400)
     const box = await api('PATCH', `/api/masters/${id}`, {
       widthPx: 100,
       heightPx: 80,
@@ -227,6 +242,10 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
     expect(first[2]!.reason).toMatch(/no file at/)
     const again = await importIntakeManifest(stack.payload, manifest)
     expect(again.map((o) => o.outcome)).toEqual(['existing', 'existing', 'failed'])
+    // Only a brand this archive keeps — its own, or its sister's.
+    await expect(
+      importIntakeManifest(stack.payload, { ...manifest, brand: 'stranger' }),
+    ).rejects.toThrow(/not "stranger"/)
     const { docs, totalDocs } = await stack.payload.find({
       collection: 'masters',
       where: { 'intake.batch': { equals: batch } },

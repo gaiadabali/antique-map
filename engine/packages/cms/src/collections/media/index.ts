@@ -7,13 +7,17 @@
  * - **Stored in the brand's bucket** through `@payloadcms/storage-s3` (`registries/storage`), under
  *   the private `uploads/` prefix. The bucket serves the public derivatives and capped tiles only;
  *   the upload — full resolution, possibly still carrying GPS and camera metadata — is fetched
- *   through Payload's file route, which `./access` opens to staff alone (8.3.g).
- * - **Limits** (8.3.d): web rasters only — JPEG, PNG, WebP, AVIF, TIFF, sniffed from the bytes by
+ *   through Payload's file route, which `./access` opens to staff alone (8.3.g). The record is
+ *   staff-only over REST; the storefront's loaders read it on the Local API.
+ * - **Limits** (8.3.d): web rasters only — JPEG, PNG, WebP, AVIF, sniffed from the bytes by
  *   Payload — and at most `MEDIA_UPLOAD_MAX_BYTES`, under the CDN's limit in front of `/admin`
- *   (`./hooks`). No SVG, which can carry script; no pasted URL, which would have the server fetch
+ *   (`./hooks`), streamed to the OS temp folder and removed when the request ends
+ *   (`./temp-files`). No TIFF, which is a capture's; no SVG, which can carry script; no pasted URL, which would have the server fetch
  *   whatever it names.
  * - **No Payload image sizes and no crop**: the derivative ladder is C9's, built by 15.1 from this
  *   file; cropping happened at intake. The focal point stays, for the derivatives' art direction.
+ * - **Role and provenance are set once**, at intake; only an admin or a manager corrects them
+ *   (`./frozen`) — provenance decides the synthetic label, which no other writer may take off.
  * - **Staff only make images**, a customer never: a consignment's or a return's photographs are
  *   private, session-bound uploads, never `media` records (6.2.e's Found 10).
  */
@@ -22,6 +26,8 @@ import type { CollectionConfig } from 'payload'
 
 import { MEDIA_ACCESS } from './access'
 import { MEDIA_FIELDS } from './fields'
+import { freezeAfterCreate, mayCorrectIntake } from './frozen'
+import { rememberTempFile, removeTempFile, removeTempFileOnError } from './temp-files'
 import {
   altInDefaultLocaleFirst,
   deriveFromFile,
@@ -46,9 +52,14 @@ export const Media: CollectionConfig = {
     pasteURL: false,
   },
   hooks: {
-    beforeOperation: [refuseOversizedUpload],
+    beforeOperation: [rememberTempFile, refuseOversizedUpload],
     beforeValidate: [altInDefaultLocaleFirst, matchItsMaster],
-    beforeChange: [deriveFromFile],
+    beforeChange: [
+      freezeAfterCreate('media', ['role', 'provenance'], mayCorrectIntake),
+      deriveFromFile,
+    ],
+    afterOperation: [removeTempFile],
+    afterError: [removeTempFileOnError],
   },
   fields: MEDIA_FIELDS,
 }

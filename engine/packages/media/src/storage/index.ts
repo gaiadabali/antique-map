@@ -25,6 +25,13 @@ export {
   MASTER_KINDS,
   type MasterKind,
 } from './master-kinds'
+export {
+  MULTIPART_ENVELOPE_BYTES,
+  multipartUploadOptions,
+  STALE_UPLOAD_MS,
+  sweepStaleUploads,
+  UPLOAD_TEMP_DIR,
+} from './multipart'
 export { s3BucketObjects, type BucketObjects, type PutOutcome } from './objects'
 export {
   s3MastersStore,

@@ -13,13 +13,26 @@
  * **No public URL.** The record has no `url` field; the bucket allows no anonymous read; staff
  * alone read the record (`./access`). Presigned reads, with an access log, are TASKS.md 15.4's.
  *
+ * **Whose it is** (`./attribution`): the archive's origin keeps every capture; each brand keeps
+ * its own print files under `print-files/<its slug>/`; an outlet records no capture. Kind,
+ * checksum and brand never change; role and provenance, set at intake, only by an admin or a
+ * manager (`../media/frozen`).
+ *
  * An intake batch's manifest becomes records through `./intake-import`, idempotently by checksum.
  */
 import type { CollectionConfig } from 'payload'
 
+import { freezeAfterCreate, mayCorrectIntake } from '../media/frozen'
 import { MASTERS_ACCESS } from './access'
 import { MASTER_FIELDS } from './fields'
-import { checkConsistency, fillFromKey, keepWhatIsFixed, verifyInBucket } from './hooks'
+import { checkAttribution } from './attribution'
+import {
+  checkConsistency,
+  dropSentFile,
+  fillFromKey,
+  keepWhatIsFixed,
+  verifyInBucket,
+} from './hooks'
 import { uploadUrlEndpoint } from './upload-url'
 
 export const Masters: CollectionConfig = {
@@ -34,8 +47,13 @@ export const Masters: CollectionConfig = {
   access: MASTERS_ACCESS,
   endpoints: [uploadUrlEndpoint()],
   hooks: {
-    beforeValidate: [fillFromKey, checkConsistency],
-    beforeChange: [keepWhatIsFixed, verifyInBucket()],
+    beforeOperation: [dropSentFile],
+    beforeValidate: [fillFromKey, checkConsistency, checkAttribution()],
+    beforeChange: [
+      keepWhatIsFixed,
+      freezeAfterCreate('masters', ['role', 'provenance'], mayCorrectIntake),
+      verifyInBucket(),
+    ],
   },
   fields: MASTER_FIELDS,
 }

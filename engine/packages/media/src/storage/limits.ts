@@ -5,7 +5,7 @@
  *   API — so it must fit under the CDN's request-body limit in front of `/admin` (Cloudflare's
  *   100 MB, ARCHITECTURE.md §7), with room for the multipart envelope. It is the *processed*
  *   image (CONTENT-MODEL.md §6): a web-renderable raster the derivatives and tiles are made from,
- *   never a RAW, never a PDF and never an SVG, which is a document that can carry script.
+ *   never a RAW or a TIFF, never a PDF and never an SVG, which is a document that can carry script.
  * - **A master** never touches the app server: it is PUT straight to the private bucket by a
  *   presigned URL whose signature covers its length and its SHA-256 (`./masters-store`), so the
  *   storage itself refuses a larger file or other bytes. Its cap is the largest single PUT S3
@@ -19,13 +19,16 @@ const MiB = 1024 * 1024
 /** A `media` upload: under Cloudflare's 100 MB body limit with ~5 MB to spare for the envelope. */
 export const MEDIA_UPLOAD_MAX_BYTES = 90 * MiB
 
-/** What a `media` upload may be, by the type sniffed from its bytes (Payload checks both). */
+/**
+ * What a `media` upload may be, by the type sniffed from its bytes (Payload checks both). Not TIFF:
+ * a processed web image is one of these four, and file-type sniffs DNG and most camera RAW files
+ * as TIFF — those are captures, and belong in masters.
+ */
 export const MEDIA_UPLOAD_MIME_TYPES = [
   'image/jpeg',
   'image/png',
   'image/webp',
   'image/avif',
-  'image/tiff',
 ] as const
 
 /** A master: S3's largest single PUT, 5 GiB — a 16-bit TIFF of a metre-wide sheet fits. */

@@ -18,17 +18,22 @@
  * files only; its masters key could not write a capture anyway (`policies/masters-outlet.json`),
  * and this says so before the PUT is refused.
  */
-import type { BrandConfig } from '@engine/config/schema'
-import { intakeMasterKey, masterKey, printFileKey } from '@engine/media/contract'
+import {
+  INTAKE_MASTERS_PREFIX,
+  intakeMasterKey,
+  masterKey,
+  printFileKey,
+} from '@engine/media/contract'
 import { isSha256Hex, masterContentType, masterUploadProblems } from '@engine/media/storage'
 import { addDataAndFileToRequest, type Endpoint, type PayloadHandler } from 'payload'
 
 import { activeBrand } from '../../access/brand'
 import { hasRole } from '../../access/roles'
 import { MASTER_WRITERS } from './access'
+import { isOutlet, type Brand } from './attribution'
+import { discardSentFile } from './hooks'
 import { mastersStoreFromEnv, STORE_MISSING, type StoreSource } from './store'
 
-type Brand = Pick<BrandConfig, 'slug' | 'sisters'>
 export type UploadUrlDeps = { readonly store: StoreSource; readonly brand: () => Brand | null }
 
 export type UploadRequest =
@@ -39,6 +44,8 @@ export type UploadRequest =
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const isId = (value: unknown): value is string =>
   typeof value === 'string' && value.length <= 64 && KEBAB.test(value)
+/** `masterKey('intake', …)` would sit under the intake prefix with no brand or batch. */
+const RESERVED_WORK_UIDS: readonly string[] = [INTAKE_MASTERS_PREFIX.split('/')[1]!]
 
 const answer = (status: number, message: string, extra: object = {}) =>
   Response.json({ errors: [{ message }], ...extra }, { status })
@@ -71,6 +78,8 @@ export function parseUploadRequest(
       )
     } else if (!isId(input[targets[0]!])) {
       problems.push(`${targets[0]!}: a kebab-case id of at most 64 characters.`)
+    } else if (targets[0] === 'workUid' && RESERVED_WORK_UIDS.includes(input.workUid as string)) {
+      problems.push(`workUid: "${String(input.workUid)}" is reserved for intake keys.`)
     }
   }
   if (problems.length > 0) return { problems }
@@ -86,16 +95,12 @@ export function keyFor(request: UploadRequest, brandSlug: string): string {
   return intakeMasterKey(brandSlug, request.batch, checksum, extension)
 }
 
-/** A brand whose sister is the archive's origin is an outlet: it writes print files only. */
-export function isOutlet(brand: Brand): boolean {
-  return brand.sisters.some((sister) => sister.role === 'archive-origin')
-}
-
 export function uploadUrlHandler(deps: UploadUrlDeps): PayloadHandler {
   return async (req) => {
     if (!req.user) return answer(401, 'Sign in to upload a master.')
     if (!hasRole(req.user, ...MASTER_WRITERS)) return answer(403, 'Your role cannot add masters.')
     await addDataAndFileToRequest(req)
+    await discardSentFile(req)
     const parsed = parseUploadRequest(req.data)
     if ('problems' in parsed) return answer(400, parsed.problems.join(' '))
     const { request } = parsed
