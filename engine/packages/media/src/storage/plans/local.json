@@ -1,0 +1,14 @@
+{
+  "$comment": "The workstation's MinIO (docker-compose.dev.yml), mirroring production's layout (DEPLOYMENT.md §2): each brand has a media key that writes only its own public bucket, and a masters key — the origin's reads and writes every master, the outlet's reads masters and writes only under print-files/. The synthetic brand's two storefronts play the two roles. Applied by `pnpm --filter @engine/media storage:policies`; staging and production get a plan of their own with the same policy documents (TASKS.md 41.2).",
+  "mastersBucket": "archive-masters",
+  "mediaBuckets": ["ig-media", "oei-media", "test-media"],
+  "users": [
+    { "user": "ig-media-writer", "policy": "media-writer", "bucket": "ig-media" },
+    { "user": "ig-masters-origin", "policy": "masters-origin" },
+    { "user": "oei-media-writer", "policy": "media-writer", "bucket": "oei-media" },
+    { "user": "oei-masters-outlet", "policy": "masters-outlet" },
+    { "user": "test-media-writer", "policy": "media-writer", "bucket": "test-media" },
+    { "user": "test-masters-origin", "policy": "masters-origin" },
+    { "user": "test-masters-outlet", "policy": "masters-outlet" }
+  ]
+}
