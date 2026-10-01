@@ -301,6 +301,9 @@ importers:
 
   engine/packages/migrate:
     dependencies:
+      '@engine/view-models':
+        specifier: workspace:*
+        version: link:../view-models
       node-html-parser:
         specifier: 9.0.4
         version: 9.0.4
