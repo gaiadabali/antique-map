@@ -1,0 +1,77 @@
+#!/usr/bin/env node
+// A stand-in for pm2 inside the test container. Like the real one, EVERY command first makes
+// sure a daemon runs for the user — ~/.pm2/rpc.sock and a live ~/.pm2/pm2.pid — so a probe that
+// runs pm2 at all is visible to the test as a change. `start` runs each app of the ecosystem file
+// detached with its node_args, cwd and env; `save` writes ~/.pm2/dump.pm2 (the apps' full specs);
+// `resurrect` starts what dump.pm2 lists and is not running; `kill` stops the apps and the
+// daemon. Test-only: the image installs it where Helios's system pm2 sits (/usr/lib/node_modules).
+const fs = require('node:fs')
+const path = require('node:path')
+const { spawn, execSync } = require('node:child_process')
+const home = process.env.PM2_HOME || path.join(process.env.HOME, '.pm2')
+const stateFile = path.join(home, 'shim-state.json')
+const pidFile = path.join(home, 'pm2.pid')
+const sock = path.join(home, 'rpc.sock')
+const dumpFile = path.join(home, 'dump.pm2')
+const alive = (pid) => {
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch {
+    return false
+  }
+}
+const [cmd, ...rest] = process.argv.slice(2)
+const load = () => (fs.existsSync(stateFile) ? JSON.parse(fs.readFileSync(stateFile, 'utf8')) : [])
+const daemonPid = () => (fs.existsSync(pidFile) ? Number(fs.readFileSync(pidFile, 'utf8')) : 0)
+if (cmd === 'kill') {
+  for (const a of load()) if (alive(a.pid)) process.kill(a.pid, 'SIGTERM')
+  if (daemonPid() && alive(daemonPid())) process.kill(daemonPid(), 'SIGTERM')
+  for (const f of [pidFile, sock, stateFile]) fs.rmSync(f, { force: true })
+  // Test hook: the deploy poller starting something right after the kill (the replace race).
+  if (fs.existsSync('/tmp/poller-race')) spawn('sleep', ['600'], { detached: true, stdio: 'ignore' }).unref()
+  process.exit(0)
+}
+fs.mkdirSync(path.join(home, 'logs'), { recursive: true })
+if (!daemonPid() || !alive(daemonPid())) {
+  const d = spawn(
+    process.execPath,
+    ['-e', `const fs=require('fs');try{fs.unlinkSync(${JSON.stringify(sock)})}catch{};require('net').createServer().listen(${JSON.stringify(sock)});fs.writeFileSync(${JSON.stringify(pidFile)},String(process.pid))`],
+    { detached: true, stdio: 'ignore' },
+  )
+  d.unref()
+  for (let i = 0; i < 50 && !(fs.existsSync(pidFile) && alive(daemonPid())); i++) execSync('sleep 0.1')
+}
+const run = (app) => {
+  const log = fs.openSync(path.join(home, 'logs', app.name + '-out.log'), 'a')
+  const child = spawn(process.execPath, [...app.node_args.split(' '), app.script], {
+    cwd: app.cwd,
+    env: { ...process.env, ...app.env },
+    detached: true,
+    stdio: ['ignore', log, log],
+  })
+  child.unref()
+  return { ...app, pid: child.pid }
+}
+if (cmd === 'start' || cmd === 'resurrect') {
+  const apps = cmd === 'start' ? require(path.resolve(rest[0])).apps : fs.existsSync(dumpFile) ? JSON.parse(fs.readFileSync(dumpFile, 'utf8')) : []
+  const live = load().filter((a) => alive(a.pid))
+  const state = cmd === 'start' ? live.filter((a) => !apps.some((b) => b.name === a.name)) : live
+  for (const app of apps) if (!state.some((a) => a.name === app.name)) state.push(run(app))
+  fs.writeFileSync(stateFile, JSON.stringify(state))
+} else if (cmd === 'describe') {
+  const p = load().find((a) => a.name === rest[0])
+  process.exit(p && alive(p.pid) ? 0 : 1)
+} else if (cmd === 'jlist') {
+  const list = load().map((a) => ({
+    name: a.name,
+    pm2_env: { exec_mode: a.exec_mode + '_mode', instances: a.instances, status: alive(a.pid) ? 'online' : 'stopped', restart_time: 0, pm_exec_path: a.script },
+  }))
+  console.log(JSON.stringify(list))
+} else if (cmd === 'save') {
+  const apps = load().map(({ pid, ...a }) => ({ ...a, pm_exec_path: a.script }))
+  fs.writeFileSync(dumpFile, JSON.stringify(apps, null, 2))
+} else {
+  console.error('shim pm2: unsupported: ' + process.argv.slice(2).join(' '))
+  process.exit(1)
+}
