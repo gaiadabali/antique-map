@@ -208,6 +208,9 @@ importers:
       '@engine/config':
         specifier: workspace:*
         version: link:../config
+      '@engine/media':
+        specifier: workspace:*
+        version: link:../media
       '@payloadcms/db-postgres':
         specifier: 3.90.2
         version: 3.90.2(payload@3.90.2(graphql@16.11.0)(typescript@5.9.3))
@@ -297,7 +300,18 @@ importers:
         specifier: 26.6.3
         version: 26.6.3
 
-  engine/packages/media: {}
+  engine/packages/media:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: 3.1141.0
+        version: 3.1141.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: 3.1141.0
+        version: 3.1141.0
+    devDependencies:
+      '@types/node':
+        specifier: 26.6.3
+        version: 26.6.3
 
   engine/packages/migrate:
     dependencies:

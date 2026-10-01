@@ -111,7 +111,11 @@ export interface Config {
     'payload-preferences': PayloadPreference
     'payload-migrations': PayloadMigration
   }
-  collectionsJoins: {}
+  collectionsJoins: {
+    places: {
+      children: 'places'
+    }
+  }
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>
     customers: CustomersSelect<false> | CustomersSelect<true>
@@ -306,42 +310,247 @@ export interface Review {
  */
 export interface Maker {
   id: number
+  /**
+   * As the maker is known: "François Valentijn", "Woodbury & Page".
+   */
+  name: string
+  /**
+   * As a collector’s maker line reads, surname first: "BLAEU, Willem Janszoon".
+   */
+  sortName: string
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * Valentyn beside Valentijn: the spellings a search should also find.
+   */
+  aliases?:
+    | {
+        name: string
+        id?: string | null
+      }[]
+    | null
+  /**
+   * What the maker is known for. A work names the role on that work.
+   */
+  roles?:
+    | (
+        | 'cartographer'
+        | 'engraver'
+        | 'publisher'
+        | 'author'
+        | 'artist'
+        | 'photographer'
+        | 'studio'
+        | 'printer'
+      )[]
+    | null
+  born: {
+    precision: 'exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown'
+    from?: number | null
+    to?: number | null
+    /**
+     * Your own wording, if the year alone says it wrong: "1724–26".
+     */
+    display?: string | null
+  }
+  died: {
+    precision: 'exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown'
+    from?: number | null
+    to?: number | null
+    /**
+     * Your own wording, if the year alone says it wrong: "1724–26".
+     */
+    display?: string | null
+  }
+  /**
+   * "Dutch", "Belanda" — in each language.
+   */
+  nationality?: string | null
+  /**
+   * A portrait, if one exists.
+   */
+  portrait?: (number | null) | Media
+  /**
+   * The same maker elsewhere: Wikidata, the Getty ULAN.
+   */
+  sameAs?:
+    | {
+        url: string
+        id?: string | null
+      }[]
+    | null
+  translationStatus: 'entered' | 'machine' | 'reviewed'
   updatedAt: string
   createdAt: string
+  _status?: ('draft' | 'published') | null
 }
 /**
+ * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "places".
+ * via the `definition` "media".
  */
-export interface Place {
+export interface Media {
   id: number
+  /**
+   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
+   */
+  alt: string
+  /**
+   * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
+   */
+  altSource?: ('baseline' | 'cataloguer' | 'ai-draft') | null
+  translationStatus?: ('entered' | 'machine' | 'reviewed') | null
+  caption?: string | null
+  credit?: string | null
+  licence?: string | null
+  /**
+   * What the image is — set at intake, the same as its master’s.
+   */
+  role:
+    | 'recto'
+    | 'verso'
+    | 'detail'
+    | 'raking'
+    | 'transmitted'
+    | 'framed'
+    | 'in-room'
+    | 'scale'
+    | 'flat'
+    | 'lifestyle'
+    | 'packaging'
+    | 'showroom'
+    | 'room-plate'
+    | 'editorial'
+  /**
+   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
+   */
+  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
+  /**
+   * The capture this image was processed from.
+   */
+  master?: (number | null) | Master
+  /**
+   * Derived from the file: the address its derivatives and tiles are stored under.
+   */
+  assetId?: string | null
+  derivatives?: {
+    status?: ('pending' | 'ready' | 'failed') | null
+    /**
+     * The ladder's version once built (now v1).
+     */
+    version?: string | null
+    blurDataUri?: string | null
+  }
+  iiif?: {
+    status?: ('none' | 'pending' | 'ready' | 'failed') | null
+  }
+  prefix?: string | null
+  _objectKey?: string | null
   updatedAt: string
   createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
 }
 /**
+ * The private files images and print files are made from: every capture as received, and each design’s print file. Never shown on the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "terms".
+ * via the `definition` "masters".
  */
-export interface Term {
+export interface Master {
   id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sources".
- */
-export interface Source {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "curations".
- */
-export interface Curation {
-  id: number
+  kind: 'capture' | 'print-file'
+  /**
+   * Where the file is in the private masters bucket. It has no public URL.
+   */
+  storageKey: string
+  /**
+   * The file's SHA-256: checked against what the bucket holds.
+   */
+  checksum: string
+  /**
+   * From the bucket.
+   */
+  byteSize?: number | null
+  contentType?: string | null
+  widthPx?: number | null
+  heightPx?: number | null
+  colourProfile?: string | null
+  /**
+   * The owning brand's slug.
+   */
+  brand: string
+  work?: (number | null) | Work
+  design?: (number | null) | Design
+  /**
+   * What the capture is, as the intake judged it.
+   */
+  role?:
+    | (
+        | 'recto'
+        | 'verso'
+        | 'detail'
+        | 'raking'
+        | 'transmitted'
+        | 'framed'
+        | 'in-room'
+        | 'scale'
+        | 'flat'
+        | 'lifestyle'
+        | 'packaging'
+        | 'showroom'
+        | 'room-plate'
+        | 'editorial'
+        | 'reference'
+      )
+    | null
+  /**
+   * How it was made — declared at intake, never inferred. No default.
+   */
+  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
+  /**
+   * The object's bounding box in the frame's pixels — a sheet's outer edge, margins included.
+   */
+  objectBox?: {
+    x?: number | null
+    y?: number | null
+    width?: number | null
+    height?: number | null
+  }
+  /**
+   * The object's pixels over its real size, from the ruler — never the file's DPI tag.
+   */
+  objectPpi?: number | null
+  captureTier?: ('good' | 'better' | 'best') | null
+  intake?: {
+    batch?: string | null
+    /**
+     * A stock number, a product, "showroom".
+     */
+    reference?: string | null
+    /**
+     * The name it was handed over under.
+     */
+    receivedAs?: string | null
+    verdict?: ('pass' | 'fix-owner' | 'legacy') | null
+    retouching?: ('none' | 'unknown' | 'retouched-legacy') | null
+    notes?:
+      | {
+          note: string
+          id?: string | null
+        }[]
+      | null
+  }
   updatedAt: string
   createdAt: string
 }
@@ -359,6 +568,159 @@ export interface Work {
  * via the `definition` "designs".
  */
 export interface Design {
+  id: number
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "places".
+ */
+export interface Place {
+  id: number
+  /**
+   * The modern name, in each language: Jakarta, Sulawesi, Maluku. Required in English, the default language; another language left blank shows the English.
+   */
+  name?: string | null
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * Batavia, Iava, Celebes, Moluccas — every name the place has gone by. Search finds the place under each.
+   */
+  historicalNames?:
+    | {
+        name: string
+        /**
+         * A language code: nl, la, pt, ms, jv.
+         */
+        language?: string | null
+        /**
+         * When it was used: "1619–1942", "VOC era".
+         */
+        period?: string | null
+        id?: string | null
+      }[]
+    | null
+  type?:
+    | (
+        | 'region'
+        | 'country'
+        | 'island-group'
+        | 'island'
+        | 'province'
+        | 'kingdom'
+        | 'city'
+        | 'town'
+        | 'sea'
+        | 'strait'
+        | 'ocean'
+      )
+    | null
+  /**
+   * The place it lies in: Batavia lies in Java. Leave empty for a top-level place.
+   */
+  parent?: (number | null) | Place
+  /**
+   * The places that lie in this one.
+   */
+  children?: {
+    docs?: (number | Place)[]
+    hasNextPage?: boolean
+    totalDocs?: number
+  }
+  /**
+   * Where it is, in decimal degrees (WGS 84): the point a locator map pins and, if useful, the box a map of it frames.
+   */
+  geo?: {
+    lat?: number | null
+    lng?: number | null
+    /**
+     * West, south, east and north edges. West may be greater than east for a box across the 180° meridian.
+     */
+    bbox?: {
+      west?: number | null
+      south?: number | null
+      east?: number | null
+      north?: number | null
+    }
+  }
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms".
+ */
+export interface Term {
+  id: number
+  /**
+   * Fixed once the term is created.
+   */
+  kind: 'subject' | 'mood' | 'room' | 'occasion' | 'recipient' | 'grade'
+  /**
+   * As a visitor reads it: "Batik", "VG+". Required in English, the default language; another language left blank shows the English.
+   */
+  label?: string | null
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * What the grade means, as the condition legend shows it.
+   */
+  definition?: string | null
+  /**
+   * Its A–D equivalent: A, B+, C or B/C.
+   */
+  equivalent?: string | null
+  /**
+   * Order within its vocabulary: a grade scale best first.
+   */
+  position?: number | null
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sources".
+ */
+export interface Source {
+  id: number
+  /**
+   * How references cite it: "Tooley", "Koeman", "Tooley (Australia)".
+   */
+  shortCite: string
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * The full entry: author, title, place, publisher, year.
+   */
+  citation?: string | null
+  /**
+   * The year it was published (the first, for a multi-volume work).
+   */
+  year?: number | null
+  /**
+   * Where it can be read or bought online, if anywhere.
+   */
+  url?: string | null
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "curations".
+ */
+export interface Curation {
   id: number
   updatedAt: string
   createdAt: string
@@ -404,24 +766,6 @@ export interface Location {
  * via the `definition` "stock-levels".
  */
 export interface StockLevel {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "masters".
- */
-export interface Master {
   id: number
   updatedAt: string
   createdAt: string
@@ -888,32 +1232,111 @@ export interface ReviewsSelect<T extends boolean = true> {
  * via the `definition` "makers_select".
  */
 export interface MakersSelect<T extends boolean = true> {
+  name?: T
+  sortName?: T
+  slug?: T
+  aliases?:
+    | T
+    | {
+        name?: T
+        id?: T
+      }
+  roles?: T
+  born?:
+    | T
+    | {
+        precision?: T
+        from?: T
+        to?: T
+        display?: T
+      }
+  died?:
+    | T
+    | {
+        precision?: T
+        from?: T
+        to?: T
+        display?: T
+      }
+  nationality?: T
+  portrait?: T
+  sameAs?:
+    | T
+    | {
+        url?: T
+        id?: T
+      }
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "places_select".
  */
 export interface PlacesSelect<T extends boolean = true> {
+  name?: T
+  slug?: T
+  historicalNames?:
+    | T
+    | {
+        name?: T
+        language?: T
+        period?: T
+        id?: T
+      }
+  type?: T
+  parent?: T
+  children?: T
+  geo?:
+    | T
+    | {
+        lat?: T
+        lng?: T
+        bbox?:
+          | T
+          | {
+              west?: T
+              south?: T
+              east?: T
+              north?: T
+            }
+      }
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "terms_select".
  */
 export interface TermsSelect<T extends boolean = true> {
+  kind?: T
+  label?: T
+  slug?: T
+  definition?: T
+  equivalent?: T
+  position?: T
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "sources_select".
  */
 export interface SourcesSelect<T extends boolean = true> {
+  shortCite?: T
+  slug?: T
+  citation?: T
+  year?: T
+  url?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -984,14 +1407,85 @@ export interface StockLevelsSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  alt?: T
+  altSource?: T
+  translationStatus?: T
+  caption?: T
+  credit?: T
+  licence?: T
+  role?: T
+  provenance?: T
+  master?: T
+  assetId?: T
+  derivatives?:
+    | T
+    | {
+        status?: T
+        version?: T
+        blurDataUri?: T
+      }
+  iiif?:
+    | T
+    | {
+        status?: T
+      }
+  prefix?: T
+  _objectKey?: T
   updatedAt?: T
   createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "masters_select".
  */
 export interface MastersSelect<T extends boolean = true> {
+  kind?: T
+  storageKey?: T
+  checksum?: T
+  byteSize?: T
+  contentType?: T
+  widthPx?: T
+  heightPx?: T
+  colourProfile?: T
+  brand?: T
+  work?: T
+  design?: T
+  role?: T
+  provenance?: T
+  objectBox?:
+    | T
+    | {
+        x?: T
+        y?: T
+        width?: T
+        height?: T
+      }
+  objectPpi?: T
+  captureTier?: T
+  intake?:
+    | T
+    | {
+        batch?: T
+        reference?: T
+        receivedAs?: T
+        verdict?: T
+        retouching?: T
+        notes?:
+          | T
+          | {
+              note?: T
+              id?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }

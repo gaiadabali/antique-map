@@ -9,8 +9,10 @@ Today the checks are run by a reviewer with an image editor that shows pixel val
 and a colour picker. The mechanical ones (§3, F-checks) are written so a script can
 run them later — proposed as a follow-up for MED, before the migration's bulk tiling.
 
-**Every threshold is a pilot value.** It is recalibrated against the owner's pilot set
-(6.2.b) — the first test on the owner's own equipment — before 6.2 closes.
+**Every threshold is a pilot value.** The pilot set (6.2.b) is the client's existing
+photographs (D19 updated 2026-10-01), so it tested §8 and not the capture thresholds
+([pilot-set/manifest.md](pilot-set/manifest.md)); they are recalibrated on the owner's
+first new item photographed to the guide.
 
 ## 1. Terms
 
@@ -147,8 +149,10 @@ M-9999                launch set: yes (recto, verso, 3 details) · raking: yes �
 
 ## 8. Legacy images
 
-The old site's images (sampled at 3543 × 2840 px, one per item, MIGRATION.md §1) are
-what 2,090 items will launch with. They are **assessed, never rejected** at migration:
+The old site's images are what its 1,823 items will launch with (MIGRATION.md §1):
+2,289 JPEGs, one per item for 88% of them, measured at a median of 2,706 × 1,697 px — the
+3,543 px once sampled is larger than 82% of the archive — with no profile, no camera
+metadata, no colour card and no verso (the pilot set, [pilot-set/manifest.md](pilot-set/manifest.md) §1). They are **assessed, never rejected** at migration:
 each records its object long edge, object ppi where the dimensions are known, a print
 ceiling **from its object's box** (C9 `printCeilingOf()`), "colour unverified — no
 card", and retouching `unknown` — or `retouched-legacy` if the owner knows it was cleaned

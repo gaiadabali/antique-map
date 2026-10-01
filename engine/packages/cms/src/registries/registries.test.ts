@@ -80,20 +80,23 @@ describe('the frozen slug list', () => {
     expect(registeredGlobals().map((g) => g.slug)).toEqual([...GLOBAL_SLUGS])
   })
 
-  it('stubs everything but users: hidden, admins may read, nobody may write', () => {
-    expect(stubSlugs()).not.toContain('users')
-    expect(stubSlugs()).toHaveLength(38)
-    const works = registeredCollections().find((c) => c.slug === 'works')!
-    expect(works.admin?.hidden).toBe(true)
-    expect(works.fields).toEqual([])
+  it('keeps every unbuilt slug a stub: hidden, admins may read, nobody may write', () => {
+    // A task that builds a collection replaces its stub, so the stub list shrinks as the
+    // Catalogue stage lands; what holds for each one left is its shape, never a count.
+    const stubs = new Set<string>(stubSlugs())
+    expect(stubs.has('users')).toBe(false)
     const as = (user: unknown) => ({ req: { user } }) as never
-    expect(works.access!.read!(as({ collection: 'users', roles: ['admin'] }))).toBe(true)
-    expect(works.access!.read!(as({ collection: 'users', roles: ['editor'] }))).toBe(false)
-    expect(works.access!.create!(as({ collection: 'users', roles: ['admin'] }))).toBe(false)
+    for (const collection of registeredCollections().filter((c) => stubs.has(c.slug))) {
+      expect(collection.admin?.hidden, collection.slug).toBe(true)
+      expect(collection.fields, collection.slug).toEqual([])
+      expect(collection.access!.read!(as({ collection: 'users', roles: ['admin'] }))).toBe(true)
+      expect(collection.access!.read!(as({ collection: 'users', roles: ['editor'] }))).toBe(false)
+      expect(collection.access!.create!(as({ collection: 'users', roles: ['admin'] }))).toBe(false)
+    }
   })
 
-  it('stores only upload collections in the bucket — none until 8.3 builds media', () => {
-    expect(uploadCollectionSlugs({ collections: registeredCollections() })).toEqual([])
+  it('stores only upload collections in the bucket — media alone; masters is plain (8.3)', () => {
+    expect(uploadCollectionSlugs({ collections: registeredCollections() })).toEqual(['media'])
     expect(
       uploadCollectionSlugs({ collections: [{ slug: 'media', upload: true, fields: [] }] }),
     ).toEqual(['media'])
