@@ -109,7 +109,7 @@ while their data and identities stay apart.
 3. WHEN an item is sold THEN its page SHALL remain published AND show no price AND show available examples of the same edition AND offer an alert.
 4. WHILE an item is reserved THEN its page SHALL show "On hold until {date}".
 5. The gallery SHALL provide maker, place, source, curation, catalogue and story pages.
-6. The gallery SHALL provide trust pages for guarantee and returns, authentication, condition grades, the certificate, shipping and insurance, framing and conservation, institutions, visiting, and FAQ. *(2026-10-01, D56 — G6: "returns" is the terms of sale — an original is a final sale, with no change-of-mind return, beside the lifetime authenticity guarantee; counsel confirms it is allowed, D11.)*
+6. The gallery SHALL provide trust pages for guarantee and returns, authentication, condition grades, the certificate, shipping and insurance, framing and conservation, institutions, visiting, and FAQ. *(2026-10-01, D56 — G6: "returns" is the terms of sale. The owner's intention is that an original is a final sale, with no change-of-mind return, beside the lifetime authenticity guarantee; it is in tension with UU 8/1999 art. 18 and for counsel (D11, not yet confirmed), so the page promises no return and states the rule only once counsel words it.)*
 7. WHEN a visitor chooses WhatsApp on an item THEN the message SHALL be prefilled with the stock number and title.
 8. WHEN reproductions of a work exist in the sister shop THEN the item page SHALL link to those exact products.
 9. The gallery SHALL provide consignment submissions with photo upload and viewing appointments.

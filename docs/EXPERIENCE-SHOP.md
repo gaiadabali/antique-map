@@ -155,8 +155,9 @@ Top to bottom, mobile first:
    on the slip; wrapping only once the owner offers it).
 6. **Trust row** — paper and ink details, payment icons (QRIS, e-wallets, virtual
    accounts, cards, bank transfer — no PayPal at launch, PAYMENTS.md §6), **a damaged
-   print replaced on a photo** (S12), and the terms — no refunds and no change-of-mind
-   returns — in counsel's words, which counsel confirms (D56, COMPLIANCE.md §6).
+   print replaced on a photo** (S12), and no returns line: the owner's "no refund" is
+   in tension with UU 8/1999 art. 18, for counsel (D11, COMPLIANCE.md §6), so until
+   counsel answers the row neither promises a refund nor prints the rule.
 7. **The story** — 100–150 words and a "where is this?" map pin, linking to the
    full article.
 8. **The original** — from the sister link (BRANDS.md §5): "The original is at
@@ -310,8 +311,9 @@ offers one.
 (`OrderLookup`), with the courier timeline and the tracking link in every
 WhatsApp update; pickups get a code or QR, a "ready" notice, the showroom's hours,
 a map and who may collect. A print that arrives damaged is replaced on a photo
-claim (S12) — the owner's promise; there is no refund and no change-of-mind return,
-as counsel confirms (D56) and words it (COMPLIANCE.md §6).
+claim (S12) — the owner's promise; no refund and no change-of-mind return is the
+owner's intention, in tension with UU 8/1999 art. 18 and for counsel (D11), so it is
+published only in counsel's words, once counsel answers (COMPLIANCE.md §6).
 
 ## 8. The showroom, Instagram and WhatsApp
 
