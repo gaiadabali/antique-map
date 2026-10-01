@@ -23,7 +23,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 11/31 | 3 | `████░░░░░░`  35% |
-| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 7/14 | 2 | `█████░░░░░`  50% |
+| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 1/3 | 11/14 | 2 | `████████░░`  79% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/23 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **26/176** | **174/837** | **46** | `██░░░░░░░░`  21% |
+| **All** | 44 phases | | | **27/176** | **178/837** | **46** | `██░░░░░░░░`  21% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -162,7 +162,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.g–i) | agent worktree | 2026-10-01 | 6.3.f merged (3e28ed2); 6.3.g–i in flight (the shop to *Anda*, field labels, the remaining lists); 6.3.j HAR next; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | agent worktree | 2026-10-01 | D50 (gallery enquiry-only), S3 (shop Indonesia-only), the docs and contracts the answers change; returns a board diff |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | — (merged 89bf351) | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | ⛔ 👤 OA9 (7.1.a: the real dump's restore); everything else ticked |
-| 7·W2 | 7.2 Normalisers and the review queue | medior | `antique-map-p7-mig-a` / `feat/p7-mig-a` (fast-forwarded to main) | 2026-10-01 | reads the 1,823 crawled records and the mock's extract from `LEGACY_DATA_DIR` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 | 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | senior-db | agent worktree (SCH) | 2026-10-01 | phase 8 opened; schema author — dev push on its own suffixed DB, no migration committed (10.3.a after the merge) |
 | 8·W1 | 8.3 Media and masters | senior-be | agent worktree (MED) | 2026-10-01 | granted `cms/src/registries/storage.ts` this wave (SCH's, no other W1 task owns it) for the media/masters storage wiring |
@@ -741,15 +740,15 @@ run beside the build line rather than in it.
   - [x] 7.1.f a mock Laravel-shaped MySQL dump (D42) committed as a fixture — synthetic rows only, covering MIGRATION.md §4's dirty-data cases — restored into a throwaway MySQL container by the restore harness, and extracted by SQL
   - [x] 7.1.d **Check:** the owner's export is restored into a throwaway MySQL container with its schema documented — **or**, as a fallback and only with the owner's OK, a read-only, rate-limited read of the public pages has produced a URL inventory, product JSON (sold included) and images; either way the legacy URL list for verification exists, nothing personal or raw has been committed, and nothing was done to the old site.
 
-- [ ] **7.2 Normalisers and the review queue** · needs: 7.1.d — 🔄 7·W2
+- [x] **7.2 Normalisers and the review queue** · needs: 7.1.d — ✅ 2026-10-01 7968cf9
   - **Lane** MIG · **Agent** medior (MIG-A) · **Wave** W2
   - **Owns** `engine/packages/migrate/src/normalise/**`
   - **Read** MIGRATION.md §4 (dirty data list)
   - _Requirements: 16.2_
-  - [ ] 7.2.a Parsers for dates, dimensions, condition grades, prices, references and titles (hook vs original; SEO suffixes removed)
-  - [ ] 7.2.b A fixture test for each dirty-data case in MIGRATION.md §4
-  - [ ] 7.2.c The review file — raw value beside the proposal — for everything below confidence
-  - [ ] 7.2.d **Check:** dates, dimensions, condition grades, prices, references and titles (hook vs original, SEO suffixes removed) parse from the real extract, with a fixture test per dirty-data case listed in MIGRATION.md, and everything below confidence goes to a review file with raw value beside proposal.
+  - [x] 7.2.a Parsers for dates, dimensions, condition grades, prices, references and titles (hook vs original; SEO suffixes removed)
+  - [x] 7.2.b A fixture test for each dirty-data case in MIGRATION.md §4
+  - [x] 7.2.c The review file — raw value beside the proposal — for everything below confidence
+  - [x] 7.2.d **Check:** dates, dimensions, condition grades, prices, references and titles (hook vs original, SEO suffixes removed) parse from the real extract, with a fixture test per dirty-data case listed in MIGRATION.md, and everything below confidence goes to a review file with raw value beside proposal.
 
 - [ ] **7.3 Old East Indies legacy URL discovery** · needs: 2.1 — 🔄 7·W1
   - **Lane** MIG · **Agent** medior (MIG-B) · **Wave** W1
@@ -2601,6 +2600,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — ✅ 7.2 — merged to `main` (7968cf9, branch 2e768b1); `pnpm verify` green on the merge (1,544 tests). Parsers for dates (C2 fuzzy date), dimensions (whole mm), orientation (from the photograph), condition (D10), price (C5 Money from the digit text — never a float, never rounded; extra decimals go to review), references, titles (hook vs original, SEO suffixes moved out), stock numbers, colour, maker, place, categories; each returns raw + proposal + confidence, a value only at ≥ 0.9. 165 tests, one named per MIGRATION.md §4 case. Re-run on `main` over the 1,823 crawled records with neutral defaults: 2,323 review rows (1,806 of them colour, which has no store wording yet); with the proposed store tables 1,239. Found for ARC/MIGRATION.md §4: sizes typed in both orders (586 width-first, 835 height-first — orientation must come from the image); D10's A–D equivalents defined nowhere; the store also used `G-` (27); more SKU prefixes than two (B., IM., PM., lowercase p.); the Color field mixes technique words; sold pages show no price (189 — only the export has them); C2 cannot hold a circa range ("ca. 1690-1700"). Follow-ups: the store's normaliser tables `indies-gallery/content/legacy/mapping/normalise.json` (grade aliases, boilerplate, SEO suffixes, SKU prefixes, 21 colour mappings) for the curator with 36.1 (OA12); `./normalise` export + `legacy:normalise` script + `@engine/config` dep so exponents come from `CURRENCY_EXPONENT` (MIG); the circa-range shape (ARC); the curator to publish D10's A–D equivalents and rule on G-/VG-; run `cli.ts catalogue` on the real dump when OA9 arrives.
 - 2026-10-01 — **7·W2 dispatched**: 7.2 (medior, lane MIG-A, `feat/p7-mig-a` reused, fast-forwarded to main). Its needs changed from 7.1 to **7.1.d** — 7.1 cannot close until the owner's dump (OA9) arrives, and 7.2 needs only the extract, which exists (1,823 crawled records + the mock's `products.jsonl`).
 - 2026-10-01 — 7.1 merged to `main` (89bf351, branch 5ed1de7); `pnpm verify` green on the merge (1,379 tests, every check ok). 7.1.b, c, d, e, f ticked: `@engine/migrate` in the workspace; the restore harness took the mock (15 tables, 240 rows, synthetic, `example.invalid` only) into a throwaway `mysql:8.4` and extracted it by SQL (`restore.integration.test.ts`, opt-in `MIGRATE_MYSQL_IT=1`, 23 s, container removed); the public read per D41 — 4,083 GETs (≥2 s apart, robots obeyed, no 429/5xx/403), **1,823 products (1,607 listed, 216 sold), 2,289 original images, 98 categories, 7,665 URLs** inventoried in `indies-gallery/content/legacy/inventory/urls.tsv` (paths only; raw 3.2 GB in `LEGACY_DATA_DIR`). **Incident, reported to the owner:** the first run's link discovery followed the enquiry form's address from an inline script 19 times with GET; the site answered 405 each time, nothing was submitted; fixed (script-found URLs never followed unless images; `enquire`/`request`/`subscribe` on the never-list; a test plants one). Found for MIGRATION.md §1/§6: `/sitemap.xml` now 404; maker pages `/mapmaker/{id}-{slug}` (305) missing from the route list; image size variants `{p}-{i}S/M.jpg` need the `/storage/products/*` rule; "≈2,090 listed" double-counts overlapping categories — the site has 1,823 distinct. Follow-ups: a CI job for `MIGRATE_MYSQL_IT=1` (HAR); `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves (MIG-B); redirects for maker pages, image variants and `/new-additions` queries (36.x); the owner's call on soft-deleted items (36.x). 7.1.a waits on OA9.
 - 2026-10-01 — **OA2 answered** (`docs/design/journeys/owner-answers.md`): the gallery becomes **enquiry-only** — no price shown, no cart, reserve or online offer; staff invoice an agreed price and the buyer pays it through the site's gateway (**D50, superseding D30**; D45, D22 answered); the shop sells **within Indonesia only at launch** and from stock (D47), partner terms case by case (D32), *Anda* (S15). New task **6.4** (ARC) replans the docs and contracts and returns a board diff; 6.1.b ticked. **6.3.f** merged (3e28ed2) — the contracts' value lists keyed, `pnpm verify` green on main; follow-ups 6.3.g–j. **6.2.f**'s Indonesian guides merged (19f69e6); follow-ups 6.2.g–h. `docs/gates/foundation/staging-drive.json` prettier-formatted (c8b9141, data unchanged) — `format:check` was red on main.
