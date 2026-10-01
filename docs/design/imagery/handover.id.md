@@ -66,7 +66,8 @@ jika ada, jika tidak beberapa kata yang dihubungkan tanda hubung (`tote-bali-map
 12.3.a); sampai saat itu, pakai nomor apa pun yang dimiliki produk itu sekarang.
 
 **Showroom:** `showroom_<area>_<nn>.<ext>`, dengan area `street` · `entrance` · `wide` ·
-`wall` · `counter` · `vignette` · `making`.
+`wall` · `counter` · `vignette` · `making` — dan `ref` untuk foto acuan setiap ruangan
+dengan kartu warna (shop-guide.id.md §5).
 
 ## 3. Folder
 

@@ -26,11 +26,12 @@ frame's finish). The configurator shows sizes, frames and mounts from its own la
 | 9 | wrapped in the gift cloth, and unwrapped; the gift note | `packaging` | daylight | if giftable | what the recipient opens |
 | 10 | the parcel as it ships — tube or box, protection inside | `packaging` | daylight | should | the damage-free delivery promise, shown |
 
-## Only if the owner agrees (interview question S14)
+## The making — the owner agreed (interview question S14)
 
 The making: the original on the copy stand, a print coming off the printer, a frame
-being joined, a parcel being packed — hands at work, faces only with consent. Name
-them `showroom_making_<nn>` or `<product>_lifestyle_<nn>`.
+being joined, a parcel being packed — hands at work, faces only with consent, as the
+[shop guide](../shop-guide.md) §5 describes. Name them `showroom_making_<nn>` or
+`<product>_lifestyle_<nn>`.
 
 ## Before you send
 

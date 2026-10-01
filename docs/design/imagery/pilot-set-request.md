@@ -13,8 +13,10 @@
 > exported as PDF or shared read-only (the Indonesian request attaches their `.id.md`
 > versions, drafts awaiting native review). The owner interview (OA2, `docs/design/journeys/owner-interview.md`)
 > asks nothing about equipment, so the two do not overlap; its S14 (filming how prints
-> are made) is the same photo day — if the owner says yes there, add `showroom_making`
-> shots here. Everything from "Dear" onward is the message.
+> are made, on the same photo day) was answered yes (`docs/design/journeys/owner-answers.md`),
+> so the `showroom_making` shots are in "The showroom" below (shop-guide.md §5). The
+> request follows the guides and the intake spec, which win where they differ (6.2.h).
+> Everything from "Dear" onward is the message.
 
 ---
 
@@ -62,14 +64,27 @@ take. In short:
 ## The showroom
 
 Photographed as a visitor meets it, on a bright day, with the lights you normally have
-on:
+on. **In each room, take one photo of the colour card first**, held where that room's
+photos will be; the room's other photos then need no card.
 
 - the street and the entrance;
 - a wide view from the door, and one from the back looking out;
-- each wall, straight on;
-- the counter or pickup point;
-- three to five close-ups — a shelf, a framed print on a wall, wrapped gifts;
-- if your staff agree, hands at work: wrapping, framing, packing.
+- each wall, straight on, with its products and QR labels;
+- the counter, and the place where online orders are collected;
+- three to five close-ups — a shelf, a framed print on a wall, wrapped gifts.
+
+**How the prints are made.** Thank you for agreeing that we may film and photograph
+this. On the same day, please photograph it in the showroom, or wherever it happens:
+
+- the original being photographed or scanned for printing;
+- a print coming off the printer;
+- a frame being joined, a print going into its mount and frame;
+- a gift being wrapped, a parcel being packed.
+
+Hands at work are welcome; a face only with that person's agreement, staff too. Handle
+an original as carefully as on the photo table, and never in the sun. Here too, one
+photo of the colour card first in each room. If you also film, keep the video files as
+they are and tell us; we will say how to send them.
 
 **If you have time — optional:**
 
@@ -86,7 +101,10 @@ A phone from the last few years is enough. A camera, two daylight lamps or a col
 chart make it better, but please do not buy anything for this. What does matter:
 
 - **daylight, never sun on an original**, and no ceiling lights mixed in;
-- **a grey card or colour chart and a ruler beside the piece** in every photo;
+- **a grey card or colour chart and a ruler beside the piece** in every photo of an
+  item — except a photo lit from behind on a light pad, where the ruler alone is enough;
+- in the showroom, and for products in a room or in hands, **one photo of the card at
+  the start of each room or scene**, then the rest without it;
 - the phone or camera held **straight above**, the whole piece in the picture;
 - **no hands and no people** in the gallery photos.
 
@@ -97,9 +115,12 @@ chart make it better, but please do not buy anything for this. What does matter:
 - **Please do not send them by WhatsApp or email.** Both shrink photos, and a shrunk
   photo cannot be used. If WhatsApp is the only way for a few, send them as a
   *Document*, not as a photo.
-- One folder per item, named with its stock number, with a few lines of notes: its
-  size, any defects you know of, whether it is framed, and which phone or camera and
-  light you used.
+- One folder per item, named with its stock number, **the dot written as a hyphen**:
+  M.9999 becomes `M-9999`. Item 6's folder starts with `legacy-`: `legacy-M-9997`. The
+  showroom's photos go in a folder of their own, `showroom`; the handover guide shows
+  the whole layout.
+- In each item's folder, a few lines of notes: its size, any defects you know of,
+  whether it is framed, and which phone or camera and light you used.
 - **Please send item 1 first** and tell us. We will check it before you go on, so a
   problem is caught early.
 
@@ -118,11 +139,14 @@ chart make it better, but please do not buy anything for this. What does matter:
 - [ ] Six items: the five new ones photographed, and item 6's existing file.
 - [ ] No Bali Hotel poster among them.
 - [ ] For items 1–5: the front, the back, the close-ups (one per defect), the side-lit photo.
-- [ ] A grey card or colour chart and a ruler in every photo.
+- [ ] A grey card or colour chart and a ruler in every photo of an item, except one lit
+  from behind.
 - [ ] Every photo checked at full size — sharp, nothing cut off.
 - [ ] The original files, not edited copies, in a shared folder — not WhatsApp.
+- [ ] One folder per item, the dot as a hyphen (`M-9999`); item 6 in `legacy-…`.
 - [ ] A few notes per item.
-- [ ] The showroom photos.
+- [ ] The showroom photos, with one photo of the card first in each room.
+- [ ] The photos of how the prints are made.
 
 ## Five quick questions
 

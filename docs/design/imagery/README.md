@@ -93,7 +93,8 @@ image was made is `media.provenance` — `photograph` · `composite` · `rendere
 | 6.2.a capture standards per brand, as the owner's guide + the intake spec | written here |
 | 6.2.b the owner's pilot set, checked against the intake spec | ⛔ 👤 OA3 — the request is [pilot-set-request.md](pilot-set-request.md) |
 | 6.2.c the configurator's room scenes | written: [room-scenes.md](room-scenes.md); who produces the plates is D46 (default: a freelance 3D artist; the owner confirms) |
-| 6.2.f fill the request, give its guides Indonesian versions, send it | the Indonesian guides drafted (awaiting native review, D20); filling the four placeholders, choosing Bapak or Ibu, and sending are the owner's |
+| 6.2.f fill the request, give its guides Indonesian versions, send it | the Indonesian guides drafted (awaiting native review, D20); "Bapak" chosen (OA2); filling the four placeholders and sending remain |
+| 6.2.h align the request with the guides | both versions: the colour card as the guides say it (every frame of an item but transmitted light; one reference photo per room or scene), the folder rule (handover.md §2–§3), and the `showroom_making` shots (S14 yes; shop-guide.md §5, intake-spec.md §6) |
 
 ## Follow-ups this folder depends on (outside its lane — routed, not done)
 

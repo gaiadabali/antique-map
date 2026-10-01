@@ -129,6 +129,7 @@ always photographs (C9 `provenanceAllowed()`).
 | `scale` | as `flat` | a reference frame | the size reference is an object everyone knows |
 | `packaging` | as `flat` | a reference frame | what the buyer or recipient actually receives |
 | `showroom` | as `flat` | a reference frame per room | verticals straight (fix — us ≤ 3°) |
+| `showroom`, area `making` (`showroom_making`) | as `flat` | a reference frame per room or workspace | how a print is made (S14, shop-guide.md §5): hands at work, H3 consent for a face; an original in the frame handled as gallery-guide.md §4 says and never in sun; verticals straight in a wide view only |
 
 ## 7. What the owner receives
 

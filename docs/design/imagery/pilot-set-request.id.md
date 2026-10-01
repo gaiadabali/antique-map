@@ -17,9 +17,12 @@
 > (read-only). Panduan-panduan itu juga masih draf yang menunggu tinjauan penutur asli
 > (D20); versi bahasa Inggrisnya dilampirkan pada pesan bahasa Inggris. Wawancara pemilik (OA2, `docs/design/journeys/owner-interview.id.md` dan
 > `owner-interview-toko.id.md`) tidak menanyakan apa pun tentang peralatan, jadi keduanya
-> tidak tumpang tindih; pertanyaan S14 di sana (merekam cara cetakan dibuat) memakai hari
-> pemotretan yang sama — jika pemilik menjawab ya, tambahkan foto `showroom_making` di
-> sini. Semua mulai dari salam pembuka ("Bapak … yang kami hormati") adalah pesannya.
+> tidak tumpang tindih; pertanyaan S14 di sana (merekam cara cetakan dibuat, pada hari
+> pemotretan yang sama) sudah dijawab ya (`docs/design/journeys/owner-answers.md`), jadi
+> foto `showroom_making` ada di bagian "Showroom" di bawah (shop-guide.id.md §5).
+> Permintaan ini mengikuti panduan-panduan dan spesifikasi penerimaan (*intake spec*),
+> yang berlaku jika ada perbedaan (6.2.h). Semua mulai dari salam pembuka ("Bapak … yang
+> kami hormati") adalah pesannya.
 
 ---
 
@@ -69,15 +72,31 @@ menyebutkan foto apa saja yang perlu diambil. Singkatnya:
 ## Showroom
 
 Difoto seperti yang dilihat pengunjung, pada hari yang cerah, dengan lampu yang biasa Anda
-nyalakan:
+nyalakan. **Di setiap ruangan, ambil lebih dulu satu foto kartu warna**, dipegang di tempat
+foto-foto ruangan itu akan diambil; setelah itu, foto-foto lain di ruangan tersebut tidak
+memerlukan kartu.
 
 - jalan dan pintu masuk;
 - pandangan lebar dari pintu, dan satu lagi dari bagian belakang ke arah luar;
-- setiap dinding, lurus dari depan;
-- meja kasir atau tempat pengambilan pesanan;
+- setiap dinding, lurus dari depan, dengan produk dan label QR-nya;
+- meja kasir, dan tempat pesanan online diambil;
 - tiga sampai lima foto jarak dekat — sebuah rak, cetakan berbingkai di dinding, kado yang
-  sudah dibungkus;
-- jika staf Anda bersedia, tangan yang sedang bekerja: membungkus, membingkai, mengemas.
+  sudah dibungkus.
+
+**Cara cetakan dibuat.** Terima kasih karena Anda mengizinkan kami merekam video dan
+memotret proses ini. Pada hari yang sama, mohon potret proses itu di showroom, atau di
+mana pun proses itu berlangsung:
+
+- karya asli yang sedang difoto atau dipindai (*scan*) untuk dicetak;
+- cetakan yang keluar dari printer;
+- bingkai yang sedang disambung, cetakan yang dimasukkan ke passe-partout dan bingkainya;
+- kado yang sedang dibungkus, paket yang sedang dikemas.
+
+Tangan yang sedang bekerja boleh tampak; wajah hanya dengan persetujuan orang itu, staf
+juga. Perlakukan karya asli sehati-hati seperti di meja pemotretan, dan jangan pernah di
+bawah sinar matahari. Di sini pun, ambil lebih dulu satu foto kartu warna di setiap
+ruangan. Jika Anda juga merekam video, simpan file videonya apa adanya dan beri tahu kami;
+kami akan menjelaskan cara mengirimkannya.
 
 **Jika ada waktu — tidak wajib:**
 
@@ -98,7 +117,10 @@ lebih baik, tetapi mohon jangan membeli apa pun untuk keperluan ini. Yang pentin
 - **cahaya siang, tetapi jangan pernah sinar matahari mengenai karya asli**, dan jangan
   dicampur dengan lampu plafon;
 - **kartu abu-abu (*grey card*) atau color chart, dan penggaris, di samping karya** di
-  setiap foto;
+  setiap foto sebuah karya — kecuali foto dengan cahaya dari belakang di atas *light pad*,
+  yang cukup memakai penggaris saja;
+- di showroom, dan untuk produk di dalam ruangan atau di tangan, **satu foto kartu di awal
+  setiap ruangan atau adegan**, lalu foto-foto selebihnya tanpa kartu;
 - ponsel atau kamera dipegang **lurus di atas karya**, dan seluruh karya masuk ke dalam
   foto;
 - **tanpa tangan dan tanpa orang** di foto-foto galeri.
@@ -111,9 +133,12 @@ lebih baik, tetapi mohon jangan membeli apa pun untuk keperluan ini. Yang pentin
 - **Mohon jangan mengirimkannya lewat WhatsApp atau email.** Keduanya mengecilkan ukuran
   foto, dan foto yang sudah dikecilkan tidak dapat dipakai. Jika WhatsApp satu-satunya cara
   untuk beberapa foto, kirimkan sebagai *Dokumen* (*Document*), bukan sebagai foto.
-- Satu folder untuk setiap karya, diberi nama dengan nomor stoknya, berisi beberapa baris
-  catatan: ukurannya, cacat yang Anda ketahui, apakah berbingkai, serta ponsel atau kamera
-  dan cahaya apa yang Anda pakai.
+- Satu folder untuk setiap karya, diberi nama dengan nomor stoknya, **dengan titiknya
+  ditulis sebagai tanda hubung**: M.9999 menjadi `M-9999`. Nama folder karya nomor 6
+  diawali `legacy-`: `legacy-M-9997`. Foto-foto showroom masuk ke folder tersendiri,
+  `showroom`; panduan serah terima menunjukkan susunan lengkapnya.
+- Di folder setiap karya, beberapa baris catatan: ukurannya, cacat yang Anda ketahui,
+  apakah berbingkai, serta ponsel atau kamera dan cahaya apa yang Anda pakai.
 - **Mohon kirim karya nomor 1 lebih dulu**, lalu kabari kami. Kami akan memeriksanya
   sebelum Anda melanjutkan, agar masalah dapat ditemukan sejak awal.
 
@@ -135,11 +160,15 @@ lebih baik, tetapi mohon jangan membeli apa pun untuk keperluan ini. Yang pentin
 - [ ] Tidak ada poster Bali Hotel di antaranya.
 - [ ] Untuk karya nomor 1–5: bagian depan, bagian belakang, foto jarak dekat (satu untuk
   setiap cacat), dan foto dengan cahaya samping.
-- [ ] Kartu abu-abu atau color chart, dan penggaris, di setiap foto.
+- [ ] Kartu abu-abu atau color chart, dan penggaris, di setiap foto sebuah karya, kecuali
+  foto dengan cahaya dari belakang.
 - [ ] Setiap foto sudah diperiksa dalam ukuran penuh — tajam, tidak ada yang terpotong.
 - [ ] File asli, bukan salinan yang sudah diedit, di folder bersama — bukan lewat WhatsApp.
+- [ ] Satu folder per karya, titiknya sebagai tanda hubung (`M-9999`); karya nomor 6 di
+  `legacy-…`.
 - [ ] Beberapa baris catatan untuk setiap karya.
-- [ ] Foto-foto showroom.
+- [ ] Foto-foto showroom, dengan satu foto kartu lebih dulu di setiap ruangan.
+- [ ] Foto-foto cara cetakan dibuat.
 
 ## Lima pertanyaan singkat
 
