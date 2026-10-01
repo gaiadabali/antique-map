@@ -21,7 +21,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **2** Local infrastructure, quality gates and CI | Foundation | 1 | ✅ done | 4/4 | 22/22 | 0 | `██████████` 100% |
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 🔄 in progress | 4/6 | 31/37 | 0 | `████████░░`  84% |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/3 | 9/19 | 3 | `█████░░░░░`  47% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 0/3 | 2/14 | 2 | `█░░░░░░░░░`  14% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | · not started | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -39,7 +39,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/2 | 0/12 | 1 | `░░░░░░░░░░`   0% |
 | **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/37 | 1 | `░░░░░░░░░░`   0% |
-| **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/27 | 2 | `░░░░░░░░░░`   0% |
+| **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/28 | 2 | `░░░░░░░░░░`   0% |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
 | **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
 | **26** Couriers and the fulfilment router 👤 | Integrations | 15, 20 | · not started | 0/3 | 0/12 | 2 | `░░░░░░░░░░`   0% |
@@ -53,15 +53,15 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/15 | 1 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/14 | 3 | `░░░░░░░░░░`   0% |
-| **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
+| **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | · not started | 0/4 | 0/15 | 0 | `░░░░░░░░░░`   0% |
-| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/8 | 0 | `░░░░░░░░░░`   0% |
+| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/9 | 0 | `░░░░░░░░░░`   0% |
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **24/175** | **161/822** | **46** | `██░░░░░░░░`  20% |
+| **All** | 44 phases | | | **26/175** | **167/825** | **46** | `██░░░░░░░░`  20% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -157,8 +157,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 5·W3 | 5.2 Foundation gate — the staging half, 5.4's plants, the re-runs | qa | `antique-map-qa-p5-gate2` / `qa/p5-foundation-2` | 2026-10-01 | local half done (`docs/gates/foundation.md`, e70a50a); closes phase 5 and **M0** |
-| 5·W3 | 5.5 The static half of 5.4's gates | — (merged 04d7e89) | `antique-map-p5-har-static` | 2026-10-01 | all subtasks ticked; its Check is driven inside qa's 5.2 run |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged 6a10f3a, 5b269dc) | `antique-map-p6-ux` | 2026-10-01 | ⛔ 👤 OA2 — your interview answers (`docs/design/journeys/owner-interview.md`, Indonesian `.id.md`); 6.1.e's native review (D20) |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged 11ad225) | `antique-map-p6-img` | 2026-10-01 | ⛔ 👤 OA3 — your pilot photographs (`docs/design/imagery/pilot-set-request.md`); 6.2.f sends the request |
 | 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
@@ -583,17 +581,17 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.1.c first release deployed; rollback rehearsed; results recorded in `docs/DEPLOYMENT.md` — including the deploy agent's health timeout and retries, checked on loopback or with a timeout that outlasts the longest migration (the first `/api/health` runs the migrations and is untimed by design; Cloudflare gives up at 100 s — 4.6 review #2)
   - [x] 5.1.d **Check:** `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` serve the shells from a CI-built release, health checks are green, and one rollback has been rehearsed; each app listens on `127.0.0.1` alone (`ss -ltnp`), and its port refuses a connection from outside (`curl http://<public-ip>:4030`), the host firewall confirmed with the owner's go-ahead.
 
-- [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4, 5.6 — 🔄 5·W3
+- [x] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4, 5.6 — ✅ 2026-10-01 4f09f74
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/foundation.md`
   - **Read** the **Done when** of phases 1–5
   - _Requirements: 1.1–1.8_
-  - [ ] 5.2.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
-  - [ ] 5.2.b Drive every clause of the **Done when** of phases 1–5 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/foundation.md`
-  - [ ] 5.2.c A planted violation for every gate (a 301-line file, a brand literal, a drifted schema, a missing route, a shadowing route, a non-literal matcher, config drift, a stale import map, an overlapping wave, a mount left on the placeholder once its handler exists, Payload reached from an `@engine/http` module that is no `payload-*.ts`, a route segment config outside the `(site)` layout, the two apps' `next.config.ts` apart) — each fails, then passes once removed
-  - [ ] 5.2.d Screenshots of both shells in English and Indonesian and both admins, on staging; the Cache Components spike write-up reviewed
-  - [ ] 5.2.e File every failure as a subtask of the task that owns it, and re-run the clause after the fix
-  - [ ] 5.2.f **Check:** every clause of the **Done when** of phases 1–5 is evidenced in `docs/gates/foundation.md`, with no failure left open.
+  - [x] 5.2.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
+  - [x] 5.2.b Drive every clause of the **Done when** of phases 1–5 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/foundation.md`
+  - [x] 5.2.c A planted violation for every gate (a 301-line file, a brand literal, a drifted schema, a missing route, a shadowing route, a non-literal matcher, config drift, a stale import map, an overlapping wave, a mount left on the placeholder once its handler exists, Payload reached from an `@engine/http` module that is no `payload-*.ts`, a route segment config outside the `(site)` layout, the two apps' `next.config.ts` apart) — each fails, then passes once removed
+  - [x] 5.2.d Screenshots of both shells in English and Indonesian and both admins, on staging; the Cache Components spike write-up reviewed
+  - [x] 5.2.e File every failure as a subtask of the task that owns it, and re-run the clause after the fix
+  - [x] 5.2.f **Check:** every clause of the **Done when** of phases 1–5 is evidenced in `docs/gates/foundation.md`, with no failure left open.
 
 - [x] **5.3 The proxy's v1.3 answers: a missing User-Agent, the item's query, its not-found's 404** · needs: 4.3 — ✅ 2026-10-01 a2c60d1
   - **Lane** PLT · **Agent** senior-be · **Wave** W1
@@ -622,7 +620,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.4.i qa's re-gate (adbc0b0) — FAIL on one new blocker: route parity resolved with Vite's conditions, not Next's, so a `react-server`/`production` `exports` condition put Payload in a mount's production bundle past every gate; fixed by resolving with Next's route-handler conditions and loading every conditional branch, plus a gate that refuses conditional `exports` in engine packages; and its LOWs — hook timeouts under load, a deep compare of each app's loaded config, `no-router-prefetch` across `engine/**`, and `createRequire` held in a variable
   - [x] 5.4.g **Check:** each planted violation of 5.4.a–d fails its gate naming the file and passes once removed; CI's status run passes its no-User-Agent case on both apps; `pnpm verify` green.
 
-- [ ] **5.5 The static half of 5.4's gates, hardened, and Next's bundle as a gate** · needs: 5.4 — 🔄 5·W3
+- [x] **5.5 The static half of 5.4's gates, hardened, and Next's bundle as a gate** · needs: 5.4 — ✅ 2026-10-01 04d7e89
   - **Lane** HAR · **Agent** medior · **Wave** W3
   - **Owns** `engine/tooling/route-parity/**`, `engine/tooling/next-config-parity/**`, `.github/workflows/ci.yml` (one step), `eslint.config.mjs`
   - **Read** 5.4's third qa gate (Log, 2026-10-01); ARCHITECTURE.md §15
@@ -1492,6 +1490,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 23.1.a 👤 the owner schedules the two observation sessions and names the cataloguer and shop manager who will also sit the 38.2 timed tests
   - [ ] 23.1.b observation notes (what they do, in what order, with what at hand, where they wait)
   - [ ] 23.1.c the *Operate* briefs
+  - [ ] 23.1.e the admin's localizer reads `Locale: undefined` for 1–2 s after sign-in on both sites (the foundation gate's N4), and Payload's admin axe debt — a critical `label`, serious `color-contrast` and `aria-hidden-focus` (F6, docs/gates/foundation.md)
   - [ ] 23.1.d **Check:** a cataloguer has been observed at the drawer and the shop manager on WhatsApp and in the showroom (about two hours each), and impeccable `shape` briefs in *Operate* mode exist for the desk, cataloguing, bulk upload, the merch wizard, the inbox, the order builder and the showroom sale — each with a keyboard map and a density spec — and Payload's Indonesian admin translation has been checked against the custom views.
 
 - [ ] **23.2 Admin shell, branding and the desk** · needs: 10.1, 13.3, 23.1
@@ -2149,6 +2148,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 37.2.a 👤 The owner's go-ahead for the staging import on Helios
   - [ ] 37.2.b A full rehearsal import on staging, and the report reviewed with the owner
   - [ ] 37.2.c A second run proving the delta import by `updated_at`
+  - [ ] 37.2.e the smoke spec runs against staging: `E2E_EXPECT_ENVIRONMENT` (default `local`) replaces `smoke.spec.ts:150`'s pinned `environment: 'local'` (the foundation gate's N2)
   - [ ] 37.2.d **Check:** a full rehearsal import runs on staging, the report is reviewed, and a delta import by `updated_at` is proven on a second run.
 
 - [ ] **37.3 Migration gate** · needs: phase 7, phase 36, 37.1, 37.2
@@ -2303,6 +2303,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.1.a The one CSP builder: per request from brand config (its payment and analytics origins, and the sister's from `sisterBaseUrl()` — the host's `SISTER_BASE_URL`, else the committed staging origin, C1), called by the proxy (3.1), which sets it on the answer and copies it onto the request (C13 `PROXY_REQUEST_HEADERS`), with a fresh nonce per request (`'nonce-…' 'strict-dynamic'`: 4.1.e found hashes cannot hold, since Next's inline scripts carry each request's RSC payload — ARCHITECTURE.md §13), and the `style-src` line decided (React renders `style` attributes, which a nonce cannot cover); security headers with tests
   - [ ] 41.1.b Rate limits (auth, forms, offers, checkout, order lookup); webhook replay protection; admin lockout
   - [ ] 41.1.c Dependency and secret scanning in CI; the OWASP Top 10 checklist
+  - [ ] 41.1.e the foundation gate's N1 and N3: CloudPanel's vhost adds its own security headers, so `X-Content-Type-Options` and others go out twice where the app sets them (`curl -sD- https://old-east-indies.gaiada.com/api/health` shows `nosniff, nosniff`) — the provision script drops those `add_header` lines from our vhosts; and route parity refuses a non-literal `config.matcher` statically (today only `next build` catches it)
   - [ ] 41.1.d **Check:** the CSP is **built per request** from brand config by the one builder (payment-provider, analytics and sister origins only; adding a provider needs a restart, not a rebuild), the request carrying the same header the answer does, security headers ship with tests, rate limits cover auth/forms/offers/checkout/order lookup, webhook replay protection and admin lockout are tested, dependency and secret scanning run in CI, and an OWASP Top 10 checklist is complete; card data never reaches our servers.
 
 - [ ] **41.2 👤 Production provisioning, backups, restore drill, monitoring** · needs: 5.1 · 👤 the Helios go-ahead for each target
@@ -2576,6 +2577,8 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — ✅ **phase 5** and **M0** — both brand shells live on staging from a CI-built release, admin signing in on both. The foundation gate (5.2, qa, `docs/gates/foundation.md` with 50 screenshots and drive logs) evidences every Done-when clause of phases 1–5: `pnpm verify` 1322 passed on a fresh clone; CI and release green; `pnpm dev --brand` ×2 serving differently branded EN/ID shells from two databases; `https://indies-gallery.gaiada.com` and `https://old-east-indies.gaiada.com` on `1eddcaf`, 8 shell pages axe 0 at 390/1280, both admins signed in; every gate fails on a planted violation, 5.4's included; F1–F7 and M1 resolved. 5.5 passed in the same run (each of its six missed forms caught; the bundle scan fails on the react-server plant and is clean on main). Lows filed: N1, N3 → 41.1.e; N2 → 37.2.e; N4 and F6 → 23.1.e.
+- 2026-10-01 — ✅ **5.2** (4f09f74) and ✅ **5.5** (04d7e89) — see phase 5 above.
 - 2026-10-01 — ✅ **5.1** (488fff3) — staging live on Helios: `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` serve the CI-built release `1eddcaf` (deployed by gaiada-poll from PR #3), `/api/health` ok in staging with database, storage and queue green, EN and ID, each admin signing in on its own site and 401 on the other; the provision script (`scripts/ops`, reviewed twice adversarially, five live-run fixes) applied idempotently — RustFS on a capped 50 GiB image (D12), Mailpit (D13), loopback ports refused from outside behind ufw; `--verify-restart` 14/14; rollback rehearsed both ways, after fixing the shared `gaiada-deploy --rollback` for subdir targets (backup kept); providers simulated (D48); secrets host-only (D49). Record: docs/ops/helios-staging.md.
 - 2026-10-01 — ✅ **5.4** (0916809; three rounds) — route parity checks each mount's specifier and loads every C13 mount under a Payload guard that refuses by specifier and resolved file (Vite plugin + Node ESM hook + CJS resolver wrap), resolving with Next's route-handler conditions and loading every conditional branch; engine packages declare no export condition; ESLint fences follow relative paths and `require()`; no storefront link, form or `prefetch` anywhere in `engine/**`; the two `next.config.ts` are one file and resolve the same; one e2e folder; CI's status run on both apps with `E2E_EXPECT_UA_FIX=1` and true no-User-Agent requests. qa failed it twice (Vite-externalised specifiers; `exports` conditions) and passed it the third time: Next's own production build of both apps bundles Payload in 0 of 41 `api/x` routes, and does with the `react-server` plant — the gate aims at a real path. `pnpm verify` 1248 passed. Five static-half LOWs → 5.5.
 - 2026-10-01 — ✅ **5.3** (a2c60d1; branch 7792967, 1bb4fad, a2b6fb0, 097b843) — the proxy supplies `PROXY_USER_AGENT` when a request has none, answers its own not-found with `PROXY_NOT_FOUND_STATUS`, and passes `x-public-search` on the item route alone; a stale slug's 308 keeps its query; the boot check refuses a loopback `HOSTNAME`; a database outage is not a refused boot, in the log or `/api/health` (5.3.f, qa's phase 4 L1). Gate on the merge: `pnpm verify` 1020 passed. qa on `main`: PASS, no blocker or should-fix — both apps, no-UA and empty-UA, hostile queries (CRLF, `//evil.com`, `#`, 12k/20k) never an open redirect or header injection, `HOSTNAME=127.1`/`2130706433`/`0x7f.0.0.1` refused on Linux, status spec 14 passed, admin sign-in at 1280/393, six mutations each caught by the tests. Low: C13's `publicSearch` doc says "as the browser sent it" but Next re-encodes the query (ARC to reword); DEPLOYMENT.md §3 should say the boot check refuses after the bind (under pm2 a restart loop, fail-closed); Next's `x-middleware-rewrite` exposes internal paths (awareness).
