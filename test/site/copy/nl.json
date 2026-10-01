@@ -1,5 +1,5 @@
 {
-  "$comment": "Synthetic brand. The lexicon values are pseudo-localised — the English app default with Dutch filler, 30% or more longer — so the third locale renders and overflows like a real one (TASKS.md 6.3.b). Not Dutch copy.",
+  "$comment": "Synthetic brand. The lexicon values are pseudo-localised — the English app default with Dutch filler, at least 30% longer than the longest of the defaults and the real brands' English values (check-brands, TASKS.md 6.3.m) — so the third locale renders and overflows like a real one (TASKS.md 6.3.b). Not Dutch copy.",
   "shell.skipToContent": "Naar de inhoud",
   "shell.homeLink": "{brand}, home",
   "shell.languages": "Taal",

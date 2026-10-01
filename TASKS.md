@@ -22,9 +22,9 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 18/38 | 4 | `█████░░░░░`  47% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 19/38 | 4 | `█████░░░░░`  50% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/4 | 12/25 | 0 | `█████░░░░░`  48% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 2/4 | 12/25 | 0 | `█████░░░░░`  48% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **31/179** | **209/865** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **33/179** | **210/865** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -159,10 +159,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.f done; ⛔ 👤 6.1.e native review (D20), 6.1.i the gallery's phone, viewing addresses and the shop's owed items |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | medior (6.3.m) | agent worktree | 2026-10-01 | 6.3.j (25828e9) and 6.3.l (a2aaea7) merged; 6.3.m gating the +30% rule in `check-brands`; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
+| 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.f–j, l, m merged; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
-| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | senior-db (fix round S1–S3, N1, N3–N6) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | review: sign off with should-fix; trial-merged with 8.3 on 7968cf9 + registry test fix: verify 1674 passed, only the schema drift 10.3.a clears; independent senior-be review to re-run (hit the usage limit) |
-| 8·W1 | 8.3 Media and masters | senior-be (fix round 1–6, 8, 9) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | review: sign off with should-fix; granted `payload.config.ts` `upload` for the round; asked `upload.limits.fileSize` in `payload.config.ts` (SCH) |
 | 8·W1 | 8.4 What 8.1's and 8.3's reviews decided, in the docs and C9 | architect | agent worktree (ARC) | 2026-10-01 | from the two reviews' ARC items |
 
 ## Decisions for the owner
@@ -713,7 +711,7 @@ run beside the build line rather than in it.
   - [x] 6.3.j HAR: `@engine/i18n/copy`'s `pluralFormOf` reads a code named `other` (`objectType.other`, `return.reason.other`, `business.shopType.other`) as a plural form, so a stray `objectType.one` would pass the gate; a planted one fails it — merged 2026-10-01 (25828e9): a plural set needs `base.other` with `{count}` and a sibling form; `plural-sets.test.ts` fails a planted `objectType.one`
   - [ ] 6.3.k after 6.4: cut or reword the keys D50, S3, S7 and S12 leave unused (6.3.g–i's report lists them: offers, cart, reserve, checkout, holds, a shown price; `madeToOrder`, refunds, PayPal, the "≈" estimate), and key the fixture fields still unlabelled by name (`message`, `conditionNotes`, `locationId`, `slotStart`, `email`, `password`, `orderNumber`, `whatsapp`, `frequency`, `consent.alerts`) or have C2 map them
   - [x] 6.3.l re-pad the 166 older `test` values to +30% over the longest real brand value, not the app default, so an overflow test fails where a brand would overflow — merged 2026-10-01 (a2aaea7): 292 values (en 133, id 13, nl 146) → 0 short; the 12 shell keys (`shell.*`, `home.*`, `notFound.*`) left as they are, since padding would fill locale names and `{brand}`
-  - [ ] 6.3.m HAR: `check-brands` enforces the +30% rule, so each `test` lexicon value is at least ceil(1.3 ×) the longest real brand value for its key and locale (nl against the app default and the en values); a planted short value fails it
+  - [x] 6.3.m HAR: `check-brands` enforces the +30% rule, so each `test` lexicon value is at least ceil(1.3 ×) the longest real brand value for its key and locale (nl against the app default and the en values); a planted short value fails it — merged 2026-10-01 (1bfed8d): `overflow.mjs`, the test brand found by its per-storefront configs, the shell keys exempt; main passes (id 710, en 714, nl 575 values measured), a planted short value fails
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
 
 - [ ] **6.4 Replan from the owner's answers** · needs: 6.1.b — 🔄 6·W2
@@ -799,7 +797,7 @@ run beside the build line rather than in it.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
 **Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2
 
-- [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
+- [x] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{makers,places,terms,sources}/**`, their validators
   - **Read** CONTENT-MODEL.md §3, ARCHITECTURE.md §8, EXPERIENCE-GALLERY.md §2
@@ -823,7 +821,7 @@ run beside the build line rather than in it.
   - [ ] 8.2.g a reference-safe delete: a maker, place, term or source a work still references is refused with "still used by N works" — Payload's relationship tables would otherwise drop the credit silently (8.1 review, senior-be)
   - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
-- [ ] **8.3 Media and masters** · needs: 3.2 — 🔄 8·W1
+- [x] **8.3 Media and masters** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
   - **Lane** MED · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{media,masters}/**` (by agreement with SCH), `engine/packages/media/src/storage/**`
   - **Read** ARCHITECTURE.md §7, CONTENT-MODEL.md §6, KOI CONTENT-MODEL Media

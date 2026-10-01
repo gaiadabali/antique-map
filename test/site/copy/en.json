@@ -1,5 +1,5 @@
 {
-  "$comment": "Synthetic brand. Each lexicon value is the app default lengthened by 30% or more, to catch overflow (TASKS.md 6.3.b). Not a voice.",
+  "$comment": "Synthetic brand. Each lexicon value is at least 30% longer than the longest real brand value for its key, to catch overflow — enforced by check-brands (TASKS.md 6.3.b, 6.3.l, 6.3.m). Not a voice.",
   "shell.skipToContent": "Skip to content",
   "shell.homeLink": "{brand}, home",
   "shell.languages": "Language",
