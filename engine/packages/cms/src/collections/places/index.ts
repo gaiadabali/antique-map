@@ -28,6 +28,7 @@ import { IN_DEFAULT_LOCALE_NOTE, requiredInDefaultLocale } from '../../fields/va
 import { guardAncestry, keepChildrenAttached } from './ancestry'
 import { geoField, historicalNamesField } from './fields'
 import { PLACE_TYPE_LABELS, PLACE_TYPES } from './place-types'
+import { refuseDeleteWhileUsed } from './still-used'
 
 export const Places: CollectionConfig = {
   slug: 'places',
@@ -41,7 +42,7 @@ export const Places: CollectionConfig = {
   versions: VOCABULARY_VERSIONS,
   hooks: {
     beforeChange: [refuseContributorPublish, guardAncestry],
-    beforeDelete: [keepChildrenAttached],
+    beforeDelete: [keepChildrenAttached, refuseDeleteWhileUsed],
   },
   fields: [
     {

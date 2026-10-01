@@ -205,6 +205,9 @@ importers:
 
   engine/packages/cms:
     dependencies:
+      '@engine/cache':
+        specifier: workspace:*
+        version: link:../cache
       '@engine/config':
         specifier: workspace:*
         version: link:../config

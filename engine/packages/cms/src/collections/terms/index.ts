@@ -27,6 +27,7 @@ import {
   requiredInDefaultLocale,
   requiredToPublish,
 } from '../../fields/validate'
+import { refuseDeleteWhileUsed } from './still-used'
 
 const isGrade = (data: unknown) => (data as { kind?: unknown } | undefined)?.kind === 'grade'
 
@@ -62,7 +63,7 @@ export const Terms: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeChange: [refuseContributorPublish] },
+  hooks: { beforeChange: [refuseContributorPublish], beforeDelete: [refuseDeleteWhileUsed] },
   // A slug is unique within its vocabulary: "warm" may be a mood and a room's colour both.
   indexes: [{ fields: ['kind', 'slug'], unique: true }],
   fields: [
