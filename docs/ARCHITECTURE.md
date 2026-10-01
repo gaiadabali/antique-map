@@ -709,7 +709,12 @@ recommendation from the 4.1 review (item 5), adopted with its conditions.
    externalised bare specifier straight to Node — so a static path to Payload fails
    CI however indirect: through `@engine/loaders`, say, any future package that
    depends on cms, a relative path into `cms/src`, a `#` subpath import, `require()`
-   or `createRequire` (4.3's senior-be review #3; 5.4's qa gate B1). **Its known
+   or `createRequire` (4.3's senior-be review #3; 5.4's qa gate B1). It resolves with
+   the conditions Next gives a node route handler (`react-server` first) and loads
+   every branch an engine package's `exports` or `imports` names; and an engine
+   package may declare no export condition at all unless route parity's commented
+   `ALLOWED_EXPORT_CONDITIONS` names it (empty today), so no branch can send Next's
+   build somewhere the check did not look (5.4's re-gate). **Its known
    limits**, which no load of a mount can see: any computed specifier — inside a
    function (the lazy path, by design) or evaluated at load with its refusal caught
    by the module itself (`try { await import(s) } catch {}`);
