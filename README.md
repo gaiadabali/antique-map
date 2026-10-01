@@ -58,7 +58,8 @@ cp .env.example .env.local                        # PORT, DATABASE_URL_*, PAYLOA
 pnpm db:fresh --brand indies-gallery              # create + migrate + seed ig_dev
 pnpm db:fresh --brand old-east-indies             # create + migrate + seed oei_dev
 pnpm dev --brand indies-gallery                   # site on :PORT, CMS on :PORT/admin
-pnpm dev --brand old-east-indies
+pnpm dev --brand old-east-indies                  # PORT, DB_SUFFIX from .env.local (pnpm worktree:env)
+pnpm dev --brand test --storefront gallery        # the test brand names its app: gallery | emporium
 # verify on a production build, never only on dev: pnpm build && pnpm start
 ```
 
