@@ -38,3 +38,39 @@ describe('canonicalRedirect()', () => {
     expect(() => canonicalRedirect(asked, canonical)).toThrow(MissingPublicPathError)
   })
 })
+
+describe('canonicalRedirect() — the item’s public query rides on the 308 (C13 publicSearch, 5.3)', () => {
+  const bali = '/product/1726-bali'
+
+  it('carries x-public-search onto the redirect, as the proxy copied it', () => {
+    expect(canonicalRedirect('/product/1726-old-bali', bali, '?utm_source=mail&gclid=x')).toBe(
+      '/product/1726-bali?utm_source=mail&gclid=x',
+    )
+    expect(canonicalRedirect('/product/1726', bali, '?fbclid=a%20b&q=caf%C3%A9')).toBe(
+      '/product/1726-bali?fbclid=a%20b&q=caf%C3%A9',
+    )
+  })
+
+  it.each(['', null])('adds nothing when there is no query (%j)', (search) => {
+    expect(canonicalRedirect('/product/1726-old-bali', bali, search)).toBe(bali)
+    expect(canonicalRedirect('/product/1726-old-bali', bali)).toBe(bali)
+  })
+
+  it('never redirects the canonical address for its query: only the path decides', () => {
+    expect(canonicalRedirect(bali, bali, '?utm_source=mail')).toBeNull()
+  })
+
+  it.each([
+    'utm_source=mail', // not URL.search's spelling: no leading `?`
+    '?',
+    '?a=1#frag',
+    '?a=1 b',
+    '?a=1\tb',
+    '?a=é',
+  ])(
+    'drops a value URL.search would never hold (%j) rather than write it into Location',
+    (search) => {
+      expect(canonicalRedirect('/product/1726-old-bali', bali, search)).toBe(bali)
+    },
+  )
+})

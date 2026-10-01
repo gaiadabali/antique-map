@@ -43,7 +43,14 @@ export const uniqueBase: UniqueBaseVM = {
 }
 
 export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {
-  const recto = image('recto-1001', 3543, 2840, 'Engraved map of the Isle of Contoh, 1718, recto')
+  // The primary is the recto itself, under its own role (C9 v1.4 `primaryImageIndex()`).
+  const recto = image(
+    'recto-1001',
+    3543,
+    2840,
+    'Engraved map of the Isle of Contoh, 1718, recto',
+    'recto',
+  )
   return {
     surface: 'item',
     id: 'prod-1001',

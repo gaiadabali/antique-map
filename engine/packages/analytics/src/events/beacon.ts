@@ -3,7 +3,7 @@
  *
  * Events a page sends to `POST /api/x/collect` (cookieless until consent, ANALYTICS.md §1), each
  * with props the page can know: they come from its own view model (C2), never from a guess — the
- * item's price band and availability from the streamed purchase panel, a sister link's work from
+ * item's price band and availability from the purchase panel, a sister link's work from
  * the link. What only the server knows — the session, the anonymous id, the ship-to market — the
  * page never sends: `/api/x/collect` stamps it on arrival (`CollectedContext`).
  */

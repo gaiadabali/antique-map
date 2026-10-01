@@ -1,1 +1,1 @@
-export { GET, POST } from '@engine/http/legacy/unbuilt' // until WEB builds @engine/http/auth
+export { GET, POST } from '@engine/http/unbuilt' // until WEB builds @engine/http/auth

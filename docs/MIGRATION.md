@@ -197,7 +197,7 @@ changed slug redirects, to the current one, by id. Other locales are prefixed
 
 | Legacy | New | Rule |
 | --- | --- | --- |
-| `/product/{id}-{anything}` | `/product/{id}-{current-slug}` | same URL when the slug is unchanged; otherwise 301 by **id** — the slug part is ignored, since old links carry stale slugs |
+| `/product/{id}-{anything}` | `/product/{id}-{current-slug}` | same URL when the slug is unchanged; otherwise one permanent redirect by **id** — a 308, the status of a page's `permanentRedirect()` — its query kept; the slug part is ignored, since old links carry stale slugs |
 | `/category/{id}-{slug}` | the equivalent facet URL | from the reviewed mapping |
 | `?s=sold` / `?s=unsold` | `availability=sold` / `available` | query mapped, not dropped |
 | `?o=newest` · `?p=highest|lowest` | `sort=newest` · `sort=price-desc|price-asc` | |
@@ -208,13 +208,27 @@ changed slug redirects, to the current one, by id. Other locales are prefixed
 
 **Who answers which URL.** Product URLs are answered by the item route itself: it
 resolves `/product/{id}-{slug}` by public id and calls `permanentRedirect()` when
-the slug has changed — no lookup table involved. Every other legacy pattern
-(`/category/…`, `/storage/products/…`, the static pages) is rewritten by the proxy
-to the engine's legacy handler (`/api/x/legacy/…`), which reads the `redirects`
-collection under `'use cache'` + `cacheTag` and answers 301 or 404; the proxy
-itself never touches the database (ARCHITECTURE.md §11). The verification script
-requests **every** legacy URL — from the owner's export and the URL inventory —
-**against the new site** and asserts 200 or one 301 to 200; the migration is not done until the failure count is zero.
+the address asked for is not the current one — no lookup table involved. That is a
+**308 Permanent Redirect**, Next's only permanent status for a page, which search
+engines treat as they treat a 301 (the 4.1.e spike §3). The route reads only the id
+from its param, since Next hands the same segment still encoded to the page and
+decoded once to its metadata, and its loader compares the **public path the proxy
+passed on** (C13 `PROXY_REQUEST_HEADERS.publicPath`, handed to C2's `Loaders.item` as
+`asked` by the page) with `href()`'s spelling, byte for byte, outside its cached read
+(DESIGN-SYSTEM.md §2):
+exactly one address answers 200, the redirect's `Location` is encoded once (twice
+would loop), and it carries on the query the old link had
+(`PROXY_REQUEST_HEADERS.publicSearch` — a rewritten request loses its query, so this
+is the one place it survives), keeping a campaign's `utm_*`. Every other legacy
+pattern (`/category/…`, `/storage/products/…`, the static pages) is rewritten by the
+proxy to the engine's legacy handler (`/api/x/legacy/…`), which reads the
+`redirects` collection under `'use cache'` + `cacheTag` and answers 301 or 404; the
+proxy itself never touches the database (ARCHITECTURE.md §11). The verification
+script requests **every** legacy URL — from the owner's export and the URL
+inventory — **against the new site** and asserts 200, or **one permanent redirect
+to a 200** — the legacy handler's 301 or the item route's 308 — after at most one of
+Next's own normalising 308s (below); the migration is not done until the failure
+count is zero.
 
 **The static pages, by decision (TASKS.md 3.4.c).** A legacy prefix ends in `/`
 (C10), so it cannot name `/about-us`, and the proxy may not ask the database
@@ -248,14 +262,27 @@ icons, the manifest) or a first segment Next or the proxy claims (`_next`,
 
 - **A trailing `/` or a doubled `//`** is answered by Next itself, a 308 to the
   path without it, before the proxy runs (measured on 16.3.6; C10 refuses both
-  too): an inventory URL `/about-us/` goes 308 → `/about-us` → 301 → the new page. The URL gate (TASKS.md 37.1.b) counts
-  Next's 308 as normalisation and still requires the one 301 after it.
-- **An old item link works whatever its slug spells** — `%27`, `(…)`, a
-  lower-case escape, a `+`: its id picks the item and the route answers 301 to
-  the current URL (C10's one exception to strict segments; a `%2F` or a
-  non-canonical id is still not found). The 4.1.e spike proves
-  `permanentRedirect()` with an encoded slug: a `Location` encoded twice would
-  loop.
+  too): an inventory URL `/about-us/` goes 308 → `/about-us` → 301 → the new page,
+  and `/product/1706-old/` 308 → `/product/1706-old` → 308 → the current URL. The
+  URL gate (TASKS.md 37.1.b) counts Next's 308 as normalisation — recognised by its
+  `Location`, the same path with the trailing `/` dropped or the `//` collapsed —
+  and still requires the one permanent redirect after it.
+- **An old item link works whatever its slug spells** — `%27`, `(…)`, `%61` for
+  `a`, a `+`: its id picks the item and the route answers one 308 to the current
+  URL (C10's one exception to strict segments; a `%2F` or a non-canonical id is
+  still not found), as the 4.1.e spike proved with an encoded slug.
+- **A lower-case escape is not another spelling.** RFC 3986 §6.2.2.1 makes
+  `%c3%a9` one URI with `%C3%A9`, and Next upper-cases an escape's hex digits
+  before the proxy runs, so `/product/1706-caf%c3%a9-de-java` is served at the one
+  address, 200 — never a second one (the spike §3).
+- **A slug part that does not decode as UTF-8** — `%FF`, a Latin-1 `caf%E9`, raw
+  bytes in the request line — is not found today (404 from the proxy: C10 cannot
+  read the segment). C10's next minor version sends it to the item route by its id
+  with a fixed ASCII slug no item has — never the bytes as asked, which Next cannot
+  decode into the route's param and answers with a bare 500 (measured by 4.3's
+  senior-fe review #4) — so it gets the one 308, its query kept (TASKS.md 22.7.d); the
+  status spec probes it, and the URL gate lists any such URL of the inventory until
+  then (4.1 review, senior-fe #12).
 - **The handler (36.4) takes a `Location` only from a root-relative `redirects`
   row** — matching `^/(?![/\\])`, never `//host` or `/\host`, which a browser
   reads as another site. A request such as `/category/%2F%2Fevil.com` reaches it
@@ -278,7 +305,7 @@ decides otherwise; the steps that involve it are the owner's own.
    production database is provisioned and imported **dark**: no DNS, no public
    traffic, but its archive API serves the works the shop's designs come from and
    the originals' per-market prices the shop displays (D25).
-1. **T–14 days** — full rehearsal import into staging (`ig.gaiada.com`) from the
+1. **T–14 days** — full rehearsal import into staging (`indies-gallery.gaiada.com`) from the
    owner's export; report reviewed; curator signs the mapping. Writing to Helios
    needs the owner's go-ahead.
 2. **T–2 days** — the owner lowers the DNS TTL to 300 s and asks their staff to
@@ -303,7 +330,7 @@ exported for manual handling.
 | Curator review of the category → facet mapping | §2, bulk publish | ~1 hour |
 | **The item register**: for every stock number, where the object physically is (Singapore, Jakarta, elsewhere) and its export status | any sale — an item without a row publishes enquiry-only (COMPLIANCE.md §1) | a spreadsheet; the largest single input the owner gives |
 | Condition-grade scale they use (`G+`, `VG`…) with definitions | the PDP condition legend | 15 min |
-| High-resolution master scans (where they exist) | large OEI print sizes — today's 3543 px web images allow about 37 cm on the long edge at 240 ppi (≈ A4 at 300 ppi), ARCHITECTURE.md §7 | ongoing |
+| High-resolution master scans (where they exist) | large OEI print sizes — today's 3543 × 2840 px web images allow at most about 37 cm on the long edge at 240 ppi, and only where the sheet fills the frame edge to edge: the ceiling is computed from the sheet's own pixels or a design's crop of them, never the file's long edge (ARCHITECTURE.md §7), so a sheet spanning 3300 px of one prints to about 35 cm. Each legacy image is assessed at import, never rejected — its object's long edge measured and, where the dimensions are known, its object ppi (`docs/design/imagery/intake-spec.md` §8) | ongoing |
 | Newsletter platform export (subscribers + consent) | §5 | 15 min |
 | Pointing `antiquemapsindonesia.com`, `indiesgallery.com` and `oldeastindies.com` at the new sites at launch (the owner's registrar and DNS) | cutover | minutes, on the day |
 | Old East Indies' product list (spreadsheet or the WhatsApp catalogue export) and any Squarespace export | §10 | 1 hour |

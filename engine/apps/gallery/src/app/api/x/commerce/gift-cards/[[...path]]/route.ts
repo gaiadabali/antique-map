@@ -1,1 +1,1 @@
-export { POST } from '@engine/http/legacy/unbuilt' // until DOM builds @engine/http/commerce/gift-cards
+export { POST } from '@engine/http/unbuilt' // until DOM builds @engine/http/commerce/gift-cards

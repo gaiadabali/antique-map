@@ -10,23 +10,35 @@
  * `loadItem`, `loadCart`. A loader reads cookies, the session and the ship-to market itself,
  * at request time; its params are only what the URL says.
  *
+ * What the URL says reaches it decoded: a slug or a place path is text from C10's parse of the
+ * public path (`parsePublicPath()` over the proxy's `x-public-path`), never a raw `params`
+ * segment, which Next hands a page still percent-encoded and its `generateMetadata` decoded once —
+ * a record looked up under both would miss in one of them (the 4.1.e spike §3; measured again on
+ * a plain `[slug]` route, 4.3's senior-fe review #3). And a loader never reads the proxy's
+ * headers, and imports nothing of `@engine/http` but its manifest (C13's names — `FORM_RESULT`'s
+ * cookie, say — a leaf): the page reads C13 `PROXY_REQUEST_HEADERS` and passes what it needs in
+ * (`item`'s `asked`, `notFound`'s `path`), so a loader is testable with a plain object and no
+ * package cycle forms between the loaders and the handlers (ARCHITECTURE.md §15).
+ *
  * Two phases, because the content is cached and the viewer's parts are not (ARCHITECTURE.md
  * §9): phase one is a `'use cache'` + `cacheTag` read returning `CachedPart<VM>` (`../common`)
- * — published-only, projected, the same for every visitor; phase two creates each `Streamed`
- * part at request time, inside the route's `<Suspense>`, and the loader returns the two
- * together. A cached read never awaits a streamed part. The request-time parts awaited instead
- * are what a visitor without JavaScript must see and act on — a post's `result` (C13
- * `FORM_RESULT`), and on the want-list page its form and the list an email's link opened: a
- * streamed part stays hidden from that visitor, so the loader resolves them and the page renders
- * them in its own body, never inside a nested `<Suspense>` — which costs no caching, since the
- * route renders at request time and only the content read is `'use cache'`. There is
- * no cookie-free fixed shell to prerender: the `(site)` layout awaits `connection()`, so every
- * page is rendered per request and caching is per read, by tag.
+ * — published-only, projected, the same for every visitor, keyed by the loader's own inputs and
+ * never by what a visitor typed; phase two creates each `Streamed` part at request time, and
+ * the loader returns the two together. A cached read never awaits a streamed part. The page
+ * awaits in its own body the parts the first flush must carry — what a visitor without
+ * JavaScript must see and act on: a post's `result` (C13 `FORM_RESULT`); the item's `purchase`,
+ * whose live availability decides which forms it shows (CONVENTIONS.md §12); on the want-list
+ * page its form and the list an email's link opened. A streamed part stays hidden from that
+ * visitor, so these are never inside a nested `<Suspense>` — which costs no caching, since the
+ * route renders at request time and only the content read is `'use cache'`. Only the parts no
+ * form depends on (rails, reviews) stream inside `<Suspense>`. There is no cookie-free fixed shell
+ * to prerender: the `(site)` layout awaits `connection()`, so every page is rendered per request
+ * and caching is per read, by tag.
  *
  * `Found<VM>`: `null` is a 404 (`notFound()`); `redirectTo` is permanent on a content page —
  * the slug changed, and the item page resolves by public id, so a product URL is never lost
- * (`permanentRedirect()`) — and temporary on a session page (`redirect()`: a checkout with
- * no bag goes to the bag; an order without access goes to the order lookup).
+ * (`permanentRedirect()`, a 308) — and temporary on a session page (`redirect()`: a checkout
+ * with no bag goes to the bag; an order without access goes to the order lookup).
  */
 import type { AccountSection, HrefParams, ListingQuery, Surface } from '@engine/config/routes'
 import type { LocaleCode } from '@engine/config/schema'
@@ -66,6 +78,15 @@ import type { CachedPart } from './common'
 
 export type Found<VM> = { vm: VM } | { redirectTo: string } | null
 
+/**
+ * The address a visitor asked for, as the proxy passed it on (C13 `PROXY_REQUEST_HEADERS`):
+ * `path`, the public path (`x-public-path`, the browser's own spelling), and `search`, its query
+ * (`x-public-search`: `''` or `?…`). The page reads both headers and hands them to the loader
+ * (v1.3, TASKS.md 4.3.f); a request that carries no public path bypassed the proxy, and the page
+ * refuses it rather than redirect an address to itself.
+ */
+export type AskedAddress = { readonly path: string; readonly search: string }
+
 type At = { locale: LocaleCode }
 /** A surface whose bare segment is its index (C10 `index: true`): no slug → the directory. */
 type Indexed<VM> = (p: At & { slug?: string }) => Promise<Found<VM | DirectoryVM>>
@@ -76,7 +97,15 @@ export type Loaders = {
   home: (p: At) => Promise<HomeVM>
   browse: (p: At & { query: ListingQuery }) => Promise<Found<ListingVM>>
   search: (p: At & { query: HrefParams['search'] }) => Promise<SearchVM>
-  item: (p: At & { publicId: number; slug: string }) => Promise<Found<ItemVM>>
+  /**
+   * By public id alone (v1.3, TASKS.md 4.3.f: it took the param's `slug`, which Next hands in two
+   * spellings). The cached read is keyed by `(locale, publicId)`; `asked` is compared with
+   * `href()`'s spelling of the item's current address, byte for byte, outside every `'use cache'`
+   * scope and never as a cache argument, since each spelling a visitor chooses would be a new
+   * entry. Not `href()`'s spelling → `redirectTo` that address with `asked.search` appended, so an
+   * old link's query survives its 308; no such item → `null`.
+   */
+  item: (p: At & { publicId: number; asked: AskedAddress }) => Promise<Found<ItemVM>>
   design: (p: At & { slug: string }) => Promise<Found<DesignVM>>
   maker: Indexed<MakerVM>
   place: (p: At & { path: readonly string[] }) => Promise<Found<PlaceVM | DirectoryVM>>
@@ -115,7 +144,9 @@ export type Loaders = {
   wantList: (p: At & HrefParams['wantList']) => Promise<Found<WantListPageVM>>
   /**
    * For `not-found.tsx`, which gets no params: `path` and `locale` come from the proxy's
-   * request headers (C13 `PROXY_REQUEST_HEADERS`). A removed item's path answers `GoneVM` —
+   * request headers (C13 `PROXY_REQUEST_HEADERS`), which the page reads and passes in. Under a 404
+   * Next takes the page's metadata from that boundary's `generateMetadata`, never from a page's
+   * (4.3's senior-fe review #5), so the boundary names it. A removed item's path answers `GoneVM` —
    * rendered at 404, noindex, and out of the sitemap; a real 410 is only the legacy handler's —
    * anything else `NotFoundVM`, a legacy product slug becoming the prefilled search.
    */
@@ -150,4 +181,8 @@ type _CachedItemIsContentOnly = Assert<
 >
 type _ItemAsFrozen = Assert<
   Equals<Awaited<ReturnType<LoadItem>>, { vm: ItemVM } | { redirectTo: string } | null>
+>
+/** The item is found by its id and the address asked for, never by a spelling of its slug (4.3.f). */
+type _ItemTakesNoSlug = Assert<
+  Equals<keyof Parameters<LoadItem>[0], 'locale' | 'publicId' | 'asked'>
 >

@@ -9,7 +9,7 @@
  */
 import { resolveBrandPaths } from '@engine/config/loader'
 
-import { notFound } from '../legacy/respond'
+import { notFound } from '../shared/respond'
 import { serveBrandAsset } from './serve'
 
 export { brandAssetUrl, versionedBrandAssetUrl } from './version'

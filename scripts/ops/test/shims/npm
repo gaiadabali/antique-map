@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# A stand-in for the npm in a site user's nvm tree, inside the test container. helios-provision.sh
+# installs no pm2 (the host's /usr/bin/pm2 is the one), so nothing should run this: every call is
+# logged to /tmp/npm-shim.log, which the test asserts stays empty. Were it run with
+# `install --global --prefix P … pm2@V`, it would lay the pm2 shim out as npm does. Test-only.
+set -euo pipefail
+printf 'uid=%s user=%s args=%s\n' "$(id -u)" "$(id -un)" "$*" >>/tmp/npm-shim.log
+[ "$(id -u)" != 0 ] || {
+  echo "npm shim: refusing to run as root" >&2
+  exit 1
+}
+[ ! -e /tmp/npm-offline ] || {
+  echo "npm ERR! network request to https://registry.npmjs.org/pm2 failed (test: offline)" >&2
+  exit 1
+}
+prefix='' pkg='' global=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    install) ;;
+    --global | -g) global=1 ;;
+    --prefix) prefix="$2" && shift ;;
+    --*) ;;
+    *) pkg="$1" ;;
+  esac
+  shift
+done
+if [ "$global" != 1 ] || [ -z "$prefix" ] || [[ "$pkg" != pm2@* ]]; then
+  echo "npm shim: unsupported: want install --global --prefix P pm2@V" >&2
+  exit 1
+fi
+mkdir -p "$prefix/lib/node_modules/pm2/bin" "$prefix/bin"
+cp /opt/shim/pm2 "$prefix/lib/node_modules/pm2/bin/pm2"
+chmod 755 "$prefix/lib/node_modules/pm2/bin/pm2"
+printf '{"name":"pm2","version":"%s"}\n' "${pkg#pm2@}" >"$prefix/lib/node_modules/pm2/package.json"
+ln -sfn ../lib/node_modules/pm2/bin/pm2 "$prefix/bin/pm2"

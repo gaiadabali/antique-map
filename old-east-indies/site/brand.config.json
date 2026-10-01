@@ -2,7 +2,7 @@
   "draft": true,
   "slug": "old-east-indies",
   "name": "Old East Indies",
-  "domains": { "production": null, "staging": "oei.gaiada.com", "aliases": [] },
+  "domains": { "production": null, "staging": "old-east-indies.gaiada.com", "aliases": [] },
   "storefront": "emporium",
   "identity": {
     "contact": { "email": "draft.contact@example.com", "whatsapp": "+15555550100", "phone": null },
@@ -186,7 +186,7 @@
       "slug": "indies-gallery",
       "name": "Indies Gallery",
       "role": "archive-origin",
-      "baseUrl": "https://ig.gaiada.com"
+      "baseUrl": "https://indies-gallery.gaiada.com"
     }
   ]
 }

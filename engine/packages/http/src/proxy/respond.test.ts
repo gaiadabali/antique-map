@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 import { loadBrandConfig } from '@engine/config/loader'
+import { PROXY_NOT_FOUND_STATUS, PROXY_USER_AGENT } from '../manifest'
 import { createProxy, proxy } from './route'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url))
@@ -42,6 +43,50 @@ describe('the proxy’s answer — the protocol NextResponse.rewrite()/.next() w
       'content-security-policy',
     )
     expect(response.headers.get('x-middleware-request-accept-language')).toBe('en')
+  })
+
+  it('answers the proxy’s own not-found with PROXY_NOT_FOUND_STATUS on its rewrite (C13 v1.3)', () => {
+    for (const path of [
+      '/nope/deeper',
+      '/en/item/1706',
+      '/de/product/1726-bali',
+      '/en/not-found',
+    ]) {
+      const response = answer(path)
+      expect(response.status, path).toBe(PROXY_NOT_FOUND_STATUS)
+      expect(response.headers.get('x-middleware-rewrite'), path).toBe(
+        'https://shop.example.com/en/not-found',
+      )
+    }
+  })
+
+  it('answers every other rewrite and pass-through 200, so the status Next’s render gives stands', () => {
+    for (const path of ['/product/1706-bali', '/nope', '/category/7', '/robots.txt', '/admin']) {
+      expect(answer(path).status, path).toBe(200)
+    }
+  })
+
+  it('forwards PROXY_USER_AGENT when the request has none or an empty one, and a client’s own as is', () => {
+    for (const headers of [{}, { 'user-agent': '' }] as Record<string, string>[]) {
+      const response = answer('/nope', headers)
+      expect(response.headers.get('x-middleware-request-user-agent')).toBe(PROXY_USER_AGENT)
+      expect(response.headers.get('x-middleware-override-headers')?.split(',')).toContain(
+        'user-agent',
+      )
+    }
+    const own = answer('/nope', { 'user-agent': 'curl/8.9.1' })
+    expect(own.headers.get('x-middleware-request-user-agent')).toBe('curl/8.9.1')
+  })
+
+  it('forwards x-public-search: the item’s query on its rewrite, "" on every other request', () => {
+    const forged = { 'x-public-search': '?token=forged' }
+    const search = (path: string) =>
+      answer(path, forged).headers.get('x-middleware-request-x-public-search')
+    expect(search('/product/1706-old?utm_source=mail')).toBe('?utm_source=mail')
+    expect(search('/product/1706-bali')).toBe('')
+    for (const path of ['/pay/abc?t=secret', '/old-maps?page=2', '/nope?q=1', '/admin?x=1']) {
+      expect(search(path), path).toBe('')
+    }
   })
 })
 

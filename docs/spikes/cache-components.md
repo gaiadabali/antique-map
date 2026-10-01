@@ -25,7 +25,7 @@ The spike is off unless `SPIKE_ROUTES=1` (and `SPIKE_CONTROLS=1` for the control
 gallery's `boot.ts` refuses on any host the boot check does not judge local: off, the fixture
 item route is the designed 404 and every spike action refuses (4.1 review, senior-fe #3). What
 outlives the spike is the item route's one-address rule, `src/item/canonical.ts`, and the status
-guard `engine/apps/gallery/e2e/status.spec.ts` (Playwright, on a production build).
+guard `tests/e2e/status/status.spec.ts` (Playwright, on a production build).
 
 ## 1. The build touches no database, brand or secret — and what that took
 

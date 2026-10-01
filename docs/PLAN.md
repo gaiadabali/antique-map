@@ -36,7 +36,7 @@ storefronts · a design gate on every UI phase.
 
 | | Milestone | Closed by phase |
 | - | --------- | ----------- |
-| **M0** | Both brand shells live on staging (`ig.gaiada.com`, `oei.gaiada.com`), admin logs in on both | 5 |
+| **M0** | Both brand shells live on staging (`indies-gallery.gaiada.com`, `old-east-indies.gaiada.com`), admin logs in on both | 5 |
 | **M1** | A direction picked per brand; both style guides on staging | 22 (after the Design stage, 14) |
 | **M2** | Catalogue, deep zoom, search and commerce core working on staging with sandbox payments | 21 (with 10 and 16) |
 | **M3** | **Old East Indies live** on `oldeastindies.com` | 42 — after the Shop, Admin, Integrations, Accounts, SEO and Migration gates, with the gallery's dark import (42.7) done |

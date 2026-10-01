@@ -1,1 +1,1 @@
-export { GET, POST } from '@engine/http/legacy/unbuilt' // until DOM builds @engine/http/commerce/quotes
+export { GET, POST } from '@engine/http/unbuilt' // until DOM builds @engine/http/commerce/quotes

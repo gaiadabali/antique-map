@@ -9,12 +9,14 @@ export {
   BootCheckError,
   checkDatabase,
   formatBootReport,
+  isRefused,
   runBootCheck,
   type BootCheckInput,
   type BootReport,
   type DatabaseProbe,
 } from './boot-check'
 export { deploymentEnvironment, LOCAL_PRODUCTION_BUILD } from './environment'
+export { isLoopbackIp, normaliseHost } from './hostname'
 export { DEPLOYMENT_ENVIRONMENTS, type BootFinding, type DeploymentEnvironment } from './findings'
 export {
   LINK_KEY_COMMAND,
