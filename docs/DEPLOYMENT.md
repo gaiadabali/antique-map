@@ -12,7 +12,7 @@ instance per tenant).
 | | Where | Data | Deploys from |
 | - | ----- | ---- | ------------ |
 | **local** | each worktree, `docker-compose.dev.yml` — Postgres 18, Mailpit, MinIO | per-lane databases (`ig_dev_<lane>`) seeded from fixtures | — |
-| **staging** | Helios — `ig.gaiada.com`, `oei.gaiada.com` | seeded + rehearsal migration imports; payment **sandboxes** | a green push to `production` (the GDA pipeline's only Helios branch) |
+| **staging** | Helios — `indies-gallery.gaiada.com`, `old-east-indies.gaiada.com` | seeded + rehearsal migration imports; payment **sandboxes** | a green push to `production` (the GDA pipeline's only Helios branch) |
 | **production** | Helios — the brands' real domains, added at cutover (MIGRATION.md §8) | live | the same, once cutover moves the targets |
 
 Two of `docker-compose.dev.yml`'s pins are load-bearing, not arbitrary
@@ -132,12 +132,12 @@ go-ahead (👤). CI's servers, on an ephemeral runner with no nginx, bind `0.0.0
 production:
   - server: helios
     site_user: uig
-    domain: ig.gaiada.com
+    domain: indies-gallery.gaiada.com
     type: node
     subdir: indies-gallery
   - server: helios
     site_user: uoei
-    domain: oei.gaiada.com
+    domain: old-east-indies.gaiada.com
     type: node
     subdir: old-east-indies
 ```

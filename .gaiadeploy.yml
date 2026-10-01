@@ -14,11 +14,11 @@
 production:
   - server: helios
     site_user: uig
-    domain: ig.gaiada.com
+    domain: indies-gallery.gaiada.com
     type: node
     subdir: indies-gallery
   - server: helios
     site_user: uoei
-    domain: oei.gaiada.com
+    domain: old-east-indies.gaiada.com
     type: node
     subdir: old-east-indies

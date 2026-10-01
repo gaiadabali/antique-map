@@ -123,7 +123,7 @@ city's masthead into the shared image).
 {
   "slug": "indies-gallery",
   "name": "Indies Gallery",
-  "domains": { "production": "antiquemapsindonesia.com", "staging": "ig.gaiada.com",
+  "domains": { "production": "antiquemapsindonesia.com", "staging": "indies-gallery.gaiada.com",
                "aliases": ["indiesgallery.com"] },
   "storefront": "gallery",                             // engine/apps/gallery
   "identity": {                                        // the floors the CMS globals override (below)

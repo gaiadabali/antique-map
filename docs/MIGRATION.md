@@ -305,7 +305,7 @@ decides otherwise; the steps that involve it are the owner's own.
    production database is provisioned and imported **dark**: no DNS, no public
    traffic, but its archive API serves the works the shop's designs come from and
    the originals' per-market prices the shop displays (D25).
-1. **T–14 days** — full rehearsal import into staging (`ig.gaiada.com`) from the
+1. **T–14 days** — full rehearsal import into staging (`indies-gallery.gaiada.com`) from the
    owner's export; report reviewed; curator signs the mapping. Writing to Helios
    needs the owner's go-ahead.
 2. **T–2 days** — the owner lowers the DNS TTL to 300 s and asks their staff to
