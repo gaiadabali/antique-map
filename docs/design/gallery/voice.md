@@ -210,8 +210,28 @@ area in `messages/lexicon/`; the values in `indies-gallery/site/copy/{en,id}.jso
 | every error | `problem.*`, `notice.*`, `codeInvalid.*`, `payment.unavailable.*`, `payment.failed.*`, `checkout.problem.*`, `field.*`, `form.*`, `signIn.*`, `error.*`, `gone.*` |
 | every empty state | `empty.*`, `cart.empty`, `wishlist.empty` |
 | every prefilled WhatsApp message | `whatsapp.*` |
-| the image labels (retouching-and-labelling.md §4–§6) | `image.*`; the mat caption is `image.inMat` |
-| the loaders' notes (C2 `MessageVM` codes) | `message.<code>` |
+| the image labels (retouching-and-labelling.md §4–§6) | `image.synthetic.<label>` and `image.syntheticAlt.<label>` by C9 `SYNTHETIC_LABEL`; the filmstrip's `image.role.<role>` (C9 `WORK_IMAGE_ROLES`, `LOCATION_IMAGE_ROLES`); the mat caption is `image.inMat` |
+| the loaders' notes (C2 `MessageVM` codes) | `message.<code>` — every code the C2 fixtures use that the gallery renders, the consignment's next steps and the delivery promise's `holidayDelay` included |
+| the converted estimate (D47) | `price.converted` ("≈ {estimate} — charged in {price}") and its note `price.convertedNote` |
+
+**The contracts' value lists (6.3.f).** Each key spells the contract's own code, so a
+component looks its label up by the value it holds:
+
+| List | Contract | Keys |
+| ---- | -------- | ---- |
+| facet names | C1 `FACET_KEYS` (all of them: which a listing shows follows from its modules and data) | `facet.<key>`, `facet.price.includeOnRequest` |
+| sort orders | C1 `SORT_KEYS` | `sort.<key>` |
+| object types | C1 `OBJECT_TYPES` | `objectType.<type>` |
+| maker roles and certainty | C2 `MakerRole`, `Certainty` | `maker.role.<role>`, `maker.certainty.<certainty>` (carries `{name}`) |
+| the record | C2 `RecordVM`, `DimensionsVM`, `ConditionVM`, `BookPartVM` | `record.*` |
+| account sections | C10 `ACCOUNT_SECTIONS`, as the buyer's nav shows them | `account.section.<section>` |
+| what waits on the buyer | C2 `AttentionVM.kind` | `account.attention.<kind>` |
+| enquiry topics | C6 `EnquiryTopic` | `enquiry.topic`, `enquiry.topic.<topic>` |
+| returns | C6 `ReturnReason`, `ReturnRequestView.status` | `return.reason.<reason>`, `return.status.<status>` |
+| a consignment's timeline | C6 `ConsignmentStatus` | `consignment.status.<status>` |
+
+A return's reason and status are labels, not a promise: the gallery's returns policy waits
+on G6 (§8) and no line here states one.
 
 **Channels (D14).** Until a WhatsApp provider is chosen, no copy promises a WhatsApp
 message: order updates go by email, and the `message.whatsappWhenPaid` note says "we will
@@ -263,3 +283,14 @@ questions this draft most needs answered:
     collector writes to a gallery, or too plain (*Selamat siang*)?
 14. Loanwords kept as they are: *browser*, *email*, *virtual account*, *PDF*. Any to
     translate (*peramban*, *surel*)?
+15. The maker line's certainty: *Diatribusikan kepada {name}* for "Attributed to",
+    *Berdasarkan karya {name}* for "After", *Bengkel kerja {name}* for "Workshop of" — the
+    terms Indonesian catalogues use?
+16. The record's printmaking terms: *Keadaan pelat (state)*, *Tahun pada pelat* ("date on
+    plate"), *Lembar pelat* (a book's plates), *Provenans*, *Cahaya samping* / *Cahaya
+    tembus* (raking and transmitted light) — current, or kept in English as collectors say
+    them?
+17. *Recto (sisi depan)* and *Verso (sisi belakang)*: keep the Latin with a gloss, or the
+    Indonesian alone?
+18. *Penahanan* for the account's "Holds" and *Jual kepada kami* for its consignments — natural
+    as navigation, or too formal?

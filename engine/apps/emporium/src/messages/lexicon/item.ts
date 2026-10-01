@@ -24,7 +24,10 @@ export const ITEM_KEYS = defineMessages({
   // price (C2 UniquePriceVM, PriceSet.basis)
   'price.onRequest': 'Price on request',
   'price.from': 'From {price}',
-  'price.converted': '≈ {estimate} — charged as {price}',
+  'price.converted': '≈ {estimate} — charged in {price}',
+  // beside a converted estimate (D47): the charge is exact; a conversion after it is not ours
+  'price.convertedNote':
+    'Your card issuer or PayPal may convert the charge again, at its own rate.',
   'action.enquire': 'Enquire',
   'action.whatsapp': 'Ask on WhatsApp',
   'action.pay': 'Complete payment',
@@ -40,12 +43,32 @@ export const ITEM_KEYS = defineMessages({
   'label.reproductionOf': 'Reproduction of an original in the {sister} archive',
   'label.archiveNo': 'Archive No. {archiveNo}',
   'label.restored': 'Digitally restored for print: {restoration}',
+  // the steps that fill `{restoration}`, joined as a list (C9 PRINT_RESTORATIONS, masters.ts)
+  'restoration.foxing-and-stains': 'foxing and stains removed',
+  'restoration.folds-and-creases': 'folds and creases smoothed',
+  'restoration.tears-closed': 'tears closed',
+  'restoration.losses-filled': 'small losses filled',
+  'restoration.tone-rebalanced': 'colour and tone rebalanced',
+  'restoration.paper-neutralised': 'paper tone neutralised',
+  'restoration.digitally-coloured': 'colour added or changed digitally',
+  'restoration.sheets-joined': 'sheets joined into one design',
   'label.madeToOrder': 'Made to order',
-  // imagery (docs/design/imagery/retouching-and-labelling.md §4–§6, room-scenes.md §8)
-  'image.mockup': 'Digital mockup',
-  'image.mockupAlt': 'Digital mockup: {alt}',
-  'image.aiGenerated': 'AI-generated image',
-  'image.aiGeneratedAlt': 'AI-generated image: {alt}',
+  // imagery (docs/design/imagery/retouching-and-labelling.md §4–§6, room-scenes.md §8): a
+  // synthetic image's label by C9 SYNTHETIC_LABEL (`image.synthetic.${label}`), on the image and
+  // in the filmstrip, and at the start of its alt text; the room plate's caption, with the
+  // plate's `wallWidthCm` as `{width}`, is `configurator.previewCaption` (./shop)
+  'image.synthetic.digital-mockup': 'Digital mockup',
+  'image.synthetic.ai-generated': 'AI-generated image',
+  'image.syntheticAlt.digital-mockup': 'Digital mockup: {alt}',
+  'image.syntheticAlt.ai-generated': 'AI-generated image: {alt}',
+  // a product's and the showroom's roles (C9 PRODUCT_IMAGE_ROLES, LOCATION_IMAGE_ROLES)
+  'image.role.in-room': 'In a room',
+  'image.role.flat': 'Flat',
+  'image.role.detail': 'Detail',
+  'image.role.lifestyle': 'In use',
+  'image.role.scale': 'To scale',
+  'image.role.packaging': 'Packaging',
+  'image.role.showroom': 'In the showroom',
   'sister.separate': '{sister} is a separate shop with its own account',
   'sister.original': 'The original is at {sister}',
   'sister.originalOnHold': 'The original is on hold at {sister}',
