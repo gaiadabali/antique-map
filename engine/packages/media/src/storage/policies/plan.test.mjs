@@ -127,17 +127,19 @@ describe('a plan', () => {
       'users[2].policy: one of media-writer, masters-origin, masters-outlet',
       "users[3].brand: a masters key names its brand's slug",
       'users[4].brand: a media-writer is scoped by its bucket, not a brand',
+      "mastersCors: the admin origins the masters bucket's CORS admits",
     ])
   })
 
   it('applies bucket policies first, each key policy once, then each user and its policy', () => {
     const operations = planOperations(localPlan, { secretFor: (user) => `secret-of-${user}` })
     const kinds = operations.map((o) => o.kind)
-    expect(kinds.slice(0, 4)).toEqual([
+    expect(kinds.slice(0, 5)).toEqual([
       'bucket-policy',
       'bucket-policy',
       'bucket-policy',
       'bucket-private',
+      'bucket-cors',
     ])
     expect(operations.filter((o) => o.kind === 'key-policy').map((o) => o.name)).toEqual([
       'media-writer-ig-media',

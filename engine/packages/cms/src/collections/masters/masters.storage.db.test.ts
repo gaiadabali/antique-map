@@ -5,6 +5,9 @@
  * Runs with CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT set (`../media/test-stack.test-support`).
  */
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
+import { mkdtempSync, readdirSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 
 import { intakeMasterKey, type IntakeManifest } from '@engine/media/contract'
 import { getPayload } from 'payload'
@@ -29,12 +32,15 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
   let analyst: string
   const sentToApp: number[] = []
   const stored: string[] = []
+  // The stack's own multipart folder, so a file left behind by any request is seen (8.3.h, 8.3.i).
+  const tempDir = mkdtempSync(path.join(tmpdir(), 'cms-masters-temp-files-'))
 
   beforeAll(async () => {
     stack = await startStack({
       storefront: 'gallery',
       mastersUser: 'test-masters-origin',
       connect: (config, key) => getPayload({ config, key }),
+      tempFileDir: tempDir,
     })
     for (const [email, roles] of [
       ['owner@storage.test', ['admin']],
@@ -53,6 +59,7 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
   afterAll(async () => {
     for (const key of stored) await asRoot(MASTERS_BUCKET).remove(key)
     await stack?.stop()
+    rmSync(tempDir, { recursive: true, force: true })
   }, 60_000)
 
   /** A JSON request to the app, its body's size counted. */
@@ -124,6 +131,18 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
     expect(response.status).toBe(400)
     expect(JSON.stringify(await response.json())).toMatch(/no file at/)
     expect(await asRoot(MASTERS_BUCKET).size(storageKey)).toBeNull()
+    // Dropped by the collection, and its temporary copy removed by the request's clean-up.
+    expect(readdirSync(tempDir)).toEqual([])
+    const signing = new FormData()
+    signing.set('_payload', JSON.stringify(declare(bytes)))
+    signing.set('file', new Blob([new Uint8Array(bytes)]), 'sneaked-in.tif')
+    const signed = await stack.rest('POST', '/api/masters/upload-url', {
+      token: staff,
+      form: signing,
+    })
+    expect(signed.status).toBe(200)
+    expect(await asRoot(MASTERS_BUCKET).size(storageKey)).toBeNull()
+    expect(readdirSync(tempDir)).toEqual([])
   }, 60_000)
 
   it('refuses a record for a file the bucket lacks, or holds with other bytes', async () => {

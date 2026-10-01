@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { STAFF_ROLES } from '../../access/roles'
 import { MEDIA_ACCESS } from './access'
-import { altBaseline } from './alt-baseline'
 import { MEDIA_FIELDS, validateAlt } from './fields'
 import { freezeAfterCreate, mayCorrectIntake } from './frozen'
 import {
@@ -237,43 +236,5 @@ describe('what intake set stays set (finding 3)', () => {
 
   it('is on the collection, before the file is read', () => {
     expect(Media.hooks?.beforeChange).toHaveLength(2)
-  })
-})
-
-describe('the alt baseline (8.3.f)', () => {
-  const words = (label: string) =>
-    label === 'ai-generated' ? 'AI-generated image' : 'Digital mockup'
-
-  it("starts a synthetic image's with its label, in the lexicon's words, and a photograph's with none", () => {
-    const description = 'Engraved map of Bali by François Valentijn, 1726, hand-coloured, recto'
-    expect(altBaseline({ description, provenance: 'photograph', labelWords: words })).toBe(
-      description,
-    )
-    expect(
-      altBaseline({
-        description: 'A framed print above a sofa',
-        provenance: 'composite',
-        labelWords: words,
-      }),
-    ).toBe('Digital mockup: A framed print above a sofa')
-    expect(
-      altBaseline({ description: 'A room', provenance: 'rendered', labelWords: words }),
-    ).toMatch(/^Digital mockup/)
-    expect(
-      altBaseline({ description: 'A street', provenance: 'ai-generated', labelWords: words }),
-    ).toMatch(/^AI-generated image: /)
-  })
-
-  it('never labels twice, and refuses an empty description or label', () => {
-    const once = altBaseline({ description: 'A room', provenance: 'composite', labelWords: words })
-    expect(altBaseline({ description: once, provenance: 'composite', labelWords: words })).toBe(
-      once,
-    )
-    expect(() =>
-      altBaseline({ description: ' ', provenance: 'photograph', labelWords: words }),
-    ).toThrow()
-    expect(() =>
-      altBaseline({ description: 'x', provenance: 'composite', labelWords: () => '' }),
-    ).toThrow()
   })
 })

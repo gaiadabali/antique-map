@@ -100,7 +100,7 @@ export function uploadUrlHandler(deps: UploadUrlDeps): PayloadHandler {
     if (!req.user) return answer(401, 'Sign in to upload a master.')
     if (!hasRole(req.user, ...MASTER_WRITERS)) return answer(403, 'Your role cannot add masters.')
     await addDataAndFileToRequest(req)
-    await discardSentFile(req)
+    discardSentFile(req)
     const parsed = parseUploadRequest(req.data)
     if ('problems' in parsed) return answer(400, parsed.problems.join(' '))
     const { request } = parsed
