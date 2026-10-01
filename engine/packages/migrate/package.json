@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./normalise": "./src/normalise/index.ts",
     "./sources/*": "./src/sources/*/index.ts"
   },
   "scripts": {
@@ -13,12 +14,15 @@
     "test": "vitest run",
     "legacy:mysql": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/sources/laravel-catalogue/cli.ts",
     "legacy:public-read": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/sources/public-read/cli.ts",
+    "legacy:normalise": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/normalise/cli.ts",
     "legacy-urls": "cd ../../.. && node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs"
   },
   "devDependencies": {
     "@types/node": "26.6.3"
   },
   "dependencies": {
+    "@engine/config": "workspace:*",
+    "@engine/view-models": "workspace:*",
     "node-html-parser": "9.0.4"
   }
 }

@@ -362,6 +362,6 @@ When you change behaviour, update the doc that describes it **in the same PR**:
 | a brand config field or module flag     | `docs/BRANDS.md`                                     |
 | a stack or infrastructure decision      | `docs/ARCHITECTURE.md` or `docs/DEPLOYMENT.md`       |
 | a new analytics event                   | `docs/ANALYTICS.md` — and never rename an existing one |
-| a task's status                         | `TASKS.md` — the orchestrator ticks it and runs `node scripts/progress.mjs` |
+| a task's status                         | `TASKS.md` — the orchestrator ticks it (`pnpm tasks:tick`); the board syncs itself |
 
 Documentation drift is how a tidy project becomes an untrustworthy one.

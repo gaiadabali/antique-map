@@ -3,12 +3,14 @@
 // whole by `validateBrandConfigs()` (C1, `@engine/config/validate`) against the app that renders
 // it, with that app's real `engine/apps/<app>/src/supports.ts`. The apps' own `supports.test.ts`
 // check the same from inside each app; this is the one gate that sees every brand at once.
-// It then checks each brand's copy against the app's message keys (TASKS.md 6.3.e, ./copy.mjs).
+// It then checks each brand's copy against the app's message keys (TASKS.md 6.3.e, ./copy.mjs),
+// and the synthetic brand's lexicon values against the +30% overflow rule (6.3.m, ./overflow.mjs).
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
 
 import { checkBrandsCopy, loadCopyKeys } from './copy.mjs'
+import { checkOverflowCopy, loadLexiconKeys } from './overflow.mjs'
 import { ENGINE_REPO_ROOT, loadSupports } from './supports.mjs'
 import { withTsRunner } from './ts-runner.mjs'
 
@@ -27,7 +29,8 @@ export async function loadBrandChecks() {
     const { supports, apps } = await loadSupports(loadModule)
     const { checkCopy } = await loadModule(I18N_COPY)
     const keys = await loadCopyKeys(loadModule, apps)
-    return { validateBrandConfigs, formatIssue, supports, apps, checkCopy, keys }
+    const lexicon = await loadLexiconKeys(loadModule, apps)
+    return { validateBrandConfigs, formatIssue, supports, apps, checkCopy, keys, lexicon }
   })
 }
 
@@ -66,5 +69,8 @@ export function checkBrands(repoRoot, checks) {
   const copy = checkBrandsCopy(report.results, checks)
   passed.push(...copy.passed.map((line) => `copy ${line}`))
   problems.push(...copy.problems)
+  const overflow = checkOverflowCopy(report.results, checks)
+  passed.push(...overflow.passed.map((line) => `overflow ${line}`))
+  problems.push(...overflow.problems)
   return { ok: report.ok && problems.length === 0, passed, problems, results: report.results }
 }

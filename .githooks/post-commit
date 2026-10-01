@@ -1,0 +1,9 @@
+#!/bin/sh
+# After `git commit TASKS.md -m …` (a commit by path), git commits the pre-commit
+# hook's synced TASKS.md but leaves the unsynced copy in the index, where a later
+# commit could undo the sync. When the working file matches the commit, point the
+# index back at it.
+[ -d .git ] || exit 0
+git diff --quiet HEAD -- TASKS.md 2>/dev/null || exit 0
+git diff --cached --quiet HEAD -- TASKS.md 2>/dev/null && exit 0
+git reset -q -- TASKS.md

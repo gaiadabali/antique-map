@@ -25,8 +25,15 @@ export type CopyValues = Readonly<Record<string, string>>
 
 export type MessageParams = Readonly<Record<string, string | number>>
 
-/** `cart.items` for keys `cart.items.one` / `cart.items.other`. */
-export type PluralBase<K extends string> = K extends `${infer Base}.other` ? Base : never
+/**
+ * `cart.items` for keys `cart.items.one` / `cart.items.other` — only where both are keys, so a
+ * code that is spelt `other` (`objectType.other`) is not a plural base (see `pluralFormOf`).
+ */
+export type PluralBase<K extends string, All extends string = K> = K extends `${infer Base}.other`
+  ? `${Base}.one` extends All
+    ? Base
+    : never
+  : never
 
 export type Messages<K extends string> = {
   readonly locale: LocaleCode
@@ -48,15 +55,35 @@ export function pluralCategoriesOf(locale: LocaleCode): readonly string[] {
 }
 
 const PLURAL_FORM = /^(.+)\.(zero|one|two|few|many|other)$/
+const CATEGORIES = ['zero', 'one', 'two', 'few', 'many'] as const
 
-/** `cart.items.one` → `{ base: 'cart.items', category: 'one' }`, when the app defines `cart.items.other`. */
+/**
+ * `cart.items.one` → `{ base: 'cart.items', category: 'one' }` — only when the app's defaults
+ * really define a plural set at `cart.items`. A last segment named after a CLDR category is not
+ * enough: the lexicon spells keys after contract codes, and some codes are literally `other`
+ * (`objectType.other`, `return.reason.other`, `business.shopType.other`).
+ *
+ * The rule (TASKS.md 6.3.j): `base` is a plural set when the defaults hold `base.other`, its
+ * value carries `{count}` (the number `t(base, { count })` selects by), and at least one sibling
+ * form `base.<zero|one|two|few|many>`. The neutral defaults are English, whose rules select
+ * `one` and `other`, so every real set carries `.one` (`photosHint`, `listing.showResults`,
+ * `message.available`, `message.works`); a code set such as `objectType.*` has neither the
+ * sibling nor the `{count}`. A key outside a set is a plain key: required in every locale, and
+ * a stray `objectType.one` in a brand's copy is unknown, not a plural form.
+ */
 export function pluralFormOf(
   key: string,
   defaults: Readonly<Record<string, string>>,
 ): { readonly base: string; readonly category: string } | null {
   const match = PLURAL_FORM.exec(key)
   const [, base, category] = match ?? []
-  return base && category && `${base}.other` in defaults ? { base, category } : null
+  return base && category && isPluralSet(base, defaults) ? { base, category } : null
+}
+
+function isPluralSet(base: string, defaults: Readonly<Record<string, string>>): boolean {
+  const other = defaults[`${base}.other`]
+  if (other === undefined || !/\{count\}/.test(other)) return false
+  return CATEGORIES.some((category) => `${base}.${category}` in defaults)
 }
 
 /** A copy value, where `''` reads as absent: an empty value is a gap, never a blank. */

@@ -109,7 +109,7 @@ describe('MIGRATION.md §4 dirty data, on the mock dump', () => {
     expect(byId(1200).fields.condition).toMatchObject({ raw: 'VG-', status: 'review', value: null })
   })
 
-  it('SKUs in two patterns — M.1044 and M.Dav5 are both preserved exactly', () => {
+  it('SKUs in more than two patterns — M.1044 and M.Dav5 are both preserved exactly', () => {
     expect(byId(1101).fields.stockNumber.value).toEqual({
       value: 'M.1044',
       prefix: 'M',

@@ -12,7 +12,7 @@ Written 2026-09-25 from the reviewed plan (a UX review and an architecture revie
 
 ## Progress
 
-Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after every tick; never edit the table by hand.
+Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on every commit that includes this file, and by the Claude Code hook after every edit to it (`scripts/progress.mjs`; `pnpm tasks:sync` by hand). Never edit the table by hand; `pnpm verify` fails if it is stale.
 
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
@@ -22,16 +22,16 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 16/35 | 4 | `█████░░░░░`  46% |
-| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 1/5 | 11/21 | 2 | `█████░░░░░`  52% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/18 | 0 | `███████░░░`  67% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 19/38 | 4 | `█████░░░░░`  50% |
+| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 2/4 | 12/25 | 0 | `█████░░░░░`  48% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
-| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
@@ -52,16 +52,16 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/15 | 1 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
-| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/14 | 3 | `░░░░░░░░░░`   0% |
+| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/16 | 5 | `░░░░░░░░░░`   0% |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | · not started | 0/4 | 0/15 | 0 | `░░░░░░░░░░`   0% |
-| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/9 | 0 | `░░░░░░░░░░`   0% |
+| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/10 | 0 | `░░░░░░░░░░`   0% |
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **27/178** | **195/849** | **47** | `██░░░░░░░░`  23% |
+| **All** | 44 phases | | | **33/179** | **210/865** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -159,14 +159,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.f done; ⛔ 👤 6.1.e native review (D20), 6.1.i the gallery's phone, viewing addresses and the shop's owed items |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | — (merged db741cb) | — | 2026-10-01 | 6.3.g–i done; 6.3.j (HAR) and 6.3.l open; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
+| 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.f–j, l, m merged; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
-| 7·W1 | 7.1 The old catalogue export (mock dump + public read) | — (merged 89bf351) | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | ⛔ 👤 OA9 (7.1.a: the real dump's restore); everything else ticked |
-| 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
-| 7·W3 | 7.4 Wire the migrate package | junior | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-10-01 | |
-| 7·W3 | 7.5 MIGRATION.md from the real data | junior | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-10-01 | §1, §4, §6, §10 only (6.4 may touch other sections) |
-| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (reported done, 562d48c) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | trial-merged with 8.3 on 7968cf9 + registry test fix: verify 1674 passed, only the schema drift 10.3.a clears; independent senior-be review to re-run (hit the usage limit) |
-| 8·W1 | 8.3 Media and masters | — (reported done, b8f5181) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | independent senior-integrator review to re-run (hit the usage limit); asks `upload.limits.fileSize` in `payload.config.ts` (SCH) |
+| 8·W1 | 8.4 What 8.1's and 8.3's reviews decided, in the docs and C9 | architect | agent worktree (ARC) | 2026-10-01 | from the two reviews' ARC items |
 
 ## Decisions for the owner
 
@@ -217,9 +212,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **OA6** | Buyers for the prototype test and the usability runs — about 10 + 10 people (D21) | 13.2, 35.2, 32.2 |
 | **OA7** | A commercial font licence, if a commercial face is chosen | 14.1.f |
 | **OA8** | ✅ 2026-09-30 — go-ahead to provision staging on Helios (the provision script runs once the orchestrator has reviewed it and its dry-run; no second confirmation), DNS for `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` (renamed from ig/oei.gaiada.com 2026-10-01, the owner's DNS); object storage per D12; Infisical entries | 5.1.b |
-| **OA9** | **The export of the old catalogue** — a MySQL dump and the product-images folder, from whoever hosts the old site. We never log in to it. | 7.1.a |
+| **OA9** | **The export of the old catalogue** — a MySQL dump and the product-images folder, from whoever hosts the old site. We never log in to it. | 36.3.e (7.1.a simulated, D53) |
 | **OA10** | **The item register** — stock location and export status for every original (D24) | 36.3 |
-| **OA11** | A Search Console export for `oldeastindies.com` | 7.3.a |
+| **OA11** | A Search Console export for `oldeastindies.com` | 36.2.c (7.3.a simulated, D53) |
 | **OA12** | The curator's review of the maker clusters and the category → facet mapping (about an hour) | 36.1 |
 | **OA13** | Two observation sessions (a cataloguer, the shop manager), and the same people for the timed tests | 23.1.a, 38.2 |
 | **OA14** | Sandbox accounts: Midtrans, Stripe Singapore, PayPal, Biteship, DHL Express (D3) | 19.3, 25.1, 25.2, 26.1, 26.2 |
@@ -233,6 +228,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D54** | **No collector accounts on the gallery** (the developer, 2026-10-01; follows D50): the gallery is simply buy and sell — a negotiated invoice paid on its pay page (D51) — so it has **no sign-up, no sign-in and no account area**; customer sign-in exists only for the shop's approved retailers (D31). Want-lists and "tell me when another example arrives" run on the email path alone (D39's double opt-in); a viewing is changed through its confirmation's link or WhatsApp, never a session; the item page's wishlist is cut or kept in the browser only (ARC). The old site's customers import as **staff-side customer records** (name, email, addresses, legacy orders) with no account and no "claim your account" email (MIGRATION.md §5), and the old `/account/*` paths get a designed answer instead of a mirror. ARC replans 28.1, 28.2, 29, 33.3, 34.2 and 36 — 6.4.h. | 2026-10-01 |
+| **D53** | **Until the client's real data arrives, migration runs on simulation and seed** (the developer, 2026-10-01): phase 7 closes on the mock dump (D42) restored, extracted and normalised, and on the Search Console importer run over a synthetic export — the read-only public read (D41) and the archive (D43) stay the real evidence. When the client hands over the MySQL dump and images (OA9) and the Search Console export (OA11), they go through the built harness in phase 36 (36.3.e, 36.2.c). The mock extract is the seed source for anything that needs legacy-shaped rows before then. | 2026-10-01 |
+| **D52** | **Old East Indies' stock is one pool at launch** (the developer, 2026-10-01): all merchandise stock counts as one quantity per variant — no split by shop, location or owner, no transfers between locations, no "In the showroom now" badge. The merchandise sells through **hundreds of shops across Bali**; they report sales and restocking over WhatsApp today and keep doing so at launch, and staff correct the pool in the admin. Showroom pickup of online orders (S4) and a counter sale recorded against the pool (24.4.c) stay. Splitting stock by shop — and who owns a shop's shelf stock (wholesale, consignment, branch) — waits for the **POS phase on our engine** (v2.19). ARC to decide whether `stock_levels` keeps a location key with one shop location configured, so the POS adds locations without a migration — 6.4.g. | 2026-10-01 |
+| **D51** | **The gallery's negotiation runs on WhatsApp, and its invoice is paid on our site** (the developer, 2026-10-01; refines D50): staff build the invoice on a phone (24.5) and send its link into the buyer's WhatsApp chat (`wa.me` share — no WhatsApp API needed); the buyer pays on the gallery's own `/pay/{token}` page, in the gallery's design, with the Stripe Payment Element embedded or bank-transfer instructions — **never a page hosted by Stripe** (Stripe Invoicing / Payment Links are out). The pay page is a designed surface: open with "On hold until {due date}", paid, expired or voided, bank transfer pending — 6.4.g. | 2026-10-01 |
 | **D50** | **The gallery is enquiry-only** (owner interview G3, G4, 2026-10-01; supersedes D30): no cart, no reserve button, no online offers, and **no price shown on any original** — every original leads to a call or WhatsApp to negotiate (Singapore). Once a price is agreed, **staff issue an invoice and the buyer pays it online through the site's gateway**; the piece shows "On hold" until the invoice is due (G5), and ships only when paid in full, shipping and duties the buyer's (G11). Merchandise (the shop) keeps its checkout. ARC replans the gallery's commerce — 6.4. | 2026-10-01 |
 | **D45** | **An invoice holds its piece until the invoice's due date**, set by the staff who issue it; released automatically if unpaid (G5). The hold starts when staff issue the invoice — staff-approved by construction. | 2026-10-01 |
 | **D22** | **No online offers on the gallery** (moot after D50): a price is negotiated by phone or WhatsApp and paid by invoice. The shop has no offers either. | 2026-10-01 |
@@ -266,8 +265,8 @@ This file is how the owner sees progress without asking. **It is updated as work
 
 1. **Opening a phase:** only when every phase its heading **needs** is ✅ and fewer than three phases are open. Check its 👤 items are in hand first; a task that would stall waits in the phase rather than holding an agent.
 2. **Dispatching a task:** append `— 🔄 17·W2` (its phase and wave) to the task line and add its row to **Now**. A wave is dispatched only when every earlier wave of its phase is merged.
-3. **Finishing a subtask:** when an agent's report evidences it, tick it `[x]` **in this file in the main checkout** — never in a worktree's copy — and run `node scripts/progress.mjs`. Re-read the file just before each edit.
-4. **Finishing a task:** only when every subtask is ticked, its **Check** passed on merged `main` and `qa` has driven it. Tick the task line, replace `🔄 …` with `✅ YYYY-MM-DD <short sha>`, add one line to the top of **Log**, update **Now**.
+3. **Finishing a subtask:** when an agent's report evidences it, tick it **in this file in the main checkout** — never in a worktree's copy — with `pnpm tasks:tick <ids…>` (or tick `[x]` by hand). Re-read the file just before each edit. The board then syncs itself.
+4. **Finishing a task:** tick its **Check** subtask only when the Check passed on merged `main` and `qa` has driven it. **Once every subtask is ticked, the task closes itself:** the sync ticks the task line, replaces `🔄 …`/`⛔ …` with `✅ YYYY-MM-DD <HEAD's short sha>` (so tick right after the merge, or pass `--sha`), and drops its rows from **Now**. Add its line to the top of **Log** yourself. A ticked task with an open subtask fails `tasks:lint`.
 5. **Closing a phase:** when every task in it is ✅, `qa` opens the phase's **Done when** on merged `main` (a production build, a phone viewport) and the orchestrator logs `✅ phase N — <evidence>`. The stage gate later drives every phase of its stage again, together.
 6. **Blocked:** append `— ⛔ <reason>` (an owner item: `— ⛔ 👤 D14`), note it in **Now**, and move on to the next unblocked task or phase.
 7. **New work:** add it as a subtask, or as a new task at the end of its phase, with the next free id. A phase that would pass eight tasks or three waves gets a **new phase** instead, numbered after the last one and placed by its needs. **Never delete a task** — a dropped one gets `— ✂️ cut: <reason>` and stops counting.
@@ -709,22 +708,25 @@ run beside the build line rather than in it.
   - [x] 6.3.g the shop's register to *Anda* (S15): the 54 old-east-indies `id` values in *kamu*/*-mu*/*aku* (6.3.f's report lists them) and the emporium voice.md (§2, §6's first person, §8's S15 row, §9 questions 1–2, 10, 12); and both voice docs' VOC stance (the gallery's matches the shop's) and British spelling — merged 2026-10-01 (db741cb): 54 values + the test brand's 9 moved to *Anda*, 0 pronoun forms left
   - [x] 6.3.h field labels and hints, keyed by each C2 `EntryFieldVM.name` (`form-fields.ts`): `contact.*`, `business.*` (the `business.shopType` select's own label), `institution.*`, `proposal`, `description`, `photos`, `neededBy`, `lines.0.quantity`, `consent.application`, the fieldset legends, and `fieldRequiredWhen` — merged (db741cb): `lexicon/fields.ts` in each app; hint `<name>Hint`, legend by group
   - [x] 6.3.i the lists the contracts define that are still unkeyed — `Colouring`, `PlaceRole`, `ProfileVM.type`, `ConsentVM.purpose` analytics, `AppointmentPurpose`, `LOCATION_IMAGE_AREAS`, the consignment upload roles, `DirectorySurface` titles, `CollectionVM.kind` — and the listing chrome (Filters, Sort by, Apply, Clear all, Show {count} results, min/max) — merged (db741cb): gallery 587 keys, shop 562; `pnpm verify` green on main
-  - [ ] 6.3.j HAR: `@engine/i18n/copy`'s `pluralFormOf` reads a code named `other` (`objectType.other`, `return.reason.other`, `business.shopType.other`) as a plural form, so a stray `objectType.one` would pass the gate; a planted one fails it
+  - [x] 6.3.j HAR: `@engine/i18n/copy`'s `pluralFormOf` reads a code named `other` (`objectType.other`, `return.reason.other`, `business.shopType.other`) as a plural form, so a stray `objectType.one` would pass the gate; a planted one fails it — merged 2026-10-01 (25828e9): a plural set needs `base.other` with `{count}` and a sibling form; `plural-sets.test.ts` fails a planted `objectType.one`
   - [ ] 6.3.k after 6.4: cut or reword the keys D50, S3, S7 and S12 leave unused (6.3.g–i's report lists them: offers, cart, reserve, checkout, holds, a shown price; `madeToOrder`, refunds, PayPal, the "≈" estimate), and key the fixture fields still unlabelled by name (`message`, `conditionNotes`, `locationId`, `slotStart`, `email`, `password`, `orderNumber`, `whatsapp`, `frequency`, `consent.alerts`) or have C2 map them
-  - [ ] 6.3.l re-pad the 166 older `test` values to +30% over the longest real brand value, not the app default, so an overflow test fails where a brand would overflow
+  - [x] 6.3.l re-pad the 166 older `test` values to +30% over the longest real brand value, not the app default, so an overflow test fails where a brand would overflow — merged 2026-10-01 (a2aaea7): 292 values (en 133, id 13, nl 146) → 0 short; the 12 shell keys (`shell.*`, `home.*`, `notFound.*`) left as they are, since padding would fill locale names and `{brand}`
+  - [x] 6.3.m HAR: `check-brands` enforces the +30% rule, so each `test` lexicon value is at least ceil(1.3 ×) the longest real brand value for its key and locale (nl against the app default and the en values); a planted short value fails it — merged 2026-10-01 (1bfed8d): `overflow.mjs`, the test brand found by its per-storefront configs, the shell keys exempt; main passes (id 710, en 714, nl 575 values measured), a planted short value fails
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
 
 - [ ] **6.4 Replan from the owner's answers** · needs: 6.1.b — 🔄 6·W2
   - **Lane** ARC · **Agent** architect · **Wave** W2
   - **Owns** `docs/{EXPERIENCE-GALLERY,EXPERIENCE-SHOP,COMMERCE,PAYMENTS,ANALYTICS,COMPLIANCE,CONTENT-MODEL}.md`, `.claude/specs/indies-platform/{requirements,design}.md`, the contract files (C1–C13, ARC's)
-  - **Read** `docs/design/journeys/owner-answers.md`, TASKS.md Decisions D50, D45, D22, D47, D32 and Voice, the journeys, 6.3.f's contract notes (6.4.d)
+  - **Read** `docs/design/journeys/owner-answers.md`, TASKS.md Decisions D50, D51, D52, D54, D45, D22, D47, D32 and Voice, the journeys, 6.3.f's contract notes (6.4.d), the developer's input `.claude/specs/indies-platform/reviews/6.4-input-developer.md`
   - _Requirements: 6.1, 7.1_
   - [ ] 6.4.a D50 — the gallery enquiry-only: EXPERIENCE-GALLERY.md (the purchase panel's modes, no shown price, the invoice-and-pay path, the hold until the invoice is due), COMMERCE.md and PAYMENTS.md (the staff-issued invoice paid through the gateway — 24.5's order builder or a pay link — and what of reserve, cart and offers the gallery no longer uses), requirements.md's affected criteria, and C1/C2's purchase actions for an original
   - [ ] 6.4.b S3 and S7 — the shop sells within Indonesia at launch and from stock: EXPERIENCE-SHOP.md, COMMERCE.md §3, PAYMENTS.md §6 (PayPal at launch or not), the configurator's framed options against "everything in stock"
   - [ ] 6.4.c G10, G12, G13, S4, S5, S6, S12, S13 — what the docs promise: no institution named, first-party analytics in the admin dashboard (and whether GA4/Meta still fire after consent — a question back to the owner if the answer is not plain), the showroom's hours, pickup and QRIS, case-by-case partner terms, a separate online WhatsApp number, no refunds but a damaged print replaced, free shipping over Rp 500.000 and a welcome code
   - [ ] 6.4.d 6.3.f's contract notes: C2 `MessageVM` names `message.<code>`; `DeliveryPromiseVM.holiday` names `holidayDelay` `{holiday, date}`; whether a controlled list's label lives in the view model (`TermVM`, `FacetOptionVM.label`) or the app's lexicon — pick one; `lifeDates` keeps "c." for a circa date
-  - [ ] 6.4.e a proposed board diff for the orchestrator — which tasks and Done-when lines in phases 18, 19, 24, 32, 34, 35, 39 and 40 change, are cut (✂️) or are added, with ids; agents never edit TASKS.md
-  - [ ] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report.
+  - [ ] 6.4.e a proposed board diff for the orchestrator — which tasks and Done-when lines in phases 18, 19, 24, 25, 28, 29, 32, 33, 34, 35, 36, 38, 39 and 40 change, are cut (✂️) or are added, with ids; agents never edit TASKS.md
+  - [ ] 6.4.g D51 and D52 (the developer's input, gaps A–C): the gallery's `/pay/{token}` invoice page on our site with the Payment Element embedded — PAYMENTS.md §6 drops "Stripe Invoicing / Payment Links"; the gallery-checkout leftovers in 25.1.b–c (authorise-then-capture, Checkout Sessions against a lock), 28.1.c and 28.2.b/d (cart merge, my offers, holds, price requests), 33.1 (cart, checkout and order-lookup loaders, viewer-relative purchase states, `hold`/`quote` actions) and 38.2.b ("an accepted offer" → "a WhatsApp-negotiated invoice → a working pay page"); the shop's one stock pool across COMMERCE.md §4 and §8, EXPERIENCE-SHOP.md and 24.4
+  - [ ] 6.4.h D54 — no collector accounts on the gallery: requirements 13.1–13.2 and ARCHITECTURE.md §12 (customer auth for the shop's retailers only), EXPERIENCE-GALLERY.md §5, §8, §10 (no account area; the wishlist cut or browser-only; want-lists by email), COMMERCE.md and C6/C10 (no session-scoped `OfferAccess`/`AppointmentAccess` on the gallery; the viewing changed by its link), MIGRATION.md §5 and the redirect map (customers as staff-side records, no claim flow or 12-month purge of unclaimed accounts; `/account/*` answered, not mirrored); the board diff covers 28.1.b–c and 28.1.e (collectors, the claim flow, cart merge), 28.2 (the gallery half), 29, 33.3.d, 34.2.c and 36
+  - [ ] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, a payment page hosted by the provider, several shop stock locations, a gallery sign-in or account, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report.
 
 ---
 
@@ -734,12 +736,12 @@ run beside the build line rather than in it.
 **Done when:** the owner's export (or, with the owner's OK, a read-only public read) is restored with its schema documented; dates, dimensions, grades, prices and titles parse with a fixture test per dirty-data case and a review file for the rest; every Squarespace path is inventoried; nothing was done to the old sites.
 **Waves:** W1 — 7.1, 7.3 · W2 — 7.2 · W3 — 7.4, 7.5
 
-- [ ] **7.1 👤 Receive the old catalogue export** · needs: 2.1 — 🔄 7·W1
+- [x] **7.1 👤 Receive the old catalogue export** · needs: 2.1 — ✅ 2026-10-01 89bf351
   - **Lane** MIG · **Agent** senior-integrator (MIG-A) · **Wave** W1
   - **Owns** `engine/packages/migrate/{package.json,tsconfig.json,vitest.config.ts,README.md,src/index.ts}` (the package scaffold), `pnpm-lock.yaml` (through `pnpm install` only), `engine/packages/migrate/src/sources/{laravel-catalogue,public-read}/**`, `indies-gallery/content/legacy/{schema,inventory}/**` (committed notes and the URL inventory; raw extracts stay in `LEGACY_DATA_DIR`, outside git)
   - **Read** MIGRATION.md §1–3
   - _Requirements: 16.1, 16.5_
-  - [ ] 7.1.a 👤 The owner asks whoever hosts the old site for a MySQL dump and the product-images folder, and hands them over — we never log in to, fix or change the old site
+  - [x] 7.1.a 👤 The owner asks whoever hosts the old site for a MySQL dump and the product-images folder, and hands them over — we never log in to, fix or change the old site — **simulated (D53)**: the mock dump (7.1.f) stands in; the real dump goes through in 36.3.e
   - [x] 7.1.b restore + schema discovery notes (tables → collections)
   - [x] 7.1.c A read-only, rate-limited reader of the old site's public pages and sitemap — run only with the owner's OK — that gathers the old URL list for verification
   - [x] 7.1.e the `@engine/migrate` package scaffold (package.json, tsconfig, vitest config, README, `src/index.ts`) in the workspace, `pnpm verify` green with it
@@ -756,34 +758,36 @@ run beside the build line rather than in it.
   - [x] 7.2.c The review file — raw value beside the proposal — for everything below confidence
   - [x] 7.2.d **Check:** dates, dimensions, condition grades, prices, references and titles (hook vs original, SEO suffixes removed) parse from the real extract, with a fixture test per dirty-data case listed in MIGRATION.md, and everything below confidence goes to a review file with raw value beside proposal.
 
-- [ ] **7.3 Old East Indies legacy URL discovery** · needs: 2.1 — 🔄 7·W1
+- [x] **7.3 Old East Indies legacy URL discovery** · needs: 2.1 — ✅ 2026-10-01 4a3168a
   - **Lane** MIG · **Agent** medior (MIG-B) · **Wave** W1
   - **Owns** `engine/packages/migrate/src/sources/csv-products/**`, `old-east-indies/content/legacy/**`
   - **Read** MIGRATION.md §10
   - _Requirements: 16.6_
-  - [ ] 7.3.a URL discovery (CDX + Search Console export 👤)
+  - [x] 7.3.a URL discovery (CDX + Search Console export 👤) — CDX and the archived sitemap real; the Search Console half **simulated (D53)** on a synthetic export; the real one goes through in 36.2.c
   - [x] 7.3.c the Wayback CDX half now — every archived `oldeastindies.com` path inventoried — and an importer for the Search Console CSV (OA11), tested on a synthetic CSV, ready for the owner's export
   - [x] 7.3.d the two archived `/sitemap.xml` captures (2024-06-24, 2024-08-08) read through Wayback playback on web.archive.org — never the old site — as a third source, since the CDX index holds only 4 Squarespace product paths; the owner's OK is D43
-  - [ ] 7.3.b **Check:** every Squarespace path from the Search Console export and the Wayback CDX index is inventoried in `old-east-indies/content/legacy/`, and nothing was done to the old site.
+  - [x] 7.3.b **Check:** every Squarespace path from the Search Console export and the Wayback CDX index is inventoried in `old-east-indies/content/legacy/`, and nothing was done to the old site.
 
-- [ ] **7.4 Wire the migrate package** · needs: 7.2, 7.3.c — 🔄 7·W3
+- [x] **7.4 Wire the migrate package** · needs: 7.2, 7.3.c — ✅ 2026-10-01 2014f2c
   - **Lane** MIG · **Agent** junior (MIG-A) · **Wave** W3
-  - **Owns** `engine/packages/migrate/{package.json,src/index.ts}`, `engine/packages/migrate/src/sources/csv-products/index.ts`, `engine/packages/migrate/src/normalise/{price.ts,tables.ts,types.ts}`, `pnpm-lock.yaml` (through `pnpm install` only)
+  - **Owns** `engine/packages/migrate/{package.json,src/index.ts}`, `engine/packages/migrate/src/sources/{csv-products,laravel-catalogue}/index.ts`, `engine/packages/migrate/src/normalise/{price.ts,tables.ts,types.ts}`, `engine/packages/migrate/src/normalise/test/**` (7.4.d), `pnpm-lock.yaml` (through `pnpm install` only)
   - **Read** `engine/packages/migrate/README.md`, `src/normalise/README.md`, CONTRACTS.md (C1 `CURRENCY_EXPONENT`, C2 `FuzzyDateVM`/`SizeVM`, C5 `Money`), the 7.1–7.3 Log entries
   - _Requirements: 16.2_
-  - [ ] 7.4.a the `./normalise` export and a `legacy:normalise` script; `src/index.ts` re-exports the normalisers and both source adapters; `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves
-  - [ ] 7.4.b `@engine/config` as a `workspace:*` dependency — currency exponents come from `CURRENCY_EXPONENT`, the tables' exponent field removed — and `@engine/view-models` type-only, with a compile-time check that the normalisers' date, size and price shapes are C2/C5's
-  - [ ] 7.4.c **Check:** `pnpm verify` green; `pnpm --filter @engine/migrate legacy:normalise public-read` reproduces 7.2's counts on the 1,823 crawled records; a type test fails when a normaliser shape drifts from C2/C5.
+  - [x] 7.4.a the `./normalise` export and a `legacy:normalise` script; `src/index.ts` re-exports the normalisers and both source adapters; `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves
+  - [x] 7.4.e `laravel-catalogue/index.ts`, so `@engine/migrate/sources/laravel-catalogue` resolves as the package README says
+  - [x] 7.4.b `@engine/config` as a `workspace:*` dependency — the tables' currency exponents **pinned to `CURRENCY_EXPONENT` by a drift test** and the currency typed `CurrencyCode` (type-only import), since plain Node cannot load `@engine/config/constants` at runtime (extensionless imports; 7.4's report) — and `@engine/view-models` type-only, with a compile-time check that the normalisers' date, size and price shapes are C2/C5's
+  - [x] 7.4.d a named fixture test for each dirty-data case MIGRATION.md §4 gained in 7.5 — sizes in both orders, `G-`, the extra SKU prefixes and `DavDw`, technique words in the colour field, a sold page's "-" price, `Year: null` beside a dated panel, a maker in the place slot — and "SKUs in two patterns" renamed to match the doc
+  - [x] 7.4.c **Check:** `pnpm verify` green; `pnpm --filter @engine/migrate legacy:normalise public-read` reproduces 7.2's counts on the 1,823 crawled records; a type test fails when a normaliser shape drifts from C2/C5.
 
-- [ ] **7.5 MIGRATION.md from the real data** · needs: 7.1.d, 7.2, 7.3.d — 🔄 7·W3
+- [x] **7.5 MIGRATION.md from the real data** · needs: 7.1.d, 7.2, 7.3.d — ✅ 2026-10-01 6fab928
   - **Lane** ARC · **Agent** junior · **Wave** W3
   - **Owns** `docs/MIGRATION.md` (§1, §4, §6, §10 only)
   - **Read** the 7.1, 7.2 and 7.3 Log entries; `indies-gallery/content/legacy/{schema,inventory}/README.md`, `old-east-indies/content/legacy/README.md`, `engine/packages/migrate/src/normalise/README.md`
   - _Requirements: 16.2, 16.5, 16.6_
-  - [ ] 7.5.a §1 and §6: `/sitemap.xml` answers 404; the maker pages `/mapmaker/{id}-{slug}` and `/new-additions`'s queries in the route list; the image size variants under the `/storage/products/*` rule; 1,823 distinct public products (the ≈2,090 double-counted categories)
-  - [ ] 7.5.b §4: the dirty data the real records showed — sizes typed in both orders (orientation from the image), `G-`, more SKU prefixes than two, technique words in the colour field, sold pages without a price, the circa range C2 cannot hold (flagged for ARC)
-  - [ ] 7.5.c §10: the shop's two platforms before Linktree (SIRCLO 2020–21, Squarespace 2022–24), the archived sitemap as a source (D43), Search Console (OA11) for what neither holds
-  - [ ] 7.5.d **Check:** each statement in §1, §4, §6 and §10 matches a Log entry or a committed README, with no number the evidence does not carry; `pnpm verify` green.
+  - [x] 7.5.a §1 and §6: `/sitemap.xml` answers 404; the maker pages `/mapmaker/{id}-{slug}` and `/new-additions`'s queries in the route list; the image size variants under the `/storage/products/*` rule; 1,823 distinct public products (the ≈2,090 double-counted categories)
+  - [x] 7.5.b §4: the dirty data the real records showed — sizes typed in both orders (orientation from the image), `G-`, more SKU prefixes than two, technique words in the colour field, sold pages without a price, the circa range C2 cannot hold (flagged for ARC)
+  - [x] 7.5.c §10: the shop's two platforms before Linktree (SIRCLO 2020–21, Squarespace 2022–24), the archived sitemap as a source (D43), Search Console (OA11) for what neither holds
+  - [x] 7.5.d **Check:** each statement in §1, §4, §6 and §10 matches a Log entry or a committed README, with no number the evidence does not carry; `pnpm verify` green.
 
 ---
 
@@ -791,9 +795,9 @@ run beside the build line rather than in it.
 
 **Goal:** the discovery vocabulary, the works collection and the media and masters collections.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
-**Waves:** W1 — 8.1, 8.3 · W2 — 8.2
+**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2
 
-- [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
+- [x] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{makers,places,terms,sources}/**`, their validators
   - **Read** CONTENT-MODEL.md §3, ARCHITECTURE.md §8, EXPERIENCE-GALLERY.md §2
@@ -806,7 +810,7 @@ run beside the build line rather than in it.
 
 - [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
-  - **Owns** `engine/packages/cms/src/collections/works/**`, `validators/work-*.ts`, `hooks/work-*.ts`
+  - **Owns** `engine/packages/cms/src/collections/works/**`, `validators/work-*.ts`, `hooks/work-*.ts`, and a `beforeDelete` hook in each of `collections/{makers,places,terms,sources}/` (8.2.g)
   - **Read** CONTENT-MODEL.md §1, §9; COMPLIANCE.md §1, §8
   - _Requirements: 3.1, 3.2, 3.3, 3.7, 3.8, 3.9, 3.10, 3.11_
   - [ ] 8.2.a fields and groups (collation, dimensions in mm, condition with the grade as a `terms(grade)` reference, references, provenance, images with roles, master, rights, **physical with no defaults** — location and export status stay blank until the item register sets them — origin, cataloguing, the `book` group for books and atlases, legacy, seo); the print ceiling lives on designs, not works
@@ -814,9 +818,10 @@ run beside the build line rather than in it.
   - [ ] 8.2.c publish guard (title, object type, date, primary place or maker, primary image with alt, grade for originals, verified AI fields) — a blank location or export status **never blocks publishing**; it makes the item enquiry-only (Req 16.8)
   - [ ] 8.2.d field-level access for `physical`; read-only guard for synced fields on copies; `publishedOrStaff` read access
   - [ ] 8.2.e `afterChange` / `afterDelete` → `@engine/cache`'s `invalidate(tags)` (4.8) for the work and everything that lists it, run after the commit: `after()` inside a request, the caller's collector outside one (ARCHITECTURE.md §9)
+  - [ ] 8.2.g a reference-safe delete: a maker, place, term or source a work still references is refused with "still used by N works" — Payload's relationship tables would otherwise drop the credit silently (8.1 review, senior-be)
   - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
-- [ ] **8.3 Media and masters** · needs: 3.2 — 🔄 8·W1
+- [x] **8.3 Media and masters** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
   - **Lane** MED · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{media,masters}/**` (by agreement with SCH), `engine/packages/media/src/storage/**`
   - **Read** ARCHITECTURE.md §7, CONTENT-MODEL.md §6, KOI CONTENT-MODEL Media
@@ -828,6 +833,18 @@ run beside the build line rather than in it.
   - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
   - [x] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
+
+- [ ] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — 🔄 8·W1
+  - **Lane** ARC · **Agent** architect · **Wave** W1
+  - **Owns** `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT}.md`, `engine/packages/media/src/{contract.ts,contract/**}` (C9), `docs/PARALLEL-TRACKS.md` §1 (the cms tests line)
+  - **Read** the two reviews (`.claude/specs/indies-platform/reviews/8.1-senior-be.md`, `8.3-senior-integrator.md`), CONTRACTS.md (versioning), ARCHITECTURE.md §7, CONTENT-MODEL.md §3, §6, DEPLOYMENT.md §2, §8
+  - _Requirements: 4.3, 4.6_
+  - [ ] 8.4.a C9 minor version: `iiifFullKey` names a private `iiif-full/` prefix in the brand's own media bucket (both brands — the outlet's masters key writes only `print-files/`), with its changelog entry; `isPublicMediaKey` stays false for it
+  - [ ] 8.4.b a synthetic image's label is added at render from `provenance` (lexicon `image.syntheticAlt.*`), never stored in `alt`: CONTENT-MODEL.md §6 and C9 reworded ("rendered alt text"), so a cataloguer cannot delete it
+  - [ ] 8.4.c `media` is read by the loaders only (Local API): public REST and GraphQL reads of `media` are refused — ARCHITECTURE.md §7, CONTENT-MODEL.md §6
+  - [ ] 8.4.d DEPLOYMENT.md §2/§8: a media bucket is public only under `derivatives/` and `iiif/`, uploads private under `uploads/`; the bucket policies are applied from `@engine/media`'s plan files with each host's keys from its secrets; a CDN never bypasses the bucket policy; the masters bucket's CORS admits the admin origin; the archive's delete-capable key is separate from the web process's; worktrees may use the plan's scoped keys locally
+  - [ ] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
+  - [ ] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
 
 ---
 
@@ -1109,6 +1126,7 @@ run beside the build line rather than in it.
   - [ ] 15.1.a The derivative job: AVIF + WebP at 320/640/1024/1600/2400 px and a blur placeholder, with `sharp` concurrency capped
   - [ ] 15.1.b Queue wiring through `@engine/media/jobs` (run by `/api/x/cron/jobs`), with the job's status on the media record
   - [ ] 15.1.c A custom `next/image` loader that picks from the ladder
+  - [ ] 15.1.e `sharp`'s `limitInputPixels` kept on (a decompression bomb refused) and its concurrency capped; Payload's `adminThumbnail` set to a derivative, so the admin list never loads full originals (8.3 review)
   - [ ] 15.1.d **Check:** an upload produces AVIF + WebP at 320/640/1024/1600/2400 and a blur placeholder via a Payload job with a concurrency cap, and a custom `next/image` loader picks from the ladder.
 
 - [ ] **15.2 IIIF tiling — the queue job and the bulk CLI** · needs: 15.1
@@ -1118,7 +1136,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.2_
   - [ ] 15.2.a the tiler (pure, shared by both paths) and the queue job
   - [ ] 15.2.b the off-box CLI with resume, a dry run and a per-item report
-  - [ ] 15.2.c **Check:** `sharp().tile({ layout: 'iiif3', size: 512 })` writes Level 0 tiles and `info.json` to the brand bucket; **public tiles stop at the configured resolution cap** while the full-resolution pyramid goes to the private prefix; the queue job (new uploads, `sharp.concurrency` capped, run by `/api/x/cron/jobs`) is idempotent and retried and the media record shows its status; and `pnpm media:tile` tiles a batch **off-box** — on a workstation or CI runner, straight to the bucket, resumable, updating records through the API — for the migration (36.3).
+  - [ ] 15.2.c **Check:** `sharp().tile({ layout: 'iiif3', size: 512 })` writes Level 0 tiles and `info.json` to the brand bucket; **public tiles stop at the configured resolution cap** while the full-resolution pyramid goes to the private `iiif-full/` prefix of the brand's own media bucket (C9, 8.4.a), anonymously 403; the queue job (new uploads, `sharp.concurrency` capped, run by `/api/x/cron/jobs`) is idempotent and retried and the media record shows its status; and `pnpm media:tile` tiles a batch **off-box** — on a workstation or CI runner, straight to the bucket, resumable, updating records through the API — for the migration (36.3).
 
 - [ ] **15.3 IIIF Presentation manifests** · needs: 8.2, 15.2
   - **Lane** MED · **Agent** medior · **Wave** W3
@@ -1134,7 +1152,7 @@ run beside the build line rather than in it.
   - **Owns** `engine/packages/media/src/masters/**`
   - **Read** ARCHITECTURE.md §7, MIGRATION.md §9
   - _Requirements: 4.3, 4.4_
-  - [ ] 15.4.a The presigned-PUT upload flow into the private bucket, recording pixels, ppi, colour profile and checksum
+  - [ ] 15.4.a On the presigned-PUT flow 8.3.b built (key, length and SHA-256 signed; checksum recorded): measure and record the stored master's pixels, ppi and colour profile
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
   - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
@@ -2152,16 +2170,18 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Read** MIGRATION.md §10
   - _Requirements: 16.6_
   - [ ] 36.2.a mapping + CSV importer + redirects
+  - [ ] 36.2.c 👤 the real Search Console export (OA11) through `legacy-urls import-gsc`, the inventory rebuilt and committed (D53)
   - [ ] 36.2.b **Check:** every Squarespace path from Search Console and the Wayback CDX index maps to a product or collection; the old gallery's "Buy Reproduction" target (one home page for every button) redirects like any other URL, since the new item pages link to exact products themselves (27.1); and the owner's product list imports through `csv-products`.
 
 - [ ] **36.3 The loader and the item register** · needs: 9.4, phase 10, 15.1, 15.2, 36.1
   - **Lane** MIG · **Agent** senior-integrator (MIG-B) · **Wave** W2
-  - **Owns** `engine/packages/migrate/src/{load,register}/**`
+  - **Owns** `engine/packages/migrate/src/{load,register}/**`, `indies-gallery/content/legacy/schema/**` (36.3.e)
   - **Read** MIGRATION.md §4–5, §9, COMPLIANCE.md §1, CONTENT-MODEL.md §1, §6
   - _Requirements: 16.1, 16.4, 16.8, 19.2_
   - [ ] 36.3.a 👤 the owner's item register — location and export status per stock number (D24)
   - [ ] 36.3.b register importer with a mismatch report (unknown stock numbers, conflicting rows)
   - [ ] 36.3.c the batch loader and the off-box tiling run — the loader collects its cache tags on Payload's `req.context` and flushes them once per committed batch (`@engine/cache`), never per row
+  - [ ] 36.3.e 👤 the real MySQL dump and images (OA9) through the 7.1 harness — `legacy:mysql restore`, `schema --notes`, `tables`, the SQL extracts from the mock's queries, `extract`, `destroy` — then `legacy:normalise catalogue` over it; the schema notes checked against the real columns (D53)
   - [ ] 36.3.d **Check:** works and products upsert idempotently by legacy id in batches of 500 with a dry-run diff, as drafts, with `publicId = legacy id` and stock numbers preserved; **the item register** sets each original's stock location and export status by stock number — an original with no row keeps both blank and publishes enquiry-only, and the report lists them; images are tiled **off-box** by `pnpm media:tile` (15.2.b) straight to the bucket, each with the **deterministic alt-text baseline** built from its record (CONTENT-MODEL.md §6) so the publish guard can pass; customers are created with a random, unusable password for the claim flow; subscribers keep recorded consent; legacy orders import read-only; wishlists become saved items or want-lists.
 
 - [ ] **36.4 Redirects and the legacy handler** · needs: 4.1.f, 9.3, 36.1
@@ -2361,6 +2381,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.2.a the shop's production target — its secrets in Infisical from the start (D49: project `old-east-indies`, environments `staging` and `production`; copy staging's from Helios then)
   - [ ] 41.2.b the gallery's production target — provisioned early and kept dark for 42.7; its secrets in Infisical (D49: project `indies-gallery`, environments `staging` and `production`)
   - [ ] 41.2.c backups, the restore drill and monitoring for both — the 5xx rate sets apart, as its own series, a `500` whose path is under `^/(brand-assets|api/x)/` and contains `%` (DEPLOYMENT.md §7: Next's own answer to a path it cannot decode, ARCHITECTURE.md §13), ticketed past a rate and never paging; measured through CloudPanel's nginx, which may answer a malformed escape with its own 400 first
+  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`
   - [ ] 41.2.d **Check:** both production targets are provisioned with the owner's go-ahead, nightly dumps and storage replication run, a timed restore drill of one brand is recorded, and alerts (p95, 5xx, disk 80%, restart loop, job lag, outbox lag, webhook signature failures) fire in a test, while a planted `500` on an undecodable `/brand-assets/` path lands in its own series and pages no one, and a real `500` elsewhere still pages.
 
 ---
@@ -2544,13 +2565,14 @@ agents are assigned then.
 - [ ] v2.9 The full "Print from the Archive" range and the gallery-wall builder — _Requirements: 7.7_
 - [ ] v2.10 Personalised old maps of Indonesian towns — _Requirements: 7.2_
 - [ ] v2.11 Loyalty and referrals; showroom visits earning points — _Requirements: 13.7_
-- [ ] v2.12 A showroom till on the same stock (QRIS) — _Requirements: 9.1_
+- [ ] v2.12 A showroom till on the same stock (QRIS) — _Requirements: 9.1_ — ✂️ cut: folded into v2.19 (D52)
 - [ ] v2.13 Marketplace sync through an omnichannel hub (Jubelio/Ginee), merchandise only — _Requirements: 3.1_
 - [ ] v2.14 Georeferenced then/now overlays (Allmaps, IIIF) — _Requirements: 4.2_
 - [ ] v2.15 The Parry cartobibliography online — _Requirements: 3.5_
 - [ ] v2.16 A verifiable QR certificate of authenticity — _Requirements: 10.5_
 - [ ] v2.17 Image licensing for institutions and publishers — _Requirements: 4.3_
 - [ ] v2.18 Print-on-demand abroad: Prodigi and Gelato adapters behind the 26.3 router, switched on with `fulfilment.pod` (D23) — _Requirements: 12.4, 12.5_
+- [ ] v2.19 **The Bali shops on our engine — the POS** (D52): the hundreds of shops as stock locations with their own logins; a till screen they sell from (QRIS); stock shared with the website in real time; each shop's ownership model (wholesale, consignment, branch) and its settlement; replacing today's WhatsApp reporting. Overlaps v2.7's trade portal for the same partners — the two may merge when scheduled — _Requirements: 9.1, 7.8_
 
 ---
 
@@ -2626,11 +2648,18 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — **The board syncs itself.** `scripts/progress.mjs` (now `scripts/board/{sync,table,run}.mjs`) closes every task whose subtasks are all ticked (`- [x] … — ✅ <today> <HEAD sha>`, its 🔄/⛔ dropped), removes its **Now** rows and rebuilds the table. It runs from the git pre-commit hook on any commit that includes TASKS.md (a post-commit hook keeps the index right after `git commit TASKS.md -m …`), from a Claude Code PostToolUse hook after any edit to TASKS.md (`.claude/settings.json`), and by hand as `pnpm tasks:sync` / `pnpm tasks:tick <ids…>`; `pnpm verify` runs `tasks:check`, which fails on a stale board. Hooks install on `pnpm install` (`core.hooksPath=.githooks`); an agent worktree's copy is never rewritten. New lint rule: a ticked task with an open subtask. 21 tests in `scripts/board/`, the hooks driven end to end in a throwaway repository. Rules 3 and 4 above, DISPATCH.md, PARALLEL-TRACKS.md §3 and CONVENTIONS.md updated.
+- 2026-10-01 — **D54: no collector accounts on the gallery** (the developer: "this is simply buy and sell") — sign-in for the shop's retailers only; want-lists by email; the old customers import as staff-side records with no claim flow. New 6.4.h; 6.4's board diff now covers phases 29 and 36 too. The developer keeps the 44 phases and runs them one at a time (quota) — no consolidation pass.
+- 2026-10-01 — ✅ **phase 7** — the old catalogue and the shop's URL discovery, on simulation and seed (D53). Evidence on `main`: the restore harness on the mock dump (`restore.integration.test.ts`, 15 tables, 240 rows) with its schema notes; the read-only public read (D41) — 1,823 products (1,607 listed, 216 sold), 2,289 images, 7,665 URLs inventoried, paths only; the normalisers over all 1,823 records with a fixture test per MIGRATION.md §4 case and the review file (2,323 rows, raw beside proposal); the shop's 673 legacy paths from the Wayback CDX index and the archived sitemaps (D43), the Search Console importer proven on a synthetic export; nothing done to either old site beyond GETs (the enquiry-address incident logged under 7.1). 7.1.a and 7.3.a closed as simulated; the real dump (OA9) and Search Console export (OA11) go through the built harness in 36.3.e and 36.2.c. Phase 7's slot is free.
+- 2026-10-01 — ✅ 7.4 — merged to `main` (2014f2c, branch 6769232); `pnpm verify` green on `main` at cfa05c3 (1,559 tests; a first run went red with four 60 s timeouts and two `check-brands` errors because two gate runs overlapped — the clean single run is green). `legacy:normalise public-read` on `main` reproduces 7.2's counts exactly (2,323 review rows). `@engine/migrate` exports `./normalise` and every source adapter; C1/C2/C5 shapes checked by `contracts.test-d.ts` (planted drifts fail tsc); the tables' exponents restated as `ENGINE_CURRENCY_EXPONENT`, typed `typeof CURRENCY_EXPONENT` and checked against C1 by `exponents.test.ts`; `dirty-data-crawl.test.ts` names each §4 case 7.5 added. Found: a maker's name in the place slot is **not** caught yet (pinned as "NOT caught yet"; the fix is in `record.ts`/`vocabulary.ts`); lower-case `p.` stock numbers go to review; a tables file setting another currency must restate its exponent. Follow-ups: MIG — send a maker in the place slot to review, update the package README (`./normalise`, `laravel-catalogue`); ARC — make `@engine/config/constants` loadable by plain Node (extensions) so the restated exponents can go, and the circa-range shape; curator — lower-case `p.` (36.1).
+- 2026-10-01 — **The developer's input to 6.4** (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`): **D51** — the gallery's negotiation runs on WhatsApp and its invoice is paid on our own `/pay/{token}` page, never one hosted by Stripe; **D52** — the shop's stock is one pool at launch (hundreds of Bali shops report over WhatsApp; per-shop stock waits for the POS, new v2.19, which absorbs v2.12 ✂️). 6.4 widened: its board diff now covers phases 25, 28, 33 and 38 too, new 6.4.g, its Check names the provider-hosted pay page and several stock locations.
+- 2026-10-01 — 7.4 reported partial (2a14caa): 7.4.a ticked (`./normalise` export, `legacy:normalise`, `src/index.ts`, `csv-products/index.ts` as typed data — `.mjs` cannot be re-exported with `allowJs` false); C2 type checks in `contracts.test-d.ts` fail on planted drift; `legacy:normalise` reproduces 7.2's counts exactly. **Blocked:** `node --experimental-strip-types` cannot load `@engine/config/constants` (its `index.ts` imports `./currencies` without an extension). Orchestrator's call: 7.4.b reworded — the exponents stay in the tables, pinned to `CURRENCY_EXPONENT` by a vitest drift test, and the currency is typed `CurrencyCode` by a type-only import (stripped at run time) — no change to the config package. Found for ARC/HAR: any strip-types CLI that imports an engine package at run time hits the same wall (`.ts` extensions in `config/src/constants`, or a resolver hook, is the general fix). Added 7.4.e (`laravel-catalogue/index.ts`). 7.4.d (fixture tests for §4's new cases) had not reached the agent; sent back with 7.4.b/e.
+- 2026-10-01 — ✅ 7.5 — merged to `main` (6fab928, branch b9cddc0); doc-only, tasks-lint and brand-literals green. MIGRATION.md §1 (sitemap 404; 1,823 distinct products, the ≈2,090 category sum double-counting; the maker route — **127 makers**, 813 URLs, which corrects this Log's "305", the fetched count; `/new-additions` queries; image size variants), §4 (the dirty data the real records showed; the circa range open for ARC), §6 (redirect rows for maker pages, `/new-additions`, image variants), §10 (SIRCLO 2020–21 then Squarespace 2022–24; 673 paths; the archived sitemap; Search Console fills the rest). Each statement traced to a Log entry, a committed README or the committed inventory; details seen only in the raw crawl kept without their numbers. Follow-ups: 7.4.d added — fixture tests for §4's new cases (given to 7.4's agent); for 6.4/ARC, the preamble's "Old East Indies has no website, so it starts clean" contradicts §10, and §9's "any Squarespace export" could name SIRCLO; Markdown is outside `format:check`.
 - 2026-10-01 — 6.1.f (a8d6dee), 6.2.h (b7754af) and 6.3.g–i (db741cb) merged; `pnpm verify` green on main (1544 tests; copy 587 gallery / 562 shop keys). The shop speaks *Anda*; J-G6 retired for J-G8, the negotiated invoice; the making is photographed in the Denpasar showroom. 6.4 (ARC) stopped on the session usage limit and resumes with the developer's input. Follow-ups 6.1.i, 6.2.i, 6.3.k–l.
 - 2026-10-01 — **7·W3 added and dispatched** — 7.4 (wire `@engine/migrate`: the normalise export, `@engine/config` exponents, C2/C5 type checks, `csv-products/index.ts`) and 7.5 (MIGRATION.md §1/§4/§6/§10 from what the real data showed), from 7.1–7.3's follow-ups. Phase 9 cannot open: phases 6, 7 and 8 are open (three).
 - 2026-10-01 — ✅ 7.2 — merged to `main` (7968cf9, branch 2e768b1); `pnpm verify` green on the merge (1,544 tests). Parsers for dates (C2 fuzzy date), dimensions (whole mm), orientation (from the photograph), condition (D10), price (C5 Money from the digit text — never a float, never rounded; extra decimals go to review), references, titles (hook vs original, SEO suffixes moved out), stock numbers, colour, maker, place, categories; each returns raw + proposal + confidence, a value only at ≥ 0.9. 165 tests, one named per MIGRATION.md §4 case. Re-run on `main` over the 1,823 crawled records with neutral defaults: 2,323 review rows (1,806 of them colour, which has no store wording yet); with the proposed store tables 1,239. Found for ARC/MIGRATION.md §4: sizes typed in both orders (586 width-first, 835 height-first — orientation must come from the image); D10's A–D equivalents defined nowhere; the store also used `G-` (27); more SKU prefixes than two (B., IM., PM., lowercase p.); the Color field mixes technique words; sold pages show no price (189 — only the export has them); C2 cannot hold a circa range ("ca. 1690-1700"). Follow-ups: the store's normaliser tables `indies-gallery/content/legacy/mapping/normalise.json` (grade aliases, boilerplate, SEO suffixes, SKU prefixes, 21 colour mappings) for the curator with 36.1 (OA12); `./normalise` export + `legacy:normalise` script + `@engine/config` dep so exponents come from `CURRENCY_EXPONENT` (MIG); the circa-range shape (ARC); the curator to publish D10's A–D equivalents and rule on G-/VG-; run `cli.ts catalogue` on the real dump when OA9 arrives.
 - 2026-10-01 — **7·W2 dispatched**: 7.2 (medior, lane MIG-A, `feat/p7-mig-a` reused, fast-forwarded to main). Its needs changed from 7.1 to **7.1.d** — 7.1 cannot close until the owner's dump (OA9) arrives, and 7.2 needs only the extract, which exists (1,823 crawled records + the mock's `products.jsonl`).
-- 2026-10-01 — 7.1 merged to `main` (89bf351, branch 5ed1de7); `pnpm verify` green on the merge (1,379 tests, every check ok). 7.1.b, c, d, e, f ticked: `@engine/migrate` in the workspace; the restore harness took the mock (15 tables, 240 rows, synthetic, `example.invalid` only) into a throwaway `mysql:8.4` and extracted it by SQL (`restore.integration.test.ts`, opt-in `MIGRATE_MYSQL_IT=1`, 23 s, container removed); the public read per D41 — 4,083 GETs (≥2 s apart, robots obeyed, no 429/5xx/403), **1,823 products (1,607 listed, 216 sold), 2,289 original images, 98 categories, 7,665 URLs** inventoried in `indies-gallery/content/legacy/inventory/urls.tsv` (paths only; raw 3.2 GB in `LEGACY_DATA_DIR`). **Incident, reported to the owner:** the first run's link discovery followed the enquiry form's address from an inline script 19 times with GET; the site answered 405 each time, nothing was submitted; fixed (script-found URLs never followed unless images; `enquire`/`request`/`subscribe` on the never-list; a test plants one). Found for MIGRATION.md §1/§6: `/sitemap.xml` now 404; maker pages `/mapmaker/{id}-{slug}` (305) missing from the route list; image size variants `{p}-{i}S/M.jpg` need the `/storage/products/*` rule; "≈2,090 listed" double-counts overlapping categories — the site has 1,823 distinct. Follow-ups: a CI job for `MIGRATE_MYSQL_IT=1` (HAR); `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves (MIG-B); redirects for maker pages, image variants and `/new-additions` queries (36.x); the owner's call on soft-deleted items (36.x). 7.1.a waits on OA9.
+- 2026-10-01 — 7.1 merged to `main` (89bf351, branch 5ed1de7); `pnpm verify` green on the merge (1,379 tests, every check ok). 7.1.b, c, d, e, f ticked: `@engine/migrate` in the workspace; the restore harness took the mock (15 tables, 240 rows, synthetic, `example.invalid` only) into a throwaway `mysql:8.4` and extracted it by SQL (`restore.integration.test.ts`, opt-in `MIGRATE_MYSQL_IT=1`, 23 s, container removed); the public read per D41 — 4,083 GETs (≥2 s apart, robots obeyed, no 429/5xx/403), **1,823 products (1,607 listed, 216 sold), 2,289 original images, 98 categories, 7,665 URLs** inventoried in `indies-gallery/content/legacy/inventory/urls.tsv` (paths only; raw 3.2 GB in `LEGACY_DATA_DIR`). **Incident, reported to the owner:** the first run's link discovery followed the enquiry form's address from an inline script 19 times with GET; the site answered 405 each time, nothing was submitted; fixed (script-found URLs never followed unless images; `enquire`/`request`/`subscribe` on the never-list; a test plants one). Found for MIGRATION.md §1/§6: `/sitemap.xml` now 404; maker pages `/mapmaker/{id}-{slug}` (127 makers; 305 was the fetched count — corrected by 7.5) missing from the route list; image size variants `{p}-{i}S/M.jpg` need the `/storage/products/*` rule; "≈2,090 listed" double-counts overlapping categories — the site has 1,823 distinct. Follow-ups: a CI job for `MIGRATE_MYSQL_IT=1` (HAR); `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves (MIG-B); redirects for maker pages, image variants and `/new-additions` queries (36.x); the owner's call on soft-deleted items (36.x). 7.1.a waits on OA9.
 - 2026-10-01 — **OA2 answered** (`docs/design/journeys/owner-answers.md`): the gallery becomes **enquiry-only** — no price shown, no cart, reserve or online offer; staff invoice an agreed price and the buyer pays it through the site's gateway (**D50, superseding D30**; D45, D22 answered); the shop sells **within Indonesia only at launch** and from stock (D47), partner terms case by case (D32), *Anda* (S15). New task **6.4** (ARC) replans the docs and contracts and returns a board diff; 6.1.b ticked. **6.3.f** merged (3e28ed2) — the contracts' value lists keyed, `pnpm verify` green on main; follow-ups 6.3.g–j. **6.2.f**'s Indonesian guides merged (19f69e6); follow-ups 6.2.g–h. `docs/gates/foundation/staging-drive.json` prettier-formatted (c8b9141, data unchanged) — `format:check` was red on main.
 - 2026-10-01 — ✅ **phase 5** and **M0** — both brand shells live on staging from a CI-built release, admin signing in on both. The foundation gate (5.2, qa, `docs/gates/foundation.md` with 50 screenshots and drive logs) evidences every Done-when clause of phases 1–5: `pnpm verify` 1322 passed on a fresh clone; CI and release green; `pnpm dev --brand` ×2 serving differently branded EN/ID shells from two databases; `https://indies-gallery.gaiada.com` and `https://old-east-indies.gaiada.com` on `1eddcaf`, 8 shell pages axe 0 at 390/1280, both admins signed in; every gate fails on a planted violation, 5.4's included; F1–F7 and M1 resolved. 5.5 passed in the same run (each of its six missed forms caught; the bundle scan fails on the react-server plant and is clean on main). Lows filed: N1, N3 → 41.1.e; N2 → 37.2.e; N4 and F6 → 23.1.e.
 - 2026-10-01 — ✅ **5.2** (4f09f74) and ✅ **5.5** (04d7e89) — see phase 5 above.

@@ -14,8 +14,9 @@ import { ENGINE_REPO_ROOT } from './supports.mjs'
  * and the shell's own keys. The spike's (`src/spike/messages.ts`, 4.1.e) are not here: no brand
  * gives the spike copy, and it renders on its neutral defaults.
  */
+export const LEXICON_KEY_SOURCE = { file: 'src/messages/keys.ts', name: 'LEXICON_MESSAGES' }
 export const COPY_KEY_SOURCES = [
-  { file: 'src/messages/keys.ts', name: 'LEXICON_MESSAGES' },
+  LEXICON_KEY_SOURCE,
   { file: 'src/shell/messages.ts', name: 'SHELL_MESSAGES' },
 ]
 

@@ -111,6 +111,13 @@ describe('the status rules', () => {
     ])
   })
 
+  it('refuses a ticked task with a subtask still open', () => {
+    const doc = board(DONE).replace('  - [x] 1.1.a **Check:** ok', '  - [ ] 1.1.a **Check:** ok')
+    expect(lint(doc).map((f) => `[${f.rule}] ${f.message}`)).toEqual([
+      '[task-status] 1.1 is ticked [x] but its subtask(s) 1.1.a are not',
+    ])
+  })
+
   it('checks 🔄 names its own phase and wave', () => {
     expect(messages({ ...DONE, 1.2: ' — 🔄 2·W2' })).toEqual([
       '[task-status] 1.2 is 🔄 2·W2, but it is a phase 1 task',

@@ -17,7 +17,7 @@ export default defineConfig({
       {
         test: {
           name: 'tooling',
-          include: ['engine/tooling/**/*.test.{mjs,ts}'],
+          include: ['engine/tooling/**/*.test.{mjs,ts}', 'scripts/**/*.test.mjs'],
           exclude: EXCLUDE,
         },
       },
