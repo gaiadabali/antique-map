@@ -21,7 +21,7 @@ each contract is one module, re-exported from the entry named below.
 | C6 | Commerce API: requests, responses, problems, capability links | `@engine/domain/api`; values at `@engine/domain/retailers`, `@engine/domain/want-lists`, `@engine/domain/links` | `domain/src/contracts/{api,cart,checkout,paying,orders,leads,links,services,after-sale,retailers,want-lists,requests,results}.ts` | DOM (handlers in `http/src/commerce/**`) | apps, WEB, C2, C13 | v1.1 |
 | C7 | Provider interfaces and normalised events | `@engine/payments/contract`, `@engine/shipping/contract`, `@engine/fulfilment/contract` | `{payments,shipping,fulfilment}/src/contract.ts`, `payments/src/contract/**`, `domain/src/contracts/payment-vocabulary.ts` | PAY, LOG | PAY, LOG, DOM | v1.1 |
 | C8 | State machines, `reserve()`, `applyPaymentEvent()`, domain events | `@engine/domain/machines/*`, `@engine/domain/reservations`, `@engine/domain/transactions`, `@engine/domain/events` | `domain/src/*/machine.ts`, `domain/src/reservations/contract.ts`, `domain/src/contracts/{machine-types,reservation-types,transactions,domain-events,apply-payment-event}.ts` | DOM | DOM, PAY, ADM, NTF, WEB, C2 | v1.1 |
-| C9 | Media artefacts: derivatives, IIIF, masters and intake keys, print files; image roles and provenance; what the intake measures and the print ceiling; the room plates | `@engine/media/contract` | `media/src/contract.ts`, `media/src/contract/**` | MED | MED, WEB, UXG, UXE, MIG, SIS, LOG, SCH, ADM, C2, C11 | v1.4 |
+| C9 | Media artefacts: derivatives, IIIF, masters and intake keys, print files; image roles and provenance; what the intake measures and the print ceiling; the room plates | `@engine/media/contract` | `media/src/contract.ts`, `media/src/contract/**` | MED | MED, WEB, UXG, UXE, MIG, SIS, LOG, SCH, ADM, C2, C11 | v1.6 |
 | C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.3 |
 | C11 | Analytics events: names and props | `@engine/analytics/events` | `analytics/src/events.ts`, `analytics/src/events/**` | SEO | every surface, DOM (the outbox) | v1.1 |
 | C12 | Sister archive API: work snapshot, the prints feed, webhooks both ways | `@engine/sister/contract` | `sister/src/contract.ts`, `sister/src/contract/**` | SIS | SIS, SCH, apps | v1.1 |
@@ -160,7 +160,10 @@ so it is breaking and also needs a redirect.
   `intakeMasterKey()`, and a work's is filed under `masterKey()` once its work exists, the one
   move a master makes. An image's role and provenance are set once, at intake, on the master and
   on its media, never on the row that places it; `primary` is no image's role — a page's primary
-  is `primaryImageIndex()`'s — and what may be synthetic where is `provenanceAllowed()`'s. A print
+  is `primaryImageIndex()`'s — and what may be synthetic where is `provenanceAllowed()`'s. A
+  synthetic image is labelled where it renders, from its provenance (`renderedAlt()`), never by
+  words stored in its alt. A media bucket is public only under `derivatives/` and `iiif/`; the
+  uncapped pyramid is `iiifFullKey()`'s, private, in the brand's own media bucket. A print
   ceiling is `printCeilingOf()` a design's crop in its master's pixels, never a file's long edge. A
   room plate's geometry is in its crop's own pixels, and a print is hung on it through `placeArt()`
   alone, by the preview and the mockups alike.
@@ -780,3 +783,43 @@ so it is breaking and also needs a redirect.
   9.2) and the `room-plates` global's stub; MED, the intake keys and filing (8.3, 15.4) and the
   ceiling from the crop (15.4.c); WEB, `primaryImageIndex()` and `orderImages()` in the loaders;
   ARC, C2's `PreviewVM` carrying `RoomPlate` (22.7).
+- **2026-10-01**: **C9 v1.6** (TASKS.md 8.4): what the reviews of 8.1 and 8.3 decided
+  (`reviews/8.1-senior-be.md`, `reviews/8.3-senior-integrator.md`). The release changes C9 alone;
+  v1.5 is 6.4's release of C1, C2, C6, C8, C10, C11 and C13, which keeps C9 at v1.4, so C9 goes
+  from v1.4 to v1.6 by the release rule above. Nothing breaks: every key is v1.4's byte for byte,
+  no name is renamed or removed, and three are added.
+  - **The uncapped pyramid moves bucket, not key.** `iiifFullKey()` names the private `iiif-full/`
+    prefix of the brand's own media bucket, for both brands. v1.4 named the masters bucket, where
+    the outlet's key writes only its print files, so the outlet could have tiled nothing there.
+    The pyramid is derived from the `media` upload, which already sits privately in that bucket
+    at full resolution, so the move adds no new exposure, and the archive keeps to masters and
+    print files. The key keeps v1.1's `brand` segment, which in a brand's own bucket is always that
+    brand's slug, so a caller written against v1.4 (8.3's storage test) still compiles. The public
+    policy names `iiif/` with its slash, so `isPublicMediaKey()` (`@engine/media/storage`, 8.3)
+    stays false for the key (8.3's test, and `keys.test.ts`). `MEDIA_ROUTES.fullTiles` streams
+    it from the brand's own bucket.
+  - **A synthetic image's label is added at render.** `SYNTHETIC_LABEL` opens an image's
+    *rendered* alt text, from its provenance, in the lexicon's words (`image.synthetic.<label>`,
+    `image.syntheticAlt.<label>`), and is never stored in `media.alt`, which describes the image
+    alone, so no edit of the alt can remove it. New: `renderedAlt(alt, label, words)`,
+    `opensWithLabel(alt, words)` and `SyntheticLabelWords`. They are one guard for whatever
+    renders an image and for the CMS: an alt that already opens with the label's words (a legacy
+    alt, or a baseline 8.3 wrote before this rule) is labelled once, and blank words never drop a
+    label.
+  - **Wording only.** The header names the media bucket by the variable the environment sets
+    (`S3_BUCKET`, not v1.4's `MEDIA_BUCKET`) and says what in it is public (`derivatives/`,
+    `iiif/`) and what is private (`uploads/`, `iiif-full/`). `PRINT_FILES_PREFIX` and
+    `printFileKey()` say the outlet's key writes only under its own slug.
+  - **In the docs of record:** ARCHITECTURE.md §7 (the tiers' buckets, the uploads' tier, `media`
+    read on the server alone); CONTENT-MODEL.md §3 (`MAKER_ROLES`, `DATE_PRECISIONS`) and §6
+    (media's rendered alt, private upload and server-only read; masters' per-brand print files);
+    DEPLOYMENT.md §2 and §8 (what a media bucket makes public, the plan files, the CDN, the keys,
+    the masters bucket's CORS); EXPERIENCE-GALLERY.md §2 (Beyond Indonesia confirmed as a root);
+    PARALLEL-TRACKS.md §1 (cms keeps its tests beside its code).
+
+  Announced to every lane in C9's "Consumed by" column. What each now builds:
+  - MED: the full pyramid in the brand's own media bucket (15.2) and its route from there (15.3).
+  - SCH: `altBaseline()` without the label, and `opensWithLabel()` from C9 (8.3's follow-up).
+  - WEB and both apps: the label at render, through `renderedAlt()`. C2's `ImageVM` must first
+    say which label it carries, a C2 change routed in 8.4's report.
+  - SIS: the same for a snapshot's image, a C12 change, also routed.

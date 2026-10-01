@@ -103,8 +103,11 @@ is promoted into `src/components/` by the app lead afterwards. Two agents
 editing `src/components/button.tsx` in one wave is the collision this prevents.
 
 Likewise `engine/packages/cms/src/`: `collections/**` is SCH's, `admin/**` is
-ADM's. Tests follow their code: unit tests live in each package's `test/` and
-belong to that package's lane; a lane may add e2e specs under
+ADM's. Tests follow their code: a package's unit tests live in its `test/` or
+beside the code they test, and belong to that code's lane. `@engine/cms` keeps
+every one beside its code (`src/**/*.test.ts`, its database suites
+`*.db.test.ts`), so a collection's, a validator's or a hook's tests sit in the
+folder its task owns. A lane may add e2e specs under
 `tests/e2e/<area>/**` (`status`, `design-system` …), which the task that writes
 them owns. The rest of `tests/**` is QA's.
 

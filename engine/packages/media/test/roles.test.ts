@@ -2,6 +2,7 @@
  * C9's image roles and provenance (v1.4, TASKS.md 6.2.e): a product and a location get roles of
  * their own, `media.role` a value list that never holds `primary`, and the honesty rules of
  * docs/design/imagery/retouching-and-labelling.md §5 become answers a publish guard can read.
+ * v1.6: a synthetic image's label is added where it renders, from its provenance — never stored.
  */
 import { describe, expect, it } from 'vitest'
 
@@ -13,10 +14,12 @@ import {
   LOCATION_IMAGE_ROLES,
   MEDIA_PROVENANCES,
   MEDIA_ROLES,
+  opensWithLabel,
   orderImages,
   PRODUCT_IMAGE_ROLES,
   primaryImageIndex,
   provenanceAllowed,
+  renderedAlt,
   roleAllowed,
   ROLES_BY_SUBJECT,
   SYNTHETIC_LABEL,
@@ -24,6 +27,7 @@ import {
   type MediaProvenance,
   type MediaRole,
   type RoledImage,
+  type SyntheticLabelWords,
 } from '../src/contract'
 
 const photo = (role: MediaRole): RoledImage => ({ role, provenance: 'photograph' })
@@ -102,6 +106,45 @@ describe('provenance', () => {
     expect(provenanceAllowed('other', 'room-plate', 'composite')).toBe(false)
     expect(provenanceAllowed('other', 'room-plate', 'ai-generated')).toBe(false)
     expect(provenanceAllowed('other', 'editorial', 'ai-generated')).toBe(true)
+  })
+})
+
+describe('renderedAlt() — the label is added at render, never stored (v1.6)', () => {
+  // The lexicon's shape (`image.synthetic.<label>`, `image.syntheticAlt.<label>`), in English.
+  const LABEL = { 'digital-mockup': 'Digital mockup', 'ai-generated': 'AI-generated image' }
+  const words: SyntheticLabelWords = {
+    label: (label) => LABEL[label],
+    labelled: (label, alt) => `${LABEL[label]}: ${alt}`,
+  }
+  const shown = (alt: string, provenance: MediaProvenance) =>
+    renderedAlt(alt, SYNTHETIC_LABEL[provenance], words)
+
+  it('shows a photograph’s alt as stored', () => {
+    expect(shown('Engraved map of Bali, 1726, recto', 'photograph')).toBe(
+      'Engraved map of Bali, 1726, recto',
+    )
+  })
+
+  it('labels every synthetic image from its provenance, whatever its alt says', () => {
+    expect(shown('The Bali map framed on a sofa wall', 'composite')).toBe(
+      'Digital mockup: The Bali map framed on a sofa wall',
+    )
+    expect(shown('A reading room', 'rendered')).toBe('Digital mockup: A reading room')
+    expect(shown('A reading room', 'ai-generated')).toBe('AI-generated image: A reading room')
+  })
+
+  it('never labels twice: an alt that already opens with the words is shown as it is', () => {
+    expect(shown('digital mockup: the Bali map framed', 'composite')).toBe(
+      'digital mockup: the Bali map framed',
+    )
+    expect(opensWithLabel('  AI-generated image of a room', 'AI-generated image ')).toBe(true)
+    expect(opensWithLabel('A digital mockup of a room', 'Digital mockup')).toBe(false)
+  })
+
+  it('never drops a label for want of words', () => {
+    expect(opensWithLabel('anything at all', '   ')).toBe(false)
+    const blank: SyntheticLabelWords = { ...words, label: () => '' }
+    expect(renderedAlt('A sofa wall', 'digital-mockup', blank)).toBe('Digital mockup: A sofa wall')
   })
 })
 
