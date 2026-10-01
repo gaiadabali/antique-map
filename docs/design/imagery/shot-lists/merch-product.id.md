@@ -28,12 +28,12 @@ lapisan gambarnya sendiri ([room-scenes.md](../room-scenes.md)).
 | 9 | dibungkus kain kado, dan setelah dibuka; kartu ucapannya | `packaging` | cahaya siang | jika bisa dijadikan kado | apa yang dibuka oleh penerimanya |
 | 10 | paket seperti saat dikirim — tabung atau kotak, pelindung di dalamnya | `packaging` | cahaya siang | sebaiknya | janji pengiriman tanpa kerusakan, diperlihatkan |
 
-## Hanya jika pemilik setuju (pertanyaan wawancara S14)
+## Proses pembuatan — pemilik sudah setuju (pertanyaan wawancara S14)
 
 Proses pembuatannya: karya asli di atas *copy stand*, cetakan yang keluar dari printer,
 bingkai yang sedang disambung, paket yang sedang dikemas — tangan yang sedang bekerja,
-wajah hanya dengan persetujuan. Beri nama `showroom_making_<nn>` atau
-`<product>_lifestyle_<nn>`.
+wajah hanya dengan persetujuan, seperti dijelaskan [panduan toko](../shop-guide.id.md)
+§5. Beri nama `showroom_making_<nn>` atau `<product>_lifestyle_<nn>`.
 
 ## Sebelum mengirim
 

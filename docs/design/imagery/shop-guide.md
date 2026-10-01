@@ -89,12 +89,31 @@ real. Photograph it as a visitor meets it; the pilot request lists the shots:
 - the street and the entrance, so a visitor recognises it on arrival;
 - a wide view from the door, and one from the back looking out;
 - each wall, straight on, with its products and QR labels;
-- the counter or pickup point;
-- a few close vignettes: a shelf, a framed print on a wall, a stack of wrapped gifts;
-- if staff agree, hands at work — wrapping, framing, packing.
+- the counter, and the place where online orders are collected;
+- a few close vignettes: a shelf, a framed print on a wall, a stack of wrapped gifts.
 
-Shoot on a bright day with the lights the showroom normally has on, and one
-reference photo with the colour card in each room.
+Shoot on a bright day with the lights the showroom normally has on. **In each room,
+take one reference photo first** — the colour card held where that room's photos will
+be — then the room's photos without it. Name it `showroom_ref_<nn>`: it is kept, never
+published (intake-spec.md §1, §6).
+
+**How the prints are made (`making`).** The owner agreed to it (interview question
+S14): on the photo day, photograph how a print is made from an original, in the
+showroom or wherever it happens —
+
+- the original being photographed or scanned for printing;
+- a print coming off the printer;
+- a frame being joined, a print going into its mount and frame;
+- a gift being wrapped in the map cloth, a parcel being packed.
+
+Hands at work are welcome; a recognisable face needs consent, staff included (§4).
+An original is handled as on the gallery's table — clean, dry hands, nothing on the
+printed area, never in the sun ([gallery-guide.md](gallery-guide.md) §4–§5). The same
+reference photo starts each room. Name the photos `showroom_making_<nn>`
+([handover.md](handover.md) §2); one that shows a single product may be
+`<product>_lifestyle_<nn>` instead ([merch-product.md](shot-lists/merch-product.md)).
+If you also film, keep the video files as they are and tell us — this guide covers
+photographs; we will say how to send video.
 
 ## 6. Respect and the brand's lines
 

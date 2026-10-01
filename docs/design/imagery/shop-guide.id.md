@@ -101,13 +101,33 @@ coba menyebutkan foto-fotonya:
 - jalan dan pintu masuk, agar pengunjung mengenalinya saat tiba;
 - pandangan lebar dari pintu, dan satu lagi dari bagian belakang ke arah luar;
 - setiap dinding, lurus dari depan, dengan produk dan label QR-nya;
-- meja kasir atau tempat pengambilan pesanan;
+- meja kasir, dan tempat pesanan online diambil;
 - beberapa sudut kecil dari dekat: sebuah rak, cetakan berbingkai di dinding, tumpukan
-  kado yang sudah dibungkus;
-- jika staf bersedia, tangan yang sedang bekerja — membungkus, membingkai, mengemas.
+  kado yang sudah dibungkus.
 
-Memotretlah pada hari yang cerah dengan lampu yang biasa dinyalakan di showroom, dan satu
-foto acuan dengan kartu warna di setiap ruangan.
+Memotretlah pada hari yang cerah dengan lampu yang biasa dinyalakan di showroom. **Di
+setiap ruangan, ambil lebih dulu satu foto acuan** — kartu warna dipegang di tempat
+foto-foto ruangan itu akan diambil — lalu foto-foto ruangan itu tanpa kartu. Beri nama
+`showroom_ref_<nn>`: foto ini disimpan, tidak pernah diterbitkan (intake-spec.md §1, §6).
+
+**Cara cetakan dibuat (`making`).** Pemilik sudah menyetujuinya (pertanyaan wawancara
+S14): pada hari pemotretan, foto cara sebuah cetakan dibuat dari karya aslinya, di
+showroom atau di mana pun proses itu berlangsung —
+
+- karya asli yang sedang difoto atau dipindai (*scan*) untuk dicetak;
+- cetakan yang keluar dari printer;
+- bingkai yang sedang disambung, cetakan yang dimasukkan ke passe-partout dan bingkainya;
+- kado yang sedang dibungkus dengan kain peta, paket yang sedang dikemas.
+
+Tangan yang sedang bekerja boleh tampak; wajah yang dapat dikenali memerlukan persetujuan,
+termasuk staf (§4). Karya asli diperlakukan seperti di meja galeri — tangan bersih dan
+kering, tidak ada apa pun di bagian yang tercetak, tidak pernah di bawah sinar matahari
+([gallery-guide.id.md](gallery-guide.id.md) §4–§5). Foto acuan yang sama mengawali setiap
+ruangan. Beri nama foto-fotonya `showroom_making_<nn>` ([handover.id.md](handover.id.md)
+§2); foto yang menampilkan satu produk tertentu boleh diberi nama
+`<product>_lifestyle_<nn>` ([merch-product.id.md](shot-lists/merch-product.id.md)). Jika
+Anda juga merekam video, simpan file videonya apa adanya dan beri tahu kami — panduan ini
+membahas foto; kami akan menjelaskan cara mengirim video.
 
 ## 6. Rasa hormat dan batas-batas merek
 

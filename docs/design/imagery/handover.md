@@ -62,7 +62,8 @@ No. if it has one, otherwise a few words with hyphens (`tote-bali-map`,
 12.3.a); until then, use whatever number the product has today.
 
 **Showroom:** `showroom_<area>_<nn>.<ext>`, with areas `street` · `entrance` · `wide` ·
-`wall` · `counter` · `vignette` · `making`.
+`wall` · `counter` · `vignette` · `making` — and `ref` for each room's reference photo
+with the colour card (shop-guide.md §5).
 
 ## 3. Folders
 
