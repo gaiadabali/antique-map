@@ -5,7 +5,7 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { payloadReached } from './payload-hook.mjs'
+import { engineChain, payloadReached } from './payload-hook.mjs'
 import { judgeSpecifiers, mountSpecifiers } from './specifiers.mjs'
 
 const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
@@ -30,10 +30,11 @@ export function routeFileFor(appDir, mountPath) {
  * specifier it re-exports (`judgeSpecifiers`, 5.4.a), then — loaded by `loadModule`
  * (`withTsRunner`'s, under the Payload hook) — whether the load reached Payload or failed, and a
  * method mismatch against what it exports. `names` is `{ app, handlerOf, unbuiltHandlerOf,
- * httpSrcDir }`; `specifiers` maps each mounted path to what the file names.
+ * httpSrcDir, appsPrefix }` (`appsPrefix`: the apps folder as a chain names it, `engineChain`);
+ * `specifiers` maps each mounted path to what the file names.
  */
 export async function checkAppMounts(appDir, routes, loadModule, names) {
-  const { app, handlerOf, unbuiltHandlerOf, httpSrcDir } = names
+  const { app, handlerOf, unbuiltHandlerOf, httpSrcDir, appsPrefix } = names
   const missingFiles = []
   const methodMismatches = []
   const violations = []
@@ -58,9 +59,7 @@ export async function checkAppMounts(appDir, routes, loadModule, names) {
     } catch (error) {
       const reached = payloadReached(error)
       // The hook records each module's first importer, which may be the other app's mount.
-      const chain = reached?.chain.filter(
-        (id) => id !== 'index.html' && !/^engine\/apps\//.test(id),
-      )
+      const chain = reached && engineChain(reached.chain, appsPrefix)
       violations.push(
         reached
           ? { kind: 'payload-reached', app, path: route.path, file, source: reached.source, chain }

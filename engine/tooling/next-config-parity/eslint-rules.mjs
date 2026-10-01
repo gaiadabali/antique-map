@@ -2,6 +2,7 @@
 // the next.config parity test that holds the rest: one route segment config, and no storefront
 // link or form that prefetches. ESLint rules only: `eslint.config.mjs` names the files each covers.
 import { fence, problem, report } from '../route-parity/eslint-fences.mjs'
+import { isReflectGet, memberName, staticString } from '../route-parity/static-string.mjs'
 
 const WHY = 'CONVENTIONS.md §12'
 
@@ -55,40 +56,27 @@ const segmentConfig = {
 }
 
 /**
- * Any `.prefetch` or `['prefetch']` member, called or not, and any `prefetch` key a destructuring
- * pattern reads — so an aliased or namespaced `useRouter`, a router destructured from a variable
- * and a method pulled off without a call are all caught (qa's 5.4 gate, S3), as are
- * `Reflect.get(r, 'prefetch')` and `r[k]` for a `const k = 'prefetch'` (its re-gate, L4). A JSX
- * `prefetch={false}` attribute and an object literal's `prefetch:` key are not members.
+ * Any member read as `prefetch`, called or not, and any `prefetch` key a destructuring pattern
+ * reads — so an aliased or namespaced `useRouter`, a router destructured from a variable and a
+ * method pulled off without a call are all caught (qa's 5.4 gate, S3), as is a `Reflect.get` of
+ * it. The name is `staticString`'s (qa's third gate, L3): `` r[`prefetch`] ``, `r[k]` for a
+ * `const k = 'prefetch' as const` or an alias of one, `Reflect['get'](r, k)`, a destructured
+ * `get`. A JSX `prefetch={false}` attribute and an object literal's `prefetch:` key are not members.
  */
 const routerPrefetch = {
   meta: problem(
     `No storefront code prefetches: under htmlLimitedBots a prefetch is a full render (${WHY}).`,
   ),
   create: (context) => {
+    const isPrefetch = (node) => staticString(node, context) === 'prefetch'
     const found = (node) => report(context, node)
-    /** Whether `id` names a `const` bound to the literal 'prefetch' (`const k = 'prefetch'`). */
-    const isPrefetchConst = (id) => {
-      for (let scope = context.sourceCode.getScope(id); scope; scope = scope.upper) {
-        const variable = scope.set.get(id.name)
-        if (!variable) continue
-        const def = variable.defs[0]
-        return def?.node.type === 'VariableDeclarator' && def.parent?.kind === 'const'
-          ? def.node.init?.value === 'prefetch'
-          : false
-      }
-      return false
-    }
     return {
-      'MemberExpression[computed=false][property.name="prefetch"]': found,
-      'MemberExpression[computed=true][property.value="prefetch"]': found,
-      'MemberExpression[computed=true][property.type="Identifier"]': (node) =>
-        isPrefetchConst(node.property) && found(node),
-      // `Reflect.get(router, 'prefetch')` (qa's 5.4 re-gate, L4)
-      'CallExpression[callee.object.name="Reflect"][callee.property.name="get"]': (node) =>
-        node.arguments[1]?.value === 'prefetch' && found(node),
-      'ObjectPattern > Property[key.name="prefetch"]': found,
-      'ObjectPattern > Property[key.value="prefetch"]': found,
+      MemberExpression: (node) => memberName(node, context) === 'prefetch' && found(node),
+      CallExpression: (node) =>
+        isReflectGet(node.callee, context) && isPrefetch(node.arguments[1]) && found(node),
+      'ObjectPattern > Property': (node) =>
+        (node.computed ? isPrefetch(node.key) : (node.key.name ?? node.key.value) === 'prefetch') &&
+        found(node),
     }
   },
 }

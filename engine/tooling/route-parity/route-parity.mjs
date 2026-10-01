@@ -4,7 +4,7 @@
 // (`./payload-hook.mjs`), resolved with Next's route-handler conditions, and
 // no engine package branching on a condition (`./package-exports.mjs`). Degrades explicitly (a `degraded` entry, not a
 // violation) wherever its input does not exist yet, per this ticket's brief.
-import { join } from 'node:path'
+import { join, relative, sep } from 'node:path'
 
 import { checkAppMounts, discoverScaffoldedApps, readProxyMatcher } from './app-mounts.mjs'
 import { discoverCollectionSlugs } from './collections.mjs'
@@ -28,7 +28,7 @@ const MANIFEST_PATH = [...HTTP_SRC, 'manifest.ts']
  * root whose `engine/packages/cms` is read for slugs), `opts.httpSrcAbsDir`
  * (where a handler's `src/<area>/route.ts` is looked for) and `opts.alias`
  * (Vite aliases for a fixture's `@engine/http/*`) and `opts.packagesAbsDir`
- * (the packages whose `exports` are judged) let a test point at
+ * (the tree whose every package.json's `exports`/`imports` are judged; `engine/` by default) let a test point at
  * fixtures outside `repoRoot` (the real manifest, `engine/apps/*`, http and
  * CMS are what CI checks; production code never overrides them). Every load
  * runs under the Payload hook (5.4.a), the manifest's and the proxy's too.
@@ -40,7 +40,9 @@ export async function checkRouteParity(repoRoot, opts = {}) {
   const appsAbsDir = opts.appsAbsDir ?? join(repoRoot, 'engine', 'apps')
   const collectionsRoot = opts.collectionsRoot ?? repoRoot
   const httpSrcDir = opts.httpSrcAbsDir ?? join(repoRoot, ...HTTP_SRC)
-  const packagesDir = opts.packagesAbsDir ?? join(repoRoot, 'engine', 'packages')
+  const packagesDir = opts.packagesAbsDir ?? join(repoRoot, 'engine')
+  // How a refusal's chain names a module under the apps folder (`engineChain`).
+  const appsPrefix = `${relative(repoRoot, appsAbsDir).split(sep).join('/')}/`
   const runner = {
     plugins: [payloadHook(repoRoot)],
     alias: opts.alias,
@@ -80,7 +82,7 @@ export async function checkRouteParity(repoRoot, opts = {}) {
         const specifiersByPath = new Map()
         for (const app of apps) {
           const appDir = join(appsAbsDir, app)
-          const names = { app, handlerOf, unbuiltHandlerOf, httpSrcDir }
+          const names = { app, handlerOf, unbuiltHandlerOf, httpSrcDir, appsPrefix }
           const mounts = await checkAppMounts(appDir, routes, loadModule, names)
           const { missingFiles, methodMismatches, specifiers } = mounts
           violations.push(...mounts.violations)
@@ -111,7 +113,9 @@ export async function checkRouteParity(repoRoot, opts = {}) {
         // No engine package hands Next a different module than this run loads (5.4 re-gate).
         const packages = readEnginePackages(packagesDir)
         violations.push(...findExportConditions(packages, repoRoot))
-        violations.push(...(await loadConditionalBranches(packages, repoRoot, loadModule)))
+        violations.push(
+          ...(await loadConditionalBranches(packages, repoRoot, loadModule, appsPrefix)),
+        )
 
         return { violations, degraded, routeCount: routes.length, collectionSlugs }
       },

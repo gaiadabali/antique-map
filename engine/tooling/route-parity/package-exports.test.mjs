@@ -70,10 +70,42 @@ describe('conditionalBranches', () => {
 })
 
 describe('no engine package exports a condition (5.4 re-gate)', () => {
-  it('holds for every real engine package', () => {
-    const packages = readEnginePackages(join(repoRoot, 'engine', 'packages'))
-    expect(packages.length).toBeGreaterThan(5)
+  it('holds for every real package.json under engine/ (tooling and the apps too)', () => {
+    const packages = readEnginePackages(join(repoRoot, 'engine'))
+    const files = packages.map(({ file }) => posix(file.slice(repoRoot.length + 1)))
+    expect(files).toEqual(expect.arrayContaining(['engine/tooling/package.json']))
+    expect(files.filter((f) => f.startsWith('engine/apps/')).length).toBeGreaterThan(1)
+    expect(files.some((f) => /node_modules|\.next/.test(f))).toBe(false)
     expect(findExportConditions(packages, repoRoot)).toEqual([])
+  })
+
+  // qa's 5.4 third gate, L1: a package.json nested in a package, tooling's, an app's.
+  it.each([
+    ['engine/packages/http/src/revalidate/package.json', 'imports', '#body'],
+    ['engine/tooling/package.json', 'exports', './x'],
+    ['engine/apps/gallery/package.json', 'imports', '#body'],
+  ])('flags a condition in %s, and passes once it is gone', (path, field, subpath) => {
+    sandbox = mkdtempSync(join(tmpdir(), 'rp-nested-'))
+    const write = (rel, json) => {
+      mkdirSync(join(sandbox, rel, '..'), { recursive: true })
+      writeFileSync(join(sandbox, rel), JSON.stringify(json))
+    }
+    write('engine/packages/http/package.json', { name: '@fixture/http', exports: './a.ts' })
+    write('engine/apps/gallery/node_modules/x/package.json', { exports: { node: './n.js' } })
+    write('engine/apps/gallery/.next/package.json', { imports: { '#a': { node: './n.js' } } })
+    const branch = { 'react-server': './payload-real.ts', default: './body.ts' }
+    write(path, {
+      ...(path.includes('/src/') ? {} : { name: '@fixture/x' }),
+      [field]: { [subpath]: branch },
+    })
+    const found = findExportConditions(readEnginePackages(join(sandbox, 'engine')), sandbox)
+    expect(found).toEqual(
+      ['react-server', 'default'].map((condition) => ({
+        ...{ kind: 'exports-condition', file: path, field, subpath, condition },
+      })),
+    )
+    write(path, { name: '@fixture/x', [field]: { [subpath]: './body.ts' } })
+    expect(findExportConditions(readEnginePackages(join(sandbox, 'engine')), sandbox)).toEqual([])
   })
 
   it('flags a condition, naming the package.json, and passes an allowlisted one', () => {
@@ -194,5 +226,45 @@ describe("the runner resolves with Next's route-handler conditions (5.4 re-gate)
       conditions: NEXT_ROUTE_CONDITIONS,
     })
     expect({ a: picked.a, b: picked.b }).toEqual({ a: 'react-server', b: 'production' })
+  })
+})
+
+describe('a branch an app mount imports names no app in its chain (qa L5)', LOADED, () => {
+  it('drops the mount that first loaded the branch, as checkAppMounts does', async () => {
+    sandbox = mkdtempSync(join(tmpdir(), 'rp-chain-'))
+    const appsAbsDir = join(sandbox, 'apps')
+    const cart = '/api/x/commerce/cart/[[...path]]'
+    writeFixtureApp(appsAbsDir, 'one', {
+      mountedRoutes: [
+        { path: '/api/health', exports: ['GET'] },
+        { path: cart, exports: ['GET', 'POST'], from: '@fixture/http/revalidate' },
+      ],
+    })
+    const files = {
+      'src/real.ts': `export { cms as POST, cms as GET } from '${CMS_INSTANCE}'\n`,
+      'src/route.ts': 'export const POST = () => new Response()\nexport const GET = POST\n',
+    }
+    const exports = {
+      './revalidate': { 'react-server': './src/real.ts', default: './src/route.ts' },
+    }
+    const pkg = writePackage('http', { name: '@fixture/http', exports }, files)
+    mkdirSync(join(sandbox, 'node_modules', '@fixture'), { recursive: true })
+    symlinkSync(pkg, join(sandbox, 'node_modules', '@fixture', 'http'), 'junction')
+    const options = {
+      manifestAbsPath: writeFixtureManifest(join(sandbox, 'manifest')),
+      appsAbsDir,
+      packagesAbsDir: join(sandbox, 'packages'),
+      ...writeFixtureHttp(sandbox),
+    }
+    const { violations } = await checkRouteParity(repoRoot, options)
+    // The mount loads first and reaches cms through the branch, so the hook records it as the
+    // branch's importer; the branch's own refusal must not name it.
+    expect(violations).toContainEqual(
+      expect.objectContaining({ kind: 'payload-reached', app: 'one', path: cart }),
+    )
+    const branch = violations.find((v) => v.kind === 'conditional-branch-reached')
+    expect(branch).toMatchObject({ subpath: './revalidate', conditions: ['react-server'] })
+    expect(branch.chain).toHaveLength(1)
+    expect(branch.chain[0]).toMatch(/packages\/http\/src\/real\.ts$/)
   })
 })

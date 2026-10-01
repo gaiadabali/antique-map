@@ -8,6 +8,7 @@ import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { PAYLOAD_SPECIFIER } from './refusal.mjs'
+import { requireArgument, staticString } from './static-string.mjs'
 
 export { PAYLOAD_SPECIFIER }
 
@@ -15,14 +16,6 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '.
 
 export const problem = (found, schema = []) => ({ type: 'problem', messages: { found }, schema })
 export const report = (context, node, data) => context.report({ node, messageId: 'found', data })
-
-/** A specifier's text: `'x'`, or a template with no `${}`; `null` for anything computed. */
-const literal = (node) =>
-  node?.type === 'Literal'
-    ? node.value
-    : node?.quasis?.length === 1
-      ? node.quasis[0].value.cooked
-      : null
 
 const posix = (path) => path.split('\\').join('/')
 const PACKAGE_FILE = /^engine\/packages\/([^/]+)(?:\/(.*))?$/
@@ -96,31 +89,6 @@ const firstString = (value) =>
         ? Object.values(value).map(firstString).find(Boolean)
         : undefined
 
-const isCreateRequire = (callee) =>
-  callee?.type === 'CallExpression' &&
-  (callee.callee.name === 'createRequire' || callee.callee.property?.name === 'createRequire')
-
-/**
- * The specifier node of a `require('x')`, `module.require('x')`, `createRequire(…)('x')`,
- * `module.createRequire(…)('x')`, or `r('x')` for a `const r = createRequire(…)` (qa's 5.4
- * re-gate, L5); `undefined` for any other call.
- */
-const requireArgument = (node, context) => {
-  const callee = node.callee
-  const heldRequire = () => {
-    for (let scope = context.sourceCode.getScope(node); scope; scope = scope.upper) {
-      const variable = scope.set.get(callee.name)
-      if (variable) return isCreateRequire(variable.defs[0]?.node.init)
-    }
-    return false
-  }
-  const isRequire =
-    (callee.type === 'Identifier' && (callee.name === 'require' || heldRequire())) ||
-    isCreateRequire(callee) ||
-    (callee.type === 'MemberExpression' && callee.property.name === 'require')
-  return isRequire ? node.arguments[0] : undefined
-}
-
 /**
  * A rule refusing each import, re-export, `import x = require()`, `require()` and — unless `lazy`
  * allows it — `import()` whose target (`reachedBy`) `banned(target, typeOnly, filename)` names.
@@ -131,7 +99,8 @@ export const fence = ({ banned, why, lazy = false }) => ({
   meta: problem(`'{{source}}'{{reaches}}: ${why}`),
   create(context) {
     const check = (node, sourceNode, typeOnly) => {
-      const source = literal(sourceNode)
+      // A literal, or a name or template that always holds one (`./static-string.mjs`).
+      const source = staticString(sourceNode, context)
       if (typeof source !== 'string') return
       const target = reachedBy(source, context.filename)
       if (banned(target, typeOnly, context.filename))
@@ -146,6 +115,7 @@ export const fence = ({ banned, why, lazy = false }) => ({
         node.moduleReference.type === 'TSExternalModuleReference' &&
         check(node, node.moduleReference.expression, node.importKind === 'type'),
       CallExpression: (node) => {
+        // `require`, `createRequire(…)`, held, aliased or reassigned; `.call`/`.apply` (qa L4)
         const argument = requireArgument(node, context)
         if (argument) check(node, argument, false)
       },
