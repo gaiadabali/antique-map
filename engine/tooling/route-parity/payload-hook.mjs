@@ -57,3 +57,13 @@ export function payloadReached(error) {
   }
   return null
 }
+
+/**
+ * A refusal's chain without what is not the reached module's own: Vite's `index.html` root, and
+ * any module under `appsPrefix` (`engine/apps/`, or a fixture's apps folder, relative to the
+ * repository). The hook records each module's first importer, which may be a mount of either app
+ * loaded earlier — so an app in a chain says which app happened to load first, not what reaches
+ * Payload (qa's 5.4 third gate, L5).
+ */
+export const engineChain = (chain, appsPrefix = 'engine/apps/') =>
+  chain.filter((id) => id !== 'index.html' && !id.startsWith(appsPrefix))

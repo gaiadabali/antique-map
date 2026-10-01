@@ -228,3 +228,43 @@ describe("the runner resolves with Next's route-handler conditions (5.4 re-gate)
     expect({ a: picked.a, b: picked.b }).toEqual({ a: 'react-server', b: 'production' })
   })
 })
+
+describe('a branch an app mount imports names no app in its chain (qa L5)', LOADED, () => {
+  it('drops the mount that first loaded the branch, as checkAppMounts does', async () => {
+    sandbox = mkdtempSync(join(tmpdir(), 'rp-chain-'))
+    const appsAbsDir = join(sandbox, 'apps')
+    const cart = '/api/x/commerce/cart/[[...path]]'
+    writeFixtureApp(appsAbsDir, 'one', {
+      mountedRoutes: [
+        { path: '/api/health', exports: ['GET'] },
+        { path: cart, exports: ['GET', 'POST'], from: '@fixture/http/revalidate' },
+      ],
+    })
+    const files = {
+      'src/real.ts': `export { cms as POST, cms as GET } from '${CMS_INSTANCE}'\n`,
+      'src/route.ts': 'export const POST = () => new Response()\nexport const GET = POST\n',
+    }
+    const exports = {
+      './revalidate': { 'react-server': './src/real.ts', default: './src/route.ts' },
+    }
+    const pkg = writePackage('http', { name: '@fixture/http', exports }, files)
+    mkdirSync(join(sandbox, 'node_modules', '@fixture'), { recursive: true })
+    symlinkSync(pkg, join(sandbox, 'node_modules', '@fixture', 'http'), 'junction')
+    const options = {
+      manifestAbsPath: writeFixtureManifest(join(sandbox, 'manifest')),
+      appsAbsDir,
+      packagesAbsDir: join(sandbox, 'packages'),
+      ...writeFixtureHttp(sandbox),
+    }
+    const { violations } = await checkRouteParity(repoRoot, options)
+    // The mount loads first and reaches cms through the branch, so the hook records it as the
+    // branch's importer; the branch's own refusal must not name it.
+    expect(violations).toContainEqual(
+      expect.objectContaining({ kind: 'payload-reached', app: 'one', path: cart }),
+    )
+    const branch = violations.find((v) => v.kind === 'conditional-branch-reached')
+    expect(branch).toMatchObject({ subpath: './revalidate', conditions: ['react-server'] })
+    expect(branch.chain).toHaveLength(1)
+    expect(branch.chain[0]).toMatch(/packages\/http\/src\/real\.ts$/)
+  })
+})

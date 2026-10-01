@@ -11,7 +11,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-import { payloadReached } from './payload-hook.mjs'
+import { engineChain, payloadReached } from './payload-hook.mjs'
 
 /**
  * The conditions a Next 16.3 production build (Turbopack, `next build`'s default; `--webpack`
@@ -130,9 +130,10 @@ function targetFiles(dir, target) {
 /**
  * Loads every conditional branch of every package but cms (cms is Payload: any branch of it is
  * the gate's to refuse above) with `loadModule`, under the Payload hook. A branch that reaches
- * Payload is `conditional-branch-reached`, naming the package.json, the branch and the chain.
+ * Payload is `conditional-branch-reached`, naming the package.json, the branch and the chain —
+ * without the app that first imported a module of it (`engineChain`, as for a mount: qa L5).
  */
-export async function loadConditionalBranches(packages, repoRoot, loadModule) {
+export async function loadConditionalBranches(packages, repoRoot, loadModule, appsPrefix) {
   const violations = []
   for (const { name, dir, file, json } of packages) {
     if (name === '@engine/cms') continue
@@ -149,7 +150,7 @@ export async function loadConditionalBranches(packages, repoRoot, loadModule) {
             file: where,
             ...branch,
             ...reached,
-            chain: reached.chain.filter((id) => id !== 'index.html'),
+            chain: engineChain(reached.chain, appsPrefix),
           })
         }
       }
