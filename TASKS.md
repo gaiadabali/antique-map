@@ -24,7 +24,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/7 | 22/51 | 1 | `████░░░░░░`  43% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 17/31 | 1 | `██████░░░░`  55% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 18/31 | 1 | `██████░░░░`  58% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | 🔄 in progress | 0/4 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -52,7 +52,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **34** Gallery: the purchase panel, forms and the pay page | Gallery | 33, 25 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
-| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/19 | 6 | `░░░░░░░░░░`   0% |
+| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/20 | 6 | `░░░░░░░░░░`   0% |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **32/185** | **217/898** | **45** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **32/185** | **218/899** | **45** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -874,7 +874,7 @@ run beside the build line rather than in it.
   - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
   - [x] 8.3.h (SCH lead) no request leaves a multipart temp file — 8.3's `useTempFiles: true` made Payload write one for every collection's POST/PATCH before access is checked, deleted only for upload collections (anonymous `/api/users` → 403 left ~94 MB); cleanup on every collection, global and error path, tested over the REST handler
-  - [ ] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers); and the stale comment in `media/src/storage/multipart.ts` (8.3.h replaced `media/temp-files`), `discardSentFile` simplified
+  - [x] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers); and the stale comment in `media/src/storage/multipart.ts` (8.3.h replaced `media/temp-files`), `discardSentFile` simplified
   - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 - [x] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — ✅ 2026-10-01 9396e35
@@ -1615,7 +1615,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 22.7.b C2's next minor version (the same release, v1.7 — 6.4 took v1.5): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
   - [ ] 22.7.d C10: an old item link whose slug part does not decode as UTF-8 — `%FF`, a Latin-1 `caf%E9`, raw UTF-8 bytes in the request line — reaches the item route by its canonical id with a fixed ASCII slug no item has (C10 names it), never the bytes as asked, which Next cannot decode into the route's param and answers with a bare 500; so it gets the one 308, its query kept (MIGRATION.md §6; 4.1 senior-fe #12, 4.3 senior-fe #4)
   - [ ] 22.7.e C2 v1.7 carries what 6.2.e found missing: `ImageVM.syntheticLabel` (not a boolean), a design's restoration steps on `ItemVM`, `PreviewVM` plates shaped on C9 `RoomPlate` (both framings × both crops); and C12 v1.7 `WorkSnapshot.master.objectBox`, its wording corrected; and ARC settles three room-plate questions from the imagery alignment: whether a plate photographed with a print placed in it is `composite` (C9 allows only `rendered` or `photograph`), whether room-scenes.md §10's recoloured-wall fallback is still a `photograph`, and whether the plate caption is one lexicon key or a per-plate field
-  - [ ] 22.7.f From 8.4: C12 `SnapshotImage.synthetic: SyntheticLabel | null` (a print listing's mockup keeps its label at the origin) and the renderer composing alt through C9's `renderedAlt()`; C1 declares `MAKER_ROLES` and `DATE_PRECISIONS` once (`config/src/schema/catalogue.ts`), C2, C12, i18n, migrate and cms derive from them
+  - [ ] 22.7.f From 8.4: C12 `SnapshotImage.synthetic: SyntheticLabel | null` (a print listing's mockup keeps its label at the origin) and the renderer composing alt through C9's `renderedAlt()`; C1 declares `MAKER_ROLES` and `DATE_PRECISIONS` once (`config/src/schema/catalogue.ts`), C2, C12, i18n, migrate and cms derive from them; C9 `opensWithLabel` gains a word boundary ("Digital mockups of…" is not a label — 8.3.i)
   - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; `/product/1706-caf%E9` and `/product/1706-%FF` parse to item 1706 with the fixed slug (`strict-paths.test.ts`), and on a production build the status spec sees each answer 308, never 500 (two cases in `tests/e2e/status/`, HAR's file: proposed in the report, added at merge); the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
 
 ---
@@ -2269,6 +2269,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 36.1.b `categories.json`: every legacy category id mapped to a facet selection
   - [ ] 36.1.c 👤 The curator reviews and signs both (about an hour)
   - [ ] 36.1.e 👤 The curator settles the gazetteer's gaps (8.4 Found 8): whole-archipelago maps (ARC recommends a leaf root `east-indies`, first in root order, historical names Oost-Indië, Nederlandsch-Indië, Insulinde, India Orientalis) and Southeast Asia, Asia, the world, Europe, Africa, the Americas and Arabia as regions under `beyond-indonesia` — the islands stay roots, so no path moves
+  - [ ] 36.1.f old-site alt text that opens with a synthetic label is stored without it — `withoutLabel()` (cms media, 8.3.i) with the brand's `image.synthetic.*` words — since the label is added at render (C9 v1.6)
   - [ ] 36.1.d **Check:** maker strings cluster into makers with aliases (never auto-merged below 0.9), `categories.json` maps every legacy category id to a facet selection, and the curator has reviewed and signed both (👤, ~1 hour).
 
 - [ ] **36.2 Old East Indies mapping and product import** · needs: 7.3, 9.2
@@ -2491,7 +2492,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.2.a the shop's production target — its secrets in Infisical from the start (D49: project `old-east-indies`, environments `staging` and `production`; copy staging's from Helios then)
   - [ ] 41.2.b the gallery's production target — provisioned early and kept dark for 42.7; its secrets in Infisical (D49: project `indies-gallery`, environments `staging` and `production`)
   - [ ] 41.2.c backups, the restore drill and monitoring for both — the 5xx rate sets apart, as its own series, a `500` whose path is under `^/(brand-assets|api/x)/` and contains `%` (DEPLOYMENT.md §7: Next's own answer to a path it cannot decode, ARCHITECTURE.md §13), ticketed past a rate and never paging; measured through CloudPanel's nginx, which may answer a malformed escape with its own 400 first
-  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`
+  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`; RustFS accepts PutBucketCors on `archive-masters` and refuses an unlisted origin or a non-PUT preflight (`STORAGE_TEST_REQUIRE_BUCKET_CORS=1`), each host plan's `mastersCors` lists its brands' admin origins with no `ifUnsupported` (local MinIO cannot hold a bucket CORS rule — 8.3.i); DEPLOYMENT §2 names `mastersCors`
   - [ ] 41.2.d **Check:** both production targets are provisioned with the owner's go-ahead, nightly dumps and storage replication run, a timed restore drill of one brand is recorded, and alerts (p95, 5xx, disk 80%, restart loop, job lag, outbox lag, webhook signature failures) fire in a test, while a planted `500` on an undecodable `/brand-assets/` path lands in its own series and pages no one, and a real `500` elsewhere still pages.
 
 ---

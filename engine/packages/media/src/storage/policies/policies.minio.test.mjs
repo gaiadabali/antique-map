@@ -1,4 +1,4 @@
-// The applied policies against a real MinIO (TASKS.md 8.3.c, 8.3.e, 8.3.g): what each key and an
+// The applied policies against a real MinIO (TASKS.md 8.3.c, 8.3.e, 8.3.g, 8.3.i): what each key and an
 // anonymous request may and may not do. Runs when STORAGE_TEST_ENDPOINT names the dev stack's S3
 // endpoint (http://localhost:9000), after `pnpm --filter @engine/media storage:policies` has
 // applied the local plan; STORAGE_TEST_ROOT_USER / _SECRET default to the dev container's root.
@@ -12,15 +12,18 @@ import { fileURLToPath } from 'node:url'
 
 import {
   DeleteObjectCommand,
+  GetBucketCorsCommand,
   GetObjectCommand,
+  PutBucketCorsCommand,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3'
 import { afterAll, describe, expect, it } from 'vitest'
 
-import { masterKey, printFileKey, derivativeKey } from '../../contract'
+import { derivativeKey, iiifFullKey, iiifPublicKey, masterKey, printFileKey } from '../../contract'
 import { s3MastersStore } from '../masters-store'
 import { UPLOADS_PREFIX } from '../prefixes'
+import { CORS_NOT_IMPLEMENTED, mastersCorsRules } from './cors.mjs'
 import { deriveLocalSecret } from './plan.mjs'
 
 const { fetch } = globalThis
@@ -163,5 +166,76 @@ describe.skipIf(!endpoint)('the applied storage policies, on MinIO', () => {
     expect(await anonymous('GET', MASTERS, printFile)).toBe(403)
     expect(await anonymous('PUT', MEDIA, `derivatives/${run}.webp`)).toBe(403)
     expect(await anonymous('GET', MEDIA, '')).toBe(403)
+  })
+
+  it('anonymously: the uncapped pyramid under iiif-full/ is refused, beside the public iiif/ (8.3.i)', async () => {
+    const id = sha(`${run}-pyramid`).slice(0, 32)
+    // The brand writes its own uncapped pyramid with its media key (C9 v1.6 iiifFullKey()).
+    const full = `${iiifFullKey('test', id)}/info.json`
+    const fullTile = `${iiifFullKey('test', id)}/full/max/0/default.jpg`
+    expect(await put(media, MEDIA, full)).toBe('written')
+    expect(await put(media, MEDIA, fullTile)).toBe('written')
+    const capped = `${iiifPublicKey(id)}/info.json`
+    const derivative = derivativeKey(id, 640, 'webp')
+    for (const key of [capped, derivative]) expect(await put(media, MEDIA, key)).toBe('written')
+    expect(await anonymous('GET', MEDIA, full)).toBe(403)
+    expect(await anonymous('GET', MEDIA, fullTile)).toBe(403)
+    expect(await anonymous('HEAD', MEDIA, full)).toBe(403)
+    // `iiif/` is named with its slash, so `iiif-full/` never matches it; the public parts stay public.
+    expect(await anonymous('GET', MEDIA, capped)).toBe(200)
+    expect(await anonymous('GET', MEDIA, derivative)).toBe(200)
+    // The media key reads its own full pyramid back, for the staff route (C13 fullTiles).
+    expect(await get(media, MEDIA, full)).toBe('read')
+  })
+
+  // MinIO's community edition implements no per-bucket CORS: PutBucketCors answers NotImplemented
+  // and every preflight is answered from the server-wide `api cors_allow_origin` (`*`). There the
+  // test skips, as `apply.mjs` warns; against RustFS (TASKS.md 41.2.e) run it with
+  // STORAGE_TEST_REQUIRE_BUCKET_CORS=1, so a storage without it fails.
+  it("the masters bucket's CORS admits an admin origin's signed PUT, and no other (8.3.i)", async ({
+    skip,
+  }) => {
+    const rules = mastersCorsRules(plan.mastersCors)
+    const apply = () =>
+      root.send(
+        new PutBucketCorsCommand({ Bucket: MASTERS, CORSConfiguration: { CORSRules: rules } }),
+      )
+    const refusal = await apply().then(
+      () => null,
+      (error) => error,
+    )
+    if (refusal && !process.env.STORAGE_TEST_REQUIRE_BUCKET_CORS) {
+      expect(`${refusal.name} ${refusal.message}`).toMatch(CORS_NOT_IMPLEMENTED)
+      skip(`${endpoint} implements no per-bucket CORS (${refusal.name}); apply.mjs warns locally`)
+    }
+    expect(refusal).toBeNull()
+    await apply() // Whole, so a second run changes nothing.
+    const { CORSRules } = await root.send(new GetBucketCorsCommand({ Bucket: MASTERS }))
+    expect(CORSRules).toHaveLength(1)
+    expect(CORSRules[0]).toMatchObject({
+      AllowedMethods: ['PUT'],
+      AllowedOrigins: rules[0].AllowedOrigins,
+    })
+    const preflight = (origin, method = 'PUT') =>
+      fetch(`${endpoint}/${MASTERS}/${capture}`, {
+        method: 'OPTIONS',
+        headers: {
+          origin,
+          'access-control-request-method': method,
+          'access-control-request-headers': 'content-type,x-amz-checksum-sha256',
+        },
+      })
+    const allowed = await preflight('http://localhost:4355')
+    expect(allowed.ok).toBe(true)
+    expect(allowed.headers.get('access-control-allow-origin')).toMatch(
+      /^(http:\/\/localhost:4355|\*)$/,
+    )
+    expect(allowed.headers.get('access-control-allow-methods')).toMatch(/PUT/)
+    for (const refused of [
+      await preflight('https://elsewhere.example'),
+      await preflight('http://localhost:4355', 'DELETE'),
+    ]) {
+      expect(refused.headers.get('access-control-allow-origin')).toBeNull()
+    }
   })
 })

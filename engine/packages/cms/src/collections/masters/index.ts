@@ -7,8 +7,10 @@
  * in memory. The upload is two steps — `POST /api/masters/upload-url` signs a PUT for one key,
  * length and SHA-256 (`./upload-url`), the client sends the bytes straight to the private masters
  * bucket, and creating the record completes it, once the bucket confirms it holds that file
- * (`./hooks`). With no `upload` in its config, Payload never parses a file sent to it, and the
- * storage plugin never touches it (`registries/storage`).
+ * (`./hooks`). With no `upload` in its config, Payload stores no file sent to it and the storage
+ * plugin never touches it (`registries/storage`); Payload still parses a multipart body to disk
+ * before access is checked, so the collection drops the file at once (`dropSentFile`) and the
+ * request's clean-up removes its temporary copy (`hooks/request-temp-files`, TASKS.md 8.3.h).
  *
  * **No public URL.** The record has no `url` field; the bucket allows no anonymous read; staff
  * alone read the record (`./access`). Presigned reads, with an access log, are TASKS.md 15.4's.

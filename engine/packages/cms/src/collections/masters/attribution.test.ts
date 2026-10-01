@@ -1,7 +1,3 @@
-import { existsSync, mkdtempSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-
 import { intakeMasterKey, masterKey, printFileKey } from '@engine/media/contract'
 import { describe, expect, it } from 'vitest'
 
@@ -13,7 +9,7 @@ import {
   keptBrands,
   type Brand,
 } from './attribution'
-import { discardSentFile, keepWhatIsFixed } from './hooks'
+import { discardSentFile, dropSentFile, keepWhatIsFixed } from './hooks'
 import { Masters } from './index'
 import { parseUploadRequest } from './upload-url'
 
@@ -126,15 +122,18 @@ describe('what a master is never changes (findings 3, 4)', () => {
 })
 
 describe('a file sent to masters is never kept', () => {
-  it('drops the request’s file and deletes its temporary copy', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'masters-test-'))
-    const path = join(dir, 'tmp-upload')
-    writeFileSync(path, 'bytes that should never have come here')
-    const req = { file: { tempFilePath: path, data: Buffer.alloc(0), size: 38 } } as never
-    await discardSentFile(req)
-    expect(existsSync(path)).toBe(false)
-    expect((req as { file?: unknown }).file).toBeUndefined()
-    await expect(discardSentFile({ file: undefined } as never)).resolves.toBeUndefined()
+  it('drops the request’s file, leaving its temporary copy to the request’s clean-up (8.3.h)', () => {
+    const file = { tempFilePath: '/tmp/indies-uploads/tmp-upload', data: Buffer.alloc(0), size: 38 }
+    const req = { file, files: { file } } as { file?: unknown; files: { file: unknown } }
+    discardSentFile(req as never)
+    expect(req.file).toBeUndefined()
+    // `hooks/request-temp-files` removes every temp file it finds on `req.files` once answered.
+    expect(req.files.file).toBe(file)
+    expect(() => discardSentFile({ file: undefined } as never)).not.toThrow()
+  })
+
+  it('is the collection’s first hook, before any operation', () => {
+    expect(Masters.hooks?.beforeOperation?.[0]).toBe(dropSentFile)
   })
 })
 
