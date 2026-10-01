@@ -7,8 +7,8 @@
 **Disiapkan:** 1 Oktober 2026 · **Status:** belum dikirim (TASKS.md OA3, 6.2.b)
 
 > **Sebelum dikirim** (untuk orkestrator — kotak ini bukan bagian dari pesan): isi keempat
-> placeholder `{…}`, bersamaan dengan versi bahasa Inggris, dan pilih "Bapak" atau "Ibu"
-> di salam pembuka; lampirkan atau tautkan versi bahasa Indonesia panduan-panduannya —
+> placeholder `{…}`, bersamaan dengan versi bahasa Inggris, dengan salam "Bapak"
+> (dipilih 2026-10-01); lampirkan atau tautkan versi bahasa Indonesia panduan-panduannya —
 > [gallery-guide.id.md](gallery-guide.id.md), ketiga shot list galeri
 > ([peta](shot-lists/map.id.md), [cetakan](shot-lists/print.id.md),
 > [foto bersejarah](shot-lists/photograph.id.md)), [shop-guide.id.md](shop-guide.id.md),
@@ -19,11 +19,11 @@
 > `owner-interview-toko.id.md`) tidak menanyakan apa pun tentang peralatan, jadi keduanya
 > tidak tumpang tindih; pertanyaan S14 di sana (merekam cara cetakan dibuat) memakai hari
 > pemotretan yang sama — jika pemilik menjawab ya, tambahkan foto `showroom_making` di
-> sini. Semua mulai dari salam pembuka ("Bapak/Ibu … yang kami hormati") adalah pesannya.
+> sini. Semua mulai dari salam pembuka ("Bapak … yang kami hormati") adalah pesannya.
 
 ---
 
-Bapak/Ibu {owner's name} yang kami hormati,
+Bapak {owner's name} yang kami hormati,
 
 Kami sedang merancang halaman-halaman baru untuk kedua situs, dan foto-fotolah yang paling
 menentukan bagus tidaknya tampilan halaman itu — lebih dari apa pun yang kami gambar.
