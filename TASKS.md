@@ -22,7 +22,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 29/29 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 1/7 | 34/52 | 1 | `███████░░░`  65% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 1/7 | 34/54 | 1 | `██████░░░░`  63% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 3/6 | 20/35 | 1 | `██████░░░░`  57% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **35/186** | **232/908** | **45** | `███░░░░░░░`  26% |
+| **All** | 44 phases | | | **35/186** | **232/910** | **45** | `███░░░░░░░`  25% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -160,7 +160,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.e cut (D20); ⛔ 👤 6.1.i the gallery's phone and viewing addresses, the shop's owed items |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
 | 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5 |
-| 6·W3 | 6.5 Brand configs, app supports and their rules | medior | agent worktree | 2026-10-01 | the gallery's phone a marked placeholder until 6.1.i |
+| 6·W3 | 6.5 Brand configs, app supports and their rules | medior | agent worktree | 2026-10-01 | a–e done; fix round: the 13 config and proxy tests that assumed the old gallery config (Owns widened for those cases); `my-account` kept for C10's required segment; 6.5.g after 6.7.g |
 | 6·W3 | 6.6 Journeys and briefs follow D51, D52, D54 | senior-uiux (6.6.f) | agent worktree | 2026-10-01 | a–e merged (4a19d73); 6.6.f settling the shop journeys' stale 6.4 items |
 | 6·W3 | 6.7 The docs outside 6.4's Owns (+ 6.2.j) | architect | agent worktree | 2026-10-01 | 6.2.j folded in: both touch MIGRATION.md |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
@@ -745,6 +745,7 @@ run beside the build line rather than in it.
   - [ ] 6.5.c The `test` brand: the emporium config adds `purchase.checkout: true`; the gallery config follows 6.5.a
   - [ ] 6.5.d The gallery app's `supports.ts` refuses `accounts.buyers`, `retention.wishlist`, `retention.wantList`, `purchase.checkout`, `purchase.offers` and `purchase.holds`, its header saying why (D50, D54); the validation tests' stated supports (`C1_STATED_SUPPORTS`) follow
   - [ ] 6.5.e PLT: the three rules C1 v1.5's header lists — `buy` only with `purchase.checkout`, `call` only with `identity.contact.phone`, `invoiceNoticeHours` below `invoiceHoldDays` in hours — each with a failing-config test
+  - [ ] 6.5.g after 6.7.g: the shop's gift note switched on (S10 — a gift note only; no wrap, no gift cards); the gallery's phone and WhatsApp placeholders (`+15555550199`, `+15555550100`) replaced once 6.1.i gives them
   - [ ] 6.5.f **Check:** `validateBrandConfigs()` and `pnpm check:brands` pass for every brand; a gallery config with any refused module, or with `buy`, fails (tests); C10 `hasSurface` gives the gallery no cart, checkout or account area and the shop its cart (test); `check-generated` shows no drift.
 
 - [ ] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4 — 🔄 6·W3
@@ -769,6 +770,7 @@ run beside the build line rather than in it.
   - [ ] 6.7.c BRANDS.md §4: the gallery's example on request — `uniquePrices: "on-request"`, the one conversation tier, `invoiceHoldDays` 3 and `invoiceNoticeHours` 24 (D45); §5: the module table — `purchase.checkout` (the shop's only), the gallery without offers, holds, buyer accounts or the account wishlist, the shop without gift cards at launch (S10), and the sister link's wording
   - [ ] 6.7.d DESIGN-SYSTEM.md §2: `Location` without "in the showroom now" stock (D52) and the gallery's header with no basket and no account (D50, D54); §3: no viewer relation at the gallery at launch
   - [ ] 6.7.e PLAN.md: no "under USD 2,000" filter or price-named alert (D50), no gift cards or export checkout at launch (S3, S10); CONVENTIONS.md §8: the gallery's E2E row — enquiry → invoice → pay page → paid or lapsed — in place of "offer → accept → pay; hold → expire"
+  - [ ] 6.7.g C1: gift notes split from `commerce.giftWrap` (S10 — the shop offers a note, never wrap), minor version per CONTRACTS.md, COMMERCE.md §10 and EXPERIENCE-SHOP.md following; `AppSupports`' doc comment lists every module the gallery omits (D50, D54); a ruling on when a gallery invoice offers bank transfer (EXPERIENCE-GALLERY §5 and COMMERCE §7 vs PAYMENTS §6)
   - [ ] 6.7.f **Check:** a search of the six docs finds no gallery sign-in, claim flow, shown price or online offer, no provider-hosted payment page, no "In the showroom now" stock, no shop checkout abroad at launch and no 7-day invoice term, and each change names its decision.
 
 ---
