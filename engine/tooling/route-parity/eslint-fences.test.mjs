@@ -1,10 +1,15 @@
 // TASKS.md 5.4.b — ARCHITECTURE.md §15's package fences, each proven by a planted violation that
 // the repository's own ESLint config (eslint.config.mjs) refuses by file and passes once it is
 // gone. Nothing is written to disk: `lintText` lints the text as if it lived at that path.
-import { join } from 'node:path'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join, relative, sep } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 import { ESLint } from 'eslint'
 import { beforeAll, describe, expect, it } from 'vitest'
+
+import { reachedBy } from './eslint-fences.mjs'
 
 const repoRoot = process.cwd()
 let eslint
@@ -229,6 +234,53 @@ describe(
       [`${HTTP}/legacy/route.ts`, "import type Payload = require('payload')\n"],
     ])('passes %s: %s', async (path, code) => {
       expect(await fencesAt(path, code)).toEqual([])
+    })
+  },
+)
+
+describe(
+  'a held createRequire, and a file:, absolute or # specifier (qa re-gate L5)',
+  LOADED,
+  () => {
+    const CMS_FILE = join(repoRoot, 'engine', 'packages', 'cms', 'src', 'instance.ts')
+    const posixPath = CMS_FILE.split(sep).join('/')
+    it.each([
+      "import { createRequire } from 'node:module'\nconst r = createRequire(import.meta.url)\nr('payload')\n",
+      "import module from 'node:module'\nmodule.createRequire(import.meta.url)('payload')\n",
+      "import module from 'node:module'\nconst load = module.createRequire(import.meta.url)\nload('@engine/cms')\n",
+      `import { cms } from '${pathToFileURL(CMS_FILE).href}'\n`,
+      `import { cms } from '${posixPath}'\n`,
+    ])('refuses %s', async (code) => {
+      expect(await fencesAt(`${HTTP}/legacy/route.ts`, code)).toEqual(['fences/payload-by-value'])
+    })
+
+    it('passes a call of any other function, and a held createRequire of a free package', async () => {
+      const code =
+        "import { createRequire } from 'node:module'\nconst r = createRequire(import.meta.url)\n" +
+        "r('zod')\nconst f = (x) => x\nf('payload')\n"
+      expect(await fencesAt(`${HTTP}/legacy/route.ts`, code)).toEqual([])
+    })
+
+    it('reads a # subpath import through the nearest package.json', () => {
+      const root = mkdtempSync(join(tmpdir(), 'fence-hash-'))
+      try {
+        const toCms = relative(root, CMS_FILE).split(sep).join('/')
+        writeFileSync(
+          join(root, 'package.json'),
+          JSON.stringify({
+            imports: {
+              '#cms': '@engine/cms/instance',
+              '#deep/*': `./${toCms.replace('instance.ts', '*.ts')}`,
+            },
+          }),
+        )
+        const importer = join(root, 'x.ts')
+        expect(reachedBy('#cms', importer)).toBe('@engine/cms/instance')
+        expect(reachedBy('#deep/instance', importer)).toBe('@engine/cms/instance')
+        expect(reachedBy('#nothing', importer)).toBe('#nothing')
+      } finally {
+        rmSync(root, { recursive: true, force: true })
+      }
     })
   },
 )

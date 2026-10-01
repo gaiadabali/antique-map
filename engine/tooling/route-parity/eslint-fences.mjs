@@ -3,7 +3,8 @@
 // behavioural half. ESLint rules only: `eslint.config.mjs` names the files each one covers. Each
 // rule is its own name, so no scope's options replace another's (a flat config keeps a rule's
 // last options).
-import { dirname, relative, resolve } from 'node:path'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { PAYLOAD_SPECIFIER } from './refusal.mjs'
@@ -38,26 +39,84 @@ const subpathOf = (rest = '') =>
  * leaves it is named as if it had used the package's name — `../../http/src/revalidate/route`
  * from cms is `@engine/http/revalidate` — or, outside every engine package, `payload` for an
  * installed Payload and `<repo>/<path>` for anything else. So a fence cannot be walked around by
- * spelling the path out.
+ * spelling the path out, as a relative, absolute or `file:` path or a `#` subpath import.
  */
 export function reachedBy(source, filename) {
-  if (!source.startsWith('.') && !source.startsWith('/')) return source
-  const target = posix(relative(repoRoot, resolve(dirname(filename), source)))
+  const path = pathOf(source, filename)
+  if (path === null) return source
+  if (typeof path === 'object') return reachedBy(path.specifier, filename) // a `#` alias of one
+  const target = posix(relative(repoRoot, path))
   const own = PACKAGE_FILE.exec(posix(relative(repoRoot, filename)))?.[1]
   const [, pkg, rest] = PACKAGE_FILE.exec(target) ?? []
-  if (pkg !== undefined && pkg === own) return source
+  if (pkg !== undefined && pkg === own && source.startsWith('.')) return source
+  if (pkg !== undefined && pkg === own) return `./${posix(relative(dirname(filename), path))}`
   if (pkg !== undefined) return ['@engine', pkg, subpathOf(rest)].filter(Boolean).join('/')
   if (/(?:^|\/)node_modules\/(?:\.pnpm\/)?(?:payload|@payloadcms)(?:[/@+]|$)/.test(target))
     return 'payload'
   return `<repo>/${target}`
 }
 
-/** `require('x')` and `createRequire(…)('x')`: the call's specifier node, or `undefined`. */
-const requireArgument = (node) => {
+/**
+ * The file a specifier names, or `null` for a bare one: a relative or absolute path, a `file:`
+ * URL, or a `#` subpath import read from the importer's nearest package.json `imports` (qa's 5.4
+ * re-gate, L5) — `{ specifier }` when that maps to a bare specifier.
+ */
+function pathOf(source, filename) {
+  if (source.startsWith('file:')) return fileURLToPath(source)
+  if (isAbsolute(source)) return source
+  if (source.startsWith('.')) return resolve(dirname(filename), source)
+  if (!source.startsWith('#')) return null
+  for (let dir = dirname(filename); ; dir = dirname(dir)) {
+    const file = join(dir, 'package.json')
+    if (existsSync(file)) {
+      const imports = JSON.parse(readFileSync(file, 'utf8')).imports ?? {}
+      for (const [key, value] of Object.entries(imports)) {
+        const [head, tail = ''] = key.split('*')
+        const exact = !key.includes('*') && key === source
+        const match = key.includes('*') && source.startsWith(head) && source.endsWith(tail)
+        if (!exact && !match) continue
+        const star = match ? source.slice(head.length, source.length - tail.length) : ''
+        const target = firstString(value)?.replace('*', star)
+        if (!target) return null
+        return target.startsWith('.') ? resolve(dir, target) : { specifier: target }
+      }
+      return null
+    }
+    if (dirname(dir) === dir) return null
+  }
+}
+
+/** The first string leaf of an `imports` value (conditions are refused by route parity). */
+const firstString = (value) =>
+  typeof value === 'string'
+    ? value
+    : Array.isArray(value)
+      ? value.map(firstString).find(Boolean)
+      : value && typeof value === 'object'
+        ? Object.values(value).map(firstString).find(Boolean)
+        : undefined
+
+const isCreateRequire = (callee) =>
+  callee?.type === 'CallExpression' &&
+  (callee.callee.name === 'createRequire' || callee.callee.property?.name === 'createRequire')
+
+/**
+ * The specifier node of a `require('x')`, `module.require('x')`, `createRequire(…)('x')`,
+ * `module.createRequire(…)('x')`, or `r('x')` for a `const r = createRequire(…)` (qa's 5.4
+ * re-gate, L5); `undefined` for any other call.
+ */
+const requireArgument = (node, context) => {
   const callee = node.callee
+  const heldRequire = () => {
+    for (let scope = context.sourceCode.getScope(node); scope; scope = scope.upper) {
+      const variable = scope.set.get(callee.name)
+      if (variable) return isCreateRequire(variable.defs[0]?.node.init)
+    }
+    return false
+  }
   const isRequire =
-    (callee.type === 'Identifier' && callee.name === 'require') ||
-    (callee.type === 'CallExpression' && callee.callee.name === 'createRequire') ||
+    (callee.type === 'Identifier' && (callee.name === 'require' || heldRequire())) ||
+    isCreateRequire(callee) ||
     (callee.type === 'MemberExpression' && callee.property.name === 'require')
   return isRequire ? node.arguments[0] : undefined
 }
@@ -87,7 +146,7 @@ export const fence = ({ banned, why, lazy = false }) => ({
         node.moduleReference.type === 'TSExternalModuleReference' &&
         check(node, node.moduleReference.expression, node.importKind === 'type'),
       CallExpression: (node) => {
-        const argument = requireArgument(node)
+        const argument = requireArgument(node, context)
         if (argument) check(node, argument, false)
       },
       ...(!lazy && { ImportExpression: (node) => check(node, node.source, false) }),
