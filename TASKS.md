@@ -24,14 +24,14 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 18/37 | 4 | `█████░░░░░`  49% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/19 | 0 | `██████░░░░`  63% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/4 | 12/25 | 0 | `█████░░░░░`  48% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
-| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
@@ -57,11 +57,11 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | · not started | 0/4 | 0/15 | 0 | `░░░░░░░░░░`   0% |
-| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/9 | 0 | `░░░░░░░░░░`   0% |
+| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/10 | 0 | `░░░░░░░░░░`   0% |
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **31/178** | **209/856** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **31/179** | **209/864** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -161,8 +161,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
 | 6·W1 | 6.3 Voice and lexicon | medior (6.3.m) | agent worktree | 2026-10-01 | 6.3.j (25828e9) and 6.3.l (a2aaea7) merged; 6.3.m gating the +30% rule in `check-brands`; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
-| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (reported done, 562d48c) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | trial-merged with 8.3 on 7968cf9 + registry test fix: verify 1674 passed, only the schema drift 10.3.a clears; independent senior-be review to re-run (hit the usage limit) |
-| 8·W1 | 8.3 Media and masters | — (reported done, b8f5181) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | independent senior-integrator review to re-run (hit the usage limit); asks `upload.limits.fileSize` in `payload.config.ts` (SCH) |
+| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | senior-db (fix round S1–S3, N1, N3–N6) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | review: sign off with should-fix; trial-merged with 8.3 on 7968cf9 + registry test fix: verify 1674 passed, only the schema drift 10.3.a clears; independent senior-be review to re-run (hit the usage limit) |
+| 8·W1 | 8.3 Media and masters | senior-be (fix round 1–6, 8, 9) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | review: sign off with should-fix; granted `payload.config.ts` `upload` for the round; asked `upload.limits.fileSize` in `payload.config.ts` (SCH) |
+| 8·W1 | 8.4 What 8.1's and 8.3's reviews decided, in the docs and C9 | architect | agent worktree (ARC) | 2026-10-01 | from the two reviews' ARC items |
 
 ## Decisions for the owner
 
@@ -794,7 +795,7 @@ run beside the build line rather than in it.
 
 **Goal:** the discovery vocabulary, the works collection and the media and masters collections.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
-**Waves:** W1 — 8.1, 8.3 · W2 — 8.2
+**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2
 
 - [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
@@ -832,6 +833,18 @@ run beside the build line rather than in it.
   - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
   - [x] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
+
+- [ ] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — 🔄 8·W1
+  - **Lane** ARC · **Agent** architect · **Wave** W1
+  - **Owns** `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT}.md`, `engine/packages/media/src/{contract.ts,contract/**}` (C9), `docs/PARALLEL-TRACKS.md` §1 (the cms tests line)
+  - **Read** the two reviews (`.claude/specs/indies-platform/reviews/8.1-senior-be.md`, `8.3-senior-integrator.md`), CONTRACTS.md (versioning), ARCHITECTURE.md §7, CONTENT-MODEL.md §3, §6, DEPLOYMENT.md §2, §8
+  - _Requirements: 4.3, 4.6_
+  - [ ] 8.4.a C9 minor version: `iiifFullKey` names a private `iiif-full/` prefix in the brand's own media bucket (both brands — the outlet's masters key writes only `print-files/`), with its changelog entry; `isPublicMediaKey` stays false for it
+  - [ ] 8.4.b a synthetic image's label is added at render from `provenance` (lexicon `image.syntheticAlt.*`), never stored in `alt`: CONTENT-MODEL.md §6 and C9 reworded ("rendered alt text"), so a cataloguer cannot delete it
+  - [ ] 8.4.c `media` is read by the loaders only (Local API): public REST and GraphQL reads of `media` are refused — ARCHITECTURE.md §7, CONTENT-MODEL.md §6
+  - [ ] 8.4.d DEPLOYMENT.md §2/§8: a media bucket is public only under `derivatives/` and `iiif/`, uploads private under `uploads/`; the bucket policies are applied from `@engine/media`'s plan files with each host's keys from its secrets; a CDN never bypasses the bucket policy; the masters bucket's CORS admits the admin origin; the archive's delete-capable key is separate from the web process's; worktrees may use the plan's scoped keys locally
+  - [ ] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
+  - [ ] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
 
 ---
 
@@ -1113,6 +1126,7 @@ run beside the build line rather than in it.
   - [ ] 15.1.a The derivative job: AVIF + WebP at 320/640/1024/1600/2400 px and a blur placeholder, with `sharp` concurrency capped
   - [ ] 15.1.b Queue wiring through `@engine/media/jobs` (run by `/api/x/cron/jobs`), with the job's status on the media record
   - [ ] 15.1.c A custom `next/image` loader that picks from the ladder
+  - [ ] 15.1.e `sharp`'s `limitInputPixels` kept on (a decompression bomb refused) and its concurrency capped; Payload's `adminThumbnail` set to a derivative, so the admin list never loads full originals (8.3 review)
   - [ ] 15.1.d **Check:** an upload produces AVIF + WebP at 320/640/1024/1600/2400 and a blur placeholder via a Payload job with a concurrency cap, and a custom `next/image` loader picks from the ladder.
 
 - [ ] **15.2 IIIF tiling — the queue job and the bulk CLI** · needs: 15.1
@@ -1122,7 +1136,7 @@ run beside the build line rather than in it.
   - _Requirements: 4.2_
   - [ ] 15.2.a the tiler (pure, shared by both paths) and the queue job
   - [ ] 15.2.b the off-box CLI with resume, a dry run and a per-item report
-  - [ ] 15.2.c **Check:** `sharp().tile({ layout: 'iiif3', size: 512 })` writes Level 0 tiles and `info.json` to the brand bucket; **public tiles stop at the configured resolution cap** while the full-resolution pyramid goes to the private prefix; the queue job (new uploads, `sharp.concurrency` capped, run by `/api/x/cron/jobs`) is idempotent and retried and the media record shows its status; and `pnpm media:tile` tiles a batch **off-box** — on a workstation or CI runner, straight to the bucket, resumable, updating records through the API — for the migration (36.3).
+  - [ ] 15.2.c **Check:** `sharp().tile({ layout: 'iiif3', size: 512 })` writes Level 0 tiles and `info.json` to the brand bucket; **public tiles stop at the configured resolution cap** while the full-resolution pyramid goes to the private `iiif-full/` prefix of the brand's own media bucket (C9, 8.4.a), anonymously 403; the queue job (new uploads, `sharp.concurrency` capped, run by `/api/x/cron/jobs`) is idempotent and retried and the media record shows its status; and `pnpm media:tile` tiles a batch **off-box** — on a workstation or CI runner, straight to the bucket, resumable, updating records through the API — for the migration (36.3).
 
 - [ ] **15.3 IIIF Presentation manifests** · needs: 8.2, 15.2
   - **Lane** MED · **Agent** medior · **Wave** W3
@@ -1138,7 +1152,7 @@ run beside the build line rather than in it.
   - **Owns** `engine/packages/media/src/masters/**`
   - **Read** ARCHITECTURE.md §7, MIGRATION.md §9
   - _Requirements: 4.3, 4.4_
-  - [ ] 15.4.a The presigned-PUT upload flow into the private bucket, recording pixels, ppi, colour profile and checksum
+  - [ ] 15.4.a On the presigned-PUT flow 8.3.b built (key, length and SHA-256 signed; checksum recorded): measure and record the stored master's pixels, ppi and colour profile
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
   - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
@@ -2367,6 +2381,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.2.a the shop's production target — its secrets in Infisical from the start (D49: project `old-east-indies`, environments `staging` and `production`; copy staging's from Helios then)
   - [ ] 41.2.b the gallery's production target — provisioned early and kept dark for 42.7; its secrets in Infisical (D49: project `indies-gallery`, environments `staging` and `production`)
   - [ ] 41.2.c backups, the restore drill and monitoring for both — the 5xx rate sets apart, as its own series, a `500` whose path is under `^/(brand-assets|api/x)/` and contains `%` (DEPLOYMENT.md §7: Next's own answer to a path it cannot decode, ARCHITECTURE.md §13), ticketed past a rate and never paging; measured through CloudPanel's nginx, which may answer a malformed escape with its own 400 first
+  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`
   - [ ] 41.2.d **Check:** both production targets are provisioned with the owner's go-ahead, nightly dumps and storage replication run, a timed restore drill of one brand is recorded, and alerts (p95, 5xx, disk 80%, restart loop, job lag, outbox lag, webhook signature failures) fire in a test, while a planted `500` on an undecodable `/brand-assets/` path lands in its own series and pages no one, and a real `500` elsewhere still pages.
 
 ---
