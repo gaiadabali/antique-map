@@ -6,12 +6,12 @@
  * with more decimals than its currency has goes to review rather than being
  * rounded here (CONVENTIONS.md §3: rounding happens only at the named
  * rounding points). The exponents are the engine's (C1 `CURRENCY_EXPONENT`),
- * passed in through the tables. A zero price, a currency the tables do not
+ * passed in through the tables, which accept no other. A zero price, a currency the tables do not
  * know, or a price beside a set on-request flag goes to review.
  */
-import type { NormaliseTables } from './tables.ts'
+import { hasExponent, type NormaliseTables } from './tables.ts'
 import { clean, isBlank, key } from './text.ts'
-import { accept, empty, review, type Parsed, type PriceValue } from './types.ts'
+import { accept, empty, review, type Money, type Parsed, type PriceValue } from './types.ts'
 
 const PRICE_TEXT = /^(?:([A-Z]{3})\s*)?(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d+))?(?:\s*([A-Z]{3}))?$/
 
@@ -56,7 +56,7 @@ export function parsePrice(input: PriceInput, tables: NormaliseTables): Parsed<P
   return accept(raw, fixed)
 }
 
-type Amount = { amount: number; currency: string } | { problem: string }
+type Amount = Money | { problem: string }
 
 function parseAmount(text: string, tables: NormaliseTables): Amount {
   const match = PRICE_TEXT.exec(text.replace(/\s+/g, ' ').trim())
@@ -64,6 +64,9 @@ function parseAmount(text: string, tables: NormaliseTables): Amount {
   const [, before, whole = '', fraction = '', after] = match
   if (before !== undefined && after !== undefined) return { problem: 'two currency codes' }
   const currency = before ?? after ?? tables.currency
+  if (!hasExponent(tables, currency)) {
+    return { problem: `a currency the tables do not know (${currency})` }
+  }
   const exponent = tables.currencyExponents[currency]
   if (exponent === undefined) return { problem: `a currency the tables do not know (${currency})` }
   // "1.500" may be a thousands separator, "12.345" a third decimal: neither is read, or rounded, here.

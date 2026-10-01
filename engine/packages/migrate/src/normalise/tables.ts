@@ -8,6 +8,23 @@
  * store-specific phrase at all — so with the defaults, anything store-specific
  * lands in the review file rather than being guessed.
  */
+import type { CURRENCY_EXPONENT, CurrencyCode } from '@engine/config/constants'
+
+/**
+ * C1's `CURRENCY_EXPONENT`, restated: the CLIs run under Node's type stripping,
+ * which cannot load `@engine/config/constants` (its relative imports carry no
+ * extension), so the values live here — typed as C1's own literal type, so tsc
+ * refuses a drift, and checked against C1's values by `test/exponents.test.ts`.
+ * A tables file may name only these currencies, at these exponents.
+ */
+export const ENGINE_CURRENCY_EXPONENT: typeof CURRENCY_EXPONENT = {
+  IDR: 0,
+  USD: 2,
+  SGD: 2,
+  EUR: 2,
+  AUD: 2,
+  GBP: 2,
+}
 
 export type GradeTerm = {
   /** The term as the scale publishes it: `VG+`. */
@@ -23,14 +40,15 @@ export type NormaliseTables = {
   readonly grades: readonly GradeTerm[]
   /** Stock phrases the store appended to every condition ("study the images"), dropped from notes. */
   readonly conditionBoilerplate: readonly string[]
-  /** The currency a bare amount (a database decimal) is in. */
-  readonly currency: string
+  /** The currency a bare amount (a database decimal) is in: one of `currencyExponents`. */
+  readonly currency: CurrencyCode
   /**
-   * Minor-unit exponents of the currencies the old store priced in — the
-   * engine's own (C1 `CURRENCY_EXPONENT`), never ISO's assumed: this package
-   * does not depend on `@engine/config`, so the CLI passes them in.
+   * Minor-unit exponents of the currencies the old store priced in — a subset
+   * of the engine's own (C1 `CURRENCY_EXPONENT`), never ISO's assumed; a price
+   * in any other currency goes to review. `parseTables` refuses an exponent
+   * that is not `ENGINE_CURRENCY_EXPONENT`'s.
    */
-  readonly currencyExponents: Readonly<Record<string, number>>
+  readonly currencyExponents: Readonly<Partial<Record<CurrencyCode, number>>>
   /** Price text meaning "price on request". */
   readonly onRequest: readonly string[]
   /** Price text meaning "no price shown" (a sold item's dash). */
@@ -121,7 +139,30 @@ export function parseTables(
       throw new Error(`normalise tables: "${name}" has the wrong shape`)
     out[name] = name === 'grades' ? parseGrades(value) : value
   }
-  return out as NormaliseTables
+  const tables = out as NormaliseTables
+  for (const [code, exponent] of Object.entries(tables.currencyExponents)) {
+    if (!isEngineCurrency(code) || ENGINE_CURRENCY_EXPONENT[code] !== exponent) {
+      throw new Error(
+        `normalise tables: "currencyExponents" ${code}: ${exponent} is not the engine's (C1 CURRENCY_EXPONENT)`,
+      )
+    }
+  }
+  if (!hasExponent(tables, tables.currency)) {
+    throw new Error(
+      `normalise tables: "currency" ${String(tables.currency)} has no entry in "currencyExponents"`,
+    )
+  }
+  return tables
+}
+
+/** A code the engine prices in (C1). */
+export function isEngineCurrency(code: string): code is CurrencyCode {
+  return Object.hasOwn(ENGINE_CURRENCY_EXPONENT, code)
+}
+
+/** A code these tables give an exponent for — always an engine currency, `parseTables` sees to it. */
+export function hasExponent(tables: NormaliseTables, code: string): code is CurrencyCode {
+  return isEngineCurrency(code) && tables.currencyExponents[code] !== undefined
 }
 
 function parseGrades(value: unknown): GradeTerm[] {
