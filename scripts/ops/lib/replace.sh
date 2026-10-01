@@ -219,6 +219,8 @@ delete_old_site() {
   clpctl site:delete --domainName="$S_REPLACE" --force
 }
 
+old_site_gone() { [ ! -e "$VHOST_DIR/$S_REPLACE.conf" ] && ! id -u "$S_USER" >/dev/null 2>&1 && [ ! -e "$S_HOME" ]; }
+
 # replace_site — in the apply loop, before ensure_cloudpanel_site. Returns 1 when the site's
 # remaining steps must not run (refused, or the delete left something behind).
 replace_site() {
@@ -254,6 +256,8 @@ replace_site() {
     REPLACE_PLANNED=1
     return 0
   fi
+  # clpctl reports the delete before it has removed the site user and home: wait for them.
+  wait_for 60 old_site_gone || true
   if [ -e "$VHOST_DIR/$S_REPLACE.conf" ] || id -u "$S_USER" >/dev/null 2>&1 || [ -e "$S_HOME" ]; then
     fail "clpctl site:delete $S_REPLACE left$([ -e "$VHOST_DIR/$S_REPLACE.conf" ] && printf ' its vhost')$(id -u "$S_USER" >/dev/null 2>&1 && printf ' the user %s' "$S_USER")$([ -e "$S_HOME" ] && printf ' %s' "$S_HOME"): no new site is made over them — look, remove by hand, re-run"
     return 1
