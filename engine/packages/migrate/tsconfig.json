@@ -1,0 +1,9 @@
+{
+  "extends": "../../tooling/tsconfig/package.tsconfig.json",
+  "//": "The CLIs run as TypeScript under Node's type stripping (no build step), so relative imports carry their .ts extension and only erasable syntax is allowed.",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true
+  }
+}
