@@ -23,7 +23,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 16/35 | 4 | `█████░░░░░`  46% |
-| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 2/5 | 15/22 | 2 | `███████░░░`  68% |
+| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 2/5 | 16/23 | 2 | `███████░░░`  70% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/18 | 0 | `███████░░░`  67% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **28/178** | **199/850** | **47** | `██░░░░░░░░`  23% |
+| **All** | 44 phases | | | **28/178** | **200/851** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -767,11 +767,12 @@ run beside the build line rather than in it.
 
 - [ ] **7.4 Wire the migrate package** · needs: 7.2, 7.3.c — 🔄 7·W3
   - **Lane** MIG · **Agent** junior (MIG-A) · **Wave** W3
-  - **Owns** `engine/packages/migrate/{package.json,src/index.ts}`, `engine/packages/migrate/src/sources/csv-products/index.ts`, `engine/packages/migrate/src/normalise/{price.ts,tables.ts,types.ts}`, `engine/packages/migrate/src/normalise/test/**` (7.4.d), `pnpm-lock.yaml` (through `pnpm install` only)
+  - **Owns** `engine/packages/migrate/{package.json,src/index.ts}`, `engine/packages/migrate/src/sources/{csv-products,laravel-catalogue}/index.ts`, `engine/packages/migrate/src/normalise/{price.ts,tables.ts,types.ts}`, `engine/packages/migrate/src/normalise/test/**` (7.4.d), `pnpm-lock.yaml` (through `pnpm install` only)
   - **Read** `engine/packages/migrate/README.md`, `src/normalise/README.md`, CONTRACTS.md (C1 `CURRENCY_EXPONENT`, C2 `FuzzyDateVM`/`SizeVM`, C5 `Money`), the 7.1–7.3 Log entries
   - _Requirements: 16.2_
-  - [ ] 7.4.a the `./normalise` export and a `legacy:normalise` script; `src/index.ts` re-exports the normalisers and both source adapters; `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves
-  - [ ] 7.4.b `@engine/config` as a `workspace:*` dependency — currency exponents come from `CURRENCY_EXPONENT`, the tables' exponent field removed — and `@engine/view-models` type-only, with a compile-time check that the normalisers' date, size and price shapes are C2/C5's
+  - [x] 7.4.a the `./normalise` export and a `legacy:normalise` script; `src/index.ts` re-exports the normalisers and both source adapters; `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves
+  - [ ] 7.4.e `laravel-catalogue/index.ts`, so `@engine/migrate/sources/laravel-catalogue` resolves as the package README says
+  - [ ] 7.4.b `@engine/config` as a `workspace:*` dependency — the tables' currency exponents **pinned to `CURRENCY_EXPONENT` by a drift test** and the currency typed `CurrencyCode` (type-only import), since plain Node cannot load `@engine/config/constants` at runtime (extensionless imports; 7.4's report) — and `@engine/view-models` type-only, with a compile-time check that the normalisers' date, size and price shapes are C2/C5's
   - [ ] 7.4.d a named fixture test for each dirty-data case MIGRATION.md §4 gained in 7.5 — sizes in both orders, `G-`, the extra SKU prefixes and `DavDw`, technique words in the colour field, a sold page's "-" price, `Year: null` beside a dated panel, a maker in the place slot — and "SKUs in two patterns" renamed to match the doc
   - [ ] 7.4.c **Check:** `pnpm verify` green; `pnpm --filter @engine/migrate legacy:normalise public-read` reproduces 7.2's counts on the 1,823 crawled records; a type test fails when a normaliser shape drifts from C2/C5.
 
@@ -2626,6 +2627,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — 7.4 reported partial (2a14caa): 7.4.a ticked (`./normalise` export, `legacy:normalise`, `src/index.ts`, `csv-products/index.ts` as typed data — `.mjs` cannot be re-exported with `allowJs` false); C2 type checks in `contracts.test-d.ts` fail on planted drift; `legacy:normalise` reproduces 7.2's counts exactly. **Blocked:** `node --experimental-strip-types` cannot load `@engine/config/constants` (its `index.ts` imports `./currencies` without an extension). Orchestrator's call: 7.4.b reworded — the exponents stay in the tables, pinned to `CURRENCY_EXPONENT` by a vitest drift test, and the currency is typed `CurrencyCode` by a type-only import (stripped at run time) — no change to the config package. Found for ARC/HAR: any strip-types CLI that imports an engine package at run time hits the same wall (`.ts` extensions in `config/src/constants`, or a resolver hook, is the general fix). Added 7.4.e (`laravel-catalogue/index.ts`). 7.4.d (fixture tests for §4's new cases) had not reached the agent; sent back with 7.4.b/e.
 - 2026-10-01 — ✅ 7.5 — merged to `main` (6fab928, branch b9cddc0); doc-only, tasks-lint and brand-literals green. MIGRATION.md §1 (sitemap 404; 1,823 distinct products, the ≈2,090 category sum double-counting; the maker route — **127 makers**, 813 URLs, which corrects this Log's "305", the fetched count; `/new-additions` queries; image size variants), §4 (the dirty data the real records showed; the circa range open for ARC), §6 (redirect rows for maker pages, `/new-additions`, image variants), §10 (SIRCLO 2020–21 then Squarespace 2022–24; 673 paths; the archived sitemap; Search Console fills the rest). Each statement traced to a Log entry, a committed README or the committed inventory; details seen only in the raw crawl kept without their numbers. Follow-ups: 7.4.d added — fixture tests for §4's new cases (given to 7.4's agent); for 6.4/ARC, the preamble's "Old East Indies has no website, so it starts clean" contradicts §10, and §9's "any Squarespace export" could name SIRCLO; Markdown is outside `format:check`.
 - 2026-10-01 — 6.1.f (a8d6dee), 6.2.h (b7754af) and 6.3.g–i (db741cb) merged; `pnpm verify` green on main (1544 tests; copy 587 gallery / 562 shop keys). The shop speaks *Anda*; J-G6 retired for J-G8, the negotiated invoice; the making is photographed in the Denpasar showroom. 6.4 (ARC) stopped on the session usage limit and resumes with the developer's input. Follow-ups 6.1.i, 6.2.i, 6.3.k–l.
 - 2026-10-01 — **7·W3 added and dispatched** — 7.4 (wire `@engine/migrate`: the normalise export, `@engine/config` exponents, C2/C5 type checks, `csv-products/index.ts`) and 7.5 (MIGRATION.md §1/§4/§6/§10 from what the real data showed), from 7.1–7.3's follow-ups. Phase 9 cannot open: phases 6, 7 and 8 are open (three).
