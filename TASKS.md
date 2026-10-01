@@ -718,7 +718,7 @@ run beside the build line rather than in it.
   - [x] 6.3.m HAR: `check-brands` enforces the +30% rule, so each `test` lexicon value is at least ceil(1.3 ×) the longest real brand value for its key and locale (nl against the app default and the en values); a planted short value fails it — merged 2026-10-01 (1bfed8d): `overflow.mjs`, the test brand found by its per-storefront configs, the shell keys exempt; main passes (id 710, en 714, nl 575 values measured), a planted short value fails
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — owner answers from 6.1.b folded in.
 
-- [x] **6.4 Replan from the owner's answers** · needs: 6.1.b — ✅ 2026-10-01 f9ffa3d
+- [x] **6.4 Replan from the owner's answers** · needs: 6.1.b — ✅ 2026-10-01 c73bbb2
   - **Lane** ARC · **Agent** architect · **Wave** W2
   - **Owns** `docs/{EXPERIENCE-GALLERY,EXPERIENCE-SHOP,COMMERCE,PAYMENTS,ANALYTICS,COMPLIANCE,CONTENT-MODEL}.md`, `.claude/specs/indies-platform/{requirements,design}.md`, the contract files (C1–C13, ARC's)
   - **Read** `docs/design/journeys/owner-answers.md`, TASKS.md Decisions D50, D51, D52, D54, D45, D22, D47, D32 and Voice, the journeys, 6.3.f's contract notes (6.4.d), the developer's input `.claude/specs/indies-platform/reviews/6.4-input-developer.md`
