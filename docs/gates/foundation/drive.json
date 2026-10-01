@@ -1,0 +1,814 @@
+[
+  {
+    "server": "ig",
+    "width": 390,
+    "path": "/",
+    "status": 200,
+    "lang": "en",
+    "title": "Indies Gallery",
+    "header": "Indies Gallery English Bahasa Indonesia",
+    "h1": "Indies Gallery",
+    "shot": "docs\\gates\\foundation\\ig-en-390.png",
+    "label": "ig / @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "ig",
+    "width": 390,
+    "path": "/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Indies Gallery",
+    "header": "Indies Gallery English Bahasa Indonesia",
+    "h1": "Indies Gallery",
+    "shot": "docs\\gates\\foundation\\ig-id-390.png",
+    "label": "ig /id @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "ig",
+    "width": 390,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\ig-admin-first-user-390.png",
+    "label": "ig /admin/login @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "ig",
+    "width": 390,
+    "consoleErrors": []
+  },
+  {
+    "server": "ig",
+    "width": 1280,
+    "path": "/",
+    "status": 200,
+    "lang": "en",
+    "title": "Indies Gallery",
+    "header": "Indies Gallery English Bahasa Indonesia",
+    "h1": "Indies Gallery",
+    "shot": "docs\\gates\\foundation\\ig-en-1280.png",
+    "label": "ig / @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "ig",
+    "width": 1280,
+    "path": "/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Indies Gallery",
+    "header": "Indies Gallery English Bahasa Indonesia",
+    "h1": "Indies Gallery",
+    "shot": "docs\\gates\\foundation\\ig-id-1280.png",
+    "label": "ig /id @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "ig",
+    "width": 1280,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\ig-admin-first-user-1280.png",
+    "label": "ig /admin/login @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "ig",
+    "width": 1280,
+    "consoleErrors": []
+  },
+  {
+    "server": "oei",
+    "width": 390,
+    "path": "/",
+    "status": 200,
+    "lang": "en",
+    "title": "Old East Indies",
+    "header": "Old East Indies English Bahasa Indonesia",
+    "h1": "Old East Indies",
+    "shot": "docs\\gates\\foundation\\oei-en-390.png",
+    "label": "oei / @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "oei",
+    "width": 390,
+    "path": "/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Old East Indies",
+    "header": "Old East Indies English Bahasa Indonesia",
+    "h1": "Old East Indies",
+    "shot": "docs\\gates\\foundation\\oei-id-390.png",
+    "label": "oei /id @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "oei",
+    "width": 390,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\oei-admin-first-user-390.png",
+    "label": "oei /admin/login @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "oei",
+    "width": 390,
+    "consoleErrors": []
+  },
+  {
+    "server": "oei",
+    "width": 1280,
+    "path": "/",
+    "status": 200,
+    "lang": "en",
+    "title": "Old East Indies",
+    "header": "Old East Indies English Bahasa Indonesia",
+    "h1": "Old East Indies",
+    "shot": "docs\\gates\\foundation\\oei-en-1280.png",
+    "label": "oei / @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "oei",
+    "width": 1280,
+    "path": "/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Old East Indies",
+    "header": "Old East Indies English Bahasa Indonesia",
+    "h1": "Old East Indies",
+    "shot": "docs\\gates\\foundation\\oei-id-1280.png",
+    "label": "oei /id @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "oei",
+    "width": 1280,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\oei-admin-first-user-1280.png",
+    "label": "oei /admin/login @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "oei",
+    "width": 1280,
+    "consoleErrors": []
+  },
+  {
+    "server": "test-gallery",
+    "width": 390,
+    "path": "/",
+    "status": 200,
+    "lang": "en",
+    "title": "Test Gallery",
+    "header": "Test Gallery English Bahasa Indonesia Nederlands",
+    "h1": "Test Gallery",
+    "shot": "docs\\gates\\foundation\\test-gallery-en-390.png",
+    "label": "test-gallery / @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-gallery",
+    "width": 390,
+    "path": "/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Test Gallery",
+    "header": "Test Gallery English Bahasa Indonesia Nederlands",
+    "h1": "Test Gallery",
+    "shot": "docs\\gates\\foundation\\test-gallery-id-390.png",
+    "label": "test-gallery /id @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-gallery",
+    "width": 390,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\test-gallery-admin-first-user-390.png",
+    "label": "test-gallery /admin/login @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-gallery",
+    "width": 390,
+    "consoleErrors": []
+  },
+  {
+    "server": "test-gallery",
+    "width": 1280,
+    "path": "/",
+    "status": 200,
+    "lang": "en",
+    "title": "Test Gallery",
+    "header": "Test Gallery English Bahasa Indonesia Nederlands",
+    "h1": "Test Gallery",
+    "shot": "docs\\gates\\foundation\\test-gallery-en-1280.png",
+    "label": "test-gallery / @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-gallery",
+    "width": 1280,
+    "path": "/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Test Gallery",
+    "header": "Test Gallery English Bahasa Indonesia Nederlands",
+    "h1": "Test Gallery",
+    "shot": "docs\\gates\\foundation\\test-gallery-id-1280.png",
+    "label": "test-gallery /id @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-gallery",
+    "width": 1280,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\test-gallery-admin-first-user-1280.png",
+    "label": "test-gallery /admin/login @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-gallery",
+    "width": 1280,
+    "consoleErrors": []
+  },
+  {
+    "server": "test-emporium",
+    "width": 390,
+    "path": "/en",
+    "status": 200,
+    "lang": "en",
+    "title": "Test Emporium",
+    "header": "Test Emporium Bahasa Indonesia English",
+    "h1": "Test Emporium",
+    "shot": "docs\\gates\\foundation\\test-emporium-en-390.png",
+    "label": "test-emporium /en @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-emporium",
+    "width": 390,
+    "path": "/",
+    "status": 200,
+    "lang": "id",
+    "title": "Test Emporium",
+    "header": "Test Emporium Bahasa Indonesia English",
+    "h1": "Test Emporium",
+    "shot": "docs\\gates\\foundation\\test-emporium-id-390.png",
+    "label": "test-emporium / @390",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-emporium",
+    "width": 390,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\test-emporium-admin-first-user-390.png",
+    "label": "test-emporium /admin/login @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-emporium",
+    "width": 390,
+    "consoleErrors": []
+  },
+  {
+    "server": "test-emporium",
+    "width": 1280,
+    "path": "/en",
+    "status": 200,
+    "lang": "en",
+    "title": "Test Emporium",
+    "header": "Test Emporium Bahasa Indonesia English",
+    "h1": "Test Emporium",
+    "shot": "docs\\gates\\foundation\\test-emporium-en-1280.png",
+    "label": "test-emporium /en @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-emporium",
+    "width": 1280,
+    "path": "/",
+    "status": 200,
+    "lang": "id",
+    "title": "Test Emporium",
+    "header": "Test Emporium Bahasa Indonesia English",
+    "h1": "Test Emporium",
+    "shot": "docs\\gates\\foundation\\test-emporium-id-1280.png",
+    "label": "test-emporium / @1280",
+    "axeViolations": [],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(28, 28, 28)",
+      "font": "Georgia, \"Times New Roman\", serif",
+      "headerBg": "rgb(255, 255, 255)"
+    }
+  },
+  {
+    "server": "test-emporium",
+    "width": 1280,
+    "path": "/admin/login",
+    "status": 200,
+    "shot": "docs\\gates\\foundation\\test-emporium-admin-first-user-1280.png",
+    "label": "test-emporium /admin/login @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(8)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-emporium",
+    "width": 1280,
+    "consoleErrors": []
+  },
+  {
+    "server": "ig",
+    "firstRegister": 400,
+    "body": "{\"errors\":[{\"name\":\"l\",\"data\":{\"collection\":\"users\",\"errors\":[{\"label\":\"Name\",\"message\":\"This field is required.\",\"path\""
+  },
+  {
+    "server": "ig",
+    "width": 390,
+    "signedIn": "http://localhost:4257/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * Name * As colleagues know you — shown on the records you change. Roles * Adm",
+    "shot": "docs\\gates\\foundation\\ig-admin-dashboard-390.png",
+    "label": "ig /admin @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(3)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "ig",
+    "width": 1280,
+    "signedIn": "http://localhost:4257/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * This field is required. Name * As colleagues know you — shown on the records",
+    "shot": "docs\\gates\\foundation\\ig-admin-dashboard-1280.png",
+    "label": "ig /admin @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(3)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "oei",
+    "firstRegister": 400,
+    "body": "{\"errors\":[{\"name\":\"l\",\"data\":{\"collection\":\"users\",\"errors\":[{\"label\":\"Name\",\"message\":\"This field is required.\",\"path\""
+  },
+  {
+    "server": "oei",
+    "width": 390,
+    "signedIn": "http://localhost:4259/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * Name * As colleagues know you — shown on the records you change. Roles * Adm",
+    "shot": "docs\\gates\\foundation\\oei-admin-dashboard-390.png",
+    "label": "oei /admin @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(3)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "oei",
+    "width": 1280,
+    "signedIn": "http://localhost:4259/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * This field is required. Name * As colleagues know you — shown on the records",
+    "shot": "docs\\gates\\foundation\\oei-admin-dashboard-1280.png",
+    "label": "oei /admin @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-gallery",
+    "firstRegister": 400,
+    "body": "{\"errors\":[{\"name\":\"l\",\"data\":{\"collection\":\"users\",\"errors\":[{\"label\":\"Name\",\"message\":\"This field is required.\",\"path\""
+  },
+  {
+    "server": "test-gallery",
+    "width": 390,
+    "signedIn": "http://localhost:4260/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * Name * As colleagues know you — shown on the records you change. Roles * Adm",
+    "shot": "docs\\gates\\foundation\\test-gallery-admin-dashboard-390.png",
+    "label": "test-gallery /admin @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(3)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-gallery",
+    "width": 1280,
+    "signedIn": "http://localhost:4260/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * This field is required. Name * As colleagues know you — shown on the records",
+    "shot": "docs\\gates\\foundation\\test-gallery-admin-dashboard-1280.png",
+    "label": "test-gallery /admin @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(3)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-emporium",
+    "firstRegister": 400,
+    "body": "{\"errors\":[{\"name\":\"l\",\"data\":{\"collection\":\"users\",\"errors\":[{\"label\":\"Name\",\"message\":\"This field is required.\",\"path\""
+  },
+  {
+    "server": "test-emporium",
+    "width": 390,
+    "signedIn": "http://localhost:4261/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * Name * As colleagues know you — shown on the records you change. Roles * Adm",
+    "shot": "docs\\gates\\foundation\\test-emporium-admin-dashboard-390.png",
+    "label": "test-emporium /admin @390",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(3)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "server": "test-emporium",
+    "width": 1280,
+    "signedIn": "http://localhost:4261/admin/create-first-user",
+    "dash": "Welcome To begin, create your first user. Email * New Password * Confirm Password * This field is required. Name * As colleagues know you — shown on the records",
+    "shot": "docs\\gates\\foundation\\test-emporium-admin-dashboard-1280.png",
+    "label": "test-emporium /admin @1280",
+    "axeViolations": [
+      "aria-hidden-focus(2)",
+      "color-contrast(2)",
+      "label(1)",
+      "landmark-one-main(1)",
+      "nested-interactive(1)",
+      "region(9)"
+    ],
+    "overflow": 0,
+    "theme": {
+      "bodyBg": "rgba(0, 0, 0, 0)",
+      "bodyColor": "rgb(47, 47, 47)",
+      "font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helv",
+      "headerBg": null
+    }
+  },
+  {
+    "cross": "ig creds -> oei",
+    "status": 401
+  },
+  {
+    "cross": "ig creds -> test-gallery",
+    "status": 401
+  },
+  {
+    "cross": "ig creds -> test-emporium",
+    "status": 401
+  },
+  {
+    "cross": "ig creds -> ig",
+    "status": 401
+  },
+  {
+    "cross": "oei creds -> ig",
+    "status": 401
+  },
+  {
+    "cross": "oei creds -> test-gallery",
+    "status": 401
+  },
+  {
+    "cross": "oei creds -> test-emporium",
+    "status": 401
+  },
+  {
+    "cross": "oei creds -> oei",
+    "status": 401
+  },
+  {
+    "cross": "test-gallery creds -> ig",
+    "status": 401
+  },
+  {
+    "cross": "test-gallery creds -> oei",
+    "status": 401
+  },
+  {
+    "cross": "test-gallery creds -> test-emporium",
+    "status": 401
+  },
+  {
+    "cross": "test-gallery creds -> test-gallery",
+    "status": 401
+  },
+  {
+    "cross": "test-emporium creds -> ig",
+    "status": 401
+  },
+  {
+    "cross": "test-emporium creds -> oei",
+    "status": 401
+  },
+  {
+    "cross": "test-emporium creds -> test-gallery",
+    "status": 401
+  },
+  {
+    "cross": "test-emporium creds -> test-emporium",
+    "status": 401
+  }
+]
