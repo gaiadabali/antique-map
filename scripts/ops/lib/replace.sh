@@ -80,10 +80,11 @@ home_unexpected() {
         .ssh | .ssh/* | .indies | .indies/*) continue ;;
       .bashrc | .profile | .bash_logout | .bash_history | .viminfo | .lesshst | .selected_editor | \
         .wget-hsts | .sudo_as_admin_successful | .node_repl_history | .npmrc | ecosystem.config.cjs | \
+        htdocs/.gitignore | backups/.gitignore | backups/databases/.gitignore | \
         shared/.env | bin/indies-cron | bin/indies-health | "$holding/engine/apps/$S_APP/server.js")
         [ "$type" = f ] && continue ;;
-      htdocs | htdocs/* | shared | bin | releases | "$holding" | "$holding/brand" | "$holding/engine" | \
-        "$holding/engine/apps" | "$holding/engine/apps/$S_APP")
+      htdocs | htdocs/* | backups | backups/databases | shared | bin | releases | "$holding" | \
+        "$holding/brand" | "$holding/engine" | "$holding/engine/apps" | "$holding/engine/apps/$S_APP")
         [ "$type" = d ] && continue ;;
       current) [ "$type" = l ] && continue ;;
     esac
@@ -134,7 +135,10 @@ try: print(" ".join(p.get("name", "?") + ":" + p.get("pm2_env", {}).get("status"
 except Exception: print("unreadable")' 2>/dev/null)"
     [ "$have" = none ] || echo "the pm2 daemon for $S_USER has apps defined: ${have:-unreadable} (pm2 jlist is not [])"
   fi
-  have="$(pgrep -a -u "$S_USER" 2>/dev/null | awk -v d="$daemon" '$1 != d' | head -n 5 | paste -sd';' -)"
+  # The poller's own probe (`sudo -u <user> /usr/bin/pm2 describe <user>`) may hang beside its
+  # idle daemon; it runs no app, so it counts as the daemon (outside the strict re-check).
+  have="$(pgrep -a -u "$S_USER" 2>/dev/null | awk -v d="$daemon" -v probe="node /usr/bin/pm2 describe $S_USER" -v strict="${1:-}"     '$1 == d { next } strict != "strict" && substr($0, index($0, " ") + 1) == probe { next } { print }' |
+    head -n 5 | paste -sd';' -)"
   [ -z "$have" ] || echo "processes run as $S_USER: $have"
   if systemctl is-active --quiet "pm2-$S_USER.service" 2>/dev/null; then echo "pm2-$S_USER.service is active"; fi
   if ! have="$(cron_unmanaged "$(crontab -u "$S_USER" -l 2>/dev/null || true)")"; then
@@ -188,6 +192,7 @@ backup_replaced() {
 stop_idle_pm2() {
   resolve_site_path
   site_run pm2 kill >/dev/null 2>&1 || true
+  pkill -u "$S_USER" -xf "node /usr/bin/pm2 describe $S_USER" 2>/dev/null || true
   wait_for 10 pm2_daemon_gone
 }
 
