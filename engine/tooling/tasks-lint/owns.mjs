@@ -71,3 +71,25 @@ export function findOwnsConflicts(taskA, taskB) {
   }
   return conflicts
 }
+
+/**
+ * Every conflict between two tasks of one wave (`tasksInWave`, ✂️ tasks already left out): the
+ * full lint's `owns-overlap` rule and `--phase N --wave K` (wave.mjs) both read it, so the wave
+ * check fails on an overlap exactly as the full lint does (PARALLEL-TRACKS.md §5, gate F4).
+ */
+export function findWaveConflicts(tasksInWave) {
+  const conflicts = []
+  for (let i = 0; i < tasksInWave.length; i++) {
+    for (let j = i + 1; j < tasksInWave.length; j++) {
+      for (const c of findOwnsConflicts(tasksInWave[i], tasksInWave[j])) {
+        conflicts.push({ ...c, wave: tasksInWave[i].wave })
+      }
+    }
+  }
+  return conflicts
+}
+
+/** How either check words a conflict `findWaveConflicts` found. */
+export function overlapMessage({ taskA, taskB, wave, pathA, pathB }) {
+  return `${taskA} and ${taskB} share wave ${wave}: "${pathA}" overlaps "${pathB}"`
+}
