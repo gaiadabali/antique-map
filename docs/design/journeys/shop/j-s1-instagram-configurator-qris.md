@@ -25,9 +25,10 @@ separate WhatsApp number for online shoppers), S7, S10, S12, S13, Requirement 7.
 **Used by:** 13.2 (steps marked **P**: the configurator), 32.1.a e2e (inside the Instagram,
 WhatsApp and TikTok in-app browsers), 32.2 usability (at least three sessions start in
 Instagram), phase 32 **Done when** (the largest giclée the seed scan allows — its ceiling
-from the design's crop at 240 ppi, D26, C9 `printCeilingOf()` — teak frame and mount, to
-scale, gift wrap and a voucher, QRIS in IDR, tracked as a guest — its gift wrap no longer
-exists, S10; 6.4.e rewords it).
+from the design's crop at 240 ppi, D26, C9 `printCeilingOf()` — "from stocked variants
+with a teak frame and mount, sees it to scale, adds a gift note and a voucher (the
+free-shipping bar at Rp 500.000, S13), pays by QRIS … in IDR only, and tracks the order
+as a guest": a gift note, not gift wrap, S10).
 
 ## Before the session
 

@@ -20,8 +20,9 @@ the buyer's, a note preview, a packing slip with prices hidden, a target deliver
 COMMERCE.md §5, §8 (the holiday calendar), §10 (gift notes free; "hide prices"), D31
 (guest).
 
-**Used by:** 32.1.a e2e, 32.2 usability (the gift-buyer session), phase 32 **Done when**
-(today "gift wrap" — S10 removes it; 6.4.e rewords it).
+**Used by:** 32.1.a e2e (the launch half only), 32.2 usability (the gift-buyer session:
+this half and J-S7, 32.2.b), phase 32 **Done when** ("adds a gift note and a voucher" —
+a gift note, with no gift wrap, S10).
 
 ## Before the session
 
@@ -101,7 +102,9 @@ are not offered at launch (S10); this path returns only if the owner adds them.
 **Answered 2026-10-01** ([owner-answers.md](../owner-answers.md)): S3 (Indonesia only at launch), S10 (a
 gift note only, prices hidden), S7 (everything in stock), S12 (a damaged print replaced on
 a photo), S13 (free shipping over Rp 500.000) — folded in above. **Still owed by the
-owner:** the price list (S2). **Still open elsewhere:** gift wrap and gift cards leaving
-the launch scope (EXPERIENCE-SHOP.md §5, §7, §11; Requirement 7.8; TASKS.md 6.4.b, 6.4.e);
-when export opens, D2 and D47's adviser questions, and whether DDP is worth offering for a
-gift abroad.
+owner:** the price list (S2). **Settled by the replan (TASKS.md 6.4):** no gift wrap and
+no gift card at launch — a gift note only, prices hidden on the packing slip; the gift
+card stays in the engine (`commerce.giftCards`) for when the owner offers one (S10;
+EXPERIENCE-SHOP.md §7, §10, §11); phase 32's Done when names the gift note. **Still open
+elsewhere:** when export opens, D2 and D47's adviser questions, and whether DDP is worth
+offering for a gift abroad — the after-launch half.

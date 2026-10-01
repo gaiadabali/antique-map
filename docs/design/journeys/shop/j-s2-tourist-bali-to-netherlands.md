@@ -22,10 +22,11 @@ visiting Bali"; "packs flat, under 1 kg"), COMMERCE.md §3 (IDR only for an Indo
 delivery), §5 (a "deliver before" date), D2 (the Indonesian seller), PAYMENTS.md §6,
 Requirement 7.5, 18.
 
-**Used by:** 32.1.a e2e, 32.2 usability (the tourist sessions), phase 32 **Done when**
-(today "a tourist switches ship-to to the Netherlands and sees each price as a euro
-estimate beside the exact rupiah (D47's default) and a duties estimate" — S3 changes it;
-6.4.e rewords it).
+**Used by:** 32.1.a e2e (the launch half only), 32.2 usability (the tourist session:
+this half and J-S6, 32.2.b), phase 32 **Done when** ("a tourist in Bali has a print
+delivered to her villa before a date, or picks it up at the showroom; a visitor whose
+ship-to is abroad is told, once, that the shop delivers within Indonesia only and reaches
+no checkout abroad (S3)").
 
 ## Before the session
 
@@ -49,7 +50,7 @@ estimate beside the exact rupiah (D47's default) and a duties estimate" — S3 c
 
 | # | Surface (route) | The participant can | States to exercise |
 | - | --------------- | ------------------- | ------------------ |
-| 1 | `Item` (`item`) | see "I'm visiting Bali" with its paths: deliver to my hotel or villa **before my departure date**, or collect at the showroom | shown to a visitor, never forcing Indonesian defaults on her; "send it home" is not offered at launch — the page says plainly that the shop delivers within Indonesia only for now (S3; its wording is TASKS.md 6.4.b's); the packaging copy says what fits a suitcase |
+| 1 | `Item` (`item`) | see "I'm visiting Bali" with its paths: deliver to my hotel or villa **before my departure date**, or collect at the showroom | shown to a visitor, never forcing Indonesian defaults on her; "send it home" is not offered at launch — the page says plainly, once, that the shop delivers within Indonesia only for now — "We deliver within Indonesia only for now" (S3; EXPERIENCE-SHOP.md §2, §4); there is no ship-to selector to switch; the packaging copy says what fits a suitcase |
 | 2 | `Item` › configurator | choose a frame with **glass glazing**, allowed for a Bali delivery | sizes stop at the design's print ceiling (its crop at 240 ppi, C9 `printCeilingOf()`); only variants in stock are offered (S7) |
 | 3 | `Item` › delivery promise | read whether it can reach her villa **before her departure date** | the Bali courier's estimate, same-day where the courier offers it (S11); the holiday calendar is read (Nyepi closes Bali, its airport and couriers); a date that cannot be met is said plainly, with pickup at the showroom offered |
 | 4 | `Cart` | see the line, the **free-shipping bar toward Rp 500.000** (S13) and the voucher field | totals in rupiah alone; the bag re-prices on the server — `PriceChanged` if it moved |
@@ -117,7 +118,9 @@ as designed before S3:
 Bali courier with a "deliver before" date; same-day where offered), S4 (pickup at the
 showroom), S7 (everything in stock), S13 (free shipping over Rp 500.000) — folded in
 above. **Still owed by the owner:** the price list (S2); the showroom's opening hours, for
-the pickup path (S4). **Still open elsewhere:** what the shop shows a visitor who wants
-delivery abroad at launch — a ship-to selector or not (TASKS.md 6.4.b); phase 32's Done
-when (6.4.e); when export opens, D2 and D47's adviser questions (a rupiah charge abroad by
-card, USD by PayPal).
+the pickup path (S4). **Settled by the replan (TASKS.md 6.4):** a visitor who wants
+delivery abroad at launch finds **no ship-to selector** — the shop's one market is
+Indonesia — and reads, once, that it delivers within Indonesia only for now (S3;
+EXPERIENCE-SHOP.md §2, §4; COMMERCE.md §2); phase 32's Done when now names this launch
+half and that sentence. **Still open elsewhere:** when export opens, D2 and D47's adviser
+questions (a rupiah charge abroad by card, USD by PayPal) — the after-launch half above.
