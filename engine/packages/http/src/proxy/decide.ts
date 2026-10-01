@@ -10,10 +10,17 @@
  * own routes (`/admin`, `/style-guide`) pass through, and anything else — an internal path
  * asked for directly, a default-locale prefix, a page whose module is off (its surface, form
  * kind or account section), the not-found route itself — rewrites to the locale's not-found
- * route, which answers 404, so no page has two addresses.
+ * route with C13's `PROXY_NOT_FOUND_STATUS` on the rewrite, so no page has two addresses and the
+ * designed page answers 404 in its own body. Every other decision carries no status: the one
+ * Next's render gives it stands (a 200, a page's `notFound()`, an item's 308).
  *
- * On every request it sets C13's `PROXY_REQUEST_HEADERS`, overwriting whatever a client sent,
- * and drops any CSP header a client sent — Next takes a nonce from either CSP request header,
+ * On every request it sets C13's `PROXY_REQUEST_HEADERS`, overwriting whatever a client sent —
+ * `x-public-search` the item route's query and `''` everywhere else, so no other page's query (a
+ * capability's included) is copied into a header — and C13's `PROXY_USER_AGENT` when the request
+ * has no `User-Agent` or an empty one, never over a client's own: Next renders in full per request
+ * only for an agent `htmlLimitedBots` matches, and counts a missing one as none, so without it a
+ * 404, a permanent redirect and this not-found's status would all be lost (ARCHITECTURE.md §9).
+ * It drops any CSP header a client sent — Next takes a nonce from either CSP request header,
  * report-only included; on a `sensitive` surface's answer, `Referrer-Policy: no-referrer` and
  * `X-Robots-Tag: noindex`; and, once 41.1.a's builder is passed in, the per-request CSP on the
  * answer and the request.
@@ -21,8 +28,15 @@
 import { parsePublicPath, SURFACE_ROUTES, type ParseConfig } from '@engine/config/routes'
 import type { BrandConfig, LocaleCode, ModuleFlags } from '@engine/config/schema'
 
-import { PROXY_REQUEST_HEADERS } from '../manifest'
-import { closedModule, hasCookie, namesNotFoundRoute, notFoundPath, rootRewrite } from './gates'
+import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
+import {
+  closedModule,
+  hasCookie,
+  hasUserAgent,
+  namesNotFoundRoute,
+  notFoundPath,
+  rootRewrite,
+} from './gates'
 
 export { NOT_FOUND_SEGMENT, notFoundPath } from './gates'
 
@@ -53,6 +67,11 @@ export type ProxyDecision = {
   readonly to: string | null
   readonly why: 'root-file' | 'legacy' | 'surface' | 'app' | 'not-found' | 'next-internal'
   readonly locale: LocaleCode
+  /**
+   * The status on the rewrite: C13's `PROXY_NOT_FOUND_STATUS` for the proxy's own not-found,
+   * which Next keeps through a normal render; `null` keeps the status Next's render gives.
+   */
+  readonly status: number | null
   /** Headers set on the request passed on, overwriting a client's. */
   readonly setRequest: Readonly<Record<string, string>>
   /** Headers removed from the request passed on (before `setRequest` is applied). */
@@ -68,7 +87,7 @@ const CSP_REQUEST_HEADERS = [
   'content-security-policy-report-only',
 ] as const
 
-type Decided = Omit<ProxyDecision, 'setRequest' | 'removeRequest' | 'setResponse'>
+type Decided = Omit<ProxyDecision, 'status' | 'setRequest' | 'removeRequest' | 'setResponse'>
 
 export function decideProxy(
   config: ProxyConfig,
@@ -84,6 +103,8 @@ export function decideProxy(
   let decision: Decided
   let setResponse: Record<string, string> = {}
   let setRequest: Record<string, string> = {}
+  // The item's own query, for its permanent redirect to carry on; `''` on every other request.
+  let publicSearch = ''
 
   const root = rootRewrite(config.assets.favicon, pathname)
   if (pathname.startsWith('/_next/')) {
@@ -117,6 +138,7 @@ export function decideProxy(
         }
         decision = { ...base, to: parsed.internal, why: 'surface', locale: parsed.locale }
         if ('sensitive' in SURFACE_ROUTES[parsed.surface]) setResponse = { ...SENSITIVE_HEADERS }
+        if (parsed.surface === 'item') publicSearch = search
         break
       case 'notFound':
         decision = notFound()
@@ -128,9 +150,12 @@ export function decideProxy(
   const headers = PROXY_REQUEST_HEADERS
   return {
     ...decision,
+    status: decision.why === 'not-found' ? PROXY_NOT_FOUND_STATUS : null,
     setRequest: {
       ...setRequest,
+      ...(hasUserAgent(request.headers) ? {} : { 'user-agent': PROXY_USER_AGENT }),
       [headers.publicPath]: pathname,
+      [headers.publicSearch]: publicSearch,
       [headers.locale]: decision.locale,
       ...(csp === null ? {} : { [headers.contentSecurityPolicy]: csp }),
     },

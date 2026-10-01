@@ -16,6 +16,11 @@ import {
   ValidationError,
   type Payload,
 } from 'payload'
+import { realpathSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { migrations } from '../../migrations'
@@ -51,7 +56,18 @@ describe.skipIf(!server)('the admin guards on a migrated database', () => {
     url.pathname = `/${database}`
     const env = { DATABASE_URL: url.toString(), PAYLOAD_SECRET: 'a'.repeat(48), SITE_URL: origin }
     config = await buildConfig(engineConfig(env))
-    // Payload creates the database on first connect when it does not exist.
+    // Payload never creates a missing database (db/adapter, disableCreateDatabase): make it here,
+    // with the pg db-postgres uses (a dependency of it, not of cms).
+    const here = path.dirname(fileURLToPath(import.meta.url))
+    const dbPostgres = realpathSync(
+      path.join(here, '../../../node_modules/@payloadcms/db-postgres'),
+    )
+    const pg = createRequire(path.join(dbPostgres, 'x.js'))('pg') as {
+      Pool: new (o: object) => Pool
+    }
+    const admin = new pg.Pool({ connectionString: server })
+    await admin.query(`CREATE DATABASE "${database}"`)
+    await admin.end()
     payload = await getPayload({ config, key: database, disableOnInit: true })
     await payload.db.migrate({ migrations: [...migrations] } as never)
     pool = (payload.db as unknown as { pool: Pool }).pool

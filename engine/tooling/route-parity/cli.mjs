@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// `pnpm check:routes` — TASKS.md 2.2.d.
+// `pnpm check:routes` — TASKS.md 2.2.d, 5.4.a.
 import { checkRouteParity } from './route-parity.mjs'
 
 const repoRoot = process.cwd()
@@ -11,7 +11,7 @@ for (const note of degraded) {
 
 if (violations.length === 0) {
   console.log(
-    `route-parity: ok, ${routeCount} manifest route(s) checked against ${collectionSlugs.length} collection slug(s)`,
+    `route-parity: ok, ${routeCount} manifest route(s) checked against ${collectionSlugs.length} collection slug(s); each mount names its handler or placeholder, and loaded without reaching Payload`,
   )
   process.exit(0)
 }

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# make-nvm USER MAJOR — the nvm tree CloudPanel gives a Node.js site user, as Helios has it: node
+# and npm (the npm shim) under ~/.nvm/versions/node/v<version>/bin, owned by the user, no pm2.
+# node is a wrapper around the image's own node. Test-only.
+set -euo pipefail
+u="$1"
+bin="/home/$u/.nvm/versions/node/v$(node -p process.versions.node)/bin"
+[ "$2" = "$(node -p 'process.versions.node.split(".")[0]')" ] || { echo "make-nvm: no node $2 here" >&2 && exit 1; }
+install -d "$bin"
+printf '#!/bin/sh\nexec /usr/local/bin/node "$@"\n' >"$bin/node"
+cp /opt/shim/npm "$bin/npm"
+chmod 755 "$bin/node" "$bin/npm"
+chown -R "$u:$u" "/home/$u/.nvm"

@@ -1,0 +1,21 @@
+[
+  ["original", "timestamp", "statuscode", "mimetype"],
+  ["https://www.example-shop.test/", "20221101000000", "200", "text/html"],
+  ["http://example-shop.test/", "20250110000000", "301", "unk"],
+  ["https://www.example-shop.test/shop/p/harbour-map-1849", "20221105120000", "200", "text/html"],
+  [
+    "https://www.example-shop.test/shop/p/harbour-map-1849?format=json",
+    "20230101000000",
+    "200",
+    "application/json"
+  ],
+  ["https://www.example-shop.test/shop/p/harbour-map-1849/", "20240601000000", "404", "text/html"],
+  ["https://www.example-shop.test/shop/p/harbour-map-1849", "20240701000000", "-", "warc/revisit"],
+  [
+    "https://www.example-shop.test/shop?category=Posters&format=rss",
+    "20230101000000",
+    "200",
+    "text/html"
+  ],
+  ["https://www.example-shop.test/shop", "20230101000000", "-", "warc/revisit"]
+]

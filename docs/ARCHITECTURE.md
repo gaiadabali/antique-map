@@ -260,7 +260,7 @@ migrated one — are part of the Commerce stage's gate (TASKS.md 21.2).
 
 | Tier | What | Where |
 | ---- | ---- | ----- |
-| **Masters** | original scans (TIFF/JPEG), colour profile, checksum | private `archive-masters` bucket; a plain `masters` collection holds the record (storage key, pixels, ppi, colour profile, checksum, owning brand) — **not** a Payload upload collection |
+| **Masters** | every capture as received (RAW, TIFF, JPEG), colour profile, checksum — a work's under its uid, one with no work yet (the owner's pilot set) or none at all (a showroom photograph, a room plate's render) under `masters/intake/<brand>/<batch>/` (C9 `intakeMasterKey()`), a work's capture filed under its uid once the work exists | private `archive-masters` bucket; a plain `masters` collection holds the record (storage key, the frame's pixels, colour profile, checksum, owning brand, and what the intake measured: the object's box in the frame, object ppi, role, provenance, capture tier, verdict — CONTENT-MODEL.md §6) — **not** a Payload upload collection |
 | **Print files** | colour-managed, cropped design files for reproduction | the same private bucket under a `print-files/` prefix — the only prefix the shop's key may write |
 | **Derivatives** | AVIF + WebP at 320 / 640 / 1024 / 1600 / 2400 px + blur placeholder | public brand bucket behind Cloudflare, immutable cache |
 | **Deep zoom — public** | static **IIIF Level 0** tiles (`sharp().tile({ layout: 'iiif3' })`, 512 px) capped at the configured public resolution, plus an IIIF Presentation 3 manifest per work | public brand bucket (`iiif/<assetId>/…`) |
@@ -282,12 +282,21 @@ No image server to run: static tiles behind a CDN answer every zoom request.
 The viewer is OpenSeadragon, loaded **on intent** (first tap or hover on the
 image, or idle after LCP) so it never costs the PDP's JavaScript budget.
 
-**Print-size ceiling.** A reproduction variant is offered only if the master
+**Print-size ceiling.** A reproduction variant is offered only if what is printed
 supports it at the product type's minimum resolution — **240 ppi** by default
-(D26). The current site's images are 3543 × 2840 px: about **300 mm** on the long
-edge at 300 ppi (≈ A4), **375 mm at 240 ppi**, 450 mm at 200 ppi. So larger sizes
-wait on true master scans (MIGRATION.md §9). The ceiling is computed from the
-master's pixels, stored on the design, and enforced when variants are generated.
+(D26). What is printed is the design's crop of its master — for a whole-sheet
+design, the object's box in that master — so the ceiling is **the crop's own long
+edge in the master's pixels** at the minimum ppi (C9 `printCeilingOf()`), stored on
+the design and enforced when variants are generated and published (TASKS.md 15.4).
+It is **never the master file's long edge**, which also holds the background, the
+colour card and the ruler, and never the print file's pixel count, which a
+resample could inflate. The current site's images are 3543 × 2840 px frames: the
+frame's long edge would claim 375 mm at 240 ppi, but a sheet spanning 3300 px of it
+prints to about **349 mm**, and a smaller sheet or a tighter crop to less. So the
+legacy images are an upper bound, not an answer, and larger sizes wait on true
+master scans (MIGRATION.md §9). The intake records each capture's **object ppi** —
+the object's pixels over its real size — and at 240 or more the shop can print the
+work at its own size (`docs/design/imagery/intake-spec.md` §4).
 
 ## 8. Search
 
@@ -317,37 +326,123 @@ lead):
 ## 9. Rendering and caching
 
 The model is **Next 16 Cache Components** (`cacheComponents: true`), used the way
-its rules require — checked against the 16.3 docs:
+its rules require — checked against the 16.3 docs, and **confirmed by the phase 4
+spike** (TASKS.md 4.1.e, 2026-09-30; the evidence is `docs/spikes/cache-components.md`):
 
-- **No route-segment config anywhere.** With Cache Components on, a segment that
+- **No route-segment config but one.** With Cache Components on, a segment that
   exports `dynamic`, `revalidate` or `fetchCache` fails the build, and
   `generateStaticParams` returning `[]` is an error. (This replaces KOI's
-  `force-dynamic` rule, which belongs to the older model.)
+  `force-dynamic` rule, which belongs to the older model.) The one exception is
+  Cache Components' own: the `(site)` root layout exports `instant = false`, since
+  a `connection()` outside `<Suspense>` otherwise fails the build (the spike, §1).
+  Its root parameter, `[locale]`, lists every engine locale in
+  `generateStaticParams` — brand-independent, and prerendering nothing. No other
+  segment exports anything of the kind, `prefetch` included.
 - **The brand is read only at request time.** The `(site)` root layout awaits
   `connection()`, so no static shell is prerendered at `next build` — a
   prerendered shell would either need the database at build or bake a brand-less
   masthead into the HTML (NOW!'s incident, BRANDS.md §3). The artifact is still
-  built with no database and no secrets.
-- **Content is cached; runtime data streams.** Loaders for content use
-  `'use cache'` + `cacheTag` (the process serves one brand, so the brand is part
-  of every key by construction); cookies, headers, search params, availability,
-  the ship-to market, the cart and the account are read **inside `<Suspense>`**
-  and never enter a shared cache. The purchase panel's dynamic part streams into a
-  placeholder of reserved height ("Checking availability…"); no purchase control
-  renders until availability is known (DESIGN-SYSTEM.md §7).
-- **Invalidation:** editorial content with `revalidateTag(tag, 'max')`
-  (stale-while-revalidate), availability and price tags with
-  `revalidateTag(tag, { expire: 0 })`. The single-argument form is deprecated.
-  Code that runs outside a request (jobs, webhooks' after-commit dispatch) calls
-  one `invalidate(tags)` helper, which posts to an internal revalidate route
-  (`REVALIDATE_SECRET`).
+  built with no database and no secrets. Next renders a layout and its page
+  concurrently, so the brand read itself awaits `connection()` (the app's
+  `currentBrand()`), and an engine `GET` handler reads its request before anything
+  else — one that never does is run at `next build` to bake its answer.
+- **Every page renders in full per request.** Next 16.3 serves a Cache Components
+  route's prerendered shell — even an empty one — with the status it had at build,
+  so a `notFound()` or `permanentRedirect()` resumed after it could only become a
+  meta tag. Each app's `next.config.ts` sets `htmlLimitedBots: /.*/`, the setting
+  under which Next renders the whole page per request with blocking metadata: a
+  404 is a 404 and a slug change a real permanent redirect (308, Next's status for
+  `permanentRedirect()`). Caching is per read, never per page. Next counts a request
+  with no `User-Agent` as no bot at all, so for it a 404, a permanent redirect and
+  the proxy's own not-found status are all lost — on a route the build lists as ƒ as
+  on one it lists as ◐ (4.3's senior-fe review #12) — so the proxy sets one on such
+  a request (C13 `PROXY_USER_AGENT`). And the proxy answers its own
+  not-found — a path that names no page — with a 404 on its rewrite (C13
+  `PROXY_NOT_FOUND_STATUS`), which Next keeps through a normal render, so the
+  not-found route renders the designed page in its own body without JavaScript,
+  where a request-time `notFound()` gets Next's empty recovery document
+  (DESIGN-SYSTEM.md §2; measured on 16.3.6, TASKS.md 4.3.d).
+  What it costs, measured by the 4.1 review (senior-fe #1): the body still streams,
+  but **no prerendered or ISR page is ever served** — free today, every shell being
+  empty, and ruled out for good; **every `generateMetadata` gates the first byte**
+  for every visitor, so it reads only cached data; **every router prefetch is a full
+  render** with the page's reads, so a storefront link is an `<a>` or the link
+  primitive (TASKS.md 11.1.c: `next/link` with `prefetch={false}`), and `next/form`
+  and `router.prefetch()`, which prefetch too, are fenced (TASKS.md 5.4). The
+  destination-side `prefetch = 'force-disabled'` was rejected: a second segment
+  config, and it still prefetches the route's metadata. Only the visitor's own
+  document navigation consumes a post's result (C13 `FORM_RESULT`); and **the nonce
+  CSP depends on it** (a served shell would carry no
+  nonce). The shell bypass is Next's implementation, not a documented promise, so
+  the status spec (`tests/e2e/status/status.spec.ts`, run on
+  both apps) asserts the 404s and permanent redirects on a production build, and
+  fails the day a Next release changes it.
+- **Content is cached; what the first flush must carry is read in the page body;
+  only slow reads that no form depends on stream.** Loaders for content use
+  `'use cache'` + `cacheTag` + `cacheLife` (the process serves one brand, so the
+  brand is part of every key by construction). Per-visitor data — cookies,
+  headers, the ship-to market, the cart, the account — never enters a shared cache.
+  What a visitor without JavaScript must see and use — a form, its current value, a
+  post's result, the canonical check, **and the purchase panel**, whose live
+  availability decides which purchase forms it shows — is read at request time in
+  the page's own body, since a streamed part stays hidden until a script swaps it
+  in (the spike, §5). So buying works without JavaScript (4.3's senior-fe review #1
+  found the earlier wording streamed the panel, leaving no way to buy without a
+  script), and "no purchase control before availability is known"
+  (DESIGN-SYSTEM.md §7) holds by construction. Only slow reads no form depends on —
+  related works, reviews, a courier's live quote, a remote rate — stream inside
+  `<Suspense>` into a placeholder of reserved height, and a streamed part carries no
+  form.
+- **The availability that decides a purchase is read live, never cached**
+  (TASKS.md 4.3.c; the spike cached it under `cacheLife('max')`, correct only while
+  every writer invalidates). It changes with no write to announce it — a checkout
+  lock or a hold lapses at its `expiresAt` — so no tag could expire a cached copy in
+  time. It is one indexed read in the page body, bounded by a short timeout after
+  which the panel resolves `unverified` (C2), so a slow database never holds the
+  first byte for long. Every cached scope that shows an availability status (a
+  listing card's *Sold*, a catalogue's *on hold*) tags it `availability:<id>`,
+  expired at once by every write, and declares as its own `cacheLife` the one-minute
+  backstop `@engine/cache` exports (`AVAILABILITY_STATUS_LIFE`,
+  `{ stale: 30, revalidate: 30, expire: 60 }`), because an explicit outer
+  `cacheLife` wins over an inner one: a status read nested in a `'max'` listing would
+  keep the listing's lifetime (4.3's senior-fe review #2). A missed invalidation or a
+  lapsed lock then heals by itself; no purchase control acts on a cached status, and
+  `reserve()` refuses a sold item whatever a page showed. A `cacheTag()` call takes
+  at most 128 tags, so a scope tagging every card of a long page batches its calls.
+- **Invalidation runs after the write commits.** Editorial content with
+  `revalidateTag(tag, 'max')` (stale-while-revalidate), availability and price tags
+  with `revalidateTag(tag, { expire: 0 })`; the single-argument form is deprecated.
+  One helper does it, `@engine/cache`'s `invalidate(tags)`, built in a leaf package
+  before its first caller (TASKS.md 4.8), with the tag builders beside it. Payload
+  runs `afterChange` before it commits (4.3's senior-be review #2), so a revalidation
+  fired there could cache the old row as fresh. So `invalidate()` never revalidates
+  on the spot: **inside a Next request** — a Payload REST or admin call, a route
+  handler, a Server Action — it schedules `revalidateTag` with `after()`, which runs
+  once the response has been sent, after Payload has committed (Next runs `after()`
+  callbacks under its own revalidation flush, `after-context.js`); **outside a
+  request** — a `payload jobs:run` worker, a seed, an import — the caller puts a
+  collector on Payload's `req.context` and flushes it once its operation returns
+  (a throw keeps its tags — a `disableTransaction` save or a hook's nested write commits before a later throw, and expiring an unchanged tag costs one recompute), an import once per batch, a jobs run once the run returns (`batch.context()` on its `req`), by a post on loopback (`REVALIDATE_ORIGIN`) to
+  `/api/x/revalidate` (C13
+  `REVALIDATE_REQUEST`, TASKS.md 4.6.f), which expires each tag at its builder's
+  profile. The mode is explicit: an out-of-request caller that forgets its collector
+  gets `after()`'s error outside a request, never a silent stale page. The helper
+  lives outside `@engine/http` (which reaches Payload through `@engine/cms`), so
+  Payload's hooks call it without cms ever importing http (§15).
 - **The admin lives under the same flag** — Payload's Cache Components support is
-  still "initial" (≥ 3.81) — so **phase 4 proves it** (TASKS.md 4.1): a production
+  still "initial" (≥ 3.81) — so **phase 4 proved it** (TASKS.md 4.1): a production
   build with the admin mounted and no database, brand or secrets, then one
   gallery build serving the `test` brand and Indies Gallery with different
-  mastheads. **Fallback if the spike fails:** Cache Components off, request-time
-  rendering throughout (KOI's model), with content caching through
-  `unstable_cache`-style tagged helpers — decided once, in phase 4, never mixed.
+  mastheads. **Verdict: Cache Components confirmed** — both builds made with no
+  database, brand or secret and the admin mounted; one gallery build served both
+  brands; `revalidateTag(tag, { expire: 0 })` never served availability stale over
+  six flips while `'max'` served the record stale once; the page body and every
+  form arrived in the first flush and only the panel streamed; the admin signed in
+  on two databases. The fallback — Cache Components off, request-time rendering
+  throughout (KOI's model), content cached through `unstable_cache`-style tagged
+  helpers — was not needed and is not adopted; the two are never mixed. The CSP
+  the proxy sets uses **per-request nonces**: hashes cannot hold, since Next's
+  inline scripts carry each request's RSC payload (the spike, §7; §13).
 - **Currency follows the ship-to destination, never the IP or the language.** One
   `shipTo` cookie (defaulted from Cloudflare's `CF-IPCountry`, changed by the
   ship-to selector) plus the routed seller decide the market; a display currency
@@ -502,12 +597,19 @@ runtime values, because `NEXT_PUBLIC_*` variables and a build-time CSP would bak
 one brand's (or no brand's) settings into a shared build — which is why the
 proxy sets it (C13 lists it among the proxy's headers). **One owner builds it:
 41.1.a**, whose builder the proxy calls; 40.2 only declares the analytics origins
-its tags need, in brand config. Hashes or `strict-dynamic` rather than nonces,
-**provided the Cache Components spike (TASKS.md 4.1.e) proves they hold** with
-Next's per-request inline scripts; if they do not, the spike adopts per-request
-nonces and records it. The proxy copies the answer's CSP onto the request too
-(C13 `PROXY_REQUEST_HEADERS`), because Next takes a nonce from the request's CSP
-header; with hashes, that copy is inert. **`img-src` allows the configured sister's media
+its tags need, in brand config. **It uses a fresh nonce per request**
+(`script-src 'self' 'nonce-…' 'strict-dynamic'`), as the Cache Components spike
+decided (TASKS.md 4.1.e, `docs/spikes/cache-components.md` §7): hashes cannot hold,
+because Next's inline scripts carry each request's RSC payload — one page hashed
+differently for two ship-to markets, and a hashed policy blocked hydration — and
+Subresource Integrity (`experimental.sri`) hashes only the files a build emits,
+never the scripts a request renders. The proxy sets the policy on the answer and
+copies it onto the request (C13 `PROXY_REQUEST_HEADERS.contentSecurityPolicy`),
+where Next takes the nonce for its scripts; it drops any CSP header a client sent.
+The nonce holds only because every page renders per request (§9) — a served shell
+would carry none — so the status spec's CSP case (no violation, every script
+nonced) pins it once 41.1.a lands. The `style-src` line is 41.1.a's call: React
+renders `style` attributes, which a nonce cannot cover. **`img-src` allows the configured sister's media
 host too** (the origin `sisterBaseUrl()` gives: the host's `SISTER_BASE_URL`, else
 the committed `sisters[].baseUrl`, the sister's staging site — C1, DEPLOYMENT.md
 §8): a sister link renders the other brand's derivative images straight from
@@ -520,6 +622,28 @@ redirects only (PCI SAQ-A), PII minimised on orders shown in the admin list
 views, admin on a public path with lockout and rate-limited sign-in (NOW!'s
 ADMIN-CONSOLIDATION risk note). The boot check refuses `LOADERS_SOURCE=fixtures`
 in production, so fixture content can never ship.
+
+**Next answers a path it cannot decode by itself.** A malformed percent-escape on
+a path the proxy never sees — `/brand-assets/%E0%A4%A.svg`, `/api/x/legacy/%C0%AE…`
+— gets Next's own bare 500, logged nowhere, before any engine code runs (4.1
+review, senior-be #12); under the proxy's matcher the same path is the proxy's
+not-found. So does a rewrite that carries an undecodable segment into a dynamic
+route's param (`/<locale>/item/1706-%FF`, measured by 4.3's senior-fe review #4),
+which is why C10 never carries one: an old item link whose slug does not decode
+reaches the item route with a fixed slug no item has (TASKS.md 22.7.d). Nothing
+leaks and nothing changes, so the engine does not answer these, but a scanner can
+trip the 5xx-rate alert: DEPLOYMENT.md §7 counts a 500 under `/brand-assets/` or
+`/api/x/` whose path holds a `%` as its own series — a rule an alert can evaluate —
+never paging on it and never dropping it (TASKS.md 41.2.c).
+
+**A capability in a path stays out of every log.** A C10 `sensitive` page — a pay
+link's, a quote's — carries its token in its own path, so an access log, an error
+report or a header dump never records that path beyond the surface's segment: not
+the URL, and not the proxy's `x-public-path` copy of it. Error reporting also scrubs
+`x-public-search`, which the proxy sets on the item route alone (C13, 4.3's
+senior-be review #6). A handler under a path the proxy never sees (`/api/…`,
+`/brand-assets/…`) never reads the proxy's request headers: there, any such header
+is the client's own.
 
 ## 14. Things we deliberately are not using
 
@@ -535,3 +659,118 @@ in production, so fixture content can never ship.
 | Docker in production | Helios is CloudPanel + pm2 (KOI); Docker is for local dev only |
 | GSAP / an animation library | CSS + View Transitions + small client components (DESIGN-SYSTEM.md §8) |
 | A separate API service | the App Router is the API; splitting it doubles the deploy surface (KOI) |
+
+## 15. How engine routes reach Payload (decided 2026-09-30, TASKS.md 4.3.a)
+
+**Decision: `@engine/http` depends on `@engine/cms` — and on it alone, never on
+`payload`.** A route handler that reads the database — `/api/health` and
+`/api/x/cron/jobs` first, then every DOM, PAY, LOG, MED, SRC, SIS and SEO handler
+that needs Payload's pool or Local API — reaches Payload through SCH's
+`@engine/cms/instance`, the process's one `getPayload({ config })`, from a
+`payload-*.ts` module in its own folder that it loads with `import()` once it has
+read its request. The apps' mounts stay one-line re-exports (C13). This is senior-be's
+recommendation from the 4.1 review (item 5), adopted with its conditions.
+
+**Rejected: each app injecting a Payload-backed port into the handlers.**
+
+- ESLint's boundary 1 forbids `payload` and `@engine/cms` in every app file outside
+  `src/app/(payload)/**`, so neither an app's `api/health/route.ts` nor its
+  `instrumentation.ts` may build the port; moving the mount under `(payload)` would
+  change the file route parity demands and end the one-line-mount rule.
+- Every database-backed handler still to come — commerce, forms, auth, privacy,
+  sister, media, search — would need the same injection, twice, once per app.
+- Boundary 1 keeps Payload out of apps, which render view models; injecting it from
+  them would defeat it. `@engine/http` is the server's composition layer, at the
+  loaders' altitude (§4), which is where Payload belongs.
+
+**Conditions — each one enforced:**
+
+1. **One Payload.** SCH exports `@engine/cms/instance` (TASKS.md 4.8): `cms()`, the
+   workspace's only server-route `getPayload({ config })`, and `cmsPool(payload)`,
+   the adapter's pool typed as `@engine/cms/db/probe`'s `databaseProbe()` takes it
+   (`Pick<LockPool, 'connect'>` — a cast, since `Payload['db']` is the generic adapter,
+   so it fails loudly when `pool.connect` is no function). So `payload` is declared
+   and pinned by cms alone, and http declares `"@engine/cms": "workspace:*"`: a
+   second copy of `payload` would split `getPayload`'s cache — two instances, two
+   pools, migrations raced. cms's peers (`next`, `react`, `react-dom`) follow it into
+   http's install; if pnpm reports them unmet, they become http devDependencies.
+2. **Lazily, after the request.** A handler's `route.ts` never imports cms. It reads
+   its request first (`atRequestTime(request)`), then `await import('./payload-…')`.
+   So `next build`'s page-data pass, route parity's runner — which imports every
+   mount — and a handler's unit test never evaluate the Payload config, and the
+   pure ports (`checkHealth`, `perRunLimit`) stay testable without it. A test that
+   calls the route itself takes the port loader as an argument — the route exports a
+   factory, `healthRoute(load = () => import('./payload-ports'))` — or `vi.mock`s the
+   module; 4.6 picks one (4.3's senior-be review #13).
+3. **Fenced — behaviourally, and by ESLint (HAR, TASKS.md 5.4).** Route parity loads
+   every mount under a guard that refuses `payload`, `@payloadcms/*` and
+   `@engine/cms` by specifier **and by resolved file** — a Vite plugin plus a
+   Node-level ESM resolve hook and CommonJS resolver wrap, since Vite hands an
+   externalised bare specifier straight to Node — so a static path to Payload fails
+   CI however indirect: through `@engine/loaders`, say, any future package that
+   depends on cms, a relative path into `cms/src`, a `#` subpath import, `require()`
+   or `createRequire` (4.3's senior-be review #3; 5.4's qa gate B1). It resolves with
+   the conditions Next gives a node route handler (`react-server` first) and loads
+   every branch an engine package's `exports` or `imports` names; and an engine
+   package may declare no export condition at all unless route parity's commented
+   `ALLOWED_EXPORT_CONDITIONS` names it (empty today), so no branch can send Next's
+   build somewhere the check did not look (5.4's re-gate). **Its known
+   limits**, which no load of a mount can see: any computed specifier — inside a
+   function (the lazy path, by design) or evaluated at load with its refusal caught
+   by the module itself (`try { await import(s) } catch {}`);
+   code loaded outside Node's resolvers (`fs` + `eval`/`vm`/`new Function`, a
+   worker or child process, `process.dlopen`); and, in a long-lived process, a
+   module already linked before the guard went up — the CLI starts fresh. And ESLint, under `engine/packages/http/src/**`: only a
+   `payload-*.ts` module imports `payload`, `@payloadcms/*` or `@engine/cms` by value,
+   statically or by `import()` (`import type` is free, so a pure port can name
+   `Payload`); no module but a test imports a `payload-*` module statically; and the
+   manifest imports other packages as types only, its tests excepted. So the proxy,
+   the manifest, brand assets, the legacy handler and the placeholder can never
+   reach Payload. **Content reaches a handler through its own `payload-*.ts`
+   module, never through `@engine/loaders`**, and the loaders import nothing of
+   `@engine/http` but its manifest (C13's names, such as `FORM_RESULT`'s cookie — a
+   leaf of constants and types): a page reads the proxy's headers and passes them to
+   a loader (C2's `asked`), so no cycle forms between the two.
+4. **No cycle.** `@engine/cms` never imports `@engine/http` (ESLint over
+   `engine/packages/cms/**`). So `invalidate(tags)`, which cms hooks call, lives in
+   neither: it lives in a leaf package, `@engine/cache` — the cache-tag builders, the
+   status backstop (`AVAILABILITY_STATUS_LIFE`) and `invalidate(tags)`, which runs
+   after the commit (§9: `after()` inside a request, a collector the caller flushes
+   outside one) — importing `next` (a peerDependency, and a devDependency, as cms
+   declares it) and no engine package but C1's types. cms, the loaders, the handlers
+   and any package's job import it alike without a cycle, and an ESLint rule keeps
+   it a leaf. Nothing in `@engine/loaders` or `@engine/http` could be that home: cms
+   would import it back. SCH builds it **before its first caller**, in phase 4
+   (TASKS.md 4.8; 4.3's senior-be review #1: at 8.2 it came after 9.1, 11.3 and 18.2
+   needed it), and adds a tag builder at another lane's request, as it does a
+   registry entry. The route it posts to from outside a request, `/api/x/revalidate`
+   (C13 `REVALIDATE_REQUEST`), is WEB's and lands in 4.6.
+5. **Client-safe, unchanged.** `check:client-safe` already refuses `payload`,
+   `@payloadcms/*` and `@engine/cms` wherever a `'use client'` module reaches them,
+   following static and dynamic imports; no `@engine/http` subpath was ever
+   client-safe (brand assets reach `node:fs`).
+6. **The build never touches a database** (CONVENTIONS.md §12): condition 2 and the
+   request read first. An unset `DATABASE_URL` does not prove it — `pg` falls back to
+   `PGHOST` and to `localhost:5432`, a workstation's own Postgres (4.3's senior-be
+   review #4) — so 4.6.c and 4.8.d point `DATABASE_URL` and `PGHOST` at a sentinel
+   listener that must accept no connection, or build with no network at all.
+
+**The files of the Payload wiring**, which TASKS.md 4.6 changes for 4.6.a–c (its
+4.6.d moves the placeholder, 4.6.e the apps' shell fields, 4.6.f builds the
+revalidate route):
+
+| File | Change |
+| --- | --- |
+| `engine/packages/http/package.json` | `"@engine/cms": "workspace:*"` in `dependencies`, by `pnpm add --filter @engine/http "@engine/cms@workspace:*"` (and `pnpm-lock.yaml` as its side effect) |
+| `engine/packages/http/src/health/route.ts` | reads the request, then loads `./payload-ports` with `import()` |
+| `engine/packages/http/src/health/payload-ports.ts` (new) | the database port — `cms()`, the pool probed once per check through `@engine/cms/db/probe` — and the queue port, counted with `runJobs`' own filter |
+| `engine/packages/http/src/health/{health,ports}.ts`, `health.test.ts` | queue lag reported, never gating the status; one probe per check behind a ~5 s single-flight memo (4.6.a) |
+| `engine/packages/http/src/cron/jobs/route.ts` | reads the request, authenticates, then loads `./payload-queue` with `import()`; single-flight in the process; a throw logged and answered 500 |
+| `engine/packages/http/src/cron/jobs/payload-queue.ts` (new) | `(await cms()).jobs.run({ limit, allQueues: true })` |
+| `engine/packages/http/src/cron/cron.test.ts` | the above, without a database |
+
+And SCH's, before it (4.8): `engine/packages/cms/src/instance.ts` and the
+`"./instance"` entry of `engine/packages/cms/package.json`'s `exports`, and the new
+leaf package `engine/packages/cache/**`. With cms reached, http's type-check covers
+the cms files it imports, so `instance.ts` imports the config and nothing an admin
+component needs.

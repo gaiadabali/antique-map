@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+# A stand-in for systemctl inside the test container, which has no systemd: it keeps each
+# unit's enabled/active state in /run/shim, runs a service's ExecStart (with its User= and
+# Environment= lines) in the background, and mounts a .mount unit's What at its Where — so
+# RustFS, Mailpit and RustFS's loop image are real during the test. A pm2-<user> unit is
+# Type=forking: its ExecStart (pm2 resurrect) runs to completion as its User, its ExecStop on
+# stop, and it is active while its PIDFile's process lives. Test-only; never on a host.
+set -euo pipefail
+S=/run/shim
+mkdir -p "$S"
+quiet=0
+now=0
+args=()
+for a in "$@"; do
+  case "$a" in --quiet | -q) quiet=1 ;; --now) now=1 ;; *) args+=("$a") ;; esac
+done
+cmd="${args[0]:-}"
+unit="${args[1]:-}"
+f="/etc/systemd/system/$unit"
+key() { sed -n "s/^$1=//p" "$f"; }
+alive() {
+  case "$unit" in
+    *.mount) mountpoint -q "$(key Where)" ;;
+    *.timer) [ -f "$S/$unit.active" ] ;;
+    pm2-*) [ -f "$S/$unit.active" ] && kill -0 "$(cat "$(key PIDFile)" 2>/dev/null)" 2>/dev/null ;;
+    *) [ -f "$S/$unit.pid" ] && kill -0 "$(cat "$S/$unit.pid")" 2>/dev/null ;;
+  esac
+}
+# as_unit COMMAND — one Exec line, in the foreground, as the unit's User with its Environment.
+as_unit() {
+  local envs=()
+  while IFS= read -r e; do envs+=("$e"); done < <(key Environment)
+  # shellcheck disable=SC2086 # the Exec line is split into words as systemd would
+  runuser -u "$(key User)" -- env -C "$(key WorkingDirectory)" "${envs[@]}" $1 >>"$S/$unit.log" 2>&1 </dev/null
+}
+start() {
+  case "$unit" in
+    *.timer)
+      touch "$S/$unit.active"
+      return 0
+      ;;
+    pm2-*)
+      alive && return 0
+      as_unit "$(key ExecStart)" && touch "$S/$unit.active"
+      return 0
+      ;;
+    *.mount)
+      alive || mount -o "$(key Options)" "$(key What)" "$(key Where)"
+      return 0
+      ;;
+  esac
+  alive && return 0
+  local exec user envs=()
+  [ -f "$f" ] || {
+    echo "shim: no unit $unit" >&2
+    return 5
+  }
+  exec="$(key ExecStart)"
+  user="$(key User)"
+  while IFS= read -r e; do envs+=("$e"); done < <(key Environment)
+  # shellcheck disable=SC2086 # ExecStart is split into words as systemd would
+  setsid runuser -u "${user:-root}" -- env "${envs[@]}" $exec >>"$S/$unit.log" 2>&1 </dev/null &
+  echo $! >"$S/$unit.pid"
+}
+stop() {
+  case "$unit" in
+    *.mount)
+      umount "$(key Where)" 2>/dev/null || true
+      return 0
+      ;;
+    pm2-*)
+      if alive; then as_unit "$(key ExecStop)" || true; fi
+      rm -f "$S/$unit.active"
+      return 0
+      ;;
+  esac
+  if alive; then
+    pkill -P "$(cat "$S/$unit.pid")" 2>/dev/null || true
+    kill "$(cat "$S/$unit.pid")" 2>/dev/null || true
+  fi
+  rm -f "$S/$unit.pid" "$S/$unit.active"
+}
+case "$cmd" in
+  daemon-reload) exit 0 ;;
+  enable)
+    touch "$S/$unit.enabled"
+    [ "$now" = 1 ] && start
+    exit 0
+    ;;
+  start) start ;;
+  restart)
+    stop
+    sleep 1
+    start
+    ;;
+  stop) stop ;;
+  is-enabled)
+    if [ -f "$S/$unit.enabled" ]; then
+      [ "$quiet" = 1 ] || echo enabled
+      exit 0
+    fi
+    [ -f "$f" ] && { [ "$quiet" = 1 ] || echo disabled; }
+    exit 1
+    ;;
+  is-active)
+    if alive; then
+      [ "$quiet" = 1 ] || echo active
+      exit 0
+    fi
+    [ "$quiet" = 1 ] || echo inactive
+    exit 3
+    ;;
+  *)
+    echo "shim systemctl: unsupported: $*" >&2
+    exit 1
+    ;;
+esac

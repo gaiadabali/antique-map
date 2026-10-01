@@ -3,7 +3,7 @@
 import { lintBrandLiterals } from './lint-brand-literals.mjs'
 
 const repoRoot = process.cwd()
-const { violations, terms, gaps } = lintBrandLiterals(repoRoot)
+const { violations, terms, legacy, gaps } = lintBrandLiterals(repoRoot)
 
 if (gaps.length > 0) {
   console.log(
@@ -14,7 +14,7 @@ if (gaps.length > 0) {
 
 if (violations.length === 0) {
   console.log(
-    `lint-brand-literals: ok, no brand literal under engine/ (${terms.length} banned term(s) checked)`,
+    `lint-brand-literals: ok, no brand literal under engine/ (${terms.length} banned term(s) and ${legacy} legacy domain(s) checked)`,
   )
   process.exit(0)
 }

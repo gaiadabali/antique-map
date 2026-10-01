@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# A stand-in for CloudPanel's clpctl inside the test container: site:add:nodejs makes the site
+# user, its home (htdocs/<domain>, logs, an nvm tree with node and npm but no pm2 — as the first
+# Helios run found) and the vhost; site:delete --force removes the vhost, the site user and its
+# home (userdel -r, which refuses while the user runs a process), as CloudPanel does. It never
+# touches Postgres. Every call is logged to /var/log/clpctl-shim.log. Test-only.
+set -euo pipefail
+VHOSTS=/etc/nginx/sites-enabled
+printf '%s\n' "$*" | sed 's/--siteUserPassword=[^ ]*/--siteUserPassword=***/' >>/var/log/clpctl-shim.log
+cmd="$1"
+shift
+declare -A o=()
+force=0
+for a in "$@"; do
+  case "$a" in
+    --force) force=1 ;;
+    --*=*) a="${a#--}" && o[${a%%=*}]="${a#*=}" ;;
+    *) echo "clpctl shim: bad argument $a" >&2 && exit 1 ;;
+  esac
+done
+d="${o[domainName]:?--domainName}"
+case "$cmd" in
+  site:add:nodejs)
+    u="${o[siteUser]:?}"
+    [ ! -e "$VHOSTS/$d.conf" ] || { echo "site $d exists" >&2 && exit 1; }
+    useradd -m -s /bin/bash "$u"
+    install -d -o "$u" -g "$u" "/home/$u/htdocs" "/home/$u/htdocs/$d" "/home/$u/logs" "/home/$u/logs/nginx"
+    /opt/shim/make-nvm "$u" "${o[nodejsVersion]:?}"
+    printf 'server {\n  server_name %s;\n  root /home/%s/htdocs/%s;\n  location / {\n    proxy_pass http://127.0.0.1:%s;\n  }\n}\n' \
+      "$d" "$u" "$d" "${o[appPort]:?}" >"$VHOSTS/$d.conf"
+    echo "Site $d has been created."
+    ;;
+  site:delete)
+    [ "$force" = 1 ] || { echo "clpctl shim: without --force it would ask" >&2 && exit 1; }
+    u="$(sed -nE 's|^ *root /home/([^/]+)/htdocs/.*|\1|p' "$VHOSTS/$d.conf")"
+    userdel -r "$u"
+    rm -f "$VHOSTS/$d.conf"
+    echo "Site $d has been deleted."
+    ;;
+  *) echo "clpctl shim: unsupported $cmd" >&2 && exit 1 ;;
+esac

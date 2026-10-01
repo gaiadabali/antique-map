@@ -1,0 +1,23 @@
+{
+  "name": "@engine/cache",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The cache tags and their one invalidation (TASKS.md 4.8, ARCHITECTURE.md §9, §15): the tag builders loaders tag reads with and hooks expire, the grammar /api/x/revalidate checks, the availability-status backstop, cacheTag() batching and invalidate(tags), which revalidates only after the write commits. A leaf: it imports next and no engine package but C1's types. SCH's.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "next": ">=16.3.3 <17.0.0"
+  },
+  "devDependencies": {
+    "@engine/config": "workspace:*",
+    "@types/node": "26.6.3",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

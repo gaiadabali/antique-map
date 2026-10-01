@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { collectBannedTerms, discoverRealBrands } from './banned-terms.mjs'
+import { sha256 } from './legacy-domains.mjs'
 import { lintBrandLiterals } from './lint-brand-literals.mjs'
 
 let sandbox
@@ -100,5 +101,63 @@ describe('lintBrandLiterals — the planted violation (2.2.i)', () => {
     const result = lintBrandLiterals(root)
     expect(result.terms).toEqual([])
     expect(result.violations).toEqual([])
+  })
+})
+
+describe('lintBrandLiterals — aliases and legacy domains (5.6.b, gate F3)', () => {
+  const ALIAS = 'www.atlas-legacy.example.test'
+  const withAlias = (root) => {
+    mkdirSync(join(root, 'fixture-atlas', 'site'), { recursive: true })
+    writeFileSync(
+      join(root, 'fixture-atlas', 'site', 'brand.config.json'),
+      JSON.stringify({
+        slug: 'fixture-atlas',
+        name: 'Fixture Atlas',
+        domains: { production: null, staging: null, aliases: [ALIAS] },
+      }),
+    )
+  }
+
+  it('bans each of domains.aliases[], in any case, and passes once it is gone', () => {
+    const root = (sandbox = makeRepo())
+    withAlias(root)
+    expect(collectBannedTerms(root).terms).toContain(ALIAS)
+    const file = join(root, 'engine', 'packages', 'domain', 'src', 'links.ts')
+    writeFileSync(file, `export const old = 'https://WWW.Atlas-Legacy.example.test/x'\n`)
+    expect(lintBrandLiterals(root).violations).toEqual([
+      { path: 'engine/packages/domain/src/links.ts', line: 1, term: ALIAS },
+    ])
+    writeFileSync(file, 'export const old = brand.domains.aliases[0]\n')
+    expect(lintBrandLiterals(root).violations).toEqual([])
+  })
+
+  it('bans a legacy domain by its digest, a subdomain of it too, and passes once it is gone', () => {
+    const root = (sandbox = makeRepo())
+    const legacyDigests = [sha256('atlas-old.example')]
+    const file = join(root, 'engine', 'packages', 'domain', 'src', 'links.ts')
+    const lint = () => lintBrandLiterals(root, { legacyDigests }).violations
+    writeFileSync(
+      file,
+      "export const a = 'https://atlas-old.example/x'\nconst b = 'Shop.Atlas-Old.Example'\n",
+    )
+    expect(lint()).toEqual([
+      { path: 'engine/packages/domain/src/links.ts', line: 1, term: 'atlas-old.example' },
+      { path: 'engine/packages/domain/src/links.ts', line: 2, term: 'atlas-old.example' },
+    ])
+    writeFileSync(
+      file,
+      "export const a = 'https://atlas-older.example/x' // config.domains.production\n",
+    )
+    expect(lint()).toEqual([])
+  })
+
+  it('reports a legacy domain a config also names once, as the config spells it', () => {
+    const root = (sandbox = makeRepo())
+    withAlias(root)
+    writeFileSync(join(root, 'engine', 'packages', 'domain', 'src', 'a.ts'), `'${ALIAS}'\n`)
+    const legacyDigests = [sha256(ALIAS)]
+    expect(lintBrandLiterals(root, { legacyDigests }).violations.map((v) => v.term)).toEqual([
+      ALIAS,
+    ])
   })
 })

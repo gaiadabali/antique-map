@@ -3,7 +3,7 @@
 // of them. `--phase/--wave` mode (`wave.mjs`) reuses `allTasks` and the needs
 // resolver but asks a narrower question.
 import { expandNeedsToken } from './needs.mjs'
-import { findOwnsConflicts } from './owns.mjs'
+import { findWaveConflicts, overlapMessage } from './owns.mjs'
 import { findUncoveredRequirements } from './requirements.mjs'
 import { isCut } from './status.mjs'
 import { checkNeedsCut, checkTaskStatus } from './status-rules.mjs'
@@ -197,18 +197,9 @@ export function checkOwnsOverlap(model) {
       byWave.get(task.wave).push(task)
     }
     for (const tasksInWave of byWave.values()) {
-      for (let i = 0; i < tasksInWave.length; i++) {
-        for (let j = i + 1; j < tasksInWave.length; j++) {
-          for (const c of findOwnsConflicts(tasksInWave[i], tasksInWave[j])) {
-            findings.push(
-              finding(
-                'owns-overlap',
-                `${c.taskA} and ${c.taskB} share wave ${tasksInWave[i].wave}: "${c.pathA}" overlaps "${c.pathB}"`,
-                tasksInWave[i].line,
-              ),
-            )
-          }
-        }
+      const lineOf = new Map(tasksInWave.map((task) => [task.id, task.line]))
+      for (const c of findWaveConflicts(tasksInWave)) {
+        findings.push(finding('owns-overlap', overlapMessage(c), lineOf.get(c.taskA)))
       }
     }
   }

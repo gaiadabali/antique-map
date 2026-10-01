@@ -42,7 +42,9 @@ export function readSegments(pathname: string): ReadSegment[] | null {
 /**
  * The path's segments decoded, or `null` when one is not in `href()`'s spelling: undecodable,
  * decoding to a `/`, empty, or written another way than `encodeURIComponent` writes it (`%6F` for
- * `o`, a lower-case `%c3%a9`, a raw `,`).
+ * `o`, a raw `,`; a lower-case `%c3%a9` too, as this function reads it — though no request through
+ * Next carries one: Next upper-cases an escape's hex digits before the proxy runs, and RFC 3986
+ * §6.2.2.1 makes the two spellings one URI).
  */
 export function decodeSegments(pathname: string): string[] | null {
   const segments = readSegments(pathname)

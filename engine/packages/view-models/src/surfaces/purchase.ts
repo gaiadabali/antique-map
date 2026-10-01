@@ -5,10 +5,11 @@
  * with this viewer's relation to it, the export status and the ship-to destination, so the
  * panel renders a designed state for every combination — a `domestic-only` item seen from
  * abroad reads "Available for delivery within Indonesia · View it in Jakarta", never a
- * disabled Buy button. It is resolved at request time and streamed; the panel reserves its
- * height and shows no purchase control until it resolves, and a read that fails resolves to
- * `enquiryOnly` / `unverified`, never to an error (`Streamed`). Loaders apply the tier, the
- * status and the modules, so a component never decides which actions exist.
+ * disabled Buy button. It is resolved at request time and the page awaits it in its own body,
+ * so the panel's forms reach the first flush and work without JavaScript (CONVENTIONS.md §12);
+ * its availability read is bounded by a short timeout, and a read that fails or times out
+ * resolves to `enquiryOnly` / `unverified`, never to an error (`Streamed`). Loaders apply the
+ * tier, the status and the modules, so a component never decides which actions exist.
  */
 import type { CountryCode, PurchaseAction, PurchaseBand } from '@engine/config/schema'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
@@ -24,8 +25,8 @@ export type * from './sister'
 export type PurchaseVM = UniquePurchaseVM | VariantsPurchaseVM | EnquiryOnlyPurchaseVM
 
 /**
- * What C11's `item.viewed` reports that only this streamed part knows, so the page sends that
- * event once the panel resolves: the purchase tier the price falls in (C1 `PurchaseBand`, never
+ * What C11's `item.viewed` reports that only this request-time part knows, so the page sends
+ * that event with the panel: the purchase tier the price falls in (C1 `PurchaseBand`, never
  * the amount) and the item's availability (C8) — `null` when it could not be read (`unverified`).
  * For counted stock, `available` while a variant can be bought, `sold` once every one is sold out.
  */

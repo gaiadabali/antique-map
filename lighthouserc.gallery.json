@@ -1,25 +1,77 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "http://localhost:4200/",
-        "http://localhost:4200/product/1-example",
-        "http://localhost:4200/bag/checkout"
-      ],
+      "url": ["http://localhost:4200/", "http://localhost:4200/product/1706-caf%C3%A9-de-java"],
       "numberOfRuns": 3,
       "settings": {
-        "preset": "mobile",
-        "throttlingMethod": "devtools",
-        "budgetsPath": "./lighthouserc.budgets.gallery.json"
+        "formFactor": "mobile"
       }
     },
     "assert": {
-      "assertions": {
-        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
-        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
-        "total-blocking-time": ["error", { "maxNumericValue": 200 }]
-      }
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": "^http://localhost:4200/$",
+          "assertions": {
+            "largest-contentful-paint": [
+              "error",
+              {
+                "maxNumericValue": 2500
+              }
+            ],
+            "cumulative-layout-shift": [
+              "error",
+              {
+                "maxNumericValue": 0.05
+              }
+            ],
+            "total-blocking-time": [
+              "error",
+              {
+                "maxNumericValue": 200
+              }
+            ],
+            "resource-summary:script:size": [
+              "error",
+              {
+                "maxNumericValue": 153600
+              }
+            ]
+          }
+        },
+        {
+          "matchingUrlPattern": "^http://localhost:4200/product/",
+          "assertions": {
+            "largest-contentful-paint": [
+              "error",
+              {
+                "maxNumericValue": 2500
+              }
+            ],
+            "cumulative-layout-shift": [
+              "error",
+              {
+                "maxNumericValue": 0.05
+              }
+            ],
+            "total-blocking-time": [
+              "error",
+              {
+                "maxNumericValue": 200
+              }
+            ],
+            "resource-summary:script:size": [
+              "error",
+              {
+                "maxNumericValue": 184320
+              }
+            ]
+          }
+        }
+      ]
     },
-    "upload": { "target": "filesystem", "outputDir": "./.lighthouseci/gallery" }
+    "upload": {
+      "target": "filesystem",
+      "outputDir": "./.lighthouseci/gallery"
+    }
   }
 }

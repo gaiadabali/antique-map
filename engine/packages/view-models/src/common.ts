@@ -35,13 +35,14 @@ export type IsoDate = string
 export type IsoDateTime = string
 
 /**
- * A part resolved at request time — availability, the ship-to market, the viewer — and
- * streamed into a `<Suspense>` boundary (ARCHITECTURE.md §9). Never produced inside a
- * cached read, and it NEVER rejects: a failed read resolves to its designed fallback — `null`
- * or an empty list (the band is omitted), `enquiryOnly` / `unverified` for a purchase panel,
- * the shell's defaults for the ship-to, the bag and consent — so no error boundary ever
- * stands in for a panel. A fixture passes `Promise.resolve(…)`, or `pending()` for the
- * reserved-height "Checking availability…" state.
+ * A part resolved at request time — availability, the ship-to market, the viewer — which the
+ * page streams into a `<Suspense>` boundary, or awaits in its own body when the first flush
+ * must carry it (the item's `purchase`; CONVENTIONS.md §12, ARCHITECTURE.md §9). Never produced
+ * inside a cached read, and it NEVER rejects: a failed read resolves to its designed fallback —
+ * `null` or an empty list (the band is omitted), `enquiryOnly` / `unverified` for a purchase
+ * panel, the shell's defaults for the ship-to, the bag and consent — so no error boundary ever
+ * stands in for a panel. A fixture passes `Promise.resolve(…)`, or `pending()` for a streamed
+ * band's reserved-height state.
  */
 export type Streamed<T> = Promise<T>
 

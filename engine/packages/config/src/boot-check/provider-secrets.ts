@@ -12,7 +12,9 @@
  * `sandbox` or `live`. Production runs on live keys; staging and local on sandbox keys, and a
  * live key there is refused too (DEPLOYMENT.md §8). A missing secret refuses a deployed process
  * and only warns on a workstation — absent sandbox credentials are a setup state; present and
- * refused ones are a defect wherever they are (CONVENTIONS.md §8).
+ * refused ones are a defect wherever they are (CONVENTIONS.md §8). Until the client hands over a
+ * provider's sandbox account, staging may set `<PREFIX>_MODE=simulate` instead: no credential is
+ * read, the report warns, and production refuses it (owner, 2026-10-01).
  *
  * The names are the ones the adapters read (PAY, LOG): an adapter that needs another secret
  * adds it here in the same change.
@@ -26,6 +28,8 @@ import type {
 import { read, type DeploymentEnvironment, type Findings } from './findings'
 
 type Mode = 'sandbox' | 'live'
+/** A provider's `<PREFIX>_MODE` that stands in for its credentials outside production. */
+export const SIMULATE = 'simulate'
 type Secret = {
   readonly name: string
   /** The mode a value declares, `null` when it is not this provider's key at all. */
@@ -173,6 +177,22 @@ function check(
   environment: DeploymentEnvironment,
   findings: Findings,
 ): void {
+  if (spec.secrets.length === 0) return
+  // `<PREFIX>_MODE=simulate`: the provider is simulated until the client hands over its sandbox
+  // account (OA14) — no credential is read and nothing may reach the provider. Staging and local
+  // only, and loud: production never simulates a payment or a courier.
+  const modeName = `${prefix}_MODE`
+  if (read(env, modeName) === SIMULATE) {
+    if (environment === 'production') {
+      findings.refuse(modeName, `is "${SIMULATE}": production runs on live keys (DEPLOYMENT.md §8)`)
+    } else {
+      findings.warn(
+        modeName,
+        `is "${SIMULATE}": ${why} is simulated — no credential, nothing reaches the provider, until its sandbox keys replace it (OA14)`,
+      )
+    }
+    return
+  }
   const expected: Mode = environment === 'production' ? 'live' : 'sandbox'
   const declared: { name: string; mode: Mode }[] = []
   for (const secret of spec.secrets) {

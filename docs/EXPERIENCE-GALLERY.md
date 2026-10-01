@@ -29,8 +29,12 @@ direction may enter as at most one candidate**. Nothing above binds the outcome.
 1. **Collectors** — know Valentijn from Van Keulen, read Latin titles, want
    collation, state, condition and references before they will talk price.
 2. **Institutions** — museums, national libraries, universities (the gallery
-   already sells to NLA, NLS, the National Museum of Singapore, Louvre Abu Dhabi,
-   Leiden): need proformas, PO numbers, provenance, export papers.
+   already sells to the National Museum of Singapore, the National Library of
+   Australia, the Louvre Abu Dhabi and Leiden University — the client's own list,
+   `docs/design/input/claude-design-2026-09/project-notes.md`; whether any other
+   institution is a client, and which may be named in public, waits on the owner's
+   answer to G10, `docs/design/journeys/owner-interview.md`): need proformas, PO
+   numbers, provenance, export papers.
 3. **Interior designers, villas and hotels** — buy by place, size and colour,
    present to clients, need framing and installation.
 4. **The diaspora and heritage buyers** — Dutch-Indonesian families, returning
@@ -80,8 +84,10 @@ carousel:
 4. **Curations** — two or three current collections or a catalogue.
 5. **Makers** — the names collectors search for, with available counts.
 6. **Stories** — the essays, which are the gallery's voice.
-7. **Trust** — the Parry certificate, the lifetime authenticity guarantee, the
-   institutions who buy here, how shipping and insurance work.
+7. **Trust** — the Parry certificate; the lifetime authenticity guarantee, a
+   default published only in counsel's words (RESEARCH.md §2, D11, owner question
+   G6); the institutions who buy here, named only with their permission (G10); how
+   shipping and insurance work.
 8. **Newsletter** — the fortnightly new-arrivals letter (now real: generated from
    inventory, §10).
 
@@ -133,11 +139,17 @@ a desktop (media left, the record and the purchase panel right, sticky).
 
 **Media**
 - Deep zoom of **recto, verso, cartouche details, raking-light and
-  transmitted-light** shots where they exist; a framed or in-room view; a **scale
-  view at launch** — a static SVG of the sheet beside a person and an A4 page,
-  cheap to build, and misjudged size is a leading cause of returns.
+  transmitted-light** shots where they exist; a framed or in-room view — an in-room
+  composite is labelled "Digital mockup" and never first; a **scale view at
+  launch** — a static SVG of the sheet beside a person and an A4 page, cheap to
+  build, and misjudged size is a leading cause of returns.
 - The primary image is a real, crawlable `<img>` with alt text and is the LCP;
-  the IIIF viewer attaches on intent (§6).
+  the IIIF viewer attaches on intent (§6). It is **the recto itself** — the
+  photograph of the whole sheet, cropped outside the sheet, never into it — never a
+  photograph of its own, a detail or a synthetic image (C9 `primaryImageIndex()`,
+  CONTENT-MODEL.md §1, §9). Every image of condition — recto, verso, detail,
+  raking, transmitted — is a photograph, never retouched (the imagery rules,
+  `docs/design/imagery/retouching-and-labelling.md` §1, §5).
 - **Books and atlases** show binding, pagination and plates, completeness, several
   openings, the spine and the cover — the collation of a volume, not of a sheet.
 
@@ -164,10 +176,12 @@ specialist will reply within {hours}" instead. The rest of the panel
 - **status:** Available · "On hold until {date}" · Sold;
 - primary and secondary actions: Buy · Reserve · Make an offer · Request price ·
   Enquire · Book a viewing · Proforma for institutions;
-- the reassurance row: lifetime authenticity guarantee, the Parry certificate,
-  14-day returns (as counsel words it), insured shipping estimate to the
-  ship-to country, **ships from** (Singapore / Jakarta), and the export note when
-  the item is `domestic-only` (COMPLIANCE.md §1);
+- the reassurance row: the Parry certificate; the lifetime authenticity guarantee
+  and 14-day returns — the research's defaults, not yet promises: each is shown
+  only in counsel's words and only once they arrive (RESEARCH.md §2, D11, owner
+  question G6), and until then the row holds neither; insured shipping estimate to
+  the ship-to country, **ships from** (Singapore / Jakarta), and the export note
+  when the item is `domestic-only` (COMPLIANCE.md §1);
 - a conservation framing quote link (UV glazing, rag mat, reversible hinges).
 
 **Context**
@@ -246,8 +260,11 @@ page) · a "Similar to sell?" micro-block linking to consignment.
 
 All in the CMS as pages, all linked from the purchase panel:
 
-- **Guarantee & returns** — lifetime authenticity guarantee; returns as counsel
-  words them (research default: 14 days, less shipping and insurance).
+- **Guarantee & returns** — a lifetime authenticity guarantee and returns (the
+  research's default: 14 days, less shipping and insurance) — both defaults,
+  subject to counsel, published only in counsel's words per seller (RESEARCH.md §2,
+  COMMERCE.md §11, D11, owner question G6); until they arrive the page is designed
+  and promises nothing.
 - **Authentication** — "How do you know it's real?": chain lines, watermarks,
   plate marks, verso text; "if doubt remains, we do not offer the item for sale".
 - **Condition grades** — the published scale with definitions and A–D
@@ -257,7 +274,10 @@ All in the CMS as pages, all linked from the purchase panel:
 - **Shipping & insurance** — how originals travel (flat, boxed, insured,
   signature), what it costs, from where, and duties by destination.
 - **Framing & conservation** — including tropical humidity guidance for Bali.
-- **Institutions** — who has bought here, with permission.
+- **Institutions** — who has bought here, each named only with its permission
+  (owner question G10); until the owner confirms it, the page explains how
+  institutions buy — proforma, PO number, bank transfer, export papers — and names
+  none.
 - **Visit** — each location, by appointment, a map, and booking. Viewing slots
   show their time zone explicitly (Singapore UTC+8, Jakarta WIB UTC+7, Bali WITA
   UTC+8), confirm by email with an `.ics`, remind on WhatsApp, and can be

@@ -55,7 +55,7 @@ function readBrandConfig(repoRoot, slug) {
 
 /**
  * `{ terms, gaps }` — `terms` is every banned literal (slug, derived name,
- * and, once configured, `name` and every domain); `gaps` lists brands whose
+ * and, once configured, `name` and every domain, `domains.aliases[]` included); `gaps` lists brands whose
  * config does not exist yet, so their domains cannot be checked.
  */
 export function collectBannedTerms(repoRoot) {
@@ -71,8 +71,9 @@ export function collectBannedTerms(repoRoot) {
     }
     if (typeof config.slug === 'string') terms.add(config.slug)
     if (typeof config.name === 'string') terms.add(config.name)
+    // production, staging and every alias (TASKS.md 5.6.b, gate F3), as the config spells them.
     const domains = config.domains ?? {}
-    for (const value of Object.values(domains)) {
+    for (const value of Object.values(domains).flat()) {
       if (typeof value === 'string' && value.length > 0) terms.add(value)
     }
   }

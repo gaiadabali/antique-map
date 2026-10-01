@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest'
 
 import { testEnv } from '../validate/testing/fixtures'
-import { assertBootable, BootCheckError, checkDatabase, runBootCheck } from './index'
+import {
+  assertBootable,
+  BootCheckError,
+  checkDatabase,
+  formatBootReport,
+  isRefused,
+  runBootCheck,
+  type DatabaseProbe,
+} from './index'
 import { redactCredentials } from '../loader/redact'
 import { bootCheck } from './index'
 import { deployableConfig, fullEnv, REPO_ROOT, secret } from './testing'
@@ -182,5 +190,49 @@ describe('bootCheck() — review fixes (3.1)', () => {
     expect(finding?.message).toBe(
       'the database did not answer: could not connect: host=db.internal user=app password=… dbname=ig',
     )
+  })
+})
+
+describe('runBootCheck() — a database outage is not a refused boot (qa’s phase 4 L1, 5.3.f)', () => {
+  const down = async (): Promise<never> => {
+    throw new Error('connect ECONNREFUSED postgres://app:hunter2@db.internal:5432/ig_db')
+  }
+  const run = (extra: Record<string, string | undefined>, database: DatabaseProbe) =>
+    runBootCheck({ env: workstation('gallery', extra), cwd: REPO_ROOT, database, now: NOW })
+
+  it('reports a database that does not answer as unavailable, never as a refused start', async () => {
+    const report = await run({}, down)
+    expect(report.ok).toBe(false) // the health check still fails…
+    expect(isRefused(report)).toBe(false) // …but the process booted
+    expect(report.problems).toEqual([
+      {
+        subject: 'DATABASE_URL',
+        message:
+          'the database did not answer: connect ECONNREFUSED postgres://…@db.internal:5432/ig_db',
+        outage: true,
+      },
+    ])
+    const text = formatBootReport(report)
+    expect(text).not.toContain('refused to start')
+    expect(text.split('\n')[0]).toBe(
+      'boot check passed (local, loaders from payload), but DATABASE_URL is unavailable: an outage, not a refused start',
+    )
+    expect(text).toContain('✗ DATABASE_URL: the database did not answer')
+    expect(text).not.toContain('hunter2')
+  })
+
+  it('still refuses a configuration fault, alone or beside an outage', async () => {
+    const serializable = await run({}, async () => ({ transactionIsolation: 'serializable' }))
+    expect(isRefused(serializable)).toBe(true) // a database on the wrong isolation is refused
+    expect(formatBootReport(serializable)).toMatch(
+      /^boot check refused to start \(local\): 1 problem/,
+    )
+    const both = await run({ HOSTNAME: '127.1' }, down)
+    expect(isRefused(both)).toBe(true)
+    expect(formatBootReport(both)).toMatch(/^boot check refused to start \(local\): 2 problem/)
+    const clean = await run({}, async () => ({ transactionIsolation: 'read committed' }))
+    expect([clean.ok, isRefused(clean)]).toEqual([true, false])
+    const [head] = formatBootReport(clean).split('\n')
+    expect(head).toBe('boot check passed (local, loaders from payload)')
   })
 })

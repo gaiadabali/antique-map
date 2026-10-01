@@ -1,0 +1,17 @@
+[
+  ["original", "timestamp", "statuscode", "mimetype"],
+  ["https://www.example-shop.test/journal/2023/3/4/a-post", "20230304000000", "200", "text/html"],
+  ["https://www.example-shop.test/journal", "20230304000000", "200", "text/html"],
+  ["https://www.example-shop.test/about/", "20230304000000", "200", "text/html"],
+  ["https://www.example-shop.test/s/catalogue.pdf", "20230304000000", "200", "application/pdf"],
+  ["https://www.example-shop.test/robots.txt", "20230304000000", "200", "text/plain"],
+  [
+    "https://www.example-shop.test/mailto:someone@example.org",
+    "20230304000000",
+    "404",
+    "text/html"
+  ],
+  ["https://www.example-shop.test/cart?cartToken=abc123", "20230304000000", "200", "text/html"],
+  ["https://shop.example-shop.test/products/tote-bag", "20210101000000", "200", "text/html"],
+  ["https://www.example-shop.test/prints", "20230304000000", "-", "warc/revisit"]
+]

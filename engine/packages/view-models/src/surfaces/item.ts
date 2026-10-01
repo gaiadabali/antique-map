@@ -3,7 +3,8 @@
  *
  * One PDP view model for every product (DESIGN-SYSTEM.md §2): an original map, a numbered
  * facsimile, a giclée print, a tote, a book. The content is cached; `purchase`, the sister
- * link, the rails and the reviews are resolved at request time and streamed. Public fields
+ * link, the rails and the reviews are resolved at request time: `purchase` awaited in the page
+ * body, so its forms reach the first flush, the rest streamed. Public fields
  * only: a work's `physical` group, acquisition cost and consignor never reach a view model
  * (ARCHITECTURE.md §12) — `shipsFrom` and the delivery gate are derived from them on the
  * server. Loaded by `loadItem`, which answers `{ vm } | { redirectTo } | null` (`./loaders`).

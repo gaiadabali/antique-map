@@ -12,7 +12,7 @@ instance per tenant).
 | | Where | Data | Deploys from |
 | - | ----- | ---- | ------------ |
 | **local** | each worktree, `docker-compose.dev.yml` — Postgres 18, Mailpit, MinIO | per-lane databases (`ig_dev_<lane>`) seeded from fixtures | — |
-| **staging** | Helios — `ig.gaiada.com`, `oei.gaiada.com` | seeded + rehearsal migration imports; payment **sandboxes** | a green push to `production` (the GDA pipeline's only Helios branch) |
+| **staging** | Helios — `indies-gallery.gaiada.com`, `old-east-indies.gaiada.com` | seeded + rehearsal migration imports; payment **sandboxes** | a green push to `production` (the GDA pipeline's only Helios branch) |
 | **production** | Helios — the brands' real domains, added at cutover (MIGRATION.md §8) | live | the same, once cutover moves the targets |
 
 Two of `docker-compose.dev.yml`'s pins are load-bearing, not arbitrary
@@ -53,7 +53,9 @@ same artifact is the escape hatch — it never runs migrations.
 KOI keeps uploads in `shared/uploads`. That does not scale to this catalogue:
 ~9,500 works × several images × derivatives × IIIF tiles is tens to hundreds of
 GB, and Helios's disk hit **93%** in September 2026. Media goes to **S3-compatible
-object storage** (Cloudflare R2 by default: no egress fees, CDN in front) through
+object storage** — **RustFS**, self-hosted (D12, 2026-09-30; staging runs it on
+Helios bound to loopback, and where it lives for the full archive is to be
+confirmed before 37.2 — this disk is why) — through
 `@payloadcms/storage-s3`; local dev uses MinIO (the `bitnamilegacy/minio` image,
 since `minio/minio` no longer allows an anonymous pull, §1); switching provider
 is an endpoint change.
@@ -75,8 +77,53 @@ push to main
   → health check https://<domain>/api/health — it calls getPayload(), which initialises
     Payload and applies pending migrations (web process only: RUN_MIGRATIONS=1 in a
     production build — Payload migrates on boot only when NODE_ENV=production, which
-    `next start` sets — under a Postgres advisory lock); on failure, roll back and reload
+    the standalone server.js sets — under a Postgres advisory lock); on failure, roll back
+    and reload
 ```
+
+**What pm2 runs** (TASKS.md 4.4, 4.3). The release is Next's standalone output, which nests
+the server under the app's workspace path (`outputFileTracingRoot` is the repository root),
+with the brand folder beside it (`assemble-artifact.sh`). So each target's pm2 process — `uig`
+for the gallery app, `uoei` for the emporium — runs, from its `current` release:
+
+```
+script     <current>/engine/apps/<app>/server.js       <app>: gallery for uig, emporium for uoei
+node_args  --dns-result-order=ipv4first                so `localhost` binds 127.0.0.1 (below)
+exec_mode  fork                                        one process per brand, never cluster
+instances  1
+
+HOSTNAME=localhost             the address server.js binds (§8): set, never left to the shell
+PORT=<the site's port>         §2's app port; server.js falls back to 3000 without it
+BRAND_ROOT=<current>/brand     the folder holding site/: brand.config.json, copy/, assets/
+```
+
+and `shared/.env` supplies the rest (§2, §8). That `server.js` sets `NODE_ENV=production`
+itself; `next start` never runs on a host.
+
+**One process, in fork mode.** 4.6's single-flight jobs run, §7's in-process rate limits
+and the health check's ~5 s memo are exact only with one process per brand; a pm2 or
+CloudPanel template running `-i max` or cluster mode would break all three without a word,
+so the entry pins `exec_mode: 'fork'` and `instances: 1`.
+
+**Bound behind nginx, on loopback alone.** The app port is reached only through nginx,
+which terminates TLS and sets `X-Forwarded-For`, on which the rate limits key — a direct
+hit could forge it. So a host never binds `0.0.0.0`, which would put 4030 and 4031 on the
+public interface (4.3's senior-be review #8), and never a loopback IP literal
+(`127.0.0.1`, `::1`): at one of those, Next renames the host to `localhost` when it re-reads
+the proxy's rewrite but builds its own URL from the raw address, so every rewrite looks
+external, is proxied to itself, and every storefront page hangs with nothing logged — which
+no choice of origin in the proxy fixes (4.4.g), so the boot check refuses one (TASKS.md
+5.3.d, C13 `PROXY_MATCHER`). The host binds **`localhost`, pinned to IPv4**: measured in
+4.3 on Next 16.3.6, `localhost` alone listened on `[::1]` only, where an nginx upstream at
+`127.0.0.1` is refused (a 502); with `--dns-result-order=ipv4first` it listened on
+`127.0.0.1` alone, answered through `127.0.0.1` and `localhost`, and did not hang, since
+both of Next's URLs then say `localhost`. nginx's upstream is `http://127.0.0.1:<port>`,
+which 5.1 confirms in the site's CloudPanel vhost. 5.1 verifies the bind on Helios:
+`ss -ltnp` shows the port on `127.0.0.1` only, a page answers
+through nginx, and `curl http://<public-ip>:4030` from outside is refused — the host
+firewall (CloudPanel's allows 22, 80 and 443) is 5.1's to confirm, with the owner's
+go-ahead (👤). CI's servers, on an ephemeral runner with no nginx, bind `0.0.0.0`
+(`start-server.sh`).
 
 `.gaiadeploy.yml`, using the pipeline's monorepo support (`subdir`, added
 2026-08-19 for exactly this):
@@ -85,12 +132,12 @@ push to main
 production:
   - server: helios
     site_user: uig
-    domain: ig.gaiada.com
+    domain: indies-gallery.gaiada.com
     type: node
     subdir: indies-gallery
   - server: helios
     site_user: uoei
-    domain: oei.gaiada.com
+    domain: old-east-indies.gaiada.com
     type: node
     subdir: old-east-indies
 ```
@@ -102,6 +149,11 @@ reload silently and the old code keeps serving.
 
 Rollback is repointing `current` and reloading — seconds, no rebuild. Two
 releases are kept per target.
+
+**Staging on Helios, as built and proven** — the hosts, the poller's health check (`/`, 6 × 5 s,
+20 s each), the first deploys, the restart and rollback rehearsals, and a defect in the shared
+`gaiada-deploy --rollback` for `subdir` targets — is recorded in
+[ops/helios-staging.md](ops/helios-staging.md) (TASKS.md 5.1.c).
 
 ## 4. Migrations
 
@@ -172,9 +224,22 @@ runbook records how long it actually took.
 ## 7. Health, monitoring, security
 
 - `/api/health` returns app, database, storage, job-queue lag and payment
-  provider reachability. Alloy on the box watches it; alert on p95 > 1 s, 5xx
-  rate, disk > 80%, pm2 restart loop, job-queue lag > 10 min, **any webhook
-  signature failure**.
+  provider reachability; the lag and the providers are reported and never gate
+  its status, because a failed health check rolls a deploy back (§3). Alloy on
+  the box watches it; alert on p95 > 1 s, 5xx rate, disk > 80%, pm2 restart
+  loop, job-queue lag > 10 min, **any webhook signature failure**.
+- **The 5xx rate sets one series apart** (TASKS.md 4.3, 41.2.c): a `500` whose
+  path is under `^/(brand-assets|api/x)/` and contains `%` is Next's own answer to
+  a path it cannot decode, before any engine code runs (ARCHITECTURE.md §13) — no
+  brand asset or engine API path carries a `%` of its own, since brand-asset
+  segments are checked and legacy URLs are logged under their public path. The
+  rule is evaluable as written (a status, a prefix and a character, no decoding),
+  and those 500s are counted as their own series — ticketed past a rate, never
+  paging and never dropped, so a Next change that 500s every `%` path still shows —
+  while every other 500 still counts toward the paging rate. nginx may answer a
+  malformed escape (`%A.`) with its own 400 first, leaving only well-formed escapes
+  of invalid UTF-8 (`%C0%AE`, `%FF`) to reach Next; 41.2.c measures that through
+  CloudPanel's nginx.
 - Security headers and the CSP are sent by the app
   (`engine/packages/http/src/security/`), never by the CloudPanel vhost, which
   regenerates its nginx config (KOI). The CSP is **built per request** from brand
@@ -189,7 +254,13 @@ runbook records how long it actually took.
 
 ```
 BRAND                       indies-gallery | old-east-indies | test
-BRAND_ROOT                  path to the brand folder shipped in the artifact (config, copy, assets)
+BRAND_ROOT                  the brand folder, the one holding site/: <current>/brand on a host — the release
+                            ships brand/site/ beside engine/apps/<app>/server.js (assemble-artifact.sh)
+HOSTNAME                    localhost on a host, where pm2 runs node with --dns-result-order=ipv4first so it
+                            binds 127.0.0.1 alone, behind nginx (§3); 0.0.0.0 in CI. The address
+                            `node server.js` binds, never an origin. Never a loopback IP — at 127.0.0.1 every
+                            proxy rewrite looks external to Next and the page hangs (TASKS.md 4.4.g, 5.3.d) —
+                            and never left to the shell, which exports the machine's name as HOSTNAME
 TEST_STOREFRONT             CI only: gallery | emporium — which test config to load
 DATABASE_URL                PAYLOAD_SECRET
 SITE_URL                    the origin this process serves: https://<its domain> on a host; the boot
@@ -204,13 +275,16 @@ PAYMENT_<SELLER>_<PROVIDER>_*   per seller, per enabled provider, per environmen
 SHIPPING_<SELLER>_<PROVIDER>_*  per seller, for each of its own couriers (sellers[].shipping, all of the
                                 brand's when it names none) — a shipping webhook is per seller too
 FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
-<PREFIX>_MODE               sandbox | live, for a provider whose keys cannot say which (below)
+<PREFIX>_MODE               sandbox | live, for a provider whose keys cannot say which; simulate outside production (below)
 WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
 SISTER_BASE_URL             the sister's origin this process syncs with: required in production (the
                             sister's production site, never sisters[0].baseUrl, which is its staging
                             site); staging may leave it unset; a workstation may name a local sister
                             at http://localhost:<port>; ignored, with a warning, by a brand with none
 REVALIDATE_SECRET  CRON_SECRET
+REVALIDATE_ORIGIN           http://127.0.0.1:<PORT> on a host (§2's app port): where a worker, a seed or an import posts
+                            cache invalidations (/api/x/revalidate), the web process on loopback; the IP literal, never
+                            localhost. Unset on a workstation (a loopback SITE_URL serves); https only off loopback
 LINK_TOKEN_KEYS             the capability links' key ring (C6 links), one per brand and per environment,
                             never shared: comma-separated kid:secret (the one current key),
                             kid:secret:YYYY-MM-DD (retired that UTC day; verifies LINK_TOKEN.keyOverlapDays
@@ -257,10 +331,15 @@ upper-cased with `-` as `_` (`SHIPPING_SG_DHL_EXPRESS_API_KEY`):
 A seller needs its own payment providers' secrets and its own couriers' — the
 brand's couriers when it names none (C1 `sellers[].shipping`) — and no other: a
 Singapore seller shipping its own stock by DHL Express needs no Biteship key. A
-`*_MODE` is `sandbox` or `live` and nothing else. A missing secret refuses a
-deployed process and only warns a workstation; a key of the wrong kind refuses
-anywhere — production runs on live keys, staging and local on sandbox keys — and
-so does a seller whose keys for one provider mix the two.
+`*_MODE` is `sandbox` or `live` — or, outside production, `simulate`. A missing
+secret refuses a deployed process and only warns a workstation; a key of the wrong
+kind refuses anywhere — production runs on live keys, staging and local on sandbox
+keys — and so does a seller whose keys for one provider mix the two.
+**`<PREFIX>_MODE=simulate`** stands in for a provider whose sandbox account the
+client has not handed over yet (OA14; the owner's call, 2026-10-01): no credential
+is read, the boot report warns, nothing may reach the provider — its adapter, when
+built, simulates the call — and production refuses it. Staging runs every provider
+simulated until its sandbox keys arrive; each then replaces its `simulate` line.
 
 **No `NEXT_PUBLIC_*` per brand.** Those are inlined at `next build`, and one
 gallery build serves several brands (and the artifact is built with none), so GA4
