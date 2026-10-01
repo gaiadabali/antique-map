@@ -136,8 +136,17 @@ except Exception: print("unreadable")' 2>/dev/null)"
     [ "$have" = none ] || echo "the pm2 daemon for $S_USER has apps defined: ${have:-unreadable} (pm2 jlist is not [])"
   fi
   # The poller's own probe (`sudo -u <user> /usr/bin/pm2 describe <user>`) may hang beside its
-  # idle daemon; it runs no app, so it counts as the daemon (outside the strict re-check).
-  have="$(pgrep -a -u "$S_USER" 2>/dev/null | awk -v d="$daemon" -v probe="node /usr/bin/pm2 describe $S_USER" -v strict="${1:-}"     '$1 == d { next } strict != "strict" && substr($0, index($0, " ") + 1) == probe { next } { print }' |
+  # idle daemon, and a daemon it started may hang before writing its socket (so no app can have
+  # been started through it). Both count as the idle daemon — outside the strict re-check.
+  have="$(pgrep -a -u "$S_USER" 2>/dev/null | awk -v d="$daemon" -v strict="${1:-}" \
+    -v probe="node /usr/bin/pm2 describe $S_USER" -v god="(${S_HOME}/.pm2)" '
+      $1 == d { next }
+      strict != "strict" {
+        cmd = substr($0, index($0, " ") + 1)
+        if (cmd == probe) next
+        if (!socket && cmd ~ /^PM2 v[0-9.]+: God Daemon / && substr(cmd, length(cmd) - length(god) + 1) == god) next
+      }
+      { print }' socket="$(pm2_daemon_live && echo 1)" |
     head -n 5 | paste -sd';' -)"
   [ -z "$have" ] || echo "processes run as $S_USER: $have"
   if systemctl is-active --quiet "pm2-$S_USER.service" 2>/dev/null; then echo "pm2-$S_USER.service is active"; fi
@@ -191,8 +200,9 @@ backup_replaced() {
 # stop_idle_pm2 — the poller's idle pm2 daemon, killed as the user (it runs no app: checked).
 stop_idle_pm2() {
   resolve_site_path
-  site_run pm2 kill >/dev/null 2>&1 || true
+  if pm2_daemon_live; then site_run pm2 kill >/dev/null 2>&1 || true; fi
   pkill -u "$S_USER" -xf "node /usr/bin/pm2 describe $S_USER" 2>/dev/null || true
+  pkill -u "$S_USER" -f "^PM2 v[0-9.]+: God Daemon \\(${S_HOME}/\\.pm2\\)$" 2>/dev/null || true
   wait_for 10 pm2_daemon_gone
 }
 
