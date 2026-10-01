@@ -13,8 +13,9 @@ language. She uses her phone.
 **Rests on:** EXPERIENCE-GALLERY.md §2 (the place hierarchy: Java › Buitenzorg/Bogor),
 §4 (zero results never dead-end, historical names), §7 (place pages), §8 (want-lists),
 DESIGN-SYSTEM.md §2 (`Search`: synonyms and historical place names, works without
-JavaScript), **D50** (enquiry-only; a staff-issued invoice paid online), D45 (the invoice
-holds the piece until its due date), G9 (the reply promise), G11 (shipping and duties the
+JavaScript), **D50** (enquiry-only; a staff-issued invoice paid online), D51 (the invoice
+on the gallery's own pay page), D45 (the invoice holds the piece until its due date — 3
+days unless staff set another, a reminder 24 hours before), D54 (no accounts), G9 (the reply promise), G11 (shipping and duties the
 buyer's, on the invoice), PAYMENTS.md §6 (IG Singapore: Stripe, including iDEAL/SEPA for
 EU buyers), D39 (want-list by email, double opt-in). A Dutch locale is v2 and the
 dedicated "find your family's town" feature is later (EXPERIENCE-GALLERY.md §12): this
@@ -28,8 +29,9 @@ journey runs on launch search, the gazetteer and place pages, in English.
   Celebes ↔ Sulawesi); a place page for Buitenzorg with at least one available
   photograph or print, one sold one, and one with a Dutch caption.
 - Staff (or the facilitator in the admin) ready to answer her enquiry with a figure the
-  script fixes and to issue the invoice — shipping and insurance to the Netherlands, the
-  duties note, a due date.
+  script fixes and to issue the invoice — in EUR, one of the Singapore seller's charge
+  currencies (PAYMENTS.md §6), so iDEAL can show; shipping and insurance to the
+  Netherlands, the duties note, the due date the builder proposes (three days, D45).
 - The Stripe sandbox with iDEAL enabled; the mail catcher open.
 
 ## Say to the participant
@@ -47,9 +49,9 @@ journey runs on launch search, the gazetteer and place pages, in English.
 | 2 | `Place` (`place`), e.g. `/places/java/buitenzorg` | read the modern and historical names, a short history, the available works, the sold ones, the stories set there | an empty "available" band → the sold works and "Alert me about new works of Buitenzorg"; a Dutch caption carries its own `lang` |
 | 3 | `Item` | choose a photograph; read its date with its precision ("c. 1910"), the photographer or studio, the condition; read "Price on request" | the date's precision is shown, never implied certainty; no price in any currency (G4) |
 | 4 | `Item` › an enquiry `Form` or "Ask on WhatsApp" | ask the price, say it is to be sent to the Netherlands | the reply promise "the same working day, Singapore time" (G9) — the time zone named, since hers is six or seven hours behind; JavaScript off → the form posts and returns with its result |
-| 5 | email → `Pay` (`pay/[token]`) | open the invoice: the piece, the figure, **shipping and insurance to the Netherlands**, the **duties note — paid by her on arrival** (G11), the charge currency named, the due date, the seller | the piece reads "On hold until {due date}" to others (D45); past the due date → released, and a designed page offering to ask again |
-| 6 | Payment (Stripe sandbox) | pay by iDEAL or card | iDEAL only where the invoice's currency allows it; failed → retry another method, the hold intact until the due date |
-| 7 | `Order` and email | see the order paid in full, the seller, the certificate, the delivery estimate | the confirmation email arrives; the certificate and invoice are downloadable from the order; it ships only now (G11) |
+| 5 | email → `Pay` (`pay/[token]`) | open the invoice on the gallery's own page (D51): the piece, the figure, **shipping and insurance to the Netherlands**, the **duties note — paid by her on arrival** (G11), the charge currency named, the due date, the seller | the piece reads "On hold until {due date}" to everyone (D45); the reminder email 24 hours before the due date; past it → expired, the piece released, and a designed page offering to ask again |
+| 6 | the Payment Element in the page (Stripe sandbox) | pay by iDEAL or card | never a gateway-hosted page (D51); iDEAL only where the invoice's currency allows it; failed → retry another method, the hold intact until the due date |
+| 7 | `Order` and email | see the order paid in full, the seller, the certificate, the delivery estimate | the confirmation email arrives; the certificate and invoice are downloadable from the order, which its email's link or the order lookup opens again — no account (D54); it ships only now (G11) |
 
 **Alternate path — nothing available:** from the place page's sold works, "Alert me" →
 `WantList` (`want-list`) → her email → the **double opt-in** email → its link opens the
@@ -84,8 +86,9 @@ pay with iDEAL, the payment she trusts at home.
 - Target (to calibrate): search to item chosen, **under 2 minutes**.
 
 **Observe:** whether she expects Dutch; how she reads "c. 1910"; whether "Price on
-request" puts her off a modest present; whether the sold works feel like an ending or an
-invitation.
+request" puts her off a modest present; whether she asks what happens if her mother does
+not like it (the site promises no return of an original — D56, the owner's intention,
+still for counsel); whether the sold works feel like an ending or an invitation.
 
 ## Open until the owner answers
 
@@ -93,6 +96,8 @@ invitation.
 authenticity guarantee, in counsel's words), G9 (same working day, Singapore time), G11
 (shipping and duties the buyer's, on the invoice), G13 (what the gallery says of itself:
 since 2001, over 9,500 antiques, the certificate) — folded in above. **Still owed by the
-owner:** nothing for this journey. **Still open elsewhere:** the currency staff invoice a
-euro buyer in, and so whether iDEAL is offered (TASKS.md 6.4.a; PAYMENTS.md §6); D1 (the
-seller), adviser.
+owner:** nothing for this journey. **Settled by the replan (TASKS.md 6.4):** the invoice
+on the gallery's own pay page with the Payment Element (D51); staff set its charge
+currency when they issue it (PAYMENTS.md §5–§6), so the script fixes EUR; the 3-day term
+and the 24-hour reminder (D45). **Still open elsewhere:** D1 (the seller), adviser;
+whether "no returns of an original" stands under UU 8/1999 art. 18 (D56, counsel, D11).
