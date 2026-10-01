@@ -22,15 +22,16 @@ owner points each domain at its new site; that is the whole cutover.
 | --- | --- |
 | Live store | `https://antiquemapsindonesia.com` — `indiesgallery.com` 301s to it |
 | Stack | custom **Laravel** app (`laravel_session`, `XSRF-TOKEN` cookies), Bootstrap 4.3.1, Apache 2.4.29 on Ubuntu 18.04 (end of life) |
-| Sitemap | **none** — `/sitemap.xml` throws an unhandled Symfony exception page |
+| Sitemap | **none** — `/sitemap.xml` answers 404 (the public read, 2026-09-30); on 2026-09-25 it threw an unhandled Symfony exception page |
 | Structured data | none (no JSON-LD) · GA via `gtag` |
-| Listed online | ≈ 2,090 items: Antique Maps 347 · Prints 1,428 · Books 34 · Posters 17 · Photographs 182 · Tribal 2 · Special Collection 80 |
+| Online | **1,823 distinct products** on the public pages: 1,607 listed, 216 sold (the public read, 7.1). The category counts — Antique Maps 347 · Prints 1,428 · Books 34 · Posters 17 · Photographs 182 · Tribal 2 · Special Collection 80 — overlap, so their sum (≈ 2,090) counts some items twice |
 | Held in total | "over 9,500 authentic antiques" (site copy) — most are **not** online |
 | Category tree | ~100 categories, embedded in every page as JSON (`var db = [...]`: `id`, `parent_id`, `slug`, `name`, `products_count`) |
 | Product URL | `/product/{id}-{slug}` — e.g. `/product/1706-bali-island-large-map-kaart-van-het-eyland-bali` |
 | Category URL | `/category/{id}-{slug}` + `?page=` · `?o=newest` · `?p=highest|lowest` · `?s=sold|unsold` |
-| Other routes | `/new-additions` `/catalogue` `/newsletter` `/about-us` `/contact-us` `/sell-to-us` `/faq` `/privacy-policy` `/terms-conditions` `/account/*` `/s` (search) |
-| Images | `/storage/products/{productId}-{imageId}.jpg` — sampled **3543 × 2840 px, 1.5 MB JPEG** |
+| Maker URL | `/mapmaker/{id}-{slug}` (the maker's name, spaces encoded: `/mapmaker/1-Abraham%20Ortelius`) with the category queries — 127 makers, 813 URLs with their query variants |
+| Other routes | `/new-additions` (with `?p=highest|lowest` · `?s=sold|unsold` · `?page=`) `/catalogue` `/newsletter` `/about-us` `/contact-us` `/sell-to-us` `/faq` `/privacy-policy` `/terms-conditions` `/account/*` `/s` (search) |
+| Images | `/storage/products/{productId}-{imageId}.jpg` — sampled **3543 × 2840 px, 1.5 MB JPEG** — plus size variants `{productId}-{imageId}S.jpg` and `…M.jpg` (2,289 originals and 1,822 variants linked from the public pages) |
 | Prices | USD (`USD 380` … `USD 38,800`) or **"On Request"** |
 
 A product page carries: SKU (`#M.1044`, `#M.0500`), title, cartographer/artist,
@@ -43,10 +44,11 @@ Inquiry, Request Price, Add to Wishlist, Sell To Us, Email a Friend, Share.
 **Gaps the new site closes** (a full audit is in RESEARCH.md §1; they shape
 EXPERIENCE-GALLERY.md):
 
-- **Debug output is on in production** — `/sitemap.xml` renders a full Laravel
-  stack trace. That is the old site's own business and outside this project (we
-  do not touch the live site); the new site shows designed error pages and never
-  leaks a trace (design.md, Error Handling).
+- **Debug output was on in production** — on 2026-09-25 `/sitemap.xml`
+  rendered a full Laravel stack trace; by 2026-09-30 it answered 404. That is
+  the old site's own business and outside this project (we do not touch the
+  live site); the new site shows designed error pages and never leaks a trace
+  (design.md, Error Handling).
 - No SEO scaffolding: no meta description, Open Graph, canonical or JSON-LD; the
   home `<title>` is " | Antique Maps Indonesia"; the only `<h1>` on product and
   category pages is the login modal's "Sign in"; thumbnails carry `align=` where
@@ -150,14 +152,31 @@ and the curator has signed the mapping. Nothing becomes public on a script's
 authority — and nothing becomes **exportable** on a script's authority either: an
 item without a register row publishes as enquiry-only.
 
-**Dirty data the normaliser must expect** (seen on live cards): `Year: null`,
-`Year: Leiden` (a place in the year field), `Size: 40 b7 22 cm.` (a typo for
-"by"), mixed mm/cm and "x"/"by", no inches anywhere, empty colour fields,
-missing makers, condition typed freehand against an unpublished scale
-(`G+ / Study images carefully` vs `…image carefully`), SKUs in two patterns
-(`M.1044`, `M.Dav5`), and one chart carrying **16** category tags. Anything the
-normaliser cannot parse with confidence goes to a review queue with the raw value
-beside the proposal — it is never guessed into a field.
+**Dirty data the normaliser must expect** (seen on live cards, then in the 1,823
+records of the public read, 7.1–7.2): `Year: null`, often on a card whose page
+still carries a date under Publication Place / Date; `Year: Leiden` (a place in
+the year field), and a maker's name in the place slot; `Size: 40 b7 22 cm.` (a
+typo for "by"), mixed mm/cm and "x"/"by", no inches anywhere; sizes typed in
+**both orders** — 586 width first, 835 height first — so which side is the height
+comes from the item's own photograph, never from the order; empty colour fields,
+and a colour field that mixes technique and object words (`Lithograph`,
+`Copperplate Engraving`, `Photograph`, `Book`) with colour, whose hand-colouring
+wording rarely says whether the colour is original or later; missing makers;
+condition typed freehand against an unpublished scale
+(`G+ / Study images carefully` vs `…image carefully`), including `G-` (27
+records), and `VG-` is possible — neither is on the D10 scale, so both go to
+review until the curator rules on them; SKUs in more than two patterns
+(`M.1044`, `M.Dav5`, and prefixes `B.`, `IM.`, `PM.` and a lower-case `p.`
+besides `M.`, `P.` and `F.`, and bare names such as `DavDw`); sold pages that
+show "-" instead of a price (189), so a sold item's price comes only from the
+export; and one chart carrying **16** category tags. Anything the normaliser
+cannot parse with confidence goes to a review queue with the raw value beside
+the proposal — it is never guessed into a field.
+
+**Open for ARC: a circa range.** "ca. 1690-1700" is both approximate and a
+range, and C2's `FuzzyDateVM` has one `precision` — `circa` or `range`, never
+both — so it cannot hold the value whole. Until ARC decides the shape, the date
+parser sends such a value to review.
 
 **Taxonomy defects to fix, not migrate:** counts that do not roll up (Asia 71,
 its child Indonesia 131), "India & Sri Lanka" under Southeast Asia, a slug
@@ -199,12 +218,14 @@ changed slug redirects, to the current one, by id. Other locales are prefixed
 | --- | --- | --- |
 | `/product/{id}-{anything}` | `/product/{id}-{current-slug}` | same URL when the slug is unchanged; otherwise one permanent redirect by **id** — a 308, the status of a page's `permanentRedirect()` — its query kept; the slug part is ignored, since old links carry stale slugs |
 | `/category/{id}-{slug}` | the equivalent facet URL | from the reviewed mapping |
-| `?s=sold` / `?s=unsold` | `availability=sold` / `available` | query mapped, not dropped |
+| `/mapmaker/{id}-{slug}` | the maker's page | one `redirects` row per legacy maker, after the makers' de-duplication (§4); its queries mapped as a category's |
+| `?s=sold` / `?s=unsold` | `availability=sold` / `available` | query mapped, not dropped — on a category, a maker page or `/new-additions` |
 | `?o=newest` · `?p=highest|lowest` | `sort=newest` · `sort=price-desc|price-asc` | |
 | `?page=n` | dropped (new pagination is facet-driven) | 301 to page one |
 | static pages | their new equivalents | hand map, ~15 rows |
+| `/new-additions` + `?p=` · `?s=` · `?page=` | the browse page by newest | a legacy path (below), its queries mapped as above |
 | `/account/*` | `/account/*` | |
-| `/storage/products/*.jpg` | 301 to the new primary image derivative | old image links live on in Pinterest and forums |
+| `/storage/products/{p}-{i}.jpg` and its size variants `{p}-{i}S.jpg` · `{p}-{i}M.jpg` | 301 to the new primary image derivative | old image links live on in Pinterest and forums; a variant redirects as its original does |
 
 **Who answers which URL.** Product URLs are answered by the item route itself: it
 resolves `/product/{id}-{slug}` by public id and calls `permanentRedirect()` when
@@ -220,8 +241,8 @@ exactly one address answers 200, the redirect's `Location` is encoded once (twic
 would loop), and it carries on the query the old link had
 (`PROXY_REQUEST_HEADERS.publicSearch` — a rewritten request loses its query, so this
 is the one place it survives), keeping a campaign's `utm_*`. Every other legacy
-pattern (`/category/…`, `/storage/products/…`, the static pages) is rewritten by the
-proxy to the engine's legacy handler (`/api/x/legacy/…`), which reads the
+pattern (`/category/…`, `/mapmaker/…`, `/storage/products/…`, the static pages)
+is rewritten by the proxy to the engine's legacy handler (`/api/x/legacy/…`), which reads the
 `redirects` collection under `'use cache'` + `cacheTag` and answers 301 or 404; the
 proxy itself never touches the database (ARCHITECTURE.md §11). The verification
 script requests **every** legacy URL — from the owner's export and the URL
@@ -337,10 +358,16 @@ exported for manual handling.
 
 ## 10. Old East Indies — a small legacy too
 
-Old East Indies has no store, but it has URLs:
+Old East Indies has no store today, but its domain has had two, and they left
+URLs (`old-east-indies/content/legacy/README.md`):
 
-- `oldeastindies.com` 301s to `linktr.ee/oldeastindiesbali`, **including old
-  Squarespace product paths Google still indexes** (e.g.
+- **2020-09 → 2021-12, a SIRCLO store:** `/products/<slug>` (225 product
+  paths), `/products/category/…`, `/lookbook/…`, `/blog/2017/…`.
+- **2022 → 2024-09, Squarespace:** `/our-collection/p/<slug>` (278 product
+  paths, 276 of them listed in the archived sitemap),
+  `/our-collection/<category>/…` and an older `/collection/…` tree.
+- **Since 2025** `oldeastindies.com` 301s to `linktr.ee/oldeastindiesbali`,
+  **including old product paths Google still indexes** (e.g.
   `/our-collection/p/bali-island-dutch-map-year-1849`) — each now lands on a
   broken Linktree URL.
 - Indies Gallery's "Buy Reproduction" buttons point at the `oldeastindies.com`
@@ -348,12 +375,20 @@ Old East Indies has no store, but it has URLs:
 - Today's catalogue lives in a WhatsApp Business catalogue and PDF catalogues on
   Google Drive; the owner's history columns run in NOW! Bali.
 
-So the emporium launch carries its own redirect map: every old Squarespace path
-— gathered from Search Console and the Wayback Machine's CDX index
-(`web.archive.org/cdx/search/cdx?url=oldeastindies.com/*`) — maps to its new
-product or collection. The old gallery's "Buy Reproduction" buttons all point at
-one home page, so there is nothing to map one-to-one: instead, **the new gallery
-item pages link to the exact products made from each work** (sister links, TASKS.md
-27.1), and the old home-page URL redirects like any other. The product list is
-imported through the generic `csv-products` source adapter rather than typed in
-by hand.
+So the emporium launch carries its own redirect map: every old path of both
+platforms maps to its new product or collection. The inventory —
+`old-east-indies/content/legacy/inventory/`, **673 paths** — comes from copies
+only, never the old domain: the Wayback Machine's CDX index
+(`web.archive.org/cdx/search/cdx?url=oldeastindies.com/*`; 1,561 captures, 311
+paths, and the only source for the SIRCLO era), and the domain's own
+`/sitemap.xml` as the Wayback Machine archived it on 2024-06-24 and 2024-08-08
+(370 URLs, read through playback with the owner's OK, D43). The owner's Search
+Console export (OA11) fills only what neither archive holds. Slugs carry variant
+suffixes — `-framed` on Squarespace, `-cardboard-frame`, `-softcover-notebook`
+and `-hardcover-notebook` on SIRCLO — which the map has to read.
+
+The old gallery's "Buy Reproduction" buttons all point at one home page, so
+there is nothing to map one-to-one: instead, **the new gallery item pages link
+to the exact products made from each work** (sister links, TASKS.md 27.1), and
+the old home-page URL redirects like any other. The product list is imported
+through the generic `csv-products` source adapter rather than typed in by hand.

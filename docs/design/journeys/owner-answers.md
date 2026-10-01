@@ -56,6 +56,7 @@ PRODUCT.md and the journeys is 6.1.f, and anything that changes a doc outside
 | --- | --- |
 | English spelling, both sites | **British** |
 | The pilot request's salutation | **Bapak** |
+| Where the prints are made and framed (S14 follow-up) | **In the Denpasar showroom** — the making photos are part of the showroom set (role `showroom`, area `making`) |
 
 ## Still owed by the owner
 
