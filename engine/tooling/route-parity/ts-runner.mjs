@@ -8,12 +8,13 @@ import { createServer } from 'vite'
 
 /**
  * Runs `fn(loadModule)` against one Vite dev server rooted at `repoRoot`, with
- * `plugins` (route parity's Payload hook) and `alias` (a test's fixture handlers) if given,
+ * `plugins` (route parity's Payload hook), `alias` (a test's fixture handlers) and
+ * `conditions` (the export conditions to resolve with) if given,
  * where `loadModule(absPath)` resolves and executes a `.ts`/`.mjs` module
  * (SSR-transformed, not bundled) and returns its exports. The server is
  * always closed, success or failure.
  */
-export async function withTsRunner(repoRoot, fn, { plugins = [], alias } = {}) {
+export async function withTsRunner(repoRoot, fn, { plugins = [], alias, conditions } = {}) {
   const server = await createServer({
     configFile: false,
     root: repoRoot,
@@ -22,6 +23,8 @@ export async function withTsRunner(repoRoot, fn, { plugins = [], alias } = {}) {
     optimizeDeps: { noDiscovery: true },
     plugins,
     ...(alias && { resolve: { alias } }),
+    // Route parity resolves as Next's route handlers do, not with Vite's own SSR defaults.
+    ...(conditions && { ssr: { resolve: { conditions, externalConditions: conditions } } }),
   })
   try {
     return await fn((absPath) => server.ssrLoadModule(absPath))

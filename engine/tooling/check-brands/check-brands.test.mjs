@@ -87,7 +87,7 @@ describe('check:brands on this repository', () => {
   let loaded
   beforeAll(async () => {
     loaded = await loadBrandChecks()
-  }, 60_000)
+  }, 180_000) // runs the Vite runner: slow under a loaded machine (qa 5.4 re-gate, L1)
 
   it('loads each app’s own supports.ts, keyed by the storefront it declares', () => {
     expect(supportsFiles().map(({ app }) => app)).toEqual(['emporium', 'gallery'])
@@ -134,7 +134,7 @@ describe('check:brands on this repository', () => {
       ...COMMITTED.map((file) => expect.stringMatching(new RegExp(`^check-brands: ok ${file} `))),
       ...COPY.map((dir) => expect.stringMatching(new RegExp(`^check-brands: ok copy ${dir} `))),
     ])
-  }, 60_000)
+  }, 180_000) // runs the Vite runner: slow under a loaded machine (qa 5.4 re-gate, L1)
 })
 
 describe('check:brands — a module the app does not support fails, naming it (4.7.b)', () => {
@@ -156,7 +156,7 @@ describe('check:brands — a module the app does not support fails, naming it (4
 
     repo.restore()
     expect(checkBrands(repo.root, direct)).toMatchObject({ ok: true, problems: [] })
-  }, 60_000)
+  }, 180_000) // runs the Vite runner: slow under a loaded machine (qa 5.4 re-gate, L1)
 
   it('an emporium config that turns on accounts.buyers, through the CLI, then passes', () => {
     const repo = plant('test/site/brand.emporium.json', (modules) => ({
@@ -173,7 +173,7 @@ describe('check:brands — a module the app does not support fails, naming it (4
     const passed = run(repo.root)
     expect(passed.status).toBe(0)
     expect(passed.stdout).toContain('check-brands: ok test/site/brand.emporium.json')
-  }, 60_000)
+  }, 180_000) // runs the Vite runner: slow under a loaded machine (qa 5.4 re-gate, L1)
 
   it('fails a storefront whose app declares no supports, and a folder with no config', () => {
     const repo = plant('test/site/brand.gallery.json', (modules) => modules)
@@ -245,7 +245,7 @@ describe('check:brands — the copy, per brand × app × supported locale (6.3.e
     )
     cpSync(join(REPO, 'test/site/copy/nl.json'), join(root, 'test/site/copy/nl.json'))
     expect(run(root).stdout).toContain('check-brands: ok copy test/site/copy (test,')
-  }, 60_000)
+  }, 180_000) // runs the Vite runner: slow under a loaded machine (qa 5.4 re-gate, L1)
 })
 
 describe('loadSupports and loadCopyKeys', () => {

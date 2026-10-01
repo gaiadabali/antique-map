@@ -1,12 +1,19 @@
 // 2.2.d — reads the `@engine/http` manifest (C13) and checks every invariant
 // TASKS.md 2.2.d names, and 5.4.a's: which module each mount names
 // (`./specifiers.mjs`), and every mount loaded under the Payload hook
-// (`./payload-hook.mjs`). Degrades explicitly (a `degraded` entry, not a
+// (`./payload-hook.mjs`), resolved with Next's route-handler conditions, and
+// no engine package branching on a condition (`./package-exports.mjs`). Degrades explicitly (a `degraded` entry, not a
 // violation) wherever its input does not exist yet, per this ticket's brief.
 import { join } from 'node:path'
 
 import { checkAppMounts, discoverScaffoldedApps, readProxyMatcher } from './app-mounts.mjs'
 import { discoverCollectionSlugs } from './collections.mjs'
+import {
+  findExportConditions,
+  loadConditionalBranches,
+  NEXT_ROUTE_CONDITIONS,
+  readEnginePackages,
+} from './package-exports.mjs'
 import { withPayloadGuard } from './payload-guard.mjs'
 import { payloadHook } from './payload-hook.mjs'
 import { findDuplicateMounts, findReservedSegmentCollisions, matchersEqual } from './rules.mjs'
@@ -20,7 +27,8 @@ const MANIFEST_PATH = [...HTTP_SRC, 'manifest.ts']
  * `opts.manifestAbsPath`, `opts.appsAbsDir`, `opts.collectionsRoot` (the
  * root whose `engine/packages/cms` is read for slugs), `opts.httpSrcAbsDir`
  * (where a handler's `src/<area>/route.ts` is looked for) and `opts.alias`
- * (Vite aliases for a fixture's `@engine/http/*`) let a test point at
+ * (Vite aliases for a fixture's `@engine/http/*`) and `opts.packagesAbsDir`
+ * (the packages whose `exports` are judged) let a test point at
  * fixtures outside `repoRoot` (the real manifest, `engine/apps/*`, http and
  * CMS are what CI checks; production code never overrides them). Every load
  * runs under the Payload hook (5.4.a), the manifest's and the proxy's too.
@@ -32,7 +40,12 @@ export async function checkRouteParity(repoRoot, opts = {}) {
   const appsAbsDir = opts.appsAbsDir ?? join(repoRoot, 'engine', 'apps')
   const collectionsRoot = opts.collectionsRoot ?? repoRoot
   const httpSrcDir = opts.httpSrcAbsDir ?? join(repoRoot, ...HTTP_SRC)
-  const runner = { plugins: [payloadHook(repoRoot)], alias: opts.alias }
+  const packagesDir = opts.packagesAbsDir ?? join(repoRoot, 'engine', 'packages')
+  const runner = {
+    plugins: [payloadHook(repoRoot)],
+    alias: opts.alias,
+    conditions: NEXT_ROUTE_CONDITIONS,
+  }
 
   return withPayloadGuard(() =>
     withTsRunner(
@@ -94,6 +107,11 @@ export async function checkRouteParity(repoRoot, opts = {}) {
         }
 
         violations.push(...findSpecifierMismatches(specifiersByPath))
+
+        // No engine package hands Next a different module than this run loads (5.4 re-gate).
+        const packages = readEnginePackages(packagesDir)
+        violations.push(...findExportConditions(packages, repoRoot))
+        violations.push(...(await loadConditionalBranches(packages, repoRoot, loadModule)))
 
         return { violations, degraded, routeCount: routes.length, collectionSlugs }
       },

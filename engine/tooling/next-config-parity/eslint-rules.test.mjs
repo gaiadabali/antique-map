@@ -169,3 +169,22 @@ describe('the fences hold however the import or the prefetch is spelled (qa S3)'
     ])
   })
 })
+
+describe(
+  'no-router-prefetch across engine/, Reflect.get and a const key (qa re-gate L4)',
+  LOADED,
+  () => {
+    it.each([
+      ['engine/packages/cms/src/admin/nav.tsx', 'useRouter().prefetch("/admin")\n'],
+      [`${SITE}/page.tsx`, "Reflect.get(useRouter(), 'prefetch')('/en')\n"],
+      [`${SITE}/page.tsx`, "const k = 'prefetch'\nconst r = useRouter()\nr[k]('/en')\n"],
+    ])('refuses %s: %s', async (path, code) => {
+      expect(new Set(await fencesAt(path, code))).toEqual(new Set(['fences/no-router-prefetch']))
+    })
+
+    it('passes a computed key that is not the const prefetch', async () => {
+      const code = "let k = 'prefetch'\nconst r = useRouter()\nconst j = 'push'\nr[j]('/en')\n"
+      expect(await fencesAt(`${SITE}/page.tsx`, code)).toEqual([])
+    })
+  },
+)
