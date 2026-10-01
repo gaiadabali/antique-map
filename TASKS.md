@@ -24,9 +24,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/7 | 22/51 | 1 | `████░░░░░░`  43% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 18/31 | 1 | `██████░░░░`  58% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 3/6 | 20/35 | 1 | `██████░░░░`  57% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
-| **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | 🔄 in progress | 0/4 | 1/20 | 0 | `█░░░░░░░░░`   5% |
+| **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | 🔄 in progress | 0/4 | 1/22 | 0 | `█░░░░░░░░░`   5% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
@@ -39,7 +39,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/6 | 0/27 | 0 | `░░░░░░░░░░`   0% |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/3 | 0/17 | 1 | `░░░░░░░░░░`   0% |
 | **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/38 | 1 | `░░░░░░░░░░`   0% |
-| **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/28 | 2 | `░░░░░░░░░░`   0% |
+| **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/29 | 2 | `░░░░░░░░░░`   0% |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/25 | 0 | `░░░░░░░░░░`   0% |
 | **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/2 | 0/9 | 2 | `░░░░░░░░░░`   0% |
 | **26** Couriers and the fulfilment router 👤 | Integrations | 15, 20 | · not started | 0/3 | 0/11 | 2 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **32/185** | **218/899** | **45** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **34/186** | **220/906** | **45** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -161,10 +161,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.c cut (D20); 6.3.k after 6.4 |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
-| 8·W1 | 8.1 Discovery vocabulary | qa (drives 8.1.e on merged `main`) | — | 2026-10-01 | merged 1de3824 with the review fixes and `wave_a` |
-| 8·W1 | 8.3 Media and masters | qa (drives 8.3.e) · senior-be (8.3.i) | agent worktrees | 2026-10-01 | merged 1de3824 with 8.3.h; 8.3.i in W2 |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
 | 8·W2 | 8.5 Staging storage holds 8.3's layout | devops | agent worktree (HAR) | 2026-10-01 | on Helios (OA-Helios); a new DNS name would be 👤; gates the next `production` push |
+| 8·W2 | 8.6 A refusal keeps its plain reason | senior-fe | agent worktree (WEB) | 2026-10-01 | qa D1 — gates the phase's Done when |
 
 ## Decisions for the owner
 
@@ -836,9 +835,9 @@ run beside the build line rather than in it.
 
 **Goal:** the discovery vocabulary, the works collection and the media and masters collections.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
-**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2, 8.5 (and 8.3.i)
+**Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2, 8.5, 8.6 (and 8.3.i)
 
-- [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
+- [x] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — ✅ 2026-10-01 1de3824
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{makers,places,terms,sources}/**`, their validators
   - **Read** CONTENT-MODEL.md §3, ARCHITECTURE.md §8, EXPERIENCE-GALLERY.md §2
@@ -847,7 +846,7 @@ run beside the build line rather than in it.
   - [x] 8.1.b places: localised modern name, `historicalNames[]`, type, parent, geo point + bbox; cycle guard
   - [x] 8.1.c terms (subject, mood, room, occasion, recipient) and sources (bibliography)
   - [x] 8.1.d gazetteer seed data file (`test/content/seed/gazetteer.json` shape, reused by every brand): the place hierarchy of EXPERIENCE-GALLERY.md §2 and the historical names of ARCHITECTURE.md §8
-  - [ ] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
+  - [x] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
 
 - [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8 — 🔄 8·W2
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
@@ -862,7 +861,7 @@ run beside the build line rather than in it.
   - [ ] 8.2.g a reference-safe delete: a maker, place, term or source a work still references is refused with "still used by N works" — Payload's relationship tables would otherwise drop the credit silently (8.1 review, senior-be)
   - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
-- [ ] **8.3 Media and masters** · needs: 3.2 — 🔄 8·W1
+- [x] **8.3 Media and masters** · needs: 3.2 — ✅ 2026-10-01 1de3824
   - **Lane** MED · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{media,masters}/**` (by agreement with SCH), `engine/packages/media/src/storage/**`
   - **Read** ARCHITECTURE.md §7, CONTENT-MODEL.md §6, KOI CONTENT-MODEL Media
@@ -875,7 +874,7 @@ run beside the build line rather than in it.
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
   - [x] 8.3.h (SCH lead) no request leaves a multipart temp file — 8.3's `useTempFiles: true` made Payload write one for every collection's POST/PATCH before access is checked, deleted only for upload collections (anonymous `/api/users` → 403 left ~94 MB); cleanup on every collection, global and error path, tested over the REST handler
   - [x] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers); and the stale comment in `media/src/storage/multipart.ts` (8.3.h replaced `media/temp-files`), `discardSentFile` simplified
-  - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
+  - [x] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 - [x] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — ✅ 2026-10-01 9396e35
   - **Lane** ARC · **Agent** architect · **Wave** W1
@@ -898,6 +897,16 @@ run beside the build line rather than in it.
   - [ ] 8.5.b The presigned master PUT reachable from the admin's browser: RustFS behind an HTTPS address the browser can reach (an nginx path on the staging host, or a DNS-only name — 👤 if a new DNS record), `S3_ENDPOINT` set to it, the masters bucket's CORS admitting each admin origin
   - [ ] 8.5.c RustFS parity on staging (41.2.e's checks, early): a tampered presigned PUT refused (it verifies `x-amz-checksum-sha256`), HEAD with `ChecksumMode` returns `ChecksumSHA256`, prefix-scoped anonymous GET enforced, `apply.mjs`'s `mc` commands answered — or the gap recorded with a fail-closed fallback
   - [ ] 8.5.d **Check:** on staging, an anonymous GET of an object under `uploads/` and `iiif-full/` is 403 and under `derivatives/` 200; a master uploads from the admin by presigned PUT and a tampered one is refused; the outlet's key is refused outside its own `print-files/<brand>/`; no `main` → `production` push carrying 8.3 goes out before this passes.
+
+- [ ] **8.6 A refusal keeps its plain reason whatever request starts Payload** · needs: 8.1, 8.3 — 🔄 8·W2
+  - **Lane** WEB (+ the HAR and SCH files below, granted for this task) · **Agent** senior-fe · **Wave** W2
+  - **Owns** both apps' `src/app/(payload)/**` mount files, both apps' `next.config.ts` (HAR's, granted), `engine/packages/cms/src/instance.ts` (SCH's, granted), and a status or e2e spec under `tests/e2e/admin/`
+  - **Read** 8·W1's qa report (D1, `.claude/specs/indies-platform/reviews/8-w1-qa.md`), ARCHITECTURE.md §15, PARALLEL-TRACKS.md §1 (the http → `@engine/cms` edge)
+  - _Requirements: 2.5, 14.8_
+  - [ ] 8.6.a Find why, in a production build whose first request is an `/admin` page, every later REST `ValidationError` loses its `data` — the admin then shows only "The following field is invalid: X", never the plain reason — in both apps (qa's lead: the instance is created by the admin's server bundle, so the REST bundle's `formatErrors` `instanceof` misses it); prove the cause, not a guess
+  - [ ] 8.6.b Fix it at the cause (one Payload module instance per process, or the error formatted whichever bundle made it), changing nothing a storefront route bundles (the Payload fence, 5.4, stays green)
+  - [ ] 8.6.c A spec that boots a production server, requests `/admin` first, then posts an invalid maker and asserts the field's plain reason comes back — and the same with `/api/health` first; run for both apps
+  - [ ] 8.6.d **Check:** on fresh production servers of both apps, whatever the first request (`/admin`, `/api/health`, a REST route), a refused save answers with its field's plain reason, in the admin and over REST; `pnpm verify` and route parity green.
 
 ---
 
@@ -965,13 +974,15 @@ run beside the build line rather than in it.
 
 - [ ] **10.1 Admin organisation and plain language** · needs: phase 8, phase 9
   - **Lane** SCH · **Agent** senior-uiux · **Wave** W1
-  - **Owns** `admin.*` settings inside `engine/packages/cms/src/collections/**` (after the wave's authors hand off)
+  - **Owns** `admin.*` settings inside `engine/packages/cms/src/collections/**` (after the wave's authors hand off); the grade definition's publish rule in `collections/terms/` (10.1.f)
   - **Read** NOW! docs/SURFACES-PLAN.md §2.2 and S3 (writer-first screens, legacy fields in tabs, plain labels)
   - _Requirements: 2.5, 14.8_
   - [ ] 10.1.a Sidebar groups — Catalogue · Merchandise · Commerce · Editorial · People · Settings — through `admin.group`
   - [ ] 10.1.b A cataloguer's default screens: engine and legacy fields in collapsed tabs, list columns chosen for the job
   - [ ] 10.1.c Plain-language labels and descriptions in English and Indonesian
   - [ ] 10.1.d `admin.hidden` driven by module flags, so a disabled module's collections disappear
+  - [ ] 10.1.f From 8·W1's qa: a grade's `definition` is required to publish in the default locale only (a translator publishing the Indonesian label is refused today — L1; Owns extended to `collections/terms/` for it); sizes in refusals in binary units ("5 GiB", not "5.4 GB" — L5)
+  - [ ] 10.1.g A hidden collection's or global's admin URL (a stub, a disabled module) answers not-found, never a blank 200 page (qa L2)
   - [ ] 10.1.e **Check:** the sidebar is grouped (Catalogue · Merchandise · Commerce · Editorial · People · Settings), a cataloguer's default screen shows no engine or legacy field, every label a cataloguer sees is in plain English and Indonesian, and disabled modules' collections are hidden.
 
 - [ ] **10.2 Seeds** · needs: phase 8, phase 9
@@ -1669,6 +1680,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 23.4.a A drop zone matching files to works by the stock number in the filename, with a list of what did not match
   - [ ] 23.4.b Inline role tags (recto, verso, detail…) and captions
   - [ ] 23.4.c Each file's derivative and tiling status
+  - [ ] 23.4.e A master's upload in the admin: the browser hashes the file, asks `masters/upload-url`, PUTs straight to the bucket and creates the record — no hand-typed `storageKey`, `checksum` or `brand` (`brand` filled by the hook, read-only) (8·W1 qa L3)
   - [ ] 23.4.d **Check:** dropping many files matches them to works by stock number in the filename, lets staff tag roles (recto, verso, detail…) and caption inline, and shows each file's derivative and tiling status.
 
 - [ ] **23.5 👤 AI-assisted cataloguing (behind `ai.cataloguing`)** · needs: 23.3 · 👤 the production model provider (D16)
@@ -2763,6 +2775,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — ✅ **8.1** and ✅ **8.3** (1de3824, with 8.3.h and 10.3.a) — qa on merged `main`, production builds of both apps, 1280 and 390 px: **PASS with lows**. 8.1: a maker, a place with a historical name and a parent, a term of every kind, a source — each with plain refusals, EN/ID, slugs kept on rename; a cycle refused with its reason; public reads published-only, no `translationStatus`; the review's S1–S3 hold (`places-tree.db.test.ts`). 8.3: alt required and localised; originals in `uploads/` 403 anonymously, staff 200; `/api/media` 403 to the public; masters by presigned PUT (the app saw 152 B), a tampered PUT 400; the outlet's key confined to `print-files/test/`; provenance and brand frozen; 91 MiB 413, 30 MiB 201; no temp file outlives a request (8.3.h). Independent reviews: senior-be (8.1) and senior-integrator (8.3), both sign off with should-fix, fixed before merge. Migration `20261001_123929_wave_a` (258 additive statements), one schema hash across four brand databases. qa's should-fix D1 (an admin-first process loses every refusal's plain reason) → new **8.6**; lows → 10.1.f–g, 23.4.e, 10.3.f.
 - 2026-10-01 — 6.2.b merged (28d3445): the pilot set is six gallery items from the old site's photos, 15 images in the local masters bucket; the archive measured (2,289 images, median 2706 px, no colour card or verso anywhere). 6.2.d evidenced. Follow-ups: 6.2.j (ARC), 12.1.f (staging copy), 36.3.f (migration dedupe and roles).
 - 2026-10-01 — **D20 answered: no native Indonesian review** — 6.1.e, 6.2.g and 6.3.c cut, OA4 not needed, 42.6/43.6 read without one. **D19 updated: no pilot shoot** — the pilot set is the client's existing photos (the old site's public read), 6.2.f cut (no request sent), OA3 not needed; 6.2.b becomes agent work. The board script now skips a ✂️ subtask (`scripts/board/{table,sync}.mjs`, a test), as rule 7 says, so a task with a cut subtask can close. 6.3.m merged (1bfed8d).
 - 2026-10-01 — ✅ **8.4** (9396e35) — the decisions of 8.1's and 8.3's independent reviews, in the docs and C9 v1.6 (additive: keys byte-identical; `renderedAlt`, `opensWithLabel`, `SyntheticLabelWords` added): the full-resolution pyramid private under `iiif-full/` in each brand's own media bucket; a synthetic image's label added at render from provenance, never stored in `alt`; `media` read on the server only (public REST refused, GraphQL off); DEPLOYMENT §2/§8's object-storage rules (public only `derivatives/` and `iiif/`, plans per host, two keys per process, the archive's delete key off the web process, masters CORS); `MAKER_ROLES`/`DATE_PRECISIONS` named in CONTENT-MODEL §3 (C1 move → 22.7.f); Beyond Indonesia a root region; ARCHITECTURE §2 says RustFS. Its Found placed: staging buckets public whole-bucket → new **8.5** (before 8.3 deploys); 8.3.i, 15.2.d, 22.7.f, 36.1.e.
