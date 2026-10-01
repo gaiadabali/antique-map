@@ -159,7 +159,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee; no agent in flight) | — | 2026-10-01 | ⛔ 👤 6.1.i is all that remains besides 6.1.d — the gallery's phone and viewing addresses, the shop's owed items; **it alone holds phase 6 open** |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (6.2.b merged 28d3445; 6.2.d evidenced; 6.2.i answered by 6.4) | — | 2026-10-01 | only 6.2.j remains, and it runs inside 6.7 (architect) |
-| 6·W3 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5; then its Check 6.3.d |
+| 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5; then its Check 6.3.d |
 | 6·W3 | 6.5 Brand configs, app supports and their rules | medior | agent worktree | 2026-10-01 | a–e done; fix round: the 13 config and proxy tests that assumed the old gallery config (Owns widened for those cases); `my-account` kept for C10's required segment; 6.5.g after 6.7.g |
 | 6·W3 | 6.7 The docs outside 6.4's Owns (+ 6.2.j) | architect | agent worktree | 2026-10-01 | 6.2.j folded in: both touch MIGRATION.md |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
@@ -685,7 +685,7 @@ run beside the build line rather than in it.
   - [ ] 6.1.i 👤 the gallery's own facts OA2 did not ask: the number buyers call and its hours, the Singapore and Jakarta viewing addresses and hours; then, as the owner sends the S1 catalogue, S2 price list, S4 hours, S6 number and S13 code value, fold each in at its open mark in the emporium PRODUCT.md and the journeys' "Still owed" lines
   - [ ] 6.1.d **Check:** each PRODUCT.md follows the impeccable product schema with no invented facts and the owner's answers folded in, and 6–8 journeys per brand exist, each naming its surfaces, states, channel handoffs and the moment that decides trust.
 
-- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b — 🔄 6·W3 (6.2.j, inside 6.7)
+- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b — 🔄 6·W1
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/imagery/**`
   - **Read** DESIGN-SYSTEM.md §11, CONTENT-MODEL.md (image roles), MIGRATION.md §9, the drafted PRODUCT.md files
@@ -701,7 +701,7 @@ run beside the build line rather than in it.
   - [ ] 6.2.j ARC, from 6.2.b's Found: a legacy recto cropped inside the object has no measurable `objectBox` — write the fallback (the frame as a lower bound) into intake-spec §8, CONTENT-MODEL §2 `designs.printCeiling` and C9; intake-spec §8 "never rejected" becomes "never rejected for quality, still refused for honesty (H4)" (synthetic overviews in the archive); a role for a folding map's case and booklet; whether 6.12's launch set is per sheet or per work; C9 `IntakeEntry`'s comment no longer cites OA3; MIGRATION.md §1/§9's image figures to the measured archive (median 2706 px, not 3543)
   - [x] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the pilot set (existing photos) is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing. — evidenced 2026-10-01: both guides and the intake spec exist; the pilot set (existing photos, gallery) is checked image by image (`pilot-set/manifest.md`) and in the private masters bucket (local `archive-masters/pilot/`, 15/15 checksums); the shop's photos are a named, non-blocking gap; S14 folded in (6.2.h)
 
-- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W3
+- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W1
   - **Lane** UXG + UXE + BRD · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/{gallery,emporium}/voice.md`, `engine/apps/*/src/messages/**` (the keys: `keys.ts` composing `lexicon/*.ts`, widened 2026-10-01 for the 300-line rule), `indies-gallery/site/copy/**`, `old-east-indies/site/copy/**`, `test/site/copy/**` (the values)
   - **Read** DESIGN-SYSTEM.md §10, BRANDS.md §2, NOW! docs/DESIGN-SYSTEM.md §6 (copy), the drafted PRODUCT.md files
