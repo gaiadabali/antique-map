@@ -11,9 +11,10 @@
  *   staff-only over REST; the storefront's loaders read it on the Local API.
  * - **Limits** (8.3.d): web rasters only — JPEG, PNG, WebP, AVIF, sniffed from the bytes by
  *   Payload — and at most `MEDIA_UPLOAD_MAX_BYTES`, under the CDN's limit in front of `/admin`
- *   (`./hooks`), streamed to the OS temp folder and removed when the request ends
- *   (`./temp-files`). No TIFF, which is a capture's; no SVG, which can carry script; no pasted URL, which would have the server fetch
- *   whatever it names.
+ *   (`./hooks`), streamed to the OS temp folder and removed when the request ends — by every
+ *   endpoint, for every collection (`hooks/request-temp-files`, TASKS.md 8.3.h). No TIFF, which
+ *   is a capture's; no SVG, which can carry script; no pasted URL, which would have the server
+ *   fetch whatever it names.
  * - **No Payload image sizes and no crop**: the derivative ladder is C9's, built by 15.1 from this
  *   file; cropping happened at intake. The focal point stays, for the derivatives' art direction.
  * - **Role and provenance are set once**, at intake; only an admin or a manager corrects them
@@ -27,7 +28,6 @@ import type { CollectionConfig } from 'payload'
 import { MEDIA_ACCESS } from './access'
 import { MEDIA_FIELDS } from './fields'
 import { freezeAfterCreate, mayCorrectIntake } from './frozen'
-import { rememberTempFile, removeTempFile, removeTempFileOnError } from './temp-files'
 import {
   altInDefaultLocaleFirst,
   deriveFromFile,
@@ -52,14 +52,12 @@ export const Media: CollectionConfig = {
     pasteURL: false,
   },
   hooks: {
-    beforeOperation: [rememberTempFile, refuseOversizedUpload],
+    beforeOperation: [refuseOversizedUpload],
     beforeValidate: [altInDefaultLocaleFirst, matchItsMaster],
     beforeChange: [
       freezeAfterCreate('media', ['role', 'provenance'], mayCorrectIntake),
       deriveFromFile,
     ],
-    afterOperation: [removeTempFile],
-    afterError: [removeTempFileOnError],
   },
   fields: MEDIA_FIELDS,
 }

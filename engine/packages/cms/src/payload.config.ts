@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url'
 import { LOCALE_CODES, type BrandConfig, type LocaleCode } from '@engine/config/schema'
 import { multipartUploadOptions } from '@engine/media/storage'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
-import { buildConfig, type Config, type EmailAdapter } from 'payload'
+import { buildConfig, type Config, type EmailAdapter, type SanitizedConfig } from 'payload'
 import { en } from 'payload/i18n/en'
 import { id } from 'payload/i18n/id'
 
@@ -28,6 +28,7 @@ import { activeBrand, brandFrom } from './access/brand'
 import { siteOrigin, trustedOrigins } from './access/origins'
 import { USERS_SLUG } from './access/roles'
 import { buildDatabaseAdapter } from './db/adapter'
+import { removingRequestTempFiles } from './hooks/request-temp-files'
 import { migrations } from './migrations'
 import { registeredCollections, registeredGlobals } from './registries/collections'
 import { jobTasks, jobWorkflows } from './registries/jobs'
@@ -134,9 +135,20 @@ export function engineConfig(env: Env = process.env): Config {
       strictDraftTypes: true,
     },
     // How a multipart body is parsed: the media upload limit, streamed to the OS temp folder
-    // rather than held in memory (`@engine/media/storage` `multipartUploadOptions`, TASKS.md 8.3).
+    // rather than held in memory (`@engine/media/storage` `multipartUploadOptions`, TASKS.md 8.3);
+    // every endpoint removes what its request streamed there (`buildEngineConfig`).
     upload: multipartUploadOptions(),
   }
 }
 
-export default buildConfig(engineConfig())
+/**
+ * The config every process runs — the apps, the CLI and the tests that drive REST: Payload's
+ * `buildConfig()`, then every endpoint made to remove its request's upload temp files, which only
+ * the built config holds (`hooks/request-temp-files`, TASKS.md 8.3.h). A test that calls
+ * `buildConfig()` itself runs without that clean-up.
+ */
+export async function buildEngineConfig(config: Config = engineConfig()): Promise<SanitizedConfig> {
+  return removingRequestTempFiles(await buildConfig(config))
+}
+
+export default buildEngineConfig()

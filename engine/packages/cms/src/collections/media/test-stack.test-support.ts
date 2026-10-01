@@ -17,10 +17,10 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { s3BucketObjects, type BucketObjects } from '@engine/media/storage'
-import { buildConfig, handleEndpoints, type Payload, type SanitizedConfig } from 'payload'
+import { multipartUploadOptions, s3BucketObjects, type BucketObjects } from '@engine/media/storage'
+import { handleEndpoints, type Payload, type SanitizedConfig } from 'payload'
 
-import { engineConfig } from '../../payload.config'
+import { buildEngineConfig, engineConfig } from '../../payload.config'
 
 type Pool = { query: (text: string) => Promise<unknown>; end: () => Promise<void> }
 
@@ -83,6 +83,8 @@ export async function startStack(options: {
   storefront: 'gallery' | 'emporium'
   mastersUser: string
   connect: Connect
+  /** Where multipart files stream to, if not the process's shared folder — for a test that counts them. */
+  tempFileDir?: string
 }): Promise<Stack> {
   const database = `cms_storage_test_${process.pid}_${Date.now()}`
   const url = new URL(server!)
@@ -110,7 +112,11 @@ export async function startStack(options: {
   const saved = { ...process.env }
   Object.assign(process.env, env)
   delete process.env.RUN_MIGRATIONS
-  const config: SanitizedConfig = await buildConfig(engineConfig(env))
+  // The config the apps run, temp-file clean-up included (`buildEngineConfig`, TASKS.md 8.3.h).
+  const base = engineConfig(env)
+  const config: SanitizedConfig = await buildEngineConfig(
+    options.tempFileDir ? { ...base, upload: multipartUploadOptions(options.tempFileDir) } : base,
+  )
   const key = database
   const payload = await options.connect(config, key)
   const rest: Stack['rest'] = async (method, route, init = {}) => {
