@@ -22,7 +22,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 29/29 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 1/7 | 34/54 | 1 | `██████░░░░`  63% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 2/7 | 35/54 | 1 | `███████░░░`  65% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 3/6 | 20/35 | 1 | `██████░░░░`  57% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **35/186** | **232/910** | **45** | `███░░░░░░░`  25% |
+| **All** | 44 phases | | | **36/186** | **233/910** | **45** | `███░░░░░░░`  26% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -161,7 +161,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
 | 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5 |
 | 6·W3 | 6.5 Brand configs, app supports and their rules | medior | agent worktree | 2026-10-01 | a–e done; fix round: the 13 config and proxy tests that assumed the old gallery config (Owns widened for those cases); `my-account` kept for C10's required segment; 6.5.g after 6.7.g |
-| 6·W3 | 6.6 Journeys and briefs follow D51, D52, D54 | senior-uiux (6.6.f) | agent worktree | 2026-10-01 | a–e merged (4a19d73); 6.6.f settling the shop journeys' stale 6.4 items |
 | 6·W3 | 6.7 The docs outside 6.4's Owns (+ 6.2.j) | architect | agent worktree | 2026-10-01 | 6.2.j folded in: both touch MIGRATION.md |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
 | 8·W2 | 8.5 Staging storage holds 8.3's layout | — (reported done, 6c1a1c8) | `worktree-agent-a1eb12599989f6e01` | 2026-10-01 | applied on Helios (backups in `/var/backups/indies/config/8.5-20261001T131439Z/`); four storage secrets rotated after a transcript leak; independent senior-integrator review running |
@@ -748,7 +747,7 @@ run beside the build line rather than in it.
   - [ ] 6.5.g after 6.7.g: the shop's gift note switched on (S10 — a gift note only; no wrap, no gift cards); the gallery's phone and WhatsApp placeholders (`+15555550199`, `+15555550100`) replaced once 6.1.i gives them
   - [ ] 6.5.f **Check:** `validateBrandConfigs()` and `pnpm check:brands` pass for every brand; a gallery config with any refused module, or with `buy`, fails (tests); C10 `hasSurface` gives the gallery no cart, checkout or account area and the shop its cart (test); `check-generated` shows no drift.
 
-- [ ] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4 — 🔄 6·W3
+- [x] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4 — ✅ 2026-10-01 016968e
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W3
   - **Owns** `docs/design/journeys/**`, `engine/apps/gallery/PRODUCT.md`, `engine/apps/emporium/PRODUCT.md`, `PRODUCT.md`
   - **Read** 6.4's report (Found 7), EXPERIENCE-GALLERY.md §5, §10 (D54), COMMERCE.md §4 (D52) and §7 (D51)
@@ -757,7 +756,7 @@ run beside the build line rather than in it.
   - [x] 6.6.b J-G3 and J-G7: the wishlist kept on the device (D54) — no buyer test account; the shortlist and the viewing's pull list from the device's list; J-G7's viewing changed by its confirmation's link
   - [x] 6.6.c J-S4 step 2 and its Read line: no "In the showroom now" badge (D52, one stock pool); J-G5's "separate account" wording
   - [x] 6.6.d Each PRODUCT.md and the journeys README's index: no gallery sign-in or account (D54); first-party analytics (D55) and no returns of originals, still for counsel (D56), wherever a brief states either
-  - [ ] 6.6.f the shop journeys' stale 6.4 items (J-S1, J-S2, J-S3, J-S5, J-S7 — "6.4.b/c/e", "Still open elsewhere") marked settled against the merged docs and phase 32's Done when, or left open with the real reason
+  - [x] 6.6.f the shop journeys' stale 6.4 items (J-S1, J-S2, J-S3, J-S5, J-S7 — "6.4.b/c/e", "Still open elsewhere") marked settled against the merged docs and phase 32's Done when, or left open with the real reason — merged 2026-10-01: no 6.4.a/b/c/e left open in the shop journeys; J-S3's page words (6.3) and J-S7's no-refund (D11) stay open with their reasons
   - [x] 6.6.e **Check:** in the live gallery and shop journeys, a search finds no "Account ›", no gallery sign-in, no "In the showroom now" and no `Quote` surface outside an after-launch half, and each journey's success criteria still hold. — evidenced 2026-10-01 (4a19d73): zero hits for "Account ›", `Quote`, sign-in and "In the showroom now" in the live gallery journeys; 47 links, 0 broken; the only README hits are J-S3's partner account and quote, which D31/D54 keep
 
 - [ ] **6.7 The docs outside 6.4's Owns** · needs: 6.4 — 🔄 6·W3
