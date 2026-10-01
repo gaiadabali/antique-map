@@ -7,12 +7,14 @@ import { ESLint } from 'eslint'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 const repoRoot = process.cwd()
+/** Under a loaded machine (four db:fresh runs, gate F7) a lint here took over 60 s: 3 min, then. */
+const LOAD_PROOF = 180_000
 /** One ESLint per file, whose first lint loads the config: generous on a loaded machine. */
-const LOADED = { timeout: 60_000 }
+const LOADED = { timeout: LOAD_PROOF }
 let eslint
 beforeAll(() => {
   eslint = new ESLint({ cwd: repoRoot })
-}, 60_000)
+}, LOAD_PROOF)
 
 /** The engine fences `code` breaks, at `path` (from the repository root). */
 async function fencesAt(path, code) {

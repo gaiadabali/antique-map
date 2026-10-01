@@ -184,8 +184,12 @@ describe('check:client-safe — each planted violation fails with its chain, the
   })
 })
 
+// It walks every module under engine/: 12.9 s once on a loaded machine (gate F7), so the load-proof
+// timeout 5.4 gave its hook tests.
+const LOADED = { timeout: 60_000 }
+
 describe('check:client-safe on this repository', () => {
-  it("passes: no 'use client' module under engine/ reaches anything server-only", () => {
+  it("passes: no 'use client' module under engine/ reaches anything server-only", LOADED, () => {
     const { violations } = checkClientSafe(REPO)
     expect(violations.map((each) => formatViolation(REPO, each))).toEqual([])
   })
