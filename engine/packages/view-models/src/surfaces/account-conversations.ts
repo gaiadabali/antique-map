@@ -8,7 +8,9 @@
  * (`services.consignment`). Statuses are C6/C8's own; the buyer's answers go through C6 by the
  * account's session and each record's id, never with a price the page showed — and never with a
  * token: the page holds none, in an intent or a URL, but a payment link's own address (`payHref`,
- * C13); the emailed links carry theirs.
+ * C13); the emailed links carry theirs. v1.5 (D50, D54): no brand renders this at launch — the
+ * gallery has no offers or holds to list and no accounts at all, so each of its conversations
+ * comes back by its own email or WhatsApp; it stays for a brand that signs buyers in.
  */
 import type {
   AppointmentAccess,
@@ -18,7 +20,7 @@ import type {
 } from '@engine/domain/api'
 import type { OfferStatus } from '@engine/domain/machines/offer'
 
-import type { ImageVM, IsoDateTime, Money, PriceVM } from '../common'
+import type { ImageVM, IsoDateTime, MessageVM, Money, PriceVM } from '../common'
 import type { ItemRefVM } from '../commerce'
 import type { LocationSummaryVM } from './editorial'
 
@@ -50,8 +52,12 @@ export type AccountHoldVM = {
 export type AccountPriceRequestVM = {
   item: ItemRefVM
   askedAt: IsoDateTime
-  /** Revealed in the buyer's market, so the rupiah rule holds here too; or queued for a person. */
-  answer: { kind: 'revealed'; price: PriceVM } | { kind: 'queued'; replyWithinHours: number }
+  /**
+   * Revealed in the buyer's market, so the rupiah rule holds here too; or with a person, who
+   * replies within the brand's promise (`reply`, a `message.<code>` as `UniqueBaseVM.reply`, G9) —
+   * always so where the brand's unique prices are on request (D50, v1.5).
+   */
+  answer: { kind: 'revealed'; price: PriceVM } | { kind: 'queued'; reply: MessageVM | null }
 }
 
 export type AccountViewingVM = {

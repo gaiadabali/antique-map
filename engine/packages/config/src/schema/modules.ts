@@ -14,6 +14,8 @@ export const MODULES = {
   'catalogue.unique': 'One-of-one items: checkout lock, sold archive, "notify me of similar"',
   'catalogue.variants': 'Variant axes, SKUs and stock',
   'catalogue.productTypes': 'Product-type templates that generate variants from a design',
+  'purchase.checkout':
+    'Buying online: the bag, checkout and its payment step. Off, nothing is bought online but through a staff-sent payment link — an invoice, an accepted quote (D50)',
   'purchase.offers': 'Make an offer → accept / counter / decline → private payment link',
   'purchase.holds': 'Staff-granted reservations with an expiry',
   'purchase.requestPrice': 'Price-on-request items and the request flow',

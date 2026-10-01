@@ -123,12 +123,17 @@ type Table = typeof RESERVATION_TRANSITIONS
 
 /**
  * The notice a kind's live reservation sends ahead of its end, once (ReservationService
- * .noticeExpiring). Only holds today; an offer hold or an invoice hold gains one by an entry here
- * and a name in NoticeDomainEvent — an additive change.
+ * .noticeExpiring), each kind with its own lead from brand config: a hold `holdNoticeHours`
+ * before it ends, an invoice hold `invoiceNoticeHours` before its due date — the buyer's
+ * reminder that the invoice is due (D45, v1.5). An offer hold would gain one the same way: an
+ * entry here and a name in NoticeDomainEvent, an additive change.
  */
 export const EXPIRING_NOTICE_EVENTS = {
   hold: 'hold.expiring',
+  invoice: 'invoiceHold.expiring',
 } as const satisfies { readonly [K in ReservationKind]?: string }
+/** The kinds that send a notice ahead of their end. */
+export type NoticeKind = keyof typeof EXPIRING_NOTICE_EVENTS
 
 export type ReservationEvent = Table[number]['event']
 export type ReservationEventFrom<F extends ReservationStatus | null> = EventsFrom<Table, F>

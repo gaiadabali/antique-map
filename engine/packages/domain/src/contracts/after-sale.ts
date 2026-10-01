@@ -90,9 +90,10 @@ export type ReturnRequestView = {
  * proforma's number and PDF; paying it is the quote's page. It stays open to any buyer where
  * `accounts.retailers` is on: it prices at retail, and D36 is about trade terms, not proformas.
  * Its `checkoutId` is bound to the cart cookie or the session, as every checkout operation's is
- * (C13 `quotes`): alone it opens nothing. Whether an anonymous buyer's proforma holds a unique
- * line at once, capped per contact and IP, or only once staff approve it, is the owner's open
- * decision (COMMERCE.md §7).
+ * (C13 `quotes`): alone it opens nothing. **D45 answers how it holds a unique line** (v1.5): an
+ * `invoice` hold starts only when staff issue the proforma — staff-approved by construction — so
+ * a proforma holding a unique line answers `requested` and holds nothing until staff issue it; one
+ * of counted stock alone is issued at once (COMMERCE.md §7).
  */
 export type ProformaRequest = {
   readonly checkoutId: string
@@ -178,6 +179,12 @@ export type QuoteBuyerView = {
   readonly poNumber: string | null
 }
 
+/**
+ * A quote or a proforma. A proforma staff issue on a price already agreed — the gallery's invoice,
+ * after a negotiation by phone or WhatsApp (D50) — is issued `accepted`, with its payment link from the
+ * start, since nothing is left to accept; at the gallery that link, the brand's own `/pay/{token}`
+ * page, is the invoice the buyer receives (`PayLinkView.invoice`, v1.5).
+ */
 export type QuoteView = {
   readonly token: string
   readonly kind: 'proforma' | 'quote'

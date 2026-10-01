@@ -62,6 +62,23 @@ disagree, the doc wins and this digest is corrected.**
     leak drafts, costs and consignors to any page that forgot.
 15. The Payload config is brand-independent — because a config shaped by `BRAND`
     would silently give two brands two schemas.
+16. The gallery sells by conversation and invoice (D50, 2026-10-01): no price on
+    any original, no bag, no online offer; staff issue an invoice that holds the
+    piece through `reserve()` until its due date and is paid through its link —
+    because the owner negotiates every original by phone or WhatsApp. It is the
+    gallery's config (`commerce.uniquePrices: "on-request"`, `purchase.checkout`
+    off), so the engine's online buying stays for the shop and any brand that
+    turns it on.
+17. The shop sells within Indonesia, and from stock, at launch (S3, S7) — the
+    rupiah rule holds on every page, PayPal is not offered, and D47's export design
+    waits, built by configuration when the owner opens export.
+18. The gallery has no customer accounts (D54, 2026-10-01): no sign-up, sign-in or
+    account area; an invoice, an order, an alert and a viewing each come back by
+    their own link (an order also by the lookup), the wishlist stays on the device,
+    and the old site's customers become staff-side records with no claim flow —
+    because the gallery is simply buy and sell, and an account no buyer needs is
+    a password to keep safe and a page to build for nothing. Customer sign-in
+    stays for the shop's approved retailers (D31).
 
 ## Architecture
 
@@ -122,10 +139,11 @@ Each process binds exactly one database. The only cross-brand path is sister
 sync, which **copies with provenance** through a signed API — never a
 cross-database join on a request.
 
-### Data Flow Diagram — a unique item from checkout to sold
+### Data Flow Diagram — a unique item from its invoice to sold (the gallery, D50)
 
 ```mermaid
 sequenceDiagram
+    participant S as Staff (order builder)
     participant B as Buyer
     participant App as gallery app
     participant H as http commerce
@@ -135,21 +153,22 @@ sequenceDiagram
     participant W as webhook handler
     participant Q as jobs queue
 
-    B->>App: Continue to payment
-    App->>H: POST /api/x/commerce/checkout (payment step)
-    H->>D: recompute totals on the server, route seller
-    D->>DB: reserve() in one tx: expire stale rows for targetKey, INSERT … ON CONFLICT (target_key) DO NOTHING
+    S->>D: issue the invoice on a phone: the agreed figure, shipping, the due date
+    D->>D: routeSeller() over its lines and the buyer's destination (export gating)
+    D->>DB: reserveAll() kind invoice in one tx: expire stale rows for targetKey, INSERT … ON CONFLICT (target_key) DO NOTHING
     alt the item is held or sold (no row returned — never a raised violation)
-        D-->>App: typed conflict
-        App-->>B: someone else was first, alternatives and a want-list
-    else reserved
-        D->>DB: order pending_payment with snapshots
-        B->>App: chooses a method
-        App->>D: payment attempt (idempotent)
-        D->>DB: extend() the lock to the method's sessionTtl plus margin
+        D-->>S: typed conflict, nothing issued
+    else held until the due date
+        D->>DB: order pending_payment, invoice numbered, its pay link, outbox proforma.issued
+        S-->>B: the link, shared into the WhatsApp chat (wa.me) or by email
+        B->>App: opens the invoice on /pay/{token}, chooses a method (Payment Element or transfer)
+        App->>H: POST /api/x/commerce/pay (payLink.start, idempotent)
+        H->>D: price again from the issued lines, route seller
+        D->>DB: reserve() the order's checkout lock, superseding the invoice hold, lasting at least as long
+        D->>DB: payment attempt committed with our reference (idempotent)
         D->>G: createSession (stored SessionResult returned on a retry)
-        G-->>App: redirect, embedded, VA or QR
-        B->>G: pays (card: authorised, not yet captured)
+        G-->>App: the Payment Element embedded in the page, or transfer instructions (no gateway-hosted page)
+        B->>G: pays (a card on an invoice captures at once: its lock lasts to the due date)
         G->>W: webhook (per seller: /api/x/webhooks/payments/{provider}/{seller})
         W->>W: verify signature on the raw body, with this seller's secret
         W->>G: retrieve() where the adapter says so (Midtrans)
@@ -182,7 +201,13 @@ sequenceDiagram
 
 A payment that lands after its lock expired takes the **late-payment path**:
 re-reserve and sell if the item is still free, otherwise void or refund
-automatically and tell the buyer (PAYMENTS.md §1).
+automatically and tell the buyer (PAYMENTS.md §1). The buyer is reminded
+`invoiceNoticeHours` before the due date (`invoiceHold.expiring`); an invoice left
+unpaid reads available the moment its due date passes, the sweep moves its hold to
+`expired` and abandons its order, and a want list `like` the piece is alerted (D45).
+The shop's bag takes the same pipeline from "Continue to payment": `reserveAll()` of
+its lines as checkout locks, then the payment step — a QR, a VA or a card — with its
+lock lasting minutes, so its cards authorise first (COMMERCE.md §5, PAYMENTS.md §1).
 
 ## Components and Interfaces
 
@@ -217,9 +242,9 @@ type BrandConfig = {
   slug: string; name: string; storefront: 'gallery' | 'emporium'
   locales: { default: Locale; supported: Locale[] }; routes: RouteMap; ids: IdConfig
   money: { base: CurrencyCode; markets: MarketConfig[]; rounding: RoundingConfig; fx: FxConfig }
-  sellers: SellerConfig[]; commerce: CommerceConfig /* inventory models, named TTLs, tiers */
+  sellers: SellerConfig[]; commerce: CommerceConfig /* inventory models, named TTLs, tiers, uniquePrices */
   modules: ModuleFlags; shipping: ShippingConfig; fulfilment: FulfilmentConfig
-  analytics: { ga4Id: string | null; metaPixelId: string | null }   // runtime, never NEXT_PUBLIC_*
+  analytics: { ga4Id: string | null; metaPixelId: string | null }   // runtime, never NEXT_PUBLIC_*; null at launch (G12)
   tokens?: TokenOverrides; sisters?: SisterConfig[]
 }
 
@@ -297,6 +322,9 @@ type Product = {
   // drafts are Payload's _status; on hold and sold are DERIVED (availability machine), never stored
   pricing: { mode: 'fixed' | 'on-request' | 'offer-only'; base?: Money; marketPrices: Money[];
              multiplier?: number; offerFloorPct?: number }
+  // 'offer-only' and offerFloorPct serve a brand that takes offers — none at launch (D22, D50);
+  // where commerce.uniquePrices is 'on-request' (the gallery) base is the private asking price,
+  // and no public read selects it whatever the mode (COMMERCE.md §7)
   shippingProfile: ShippingProfile; taxClass: TaxClass; channels: Channel[]
 }
 
@@ -333,33 +361,38 @@ erDiagram
     LOCATIONS ||--o{ STOCK_LEVELS : "holds"
     PRODUCTS ||--o{ RESERVATIONS : "reserved by"
     CARTS ||--o{ RESERVATIONS : "locks"
+    INVOICES ||--o{ RESERVATIONS : "holds until due"
     OFFERS ||--o| RESERVATIONS : "holds"
     CUSTOMERS ||--o{ ORDERS : "places"
     ORDERS ||--o{ PAYMENT_ATTEMPTS : "paid by"
     PAYMENT_ATTEMPTS ||--o{ REFUNDS : "refunded by"
     ORDERS ||--o{ SHIPMENTS : "ships as"
-    CUSTOMERS |o--o{ WANT_LISTS : "saves (or held by an email alone, no account, D39)"
+    CUSTOMERS |o--o{ WANT_LISTS : "saves (or held by an email alone — at launch always, D39, D54)"
     CUSTOMERS ||--o{ SAVED_ITEMS : "wishes"
 ```
 
 ## Business Process
 
-### Offer → accepted → paid (gallery)
+### Conversation → invoice → paid (gallery, D50)
 
 ```mermaid
 flowchart TD
-    A[Buyer submits offer] --> B{At or above private floor}
-    B -- no --> C[Auto-decline courteously]
-    B -- yes --> D[Offer submitted, staff notified on the desk]
-    D --> E{Staff decision}
-    E -- decline --> F[Declined, buyer told, item stays available]
-    E -- counter --> G[Counter valid 72 h] --> A
-    E -- accept --> H[reserve kind offer, 48 to 72 h]
-    H --> I[Payment link, session expires before the hold]
-    I --> J{Paid in time}
-    J -- yes --> K[One transaction: payment, reservation converted, order paid]
-    J -- no --> L[Hold expires, item available, buyer told]
+    A[Buyer on the item page: Price on request] --> B[WhatsApp, a call, a price request or an enquiry]
+    B --> C[Negotiated by phone or WhatsApp, Singapore]
+    C --> D{Price agreed}
+    D -- no --> E[Item stays available, the lead logged]
+    D -- yes --> F[Staff issue the invoice: agreed figure, shipping, due date]
+    F --> G[reserve kind invoice until the due date]
+    G --> H[Private link: the invoice page, PDF, Pay online]
+    H --> I{Paid in full by the due date}
+    I -- yes --> J[One transaction: payment, reservation converted, order paid]
+    J --> K[Ships, shipping and duties the buyer's]
+    I -- no --> L[Hold lapses at the due date, item available, buyer and staff told]
 ```
+
+The engine's offer flow — submit, the private floor, accept, counter, an `offer`
+hold and its payment link — stays for a brand that takes offers (COMMERCE.md §6–7);
+no brand does at launch (D22).
 
 ### Sister sync
 
@@ -450,7 +483,7 @@ flowchart LR
 | **Concurrency** | 50 parallel reservations of one unique item → exactly one; a sold item refuses a new reservation, even by direct insert; duplicate webhook → one payment; gapless document numbers under load; discount usage limit under load | `packages/testing/concurrency` + CI Postgres |
 | **Access** | a draft and a private field (`physical`, acquisition cost, consignor) requested through every loader and the sister API come back as neither | e2e + `verify-*` scripts |
 | **Component** | primitives, viewer, configurator: interaction states, keyboard paths, reduced motion, price/preview agreement | package tests |
-| **E2E (Playwright)** | per brand and for `test`, desktop + mobile, on a **production build**: browse → item → buy; offer → accept → pay; hold → expire; CMS publish → live; legacy URL → 301 | `tests/e2e/**` |
+| **E2E (Playwright)** | per brand and for `test`, desktop + mobile, on a **production build**: the shop's browse → item → buy; the gallery's enquiry → invoice → pay, and an invoice's hold → lapse at its due date; CMS publish → live; legacy URL → 301 (offer → accept → pay returns with a brand that takes offers) | `tests/e2e/**` |
 | **Accessibility** | axe on every surface; manual screen reader and 200% zoom on checkout in the Launch stage | e2e + audit |
 | **Performance** | Lighthouse CI budgets per surface; field Web Vitals in the dashboard | CI + analytics |
 | **Visual** | each app's `/style-guide` at three breakpoints | CI snapshots |

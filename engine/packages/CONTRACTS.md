@@ -13,19 +13,19 @@ each contract is one module, re-exported from the entry named below.
 
 | # | Contract | Entry | Files | Implemented by | Consumed by | Version |
 | - | -------- | ----- | ----- | -------------- | ----------- | ------- |
-| C1 | Brand config schema, module registry, catalogue and listing vocabularies | `@engine/config/schema`; zod-free locales and currencies at `@engine/config/constants` | `config/src/schema.ts`, `config/src/schema/**`, `config/src/constants/**` | PLT (loader, `validateBrandConfigs()`, `bootCheck()`), BRD (brand folders) | every lane | v1.2 |
-| C2 | Surfaces and view models, loader signatures, typed fixtures | `@engine/view-models`, `@engine/view-models/fixtures` | `view-models/src/**` (except `blocks*.ts`) | WEB (`@engine/loaders`; state fixtures, TASKS.md 11.4) | WEB, UXG, UXE, SEO, DOM, NTF | v1.4 |
+| C1 | Brand config schema, module registry, catalogue and listing vocabularies | `@engine/config/schema`; zod-free locales and currencies at `@engine/config/constants` | `config/src/schema.ts`, `config/src/schema/**`, `config/src/constants/**` | PLT (loader, `validateBrandConfigs()`, `bootCheck()`), BRD (brand folders) | every lane | v1.5 |
+| C2 | Surfaces and view models, loader signatures, typed fixtures | `@engine/view-models`, `@engine/view-models/fixtures` | `view-models/src/**` (except `blocks*.ts`) | WEB (`@engine/loaders`; state fixtures, TASKS.md 11.4) | WEB, UXG, UXE, SEO, DOM, NTF | v1.5 |
 | C3 | Token contract and the brand-overridable subset | `@engine/ui/tokens/contract` | `ui/src/tokens/contract.ts` | UXG, UXE (app defaults), WEB (token pipeline, TASKS.md 11.2) | UXG, UXE, BRD, ADM | v1.1 |
 | C4 | Content blocks: the frozen list and prop shapes | `@engine/view-models` | `view-models/src/blocks.ts`, `blocks-check.ts` | SCH (Payload blocks), UXG and UXE (renderers) | SCH, UXG, UXE, WEB | v1.1 |
 | C5 | Money: `Money`, `PriceSet`, rounding points, the pricing step | `@engine/domain/money` | `domain/src/money/contract.ts`, `domain/src/contracts/{pricing,price-sources}.ts`; shared by C5–C8: `domain/src/contracts/{scalars,type-assertions,storage}.ts` (`@engine/domain/storage`) | DOM | DOM, PAY, WEB, apps, C2 | v1.2 |
-| C6 | Commerce API: requests, responses, problems, capability links | `@engine/domain/api`; values at `@engine/domain/retailers`, `@engine/domain/want-lists`, `@engine/domain/links` | `domain/src/contracts/{api,cart,checkout,paying,orders,leads,links,services,after-sale,retailers,want-lists,requests,results}.ts` | DOM (handlers in `http/src/commerce/**`) | apps, WEB, C2, C13 | v1.1 |
+| C6 | Commerce API: requests, responses, problems, capability links | `@engine/domain/api`; values at `@engine/domain/retailers`, `@engine/domain/want-lists`, `@engine/domain/links` | `domain/src/contracts/{api,cart,checkout,paying,orders,leads,links,services,after-sale,retailers,want-lists,requests,results}.ts` | DOM (handlers in `http/src/commerce/**`) | apps, WEB, C2, C13 | v1.5 |
 | C7 | Provider interfaces and normalised events | `@engine/payments/contract`, `@engine/shipping/contract`, `@engine/fulfilment/contract` | `{payments,shipping,fulfilment}/src/contract.ts`, `payments/src/contract/**`, `domain/src/contracts/payment-vocabulary.ts` | PAY, LOG | PAY, LOG, DOM | v1.1 |
-| C8 | State machines, `reserve()`, `applyPaymentEvent()`, domain events | `@engine/domain/machines/*`, `@engine/domain/reservations`, `@engine/domain/transactions`, `@engine/domain/events` | `domain/src/*/machine.ts`, `domain/src/reservations/contract.ts`, `domain/src/contracts/{machine-types,reservation-types,transactions,domain-events,apply-payment-event}.ts` | DOM | DOM, PAY, ADM, NTF, WEB, C2 | v1.1 |
+| C8 | State machines, `reserve()`, `applyPaymentEvent()`, domain events | `@engine/domain/machines/*`, `@engine/domain/reservations`, `@engine/domain/transactions`, `@engine/domain/events` | `domain/src/*/machine.ts`, `domain/src/reservations/contract.ts`, `domain/src/contracts/{machine-types,reservation-types,transactions,domain-events,apply-payment-event}.ts` | DOM | DOM, PAY, ADM, NTF, WEB, C2 | v1.5 |
 | C9 | Media artefacts: derivatives, IIIF, masters and intake keys, print files; image roles and provenance; what the intake measures and the print ceiling; the room plates | `@engine/media/contract` | `media/src/contract.ts`, `media/src/contract/**` | MED | MED, WEB, UXG, UXE, MIG, SIS, LOG, SCH, ADM, C2, C11 | v1.6 |
-| C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.3 |
-| C11 | Analytics events: names and props | `@engine/analytics/events` | `analytics/src/events.ts`, `analytics/src/events/**` | SEO | every surface, DOM (the outbox) | v1.1 |
+| C10 | Route map, `href()` and its inverse | `@engine/config/routes` | `config/src/routes.ts`, `config/src/routes/**` | PLT (the proxy), WEB | PLT, WEB, UXG, UXE, SEO, NTF, MIG | v1.5 |
+| C11 | Analytics events: names and props | `@engine/analytics/events` | `analytics/src/events.ts`, `analytics/src/events/**` | SEO | every surface, DOM (the outbox) | v1.5 |
 | C12 | Sister archive API: work snapshot, the prints feed, webhooks both ways | `@engine/sister/contract` | `sister/src/contract.ts`, `sister/src/contract/**` | SIS | SIS, SCH, apps | v1.1 |
-| C13 | HTTP handler manifest, the proxy's headers and answers, and its matcher | `@engine/http/manifest` | `http/src/manifest.ts`, `http/src/manifest/**` | WEB and the handler lanes (DOM, PAY, LOG, MED, SRC, SIS, SEO); PLT (the proxy) | WEB, UXG, UXE, PLT, HAR (route parity) | v1.3 |
+| C13 | HTTP handler manifest, the proxy's headers and answers, and its matcher | `@engine/http/manifest` | `http/src/manifest.ts`, `http/src/manifest/**` | WEB and the handler lanes (DOM, PAY, LOG, MED, SRC, SIS, SEO); PLT (the proxy) | WEB, UXG, UXE, PLT, HAR (route parity) | v1.5 |
 
 Paths are under `engine/packages/`. The dependency order is fixed: `config` is the leaf
 and imports no engine package; `domain` builds on it; the view models, the manifest and
@@ -103,7 +103,10 @@ so it is breaking and also needs a redirect.
   `retention.emailWantList` (D39), each app's `supports` saying which it can render. Every want
   list is sent by email and made on the want-list page, so an account's (`retention.wantList`)
   builds on an address's (`retention.emailWantList`). Only an owner-role user overrides the trade
-  tiers (D33).
+  tiers (D33). Whether a brand sells online and whether a unique item's price is ever published
+  are config too (v1.5, D50): `purchase.checkout` (the bag and checkout) and
+  `commerce.uniquePrices` — with `on-request`, no public read carries a unique item's price, and no
+  tier offers `buy`.
 - **C2.** Change the view model first, the fixture second and the loader third
   (DESIGN-SYSTEM.md §3). Money is C5's `Money`, a safe integer of minor units plus a
   currency code, and a price is C5's `PriceSet`: never a float, never a preformatted
@@ -134,7 +137,10 @@ so it is breaking and also needs a redirect.
   forms.
   Only an approved partner signs in, so only its view model carries
   trade terms or a reorder, and the Partnership page holds no term or price in any state
-  (`retailer-check.ts`, D31–D36).
+  (`retailer-check.ts`, D31–D36). A value of a list a contract fixes reaches a view model as its
+  key, and the app labels it from its lexicon at `<list>.<key>`; a vocabulary editors create
+  carries its label (`TermVM`). A message's words are the app's at `message.<code>`, and its params
+  are values — a date already formatted with its precision (v1.5).
 - **C3.** A new token needs a value in both apps (`AppTokens` is total) and its contrast
   pairings. The contract is a floor: an app's own tokens are named `--app-…`, and the shared
   primitives read contract tokens only. The overridable subset lives in C1 and grows only
@@ -783,6 +789,90 @@ so it is breaking and also needs a redirect.
   9.2) and the `room-plates` global's stub; MED, the intake keys and filing (8.3, 15.4) and the
   ceiling from the crop (15.4.c); WEB, `primaryImageIndex()` and `orderImages()` in the loaders;
   ARC, C2's `PreviewVM` carrying `RoomPlate` (22.7).
+- **2026-10-01**: **v1.5 of C1, C2, C6, C8, C10, C11 and C13** (TASKS.md 6.4): the owner's
+  interview answers (OA2) — the gallery enquiry-only (D50, superseding D30), an invoice holding
+  its piece until its due date (D45), the shop within Indonesia only and from stock (S3, S7) — the
+  developer's input to 6.4 (the invoice on the brand's own pay page, one stock pool: D51, D52; no
+  collector accounts on the gallery: D54), the owner's later answers (first-party analytics only,
+  G12; D45's term of three days with a reminder a day ahead), and 6.3.f's and 6.3.g–i's notes.
+  The number was
+  reserved for this release while it was open: 8.4's v1.6, below, merged first and names it. C3–C5,
+  C7, C9 and C12 keep their versions in this release: C12's `OriginalListing` already carries an
+  original `on-request` with no price, and C9 gains no video (CONTENT-MODEL.md §6).
+  - **C1:**
+    - `commerce.uniquePrices` (`UNIQUE_PRICES`: `shown`, the default, or `on-request`): with
+      `on-request` no public read carries a unique item's price, and the commerce schema refuses
+      `buy` in any tier (a test, `schema/commerce.test.ts`);
+    - the module `purchase.checkout` — buying online: the bag, checkout and its payment step — off
+      unless a brand turns it on;
+    - `PURCHASE_ACTIONS` gains `call`, a `tel:` link to `identity.contact.phone`;
+    - `ttl.invoiceHoldDays` is the term the order builder proposes — an invoice hold lasts to the
+      due date staff set, which they may change per invoice — and its default is now **3** (was
+      7), with `ttl.invoiceNoticeHours` (**24**) the reminder's lead: the owner's answers to D45's
+      term (2026-10-01), tested in `schema/commerce.test.ts`;
+    - the header's `validateBrandConfigs()` list gains `buy` needing `purchase.checkout`, `call`
+      needing a phone, and `invoiceNoticeHours` below the default term — PLT implements them.
+  - **C10, C13:** the `cart` and `checkout` surfaces and commerce areas need `purchase.checkout`;
+    `pay`, `order` and `order-lookup` stay open (the gallery's invoice is paid on its pay link).
+    D54: C13 `APPOINTMENT_ACCESS` — the confirmation's one-hop link moves the appointment's token
+    into a cookie and answers 303 to the `appointment` form page, which reschedules or cancels
+    that viewing (C10's `form` doc); the auth catch-all answers 404 for every operation on a brand
+    with neither account module, and a claim link goes out only where `accounts.buyers` is on;
+    C10's `wishlist` (the device's) is the gallery's too.
+  - **C2:**
+    - `PurchaseActionVM` gains `call` (`href` `tel:…`, `number` as printed);
+    - `heldForMe` may show `onRequest` (the figure is the invoice's); `queued` names no hours, and
+      `UniqueBaseVM` and `EnquiryOnlyPurchaseVM` carry `reply`, the brand's reply promise as a
+      `MessageVM` — "the same working day, Singapore time" (G9) is no count of hours;
+    - `PayVM.invoice` (number, buyer, PDF) and the invoice page's states; `OrderPaymentVM`
+      `invoice` (its pay link and due date), since an invoice places its order at issue;
+    - who labels a list (`TermVM`'s rule): `RecordVM.objectType`, `technique` and `colour` are
+      keys, `FacetOptionVM.label` is `null` for a contract's list, applied chips are
+      `AppliedFacetVM` (key, value, label);
+    - `MessageVM` names `message.<code>` and preformatted params (`lifeDates` keeps "c.");
+      `DeliveryPromiseVM.holiday` is `holidayDelay` `{holiday, date}`; form fields' hint
+      `<name>Hint`, legend by the bare group, `message.fieldRequiredWhen` `{value}`;
+      `ProfileVM.type` `trade` is no D36 partner; `ConsentVM` `analytics` governs only the
+      persistent first-party id (G12);
+    - fixtures: the gallery's launch states (`purchaseStates.conversation…`,
+      `invoiceHeldByOther`), `item-enquiry-led`, `item-invoice-held`, `listing-on-request`,
+      `pay-invoice` and its transfer-pending, paid, expired and voided states, `order-invoice` —
+      issued on 2 October and due three days later, the proposed term, the transfer's window
+      ending at the due date, and the order opened by its link (`access: 'lookup'`, D54);
+    - D55 (G12, the owner, 2026-10-01): `ShellVM.analytics`' ids are `null` for every brand at
+      launch, and with neither set the banner asks no marketing category (`choice.marketing`
+      stays `false`);
+    - D54 — no viewer relation at the gallery: `heldForMe`, `inMyCheckout` and `myOffer` need a
+      buyer's session, which no brand has at launch, so no launch fixture shows one;
+      `ShellVM.cart` is `null` without `purchase.checkout` and `ShellVM.account` `null` on a brand
+      with no accounts; the `shell` fixture is the gallery's launch shell — no bag, no account
+      entry, the wishlist on the device (`/wishlist`), its phone for Call — and `shell-shop`
+      keeps its bag; the account surfaces are rendered by no app at launch.
+  - **C6:** `PriceRequestResult.queued` names no hours; D45 answers `quote.proforma`'s unique
+    lines (held only once staff issue it); a proforma issued on an agreed price is `accepted`;
+    `PayLinkView.invoice` and its page as the brand's own; a `like` want list alerts when its piece
+    is available again (an invoice lapsing). D54: `OfferAccess` and `AppointmentAccess`'s
+    `account` kind exists only where a brand signs buyers in — none at launch — so a gallery
+    booker changes a viewing by its confirmation's token, and a booking's pull list is the
+    device's wishlist.
+  - **C8:** `EXPIRING_NOTICE_EVENTS.invoice` (`invoiceHold.expiring`, in `NoticeDomainEvent`) and
+    `noticeExpiring({ kind, lead, limit })`, one call per kind; the order machine's `reach-payment`
+    also opens an order when staff issue an invoice; `ReserveInput.ttl` for an invoice is the time
+    to its due date.
+  - **C11:** `call.clicked` (`context`: `item` · `footer`).
+
+  **Breaks:** in shape, C2's reshaped fields (`ShellVM.cart` now nullable among them), C6's queued
+  answer and `PayLinkView.invoice`, and C8's `noticeExpiring` input — but no lane has built on
+  them (the loaders, the handlers, the domain's reserve(), the apps' item and pay pages and their
+  shells' bag are unbuilt), so each is a minor version, as v1.1's were. **One behaviour lands
+  with BRD:** behind `purchase.checkout`, a brand whose config does not turn it on has no bag — so
+  the shop's and the synthetic emporium's configs add `"purchase.checkout": true` before the shop's
+  bag is built (TASKS.md 6.4's report lists the edits, as 6.5), and the gallery's config never
+  does. Announced to every lane in each contract's "Consumed by" column. The docs follow in the
+  same change: COMMERCE.md §2–§5, §7–§13, PAYMENTS.md §1, §3, §5–§7, EXPERIENCE-GALLERY.md,
+  EXPERIENCE-SHOP.md, ANALYTICS.md, COMPLIANCE.md, CONTENT-MODEL.md, requirements.md and
+  design.md; BRANDS.md §3–§4, DESIGN-SYSTEM.md, ARCHITECTURE.md §12 and MIGRATION.md §5–§6 (D54)
+  are routed in 6.4's report.
 - **2026-10-01**: **C9 v1.6** (TASKS.md 8.4): what the reviews of 8.1 and 8.3 decided
   (`reviews/8.1-senior-be.md`, `reviews/8.3-senior-integrator.md`). The release changes C9 alone;
   v1.5 is 6.4's release of C1, C2, C6, C8, C10, C11 and C13, which keeps C9 at v1.4, so C9 goes

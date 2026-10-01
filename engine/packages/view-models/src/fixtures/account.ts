@@ -145,6 +145,15 @@ export const accountPriceRequests: AccountVM = signedIn({
       askedAt: '2026-09-24T09:00:00+08:00',
       answer: { kind: 'revealed', price: price(money(480000, 'USD')) },
     },
+    // Where unique prices are on request (the gallery, D50): a person replies, never a figure.
+    {
+      item: STRAITS,
+      askedAt: '2026-09-30T16:20:00+08:00',
+      answer: {
+        kind: 'queued',
+        reply: { code: 'replySameWorkingDay', params: { timeZone: 'Singapore' } },
+      },
+    },
   ],
 })
 

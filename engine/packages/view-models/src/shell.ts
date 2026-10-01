@@ -6,7 +6,8 @@
  * changes — there is no free currency switcher), cart indicator and sister strip. Brand
  * identity is runtime data read from `BRAND` at request time — never baked into a build —
  * so a third brand on the same app renders its own name, assets and tokens. The analytics
- * ids are runtime values too, loaded only after marketing consent (never NEXT_PUBLIC_*).
+ * ids are runtime values too, loaded only after marketing consent (never NEXT_PUBLIC_*) — and
+ * set by no brand at launch, whose analytics are first-party only (G12).
  */
 import type { LocaleCode, ModuleKey, Storefront, TokenOverrides } from '@engine/config/schema'
 
@@ -68,12 +69,20 @@ export type ShellVM = {
   social: readonly { network: 'instagram' | 'facebook' | 'tiktok' | 'youtube'; href: string }[]
   /** The legal identities the footer names — every seller of record the brand has. */
   sellers: readonly SellerIdentityVM[]
-  /** The sister strip: a separate shop with its own account, and the link says so. */
+  /** The sister strip: a separate business that sells its own way, and the link says so. */
   sister: { name: string; href: string; role: 'archive-origin' | 'merch-outlet' } | null
+  /**
+   * Third-party tag ids — both `null` for every brand at launch: the analytics are first-party
+   * only (G12, v1.5). With neither set, the consent banner offers no marketing-tag category.
+   */
   analytics: { ga4Id: string | null; metaPixelId: string | null }
   /** From the `shipTo` cookie (defaulted from the visitor's country). */
   shipTo: Streamed<ShipToVM>
-  cart: Streamed<{ count: number }>
+  /**
+   * The header's bag: its count, or `null` without `purchase.checkout` — the gallery, which has
+   * no bag (D50, C1 v1.5), so its header shows none (v1.5).
+   */
+  cart: Streamed<{ count: number } | null>
   /**
    * The header's saved items: the device's count and the Wishlist page with
    * `retention.deviceWishlist` (D35), the account's wishlist with `retention.wishlist`; `null`
@@ -81,9 +90,9 @@ export type ShellVM = {
    */
   wishlist: Streamed<{ count: number; href: string } | null>
   /**
-   * The header's account entry — `null` where this visitor has none to see: a shop whose only
-   * accounts are retailers', to anyone not signed in as one (the Partnership item is the way
-   * in, D31).
+   * The header's account entry — `null` where this visitor has none to see: a brand with no
+   * accounts at all (the gallery, D54), or a shop whose only accounts are retailers', to anyone
+   * not signed in as one (the Partnership item is the way in, D31).
    */
   account: Streamed<{
     audience: 'buyer' | 'retailer'
@@ -93,7 +102,11 @@ export type ShellVM = {
   } | null>
   consent: Streamed<{
     policyVersion: string
-    /** `null` until the visitor has chosen; the beacon stays cookieless until then. */
+    /**
+     * `null` until the visitor has chosen; the beacon stays cookieless until then. `marketing`
+     * is asked only where `analytics` names a tag id — nowhere at launch (G12), so it stays
+     * `false` there.
+     */
     choice: { analytics: boolean; marketing: boolean } | null
   }>
   /** The dismissible banner offering the visitor's language; never a redirect. */

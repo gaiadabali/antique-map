@@ -106,6 +106,12 @@ export type OrderPaymentVM =
   | { state: 'retry'; method: PaymentMethodId; reason: PaymentFailureClass; retryHref: string }
   /** Settled off-platform — on WhatsApp, in the showroom — in the editor's own words (KOI). */
   | { state: 'manual'; note: string }
+  /**
+   * A staff-issued invoice not paid yet (v1.5, D50): the order exists from issue, held for this
+   * buyer until `dueAt` (D45), and is paid on its own pay page (`payHref`, C13's capability
+   * address) — this page polls nothing until a payment starts there.
+   */
+  | { state: 'invoice'; payHref: string; dueAt: IsoDateTime }
   | { state: 'refunded'; refunded: Money; partial: boolean }
 
 /**

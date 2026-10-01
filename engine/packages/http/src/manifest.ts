@@ -36,7 +36,8 @@
  * never travels in a URL (`ORDER_ACCESS`; `payment.status` is a POST). A pay-link or quote
  * token is the capability its page's own URL already carries (C10 `sensitive`), so
  * `payLink.get` and `quote.get` read it from the query; the one-hop links an email carries
- * (`ORDER_ACCESS.link`, `WANT_LIST_ACCESS.link`, the auth routes' GET links — `APPLICATION_ACCESS`,
+ * (`ORDER_ACCESS.link`, `APPOINTMENT_ACCESS.link`, `WANT_LIST_ACCESS.link`, the auth routes' GET
+ * links — `APPLICATION_ACCESS`,
  * `PASSWORD_LINK`, email verification — and one-click unsubscribe) are the only other credentials
  * in a URL, and each but the unsubscribe moves its token into a cookie and answers 303 to a clean
  * page. Every such token is a derived capability link (C6 `links`), stored nowhere and never in an

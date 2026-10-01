@@ -10,12 +10,19 @@
  * its availability read is bounded by a short timeout, and a read that fails or times out
  * resolves to `enquiryOnly` / `unverified`, never to an error (`Streamed`). Loaders apply the
  * tier, the status and the modules, so a component never decides which actions exist.
+ *
+ * v1.5 (D50): where a brand's unique prices are on request (C1 `commerce.uniquePrices`, the
+ * gallery) no unique panel carries a figure in any state — its price is `onRequest`, `queued` or
+ * `hidden` — the conversation leads (WhatsApp, `call`), and a piece is held by the invoice staff
+ * issue: `heldByOther` until its due date, for every visitor. The invoice's buyer pays through
+ * the invoice's own link: the gallery signs no one in (D54), so no viewer relation — `heldForMe`,
+ * `inMyCheckout`, `myOffer` — is produced at launch; they stay for a brand that signs buyers in.
  */
 import type { CountryCode, PurchaseAction, PurchaseBand } from '@engine/config/schema'
 import type { AvailabilityState } from '@engine/domain/machines/availability'
 
 import type { CardVM } from '../cards'
-import type { IsoDateTime, LineIntent, LinkVM, Money, PriceVM } from '../common'
+import type { IsoDateTime, LineIntent, LinkVM, MessageVM, Money, PriceVM } from '../common'
 import type { VariantsPurchaseVM } from './purchase-variants'
 import type { SisterLinkVM } from './sister'
 
@@ -36,13 +43,17 @@ export type PurchaseAnalyticsVM = { priceBand: PurchaseBand; status: Availabilit
  * An action the panel offers. `buy` posts its line to `cart.addLines` (C6) — ids and a
  * quantity of 1, never the price beside it; `pay` opens the payment link of what is held for
  * this viewer; `whatsapp` opens a chat prefilled with the stock number and title in the
- * page's language; the others open their dialog, whose no-JavaScript path is `href` (C10).
+ * page's language; `call` dials the brand's number (C1 `identity.contact.phone`) and shows it as
+ * text, which a visitor at a desktop reads (v1.5, D50); the others open their dialog, whose
+ * no-JavaScript path is `href` (C10).
  */
 export type PurchaseActionVM =
   | { action: 'buy'; line: LineIntent }
   | { action: 'pay'; href: string }
   | { action: 'whatsapp'; href: string }
-  | { action: Exclude<PurchaseAction, 'buy' | 'whatsapp'>; href: string }
+  /** `href` is `tel:` and the E.164 number; `number` the number as the page prints it. */
+  | { action: 'call'; href: `tel:${string}`; number: string }
+  | { action: Exclude<PurchaseAction, 'buy' | 'whatsapp' | 'call'>; href: string }
 /** Every action but Buy: what a panel offers when the item cannot go in the bag now. */
 export type NoBuyActionVM = Exclude<PurchaseActionVM, { action: 'buy' }>
 
@@ -60,22 +71,39 @@ export type DeliveryGateVM =
   | { kind: 'exportPending'; viewAt: string }
 
 export type UniquePriceVM =
+  /** Never where the brand's unique prices are on request (C1 `commerce.uniquePrices`, D50). */
   | { kind: 'fixed'; price: PriceVM }
-  /** "Price on request": the request-price flow answers in place. */
+  /**
+   * "Price on request": a request is answered in place where prices are shown, and by a person —
+   * within the panel's `reply` — where they are on request.
+   */
   | { kind: 'onRequest' }
-  /** Answered in place after the viewer left an email or WhatsApp number. */
+  /**
+   * Answered in place after the viewer left an email or WhatsApp number — never where the brand's
+   * unique prices are on request: there the answer is a person's (`queued`).
+   */
   | { kind: 'revealed'; price: PriceVM }
-  /** A sensitive item: "A specialist will reply within {hours}". */
-  | { kind: 'queued'; replyHours: number }
+  /**
+   * The request is with a person — every request where prices are on request, an item marked
+   * sensitive elsewhere: "A specialist will reply", and when is the panel's `reply` (G9, v1.5).
+   */
+  | { kind: 'queued' }
   /** No asking price (`pricing.mode: offer-only`): the panel invites an offer. */
   | { kind: 'offerOnly' }
   /** Sold: no price. */
   | { kind: 'hidden' }
 type Price<K extends UniquePriceVM['kind']> = Extract<UniquePriceVM, { kind: K }>
 
-/** "On hold until Friday 14:00" — someone else's lock, hold, offer or invoice. */
+/**
+ * "On hold until Friday 14:00" — someone else's lock, hold, offer or invoice; an invoice's until
+ * its due date (D45).
+ */
 export type HeldByOtherVM = { kind: 'heldByOther'; until: IsoDateTime | null }
-/** A staff hold, an accepted offer or a proforma for this viewer: `pay` leads, Buy never shows. */
+/**
+ * A staff hold, an accepted offer, or an invoice or proforma for this viewer, known by the
+ * viewer's session — where a brand signs buyers in, none at launch (D54): `pay` leads, Buy never
+ * shows.
+ */
 export type HeldForMeVM = {
   kind: 'heldForMe'
   reason: 'hold' | 'offer' | 'invoice'
@@ -135,7 +163,8 @@ export type UniquePanelVM =
     }
   | {
       state: HeldForMeVM
-      price: Price<'fixed' | 'revealed'>
+      /** `onRequest` where the brand's unique prices are: the agreed figure is the invoice's (D50). */
+      price: Price<'fixed' | 'revealed' | 'onRequest'>
       actions: {
         primary: Extract<PurchaseActionVM, { action: 'pay' }>
         secondary: readonly NoBuyActionVM[]
@@ -170,6 +199,14 @@ export type UniqueBaseVM = {
    * `like` its public id); `null` when `retention.emailWantList` is off.
    */
   alert: { href: string } | null
+  /**
+   * The reply promise beside the panel's conversation — WhatsApp, a call, a price request, an
+   * enquiry (G9, v1.5): the brand's, from its settings (CONTENT-MODEL.md §6), a code the app words
+   * at `message.<code>` — `replyWithinHours` `{hours}`, `replyWithinDays` `{days}`,
+   * `replySameWorkingDay` `{timeZone}` (the gallery's: the same working day, Singapore time).
+   * `null` where the brand promises none.
+   */
+  reply: MessageVM | null
   analytics: PurchaseAnalyticsVM
 }
 export type UniquePurchaseVM = UniqueBaseVM & UniquePanelVM
@@ -182,7 +219,10 @@ export type UniquePurchaseVM = UniqueBaseVM & UniquePanelVM
 export type EnquiryOnlyPurchaseVM = {
   kind: 'enquiryOnly'
   reason: 'unroutable' | 'notForSale' | 'unverified'
+  /** `null` where the brand's unique prices are on request, whatever the reason (D50). */
   price: PriceVM | null
   actions: PurchaseActionsVM<NoBuyActionVM>
+  /** The reply promise beside the enquiry, as `UniqueBaseVM.reply` (G9, v1.5). */
+  reply: MessageVM | null
   analytics: PurchaseAnalyticsVM
 }

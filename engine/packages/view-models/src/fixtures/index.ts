@@ -32,7 +32,16 @@ import * as editorial from './editorial'
 import * as form from './form'
 import { giftCard, giftCardBalance } from './gift-card'
 import { homeGallery, homeShop } from './home'
+import {
+  orderInvoice,
+  payInvoice,
+  payInvoiceExpired,
+  payInvoicePaid,
+  payInvoiceTransferPending,
+  payInvoiceVoided,
+} from './invoice'
 import { itemAvailabilityUnverified } from './item-availability-unverified'
+import { itemEnquiryLed, itemInvoiceHeld } from './item-enquiry-led'
 import { itemEnquiryOnly } from './item-enquiry-only'
 import { itemLongContent, itemWithoutHookTitle } from './item-long-content'
 import { itemOnHold } from './item-on-hold'
@@ -40,7 +49,7 @@ import { itemPriceOnRequest, itemPriceRevealed } from './item-price-on-request'
 import { itemSoldPriceRealised, itemSoldWithAlternative } from './item-sold-with-alternative'
 import { itemUnique, itemUniqueStreaming } from './item-unique'
 import { itemVariants, itemVariantsForPartner, itemVariantsSelected } from './item-variants'
-import { listing, listingEmpty, search } from './listing'
+import { listing, listingEmpty, listingOnRequest, search } from './listing'
 import * as order from './order'
 import * as lookup from './order-lookup'
 import * as partnership from './partnership'
@@ -63,6 +72,7 @@ export const FIXTURES = {
   'home-shop': homeShop,
   listing,
   'listing-empty': listingEmpty,
+  'listing-on-request': listingOnRequest,
   search,
   'item-unique': itemUnique,
   'item-unique-streaming': itemUniqueStreaming,
@@ -72,6 +82,8 @@ export const FIXTURES = {
   'item-price-on-request': itemPriceOnRequest,
   'item-price-revealed': itemPriceRevealed,
   'item-enquiry-only': itemEnquiryOnly,
+  'item-enquiry-led': itemEnquiryLed,
+  'item-invoice-held': itemInvoiceHeld,
   'item-availability-unverified': itemAvailabilityUnverified,
   'item-variants': itemVariants,
   'item-variants-selected': itemVariantsSelected,
@@ -109,6 +121,7 @@ export const FIXTURES = {
   'order-pending-qris': order.orderPendingQris,
   'order-retry': order.orderRetry,
   'order-manual': order.orderManual,
+  'order-invoice': orderInvoice,
   'order-lookup': lookup.orderLookup,
   'order-lookup-found': lookup.orderLookupFound,
   'order-lookup-not-found': lookup.orderLookupNotFound,
@@ -117,6 +130,11 @@ export const FIXTURES = {
   pay,
   'pay-paid': payPaid,
   'pay-transfer-pending': payTransferPending,
+  'pay-invoice': payInvoice,
+  'pay-invoice-transfer-pending': payInvoiceTransferPending,
+  'pay-invoice-paid': payInvoicePaid,
+  'pay-invoice-expired': payInvoiceExpired,
+  'pay-invoice-voided': payInvoiceVoided,
   'quote-proforma': quoteProforma,
   'quote-requested': quoteRequested,
   'quote-trade': quoteTrade,

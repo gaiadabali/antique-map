@@ -28,13 +28,16 @@ import type {
   ProductKind,
   SeoVM,
   Streamed,
-  TermVM,
 } from '../common'
 import type { PurchaseVM, SisterLinkVM } from './purchase'
 
-/** The collation block collectors expect (EXPERIENCE-GALLERY.md §5, the Sanderus model). */
+/**
+ * The collation block collectors expect (EXPERIENCE-GALLERY.md §5, the Sanderus model). Its
+ * controlled lists arrive as keys the app labels from its lexicon — `objectType.<key>`,
+ * `technique.<key>`, `colour.<key>` (v1.5, `TermVM`'s rule in `../common`).
+ */
 export type RecordVM = {
-  objectType: TermVM<ObjectType>
+  objectType: ObjectType
   publication: {
     place: string | null
     publisher: string | null
@@ -49,8 +52,9 @@ export type RecordVM = {
   }
   firstEdition: FuzzyDateVM | null
   dateOnPlate: FuzzyDateVM | null
-  technique: TermVM | null
-  colour: TermVM<Colouring> | null
+  /** The controlled select's key; its list joins C1 with the works schema (TASKS.md 8.2). */
+  technique: string | null
+  colour: Colouring | null
   /** mm; the formatter adds inches. */
   dimensions: DimensionsVM
 }

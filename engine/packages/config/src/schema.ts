@@ -24,7 +24,8 @@
  *   most a tenth of its lower bound (the previous band's `upTo`; the first band's, of its own),
  *   and an `fx.bufferPct` for each (`"0"` when none — never a silent 0 %);
  * - `holdNoticeHours` < `holdDefaultHours` ≤ `holdMaxHours`, and `checkoutLockMinutes` within
- *   `checkoutLockMaxHours`;
+ *   `checkoutLockMaxHours`; `invoiceNoticeHours` below `invoiceHoldDays` in hours, so the default
+ *   term leaves room for its reminder (v1.5);
  * - `documentPrefix` unique across sellers, and no provider listed twice in one seller;
  * - a seller's own couriers (`sellers[].shipping`) each one of the brand's `shipping.providers`;
  * - `sister.links` only with a sister in `sisters` to link and sync with;
@@ -36,7 +37,12 @@
  *   `defaultTier` (the schema itself checks the tiers: ids unique, `defaultTier` one of them,
  *   none past `maxDiscountBps`);
  * - an `amount` minimum in `commerce.trade` in a currency every seller lists in `charge`: the
- *   seller that quotes a retailer is the one serving its destination, which may be any of them.
+ *   seller that quotes a retailer is the one serving its destination, which may be any of them;
+ * - each purchase tier's actions only with the module whose flow it opens — `buy` with
+ *   `purchase.checkout` (the bag, v1.5), `offer`, `reserve`, `requestPrice`, `viewing` and
+ *   `proforma` as before — and `call` only with `identity.contact.phone`, the number it dials, as
+ *   `whatsapp` needs `identity.contact.whatsapp` (v1.5). (`buy` beside `uniquePrices: "on-request"`
+ *   is the commerce schema's own refusal: D50.)
  * Secrets and environment are `bootCheck()`'s: every configured provider's — per seller for
  * payments and for each seller's own couriers, per brand for fulfilment — and the sister's when
  * one is set.

@@ -21,9 +21,11 @@ export type CommerceRoute = {
 
 export const COMMERCE_AREAS = {
   destination: { auth: ['public'], methods: POST }, // the shipTo cookie: the only market input
-  cart: { auth: ['public'], methods: GET_POST }, // never reserves
+  // Buying online is a module (v1.5): a brand selling by invoice alone has no bag to post to and
+  // no checkout, so neither area answers there (D50) — its pay links, orders and lookups do.
+  cart: { auth: ['public'], methods: GET_POST, module: 'purchase.checkout' }, // never reserves
   // A checkout id is bound to the cart cookie or the session: on its own it opens nothing.
-  checkout: { auth: ['public', 'customer'], methods: POST },
+  checkout: { auth: ['public', 'customer'], methods: POST, module: 'purchase.checkout' },
   // Its scope — a checkout, a pay link, an order's access — is a credential: body only.
   payments: { auth: ['public', 'customer', 'token'], methods: POST },
   // No C6 operation: `ORDER_ACCESS.link`, and `documents/{kind}?number=…` (PDFs).
@@ -36,8 +38,9 @@ export const COMMERCE_AREAS = {
   'price-requests': { auth: ['public'], methods: POST, module: 'purchase.requestPrice' },
   enquiries: { auth: ['public'], methods: POST }, // every topic, framing included
   consignments: { auth: ['public', 'customer'], methods: POST, module: 'services.consignment' },
-  // `appointment.change` by the session and the viewing's id, or by its confirmation's token. No
-  // C6 operation: `ics?appointment=<id>` (GET), a signed-in booker's own viewing as an `.ics`, by
+  // `appointment.change` by the session and the viewing's id, or by its confirmation's token
+  // (`APPOINTMENT_ACCESS`'s cookie). No C6 operation: `APPOINTMENT_ACCESS.link`, and
+  // `ics?appointment=<id>` (GET), a signed-in booker's own viewing as an `.ics`, by
   // session — never by a token, which no calendar URL carries: a guest's confirmation attaches its.
   appointments: {
     auth: ['public', 'customer', 'token'],
@@ -149,6 +152,21 @@ export function commerceUrl(operation: CommerceOperation): string {
 export const ORDER_ACCESS = {
   cookie: 'order_access',
   link: '/api/x/commerce/orders/access',
+} as const
+
+/**
+ * A booker's viewing without a session (C6 `AppointmentAccess` `token`; v1.5) — at launch every
+ * booker's, since the gallery signs no one in (D54). Its confirmation and reminder carry
+ * `link?token=…`, the appointment's derived capability link (C6 `links`, purpose `appointment`),
+ * which stores it in `cookie` (HttpOnly, Secure, SameSite=Lax, Path=/, living as long as the
+ * token's window) and answers 303 to the clean `appointment` form page (C10 `form`), which shows
+ * that viewing with its reschedule and cancel buttons, each a POST: following the link changes
+ * nothing. A handler logs the link's path without `?token=`, and a write the cookie authenticates
+ * is refused from another origin.
+ */
+export const APPOINTMENT_ACCESS = {
+  cookie: 'appointment_access',
+  link: '/api/x/commerce/appointments/access',
 } as const
 
 /**

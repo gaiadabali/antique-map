@@ -5,7 +5,7 @@
  * its URL, essay and images stay live. Nothing is ever defaulted into exportability.
  */
 import type { ItemVM } from '../surfaces/item'
-import { enquire, originalItem, whatsapp } from './_item'
+import { enquire, originalItem, reply, whatsapp } from './_item'
 
 export const itemEnquiryOnly: ItemVM = originalItem({
   kind: 'enquiryOnly',
@@ -15,5 +15,6 @@ export const itemEnquiryOnly: ItemVM = originalItem({
     primary: enquire,
     secondary: [whatsapp, { action: 'viewing', href: '/book-a-visit?item=1001' }],
   },
+  reply,
   analytics: { priceBand: 'none', status: 'available' },
 })

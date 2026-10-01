@@ -36,7 +36,9 @@ export const ORDER_STATUSES = [
 export type OrderStatus = (typeof ORDER_STATUSES)[number]
 
 export const ORDER_TRANSITIONS = [
-  // Checkout reaches payment: snapshots written, the checkout lock already taken by reserve().
+  // Checkout reaches payment: snapshots written, the checkout lock already taken by reserve() —
+  // or staff issue an invoice (D50, v1.5): the order exists from issue, its `invoice` holds
+  // taken by reserve() until the due date; unpaid by then it lapses (`payment-lapsed`).
   {
     from: [null],
     event: 'reach-payment',

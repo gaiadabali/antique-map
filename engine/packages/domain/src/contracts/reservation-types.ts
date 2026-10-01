@@ -76,7 +76,10 @@ type TargetAndQuantity =
 type ReserveInputOf<K extends ReservationKind> = {
   readonly kind: K
   readonly owner: ReservationOwnerByKind[K]
-  /** The kind's TTL from brand config (`commerce.ttl`), never beyond its maximum. */
+  /**
+   * The kind's TTL from brand config (`commerce.ttl`), never beyond its maximum — and an
+   * `invoice` hold's, the time to the due date the issuing staff set (D45, v1.5).
+   */
   readonly ttl: Duration
   /**
    * The same buyer's live reservation of this target that this one replaces: a hold, an offer

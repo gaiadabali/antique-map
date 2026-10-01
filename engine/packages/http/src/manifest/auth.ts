@@ -13,10 +13,14 @@
  *   does a reinstated one's: approving an `ended` partner sends a new one (C8). A reset
  *   request sends a link only to an account that may sign in: a reset link where it has a
  *   password; approval's link again to an approved retailer without one yet; a claim link to a
- *   migrated buyer (MIGRATION.md §5). An applicant, a declined or an ended retailer never gets
- *   one, so no one reaches trade terms around staff.
+ *   migrated buyer only where `accounts.buyers` is on (none at launch: the gallery's old customers
+ *   are staff-side records with no claim, D54, MIGRATION.md §5). An applicant, a declined or an
+ *   ended retailer never gets one, so no one reaches trade terms around staff.
  * - no shopper sign-up where it is not a module: `auth.register` and `auth.verifyEmail` answer
  *   404 without `accounts.buyers`, so a shop whose accounts are its partners' has none (D31).
+ * - no auth at all on a brand with neither `accounts.buyers` nor `accounts.retailers` — the
+ *   gallery, which signs no one in (D54): every operation answers 404, as an unbuilt surface does
+ *   (C10 `hasSurface()`'s `account`, open while either account module is) (v1.5).
  */
 import { GET_POST, type RouteAuth, type SubRoute } from './types'
 

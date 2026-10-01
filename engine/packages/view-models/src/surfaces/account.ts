@@ -8,8 +8,9 @@
  * (`./account-entry`). Customers are never staff (ARCHITECTURE.md §12): their session has its
  * own cookie. Who may hold an account is the brand's modules (C1): buyers (`accounts.buyers`)
  * and partners by application (`accounts.retailers`); a shop with only the second offers no
- * shopper sign-up anywhere (D31), and only its approved partners sign in (D34). Private, per
- * request, never cached.
+ * shopper sign-up anywhere (D31), and only its approved partners sign in (D34). At launch that
+ * shop is the only brand with accounts: the gallery has none (D54, v1.5), so a buyer's area is
+ * built by no app yet. Private, per request, never cached.
  */
 import type { AccountSection } from '@engine/config/routes'
 import type { LocaleCode } from '@engine/config/schema'
@@ -51,12 +52,23 @@ export type ProfileVM = {
   locale: LocaleCode
   /** The market the buyer prefers when no ship-to cookie says otherwise. */
   market: MarketVM | null
+  /**
+   * What the buyer says they are, for staff's context alone — it grants nothing (v1.5). `trade`
+   * is a dealer or designer buying for clients at the gallery, **never a D36 partner**: a partner
+   * is an approved retailer account (`accounts.retailers`, the shop's), whose trade terms come
+   * from its approval and tier (C5 `TradeTermsResolution`), never from this field.
+   */
   type: 'collector' | 'institution' | 'trade' | 'retail'
   organisation: string | null
   taxId: string | null
 }
 
-/** Consent per purpose, with when it was given and under which policy (COMPLIANCE.md §7). */
+/**
+ * Consent per purpose, with when it was given and under which policy (COMPLIANCE.md §7).
+ * `analytics` governs only the persistent first-party anonymous id that links one visitor's
+ * visits: the cookieless beacon counts every visit without it, so the owner's own analytics
+ * (G12) need no consent to count, and none of it is sent to a third party (ANALYTICS.md §1, v1.5).
+ */
 export type ConsentVM = {
   purpose: 'marketingEmail' | 'marketingWhatsapp' | 'analytics'
   granted: boolean

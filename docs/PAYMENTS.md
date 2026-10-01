@@ -29,7 +29,11 @@ return, and no further.
    `window-too-short`; card and wallet methods that support it authorise first and
    **capture only while the reservation is live**; cash-at-retail is never offered
    for a unique item. No payment completes against an expired reservation
-   without going through rule 5.
+   without going through rule 5. Authorising first matters for a **checkout lock**,
+   which lasts minutes; a staff-sent link's lock lasts as long as the invoice hold it
+   supersedes — days, to the due date (D45) — so the gallery's card payments on its
+   own pay page capture at once, and Stripe Checkout Sessions, a Stripe-hosted page,
+   are not used (§5).
 5. **A payment that arrives late is never kept silently.** If the item is still
    available it is re-reserved and sold to that buyer; if not, it is refunded
    automatically — or its authorisation voided — and the buyer is told why, the
@@ -145,7 +149,9 @@ checkout → seller = routeSeller(stockLocations, destination)          (COMMERC
         → providers = seller.payments
         → options   = providers.flatMap(p => p.capabilities(ctx)?.methods)
                       .filter(amountCaps)            // QRIS ≤ IDR 10 m, e-wallet ≤ 20 m, retail ≤ 5 m …
-                      .filter(itemConstraints)       // price-on-request never; export-blocked items never;
+                      .filter(itemConstraints)       // a price-on-request item never from a list — a line
+                                                     // priced by an agreement (an invoice, a quote) is priced;
+                                                     // export-blocked items never;
                                                      // cash-at-retail never for a unique item
                       .filter(riskPolicy)            // cards above the seller's ceiling → bank transfer / invoice
                       .sort(seller.methodOrder)
@@ -252,12 +258,29 @@ them; only a throw answers 5xx, so the provider retries.
   an order status: the order stands, the evidence pack it already holds
   (condition report, photos, certificate, delivery signature) is attached, and the
   manager notified. A lost dispute is alerted like a refund at the provider.
-- **Payment links** serve accepted offers, staff holds, institutional invoices and
-  WhatsApp sales: `/pay/{token}` (C6 `payLink.get`, then `payLink.start`) shows the
-  seller, the amount, the expiry and the methods routing allows. An accepted
-  offer's link charges the agreed figure, stored in the charge currency at
-  acceptance with its FX snapshot — never a figure from the request. The hold is
-  sized to outlast the method the buyer picks (rule 4).
+- **Payment links** serve **the gallery's staff-issued invoices** — its one way to
+  sell an original (D50, COMMERCE.md §7) — institutional proformas, a partner's
+  accepted quote and WhatsApp sales (and accepted offers and staff holds, where a
+  brand takes them — none at launch): `/pay/{token}` (C6 `payLink.get`, then
+  `payLink.start`) shows the seller, the amount, the expiry and the methods routing
+  allows. An invoice's link charges its issued lines — the agreed figure, stored in
+  the charge currency when staff issue it (C5 `AgreedPrice`), with its FX snapshot
+  — never a figure from the request, and stays open until the invoice's due date,
+  when its hold ends (D45). Starting a payment supersedes that hold with the order's
+  checkout lock, lasting at least as long, so a declined card never costs the buyer
+  the piece; the method's session is sized to finish before it (rule 4).
+- **The pay page is ours, never the gateway's** (D51, the developer, 2026-10-01). A staff-sent
+  link opens the brand's own `/pay/{token}` page in the brand's design — for the
+  gallery, the invoice itself (COMMERCE.md §7) — with the gateway's embedded element
+  inside it (Stripe's Payment Element; Midtrans's for an IDR invoice) and bank transfer
+  as the other method. No Stripe Invoicing or Payment Links page, nor any other
+  provider-hosted invoice, is used: a buyer coming from a chat must land on a page that
+  looks like the seller and names it. The page's states are designed, not discovered:
+  **open** ("On hold until {due date}"), **bank transfer pending** (its instructions, and
+  that payment must be received and confirmed), **paid**, and **expired** or **voided**
+  (staff cancelled it) — the last two with the ways to reach the seller. Staff send the
+  link from the order builder on a phone, into the buyer's WhatsApp chat by a `wa.me`
+  share, or by email.
 
 ## 6. Providers per brand — the defaults
 
@@ -266,14 +289,25 @@ supports all of these; the table is what each brand's config starts with.
 
 | Seller | Providers (in order) | Charge currency | Notes |
 | ------ | -------------------- | --------------- | ----- |
-| **IG · Singapore** | `stripe` (cards, Apple/Google Pay, PayNow, iDEAL/SEPA) · `bank-transfer` (proforma, USD/EUR/SGD) · `paypal` (optional) | USD by default; EUR/SGD/AUD where priced | Stripe Invoicing / Payment Links for inquire → pay; above ~USD 5–10k steer to bank transfer |
-| **IG · Indonesia** (if Jakarta stock is sold domestically) | `midtrans` (Mandiri/BNI/BRI VA for high value, cards in IDR) · `bank-transfer` (IDR) | IDR only | |
-| **OEI · Indonesia** | `midtrans` (QRIS, GoPay, ShopeePay, OVO, DANA, VA, cards, Alfamart/Indomaret, Akulaku/Kredivo) · `bank-transfer` (trade/B2B) · `paypal` (international buyers, USD) | IDR for every price, total and card charge; PayPal alone in USD, converted from the rupiah total at the payment step (D47's default, below) | the showroom's QRIS on the same Midtrans account |
+| **IG · Singapore** | `stripe` (cards, Apple/Google Pay, PayNow, iDEAL/SEPA) · `bank-transfer` (invoice and proforma, USD/EUR/SGD) | USD by default; EUR/SGD/AUD where priced; IDR for an Indonesian delivery (D29) | every original is sold on a staff-issued invoice paid through its link (D50): the Payment Element embedded in the gallery's own `/pay/{token}` page — no Stripe-hosted invoice or payment link (§5) — and, above the card ceiling or for an institution, bank transfer against the invoice's PDF |
+| **IG · Indonesia** (if Jakarta stock is sold domestically, D1) | `midtrans` (Mandiri/BNI/BRI VA for high value, cards in IDR) · `bank-transfer` (IDR) | IDR only | the same invoice and link, in rupiah; until the Indonesian seller has a Midtrans account (D3), bank transfer alone |
+| **OEI · Indonesia** | `midtrans` (QRIS, GoPay, ShopeePay, OVO, DANA, VA, cards — foreign cards charged in IDR —, Alfamart/Indomaret, Akulaku/Kredivo) · `bank-transfer` (trade/B2B) | IDR for every price, total and charge | the showroom's QRIS on the same Midtrans account; no `paypal` at launch (below) |
 | **OEI · Singapore** (optional, v2) | `stripe` | buyer currency | international orders fulfilled by print-on-demand abroad; export markets then get price lists of their own |
 
-**The shop's buyer abroad, at launch — D47's default** (COMMERCE.md §3). The
-Indonesian PT prices and charges in rupiah (`charge: ["IDR"]`), for Indonesian and
-export destinations alike:
+**PayPal at launch: no** (decided 2026-10-01, TASKS.md 6.4). The shop sells within
+Indonesia only at launch (S3), so every order it takes is delivered in Indonesia — a
+domestic transaction the rupiah rule requires to be priced and paid in rupiah
+(COMPLIANCE.md §1 #2) — and PayPal cannot charge rupiah at all. PayPal was in the
+shop's config for buyers abroad alone; with none at launch it could only offer an
+Indonesian buyer a dollar charge the law forbids, while Midtrans already takes every
+Indonesian method and a visitor's foreign card in rupiah. The gallery never listed it:
+Stripe and bank transfer pay its invoices. So no seller lists `paypal` at launch, and
+its adapter (TASKS.md 25.2) is built with the shop's export, below — the engine keeps
+the provider id and the contract (C1, C7).
+
+**The shop's buyer abroad — D47's design, off at launch** (COMMERCE.md §3). When the
+owner opens export, the Indonesian PT prices and charges in rupiah (`charge:
+["IDR"]`), for Indonesian and export destinations alike:
 
 | What the buyer sees | Exact or "≈" | Where it comes from |
 | ------------------- | ------------ | ------------------- |
@@ -287,9 +321,9 @@ total once when it starts the attempt, and the attempt's `charge` is that dollar
 figure while the order stays in rupiah. A refund of it is the refunded rupiah at
 the attempt's own rate, never the day's, and never above what the attempt took.
 Which methods a buyer abroad is offered is routing's (§3); the card and PayPal are
-the two these defaults expect. That the PT may take US dollars through PayPal for
+the two this design expects. That the PT may take US dollars through PayPal for
 an export sale, and whether PayPal's conversion carries a buffer, are the adviser's
-and the owner's to confirm (D2, D47).
+and the owner's to confirm (D2) when export opens.
 
 **Fees at the time of research** (for the config's method ordering, not for
 display): Midtrans cards 2.9% + IDR 2,000, VA IDR 4,000, QRIS 0.7%,
@@ -304,8 +338,9 @@ default.
 
 The Commerce stage ships the contract, `manual` and `bank-transfer`, the routing, the
 webhook pipeline, reconciliation and **one real adapter in sandbox** (Midtrans,
-because OEI launches on it). The Integrations stage adds Stripe, PayPal and, only if chosen,
-Xendit or DOKU. Every adapter passes the **shared contract suite**
+because OEI launches on it). The Integrations stage adds Stripe (the gallery's
+invoices) and, only if chosen, Xendit or DOKU; PayPal waits for the shop's export
+(§6). Every adapter passes the **shared contract suite**
 (`tests/contract/payments/*`) against recorded sandbox fixtures, including
 signature failure, duplicate delivery, out-of-order delivery and refund
 idempotency — and the cases the money path depends on:
@@ -313,8 +348,9 @@ idempotency — and the cases the money path depends on:
 - **apply throws after the dedupe insert → the provider's retry is applied once**;
 - **`pending` then `settlement` for one Midtrans order → paid** (the two
   notifications must not dedupe each other);
-- **a Stripe Checkout session is created with `expires_at` ≥ 30 minutes** and the
-  reservation is extended to match;
+- **a session is never cut below its provider's floor** (`minSessionTtl` — Stripe
+  Checkout's 30 minutes, for a brand that uses a hosted session; none does at launch,
+  §5) and the reservation is extended to match;
 - **a payment after the item sold elsewhere → automatic refund or voided
   authorisation**, and the buyer is told — also when the lock lapsed and no sweep
   had yet abandoned the order;

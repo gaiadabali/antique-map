@@ -206,6 +206,8 @@ describe('C10 — the account area is on while either account module is (3.4.f)'
       'newsletterArchive',
       'story',
       'catalogue',
+      'cart',
+      'checkout',
       'quote',
       'partnership',
       'wishlist',
@@ -215,5 +217,12 @@ describe('C10 — the account area is on while either account module is (3.4.f)'
       expect(hasSurface(modules(), surface), surface).toBe(!gated.has(surface))
     }
     expect(hasSurface(modules('content.journal'), 'story')).toBe(true)
+    // v1.5 (D50): the bag and checkout are a brand's that buys online; a gallery selling by
+    // invoice alone has neither, and its pay links, orders and order lookup stay open.
+    expect(hasSurface(modules('purchase.checkout'), 'cart')).toBe(true)
+    expect(hasSurface(modules('purchase.checkout'), 'checkout')).toBe(true)
+    for (const open of ['pay', 'order', 'orderLookup'] as const) {
+      expect(hasSurface(modules(), open), open).toBe(true)
+    }
   })
 })

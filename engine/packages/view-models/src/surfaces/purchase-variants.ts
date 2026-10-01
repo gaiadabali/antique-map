@@ -36,7 +36,12 @@ export type ConfiguratorRuleVM = {
   reason: MessageVM
 }
 
-/** Stock as the data states it — "Only 2 left" only when there are two (DESIGN-SYSTEM.md §10). */
+/**
+ * Stock as the data states it — "Only 2 left" only when there are two (DESIGN-SYSTEM.md §10). A
+ * shop selling from one stock pool at one location answers `inStock` or `soldOut`; `inShowroom`
+ * waits for stock kept in more than one place, and `madeToOrder` for a product made to order —
+ * neither at the shop's launch (S7; COMMERCE.md §4, v1.5).
+ */
 export type VariantStockVM =
   | { kind: 'inShowroom'; count: number | null }
   | { kind: 'inStock'; lowCount: number | null }
@@ -54,13 +59,20 @@ export type SelectedVariantVM = {
 
 /** The promise for this ship-to destination, read against the holiday calendar. */
 export type DeliveryPromiseVM = {
-  /** "Ready at the showroom in 2 hours" · "Made to order, ships in 3–5 days"… */
+  /**
+   * Codes the app words at `message.<code>`: `readyAtShowroom` `{hours}` · `packedWithin` `{days}`
+   * · `madeToOrder` `{min, max}` — not at the shop's launch, which promises from stock (S7).
+   */
   lines: readonly MessageVM[]
   /** For the saved district, so a shipping cost is never first seen at checkout. */
   shippingEstimate: PriceVM | null
   duties: { kind: 'included' } | { kind: 'estimated'; amount: PriceVM } | null
-  /** Nyepi, Lebaran: a closure that moves the promise. */
-  holiday: MessageVM | null
+  /**
+   * Nyepi, Lebaran: a closure that moves the promise — `message.holidayDelay`, "{holiday} may
+   * slow delivery around {date}": `holiday` the holiday calendar's name for it in the page's
+   * locale, `date` the day formatted by `formatCalendarDate` (v1.5, TASKS.md 6.4.d).
+   */
+  holiday: MessageVM<'holidayDelay'> | null
 }
 
 /** Layers composited in the browser (DESIGN-SYSTEM.md §7) — never the scan redrawn on a canvas. */

@@ -2,9 +2,12 @@
  * @contract C2 — fixtures `shell` and `shell-shop` · owner: ARC
  * The root layout for a fictional gallery brand: runtime identity, assets, validated token
  * overrides, analytics ids (loaded only after consent), the ship-to selector, the sister strip.
- * And the shop's: shoppers buy as guests, so no account entry — Partnership is the way in (D31,
- * D36) — and their saved items live on the device, behind the header's heart (D35). Every asset is
- * at its versioned URL (C13 `BRAND_ASSET_URL`); the shop ships no touch icon yet, so it links none.
+ * Since v1.5 it has no bag (D50: `purchase.checkout` off) and no account entry (D54: no one signs
+ * in), its saved items live on the device (D35), and its phone is shown for Call. And the shop's:
+ * shoppers buy as guests, so no account entry — Partnership is the way in (D31, D36) — and their
+ * saved items live on the device, behind the header's heart (D35); its ship-to lists Indonesia
+ * alone (S3). Every asset is at its versioned URL (C13 `BRAND_ASSET_URL`); the shop ships no touch
+ * icon yet, so it links none.
  */
 import type { ShellVM } from '../shell'
 import { ORIGIN, SELLER_ID, SELLER_SG, SISTER_ORIGIN, streamed } from './_shared'
@@ -32,10 +35,11 @@ export const shell: ShellVM = {
   },
   tokens: { '--c-accent': '#8a5a1f' },
   modules: [
-    'accounts.buyers',
     'catalogue.unique',
-    'purchase.offers',
-    'retention.wishlist',
+    'purchase.requestPrice',
+    'purchase.invoices',
+    'retention.deviceWishlist',
+    'retention.emailWantList',
     'sister.links',
   ],
   nav: {
@@ -57,11 +61,11 @@ export const shell: ShellVM = {
   contact: {
     email: 'desk@gallery.example.test',
     whatsapp: {
-      href: 'https://wa.me/6281200000000',
-      display: '+62 812 0000 0000',
-      replyHours: '09–21 WITA',
+      href: 'https://wa.me/6560000000',
+      display: '+65 6000 0000',
+      replyHours: null,
     },
-    phone: null,
+    phone: '+65 6000 0000',
   },
   social: [{ network: 'instagram', href: 'https://instagram.example/fixture' }],
   sellers: [SELLER_SG, SELLER_ID],
@@ -76,9 +80,9 @@ export const shell: ShellVM = {
       { country: 'NL', currency: 'EUR' },
     ],
   }),
-  cart: streamed({ count: 1 }),
-  wishlist: streamed({ count: 2, href: '/account/wishlist' }),
-  account: streamed({ audience: 'buyer', signedIn: false, firstName: null, href: '/account' }),
+  cart: streamed(null),
+  wishlist: streamed({ count: 2, href: '/wishlist' }),
+  account: streamed(null),
   consent: streamed({ policyVersion: '2026-09', choice: null }),
   languageSuggestion: streamed({ locale: 'id' }),
 }
@@ -103,11 +107,21 @@ export const shellShop: ShellVM = {
     footer: [],
   },
   sister: { name: 'Fixture Gallery', href: ORIGIN, role: 'archive-origin' },
+  contact: {
+    email: 'halo@emporium.example.test',
+    whatsapp: {
+      href: 'https://wa.me/6281200000000',
+      display: '+62 812 0000 0000',
+      replyHours: null,
+    },
+    phone: null,
+  },
   shipTo: streamed({
     country: 'ID',
     currency: 'IDR',
     options: [{ country: 'ID', currency: 'IDR' }],
   }),
+  cart: streamed({ count: 1 }),
   wishlist: streamed({ count: 2, href: '/wishlist' }),
   account: streamed(null),
 }
