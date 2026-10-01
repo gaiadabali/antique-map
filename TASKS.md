@@ -8,7 +8,7 @@
 - **Many agents at once, inside a bound.** At most **three phases are open at once**; inside a phase each wave's tasks run in parallel, one agent each, in its own worktree, on paths nobody else in that wave owns.
 - **Every task ends in a Check** — the evidence that it works — and the progress table counts ticked subtasks, so a phase only moves the bar as its steps are proven.
 
-Written 2026-09-25 from the reviewed plan (a UX review and an architecture review, both applied); **replanned 2026-09-28** from 14 large phases, whose waves ran across each other, into 44 small ones (the id mapping is in the Log). Every task lists the requirements it satisfies ([requirements.md](.claude/specs/indies-platform/requirements.md), 161 criteria).
+Written 2026-09-25 from the reviewed plan (a UX review and an architecture review, both applied); **replanned 2026-09-28** from 14 large phases, whose waves ran across each other, into 44 small ones (the id mapping is in the Log). Every task lists the requirements it satisfies ([requirements.md](.claude/specs/indies-platform/requirements.md), 179 criteria).
 
 ## Progress
 
@@ -22,7 +22,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 29/29 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 21/34 | 1 | `██████░░░░`  62% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/7 | 22/51 | 1 | `████░░░░░░`  43% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 17/31 | 1 | `██████░░░░`  55% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
@@ -33,35 +33,35 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
 | **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
-| **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
-| **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | · not started | 0/4 | 0/24 | 1 | `░░░░░░░░░░`   0% |
-| **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
-| **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/2 | 0/12 | 1 | `░░░░░░░░░░`   0% |
+| **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | · not started | 0/4 | 0/23 | 1 | `░░░░░░░░░░`   0% |
+| **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | · not started | 0/6 | 0/27 | 0 | `░░░░░░░░░░`   0% |
+| **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | · not started | 0/3 | 0/17 | 1 | `░░░░░░░░░░`   0% |
 | **22** App foundations and surfaces from fixtures | Design systems | 3, 5, 11, 14 | · not started | 0/7 | 0/38 | 1 | `░░░░░░░░░░`   0% |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | · not started | 0/6 | 0/28 | 2 | `░░░░░░░░░░`   0% |
-| **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
-| **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/3 | 0/13 | 2 | `░░░░░░░░░░`   0% |
-| **26** Couriers and the fulfilment router 👤 | Integrations | 15, 20 | · not started | 0/3 | 0/12 | 2 | `░░░░░░░░░░`   0% |
+| **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | · not started | 0/5 | 0/25 | 0 | `░░░░░░░░░░`   0% |
+| **25** Payment adapters 👤 | Integrations | 19 | · not started | 0/2 | 0/9 | 2 | `░░░░░░░░░░`   0% |
+| **26** Couriers and the fulfilment router 👤 | Integrations | 15, 20 | · not started | 0/3 | 0/11 | 2 | `░░░░░░░░░░`   0% |
 | **27** Sister sync, WhatsApp and the integrations gate 👤 | Integrations | 25, 26 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
-| **28** Accounts, consent and data-subject operations | Accounts | 17, 22 | · not started | 0/5 | 0/22 | 0 | `░░░░░░░░░░`   0% |
+| **28** Accounts, consent and data-subject operations | Accounts | 17, 22 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **29** Alerts, newsletter, retention and the accounts gate | Accounts | 16, 20, 28 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **30** Shop: loaders, home and collections, the product page and the configurator | Shop | 16, 21, 22 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
-| **31** Shop: stories, the bag and checkout, order tracking | Shop | 21, 22 | · not started | 0/3 | 0/15 | 0 | `░░░░░░░░░░`   0% |
+| **31** Shop: stories, the bag and checkout, order tracking | Shop | 21, 22 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **32** Shop: polish, buyers and the shop gate 👤 | Shop | 30, 31 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
-| **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | · not started | 0/3 | 0/15 | 1 | `░░░░░░░░░░`   0% |
+| **34** Gallery: the purchase panel, forms and the pay page | Gallery | 33, 25 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
-| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/18 | 6 | `░░░░░░░░░░`   0% |
+| **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | · not started | 0/4 | 0/19 | 6 | `░░░░░░░░░░`   0% |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
-| **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | · not started | 0/4 | 0/15 | 0 | `░░░░░░░░░░`   0% |
+| **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | · not started | 0/3 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **32/180** | **216/872** | **46** | `███░░░░░░░`  25% |
+| **All** | 44 phases | | | **32/185** | **217/898** | **45** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -105,7 +105,7 @@ A phase opens when every phase in its **Needs** column is ✅, lowest number fir
 | **3** Config spine and Payload boot | Foundation | 2 | 2 | 2 | ~1d |  |
 | **4** App shells and the Cache Components spike | Foundation | 3 | 3 | 8 | ~2.5d |  |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | 3 | 4 | ~2d | **M0** |
-| **6** Briefs, image direction and voice | Design | 4 | 2 | 4 | ~3d |  |
+| **6** Briefs, image direction and voice | Design | 4 | 3 | 7 | ~3d |  |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 2 | 3 | ~2d |  |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 2 | 3 | ~2d |  |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | 2 | 4 | ~3d |  |
@@ -119,27 +119,27 @@ A phase opens when every phase in its **Needs** column is ✅, lowest number fir
 | **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | 3 | 4 | ~2.5d |  |
 | **18** Reservations, state machines and the cart | Commerce | 17 | 1 | 3 | ~2d |  |
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | 3 | 4 | ~3d |  |
-| **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | 1 | 5 | ~3d |  |
-| **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | 2 | 2 | ~1.5d | **M2** |
+| **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | 2 | 6 | ~3d |  |
+| **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | 2 | 3 | ~1.5d | **M2** |
 | **22** App foundations and surfaces from fixtures | Design systems | 5, 11, 14 | 3 | 6 | ~5d | **M1** |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | 3 | 6 | ~4.5d |  |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | 1 | 5 | ~3.5d |  |
-| **25** Payment adapters 👤 | Integrations | 19 | 1 | 3 | ~3.5d |  |
+| **25** Payment adapters 👤 | Integrations | 19 | 1 | 2 | ~3.5d |  |
 | **26** Couriers and the fulfilment router 👤 | Integrations | 15, 20 | 1 | 3 | ~3d |  |
 | **27** Sister sync, WhatsApp and the integrations gate 👤 | Integrations | 25, 26 | 2 | 3 | ~3d |  |
 | **28** Accounts, consent and data-subject operations | Accounts | 17, 22 | 2 | 4 | ~3d |  |
 | **29** Alerts, newsletter, retention and the accounts gate | Accounts | 16, 20, 28 | 2 | 4 | ~3d |  |
 | **30** Shop: loaders, home and collections, the product page and the configurator | Shop | 16, 21, 22 | 1 | 4 | ~4.5d |  |
-| **31** Shop: stories, the bag and checkout, order tracking | Shop | 21, 22 | 2 | 3 | ~3.5d |  |
+| **31** Shop: stories, the bag and checkout, order tracking | Shop | 21, 22 | 2 | 4 | ~3.5d |  |
 | **32** Shop: polish, buyers and the shop gate 👤 | Shop | 30, 31 | 3 | 3 | ~3.5d |  |
 | **33** Gallery: loaders, browse, the item page and editorial | Gallery | 16, 21, 22 | 1 | 4 | ~5d |  |
-| **34** Gallery: the purchase panel, forms and checkout | Gallery | 33 | 1 | 3 | ~3.5d |  |
+| **34** Gallery: the purchase panel, forms and the pay page | Gallery | 33, 25 | 1 | 4 | ~3.5d |  |
 | **35** Gallery: polish, buyers and the gallery gate 👤 | Gallery | 34 | 3 | 3 | ~3.5d |  |
 | **36** Mapping, the loader, the item register and redirects 👤 | Migration | 4, 7, 10, 15 | 2 | 4 | ~2.5d |  |
 | **37** Verification, the staging rehearsal and the migration gate 👤 | Migration | 5, 36 | 3 | 3 | ~2d |  |
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | 3 | 3 | ~2d |  |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | 2 | 4 | ~2.5d |  |
-| **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | 3 | 4 | ~2.5d |  |
+| **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | 3 | 3 | ~2.5d |  |
 | **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | 1 | 2 | ~1.5d |  |
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | 2 | 8 | ~4d | **M3** |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | 2 | 8 | ~4d | **M4** |
@@ -175,8 +175,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | # | Decision | Default until answered | Who answers | Needed by |
 | --- | --- | --- | --- | --- |
 | **D1** | Selling entities: is Indies Gallery a Singapore company, an Indonesian PT, or both? Where is its stock physically? | one Singapore seller for Singapore stock and export + one Indonesian seller for Jakarta stock sold domestically (COMPLIANCE.md §2) | legal/tax adviser | 17.3 (draft values until then); real values before 42.8 |
-| **D2** | Old East Indies' entity; a Singapore seller for export later? | Indonesian PT only at launch; export charged in IDR by card, or PayPal in USD | owner + adviser | 19.3, 42.8 |
-| **D3** | Gateways | IG: Stripe SG + bank transfer; OEI: Midtrans + PayPal | merchant accounts + sandbox keys | 19.3, 25.1, 25.2, 25.3 |
+| **D2** | Old East Indies' entity; a Singapore seller for export later? | Indonesian PT only at launch, delivering within Indonesia (S3); export — charged in IDR by card, or PayPal in USD — waits for v2.20 | owner + adviser | 19.3, 42.8 |
+| **D3** | Gateways | IG: Stripe SG + bank transfer; OEI: Midtrans (PayPal with the shop's export, v2.20 — 25.2 ✂️) | merchant accounts + sandbox keys | 19.3, 25.1, 25.3 |
 | **D4** | PKP / GST registration status of each seller | PPN not charged by OEI until registration is confirmed; IG GST off | accountant | 17.4, 42.3, 43.3 |
 | **D5** | Export clearance for items held in Jakarta | every Jakarta item `domestic-only` until a written determination exists | lawyer / customs broker | 17.3 |
 | **D6** | **Hofker rights** for the Bali Hotel line | line built but **not published** until confirmed | estate / licence | 12.2 (no direction may depend on it), 42.8 (publish the line or not) |
@@ -187,7 +187,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D11** | Returns policy text per seller | none published until drafted — the engine supports returns on every line | counsel | 20.4, 42.3, 43.3 |
 | **D13** | Transactional email for each brand's domain **in production** (staging answered: mocked — see Answered) | the brand's Google Workspace SMTP with SPF/DKIM/DMARC; a transactional provider if it has none | owner (DNS) | 20.3 |
 | **D14** | WhatsApp notifications provider — **needed before phase 27 opens**, because viewing reminders, payment instructions and order updates are promised on WhatsApp | if unanswered by then: click-to-chat only, every notification goes by email, and no copy promises a WhatsApp message | owner | 27.2 — before phase 27 opens |
-| **D15** | Legacy passwords | no import; "claim your account" email (bcrypt rehash-on-login is a one-day option) | owner | 28.1, 36.3 |
+| **D15** | Legacy passwords | no import, and no claim flow: the gallery has no accounts (D54), so the old customers become staff-side records (36.3) | owner | 36.3 |
 | **D16** | AI cataloguing model provider | a production model behind the `ai.cataloguing` flag, human-verified; Ollama Cloud for development only (not a production dependency) | owner | 23.5 |
 | **D17** | Staging tier after launch | staging stays on Helios `.gaiada.com`; Delphi `staging` branch only if wanted | owner | 44.2 |
 | **D18** | Default locale per brand (served unprefixed) | English for both; Indonesian at `/id/…` | owner | 3.1 |
@@ -200,7 +200,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **D28** | Newsletter sender | a bulk-sending provider for the newsletter and alerts (Workspace SMTP caps daily sends and would put transactional mail at risk); transactional mail stays per D13 | owner (account) | 29.2 |
 | **D29** | The Singapore seller selling Singapore-held stock to an Indonesian address | priced and charged in **IDR** (the rupiah rule governs what the buyer sees), card or bank transfer, import duties the buyer's (DAP) | tax adviser | 17.3, 25.1 |
 | **D46** | Who produces the configurator's room plates (6.2.c: six master plates) | a freelance 3D artist renders them to `docs/design/imagery/room-scenes.md`; no AI-generated or stock interiors | owner (budget) | 22.7 |
-| **D48** | Payment and courier providers before the client hands over sandbox accounts (OA14) | **simulated**: `<PREFIX>_MODE=simulate` on staging and local — no credential read, the boot report warns, production refuses it; each adapter (19.3, 25.x, 26.x) ships a simulator for that mode, and the real sandbox keys replace the `simulate` line when they arrive (owner, 2026-10-01; DEPLOYMENT.md §8) | owner | 19.3, 25.1–25.3, 26.1–26.2 |
+| **D48** | Payment and courier providers before the client hands over sandbox accounts (OA14) | **simulated**: `<PREFIX>_MODE=simulate` on staging and local — no credential read, the boot report warns, production refuses it; each adapter (19.3, 25.x, 26.x) ships a simulator for that mode, and the real sandbox keys replace the `simulate` line when they arrive (owner, 2026-10-01; DEPLOYMENT.md §8) | owner | 19.3, 25.1, 25.3, 26.1–26.2 |
 
 ### Owner actions (not questions)
 
@@ -219,9 +219,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **OA11** | A Search Console export for `oldeastindies.com` | 36.2.c (7.3.a simulated, D53) |
 | **OA12** | The curator's review of the maker clusters and the category → facet mapping (about an hour) | 36.1 |
 | **OA13** | Two observation sessions (a cataloguer, the shop manager), and the same people for the timed tests | 23.1.a, 38.2 |
-| **OA14** | Sandbox accounts: Midtrans, Stripe Singapore, PayPal, Biteship, DHL Express (D3) | 19.3, 25.1, 25.2, 26.1, 26.2 |
+| **OA14** | Sandbox accounts: Midtrans, Stripe Singapore, Biteship, DHL Express (D3) — PayPal's waits for the shop's export (v2.20) | 19.3, 25.1, 26.1, 26.2 |
 | **OA15** | A WhatsApp Business account and provider (D14) | 27.2 |
-| **OA16** | Merchant Center and Meta Commerce Manager access for each brand | 39.4 |
+| **OA16** | Merchant Center and Meta Commerce Manager access for the shop — the gallery has no shopping feed (D50) | 39.4 |
 | **OA17** | Counsel's bilingual legal pages per seller; breach-response contacts; the data-protection-officer decision | 42.3.b |
 | **OA18** | Go-aheads on Helios for the staging import, the gallery's dark production import and production provisioning | 37.2, 42.7, 41.2 |
 | **OA19** | At launch: live payment and courier credentials; pointing `oldeastindies.com`, then `antiquemapsindonesia.com` and `indiesgallery.com`, at the new sites | 42.8, 43.8 |
@@ -661,7 +661,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 
 **Goal:** what each brand is for and who it serves, the photography it will stand on, and how it speaks in both languages.
 **Done when:** the product briefs and the 6.1.c journeys are written and approved; the capture standards exist and the owner's pilot set is delivered (D19); each brand has a native-reviewed EN/ID voice and lexicon.
-**Waves:** W1 — 6.1, 6.2, 6.3 · W2 — 6.4
+**Waves:** W1 — 6.1, 6.2, 6.3 · W2 — 6.4 · W3 — 6.5, 6.6, 6.7
 
 **Why the Design stage is long.** A research recommendation is the category default —
 "Print Room" is what a premium dealer site already looks like; a Deco travel
@@ -697,7 +697,7 @@ run beside the build line rather than in it.
   - [ ] 6.2.f fill the pilot request's four placeholders (`{owner's name}`, `{our address}`, `{date}`, `{sender}`) in both the English and the Indonesian version, choose Bapak or Ibu, give the guides it attaches (gallery-guide, shop-guide, the shot lists, handover) Indonesian versions too, and send it with the guides (`docs/design/imagery/pilot-set-request.md`), after OA2's answers where they change it — the guides' Indonesian versions merged 2026-10-01 (19f69e6), "Bapak" chosen (121e784); the four placeholders and the send remain — ✂️ cut: no request is sent — the pilot set is existing photos (D19 updated 2026-10-01); the guides stay as the reference for new items
   - [ ] 6.2.g 👤 the native review (D20, OA4) of the seven guides' `.id.md` drafts, together with 6.1.e's — ✂️ cut: no native review (D20, 2026-10-01); the Indonesian stands as drafted
   - [x] 6.2.h align both versions of the pilot request with the guides — a colour card in every frame except transmitted light and life shots (one reference frame per scene), a reference frame per showroom room (intake-spec.md §6), the stock-number folder rule (handover.md §2–§3) — and add the `showroom_making` shots now that S14 is yes — merged 2026-10-01 (b7754af); the making happens in the Denpasar showroom (owner, 2026-10-01)
-  - [ ] 6.2.i video from the photo day (S14 says "film and photograph"): ARC decides in 6.4 whether video is accepted and whether C9 models it; then handover.md §1 and intake-spec.md §3 F1 follow
+  - [x] 6.2.i video from the photo day (S14 says "film and photograph"): ARC decides in 6.4 whether video is accepted and whether C9 models it; then handover.md §1 and intake-spec.md §3 F1 follow — answered by 6.4 (2026-10-01): no video at launch; video goes on YouTube or Vimeo and is embedded with the C4 block
   - [ ] 6.2.j ARC, from 6.2.b's Found: a legacy recto cropped inside the object has no measurable `objectBox` — write the fallback (the frame as a lower bound) into intake-spec §8, CONTENT-MODEL §2 `designs.printCeiling` and C9; intake-spec §8 "never rejected" becomes "never rejected for quality, still refused for honesty (H4)" (synthetic overviews in the archive); a role for a folding map's case and booklet; whether 6.12's launch set is per sheet or per work; C9 `IntakeEntry`'s comment no longer cites OA3; MIGRATION.md §1/§9's image figures to the measured archive (median 2706 px, not 3543)
   - [x] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the pilot set (existing photos) is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing. — evidenced 2026-10-01: both guides and the intake spec exist; the pilot set (existing photos, gallery) is checked image by image (`pilot-set/manifest.md`) and in the private masters bucket (local `archive-masters/pilot/`, 15/15 checksums); the shop's photos are a named, non-blocking gap; S14 folded in (6.2.h)
 
@@ -715,7 +715,7 @@ run beside the build line rather than in it.
   - [x] 6.3.h field labels and hints, keyed by each C2 `EntryFieldVM.name` (`form-fields.ts`): `contact.*`, `business.*` (the `business.shopType` select's own label), `institution.*`, `proposal`, `description`, `photos`, `neededBy`, `lines.0.quantity`, `consent.application`, the fieldset legends, and `fieldRequiredWhen` — merged (db741cb): `lexicon/fields.ts` in each app; hint `<name>Hint`, legend by group
   - [x] 6.3.i the lists the contracts define that are still unkeyed — `Colouring`, `PlaceRole`, `ProfileVM.type`, `ConsentVM.purpose` analytics, `AppointmentPurpose`, `LOCATION_IMAGE_AREAS`, the consignment upload roles, `DirectorySurface` titles, `CollectionVM.kind` — and the listing chrome (Filters, Sort by, Apply, Clear all, Show {count} results, min/max) — merged (db741cb): gallery 587 keys, shop 562; `pnpm verify` green on main
   - [x] 6.3.j HAR: `@engine/i18n/copy`'s `pluralFormOf` reads a code named `other` (`objectType.other`, `return.reason.other`, `business.shopType.other`) as a plural form, so a stray `objectType.one` would pass the gate; a planted one fails it — merged 2026-10-01 (25828e9): a plural set needs `base.other` with `{count}` and a sibling form; `plural-sets.test.ts` fails a planted `objectType.one`
-  - [ ] 6.3.k after 6.4: cut or reword the keys D50, S3, S7 and S12 leave unused (6.3.g–i's report lists them: offers, cart, reserve, checkout, holds, a shown price; `madeToOrder`, refunds, PayPal, the "≈" estimate), and key the fixture fields still unlabelled by name (`message`, `conditionNotes`, `locationId`, `slotStart`, `email`, `password`, `orderNumber`, `whatsapp`, `frequency`, `consent.alerts`) or have C2 map them
+  - [ ] 6.3.k after 6.4: cut or reword the keys D50, S3, S7, S10, S12 and D54 leave unused (6.3.g–i's report lists them: offers, cart, reserve, checkout, holds, a shown price; `madeToOrder`, refunds, PayPal, the "≈" estimate; and, from 6.4, gift cards and gift wrap, the gallery's account, sign-in and checkout keys), and key the fixture fields still unlabelled by name (`message`, `conditionNotes`, `locationId`, `slotStart`, `email`, `password`, `orderNumber`, `whatsapp`, `frequency`, `consent.alerts`) or have C2 map them
   - [x] 6.3.l re-pad the 166 older `test` values to +30% over the longest real brand value, not the app default, so an overflow test fails where a brand would overflow — merged 2026-10-01 (a2aaea7): 292 values (en 133, id 13, nl 146) → 0 short; the 12 shell keys (`shell.*`, `home.*`, `notFound.*`) left as they are, since padding would fill locale names and `{brand}`
   - [x] 6.3.m HAR: `check-brands` enforces the +30% rule, so each `test` lexicon value is at least ceil(1.3 ×) the longest real brand value for its key and locale (nl against the app default and the en values); a planted short value fails it — merged 2026-10-01 (1bfed8d): `overflow.mjs`, the test brand found by its per-storefront configs, the shell keys exempt; main passes (id 710, en 714, nl 575 values measured), a planted short value fails
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — owner answers from 6.1.b folded in.
@@ -733,6 +733,41 @@ run beside the build line rather than in it.
   - [ ] 6.4.g D51 and D52 (the developer's input, gaps A–C): the gallery's `/pay/{token}` invoice page on our site with the Payment Element embedded — PAYMENTS.md §6 drops "Stripe Invoicing / Payment Links"; the gallery-checkout leftovers in 25.1.b–c (authorise-then-capture, Checkout Sessions against a lock), 28.1.c and 28.2.b/d (cart merge, my offers, holds, price requests), 33.1 (cart, checkout and order-lookup loaders, viewer-relative purchase states, `hold`/`quote` actions) and 38.2.b ("an accepted offer" → "a WhatsApp-negotiated invoice → a working pay page"); the shop's one stock pool across COMMERCE.md §4 and §8, EXPERIENCE-SHOP.md and 24.4
   - [ ] 6.4.h D54 — no collector accounts on the gallery: requirements 13.1–13.2 and ARCHITECTURE.md §12 (customer auth for the shop's retailers only), EXPERIENCE-GALLERY.md §5, §8, §10 (no account area; the wishlist cut or browser-only; want-lists by email), COMMERCE.md and C6/C10 (no session-scoped `OfferAccess`/`AppointmentAccess` on the gallery; the viewing changed by its link), MIGRATION.md §5 and the redirect map (customers as staff-side records, no claim flow or 12-month purge of unclaimed accounts; `/account/*` answered, not mirrored); the board diff covers 28.1.b–c and 28.1.e (collectors, the claim flow, cart merge), 28.2 (the gallery half), 29, 33.3.d, 34.2.c and 36
   - [ ] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, a payment page hosted by the provider, several shop stock locations, a gallery sign-in or account, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report.
+
+- [ ] **6.5 Brand configs, app supports and their rules follow D50, D52, D54, S3, S7 and S10** · needs: 6.4
+  - **Lane** BRD + UXG + PLT · **Agent** medior · **Wave** W3
+  - **Owns** `indies-gallery/site/brand.config.json`, `old-east-indies/site/brand.config.json`, `test/site/brand.gallery.json`, `test/site/brand.emporium.json`, `engine/apps/gallery/src/supports.ts`, `engine/packages/config/src/validate/rules/**`, `engine/packages/config/src/validate/testing/fixtures.ts`
+  - **Read** 6.4's report (the board diff's 6.5), C1 v1.5's header (`engine/packages/config/src/schema.ts`), BRANDS.md §4–§6, EXPERIENCE-GALLERY.md (D50, D54), EXPERIENCE-SHOP.md §11
+  - _Requirements: 2.1, 2.2, 2.5, 6.13, 7.14, 13.8_
+  - [ ] 6.5.a The gallery's config: `commerce.uniquePrices: "on-request"`; one tier `{ "upTo": null, "primary": "whatsapp", "secondary": ["call", "requestPrice", "enquire", "viewing", "proforma"] }`; `ttl.invoiceHoldDays` 3 and `ttl.invoiceNoticeHours` 24 (D45); `purchase.offers`, `purchase.holds`, `accounts.buyers`, `retention.wishlist` and `retention.wantList` off, `retention.deviceWishlist` and `retention.emailWantList` on; `identity.contact.phone` set (6.1.i's number, a marked placeholder until then); routes with no `account` segment, a `wishlist` segment, and `/account/` in `legacyPrefixes` and `/account` in `legacyPaths` (36.4.e)
+  - [ ] 6.5.b The shop's config: `purchase.checkout: true`; its seller serving `["ID"]` and charging `["IDR"]`; payments `midtrans` and `bank-transfer`, no `paypal` in its providers or `methodOrder`; `inventoryModels` `["stocked", "service"]`; `commerce.giftCards` and gift wrap off (S10)
+  - [ ] 6.5.c The `test` brand: the emporium config adds `purchase.checkout: true`; the gallery config follows 6.5.a
+  - [ ] 6.5.d The gallery app's `supports.ts` refuses `accounts.buyers`, `retention.wishlist`, `retention.wantList`, `purchase.checkout`, `purchase.offers` and `purchase.holds`, its header saying why (D50, D54); the validation tests' stated supports (`C1_STATED_SUPPORTS`) follow
+  - [ ] 6.5.e PLT: the three rules C1 v1.5's header lists — `buy` only with `purchase.checkout`, `call` only with `identity.contact.phone`, `invoiceNoticeHours` below `invoiceHoldDays` in hours — each with a failing-config test
+  - [ ] 6.5.f **Check:** `validateBrandConfigs()` and `pnpm check:brands` pass for every brand; a gallery config with any refused module, or with `buy`, fails (tests); C10 `hasSurface` gives the gallery no cart, checkout or account area and the shop its cart (test); `check-generated` shows no drift.
+
+- [ ] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4
+  - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W3
+  - **Owns** `docs/design/journeys/**`, `engine/apps/gallery/PRODUCT.md`, `engine/apps/emporium/PRODUCT.md`, `PRODUCT.md`
+  - **Read** 6.4's report (Found 7), EXPERIENCE-GALLERY.md §5, §10 (D54), COMMERCE.md §4 (D52) and §7 (D51)
+  - _Requirements: 6.1, 7.1_
+  - [ ] 6.6.a J-G2: the institution's proforma is the invoice on the gallery's own pay page (D51), not the `Quote` surface — steps 4 and 6, its surfaces line and "Still open elsewhere"
+  - [ ] 6.6.b J-G3 and J-G7: the wishlist kept on the device (D54) — no buyer test account; the shortlist and the viewing's pull list from the device's list; J-G7's viewing changed by its confirmation's link
+  - [ ] 6.6.c J-S4 step 2 and its Read line: no "In the showroom now" badge (D52, one stock pool); J-G5's "separate account" wording
+  - [ ] 6.6.d Each PRODUCT.md and the journeys README's index: no gallery sign-in or account (D54); first-party analytics (D55) and no returns of originals, still for counsel (D56), wherever a brief states either
+  - [ ] 6.6.e **Check:** in the live gallery and shop journeys, a search finds no "Account ›", no gallery sign-in, no "In the showroom now" and no `Quote` surface outside an after-launch half, and each journey's success criteria still hold.
+
+- [ ] **6.7 The docs outside 6.4's Owns** · needs: 6.4
+  - **Lane** ARC · **Agent** architect · **Wave** W3
+  - **Owns** `docs/ARCHITECTURE.md`, `docs/MIGRATION.md`, `docs/BRANDS.md`, `docs/DESIGN-SYSTEM.md`, `docs/PLAN.md`, `docs/CONVENTIONS.md`
+  - **Read** 6.4's report (Found 1–6), TASKS.md Decisions D45 and D50–D56, `engine/packages/CONTRACTS.md` v1.5
+  - _Requirements: 6.1, 7.1_
+  - [ ] 6.7.a ARCHITECTURE.md §12: customer auth for the shop's approved retailers only — no collector sign-up, sign-in or claim flow, and every auth operation answering 404 on a brand with neither account module (D54, C13 v1.5); §6: no Stripe Checkout Sessions — the Payment Element's PaymentIntent on the brand's own pay page (D51)
+  - [ ] 6.7.b MIGRATION.md §5: customers import as staff-side records — name, email, addresses, legacy orders — with no password, no claim email and no 12-month purge, and wishlists are not imported (D54); §6: `/account` and `/account/*` answered by one designed page (a 301 through `legacyPrefixes` `/account/` and `legacyPaths` `/account`, 36.4.e), and `?p=highest|lowest` mapped to `sort=newest` (no price sort, D50)
+  - [ ] 6.7.c BRANDS.md §4: the gallery's example on request — `uniquePrices: "on-request"`, the one conversation tier, `invoiceHoldDays` 3 and `invoiceNoticeHours` 24 (D45); §5: the module table — `purchase.checkout` (the shop's only), the gallery without offers, holds, buyer accounts or the account wishlist, the shop without gift cards at launch (S10), and the sister link's wording
+  - [ ] 6.7.d DESIGN-SYSTEM.md §2: `Location` without "in the showroom now" stock (D52) and the gallery's header with no basket and no account (D50, D54); §3: no viewer relation at the gallery at launch
+  - [ ] 6.7.e PLAN.md: no "under USD 2,000" filter or price-named alert (D50), no gift cards or export checkout at launch (S3, S10); CONVENTIONS.md §8: the gallery's E2E row — enquiry → invoice → pay page → paid or lapsed — in place of "offer → accept → pay; hold → expire"
+  - [ ] 6.7.f **Check:** a search of the six docs finds no gallery sign-in, claim flow, shown price or online offer, no provider-hosted payment page, no "In the showroom now" stock, no shop checkout abroad at launch and no 7-day invoice term, and each change names its decision.
 
 ---
 
@@ -1083,9 +1118,9 @@ run beside the build line rather than in it.
   - **Lane** UXG + UXE · **Agent** senior-uiux, qa · **Wave** W2
   - **Owns** `docs/design/research/prototype-test/**`
   - _Requirements: 19.10_
-  - [ ] 13.2.a Build a clickable phone prototype of the chosen item page and configurator, with 13.1's requested changes
-  - [ ] 13.2.b Write the test script from the 6.1.c journeys — tasks, success criteria, what to observe — in English and Indonesian
-  - [ ] 13.2.c 👤 Recruit five collectors and five Instagram-type shoppers (D21), two of the sessions in Indonesian
+  - [ ] 13.2.a Build a clickable phone prototype of the chosen gallery item page — the enquiry-led panel with no price and the invoice's pay page (D50, D51) — and of the shop's product page with its configurator over stocked variants only (S7), with 13.1's requested changes
+  - [ ] 13.2.b Write the test script from the live journeys, as 6.4's report lays it out — collectors: J-G1 steps 1–5, J-G8 steps 4–5 on the prototype pay page, J-G5; shoppers: J-S1, J-S2's launch half, J-S4 — with each step's task, success criteria, target time to calibrate and what to observe, in English and Indonesian
+  - [ ] 13.2.c 👤 Recruit five collectors and five Instagram-type shoppers (D21), one of the shoppers a showroom walk-in (S9), two of the sessions in Indonesian
   - [ ] 13.2.d Run and record the ten sessions: task time, success, quotes, findings ranked by severity
   - [ ] 13.2.e Turn the findings into a list of design changes for 14.1
   - [ ] 13.2.f **Check:** a clickable phone prototype of the chosen item page and configurator has been tested with five collectors and five Instagram-type shoppers — two sessions in Indonesian — on the 6.1.c journeys, with task times, success and findings recorded and folded into 14.1.
@@ -1258,7 +1293,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 17.2.a money module, rounding points, allocation + property tests
   - [ ] 17.2.b FX: rate source port (ECB reference rates by default, D27), daily refresh job, snapshots
   - [ ] 17.2.c market price resolution + "From" price for a destination
-  - [ ] 17.2.e D47's contracts first (ARC, opus): C6 `PaymentOptionView.charge`, C2 `PaymentOptionVM` and C7 `SessionInput.charge` show PayPal's own USD charge on an IDR order; a C1 minor version lets an estimate-only market skip the ladder and buffer; the shop's and `test`'s emporium configs follow (`charge: ["IDR"]`, eu/au/sg/row estimate markets); `commerce-check` proves a PayPal option on an IDR order carries a USD charge while the totals stay IDR
+  - [ ] 17.2.e D47's contracts first (ARC, opus): C6 `PaymentOptionView.charge`, C2 `PaymentOptionVM` and C7 `SessionInput.charge` show PayPal's own USD charge on an IDR order; a C1 minor version lets an estimate-only market skip the ladder and buffer; the shop's and `test`'s emporium configs follow (`charge: ["IDR"]`, eu/au/sg/row estimate markets); `commerce-check` proves a PayPal option on an IDR order carries a USD charge while the totals stay IDR — ✂️ cut: S3 (2026-10-01) — no export at launch; D47's contracts move to v2.20 with the shop's export
   - [ ] 17.2.d **Check:** safe-integer money arithmetic with the **engine's own exponents** (not ISO 4217's — a guard rejects any non-safe-integer at every boundary), the **named rounding points** with their methods — half-even, and largest-remainder allocation so parts sum to the whole (COMMERCE.md §3) — the **five price sources** (explicit, product-type table × multiplier, derived — FX + buffer + market price point — an accepted offer's agreed price, an issued quote's or proforma's line), "From" prices and the FX snapshot are pure and **property-tested** (no float, no rounding outside a named point, totals reproducible).
 
 - [ ] **17.3 Seller routing, destination and the rupiah rule** · needs: 3.1.a, 17.2
@@ -1270,7 +1305,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 17.3.b The one `shipTo` cookie (defaulted from `CF-IPCountry`) and its API under `/api/x/commerce/destination` — no currency parameter anywhere
   - [ ] 17.3.c The rupiah rule in VM formatting, with a test that fails on any foreign amount for an Indonesian destination
   - [ ] 17.3.d The Singapore seller's Indonesian deliveries priced and charged in IDR (D29)
-  - [ ] 17.3.e **Check:** `routeSeller()` picks one seller from stock location and destination, or explains blocked lines; an original with **no known location sells nowhere** (enquiry-only); a Jakarta `domestic-only` item is blocked for a Dutch destination with the stated message; the Singapore seller shipping to Indonesia prices in IDR (D29); the one `shipTo` cookie (defaulted from `CF-IPCountry`) and its API are the **only** input to the market — there is no currency parameter anywhere; VM formatting provably renders **IDR only** for Indonesian destinations (a test fails if any foreign amount is present).
+  - [ ] 17.3.e **Check:** `routeSeller()` picks one seller from stock location and destination, or explains blocked lines; an original with **no known location sells nowhere** (enquiry-only); a Jakarta `domestic-only` item is blocked for a Dutch destination with the stated message; the Singapore seller shipping to Indonesia prices in IDR (D29); the one `shipTo` cookie (defaulted from `CF-IPCountry`) and its API are the **only** input to the market — there is no currency parameter anywhere; VM formatting provably renders **IDR only** for Indonesian destinations (a test fails if any foreign amount is present); a destination no market lists — the shop's abroad at launch (S3) — is blocked as `destination-not-served`, never priced.
 
 - [ ] **17.4 Pricing pipeline and tax** · needs: 17.2, 17.3
   - **Lane** DOM · **Agent** senior-be (DOM-A) · **Wave** W3
@@ -1287,19 +1322,20 @@ state machines and `applyPaymentEvent()` above all.
 ## Phase 18 — Reservations, state machines and the cart · Commerce · needs 17 · ~2d
 
 **Goal:** the one-of-one guarantee, the state machines and the outbox, and the cart.
-**Done when:** two parallel reservations of one unique item yield exactly one and one clean conflict; a sold item cannot be reserved again; every machine refuses an illegal transition and each transition writes its outbox event in the same transaction; a cart holds lines and re-prices on the server.
+**Done when:** two parallel reservations of one unique item yield exactly one and one clean conflict; a sold item cannot be reserved again; an invoice hold reads available the instant its due date passes, before any sweep, and its reminder is noticed once; every machine refuses an illegal transition and each transition writes its outbox event in the same transaction; a cart holds lines and re-prices on the server.
 **Waves:** W1 — 18.1, 18.2, 18.3
 
 - [ ] **18.1 The reservation service** · needs: 1.2.g, 17.1
   - **Lane** DOM · **Agent** senior-be (DOM-B), reviewed by senior-db · **Wave** W1
   - **Owns** `engine/packages/domain/src/{reservations,inventory}/**` (not `reservations/contract.ts`, which is C8), `engine/packages/testing/src/concurrency/**`, `engine/packages/http/src/cron/sweeps/**`
   - **Read** ARCHITECTURE.md §6, COMMERCE.md §4, PAYMENTS.md §1
-  - _Requirements: 9.1, 9.2, 9.4, 9.5, 9.9, 11.6_
+  - _Requirements: 9.1, 9.2, 9.4, 9.5, 9.9, 9.10, 11.6_
   - [ ] 18.1.a `reserve()` writing the scalar `targetKey` and first expiring stale active rows for that target, in one transaction
   - [ ] 18.1.b `reserveAll` (several targets at once, all-or-nothing under a savepoint — a bag at "Continue to payment"); `extend`, `release`, `convert` and `reverse`, each taking reservation ids in bulk; counted stock through the conditional `stock_levels` update
   - [ ] 18.1.c The concurrency harness: 50 parallel reservations → one success and 49 typed conflicts; a sold item refusing a new reservation, even by direct insert
   - [ ] 18.1.d The sweeper route `/api/x/cron/sweeps` (C13; it runs C8 `DomainSweeps`) — housekeeping only; among its sweeps, the daily delete of idempotency keys older than `IDEMPOTENCY_KEY_RETENTION` (7 days, C8 `DomainSweeps.idempotencyKeys`)
-  - [ ] 18.1.e **Check:** `reserve()` — `reserve` · `reserveAll` · `extend` · `release` · `convert` · `reverse` — is the only writer and always writes the scalar `targetKey`; inside its transaction it first expires stale active rows **for that target**, so correctness never waits on the sweeper; 50 parallel reservations of one unique item yield exactly one success and 49 typed conflicts (test); `reserveAll` reserves several targets under one savepoint, all or nothing, rolling back only its own work on any conflict (test); **a converted (sold) item refuses every new reservation at the database** (test, including a direct insert); `extend` lengthens a checkout lock to the chosen method's `sessionTtl` + margin within the configured ceiling; stocked quantity races never oversell; an expired active row reads as available; the sweeper claims its rows with `FOR UPDATE SKIP LOCKED` and is otherwise housekeeping only; it deletes idempotency keys older than `IDEMPOTENCY_KEY_RETENTION` and keeps younger ones (test).
+  - [ ] 18.1.f The invoice kind (C8 v1.5, D45): `reserveAll` holds an invoice's unique lines to the due date staff set; `extend` re-dates it and `release` voids it; `noticeExpiring({ kind: 'invoice', lead: invoiceNoticeHours })` emits `invoiceHold.expiring` once per hold (C1: 24 h), run by the sweeps' `holdNotices` beside `hold`'s
+  - [ ] 18.1.e **Check:** `reserve()` — `reserve` · `reserveAll` · `extend` · `release` · `convert` · `reverse` — is the only writer and always writes the scalar `targetKey`; inside its transaction it first expires stale active rows **for that target**, so correctness never waits on the sweeper; 50 parallel reservations of one unique item yield exactly one success and 49 typed conflicts (test); `reserveAll` reserves several targets under one savepoint, all or nothing, rolling back only its own work on any conflict (test); **a converted (sold) item refuses every new reservation at the database** (test, including a direct insert); `extend` lengthens a checkout lock to the chosen method's `sessionTtl` + margin within the configured ceiling; stocked quantity races never oversell; an expired active row reads as available; the sweeper claims its rows with `FOR UPDATE SKIP LOCKED` and is otherwise housekeeping only; it deletes idempotency keys older than `IDEMPOTENCY_KEY_RETENTION` and keeps younger ones (test); an invoice hold reads available the instant its due date passes, before any sweep, and `noticeExpiring` emits `invoiceHold.expiring` exactly once per hold, `invoiceNoticeHours` before its end (tests).
 
 - [ ] **18.2 State machines and the outbox** · needs: 1.2.g, 17.1, 4.8
   - **Lane** DOM · **Agent** senior-be (DOM-D), reviewed by senior-db · **Wave** W1
@@ -1319,17 +1355,17 @@ state machines and `applyPaymentEvent()` above all.
   - **Owns** `engine/packages/domain/src/cart/**`
   - **Read** COMMERCE.md §5
   - _Requirements: 8.8, 9.1_
-  - [ ] 18.3.a Guest carts behind a hashed token, merged on sign-in
+  - [ ] 18.3.a Guest carts behind a hashed token (merging on sign-in waits for a brand whose buyers sign in to buy online — none at launch: D31, D54)
   - [ ] 18.3.b Line validation (status, active variant, routable) and 30-day expiry
   - [ ] 18.3.c `CartVM` computation, and a test proving a cart never reserves
-  - [ ] 18.3.d **Check:** guest carts (hashed token), merge on sign-in, line validation (status, variant active, routable), 30-day expiry and `CartVM` computation are tested; **a cart never reserves**.
+  - [ ] 18.3.d **Check:** guest carts (hashed token), line validation (status, variant active, routable), 30-day expiry and `CartVM` computation are tested; a unique item whose prices are on request is refused as `not-sold-by-cart` (D50); **a cart never reserves**.
 
 ---
 
 ## Phase 19 — Checkout, the payment pipeline and Midtrans 👤 · Commerce · needs 18 · ~3d
 
 **Goal:** order placement, payments core, the Midtrans sandbox adapter and `applyPaymentEvent()`.
-**Done when:** a checkout places an order and pays by VA in the Midtrans sandbox; one webhook delivered twice yields one payment; a crash after the dedupe insert rolls back and applies once on the retry; a payment landing after its reservation expired takes the late-payment path.
+**Done when:** a checkout places an order and pays by VA in the Midtrans sandbox; a staff-sent pay link starts a payment that supersedes its invoice hold with the order's lock; one webhook delivered twice yields one payment; a crash after the dedupe insert rolls back and applies once on the retry; a payment landing after its reservation expired takes the late-payment path.
 **Waves:** W1 — 19.1 · W2 — 19.2, 19.4 · W3 — 19.3
 
 - [ ] **19.1 Checkout and order placement** · needs: 17.4, phase 18
@@ -1339,23 +1375,23 @@ state machines and `applyPaymentEvent()` above all.
   - _Requirements: 9.3, 9.5, 9.6, 9.7, 10.1, 10.4, 11.6_
   - [ ] 19.1.a `CheckoutVM.steps` derived from seller, destination and lines
   - [ ] 19.1.b Order placement snapshotting every figure: lines, pipeline, tax, FX, seller
-  - [ ] 19.1.c The payment step: take the checkout lock, `extend()` it at method choice to the method's `sessionTtl` + margin (no cash-at-retail for a unique item), close any other open attempt of the order first (so a provider reference is never used twice, and every reservation the new attempt pays for carries the order's id), and create the payment attempt idempotently — a retry returns its stored `SessionResult`; inside the attempt's lease (`PAYMENT_ATTEMPT_LEASE`, C8) a retry answers `rate-limited` and never voids it, and past the lease a missing session is a crash, voided and made again — the store and the void each a compare-and-set under the attempt's row lock, so a store that lands past the lease and a concurrent retry never both win (the loser's provider session is cancelled); a method whose floor (C7 `minSessionTtl`) no longer fits before the lock's ceiling or the hold's end is not offered, and a start that finds so answers `method-unavailable` (`window-too-short`) — a session is never cut below its floor
-  - [ ] 19.1.d Offers (non-binding, D22): submit, auto-decline below the floor, accept → an offer hold and a payment link that expires before it; a submitted or countered offer closes as declined — never left open — the moment its item sells or is withdrawn elsewhere (`offer.closedUnavailable`); staff holds
+  - [ ] 19.1.c The payment step: take the checkout lock, `extend()` it at method choice to the method's `sessionTtl` + margin (no cash-at-retail for a unique item), close any other open attempt of the order first (so a provider reference is never used twice, and every reservation the new attempt pays for carries the order's id), and create the payment attempt idempotently — a retry returns its stored `SessionResult`; inside the attempt's lease (`PAYMENT_ATTEMPT_LEASE`, C8) a retry answers `rate-limited` and never voids it, and past the lease a missing session is a crash, voided and made again — the store and the void each a compare-and-set under the attempt's row lock, so a store that lands past the lease and a concurrent retry never both win (the loser's provider session is cancelled); a method whose floor (C7 `minSessionTtl`) no longer fits before the lock's ceiling or the hold's end is not offered, and a start that finds so answers `method-unavailable` (`window-too-short`) — a session is never cut below its floor; the same step serves a staff-sent pay link (`payLink.start`, C6), whose first transaction supersedes the invoice or quote hold with the order's lock, lasting at least as long
+  - [ ] 19.1.d Offers (non-binding, D22): submit, auto-decline below the floor, accept → an offer hold and a payment link that expires before it; a submitted or countered offer closes as declined — never left open — the moment its item sells or is withdrawn elsewhere (`offer.closedUnavailable`); staff holds — ✂️ cut: D50, D22 (2026-10-01) — no brand takes online offers or reserve requests at launch; C6/C8's offer and hold contracts stay frozen, and the flows return with v2.1
   - [ ] 19.1.e Every transition through the 18.2 machine runner
-  - [ ] 19.1.f **Check:** `CheckoutVM.steps` derive from seller, destination and lines; placing an order snapshots every figure; the checkout lock is taken at the payment step and **extended at method choice** to that method's `sessionTtl` + margin (no cash-at-retail for a unique item); the payment step creates a payment attempt idempotently and returns its **stored `SessionResult`** on a retry, and a store that lands past `PAYMENT_ATTEMPT_LEASE` against a concurrent retry leaves exactly one attempt (test); offers are non-binding (D22), auto-decline below the floor, an accepted offer creates an offer hold and a payment link that expires before it, and one left open closes as declined the moment its item sells or is withdrawn elsewhere; every transition goes through the 18.2 machine runner; a pure `buyerOrderStatus()` derives the buyer-facing status from the order's own status, the attempt that paid it (or the latest, before one has) and its shipments (COMMERCE.md §6), tested over `ORDER_STATUSES` × the paying attempt's `PAYMENT_STATUSES` × {nothing shipped, a label printed, a pickup ready, a pickup collected while another line waits, one shipment on its way, partly delivered, an exception, returned to sender, nothing to ship (a gift card)} (each shipment case in one of C6's `ShipmentOnItsWay`, `ShipmentAtPickup` and `ShipmentNotYetGone`), each case asserting `OrderVM.status` and `OrderVM.payment.state` from one row — a buyer's answer never carries a raw `OrderStatus`, a `PaymentStatus` or a dispute.
+  - [ ] 19.1.f **Check:** `CheckoutVM.steps` derive from seller, destination and lines; placing an order snapshots every figure; the checkout lock is taken at the payment step and **extended at method choice** to that method's `sessionTtl` + margin (no cash-at-retail for a unique item); the payment step creates a payment attempt idempotently and returns its **stored `SessionResult`** on a retry, and a store that lands past `PAYMENT_ATTEMPT_LEASE` against a concurrent retry leaves exactly one attempt (test); a staff-sent pay link's start supersedes its invoice or quote hold with the order's lock, never shorter (test); every transition goes through the 18.2 machine runner; a pure `buyerOrderStatus()` derives the buyer-facing status from the order's own status, the attempt that paid it (or the latest, before one has) and its shipments (COMMERCE.md §6), tested over `ORDER_STATUSES` × the paying attempt's `PAYMENT_STATUSES` × {nothing shipped, a label printed, a pickup ready, a pickup collected while another line waits, one shipment on its way, partly delivered, an exception, returned to sender, nothing to ship (a gift card)} (each shipment case in one of C6's `ShipmentOnItsWay`, `ShipmentAtPickup` and `ShipmentNotYetGone`), each case asserting `OrderVM.status` and `OrderVM.payment.state` from one row, a `pending_payment` order with an open invoice among them (`OrderVM.payment.state` `invoice`, with its pay link and due date, C2 v1.5) — a buyer's answer never carries a raw `OrderStatus`, a `PaymentStatus` or a dispute.
 
 - [ ] **19.2 Payments core** · needs: 1.2.f, 17.3, 19.1
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W2
   - **Owns** `engine/packages/payments/src/{registry,routing,limits.ts,reconcile,links,boot-check,adapters/manual,adapters/bank-transfer}/**`, `engine/packages/http/src/webhooks/payments/**`, `engine/packages/http/src/cron/reconcile/**`, `tests/contract/payments/**`
   - **Read** PAYMENTS.md
-  - _Requirements: 11.1, 11.2, 11.4, 11.5, 11.8, 18.7_
+  - _Requirements: 11.1, 11.2, 11.4, 11.5, 11.8, 11.9, 11.10, 18.7_
   - [ ] 19.2.a provider registry per seller (secrets as `PAYMENT_<SELLER>_<PROVIDER>_*`) + the shared contract suite: signature failure, duplicate, out-of-order, **crash after the dedupe insert**, pending → settlement, refund idempotency, a session outliving its reservation window, late payment after the item sold, an event for an unknown attempt routed to `payment_events_unmatched` without consuming the dedupe key, and a provider figure that is no whole minor unit coming back `InexactMoney` — **flagged by `applyPaymentEvent()`, never rounded or paid**
   - [ ] 19.2.b routing with `limits.ts` (sourced, dated caps)
   - [ ] 19.2.c the thin webhook handler, mounted **per seller** (`/api/x/webhooks/payments/[provider]/[seller]`: parse → retrieve → apply; no business logic)
   - [ ] 19.2.d reconciliation cron route `/api/x/cron/reconcile`
-  - [ ] 19.2.e payment links `/pay/{token}`; manual and bank-transfer providers (instructions, proforma reference)
+  - [ ] 19.2.e payment links `/pay/{token}` (C6 `PayLinkView`, reason `invoice` first: the invoice's number, buyer and PDF; open until its due date); manual and bank-transfer providers (instructions on the PDF, the proforma reference)
   - [ ] 19.2.f the payments part of the boot check: sandbox/live key vs environment
-  - [ ] 19.2.g **Check:** routing offers only allowed methods with dated caps (no retail method for a unique item, and none whose `minSessionTtl` no longer fits before the lock's ceiling or the hold's end); the webhook handler at `/api/x/webhooks/payments/{provider}/{seller}` verifies the signature on the raw body with that seller's secret, calls `retrieve()` where the adapter says so, and hands one normalised event to `domain.applyPaymentEvent()` (19.4), answering 200 for every outcome and 5xx only on a throw; reconciliation runs every 10 minutes through the same path; payment links work; `manual` and `bank-transfer` pass the contract suite, and every `Money` across an adapter is in C5's minor units (C7's header).
+  - [ ] 19.2.g **Check:** routing offers only allowed methods with dated caps (no retail method for a unique item, and none whose `minSessionTtl` no longer fits before the lock's ceiling or the hold's end); the webhook handler at `/api/x/webhooks/payments/{provider}/{seller}` verifies the signature on the raw body with that seller's secret, calls `retrieve()` where the adapter says so, and hands one normalised event to `domain.applyPaymentEvent()` (19.4), answering 200 for every outcome and 5xx only on a throw; reconciliation runs every 10 minutes through the same path; payment links work — an invoice's link charges the figures issued on the server and refuses payment after its due date (test); `manual` and `bank-transfer` pass the contract suite, and every `Money` across an adapter is in C5's minor units (C7's header).
 
 - [ ] **19.3 👤 Midtrans adapter (sandbox)** · needs: 19.2.a · 👤 a Midtrans sandbox merchant account and keys
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W3
@@ -1385,8 +1421,8 @@ state machines and `applyPaymentEvent()` above all.
 ## Phase 20 — Shipping, discounts, notifications, documents, returns and the tax export · Commerce · needs 19 · ~3d
 
 **Goal:** everything around a placed order: shipping and duties, discounts and gift cards, the order's emails and documents, returns and the tax export.
-**Done when:** an order to Bali and one to the Netherlands get their shipping and duties; a discount, a gift card and gift wrap apply; the order's emails arrive with its PDF documents numbered in sequence; a return refunds; the tax export reproduces the period.
-**Waves:** W1 — 20.1, 20.2, 20.3, 20.4, 20.5
+**Done when:** an order to Bali and a gallery invoice to the Netherlands get their shipping and duties; a discount code and the free-shipping threshold apply; the order's and the invoice's emails arrive with their PDF documents numbered in sequence; a staff-issued invoice holds its piece to its due date and lapses unpaid by itself; a damaged print's replacement and a refund go through; the tax export reproduces the period.
+**Waves:** W1 — 20.1, 20.2, 20.3, 20.4, 20.5 · W2 — 20.6
 
 - [ ] **20.1 Discounts, gift cards, bundles, gift wrap** · needs: 17.4, 18.3
   - **Lane** DOM · **Agent** senior-be (DOM-C) · **Wave** W1
@@ -1394,10 +1430,10 @@ state machines and `applyPaymentEvent()` above all.
   - **Read** COMMERCE.md §10
   - _Requirements: 8.7_
   - [ ] 20.1.a Discount codes with usage limits enforced atomically (a concurrency test)
-  - [ ] 20.1.b The gift-card ledger, which never goes below zero
+  - [ ] 20.1.b The gift-card ledger, which never goes below zero — ✂️ cut: S10 (2026-10-01) — a gift note only, so no gift cards at launch; v2.21
   - [ ] 20.1.c Bundles and "3 for 2" at line level; order discounts allocated by largest remainder
-  - [ ] 20.1.d The free-shipping threshold as an automatic rule per market; gift wrap as a priced product line
-  - [ ] 20.1.e **Check:** codes enforce usage limits atomically under concurrency (test), gift cards debit a ledger and never go below zero, bundles and "3 for 2" apply at line level with the order discount allocated by largest remainder, the free-shipping threshold is an automatic rule per market, and gift wrap is a priced product line.
+  - [ ] 20.1.d The free-shipping threshold as an automatic rule per market (the shop's Rp 500.000, set in the admin, S13); gift wrap waits (S10, v2.21)
+  - [ ] 20.1.e **Check:** codes enforce usage limits atomically under concurrency (test), bundles and "3 for 2" apply at line level with the order discount allocated by largest remainder, and the free-shipping threshold is an automatic rule per market.
 
 - [ ] **20.2 Shipping basics and duties** · needs: 1.2.f, 9.2
   - **Lane** LOG · **Agent** medior · **Wave** W1
@@ -1414,11 +1450,11 @@ state machines and `applyPaymentEvent()` above all.
   - **Lane** NTF · **Agent** medior · **Wave** W1
   - **Owns** `engine/packages/{mail,documents}/**`
   - **Read** COMMERCE.md §12–13, ANALYTICS.md §1–2
-  - _Requirements: 10.5, 13.5_
+  - _Requirements: 10.5, 13.5, 6.17_
   - [ ] 20.3.a template system and senders (SMTP), bilingual, `List-Unsubscribe` (RFC 8058, one-click) where marketing **or** a want-list alert
   - [ ] 20.3.b event → template wiring; PDF job infrastructure (confirmation, proforma; COA and commercial invoice in 24.2)
   - [ ] 20.3.c email design system per brand (senior-uiux): layouts that work with images off and in dark-mode clients, stay under Gmail's 102 KB clipping limit and render in Outlook; the payment-instructions email designed as carefully as the payment-pending page; the newsletter layout for 29.2
-  - [ ] 20.3.d **Check:** EN/ID templates exist for order received/paid, payment instructions (VA, QR), pickup ready, shipped, refund, return received, offer received/accepted/countered/expired, hold granted/expiring, enquiry acknowledged + staff alert, consignment received, viewing confirmed and rescheduled (its `.ics` attached, never linked), **a want-list's double opt-in confirmation and its instant/daily alert** (each with its own RFC 8058 one-click stop link); WhatsApp deep links are built; a Payload job renders order PDFs; **the outbox dispatcher (18.2) triggers them** — never a request handler — with the event id as the idempotency key, and **derives each email's link token as it sends** (C6 `links`): no outbox row carries a token, and a test proves it (Mailpit in CI).
+  - [ ] 20.3.d **Check:** EN/ID templates exist for order received/paid, payment instructions (VA, QR), pickup ready, shipped, refund, return received, the invoice issued (its pay link and PDF), its reminder (`invoiceHold.expiring`), lapsed (`invoiceHold.expired`) and paid, enquiry and price request acknowledged with the reply promise + staff alert, consignment received, viewing confirmed and rescheduled (its `.ics` attached, never linked), **a want-list's double opt-in confirmation and its instant/daily alert** (each with its own RFC 8058 one-click stop link); WhatsApp deep links are built; a Payload job renders order PDFs; **the outbox dispatcher (18.2) triggers them** — never a request handler — with the event id as the idempotency key, and **derives each email's link token as it sends** (C6 `links`): no outbox row carries a token, and a test proves it (Mailpit in CI).
 
 - [ ] **20.4 Returns** · needs: 17.4, 19.1
   - **Lane** DOM · **Agent** senior-be (DOM-B) · **Wave** W1
@@ -1440,37 +1476,60 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 20.5.c The per-seller CSV export, one row per document: date, number, customer country, net, tax base, tax, currency, FX snapshot
   - [ ] 20.5.d **Check:** every seller's orders, invoices, credit notes and receipts are numbered **gaplessly per series** from `document_sequences` inside the transaction that issues them (a concurrency test proves no gap and no duplicate), and a per-seller export (CSV, per document: date, number, customer country, net, tax base, tax, currency, FX snapshot) reproduces the tax figures the accountant files.
 
+- [ ] **20.6 The staff-issued invoice — issue, hold, pay link, lapse (D50, D45)** · needs: 18.1, 19.1, 19.2.e, 20.3, 20.5
+  - **Lane** DOM · **Agent** senior-be (DOM-B), reviewed by senior-db · **Wave** W2
+  - **Owns** `engine/packages/domain/src/invoices/**`
+  - **Read** COMMERCE.md §2, §4, §7 (the invoice), §12; PAYMENTS.md §1, §5; C5 `AgreedPrice`; C6 `after-sale.ts`, `paying.ts`; C8 `reservations/contract.ts`, `order/machine.ts`
+  - _Requirements: 6.14, 6.15, 6.17, 9.10, 11.9_
+  - [ ] 20.6.a `issueInvoice()` in one transaction: `routeSeller()` over its lines and the buyer's destination (export gating); `reserveAll` `invoice` holds to the due date staff set (C1 proposes three days, D45); the order placed `pending_payment` (`reach-payment` by staff) with the agreed figure (C5 source `quote`) and the shipping and duties as quoted; the proforma numbered from the seller's series (20.5) and its PDF queued; the pay link (C6 `PayLinkView`, reason `invoice`); `order.created`, `proforma.issued` and `invoiceHold.taken` to the outbox
+  - [ ] 20.6.b A held or sold piece is a typed conflict and nothing is issued; only a role that may set prices issues one, and every figure is audited
+  - [ ] 20.6.c Re-date (`extend`) and void (`release`: the order cancelled, its link dead) by staff, each only before the due date and each writing its event
+  - [ ] 20.6.d The lapse: the piece reads available the moment the due date passes (lazy expiry); the sweeps abandon the order (`payment-lapsed`) and expire its link; `invoiceHold.expired` leaves the outbox once — to the buyer's and staff's emails and to want-list matching (29.1.f); a payment after the lapse takes 19.4's late path
+  - [ ] 20.6.e Paid in full only (G11): the order turns `paid` only when a payment covers the invoice's total — a short transfer leaves it pending — and no shipment can be created before `paid`
+  - [ ] 20.6.f **Check:** an invoice for two pieces issues in one transaction or not at all (a conflict on the second leaves the first unheld); a `domestic-only` piece to a Dutch address is refused with its reason; from issue the pieces read "On hold until {due date}", the order is `pending_payment` and its pay link charges the issued total to the minor unit, whatever the request says; the reminder `invoiceHold.expiring` leaves the outbox once, 24 hours ahead; at the due date the pieces read available before any sweep, then the order is abandoned, the link refuses payment and `invoiceHold.expired` is dispatched once; re-dating and voiding work only before the due date and only for the right role; a short transfer leaves the order pending and no shipment can be created before `paid` — each a test, the emails seen in Mailpit.
+
 ---
 
 ## Phase 21 — The commerce API and the money-safety gate 👤 · Commerce · needs 20 · ~1.5d
 
 **Goal:** the handlers the storefronts call, and the gate over the Commerce stage.
-**Done when:** two parallel checkouts on one unique gallery item yield exactly one paid order and one clean conflict; a sold item cannot be reserved again; one webhook delivered twice yields one payment, and a crash after the dedupe insert rolls back and applies once on the retry; a payment landing after its reservation expired takes the late-payment path; a multi-line shop cart to Bali prices in IDR only, never offers QRIS above IDR 10 m, pays by VA in the Midtrans sandbox, and its emails arrive; every order reproduces its own total.
-**Waves:** W1 — 21.1 · W2 — 21.2 · closes **M2**
+**Done when:** two invoices issued at once for one unique gallery piece yield exactly one invoice and one clean conflict; a sold item cannot be reserved again; one webhook delivered twice yields one payment, and a crash after the dedupe insert rolls back and applies once on the retry; a payment landing after its reservation expired takes the late-payment path; a multi-line shop cart to Bali prices in IDR only, never offers QRIS above IDR 10 m, pays by VA in the Midtrans sandbox, and its emails arrive; every order reproduces its own total.
+**Waves:** W1 — 21.1 · W2 — 21.2, 21.3 · closes **M2**
 
 - [ ] **21.1 Commerce API handlers** · needs: 17.4, 18.3, 19.1, 19.2, 19.4, 20.1, 20.4
   - **Lane** DOM (+ WEB for mounting) · **Agent** senior-be (DOM-C) · **Wave** W1
   - **Owns** `engine/packages/http/src/commerce/**` (not `commerce/destination/**`, 17.3's), app `src/app/api/x/commerce/**` re-exports
   - **Read** C6, C13, COMMERCE.md
   - _Requirements: 8.8, 19.5_
-  - [ ] 21.1.a Handlers under `/api/x/commerce/…`: cart, ship-to, checkout, offer (`offer.respond` by the session and the offer's id, or by an email's token: C6 `OfferAccess`), hold request, price request, enquiry
-  - [ ] 21.1.b Consignment, appointment (`appointment.change` by the session and the viewing's id, or by an email's token: C6 `AppointmentAccess`; `ics?appointment=` by session alone), return request, order lookup and quote (`quote.proforma`'s checkout bound to the cart cookie or the session, as the checkout's own operations are)
+  - [ ] 21.1.a Handlers under `/api/x/commerce/…`: cart and checkout, behind `purchase.checkout` (C13 v1.5: the gallery has neither); ship-to; price request, which comes back `queued` and never reveals a price where prices are on request (C6 v1.5, D50); enquiry; the offer and hold-request areas mount C13's placeholder — no brand takes them at launch (D50, D22)
+  - [ ] 21.1.b Consignment, appointment (`appointment.change` by its confirmation's token — C6 `AppointmentAccess`, moved into C13 `APPOINTMENT_ACCESS`'s cookie by its link, the gallery's one way since it signs no one in (D54) — or, where a brand signs buyers in, by the session and the viewing's id; `ics?appointment=` by session alone), return request, order lookup and quote (`quote.proforma`'s checkout bound to the cart cookie or the session, as the checkout's own operations are)
   - [ ] 21.1.c zod validation on every input, client prices ignored, rate limits
   - [ ] 21.1.d Mounted in both apps, parity green
   - [ ] 21.1.f A `FORM_DECODING` conformance table (C13) — form body → request or `FieldError`, covering the settled cases: a password never trimmed, an absent radio `null`, an empty array element dropped, an index gap `format`, the money grammar for exponents 0 and 2 (`4200000.`, `.50`, `4,20` refused; `4200.50` → `420050`), no `shipTo` → `required`, a zero bid `out-of-range`, a body or field count past the limit → 413 — which every DOM handler here and WEB's form route (22) both run, so there is one decoder in practice
-  - [ ] 21.1.e **Check:** cart, ship-to, checkout, offer, hold request, price request, enquiry, consignment, appointment, return request, order lookup and quote endpoints under `/api/x/commerce/…` validate input with zod, ignore any client price, are rate-limited, decode every HTML form post through the one `FORM_DECODING` decoder and pass its conformance table (21.1.f), and are mounted in both apps (parity green; the manifest entries were declared in C13); an account's session answers its offer and changes its viewing by id, the `.ics` route refuses a token, and `quote.proforma` refuses a checkout id not bound to the caller's cart cookie or session (tests).
+  - [ ] 21.1.e **Check:** cart, ship-to, checkout, price request, enquiry, consignment, appointment, return request, order lookup and quote endpoints under `/api/x/commerce/…` validate input with zod, ignore any client price, are rate-limited, decode every HTML form post through the one `FORM_DECODING` decoder and pass its conformance table (21.1.f), and are mounted in both apps (parity green; the manifest entries were declared in C13); cart and checkout answer 404 on a brand with `purchase.checkout` off (the gallery), and a price request on an item priced on request comes back `queued`, with no price (tests); a viewing is changed through its confirmation's link (`APPOINTMENT_ACCESS`), the `.ics` route refuses a token, and `quote.proforma` refuses a checkout id not bound to the caller's cart cookie or session (tests).
 
 - [ ] **21.2 👤 Commerce gate — the money-safety gate** · needs: phase 17, phase 18, phase 19, phase 20, 21.1 · 👤 the Midtrans sandbox keys in staging's `shared/.env`
   - **Lane** QA · **Agent** qa · **Wave** W2
   - **Owns** `docs/gates/commerce.md`
   - **Read** the **Done when** of phases 17–21
-  - _Requirements: 8.1–8.10, 9.1–9.9, 10.1, 10.4, 10.6, 11.1–11.8_
+  - _Requirements: 8.1–8.10, 9.1–9.10, 10.1, 10.4, 10.6, 11.1–11.10_
   - [ ] 21.2.a 👤 The Midtrans sandbox keys in staging's `shared/.env` (through Infisical)
   - [ ] 21.2.b The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build
   - [ ] 21.2.c On staging: the concurrency test against the real database, a sold-item re-reservation attempt, a duplicate-webhook replay, and a forced crash between the dedupe insert and the commit
   - [ ] 21.2.d On staging: the multi-line shop cart to a Bali address — IDR only, no QRIS above IDR 10 m, paid by virtual account in the Midtrans sandbox, emails arriving — and every order reproducing its own total
   - [ ] 21.2.e Evidence per clause in `docs/gates/commerce.md`; every failure filed as a subtask of the task that owns it and re-run after the fix
   - [ ] 21.2.f **Check:** the **Done when** of phases 17–21 runs on staging with the Midtrans sandbox, including the concurrency test against the real database, a sold-item re-reservation attempt, a duplicate-webhook replay and a forced crash between the dedupe insert and the commit — evidenced in `docs/gates/commerce.md`.
+
+- [ ] **21.3 The forms route: uploads and saved items** · needs: 21.1.f
+  - **Lane** WEB · **Agent** senior-be · **Wave** W2
+  - **Owns** `engine/packages/http/src/forms/**`
+  - **Read** C13 `./manifest/forms` (`FORM_OPERATIONS`, `FORM_DECODING`, `FORM_RESULT`, `DEVICE_WISHLIST`), C6 uploads, D35, D54
+  - _Requirements: 6.9, 13.8_
+  - [ ] 21.3.a The catch-all at `/api/x/forms/[...path]` dispatching `FORM_OPERATIONS`, every post through the one `FORM_DECODING` decoder (21.1.f) and back to its page through `FORM_RESULT`
+  - [ ] 21.3.b Uploads: streamed to the upload store as they arrive, checked there, and answered with C6 `UploadId`s, within the form's `uploads` limits (consignment photos, the shop's damaged-print claim)
+  - [ ] 21.3.c `wishlist.set`: the device's list in `DEVICE_WISHLIST`'s cookie where `retention.deviceWishlist` is on — both brands at launch (D35, D54) — and an account's saved items only where `retention.wishlist` is
+  - [ ] 21.3.d The newsletter and back-in-stock operations mount C13's placeholder until 29.2 and 29.3 build them
+  - [ ] 21.3.e **Check:** a form post to each operation decodes through `FORM_DECODING` and comes back through `FORM_RESULT` without JavaScript; an upload past its limits is refused unread; `wishlist.set` saves and removes on the device with no account (and no identifier in its cookie), and answers 404 where neither wishlist module is on (tests); route parity green.
 
 ---
 
@@ -1490,7 +1549,7 @@ state machines and `applyPaymentEvent()` above all.
   - [ ] 22.1.c the work card (image on its mat, never cropped — verified with fixtures at aspects 0.3, 1 and 3.5; one link; the wishlist button outside the link with its own focus stop; status as text)
   - [ ] 22.1.d block renderers (exhaustive map against C4)
   - [ ] 22.1.e `/style-guide` (an underscore folder would be private in the App Router) with a token-override picker, module toggles and the state switcher from 11.4 (noindex)
-  - [ ] 22.1.f **Check:** the shell (header with utility row, navigation — with the phone menu's prioritised order and the place drill-down — footer with seller identity and sister strip, consent banner, the ship-to selector that decides the currency, locale banner), the **bottom-edge stacking policy**, the work card, the type scale and all fifteen block renderers exist and appear in `/style-guide`.
+  - [ ] 22.1.f **Check:** the shell (header with utility row, navigation — with the phone menu's prioritised order and the place drill-down — footer with seller identity and sister strip, consent banner, the ship-to selector naming a country for export gating — no price follows it, and the header has no basket and no account entry (D50, D54) — locale banner), the **bottom-edge stacking policy**, the work card, the type scale and all fifteen block renderers exist and appear in `/style-guide`.
 
 - [ ] **22.2 Shop app foundation** · needs: 11.1, 11.2, 14.1
   - **Lane** UXE · **Agent** senior-uiux (app lead) · **Wave** W1
@@ -1498,12 +1557,12 @@ state machines and `applyPaymentEvent()` above all.
   - **Read** engine/apps/emporium/DESIGN.md, EXPERIENCE-SHOP.md §2, DESIGN-SYSTEM.md §6, §9, §12
   - _Requirements: 7.1, 8.9, 18.3, 19.1, 19.2_
   - [ ] 22.2.a Fonts via `next/font` (self-hosted, within the 14.1.d budget); Tailwind v4 `@theme inline` roles
-  - [ ] 22.2.b Shell components fed by `ShellVM`: the utility bar (ship-to, WhatsApp, account, bag), the Shop mega-menu, the footer
+  - [ ] 22.2.b Shell components fed by `ShellVM`: the utility bar ("Delivery within Indonesia" — no ship-to selector at launch, S3 — the online shoppers' WhatsApp number (S6), account, bag), the Shop mega-menu, the footer
   - [ ] 22.2.c The bottom-edge stacking policy: WhatsApp merged into the buy bar on product pages, no welcome offer before first engagement, no exit-intent pop-up on phones
   - [ ] 22.2.d The product tile: named swatches, badge, Reproduction label, "From" price
   - [ ] 22.2.e Block renderers (an exhaustive map against C4)
   - [ ] 22.2.f `/style-guide` with a token-override picker, module toggles and the 11.4 state switcher (noindex)
-  - [ ] 22.2.g **Check:** the shell (utility bar with ship-to, WhatsApp, account, bag; Shop mega-menu; footer), the bottom-edge stacking policy (WhatsApp merged into the buy bar on product pages; no welcome offer before first engagement; no exit-intent pop-up on phones), the product tile (named swatches, badge, Reproduction label, "From" price), all fifteen block renderers and `/style-guide` (with the state switcher) exist.
+  - [ ] 22.2.g **Check:** the shell (utility bar with "Delivery within Indonesia" (S3), the online WhatsApp number (S6), account, bag; Shop mega-menu; footer), the bottom-edge stacking policy (WhatsApp merged into the buy bar on product pages; no welcome offer before first engagement; no exit-intent pop-up on phones), the product tile (named swatches, badge, Reproduction label, "From" price), all fifteen block renderers and `/style-guide` (with the state switcher) exist.
 
 - [ ] **22.3 Surface briefs** · needs: 14.1
   - **Lane** UXG + UXE · **Agent** senior-uiux (one per app, not the app leads) · **Wave** W1
@@ -1512,7 +1571,7 @@ state machines and `applyPaymentEvent()` above all.
   - _Requirements: 6.11, 7.11, 19.10_
   - [ ] 22.3.a gallery surface briefs
   - [ ] 22.3.b shop surface briefs
-  - [ ] 22.3.c cross-cutting behaviours, designed: switching ship-to (which moves currency) and locale; the language banner's place; the WhatsApp handoff (DESIGN-SYSTEM.md §12)
+  - [ ] 22.3.c cross-cutting behaviours, designed: the shop's message to a visitor abroad (it delivers within Indonesia only, S3) and the gallery's ship-to (export gating, no price, D50); switching locale; the language banner's place; the WhatsApp handoff (DESIGN-SYSTEM.md §12)
   - [ ] 22.3.d **Check:** every surface not comped in the Design stage has an impeccable `shape` brief naming its mode (Experience · Operate · Read · Persuade), its states and its content rules, with `concept-seed --scope surface` run for the open ones — including 404/410/500, the payment-pending page, the bag's edge cases, `Pay`, `Quote`, `OrderLookup`, `WantList`, the trust pages, Partnership and the design page.
 
 - [ ] **22.4 Surface skeletons from fixtures in both apps** · needs: 11.3, 22.1–22.3, 22.7, 5.3
@@ -1552,10 +1611,10 @@ state machines and `applyPaymentEvent()` above all.
   - **Owns** `engine/packages/config/src/{schema,routes}{.ts,/**}` (C1, C10), `engine/packages/view-models/src/surfaces/purchase-variants.ts` and its fixtures (C2), `engine/packages/CONTRACTS.md`
   - **Read** `.claude/specs/indies-platform/reviews/3.4-senior-fe.md` (#3, #9); CONVENTIONS.md §6; DESIGN-SYSTEM.md §7; EXPERIENCE-SHOP.md §5; COMMERCE.md §1
   - _Requirements: 7.2, 19.1_
-  - [ ] 22.7.a C10's next minor version (v1.4 after 4.3's v1.3): the product-type axes move to C1 (`AXIS_KEYS`; C2's `AxisKey` imports it — config is the leaf); `HrefParams['design']` and `['item']` (a variant product at the gallery) take the selection (axis → value), `href()` writes it as the query in `AXIS_KEYS` order, and `parsePublicPath()` carries it — one value per axis, value-shaped, unknown keys dropped — into the internal URL's query, since Next replaces a rewritten request's query and the GET form's selection otherwise never reaches the server render; the loader redirects a selection the product type does not take to its canonical URL (3.4 senior-fe #9)
-  - [ ] 22.7.b C2's next minor version (v1.5 — 6.2.e took v1.4): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
+  - [ ] 22.7.a C10's next minor version (the next release number — v1.7 after 6.4's v1.5 and 8.4's v1.6): the product-type axes move to C1 (`AXIS_KEYS`; C2's `AxisKey` imports it — config is the leaf); `HrefParams['design']` and `['item']` (a variant product at the gallery) take the selection (axis → value), `href()` writes it as the query in `AXIS_KEYS` order, and `parsePublicPath()` carries it — one value per axis, value-shaped, unknown keys dropped — into the internal URL's query, since Next replaces a rewritten request's query and the GET form's selection otherwise never reaches the server render; the loader redirects a selection the product type does not take to its canonical URL (3.4 senior-fe #9)
+  - [ ] 22.7.b C2's next minor version (the same release, v1.7 — 6.4 took v1.5): every price the configurator renders as its selection changes — `priceTable` rows, each `AxisOptionVM.from`, `selected.price`, `giftWrap.price` — carries the server's display string beside its `PriceVM` (CONVENTIONS.md §6); fixtures follow
   - [ ] 22.7.d C10: an old item link whose slug part does not decode as UTF-8 — `%FF`, a Latin-1 `caf%E9`, raw UTF-8 bytes in the request line — reaches the item route by its canonical id with a fixed ASCII slug no item has (C10 names it), never the bytes as asked, which Next cannot decode into the route's param and answers with a bare 500; so it gets the one 308, its query kept (MIGRATION.md §6; 4.1 senior-fe #12, 4.3 senior-fe #4)
-  - [ ] 22.7.e C2 v1.5 carries what 6.2.e found missing: `ImageVM.syntheticLabel` (not a boolean), a design's restoration steps on `ItemVM`, `PreviewVM` plates shaped on C9 `RoomPlate` (both framings × both crops); and C12 v1.5 `WorkSnapshot.master.objectBox`, its wording corrected; and ARC settles three room-plate questions from the imagery alignment: whether a plate photographed with a print placed in it is `composite` (C9 allows only `rendered` or `photograph`), whether room-scenes.md §10's recoloured-wall fallback is still a `photograph`, and whether the plate caption is one lexicon key or a per-plate field
+  - [ ] 22.7.e C2 v1.7 carries what 6.2.e found missing: `ImageVM.syntheticLabel` (not a boolean), a design's restoration steps on `ItemVM`, `PreviewVM` plates shaped on C9 `RoomPlate` (both framings × both crops); and C12 v1.7 `WorkSnapshot.master.objectBox`, its wording corrected; and ARC settles three room-plate questions from the imagery alignment: whether a plate photographed with a print placed in it is `composite` (C9 allows only `rendered` or `photograph`), whether room-scenes.md §10's recoloured-wall fallback is still a `photograph`, and whether the plate caption is one lexicon key or a per-plate field
   - [ ] 22.7.f From 8.4: C12 `SnapshotImage.synthetic: SyntheticLabel | null` (a print listing's mockup keeps its label at the origin) and the renderer composing alt through C9's `renderedAlt()`; C1 declares `MAKER_ROLES` and `DATE_PRECISIONS` once (`config/src/schema/catalogue.ts`), C2, C12, i18n, migrate and cms derive from them
   - [ ] 22.7.c **Check:** a round-trip test over `href()` and `parsePublicPath()` with a selection; `/product/1706-caf%E9` and `/product/1706-%FF` parse to item 1706 with the fixed slug (`strict-paths.test.ts`), and on a production build the status spec sees each answer 308, never 500 (two cases in `tests/e2e/status/`, HAR's file: proposed in the report, added at merge); the proxy rewrites a design URL with `?size=a3&frame=teak` to the design route with both in canonical order and drops an unknown key; the configurator's view model type-checks with a display string on every price it renders, and its fixture carries them.
 
@@ -1580,17 +1639,17 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 23.1.b observation notes (what they do, in what order, with what at hand, where they wait)
   - [ ] 23.1.c the *Operate* briefs
   - [ ] 23.1.e the admin's localizer reads `Locale: undefined` for 1–2 s after sign-in on both sites (the foundation gate's N4), and Payload's admin axe debt — a critical `label`, serious `color-contrast` and `aria-hidden-focus` (F6, docs/gates/foundation.md)
-  - [ ] 23.1.d **Check:** a cataloguer has been observed at the drawer and the shop manager on WhatsApp and in the showroom (about two hours each), and impeccable `shape` briefs in *Operate* mode exist for the desk, cataloguing, bulk upload, the merch wizard, the inbox, the order builder and the showroom sale — each with a keyboard map and a density spec — and Payload's Indonesian admin translation has been checked against the custom views.
+  - [ ] 23.1.d **Check:** a cataloguer has been observed at the drawer and the shop manager on WhatsApp and in the showroom (about two hours each), and impeccable `shape` briefs in *Operate* mode exist for the desk, cataloguing, bulk upload, the merch wizard, the inbox, the order builder — with the invoice built and shared on a phone (D50, D51) — and the showroom sale — each with a keyboard map and a density spec — and Payload's Indonesian admin translation has been checked against the custom views.
 
 - [ ] **23.2 Admin shell, branding and the desk** · needs: 10.1, 13.3, 23.1
   - **Lane** ADM · **Agent** senior-uiux (ADM-A) · **Wave** W2
   - **Owns** `engine/packages/cms/src/admin/{shell,desk,theme}/**`
   - **Read** NOW! SURFACES-PLAN S3.1 (custom views inside `DefaultTemplate`), DESIGN-SYSTEM.md §4
-  - _Requirements: 14.1, 14.8_
-  - [ ] 23.2.a The admin wearing the brand's tokens (chrome and accents, per 13.3)
-  - [ ] 23.2.b The desk: the queues in Req 14.1, each with its count
+  - _Requirements: 14.1, 14.8, 14.9_
+  - [ ] 23.2.a The admin wearing the brand's tokens (chrome and accents, per 13.3); each staff user picks the admin's language, English or Indonesian (G15)
+  - [ ] 23.2.b The desk: the queues in Req 14.9 — price requests and enquiries awaiting a reply, invoices nearing their due date and lapsed unpaid, consignments, orders to fulfil, low stock, drafts to verify — each with its count
   - [ ] 23.2.c Custom views inside Payload's `DefaultTemplate` so they keep its navigation, registered through ADM's `views` barrel
-  - [ ] 23.2.d **Check:** the admin wears the brand's tokens, the desk shows the queues in Req 14.1 with counts, and every custom view renders inside Payload's navigation (opened, not assumed).
+  - [ ] 23.2.d **Check:** the admin wears the brand's tokens, each staff user's chosen language holds across the admin, the desk shows the queues in Req 14.9 with counts, and every custom view renders inside Payload's navigation (opened, not assumed).
 
 - [ ] **23.3 Fast cataloguing** · needs: 8.2, 23.1
   - **Lane** ADM · **Agent** senior-fe (ADM-B) · **Wave** W2
@@ -1628,18 +1687,18 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Owns** `docs/design/collateral/**`, `engine/packages/documents/src/templates/**`
   - **Read** COMMERCE.md §12, DESIGN-SYSTEM.md §11
   - _Requirements: 10.5, 19.10_
-  - [ ] 23.6.a The certificate of authenticity (image, stock number, grade, the Parry signature block, a slot for the v2 verification QR) and the designers' item factsheet
-  - [ ] 23.6.b The proforma, the commercial invoice, the packing slip and its gift variant
-  - [ ] 23.6.c The gift card (digital and print), the shop's story card, the showroom QR placard, the hang tag / Archive No. label
+  - [ ] 23.6.a The certificate of authenticity (image, stock number, grade, the Parry signature block, a slot for the v2 verification QR) and the designers' item factsheet — the piece, "Price on request", the gallery's contact and the date it was printed, never a price (G14)
+  - [ ] 23.6.b The invoice — the proforma staff issue on an agreed price, with its due date and the transfer details on the PDF only (D50, D45) — the commercial invoice, the packing slip and its gift variant
+  - [ ] 23.6.c The shop's story card, the showroom QR placard, the hang tag / Archive No. label (the gift card waits, S10, v2.21)
   - [ ] 23.6.d Bilingual, A4 and US Letter, fonts embedded — and test-printed on a real printer
-  - [ ] 23.6.e **Check:** each brand's printed and PDF artefacts are designed, bilingual, in A4 and US Letter with embedded fonts, and **test-printed on a real printer**: the certificate of authenticity (image, stock number, grade, the Parry signature block, a slot for the v2 verification QR), the item factsheet designers present, the proforma, the commercial invoice, the packing slip (and its gift variant), the gift card (digital and print), the shop's story card, the showroom QR placard, and the hang tag / Archive No. label.
+  - [ ] 23.6.e **Check:** each brand's printed and PDF artefacts are designed, bilingual, in A4 and US Letter with embedded fonts, and **test-printed on a real printer**: the certificate of authenticity (image, stock number, grade, the Parry signature block, a slot for the v2 verification QR), the item factsheet designers present (no price), the invoice (proforma), the commercial invoice, the packing slip (and its gift variant), the shop's story card, the showroom QR placard, and the hang tag / Archive No. label.
 
 ---
 
 ## Phase 24 — Admin operations: merch wizard, orders, inbox, stock and manual orders · Admin · needs 20, 23 · ~3.5d
 
 **Goal:** the screens that run the business once orders arrive.
-**Done when:** a shop manager turns one work into a twelve-variant giclée product with mockups; an order is fulfilled with its documents; an accepted offer reaches the buyer as a working payment link; stock moves between locations and a showroom sale records; a manual quote becomes an order.
+**Done when:** a shop manager turns one work into a twelve-variant giclée product with mockups, each variant stocked; an order is fulfilled with its documents; an invoice built on a phone from a WhatsApp-negotiated price reaches the buyer as a working pay page and holds its piece to its due date; stock is counted in its one location and a showroom sale records; a manual quote becomes an order.
 **Waves:** W1 — 24.1, 24.2, 24.3, 24.4, 24.5
 
 - [ ] **24.1 Merch-from-work wizard and mockups** · needs: 9.2, 15.4
@@ -1650,68 +1709,72 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 24.1.a Pick a work (a provenance copy) and crop a design with the print ceiling visible
   - [ ] 24.1.b Choose product types; preview the generated variants within constraints and ceilings, priced from the tables
   - [ ] 24.1.c Composite room mockups (MED) and create the drafts
-  - [ ] 24.1.d **Check:** a manager picks a work (provenance copy), crops a design with the print ceiling visible, selects product types, previews generated variants that respect constraints and ceilings, sees prices from the tables, and creates drafts with composited room mockups.
+  - [ ] 24.1.d **Check:** a manager picks a work (provenance copy), crops a design with the print ceiling visible, selects product types, previews generated variants that respect constraints and ceilings, sees prices from the tables, and creates drafts with composited room mockups and a stock count for each variant (S7: only stocked variants are offered).
 
 - [ ] **24.2 Order operations and documents** · needs: 19.1, 19.2, 20.3, 23.6
   - **Lane** ADM + NTF · **Agent** senior-fe (ADM-B), medior (NTF) · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/orders/**`, `engine/packages/documents/src/{coa,factsheet,commercial-invoice,packing-slip}/**`
   - **Read** COMMERCE.md §6, §11–12, the 23.6 collateral designs
-  - _Requirements: 10.5, 10.6, 14.6_
+  - _Requirements: 10.5, 10.6, 14.6, 6.15_
   - [ ] 24.2.a The order screen with its state-machine timeline
   - [ ] 24.2.b Shipments with tracking; pickups marked ready
-  - [ ] 24.2.c Refunds (gateway or manual task) and returns, including the shop's photo claim for a damaged print
-  - [ ] 24.2.d Documents to the 23.6 designs: the COA with the curator signature block, the factsheet, the commercial invoice, the packing slip and its gift variant
-  - [ ] 24.2.e **Check:** the order screen shows the state-machine timeline, creates shipments with tracking, marks pickups ready, issues refunds (gateway or manual task), processes returns (including the shop's photo claim for a damaged print), and generates — **to the 23.6 designs** — the COA (with curator signature block), the item factsheet, the commercial invoice and the packing slip (with a gift variant that hides prices).
+  - [ ] 24.2.c Refunds (gateway or manual task) and returns, including the shop's photo claim for a damaged print, which ends in a replacement — a zero-priced order from the order builder (S12)
+  - [ ] 24.2.d Documents to the 23.6 designs: the COA with the curator signature block, the factsheet, the commercial invoice, the packing slip and its gift variant; no shipment before the order is `paid` (G11)
+  - [ ] 24.2.e **Check:** the order screen shows the state-machine timeline, creates shipments with tracking — never before the order is `paid` (G11) — marks pickups ready, issues refunds (gateway or manual task), processes returns (including the shop's photo claim for a damaged print, replaced by a zero-priced order), and generates — **to the 23.6 designs** — the COA (with curator signature block), the item factsheet, the commercial invoice and the packing slip (with a gift variant that hides prices).
 
-- [ ] **24.3 The inbox: offers, holds, price requests, enquiries, consignments, appointments** · needs: 19.1, 19.2.e
+- [ ] **24.3 The inbox: price requests, enquiries, proforma requests, invoices, consignments, appointments** · needs: 19.1, 19.2.e
   - **Lane** ADM · **Agent** senior-fe (ADM-A) · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/inbox/**`
-  - _Requirements: 9.5, 9.7, 11.5, 14.7_
-  - [ ] 24.3.a Offers: accept (issuing a payment link), counter, decline
-  - [ ] 24.3.b Holds (grant, release, expiry) and price-request answers from templates
+  - _Requirements: 9.5, 9.7, 11.5, 14.7, 14.10_
+  - [ ] 24.3.a Offers: accept (issuing a payment link), counter, decline — ✂️ cut: D50, D22 (2026-10-01) — no brand takes online offers at launch
+  - [ ] 24.3.b Price requests and enquiries answered from templates within the reply promise (G9), each showing its age against it; a request turned into an invoice in the order builder (24.5) in one step
   - [ ] 24.3.c Consignment statuses and the appointments calendar
   - [ ] 24.3.d Layouts that work at 390 px and 768 px as well as on a desktop
-  - [ ] 24.3.e **Check:** staff accept (issuing a payment link), counter or decline offers; grant or release holds with expiry; answer price requests from templates; move consignments through their statuses; and see appointments on a calendar — **on a phone (390 px) and a tablet (768 px)** as well as a desktop, because the shop manager works from a phone.
+  - [ ] 24.3.f Invoices nearing their due date and lapsed unpaid, each re-dated or voided from here before its due date (20.6.c)
+  - [ ] 24.3.e **Check:** staff answer price requests and enquiries from templates, each with its age against the reply promise, and turn one into an invoice; see invoices nearing their due date and lapsed unpaid, and re-date or void one before its date; move consignments through their statuses; and see appointments on a calendar — **on a phone (390 px) and a tablet (768 px)** as well as a desktop, because the shop manager works from a phone.
 
 - [ ] **24.4 Stock, locations and showroom sales** · needs: 18.1
   - **Lane** ADM · **Agent** medior (ADM-C) · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/stock/**`
-  - _Requirements: 9.1, 7.8_
-  - [ ] 24.4.a Stock counts and transfers between locations; the showroom stock view
+  - _Requirements: 9.1, 7.8, 7.15_
+  - [ ] 24.4.a Stock counts in the one stock location, the Denpasar showroom — no transfers between locations at launch (D52); the showroom stock view
   - [ ] 24.4.b Low-stock alerts
-  - [ ] 24.4.c The showroom sale, reserving and converting through `reserve()` (channel `showroom`), on the counter's tablet and a phone
-  - [ ] 24.4.d **Check:** staff count and transfer stock, see showroom stock, get low-stock alerts, and record a showroom sale that reserves and converts through `reserve()` (channel `showroom`) — the showroom-sale screen working on the counter's tablet (768 px) and a phone.
+  - [ ] 24.4.c The showroom sale, reserving and converting through `reserve()` (channel `showroom`), paid by QRIS at the counter through the shop's Midtrans (S4) or in cash, on the counter's tablet and a phone
+  - [ ] 24.4.e The counter's pickup lookup: a pickup code or QR, scanned or typed, shows the order as paid and marks it collected (S4, J-S4)
+  - [ ] 24.4.f QR labels for the showroom: the hang tag / Archive No. label (23.6.c) printed per product with its in-showroom QR (C10), from the stock view
+  - [ ] 24.4.d **Check:** staff count stock in the one showroom location (no transfers at launch), get low-stock alerts, record a showroom sale that reserves and converts through `reserve()` (channel `showroom`), paid by QRIS at the counter or in cash, find a pickup order by its code and mark it collected, and print QR labels for the showroom stock — each screen working on the counter's tablet (768 px) and a phone.
 
-- [ ] **24.5 Manual order and quote builder** · needs: 19.1, 19.2, 23.1
+- [ ] **24.5 The order builder: invoices, manual orders and quotes** · needs: 19.1, 19.2, 20.6, 23.1
   - **Lane** ADM · **Agent** senior-fe (ADM-C) · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/order-builder/**`
   - **Read** COMMERCE.md §5, §7, PAYMENTS.md §5, the 23.1 order-builder brief
-  - _Requirements: 9.1, 11.5, 14.6, 14.7_
-  - [ ] 24.5.a Build an order or a quote: items (a unique item is reserved through `reserve()` the moment it is added), the customer, the destination
-  - [ ] 24.5.b Staff discounts within the role's limit, with every figure priced by the server
-  - [ ] 24.5.c Send it as a payment link or a quote PDF — from a phone at 390 px
-  - [ ] 24.5.d **Check:** staff build an order or a quote for a WhatsApp, phone or showroom sale — pick items (a unique item is reserved through `reserve()` the moment it is added), the customer and the destination, apply a staff discount within the role's limit — with every figure **priced by the server**, and send it as a payment link or a quote PDF; it works on a phone (390 px), because most of these sales start in a WhatsApp chat.
+  - _Requirements: 9.1, 11.5, 14.6, 14.7, 6.14, 14.10_
+  - [ ] 24.5.a Build an invoice — the gallery's: the agreed figure (C5 `AgreedPrice`, set only by a role that may set prices), the insured shipping and any duties as quoted, a due date proposed from `invoiceHoldDays` (3 days, D45), which staff may change — a manual order or a quote: items, the customer, the destination; a unique piece is held only when the invoice is issued, through 20.6's `issueInvoice()` (D45), never when it is added
+  - [ ] 24.5.b Staff discounts within the role's limit (the shop), and the agreed figure (the gallery) entered only by a role that may set prices, with every figure priced and audited by the server
+  - [ ] 24.5.c Issue it and share its pay link into the buyer's WhatsApp chat (`wa.me`) or by email, the PDF beside it — from a phone at 390 px
+  - [ ] 24.5.e A held or sold piece and an export-blocked line are refused with their reasons, and nothing is issued (20.6.a–b)
+  - [ ] 24.5.d **Check:** staff build, on a phone (390 px), the invoice for a price agreed on WhatsApp or the phone — the piece, the agreed figure (only a role that may set prices), shipping and duties as quoted, a due date — issue it, the piece held until that date through `reserve()` (D45), and share its pay link into the buyer's WhatsApp chat or by email; a held or sold piece and an export-blocked line are refused with their reasons; the shop's manual orders and quotes still build with staff discounts within the role's limit; every figure is **priced by the server**.
 
 ---
 
 ## Phase 25 — Payment adapters 👤 · Integrations · needs 19 · ~3.5d
 
 **Goal:** the remaining payment providers behind the `PaymentGateway` contract.
-**Done when:** the Stripe (Singapore seller) and PayPal adapters — and Xendit or DOKU if chosen — pass the contract suite on recorded sandbox fixtures.
+**Done when:** the Stripe adapter (the Singapore seller, its Payment Element embedded in the brand's own pay page) — and Xendit or DOKU if chosen — pass the contract suite on recorded sandbox fixtures; PayPal waits for the shop's export (v2.20).
 **Waves:** W1 — 25.1, 25.2, 25.3
 
 - [ ] **25.1 👤 Stripe adapter (Singapore seller)** · needs: 19.2 · 👤 sandbox keys (D3)
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W1
   - **Owns** `engine/packages/payments/src/adapters/stripe/**`
-  - **Read** PAYMENTS.md §2–4
-  - _Requirements: 11.1, 11.5, 11.6, 11.7_
+  - **Read** PAYMENTS.md §1–6
+  - _Requirements: 11.1, 11.5, 11.6, 11.7, 6.16, 11.10_
   - [ ] 25.1.a 👤 Stripe Singapore **sandbox** account and keys, into Infisical (D3)
-  - [ ] 25.1.b The Payment Element (cards, Apple/Google Pay, PayNow; iDEAL/SEPA where enabled) with 3DS; authorise-then-capture for unique items
-  - [ ] 25.1.c Checkout Sessions declared with `minSessionTtl` of 30 minutes (Stripe's floor) and never cut below it — not offered where the lock's ceiling or the hold leaves less; IDR charging for the Singapore seller's Indonesian deliveries (D29), converted both ways at the adapter (Stripe counts IDR in hundredths), a figure that is no whole rupiah coming back `InexactMoney`, never rounded
-  - [ ] 25.1.d Webhooks keyed by Stripe's event id, refunds, Invoicing / Payment Links — through the contract suite
-  - [ ] 25.1.e **Check:** the Payment Element (cards, Apple/Google Pay, PayNow; iDEAL/SEPA where enabled) with 3DS, authorise-then-capture for unique items (capture only while the reservation is live), Checkout Sessions never cut below Stripe's 30-minute floor (`minSessionTtl`, and not offered where it no longer fits), IDR charging for the Singapore seller's Indonesian deliveries (D29) with the adapter's unit conversion both ways and an inexact figure flagged, webhooks keyed by Stripe's event id, refunds, and Invoicing/Payment Links for inquire → pay pass the contract suite.
+  - [ ] 25.1.b The Payment Element embedded in the brand's own `/pay/{token}` page (cards, Apple/Google Pay, PayNow; iDEAL/SEPA where enabled) with 3DS; an invoice's payment captured at once, since its hold lasts to the due date (PAYMENTS.md §1, D51)
+  - [ ] 25.1.c No Checkout Sessions (D51): the Payment Element's PaymentIntents declare their `minSessionTtl` and are never cut below it — not offered where the hold leaves less; IDR charging for the Singapore seller's Indonesian invoices (D29), converted both ways at the adapter (Stripe counts IDR in hundredths), a figure that is no whole rupiah coming back `InexactMoney`, never rounded
+  - [ ] 25.1.d Webhooks keyed by Stripe's event id and refunds — through the contract suite; no Stripe Invoicing or Payment Links page (the invoice is the brand's own page, D51)
+  - [ ] 25.1.e **Check:** the Payment Element, embedded in the brand's own pay page (cards, Apple/Google Pay, PayNow; iDEAL/SEPA where enabled), with 3DS and an invoice captured at once while its hold is live, PaymentIntents never cut below their floor (`minSessionTtl`, and not offered where it no longer fits), IDR charging for the Singapore seller's Indonesian invoices (D29) with the adapter's unit conversion both ways and an inexact figure flagged, webhooks keyed by Stripe's event id and refunds pass the contract suite; no Stripe-hosted page is used.
 
-- [ ] **25.2 PayPal adapter** · needs: 19.2
+- [ ] **25.2 PayPal adapter** · needs: 19.2 — ✂️ cut: S3 (2026-10-01) — no seller lists PayPal at launch: it cannot charge rupiah and the shop delivers within Indonesia only; it returns with the shop's export, v2.20
   - **Lane** PAY · **Agent** senior-integrator · **Wave** W1
   - **Owns** `engine/packages/payments/src/adapters/paypal/**`
   - _Requirements: 11.1, 11.7_
@@ -1734,7 +1797,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 26 — Couriers and the fulfilment router 👤 · Integrations · needs 15, 20 · ~3d
 
 **Goal:** domestic and export shipping, and the router that sends each line to where it is made or held.
-**Done when:** a Denpasar order gets live Biteship rates and tracking; a Netherlands order ships from Bali stock by DHL Express with a duties estimate; the router sends each line to own stock or local made-to-order (print-on-demand abroad is not part of the launch, D23).
+**Done when:** a Denpasar order gets live Biteship rates and tracking; a gallery invoice to the Netherlands is quoted DHL Express shipping with its declared value and a duties estimate; the router sends each shop line to its own stock (the one pool, D52), and an Indonesian destination never routes overseas (print-on-demand abroad is not part of the launch, D23; nothing is made to order, S7).
 **Waves:** W1 — 26.1, 26.2, 26.3
 
 - [ ] **26.1 👤 Biteship** · needs: 20.2 · 👤 sandbox key
@@ -1761,29 +1824,29 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Read** COMMERCE.md §8, COMPLIANCE.md §5
   - _Requirements: 12.4, 12.5, 12.7_
   - [ ] 26.3.a The router: a **pure** function over `RouteFulfilmentInput` (variant, quantity, destination) and a `RouteFulfilmentContext` the caller loads first — stock per location, locations to try first (the showroom for Bali), local-production and POD eligibility (C7 `RouteFulfilment`) — own stock → local made-to-order → POD near the buyer (only while `fulfilment.pod` is on) → not offered
-  - [ ] 26.3.b The local made-to-order adapter: a production task for the Bali print partner, with a presigned print file from `print-files/`
-  - [ ] 26.3.c Tests: an Indonesian destination never routes overseas; switching `fulfilment.pod` on needs no router change
-  - [ ] 26.3.d **Check:** each line routes own stock → local made-to-order (a production task for the Bali print partner, with its presigned print file from `print-files/`) → **POD near the buyer only while `fulfilment.pod` is on** (off at launch, D23) → not offered; the router does no I/O of its own — every fact it needs arrives in its loaded context — so it is unit-tested as a pure function; a test proves Indonesian destinations never route overseas and that switching `fulfilment.pod` on needs no router change. The Prodigi and Gelato adapters are post-launch (v2.18).
+  - [ ] 26.3.b The local made-to-order adapter: a production task for the Bali print partner, with a presigned print file from `print-files/` — ✂️ cut: S7 (2026-10-01) — everything the shop sells is in stock at launch; the made-to-order rung moves to v2.20
+  - [ ] 26.3.c Tests: an Indonesian destination never routes overseas; switching the `made-to-order` inventory model or `fulfilment.pod` on needs no router change
+  - [ ] 26.3.d **Check:** each line routes own stock (at launch the one pool, D52) → local made-to-order (only while the brand offers the `made-to-order` inventory model — none at launch, S7) → **POD near the buyer only while `fulfilment.pod` is on** (off at launch, D23) → not offered; the router does no I/O of its own — every fact it needs arrives in its loaded context — so it is unit-tested as a pure function; a test proves Indonesian destinations never route overseas and that switching made-to-order or `fulfilment.pod` on needs no router change. The Prodigi and Gelato adapters are post-launch (v2.18).
 
 ---
 
 ## Phase 27 — Sister sync, WhatsApp and the integrations gate 👤 · Integrations · needs 25, 26 · ~3d
 
 **Goal:** the gallery's works reaching the shop, WhatsApp notifications, and the gate over the Integrations stage.
-**Done when:** every adapter passes the contract suite on recorded sandbox fixtures; a Denpasar order gets live Biteship rates and tracking; a Netherlands order ships from Bali stock by DHL Express with a duties estimate (print-on-demand abroad is not part of the launch, D23); publishing a work in the gallery updates its shop copy within a minute and the shop's "own the original" reads "sold" after the gallery sells it.
+**Done when:** every adapter passes the contract suite on recorded sandbox fixtures; a Denpasar order gets live Biteship rates and tracking; a gallery invoice to the Netherlands is quoted DHL Express shipping with a duties estimate (the shop delivers within Indonesia only at launch, S3; print-on-demand abroad is not part of the launch, D23); publishing a work in the gallery updates its shop copy within a minute and the shop's "own the original" reads "sold" after the gallery sells it, never showing a price.
 **Waves:** W1 — 27.1, 27.2 · W2 — 27.3
 
 - [ ] **27.1 Sister sync** · needs: 1.2.g, 8.2
   - **Lane** SIS · **Agent** senior-integrator · **Wave** W1
   - **Owns** `engine/packages/sister/**`, `engine/packages/http/src/sister/**`
   - **Read** BRANDS.md §5
-  - _Requirements: 3.8, 3.11, 15.1, 15.2, 15.3, 15.4, 15.5, 16.6, 8.3_
+  - _Requirements: 3.8, 3.11, 15.1, 15.2, 15.3, 15.4, 15.5, 16.6, 8.3, 7.13_
   - [ ] 27.1.a The gallery's signed read-only archive API at `/api/x/sister/…` — published works only, `overrideAccess: false`, a field `select` — and a test that drafts, `physical` and acquisition fields never leave
   - [ ] 27.1.b `work.*` webhooks, sent from the outbox, and the shop's `prints.*` webhook back — both signed with the pair's shared secret, and every call to the sister addressed at `sisterBaseUrl()` (the host's `SISTER_BASE_URL`, else the committed staging origin; C1, DEPLOYMENT.md §8)
   - [ ] 27.1.c The shop's idempotent provenance-copy importer (synced fields read-only); the shop sends what it makes from a work back as that work's whole `PrintsFeed`, which the gallery's idempotent importer uses to replace its copy whole, so a withdrawn product simply drops out; a nightly reconcile each way; each side applies each part of a work only when it is newer than its copy — the work's fields by a snapshot's `updatedAt`, its original's listing by that listing's `asOf` (alone or inside a snapshot), the feed by its `asOf` — acknowledging and dropping anything older, and a tombstone or an unpublishing moves every part; an FX refresh stamps a new `asOf` on every listing whose derived price it moved
-  - [ ] 27.1.d Both cross-links: the gallery item page linking to the exact products, and — from its copy of the shop's feed, never a live read of the shop's database — "Prints of this map"; the shop's "own the original" in the visitor's market currency, export status respected. Every price on either link travels per market as the selling brand shows it, and every image is the C9 ladder at the owning brand's absolute URLs, never copied or re-derived.
+  - [ ] 27.1.d Both cross-links: the gallery item page linking to the exact products, and — from its copy of the shop's feed, never a live read of the shop's database — "Prints of this map", in rupiah and delivered within Indonesia (S3); the shop's "own the original" showing the original's status — available (enquire at the gallery), on hold or sold — and never a price (C12 `pricing: 'on-request'`, 7.13), export status respected. Every price either link shows travels per market as the selling brand shows it, and every image is the C9 ladder at the owning brand's absolute URLs, never copied or re-derived.
   - [ ] 27.1.e A two-database test: a sale in the gallery flips the shop's block to sold within a minute
-  - [ ] 27.1.f **Check:** the gallery's signed read-only archive API at `/api/x/sister/…` — reading **published works only**, with `overrideAccess: false` and a field `select`, so drafts, `physical` and acquisition fields never leave (a test asserts it) — and `work.*` webhooks sent from the outbox feed the shop's idempotent provenance-copy importer (synced fields read-only); the shop's `prints.*` webhook feeds the gallery's copy back the same way, so "Prints of this map" renders from it, never a live read; both cross-links resolve, the gallery item page links to the exact products made from its work (Req 16.6), and a two-database test proves a sale in the gallery flips the shop's "own the original" to sold within a minute — that a delayed "available" arriving after "sold" leaves it sold, and that a snapshot with newer fields but an older `original` than the copy's updates the fields alone. Every price either link shows is **per market, as the selling brand shows it** (never USD beside an IDR page) and **respects export status** — tested for an Indonesian destination and for a `domestic-only` original seen from abroad; every image renders at the owning brand's absolute URL from the C9 ladder, never copied into the other brand's bucket.
+  - [ ] 27.1.f **Check:** the gallery's signed read-only archive API at `/api/x/sister/…` — reading **published works only**, with `overrideAccess: false` and a field `select`, so drafts, `physical` and acquisition fields never leave (a test asserts it) — and `work.*` webhooks sent from the outbox feed the shop's idempotent provenance-copy importer (synced fields read-only); the shop's `prints.*` webhook feeds the gallery's copy back the same way, so "Prints of this map" renders from it, never a live read; both cross-links resolve, the gallery item page links to the exact products made from its work (Req 16.6), and a two-database test proves a sale in the gallery flips the shop's "own the original" to sold within a minute — that a delayed "available" arriving after "sold" leaves it sold, and that a snapshot with newer fields but an older `original` than the copy's updates the fields alone; the shop's block never shows the original's price (C12 on-request, 7.13). Every price either link shows is **per market, as the selling brand shows it** (never USD beside an IDR page) and **respects export status** — tested for an Indonesian destination and for a `domestic-only` original seen from abroad; every image renders at the owning brand's absolute URL from the C9 ladder, never copied into the other brand's bucket.
 
 - [ ] **27.2 👤 WhatsApp notifications** · needs: 20.3 · 👤 provider (D14 — needed before this wave; otherwise close as email-only with the date)
   - **Lane** NTF · **Agent** senior-integrator · **Wave** W1
@@ -1806,29 +1869,29 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 
 ## Phase 28 — Accounts, consent and data-subject operations · Accounts · needs 17, 22 · ~3d
 
-**Goal:** collector sign-in and the legacy claim flow on the gallery, retailer accounts on the shop (shoppers buy as guests, D31), both account areas, consent, and the data-subject operations.
-**Done when:** a gallery collector signs up and a legacy customer claims their account; a shop visitor checks out as a guest and finds no shopper sign-up; a retailer applies from the Partnership page, is approved by staff and signs in to the retailer area; the consent banner records each choice and the beacon runs cookieless without consent; an erasure request removes a customer's personal data while their orders stay reproducible.
+**Goal:** retailer accounts on the shop — shoppers buy as guests (D31) and the gallery signs no one in (D54) — the retailer area, consent, and the data-subject operations, which staff carry out on request at the gallery.
+**Done when:** neither storefront has a shopper or collector sign-up — the gallery's auth routes answer 404, and an old `/account/…` link reaches the designed page (36.4.e); a shop visitor checks out as a guest; a retailer applies from the Partnership page, is approved by staff and signs in to the retailer area; the consent banner records each choice and the beacon runs cookieless without consent; an erasure request — asked by email at the gallery and carried out by staff — removes a customer's personal data while their orders stay reproducible.
 **Waves:** W1 — 28.1, 28.3, 28.4 · W2 — 28.2, 28.5
 
-- [ ] **28.1 Customer authentication and the legacy claim flow** · needs: 9.4
+- [ ] **28.1 Customer authentication — the shop's retailers** · needs: 9.4
   - **Lane** WEB (+ SCH consult) · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/http/src/auth/**`
   - **Read** ARCHITECTURE.md §12, MIGRATION.md §5, NOW! READER-IDENTITY.md
-  - _Requirements: 13.1, 16.4, 19.5_
+  - _Requirements: 13.1, 16.4, 19.5, 13.8_
   - [ ] 28.1.a The custom auth strategy on `customers` under its own cookie — a staff session in the same browser survives (test)
-  - [ ] 28.1.b Register, verify, sign in, reset, lockout, rate limits — on the gallery for collectors; on the shop **for approved retailers only**, with no shopper registration route at all (D31). A set-password link (approval's, a reset's, a claim) is a single-use random nonce that the auth service mints when NTF asks for one as it sends the email, keeping only its hash and expiry on the customer until it is used (C13 `PASSWORD_LINK`). Every other emailed link — the application's status link included — is derived (C6 `links`), stored nowhere.
-  - [ ] 28.1.c Cart merge on sign-in; the claim flow for the gallery's migrated accounts (random, unusable password)
-  - [ ] 28.1.d Tests: wrong password, unknown user (the same answer), lockout, a customer on an admin route
-  - [ ] 28.1.e **Check:** customer sessions are issued by a **custom auth strategy on `customers` under their own cookie** — a member of staff signed in to `/admin` stays signed in after signing in as a customer in the same browser (test); register, verify, sign in, reset, lockout and rate limits work for customers only — collectors on the gallery, approved retailers on the shop, and the shop exposes no shopper sign-up; carts merge on sign-in; a migrated account (random, unusable password) can claim itself by email link; tests cover wrong password, unknown user (same answer as wrong password), lockout and a customer attempting an admin route.
+  - [ ] 28.1.b Sign in, reset, lockout, rate limits — **for the shop's approved retailers only** (D31): no shopper or collector registration route on either brand (D54), and on a brand with neither account module every auth operation answers 404 (C13 v1.5). A set-password link (approval's, a reset's, a claim) is a single-use random nonce that the auth service mints when NTF asks for one as it sends the email, keeping only its hash and expiry on the customer until it is used (C13 `PASSWORD_LINK`). Every other emailed link — the application's status link included — is derived (C6 `links`), stored nowhere.
+  - [ ] 28.1.c Cart merge on sign-in; the claim flow for the gallery's migrated accounts (random, unusable password) — ✂️ cut: D54 (2026-10-01) — no collector accounts, so no claim flow, and no brand merges a cart at launch (D50, D31); collector accounts are v2.22
+  - [ ] 28.1.d Tests: wrong password, unknown user (the same answer), lockout, a customer on an admin route, and every gallery auth route answering 404
+  - [ ] 28.1.e **Check:** customer sessions are issued by a **custom auth strategy on `customers` under their own cookie** — a member of staff signed in to `/admin` stays signed in after signing in as a customer in the same browser (test); sign in, reset, lockout and rate limits work for the shop's approved retailers only; neither the gallery nor the shop exposes a shopper or collector sign-up, and on the gallery every auth operation answers 404 (test); tests cover wrong password, unknown user (same answer as wrong password), lockout and a customer attempting an admin route.
 
-- [ ] **28.2 The gallery's account area and the shop's retailer area** · needs: 28.1
-  - **Lane** UXG + UXE · **Agent** senior-uiux (one per app) · **Wave** W2
-  - **Owns** `engine/apps/*/src/surfaces/account/**` + routes
-  - _Requirements: 13.2, 18.6_
-  - [ ] 28.2.a The gallery: overview, orders with documents, wishlist, want-lists (each with its own stop button — no separate unsubscribe landing page: every alert leads to the one want-list page, C10 `wantList`), addresses, profile, consents, export and deletion requests. The shop's retailer area: overview, orders and quotes with documents, the retail terms (data set by D32), addresses, profile, consents, export and deletion requests
-  - [ ] 28.2.b The gallery's conversations: my offers (with the counter's countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), consignments with their timeline — each answered by the session and the record's id (C6 `OfferAccess`, `AppointmentAccess`), a viewing rescheduled through the `appointment` form that names it (C10 `form`'s `appointment`), and its `.ics` served by session: no token in the page or in any URL on it but a pay link's or a quote's own address
+- [ ] **28.2 The shop's retailer area** · needs: 28.1
+  - **Lane** UXE · **Agent** senior-uiux · **Wave** W2
+  - **Owns** `engine/apps/emporium/src/surfaces/account/**` + routes
+  - _Requirements: 13.2, 18.6, 13.8_
+  - [ ] 28.2.a The shop's retailer area: overview, orders and quotes with documents, the terms agreed with this partner (S5: case by case, none published), addresses, profile, consents, export and deletion requests. (The gallery's half — its account area with orders, wishlist and want-lists — is dropped: the gallery has no accounts, D54; v2.22.)
+  - [ ] 28.2.b The gallery's conversations: my offers (with the counter's countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), consignments with their timeline — each answered by the session and the record's id (C6 `OfferAccess`, `AppointmentAccess`), a viewing rescheduled through the `appointment` form that names it (C10 `form`'s `appointment`), and its `.ics` served by session: no token in the page or in any URL on it but a pay link's or a quote's own address — ✂️ cut: D54 (2026-10-01) — no gallery account: each conversation comes back by its own link or WhatsApp (EXPERIENCE-GALLERY.md §10); v2.22
   - [ ] 28.2.c Empty states that invite rather than blank
-  - [ ] 28.2.d **Check:** the gallery's account and the shop's retailer area each hold what 28.2.a lists; in the gallery, overview, orders with documents, wishlist (the gallery's viewing pull list), want-lists (each stopped from the one want-list page, never a separate landing page), addresses, profile and consents, and export/deletion requests work; the gallery's account also holds **my offers** (with the counter's countdown), holds, price requests, viewings (reschedule, cancel, `.ics`) and consignments with their status timeline, all by session — a test finds no offer, appointment or lookup token in the account's HTML; empty states invite rather than blank (NOW! DESIGN-SYSTEM §4).
+  - [ ] 28.2.d **Check:** the shop's retailer area holds what 28.2.a lists for it — overview, orders and quotes with documents, the partner's agreed terms, addresses, profile and consents, and export/deletion requests work; the gallery serves no account area, and a test finds no account entry in its shell; empty states invite rather than blank (NOW! DESIGN-SYSTEM §4).
 
 - [ ] **28.3 Consent banner, records and the cookieless beacon mode** · needs: 9.4, 22.1, 22.2
   - **Lane** SEO · **Agent** senior-fe · **Wave** W1
@@ -1837,28 +1900,28 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 17.5, 17.6, 18.5_
   - [ ] 28.3.a The fixed, CLS-safe banner
   - [ ] 28.3.b Consent records: purpose, timestamp, policy version
-  - [ ] 28.3.c The beacon cookieless until consent; GA4 and Meta loaded from the runtime ids in `ShellVM` only after marketing consent; an e2e for rejection
-  - [ ] 28.3.d **Check:** the banner is fixed (CLS-safe), records purpose + timestamp + policy version, keeps the beacon cookieless until consent, loads GA4 and Meta only from the **runtime** ids in `ShellVM` after marketing consent, and an e2e proves rejecting consent loads no marketing tag.
+  - [ ] 28.3.c The beacon cookieless until consent, analytics consent adding only its persistent first-party id; no marketing-tag category on the banner, since no brand sets a GA4 or Meta id (D55); an e2e for rejection
+  - [ ] 28.3.d **Check:** the banner is fixed (CLS-safe), records purpose + timestamp + policy version, keeps the beacon cookieless until consent, offers no marketing-tag category and loads no third-party tag (D55), and an e2e proves rejecting consent sets no persistent analytics id.
 
 - [ ] **28.4 Data-subject operations** · needs: 9.4, 17.1
   - **Lane** DOM + WEB · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/domain/src/privacy/**`, `engine/packages/http/src/privacy/**`
   - **Read** COMPLIANCE.md §7, MIGRATION.md §5
   - _Requirements: 13.2, 18.6_
-  - [ ] 28.4.a Export (JSON) and correction
+  - [ ] 28.4.a Export (JSON) and correction — by staff on an emailed request where a brand has no account area (the gallery, D54): the admin action takes the customer record, checks the request came from its email, and sends the export there
   - [ ] 28.4.b Erasure: personal fields removed or pseudonymised everywhere, while orders, invoices and tax records keep what the law requires and still reproduce their totals
-  - [ ] 28.4.c The record-of-processing export per brand; never-claimed migrated accounts purged on counsel's schedule
+  - [ ] 28.4.c The record-of-processing export per brand; customer records with no order, consent or recent contact purged on counsel's schedule (there are no unclaimed accounts to purge, D54)
   - [ ] 28.4.d An operations log that never holds the personal data itself
-  - [ ] 28.4.e **Check:** a verified customer (or staff on their behalf) can **export** their data as JSON, **correct** it, and **erase** it — personal fields removed or pseudonymised everywhere, while orders, invoices and tax records keep what the retention law requires and still reproduce their totals; a record-of-processing export exists per brand; migrated customers who never claim their account are purged on the schedule counsel sets; every operation is logged without the personal data itself.
+  - [ ] 28.4.e **Check:** a verified customer (or staff on their behalf — at the gallery always, on an emailed request checked against the record's email) can **export** their data as JSON, **correct** it, and **erase** it — personal fields removed or pseudonymised everywhere, while orders, invoices and tax records keep what the retention law requires and still reproduce their totals; a record-of-processing export exists per brand; customer records past counsel's schedule are purged; every operation is logged without the personal data itself.
 
 - [ ] **28.5 The Partnership page and retailer accounts** · needs: 28.1, 22.4
   - **Lane** UXE + DOM (+ SCH for the `retailerStatus` field, in the wave migration) · **Agent** senior-uiux, senior-be · **Wave** W2
   - **Owns** `engine/apps/emporium/src/surfaces/partnership/**` + its routes, `engine/packages/domain/src/retailers/**`
   - **Read** `docs/design/input/claude-design-2026-09/Old East Indies/Partnership.dc.html` and `project-notes.md` (the client's decision of 11 Sept 2026), EXPERIENCE-SHOP.md §9, COMPLIANCE.md §7
-  - _Requirements: 7.8, 13.1, 13.2_
-  - [ ] 28.5.a The Partnership page: what a retail partner gets (the terms D32 sets), reached from the partnership highlight in the home hero and from **Partnership** in the header; its last section is the call to action that opens sign-up or sign-in, inline or as a dialog
+  - _Requirements: 7.8, 13.1, 13.2, 7.16_
+  - [ ] 28.5.a The Partnership page: what a retail partner gets, with no published discount or minimum (S5: staff agree terms with each partner), reached from the partnership highlight in the home hero and from **Partnership** in the header; its last section is the call to action that opens sign-up or sign-in, inline or as a dialog
   - [ ] 28.5.b The retailer application — business name, tax number (NPWP), address, type of shop, contact, consent — saved as a customer with `retailerStatus: applied`; staff approve or decline it in the admin, and approval emails a set-password link
-  - [ ] 28.5.c An approved retailer signs in (28.1) and sees the retail terms as data — the trade price tier and minimum order (D32) — and orders through a quote (the order builder, 24.5); a declined or pending applicant sees their status, never trade prices
+  - [ ] 28.5.c An approved retailer signs in (28.1) and sees the terms staff agreed with them — their trade price tier and any minimum (D32's data, set per partner, S5) — and orders through a quote (the order builder, 24.5); a declined or pending applicant sees their status, never trade prices
   - [ ] 28.5.d **Check:** from the home hero and from the header, a visitor reaches the Partnership page, applies at its last section, is approved by staff in the admin, sets a password from the email and signs in to the retailer area with the trade terms; a pending or declined applicant never sees a trade price; a shopper has no sign-up route and checks out as a guest.
 
 ---
@@ -1869,16 +1932,17 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 **Done when:** a guest's saved search emails them when a match is published; a confirmed subscriber receives the next generated digest; a consented abandoned bag sends one email and a non-consented one sends none; an erasure request removes a customer's personal data while their orders stay reproducible.
 **Waves:** W1 — 29.1, 29.2 · W2 — 29.3 · W3 — 29.4
 
-- [ ] **29.1 Want-lists: subscribe, confirm, match and alert** · needs: 16.3, 20.3
+- [ ] **29.1 Want-lists: subscribe, confirm, match and alert** · needs: 16.3, 20.3, 20.6
   - **Lane** DOM · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/domain/src/want-lists/**`, `engine/packages/http/src/commerce/want-lists/**`
   - **Read** COMMERCE.md §7, COMPLIANCE.md §7, ARCHITECTURE.md §11
-  - _Requirements: 13.3, 5.6_
-  - [ ] 29.1.a `wantList.subscribe`: an account's list starts at once (`retention.wantList`); an address's is stored `pending` and answers the same — a link is on its way — whoever asks and whatever it already watches, within `WANT_LIST_EMAIL_LIMIT` and at most `WANT_LIST_PENDING_PER_ADDRESS` pending per address (past it, nothing stored, the same receipt); the confirmation is sent from the outbox after commit, its link's token derived as it is sent (C6 `links`), never carried by the row
-  - [ ] 29.1.b `wantList.confirm` (POST, by `WANT_LIST_ACCESS`'s cookie only) starts a `pending` list; `wantList.unsubscribe` erases a list whole — address, query and consent — by the account, the page's cookie, or RFC 8058's one-click token on C13 `ONE_CLICK_UNSUBSCRIBE`'s terms (the URL's token alone, the body `List-Unsubscribe=One-Click` alone, no cookie or session read, `200` with an empty body, the token stripped from the log); a daily sweep purges a `pending` list never confirmed within `WANT_LIST_PENDING_DAYS` (7)
+  - _Requirements: 13.3, 5.6, 6.13, 6.17_
+  - [ ] 29.1.a `wantList.subscribe`: an account's list starts at once (`retention.wantList` — no brand at launch, D54); an address's — every list at launch — is stored `pending` and answers the same — a link is on its way — whoever asks and whatever it already watches, within `WANT_LIST_EMAIL_LIMIT` and at most `WANT_LIST_PENDING_PER_ADDRESS` pending per address (past it, nothing stored, the same receipt); the confirmation is sent from the outbox after commit, its link's token derived as it is sent (C6 `links`), never carried by the row
+  - [ ] 29.1.b `wantList.confirm` (POST, by `WANT_LIST_ACCESS`'s cookie only) starts a `pending` list; `wantList.unsubscribe` erases a list whole — address, query and consent — by the account (where a brand has buyer accounts), the page's cookie, or RFC 8058's one-click token on C13 `ONE_CLICK_UNSUBSCRIBE`'s terms (the URL's token alone, the body `List-Unsubscribe=One-Click` alone, no cookie or session read, `200` with an empty body, the token stripped from the log); a daily sweep purges a `pending` list never confirmed within `WANT_LIST_PENDING_DAYS` (7)
   - [ ] 29.1.c Matching on publish, from an outbox event run by the queue; delivery within 15 minutes or in a daily digest, as the subscriber chose; "another example arrived" for sold items
-  - [ ] 29.1.d Budgets compared in the want-list's own market currency
-  - [ ] 29.1.e **Check:** an address's `wantList.subscribe` stores a `pending` list and emails a double opt-in link from the outbox, admitting nothing about what it already watches; the want-list page's POST confirms it or, by the same access cookie or an emailed RFC 8058 token, stops it — erasing the list whole; a `pending` list never confirmed is purged after 7 days (test); publishing a work or product emits an outbox event that the queue matches against saved queries, notifying **within 15 minutes** or in a daily digest as the subscriber chose (a test measures publish → email in Mailpit), including "another example arrived" for sold items; budgets compare in the want-list's own market currency; subscribing past `WANT_LIST_EMAIL_LIMIT` answers the same receipt without sending another email, and past `WANT_LIST_PENDING_PER_ADDRESS` stores nothing (tests); a cross-site post carrying the visitor's access cookie and a `?token=` erases nothing (test).
+  - [ ] 29.1.d Budgets — only where a brand shows prices (none on the gallery: its want-lists take no budget, D50) — compared in the want-list's own market currency
+  - [ ] 29.1.f A piece released from an invoice hold (`invoiceHold.expired`, `invoiceHold.released`) alerts every list watching it — "Tell me if it becomes available" — once, as another example's arrival does (D45, 6.17)
+  - [ ] 29.1.e **Check:** an address's `wantList.subscribe` stores a `pending` list and emails a double opt-in link from the outbox, admitting nothing about what it already watches; the want-list page's POST confirms it or, by the same access cookie or an emailed RFC 8058 token, stops it — erasing the list whole; a `pending` list never confirmed is purged after 7 days (test); publishing a work or product emits an outbox event that the queue matches against saved queries, notifying **within 15 minutes** or in a daily digest as the subscriber chose (a test measures publish → email in Mailpit), including "another example arrived" for sold items; a piece released from a lapsed or voided invoice alerts the lists watching it, once (test); budgets compare in the want-list's own market currency, and a gallery list takes none; subscribing past `WANT_LIST_EMAIL_LIMIT` answers the same receipt without sending another email, and past `WANT_LIST_PENDING_PER_ADDRESS` stores nothing (tests); a cross-site post carrying the visitor's access cookie and a `?token=` erases nothing (test).
 
 - [ ] **29.2 Newsletter: double opt-in and the generated digest** · needs: 9.4, 20.3
   - **Lane** NTF · **Agent** medior · **Wave** W1
@@ -1889,21 +1953,21 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 29.2.c Sending through the D28 newsletter sender, with list-unsubscribe
   - [ ] 29.2.d **Check:** double opt-in works (KOI), the gallery digest is generated from inventory published since the last issue, issues are archived as HTML pages, sends go through the newsletter sender chosen in D28 (never the transactional SMTP's daily quota), and every send carries list-unsubscribe.
 
-- [ ] **29.3 Shop retention: welcome offer, reviews, back in stock, abandoned bag, gift-card purchase** · needs: 20.1, 29.2
+- [ ] **29.3 Shop retention: welcome offer, reviews, back in stock, abandoned bag** · needs: 20.1, 29.2
   - **Lane** DOM + UXE + NTF · **Agent** senior-be, medior · **Wave** W2
   - **Owns** `engine/packages/domain/src/{reviews,retention}/**`, `engine/apps/emporium/src/surfaces/{reviews,gift-card}/**`
   - _Requirements: 13.6, 13.7, 8.7_
   - [ ] 29.3.a A welcome code on a confirmed newsletter signup (no account — shoppers buy as guests, D31)
   - [ ] 29.3.b Verified-buyer reviews with photos, under moderation
   - [ ] 29.3.c Back-in-stock alerts; abandoned-bag email only with consent (tested both ways)
-  - [ ] 29.3.d Gift cards bought and redeemed
-  - [ ] 29.3.e **Check:** a confirmed newsletter signup issues a welcome code, verified buyers (by their order, no account) can review with photos under moderation, restock alerts fire, abandoned-bag email goes only to consented buyers (test both ways), and gift cards can be bought and redeemed.
+  - [ ] 29.3.d Gift cards bought and redeemed — ✂️ cut: S10 (2026-10-01) — no gift cards at launch; v2.21
+  - [ ] 29.3.e **Check:** a confirmed newsletter signup issues a welcome code (S13), verified buyers (by their order, no account) can review with photos under moderation, restock alerts fire, and abandoned-bag email goes only to consented buyers (test both ways).
 
 - [ ] **29.4 Accounts gate** · needs: phase 28, 29.1–29.3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/accounts.md`
   - **Read** the **Done when** of phases 28 and 29
-  - _Requirements: 13.1–13.7, 18.6_
+  - _Requirements: 13.1–13.8, 18.6_
   - [ ] 29.4.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
   - [ ] 29.4.b Drive every clause of the **Done when** of phases 28 and 29 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/accounts.md`
   - [ ] 29.4.c File every failure as a subtask of the task that owns it, and re-run the clause after the fix
@@ -1914,7 +1978,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 30 — Shop: loaders, home and collections, the product page and the configurator · Shop · needs 16, 21, 22 · ~4.5d
 
 **Goal:** the shop's browsing half on real data, built to its briefs.
-**Done when:** on a phone, inside the Instagram in-app browser, the shop's home, menus, collections, places and eras, gifts and search run on real data; a product page shows its variants; the configurator builds the largest giclée the seed scan allows (≈ 37 cm on the long edge at 240 ppi, D26) with a teak frame and mount, seen to scale.
+**Done when:** on a phone, inside the Instagram in-app browser, the shop's home, menus, collections, places and eras, gifts and search run on real data; a product page shows its variants, every one it offers in stock (S7); the configurator builds the largest giclée the seed scan allows (≈ 37 cm on the long edge at 240 ppi, D26) with a teak frame and mount, seen to scale.
 **Waves:** W1 — 30.1, 30.2, 30.3, 30.4
 
 - [ ] **30.1 Shop loaders** · needs: phase 10, 15.3, 16.3, 21.1
@@ -1924,9 +1988,9 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 1.2, 3.11, 7.5, 8.3, 19.12_
   - [ ] 30.1.a The Payload source for the shop-specific loaders, through the 11.3 read helper
   - [ ] 30.1.b `DesignVM` and variant pricing for the current destination (rupiah only for Indonesia)
-  - [ ] 30.1.c `IgVM` from the CMS-curated posts, `LocationVM` with showroom stock, `GiftCardVM`
+  - [ ] 30.1.c `IgVM` from the CMS-curated posts; `LocationVM` with the showroom's address, published hours, map and its own WhatsApp (S4, S6) — no "In the showroom now" stock, one pool (D52); `GiftCardVM` waits (S10, v2.21)
   - [ ] 30.1.d The same cache and streaming rules, and tests, as 33.1
-  - [ ] 30.1.e **Check:** every shop surface loads real, published-only, projected data through the 11.3 read helper, including `DesignVM`, the variant-pricing VMs for the current destination (rupiah only for Indonesia), `IgVM` from the CMS-curated posts (an Instagram API feed is v2), `LocationVM`/showroom stock and `GiftCardVM`; the same cache and streaming rules as 33.1 hold; a loader test proves `VariantsPurchaseVM.actions.quote` is `null` for every viewer but a signed-in approved partner where `accounts.retailers` is on (D36).
+  - [ ] 30.1.e **Check:** every shop surface loads real, published-only, projected data through the 11.3 read helper, including `DesignVM`, the variant-pricing VMs for the current destination (rupiah only for Indonesia), `IgVM` from the CMS-curated posts (an Instagram API feed is v2) and `LocationVM` with the showroom's hours and WhatsApp (no showroom stock list, D52); the same cache and streaming rules as 33.1 hold; a loader test proves `VariantsPurchaseVM.actions.quote` is `null` for every viewer but a signed-in approved partner where `accounts.retailers` is on (D36).
 
 - [ ] **30.2 Home, menus, collections, places & eras, gifts, search and filters** · needs: 22.4
   - **Lane** UXE · **Agent** senior-uiux (UXE-A) · **Wave** W1
@@ -1943,51 +2007,51 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** UXE · **Agent** senior-uiux (UXE-B) · **Wave** W1
   - **Owns** `engine/apps/emporium/src/surfaces/item/**` + route
   - **Read** EXPERIENCE-SHOP.md §4
-  - _Requirements: 7.1, 7.5, 7.6, 15.3, 18.7_
+  - _Requirements: 7.1, 7.5, 7.6, 15.3, 18.7, 7.13, 7.14_
   - [ ] 30.3.a Images and the title block (Archive No., Reproduction label, badge, live price)
-  - [ ] 30.3.b The delivery promise from the holiday calendar, a shipping estimate for the saved district, the stated COD position
+  - [ ] 30.3.b The delivery promise from stock (no lead time, S7) and the holiday calendar, a shipping estimate for the saved district, the stated COD position; a visitor abroad told, once, that the shop delivers within Indonesia only (S3)
   - [ ] 30.3.c The sticky buy bar with WhatsApp merged in (prefilled from the lexicon), the trust row, story, specs and "more with this image"
-  - [ ] 30.3.d The original's status (market currency, export status respected, the separate-account note); the in-showroom mode from a showroom QR
-  - [ ] 30.3.e **Check:** images, the title block (Archive No., Reproduction label, badge, live price), the delivery promise (reading the holiday calendar) with a shipping estimate for the saved district and the stated COD position, the sticky buy bar with WhatsApp merged in and prefilled from the lexicon, trust row, story, the original's status (price in the visitor's market currency, export status respected, the separate-account note), specs and "more with this image" render from real data; a page opened from a showroom QR switches to the in-showroom mode.
+  - [ ] 30.3.d The original's status at the gallery — available (enquire at the gallery), on hold, or sold — never a price (7.13, C12 on-request), export status respected, the separate-business note; the in-showroom mode from a showroom QR
+  - [ ] 30.3.e **Check:** images, the title block (Archive No., Reproduction label, badge, live price), the delivery promise from stock (reading the holiday calendar) with a shipping estimate for the saved district and the stated COD position, the abroad message for a visitor outside Indonesia, the sticky buy bar with WhatsApp merged in and prefilled from the lexicon, trust row, story, the original's status (no price, export status respected, the separate-business note), specs and "more with this image" render from real data; a page opened from a showroom QR switches to the in-showroom mode.
 
 - [ ] **30.4 The configurator** · needs: 9.2, 17.2
   - **Lane** WEB (30.4.a) + UXE (30.4.b) · **Agent** senior-fe, senior-uiux (UXE-B) · **Wave** W1
   - **Owns** `engine/packages/ui/src/configurator/**` (30.4.a), `engine/apps/emporium/src/surfaces/configurator/**` (30.4.b; the item page imports it)
   - **Read** EXPERIENCE-SHOP.md §5, COMMERCE.md §3
-  - _Requirements: 4.4, 7.2, 7.3, 19.1, 19.2_
+  - _Requirements: 4.4, 7.2, 7.3, 19.1, 19.2, 7.15_
   - [ ] 30.4.a headless configurator state machine, constraint evaluation, URL codec, GET-form fallback (unit-tested)
   - [ ] 30.4.b configurator UI and layered preview (scan, mount, frame, shadow; three views; pinned on phones)
-  - [ ] 30.4.c **Check:** the options are server-rendered radio groups in a GET form that works without JavaScript and hydrates progressively; constraints from the product type disable impossible combinations with a reason; the price updates instantly from the destination's price table shipped with the page (display only — the bag re-prices on the server and shows any difference); the preview (pre-sized AVIF, 9-slice frames, pre-composited room plates, SVG scale) loads on intent and renders flat/on a wall/to scale in under 100 ms **measured on the reference device**; the configuration round-trips through the URL; swatches are named with ≥ 24 px targets and a text summary.
+  - [ ] 30.4.c **Check:** the options are server-rendered radio groups in a GET form that works without JavaScript and hydrates progressively; only stocked variants are offered, and a sold-out one says so with its back-in-stock alert (S7, C2 `VariantStockVM`); constraints from the product type disable impossible combinations with a reason; the price updates instantly from the destination's price table shipped with the page (display only — the bag re-prices on the server and shows any difference); the preview (pre-sized AVIF, 9-slice frames, pre-composited room plates, SVG scale) loads on intent and renders flat/on a wall/to scale in under 100 ms **measured on the reference device**; the configuration round-trips through the URL; swatches are named with ≥ 24 px targets and a text summary.
 
 ---
 
 ## Phase 31 — Shop: stories, the bag and checkout, order tracking · Shop · needs 21, 22 · ~3.5d
 
 **Goal:** the shop's buying half on real data, built to its briefs.
-**Done when:** the shop's design pages, stories, the Partnership page (D36), `/ig`, showroom and gift-card pages render on real data; a bag checks out in the sandbox in IDR only — by QRIS, or by VA following the payment-pending page; a guest tracks the order and a showroom pickup is confirmed.
-**Waves:** W1 — 31.1, 31.2 · W2 — 31.3
+**Done when:** the shop's design pages, stories, the Partnership page (D36), `/ig` and the showroom page render on real data; a bag checks out in the sandbox in IDR only — by QRIS, or by VA following the payment-pending page; a visitor whose ship-to is abroad is told the shop delivers within Indonesia only and reaches no checkout to an address abroad (S3); a guest tracks the order and a showroom pickup is confirmed; saved items stay on the device with no account.
+**Waves:** W1 — 31.1, 31.2, 31.4 · W2 — 31.3
 
-- [ ] **31.1 Design pages, stories, the quote page, `/ig`, showroom, gift cards** · needs: 21.1, 22.4
+- [ ] **31.1 Design pages, stories, the quote page, `/ig`, showroom** · needs: 21.1, 22.4
   - **Lane** UXE · **Agent** senior-uiux (UXE-C) · **Wave** W1
   - **Owns** `engine/apps/emporium/src/surfaces/{design,story,page,form,quote,ig,showroom,gift-card}/**` + routes
   - **Read** EXPERIENCE-SHOP.md §6, §8–9
-  - _Requirements: 7.7, 7.8_
+  - _Requirements: 7.7, 7.8, 7.16_
   - [ ] 31.1.a Design pages listing every product made from one design
   - [ ] 31.1.b Stories with shop-the-story rails and `shoppableImage` hotspots
   - [ ] 31.1.c The **quote page** (lines, validity, PDF, accept → payment link) that an approved partner's brief becomes (28.5's Partnership page, D31/D36 — never a separate "For Business" surface) or that a configured product starts ("Turn this into a quote" → the C10 `quote` form with the product and its variant, shown to a signed-in partner only)
-  - [ ] 31.1.d `/ig` from the CMS-curated posts; the showroom page ("In the showroom now", hours, map); gift cards (choose, schedule for a recipient, check a balance)
-  - [ ] 31.1.e **Check:** a design page lists every product from one design; stories carry shop-the-story rails and `shoppableImage` hotspots; an approved partner's brief becomes a **quote page** (lines, validity, PDF, accept → payment link), which a configured product can also start ("Turn this into a quote"); `/ig` shows the posts staff curate in the CMS, each linked to the products it shows (no Instagram API at launch); the showroom page shows "In the showroom now" stock with hours and map; gift cards can be chosen, scheduled for a recipient, and checked for balance.
+  - [ ] 31.1.d `/ig` from the CMS-curated posts; the showroom page — address, published hours, map and its own WhatsApp (S4, S6), with no "In the showroom now" list (one stock pool, D52); gift cards wait (S10, v2.21)
+  - [ ] 31.1.e **Check:** a design page lists every product from one design; stories carry shop-the-story rails and `shoppableImage` hotspots; an approved partner's brief becomes a **quote page** (lines, validity, PDF, accept → payment link), which a configured product can also start ("Turn this into a quote"); `/ig` shows the posts staff curate in the CMS, each linked to the products it shows (no Instagram API at launch); the showroom page shows its address, published hours, map and its own WhatsApp; no gift-card page exists at launch.
 
 - [ ] **31.2 Bag drawer, checkout, payment-pending and order pages** · needs: 19.1, 21.1, 22.4
   - **Lane** UXE · **Agent** senior-fe (UXE-D) · **Wave** W1
   - **Owns** `engine/apps/emporium/src/surfaces/{cart,checkout,order,pay}/**` + routes
   - **Read** EXPERIENCE-SHOP.md §7, COMMERCE.md §5, PAYMENTS.md §3, DESIGN-SYSTEM.md §2, §12
-  - _Requirements: 7.9, 7.11, 10.1, 10.2, 10.3, 10.8, 12.3, 18.7, 19.11_
-  - [ ] 31.2.a The bag drawer (free-shipping bar, upsells, voucher field) and every bag edge case with a fixture and a designed state, including re-pricing to IDR with a notice
-  - [ ] 31.2.b The Indonesian checkout: WhatsApp first (+62), one full-name field, searchable address pickers with an optional pin; the "I'm visiting Bali" path; gift options
+  - _Requirements: 7.9, 7.11, 10.1, 10.2, 10.3, 10.8, 12.3, 18.7, 19.11, 7.14_
+  - [ ] 31.2.a The bag drawer (free-shipping bar at Rp 500.000 (S13), upsells, voucher field) and every bag edge case with a fixture and a designed state, including the notice to a visitor abroad that the shop delivers within Indonesia only (S3)
+  - [ ] 31.2.b The Indonesian checkout: WhatsApp first (+62), one full-name field, searchable address pickers with an optional pin; the two "visiting Bali" paths — delivered before a date, or picked up at the showroom (no "send it home" at launch, S3); gift options — a gift note with prices hidden on the packing slip, no gift wrap or gift card (S10)
   - [ ] 31.2.c Routed methods only; the payment-pending page (VA copy, per-bank steps, a countdown matching the session's real expiry, the cap warning, auto-switch to paid, QRIS save-to-gallery and e-wallet deep links, retry keeping the bag)
-  - [ ] 31.2.d The in-app-browser hint; the `Pay` page; the export flow with market currency and duties
-  - [ ] 31.2.e **Check:** the drawer shows the free-shipping bar, upsells and voucher field, and **every bag edge case** in EXPERIENCE-SHOP.md §7 has a fixture and a designed state — including the bag re-pricing to IDR with a visible notice when ship-to moves to Indonesia; the Indonesian flow asks WhatsApp first (normalised to +62), uses one full-name field and searchable address pickers with an optional pin; the "I'm visiting Bali" path works (deliver before a date, pickup, send home); gift options (recipient address, note preview, prices hidden, target date); payment shows only routed methods; the **payment-pending page** (VA copy, per-bank steps, countdown matching the session's real expiry, cap warning, auto-switch to paid; QRIS save-to-gallery and e-wallet deep links; retry keeps the bag) is complete; an in-app browser gets "open in your browser" where a payment cannot complete; the `Pay` page serves staff-sent links; the export flow shows market currency and duties.
+  - [ ] 31.2.d The in-app-browser hint; the `Pay` page; no checkout to an address abroad — the export flow waits for the shop's export (v2.20)
+  - [ ] 31.2.e **Check:** the drawer shows the free-shipping bar, upsells and voucher field, and **every bag edge case** in EXPERIENCE-SHOP.md §7 has a fixture and a designed state — including the notice to a visitor abroad that the shop delivers within Indonesia only; the Indonesian flow asks WhatsApp first (normalised to +62), uses one full-name field and searchable address pickers with an optional pin; the two "visiting Bali" paths work (deliver before a date, pickup); gift options (a gift note with its preview, prices hidden, target date); payment shows only routed methods, all in rupiah; the **payment-pending page** (VA copy, per-bank steps, countdown matching the session's real expiry, cap warning, auto-switch to paid; QRIS save-to-gallery and e-wallet deep links; retry keeps the bag) is complete; an in-app browser gets "open in your browser" where a payment cannot complete; the `Pay` page serves staff-sent links; no address abroad reaches a checkout.
 
 - [ ] **31.3 Guest order tracking, pickup confirmation and the want-list page** · needs: 20.3, 31.2
   - **Lane** UXE · **Agent** senior-fe · **Wave** W2
@@ -2000,19 +2064,28 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 31.3.d The want-list page (C10 `wantList`, module `retention.emailWantList`): the subscribe form for what its URL names — always an email address here, no shopper account — the list an email's link opened (confirm or stop), and the last post's result, all resolved at request time, none of it streamed (D39)
   - [ ] 31.3.e **Check:** a guest finds an order by order number plus email or WhatsApp number (rate-limited, answering the same for a wrong pair and an unknown order) and sees the courier timeline; every WhatsApp update carries the tracking link; a pickup order shows a pickup code or QR, the "ready" notice, hours, map and who may collect; the want-list page saves, confirms or stops what its URL and access cookie name, every state resolved without JavaScript.
 
+- [ ] **31.4 The shop's device wishlist page** · needs: 21.3, 22.4
+  - **Lane** UXE · **Agent** senior-uiux · **Wave** W1
+  - **Owns** `engine/apps/emporium/src/surfaces/wishlist/**` + routes
+  - **Read** EXPERIENCE-SHOP.md §2, §10, C10 `wishlist`, C13 `DEVICE_WISHLIST`, D35
+  - _Requirements: 13.8_
+  - [ ] 31.4.a The C10 `wishlist` page: the items saved on this device, each with its price, stock and a link back, saying plainly that the list lives on this device (J-S6)
+  - [ ] 31.4.b The header heart's count from `ShellVM.wishlist`, and the save button on tiles and product pages posting `wishlist.set` (21.3) without JavaScript
+  - [ ] 31.4.c **Check:** items saved from a tile and a product page survive a reload on the same device with no account, the page says where the list lives, and removing one works without JavaScript (e2e, J-S6's first half).
+
 ---
 
 ## Phase 32 — Shop: polish, buyers and the shop gate 👤 · Shop · needs 30, 31 · ~3.5d
 
 **Goal:** the shop end to end, run by real buyers, and the gate over the Shop stage.
-**Done when:** the 6.1.c shop journeys pass on a phone **inside the Instagram in-app browser** — a visitor opens a collection, configures the largest giclée the seed scan allows (its ceiling from the design's crop at 240 ppi, D26, C9 `printCeilingOf()`) with a teak frame and mount, sees it to scale, adds gift wrap and a voucher, pays by QRIS (or VA, following the payment-pending page) in the sandbox in IDR only, and tracks the order as a guest; a tourist switches ship-to to the Netherlands and sees each price as a euro estimate beside the exact rupiah (D47's default) and a duties estimate; a showroom QR opens the in-showroom mode; budgets pass; axe is clean; real buyers have run the journeys; the design gate passes.
+**Done when:** the live shop journeys (J-S1–J-S7, the launch halves of J-S2 and J-S5) pass on a phone **inside the Instagram in-app browser** — a visitor opens a collection, configures the largest giclée the seed scan allows (its ceiling from the design's crop at 240 ppi, D26, C9 `printCeilingOf()`) from stocked variants with a teak frame and mount, sees it to scale, adds a gift note and a voucher (the free-shipping bar at Rp 500.000, S13), pays by QRIS (or VA, following the payment-pending page) in the sandbox in IDR only, and tracks the order as a guest; a tourist in Bali has a print delivered to her villa before a date, or picks it up at the showroom; a visitor whose ship-to is abroad is told, once, that the shop delivers within Indonesia only and reaches no checkout abroad (S3); a showroom QR opens the in-showroom mode and a walk-in buys there and takes the piece (J-S4); budgets pass; axe is clean; real buyers have run the journeys; the design gate passes.
 **Waves:** W1 — 32.1 · W2 — 32.2 · W3 — 32.3
 
 - [ ] **32.1 Shop polish and end-to-end** · needs: 30.2–30.4, phase 31
   - **Lane** QA + UXE lead · **Agent** qa, senior-uiux · **Wave** W1
   - **Owns** `tests/e2e/emporium/**`
   - _Requirements: 19.1, 19.2, 19.11_
-  - [ ] 32.1.a e2e for every 6.1.c shop journey on a production build — desktop, phone, and the Instagram, WhatsApp and TikTok in-app browsers
+  - [ ] 32.1.a e2e for every live shop journey (J-S1–J-S7, the launch halves of J-S2 and J-S5 — their after-launch halves are not run) on a production build — desktop, phone, and the Instagram, WhatsApp and TikTok in-app browsers
   - [ ] 32.1.b impeccable findings fixed
   - [ ] 32.1.c Budgets and axe green; the reference-device check on Telkomsel 4G in Bali recorded
   - [ ] 32.1.d **Check:** every 6.1.c shop journey passes e2e on a production build (desktop, phone, and the Instagram, WhatsApp and TikTok in-app browsers); impeccable findings are fixed; budgets and axe pass; the reference-device check on Telkomsel 4G in Bali is recorded.
@@ -2021,16 +2094,16 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** QA + UXE · **Agent** qa, senior-uiux · **Wave** W2
   - **Owns** `docs/design/research/shop-usability/**`
   - _Requirements: 19.10_
-  - [ ] 32.2.a 👤 Recruit five buyers — tourists, an expat, a gift buyer, a local; at least two sessions in Indonesian, at least three from the Instagram in-app browser
-  - [ ] 32.2.b Run the journeys on staging, recording task times and success
+  - [ ] 32.2.a 👤 Recruit five buyers — tourists, an expat, a gift buyer, a local, a showroom walk-in; at least two sessions in Indonesian, at least three from the Instagram in-app browser, at least one in the Denpasar showroom (S9)
+  - [ ] 32.2.b Run the 32.2 script on staging (6.4's report: a local J-S1 + J-S6; a gift buyer J-S5's launch half + J-S7; an expat J-S3 + J-S1's steps 3–6; a tourist J-S2's launch half + J-S6; the walk-in J-S4 in the showroom + J-S7's steps 1–3), recording task times and success
   - [ ] 32.2.c Fix every blocker, or file it as a task, before the gate
-  - [ ] 32.2.d **Check:** five buyers (tourists, an expat, a gift buyer, a local; at least two in Indonesian; at least three from the Instagram in-app browser) have run the journeys on staging with task times and success recorded, and every blocker is fixed or filed before the gate.
+  - [ ] 32.2.d **Check:** five buyers (tourists, an expat, a gift buyer, a local, a showroom walk-in; at least two in Indonesian; at least three from the Instagram in-app browser; at least one in the showroom) have run the 32.2 script's journeys on staging with task times and success recorded, and every blocker is fixed or filed before the gate.
 
 - [ ] **32.3 Shop gate — with the design gate** · needs: phase 30, phase 31, 32.1, 32.2
   - **Lane** QA + UXE · **Agent** qa, senior-uiux · **Wave** W3
   - **Owns** `docs/gates/shop.md`
   - **Read** the **Done when** of phases 30–32, DESIGN-SYSTEM.md §13
-  - _Requirements: 7.1–7.12, 19.10_
+  - _Requirements: 7.1–7.16, 19.10_
   - [ ] 32.3.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
   - [ ] 32.3.b Drive every clause of the **Done when** of phases 30–32 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/shop.md`
   - [ ] 32.3.c File every failure as a subtask of the task that owns it, and re-run the clause after the fix
@@ -2043,19 +2116,19 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 33 — Gallery: loaders, browse, the item page and editorial · Gallery · needs 16, 21, 22 · ~5d
 
 **Goal:** the gallery's browsing half on real data, built to its briefs.
-**Done when:** on a phone a visitor lands on a place page, filters Java maps under USD 2,000 and zooms an item's verso, on real data; a changed slug 301s to the item; makers, places, sources, curations, catalogues, exhibitions and stories render.
+**Done when:** on a phone a visitor lands on a place page, filters Java maps by date and maker and zooms an item's verso, on real data, with no price on any page, card, facet or sort (D50); a changed slug 301s to the item; makers, places, sources, curations, catalogues, exhibitions and stories render.
 **Waves:** W1 — 33.1, 33.2, 33.3, 33.4
 
 - [ ] **33.1 Gallery loaders** · needs: phase 10, 15.3, 16.3, 21.1
   - **Lane** WEB · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/packages/loaders/src/{home,browse,search,item,maker,place,source,exhibition,location,curation,story,page,form,cart,checkout,order,pay,quote,order-lookup,newsletter-archive}.ts` (Payload source)
   - **Read** DESIGN-SYSTEM.md §2–3, §7, ARCHITECTURE.md §9, §12
-  - _Requirements: 1.2, 3.11, 6.3, 6.4, 6.10, 6.11, 19.4, 19.12_
+  - _Requirements: 1.2, 3.11, 6.3, 6.4, 6.10, 6.11, 19.4, 19.12, 6.13_
   - [ ] 33.1.a The Payload source for every gallery surface, through the 11.3 read helper
-  - [ ] 33.1.b `loadItem` by public id, returning `redirectTo` on a slug mismatch; the viewer-relative purchase states, *enquiry-only* included
-  - [ ] 33.1.c Content under `'use cache'` + `cacheTag`; availability, the ship-to market and the cart inside `<Suspense>`, streaming into reserved placeholders
+  - [ ] 33.1.b `loadItem` by public id, returning `redirectTo` on a slug mismatch; the D50 purchase states (C2 v1.5: on request, held by an invoice, sold, *enquiry-only*) with the reply promise (`reply`), and a loader test that no view model of a brand whose prices are on request carries a price
+  - [ ] 33.1.c Content under `'use cache'` + `cacheTag`; availability and the ship-to market read at request time — the purchase panel in the page body (AGENTS.md, CONVENTIONS.md §12), the slower reads inside `<Suspense>`, streaming into reserved placeholders; the `cart`, `checkout` and `order-lookup` loaders stay, shared with the shop (30.1), the lookup being the gallery buyer's way back to an order (D54)
   - [ ] 33.1.d Tests: never stale-available from cache, no purchase control before availability (with a CLS assertion), no draft or private field in any response
-  - [ ] 33.1.e **Check:** every gallery surface loads real, **published-only, projected** data into its VM through the 11.3 read helper (`overrideAccess: false`, `_status: 'published'`, `select`), including the viewer-relative purchase states and *enquiry-only*; `loadItem` resolves `/product/{id}-{slug}` by public id and returns `redirectTo` when the slug differs; content is `'use cache'` + `cacheTag`; availability, the ship-to market and the cart are read inside `<Suspense>` and **stream into a reserved placeholder** — tests prove a sold item is never served as available from cache (its tags expire immediately), no purchase control renders before availability resolves (with a CLS assertion), and a draft or a private field never reaches a response; the purchase panel's `reserve` and `proforma` actions link to the `hold` and `quote` form pages (C10), and a guest institution's `quote` page renders where `accounts.retailers` is off.
+  - [ ] 33.1.e **Check:** every gallery surface loads real, **published-only, projected** data into its VM through the 11.3 read helper (`overrideAccess: false`, `_status: 'published'`, `select`), including the D50 purchase states and *enquiry-only*, no view model carrying a price where prices are on request (test); `loadItem` resolves `/product/{id}-{slug}` by public id and returns `redirectTo` when the slug differs; content is `'use cache'` + `cacheTag`; availability and the ship-to market are read at request time, the purchase panel in the page body and the slower parts **streaming into a reserved placeholder** — tests prove a sold item is never served as available from cache (its tags expire immediately), no purchase control renders before availability resolves (with a CLS assertion), and a draft or a private field never reaches a response; the purchase panel's `proforma` action links to the `quote` form page (C10) — there is no `reserve` action (D50) — and a guest institution's `quote` page renders where `accounts.retailers` is off.
 
 - [ ] **33.2 Home, browse and search** · needs: 22.4
   - **Lane** UXG · **Agent** senior-uiux (UXG-A) · **Wave** W1
@@ -2063,10 +2136,10 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Read** EXPERIENCE-GALLERY.md §3–4, §10; the 22.3 surface briefs
   - _Requirements: 5.3, 5.4, 5.5, 5.6, 5.7_
   - [ ] 33.2.a Home bands from the homepage global
-  - [ ] 33.2.b Browse: available by default with the sold toggle; the facet bottom sheet on phones (chips, live count, number inputs, sticky apply/clear); sort; named facet URLs
+  - [ ] 33.2.b Browse: available by default with the sold toggle; the facet bottom sheet on phones (chips, live count, number inputs, sticky apply/clear); sort; named facet URLs — no price facet or price sort (D50)
   - [ ] 33.2.c Search without JavaScript; the zero-results page ("not all 9,500 works are online — ask us", a prefilled enquiry, historical-name suggestions, Indonesian queries, a want-list link to the want-list page, C10 `wantList`)
   - [ ] 33.2.d The designed 404, 410 and 500
-  - [ ] 33.2.e **Check:** home bands follow the homepage global; browse defaults to available with the sold toggle, the full facet set in a bottom sheet on phones (applied-filter chips, live count on apply, number inputs beside sliders, sticky apply/clear), working sort, named facet URLs; search works without JavaScript; **zero results never dead-end** ("not all 9,500 works are online — ask us" with a prefilled enquiry, historical-name suggestions, Indonesian queries, a link to the want-list page); 404, 410 and 500 are the designed pages.
+  - [ ] 33.2.e **Check:** home bands follow the homepage global; browse defaults to available with the sold toggle, the full facet set in a bottom sheet on phones (applied-filter chips, live count on apply, number inputs beside sliders, sticky apply/clear), working sort, named facet URLs, and no price facet or price sort; search works without JavaScript; **zero results never dead-end** ("not all 9,500 works are online — ask us" with a prefilled enquiry, historical-name suggestions, Indonesian queries, a link to the want-list page); 404, 410 and 500 are the designed pages.
 
 - [ ] **33.3 The item page** · needs: 16.1, 22.4
   - **Lane** UXG · **Agent** senior-uiux (UXG-B) · **Wave** W1
@@ -2076,8 +2149,8 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 33.3.a The item route: the id from its segment (`null` → `notFound()`), the address asked for from the proxy's headers, then `loadItem({ locale, publicId, asked })`; `permanentRedirect()` — a 308 — on its `redirectTo`, `notFound()` on null, whose designed body needs JavaScript (DESIGN-SYSTEM.md §2); the purchase panel awaited in the page body, so its forms work without JavaScript; the status spec's item cases move from the spike's fixtures to real items (HAR's file: proposed in the report, added at merge)
   - [ ] 33.3.b The title block with the designed hook-title fallback; media with the viewer on intent; the static scale view; the primary image as LCP
   - [ ] 33.3.c The record: collation (and the book variant for volumes), condition linked to the scale, references, provenance, stock number
-  - [ ] 33.3.d Context (essay, maker, locator map, related) and utilities (wishlist/alert, share, print, factsheet PDF, sister prints, the consign block)
-  - [ ] 33.3.e **Check:** the item route calls `permanentRedirect()` (a 308, its `Location` encoded once and carrying the old link's query) on a `redirectTo` and `notFound()` on null; with JavaScript off, the purchase panel's forms post; an editor's save of the work in the admin shows on the item page by the second request after it, and on every one after (the first may be served stale while `'max'` regenerates) — a regeneration that read the row before its commit would keep the old text (invalidation after the commit, ARCHITECTURE.md §9); the title block (with the designed hook-title fallback), media with the viewer on intent, the static scale view, the record (collation — and the book variant for volumes — condition linked to the scale, references, provenance, stock number), context (essay, maker, locator map, related) and utilities (wishlist/alert, share, print, factsheet PDF, sister prints, consign block) render from real data; the primary image is the LCP.
+  - [ ] 33.3.d Context (essay, maker, locator map, related) and utilities (the wishlist kept on the device (D54) and the alert by email, share, print, the factsheet PDF with no price (G14), sister prints, the consign block)
+  - [ ] 33.3.e **Check:** the item route calls `permanentRedirect()` (a 308, its `Location` encoded once and carrying the old link's query) on a `redirectTo` and `notFound()` on null; with JavaScript off, the purchase panel's forms post; an editor's save of the work in the admin shows on the item page by the second request after it, and on every one after (the first may be served stale while `'max'` regenerates) — a regeneration that read the row before its commit would keep the old text (invalidation after the commit, ARCHITECTURE.md §9); the title block (with the designed hook-title fallback), media with the viewer on intent, the static scale view, the record (collation — and the book variant for volumes — condition linked to the scale, references, provenance, stock number), context (essay, maker, locator map, related) and utilities (the device wishlist and the email alert, share, print, factsheet PDF — carrying no price — sister prints, consign block) render from real data; the primary image is the LCP.
 
 - [ ] **33.4 Makers, places, sources, curations, catalogues, exhibitions and stories** · needs: 22.4
   - **Lane** UXG · **Agent** senior-uiux (UXG-C) · **Wave** W1
@@ -2092,20 +2165,21 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 
 ---
 
-## Phase 34 — Gallery: the purchase panel, forms and checkout · Gallery · needs 33 · ~3.5d
+## Phase 34 — Gallery: the purchase panel, forms and the pay page · Gallery · needs 33, 25 · ~3.5d
 
-**Goal:** every purchase state and the conversations a gallery lives on.
-**Done when:** on the item page a visitor requests the price, reserves, makes an offer or buys in the sandbox and gets the confirmation; the trust pages, consignment, viewings and proformas work; checkout, payment and order pages run end to end.
-**Waves:** W1 — 34.1, 34.2, 34.3
+**Goal:** the enquiry-led purchase panel, the conversations a gallery lives on, and the invoice's own pay page (D50, D51).
+**Done when:** on the item page a visitor starts a WhatsApp chat or a call, requests the price and reads when a person will reply, enquires or books a viewing — and no state shows a price or a purchase control; the invoice staff issue opens on the gallery's own pay page and is paid by card in the Stripe sandbox or by bank transfer, each of its states reached; the trust pages, consignment, viewings (changed by their confirmation's link) and the institution's proforma work; the order, lookup and want-list pages run end to end; saved pieces stay on the device with no account (D54).
+**Waves:** W1 — 34.1, 34.2, 34.3, 34.4
 
 - [ ] **34.1 Purchase panel and flows** · needs: 11.4, 21.1, 33.3
   - **Lane** UXG · **Agent** senior-uiux (UXG-B) · **Wave** W1
   - **Owns** `engine/apps/gallery/src/surfaces/item/purchase/**`
   - **Read** COMMERCE.md §7, EXPERIENCE-GALLERY.md §5, §8
-  - _Requirements: 6.2, 6.3, 6.4, 6.7, 6.11, 8.2, 9.3, 9.6, 16.8_
-  - [ ] 34.1.a design the purchase-state matrix (tier × status × viewer relation × export status × ship-to × signed in) before building it
-  - [ ] 34.1.b build every state; e2e over the fixture set
-  - [ ] 34.1.c **Check:** every combination in the purchase-state matrix renders its designed state from the 11.4 fixtures; request price answers in place; a **make-an-offer** flow states plainly that offers are non-binding (D22) and shows the offer's status in the panel; an enquiry-only original (no known location) offers Enquire and Book a viewing, never Buy; sold pages put "own a print of this map" in the primary position; WhatsApp is prefilled (from the lexicon) with stock number and title; a `domestic-only` item seen from abroad reads "Available for delivery within Indonesia · View it in Jakarta"; each flow reaches its API and shows its confirmation.
+  - _Requirements: 6.2, 6.3, 6.4, 6.7, 6.11, 8.2, 9.3, 9.6, 16.8, 6.13_
+  - [ ] 34.1.a design the D50 purchase-state matrix (status — available, held by an invoice, sold, no recorded location — × export status × ship-to; no viewer relation, since no one signs in, D54) before building it; every C2 state still maps (an exhaustive map), the states no gallery config produces shown once in the style guide
+  - [ ] 34.1.b build every state; e2e over the fixture set (C2 v1.5: `item-enquiry-led`, `item-invoice-held`, the conversation states)
+  - [ ] 34.1.d Call (C1 `call`: the gallery's Singapore number, a `tel:` tap on a phone, the number shown on a desktop) and WhatsApp prefilled from the lexicon; Request price answered by a person — after an email or WhatsApp number the visitor reads the reply promise (C2 `reply`, G9) — with `call.clicked` and the lead events emitted (C11 v1.5)
+  - [ ] 34.1.c **Check:** every combination in the D50 matrix renders its designed state from the 11.4 fixtures, and no state shows a price or a Buy, Reserve or Make-an-offer control (a test over every fixture); WhatsApp is prefilled (from the lexicon) with stock number and title; Call dials the gallery's number; Request price never reveals a price and states when a person will reply (the same working day, Singapore time, G9); a held piece reads "On hold until {due date}" with "Tell me if it becomes available"; an enquiry-only original (no known location) offers Enquire, WhatsApp and Book a viewing; sold pages say "Sold" only and put "own a print of this map" in the primary position; a `domestic-only` item seen from abroad reads "Available for delivery within Indonesia · View it in Jakarta"; each flow reaches its API and shows its confirmation.
 
 - [ ] **34.2 Trust pages, forms, consignment, viewings and proformas** · needs: 21.1, 33.4
   - **Lane** UXG · **Agent** senior-uiux (UXG-C) · **Wave** W1
@@ -2114,54 +2188,64 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 6.6, 6.9, 18.4_
   - [ ] 34.2.a Page templates serving the trust pages from the CMS
   - [ ] 34.2.b Consignment: the phone camera, HEIC, per-file progress with retry, the "what happens next" timeline
-  - [ ] 34.2.c Viewing booking: time zones, `.ics` (attached to the confirmation; a signed-in booker's also served by session), the reminder (WhatsApp once D14 is chosen, email until then), rescheduling (a signed-in booker's through the `appointment` form naming the viewing), the wishlist as a pull list; the location page
-  - [ ] 34.2.d The framing quote; a cart → multi-item proforma from its checkout's payment step ("Proforma instead", C6 `quote.proforma`) onto the `Quote` surface (PO field, PDF, "pay this proforma"); the `hold` form ("Reserve") and the `quote` form ("Proforma for institutions", an item even on request, its copy promising a proforma that staff issue within the reply time, never a PDF at once) from the purchase panel
-  - [ ] 34.2.f 👤 The owner decides how an anonymous checkout's proforma may hold a unique line: a cap per contact and per IP, or staff approval before its `invoice` hold starts (COMMERCE.md §7; ARC recommends staff approval — a cap is cheap to evade, and an institution's proforma already passes through staff); a proforma of non-unique lines stays instant
-  - [ ] 34.2.e **Check:** page templates serve guarantee, authentication, grades, certificate, shipping & insurance, framing & conservation, institutions, visit and FAQ from the CMS; consignment uses the phone camera, accepts HEIC, shows per-file progress with retry and a "what happens next" timeline; viewing booking shows the location's time zone, sends an `.ics` (attached to its confirmation, never a URL with a token), reminds on WhatsApp, can be rescheduled and attaches the wishlist as a pull list; the framing quote has its flow; a cart becomes a multi-item proforma at its checkout's payment step, onto the `Quote` surface with a PO field, PDF and "pay this proforma"; "Reserve" and "Proforma for institutions" each open their own form page (C10 `hold`, `quote`) that works without JavaScript and comes back refused, sent back or received.
+  - [ ] 34.2.c Viewing booking: time zones, the `.ics` attached to the confirmation (no account, so none served by session, D54), the reminder (WhatsApp once D14 is chosen, email until then), rescheduling and cancelling through the confirmation's link (C13 `APPOINTMENT_ACCESS` → the `appointment` form), the device wishlist as the pull list; the location page
+  - [ ] 34.2.d The framing quote; the `quote` form ("Proforma for institutions", one piece or several, even on request, its copy promising a proforma that staff issue within the reply time, never a PDF at once) from the purchase panel — the proforma staff issue is an invoice (20.6), paid on the same pay page (34.3); there is no cart proforma and no `hold` form (D50)
+  - [ ] 34.2.f 👤 The owner decides how an anonymous checkout's proforma may hold a unique line: a cap per contact and per IP, or staff approval before its `invoice` hold starts (COMMERCE.md §7; ARC recommends staff approval — a cap is cheap to evade, and an institution's proforma already passes through staff); a proforma of non-unique lines stays instant — ✂️ cut: answered by D45 (G5, 2026-10-01) — an invoice hold starts only when staff issue the invoice, and the gallery has no checkout to proforma from (D50)
+  - [ ] 34.2.e **Check:** page templates serve guarantee & terms of sale, authentication, grades, certificate, shipping & insurance, framing & conservation, institutions, visit and FAQ from the CMS, saying what the owner answered — the lifetime guarantee in counsel's words (G6) with no returns promise while D56 is with counsel, the certificate with every original and no sample shown (G7), shipping paid by the buyer and nothing sent before payment in full (G11), no institution named (G10), viewings in Singapore and Jakarta by appointment (G2); consignment uses the phone camera, accepts HEIC, shows per-file progress with retry and a "what happens next" timeline; viewing booking shows the location's time zone, attaches an `.ics` to its confirmation (never a URL with a token), reminds on WhatsApp, can be rescheduled or cancelled by the confirmation's link and attaches the device's wishlist as a pull list; the framing quote has its flow; "Proforma for institutions" opens its own form page (C10 `quote`) that works without JavaScript and comes back refused, sent back or received.
 
-- [ ] **34.3 Cart, checkout, payment, order and want-list pages** · needs: 19.1, 21.1, 22.4
+- [ ] **34.3 The invoice's pay page, order, lookup and want-list pages** · needs: 19.1, 20.6, 21.1, 22.4, 25.1
   - **Lane** UXG · **Agent** senior-fe (UXG-D) · **Wave** W1
-  - **Owns** `engine/apps/gallery/src/surfaces/{cart,checkout,order,pay,order-lookup,want-list}/**` + routes
+  - **Owns** `engine/apps/gallery/src/surfaces/{order,pay,order-lookup,want-list}/**` + routes
   - **Read** COMMERCE.md §5, §7, PAYMENTS.md §2–5, DESIGN-SYSTEM.md §2
-  - _Requirements: 9.3, 10.1, 10.5, 10.7, 11.5, 18.3_
-  - [ ] 34.3.a Cart and checkout rendering the steps the VM contains and every `SessionResult` kind
-  - [ ] 34.3.b The lock countdown surviving a 3-D Secure redirect; its expiry mid-payment as a designed state; "someone else was first" with alternatives and a link to the want-list page
-  - [ ] 34.3.c Bank transfer for a high-value item (how long it is held, the SWIFT instructions, what happens at expiry); the `Pay` page for staff-sent links
-  - [ ] 34.3.d Guest order lookup; confirmation and order pages with the seller identity and documents
+  - _Requirements: 9.3, 10.1, 10.5, 10.7, 11.5, 18.3, 6.16_
+  - [ ] 34.3.a The `Pay` surface is the invoice (D51, COMMERCE.md §7): its number, the piece with its stock number, the agreed figure, shipping and insurance, the duties or their note, the total in the charge currency, the due date, the seller of record, the buyer (and PO number) and the PDF; the Stripe Payment Element embedded and bank transfer beside it; every `SessionResult` kind its methods produce
+  - [ ] 34.3.b Its designed states — open ("On hold until {due date}"), bank transfer pending ("payment must be received and confirmed"), paid, expired (the piece released) and voided — each with the ways to reach the gallery, never a bare gateway error; a 3-D Secure redirect comes back to the same page and state
+  - [ ] 34.3.c Bank transfer: how long the piece is held (to the due date), the instructions, the SWIFT details on the PDF only (COMMERCE.md §12), what happens at the due date; the WhatsApp in-app browser's "open in your browser" where a payment cannot complete there
+  - [ ] 34.3.d Guest order lookup — an invoice's order found from its issue, awaiting payment and leading to its pay page (C2 `OrderPaymentVM` `invoice`); confirmation and order pages with the seller identity and documents
   - [ ] 34.3.e The want-list page (C10 `wantList`, module `retention.emailWantList`): the subscribe form for what its URL names, the list an email's link opened (confirm or stop), and the last post's result — all resolved at request time, none of it streamed, so it works without JavaScript (D39)
-  - [ ] 34.3.f **Check:** checkout renders the steps its VM contains and every `SessionResult` kind (embedded, redirect, instructions, QR, manual); the lock countdown survives a 3-D Secure redirect, and its expiry mid-payment is a designed state; "someone else was first" offers alternatives and a link to the want-list page; a bank transfer for a high-value item shows how long it is held, the SWIFT instructions and what happens at expiry; the `Pay` page serves staff-sent links; guests can look an order up; confirmation and order pages show the seller identity and documents; the want-list page saves, confirms or stops what its URL and access cookie name, every state resolved without JavaScript.
+  - [ ] 34.3.f **Check:** the pay page an invoice's link opens shows the invoice whole — number, piece, agreed figure, shipping, duties or their note, total, due date, seller, buyer, PDF — and pays it by the embedded Payment Element in the Stripe sandbox and by bank transfer confirmed by staff, charging the figure issued on the server to the minor unit; each of its states (open, bank transfer pending, paid, expired, voided) is designed and reached on staging; a 3-D Secure redirect returns to it; the SWIFT details appear on the PDF only; guests can look an order up, and an invoice's order shows from its issue; confirmation and order pages show the seller identity and documents; the want-list page saves, confirms or stops what its URL and access cookie name, every state resolved without JavaScript; no cart or checkout path answers on the gallery (404).
+
+- [ ] **34.4 The gallery's device wishlist page and the viewing pull list** · needs: 21.3, 22.4
+  - **Lane** UXG · **Agent** senior-uiux · **Wave** W1
+  - **Owns** `engine/apps/gallery/src/surfaces/wishlist/**` + routes
+  - **Read** EXPERIENCE-GALLERY.md §5, §10 (D54), C10 `wishlist`, C13 `DEVICE_WISHLIST`, D35
+  - _Requirements: 13.8_
+  - [ ] 34.4.a The C10 `wishlist` page: the pieces saved on this device, each with its status ("Price on request", "On hold until …", "Sold") and size, never a price, saying plainly that the list lives on this device
+  - [ ] 34.4.b The header heart's count from `ShellVM.wishlist`, and the save button on cards and the item page posting `wishlist.set` (21.3) without JavaScript
+  - [ ] 34.4.c "Book a viewing with these" prefills the `appointment` form's pull list from the device's list (C6 `AppointmentBookRequest.pullList`)
+  - [ ] 34.4.d **Check:** three pieces saved on a phone survive a reload with no account, the page shows each one's status and no price, and booking a viewing from it carries them as the pull list (e2e, J-G3's and J-G7's shortlists).
 
 ---
 
 ## Phase 35 — Gallery: polish, buyers and the gallery gate 👤 · Gallery · needs 34 · ~3.5d
 
 **Goal:** the gallery end to end, run by real buyers, and the gate over the Gallery stage.
-**Done when:** the 6.1.c gallery journeys pass on a phone — a visitor lands on a place page, filters Java maps under USD 2,000, zooms an item's verso, requests the price or reserves or buys it in the sandbox and gets the confirmation; an institution turns a cart into a proforma; a sold item shows its available alternative and "own a print of this map" and takes an alert — budgets pass on home, browse and item; axe is clean; real buyers have run the journeys; the design gate passes.
+**Done when:** the live gallery journeys (J-G1–J-G5, J-G7, J-G8) pass on a phone — a visitor lands on a place page, filters Java maps by date and maker, zooms an item's verso, sees no price and no purchase control on any original, starts a WhatsApp chat or a call and requests the price; staff issue the agreed invoice from a phone and it opens on the gallery's own pay page and is paid in the sandbox — or lapses at its due date, releasing the piece and alerting whoever asked; an institution's proforma request becomes an invoice paid by bank transfer; a sold item says "Sold" only, shows its available alternative and "own a print of this map" and takes an alert — budgets pass on home, browse, item and the pay page; axe is clean; real buyers have run the journeys; the design gate passes.
 **Waves:** W1 — 35.1 · W2 — 35.2 · W3 — 35.3
 
 - [ ] **35.1 Gallery polish and end-to-end** · needs: 33.2–33.4, phase 34
   - **Lane** QA + UXG lead · **Agent** qa, senior-uiux · **Wave** W1
   - **Owns** `tests/e2e/gallery/**`
   - _Requirements: 19.1, 19.2, 19.11_
-  - [ ] 35.1.a e2e for every 6.1.c gallery journey on a production build — desktop, phone and the WhatsApp in-app browser
+  - [ ] 35.1.a e2e for every live gallery journey (J-G1–J-G5, J-G7, J-G8; J-G6 is retired) on a production build — desktop, phone and the WhatsApp in-app browser — with a test over every page and fixture that no original shows a price or a purchase control (the journeys README's criterion 6)
   - [ ] 35.1.b impeccable `audit` and `polish`, and the fixes
   - [ ] 35.1.c LHCI budgets and axe green; the reference-device check on 4G recorded
-  - [ ] 35.1.d **Check:** every 6.1.c gallery journey passes e2e on a production build (desktop, phone, and the WhatsApp in-app browser); impeccable `audit` and `polish` findings are fixed; LHCI budgets and axe pass; the reference-device check on 4G is recorded.
+  - [ ] 35.1.d **Check:** every live gallery journey passes e2e on a production build (desktop, phone, and the WhatsApp in-app browser), and no page or fixture shows a price or a purchase control on an original; impeccable `audit` and `polish` findings are fixed; LHCI budgets and axe pass; the reference-device check on 4G is recorded.
 
 - [ ] **35.2 👤 Usability runs with real buyers** · needs: 35.1
   - **Lane** QA + UXG · **Agent** qa, senior-uiux · **Wave** W2
   - **Owns** `docs/design/research/gallery-usability/**`
   - _Requirements: 19.10_
-  - [ ] 35.2.a 👤 Recruit five buyers — collectors, a designer, a diaspora buyer; at least one session in Indonesian
-  - [ ] 35.2.b Run the journeys on staging, recording task times and success
+  - [ ] 35.2.a 👤 Recruit five buyers — collectors (one in Singapore, one in Jakarta), a designer, a diaspora buyer, an institution's buyer; at least one session in Indonesian
+  - [ ] 35.2.b Run the 35.2 script on staging, the facilitator playing the gallery's staff and issuing invoices in the admin on a phone (6.4's report: the Singapore collector J-G1 to paid + J-G5; the Jakarta collector J-G7 + J-G8's lapsed invoice; the designer J-G3 + J-G1's steps 4–5; the diaspora buyer J-G4 + a want-list by email; the institution J-G2 + J-G8's steps 1–3), recording task times and success
   - [ ] 35.2.c Fix every blocker, or file it as a task, before the gate
-  - [ ] 35.2.d **Check:** five buyers (collectors, a designer, a diaspora buyer; at least one in Indonesian) have run the journeys on staging with task times and success recorded, and every blocker is fixed or filed before the gate.
+  - [ ] 35.2.d **Check:** five buyers (collectors, a designer, a diaspora buyer, an institution's buyer; at least one in Indonesian) have run the 35.2 script's journeys on staging with task times and success recorded, and every blocker is fixed or filed before the gate.
 
 - [ ] **35.3 Gallery gate — with the design gate** · needs: phase 33, phase 34, 35.1, 35.2
   - **Lane** QA + UXG · **Agent** qa, senior-uiux · **Wave** W3
   - **Owns** `docs/gates/gallery.md`
   - **Read** the **Done when** of phases 33–35, DESIGN-SYSTEM.md §13
-  - _Requirements: 6.1–6.12, 19.10_
+  - _Requirements: 6.1–6.17, 19.10_
   - [ ] 35.3.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
   - [ ] 35.3.b Drive every clause of the **Done when** of phases 33–35 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/gallery.md`
   - [ ] 35.3.c File every failure as a subtask of the task that owns it, and re-run the clause after the fix
@@ -2200,23 +2284,24 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** MIG · **Agent** senior-integrator (MIG-B) · **Wave** W2
   - **Owns** `engine/packages/migrate/src/{load,register}/**`, `indies-gallery/content/legacy/schema/**` (36.3.e)
   - **Read** MIGRATION.md §4–5, §9, COMPLIANCE.md §1, CONTENT-MODEL.md §1, §6
-  - _Requirements: 16.1, 16.4, 16.8, 19.2_
+  - _Requirements: 16.1, 16.4, 16.8, 19.2, 16.9_
   - [ ] 36.3.a 👤 the owner's item register — location and export status per stock number (D24)
   - [ ] 36.3.b register importer with a mismatch report (unknown stock numbers, conflicting rows)
   - [ ] 36.3.c the batch loader and the off-box tiling run — the loader collects its cache tags on Payload's `req.context` and flushes them once per committed batch (`@engine/cache`), never per row
   - [ ] 36.3.e 👤 the real MySQL dump and images (OA9) through the 7.1 harness — `legacy:mysql restore`, `schema --notes`, `tables`, the SQL extracts from the mock's queries, `extract`, `destroy` — then `legacy:normalise catalogue` over it; the schema notes checked against the real columns (D53)
   - [ ] 36.3.f from 6.2.b's measurement of the archive: deduplicate images by checksum (64 of 222 multi-image items carry another item's byte-identical photograph; 12 files repeat inside an item), assign a shared file to its own item, set image roles by heuristic plus review rather than position (the first image is not always the recto), and record whether "Image Dimensions" measures the sheet, plate or frame (it varies — ±20% on object ppi)
-  - [ ] 36.3.d **Check:** works and products upsert idempotently by legacy id in batches of 500 with a dry-run diff, as drafts, with `publicId = legacy id` and stock numbers preserved; **the item register** sets each original's stock location and export status by stock number — an original with no row keeps both blank and publishes enquiry-only, and the report lists them; images are tiled **off-box** by `pnpm media:tile` (15.2.b) straight to the bucket, each with the **deterministic alt-text baseline** built from its record (CONTENT-MODEL.md §6) so the publish guard can pass; customers are created with a random, unusable password for the claim flow; subscribers keep recorded consent; legacy orders import read-only; wishlists become saved items or want-lists.
+  - [ ] 36.3.d **Check:** works and products upsert idempotently by legacy id in batches of 500 with a dry-run diff, as drafts, with `publicId = legacy id` and stock numbers preserved; **the item register** sets each original's stock location and export status by stock number — an original with no row keeps both blank and publishes enquiry-only, and the report lists them; images are tiled **off-box** by `pnpm media:tile` (15.2.b) straight to the bucket, each with the **deterministic alt-text baseline** built from its record (CONTENT-MODEL.md §6) so the publish guard can pass; customers import as staff-side records — name, email, addresses, legacy orders — with no password hash, no account and no claim email (D54); subscribers keep recorded consent; legacy orders import read-only; wishlists are not imported (no accounts, and a want-list needs its owner's double opt-in, D39); every original imports `pricing: on-request`, its legacy price kept as the private asking price (D50).
 
 - [ ] **36.4 Redirects and the legacy handler** · needs: 4.1.f, 9.3, 36.1
   - **Lane** MIG + WEB · **Agent** senior-be · **Wave** W2
   - **Owns** `engine/packages/migrate/src/redirects/**`, `engine/packages/http/src/legacy/**`
   - **Read** MIGRATION.md §6, ARCHITECTURE.md §11
-  - _Requirements: 6.10, 16.5_
-  - [ ] 36.4.a Rules for categories and query parameters → facet URLs, static pages and `/storage/products/*.jpg`
+  - _Requirements: 6.10, 16.5, 16.9_
+  - [ ] 36.4.a Rules for categories and query parameters → facet URLs (the legacy `?p=highest|lowest` price sorts to `sort=newest`: no price sort, D50), static pages and `/storage/products/*.jpg`
   - [ ] 36.4.b The rules in the `redirects` collection, answered by the legacy handler at `/api/x/legacy/…` under `'use cache'` + `cacheTag`, matched on the raw path exactly as asked for, with a `Location` only from a root-relative row (`^/(?![/\\])`) — a request such as `/category/%2F%2Fevil.com` is a 404 unless a row names it (MIGRATION.md §6)
   - [ ] 36.4.c 404 for an unknown legacy path, 410 for a removed item; product URLs need no rule (33.3)
-  - [ ] 36.4.d **Check:** product URLs need no rule — the item route resolves them by public id and answers a changed slug with one 308 (33.3); categories and query parameters map to facet URLs, static pages and `/storage/products/*.jpg` redirect; rules live in the `redirects` collection and are answered by the legacy handler at `/api/x/legacy/…` under `'use cache'` + `cacheTag` (the proxy only rewrites to it and never touches the database); an unknown legacy path answers 404, a removed item 410.
+  - [ ] 36.4.e `/account` and every path under `/account/` answer one 301 to the CMS page that says the gallery keeps no accounts and how to reach an order, an invoice or an alert, in English and Indonesian (D54, 16.9; the gallery config's `legacyPrefixes` and `legacyPaths`, 6.5.a) — never a mirror of an account area, never a bare 404
+  - [ ] 36.4.d **Check:** product URLs need no rule — the item route resolves them by public id and answers a changed slug with one 308 (33.3); categories and query parameters map to facet URLs, the old price sorts to newest, static pages and `/storage/products/*.jpg` redirect; `/account` and every path under it reach the designed accounts page with one 301; rules live in the `redirects` collection and are answered by the legacy handler at `/api/x/legacy/…` under `'use cache'` + `cacheTag` (the proxy only rewrites to it and never touches the database); an unknown legacy path answers 404, a removed item 410.
 
 ---
 
@@ -2230,10 +2315,10 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** MIG + QA · **Agent** qa · **Wave** W1
   - **Owns** `engine/packages/migrate/src/report/**`, `tests/migration/**`
   - _Requirements: 16.5_
-  - [ ] 37.1.a The report: counts per legacy category vs new facets, items without images, parse failures, price parity
+  - [ ] 37.1.a The report: counts per legacy category vs new facets, items without images, parse failures, price parity (of the private asking price — none is shown, D50)
   - [ ] 37.1.b The URL gate: every legacy URL from the export and the URL inventory requested **against the new site on staging** — 200, or one permanent redirect to a 200: the legacy handler's 301 or the item route's 308, after at most one of Next's own 308s that only drops a trailing `/` or collapses a `//` (MIGRATION.md §6)
   - [ ] 37.1.c Zero failures before the gate
-  - [ ] 37.1.d **Check:** the report shows counts per legacy category vs new facets, items without images, parse failures and price parity, and requesting **every** legacy URL against the new site on staging returns 200 or a single permanent redirect (301 or 308, after at most one normalising 308) to 200, with zero failures.
+  - [ ] 37.1.d **Check:** the report shows counts per legacy category vs new facets, items without images, parse failures and price parity of the private asking price, and requesting **every** legacy URL against the new site on staging returns 200 or a single permanent redirect (301 or 308, after at most one normalising 308) to 200, with zero failures.
 
 - [ ] **37.2 👤 Rehearsal on staging and the delta import** · needs: 5.1, 37.1 · 👤 the Helios go-ahead for the staging import
   - **Lane** MIG + HAR · **Agent** senior-integrator, devops · **Wave** W2
@@ -2248,7 +2333,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/migration.md`
   - **Read** the **Done when** of phases 7, 36 and 37
-  - _Requirements: 16.1–16.8_
+  - _Requirements: 16.1–16.9_
   - [ ] 37.3.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
   - [ ] 37.3.b Drive every clause of the **Done when** of phases 7, 36 and 37 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/migration.md`
   - [ ] 37.3.c File every failure as a subtask of the task that owns it, and re-run the clause after the fix
@@ -2259,7 +2344,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 38 — Editors, the timed tests and the admin gate 👤 · Admin · needs 24, 30, 33 · ~2d
 
 **Goal:** the homepage and navigation editors, the timed tests with real staff, and the gate over the Admin stage.
-**Done when:** — measured with real people — a cataloguer enters twenty works at the agreed median time with images, unaided; a shop manager turns one work into a twelve-variant giclée product with mockups in under five minutes; an accepted offer reaches the buyer as a working payment link; every custom view was opened and has the Payload sidebar.
+**Done when:** — measured with real people — a cataloguer enters twenty works at the agreed median time with images, unaided; a shop manager turns one work into a twelve-variant giclée product with mockups in under five minutes; a WhatsApp-negotiated invoice reaches the buyer as a working pay page; every custom view was opened and has the Payload sidebar.
 **Waves:** W1 — 38.1 · W2 — 38.2 · W3 — 38.3
 
 - [ ] **38.1 Homepage and navigation editors with preview** · needs: 9.3, 30.2, 33.2
@@ -2275,7 +2360,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** QA + ADM · **Agent** qa · **Wave** W2
   - _Requirements: 14.2, 14.5_
   - [ ] 38.2.a 👤 The owner's cataloguer and shop manager (named in 23.1.a) sit the timed session
-  - [ ] 38.2.b Timed runs: twenty works from a drawer with images; one work → a twelve-variant giclée product with mockups; an accepted offer → a working payment link
+  - [ ] 38.2.b Timed runs: twenty works from a drawer with images; one work → a twelve-variant giclée product with mockups; a price agreed on WhatsApp → an invoice issued from a phone and its pay link shared into the chat
   - [ ] 38.2.c Fix every blocker, or file it as a task
   - [ ] 38.2.d **Check:** the owner's cataloguer and shop manager complete the phase's tasks with the times recorded; every blocker found is fixed or filed as a task.
 
@@ -2283,7 +2368,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** QA + ADM · **Agent** qa, senior-uiux · **Wave** W3
   - **Owns** `docs/gates/admin.md`
   - **Read** the **Done when** of phases 23, 24 and 38, DESIGN-SYSTEM.md §13
-  - _Requirements: 14.1–14.8, 19.10_
+  - _Requirements: 14.1–14.10, 19.10_
   - [ ] 38.3.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
   - [ ] 38.3.b Drive every clause of the **Done when** of phases 23, 24 and 38 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/admin.md`
   - [ ] 38.3.c File every failure as a subtask of the task that owns it, and re-run the clause after the fix
@@ -2296,7 +2381,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
 ## Phase 39 — Metadata, JSON-LD, sitemaps and feeds 👤 · SEO and analytics · needs 30, 33 · ~2.5d
 
 **Goal:** discoverability for both storefronts.
-**Done when:** Rich Results passes for an item, a sold item, a design and a location; sitemaps validate and include sold items; the Merchant and Meta feeds validate.
+**Done when:** a gallery item and a sold item validate as `VisualArtwork` with no `Product` or `Offer` (the Schema Markup Validator), and a shop design and a location pass Rich Results; sitemaps validate and include sold items; the shop's Merchant and Meta feeds validate in rupiah, and no gallery original appears in any feed (D50).
 **Waves:** W1 — 39.1, 39.2, 39.3 · W2 — 39.4
 
 - [ ] **39.1 Metadata, canonicals, hreflang, OG images** · needs: 30.1, 33.1
@@ -2306,17 +2391,17 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 17.1, 18.1_
   - [ ] 39.1.a Title and description templates per surface, the brand name from config
   - [ ] 39.1.b Canonicals and reciprocal `hreflang` (the default locale unprefixed, `/id` prefixed)
-  - [ ] 39.1.c OG images per item and design, generated at request time and cached — the sheet on its mat, centred so WhatsApp's square crop never cuts it
-  - [ ] 39.1.d **Check:** every surface has its templated title, description, canonical and reciprocal `hreflang` (default unprefixed + `/id`), and OG images are generated per item and design at request time with caching — **the sheet on its mat, centred so WhatsApp's square crop never cuts it**, with the stock number and title.
+  - [ ] 39.1.c OG images per item and design, generated at request time and cached — the sheet on its mat, centred so WhatsApp's square crop never cuts it, and never a price (D50)
+  - [ ] 39.1.d **Check:** every surface has its templated title, description, canonical and reciprocal `hreflang` (default unprefixed + `/id`), and OG images are generated per item and design at request time with caching — **the sheet on its mat, centred so WhatsApp's square crop never cuts it**, with the stock number and title and never a price.
 
 - [ ] **39.2 JSON-LD** · needs: 30.1, 33.1
   - **Lane** SEO · **Agent** medior · **Wave** W1
   - **Owns** `engine/packages/seo/src/jsonld/**`
-  - _Requirements: 17.2_
-  - [ ] 39.2.a Gallery: `Product` + `VisualArtwork` with `InStock` / `Reserved` / `SoldOut`, and no price for price-on-request
-  - [ ] 39.2.b Shop: `Product` + `Offer`; `ArtGallery` / `Store` per location; `BreadcrumbList`, `FAQPage`, `Organization`
+  - _Requirements: 17.2, 17.8_
+  - [ ] 39.2.a Gallery: `VisualArtwork` (with its `ImageObject`s) and no `Product` or `Offer` while no price is shown (D50, 17.8)
+  - [ ] 39.2.b Shop: `Product` + `Offer` with honest availability (`InStock`, `SoldOut`); `ArtGallery` / `Store` per location; `BreadcrumbList`, `FAQPage`, `Organization`
   - [ ] 39.2.c Schema-shape tests
-  - [ ] 39.2.d **Check:** builders emit `Product` + `VisualArtwork` (gallery) with `InStock`/`Reserved`/`SoldOut` and no price for POR, `Product` + `Offer` (shop), `ArtGallery`/`Store` per location, `BreadcrumbList`, `FAQPage` from faq blocks and `Organization`, with schema-shape tests.
+  - [ ] 39.2.d **Check:** builders emit `VisualArtwork` (gallery) with no `Product` or `Offer`, `Product` + `Offer` (shop) with `InStock`/`SoldOut`, `ArtGallery`/`Store` per location, `BreadcrumbList`, `FAQPage` from faq blocks and `Organization`, with schema-shape tests.
 
 - [ ] **39.3 Sitemaps** · needs: 30.1, 33.1
   - **Lane** SEO · **Agent** medior · **Wave** W1
@@ -2327,21 +2412,21 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 39.3.c Validation in CI
   - [ ] 39.3.d **Check:** per-locale sitemaps split by type include sold items and an image sitemap, regenerate on publish and nightly, and validate.
 
-- [ ] **39.4 👤 Google Merchant and Meta catalogue feeds** · needs: 39.2 · 👤 Merchant Center and Meta Commerce Manager access for each brand
+- [ ] **39.4 👤 Google Merchant and Meta catalogue feeds — the shop's** · needs: 39.2 · 👤 Merchant Center and Meta Commerce Manager access for the shop
   - **Lane** SEO · **Agent** medior · **Wave** W2
   - **Owns** `engine/packages/seo/src/feeds/**`, `engine/packages/http/src/feeds/**`
-  - _Requirements: 17.4_
-  - [ ] 39.4.a 👤 Merchant Center and Meta Commerce Manager access for each brand
-  - [ ] 39.4.b The Google Merchant feed for both brands — honest availability, the right currency per market, a rupiah-only feed for Indonesia, enquiry-only originals left out
+  - _Requirements: 17.4, 17.9_
+  - [ ] 39.4.a 👤 Merchant Center and Meta Commerce Manager access for the shop (the gallery has no shopping feed: D50, 17.9)
+  - [ ] 39.4.b The shop's Google Merchant feed in rupiah, for Indonesia only (S3) — its stocked variants with honest availability; no gallery feed
   - [ ] 39.4.c The Meta catalogue feed for the shop (Instagram tags, the WhatsApp catalogue), validated in the test catalogues
-  - [ ] 39.4.d **Check:** both feeds validate (Merchant Center, Meta Commerce Manager test catalogues) with honest availability and the right currency per market — the Indonesian feed in rupiah only — with enquiry-only originals left out; the Meta feed can drive Instagram tags and the WhatsApp catalogue.
+  - [ ] 39.4.d **Check:** the shop's feeds validate (Merchant Center, Meta Commerce Manager test catalogues) in rupiah with honest availability, and no gallery original appears in either; the Meta feed can drive Instagram tags and the WhatsApp catalogue.
 
 ---
 
 ## Phase 40 — Analytics, dashboards and the SEO gate · SEO and analytics · needs 23, 28, 39 · ~2.5d
 
-**Goal:** the event pipeline, consent-gated tags, the admin dashboards, and the gate over the SEO and analytics stage.
-**Done when:** Rich Results passes for an item, a sold item, a design and a location; sitemaps validate and include sold items; the Merchant feed validates; a purchase funnel and a lead funnel from real staging sessions are visible in the dashboard; rejecting consent stops every non-essential tag.
+**Goal:** the first-party event pipeline, the admin dashboards — the analytics the owner reads (D55) — and the gate over the SEO and analytics stage.
+**Done when:** a gallery item and a sold item validate as `VisualArtwork` with no `Product` or `Offer`, and a shop design and a location pass Rich Results; sitemaps validate and include sold items; the shop's Merchant feed validates in rupiah; the gallery's lead funnel — enquiry, call or WhatsApp → invoice issued → paid or lapsed — and the shop's purchase funnel, from real staging sessions, are visible in each brand's admin dashboard (D55), with leads' response times against the reply promise (G9); every event is first-party, the beacon runs cookieless without consent, and no third-party tag loads for anyone.
 **Waves:** W1 — 40.1 · W2 — 40.2, 40.3 · W3 — 40.4
 
 - [ ] **40.1 Beacon, events table, rollups and instrumentation** · needs: 18.2, 28.3
@@ -2351,9 +2436,9 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - _Requirements: 17.5_
   - [ ] 40.1.a (SCH lead) the DDL in `db/analytics.ts`: the monthly-partitioned `analytics_events`, `ensure_partition(ts)` and `analytics_rollups`, in the wave migration
   - [ ] 40.1.b beacon, store, rollups and the instrumentation of both apps
-  - [ ] 40.1.c **Check:** the batched beacon at `/api/x/collect` writes to partitioned `analytics_events` (partition ensured before insert), bots are filtered, rollups run before retention drops, domain events reach the store **only from the outbox dispatcher** (never from a request handler), and every event in C11 is emitted by both apps (a test checks names against the contract).
+  - [ ] 40.1.c **Check:** the batched beacon at `/api/x/collect` writes to partitioned `analytics_events` (partition ensured before insert), bots are filtered, rollups run before retention drops, domain events reach the store **only from the outbox dispatcher** (never from a request handler), and every C11 event a brand's modules allow is emitted by the app that renders it — `call.clicked` from the gallery's Call (C11 v1.5), no offer or hold event from either app at launch (a test checks names against the contract and the modules).
 
-- [ ] **40.2 GA4 and Meta, consent-gated** · needs: 28.3, 40.1
+- [ ] **40.2 GA4 and Meta, consent-gated** · needs: 28.3, 40.1 — ✂️ cut: D55 (2026-10-01) — the analytics are first-party only: no GA4 and no Meta Pixel at launch, even after consent
   - **Lane** SEO · **Agent** medior · **Wave** W2
   - **Owns** `engine/packages/analytics/src/adapters/**`
   - _Requirements: 17.6_
@@ -2366,16 +2451,16 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - **Lane** ADM + SEO · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/packages/cms/src/admin/analytics/**`, `engine/packages/analytics/src/queries/**`
   - _Requirements: 17.7_
-  - [ ] 40.3.a Queries: funnels, leads with response times, unmet demand (zero results + want-lists kept), the sold archive, payments, merchandise, field Web Vitals
+  - [ ] 40.3.a Queries: each brand's funnels — the gallery's lead → invoice issued → paid or lapsed (from `proforma.issued`, `invoiceHold.expired` and `order.paid`), the shop's listing → item → bag → checkout → paid — leads with response times against the reply promise (G9), unmet demand (zero results + want-lists kept; no budgets at the gallery), the sold archive (no "price realised" where prices are on request), payments, merchandise, field Web Vitals
   - [ ] 40.3.b Admin views per brand, inside Payload's navigation
   - [ ] 40.3.c Opened and seen with real staging sessions
-  - [ ] 40.3.d **Check:** funnels, leads with response times, unmet demand (zero results + want-lists), the sold archive, payments, merchandise metrics and field Web Vitals render per brand — **opened and seen with real session data**, not only queried.
+  - [ ] 40.3.d **Check:** each brand's funnels (the gallery's from lead to invoice to paid or lapsed), leads with response times against the reply promise, unmet demand (zero results + want-lists), the sold archive, payments, merchandise metrics and field Web Vitals render per brand in its admin — the first-party record the owner asked for (D55) — **opened and seen with real session data**, not only queried.
 
-- [ ] **40.4 SEO and analytics gate** · needs: phase 39, 40.1–40.3
+- [ ] **40.4 SEO and analytics gate** · needs: phase 39, 40.1, 40.3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/seo-and-analytics.md`
   - **Read** the **Done when** of phases 39 and 40
-  - _Requirements: 17.1–17.7_
+  - _Requirements: 17.1–17.9_
   - [ ] 40.4.a The full gate on merged `main`: `pnpm verify`, e2e for `indies-gallery`, `old-east-indies` and both `test` configs on a production build, Lighthouse for the stage's surfaces
   - [ ] 40.4.b Drive every clause of the **Done when** of phases 39 and 40 on a production build (on staging where it says so), with evidence per clause — a test name, a command output or a screenshot path — in `docs/gates/seo-and-analytics.md`
   - [ ] 40.4.c File every failure as a subtask of the task that owns it, and re-run the clause after the fix
@@ -2446,7 +2531,7 @@ photography or copy.
   - **Owns** `manual/**`
   - _Requirements: 14.1–14.7_
   - [ ] 42.4.a 👤 The shop's guide (`manual/`), with screenshots, and a training session with the shop's staff, their questions folded back in
-  - [ ] 42.4.b **Check:** `manual/user-guide.md` and `manual/cms-guide.md` (cataloguing, merch wizard, order builder, orders, offers, holds, refunds, returns, data-subject requests) exist with screenshots for the brand, and a training session has been held with its staff and their questions folded back in.
+  - [ ] 42.4.b **Check:** `manual/user-guide.md` and `manual/cms-guide.md` (cataloguing, merch wizard, the order builder and invoices, orders, refunds, returns and the damaged-print replacement, data-subject requests) exist with screenshots for the brand, and a training session has been held with its staff and their questions folded back in.
 
 - [ ] **42.5 👤 Photography coverage gate — the shop** · needs: 6.2, phase 32
   - **Lane** QA + UXG/UXE · **Agent** qa, senior-uiux · **Wave** W1
@@ -2489,14 +2574,14 @@ photography or copy.
 - [ ] **43.1 Performance pass on the reference devices — the gallery** · needs: phase 35
   - **Lane** QA + WEB · **Agent** senior-fe · **Wave** W1
   - _Requirements: 19.1, 19.11_
-  - [ ] 43.1.a The gallery: the same on home, browse, item (the viewer loading on intent) and checkout, on the reference devices and 4G, with its per-route JS report
-  - [ ] 43.1.b **Check:** field and lab budgets pass on home, browse, item, design and checkout for the brand on the named reference devices (DESIGN-SYSTEM.md §7), including a run on Telkomsel 4G in Bali and inside the Instagram and WhatsApp in-app browsers; the per-route JS report is attached; image sizes match rendered sizes; `Save-Data` is honoured.
+  - [ ] 43.1.a The gallery: the same on home, browse, item (the viewer loading on intent) and the invoice's pay page (D50: the gallery has no checkout), on the reference devices and 4G, with its per-route JS report
+  - [ ] 43.1.b **Check:** field and lab budgets pass on home, browse, item and the pay page for the brand on the named reference devices (DESIGN-SYSTEM.md §7), including a run on Telkomsel 4G in Bali and inside the Instagram and WhatsApp in-app browsers; the per-route JS report is attached; image sizes match rendered sizes; `Save-Data` is honoured.
 
 - [ ] **43.2 Accessibility audit — the gallery** · needs: phase 35
   - **Lane** QA + UXG/UXE · **Agent** qa, senior-uiux · **Wave** W1
   - _Requirements: 19.2, 19.11_
-  - [ ] 43.2.a The gallery: the same audit, including the viewer's keyboard map and the purchase panel's states — no open blocker
-  - [ ] 43.2.b **Check:** a WCAG 2.2 AA audit of the brand — axe plus manual keyboard, NVDA/VoiceOver, 200% zoom through its checkout, focus-not-obscured and dragging alternatives, and the in-app browsers — has no open blocker.
+  - [ ] 43.2.a The gallery: the same audit, including the viewer's keyboard map, the purchase panel's states and the pay page's — no open blocker
+  - [ ] 43.2.b **Check:** a WCAG 2.2 AA audit of the brand — axe plus manual keyboard, NVDA/VoiceOver, 200% zoom through its pay page, focus-not-obscured and dragging alternatives, and the in-app browsers — has no open blocker.
 
 - [ ] **43.3 👤 Compliance implementation check — the gallery** · needs: phase 21, phase 29, phase 35, 42.3
   - **Lane** QA + ARC · **Agent** qa · **Wave** W1
@@ -2510,7 +2595,7 @@ photography or copy.
   - **Owns** `manual/**`
   - _Requirements: 14.1–14.7_
   - [ ] 43.4.a 👤 The gallery's guide and a training session with the gallery's staff, their questions folded back in
-  - [ ] 43.4.b **Check:** `manual/user-guide.md` and `manual/cms-guide.md` (cataloguing, merch wizard, order builder, orders, offers, holds, refunds, returns, data-subject requests) exist with screenshots for the brand, and a training session has been held with its staff and their questions folded back in.
+  - [ ] 43.4.b **Check:** `manual/user-guide.md` and `manual/cms-guide.md` (cataloguing, merch wizard, the order builder and invoices, orders, refunds, returns and the damaged-print replacement, data-subject requests) exist with screenshots for the brand, and a training session has been held with its staff and their questions folded back in.
 
 - [ ] **43.5 👤 Photography coverage gate — the gallery** · needs: 6.2, phase 35
   - **Lane** QA + UXG/UXE · **Agent** qa, senior-uiux · **Wave** W1
@@ -2598,6 +2683,9 @@ agents are assigned then.
 - [ ] v2.17 Image licensing for institutions and publishers — _Requirements: 4.3_
 - [ ] v2.18 Print-on-demand abroad: Prodigi and Gelato adapters behind the 26.3 router, switched on with `fulfilment.pod` (D23) — _Requirements: 12.4, 12.5_
 - [ ] v2.19 **The Bali shops on our engine — the POS** (D52): the hundreds of shops as stock locations with their own logins; a till screen they sell from (QRIS); stock shared with the website in real time; each shop's ownership model (wholesale, consignment, branch) and its settlement; replacing today's WhatsApp reporting. Overlaps v2.7's trade portal for the same partners — the two may merge when scheduled — _Requirements: 9.1, 7.8_
+- [ ] v2.20 **The shop's export** (S3; 6.4): D47's contracts (17.2.e's scope), the PayPal adapter (25.2's), checkout to an address abroad with the market's "≈" estimate and duties (31.2.d's export half), markets abroad in the shop's config, and the made-to-order rung of the router (26.3.b's) — _Requirements: 7.14, 11.10_
+- [ ] v2.21 **Gift cards and gift wrap** (S10; 6.4): the gift-card ledger (20.1.b), buying and redeeming one (29.3.d), its page and balance check (31.1.d's half), the digital and printed card (23.6.c's), and gift wrap as a priced line — _Requirements: 8.7_
+- [ ] v2.22 **Collector accounts on the gallery** (D54; 6.4): sign-up, sign-in and the claim flow for migrated customers (28.1's collector half), the gallery's account area and its conversations (28.2's gallery half), an account's wishlist and want-lists, "held for you" — the first thing My Collection (v2.6) would need — _Requirements: 13.8_
 
 ---
 
@@ -2647,6 +2735,7 @@ flowchart TD
     N6 --> N13
     N7 --> N13
     N8 --> N13
+    N10 --> N13
     N2 --> N14
     N6 --> N14
     N9 --> N15
