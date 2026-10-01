@@ -55,7 +55,8 @@ the reasoning — it is written down so it can be challenged (KOI's rule).
                                          │  sister API + webhooks    │
                                          └──── work snapshots ───────┘   (copy with provenance)
 
-   object storage (R2): ig-media · oei-media (public, CDN) · archive-masters (private, shared)
+   object storage (RustFS, S3-compatible, D12; bucket policies scoped by prefix):
+   ig-media · oei-media (public by prefix, CDN) · archive-masters (private, shared)
    providers per brand: payment gateways · couriers · print-on-demand · SMTP · WhatsApp
 ```
 
