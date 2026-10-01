@@ -9,8 +9,8 @@ on 2026-10-01 (TASKS.md 6.1.f, `docs/design/journeys/owner-answers.md`, cited be
 serves Old East Indies through configuration. Every interview question for the shop is
 answered; a few answers name something the owner still has to send. Each of those
 stands where it applies, marked open with its question number and what is still owed,
-and nothing is invented in its place. What waits on the architect's
-replan (TASKS.md 6.4) says so where it stands. The journeys this brief serves are
+and nothing is invented in its place. The architect's replan (TASKS.md 6.4: S3, S7,
+D52, D55) is folded in (6.6). The journeys this brief serves are
 `docs/design/journeys/shop/`.
 
 ## Platform
@@ -76,16 +76,21 @@ Bali a courier delivers to a hotel or villa by a **"deliver before" date**, same
 where the courier offers it (S11). Online shoppers message **their own WhatsApp number,
 separate from the showroom's** —
 **(open — pending the owner interview, OA2 · S6: the number and its reply hours; still owed)**.
-Products are created in bursts from archive works in the admin. Saved items live on the
-shopper's device (D35); a saved search is an email alert with double opt-in, no account
-(D39).
+Products are created in bursts from archive works in the admin. **The stock is one pool
+at launch** (D52): every unit counts once per variant, held at the showroom, with no
+split by shop or location, no transfers and no showroom-stock badge or filter — "in
+stock" says it. The merchandise also sells through hundreds of partner shops across
+Bali, which report sales and restocking over WhatsApp as today; staff correct the pool in
+the admin, and selling from those shelves on this engine waits for the point-of-sale
+phase (backlog v2.19). Saved items live on the shopper's device (D35); a saved search is
+an email alert with double opt-in, no account (D39).
 
 ## Capabilities and Constraints
 
 - **Everything is in stock** (S7): the shop makes no "made to order" promise, and a
-  delivery promise is read from stock and the courier. How the configurator's framed
-  options square with "everything in stock" is the architect's to reconcile (TASKS.md
-  6.4.b). Who makes each product, and in which workshop, waits on the catalogue (S1,
+  delivery promise is read from stock and the courier. The configurator offers only the
+  variants in stock — framed options included (COMMERCE.md §4, EXPERIENCE-SHOP.md §5).
+  Who makes each product, and in which workshop, waits on the catalogue (S1,
   above). **Print-on-demand abroad is not part of the launch** (D23), and neither is
   export (S3).
 - The configurator's sizes are capped by each scan's resolution (240 ppi, D26).
@@ -96,6 +101,8 @@ shopper's device (D35); a saved search is an email alert with double opt-in, no 
   **(open — pending the owner interview, OA2 · S2: the price list; still owed)**; staging
   carries test prices only.
 - Payment methods filtered by amount (QRIS ≤ IDR 10 m, COMPLIANCE.md §1).
+- **Analytics are first-party only**, shown in the admin dashboard (D55, the owner's
+  G12): no GA4 and no Meta Pixel at launch, even after consent.
 - Social media may promote but not take payment — checkout is always on the site
   (Permendag 31/2023).
 - **Offers in the bag:** free shipping over **Rp 500.000** and a **welcome code**, set in

@@ -15,11 +15,11 @@ They are used four times, and each use reads the same file:
 | The Shop stage's done-criteria, e2e and usability runs | TASKS.md 32.1.a (every shop journey, phone, the Instagram, WhatsApp and TikTok in-app browsers), 32.2, phase 32 **Done when** | as above |
 
 The owner answered the interview on 1 October 2026 ([owner-answers.md](owner-answers.md));
-each journey's last section says which answers it folds in, what the owner still owes
-it, and what waits on the architect's replan (TASKS.md 6.4). A step that cannot run yet
-— its surface or module is not built, or it waits on an item still owed or on 6.4 —
-runs on the **default** its journey names and is noted in the session record, never
-skipped silently. The half of a journey marked **after launch** is not run until what it
+each journey's last section says which answers it folds in, what the architect's replan
+settled (TASKS.md 6.4, folded in by 6.6), what the owner still owes it, and what is still
+open with an adviser. A step that cannot run yet — its surface or module is not built, or
+it waits on an item still owed — runs on the **default** its journey names and is noted
+in the session record, never skipped silently. The half of a journey marked **after launch** is not run until what it
 waits on opens (export for the shop, S3).
 
 **What the answers changed.** The gallery is **enquiry-only** (D50): no price on any
@@ -30,16 +30,29 @@ invoice) replaces it. The shop sells **within Indonesia only at launch** (S3), s
 and J-S5's abroad halves wait for export; its walk-ins are the main buyers (S9), so
 **J-S4 is the shop's first journey beside J-S1** and runs in every shop round.
 
+**What the replan settled** (TASKS.md 6.4, folded into the journeys by 6.6). The gallery's
+invoice — an institution's proforma too — is **its own pay page**, `/pay/{token}`, in the
+gallery's design, the Stripe Payment Element embedded and bank transfer beside it, never a
+gateway-hosted page (D51); it is due in **three days** unless staff set another date, and
+the buyer is **reminded 24 hours before** it lapses (D45). The gallery has **no accounts**
+— nothing to register for and no account area (D54): an invoice, an order, a want-list and a
+viewing are each reached by their own link (an order also by the order lookup), and the
+wishlist lives on the visitor's device, as the shop's does. The shop's stock is **one
+pool** at launch, held at the showroom, with no showroom-stock badge (D52). Analytics are
+**first-party only** — no GA4 and no Meta Pixel, even after consent (D55). The owner
+intends **no returns of originals** (D56) and **no refunds** at the shop (S12); both are
+still for counsel (D11), so no journey promises a return or prints the rule.
+
 ## The index
 
 | # | Journey | Surfaces | The moment that decides trust |
 | - | ------- | -------- | ----------------------------- |
-| [J-G1](gallery/j-g1-collector-google-request-price.md) | A collector from Google on a phone → item → verso zoom → WhatsApp → the agreed price → the invoice, paid online | Item (viewer, purchase panel), Pay, Order | the invoice opened from WhatsApp names the seller, the piece, the agreed figure, shipping and duties, and the due date |
-| [J-G2](gallery/j-g2-institution-proforma.md) | An institution → an enquiry → a proforma invoice → bank transfer | Browse, Item, Form (quote), Quote, Order | the proforma PDF their finance office can pay without a phone call, holding the maps until its due date |
-| [J-G3](gallery/j-g3-designer-factsheet.md) | A designer → shortlist → factsheet → the client → the invoice that holds it | Browse, Item, Account › wishlist, Form (enquiry), Pay | the factsheet in the client's hands is accurate, dated, carries no price and links back to the live status |
+| [J-G1](gallery/j-g1-collector-google-request-price.md) | A collector from Google on a phone → item → verso zoom → WhatsApp → the agreed price → the invoice, paid online | Item (viewer, purchase panel), Pay, Order | the invoice opened from WhatsApp, on the gallery's own pay page, names the seller, the piece, the agreed figure, shipping and duties, and the due date |
+| [J-G2](gallery/j-g2-institution-proforma.md) | An institution → an enquiry → a proforma invoice → bank transfer | Browse, Item, Form (quote), Pay, Order | the proforma PDF their finance office can pay without a phone call, on a pay page holding the maps until its due date |
+| [J-G3](gallery/j-g3-designer-factsheet.md) | A designer → shortlist → factsheet → the client → the invoice that holds it | Browse, Item, Wishlist (this device), Form (enquiry), Pay | the factsheet in the client's hands is accurate, dated, carries no price and links back to the live status |
 | [J-G4](gallery/j-g4-diaspora-town-search.md) | A diaspora buyer → a family town under its old name → an enquiry → an invoice paid from home | Search, Place, Item, Form (enquiry), Pay, Order, WantList | the site knows Buitenzorg is Bogor |
 | [J-G5](gallery/j-g5-sold-item-old-link.md) | An old link to a sold map → the available example, a print, an alert | Item (sold), sister link, WantList, NotFound / Gone | a sold page that is honest — "Sold", nothing more — and still useful |
-| [J-G7](gallery/j-g7-jakarta-viewing-rupiah.md) | A Jakarta collector → book a viewing → an invoice in rupiah | Browse, Item, Account › wishlist, Form (appointment), Location, Pay, Order | a viewing confirmation that names place, time zone and what will be out; then an invoice in rupiah alone |
+| [J-G7](gallery/j-g7-jakarta-viewing-rupiah.md) | A Jakarta collector → book a viewing → an invoice in rupiah | Browse, Item, Wishlist (this device), Form (appointment), Location, Pay, Order | a viewing confirmation that names place, time zone and what will be out; then an invoice in rupiah alone |
 | [J-G8](gallery/j-g8-call-negotiated-invoice.md) | A call to the gallery → an agreed price → the invoice by email → paid in full, or released at its due date | Item, Pay, Order | the invoice after the call matches the conversation line for line |
 | [J-S1](shop/j-s1-instagram-configurator-qris.md) | The Instagram in-app browser → configurator → QRIS | Ig, Item (configurator), Cart, Checkout, Order (payment pending) | paying inside Instagram: the QR saves to the gallery and the page turns *Paid* by itself |
 | [J-S2](shop/j-s2-tourist-bali-to-netherlands.md) | A tourist buying in Bali → delivered to her villa before she flies (shipped home to the Netherlands: after launch) | Item, Cart, Checkout, Order | the promise says plainly whether it reaches the villa before her departure date |
@@ -107,3 +120,9 @@ calibrates it on the prototype and the stage gates adopt the calibrated figure.
 5. On a phone, nothing needs a horizontal scroll or a pinch outside the viewer.
 6. On the gallery, no price and no purchase control appears on any original, its tile,
    its factsheet or its structured data (D50, G4).
+7. On the gallery, no step asks the participant for an account, and nothing they come
+   back to needs one: each has its own link, and the wishlist stays on the device (D54).
+   On the shop, only an approved partner has an account (D31, J-S3).
+8. No page promises a return of an original or a refund, or prints a rule refusing one,
+   until counsel words it (D56, S12, D11); the shop's damaged-print replacement is the
+   one after-sale promise besides the gallery's authenticity guarantee.

@@ -2,12 +2,14 @@
 
 **Who:** a Jakarta shopper browsing the shop late at night on her phone. She saves three
 things she likes without buying. A week later, on the same phone, she comes back: one is
-still there, one has sold out at the showroom, and she wants to hear when new prints of
-old Batavia arrive. She will not create an account.
+still there, one has sold out, and she wants to hear when new prints of old Batavia
+arrive. She will not create an account.
 
 **Rests on:** **D35** (the wishlist lives on the guest's device, no account; every
-wishlist action tracked within the consent rules), **D38** (the cookieless beacon counts
-before consent; GA4 and Meta only after), **D39** (the want-list is an email alert, no
+wishlist action tracked within the consent rules), **D38** and **D55** (the first-party
+beacon counts cookieless before consent; analytics consent adds only a first-party id —
+no GA4 and no Meta Pixel at launch, even after consent: ANALYTICS.md), D52 (one stock
+pool: "sold out" means the pool is empty), **D39** (the want-list is an email alert, no
 account: double opt-in, alerts by email with an unsubscribe), D31 (guests only),
 EXPERIENCE-SHOP.md §2 (saved items: the heart; every "alert me" link leads to the one
 want-list page), §10 (retention), DESIGN-SYSTEM.md §2 (`Wishlist`, `WantList`),
@@ -18,9 +20,10 @@ BRANDS.md §4 (`retention.deviceWishlist`, `retention.emailWantList`,
 
 ## Before the session
 
-- On staging: three products — two available, one stocked **only** at the showroom and
-  set to sell out between the two halves of the session (everything is stocked; nothing
-  is made to order, S7); a "Batavia/Jakarta" collection with a saved-search subject.
+- On staging: three products — two available, one with a single unit left in the shop's
+  one stock pool (D52) and set to sell out between the two halves of the session
+  (everything is stocked; nothing is made to order, S7); a "Batavia/Jakarta" collection
+  with a saved-search subject.
 - The consent banner in its default state; the mail catcher open.
 - The session runs in **two halves** on the same phone and browser: save, then (after
   the facilitator changes the stock) return.
@@ -36,9 +39,9 @@ BRANDS.md §4 (`retention.deviceWishlist`, `retention.emailWantList`,
 
 | # | Surface (route) | The participant can | States to exercise |
 | - | --------------- | ------------------- | ------------------ |
-| 1 | `Item` / tiles › the heart | save three products | the heart sits outside the tile's link with its own focus stop; no sign-in prompt anywhere; before consent only the cookieless beacon counts the save (D38) |
+| 1 | `Item` / tiles › the heart | save three products | the heart sits outside the tile's link with its own focus stop; no sign-in prompt anywhere; before consent only the cookieless first-party beacon counts the save, and no third-party tag loads before or after it (D38, D55) |
 | 2 | `Wishlist` (`wishlist`) | see the three saved items | the page **says where the list lives** ("saved on this phone, in this browser"); the list streams in; empty state explains how to save |
-| 3 | (a week later) shell › the heart → `Wishlist` | find the three again | a removed product drops out with a line saying so; the sold-out showroom item reads unavailable with "Alert me"; a different browser or cleared data → an empty list whose copy explains why, never an error |
+| 3 | (a week later) shell › the heart → `Wishlist` | find the three again | a removed product drops out with a line saying so; the sold-out item reads unavailable with "Alert me"; a different browser or cleared data → an empty list whose copy explains why, never an error |
 | 4 | `Wishlist` › remove | remove one item with its heart | the removal is immediate and announced |
 | 5 | "Alert me" (back in stock) → `WantList` (`want-list`) | leave an email for the sold-out item | the one want-list page every alert leads to; it asks an email, **no account**; the same courteous answer whoever asks |
 | 6 | `Browse` › the Batavia collection › "Alert me about new prints" → `WantList` | save the search with the same email | one address may hold several lists; each is stoppable on its own |
@@ -78,5 +81,5 @@ understood as email; whether the consent banner interrupts saving.
 offers are free shipping over Rp 500.000 and a welcome code — an alert carries no offer of
 its own), S15 (the alert copy in the *Anda* register, TASKS.md 6.3.g) — folded in above.
 S9 answered where buyers come from (the showroom first), not how often they come back;
-the shop's own analytics will show it. **Still owed by the owner:** nothing for this
+the shop's own first-party analytics will show it (D55). **Still owed by the owner:** nothing for this
 journey.

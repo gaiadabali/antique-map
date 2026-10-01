@@ -8,7 +8,8 @@ and `engine/apps/emporium/PRODUCT.md` (Old East Indies). Drafted from research o
 2026-09-25; conformed to impeccable's product schema on 2026-10-01 (TASKS.md 6.1.a)
 against the decisions answered by then (TASKS.md, Decisions › Answered); the owner's
 interview answers folded in on 2026-10-01 (TASKS.md 6.1.f,
-`docs/design/journeys/owner-answers.md`, cited as **Gn / Sn**).
+`docs/design/journeys/owner-answers.md`, cited as **Gn / Sn**); the replan's decisions
+(D50–D56) folded in on 2026-10-01 (TASKS.md 6.6).
 
 **How to read the marks.** A statement with a source is a fact. The owner interview
 is answered; where an answer names something the owner still has to send, the
@@ -26,8 +27,11 @@ Indies Gallery works through drawers of originals — maps, prints, photographs 
 entering title, maker, date, technique, dimensions, condition and references,
 often from the object in hand; there are ~9,500 in inventory and ~2,090 online
 today (MIGRATION.md §1). A shop manager at Old East Indies turns archive works into
-products, keeps showroom stock right, and answers WhatsApp. Managers answer the
-gallery's enquiries and issue its invoices (D50), and handle partners' quotes. None of
+products, keeps the shop's one stock pool right — the showroom's, corrected from the sales
+and restocking that hundreds of partner shops across Bali report over WhatsApp (D52) — and
+answers WhatsApp. Managers answer the gallery's enquiries, issue its invoices from a phone
+and share their pay links into the buyer's chat (D50, D51), and handle partners'
+quotes. None of
 them are developers. **The admin is in English and Indonesian for every staff member**
 — not split by team; each user picks a language (G15). Who exactly does each job and
 how many people there are was not answered; the two observation sessions (OA13,
@@ -87,12 +91,17 @@ EXPERIENCE-GALLERY.md §9).
 - Purpose-built admin screens beside the standard collection UI: the desk,
   fast cataloguing, bulk image upload, AI-assisted drafting (flagged,
   human-verified; D16 open), the merch-from-work wizard, order operations, the
-  enquiries and holds inbox, the invoice a gallery sale ends in (D50; TASKS.md 24.5),
-  partner applications (D31), stock and showroom sales, homepage editing with preview.
-  No offers inbox: neither brand takes online offers (D22).
-- **First-party analytics, shown in the admin dashboard** (G12; ANALYTICS.md, phase 40);
-  whether GA4 and Meta still fire after consent is to confirm with the owner (TASKS.md
-  6.4.c).
+  enquiries and holds inbox, the invoice a gallery sale ends in (D50; TASKS.md 24.5) —
+  due in three days unless staff set another date, its buyer reminded 24 hours before
+  (D45) — partner applications (D31), the shop's one stock pool and its showroom sales
+  (D52; TASKS.md 24.4.c), customer records, homepage editing with preview. No offers
+  inbox: neither brand takes online offers (D22).
+- **Customer sign-in exists only for the shop's approved partners** (D31). The gallery
+  has no sign-up, sign-in or account area (D54); the old site's customers become
+  staff-side customer records with no account and no claim email (MIGRATION.md §5), and a
+  request to see, correct or erase one's data is done by staff (COMPLIANCE.md §7).
+- **First-party analytics only, shown in the admin dashboard** (G12, D55; ANALYTICS.md,
+  phase 40): no GA4 and no Meta Pixel at launch, even after consent.
 - **Never imply certainty the record lacks**: dates carry precision,
   attributions carry certainty, AI drafts stay flagged until verified.
 - Legal constraints are enforced, not documented: IDR-only for Indonesian
@@ -100,7 +109,9 @@ EXPERIENCE-GALLERY.md §9).
   separate consents (COMPLIANCE.md).
 - **Undecided, and owned by advisers rather than the owner interview:** the selling
   entities and their tax registrations (D1, D2, D4), export clearance (D5), returns
-  wording (D11), Hofker rights (D6) — each has a default in TASKS.md, Decisions.
+  wording (D11) — the owner intends no returns of originals (D56) and no refunds at the
+  shop (S12), and counsel is still to confirm either under UU 8/1999 art. 18 — Hofker
+  rights (D6); each has a default in TASKS.md, Decisions.
 
 ## Brand Commitments
 
@@ -137,8 +148,9 @@ EXPERIENCE-GALLERY.md §9).
   (`docs/design/journeys/owner-answers.md`).
 - **Absences that must not be invented:** the selling entities and their tax
   registrations; real prices for merchandise (the price list is still owed, S2); the
-  grading scale's wording; the returns policy; Hofker rights; photography of the
-  showroom; the staff roster.
+  grading scale's wording; the returns policy (counsel's, D11 — the owner's intentions,
+  D56 and S12, are not yet confirmed); Hofker rights; photography of the showroom; the
+  staff roster.
 
 ## Product Principles
 
