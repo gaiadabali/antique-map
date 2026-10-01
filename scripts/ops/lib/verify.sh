@@ -91,7 +91,8 @@ verify_pm2() {
   if pm2_daemon_live; then site_run pm2 kill >/dev/null 2>&1 || true; fi
   wait_for 10 pm2_daemon_gone || true
   systemctl restart "$unit" || true
-  if wait_for 30 pm2_online && wait_for 30 answers "http://127.0.0.1:$S_PORT/api/health" &&
+  # A cold Next start plus the boot check's database probe can pass 30 s (measured on Helios).
+  if wait_for 90 pm2_online && wait_for 90 answers "http://127.0.0.1:$S_PORT/api/health" &&
     systemctl is-active --quiet "$unit"; then
     after="$(pm2_pid)"
     if [ "$after" != "$before" ]; then
