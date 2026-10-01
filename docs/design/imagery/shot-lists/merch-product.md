@@ -1,5 +1,7 @@
 # Shot list — a shop product
 
+*Bahasa Indonesia:* [merch-product.id.md](merch-product.id.md)
+
 For Old East Indies products: framed and unframed prints, posters, postcards,
 notebooks, coasters, totes and the gift wrap. Set up as in the
 [shop guide](../shop-guide.md): catalogue shots on the plain background with the

@@ -1,5 +1,7 @@
 # Photographing originals — a guide for the gallery
 
+*Bahasa Indonesia:* [gallery-guide.id.md](gallery-guide.id.md)
+
 For the owner and staff of Indies Gallery. It explains how to photograph a map, a
 print or a photograph so that a collector on the other side of the world can judge
 it as if it were in their hands. You do not need to be a photographer, and you never

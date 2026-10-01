@@ -1,5 +1,7 @@
 # Shot list — a print
 
+*Bahasa Indonesia:* [print.id.md](print.id.md)
+
 For engravings, etchings, aquatints, lithographs and chromolithographs: views,
 costume and natural-history plates, book illustrations. Set up as in the
 [gallery guide](../gallery-guide.md) §4–§6. **No hands in any frame.** Name files

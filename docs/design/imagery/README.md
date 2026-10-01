@@ -14,17 +14,20 @@ handed-over image against.
 
 | File | For | What it settles |
 | ---- | --- | --------------- |
-| [gallery-guide.md](gallery-guide.md) | the owner and gallery staff | photographing originals: kit tiers, light, colour card, raking and transmitted light, frames and mats |
-| [shop-guide.md](shop-guide.md) | the owner and shop staff | photographing products and the showroom: sun, hands, rooms, packaging |
-| [shot-lists/map.md](shot-lists/map.md) · [print.md](shot-lists/print.md) · [photograph.md](shot-lists/photograph.md) · [merch-product.md](shot-lists/merch-product.md) | whoever holds the camera | one page per item type: every shot, in order, with its image role |
+| [gallery-guide.md](gallery-guide.md) · Indonesian: [gallery-guide.id.md](gallery-guide.id.md) | the owner and gallery staff | photographing originals: kit tiers, light, colour card, raking and transmitted light, frames and mats |
+| [shop-guide.md](shop-guide.md) · Indonesian: [shop-guide.id.md](shop-guide.id.md) | the owner and shop staff | photographing products and the showroom: sun, hands, rooms, packaging |
+| [shot-lists/map.md](shot-lists/map.md) · [print.md](shot-lists/print.md) · [photograph.md](shot-lists/photograph.md) · [merch-product.md](shot-lists/merch-product.md) · Indonesian: [map.id.md](shot-lists/map.id.md) · [print.id.md](shot-lists/print.id.md) · [photograph.id.md](shot-lists/photograph.id.md) · [merch-product.id.md](shot-lists/merch-product.id.md) | whoever holds the camera | one page per item type: every shot, in order, with its image role |
 | [retouching-and-labelling.md](retouching-and-labelling.md) | everyone, both brands | what may and may never be corrected; how a synthetic image is labelled |
 | [intake-spec.md](intake-spec.md) | the reviewer, and the checking tool later | the checks per image role, and the pass / fix / reject rubric |
-| [handover.md](handover.md) | the owner and the reviewer | file formats, names, folders, how to send, what we do with location data |
+| [handover.md](handover.md) · Indonesian: [handover.id.md](handover.id.md) | the owner and the reviewer | file formats, names, folders, how to send, what we do with location data |
 | [room-scenes.md](room-scenes.md) | UXE, MED (30.4, 24.1) | the configurator's room plates: wall colours, scale props, perspective, labelling (6.2.c) |
-| [pilot-set-request.md](pilot-set-request.md) | the owner — **it is sent to them** | the pilot set (6.2.b, 👤 OA3) and how to hand it over |
+| [pilot-set-request.md](pilot-set-request.md) · Indonesian: [pilot-set-request.id.md](pilot-set-request.id.md) | the owner — **it is sent to them** | the pilot set (6.2.b, 👤 OA3) and how to hand it over |
 
-The owner-facing files are plain language on purpose; the intake spec and the room
-scenes are for the people who build and check. Where the two disagree, the intake
+The owner-facing files are plain language on purpose. The ones the pilot request attaches
+have Indonesian versions (`*.id.md`, 6.2.f) — drafts awaiting native review (D20), with
+the English as the source: a change to a guide is made in the English and then carried
+into its `.id.md`. The intake spec and the room scenes are for the people who build
+and check. Where the two disagree, the intake
 spec wins and the guide is corrected.
 
 ## The image roles
@@ -90,6 +93,7 @@ image was made is `media.provenance` — `photograph` · `composite` · `rendere
 | 6.2.a capture standards per brand, as the owner's guide + the intake spec | written here |
 | 6.2.b the owner's pilot set, checked against the intake spec | ⛔ 👤 OA3 — the request is [pilot-set-request.md](pilot-set-request.md) |
 | 6.2.c the configurator's room scenes | written: [room-scenes.md](room-scenes.md); who produces the plates is D46 (default: a freelance 3D artist; the owner confirms) |
+| 6.2.f fill the request, give its guides Indonesian versions, send it | the Indonesian guides drafted (awaiting native review, D20); filling the four placeholders, choosing Bapak or Ibu, and sending are the owner's |
 
 ## Follow-ups this folder depends on (outside its lane — routed, not done)
 
@@ -104,7 +108,7 @@ image was made is `media.provenance` — `photograph` · `composite` · `rendere
 | 7 | the owner (D46) | who produces the configurator plates (room-scenes.md §10) |
 | 8 | the owner (a later request) | photographs of the real frame mouldings and mount boards, before 24.1 and 30.4 |
 | 9 | this lane, later | a shot list for books, atlases and albums |
-| 10 | 6.3 / OA4 | Indonesian versions of the owner-facing files, for staff |
+| 10 | 6.3 / OA4 | Indonesian versions of the owner-facing files, for staff — the request and the guides it attaches drafted (6.1.e, 6.2.f); their native review (D20), and retouching-and-labelling.md, which the guides link, remain |
 | 11 | counsel (OA17) | the one-paragraph consent form for recognisable people (handover.md §6) |
 
 **Every number in the intake spec is a pilot value.** The pilot set is the first
