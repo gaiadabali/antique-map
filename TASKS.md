@@ -24,8 +24,8 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 11/31 | 3 | `████░░░░░░`  35% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 1/3 | 11/14 | 2 | `████████░░`  79% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 0/18 | 0 | `░░░░░░░░░░`   0% |
-| **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/23 | 0 | `░░░░░░░░░░`   0% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/18 | 0 | `███████░░░`  67% |
+| **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/12 | 1 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **27/176** | **178/837** | **46** | `██░░░░░░░░`  21% |
+| **All** | 44 phases | | | **27/176** | **190/838** | **46** | `██░░░░░░░░`  23% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -163,8 +163,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W2 | 6.4 Replan from the owner's answers | architect | agent worktree | 2026-10-01 | D50 (gallery enquiry-only), S3 (shop Indonesia-only), the docs and contracts the answers change; returns a board diff |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | — (merged 89bf351) | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | ⛔ 👤 OA9 (7.1.a: the real dump's restore); everything else ticked |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
-| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | senior-db | agent worktree (SCH) | 2026-10-01 | phase 8 opened; schema author — dev push on its own suffixed DB, no migration committed (10.3.a after the merge) |
-| 8·W1 | 8.3 Media and masters | senior-be | agent worktree (MED) | 2026-10-01 | granted `cms/src/registries/storage.ts` this wave (SCH's, no other W1 task owns it) for the media/masters storage wiring |
+| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (reported done, 562d48c) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | trial-merged with 8.3 on 7968cf9 + registry test fix: verify 1674 passed, only the schema drift 10.3.a clears; independent senior-be review to re-run (hit the usage limit) |
+| 8·W1 | 8.3 Media and masters | — (reported done, b8f5181) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | independent senior-integrator review to re-run (hit the usage limit); asks `upload.limits.fileSize` in `payload.config.ts` (SCH) |
 
 ## Decisions for the owner
 
@@ -773,11 +773,11 @@ run beside the build line rather than in it.
   - **Owns** `engine/packages/cms/src/collections/{makers,places,terms,sources}/**`, their validators
   - **Read** CONTENT-MODEL.md §3, ARCHITECTURE.md §8, EXPERIENCE-GALLERY.md §2
   - _Requirements: 3.4, 3.5, 5.1_
-  - [ ] 8.1.a makers: names, sortName, aliases, roles, life dates with precision, bio (blocks), portrait, `sameAs`
-  - [ ] 8.1.b places: localised modern name, `historicalNames[]`, type, parent, geo point + bbox; cycle guard
-  - [ ] 8.1.c terms (subject, mood, room, occasion, recipient) and sources (bibliography)
-  - [ ] 8.1.d gazetteer seed data file (`test/content/seed/gazetteer.json` shape, reused by every brand): the place hierarchy of EXPERIENCE-GALLERY.md §2 and the historical names of ARCHITECTURE.md §8
-  - [ ] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
+  - [x] 8.1.a makers: names, sortName, aliases, roles, life dates with precision, bio (blocks — moved to 9.3.g: Payload 3.90's admin crashes on an empty blocks field, and the C4 definitions are 9.3.a's), portrait, `sameAs`
+  - [x] 8.1.b places: localised modern name, `historicalNames[]`, type, parent, geo point + bbox; cycle guard
+  - [x] 8.1.c terms (subject, mood, room, occasion, recipient) and sources (bibliography)
+  - [x] 8.1.d gazetteer seed data file (`test/content/seed/gazetteer.json` shape, reused by every brand): the place hierarchy of EXPERIENCE-GALLERY.md §2 and the historical names of ARCHITECTURE.md §8
+  - [x] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
 
 - [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
@@ -796,13 +796,13 @@ run beside the build line rather than in it.
   - **Owns** `engine/packages/cms/src/collections/{media,masters}/**` (by agreement with SCH), `engine/packages/media/src/storage/**`
   - **Read** ARCHITECTURE.md §7, CONTENT-MODEL.md §6, KOI CONTENT-MODEL Media
   - _Requirements: 4.3, 4.6_
-  - [ ] 8.3.a `media` upload collection: localised alt text required, image roles, the brand bucket through `@payloadcms/storage-s3`
-  - [ ] 8.3.b `masters` as a plain collection: a presigned PUT straight to the private bucket (never through the app server), checksum recorded on completion, no public URL
-  - [ ] 8.3.c Bucket policies: the shop's credentials write only under `print-files/`; local MinIO policies mirror production
-  - [ ] 8.3.d Upload size limits and allowed types
-  - [ ] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
-  - [ ] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
-  - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
+  - [x] 8.3.a `media` upload collection: localised alt text required, image roles, the brand bucket through `@payloadcms/storage-s3`
+  - [x] 8.3.b `masters` as a plain collection: a presigned PUT straight to the private bucket (never through the app server), checksum recorded on completion, no public URL
+  - [x] 8.3.c Bucket policies: the shop's credentials write only under `print-files/`; local MinIO policies mirror production
+  - [x] 8.3.d Upload size limits and allowed types
+  - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
+  - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
+  - [x] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 ---
 
@@ -838,7 +838,7 @@ run beside the build line rather than in it.
 
 - [ ] **9.3 Editorial and site: stories, pages, curations, exhibitions, redirects, globals, blocks** · needs: 1.2.d, 3.2
   - **Lane** SCH · **Agent** senior-be · **Wave** W1
-  - **Owns** `engine/packages/cms/src/{collections/{stories,pages,curations,exhibitions,redirects},globals,blocks}/**`
+  - **Owns** `engine/packages/cms/src/{collections/{stories,pages,curations,exhibitions,redirects},globals,blocks}/**`, and the `bio` and `description` fields in `collections/{makers,places}/` (9.3.g)
   - **Read** CONTENT-MODEL.md §6–7, DESIGN-SYSTEM.md §5, BRANDS.md §3
   - _Requirements: 2.3, 2.4, 3.5, 3.9, 3.11_
   - [ ] 9.3.a block definitions from C4 + an exhaustiveness test against `@engine/view-models` blocks
@@ -846,6 +846,7 @@ run beside the build line rather than in it.
   - [ ] 9.3.c globals: brandSettings, navigation, homepage (ordered bands), commerceSettings, consent, seoDefaults — wired into the config merge seam (3.1.a)
   - [ ] 9.3.d redirects collection (from, to, code, source, hits) with a unique `from` and a root-relative `to` — `^/(?![/\\])`, never `//host` or `/\host` (MIGRATION.md §6)
   - [ ] 9.3.e draft preview at the real URL for staff (NOW! S4 pattern: staff session, not a token) and live preview config
+  - [ ] 9.3.g `makers.bio` and `places.description` as localised C4 blocks fields (CONTENT-MODEL.md §3, §7), once 9.3.a defines the blocks — held from 8.1 (an empty blocks field blanks Payload 3.90's edit view)
   - [ ] 9.3.f **Check:** all fifteen blocks from C4 have Payload definitions matching the union exactly (a test compares them), including `prose` note marks that cite a source and `zoomFigure` regions addressed in IIIF coordinates; the six globals save (the holiday calendar inside `commerceSettings`, which holds **no prices**); a curation can be a manual list or a saved facet query, with price thresholds **per market currency**; every drafts-enabled collection reads `publishedOrStaff`.
 
 - [ ] **9.4 People (non-commerce): customers, addresses, saved items, want-lists, subscribers, reviews** · needs: 3.2
