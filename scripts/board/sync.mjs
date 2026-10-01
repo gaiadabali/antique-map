@@ -56,7 +56,8 @@ export function closeFinishedTasks(text, { date, sha }) {
   const closed = []
   for (const task of tasksOf(text)) {
     if (task.checked || task.status === 'cut' || task.subtasks.length === 0) continue
-    if (!task.subtasks.every((s) => s.checked)) continue
+    // a subtask marked ✂️ (cut) stops counting, as a cut task does (TASKS.md rule 7)
+    if (!task.subtasks.every((s) => s.checked || s.text.includes('✂️'))) continue
     const head = TASK_HEAD_RE.exec(lines[task.line - 1])
     if (!head) continue
     const { needsRaw } = splitStatusSuffix(head[3].trimEnd())

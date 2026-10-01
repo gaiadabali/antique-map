@@ -105,6 +105,17 @@ describe('the progress table', () => {
     expect(countPhases(board())[0].owner).toBe(1)
   })
 
+  it('skips a cut subtask in the counts, and closes a task whose other subtasks are ticked', () => {
+    const cutOwner = board({ boxes: { '7.10.b': 'x' } }).replace(
+      '7.10.a 👤 the owner hands it over',
+      '7.10.a 👤 the owner hands it over — ✂️ cut: not needed',
+    )
+    const phase = countPhases(cutOwner)[0]
+    expect(phase).toMatchObject({ subs: 4, subsDone: 1, owner: 0 })
+    const { closed } = closeFinishedTasks(cutOwner, AT)
+    expect(closed).toContain('7.10')
+  })
+
   it('is rebuilt between the markers, keeping CRLF files CRLF', () => {
     const crlf = board().replace(/\n/g, '\r\n')
     const { next } = computeBoard(crlf, AT)

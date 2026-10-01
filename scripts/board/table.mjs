@@ -51,7 +51,7 @@ export function countPhases(text) {
       continue
     }
     const sub = SUBTASK_RE.exec(line)
-    if (sub && !cut) {
+    if (sub && !cut && !line.includes('✂️')) {
       current.subs += 1
       if (sub[1] === 'x') current.subsDone += 1
       else if (line.includes('👤')) current.owner += 1
