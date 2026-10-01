@@ -103,6 +103,8 @@ note only), S12 (no refunds; a damaged print replaced on a photo), S13 (free shi
 Rp 500.000 and a welcome code), S6 (a separate online WhatsApp number), S3 (Indonesia
 only) — folded in above. **Still owed by the owner:** the catalogue — the formats, sizes,
 papers and frames offered (S1); the price list (S2); the welcome code's value (S13); the
-online WhatsApp number and its reply hours (S6). **Still open elsewhere:** how a
-configurator of framed options squares with "everything in stock" (TASKS.md 6.4.b);
-counsel's wording of "no refunds" against Indonesian consumer law (D11).
+online WhatsApp number and its reply hours (S6). **Settled by the replan (TASKS.md
+6.4):** the configurator offers only the variants in the shop's one stock pool, framed
+prints included — a combination nobody stocks is never offered (S7, D52;
+EXPERIENCE-SHOP.md §5). **Still open elsewhere:** counsel's wording of "no refunds"
+against Indonesian consumer law (D11).

@@ -22,7 +22,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 29/29 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 1/7 | 29/51 | 1 | `██████░░░░`  57% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 1/7 | 34/52 | 1 | `███████░░░`  65% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 3/6 | 20/35 | 1 | `██████░░░░`  57% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
@@ -31,7 +31,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **14** DESIGN.md, tokens and the design gate 👤 | Design | 13 | · not started | 0/2 | 0/11 | 2 | `░░░░░░░░░░`   0% |
-| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **15** Derivatives, IIIF tiles, manifests and masters | Media and search | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **16** The viewer, the search index, facets and the media gate | Media and search | 11, 15 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **17** Commerce schema, money, sellers, pricing and tax | Commerce | 10 | · not started | 0/4 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **18** Reservations, state machines and the cart | Commerce | 17 | · not started | 0/3 | 0/17 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **35/186** | **227/906** | **45** | `███░░░░░░░`  25% |
+| **All** | 44 phases | | | **35/186** | **232/908** | **45** | `███░░░░░░░`  26% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -159,9 +159,12 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.e cut (D20); ⛔ 👤 6.1.i the gallery's phone and viewing addresses, the shop's owed items |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.c cut (D20); 6.3.k after 6.4 |
+| 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5 |
+| 6·W3 | 6.5 Brand configs, app supports and their rules | medior | agent worktree | 2026-10-01 | the gallery's phone a marked placeholder until 6.1.i |
+| 6·W3 | 6.6 Journeys and briefs follow D51, D52, D54 | senior-uiux (6.6.f) | agent worktree | 2026-10-01 | a–e merged (4a19d73); 6.6.f settling the shop journeys' stale 6.4 items |
+| 6·W3 | 6.7 The docs outside 6.4's Owns (+ 6.2.j) | architect | agent worktree | 2026-10-01 | 6.2.j folded in: both touch MIGRATION.md |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
-| 8·W2 | 8.5 Staging storage holds 8.3's layout | devops | agent worktree (HAR) | 2026-10-01 | on Helios (OA-Helios); a new DNS name would be 👤; gates the next `production` push |
+| 8·W2 | 8.5 Staging storage holds 8.3's layout | — (reported done, 6c1a1c8) | `worktree-agent-a1eb12599989f6e01` | 2026-10-01 | applied on Helios (backups in `/var/backups/indies/config/8.5-20261001T131439Z/`); four storage secrets rotated after a transcript leak; independent senior-integrator review running |
 | 8·W2 | 8.6 A refusal keeps its plain reason | senior-fe | agent worktree (WEB) | 2026-10-01 | qa D1 — gates the phase's Done when |
 
 ## Decisions for the owner
@@ -732,7 +735,7 @@ run beside the build line rather than in it.
   - [x] 6.4.h D54 — no collector accounts on the gallery: requirements 13.1–13.2 and ARCHITECTURE.md §12 (customer auth for the shop's retailers only), EXPERIENCE-GALLERY.md §5, §8, §10 (no account area; the wishlist cut or browser-only; want-lists by email), COMMERCE.md and C6/C10 (no session-scoped `OfferAccess`/`AppointmentAccess` on the gallery; the viewing changed by its link), MIGRATION.md §5 and the redirect map (customers as staff-side records, no claim flow or 12-month purge of unclaimed accounts; `/account/*` answered, not mirrored); the board diff covers 28.1.b–c and 28.1.e (collectors, the claim flow, cart merge), 28.2 (the gallery half), 29, 33.3.d, 34.2.c and 36
   - [x] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, a payment page hosted by the provider, several shop stock locations, a gallery sign-in or account, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report. — merged 2026-10-01 (c73bbb2): every answer reflected or routed (the report's table); greps find no gallery online buying, shown price, offer or account and no shop checkout abroad at launch; contracts C1, C2, C6, C8, C10, C11, C13 at v1.5; `pnpm verify` exit 0 on the merged tree (64b2acd, byte-identical to c73bbb2: 1792 tests, tasks-lint ok); in the shared main checkout two load-sensitive suites timed out and pass in isolation (route-parity's Vite tests; 8.3.h's `request-temp-files.test.ts` at the 5 s default)
 
-- [ ] **6.5 Brand configs, app supports and their rules follow D50, D52, D54, S3, S7 and S10** · needs: 6.4
+- [ ] **6.5 Brand configs, app supports and their rules follow D50, D52, D54, S3, S7 and S10** · needs: 6.4 — 🔄 6·W3
   - **Lane** BRD + UXG + PLT · **Agent** medior · **Wave** W3
   - **Owns** `indies-gallery/site/brand.config.json`, `old-east-indies/site/brand.config.json`, `test/site/brand.gallery.json`, `test/site/brand.emporium.json`, `engine/apps/gallery/src/supports.ts`, `engine/packages/config/src/validate/rules/**`, `engine/packages/config/src/validate/testing/fixtures.ts`
   - **Read** 6.4's report (the board diff's 6.5), C1 v1.5's header (`engine/packages/config/src/schema.ts`), BRANDS.md §4–§6, EXPERIENCE-GALLERY.md (D50, D54), EXPERIENCE-SHOP.md §11
@@ -744,18 +747,19 @@ run beside the build line rather than in it.
   - [ ] 6.5.e PLT: the three rules C1 v1.5's header lists — `buy` only with `purchase.checkout`, `call` only with `identity.contact.phone`, `invoiceNoticeHours` below `invoiceHoldDays` in hours — each with a failing-config test
   - [ ] 6.5.f **Check:** `validateBrandConfigs()` and `pnpm check:brands` pass for every brand; a gallery config with any refused module, or with `buy`, fails (tests); C10 `hasSurface` gives the gallery no cart, checkout or account area and the shop its cart (test); `check-generated` shows no drift.
 
-- [ ] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4
+- [ ] **6.6 Journeys and briefs follow D51, D52 and D54** · needs: 6.4 — 🔄 6·W3
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W3
   - **Owns** `docs/design/journeys/**`, `engine/apps/gallery/PRODUCT.md`, `engine/apps/emporium/PRODUCT.md`, `PRODUCT.md`
   - **Read** 6.4's report (Found 7), EXPERIENCE-GALLERY.md §5, §10 (D54), COMMERCE.md §4 (D52) and §7 (D51)
   - _Requirements: 6.1, 7.1_
-  - [ ] 6.6.a J-G2: the institution's proforma is the invoice on the gallery's own pay page (D51), not the `Quote` surface — steps 4 and 6, its surfaces line and "Still open elsewhere"
-  - [ ] 6.6.b J-G3 and J-G7: the wishlist kept on the device (D54) — no buyer test account; the shortlist and the viewing's pull list from the device's list; J-G7's viewing changed by its confirmation's link
-  - [ ] 6.6.c J-S4 step 2 and its Read line: no "In the showroom now" badge (D52, one stock pool); J-G5's "separate account" wording
-  - [ ] 6.6.d Each PRODUCT.md and the journeys README's index: no gallery sign-in or account (D54); first-party analytics (D55) and no returns of originals, still for counsel (D56), wherever a brief states either
-  - [ ] 6.6.e **Check:** in the live gallery and shop journeys, a search finds no "Account ›", no gallery sign-in, no "In the showroom now" and no `Quote` surface outside an after-launch half, and each journey's success criteria still hold.
+  - [x] 6.6.a J-G2: the institution's proforma is the invoice on the gallery's own pay page (D51), not the `Quote` surface — steps 4 and 6, its surfaces line and "Still open elsewhere" — merged 4a19d73
+  - [x] 6.6.b J-G3 and J-G7: the wishlist kept on the device (D54) — no buyer test account; the shortlist and the viewing's pull list from the device's list; J-G7's viewing changed by its confirmation's link
+  - [x] 6.6.c J-S4 step 2 and its Read line: no "In the showroom now" badge (D52, one stock pool); J-G5's "separate account" wording
+  - [x] 6.6.d Each PRODUCT.md and the journeys README's index: no gallery sign-in or account (D54); first-party analytics (D55) and no returns of originals, still for counsel (D56), wherever a brief states either
+  - [ ] 6.6.f the shop journeys' stale 6.4 items (J-S1, J-S2, J-S3, J-S5, J-S7 — "6.4.b/c/e", "Still open elsewhere") marked settled against the merged docs and phase 32's Done when, or left open with the real reason
+  - [x] 6.6.e **Check:** in the live gallery and shop journeys, a search finds no "Account ›", no gallery sign-in, no "In the showroom now" and no `Quote` surface outside an after-launch half, and each journey's success criteria still hold. — evidenced 2026-10-01 (4a19d73): zero hits for "Account ›", `Quote`, sign-in and "In the showroom now" in the live gallery journeys; 47 links, 0 broken; the only README hits are J-S3's partner account and quote, which D31/D54 keep
 
-- [ ] **6.7 The docs outside 6.4's Owns** · needs: 6.4
+- [ ] **6.7 The docs outside 6.4's Owns** · needs: 6.4 — 🔄 6·W3
   - **Lane** ARC · **Agent** architect · **Wave** W3
   - **Owns** `docs/ARCHITECTURE.md`, `docs/MIGRATION.md`, `docs/BRANDS.md`, `docs/DESIGN-SYSTEM.md`, `docs/PLAN.md`, `docs/CONVENTIONS.md`
   - **Read** 6.4's report (Found 1–6), TASKS.md Decisions D45 and D50–D56, `engine/packages/CONTRACTS.md` v1.5
@@ -1003,7 +1007,7 @@ run beside the build line rather than in it.
   - [ ] 10.3.b wave B migration
   - [ ] 10.3.c wave C migration (incl. the `inventory_movements` engine table)
   - [ ] 10.3.d a verify script creating a work + product through the Local API with hooks (NOW! `verify-*` pattern), then reading them **as the public** (`overrideAccess: false`) to prove a draft and a `physical` field never come back; run in CI
-  - [ ] 10.3.f From 8·W1's SCH lead: the remaining test support (`pushed-database.test-support.ts`, `admins.db.test.ts`, `instance.db.test.ts`) builds with `buildEngineConfig()`; the media, masters and places db tests run on migrated databases now that `wave_a` exists; a compound index's name carries its table (Payload names `(kind, slug)` `kind_slug_idx` — a second collection with the same pair would collide); HAR (on request) caps `*.db.test.ts` file parallelism — CREATE DATABASE checkpoints on a dev Postgres of ~54 databases time out under parallel runs
+  - [ ] 10.3.f From 8·W1's SCH lead: the remaining test support (`pushed-database.test-support.ts`, `admins.db.test.ts`, `instance.db.test.ts`) builds with `buildEngineConfig()`; the media, masters and places db tests run on migrated databases now that `wave_a` exists; a compound index's name carries its table (Payload names `(kind, slug)` `kind_slug_idx` — a second collection with the same pair would collide); HAR (on request) caps `*.db.test.ts` file parallelism — CREATE DATABASE checkpoints on a dev Postgres of ~54 databases time out under parallel runs; `hooks/request-temp-files.test.ts` gets a load-proof timeout for its cold `import('../payload.config')` (times out at 5 s under the full suite — 8.5)
   - [ ] 10.3.e **Check:** each wave has exactly one generated migration, `payload migrate:create` reports "No schema changes detected" after it, the one `engine/packages/cms/payload-types.ts` is regenerated, and `schema-hash --all` is equal.
 
 - [ ] **10.4 Catalogue gate** · needs: phase 8, phase 9, 10.1–10.3
@@ -1222,6 +1226,7 @@ run beside the build line rather than in it.
   - [ ] 15.4.b Presigned read URLs with an expiry, and an access log
   - [ ] 15.4.c The print ceiling per design, computed from the design's crop in its master's pixels — the object's box for a whole sheet — never the file's long edge, at the product type's minimum ppi (C9 v1.4 `printCeilingOf()`), stored and shown; filing an intake capture under `masterKey()` verifies the copy's checksum before the intake object is deleted; filing runs outside the web process, with the archive's delete-capable key (DEPLOYMENT.md §2)
   - [ ] 15.4.d Enforcement on variant save and on publish; the MinIO-policy test for `print-files/`
+  - [ ] 15.4.f `apply.mjs` hands each user's secret to `mc` on stdin, never in its arguments — on a shared host any user reads a process's argv (Helios has no `hidepid`; 8.5 worked around it with throwaway secrets and the provision step)
   - [ ] 15.4.e **Check:** masters are uploaded by presigned PUT straight to the private bucket and record pixels, ppi, colour profile and checksum; presigned read URLs expire and are logged; the shop's key is refused outside `print-files/` (a test against MinIO policies); a design's print ceiling is computed from its master at the product type's minimum ppi (240 by default: a 3543 px long edge → 375 mm) and stored; a test proves an over-ceiling variant is refused on save and on publish.
 
 ---
@@ -2503,7 +2508,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.2.a the shop's production target — its secrets in Infisical from the start (D49: project `old-east-indies`, environments `staging` and `production`; copy staging's from Helios then)
   - [ ] 41.2.b the gallery's production target — provisioned early and kept dark for 42.7; its secrets in Infisical (D49: project `indies-gallery`, environments `staging` and `production`)
   - [ ] 41.2.c backups, the restore drill and monitoring for both — the 5xx rate sets apart, as its own series, a `500` whose path is under `^/(brand-assets|api/x)/` and contains `%` (DEPLOYMENT.md §7: Next's own answer to a path it cannot decode, ARCHITECTURE.md §13), ticketed past a rate and never paging; measured through CloudPanel's nginx, which may answer a malformed escape with its own 400 first
-  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`; RustFS accepts PutBucketCors on `archive-masters` and refuses an unlisted origin or a non-PUT preflight (`STORAGE_TEST_REQUIRE_BUCKET_CORS=1`), each host plan's `mastersCors` lists its brands' admin origins with no `ifUnsupported` (local MinIO cannot hold a bucket CORS rule — 8.3.i); DEPLOYMENT §2 names `mastersCors`
+  - [ ] 41.2.e RustFS parity for 8.3: `policies.minio.test.mjs` and the tampered-PUT test re-run against RustFS (it must verify `x-amz-checksum-sha256` on a presigned PUT and return `ChecksumSHA256` on HEAD, or masters fail open); `apply.mjs`'s `mc` commands answered; a staging and a production plan file with `--secrets env`; versioning or object lock on `archive-masters`; RustFS accepts PutBucketCors on `archive-masters` and refuses an unlisted origin or a non-PUT preflight (`STORAGE_TEST_REQUIRE_BUCKET_CORS=1`), each host plan's `mastersCors` lists its brands' admin origins with no `ifUnsupported` (local MinIO cannot hold a bucket CORS rule — 8.3.i); DEPLOYMENT §2 names `mastersCors`; on staging 8.5 proved RustFS 1.0.0 verifies the checksum, enforces prefix-scoped anonymous GET and answers `mc cors set` — production repeats it with `scripts/ops/storage/production-<brand>.json` (the storage step refuses to run without one); the container test's "WOULD stop uig's idle pm2 daemon" assertion is flaky on `main` too
   - [ ] 41.2.d **Check:** both production targets are provisioned with the owner's go-ahead, nightly dumps and storage replication run, a timed restore drill of one brand is recorded, and alerts (p95, 5xx, disk 80%, restart loop, job lag, outbox lag, webhook signature failures) fire in a test, while a planted `500` on an undecodable `/brand-assets/` path lands in its own series and pages no one, and a real `500` elsewhere still pages.
 
 ---

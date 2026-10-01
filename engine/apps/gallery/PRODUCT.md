@@ -8,9 +8,9 @@ owner's interview answers folded in on 2026-10-01 (TASKS.md 6.1.f,
 `docs/design/journeys/owner-answers.md`, cited below as **G1–G15**). This app is
 named for its archetype — a catalogue of one-of-one objects — and serves Indies
 Gallery through configuration. Every interview question for the gallery is answered;
-nothing in this brief waits on the owner interview. What waits on an adviser or on the
-architect's replan (TASKS.md 6.4) says so where it stands. The journeys this brief
-serves are `docs/design/journeys/gallery/`.
+nothing in this brief waits on the owner interview. The architect's replan (TASKS.md 6.4:
+D50–D56) is folded in (6.6); what still waits on an adviser says so where it stands. The
+journeys this brief serves are `docs/design/journeys/gallery/`.
 
 ## Platform
 
@@ -31,12 +31,13 @@ family knew. These four are the research's audiences (EXPERIENCE-GALLERY.md §1)
 
 Every one of them reaches the sale the same way: **a conversation with the gallery in
 Singapore** — a call or a WhatsApp message, or an enquiry or proforma request that starts
-one — where the price is negotiated (G3). Which of them buys most was
-not answered, and how buyers arrive is not measured: no Google Analytics export comes
-from the old site (G12). The gallery's own first-party analytics, shown in the admin
-dashboard, will measure it (G12; ANALYTICS.md, phase 40). Until then the journeys assume
-the interview's default: phones first, most visitors landing on an item page from
-search.
+one — where the price is negotiated (G3). **None of them signs up or signs in** (D54):
+there are no collector accounts, and each thing a buyer comes back to has its own link.
+Which of them buys most was not answered, and how buyers arrive is not measured: no
+Google Analytics export comes from the old site (G12). The gallery's own first-party
+analytics, shown in the admin dashboard, will measure it (G12, D55; ANALYTICS.md, phase
+40). Until then the journeys assume the interview's default: phones first, most visitors
+landing on an item page from search.
 
 ## Product Purpose
 
@@ -51,12 +52,15 @@ zoom, no terms, broken sorting and no structured data (MIGRATION.md §1).
 shown on any original — every one reads "Price on request" (G4). There is no cart, no
 reserve button and no online offer (G3, G8, D22). Every original leads to a call or a
 WhatsApp message to negotiate. Once a price is agreed, **staff issue an invoice and the
-buyer pays it online through the site's gateway** (G3b). The piece shows "On hold" until
-the invoice's due date and is released if it stays unpaid (G5, D45). It ships only once
-paid in full, with shipping and duties the buyer's, quoted on the invoice (G11). How the
-gallery's commerce is rebuilt around this — the purchase panel, the invoice and its pay
-page, what of reserve, cart and offers stays in the engine — is the architect's replan
-(TASKS.md 6.4.a).
+buyer pays it online through the site's gateway** (G3b) — on **the gallery's own pay
+page**, `/pay/{token}`, in its design, the Stripe Payment Element embedded and bank
+transfer beside it, never a gateway-hosted page; staff build it on a phone and share its
+link into the buyer's WhatsApp chat (D51). The piece shows "On hold until {due date}" —
+three days out unless staff set another date, the buyer reminded 24 hours before — and is
+released if it stays unpaid (G5, D45). It ships only once paid in full, with shipping and
+duties the buyer's, quoted on the invoice (G11). The purchase panel, the invoice and its
+pay page are EXPERIENCE-GALLERY.md §5's and COMMERCE.md §7's; reserve, cart and offers
+stay in the engine, off for the gallery.
 
 Success is every enquiry answered the same working day, a price agreed on the phone
 arriving as an invoice the buyer can pay without a second conversation, an institution
@@ -90,21 +94,29 @@ continuously.
 - Every original is unique; availability is guaranteed by the reservation service
   (`reserve()`, COMMERCE.md §4). On the gallery the one hold a buyer meets is the
   **invoice's**: it starts when staff issue the invoice — staff-approved by construction
-  — and lasts until the due date the staff set, released automatically if unpaid (G5,
-  D45).
+  — and lasts until the due date the staff set (three days by default, a reminder 24
+  hours before), released automatically if unpaid (G5, D45).
 - Deep zoom from static IIIF tiles; the primary image is always a crawlable image.
 - **The purchase panel has no price and no purchase control.** It shows "Price on
   request", the status (Available · "On hold until {date}" · Sold), and the ways to start
   a conversation: WhatsApp prefilled with the stock number and title, a call, an enquiry
   by email, a viewing in Singapore or Jakarta, a proforma for institutions — each with
-  the same-working-day reply promise (G3, G4, G9). The panel's exact modes, and whether
-  price tiers survive in the engine at all, are 6.4.a's.
+  the same-working-day reply promise (G3, G4, G9). Every visitor reads the same panel —
+  there is no viewer relation, since no one signs in (D54); its modes are
+  EXPERIENCE-GALLERY.md §5's, one conversation tier for every original (COMMERCE.md §7).
 - **No price anywhere in public** — not on the item, a tile, a factsheet (G14), a sister
   link, a feed or structured data (G4). JSON-LD `offers` and the merchant feeds follow
-  (TASKS.md 39.4); a price facet or a price sort would leak what the page hides (routed
-  to 6.4.a).
+  (TASKS.md 39.4); there is no price facet or price sort, which would leak what the page
+  hides (COMMERCE.md §7).
 - **No online offers** (G8, D22): a price is negotiated by phone or WhatsApp and paid by
   invoice.
+- **No accounts** (D54): no sign-up, no sign-in and no account area. An invoice is
+  reached by its link in the chat or the email, an order by its email's link or the order
+  lookup, a want-list by its confirmation email, and a viewing by its confirmation's link
+  or on WhatsApp. The wishlist lives on the visitor's device and becomes a viewing's pull
+  list; every want-list is an email's, confirmed by double opt-in (D39). The old site's
+  customers are staff-side records (MIGRATION.md §5), and its `/account` pages get a
+  designed answer, not a mirror.
 - **Selling entity and stock locations:** the originals are in Singapore and Jakarta
   (G2). D1's default — a Singapore seller for Singapore stock and export, an Indonesian
   seller for Jakarta stock sold domestically — stays with the adviser; the per-item
@@ -113,10 +125,10 @@ continuously.
   an item with no register row stays enquiry-only and is never invoiced for export.
 - **Shipping and duties are the buyer's**, quoted on the invoice, and nothing ships
   before the invoice is paid in full (G11). The engine's default for how originals
-  travel — fine-art transit insurance above the courier's limits, duties DAP
-  (COMMERCE.md §8) — stands until the replan says otherwise.
-- **Analytics are first-party and shown in the admin dashboard** (G12). Whether GA4 and
-  Meta still fire after consent is to confirm with the owner (TASKS.md 6.4.c).
+  travel — fine-art transit insurance above the courier's limits, duties DAP — is
+  COMMERCE.md §8's.
+- **Analytics are first-party only and shown in the admin dashboard** (G12, D55): no GA4
+  and no Meta Pixel at launch, even after consent.
 - Legacy product URLs (`/product/{id}-{slug}`) stay byte-identical.
 
 ## Brand Commitments
@@ -126,8 +138,10 @@ continuously.
   they sit beside "Price on request" and the enquiry. Every original comes with a
   certificate; **no sample certificate is shown** until Dr Parry agrees (G7). The
   gallery promises a **lifetime authenticity guarantee**, published only in counsel's
-  words (G6, D11). Returns of an original were not asked about beyond that; nothing is
-  promised until counsel's wording arrives (D11).
+  words (G6, D11). **No returns of originals** is the owner's intention (D56): a sale of
+  an original is final. It is in tension with UU 8/1999 art. 18 and still for counsel
+  (D11, not yet confirmed), so until counsel answers no page promises a return or prints
+  the rule.
 - Honest status: "Sold", "On hold until…", "Price on request" — never invented
   urgency. A sold piece says "Sold" and nothing about its buyer (G10).
 - Stock numbers (`M.`, `P.`, `F.`) are part of the identity and always shown
@@ -158,7 +172,8 @@ continuously.
   not used — no institution is named (G10) and the reply promise is G9's.
 - The owner's interview answers of 1 October 2026 (`docs/design/journeys/owner-answers.md`).
 - **Absences that must not be invented:** the published grading scale's wording
-  (D10), the guarantee's and any returns' wording (D11), the legal entity (D1), the
+  (D10), the guarantee's and any returns' wording (D11; D56 is the owner's intention, not
+  yet confirmed), the legal entity (D1), the
   gallery's addresses and the hours of its Singapore and Jakarta viewings, the number
   buyers call (not asked in the interview — to confirm with the owner), testimonials,
   memberships, press and fairs (G13 confirmed none of them), real photography beyond the
