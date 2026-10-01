@@ -24,7 +24,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 19/38 | 4 | `█████░░░░░`  50% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 2/4 | 12/25 | 0 | `█████░░░░░`  48% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/4 | 10/26 | 0 | `████░░░░░░`  38% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -57,11 +57,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **38** Editors, the timed tests and the admin gate 👤 | Admin | 24, 30, 33 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
 | **39** Metadata, JSON-LD, sitemaps and feeds 👤 | SEO and analytics | 30, 33 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **40** Analytics, dashboards and the SEO gate | SEO and analytics | 23, 28, 39 | · not started | 0/4 | 0/15 | 0 | `░░░░░░░░░░`   0% |
-| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/10 | 0 | `░░░░░░░░░░`   0% |
+| **41** Security hardening and production provisioning 👤 | Launch | 5, 21, 27 | · not started | 0/2 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **33/179** | **210/865** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **31/179** | **208/867** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -161,6 +161,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.f–j, l, m merged; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
+| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (fix round done, df2518d) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | review signed off with should-fix, all fixed; merged with 8.3 in `antique-map-p8-sch-lead` (31933a1) awaiting the SCH lead |
+| 8·W1 | 8.3 Media and masters | — (fix round done, 5a7ab6f) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | review signed off with should-fix, all fixed; 8.3.h + 10.3.a with the SCH lead (senior-db, `feat/p8-sch-lead`) |
 | 8·W1 | 8.4 What 8.1's and 8.3's reviews decided, in the docs and C9 | architect | agent worktree (ARC) | 2026-10-01 | from the two reviews' ARC items |
 
 ## Decisions for the owner
@@ -797,7 +799,7 @@ run beside the build line rather than in it.
 **Done when:** in the gallery admin a non-developer creates a maker, a place with a historical name, and a work with a circa date and a verso image; an incomplete work is refused on publish with a plain reason; all of it appears in the API.
 **Waves:** W1 — 8.1, 8.3, 8.4 · W2 — 8.2
 
-- [x] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
+- [ ] **8.1 Discovery vocabulary: makers, places (gazetteer), terms, sources** · needs: 3.2 — 🔄 8·W1
   - **Lane** SCH · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{makers,places,terms,sources}/**`, their validators
   - **Read** CONTENT-MODEL.md §3, ARCHITECTURE.md §8, EXPERIENCE-GALLERY.md §2
@@ -806,7 +808,7 @@ run beside the build line rather than in it.
   - [x] 8.1.b places: localised modern name, `historicalNames[]`, type, parent, geo point + bbox; cycle guard
   - [x] 8.1.c terms (subject, mood, room, occasion, recipient) and sources (bibliography)
   - [x] 8.1.d gazetteer seed data file (`test/content/seed/gazetteer.json` shape, reused by every brand): the place hierarchy of EXPERIENCE-GALLERY.md §2 and the historical names of ARCHITECTURE.md §8
-  - [x] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
+  - [ ] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
 
 - [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
@@ -821,7 +823,7 @@ run beside the build line rather than in it.
   - [ ] 8.2.g a reference-safe delete: a maker, place, term or source a work still references is refused with "still used by N works" — Payload's relationship tables would otherwise drop the credit silently (8.1 review, senior-be)
   - [ ] 8.2.f **Check:** every field in CONTENT-MODEL.md §1 exists; save-time validation and the publish guard are unit-tested; public read is `publishedOrStaff`; `physical` fields are invisible to roles without access and to the public; a provenance copy's synced fields reject edits; against a real database and outside a request (a collector on `req.context`), a save whose transaction rolls back flushes nothing, and a committed save's tags are flushed only once its operation has returned.
 
-- [x] **8.3 Media and masters** · needs: 3.2 — ✅ 2026-10-01 1bfed8d
+- [ ] **8.3 Media and masters** · needs: 3.2 — 🔄 8·W1
   - **Lane** MED · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{media,masters}/**` (by agreement with SCH), `engine/packages/media/src/storage/**`
   - **Read** ARCHITECTURE.md §7, CONTENT-MODEL.md §6, KOI CONTENT-MODEL Media
@@ -832,7 +834,8 @@ run beside the build line rather than in it.
   - [x] 8.3.d Upload size limits and allowed types
   - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
-  - [x] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
+  - [ ] 8.3.h (SCH lead) no request leaves a multipart temp file — 8.3's `useTempFiles: true` made Payload write one for every collection's POST/PATCH before access is checked, deleted only for upload collections (anonymous `/api/users` → 403 left ~94 MB); cleanup on every collection, global and error path, tested over the REST handler
+  - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 - [ ] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — 🔄 8·W1
   - **Lane** ARC · **Agent** architect · **Wave** W1
@@ -2373,6 +2376,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.1.b Rate limits (auth, forms, offers, checkout, order lookup); webhook replay protection; admin lockout
   - [ ] 41.1.c Dependency and secret scanning in CI; the OWASP Top 10 checklist
   - [ ] 41.1.e the foundation gate's N1 and N3: CloudPanel's vhost adds its own security headers, so `X-Content-Type-Options` and others go out twice where the app sets them (`curl -sD- https://old-east-indies.gaiada.com/api/health` shows `nosniff, nosniff`) — the provision script drops those `add_header` lines from our vhosts; and route parity refuses a non-literal `config.matcher` statically (today only `next build` catches it)
+  - [ ] 41.1.f nginx `client_max_body_size` small by default and about 100 MB only for `/api/media` and `/admin` (8.3's review: multipart bodies are parsed before access is checked)
   - [ ] 41.1.d **Check:** the CSP is **built per request** from brand config by the one builder (payment-provider, analytics and sister origins only; adding a provider needs a restart, not a rebuild), the request carrying the same header the answer does, security headers ship with tests, rate limits cover auth/forms/offers/checkout/order lookup, webhook replay protection and admin lockout are tested, dependency and secret scanning run in CI, and an OWASP Top 10 checklist is complete; card data never reaches our servers.
 
 - [ ] **41.2 👤 Production provisioning, backups, restore drill, monitoring** · needs: 5.1 · 👤 the Helios go-ahead for each target
