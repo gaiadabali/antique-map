@@ -119,8 +119,15 @@ async function main(): Promise<void> {
       return
     }
     case 'destroy': {
-      const removed = await removeContainer(container)
-      log(removed ? `removed ${container}` : `${container} was not there`)
+      if ((await containerState(container)) === 'absent') {
+        log(`${container} was not there`)
+        return
+      }
+      log(
+        (await removeContainer(container))
+          ? `removed ${container}`
+          : `could not remove ${container}`,
+      )
       return
     }
     default:
