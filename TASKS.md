@@ -23,7 +23,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 11/31 | 3 | `████░░░░░░`  35% |
-| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 1/3 | 11/14 | 2 | `████████░░`  79% |
+| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 1/5 | 11/21 | 2 | `█████░░░░░`  52% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/18 | 0 | `███████░░░`  67% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **27/176** | **190/838** | **46** | `██░░░░░░░░`  23% |
+| **All** | 44 phases | | | **27/178** | **190/845** | **46** | `██░░░░░░░░`  22% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -163,6 +163,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W2 | 6.4 Replan from the owner's answers | architect | agent worktree | 2026-10-01 | D50 (gallery enquiry-only), S3 (shop Indonesia-only), the docs and contracts the answers change; returns a board diff |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | — (merged 89bf351) | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | ⛔ 👤 OA9 (7.1.a: the real dump's restore); everything else ticked |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
+| 7·W3 | 7.4 Wire the migrate package | junior | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-10-01 | |
+| 7·W3 | 7.5 MIGRATION.md from the real data | junior | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-10-01 | §1, §4, §6, §10 only (6.4 may touch other sections) |
 | 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (reported done, 562d48c) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | trial-merged with 8.3 on 7968cf9 + registry test fix: verify 1674 passed, only the schema drift 10.3.a clears; independent senior-be review to re-run (hit the usage limit) |
 | 8·W1 | 8.3 Media and masters | — (reported done, b8f5181) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | independent senior-integrator review to re-run (hit the usage limit); asks `upload.limits.fileSize` in `payload.config.ts` (SCH) |
 
@@ -726,7 +728,7 @@ run beside the build line rather than in it.
 
 **Goal:** the owner's export restored and normalised, and the shop's legacy URLs inventoried — all from copies, never from the live sites.
 **Done when:** the owner's export (or, with the owner's OK, a read-only public read) is restored with its schema documented; dates, dimensions, grades, prices and titles parse with a fixture test per dirty-data case and a review file for the rest; every Squarespace path is inventoried; nothing was done to the old sites.
-**Waves:** W1 — 7.1, 7.3 · W2 — 7.2
+**Waves:** W1 — 7.1, 7.3 · W2 — 7.2 · W3 — 7.4, 7.5
 
 - [ ] **7.1 👤 Receive the old catalogue export** · needs: 2.1 — 🔄 7·W1
   - **Lane** MIG · **Agent** senior-integrator (MIG-A) · **Wave** W1
@@ -759,6 +761,25 @@ run beside the build line rather than in it.
   - [x] 7.3.c the Wayback CDX half now — every archived `oldeastindies.com` path inventoried — and an importer for the Search Console CSV (OA11), tested on a synthetic CSV, ready for the owner's export
   - [x] 7.3.d the two archived `/sitemap.xml` captures (2024-06-24, 2024-08-08) read through Wayback playback on web.archive.org — never the old site — as a third source, since the CDX index holds only 4 Squarespace product paths; the owner's OK is D43
   - [ ] 7.3.b **Check:** every Squarespace path from the Search Console export and the Wayback CDX index is inventoried in `old-east-indies/content/legacy/`, and nothing was done to the old site.
+
+- [ ] **7.4 Wire the migrate package** · needs: 7.2, 7.3.c — 🔄 7·W3
+  - **Lane** MIG · **Agent** junior (MIG-A) · **Wave** W3
+  - **Owns** `engine/packages/migrate/{package.json,src/index.ts}`, `engine/packages/migrate/src/sources/csv-products/index.ts`, `engine/packages/migrate/src/normalise/{price.ts,tables.ts,types.ts}`, `pnpm-lock.yaml` (through `pnpm install` only)
+  - **Read** `engine/packages/migrate/README.md`, `src/normalise/README.md`, CONTRACTS.md (C1 `CURRENCY_EXPONENT`, C2 `FuzzyDateVM`/`SizeVM`, C5 `Money`), the 7.1–7.3 Log entries
+  - _Requirements: 16.2_
+  - [ ] 7.4.a the `./normalise` export and a `legacy:normalise` script; `src/index.ts` re-exports the normalisers and both source adapters; `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves
+  - [ ] 7.4.b `@engine/config` as a `workspace:*` dependency — currency exponents come from `CURRENCY_EXPONENT`, the tables' exponent field removed — and `@engine/view-models` type-only, with a compile-time check that the normalisers' date, size and price shapes are C2/C5's
+  - [ ] 7.4.c **Check:** `pnpm verify` green; `pnpm --filter @engine/migrate legacy:normalise public-read` reproduces 7.2's counts on the 1,823 crawled records; a type test fails when a normaliser shape drifts from C2/C5.
+
+- [ ] **7.5 MIGRATION.md from the real data** · needs: 7.1.d, 7.2, 7.3.d — 🔄 7·W3
+  - **Lane** ARC · **Agent** junior · **Wave** W3
+  - **Owns** `docs/MIGRATION.md` (§1, §4, §6, §10 only)
+  - **Read** the 7.1, 7.2 and 7.3 Log entries; `indies-gallery/content/legacy/{schema,inventory}/README.md`, `old-east-indies/content/legacy/README.md`, `engine/packages/migrate/src/normalise/README.md`
+  - _Requirements: 16.2, 16.5, 16.6_
+  - [ ] 7.5.a §1 and §6: `/sitemap.xml` answers 404; the maker pages `/mapmaker/{id}-{slug}` and `/new-additions`'s queries in the route list; the image size variants under the `/storage/products/*` rule; 1,823 distinct public products (the ≈2,090 double-counted categories)
+  - [ ] 7.5.b §4: the dirty data the real records showed — sizes typed in both orders (orientation from the image), `G-`, more SKU prefixes than two, technique words in the colour field, sold pages without a price, the circa range C2 cannot hold (flagged for ARC)
+  - [ ] 7.5.c §10: the shop's two platforms before Linktree (SIRCLO 2020–21, Squarespace 2022–24), the archived sitemap as a source (D43), Search Console (OA11) for what neither holds
+  - [ ] 7.5.d **Check:** each statement in §1, §4, §6 and §10 matches a Log entry or a committed README, with no number the evidence does not carry; `pnpm verify` green.
 
 ---
 
@@ -2601,6 +2622,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — **7·W3 added and dispatched** — 7.4 (wire `@engine/migrate`: the normalise export, `@engine/config` exponents, C2/C5 type checks, `csv-products/index.ts`) and 7.5 (MIGRATION.md §1/§4/§6/§10 from what the real data showed), from 7.1–7.3's follow-ups. Phase 9 cannot open: phases 6, 7 and 8 are open (three).
 - 2026-10-01 — ✅ 7.2 — merged to `main` (7968cf9, branch 2e768b1); `pnpm verify` green on the merge (1,544 tests). Parsers for dates (C2 fuzzy date), dimensions (whole mm), orientation (from the photograph), condition (D10), price (C5 Money from the digit text — never a float, never rounded; extra decimals go to review), references, titles (hook vs original, SEO suffixes moved out), stock numbers, colour, maker, place, categories; each returns raw + proposal + confidence, a value only at ≥ 0.9. 165 tests, one named per MIGRATION.md §4 case. Re-run on `main` over the 1,823 crawled records with neutral defaults: 2,323 review rows (1,806 of them colour, which has no store wording yet); with the proposed store tables 1,239. Found for ARC/MIGRATION.md §4: sizes typed in both orders (586 width-first, 835 height-first — orientation must come from the image); D10's A–D equivalents defined nowhere; the store also used `G-` (27); more SKU prefixes than two (B., IM., PM., lowercase p.); the Color field mixes technique words; sold pages show no price (189 — only the export has them); C2 cannot hold a circa range ("ca. 1690-1700"). Follow-ups: the store's normaliser tables `indies-gallery/content/legacy/mapping/normalise.json` (grade aliases, boilerplate, SEO suffixes, SKU prefixes, 21 colour mappings) for the curator with 36.1 (OA12); `./normalise` export + `legacy:normalise` script + `@engine/config` dep so exponents come from `CURRENCY_EXPONENT` (MIG); the circa-range shape (ARC); the curator to publish D10's A–D equivalents and rule on G-/VG-; run `cli.ts catalogue` on the real dump when OA9 arrives.
 - 2026-10-01 — **7·W2 dispatched**: 7.2 (medior, lane MIG-A, `feat/p7-mig-a` reused, fast-forwarded to main). Its needs changed from 7.1 to **7.1.d** — 7.1 cannot close until the owner's dump (OA9) arrives, and 7.2 needs only the extract, which exists (1,823 crawled records + the mock's `products.jsonl`).
 - 2026-10-01 — 7.1 merged to `main` (89bf351, branch 5ed1de7); `pnpm verify` green on the merge (1,379 tests, every check ok). 7.1.b, c, d, e, f ticked: `@engine/migrate` in the workspace; the restore harness took the mock (15 tables, 240 rows, synthetic, `example.invalid` only) into a throwaway `mysql:8.4` and extracted it by SQL (`restore.integration.test.ts`, opt-in `MIGRATE_MYSQL_IT=1`, 23 s, container removed); the public read per D41 — 4,083 GETs (≥2 s apart, robots obeyed, no 429/5xx/403), **1,823 products (1,607 listed, 216 sold), 2,289 original images, 98 categories, 7,665 URLs** inventoried in `indies-gallery/content/legacy/inventory/urls.tsv` (paths only; raw 3.2 GB in `LEGACY_DATA_DIR`). **Incident, reported to the owner:** the first run's link discovery followed the enquiry form's address from an inline script 19 times with GET; the site answered 405 each time, nothing was submitted; fixed (script-found URLs never followed unless images; `enquire`/`request`/`subscribe` on the never-list; a test plants one). Found for MIGRATION.md §1/§6: `/sitemap.xml` now 404; maker pages `/mapmaker/{id}-{slug}` (305) missing from the route list; image size variants `{p}-{i}S/M.jpg` need the `/storage/products/*` rule; "≈2,090 listed" double-counts overlapping categories — the site has 1,823 distinct. Follow-ups: a CI job for `MIGRATE_MYSQL_IT=1` (HAR); `csv-products/index.ts` so `@engine/migrate/sources/csv-products` resolves (MIG-B); redirects for maker pages, image variants and `/new-additions` queries (36.x); the owner's call on soft-deleted items (36.x). 7.1.a waits on OA9.
