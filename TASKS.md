@@ -101,13 +101,13 @@ A phase opens when every phase in its **Needs** column is ✅, lowest number fir
 | Phase | Stage | Needs | Waves | Tasks | Size | Closes |
 | --- | --- | --- | --- | --- | --- | --- |
 | **1** Repository, contracts and agent workspace | Foundation | — | 2 | 3 | ~1.5d |  |
-| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 2 | 3 | ~1.5d |  |
-| **3** Config spine and Payload boot | Foundation | 2 | 2 | 2 | ~1d |  |
+| **2** Local infrastructure, quality gates and CI | Foundation | 1 | 2 | 4 | ~1.5d |  |
+| **3** Config spine and Payload boot | Foundation | 2 | 2 | 5 | ~1d |  |
 | **4** App shells and the Cache Components spike | Foundation | 3 | 3 | 8 | ~2.5d |  |
-| **5** Staging and the foundation gate 👤 | Foundation | 4 | 3 | 4 | ~2d | **M0** |
+| **5** Staging and the foundation gate 👤 | Foundation | 4 | 3 | 6 | ~2d | **M0** |
 | **6** Briefs, image direction and voice | Design | 4 | 3 | 7 | ~3d |  |
-| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 2 | 3 | ~2d |  |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 2 | 3 | ~2d |  |
+| **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 2 | 5 | ~2d |  |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 2 | 6 | ~2d |  |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | 2 | 4 | ~3d |  |
 | **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | 2 | 4 | ~2.5d |  |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | 2 | 4 | ~3d |  |
@@ -121,13 +121,13 @@ A phase opens when every phase in its **Needs** column is ✅, lowest number fir
 | **19** Checkout, the payment pipeline and Midtrans 👤 | Commerce | 18 | 3 | 4 | ~3d |  |
 | **20** Shipping, discounts, notifications, documents, returns and the tax export | Commerce | 19 | 2 | 6 | ~3d |  |
 | **21** The commerce API and the money-safety gate 👤 | Commerce | 20 | 2 | 3 | ~1.5d | **M2** |
-| **22** App foundations and surfaces from fixtures | Design systems | 5, 11, 14 | 3 | 6 | ~5d | **M1** |
+| **22** App foundations and surfaces from fixtures | Design systems | 5, 11, 14 | 3 | 7 | ~5d | **M1** |
 | **23** The admin shell and cataloguing 👤 | Admin | 10, 14, 15 | 3 | 6 | ~4.5d |  |
 | **24** Admin operations: merch wizard, orders, inbox, stock and manual orders | Admin | 20, 23 | 1 | 5 | ~3.5d |  |
 | **25** Payment adapters 👤 | Integrations | 19 | 1 | 2 | ~3.5d |  |
 | **26** Couriers and the fulfilment router 👤 | Integrations | 15, 20 | 1 | 3 | ~3d |  |
 | **27** Sister sync, WhatsApp and the integrations gate 👤 | Integrations | 25, 26 | 2 | 3 | ~3d |  |
-| **28** Accounts, consent and data-subject operations | Accounts | 17, 22 | 2 | 4 | ~3d |  |
+| **28** Accounts, consent and data-subject operations | Accounts | 17, 22 | 2 | 5 | ~3d |  |
 | **29** Alerts, newsletter, retention and the accounts gate | Accounts | 16, 20, 28 | 2 | 4 | ~3d |  |
 | **30** Shop: loaders, home and collections, the product page and the configurator | Shop | 16, 21, 22 | 1 | 4 | ~4.5d |  |
 | **31** Shop: stories, the bag and checkout, order tracking | Shop | 21, 22 | 2 | 4 | ~3.5d |  |
@@ -157,9 +157,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.e cut (D20); ⛔ 👤 6.1.i the gallery's phone and viewing addresses, the shop's owed items |
-| 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5 |
+| 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee; no agent in flight) | — | 2026-10-01 | ⛔ 👤 6.1.i is all that remains besides 6.1.d — the gallery's phone and viewing addresses, the shop's owed items; **it alone holds phase 6 open** |
+| 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (6.2.b merged 28d3445; 6.2.d evidenced; 6.2.i answered by 6.4) | — | 2026-10-01 | only 6.2.j remains, and it runs inside 6.7 (architect) |
+| 6·W3 | 6.3 Voice and lexicon | senior-uiux (6.3.k) | agent worktree | 2026-10-01 | 6.3.k cutting and adding keys against C2 v1.5; then its Check 6.3.d |
 | 6·W3 | 6.5 Brand configs, app supports and their rules | medior | agent worktree | 2026-10-01 | a–e done; fix round: the 13 config and proxy tests that assumed the old gallery config (Owns widened for those cases); `my-account` kept for C10's required segment; 6.5.g after 6.7.g |
 | 6·W3 | 6.7 The docs outside 6.4's Owns (+ 6.2.j) | architect | agent worktree | 2026-10-01 | 6.2.j folded in: both touch MIGRATION.md |
 | 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
@@ -660,7 +660,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
 ## Phase 6 — Briefs, image direction and voice · Design · needs 4 · ~3d
 
 **Goal:** what each brand is for and who it serves, the photography it will stand on, and how it speaks in both languages.
-**Done when:** the product briefs and the 6.1.c journeys are written and approved; the capture standards exist and the owner's pilot set is delivered (D19); each brand has a native-reviewed EN/ID voice and lexicon.
+**Done when:** the product briefs and the 6.1.c journeys are written and approved; the capture standards exist and the pilot set — the client's existing photos, no shoot (D19, updated 2026-10-01) — is checked against them; each brand has a decided EN/ID voice and lexicon (no native review, D20).
 **Waves:** W1 — 6.1, 6.2, 6.3 · W2 — 6.4 · W3 — 6.5, 6.6, 6.7
 
 **Why the Design stage is long.** A research recommendation is the category default —
@@ -671,7 +671,7 @@ component, and the only honest test of a direction is a real buyer on a real
 phone (DESIGN-SYSTEM.md §11, §13). Its phases wait mostly on the owner, so they
 run beside the build line rather than in it.
 
-- [ ] **6.1 Product briefs and journeys** · needs: 1.3.b — 🔄 6·W1
+- [ ] **6.1 Product briefs and journeys** · needs: 1.3.b — ⛔ 👤 6.1.i
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `engine/apps/gallery/PRODUCT.md`, `engine/apps/emporium/PRODUCT.md`, `PRODUCT.md`, `docs/design/journeys/**`
   - **Read** the drafted PRODUCT.md files, EXPERIENCE-GALLERY.md, EXPERIENCE-SHOP.md, RESEARCH.md §1, §3
@@ -685,7 +685,7 @@ run beside the build line rather than in it.
   - [ ] 6.1.i 👤 the gallery's own facts OA2 did not ask: the number buyers call and its hours, the Singapore and Jakarta viewing addresses and hours; then, as the owner sends the S1 catalogue, S2 price list, S4 hours, S6 number and S13 code value, fold each in at its open mark in the emporium PRODUCT.md and the journeys' "Still owed" lines
   - [ ] 6.1.d **Check:** each PRODUCT.md follows the impeccable product schema with no invented facts and the owner's answers folded in, and 6–8 journeys per brand exist, each naming its surfaces, states, channel handoffs and the moment that decides trust.
 
-- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b — 🔄 6·W1
+- [ ] **6.2 👤 Image direction, capture standards and the pilot set** · needs: 1.3.b — 🔄 6·W3 (6.2.j, inside 6.7)
   - **Lane** UXG + UXE · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/imagery/**`
   - **Read** DESIGN-SYSTEM.md §11, CONTENT-MODEL.md (image roles), MIGRATION.md §9, the drafted PRODUCT.md files
@@ -701,7 +701,7 @@ run beside the build line rather than in it.
   - [ ] 6.2.j ARC, from 6.2.b's Found: a legacy recto cropped inside the object has no measurable `objectBox` — write the fallback (the frame as a lower bound) into intake-spec §8, CONTENT-MODEL §2 `designs.printCeiling` and C9; intake-spec §8 "never rejected" becomes "never rejected for quality, still refused for honesty (H4)" (synthetic overviews in the archive); a role for a folding map's case and booklet; whether 6.12's launch set is per sheet or per work; C9 `IntakeEntry`'s comment no longer cites OA3; MIGRATION.md §1/§9's image figures to the measured archive (median 2706 px, not 3543)
   - [x] 6.2.d **Check:** each brand has capture standards written as the owner's photography guide and an intake spec, the pilot set (existing photos) is checked against it, and the pilot images are in the private masters bucket ready for the comps; any owner answer from 6.1.b that changes the standards is folded in before closing. — evidenced 2026-10-01: both guides and the intake spec exist; the pilot set (existing photos, gallery) is checked image by image (`pilot-set/manifest.md`) and in the private masters bucket (local `archive-masters/pilot/`, 15/15 checksums); the shop's photos are a named, non-blocking gap; S14 folded in (6.2.h)
 
-- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W1
+- [ ] **6.3 👤 Voice and lexicon** · needs: 3.1.b, 4.1 — 🔄 6·W3
   - **Lane** UXG + UXE + BRD · **Agent** senior-uiux · **Wave** W1
   - **Owns** `docs/design/{gallery,emporium}/voice.md`, `engine/apps/*/src/messages/**` (the keys: `keys.ts` composing `lexicon/*.ts`, widened 2026-10-01 for the 300-line rule), `indies-gallery/site/copy/**`, `old-east-indies/site/copy/**`, `test/site/copy/**` (the values)
   - **Read** DESIGN-SYSTEM.md §10, BRANDS.md §2, NOW! docs/DESIGN-SYSTEM.md §6 (copy), the drafted PRODUCT.md files
