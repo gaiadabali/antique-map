@@ -56,8 +56,9 @@ routeSeller({ lines, destination }): { seller } | { blocked: LineProblem[] }
    publishes (its URL, essay and images stay live) but its purchase panel is
    enquiry-only. Nothing is ever defaulted into exportability.
 4. If one seller can serve every line, it is chosen. If lines need different
-   sellers — rare, and only when a gallery cart mixes Singapore and Jakarta stock —
-   the cart shows two checkouts rather than inventing a cross-entity order.
+   sellers — rare: a basket of Singapore and Jakarta stock — the cart shows two
+   checkouts rather than inventing a cross-entity order, and at the gallery, which
+   has no cart (§7), staff issue one invoice per seller.
 5. A Singapore seller selling Singapore-held stock to an Indonesian destination
    prices and charges in **IDR** (the rupiah rule applies to what the buyer sees)
    — default until the advisers rule otherwise (D29).
@@ -67,6 +68,17 @@ destination before an address exists, defaulted from the visitor's country and
 remembered in one `shipTo` cookie. It is the only input to the market — routing,
 currency, prices, price facets and duties everywhere on the site follow from it
 (ARCHITECTURE.md §9).
+
+**A destination no market lists is one the brand does not deliver to.** The
+selector offers only the countries a market lists, and a visitor from anywhere
+else starts at the brand's **home market** — the market priced in its base
+currency. Nothing is priced, estimated or offered for a destination the brand
+does not deliver to. This is the shop at launch: its one market and its one seller
+list Indonesia alone (S3, 2026-10-01; D47 answered), so a visitor abroad browses in
+rupiah for delivery within Indonesia, every product page and the bag say once,
+plainly, that the shop delivers within Indonesia only for now, and a checkout takes
+an Indonesian address — a Bali hotel or villa, a home, or pickup at the showroom —
+or none. The export design that waits for the owner is §3.
 
 ## 3. Money, currencies and price lists
 
@@ -86,10 +98,23 @@ currency, prices, price facets and duties everywhere on the site follow from it
   charged in its own currency only where the routed seller charges it (C1
   `sellers[].charge`); otherwise the seller's charge currency is the exact figure
   and the market's is the estimate beside it.
-- **A buyer abroad at the shop, at launch — D47's default, until the owner and the
-  adviser answer.** The shop's one seller is an Indonesian PT (D2): its gateway
-  charges rupiah, cards from abroad included (COMPLIANCE.md §1–2), and PayPal, its
-  one method in another currency, takes no rupiah at all. So:
+- **The shop sells within Indonesia only at launch (S3, 2026-10-01 — D47
+  answered).** There is no checkout to an address abroad, so no "≈" estimate in a
+  foreign currency is shown anywhere on the shop and no payment is charged in one:
+  every price, total and charge is the exact rupiah, and PayPal is not offered
+  (PAYMENTS.md §6). The rupiah rule above already governs every page, since every
+  ship-to the shop delivers to is Indonesian (§2). A visitor's foreign card is charged
+  that exact rupiah total, and the payment step says, in one line, that their card
+  issuer may convert it again into their own currency at its own rate.
+- **A buyer abroad at the shop — D47's design, off at launch.** What follows is
+  the design for when the owner opens export (the owner and the adviser decide,
+  D2): kept, so the engine is ready, and switched on by configuration alone — a
+  market and a seller that serve the destinations abroad, `charge: ["IDR"]`,
+  estimate-only markets and `paypal` among the seller's providers (TASKS.md 17.2.e
+  builds it with that change, not before). The shop's one seller is an Indonesian
+  PT (D2): its gateway charges rupiah, cards from abroad included (COMPLIANCE.md
+  §1–2), and PayPal, its one method in another currency, takes no rupiah at all.
+  So, once export opens:
   - **one price list, in rupiah, for every destination.** The seller prices and
     charges IDR alone (`charge: ["IDR"]`); there is no hand-set EUR, AUD, SGD or USD
     list until a seller that can charge those currencies exists (the v2 Singapore
@@ -120,9 +145,10 @@ currency, prices, price facets and duties everywhere on the site follow from it
 
   | Source | Used for | How |
   | ------ | -------- | --- |
-  | explicit | OEI's international lists; any hand-priced original | a stored price for that currency on the product or variant |
+  | explicit | any hand-priced original; OEI's lists abroad once export opens | a stored price for that currency on the product or variant |
   | product-type table | OEI merchandise | `table[format × size × frame × mount × glazing][market]` × the artwork multiplier (licensed or hero works fund royalties) |
-  | derived | IG's non-base currencies | base price → daily FX → + FX buffer (3–5%, per market) → rounded |
+  | derived | IG's non-base currencies — at launch only staff's view of a private asking price in the buyer's currency, since no gallery price is published (D50, §7) | base price → daily FX → + FX buffer (3–5%, per market) → rounded |
+  | agreed | a staff-issued invoice or proforma, an accepted quote (and an accepted offer, where a brand takes them) | the figure agreed with the buyer, stored on the server as C5 `AgreedPrice` when the document is issued — never from a request |
 
 - **Rounding happens at named points, each with its method** (C5) — "round once"
   is impossible when percentage discounts, PPN on an 11/12 base, FX and partial
@@ -156,7 +182,8 @@ currency, prices, price facets and duties everywhere on the site follow from it
 
 ```
 unit price   (market list: explicit | product-type table × multiplier | derived —
-              or an already-agreed price: an accepted offer's, an issued quote's or proforma's line)
+              or an already-agreed price: an issued invoice's, quote's or proforma's line,
+              or an accepted offer's where a brand takes offers)
 → customer price list          an approved retail partner's trade tier only (D32); no wholesale list
 → line discounts               bundles, multi-buy ("3 for 2" cards)
 → order discounts              codes, first-order offer, automatic rules (the free-shipping threshold)
@@ -180,18 +207,41 @@ intermediate figure so an invoice can be reproduced exactly.
 | `pod` | print-on-demand abroad | provider availability, no count |
 | `service` | framing, conservation | quote |
 
-**Stock locations** are data: the Denpasar showroom, a Bali stockroom, the
-Jakarta gallery, Singapore storage, and a virtual `print-on-demand` location.
-Showroom stock carries an "In the showroom now" badge and powers click & collect.
+**The shop sells from stock at launch (S7, 2026-10-01: "everything in stock").**
+Its config lists `stocked` and `service` only: every product it offers is counted at
+a location, no variant is made to order, and no page promises a lead time — the
+configurator offers the variants on the shelf (EXPERIENCE-SHOP.md §5). The
+`made-to-order` and `pod` models, and the router's rungs for them (§8), stay in the
+engine for when the owner offers them.
+
+**Stock locations** are data: the gallery's Singapore storage and Jakarta gallery,
+which route an original's seller (§2), and the shop's. **The shop's stock is one pool
+at launch** (decided 2026-10-01, the developer's input to TASKS.md 6.4): every
+merchandise unit counts as one quantity per variant, in **one** shop location — the
+Denpasar showroom, where online orders are packed and collected (pickup, S4) and
+walk-ins buy (a showroom sale against the same pool, TASKS.md 24.4.c). `stock_levels`
+stays keyed by variant × location, so the next phase adds locations without a
+migration while launch reads one row per variant; there are no transfers between
+locations, and no "In the showroom now" badge or filter — with one pool, every unit in
+stock is in the showroom, so "in stock" says it. The merchandise also sells through
+hundreds of partner shops across Bali, which report sales and restocking over WhatsApp
+as today; who owns the stock on a shop's shelf — wholesale, consignment, a branch — is
+the point-of-sale phase's (backlog), not launch's.
 
 **Reservation kinds**
 
 | Kind | Taken when | TTL (named in C1) | Public status |
 | ---- | ---------- | ----------------- | ------------- |
-| `checkout-lock` | the buyer presses "Continue to payment" | `checkoutLockMinutes` (15), then **extended** to the chosen method's `sessionTtl` + margin | "On hold" (unique only) |
-| `hold` | staff grant a buyer's reserve request | `holdDefaultHours` (48), at most `holdMaxHours` (72) | "On hold until {date}" |
-| `offer` | an offer is accepted | `offerHoldHours` (48); a counter-offer stays open `offerCounterHours` (72) | "On hold" |
-| `invoice` | a proforma invoice is issued | `invoiceHoldDays` (7) or the invoice's due date | "On hold" |
+| `checkout-lock` | the buyer presses "Continue to payment" (the shop's bag), or starts paying a staff-sent link (the gallery's invoice, §7) | `checkoutLockMinutes` (15), then **extended** to the chosen method's `sessionTtl` + margin; a link's lock lasts at least as long as the hold it supersedes | "On hold" (unique only) |
+| `invoice` | staff issue an invoice — the gallery's one way to sell an original (D50, §7) — or a proforma | to the invoice's **due date**, which staff set (D45); `invoiceHoldDays` (7) is the term the order builder proposes | "On hold until {due date}" |
+| `hold` | staff grant a buyer's reserve request — **no brand at launch** (D50: the gallery has no reserve button; the shop takes no holds) | `holdDefaultHours` (48), at most `holdMaxHours` (72) | "On hold until {date}" |
+| `offer` | an offer is accepted — **no brand at launch** (D22 answered: neither site takes offers) | `offerHoldHours` (48); a counter-offer stays open `offerCounterHours` (72) | "On hold" |
+
+All four stay in `reserve()` (C8): a brand turns on the flows behind `hold` and
+`offer` with `purchase.holds` and `purchase.offers`. An invoice hold starts **only
+when staff issue the invoice** — staff-approved by construction (D45) — and ends at
+its due date by itself, read as available the moment the date passes, before any
+sweep; staff re-date it before then with `extend()` or cancel it with `release()`.
 
 `reserve(target, qty, kind, owner, ttl)` is the **only** writer, with
 `reserveAll` (several targets, all or nothing), `extend`, `release`, `convert`
@@ -201,8 +251,9 @@ never a refund alone) and the sweep's `expireDue` (C8). It writes the scalar
 lapsed `active` rows for the same target **in the same transaction**, judged by
 the database clock (`statement_timestamp()`); and it returns a reservation or a
 typed conflict — never a database error at a buyer. A buyer is never blocked by
-their own reservation: the same owner gets it back, and a hold or an offer hold
-paid through checkout is superseded by the checkout lock in the same call. A
+their own reservation: the same owner gets it back, and an invoice hold paid
+through its link (or a hold or an offer hold, where a brand takes them) is
+superseded by the checkout lock in the same call. A
 returned stocked item is a stock adjustment, not a reversed reservation.
 Cash-at-retail methods are never offered for a unique item, because they cannot
 complete inside any reasonable hold.
@@ -228,11 +279,21 @@ The checkout lock shows the buyer a countdown — *"We're holding this for you f
 
 ## 5. Cart and checkout
 
+**The bag and checkout are module `purchase.checkout`** (C1, C10, C13 v1.5): on at
+the shop, **off at the gallery**, which sells by conversation and invoice (D50,
+§7) — so the gallery has no bag, no checkout and no basket in its header, and a
+crafted post to the cart answers 404. Everything below is the shop's at launch,
+and any brand's that turns the module on.
+
 **Cart.** Guest carts identified by a hashed token cookie; merged into the
-account on sign-in; 30-day expiry for guests. Lines hold product, variant,
+account on sign-in where a brand's buyers sign in and buy online (at launch none: the
+shop's shoppers are guests and its partners order by quote, D31–D32, and the gallery
+has no cart); 30-day expiry for guests. Lines hold product, variant,
 quantity and configuration (for configured prints, the option set). **A cart
 never reserves** — only checkout does. A unique item in someone else's checkout
-shows "On hold — check back in 15 minutes" and offers the want-list.
+shows "On hold — check back in 15 minutes" and offers the want-list. A unique
+item whose price is on request never enters a bag: it has no list price to
+charge.
 
 **Checkout is data, not pages.** `CheckoutVM.steps` is computed from the seller,
 destination and lines; the apps render whichever steps are present:
@@ -330,7 +391,8 @@ is released or reversed; `withdrawn` when staff take it off sale. It is computed
 from reservations and product status, and every change emits an event that
 revalidates the pages showing it.
 
-**Offer** — `submitted → countered ⇄ submitted → accepted | declined | expired |
+**Offer** (engine capability — no brand takes offers at launch: D22, D50) —
+`submitted → countered ⇄ submitted → accepted | declined | expired |
 withdrawn`; `accepted` creates an `offer` reservation, stores the agreed figure —
 the proposal or the counter, converted once into the charge currency with its FX
 snapshot — and a payment link that charges exactly that. An open offer closes as
@@ -347,10 +409,125 @@ commit loses nothing and a rolled-back transaction sends nothing.
 
 ## 7. Buying a one-of-one object
 
-The gallery's purchase panel shows the modes the item's price tier and status
-allow. Tiers are brand config (`purchaseTiers`, in the seller's base currency),
-defaulting to the research (RESEARCH.md §2). Offers are **in scope for launch**
-as non-binding offers (D22); binding offers are v2.
+**The gallery at launch sells by conversation and invoice** (D50, 2026-10-01; it
+supersedes D30). The owner negotiates every original by phone or WhatsApp, with the
+gallery in Singapore (G3), and the site shows no price (G4). Online buying stays
+engine capability — the shop's checkout, and any brand that turns it on (below) —
+and the gallery's difference is configuration alone:
+
+- **No price, anywhere** — `commerce.uniquePrices: "on-request"` (C1 v1.5). No unique
+  item's price reaches a page, a card, a facet or a sort, a want-list budget, the
+  factsheet (G14), a social image, structured data, a feed, the sister shop's
+  snapshot (C12 `OriginalListing.pricing: 'on-request'`) or an analytics event (the
+  band is `on-request`). Every original reads **"Price on request"**. The asking price
+  staff record stays private — the start of a negotiation and the insured value. A
+  **price request is a lead a person answers, never revealed in place**, within the
+  reply promise the panel states (G9: the same working day, Singapore time; C2
+  `reply`).
+- **The conversation leads** — one purchase tier, every original alike:
+
+  | Tier | Primary | Secondary |
+  | ---- | ------- | --------- |
+  | every original (`upTo: null`) | WhatsApp, prefilled with the stock number and title | Call (the gallery's Singapore number, C1 `call`) · Request price · Enquire · Book a viewing (Singapore or Jakarta, G2) · Proforma for institutions (C10 `quote`) |
+
+- **No cart, no checkout, no reserve button, no online offer** — `purchase.checkout`
+  is off, so the gallery has no bag and no checkout (§5); `purchase.offers` and
+  `purchase.holds` are off (D22 answered: neither site takes offers). No tier offers
+  Buy, Reserve or Make an offer, and C1 refuses Buy beside on-request prices.
+
+**The invoice — the gallery's one way to pay for an original.** Once a price is
+agreed in the chat or on the phone, staff build an **invoice** in the admin's order
+builder — **on a phone**, since the sale started in a WhatsApp chat (TASKS.md 24.5). It
+carries the piece at the agreed figure — C5 `AgreedPrice` (source `quote`), entered by
+a role that may set prices and audited — the insured shipping as quoted (§8), the duties
+where the seller ships DDP (under DAP it states the estimate and that they are paid on
+arrival), the buyer and, for an institution, its PO number, and a **due date** staff set
+(D45; the order builder proposes `invoiceHoldDays`). Issuing it is one transaction that:
+
+1. **routes it like a checkout** — `routeSeller()` over its lines and the buyer's
+   destination (§2): a piece with no recorded location or export status, or a
+   `domestic-only` one for an address abroad, refuses the invoice with its reason
+   (COMPLIANCE.md §1) — staff complete the record first, or the buyer views the piece
+   where it is;
+2. takes an `invoice` hold on every unique line through **`reserve()`** —
+   `reserveAll()` for several pieces — until the due date: the one writer of
+   reservations, as everywhere (§4). A piece already held or sold is a typed conflict
+   the builder shows, and nothing is issued;
+3. **places its order** (`pending_payment`, the order machine's `reach-payment` by
+   staff), snapshotting every figure (§1), so the buyer's account and the order lookup
+   find it from the start;
+4. numbers the invoice from the seller's gapless proforma series and renders its PDF,
+   the transfer details on the PDF only (§12);
+5. creates its **payment link** (C6 `payLink`, reason `invoice`), open until the due
+   date;
+6. writes `order.created`, `proforma.issued` and `invoiceHold.taken` to the outbox (§13).
+
+Staff then **share the link into the buyer's WhatsApp chat** from the same phone — a
+`wa.me` share, no WhatsApp API needed (D14 is untouched) — or it goes by email.
+
+**The invoice is our own page.** The buyer opens it at the gallery's **`/pay/{token}`**,
+in the gallery's design — never a page the gateway hosts (no Stripe Invoicing or
+Payment Links): the `Pay` surface **is** the invoice, the bridge from the chat. It shows
+the invoice's number, the piece with its stock number, the agreed figure, shipping and
+insurance, the duties or their note, the total in the charge currency, the due date,
+the seller of record, the buyer (and PO number) and the PDF, and two ways to pay: **the
+Stripe Payment Element embedded** in the page (card, Apple/Google Pay, PayNow,
+iDEAL/SEPA where enabled — Midtrans for an Indonesian seller's IDR invoice) and **bank
+transfer** (its instructions; the SWIFT details on the PDF), confirmed by staff. Its
+designed states: **open** — "On hold until {due date}"; **bank transfer pending** — the
+instructions, and "payment must be received and confirmed"; **paid**; and **expired**
+(its due date passed and the piece released) or **voided** (staff cancelled it), each
+with the ways to reach the gallery, never a bare gateway error (PAYMENTS.md §5). An
+institution's proforma is the same page: the PDF is what its finance office pays from.
+An invoice issued on a price already agreed is **accepted** from the start: nothing is
+left to accept. A signed-in buyer also finds it in Account › orders, awaiting payment,
+its order page leading to the same link.
+
+**The hold until the due date (D45).** From issue every other visitor reads **"On hold
+until {due date}"**; a signed-in buyer whose invoice it is reads "Held for you until
+{due date}", and Pay. **The buyer is reminded before the due date** —
+`invoiceHold.expiring`, `invoiceNoticeHours` ahead (C1, 48 hours by default), by email
+(by WhatsApp once D14 is answered) — and staff see invoices nearing their date on the
+desk. Paying moves the hold the usual way: `payLink.start` supersedes the invoice hold
+with the order's checkout lock, lasting at least as long, and `applyPaymentEvent()`
+converts it in the one transaction that marks the payment and the order paid (§6,
+PAYMENTS.md §1). **Unpaid at its due date, the hold lapses by itself**: the piece reads
+available the moment the date passes (`reserve()`'s lazy expiry, then the sweep), the
+order is abandoned, the link stops taking payment, the invoice reads expired, and the
+buyer and staff are told. **A visitor who asked on the held page to hear if it becomes
+available** — a want list `like` that piece (C6, D39) — gets its alert the moment the
+piece is available again, as anyone does when another example arrives. Staff may
+re-date an invoice before its date (`extend()`) or void it (`release()`). A payment
+that lands after the lapse takes the late-payment path (PAYMENTS.md §1): re-reserved
+and sold if the piece is still free, refunded otherwise.
+
+**It ships only when paid in full (G11).** The order is `paid` only when its payment
+covers the invoice's total — there are no part payments; a short transfer leaves it
+pending and staff write to the buyer — and nothing ships before `paid` (COMPLIANCE.md
+§9). Shipping, insurance and duties are the buyer's: quoted on the invoice or, for
+duties under DAP, estimated on it and paid on arrival.
+
+**What the gallery does not use — engine capability that stays** for the shop or a
+future brand: the bag and checkout, and with them a bag's `checkout-lock` (a pay link
+still takes one); offers (`offer` holds, the offer machine, `offer.*`); staff holds on
+a reserve request (`hold`, `hold.request`); the instant price reveal; and the
+checkout's "Proforma instead" (`quote.proforma`). "Only `reserve()` writes a
+reservation" holds unchanged: the invoice hold is `reserve()`'s `invoice` kind.
+
+**Sold** items stay published: "Sold" and no price — no buyer is named (G10), and no
+"price realised" where unique prices are on request — available alternatives, and
+"Tell me when another example arrives". Every such link, and every saved-search alert
+from browse or search, leads to the one **want-list page** (C10 `wantList`), which
+saves it to a signed-in buyer's account at once or, for anyone else, to the email
+address they give, confirmed by double opt-in before the first alert goes out (C6
+`wantList.*`, D39).
+
+### For a brand that lists its prices (engine capability, not at launch)
+
+A brand with `commerce.uniquePrices: "shown"` — the default — and `purchase.checkout`
+on shows the modes the item's price tier and status allow. Tiers are brand config
+(`purchaseTiers`, in the seller's base currency); the research's ladder (RESEARCH.md
+§2) was the gallery's before D50:
 
 | Tier (base price) | Primary | Secondary |
 | ----------------- | ------- | --------- |
@@ -360,34 +537,27 @@ as non-binding offers (D22); binding offers are v2.
 
 - **Request price** answers in place: after an email or WhatsApp field, the price
   is revealed on the page and the lead is logged; an item marked sensitive queues
-  for a human with a stated reply time instead.
-- **Make an offer**: amount, currency, message. A private floor (percent of
-  price) auto-declines politely below it; staff accept, counter (valid 72 h) or
-  decline. Acceptance creates the `offer` hold and a payment link. v2 makes
-  offers *binding* by collecting a payment method with the offer where the
-  seller's gateway supports it (Stripe), as Artsy does.
-- **Reserve** requests a staff hold on its own short form (C10 `hold`, posting
-  `hold.request`); a deposit option is v2.
+  for a human with the stated reply promise instead.
+- **Make an offer** (`purchase.offers`): amount, currency, message. A private floor
+  (percent of price) auto-declines politely below it; staff accept, counter (valid
+  72 h) or decline. Acceptance creates the `offer` hold and a payment link. A later
+  version makes offers *binding* by collecting a payment method with the offer where
+  the seller's gateway supports it (Stripe), as Artsy does (backlog v2.1).
+- **Reserve** (`purchase.holds`) requests a staff hold on its own short form (C10
+  `hold`, posting `hold.request`); a deposit option is v2.
 - **Proforma invoice** for institutions — **a whole cart** at its checkout's
   payment step ("Proforma instead", C6 `quote.proforma`, from the checkout's own
   contact and institution), or one item, even one on request, through the quote
   form (C10 `quote`) that staff issue as a proforma: PO number, bank transfer,
-  `invoice` holds on every line until the due date, a PDF, and a "pay this
+  `invoice` holds on every unique line until the due date, a PDF, and a "pay this
   proforma" page (the `Quote` surface); "payment must be received and confirmed
   before an order is considered complete". The checkout's id is bound to the
   cart cookie or the session, as every checkout operation's is (C13 `quotes`).
-  **Owner decision, open (senior-be F13):** a checkout's proforma takes
-  `invoice` holds on its unique lines with no payment, in one click, so an
-  anonymous visitor could hold a one-of-one map for a week again and again.
-  Either cap it per contact and per IP, or have staff approve a unique line
-  before its hold starts.
-- **Sold** items stay published: no price (optionally "price realised" for
-  signed-in buyers), available alternatives, and "Tell me when another example
-  arrives" — every such link, and every saved-search alert from browse or
-  search, leads to the one **want-list page** (C10 `wantList`), which saves it
-  to a signed-in buyer's account at once or, for anyone else, to the email
-  address they give, confirmed by double opt-in before the first alert goes
-  out (C6 `wantList.*`, D39).
+  **Answered by D45 (2026-10-01; senior-be F13):** an `invoice` hold starts only
+  when staff issue the proforma — staff-approved by construction — so a checkout's
+  proforma of a unique line is a request staff issue, holding nothing until they do,
+  and no anonymous visitor can keep a one-of-one off the market with proformas; a
+  proforma of counted stock alone stays instant.
 
 ## 8. Shipping and fulfilment
 
@@ -403,6 +573,13 @@ work); pickup (free). Couriers cap art cover (FedEx USD 1,000 declared; DHL
 restricts fine art), so originals above the seller's threshold ship with a
 separate fine-art transit policy, recorded on the shipment.
 
+**An original's shipping is on its invoice (G11, D50).** Staff quote the insured
+shipping — a carrier's rate, or the fine-art quote above the threshold — onto the
+invoice's own line, and it is paid with the piece: nothing ships until the invoice
+is paid in full. The shop's rates at launch are Indonesian alone — Biteship, the
+flat table, same-day where the courier offers it, and pickup at the showroom (S3,
+S11); DHL Express carries the gallery's originals abroad.
+
 **Delivery promises read a holiday calendar** (a CMS global): Nyepi closes Bali
 — showroom, couriers and the airport — for a day, and Lebaran stops couriers
 nationwide for longer. A promise that ignores them is a promise broken.
@@ -411,13 +588,14 @@ nationwide for longer. A promise that ignores them is a promise broken.
 DDP per seller when enabled). International shipments get a generated commercial
 invoice with HS codes (COMPLIANCE.md §4).
 
-**Fulfilment routing** (OEI), per line — print-on-demand abroad is **not part of
-the launch** (D23): at launch, export orders ship from Bali stock or local
-production (DAP), and the POD rung below switches on in v2 with no change to the
-router:
+**Fulfilment routing** (OEI), per line. At launch every line ships from own stock:
+the shop delivers within Indonesia only (S3) and sells only what it holds (S7), so
+the local-production rung below is unused and print-on-demand abroad is off (D23).
+Each rung stays in the router, switched on by configuration — an inventory model,
+a fulfilment provider, `fulfilment.pod` — with no change to the router:
 
 ```
-stocked at a location that serves the destination?  → own stock (showroom first for Bali)
+stocked at a location that serves the destination?  → own stock (at launch the one pool, §4)
 made-to-order locally and destination is Indonesia? → local production job
 destination abroad and a POD route exists?          → print-on-demand near the buyer (Prodigi fine art, Gelato paper goods)
 otherwise                                           → not offered for this destination
@@ -447,19 +625,37 @@ date, because they change.
 - **Automatic rules** are discounts without a code — **the free-shipping
   threshold is one** (per market, minimum spend), edited by a manager with an
   audit trail, not a free-text global an editor can change.
+- **The shop at launch (S13, 2026-10-01):** free shipping over **Rp 500.000** (an
+  automatic rule, the bag's progress bar reading it) and a **welcome code** — a
+  first-order discount code given on newsletter sign-up, never before a first
+  engagement; its value is the owner's to give (OA2's owed items). Both are set in
+  the admin at launch, so neither is a promise in code.
 - **Gift cards**: digital, hashed code, currency-bound, balance ledger, expiry per
-  local law **(confirm)**; applied after tax as a payment-like deduction.
+  local law **(confirm)**; applied after tax as a payment-like deduction. **Not at
+  launch** (S10: a gift note only, with prices hidden on the slip) — the engine keeps
+  them behind `commerce.giftCards`.
 - **Bundles and sets**: postcard sets, print + frame, gallery-wall sets (10–15%
   off), "3 for 2" stationery — line-level rules.
 - **Gift wrap** is a product (kind `service`) added as a line, so its price lives
-  with every other price; gift notes are free; "hide prices" suppresses prices on
-  the packing slip.
+  with every other price — none is offered at launch (S10); gift notes are free;
+  "hide prices" suppresses prices on the packing slip.
 
 ## 11. Returns and refunds
 
 Policy text per seller comes from counsel — Indonesian law does not allow "all
-sales final" (COMPLIANCE.md §6). The gallery's research default: 14-day returns,
-a lifetime authenticity guarantee, and the Parry certificate. The engine
+sales final" (COMPLIANCE.md §6). The gallery's commitments: a **lifetime
+authenticity guarantee** (the owner's, G6) and the Parry certificate with every
+original (G7), both published in counsel's words (D11). **Whether an original may be
+returned is not answered**: G6 asked it, and the owner named only the guarantee — so
+nothing is promised on any page, and the research's suggestion (14 days, less
+shipping and insurance) stays a suggestion, the owner's and counsel's to decide. The
+shop's answer (S12) is **"no refund": no refunds and no change-of-mind returns, and a
+print that arrives damaged replaced** on a photo. That answer is **in tension with
+Indonesian consumer law** as COMPLIANCE.md §6 records it (UU 8/1999 art. 18 on
+standard clauses refusing returns or refunds) — this doc does not decide it: counsel
+does (D11), and the shop publishes only the damaged-print replacement until then. A
+damaged print's replacement is staff's zero-priced order from the order builder
+(TASKS.md 24.5), the claim's return closed with no refund. The engine
 supports — as a domain of its own (TASKS.md 20.4), not only admin screens — a
 buyer's return request per order line with reason and photos (from the account or
 the order lookup), staff approval, return shipping instructions, inspection,
@@ -471,10 +667,14 @@ a return** without advice (it reopens the export question).
 ## 12. Documents
 
 Generated from the order snapshot, per seller, in the buyer's language (EN/ID):
-order confirmation, proforma invoice, receipt / tax invoice data, **certificate of
+order confirmation, proforma invoice — at the gallery, **the staff-issued invoice
+every original is sold on** (§7: the piece, the agreed figure, shipping, duties,
+the due date, the transfer details) — receipt / tax invoice data, **certificate of
 authenticity** (IG: item photo, collation, stock number, curator's signature
 block, verification QR in v2), commercial invoice for export, packing slip,
 return authorisation. PDFs are built by a Payload job and attached to the order.
+The item factsheet designers hand their clients shows the piece, "Price on
+request", the gallery's contact and the date it was printed — never a price (G14).
 Order, proforma and invoice numbers come from **gapless sequences per seller**,
 with prefixes from the seller's config — tax invoices must not skip numbers, and
 no brand name is baked into the engine.
@@ -488,10 +688,13 @@ updates the merch shop's "own the original" link), and cache revalidation
 (availability is never stale in a cached page — ARCHITECTURE.md §9).
 
 **What the business counts is counted from these records, never from the
-beacon.** A lead — an offer, a hold request, a price request, an enquiry, a
-consignment, an appointment — is stored the moment it is received, and the
-Leads dashboard's response times and conversion count that record, which a
-blocked script or a failed beacon post cannot move (ANALYTICS.md §2–§3). A
+beacon.** A lead — a price request, an enquiry, a proforma request, a consignment,
+an appointment (and an offer or a hold request, where a brand takes them) — is
+stored the moment it is received, and the Leads dashboard's response times and
+conversion count that record, which a blocked script or a failed beacon post
+cannot move (ANALYTICS.md §2–§3). At the gallery a sale is counted from the
+invoice: `proforma.issued` when staff issue it, `invoiceHold.expired` when it
+lapses unpaid, `order.paid` when it is paid. A
 want list emits `wantList.requested` when it is asked for, `wantList.started`
 once it is confirmed or saved to an account — what the demand dashboard counts
 as a kept want-list — `wantList.repeated` when an address already watching a

@@ -13,8 +13,8 @@ do whatever the advisers decide, and to name what it must never do.
 
 | # | Finding | What the software must do |
 | - | ------- | ------------------------- |
-| 1 | **Exporting antiques from Indonesia is restricted.** Permendag 22/2023 (4th amendment Permendag 6/2026, in force 1 Apr 2026) bans export of ex-HS 9706 antiques over 100 years that meet its heritage criteria, and ex-9705.10 collections of historical interest 50+ years old. UU 11/2010 lets designated cultural heritage leave only for research, promotion or exhibition with a ministerial permit; penalties reach 10 years and Rp 1.5 bn. The ban works on criteria at the border — *not being formally designated is no safe harbour*. | Every unique item records **where it physically is** and its **export status** (`cleared` · `domestic-only` · `permit-pending` · `not-applicable`), from the owner's item register — **never defaulted**. An item with either field blank sells **nowhere** online (enquiry only); international checkout is **blocked** for an item in Indonesia that is not cleared. International stock is expected to sit outside Indonesia. |
-| 2 | **Domestic Indonesian transactions must be in rupiah, and dual quotation is banned** — BI forbids showing IDR and a foreign currency side by side, websites included (UU 7/2011 art. 21 & 33; BI circulars). International trade is exempt. | **Currency follows the delivery country, not the visitor's IP.** Delivering in Indonesia → IDR only, with no "≈ USD" beside it. Exporting → the buyer's currency is allowed. |
+| 1 | **Exporting antiques from Indonesia is restricted.** Permendag 22/2023 (4th amendment Permendag 6/2026, in force 1 Apr 2026) bans export of ex-HS 9706 antiques over 100 years that meet its heritage criteria, and ex-9705.10 collections of historical interest 50+ years old. UU 11/2010 lets designated cultural heritage leave only for research, promotion or exhibition with a ministerial permit; penalties reach 10 years and Rp 1.5 bn. The ban works on criteria at the border — *not being formally designated is no safe harbour*. | Every unique item records **where it physically is** and its **export status** (`cleared` · `domestic-only` · `permit-pending` · `not-applicable`), from the owner's item register — **never defaulted**. An item with either field blank sells **nowhere** online (enquiry only); international checkout is **blocked** for an item in Indonesia that is not cleared. **A staff-issued invoice is gated exactly as a checkout** (the gallery's one way to sell, D50): the order builder routes its lines with the buyer's destination and refuses an item with either field blank, or a `domestic-only` one for an address abroad, with its reason (COMMERCE.md §7). International stock is expected to sit outside Indonesia. |
+| 2 | **Domestic Indonesian transactions must be in rupiah, and dual quotation is banned** — BI forbids showing IDR and a foreign currency side by side, websites included (UU 7/2011 art. 21 & 33; BI circulars). International trade is exempt. | **Currency follows the delivery country, not the visitor's IP.** Delivering in Indonesia → IDR only, with no "≈ USD" beside it, and charged in rupiah — never a foreign-currency payment for an Indonesian delivery, which is why PayPal, which cannot charge rupiah, is not offered while the shop delivers within Indonesia only (S3, PAYMENTS.md §6). Exporting → the buyer's currency is allowed. |
 | 3 | **An Indonesian PT can only charge in IDR** — Xendit (BI rule), Midtrans and DOKU all settle IDR; Stripe Indonesia is invite-only preview. Stripe Singapore is fully available with multi-currency settlement. | A brand may have **more than one seller of record** (BRANDS.md §3), each with its own entity, currency, tax regime and gateways. Checkout routes to one seller. |
 | 4 | **Payment channels have hard per-transaction caps**: QRIS IDR 10 m (PADG 3/2025); e-wallets 20 m verified / 2 m unverified; Alfamart/Indomaret 5 m; Kredivo 30 m; BCA VA 50 m on Xendit (up to 20 bn on Midtrans); Mandiri/BNI/BRI VA up to 50 bn. | **Payment methods are filtered by amount**, currency and seller. A USD 12,000 map never shows a QRIS button that would fail. |
 | 5 | **Couriers do not insure art properly**: FedEx caps art and antiques at USD 1,000 declared; DHL restricts fine art and may exclude it from value protection unless endorsed in writing. | Shipping for originals above a threshold is **quote-based with separate fine-art transit insurance**, recorded on the shipment; the checkout never implies courier cover it cannot give. |
@@ -29,8 +29,8 @@ Jakarta gallery; Old East Indies trades from Denpasar and describes itself as
 | - | ---------------------- | ------------------ | ------------------- |
 | Main gateway | Stripe SG — cards, Apple/Google Pay, PayNow, iDEAL/SEPA for EU buyers | Midtrans (or Xendit/DOKU) — foreign cards charged in IDR | **Midtrans** — cheapest for small tickets, GoPay native, no minimum fees; DOKU alternative; Xendit only if its tooling is worth its Oct-2026 fees |
 | Charge / settle | USD, EUR, SGD, AUD… / multi-currency settlement | IDR / IDR | IDR / IDR |
-| High value | Stripe Invoicing / Payment Links; above ~USD 5–10k bank transfer to SG accounts | Mandiri/BNI/BRI VA (to 50 bn); USD export invoices by SWIFT (trade exemption) | payment links over WhatsApp |
-| Secondary | PayPal SG | PayPal ID (no IDR in PayPal itself; withdraw to IDR) | QRIS in the showroom |
+| High value | every original on a staff-issued invoice (D50), paid through the site's own payment link (Stripe); above ~USD 5–10k bank transfer to SG accounts | Mandiri/BNI/BRI VA (to 50 bn); USD export invoices by SWIFT (trade exemption) | payment links over WhatsApp |
+| Secondary | PayPal SG (not configured: invoices need none) | PayPal ID (no IDR in PayPal itself; withdraw to IDR) | QRIS in the showroom; no PayPal while it delivers within Indonesia only (S3) |
 
 **Consequences the engine supports without code changes:**
 
@@ -105,6 +105,14 @@ this (COMMERCE.md §8).
   refunds — **no "all sales final"**, including for made-to-order prints. The
   returns policy is drafted by counsel; the software supports return requests
   on every order line.
+- **The shop's returns answer is in tension with art. 18 — for counsel (S12,
+  2026-10-01).** The owner's answer is "no refund": no refunds and no change-of-mind
+  returns, and a print that arrives damaged replaced on a photo. Read against art. 18
+  as recorded above, a published "no refund" line may be a standard clause the law
+  does not allow. This document does not decide it: **counsel does (D11)** — whether
+  the shop may state it, and in what words. Until counsel answers, the shop states
+  only the damaged-print replacement and no returns line at all, and the engine keeps
+  a return request on every order line whatever the wording becomes (COMMERCE.md §11).
 - **UU 24/2009**: agreements with Indonesian parties in Bahasa Indonesia →
   terms, privacy notice and order documents exist in Indonesian and English.
 - **Permendag 31/2023**: social media may promote, not process payments —
@@ -122,6 +130,10 @@ this (COMMERCE.md §8).
   organisation **(confirm)**.
 - **EU visitors** — GDPR-grade cookie consent: IG sells to the Dutch heritage
   market.
+- **Analytics stays first-party** (G12, 2026-10-01): the owner's own records, in the
+  admin. GA4 and the Meta Pixel load only after marketing consent (D38) — and, until
+  the owner says whether they want them at all, no brand config names their ids, so
+  no visitor's data reaches either (ANALYTICS.md).
 - **A retailer's application is personal data even when it never becomes a
   partner.** One declined or left pending has no order behind it, so it needs
   its own retention period, not the customer record's — **the period is
@@ -169,7 +181,8 @@ once with the rest of its caller's data.
 
 Hosted fields or redirects only (PCI SAQ-A). 3DS2 on every card payment (it moves
 fraud liability, not "not as described" claims). Ship originals only after funds
-settle; signature on delivery; screen freight-forwarder addresses. Keep the
+settle — the gallery ships an original only once its invoice is paid in full (G11,
+D50); signature on delivery; screen freight-forwarder addresses. Keep the
 condition report, photos and certificate with the order. Virtual-account and
 retail-outlet payments **cannot be refunded through the gateway** — the refund
 flow records a manual bank refund for them. Xendit's repricing from 1 Oct 2026
@@ -183,8 +196,10 @@ Midtrans is the OEI default.
 - [ ] NIB with the internet-retail and shop KBLI codes, NPWP **(confirm)**
 - [ ] PSE registration through OSS
 - [ ] Seller identity on the site; Indonesian + English terms and privacy notice
-- [ ] Returns policy compliant with UU 8/1999 art. 18 (counsel)
-- [ ] IDR-only pricing for Indonesian delivery (enforced by the engine)
+- [ ] Returns policy compliant with UU 8/1999 art. 18 (counsel), reconciling the
+      owner's S12 intention — no refunds, a damaged print replaced (§6)
+- [ ] IDR-only pricing for Indonesian delivery (enforced by the engine); delivery
+      within Indonesia only at launch (S3), so no export or foreign-currency charge
 - [ ] Gateway KYC (Midtrans) + showroom QRIS
 - [ ] PDP basics: notice, separate consent, processor contracts, breach plan
 - [ ] Decision: 0.5% final tax vs PKP registration
@@ -200,7 +215,9 @@ Midtrans is the OEI default.
       export status for every item (the migration fills most of it)
 - [ ] Written export determination for any item in Jakarta that may be sold abroad
 - [ ] Fine-art transit insurance policy
-- [ ] Terms: condition, authenticity guarantee, returns, duties and taxes
+- [ ] Terms: condition, the lifetime authenticity guarantee (G6), returns, duties
+      and taxes; the invoice's terms — its due date, the hold until then (D45), and
+      shipping only once paid in full (G11)
 
 **Later**
 

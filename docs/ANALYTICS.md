@@ -6,6 +6,17 @@ The pipeline is KOI's (a beacon into an append-only, partitioned `events` table,
 read by admin dashboards), extended with commerce funnels and the lead flows a
 gallery lives on.
 
+**The first-party record is the analytics (the owner's answer to G12,
+2026-10-01):** "we need to log all our analytics ourselves and visible in the
+dashboard". Every number the owner reads comes from this pipeline and the domain's
+records, in each brand's admin (§3); nothing depends on an export from, or an
+account at, Google Analytics. **Whether GA4 and the Meta Pixel load at all after a
+visitor's marketing consent** — for ad attribution and audiences, the third layer
+below — **is a question back to the owner** (TASKS.md 6.4). Until it is answered,
+neither brand config names a GA4 or a Meta id, so no third-party tag loads, consent
+or not, and the first two layers are complete without it; D38's rule governs the
+day an id is set.
+
 ---
 
 ## 1. Three layers
@@ -13,8 +24,8 @@ gallery lives on.
 | Layer | What | Where | Consent |
 | ----- | ---- | ----- | ------- |
 | **Domain events** | server-side facts: order paid, offer accepted, hold expired, refund issued | written by `@engine/domain` to the outbox `domain_events` **in the same transaction as the change**, then dispatched by the jobs queue to analytics, email and the sister webhook (COMMERCE.md §13) | none needed — they are business records, not tracking |
-| **First-party beacon** | page and interaction events | `POST /api/x/collect` → `analytics_events` (monthly partitions) | **cookieless until consent**: a per-session hashed id only; a persistent anonymous id after analytics consent |
-| **GA4 + Meta Pixel** | ad attribution, audiences | client tags, loaded only after marketing consent | marketing consent, per EU/Indonesian rules (COMPLIANCE.md §7) |
+| **First-party beacon** | page and interaction events | `POST /api/x/collect` → `analytics_events` (monthly partitions) | **cookieless until consent**: a per-session hashed id only, so every visit is counted with no consent at all — which is what G12 asks; **analytics consent** (C2 `ConsentVM` `analytics`) adds only the persistent first-party anonymous id that links a visitor's visits, still kept by the brand alone |
+| **GA4 + Meta Pixel** | ad attribution, audiences | client tags, loaded only after marketing consent — and only where the brand config names an id: none does until the owner answers G12's question (above) | marketing consent, per EU/Indonesian rules (COMPLIANCE.md §7) |
 
 The GA4 measurement id and the Meta Pixel id are **runtime brand config**
 (`analytics.ga4Id`, `analytics.metaPixelId`, BRANDS.md §3), handed to the page
@@ -65,7 +76,10 @@ essays)
 once the purchase panel **resolves**: `priceBand` and `status` are its own
 `analytics` (C2 `PurchaseVM`), which only the streamed part knows, and
 `status` is `null` when availability could not be read (the `unverified`
-panel) · `item.zoomed` (image role, max zoom) · `item.versoViewed` ·
+panel); where a brand's unique prices are on request (the gallery, D50) every
+unique item's band is `on-request` — a tier worked out from a private price would
+tell anyone reading the page's beacon what range the price lies in ·
+`item.zoomed` (image role, max zoom) · `item.versoViewed` ·
 `item.roomViewOpened` · `item.factsheetDownloaded` · `item.shared` (channel) ·
 `item.saved` · `item.unsaved` (both: product id, variant id, the list's new
 size — the wishlist's contents never leave the device, D35) · `alert.created`
@@ -74,14 +88,19 @@ domain's `wantList.started` instead, never this) ·
 `sister.clicked` (direction: to-original · to-prints, the link's own `workUid`) ·
 `configurator.changed` (axis) · `configurator.completed`
 
-**Leads — the gallery's real funnel**
+**Leads — the gallery's real funnel, and at launch its only one** (D50: every
+original is sold by conversation and invoice)
 `price.requested` · `offer.submitted` · `hold.requested` · `enquiry.submitted`
 (topic) · `viewing.booked` · `consignment.submitted` · `whatsapp.clicked`
-(context: item · checkout · footer · business) · `retailerApplication.submitted`
-(shop type only, never who it is). These feed GA4's `generate_lead`, Meta's
-`Lead` and the funnel's steps; the **Leads dashboard's own counts** (§3) come
-from the domain's stored records instead, which a blocked script, a failed
-beacon post or a reload cannot move.
+(context: item · checkout · footer · business) · `call.clicked` (context: item ·
+footer — the gallery's Call button, added with C11 v1.5) ·
+`retailerApplication.submitted` (shop type only, never who it is). No brand sends
+`offer.submitted` or `hold.requested` at launch (D22, D50); the names stay. These
+feed GA4's `generate_lead`, Meta's `Lead` and the funnel's steps; the **Leads
+dashboard's own counts** (§3) come from the domain's stored records instead, which
+a blocked script, a failed beacon post or a reload cannot move. A call or a
+WhatsApp chat leaves no record on the site, so its tap is the one lead step only
+the beacon can see — counted, never mistaken for a sale.
 
 **Purchase**
 `cart.added` (product id, variant id, quantity, `value` — the added line's own
@@ -90,10 +109,13 @@ an estimate and never recomputed in the page) · `cart.removed` · `cart.viewed`
 `checkout.started` · `checkout.stepCompleted` (step) · `checkout.lockTaken` ·
 `checkout.lockExpired` · `payment.methodSelected` · `payment.attempted` ·
 `payment.failed` (`reasonClass`, C7's failure class) · and, from the domain:
-`order.paid` · `order.refunded` · `order.partiallyRefunded` · `offer.accepted` ·
-`hold.granted` · `hold.expired` · `reservation.conflicted` (someone else was
-first) · the leads as stored — `offer.received` · `holdRequest.received` ·
-`priceRequest.received` · `enquiry.received` · `consignment.received` ·
+`order.paid` · `order.refunded` · `order.partiallyRefunded` · `proforma.issued` and
+`invoiceHold.expired` (the gallery's invoice issued, and lapsed unpaid, D50) ·
+`offer.accepted` · `hold.granted` · `hold.expired` (no brand at launch: D22, D50 — the
+names stay for a brand that takes offers or reserve requests) ·
+`reservation.conflicted` (someone else was
+first) · the leads as stored — `offer.received` · `holdRequest.received` (neither at
+launch) · `priceRequest.received` · `enquiry.received` · `consignment.received` ·
 `appointment.booked` · `quote.requested` (a partner's brief or reorder, an
 institution's request: who asked and how, never who they are) · `retailer.applied` · `retailer.reapplied` · `retailer.approved` ·
 `retailer.declined` (the shop's partner funnel, D31: applications — first and
@@ -124,7 +146,7 @@ surface and device class — field data, not just lab)
 | shipping / payment step | `add_shipping_info` / `add_payment_info` | `AddPaymentInfo` |
 | `order.paid` | `purchase` | `Purchase` |
 | `order.refunded` · `order.partiallyRefunded` | `refund` (with the refunded value) | — |
-| `price.requested` · `offer.submitted` · `enquiry.submitted` · `viewing.booked` · `retailerApplication.submitted` | `generate_lead` | `Lead` |
+| `price.requested` · `offer.submitted` (a brand that takes offers) · `enquiry.submitted` · `viewing.booked` · `retailerApplication.submitted` | `generate_lead` | `Lead` |
 | `search.submitted` | `search` | `Search` |
 | `newsletter.confirmed` | `sign_up` | `Subscribe` |
 
@@ -146,15 +168,22 @@ One brand per dashboard, labelled as such — a Payload process binds one
 database, so a cross-brand total would be a claim the screen cannot back (NOW!
 DESIGN-SYSTEM §5).
 
-- **Funnels** — listing → item → (cart | lead) → checkout → paid, by market,
-  destination, device class and source.
+- **Funnels** — each brand's own, by market, destination, device class and
+  source. The shop's: listing → item → cart → checkout → paid. **The gallery's**
+  (D50): listing → item → lead (a WhatsApp or call tap, a price request, an
+  enquiry, a viewing, a proforma request) → **invoice issued** (`proforma.issued`)
+  → **paid** (`order.paid`), or **lapsed unpaid** (`invoiceHold.expired`) — so the
+  owner sees how many conversations become invoices and how many invoices are paid.
 - **Demand the stock does not meet** — zero-result searches and want-lists kept
   (the domain's `wantList.started`, never the beacon's `alert.created`)
-  grouped by maker, place and budget. For the gallery this is a **buying list**:
+  grouped by maker and place — and by budget only where prices are shown (the
+  gallery's want-lists take none, D50). For the gallery this is a **buying list**:
   what collectors want that is not in the drawers.
-- **Leads** — requests, offers, holds, enquiries, viewings, quote requests and
-  retailer applications, counted from the domain's stored records (§2) with response
-  time to first reply and conversion to paid.
+- **Leads** — price requests, enquiries, viewings, proforma and quote requests and
+  retailer applications (and offers and holds, where a brand takes them), counted
+  from the domain's stored records (§2), with response time to first reply — the
+  gallery promises the same working day, Singapore time (G9) — and conversion to an
+  invoice and to paid.
 - **The sold archive** — traffic to sold pages and the alerts they create.
 - **Payments** — method mix, failure reasons, reconciliation corrections,
   late-payment refunds.

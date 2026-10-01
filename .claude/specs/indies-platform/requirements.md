@@ -105,7 +105,7 @@ while their data and identities stay apart.
 #### Acceptance Criteria
 
 1. The item page SHALL show the hook title, the original title, the maker line with certainty, the collation block, the condition grade linked to the published scale, references, provenance and the stock number.
-2. The purchase panel SHALL show only the modes allowed by the item's price tier, status and the brand's modules (buy, reserve, offer, request price, enquire, book a viewing, proforma).
+2. The purchase panel SHALL show only the modes allowed by the item's price tier, status and the brand's modules (buy, reserve, offer, request price, enquire, book a viewing, proforma). *(2026-10-01, D50: at launch the gallery's config allows only the conversation's modes — WhatsApp, call, request price, enquire, book a viewing, proforma — and no buy, reserve or offer; 6.13–6.17.)*
 3. WHEN an item is sold THEN its page SHALL remain published AND show no price AND show available examples of the same edition AND offer an alert.
 4. WHILE an item is reserved THEN its page SHALL show "On hold until {date}".
 5. The gallery SHALL provide maker, place, source, curation, catalogue and story pages.
@@ -114,8 +114,13 @@ while their data and identities stay apart.
 8. WHEN reproductions of a work exist in the sister shop THEN the item page SHALL link to those exact products.
 9. The gallery SHALL provide consignment submissions with photo upload and viewing appointments.
 10. Existing legacy product URLs SHALL resolve unchanged.
-11. The purchase panel SHALL render a designed state for every combination of price tier, item status, the viewer's relation to the item (held for me, in my checkout, my offer pending), export status and ship-to destination, AND SHALL NOT render a purchase control before availability is known.
+11. The purchase panel SHALL render a designed state for every combination of price tier, item status, the viewer's relation to the item (held for me, in my checkout, my offer pending), export status and ship-to destination, AND SHALL NOT render a purchase control before availability is known. *(2026-10-01, D50: at the gallery the relations "in my checkout" and "my offer pending" cannot occur — it has no checkout and takes no offers — and "held for me" is the buyer's own invoice.)*
 12. WHEN the gallery launches THEN its 200 most important items SHALL have at least a recto, a verso and one detail image shot to the capture standards.
+13. The gallery SHALL show no price on any original — on its pages, cards, facets, sorts, want-lists, factsheet, social images, structured data, feeds, the sister shop's "own the original" and analytics events — AND a price request SHALL be answered by a person within the reply promise the page states, never revealed in place (D50, G4, G9; brand config `commerce.uniquePrices: "on-request"`, 2026-10-01).
+14. WHEN staff and a buyer agree a price THEN staff SHALL issue an invoice from the order builder that holds each unique piece through `reserve()` until the invoice's due date AND reaches the buyer as a private link through which they pay online by the seller's gateway or by bank transfer; IF it is unpaid at its due date THEN the hold SHALL lapse and the piece SHALL be available again (D50, D45, 2026-10-01).
+15. An original SHALL ship only once its invoice is paid in full, its shipping (and, where the seller ships duties paid, its duties) quoted on the invoice and paid by the buyer (G11, 2026-10-01).
+16. The invoice SHALL be paid on the brand's own pay page (`/pay/{token}`), in its design, with the gateway's payment element embedded and bank transfer beside it — never a provider-hosted page — AND the page SHALL render a designed state for open ("On hold until {due date}"), bank transfer pending, paid, expired and voided; staff SHALL build it and share its link from a phone (the developer's input, 2026-10-01).
+17. WHEN an invoice's due date is near THEN its buyer SHALL be reminded, AND WHEN its hold lapses unpaid THEN everyone who asked to hear about the piece SHALL be alerted that it is available again (D45, 2026-10-01).
 
 ### Requirement 7 — Old East Indies storefront
 
@@ -128,13 +133,17 @@ while their data and identities stay apart.
 3. The configuration SHALL be encoded in the URL so it can be shared and restored.
 4. The shop SHALL provide collections, places and eras, gifts by price, recipient and occasion, filters and sorting per EXPERIENCE-SHOP.md §2.
 5. The product page SHALL show a delivery promise for the current ship-to destination.
-6. The product page SHALL show the original's status at the gallery (available with price, enquire, or sold).
+6. ~~The product page SHALL show the original's status at the gallery (available with price, enquire, or sold).~~ **Superseded 2026-10-01** by 7.13 (D50: the gallery shows no price on any original, so neither does its sister).
 7. The shop SHALL provide design pages listing every product made from one design.
-8. The shop SHALL provide an `/ig` page, a showroom page with "In the showroom now" stock, a Partnership page — the one programme every business buyer applies through, with no separate "For Business" path (D36) — and gift cards.
+8. ~~The shop SHALL provide an `/ig` page, a showroom page with "In the showroom now" stock, a Partnership page — the one programme every business buyer applies through, with no separate "For Business" path (D36) — and gift cards.~~ **Superseded 2026-10-01** by 7.16 (S10: a gift note only, so no gift cards at launch; the developer's input: the shop's stock is one pool at the showroom, so there is no "in the showroom now" stock to show apart).
 9. The bag SHALL show a free-shipping progress bar, relevant upsells and a voucher field.
 10. The shop SHALL let a guest look up and track an order by order number plus email or WhatsApp number, AND SHALL give pickup orders a pickup code with hours and location.
 11. WHILE a payment awaits a virtual-account or QRIS transfer THEN the order page SHALL show the exact amount, the VA number with a copy action, per-bank steps, an expiry countdown and the bank-cap warning, offer save-to-gallery and e-wallet deep links for QR, AND switch to paid automatically.
 12. WHEN the shop launches THEN every launch product SHALL have flat, in-room and detail images, with any synthetic mockup labelled as such.
+13. The product page SHALL show the original's status at the gallery — available (enquire at the gallery), on hold, or sold — with no price (D50, 2026-10-01).
+14. WHEN the shop launches THEN it SHALL deliver within Indonesia only: a visitor whose destination is abroad SHALL be told so on the product page and in the bag, SHALL NOT reach a checkout to an address abroad, AND SHALL see no foreign-currency estimate (S3, D47 answered, 2026-10-01).
+15. WHEN the shop launches THEN every product it offers SHALL be held in stock — in one stock pool, at the showroom: no variant is made to order, no page promises a lead time, AND the configurator offers only stocked variants, a sold-out one saying so with a back-in-stock alert (S7, the developer's input, 2026-10-01).
+16. The shop SHALL provide an `/ig` page, a showroom page (address, published hours, map, its own WhatsApp), and a Partnership page — the one programme every business buyer applies through, with no separate "For Business" path (D36) and no published terms (S5) — AND SHALL offer a gift note with prices hidden on the packing slip, no gift wrap and no gift card (S10, 2026-10-01).
 
 ### Requirement 8 — Commerce core: sellers, money, pricing, tax
 
@@ -143,12 +152,12 @@ while their data and identities stay apart.
 #### Acceptance Criteria
 
 1. WHEN a checkout starts THEN the system SHALL route it to exactly one seller of record from the lines' stock locations and the destination.
-2. IF a unique item is held in Indonesia AND is not export-cleared AND the destination is outside Indonesia THEN the system SHALL block that line with an explanation.
+2. IF a unique item is held in Indonesia AND is not export-cleared AND the destination is outside Indonesia THEN the system SHALL block that line with an explanation. *(2026-10-01, D50: the same holds for a line on a staff-issued invoice — the order builder routes its lines with the buyer's destination and refuses such a line, and one with no recorded location or export status, with its reason; 6.14.)*
 3. WHEN the destination is Indonesia THEN prices SHALL be displayed and charged in IDR only, with no foreign-currency amount beside them.
 4. The system SHALL price every line on the server from market price lists (explicit, product-type table × artwork multiplier, or derived by FX + buffer + rounding).
 5. The system SHALL store every pricing-pipeline figure and the FX snapshot on the order so its total can be reproduced exactly.
 6. The system SHALL compute tax per seller regime (ID-PPN, SG-GST, none) with zero-rated exports.
-7. The system SHALL support discount codes with atomically enforced usage limits, gift cards with a ledger, bundles and gift-wrap lines.
+7. The system SHALL support discount codes with atomically enforced usage limits, gift cards with a ledger, bundles and gift-wrap lines. *(2026-10-01, S10: neither brand offers a gift card or gift wrap at launch; the engine keeps both behind their modules.)*
 8. IF a request carries prices, totals, discounts or shipping amounts THEN the system SHALL ignore them.
 9. The display and charge currency SHALL be decided only by the ship-to destination and the serving seller, AND the system SHALL NOT offer a free currency switch.
 10. The system SHALL number each seller's documents gaplessly per series AND export each seller's sales and tax figures per document for its accountant.
@@ -163,11 +172,12 @@ while their data and identities stay apart.
 2. WHEN two checkouts try to reserve the same unique item concurrently THEN exactly one SHALL succeed AND the other SHALL receive a typed conflict shown as a clear message.
 3. WHEN a buyer continues to payment THEN the system SHALL take a checkout lock for the configured TTL AND show the remaining time.
 4. WHEN a reservation's expiry passes THEN the item SHALL be treated as available even if the sweeper has not yet run.
-5. The system SHALL support staff holds, offer holds and invoice holds with their TTLs AND show them publicly as "On hold".
-6. WHEN an offer is submitted below the item's private floor THEN the system SHALL decline it automatically with a courteous message.
-7. WHEN an offer is accepted THEN the system SHALL create an offer hold AND a payment link that expires before the hold.
+5. ~~The system SHALL support staff holds, offer holds and invoice holds with their TTLs AND show them publicly as "On hold".~~ **Superseded 2026-10-01** by 9.10 (D50, D22, D45: no brand takes a reserve request or an offer at launch, so the only hold is an invoice's; `reserve()` keeps every kind, and staff and offer holds return with backlog v2.1).
+6. ~~WHEN an offer is submitted below the item's private floor THEN the system SHALL decline it automatically with a courteous message.~~ **Superseded for launch 2026-10-01** (D50, D22: neither site takes online offers; the C6/C8 offer contracts stay frozen, and this criterion returns with backlog v2.1).
+7. ~~WHEN an offer is accepted THEN the system SHALL create an offer hold AND a payment link that expires before the hold.~~ **Superseded for launch 2026-10-01** (D50, D22, as 9.6).
 8. IF a payment arrives after its reservation expired AND the item was sold elsewhere THEN the system SHALL refund it automatically AND notify the buyer.
 9. IF a unique item has been sold (its reservation converted) THEN the database SHALL refuse any further reservation of it, whatever path the request takes.
+10. WHEN staff issue an invoice or a proforma THEN the system SHALL hold each of its unique lines through `reserve()` until the invoice's due date, show it publicly as "On hold until {due date}", AND treat it as available the moment that date passes unpaid, before any sweep (D45, 2026-10-01).
 
 ### Requirement 10 — Checkout and orders
 
@@ -194,10 +204,12 @@ while their data and identities stay apart.
 2. WHEN checkout reaches payment THEN the system SHALL offer only the methods the seller's providers support for the currency, destination and amount, with per-method caps held as dated data.
 3. WHEN a payment webhook arrives THEN the system SHALL verify its signature on the raw body, AND record its provider event id, apply it to the payment, reservation and order, and write its domain events in **one** database transaction; IF that transaction fails THEN the dedupe record SHALL roll back with it AND the handler SHALL answer 5xx so the provider retries.
 4. The system SHALL reconcile pending payment attempts at least every 10 minutes through the provider's status API.
-5. The system SHALL issue payment links for accepted offers, staff holds, institutional invoices and WhatsApp sales.
+5. ~~The system SHALL issue payment links for accepted offers, staff holds, institutional invoices and WhatsApp sales.~~ **Superseded 2026-10-01** by 11.9 (D50, D22: no accepted offers or staff holds at launch; the staff-issued invoice is the gallery's sale).
 6. WHEN a buyer chooses a payment method for a unique item THEN the system SHALL extend the checkout lock to cover that method's session lifetime plus a margin, AND SHALL capture or settle only while the reservation is live; no payment SHALL complete against an expired reservation except through the late-payment path (9.8).
-7. The system SHALL support manual, bank transfer, Midtrans, Stripe and PayPal providers per seller, and Xendit or DOKU if chosen.
+7. ~~The system SHALL support manual, bank transfer, Midtrans, Stripe and PayPal providers per seller, and Xendit or DOKU if chosen.~~ **Superseded 2026-10-01** by 11.10 (S3: the shop delivers within Indonesia only at launch, and PayPal cannot charge the rupiah an Indonesian delivery must be paid in).
 8. IF sandbox credentials are configured in production, or live credentials outside it, THEN boot SHALL fail.
+9. The system SHALL issue payment links for staff-issued invoices — the gallery's one way to sell an original — institutional proformas, accepted quotes and WhatsApp sales, each charging the figures issued on the server and open no longer than the hold behind it (D50, 2026-10-01).
+10. The system SHALL support manual, bank transfer, Midtrans and Stripe providers per seller at launch, PayPal when a seller sells abroad, and Xendit or DOKU if chosen (S3, 2026-10-01).
 
 ### Requirement 12 — Shipping and fulfilment
 
@@ -208,7 +220,7 @@ while their data and identities stay apart.
 1. The system SHALL support shipping profiles and rate sources (flat tables, carrier APIs, quotes, pickup) per seller and destination.
 2. IF an original's value exceeds the seller's insured threshold THEN shipping SHALL require a quote that includes fine-art transit insurance.
 3. The system SHALL show a duties estimate for the destination before payment.
-4. The system SHALL route each merchandise line to own stock, then local made-to-order for Indonesian destinations, then — only while `fulfilment.pod` is enabled (not at launch, D23) — print-on-demand near the buyer for export, otherwise not offer it.
+4. The system SHALL route each merchandise line to own stock, then local made-to-order for Indonesian destinations, then — only while `fulfilment.pod` is enabled (not at launch, D23) — print-on-demand near the buyer for export, otherwise not offer it. *(2026-10-01, S7, S3: at launch every line is own stock — the shop offers nothing made to order and delivers within Indonesia only; the router keeps its other rungs.)*
 5. IF the destination is Indonesia THEN the system SHALL NOT route a line to overseas print-on-demand.
 6. International shipments SHALL get a generated commercial invoice with HS codes.
 7. Shipments SHALL carry tracking that drives buyer notifications.
@@ -233,14 +245,16 @@ while their data and identities stay apart.
 
 #### Acceptance Criteria
 
-1. The admin SHALL provide a desk with queues for offers, expiring holds, enquiries, price requests, consignments, orders to fulfil, low stock and drafts to verify.
+1. ~~The admin SHALL provide a desk with queues for offers, expiring holds, enquiries, price requests, consignments, orders to fulfil, low stock and drafts to verify.~~ **Superseded 2026-10-01** by 14.9 (D50, D22: no offers or reserve requests at launch; an invoice is the hold to watch).
 2. The cataloguing screen SHALL support save-and-add-another with retained context, fuzzy date and dimension parsing, inline creation of makers and places, duplicate warnings, autosave and side-by-side locales.
 3. Bulk upload SHALL match images to works by stock number in the filename AND let staff tag image roles and captions inline.
 4. IF `ai.cataloguing` is enabled THEN every AI-suggested field SHALL stay flagged until a human verifies it AND an item with unverified AI fields SHALL NOT publish.
 5. The merch wizard SHALL create a design and its products with variants from a work within the print ceiling, priced from product-type tables, with generated mockups.
 6. Staff SHALL fulfil, refund, process returns and generate documents from the order screen.
-7. Staff SHALL accept, counter or decline offers, grant or release holds, and answer price requests from one inbox.
+7. ~~Staff SHALL accept, counter or decline offers, grant or release holds, and answer price requests from one inbox.~~ **Superseded 2026-10-01** by 14.10 (D50, D22).
 8. The admin SHALL wear the brand's tokens AND every custom view SHALL render inside Payload's navigation.
+9. The admin SHALL provide a desk with queues for price requests and enquiries awaiting a reply, invoices nearing their due date and lapsed unpaid, consignments, orders to fulfil, low stock and drafts to verify (D50, 2026-10-01).
+10. Staff SHALL answer price requests, enquiries and proforma requests, and re-date or cancel an invoice before its due date, from one inbox that works on a phone (D50, D45, 2026-10-01).
 
 ### Requirement 15 — Sister brands
 
@@ -276,12 +290,14 @@ while their data and identities stay apart.
 #### Acceptance Criteria
 
 1. Every page SHALL have a templated title, a canonical URL, reciprocal `hreflang` and an Open Graph image.
-2. Items SHALL carry JSON-LD (`Product` + `VisualArtwork` in the gallery; `Product` + `Offer` in the shop) with honest availability (`InStock`, `Reserved`, `SoldOut`) AND no price for price-on-request items.
+2. ~~Items SHALL carry JSON-LD (`Product` + `VisualArtwork` in the gallery; `Product` + `Offer` in the shop) with honest availability (`InStock`, `Reserved`, `SoldOut`) AND no price for price-on-request items.~~ **Superseded 2026-10-01** by 17.8 (D50: an `Offer` without a price fails product validation, and the gallery shows none).
 3. Sitemaps per locale SHALL include sold items and images.
-4. The system SHALL produce a Google Merchant feed for both brands and a Meta catalogue feed for the shop.
+4. ~~The system SHALL produce a Google Merchant feed for both brands and a Meta catalogue feed for the shop.~~ **Superseded 2026-10-01** by 17.9 (D50: a Merchant listing needs a price, and no gallery original shows one).
 5. The system SHALL record first-party events per the taxonomy, cookieless until consent.
 6. GA4 and Meta tags SHALL load only after marketing consent.
 7. Each brand's admin SHALL show funnels, leads, unmet demand, payments and Web Vitals dashboards.
+8. Items SHALL carry JSON-LD with honest facts: in the gallery `VisualArtwork`, with no `Product` or `Offer` while no price is shown; in the shop `Product` + `Offer` with honest availability (`InStock`, `SoldOut`) (D50, 2026-10-01).
+9. The system SHALL produce the shop's Google Merchant and Meta catalogue feeds in rupiah, AND no shopping feed for a brand that shows no price (D50, S3, 2026-10-01).
 
 ### Requirement 18 — Localisation, currency and legal compliance
 

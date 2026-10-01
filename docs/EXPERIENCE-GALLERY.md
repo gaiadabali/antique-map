@@ -22,18 +22,19 @@ direction may enter as at most one candidate**. Nothing above binds the outcome.
 
 **Decided 2026-09-28 (D9's shape, TASKS.md):** both sites share **one base system** — layout, components, buttons and type, **Cormorant Garamond + Karla** (the client asked to keep them) — and differ only in **accents**: palette and signature details, inside the token contract's overridable subset. The references are Etalage and Everart, mixed, not copied; the owner's draft (`docs/design/input/claude-design-2026-09/`) is the lead candidate. The research directions below are background, not candidates.
 
+**Decided 2026-10-01 (D50, the owner interview G3–G5, superseding D30): the gallery is enquiry-only.** No price is shown on any original — every one reads "Price on request" — and there is no bag, no checkout, no reserve button and no online offer. Every original leads to a conversation: a call or WhatsApp with the gallery in Singapore, where the price is negotiated. Once it is agreed, staff issue an **invoice**, which holds the piece until its due date and which the buyer pays online through the site's gateway, or by bank transfer; the piece ships when it is paid in full, shipping and duties the buyer's (§5, COMMERCE.md §7). The shop keeps its checkout. The gallery's brand config says all of this — `commerce.uniquePrices: "on-request"`, `purchase.checkout`, `purchase.offers` and `purchase.holds` off, one purchase tier led by WhatsApp — and the engine keeps every capability the shop or a future brand uses.
+
 ---
 
 ## 1. Who it serves, in order
 
 1. **Collectors** — know Valentijn from Van Keulen, read Latin titles, want
    collation, state, condition and references before they will talk price.
-2. **Institutions** — museums, national libraries, universities (the gallery
-   already sells to the National Museum of Singapore, the National Library of
-   Australia, the Louvre Abu Dhabi and Leiden University — the client's own list,
-   `docs/design/input/claude-design-2026-09/project-notes.md`; whether any other
-   institution is a client, and which may be named in public, waits on the owner's
-   answer to G10, `docs/design/journeys/owner-interview.md`): need proformas, PO
+2. **Institutions** — museums, national libraries, universities, which already buy
+   from the gallery. **None is named in public** (the owner's answer to G10,
+   2026-10-01): the client list in
+   `docs/design/input/claude-design-2026-09/project-notes.md` is for the team only,
+   and a piece an institution bought shows only "Sold". They need proformas, PO
    numbers, provenance, export papers.
 3. **Interior designers, villas and hotels** — buy by place, size and colour,
    present to clients, need framing and installation.
@@ -44,8 +45,10 @@ direction may enter as at most one candidate**. Nothing above binds the outcome.
 ## 2. Information architecture
 
 **Header:** logo · Maps & Charts · Prints · Photographs · Books · Places ·
-Makers · Stories · Catalogues — with a utility row: search · ship-to/currency ·
-wishlist · account · basket · WhatsApp.
+Makers · Stories · Catalogues — with a utility row: search · ship-to · wishlist ·
+account · WhatsApp. There is **no basket** (D50: the gallery has no bag), and the
+ship-to names a country, never a currency — no price is shown — because it still
+decides export gating: a `domestic-only` original seen from abroad says so (§5).
 
 **Footer:** Visit (locations, by appointment) · Sell to us · Guarantee &
 returns · Authentication · Condition grades · Shipping & insurance · Framing &
@@ -84,10 +87,12 @@ carousel:
 4. **Curations** — two or three current collections or a catalogue.
 5. **Makers** — the names collectors search for, with available counts.
 6. **Stories** — the essays, which are the gallery's voice.
-7. **Trust** — the Parry certificate; the lifetime authenticity guarantee, a
-   default published only in counsel's words (RESEARCH.md §2, D11, owner question
-   G6); the institutions who buy here, named only with their permission (G10); how
-   shipping and insurance work.
+7. **Trust** — the facts the owner has confirmed, and only those (G13): **since
+   2001**, **over 9,500 authentic antiques**, and **a certificate with every
+   original** from Dr David E. Parry (G7); the **lifetime authenticity guarantee**,
+   the owner's commitment (G6), published in counsel's words (D11); how the gallery
+   sells — a conversation, then an invoice (D50) — and how shipping and insurance
+   work. No institution is named (G10).
 8. **Newsletter** — the fortnightly new-arrivals letter (now real: generated from
    inventory, §10).
 
@@ -95,23 +100,24 @@ carousel:
 
 - **Default: available items**, with a visible *Available · On hold · Sold*
   toggle — the sold archive is a feature, not a filter nobody finds.
-- **Facets:** availability (incl. new in 30/60/90 days) · price (slider with
-  "include price on request", and presets **per market currency**, set in brand
-  config — e.g. < US$350 · 350–1k · 1–5k · 5k+ for export destinations, and
-  < Rp 5 juta · 5–15 juta · 15–75 juta · 75 juta+ for Indonesia, where the
-  rupiah rule allows no dollar figure at all) · date
+- **Facets:** availability (incl. new in 30/60/90 days) · date
   (range slider, century chips, "VOC era 1602–1799") · maker (with counts) ·
   photographer/studio · source work · technique · colour · condition grade · size
   (cm and inches: presets and min/max H/W) · place · theme · text language.
-  Counts follow the all-but-this-facet rule.
-- **Sort that works:** newest · price ↑ ↓ · date of the work · maker.
+  Counts follow the all-but-this-facet rule. **No price facet** (D50): with no
+  price shown, a price range would only let a visitor work out the price it hides.
+  (The engine keeps the price facet — a slider with "include price on request" and
+  presets per market currency from brand config, rupiah alone for Indonesia — for
+  a brand whose prices are shown.)
+- **Sort that works:** newest · date of the work · maker — and no price sort, for
+  the same reason.
 - **Named facet URLs** for the combinations people search: `/antique-maps`,
   `/antique-maps/java`, `/antique-maps/java/batavia`, `/photographs/bali`,
   `/makers/valentijn`. Parameter combinations beyond those are canonicalised.
 - **Cards:** the image on its mat (never cropped — the image treatment in
   DESIGN.md says how a 3.5 : 1 coastal profile and a 0.3 : 1 costume print share a
-  grid), hook title, maker and date, dimensions, and one status line — price ·
-  "Price on request" · "On hold until Fri" · "Sold". One card is one link (KOI
+  grid), hook title, maker and date, dimensions, and one status line — "Price on
+  request" · "On hold until Fri" · "Sold" (never a price, D50). One card is one link (KOI
   accessibility rule); the wishlist button sits **outside** the link, overlaid,
   with its own focus stop.
 - Mobile: facets in a bottom sheet with applied-filter chips, a live count on the
@@ -161,28 +167,50 @@ dimensions (image and sheet, mm **and** inches; framed if framed) · condition
 never "study images carefully") · references (each linking to its source page;
 Parry numbers first) · provenance · stock number.
 
-**The purchase panel** — modes by price tier, status and **the viewer's relation
-to the item** (DESIGN-SYSTEM.md §3): a state matrix of tier × status (available ·
-held by someone else · held for me · in my checkout · my offer pending · sold ·
-sold with price realised) × export status × ship-to × signed in, designed before
-it is built (TASKS.md 34.1.a). It reserves its height and reads "Checking
-availability…" until availability resolves — no purchase control before then.
-Request price answers **in place**: after an email or WhatsApp field, the price
-appears on the page and the lead is logged; items marked sensitive say "A
-specialist will reply within {hours}" instead. The rest of the panel
-(COMMERCE.md §7):
-- the price in the buyer's market currency, with a converted estimate only for
-  export destinations; or "Price on request";
-- **status:** Available · "On hold until {date}" · Sold;
-- primary and secondary actions: Buy · Reserve · Make an offer · Request price ·
-  Enquire · Book a viewing · Proforma for institutions;
-- the reassurance row: the Parry certificate; the lifetime authenticity guarantee
-  and 14-day returns — the research's defaults, not yet promises: each is shown
-  only in counsel's words and only once they arrive (RESEARCH.md §2, D11, owner
-  question G6), and until then the row holds neither; insured shipping estimate to
-  the ship-to country, **ships from** (Singapore / Jakarta), and the export note
-  when the item is `domestic-only` (COMPLIANCE.md §1);
+**The purchase panel — a conversation, never a checkout (D50).** It shows no price
+and sells nothing by itself: it starts the conversation in which the price is
+agreed, and holds the piece once staff have issued its invoice (COMMERCE.md §7).
+Its states are the item's status × **the viewer's relation to the item**
+(DESIGN-SYSTEM.md §3) × export status × ship-to × signed in, designed before they
+are built (TASKS.md 34.1.a):
+
+| Status | What every visitor reads | Leads with |
+| ------ | ------------------------ | ---------- |
+| available | "Price on request" | WhatsApp, prefilled with the stock number and title in the page's language · Call the gallery (its Singapore number shown, a tap on a phone) — then Request price · Enquire · Book a viewing · Proforma for institutions |
+| held — an invoice is out | "On hold until {due date}" | the same conversation, and "Tell me if it becomes available" |
+| held for me — signed in, my invoice | "Held for you until {due date}" | Pay (the invoice's link) |
+| sold | "Sold" — nothing else: no price, no buyer named (G10) | "Own a print of this map" and the available example (§8) |
+| no recorded location or export status | "Price on request" | Enquire · WhatsApp · Book a viewing — the enquiry-only panel (COMMERCE.md §2) |
+
+It reserves its height and reads "Checking availability…" until availability
+resolves — no control before then. **Request price is answered by a person, never
+in place:** after an email or WhatsApp number the visitor reads when a specialist
+will reply — the reply promise beside every enquiry button, the same working day,
+Singapore time (G9) — and the lead is logged. No Buy, Reserve or Make an offer
+appears in any state. The rest of the panel:
+- the reassurance row: the Parry certificate with every original (G7); the
+  **lifetime authenticity guarantee** (G6) in counsel's words; returns only once
+  counsel words them (D11) — until then the row holds neither line; **ships from**
+  (Singapore / Jakarta); shipping, insured and quoted on the invoice (G11); the
+  export note when the item is `domestic-only` (COMPLIANCE.md §1);
 - a conservation framing quote link (UV glazing, rag mat, reversible hinges).
+
+**From conversation to payment.** On WhatsApp or the phone the buyer and the
+gallery agree the price. Staff then build the **invoice** in the admin on their
+phone — the piece at the agreed figure, the insured shipping, any duties, the due
+date — and share its link into the buyer's WhatsApp chat (a `wa.me` share), or
+email it. The link opens **the invoice on the gallery's own page**, `/pay/{token}`,
+in the gallery's design and never a gateway's: its number, the piece with its stock
+number, the figure, shipping and duties, the total, the due date, the seller of
+record, the buyer (and an institution's PO number) and the PDF — and two ways to
+pay, **the Stripe Payment Element in the page** (card, Apple or Google Pay, PayNow,
+iDEAL or SEPA) and **bank transfer** against the PDF. Its states are designed: open
+— "On hold until {due date}" — bank transfer pending, paid, and expired or voided
+with the ways to reach the gallery (COMMERCE.md §7, PAYMENTS.md §5). From the moment
+the invoice is issued the piece is **on hold until its due date** for everyone else;
+the buyer is reminded two days before it; unpaid by then, the piece is released by
+itself and the link stops taking payment (D45). It ships only once the invoice is
+paid in full (G11).
 
 **Context**
 - The essay (the existing long-form descriptions, restructured with subheads).
@@ -192,7 +220,9 @@ specialist will reply within {hours}" instead. The rest of the panel
   examples.
 
 **Utilities** — wishlist and "tell me when another example arrives" · share
-(WhatsApp first) · print description · factsheet PDF (designers present these) ·
+(WhatsApp first) · print description · factsheet PDF (designers present these:
+the piece, "Price on request", the gallery's contact and the date it was printed —
+no price, G14) ·
 **"Prints of this map from Old East Indies"** (the exact products, not a home
 page) · a "Similar to sell?" micro-block linking to consignment.
 
@@ -238,18 +268,24 @@ page) · a "Similar to sell?" micro-block linking to consignment.
 
 ## 8. Sold, holds and want-lists
 
-- A sold page stays indexed. It says "Sold", shows no price (optionally "price
-  realised" to signed-in buyers), offers **the available example** when a
+- A sold page stays indexed. It says "Sold" and nothing more about the sale — no
+  price, no "price realised", and no buyer, institution or "private collection"
+  named (D50, G10) — offers **the available example** when a
   `sameEdition` work is in stock ("The item below has been sold, but the example
-  shown above is currently available"), and — **in the primary position, where
-  "Buy" was** — "Own a print of this map" from Old East Indies when a design
-  exists; then similar works and "Tell me when another example arrives". Sold
+  shown above is currently available"), and — **in the primary position, where an
+  available piece's WhatsApp button stands** — "Own a print of this map" from Old
+  East Indies when a design exists; then similar works and "Tell me when another
+  example arrives". Sold
   pages are the sister shop's best placement.
-- A held item says "On hold until Friday 14:00" and offers the same alert.
-- Want-lists are saved searches by maker, place, date and budget, from any browse
-  page ("Alert me about new maps of Bali under US$2,000" — the budget in the
-  viewer's market currency, stored with it), delivered **within 15 minutes or
-  in a daily digest**, the subscriber's choice. A signed-in collector's saves at
+- A held item — an invoice is out for it — says "On hold until {the invoice's due
+  date}" and offers "Tell me if it becomes available"; if the invoice lapses unpaid
+  the piece is simply available again (D45), and everyone who asked gets the alert
+  at once.
+- Want-lists are saved searches by maker, place, date, type and size, from any
+  browse page ("Alert me about new maps of Bali"), delivered **within 15 minutes or
+  in a daily digest**, the subscriber's choice. They take **no budget** here, since
+  no price is shown (D50); a brand whose prices are shown keeps one, in the viewer's
+  market currency. A signed-in collector's saves at
   once; a guest leaves an email with no account, which starts watching only
   once confirmed — a **double opt-in**: the confirmation email's link opens the
   want-list page, whose button confirms it (a mail scanner following the link
@@ -260,40 +296,41 @@ page) · a "Similar to sell?" micro-block linking to consignment.
 
 All in the CMS as pages, all linked from the purchase panel:
 
-- **Guarantee & returns** — a lifetime authenticity guarantee and returns (the
-  research's default: 14 days, less shipping and insurance) — both defaults,
-  subject to counsel, published only in counsel's words per seller (RESEARCH.md §2,
-  COMMERCE.md §11, D11, owner question G6); until they arrive the page is designed
-  and promises nothing.
+- **Guarantee & returns** — the **lifetime authenticity guarantee**, the owner's
+  commitment (G6), published in counsel's words (D11). Whether an original may be
+  returned is not answered — G6 named only the guarantee — so the page promises no
+  returns until the owner and counsel decide (the research suggested 14 days, less
+  shipping and insurance; COMMERCE.md §11).
 - **Authentication** — "How do you know it's real?": chain lines, watermarks,
   plate marks, verso text; "if doubt remains, we do not offer the item for sale".
 - **Condition grades** — the published scale with definitions and A–D
   equivalents.
 - **The certificate** — Dr David E. Parry, author of *The Cartography of the
-  East Indian Islands*; a sample certificate; how to keep it with insurance papers.
+  East Indian Islands*; every original comes with one (G7); how to keep it with
+  insurance papers. No sample certificate is shown until Dr Parry agrees (G7).
 - **Shipping & insurance** — how originals travel (flat, boxed, insured,
-  signature), what it costs, from where, and duties by destination.
+  signature), from where, and duties by destination: the buyer's, quoted on the
+  invoice, and nothing ships before the invoice is paid in full (G11).
 - **Framing & conservation** — including tropical humidity guidance for Bali.
-- **Institutions** — who has bought here, each named only with its permission
-  (owner question G10); until the owner confirms it, the page explains how
-  institutions buy — proforma, PO number, bank transfer, export papers — and names
-  none.
-- **Visit** — each location, by appointment, a map, and booking. Viewing slots
-  show their time zone explicitly (Singapore UTC+8, Jakarta WIB UTC+7, Bali WITA
-  UTC+8), confirm by email with an `.ics`, remind on WhatsApp, and can be
+- **Institutions** — how institutions buy — a proforma request, the staff-issued
+  invoice with the PO number, bank transfer, export papers — naming none of them
+  (G10).
+- **Visit** — Singapore and Jakarta, by appointment only (G2), a map, and booking.
+  Viewing slots show their time zone explicitly (Singapore UTC+8, Jakarta WIB
+  UTC+7), confirm by email with an `.ics`, remind on WhatsApp, and can be
   rescheduled.
 - **FAQ** — replacing today's "work in progress" page.
 
 **Forms that behave like the gallery, not like a CMS:** consignment uses the phone
 camera directly, accepts HEIC, shows per-file progress and retries on weak
 networks, and ends with a "what happens next" timeline; the framing quote has its
-own short flow; institutions can turn a **cart of several items into a proforma**
-at the checkout's payment step ("Proforma instead"), or ask for one on a single
-item — even one on request — through the quote form (PO field, PDF, and a "pay
-this proforma" page — the `Quote` surface). Staff answer the form's request with
-the proforma within the stated reply time, so "Proforma for institutions"
-promises that, never a PDF at once. "Reserve" has its own short form, a request
-for a staff hold.
+own short flow; an institution asks for a **proforma** on one piece or several
+through the quote form (the PO number, the pieces, when it needs it) — there is no
+cart to turn into one (D50). Staff answer within the stated reply promise by
+issuing the invoice (§5) — the same pay page as every invoice, carrying the PO
+number and the PDF the finance office pays from, bank transfer beside the card — so
+"Proforma for institutions" promises that, never a PDF at once. There is no
+"Reserve" form: a piece is held when its invoice is issued (D45).
 
 ## 10. Accounts and retention
 
@@ -308,9 +345,11 @@ for a staff hold.
   straight from its own "unsubscribe" action, carrying the token in the URL
   itself rather than the page.
 - Orders with **certificate and invoice downloads**.
-- The gallery's conversations, in one place: **my offers** (with the counter's
-  countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), and
-  consignments with their status timeline.
+- The gallery's conversations, in one place: **invoices** — each an order awaiting
+  payment, "Held for you until {due date}", leading to its pay page — price requests,
+  viewings (reschedule, cancel, `.ics`), and consignments with their status timeline.
+  An invoice reaches its buyer by its own link, signed in or not; there are no offers
+  or holds to list (D50).
 - A legacy `/product/{id}-{slug}` that no longer resolves turns its slug into a
   prefilled search with similar works; an item removed from inventory shows
   the designed Gone page — a 404, noindex and out of the sitemap, since a page
@@ -326,12 +365,16 @@ for a staff hold.
 
 - Title template `{hook title} – {maker}, {year} | {brand.name}` (the brand name
   comes from config — no brand literal in the app); H1 = title.
-- JSON-LD `["Product", "VisualArtwork"]` with `artMedium`, `artworkSurface`,
-  dimensions, `creator` (Person with life dates, `sameAs`), `dateCreated`,
-  `locationCreated`, `spatialCoverage` (Place with coordinates), `sku`,
-  `itemCondition: UsedCondition`, and `offers.availability` `InStock` ·
-  `Reserved` · `SoldOut`; price only when priced (POR omits it). Plus
-  `BreadcrumbList`, `ArtGallery` per location, `ImageObject`.
+- JSON-LD `VisualArtwork` with `artMedium`, `artworkSurface`, dimensions,
+  `creator` (Person with life dates, `sameAs`), `dateCreated`, `locationCreated`,
+  `spatialCoverage` (Place with coordinates) and the stock number as `identifier`
+  — and **no `Product` or `Offer`** while no price is shown (D50): an `Offer`
+  without a price fails the search engines' product validation, and inventing one
+  would contradict the page. Plus `BreadcrumbList`, `ArtGallery` per location,
+  `ImageObject`. (For a brand that shows its prices the builder adds `Product` with
+  `sku`, `itemCondition: UsedCondition` and `offers` — `InStock` · `Reserved` ·
+  `SoldOut`, the price only when priced.)
+- No shopping feed: Google's Merchant listing needs a price, and none is shown.
 - Crawlable images with real alt text, slugged filenames, `og:image`, an image
   sitemap; sitemaps **include sold items**; `hreflang` pairs; canonicals on
   sort and parameter pages.
@@ -341,16 +384,22 @@ for a staff hold.
 
 **MVP (launch):** URL parity + redirect map; the new item page (collation,
 condition scale, references, multi-image deep zoom with a crawlable image, hook
-+ original titles, maker bio, related); Buy, Enquire and instant Request price;
-WhatsApp prefilled with the stock number; checkout lock and "On hold"; **make an
-offer — non-binding** (accept / counter / decline in the admin, an accepted offer
-becomes a private pay link and a hold; D22); cards, PayPal, bank transfer and
-proforma; currency by destination; working sort and the full facet set; sold
-archive with notify-me; wishlist and want-lists; all trust pages; the Parry
-certificate page; locations and viewing booking; the generated newsletter;
-consignment with photo upload; place and maker pages; stories; **web-native
-catalogue pages** with live availability; Old East Indies deep links; the data
-clean-up (MIGRATION.md §4); WCAG 2.2 AA and the budgets.
++ original titles, maker bio, related); **no price on any original** and the
+enquiry-led panel (D50) — WhatsApp prefilled with the stock number, Call, Request
+price answered by a person, Enquire, Book a viewing, Proforma for institutions;
+**staff-issued invoices** that hold the piece until their due date (D45), paid
+online through the seller's gateway (cards, PayNow, iDEAL/SEPA) or by bank
+transfer, shipped once paid in full (G11); "On hold until"; the working sort and
+facet set (no price facet); sold archive with notify-me; wishlist and want-lists;
+all trust pages; the Parry certificate page; Singapore and Jakarta viewing
+booking; the generated newsletter; consignment with photo upload; place and maker
+pages; stories; **web-native catalogue pages** with live availability; Old East
+Indies deep links; the data clean-up (MIGRATION.md §4); WCAG 2.2 AA and the
+budgets.
+
+**Not at launch (D50, D22), kept in the engine:** the bag and checkout for
+originals, Buy, Reserve, online offers, shown prices and the instant price reveal
+— switched on by a brand's config, never by code.
 
 **v2:** binding offers (an accepted offer is a contract to buy); the catalogue
 as a printable PDF; reserve with deposit; instalments; in-room and AR views (the
