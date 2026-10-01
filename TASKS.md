@@ -159,7 +159,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.f done; ⛔ 👤 6.1.e native review (D20), 6.1.i the gallery's phone, viewing addresses and the shop's owed items |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | — (merged db741cb) | — | 2026-10-01 | 6.3.g–i done; 6.3.j (HAR) and 6.3.l open; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
+| 6·W1 | 6.3 Voice and lexicon | medior (6.3.j) + junior (6.3.l) | agent worktrees | 2026-10-01 | 6.3.g–i merged (db741cb); 6.3.j fixing the copy gate's plural check (HAR, `engine/packages/i18n`), 6.3.l re-padding the test brand (`test/site/copy`); 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | — (merged 89bf351) | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | ⛔ 👤 OA9 (7.1.a: the real dump's restore); everything else ticked |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
