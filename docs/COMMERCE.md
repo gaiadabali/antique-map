@@ -653,14 +653,12 @@ Policy text per seller comes from counsel (D11; COMPLIANCE.md §6 records what U
 8/1999 art. 18 allows). The gallery's commitments: a **lifetime authenticity
 guarantee** (the owner's, G6) and the Parry certificate with every original (G7),
 both published in counsel's words. **An original is a final sale** (the owner's
-answer, 2026-10-01): no change-of-mind return, so no returns window is offered on any
-page — the research's 14 days is dropped — and counsel confirms this is allowed. The
-guarantee is the one promise after the sale, its remedy as counsel words it. The
-shop's answer (S12) is **"no refund": no refunds and no change-of-mind returns, and a
-print that arrives damaged replaced** on a photo. That answer is **in tension with
-Indonesian consumer law** as COMPLIANCE.md §6 records it (UU 8/1999 art. 18 on
-standard clauses refusing returns or refunds) — this doc does not decide it: counsel
-does (D11), and the shop publishes only the damaged-print replacement until then. A
+answer, D56): no change-of-mind return, so no returns window is offered on any
+page — the research's 14 days is dropped (D56). The guarantee is the one promise
+after the sale, its remedy as counsel words it. The shop's answer (S12) is **"no
+refund": no refunds and no change-of-mind returns, and a print that arrives damaged
+replaced** on a photo. Counsel confirms both brands' terms against UU 8/1999 art. 18
+(D56, D11; COMPLIANCE.md §6), and each site publishes them in counsel's words. A
 damaged print's replacement is staff's zero-priced order from the order builder
 (TASKS.md 24.5), the claim's return closed with no refund. The engine
 supports — as a domain of its own (TASKS.md 20.4), not only admin screens — a

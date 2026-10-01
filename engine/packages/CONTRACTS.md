@@ -839,7 +839,7 @@ so it is breaking and also needs a redirect.
       `pay-invoice` and its transfer-pending, paid, expired and voided states, `order-invoice` —
       issued on 2 October and due three days later, the proposed term, the transfer's window
       ending at the due date, and the order opened by its link (`access: 'lookup'`, D54);
-    - G12 (the owner, 2026-10-01): `ShellVM.analytics`' ids are `null` for every brand at
+    - D55 (G12, the owner, 2026-10-01): `ShellVM.analytics`' ids are `null` for every brand at
       launch, and with neither set the banner asks no marketing category (`choice.marketing`
       stays `false`);
     - D54 — no viewer relation at the gallery: `heldForMe`, `inMyCheckout` and `myOffer` need a

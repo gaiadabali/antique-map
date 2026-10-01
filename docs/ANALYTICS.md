@@ -12,7 +12,7 @@ gallery lives on.
 dashboard". Every number the owner reads comes from this pipeline and the domain's
 records, in each brand's admin (§3); nothing depends on an export from, or an
 account at, Google Analytics. **No GA4 and no Meta Pixel at launch, even after
-consent** (the owner's answer, 2026-10-01): the analytics are first-party only.
+consent** (D55, the owner's answer to G12, 2026-10-01): the analytics are first-party only.
 Neither brand config names a GA4 or a Meta id, so no third-party tag loads for
 anyone, and the consent banner offers **no marketing-tag category** — it asks only
 what the first-party beacon needs (the analytics row below). The third layer stays

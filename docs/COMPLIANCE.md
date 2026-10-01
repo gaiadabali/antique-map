@@ -103,23 +103,20 @@ this (COMMERCE.md §8).
   payment and delivery terms.
 - **UU 8/1999 art. 18** bans standard clauses letting the seller refuse returns or
   refunds, which the research read as **no "all sales final"**, including for
-  made-to-order prints. The returns policy is drafted by counsel; the software
-  supports return requests on every order line.
-- **The gallery's originals are final sales — counsel confirms it is allowed (G6,
-  D11, 2026-10-01).** The gallery promises the **lifetime authenticity guarantee**
-  and takes no change-of-mind return of an original; counsel words both, the
-  guarantee's remedy included. A return request still exists on every order line,
-  for whatever the guarantee or counsel's terms admit.
-- **The shop's returns answer is in tension with art. 18 — for counsel (S12,
-  2026-10-01).** The owner's answer is "no refund": no refunds and no change-of-mind
-  returns, and a print that arrives damaged replaced on a photo. Read against art. 18
-  as recorded above, a published "no refund" line may be a standard clause the law
-  does not allow. This document does not decide it: **counsel does (D11)** — whether
-  the shop may state it, and in what words. Until counsel answers, the shop states
-  only the damaged-print replacement and no returns line at all, and the engine keeps
-  a return request on every order line whatever the wording becomes (COMMERCE.md §11).
-  Counsel's G6 answer reads the same article for the gallery's originals (above);
-  whether it settles the shop's wording too is counsel's to say.
+  made-to-order prints; counsel's reading (below, D56) allows both brands' terms. The
+  returns policy is drafted by counsel; the software supports return requests on
+  every order line.
+- **Counsel confirms both brands' terms against art. 18 (D56, D11, 2026-10-01).**
+  - **The gallery's originals are final sales** (G6): the gallery promises the
+    **lifetime authenticity guarantee** and takes no change-of-mind return of an
+    original.
+  - **The shop's "no refund"** (S12): no refunds and no change-of-mind returns, and a
+    print that arrives damaged replaced on a photo.
+
+  Counsel words each brand's terms, the guarantee's remedy included, and the sites
+  publish them in counsel's words. The engine still keeps a return request on every
+  order line — the shop's damaged-print claim, whatever the guarantee admits
+  (COMMERCE.md §11).
 - **UU 24/2009**: agreements with Indonesian parties in Bahasa Indonesia →
   terms, privacy notice and order documents exist in Indonesian and English.
 - **Permendag 31/2023**: social media may promote, not process payments —
@@ -137,7 +134,7 @@ this (COMMERCE.md §8).
   organisation **(confirm)**.
 - **EU visitors** — GDPR-grade cookie consent: IG sells to the Dutch heritage
   market.
-- **Analytics stays first-party** (G12, the owner's answer, 2026-10-01): the owner's
+- **Analytics stays first-party** (D55, the owner's answer to G12, 2026-10-01): the owner's
   own records, in the admin. **No GA4 and no Meta Pixel at launch, even after
   consent**: no brand config names their ids, so no visitor's data reaches either,
   and the consent banner has **no marketing-tag category** — it asks only for the
@@ -216,8 +213,9 @@ Midtrans is the OEI default.
 - [ ] NIB with the internet-retail and shop KBLI codes, NPWP **(confirm)**
 - [ ] PSE registration through OSS
 - [ ] Seller identity on the site; Indonesian + English terms and privacy notice
-- [ ] Returns policy compliant with UU 8/1999 art. 18 (counsel), reconciling the
-      owner's S12 intention — no refunds, a damaged print replaced (§6)
+- [ ] Returns policy in counsel's words — no refunds and no change-of-mind returns,
+      a damaged print replaced on a photo (S12), which counsel confirms against UU
+      8/1999 art. 18 (D56, §6)
 - [ ] IDR-only pricing for Indonesian delivery (enforced by the engine); delivery
       within Indonesia only at launch (S3), so no export or foreign-currency charge
 - [ ] Gateway KYC (Midtrans) + showroom QRIS
@@ -236,7 +234,7 @@ Midtrans is the OEI default.
 - [ ] Written export determination for any item in Jakarta that may be sold abroad
 - [ ] Fine-art transit insurance policy
 - [ ] Terms: condition, the lifetime authenticity guarantee (G6), the final sale of
-      an original (no change-of-mind return — counsel confirmed, D11), duties and
+      an original (no change-of-mind return — counsel confirmed, D56), duties and
       taxes; the invoice's terms — its due date (three days proposed, staff may
       change it), the hold until then (D45), and shipping only once paid in full (G11)
 

@@ -208,7 +208,7 @@ appears in any state. The rest of the panel:
 - the reassurance row: the Parry certificate with every original (G7); the
   **lifetime authenticity guarantee** (G6) in counsel's words; **a final sale** —
   said plainly beside the guarantee, since no original is returned on a change of
-  mind (the owner's answer, counsel confirming it, D11); **ships from**
+  mind (D56: the owner's answer, counsel confirming it); **ships from**
   (Singapore / Jakarta); shipping, insured and quoted on the invoice (G11); the
   export note when the item is `domestic-only` (COMPLIANCE.md §1);
 - a conservation framing quote link (UV glazing, rag mat, reversible hinges).
@@ -318,7 +318,7 @@ All in the CMS as pages, all linked from the purchase panel:
 
 - **Guarantee & terms of sale** — the **lifetime authenticity guarantee**, the
   owner's commitment (G6), and the terms of sale: an original is a **final sale**,
-  with no change-of-mind return (the owner's answer, 2026-10-01; counsel confirms it
+  with no change-of-mind return (D56: the owner's answer, 2026-10-01; counsel confirms it
   is allowed, D11), the guarantee being the one promise after it — both in counsel's
   words (COMMERCE.md §11).
 - **Authentication** — "How do you know it's real?": chain lines, watermarks,

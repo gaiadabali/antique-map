@@ -109,7 +109,7 @@ while their data and identities stay apart.
 3. WHEN an item is sold THEN its page SHALL remain published AND show no price AND show available examples of the same edition AND offer an alert.
 4. WHILE an item is reserved THEN its page SHALL show "On hold until {date}".
 5. The gallery SHALL provide maker, place, source, curation, catalogue and story pages.
-6. The gallery SHALL provide trust pages for guarantee and returns, authentication, condition grades, the certificate, shipping and insurance, framing and conservation, institutions, visiting, and FAQ. *(2026-10-01, G6: "returns" is the terms of sale — an original is a final sale, with no change-of-mind return, beside the lifetime authenticity guarantee; counsel confirms it is allowed, D11.)*
+6. The gallery SHALL provide trust pages for guarantee and returns, authentication, condition grades, the certificate, shipping and insurance, framing and conservation, institutions, visiting, and FAQ. *(2026-10-01, D56 — G6: "returns" is the terms of sale — an original is a final sale, with no change-of-mind return, beside the lifetime authenticity guarantee; counsel confirms it is allowed, D11.)*
 7. WHEN a visitor chooses WhatsApp on an item THEN the message SHALL be prefilled with the stock number and title.
 8. WHEN reproductions of a work exist in the sister shop THEN the item page SHALL link to those exact products.
 9. The gallery SHALL provide consignment submissions with photo upload and viewing appointments.
@@ -296,7 +296,7 @@ while their data and identities stay apart.
 3. Sitemaps per locale SHALL include sold items and images.
 4. ~~The system SHALL produce a Google Merchant feed for both brands and a Meta catalogue feed for the shop.~~ **Superseded 2026-10-01** by 17.9 (D50: a Merchant listing needs a price, and no gallery original shows one).
 5. The system SHALL record first-party events per the taxonomy, cookieless until consent.
-6. GA4 and Meta tags SHALL load only after marketing consent. *(2026-10-01, G12: no brand loads either at launch, even after consent — the analytics are first-party only, and the consent banner offers no marketing-tag category; this holds for a brand that later sets a tag id.)*
+6. GA4 and Meta tags SHALL load only after marketing consent. *(2026-10-01, D55 — G12: no brand loads either at launch, even after consent — the analytics are first-party only, and the consent banner offers no marketing-tag category; this holds for a brand that later sets a tag id.)*
 7. Each brand's admin SHALL show funnels, leads, unmet demand, payments and Web Vitals dashboards.
 8. Items SHALL carry JSON-LD with honest facts: in the gallery `VisualArtwork`, with no `Product` or `Offer` while no price is shown; in the shop `Product` + `Offer` with honest availability (`InStock`, `SoldOut`) (D50, 2026-10-01).
 9. The system SHALL produce the shop's Google Merchant and Meta catalogue feeds in rupiah, AND no shopping feed for a brand that shows no price (D50, S3, 2026-10-01).
