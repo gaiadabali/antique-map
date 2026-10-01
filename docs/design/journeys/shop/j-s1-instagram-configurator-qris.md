@@ -1,5 +1,10 @@
 # J-S1 — The Instagram in-app browser → configurator → QRIS
 
+> **Updated 2026-10-01 — S7, S10, S12, S13.** Everything is in stock, so no "made to
+> order" promise (S7); a gift note only, no gift wrap (S10); free shipping over
+> Rp 500.000 and a welcome code (S13); no refunds, a damaged print replaced on a photo
+> (S12).
+
 **Who:** a young professional in Denpasar who follows the shop on Instagram. She taps a
 post of a framed map, lands on the product inside Instagram's own browser, configures a
 framed giclée for her living room, and pays by QRIS — all on her phone, without leaving
@@ -13,22 +18,26 @@ without JavaScript; the preview on intent; impossible combinations disabled with
 reason), §7 (the bag drawer; checkout for an Indonesian destination; payment pending;
 the in-app browser note), §8 (`/ig`; Permendag 31/2023: checkout on the site),
 COMPLIANCE.md §1 (QRIS ≤ IDR 10 m), PAYMENTS.md §6 (OEI: Midtrans), DESIGN-SYSTEM.md §2
-(`Order` payment-pending), Requirement 7.1–7.3, 7.9, 7.11.
+(`Order` payment-pending), S3 and D47 (delivery within Indonesia only at launch), S6 (a
+separate WhatsApp number for online shoppers), S7, S10, S12, S13, Requirement 7.1–7.3,
+7.9, 7.11.
 
 **Used by:** 13.2 (steps marked **P**: the configurator), 32.1.a e2e (inside the Instagram,
 WhatsApp and TikTok in-app browsers), 32.2 usability (at least three sessions start in
 Instagram), phase 32 **Done when** (the largest giclée the seed scan allows — its ceiling
 from the design's crop at 240 ppi, D26, C9 `printCeilingOf()` — teak frame and mount, to
-scale, gift wrap and a voucher, QRIS in IDR, tracked as a guest).
+scale, gift wrap and a voucher, QRIS in IDR, tracked as a guest — its gift wrap no longer
+exists, S10; 6.4.e rewords it).
 
 ## Before the session
 
 - On staging: a product made from a seed design whose print ceiling is ≈ 37 cm — its
   crop's long edge in the master's pixels at 240 ppi (C9 `printCeilingOf()`; for a
   whole-sheet design, the object's box), not the scan file's long edge, which also holds
-  the background, the card and the ruler; product-type tables with **test** prices (S2);
-  a voucher code;
-  gift wrap switched on only if S10 confirms it (else skip that step and note it).
+  the background, the card and the ruler; product-type tables with **test** prices (S2 —
+  the price list is still owed); the variants offered **in stock** (S7); the free-shipping
+  rule at Rp 500.000 and a welcome code with a **test** value (S13 — its real value is
+  still owed); no gift wrap (S10).
 - An Instagram post (a test account) or, failing that, a link opened from an Instagram
   direct message, so the page opens **in Instagram's in-app browser**.
 - The Midtrans sandbox with QRIS and e-wallets; the mail catcher open.
@@ -45,10 +54,10 @@ scale, gift wrap and a voucher, QRIS in IDR, tracked as a guest).
 | 1 | `Ig` (`ig`) or a product tag → `Item` (`item`) | land on the product: images (framed on a wall first), title, **Reproduction** label, **Archive No.**, "From Rp …" | the page is inside Instagram's webview; the primary image is the LCP; the price reads "From" until options are chosen |
 | 2 **P** | `Item` › configurator | choose Format (Giclée), Size (the largest offered), Paper, Frame (natural teak), Mount (6 cm), Glazing | sizes above the design's print ceiling (its crop at 240 ppi, C9 `printCeilingOf()`) are absent; glass glazing disabled **with the reason** ("glass only for pickup or delivery within Bali") when ship-to is outside Bali; mount only with a frame; JavaScript off → radio groups in a GET form, the page reloads with the choice |
 | 3 **P** | `Item` › preview | switch Flat · On a wall (three wall colours) · **To scale** (a 1.7 m person, a 2 m sofa) | the preview loads on intent and updates in under 100 ms on the reference device; the text summary is the truth, the preview decoration; the price change is announced politely |
-| 4 **P** | `Item` › price and delivery promise | read the live price and the promise ("Made to order, ships in N days" — S7) and the shipping estimate for her district | the promise reads the holiday calendar (Nyepi, Lebaran); no day count is shown until the data has one (S7 default); "No COD — pay by QRIS or VA, confirmed instantly" |
-| 5 | `Item` › sticky buy bar | add to bag; optionally "Ask on WhatsApp" with the product and chosen options prefilled | the configuration lives in the URL, so a WhatsApp link restores it exactly |
-| 6 | `Cart` drawer (`cart`) | see the line with its configuration, the free-shipping bar (only if S13 sets a threshold), a voucher field; add gift wrap | voucher expired / below minimum spend / not combinable → a sentence that instructs; the bag re-prices on the server — `PriceChanged` shown if it moved |
-| 7 | `Checkout` (Contact, Delivery, Shipping method, Payment) | give **WhatsApp number first** (`08…` → `+62 8…`), **one Full name**, address by province → city → district → sub-district pickers, a courier with price and ETA | guest only (D31): no account prompt anywhere; map pin optional; IDR only |
+| 4 **P** | `Item` › price and delivery promise | read the live price, the promise — **in stock** (S7), with the courier's estimate for her district — and the trust row: **a damaged print is replaced on a photo** (S12) | no "made to order" wording anywhere (S7); the promise reads the holiday calendar (Nyepi, Lebaran); no day count is shown until the courier data has one; "No COD — pay by QRIS or VA, confirmed instantly"; no refund or change-of-mind return is promised (S12 — counsel words the policy, D11) |
+| 5 | `Item` › sticky buy bar | add to bag; optionally "Ask on WhatsApp" with the product and chosen options prefilled | the configuration lives in the URL, so a WhatsApp link restores it exactly; the link opens the **online shoppers' number**, not the showroom's (S6) |
+| 6 | `Cart` drawer (`cart`) | see the line with its configuration, the **free-shipping bar toward Rp 500.000** (S13), the voucher field; enter the **welcome code** | no gift wrap offered (S10); a code expired / below its minimum spend / not combinable → a sentence that instructs; the bag re-prices on the server — `PriceChanged` shown if it moved |
+| 7 | `Checkout` (Contact, Delivery, Shipping method, Payment) | give **WhatsApp number first** (`08…` → `+62 8…`), **one Full name**, address by province → city → district → sub-district pickers, a courier with price and ETA | guest only (D31): no account prompt anywhere; map pin optional; IDR only; delivery within Indonesia only (S3) |
 | 8 | Payment → **QRIS** | choose QRIS | QRIS absent above IDR 10 m; methods filtered by amount |
 | 9 | `Order` (`order/[number]`) › payment pending | see the exact amount, the QR, **"Save QR to gallery"** and e-wallet deep links (a phone cannot scan its own screen), the countdown | inside Instagram a step that cannot complete says so and offers **"Open in your browser"**, keeping the order; QR expired → another method, the bag kept |
 | 10 | e-wallet app (sandbox) → back | pay; the page turns **Paid** by itself | never "upload your transfer receipt"; the confirmation email arrives; order updates by email (D14 default) |
@@ -84,9 +93,16 @@ options tell her the shop knows its craft rather than letting her order the impo
   emporium PRODUCT.md), to calibrate in 13.2 and 32.2.
 
 **Observe:** whether "giclée" needs explaining; whether she trusts the preview's size;
-what she does when the in-app browser limits her.
+whether the free-shipping bar changes what she adds; what she does when the in-app
+browser limits her.
 
 ## Open until the owner answers
 
-S1 (the options and papers offered), S2 (prices), S7 (lead time), S10 (gift wrap), S12
-(the damaged-print promise in the trust row), S13 (free-shipping threshold, vouchers).
+**Answered 2026-10-01** ([owner-answers.md](../owner-answers.md)): S7 (everything in stock), S10 (a gift
+note only), S12 (no refunds; a damaged print replaced on a photo), S13 (free shipping over
+Rp 500.000 and a welcome code), S6 (a separate online WhatsApp number), S3 (Indonesia
+only) — folded in above. **Still owed by the owner:** the catalogue — the formats, sizes,
+papers and frames offered (S1); the price list (S2); the welcome code's value (S13); the
+online WhatsApp number and its reply hours (S6). **Still open elsewhere:** how a
+configurator of framed options squares with "everything in stock" (TASKS.md 6.4.b);
+counsel's wording of "no refunds" against Indonesian consumer law (D11).

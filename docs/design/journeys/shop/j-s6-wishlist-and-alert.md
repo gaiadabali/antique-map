@@ -18,9 +18,9 @@ BRANDS.md §4 (`retention.deviceWishlist`, `retention.emailWantList`,
 
 ## Before the session
 
-- On staging: three products — one available, one stocked **only** at the showroom and
-  set to sell out between the two halves of the session, one made to order; a
-  "Batavia/Jakarta" collection with a saved-search subject.
+- On staging: three products — two available, one stocked **only** at the showroom and
+  set to sell out between the two halves of the session (everything is stocked; nothing
+  is made to order, S7); a "Batavia/Jakarta" collection with a saved-search subject.
 - The consent banner in its default state; the mail catcher open.
 - The session runs in **two halves** on the same phone and browser: save, then (after
   the facilitator changes the stock) return.
@@ -74,5 +74,9 @@ understood as email; whether the consent banner interrupts saving.
 
 ## Open until the owner answers
 
-S9 (how often buyers come back before buying), S13 (whether an alert carries an offer),
-S15 (the Indonesian register of the alert copy).
+**Answered 2026-10-01** ([owner-answers.md](../owner-answers.md)): S7 (everything in stock), S13 (the only
+offers are free shipping over Rp 500.000 and a welcome code — an alert carries no offer of
+its own), S15 (the alert copy in the *Anda* register, TASKS.md 6.3.g) — folded in above.
+S9 answered where buyers come from (the showroom first), not how often they come back;
+the shop's own analytics will show it. **Still owed by the owner:** nothing for this
+journey.

@@ -5,7 +5,8 @@
 > [owner-interview-toko.id.md](owner-interview-toko.id.md)
 
 **Untuk:** pemilik Indies Gallery dan Old East Indies · **Dari:** tim desain ·
-**Disiapkan:** 1 Oktober 2026 · **Status:** belum dikirim (TASKS.md OA2, 6.1.b)
+**Disiapkan:** 1 Oktober 2026 · **Status:** sudah dijawab langsung, 1 Oktober 2026 — jawabannya
+di [owner-answers.md](owner-answers.md) (TASKS.md OA2, 6.1.b)
 
 Bapak/Ibu, kami sedang merancang kedua situs yang baru. Sebagian besar yang kami
 perlukan sudah kami dapatkan dari situs Anda saat ini, catatan Anda tanggal 11 September,

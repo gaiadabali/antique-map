@@ -6,12 +6,14 @@ This file covers what both brands share: the platform and **the admin**. Each
 storefront has its own brief — `engine/apps/gallery/PRODUCT.md` (Indies Gallery)
 and `engine/apps/emporium/PRODUCT.md` (Old East Indies). Drafted from research on
 2026-09-25; conformed to impeccable's product schema on 2026-10-01 (TASKS.md 6.1.a)
-against the decisions answered by then (TASKS.md, Decisions › Answered).
+against the decisions answered by then (TASKS.md, Decisions › Answered); the owner's
+interview answers folded in on 2026-10-01 (TASKS.md 6.1.f,
+`docs/design/journeys/owner-answers.md`, cited as **Gn / Sn**).
 
-**How to read the marks.** A statement with a source is a fact. A statement marked
-**(open — pending the owner interview, OA2 · Gn / Sn)** is not yet sourced: it is
-the working assumption, and the owner's answer to that question in
-`docs/design/journeys/owner-interview.md` folds in exactly there (TASKS.md 6.1.b).
+**How to read the marks.** A statement with a source is a fact. The owner interview
+is answered; where an answer names something the owner still has to send, the
+storefront's brief marks it open, with its question number and what is still owed, and
+nothing is invented in its place. This file has no such mark.
 
 ## Platform
 
@@ -24,12 +26,12 @@ Indies Gallery works through drawers of originals — maps, prints, photographs 
 entering title, maker, date, technique, dimensions, condition and references,
 often from the object in hand; there are ~9,500 in inventory and ~2,090 online
 today (MIGRATION.md §1). A shop manager at Old East Indies turns archive works into
-products, keeps showroom stock right, and answers WhatsApp. Managers answer offers,
-holds and price requests. None of them are developers. Who exactly does each job,
-how many people, and in which language each works — the draft assumed several work
-in Indonesian and that fulfilment staff pack fragile paper and gifts — is
-**(open — pending the owner interview, OA2 · G15)**. The two observation sessions
-(OA13, TASKS.md 23.1.a) watch a real cataloguer and the real shop manager.
+products, keeps showroom stock right, and answers WhatsApp. Managers answer the
+gallery's enquiries and issue its invoices (D50), and handle partners' quotes. None of
+them are developers. **The admin is in English and Indonesian for every staff member**
+— not split by team; each user picks a language (G15). Who exactly does each job and
+how many people there are was not answered; the two observation sessions (OA13,
+TASKS.md 23.1.a) watch a real cataloguer and the real shop manager.
 
 **Secondary: the buyers**, for whom the staff's work is the product — described
 in each storefront's brief.
@@ -44,8 +46,10 @@ two markets — originals to collectors and institutions, merchandise to tourist
 expats, gift buyers and retail partners — with separate databases, sellers of
 record, payment gateways and accents. What the client asked for in its first form
 (design input, `project-notes.md`): sell online, look credible to serious buyers,
-explain what they actually do, **save admin time**, and bring old customers back.
-Success is **both sites filling up without developer help**, every one-of-one
+explain what they actually do, **save admin time**, and bring old customers back. The
+shop sells online through its checkout; the gallery sells by conversation and takes
+payment online by a staff-issued invoice (D50). Success is **both sites filling up
+without developer help**, every one-of-one
 object selling exactly once, and every sale lawful where it is made.
 
 ## Positioning
@@ -64,10 +68,13 @@ a work is publishable with a title, object type, date (any precision), a place o
 maker and a primary image, and deepens later. Corrections are daily work: a
 misattributed maker, a better date, a new verso photograph. Merchandise is made
 in bursts: one engraving becomes a dozen products in one sitting. WhatsApp is a
-primary channel in Indonesia (RESEARCH.md §1.6–1.9, §3.2). Orders, offers and holds
-are expected from several countries and time zones (Singapore UTC+8, Jakarta
-UTC+7, Bali UTC+8 — EXPERIENCE-GALLERY.md §9); who answers them, and in which
-hours, is **(open — pending the owner interview, OA2 · G9, S6)**.
+primary channel in Indonesia (RESEARCH.md §1.6–1.9, §3.2). The gallery sells by
+conversation — a call or WhatsApp to Singapore, then a staff-issued invoice paid online
+(D50) — and **replies the same working day, Singapore time** (G9). The shop's online
+shoppers message their own WhatsApp number, separate from the showroom's (S6; the
+number and its hours are still owed — the shop's brief marks them). Enquiries and
+orders arrive from several time zones (Singapore UTC+8, Jakarta UTC+7, Bali UTC+8 —
+EXPERIENCE-GALLERY.md §9).
 
 ## Capabilities and Constraints
 
@@ -80,8 +87,12 @@ hours, is **(open — pending the owner interview, OA2 · G9, S6)**.
 - Purpose-built admin screens beside the standard collection UI: the desk,
   fast cataloguing, bulk image upload, AI-assisted drafting (flagged,
   human-verified; D16 open), the merch-from-work wizard, order operations, the
-  offers / holds / enquiries inbox, partner applications (D31), stock and showroom
-  sales, homepage editing with preview.
+  enquiries and holds inbox, the invoice a gallery sale ends in (D50; TASKS.md 24.5),
+  partner applications (D31), stock and showroom sales, homepage editing with preview.
+  No offers inbox: neither brand takes online offers (D22).
+- **First-party analytics, shown in the admin dashboard** (G12; ANALYTICS.md, phase 40);
+  whether GA4 and Meta still fire after consent is to confirm with the owner (TASKS.md
+  6.4.c).
 - **Never imply certainty the record lacks**: dates carry precision,
   attributions carry certainty, AI drafts stay flagged until verified.
 - Legal constraints are enforced, not documented: IDR-only for Indonesian
@@ -104,6 +115,11 @@ hours, is **(open — pending the owner interview, OA2 · G9, S6)**.
   the CMS matches the public site's world) — chrome and accents only (TASKS.md 13.3).
 - Plain language on every screen a non-developer sees, in English and
   Indonesian: "Web address", not "slug"; "What it depicts", not "places".
+- **British spelling** in English on both sites and in the admin; Indonesian in the
+  *Anda* register on both (British spelling: the owner's answer, 2026-10-01; *Anda*: the
+  shop's by the owner, S15, the gallery's in its voice, docs/design/gallery/voice.md).
+- **No VOC imagery beyond the items themselves**, on either brand (S15 and the
+  gallery's matching answer, 2026-10-01).
 - Status is shown as form and colour and text — never colour alone.
 
 ## Evidence on Hand
@@ -114,11 +130,15 @@ hours, is **(open — pending the owner interview, OA2 · G9, S6)**.
   dump stands in).
 - The owner's first design draft and the client's decisions of 11 Sept 2026
   (`docs/design/input/claude-design-2026-09/`, `project-notes.md`) — draft input:
-  its copy (years in trade, prices, production claims) is not confirmed fact.
+  its copy (years in trade, prices, production claims) is not confirmed fact, except
+  where an interview answer confirms it ("since 2001", G13; free shipping over
+  Rp 500.000, S13).
+- The owner's interview answers of 1 October 2026
+  (`docs/design/journeys/owner-answers.md`).
 - **Absences that must not be invented:** the selling entities and their tax
-  registrations; real prices for merchandise; the grading scale's wording; the
-  returns policy; Hofker rights; photography of the showroom; the staff roster; the
-  owner's answers to the owner interview (OA2 — pending).
+  registrations; real prices for merchandise (the price list is still owed, S2); the
+  grading scale's wording; the returns policy; Hofker rights; photography of the
+  showroom; the staff roster.
 
 ## Product Principles
 

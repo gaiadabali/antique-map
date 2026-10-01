@@ -11,7 +11,9 @@ amount, the VA number with a copy button, per-bank steps — m-BCA, Livin', BRIm
 the expiry countdown, the bank daily-cap warning, the automatic switch to *Paid*;
 `OrderLookup`), EXPERIENCE-SHOP.md §7 (after the order: guests track by order number plus
 email or WhatsApp number; the courier timeline; a damaged print replaced on a photo
-claim), PAYMENTS.md §1 (the late-payment path), COMMERCE.md §5, Requirement 7.10, 7.11.
+claim), PAYMENTS.md §1 (the late-payment path), COMMERCE.md §5, S12 (no refunds; a
+damaged print replaced on a photo), S6 (a separate WhatsApp number for online shoppers),
+Requirement 7.10, 7.11.
 
 **Used by:** 32.1.a e2e, 32.2 usability, phase 32 **Done when** ("pays by QRIS (or VA,
 following the payment-pending page) … and tracks the order as a guest").
@@ -39,7 +41,7 @@ following the payment-pending page) … and tracks the order as a guest").
 | 5 | email | receive the confirmation with the order number | the email holds the number and the tracking link once shipped |
 | 6 | (days later) `OrderLookup` (`order-lookup`) | enter the order number and her email or WhatsApp number | a wrong pair → one answer that reveals nothing; rate-limited; works without JavaScript |
 | 7 | `Order` › tracking | see the courier timeline and the tracking link; the buyer's status is the derived one (never a raw payment state) | shipped · in transit · delivered; a delay on Lebaran explained by the holiday calendar |
-| 8 | `Order` › a problem | report a damaged item with a photo (if S12 confirms the promise) | the return request per line, with reason and photos (COMMERCE.md §11) |
+| 8 | `Order` › a problem | report a damaged item with a photo, and see that it will be **replaced** | the claim per line, with reason and photos (COMMERCE.md §11); the outcome offered is a replacement, never a refund or a change-of-mind return (S12 — counsel words the policy, D11); help on WhatsApp goes to the online shoppers' number (S6) |
 
 ## Channel handoffs
 
@@ -70,5 +72,10 @@ WhatsApp message; where she looks first for her order later (email or the site).
 
 ## Open until the owner answers
 
-S6 (the WhatsApp number shown for help), S12 (the damaged-item promise), S3 (couriers
-used), S9 (whether VA is how local buyers pay today).
+**Answered 2026-10-01** ([owner-answers.md](../owner-answers.md)): S12 (no refunds; a damaged print
+replaced on a photo), S6 (a separate WhatsApp number for online shoppers), S3 (delivery
+within Indonesia only) — folded in above. S9 answered where buyers come from (the showroom
+first), not how they pay; VA stays the method this journey tests. **Still owed by the
+owner:** the online WhatsApp number and its reply hours (S6). **Still open elsewhere:** a
+replacement claim in place of COMMERCE.md §11's return-and-refund request (TASKS.md
+6.4.c); counsel's wording against Indonesian consumer law (D11).
