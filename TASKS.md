@@ -22,7 +22,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 16/36 | 4 | `████░░░░░░`  44% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 17/37 | 4 | `█████░░░░░`  46% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 2/5 | 16/23 | 2 | `███████░░░`  70% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/18 | 0 | `███████░░░`  67% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **28/178** | **200/852** | **47** | `██░░░░░░░░`  23% |
+| **All** | 44 phases | | | **28/178** | **201/853** | **47** | `██░░░░░░░░`  24% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -159,7 +159,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged a8d6dee) | — | 2026-10-01 | 6.1.f done; ⛔ 👤 6.1.e native review (D20), 6.1.i the gallery's phone, viewing addresses and the shop's owed items |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged b7754af) | — | 2026-10-01 | ⛔ 👤 the four placeholders and the send (6.2.f), OA3 photographs, OA4 review (6.2.g); 6.2.i after 6.4 |
-| 6·W1 | 6.3 Voice and lexicon | medior (6.3.j) + junior (6.3.l) | agent worktrees | 2026-10-01 | 6.3.g–i merged (db741cb); 6.3.j fixing the copy gate's plural check (HAR, `engine/packages/i18n`), 6.3.l re-padding the test brand (`test/site/copy`); 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
+| 6·W1 | 6.3 Voice and lexicon | medior (6.3.j) | agent worktree | 2026-10-01 | 6.3.l merged (a2aaea7); 6.3.j fixing the copy gate's plural check; 6.3.m (the +30% gate) after it; 6.3.k after 6.4; ⛔ 👤 OA4 native review (6.3.c) |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | — (merged 89bf351) | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | ⛔ 👤 OA9 (7.1.a: the real dump's restore); everything else ticked |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
@@ -712,7 +712,8 @@ run beside the build line rather than in it.
   - [x] 6.3.i the lists the contracts define that are still unkeyed — `Colouring`, `PlaceRole`, `ProfileVM.type`, `ConsentVM.purpose` analytics, `AppointmentPurpose`, `LOCATION_IMAGE_AREAS`, the consignment upload roles, `DirectorySurface` titles, `CollectionVM.kind` — and the listing chrome (Filters, Sort by, Apply, Clear all, Show {count} results, min/max) — merged (db741cb): gallery 587 keys, shop 562; `pnpm verify` green on main
   - [ ] 6.3.j HAR: `@engine/i18n/copy`'s `pluralFormOf` reads a code named `other` (`objectType.other`, `return.reason.other`, `business.shopType.other`) as a plural form, so a stray `objectType.one` would pass the gate; a planted one fails it
   - [ ] 6.3.k after 6.4: cut or reword the keys D50, S3, S7 and S12 leave unused (6.3.g–i's report lists them: offers, cart, reserve, checkout, holds, a shown price; `madeToOrder`, refunds, PayPal, the "≈" estimate), and key the fixture fields still unlabelled by name (`message`, `conditionNotes`, `locationId`, `slotStart`, `email`, `password`, `orderNumber`, `whatsapp`, `frequency`, `consent.alerts`) or have C2 map them
-  - [ ] 6.3.l re-pad the 166 older `test` values to +30% over the longest real brand value, not the app default, so an overflow test fails where a brand would overflow
+  - [x] 6.3.l re-pad the 166 older `test` values to +30% over the longest real brand value, not the app default, so an overflow test fails where a brand would overflow — merged 2026-10-01 (a2aaea7): 292 values (en 133, id 13, nl 146) → 0 short; the 12 shell keys (`shell.*`, `home.*`, `notFound.*`) left as they are, since padding would fill locale names and `{brand}`
+  - [ ] 6.3.m HAR: `check-brands` enforces the +30% rule, so each `test` lexicon value is at least ceil(1.3 ×) the longest real brand value for its key and locale (nl against the app default and the en values); a planted short value fails it
   - [ ] 6.3.d **Check:** each brand has voice principles, a decided Indonesian register (*Anda* for both — the shop's decided by the owner, S15), and an EN/ID lexicon covering every status, purchase mode, configurator label, checkout step, error, empty state and prefilled WhatsApp message — its **keys** in each app, its **values** in each brand's `site/copy/` (no brand copy in `engine/`) — reviewed by a native Indonesian writer; owner answers from 6.1.b folded in.
 
 - [ ] **6.4 Replan from the owner's answers** · needs: 6.1.b — 🔄 6·W2
