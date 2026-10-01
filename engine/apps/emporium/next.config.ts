@@ -38,6 +38,9 @@ const nextConfig: NextConfig = {
   // one here (the 4.1.e spike, ARCHITECTURE.md §9). Metadata renders in the <head>, never streamed.
   htmlLimitedBots: /.*/,
   poweredByHeader: false,
+  // `next dev` writes no AGENTS.md/CLAUDE.md into the app: the repository root's own carry the
+  // rules, and an untracked pair per app is noise in every worktree (TASKS.md 5.6.d, gate F5).
+  agentRules: false,
   reactStrictMode: true,
 }
 
