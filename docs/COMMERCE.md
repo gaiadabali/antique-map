@@ -283,7 +283,8 @@ The checkout lock shows the buyer a countdown — *"We're holding this for you f
 the shop, **off at the gallery**, which sells by conversation and invoice (D50,
 §7) — so the gallery has no bag, no checkout and no basket in its header, and a
 crafted post to the cart answers 404. Everything below is the shop's at launch,
-and any brand's that turns the module on.
+and any brand's that turns the module on in an app that renders it — the gallery
+app does not at launch: its `supports.ts` refuses the module (TASKS.md phase 34).
 
 **Cart.** Guest carts identified by a hashed token cookie; merged into the
 account on sign-in where a brand's buyers sign in and buy online (at launch none: the

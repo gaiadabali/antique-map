@@ -398,8 +398,13 @@ Indies deep links; the data clean-up (MIGRATION.md §4); WCAG 2.2 AA and the
 budgets.
 
 **Not at launch (D50, D22), kept in the engine:** the bag and checkout for
-originals, Buy, Reserve, online offers, shown prices and the instant price reveal
-— switched on by a brand's config, never by code.
+originals, Buy, Reserve, online offers, shown prices and the instant price reveal.
+The domain and the contracts keep them behind config (`commerce.uniquePrices`,
+`purchase.checkout`, `purchase.offers`, `purchase.holds`); the gallery app builds
+none of their flows at launch — its purchase panel maps every C2 state, as an
+exhaustive map must, but the bag, checkout, offer and reserve screens are not
+built — and its `supports.ts` refuses those three modules, so bringing them back to
+the gallery is a build (TASKS.md phase 34), not only a switch.
 
 **v2:** binding offers (an accepted offer is a contract to buy); the catalogue
 as a printable PDF; reserve with deposit; instalments; in-room and AR views (the
