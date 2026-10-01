@@ -70,7 +70,7 @@
       "cart": "bag",
       "checkout": "checkout",
       "order": "orders",
-      "account": "account",
+      "account": "my-account",
       "pay": "pay",
       "quote": "quote",
       "orderLookup": "track",
@@ -140,7 +140,7 @@
       "cart": "tas",
       "checkout": "afrekenen",
       "order": "bestellingen",
-      "account": "account",
+      "account": "mijn-account",
       "pay": "betalen",
       "quote": "offerte",
       "orderLookup": "volgen",
@@ -167,7 +167,8 @@
       }
     },
     "defaultSort": { "browse": "newest", "search": "relevance" },
-    "legacyPrefixes": ["/category/", "/storage/products/"]
+    "legacyPrefixes": ["/category/", "/storage/products/", "/account/"],
+    "legacyPaths": ["/account"]
   },
   "ids": { "workUidPrefix": "TG", "stockNumberPattern": "^T\\.[0-9]+$" },
   "money": {
@@ -247,12 +248,15 @@
   ],
   "commerce": {
     "inventoryModels": ["unique", "edition", "stocked", "made-to-order", "pod", "service"],
-    "ttl": {},
+    "ttl": { "invoiceHoldDays": 3, "invoiceNoticeHours": 24 },
     "purchaseTiers": [
-      { "upTo": 500000, "primary": "buy", "secondary": ["enquire", "whatsapp"] },
-      { "upTo": 2500000, "primary": "buy", "secondary": ["reserve", "offer", "enquire"] },
-      { "upTo": null, "primary": "requestPrice", "secondary": ["viewing", "proforma"] }
+      {
+        "upTo": null,
+        "primary": "whatsapp",
+        "secondary": ["call", "requestPrice", "enquire", "viewing", "proforma"]
+      }
     ],
+    "uniquePrices": "on-request",
     "trade": null
   },
   "shipping": { "providers": ["flat", "biteship", "dhl-express", "quote", "collect"] },
@@ -262,8 +266,9 @@
     "catalogue.unique": true,
     "catalogue.variants": true,
     "catalogue.productTypes": true,
-    "purchase.offers": true,
-    "purchase.holds": true,
+    "purchase.checkout": false,
+    "purchase.offers": false,
+    "purchase.holds": false,
     "purchase.requestPrice": true,
     "purchase.invoices": true,
     "media.deepZoom": true,
@@ -277,9 +282,10 @@
     "content.linkInBio": true,
     "services.consignment": true,
     "services.appointments": true,
-    "accounts.buyers": true,
-    "retention.wishlist": true,
-    "retention.wantList": true,
+    "accounts.buyers": false,
+    "retention.wishlist": false,
+    "retention.deviceWishlist": true,
+    "retention.wantList": false,
     "retention.emailWantList": true,
     "retention.newsletter": true,
     "retention.reviews": true,

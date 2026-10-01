@@ -1,8 +1,9 @@
 /**
  * The module rules of `validateBrandConfigs()` (C1's header list): what the chosen app can
  * render, which modules only make sense together (or with the data they work on — a sister to
- * link to), and the purchase panel's actions, each of which opens a flow some module owns. A
- * flag is a capability, never a brand (BRANDS.md §4).
+ * link to), and the purchase panel's actions, each of which opens a flow some module owns —
+ * `buy` the bag's, `purchase.checkout` (v1.5) — or needs a number to reach: `whatsapp` and
+ * `call` (v1.5). A flag is a capability, never a brand (BRANDS.md §4).
  */
 import {
   hasModule,
@@ -16,6 +17,8 @@ import type { ConfigPath, Report } from '../issues'
 
 /** The module whose flow an action opens; an action absent here needs none. */
 const ACTION_MODULES: Partial<Record<PurchaseAction, ModuleKey>> = {
+  // The bag and its checkout (C1 v1.5): no Buy at a brand that sells by invoice alone (D50).
+  buy: 'purchase.checkout',
   offer: 'purchase.offers',
   reserve: 'purchase.holds',
   requestPrice: 'purchase.requestPrice',
@@ -88,6 +91,18 @@ function checkSupports(
 }
 
 function checkPurchaseTiers(config: BrandConfig, report: Report): void {
+  // No tiers means every priced unique item leads with Buy (C1 `purchaseTiers`), so a brand
+  // selling one-of-ones with no bag must say what its panel leads with instead.
+  if (
+    config.commerce.purchaseTiers.length === 0 &&
+    hasModule(config, 'catalogue.unique') &&
+    !hasModule(config, 'purchase.checkout')
+  ) {
+    report(
+      ['commerce', 'purchaseTiers'],
+      'is empty, so every unique item would lead with "buy", whose module "purchase.checkout" is off: give a tier the actions it leads with (D50)',
+    )
+  }
   config.commerce.purchaseTiers.forEach((tier, i) => {
     const at: ConfigPath = ['commerce', 'purchaseTiers', i]
     const actions: [ConfigPath, PurchaseAction][] = [
@@ -104,6 +119,9 @@ function checkPurchaseTiers(config: BrandConfig, report: Report): void {
       }
       if (action === 'whatsapp' && config.identity.contact.whatsapp === null) {
         report(path, '"whatsapp" needs identity.contact.whatsapp, the number the button opens')
+      }
+      if (action === 'call' && config.identity.contact.phone === null) {
+        report(path, '"call" needs identity.contact.phone, the number the link dials')
       }
     }
   })
