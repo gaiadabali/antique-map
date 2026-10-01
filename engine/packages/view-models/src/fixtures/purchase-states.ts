@@ -5,10 +5,25 @@
  * status × the viewer's relation × export status × ship-to. The style guide's state
  * switcher renders each; every one is a designed state, never a disabled Buy button. Each says,
  * for `item.viewed`, the availability it shows (an offer holds nothing, so `myOffer` is available).
+ * The `conversation…` and `invoice…` states are the gallery's at launch (D50, v1.5): no figure in
+ * any of them, the conversation leading, a piece held by the invoice staff issue (D45).
  */
 import type { PurchaseVM } from '../surfaces/purchase'
-import { enquire, uniqueBase, whatsapp } from './_item'
+import { call, enquire, reply, uniqueBase, whatsapp } from './_item'
 import { card, line, money, price } from './_shared'
+
+/** The gallery's one tier (COMMERCE.md §7): every original alike, the conversation first. */
+const conversation = {
+  primary: whatsapp,
+  secondary: [
+    call,
+    { action: 'requestPrice', href: '/enquire?item=1001&topic=price-request' },
+    enquire,
+    { action: 'viewing', href: '/book-a-visit?item=1001' },
+    { action: 'proforma', href: '/request-a-quote?item=1001' },
+  ],
+} as const
+const onRequest = { kind: 'onRequest' } as const
 
 const fixed = { kind: 'fixed', price: price(money(480000, 'USD')) } as const
 const buy = { action: 'buy', line: line(1001) } as const
@@ -139,10 +154,13 @@ export const purchaseStates = {
     actions: { primary: offer, secondary: [enquire, whatsapp] },
     analytics: { priceBand: 'none', status: 'available' },
   },
-  /** Queued for a human: the item is marked sensitive. */
+  /**
+   * With a person: the item is marked sensitive — and, where unique prices are on request, every
+   * request. When they reply is the panel's `reply`.
+   */
   priceQueued: {
     ...uniqueBase,
-    price: { kind: 'queued', replyHours: 24 },
+    price: { kind: 'queued' },
     state: { kind: 'available' },
     actions: { primary: null, secondary: [enquire, whatsapp] },
     analytics: { priceBand: 'on-request', status: 'available' },
@@ -152,6 +170,7 @@ export const purchaseStates = {
     reason: 'notForSale',
     price: null,
     actions: { primary: enquire, secondary: [] },
+    reply,
     analytics: { priceBand: 'none', status: 'withdrawn' },
   },
   /** Availability could not be read just now: an enquiry, never an error or a guess. */
@@ -160,6 +179,44 @@ export const purchaseStates = {
     reason: 'unverified',
     price: null,
     actions: { primary: enquire, secondary: [whatsapp] },
+    reply,
     analytics: { priceBand: 'none', status: null },
+  },
+  /** The gallery's available original (D50): "Price on request", and the conversation leads. */
+  conversation: {
+    ...uniqueBase,
+    price: onRequest,
+    state: { kind: 'available' },
+    insuredShipping: { kind: 'quote' },
+    actions: conversation,
+    analytics: { priceBand: 'on-request', status: 'available' },
+  },
+  /** The same, once the visitor asked for the price: a person replies, never a figure in place. */
+  conversationQueued: {
+    ...uniqueBase,
+    price: { kind: 'queued' },
+    state: { kind: 'available' },
+    insuredShipping: { kind: 'quote' },
+    actions: { primary: whatsapp, secondary: [call, enquire] },
+    analytics: { priceBand: 'on-request', status: 'available' },
+  },
+  /** Someone else's invoice holds it until its due date (D45): still no figure, still a chat. */
+  invoiceHeldByOther: {
+    ...uniqueBase,
+    price: onRequest,
+    state: { kind: 'heldByOther', until: '2026-10-09T17:00:00+08:00' },
+    actions: { primary: whatsapp, secondary: [call, enquire] },
+    analytics: { priceBand: 'on-request', status: 'reserved' },
+  },
+  /** This signed-in buyer's own invoice: Pay leads, the figure is on the invoice, not here. */
+  invoiceHeldForMe: {
+    ...uniqueBase,
+    price: onRequest,
+    state: { kind: 'heldForMe', reason: 'invoice', until: '2026-10-09T17:00:00+08:00' },
+    actions: {
+      primary: { action: 'pay', href: '/pay/tok_invoice_fixture' },
+      secondary: [whatsapp, call],
+    },
+    analytics: { priceBand: 'on-request', status: 'reserved' },
   },
 } satisfies Record<string, PurchaseVM>

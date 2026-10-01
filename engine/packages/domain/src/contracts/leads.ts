@@ -86,7 +86,12 @@ export type HoldRequestView = {
   readonly heldUntil: IsoInstant | null
 }
 
-/** Request price (module `purchase.requestPrice`): answered in place after an email or WhatsApp. */
+/**
+ * Request price (module `purchase.requestPrice`): answered in place after an email or WhatsApp —
+ * or by a person, for an item marked sensitive and for every item where the brand's unique prices
+ * are on request (C1 `commerce.uniquePrices`, D50, v1.5). Stored and put on the staff desk either
+ * way (`priceRequest.received`).
+ */
 export type PriceRequest = {
   readonly productId: ProductPublicId
   readonly contact: LeadContactInput
@@ -95,11 +100,12 @@ export type PriceRequest = {
 
 /**
  * The price revealed on the page — for the buyer's market, so the rupiah rule holds here too —
- * or, for an item marked sensitive, a stated reply time from a specialist.
+ * or `queued`: a person replies. The answer names no time: the page states the brand's reply
+ * promise (C2 `reply`), which may be "the same working day, Singapore time" (G9), something a
+ * count of hours cannot say (v1.5). Never `revealed` where unique prices are on request.
  */
 export type PriceRequestResult =
-  | { readonly kind: 'revealed'; readonly price: PriceSet }
-  | { readonly kind: 'queued'; readonly replyWithinHours: number }
+  { readonly kind: 'revealed'; readonly price: PriceSet } | { readonly kind: 'queued' }
 
 // ─── Type-level tests ────────────────────────────────────────────────────────────────────────
 

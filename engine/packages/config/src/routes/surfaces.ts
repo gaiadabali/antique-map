@@ -47,8 +47,9 @@ export const SURFACE_ROUTES = {
   story: { internal: 'story/[slug]', index: true, module: 'content.journal' },
   catalogue: { internal: 'catalogue/[slug]', index: true, module: 'content.catalogues' },
   page: { internal: 'page/[slug]' },
-  cart: { internal: 'cart' },
-  checkout: { internal: 'checkout' },
+  // Buying online (v1.5): the shop's, and no bag at a brand that sells by invoice alone (D50).
+  cart: { internal: 'cart', module: 'purchase.checkout' },
+  checkout: { internal: 'checkout', module: 'purchase.checkout' },
   // The session or the order-access cookie (C13 `ORDER_ACCESS`), never the number alone.
   order: { internal: 'order/[number]', sensitive: true },
   // Every signed-in customer's area — a buyer's, or an approved partner's (D31) — so on while

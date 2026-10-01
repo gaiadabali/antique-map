@@ -4,14 +4,20 @@
  * The parts every form shares: the Form surface, the Partnership page, the account's password
  * pages, a partner's quote brief. A field is data the loader builds. Its `name` is its dotted
  * path in the request it posts (C6's, or an auth operation's, C13) and the key its label and
- * hint are looked up by, so no English string arrives in a field. A form posts to its C13 route
- * with JavaScript or without; without, it comes back through C13's `FORM_RESULT`.
+ * hint are looked up by, so no English string arrives in a field: its label at `<name>`
+ * (`contact.email`), its hint — where the app gives one — at **`<name>Hint`**
+ * (`contact.emailHint`), and a hint with a count at `<name>Hint.<plural form>` (v1.5, the keys
+ * TASKS.md 6.3.h made). A form posts to its C13 route with JavaScript or without; without, it
+ * comes back through C13's `FORM_RESULT`.
  */
 import type { FieldError, ProblemCode } from '@engine/domain/api'
 
 import type { MessageVM } from '../common'
 
-/** The fieldset a field renders in, its legend looked up by this key (`business`, `contact`). */
+/**
+ * The fieldset a field renders in, its legend looked up by this **bare** key (`contact`,
+ * `institution`, `business`, `consent`) — so a group is never named like a field (v1.5).
+ */
 type Grouped = { name: string; group: string | null }
 
 /**
@@ -37,9 +43,11 @@ export type EntryFieldVM = Grouped & {
   required: boolean
   /**
    * Required only while another field holds one of these values: an NPWP while
-   * `business.country` is `ID`. The hint says so (the message `fieldRequiredWhen`, the value
-   * named by `Intl.DisplayNames`: "Required for businesses in Indonesia"). The server enforces
-   * it and the browser never does, so a business abroad can post without JavaScript.
+   * `business.country` is `ID`. The hint says so — the message `message.fieldRequiredWhen`, one
+   * param `{value}`: the other field's value as the page names it, a region by
+   * `Intl.DisplayNames` ("Required for Indonesia"), else that value's own label (v1.5). The
+   * server enforces it and the browser never does, so a business abroad can post without
+   * JavaScript.
    */
   requiredWhen: { field: string; oneOf: readonly string[] } | null
   autocomplete: string | null

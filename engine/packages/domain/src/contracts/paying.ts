@@ -9,7 +9,7 @@
  */
 import type { PaymentMethodFamily } from '@engine/config/schema'
 
-import type { OrderAccess } from './after-sale'
+import type { OrderAccess, QuoteBuyerView } from './after-sale'
 import type { SellerIdentity } from './checkout'
 import type { BuyerOrderStatus, OrderedLineView } from './orders'
 import type { PaymentMethodId, PaymentProviderId, SessionResult } from './payment-vocabulary'
@@ -122,16 +122,32 @@ export type PayLinkGetRequest = { readonly token: string }
 /**
  * A staff-sent payment link, read: who sells, what for, how much, until when, and how it may be
  * paid. Its lines are priced already — an accepted offer at its stored AgreedPrice, a quote or a
- * proforma at its issued lines — and `pricing.token` is what `payLink.start` sends back.
+ * proforma at its issued lines — and `pricing.token` is what `payLink.start` sends back. Its page
+ * is the brand's own (`/pay/{token}`), the provider's element embedded, never a provider-hosted
+ * page (PAYMENTS.md §5, v1.5).
  */
 export type PayLinkView = {
   readonly token: string
-  /** Why the link exists: an accepted offer, a staff hold, a proforma, a sale agreed on WhatsApp. */
+  /**
+   * Why the link exists: an accepted offer, a staff hold, an invoice or a proforma — every sale
+   * of a gallery original is a staff-issued invoice (D50) — or a sale agreed on WhatsApp.
+   */
   readonly reason: 'offer' | 'hold' | 'invoice' | 'sale'
+  /** `cancelled`: voided by staff; `expired`: past its end — an invoice's, its due date (D45). */
   readonly status: 'open' | 'paid' | 'expired' | 'cancelled'
   readonly seller: SellerIdentity
   readonly lines: readonly OrderedLineView[]
   readonly pricing: PricedTotals
+  /**
+   * For reason `invoice`: the invoice the link pays — its number in the seller's series, who it is
+   * for, as issued (an institution's PO number among it), and its PDF, the one place the transfer
+   * details appear (v1.5, the developer's gap A). `null` for any other reason.
+   */
+  readonly invoice: {
+    readonly number: string
+    readonly buyer: QuoteBuyerView
+    readonly pdfUrl: string
+  } | null
   /** The note staff wrote when sending it ("As agreed on WhatsApp…"), in their words. */
   readonly note: string | null
   /** Empty unless `open`. */

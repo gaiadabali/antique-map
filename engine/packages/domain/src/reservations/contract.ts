@@ -24,6 +24,7 @@ import type {
 } from '../contracts/reservation-types'
 import type { Duration } from '../contracts/scalars'
 import type { DomainTx, SweepResult } from '../contracts/transactions'
+import type { NoticeKind } from './machine'
 
 export type * from './machine'
 export type * from '../contracts/reservation-types'
@@ -124,16 +125,18 @@ export type ReservationService<Tx extends DomainTx = DomainTx> = {
    */
   expireDue(tx: Tx, limit: number): Promise<SweepResult>
   /**
-   * Live reservations whose end is within `lead` → their kind's notice (`EXPIRING_NOTICE_EVENTS`:
-   * `hold.expiring`), once each, taken the way the sweep takes rows: a CTE of `SELECT … WHERE
-   * status = 'active' AND expiring_notified_at IS NULL AND expires_at > statement_timestamp() AND
-   * expires_at <= statement_timestamp() + $lead ORDER BY target_key, id LIMIT $limit FOR UPDATE
-   * SKIP LOCKED`, then `UPDATE … SET expiring_notified_at = statement_timestamp() FROM` it. A rerun
-   * sends nothing twice, and a row a buyer holds waits for the next run. Kinds with no notice are
-   * skipped; the checkout lock's countdown is on the buyer's screen.
+   * Live reservations of `kind` whose end is within `lead` → that kind's notice
+   * (`EXPIRING_NOTICE_EVENTS`: `hold.expiring`, `invoiceHold.expiring`), once each, taken the way
+   * the sweep takes rows: a CTE of `SELECT … WHERE kind = $kind AND status = 'active' AND
+   * expiring_notified_at IS NULL AND expires_at > statement_timestamp() AND expires_at <=
+   * statement_timestamp() + $lead ORDER BY target_key, id LIMIT $limit FOR UPDATE SKIP LOCKED`,
+   * then `UPDATE … SET expiring_notified_at = statement_timestamp() FROM` it. One call per kind,
+   * each with its own lead (v1.5): a hold's is hours, an invoice's days. A rerun sends nothing
+   * twice, and a row a buyer holds waits for the next run. The checkout lock sends none: its
+   * countdown is on the buyer's screen.
    */
   noticeExpiring(
     tx: Tx,
-    input: { readonly lead: Duration; readonly limit: number },
+    input: { readonly kind: NoticeKind; readonly lead: Duration; readonly limit: number },
   ): Promise<SweepResult>
 }

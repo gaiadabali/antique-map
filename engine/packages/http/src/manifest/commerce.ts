@@ -21,9 +21,11 @@ export type CommerceRoute = {
 
 export const COMMERCE_AREAS = {
   destination: { auth: ['public'], methods: POST }, // the shipTo cookie: the only market input
-  cart: { auth: ['public'], methods: GET_POST }, // never reserves
+  // Buying online is a module (v1.5): a brand selling by invoice alone has no bag to post to and
+  // no checkout, so neither area answers there (D50) — its pay links, orders and lookups do.
+  cart: { auth: ['public'], methods: GET_POST, module: 'purchase.checkout' }, // never reserves
   // A checkout id is bound to the cart cookie or the session: on its own it opens nothing.
-  checkout: { auth: ['public', 'customer'], methods: POST },
+  checkout: { auth: ['public', 'customer'], methods: POST, module: 'purchase.checkout' },
   // Its scope — a checkout, a pay link, an order's access — is a credential: body only.
   payments: { auth: ['public', 'customer', 'token'], methods: POST },
   // No C6 operation: `ORDER_ACCESS.link`, and `documents/{kind}?number=…` (PDFs).

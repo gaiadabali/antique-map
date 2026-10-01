@@ -38,8 +38,12 @@ export type WantListFrequency = 'instant' | 'daily'
  * What a list watches. A listing, by the public path of its browse or search page, which C10's
  * `parsePublicPath` must read as one (else `invalid`): its facets and words are the query, and its
  * price range is the budget — in the ship-to market's currency, from the `shipTo` cookie, never
- * the request — stored with the list (TASKS.md 9.4.c). Or a product: another example of its work or
- * edition ("Tell me when another example arrives"); an unknown or unpublished one is `not-found`.
+ * the request — stored with the list (TASKS.md 9.4.c); a listing with no price facet, as where
+ * unique prices are on request (D50), gives none. Or a product: another example of its work or
+ * edition ("Tell me when another example arrives") — and the product itself, should it be
+ * available again: a held piece whose invoice lapses unpaid at its due date (D45) alerts every
+ * list that likes it, as an example arriving does (v1.5). An unknown or unpublished one is
+ * `not-found`.
  */
 export type WantListSubject =
   | { readonly kind: 'listing'; readonly path: string }

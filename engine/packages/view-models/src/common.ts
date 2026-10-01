@@ -69,7 +69,14 @@ export type CachedPart<T> =
 /** A resolved link: `href` comes from C10's `href()` (or is absolute, for a sister). */
 export type LinkVM = { label: string; href: string }
 
-/** A code the app turns into words through its own message keys, with the values to fill. */
+/**
+ * A code the app turns into words through its own message keys, with the values to fill. The
+ * app reads its words at **`message.<code>`** (`message.holidayDelay`, `message.lifeDates`;
+ * TASKS.md 6.3.f), the brand supplying them. A param is a value, never a word to translate: a
+ * number (a count, an id), or a string the server has already formatted — a date by `formatDate`
+ * with its precision, so a circa date keeps its "c." (`{ born: 'c. 1671' }`), money by
+ * `formatMoney`, a calendar day by `formatCalendarDate`, a name from the data (v1.5).
+ */
 export type MessageVM<Code extends string = string> = {
   code: Code
   params?: Readonly<Record<string, string | number>>
@@ -208,7 +215,19 @@ export type PlaceRefVM = {
   geo: { lat: number; lng: number } | null
 }
 
-/** A controlled vocabulary value: its key for logic, its label for the page. */
+/**
+ * Who labels a value of a list (v1.5, TASKS.md 6.4.d) — one owner per kind of list:
+ * - **a list a contract fixes** — C1 `OBJECT_TYPES`, `FACET_KEYS`, `SORT_KEYS`; C2 `Colouring`,
+ *   `MakerRole`, `Certainty`, `PlaceRole`; the controlled `technique` select; C9's roles — reaches
+ *   a view model as its **key alone**, and the app labels it from its lexicon at `<list>.<key>`
+ *   (`objectType.map`, `colour.original-hand`, `technique.etching`): interface words the brand
+ *   supplies and the native writer reviews in one place, in every locale, which the copy gate
+ *   (`checkCopy()`, TASKS.md 6.3.e) checks complete — and a loader cannot read an app's keys, so
+ *   a label it carried would be the CMS select's one-language literal;
+ * - **a vocabulary editors create** — a `terms` subject, mood, room, occasion, recipient or grade,
+ *   a place, a maker — reaches it with its label, localised in the CMS (`TermVM`): no lexicon holds
+ *   a key for a value an editor made.
+ */
 export type TermVM<Key extends string = string> = { key: Key; label: string }
 
 export type Colouring =

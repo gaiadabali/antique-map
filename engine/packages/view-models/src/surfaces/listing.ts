@@ -16,7 +16,13 @@ import type { ImageVM, LinkVM, MessageVM, SeoVM } from '../common'
 
 export type FacetOptionVM = {
   value: string
-  label: string
+  /**
+   * Its words when the value is data an editor made — a place, a maker, a subject, a grade, a
+   * product type — localised in the CMS. `null` for a value of a list a contract fixes (object
+   * type, colouring, technique, availability…), which the app labels from its lexicon at
+   * `<facet key>.<value>` (`objectType.map`): one owner per kind of list (v1.5, `TermVM`).
+   */
+  label: string | null
   count: number
   selected: boolean
   href: string
@@ -24,9 +30,20 @@ export type FacetOptionVM = {
   children: readonly FacetOptionVM[]
 }
 
+/**
+ * An applied-filter chip and the href that removes it: the facet and the value it holds, labelled
+ * as its option is (`label` `null` → `<key>.<value>` from the lexicon) or, for a range, by the
+ * preset's own words ("< Rp 5 juta").
+ */
+export type AppliedFacetVM = { key: FacetKey; value: string; label: string | null; href: string }
+
 export type FacetVM =
   | { kind: 'options'; key: FacetKey; options: readonly FacetOptionVM[]; multiple: boolean }
-  /** Date (years), size (mm) or price (minor units of `currency` — the market's alone). */
+  /**
+   * Date (years), size (mm) or price (minor units of `currency` — the market's alone). No price
+   * facet, and no price sort, over unique items whose brand keeps their prices on request (C1
+   * `commerce.uniquePrices`, D50): a range would let a visitor work out the price it hides.
+   */
   | {
       kind: 'range'
       key: FacetKey
@@ -66,15 +83,16 @@ type ListingBase = {
   results: readonly CardVM[]
   total: number
   facets: readonly FacetVM[]
-  /** Applied-filter chips, each with the href that removes it. */
-  applied: readonly LinkVM[]
+  /** Applied-filter chips, each with the href that removes it (v1.5: keyed, as options are). */
+  applied: readonly AppliedFacetVM[]
   clearAll: string | null
   sort: readonly { key: SortKey; href: string; selected: boolean }[]
   pagination: PaginationVM
   empty: EmptyResultsVM | null
   /**
-   * "Alert me about new maps of Bali under US$2,000": the want-list page for this listing (C10
-   * `wantList`, `watch` its canonical path); `null` when `retention.emailWantList` is off.
+   * "Alert me about new maps of Bali": the want-list page for this listing (C10 `wantList`,
+   * `watch` its canonical path) — with a budget only where the listing has a price facet;
+   * `null` when `retention.emailWantList` is off.
    */
   alert: { href: string } | null
   seo: SeoVM
@@ -113,7 +131,11 @@ export type DirectoryEntryVM = {
   title: string
   href: string
   image: ImageVM | null
-  /** Life dates, "18 available", "12–15 March": codes and values the app words and formats. */
+  /**
+   * Life dates, "18 available", "12–15 March": codes the app words at `message.<code>`. A date
+   * arrives formatted with its precision — `lifeDates` `{ born, died }`, each `formatDate`'s
+   * string, so a circa birth reads "c. 1671" (v1.5) — and a count as a number.
+   */
   meta: readonly MessageVM[]
   children: readonly DirectoryEntryVM[]
 }

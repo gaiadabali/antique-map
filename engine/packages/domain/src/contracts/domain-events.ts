@@ -37,10 +37,12 @@ export type NoticeDomainEvent =
    */
   | 'order.refundedAtProvider'
   /**
-   * Ahead of the end, once per reservation or counter (COMMERCE.md §6): `hold.expiring` from
+   * Ahead of the end, once per reservation or counter (COMMERCE.md §6): `hold.expiring` and
+   * `invoiceHold.expiring` — the reminder that an invoice is due (D45, v1.5) — from
    * ReservationService.noticeExpiring(), `offer.counterExpiring` from the offer sweep.
    */
   | 'hold.expiring'
+  | 'invoiceHold.expiring'
   | 'offer.counterExpiring'
   /** C6 records, stored — never merely forwarded — and put on the staff desk. */
   | 'priceRequest.received'

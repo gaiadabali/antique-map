@@ -115,6 +115,12 @@ export type BeaconEventProps = {
   readonly 'consignment.submitted': NoProps
   /** `business`: the Partnership page (D36), the one place a business buyer is addressed. */
   readonly 'whatsapp.clicked': { readonly context: 'item' | 'checkout' | 'footer' | 'business' }
+  /**
+   * The Call button — the gallery's (C1 `call`, D50: every original is negotiated by phone or
+   * WhatsApp). A call leaves no record on the site, so this tap is the step only the beacon sees,
+   * counted as a lead, never as a sale (v1.5).
+   */
+  readonly 'call.clicked': { readonly context: 'item' | 'footer' }
   /** The Partnership application sent (D31, D36): the kind of business, never who it is. */
   readonly 'retailerApplication.submitted': { readonly shopType: RetailerShopType }
   // Purchase

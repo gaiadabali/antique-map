@@ -128,7 +128,11 @@ export type SweepResult = { readonly processed: number; readonly more: boolean }
 export type DomainSweeps<Tx extends DomainTx = DomainTx> = {
   /** `active` reservations past their end → `expired`: ReservationService.expireDue(). */
   readonly reservations: (tx: Tx, limit: number) => Promise<SweepResult>
-  /** Holds near their end → `hold.expiring`, once each: ReservationService.noticeExpiring(). */
+  /**
+   * Holds and invoice holds near their end → `hold.expiring` (`holdNoticeHours` ahead) and
+   * `invoiceHold.expiring` (`invoiceNoticeHours` ahead of the due date, the buyer's reminder, D45),
+   * once each: ReservationService.noticeExpiring(), once per kind with its lead (v1.5).
+   */
   readonly holdNotices: (tx: Tx, limit: number) => Promise<SweepResult>
   /**
    * Attempts no provider will ever close — `manual` and `bank-transfer`, past `expected_by` with no

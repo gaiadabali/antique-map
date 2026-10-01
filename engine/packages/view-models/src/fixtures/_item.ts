@@ -4,7 +4,7 @@
  * A fictional one-of-one map every item fixture varies: its content is shared, and each
  * fixture swaps the streamed purchase state it exists to show.
  */
-import type { LinkVM } from '../common'
+import type { LinkVM, MessageVM } from '../common'
 import type { ItemVM } from '../surfaces/item'
 import type { NoBuyActionVM, PurchaseVM, UniqueBaseVM } from '../surfaces/purchase'
 import { card, date, image, MAKER, ORIGIN, pending, seo, streamed } from './_shared'
@@ -13,7 +13,15 @@ export const whatsapp: NoBuyActionVM = {
   action: 'whatsapp',
   href: 'https://wa.me/6281200000000?text=M.0001%20The%20Isle%20of%20Contoh',
 }
+/** The gallery's number, dialled on a phone and read on a desktop (C1 `call`, D50). */
+export const call: NoBuyActionVM = {
+  action: 'call',
+  href: 'tel:+6560000000',
+  number: '+65 6000 0000',
+}
 export const enquire: NoBuyActionVM = { action: 'enquire', href: '/enquire?item=1001' }
+/** The reply promise beside the conversation: the same working day, Singapore time (G9). */
+export const reply: MessageVM = { code: 'replySameWorkingDay', params: { timeZone: 'Singapore' } }
 export const reassurance: readonly LinkVM[] = [
   { label: 'Lifetime authenticity guarantee', href: '/guarantee' },
   { label: 'The certificate', href: '/certificate' },
@@ -27,6 +35,7 @@ const unverified: PurchaseVM = {
   reason: 'unverified',
   price: null,
   actions: { primary: enquire, secondary: [] },
+  reply,
   analytics: { priceBand: 'none', status: null },
 }
 
@@ -39,6 +48,7 @@ export const uniqueBase: UniqueBaseVM = {
   insuredShipping: null,
   reassurance,
   alert: { href: '/alerts?like=1001' },
+  reply,
   analytics: { priceBand: 'tier-2', status: 'available' },
 }
 
@@ -79,7 +89,8 @@ export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {
       scale: { widthMm: 520, heightMm: 410 },
     },
     record: {
-      objectType: { key: 'map', label: 'Map' },
+      // Keys alone: the app labels a contract's list from its lexicon (`objectType.map`, v1.5).
+      objectType: 'map',
       publication: {
         place: 'Amsterdam',
         publisher: 'Weduwe Proef',
@@ -91,8 +102,8 @@ export function originalItem(purchase: PurchaseVM | 'pending'): ItemVM {
       },
       firstEdition: date(1716),
       dateOnPlate: date(1718),
-      technique: { key: 'copperplate-engraving', label: 'Copperplate engraving' },
-      colour: { key: 'original-hand', label: 'Original hand colour' },
+      technique: 'copperplate-engraving',
+      colour: 'original-hand',
       dimensions: {
         image: { heightMm: 380, widthMm: 490 },
         sheet: { heightMm: 410, widthMm: 520 },

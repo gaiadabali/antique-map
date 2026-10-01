@@ -26,6 +26,7 @@ export const pay: PayVM = {
     },
   ],
   totals: totals({ currency: 'USD', subtotal: 450000, shipping: 12000, taxRegime: 'SG-GST' }),
+  invoice: null,
   expiresAt: '2026-09-27T12:00:00+08:00',
   holdExpiresAt: '2026-09-27T14:00:00+08:00',
   note: 'As agreed, the map is held for you until Sunday.',

@@ -31,7 +31,8 @@ export const makerDirectory: DirectoryVM = {
           href: '/makers/voorbeeld',
           image: image('portrait-voorbeeld', 800, 1000, 'Portrait of Hendrik Voorbeeld'),
           meta: [
-            { code: 'lifeDates', params: { born: 1671, bornPrecision: 'circa', died: 1733 } },
+            // Each date formatted with its precision, so a circa birth keeps its "c." (v1.5).
+            { code: 'lifeDates', params: { born: 'c. 1671', died: '1733' } },
             { code: 'available', params: { count: 18 } },
           ],
           children: [],

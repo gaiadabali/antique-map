@@ -5,7 +5,13 @@
  * proforma, a sale agreed on WhatsApp (PAYMENTS.md §5): the item, the terms, the expiry, the
  * seller's identity and the methods routing allows, never a bare gateway screen; the hold it
  * pays for outlasts the method the buyer picks. It is C6's `PayLinkView` (`payLink.get`) as
- * the page reads it. `Quote` is a business or institutional
+ * the page reads it. **At the gallery it is the invoice itself** (v1.5, D50, the developer's
+ * gap A): the brand's own `/pay/{token}` page, the gateway's element embedded in it and bank
+ * transfer beside it — never a provider-hosted page — whose states are `open` ("On hold until
+ * {holdExpiresAt}"), `payment` a transfer's instructions (bank transfer pending), `paid`,
+ * `expired` (the due date passed, the piece released) and `cancelled` (staff voided it).
+ *
+ * `Quote` is a business or institutional
  * quote or proforma (COMMERCE.md §7, EXPERIENCE-SHOP.md §9), or an approved retailer's order
  * at its trade tier (D32): lines, validity, the PDF (the only place wire details appear),
  * accept → the payment link. The token in each URL is the capability; the figures are
@@ -35,15 +41,28 @@ export type IssuedLineVM = {
 
 export type PayVM = {
   surface: 'pay'
-  /** Why the link exists: it frames the page and decides its terms. */
+  /**
+   * Why the link exists: it frames the page and decides its terms. `invoice`: a staff-issued
+   * invoice or proforma — every sale of a gallery original (D50).
+   */
   reason: 'offer' | 'hold' | 'invoice' | 'sale'
+  /** `cancelled`: staff voided it; `expired`: past its end — for an invoice, its due date. */
   status: 'open' | 'paid' | 'expired' | 'cancelled'
   seller: SellerIdentityVM
   lines: readonly IssuedLineVM[]
   totals: TotalsVM
+  /**
+   * The invoice the link pays, for reason `invoice` (v1.5): its number in the seller's series,
+   * who it is for (an institution's PO number among it), and its PDF — the only place the
+   * transfer details appear. `null` for any other reason.
+   */
+  invoice: { number: string; buyer: QuoteBuyerView; pdf: string } | null
   /** When the link stops taking payment — at the latest when the hold behind it ends. */
   expiresAt: IsoDateTime
-  /** When the hold behind it ends; each method's session is sized to finish before it. */
+  /**
+   * When the hold behind it ends — an invoice's due date (D45) — each method's session sized to
+   * finish before it.
+   */
   holdExpiresAt: IsoDateTime | null
   /** The staff member's note ("As agreed on WhatsApp…"), in their words. */
   note: string | null
@@ -117,7 +136,11 @@ export type QuoteVM = {
   terms: readonly MessageVM[]
   /** An approved retailer's quote: the tier and minimum it was issued at; `null` otherwise. */
   trade: QuoteTradeVM | null
-  /** Accepted: the payment link's page. */
+  /**
+   * Accepted: the payment link's page. A proforma issued on a price already agreed is accepted
+   * from the start (v1.5, D50) — though at the gallery its link, the invoice page, is what staff
+   * send (`PayVM.invoice`), and this surface serves quotes and partners' orders.
+   */
   pay: { href: string } | null
   /** `null` unless issued and valid. The component adds an idempotency key. */
   intents: { accept: Omit<QuoteAcceptRequest, 'idempotencyKey'> } | null

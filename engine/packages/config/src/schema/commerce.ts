@@ -29,6 +29,9 @@ export const PURCHASE_ACTIONS = [
   'offer',
   'enquire',
   'whatsapp',
+  // A `tel:` link to the brand's number (`identity.contact.phone`): the gallery negotiates every
+  // original by phone or WhatsApp (D50, v1.5).
+  'call',
   'requestPrice',
   'viewing',
   // Opens the `quote` form (C10; `quote.request`), which staff answer with a proforma within the
@@ -37,6 +40,18 @@ export const PURCHASE_ACTIONS = [
   'proforma',
 ] as const
 export type PurchaseAction = (typeof PURCHASE_ACTIONS)[number]
+
+/**
+ * Whether a unique item's asking price is ever published (COMMERCE.md §7, D50). `shown`: a priced
+ * item shows its price, and a request for one on request is answered in place (or queued for a
+ * person, an item marked sensitive). `on-request`: no unique item's price reaches any public read —
+ * a page, a card, a facet or a sort, a want-list budget, a factsheet, a social image, structured
+ * data, a feed, a sister snapshot or an analytics band — every one reads "Price on request", a
+ * request is always a person's to answer, and the agreed figure reaches the buyer only on the
+ * invoice staff issue (C6 `QuoteView`, `PayLinkView`). The stored asking price stays staff's.
+ */
+export const UNIQUE_PRICES = ['shown', 'on-request'] as const
+export type UniquePrices = (typeof UNIQUE_PRICES)[number]
 
 export const SHIPPING_PROVIDERS = ['flat', 'biteship', 'dhl-express', 'quote', 'collect'] as const
 export type ShippingProviderId = (typeof SHIPPING_PROVIDERS)[number]
@@ -61,7 +76,17 @@ export const ttlSchema = z.strictObject({
   holdNoticeHours: z.int().positive().default(12),
   offerHoldHours: z.int().positive().default(48),
   offerCounterHours: z.int().positive().default(72),
+  /**
+   * The term the order builder proposes for an invoice's due date. An `invoice` hold lasts until
+   * the due date the issuing staff set (D45) — `reserve()` is called with the time to it — and
+   * lapses by itself, unpaid; staff re-date it with `extend()` or cancel it with `release()`.
+   */
   invoiceHoldDays: z.int().positive().default(7),
+  /**
+   * How long before an invoice's due date its buyer is reminded: `invoiceHold.expiring`, C8
+   * `noticeExpiring`'s lead for the `invoice` kind (D45, v1.5).
+   */
+  invoiceNoticeHours: z.int().positive().default(48),
 })
 export type CommerceTtl = z.infer<typeof ttlSchema>
 
@@ -80,18 +105,38 @@ export type PurchaseTier = z.infer<typeof purchaseTierSchema>
 /**
  * Which purchase tier an item's price falls in, by its position in `purchaseTiers` (`tier-1` the
  * lowest), or why it has none: what C11's `item.viewed` reports instead of an amount, and what
- * the purchase panel hands the page to report (C2 `PurchaseVM.analytics`).
+ * the purchase panel hands the page to report (C2 `PurchaseVM.analytics`). Where `uniquePrices` is
+ * `on-request`, every unique item's band is `on-request`: a tier worked out from a private price
+ * would tell anyone reading the page's beacon the range that price lies in.
  */
 export type PurchaseBand = `tier-${number}` | 'on-request' | 'none'
 
-export const commerceConfigSchema = z.strictObject({
-  inventoryModels: z.array(z.enum(INVENTORY_MODELS)).min(1),
-  ttl: ttlSchema.prefault({}),
-  /** Empty: every priced unique item leads with `buy`. */
-  purchaseTiers: z.array(purchaseTierSchema).default([]).refine(isLadder, LADDER_MESSAGE),
-  /** The trade terms of `accounts.retailers` (`./trade`); `null` for a brand without partners. */
-  trade: tradeConfigSchema.nullable().default(null),
-})
+export const commerceConfigSchema = z
+  .strictObject({
+    inventoryModels: z.array(z.enum(INVENTORY_MODELS)).min(1),
+    ttl: ttlSchema.prefault({}),
+    /** Empty: every priced unique item leads with `buy`. */
+    purchaseTiers: z.array(purchaseTierSchema).default([]).refine(isLadder, LADDER_MESSAGE),
+    /** Whether a unique item's price is ever published (`UNIQUE_PRICES`; D50, v1.5). */
+    uniquePrices: z.enum(UNIQUE_PRICES).default('shown'),
+    /** The trade terms of `accounts.retailers` (`./trade`); `null` for a brand without partners. */
+    trade: tradeConfigSchema.nullable().default(null),
+  })
+  .superRefine((commerce, ctx) => {
+    // Buy adds a unique item to a bag at its list price, and with prices on request there is none
+    // to charge: the brand sells on an invoice staff issue at the agreed figure instead (D50).
+    if (commerce.uniquePrices !== 'on-request') return
+    const message = '"buy" has no price to charge while uniquePrices is "on-request" (D50)'
+    commerce.purchaseTiers.forEach((tier, i) => {
+      if (tier.primary === 'buy') {
+        ctx.addIssue({ code: 'custom', path: ['purchaseTiers', i, 'primary'], message })
+      }
+      tier.secondary.forEach((action, j) => {
+        if (action !== 'buy') return
+        ctx.addIssue({ code: 'custom', path: ['purchaseTiers', i, 'secondary', j], message })
+      })
+    })
+  })
 export type CommerceConfig = z.infer<typeof commerceConfigSchema>
 
 /**
