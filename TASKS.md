@@ -157,8 +157,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
-| 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
+| 5·W3 | 5.2 Foundation gate — the staging half, 5.4's plants, the re-runs | qa | `antique-map-qa-p5-gate2` / `qa/p5-foundation-2` | 2026-10-01 | local half done (`docs/gates/foundation.md`, e70a50a); closes phase 5 and **M0** |
+| 5·W3 | 5.5 The static half of 5.4's gates | — (merged 04d7e89) | `antique-map-p5-har-static` | 2026-10-01 | all subtasks ticked; its Check is driven inside qa's 5.2 run |
+| 6·W1 | 6.1 Product briefs and journeys | — (merged 6a10f3a, 5b269dc) | `antique-map-p6-ux` | 2026-10-01 | ⛔ 👤 OA2 — your interview answers (`docs/design/journeys/owner-interview.md`, Indonesian `.id.md`); 6.1.e's native review (D20) |
+| 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged 11ad225) | `antique-map-p6-img` | 2026-10-01 | ⛔ 👤 OA3 — your pilot photographs (`docs/design/imagery/pilot-set-request.md`); 6.2.f sends the request |
 | 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
@@ -581,7 +583,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.1.c first release deployed; rollback rehearsed; results recorded in `docs/DEPLOYMENT.md` — including the deploy agent's health timeout and retries, checked on loopback or with a timeout that outlasts the longest migration (the first `/api/health` runs the migrations and is untimed by design; Cloudflare gives up at 100 s — 4.6 review #2)
   - [x] 5.1.d **Check:** `indies-gallery.gaiada.com` and `old-east-indies.gaiada.com` serve the shells from a CI-built release, health checks are green, and one rollback has been rehearsed; each app listens on `127.0.0.1` alone (`ss -ltnp`), and its port refuses a connection from outside (`curl http://<public-ip>:4030`), the host firewall confirmed with the owner's go-ahead.
 
-- [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4, 5.6
+- [ ] **5.2 Foundation gate** · needs: phase 1, phase 2, phase 3, 4.1, 5.1, 5.3, 5.4, 5.6 — 🔄 5·W3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/foundation.md`
   - **Read** the **Done when** of phases 1–5
@@ -620,7 +622,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.4.i qa's re-gate (adbc0b0) — FAIL on one new blocker: route parity resolved with Vite's conditions, not Next's, so a `react-server`/`production` `exports` condition put Payload in a mount's production bundle past every gate; fixed by resolving with Next's route-handler conditions and loading every conditional branch, plus a gate that refuses conditional `exports` in engine packages; and its LOWs — hook timeouts under load, a deep compare of each app's loaded config, `no-router-prefetch` across `engine/**`, and `createRequire` held in a variable
   - [x] 5.4.g **Check:** each planted violation of 5.4.a–d fails its gate naming the file and passes once removed; CI's status run passes its no-User-Agent case on both apps; `pnpm verify` green.
 
-- [ ] **5.5 The static half of 5.4's gates, hardened, and Next's bundle as a gate** · needs: 5.4
+- [ ] **5.5 The static half of 5.4's gates, hardened, and Next's bundle as a gate** · needs: 5.4 — 🔄 5·W3
   - **Lane** HAR · **Agent** medior · **Wave** W3
   - **Owns** `engine/tooling/route-parity/**`, `engine/tooling/next-config-parity/**`, `.github/workflows/ci.yml` (one step), `eslint.config.mjs`
   - **Read** 5.4's third qa gate (Log, 2026-10-01); ARCHITECTURE.md §15
