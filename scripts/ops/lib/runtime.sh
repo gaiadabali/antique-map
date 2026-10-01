@@ -2,6 +2,13 @@
 # The site's one pm2 process (DEPLOYMENT.md §3): a holding release so the deploy agent has a
 # process to reload before the first real release, the ecosystem file, the pm2 systemd unit
 # ordered after Postgres and RustFS, and daily log rotation. It never restarts a running app.
+#
+# It lives beside the GDA deploy poller (gaiada-poll.timer, every minute, as root): once a
+# CloudPanel site user exists, the poller puts its release under ~/releases/deploy_*, points
+# `current` at it and runs `pm2 reload <user>` through /usr/bin/pm2 as the user. This script
+# never fights it: it makes the holding release only while `current` is absent, never moves
+# `current` afterwards, and adopts a pm2 daemon the poller started (it starts the process in
+# it; it never kills or restarts it on an apply).
 
 # The holding server: answers 503 to everything until the first release replaces `current`.
 # It sits where a release's server.js sits, so the ecosystem file never changes at first deploy.
@@ -110,7 +117,7 @@ pm2_save() { site_run pm2 save >/dev/null; }
 
 ensure_runtime() {
   say "$S_APP: holding release, pm2 $S_USER"
-  local holding="$S_HOME/releases/bootstrap-holding"
+  local holding="$S_HOME/releases/bootstrap-holding" made=0
   if [ -e "$S_CURRENT" ] || [ -L "$S_CURRENT" ]; then
     ok "$S_CURRENT -> $(readlink "$S_CURRENT" 2>/dev/null || printf 'not a link') (left as it is)"
   else
@@ -123,12 +130,12 @@ ensure_runtime() {
     holding_server_js | user_put "$holding/engine/apps/$S_APP/server.js" 644
     act "link $S_CURRENT -> $holding, as $S_USER (the first deploy moves it)" \
       site_run ln -sfn "$holding" "$S_CURRENT"
+    made=1
   fi
 
   PUT_CHANGED=0
   ecosystem_cjs | user_put "$S_HOME/ecosystem.config.cjs" 644
   local eco_changed="$PUT_CHANGED"
-  ensure_pm2
   if [ -z "$SITE_NODE_BIN" ]; then
     fail "no trusted pm2 for $S_USER: the pm2 steps are skipped"
     return 0
@@ -144,8 +151,12 @@ ensure_runtime() {
     else
       act "pm2 save, as $S_USER (dump.pm2 does not name $S_USER, so a reboot would not bring it back)" pm2_save
     fi
+  elif [ "$made" = 0 ] && ! user_exists_path "$S_SERVER_JS"; then
+    fail "$S_CURRENT -> $(readlink "$S_CURRENT" 2>/dev/null) has no engine/apps/$S_APP/server.js (DEPLOYMENT.md §3): pm2 process $S_USER not started; current left as the deploy agent set it"
   else
-    act "start pm2 process $S_USER from ~/ecosystem.config.cjs, then pm2 save (as $S_USER)" pm2_start_and_save
+    local into='a new pm2 daemon'
+    if pm2_daemon_live; then into="the pm2 daemon already running for $S_USER (adopted: not killed or restarted)"; fi
+    act "start pm2 process $S_USER from ~/ecosystem.config.cjs in $into, then pm2 save (as $S_USER)" pm2_start_and_save
   fi
 
   local unit="pm2-$S_USER.service"

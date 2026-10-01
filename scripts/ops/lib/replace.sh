@@ -6,15 +6,19 @@
 #   - OLD's vhost names (in its `root /home/<user>/htdocs/…`) a site user this run provisions,
 #     and the new domain has no vhost yet
 #   - the home holds what this script made and nothing else: shared/.env (ours, every app secret
-#     blank, no key the skeleton lacks), current -> releases/bootstrap-holding and no other
-#     release, the ecosystem file, ~/bin's two helpers, ~/.indies — besides CloudPanel's
-#     skeleton (its dotfiles, an htdocs tree without a file, logs, tmp, .ssh, .nvm, .npm, .cache)
-#     and pm2's own ~/.pm2
-#   - nothing runs as the user (so pm2 runs nothing for it), pm2-<user>.service is not active,
-#     and its crontab has no line outside this script's block
+#     blank, no key the skeleton lacks), releases/bootstrap-holding, the ecosystem file, ~/bin's
+#     two helpers, ~/.indies — besides CloudPanel's skeleton (its dotfiles, an htdocs tree
+#     without a file, logs, tmp, .ssh, .nvm, .npm, .cache), pm2's own ~/.pm2, and the GDA deploy
+#     poller's output: releases/deploy_* and `current` pointing into one of them or the holding
+#     release (the poller deploys into every new CloudPanel site user within a minute)
+#   - no process runs as the user but an idle pm2 daemon — the one the poller's `pm2 describe`
+#     starts — whose `pm2 jlist` is [] (asked only while it runs); pm2-<user>.service is not
+#     active; and its crontab has no line outside this script's block
 # Then the crontab, shared/.env and the vhost are copied to /var/backups/indies/config/
-# replace-site/OLD.<stamp>/ (700 root), the crontab is removed (a crontab left under the name
-# would belong to the old uid), and `clpctl site:delete --domainName=OLD --force` runs.
+# replace-site/OLD.<stamp>/ (700 root), the idle daemon is stopped (`pm2 kill`, as the user),
+# and the checks run again with no process allowed at all: the poller may have started a daemon
+# or deployed in between, and then nothing is deleted. Last, the crontab is removed (one left
+# under the name would belong to the old uid) and `clpctl site:delete --domainName=OLD --force`.
 #
 # What clpctl site:delete removes is CloudPanel's site delete (the panel's Delete button; --force
 # skips its question): the site's record, nginx vhost and certificate, its site user and that
@@ -68,8 +72,10 @@ replace_map() {
 # pm2's own, as "type path" (find's %y). Listed as the user; find follows no link.
 home_unexpected() {
   local type rel holding="releases/bootstrap-holding"
-  site_run find "$S_HOME" -mindepth 1 -printf '%y\t%P\n' 2>/dev/null | while IFS=$'\t' read -r type rel; do
+  site_run find "$S_HOME" -mindepth 1 \( -path "$S_HOME/releases/deploy_*/*" -o -path "$S_HOME/.nvm/*" \) \
+    -prune -o -printf '%y\t%P\n' 2>/dev/null | while IFS=$'\t' read -r type rel; do
     case "$rel" in
+      releases/deploy_*) [ "$type" = d ] && continue ;;
       .nvm | .nvm/* | .npm | .npm/* | .cache | .cache/* | .pm2 | .pm2/* | logs | logs/* | tmp | tmp/* | \
         .ssh | .ssh/* | .indies | .indies/*) continue ;;
       .bashrc | .profile | .bash_logout | .bash_history | .viminfo | .lesshst | .selected_editor | \
@@ -85,9 +91,10 @@ home_unexpected() {
   done
 }
 
-# replace_reasons — why this site may not be replaced, one reason per line; nothing when it may.
+# replace_reasons [strict] — why this site may not be replaced, one reason per line; nothing
+# when it may. strict (right before the delete) allows no process at all, not even pm2's.
 replace_reasons() {
-  local p key have skeleton
+  local p key have skeleton daemon=''
   [ ! -e "$VHOST_DIR/$S_DOMAIN.conf" ] || echo "the new site's vhost $VHOST_DIR/$S_DOMAIN.conf exists already"
   home_unexpected | head -n 20 | sed 's/^\(.\) \(.*\)$/the home holds \2 (find type \1), which this script did not make/'
   for p in ecosystem.config.cjs:'Written by scripts/ops/helios-provision.sh' \
@@ -99,9 +106,11 @@ replace_reasons() {
     fi
   done
   have="$(readlink "$S_CURRENT" 2>/dev/null || true)"
-  if [ -L "$S_CURRENT" ] && [ "$have" != "$S_HOME/releases/bootstrap-holding" ]; then
-    echo "current -> $have, not the holding release: a release was deployed"
-  fi
+  case "$have" in /*) ;; ?*) have="$S_HOME/$have" ;; esac
+  case "$have" in
+    '' | "$S_HOME/releases/bootstrap-holding" | "$S_HOME"/releases/deploy_*) ;;
+    *) echo "current -> $have: neither the holding release nor a deploy agent's release" ;;
+  esac
   if user_exists_path "$S_ENV"; then
     user_read "$S_ENV" | grep -qF 'Written once by scripts/ops/helios-provision.sh' ||
       echo "$S_ENV was not written by this script"
@@ -116,8 +125,17 @@ replace_reasons() {
     if [ "$ENVIRONMENT" = production ] && [ -n "$(env_get "$S_ENV" SMTP_PASS)" ]; then echo "$S_ENV has SMTP_PASS filled in"; fi
     [ -z "$(env_db_password)" ] || echo "$S_ENV's DATABASE_URL has a password"
   fi
-  have="$(pgrep -a -u "$S_USER" 2>/dev/null | head -n 5 | paste -sd';' -)"
-  [ -z "$have" ] || echo "processes run as $S_USER (pm2 or its apps?): $have"
+  if [ "${1:-}" != strict ] && pm2_daemon_live; then
+    daemon="$(pm2_pid)"
+    resolve_site_path
+    have="$( (site_run pm2 jlist 2>/dev/null || true) | tail -n 1 | python3 -c '
+import json, sys
+try: print(" ".join(p.get("name", "?") + ":" + p.get("pm2_env", {}).get("status", "?") for p in json.load(sys.stdin)) or "none")
+except Exception: print("unreadable")' 2>/dev/null)"
+    [ "$have" = none ] || echo "the pm2 daemon for $S_USER has apps defined: ${have:-unreadable} (pm2 jlist is not [])"
+  fi
+  have="$(pgrep -a -u "$S_USER" 2>/dev/null | awk -v d="$daemon" '$1 != d' | head -n 5 | paste -sd';' -)"
+  [ -z "$have" ] || echo "processes run as $S_USER: $have"
   if systemctl is-active --quiet "pm2-$S_USER.service" 2>/dev/null; then echo "pm2-$S_USER.service is active"; fi
   if ! have="$(cron_unmanaged "$(crontab -u "$S_USER" -l 2>/dev/null || true)")"; then
     echo "$S_USER's crontab has broken indies-provision markers"
@@ -146,8 +164,12 @@ replace_plan() {
   site_run find "$S_HOME" -mindepth 1 -printf '%y\t%P\n' 2>/dev/null | sort -t$'\t' -k2 | awk -F'\t' '
     { split($2, p, "/") }
     p[1] ~ /^\.(nvm|npm|cache)$/ && $2 != p[1] { n[p[1]]++; next }
+    p[1] == "releases" && p[2] ~ /^deploy_/ && p[3] != "" {
+      k = p[1] "/" p[2]; n[k]++; t = k "/" p[3]
+      if (!(t in seen)) { seen[t]; printf "          | %s (in the deploy agent release)\n", t }
+      next }
     { printf "          | %s %s\n", $1, $2 }
-    END { for (k in n) printf "          | (and %d more under %s/: tooling)\n", n[k], k }'
+    END { for (k in n) printf "          | (%d entries under %s/)\n", n[k], k }'
   note "it does not touch Postgres: $S_DB and role $S_ROLE stay (checked after the delete), nor RustFS"
 }
 
@@ -160,6 +182,13 @@ backup_replaced() {
     if user_exists_path "$S_ENV"; then user_read "$S_ENV" >"$dir/shared.env"; fi
     cat -- "$VHOST_DIR/$S_REPLACE.conf" >"$dir/vhost.conf"
   )
+}
+
+# stop_idle_pm2 — the poller's idle pm2 daemon, killed as the user (it runs no app: checked).
+stop_idle_pm2() {
+  resolve_site_path
+  site_run pm2 kill >/dev/null 2>&1 || true
+  wait_for 10 pm2_daemon_gone
 }
 
 delete_old_site() {
@@ -180,6 +209,19 @@ replace_site() {
   replace_plan
   act "copy $S_USER's crontab, $S_ENV and the vhost to $BACKUP_ROOT/config/replace-site/$S_REPLACE.$STAMP/ (700 root)" \
     backup_replaced
+  if pm2_daemon_live && ! act "stop $S_USER's idle pm2 daemon (pid $(pm2_pid); pm2 kill, as $S_USER)" stop_idle_pm2; then
+    fail "$S_USER's pm2 daemon did not stop: $S_REPLACE is not deleted"
+    return 1
+  fi
+  if ! dry; then
+    local again
+    again="$(replace_reasons strict)"
+    if [ -n "$again" ]; then
+      while IFS= read -r r; do fail "--replace-site $S_REPLACE: changed since the check, so nothing is deleted: $r"; done <<<"$again"
+      return 1
+    fi
+    ok "checked again right before the delete: still only this script's, CloudPanel's and the poller's files; nothing runs as $S_USER"
+  fi
   if ! act "remove $S_USER's crontab and run clpctl site:delete --domainName=$S_REPLACE --force" delete_old_site; then
     fail "clpctl site:delete --domainName=$S_REPLACE failed (its output above): $S_APP's steps are skipped"
     return 1

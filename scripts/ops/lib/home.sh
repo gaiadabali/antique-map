@@ -142,32 +142,6 @@ user_put() {
   PUT_CHANGED=1
 }
 
-# trusted_bin FILE — a binary root may name in a unit: root-owned and writable by root alone
-# (after resolving links), or inside this user's own nvm tree, which only ever runs as the user.
-trusted_bin() {
-  local real
-  real="$(readlink -f -- "$1")" || return 1
-  case "$real" in "$S_HOME"/.nvm/*) return 0 ;; esac
-  [ "$(stat -c %U -- "$real")" = root ] && [ $((8#$(stat -c %a -- "$real") & 8#022)) = 0 ] &&
-    [ "$(stat -c %U -- "$(dirname "$real")")" = root ]
-}
-
-# resolve_site_path — find node and pm2 by looking, never by running the user's shell: the
-# newest nvm version in the home first (CloudPanel's layout), then root-owned system copies.
-resolve_site_path() {
-  SITE_NODE_BIN=''
-  SITE_PATH=/usr/local/bin:/usr/bin:/bin
-  local d
-  for d in $(printf '%s\n' "$S_HOME"/.nvm/versions/node/v*/bin | sort -rV) /usr/local/bin /usr/bin; do
-    if ! [ -x "$d/node" ] || ! [ -x "$d/pm2" ]; then continue; fi
-    if ! trusted_bin "$d/node" || ! trusted_bin "$d/pm2"; then continue; fi
-
-    SITE_NODE_BIN="$d"
-    SITE_PATH="$d:/usr/local/bin:/usr/bin:/bin"
-    return 0
-  done
-}
-
 # pm2_daemon_live — pm2's daemon runs for this user: its socket exists and pm2.pid names a live
 # process of the user's. Without one, no pm2 command is run at all in a probe — any pm2 command
 # would spawn a daemon, which is a change (review should-fix 2).

@@ -25,11 +25,14 @@
 # CloudPanel's clpctl writes the new site's vhost and reloads the host's shared nginx.
 #
 # --replace-site OLD_DOMAIN removes a CloudPanel site this script made under an old host name,
-# only when its home still holds nothing but what this script and CloudPanel made (replace.sh):
-# clpctl site:delete deletes the site user and its home; the Postgres database stays.
+# only when its home still holds nothing but what this script, CloudPanel and the deploy poller
+# made (replace.sh): clpctl site:delete deletes the site user and its home; Postgres stays.
 #
-# pm2 is pinned (PM2_VERSION, pm2.sh): when a site user has no trusted pm2, it is installed
-# into the user's own nvm tree, by the user's own npm, as the user.
+# The GDA deploy poller (gaiada-poll.timer, every minute, as root) acts on every CloudPanel site
+# user: CloudPanel site user -> poller -> ~/releases/deploy_*, `current`, `pm2 reload <user>`.
+# This script never fights it: it never moves `current` once it exists (the holding release is
+# made only while `current` is absent), and it adopts the poller's pm2 daemon, never killing it
+# on an apply. pm2 is the host's /usr/bin/pm2, the poller's and KOI's; none is installed (pm2.sh).
 #
 # CloudPanel's cron UI rewrites a site's crontab: if the managed block goes, --report says so
 # (an ERROR), and re-running the script puts it back.
@@ -212,7 +215,7 @@ main() {
       ensure_cloudpanel_site
       resolve_site_path
       if [ "$REPLACE_PLANNED" = 1 ]; then
-        note "$S_APP: once replaced, the home is new and empty: shared/.env, the holding release, pm2 $PM2_VERSION and its unit, ~/bin and the crontab are made as on a first run (a dry run after the replacement shows them byte for byte)"
+        note "$S_APP: once replaced, the home is new and empty: shared/.env, the holding release, the pm2 process and its unit, ~/bin and the crontab are made as on a first run (a dry run after the replacement shows them byte for byte)"
         ensure_database
         continue
       fi

@@ -95,11 +95,11 @@ inventory_report() {
     for f in "$S_ENV" "$S_HOME/ecosystem.config.cjs" "$S_HOME/bin/indies-cron" "$S_HOME/bin/indies-health" \
       "$S_HOME/.indies" "$S_HOME/releases/bootstrap-holding" "$S_CURRENT"; do inv_home "$f"; done
     resolve_site_path
-    case "$SITE_NODE_BIN" in
-      "$S_HOME"/.nvm/*) inv home present "$SITE_NODE_BIN/pm2 — pm2 $(pm2_version_at "$SITE_NODE_BIN") (pinned $PM2_VERSION)" ;;
-      '') inv home absent "pm2 in $S_HOME/.nvm (pinned $PM2_VERSION)" ;;
-      *) inv home other "$SITE_NODE_BIN/pm2 — the host's, not installed by this script" ;;
-    esac
+    if [ -n "$SITE_NODE_BIN" ]; then
+      inv pm2 host "$SITE_NODE_BIN/pm2 — pm2 $(pm2_version_at "$SITE_NODE_BIN"), the host's (not this script's), run as $S_USER"
+    else
+      inv pm2 absent "no trusted system pm2 for $S_USER"
+    fi
     if cron_block_present; then inv cron present "$S_USER's crontab: the indies-provision block"; else inv cron absent "$S_USER's crontab: the indies-provision block"; fi
   done
   for app in $(selected_apps); do

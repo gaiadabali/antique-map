@@ -1,26 +1,87 @@
 # shellcheck shell=bash
-# pm2 for each site user, pinned. The first Helios run (2026-10-01) found none it could trust:
-# CloudPanel's nvm for a new site user holds node, npm and corepack but no pm2, and the global
-# /usr/bin/pm2 resolves to /usr/lib/node_modules/pm2, root's but group-writable (775), which a
-# root-written unit must never name (trusted_bin, home.sh).
+# Which node and pm2 a site's unit names, and why it may trust them.
 #
-# So when no trusted pm2 exists, pm2 $PM2_VERSION goes into the site user's OWN nvm tree, put
-# there by that user's own npm, run as that user through site_run (no login shell, a clean
-# environment, the explicit PATH). Never as root, never `npm i -g` into a system prefix. npm runs
-# no install scripts (pm2 has none). Its version is read from its package.json, never by running
-# pm2: any pm2 command starts a daemon. Same version, no change.
+# The house standard on Helios is the system pm2: /usr/bin/pm2 -> /usr/lib/node_modules/pm2,
+# the one the GDA deploy poller drives (`sudo -u <user> /usr/bin/pm2 …`) and KOI runs (7.0.1).
+# One pm2 per ~/.pm2 daemon: a second version against the same daemon breaks the poller's
+# reloads ("In-memory PM2 is out-of-date"), so this script installs no pm2 of its own. It uses
+# /usr/bin's node and pm2 (then /usr/local/bin's), as the site user only, never as root.
+#
+# Trusted means only root can change what runs: the file, and every directory up to /, are
+# root's and writable by nobody else. npm's global tree on Helios is 775 root:root, so a group
+# write bit is accepted when the group is gid 0 and gid 0 has no member — none listed in the
+# group database, and no account but root with it as its primary group. Anything else refuses.
+# pm2's version is read from its package.json, never by running pm2 (that starts a daemon).
 
-# The last 6.x on npm (2025-11-26). 7.x exists (7.0.4, 2026-08-24); moving to it is its own change.
-PM2_VERSION=6.0.14
+PM2_MAJOR=7
 
-# site_nvm_bin — the newest nvm node bin in the home whose node and npm are the user's own.
-site_nvm_bin() {
-  local d
-  for d in $(printf '%s\n' "$S_HOME"/.nvm/versions/node/v*/bin | sort -rV); do
-    if ! [ -x "$d/node" ] || ! [ -x "$d/npm" ]; then continue; fi
-    if ! trusted_bin "$d/node" || ! trusted_bin "$d/npm"; then continue; fi
-    printf '%s' "$d"
+# root_group_members — the accounts in gid 0 besides root, comma-separated; empty when none.
+root_group_members() {
+  {
+    getent group 0 | cut -d: -f4 | tr ',' '\n'
+    getent passwd | awk -F: '$4 == 0 && $1 != "root" { print $1 }'
+  } | sed '/^$/d' | sort -u | paste -sd, -
+}
+
+# root_only_why PATH — nothing when only root can write PATH; otherwise why not.
+root_only_why() {
+  local m
+  m=$((8#$(stat -c %a -- "$1")))
+  if [ "$(stat -c %u -- "$1")" != 0 ]; then
+    printf '%s is owned by %s' "$1" "$(stat -c %U -- "$1")"
+  elif [ $((m & 8#002)) != 0 ]; then
+    printf '%s is writable by anyone (%s)' "$1" "$(stat -c %a -- "$1")"
+  elif [ $((m & 8#020)) != 0 ] && [ "$(stat -c %g -- "$1")" != 0 ]; then
+    printf '%s is writable by group %s' "$1" "$(stat -c %G -- "$1")"
+  elif [ $((m & 8#020)) != 0 ] && [ -n "$(root_group_members)" ]; then
+    printf '%s is writable by group root, whose members are %s' "$1" "$(root_group_members)"
+  fi
+}
+
+# untrusted_why FILE — nothing when FILE (resolved) and every directory above it, and the
+# directory holding the link itself, can be changed by root alone; otherwise the first reason.
+untrusted_why() {
+  local real p why
+  real="$(readlink -f -- "$1")" || {
+    printf '%s does not resolve' "$1"
     return 0
+  }
+  for p in "$real" "$(dirname "$1")"; do
+    while :; do
+      why="$(root_only_why "$p")"
+      if [ -n "$why" ]; then
+        printf '%s' "$why"
+        return 0
+      fi
+      [ "$p" = / ] && break
+      p="$(dirname "$p")"
+    done
+  done
+}
+trusted_bin() { [ -e "$1" ] && [ -z "$(untrusted_why "$1")" ]; }
+
+# resolve_site_path — the system node and pm2, by looking: /usr/bin's, then /usr/local/bin's.
+resolve_site_path() {
+  SITE_NODE_BIN=''
+  SITE_PATH=/usr/local/bin:/usr/bin:/bin
+  local d x
+  for d in /usr/bin /usr/local/bin; do
+    if ! [ -x "$d/node" ] || ! [ -x "$d/pm2" ]; then continue; fi
+    if ! trusted_bin "$d/node" || ! trusted_bin "$d/pm2"; then continue; fi
+    SITE_NODE_BIN="$d"
+    SITE_PATH="$d"
+    for x in /usr/local/bin /usr/bin /bin; do [ "$x" = "$d" ] || SITE_PATH="$SITE_PATH:$x"; done
+    return 0
+  done
+}
+
+# why_no_system_pm2 — each system node or pm2 that exists, and why it is refused.
+why_no_system_pm2() {
+  local p why
+  for p in /usr/bin/node /usr/bin/pm2 /usr/local/bin/node /usr/local/bin/pm2; do
+    [ -e "$p" ] || continue
+    why="$(untrusted_why "$p")"
+    [ -z "$why" ] || printf '%s -> %s: %s; ' "$p" "$(readlink -f -- "$p")" "$why"
   done
 }
 
@@ -34,19 +95,6 @@ pm2_version_at() {
       2>/dev/null || true
 }
 
-# why_no_system_pm2 — name each system pm2 that exists and why trusted_bin refused it.
-why_no_system_pm2() {
-  local p real
-  for p in /usr/local/bin/pm2 /usr/bin/pm2; do
-    [ -e "$p" ] || continue
-    real="$(readlink -f -- "$p")"
-    trusted_bin "$p" && continue
-    printf '%s -> %s (%s %s, in a dir %s %s) is not root-only; ' "$p" "$real" \
-      "$(stat -c %U -- "$real")" "$(stat -c %a -- "$real")" \
-      "$(stat -c %U -- "$(dirname "$real")")" "$(stat -c %a -- "$(dirname "$real")")"
-  done
-}
-
 node_version_ok() {
   local node
   node="$(site_run "$1/node" -p process.versions.node 2>/dev/null || true)"
@@ -55,8 +103,19 @@ node_version_ok() {
   elif version_ge "$node" "$MIN_NODE"; then
     ok "node $node from $1, run as $S_USER only"
   else
-    fail "node $node for $S_USER: the engine needs $MIN_NODE or later (package.json engines)"
+    fail "node $node at $1/node: the engine needs $MIN_NODE or later (package.json engines)"
   fi
+}
+
+# pm2_version_check — the system pm2 is the poller's; a major other than PM2_MAJOR is a warning.
+pm2_version_check() {
+  local v
+  v="$(pm2_version_at "$SITE_NODE_BIN")"
+  case "$v" in
+    "$PM2_MAJOR".*) ok "pm2 $v at $SITE_NODE_BIN/pm2 (the host's, as the deploy poller and KOI use it)" ;;
+    '') warn "pm2 at $SITE_NODE_BIN/pm2 has no readable package.json version (expected $PM2_MAJOR.x)" ;;
+    *) warn "pm2 $v at $SITE_NODE_BIN/pm2, not $PM2_MAJOR.x as KOI and the poller run: left as it is (never changed here)" ;;
+  esac
 }
 
 runtime_preflight() {
@@ -66,76 +125,10 @@ runtime_preflight() {
     return 0
   fi
   resolve_site_path
-  if [ -n "$SITE_NODE_BIN" ]; then
-    node_version_ok "$SITE_NODE_BIN"
-    pm2_version_check
+  if [ -z "$SITE_NODE_BIN" ]; then
+    fail "no trusted system node + pm2 for $S_USER in /usr/bin or /usr/local/bin: $(why_no_system_pm2)(this script installs no pm2; the poller and KOI use /usr/bin/pm2)"
     return 0
   fi
-  local bin
-  bin="$(site_nvm_bin)"
-  if [ -z "$bin" ]; then
-    fail "no trusted node + pm2 for $S_USER, and no nvm node + npm of its own in $S_HOME/.nvm to install pm2 with (CloudPanel's Node.js site installs nvm): $(why_no_system_pm2)"
-    return 0
-  fi
-  note "no trusted pm2 for $S_USER ($(why_no_system_pm2)none in $bin): pm2 $PM2_VERSION will be installed there, as $S_USER"
-  node_version_ok "$bin"
-}
-
-# pm2_version_check [after-install] — the pm2 in use against the pin. After an install a
-# mismatch is an error; an existing pm2 of another version is left alone (its daemon keeps the
-# version it started with), with the command that moves it.
-pm2_version_check() {
-  local v
-  v="$(pm2_version_at "$SITE_NODE_BIN")"
-  if [ "$v" = "$PM2_VERSION" ]; then
-    ok "pm2 $v at $SITE_NODE_BIN/pm2 (pinned $PM2_VERSION)"
-  elif [ "${1:-}" = after-install ]; then
-    fail "pm2 at $SITE_NODE_BIN/pm2 reports version '${v}' after installing $PM2_VERSION"
-  elif [ -z "$v" ]; then
-    warn "pm2 at $SITE_NODE_BIN/pm2 has no readable package.json version; the pin is $PM2_VERSION"
-  else
-    warn "pm2 $v at $SITE_NODE_BIN/pm2, not the pinned $PM2_VERSION: left as it is (to move it, as $S_USER: npm install -g pm2@$PM2_VERSION, then pm2 update — a restart of its apps)"
-  fi
-}
-
-# install_pm2 BIN_DIR — as the site user, with its own npm, into its own nvm prefix.
-install_pm2() {
-  local bin="$1" saved="$SITE_PATH" rc=0
-  SITE_PATH="$bin:/usr/local/bin:/usr/bin:/bin"
-  site_run "$bin/npm" install --global --prefix "$(dirname "$bin")" --ignore-scripts --no-audit \
-    --no-fund --no-update-notifier --loglevel=error "pm2@$PM2_VERSION" >/dev/null || rc=$?
-  SITE_PATH="$saved"
-  return "$rc"
-}
-
-# ensure_pm2 — a trusted pm2 for the site user, installed (pinned) when there is none. Leaves
-# SITE_NODE_BIN empty when there is still none (the pm2 steps are then skipped, as errors).
-ensure_pm2() {
-  resolve_site_path
-  if [ -n "$SITE_NODE_BIN" ]; then
-    pm2_version_check
-    return 0
-  fi
-  local bin
-  bin="$(site_nvm_bin)"
-  if [ -z "$bin" ]; then
-    fail "no nvm node + npm of $S_USER's own in $S_HOME/.nvm: pm2 cannot be installed for it"
-    return 0
-  fi
-  if ! act "install pm2@$PM2_VERSION into $(dirname "$bin") with $bin/npm, as $S_USER (not root, not system-wide)" \
-    install_pm2 "$bin"; then
-    fail "npm install pm2@$PM2_VERSION as $S_USER failed (output above)"
-    return 0
-  fi
-  if dry; then
-    SITE_NODE_BIN="$bin" SITE_PATH="$bin:/usr/local/bin:/usr/bin:/bin"
-    return 0
-  fi
-  resolve_site_path
-  if [ "$SITE_NODE_BIN" != "$bin" ]; then
-    fail "pm2 was installed but $bin/pm2 is missing or not trusted (resolved: '${SITE_NODE_BIN}')"
-    SITE_NODE_BIN=''
-    return 0
-  fi
-  pm2_version_check after-install
+  node_version_ok "$SITE_NODE_BIN"
+  pm2_version_check
 }
