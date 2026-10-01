@@ -35,8 +35,9 @@ inventory.
 
 The app secrets, the database passwords, and the RustFS and Mailpit credentials were generated
 on Helios and written straight into each `shared/.env` (600, the site user's). They were never
-printed and are not in this repository. **They are not in Infisical yet**: there was no
-Infisical access when they were made.
+printed and are not in this repository. They **stay host-only for staging** (D49). Infisical comes with production provisioning
+(TASKS.md 41.2): one project per brand, `indies-gallery` and `old-east-indies`, each with
+`staging` and `production` environments. The staging values are copied in from Helios then.
 
 Every payment and courier provider runs as `<PREFIX>_MODE=simulate` until the client hands
 over sandbox accounts (D48, DEPLOYMENT.md §8). Each provider's real sandbox keys replace its
