@@ -158,8 +158,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W1 | 6.1 Product briefs and journeys | — (merged 6a10f3a, 5b269dc) | `antique-map-p6-ux` | 2026-10-01 | ⛔ 👤 OA2 — your interview answers (`docs/design/journeys/owner-interview.md`, Indonesian `.id.md`); 6.1.e's native review (D20) |
-| 6·W1 | 6.2 Image direction, capture standards and the pilot set | — (merged 11ad225) | `antique-map-p6-img` | 2026-10-01 | ⛔ 👤 OA3 — your pilot photographs (`docs/design/imagery/pilot-set-request.md`); 6.2.f sends the request |
-| 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
+| 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.f's Indonesian guides) | agent worktree | 2026-10-01 | ⛔ 👤 OA3 — your pilot photographs (`docs/design/imagery/pilot-set-request.md`); 6.2.f: the guides' `.id.md` in flight, then the placeholders and Bapak/Ibu (yours) and the send |
+| 6·W1 | 6.3 Voice and lexicon | senior-uiux (6.3.f) | agent worktree | 2026-10-01 | 6.3.f in flight — keys from the contracts' value lists (C2, C9 v1.4, domain, config); any list no contract holds yet waits on phase 8; ⛔ 👤 OA4 native review (6.3.c), OA2 answers |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
