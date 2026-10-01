@@ -270,7 +270,7 @@ PAYMENT_<SELLER>_<PROVIDER>_*   per seller, per enabled provider, per environmen
 SHIPPING_<SELLER>_<PROVIDER>_*  per seller, for each of its own couriers (sellers[].shipping, all of the
                                 brand's when it names none) — a shipping webhook is per seller too
 FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
-<PREFIX>_MODE               sandbox | live, for a provider whose keys cannot say which (below)
+<PREFIX>_MODE               sandbox | live, for a provider whose keys cannot say which; simulate outside production (below)
 WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
 SISTER_BASE_URL             the sister's origin this process syncs with: required in production (the
                             sister's production site, never sisters[0].baseUrl, which is its staging
@@ -326,10 +326,15 @@ upper-cased with `-` as `_` (`SHIPPING_SG_DHL_EXPRESS_API_KEY`):
 A seller needs its own payment providers' secrets and its own couriers' — the
 brand's couriers when it names none (C1 `sellers[].shipping`) — and no other: a
 Singapore seller shipping its own stock by DHL Express needs no Biteship key. A
-`*_MODE` is `sandbox` or `live` and nothing else. A missing secret refuses a
-deployed process and only warns a workstation; a key of the wrong kind refuses
-anywhere — production runs on live keys, staging and local on sandbox keys — and
-so does a seller whose keys for one provider mix the two.
+`*_MODE` is `sandbox` or `live` — or, outside production, `simulate`. A missing
+secret refuses a deployed process and only warns a workstation; a key of the wrong
+kind refuses anywhere — production runs on live keys, staging and local on sandbox
+keys — and so does a seller whose keys for one provider mix the two.
+**`<PREFIX>_MODE=simulate`** stands in for a provider whose sandbox account the
+client has not handed over yet (OA14; the owner's call, 2026-10-01): no credential
+is read, the boot report warns, nothing may reach the provider — its adapter, when
+built, simulates the call — and production refuses it. Staging runs every provider
+simulated until its sandbox keys arrive; each then replaces its `simulate` line.
 
 **No `NEXT_PUBLIC_*` per brand.** Those are inlined at `next build`, and one
 gallery build serves several brands (and the artifact is built with none), so GA4
