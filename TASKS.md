@@ -24,9 +24,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
 | **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 21/34 | 1 | `██████░░░░`  62% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | ✅ done | 5/5 | 23/23 | 0 | `██████████` 100% |
-| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 16/31 | 1 | `█████░░░░░`  52% |
+| **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 1/5 | 17/31 | 1 | `██████░░░░`  55% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
-| **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | · not started | 0/4 | 0/19 | 0 | `░░░░░░░░░░`   0% |
+| **10** Admin organisation, seeds and the catalogue gate | Catalogue | 9 | 🔄 in progress | 0/4 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **11** Primitives, tokens, the loader interface and state fixtures | Design systems | 4 | · not started | 0/4 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **12** The shared base, each brand's accents and the sister system | Design | 6 | · not started | 0/3 | 0/13 | 1 | `░░░░░░░░░░`   0% |
 | **13** The owner's pick and the buyer test 👤 | Design | 12 | · not started | 0/3 | 0/14 | 2 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **32/180** | **214/871** | **46** | `███░░░░░░░`  25% |
+| **All** | 44 phases | | | **32/180** | **216/872** | **46** | `███░░░░░░░`  25% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -161,8 +161,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set | senior-uiux (6.2.b) | agent worktree | 2026-10-01 | 6.2.b picking the pilot set from the old site's photos (D19 updated); 6.2.f, 6.2.g cut; 6.2.i after 6.4 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged 1bfed8d) | — | 2026-10-01 | 6.3.c cut (D20); 6.3.k after 6.4 |
 | 6·W2 | 6.4 Replan from the owner's answers | architect | `worktree-agent-ac60a6f4679087c7c` | 2026-10-01 | ⏸ stopped mid-task on the session usage limit (resets 18:50 WITA); resume in its worktree with the developer's input (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`) and 6.1.f's Found list |
-| 8·W1 | 8.1 Discovery vocabulary: makers, places, terms, sources | — (fix round done, df2518d) | `worktree-agent-aa0679c17fb13aaf8` | 2026-10-01 | review signed off with should-fix, all fixed; merged with 8.3 in `antique-map-p8-sch-lead` (31933a1) awaiting the SCH lead |
-| 8·W1 | 8.3 Media and masters | — (fix round done, 5a7ab6f) | `worktree-agent-a8ce4bf9698372e36` | 2026-10-01 | review signed off with should-fix, all fixed; 8.3.h + 10.3.a with the SCH lead (senior-db, `feat/p8-sch-lead`) |
+| 8·W1 | 8.1 Discovery vocabulary | qa (drives 8.1.e on merged `main`) | — | 2026-10-01 | merged 1de3824 with the review fixes and `wave_a` |
+| 8·W1 | 8.3 Media and masters | qa (drives 8.3.e) · senior-be (8.3.i) | agent worktrees | 2026-10-01 | merged 1de3824 with 8.3.h; 8.3.i in W2 |
+| 8·W2 | 8.2 Works | senior-db | agent worktree (SCH) | 2026-10-01 | schema author; 10.3.b after the wave |
+| 8·W2 | 8.5 Staging storage holds 8.3's layout | devops | agent worktree (HAR) | 2026-10-01 | on Helios (OA-Helios); a new DNS name would be 👤; gates the next `production` push |
 
 ## Decisions for the owner
 
@@ -812,7 +814,7 @@ run beside the build line rather than in it.
   - [x] 8.1.d gazetteer seed data file (`test/content/seed/gazetteer.json` shape, reused by every brand): the place hierarchy of EXPERIENCE-GALLERY.md §2 and the historical names of ARCHITECTURE.md §8
   - [ ] 8.1.e **Check:** each collection saves with validation, localisation and slugs; a place stores historical names and a parent; a unit test proves a place cannot be its own ancestor.
 
-- [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8
+- [ ] **8.2 Works** · needs: 8.1, 8.3, 4.8 — 🔄 8·W2
   - **Lane** SCH · **Agent** senior-db · **Wave** W2
   - **Owns** `engine/packages/cms/src/collections/works/**`, `validators/work-*.ts`, `hooks/work-*.ts`, and a `beforeDelete` hook in each of `collections/{makers,places,terms,sources}/` (8.2.g)
   - **Read** CONTENT-MODEL.md §1, §9; COMPLIANCE.md §1, §8
@@ -836,8 +838,8 @@ run beside the build line rather than in it.
   - [x] 8.3.d Upload size limits and allowed types
   - [x] 8.3.f C9 v1.4's fields (6.2.e): `media.role` (required, `MEDIA_ROLES`) and `media.provenance` (required, no default; `aiGenerated` gone), `media.master` staff-only; `masters` per CONTENT-MODEL.md §6 (kind, storageKey, checksum unique, frame pixels, `objectBox` validated by `boxFits`, `objectPpi`, role, provenance, captureTier, the `intake` group) and an idempotent intake-manifest import keyed by checksum; a synthetic image's alt baseline starts with its label
   - [x] 8.3.g the public bucket serves only derivatives and capped tiles — never an upload's full-resolution original, which bypasses `publicZoomMaxPx` and may carry GPS and camera metadata — proven by a test (6.2.e's Found 11); consignment and return photos are private, session-bound uploads, never `media` records (Found 10)
-  - [ ] 8.3.h (SCH lead) no request leaves a multipart temp file — 8.3's `useTempFiles: true` made Payload write one for every collection's POST/PATCH before access is checked, deleted only for upload collections (anonymous `/api/users` → 403 left ~94 MB); cleanup on every collection, global and error path, tested over the REST handler
-  - [ ] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers)
+  - [x] 8.3.h (SCH lead) no request leaves a multipart temp file — 8.3's `useTempFiles: true` made Payload write one for every collection's POST/PATCH before access is checked, deleted only for upload collections (anonymous `/api/users` → 403 left ~94 MB); cleanup on every collection, global and error path, tested over the REST handler
+  - [ ] 8.3.i (W2, after 8.4) `altBaseline()` builds the description only and uses C9 v1.6's `opensWithLabel` — the label is added at render (8.4.b; supersedes 8.3.f's "starts with its label"); a MinIO test that anonymous GET of `iiif-full/<brand>/<id>/info.json` is 403; `apply.mjs` applies the masters bucket's CORS (each admin origin; PUT with its signed headers); and the stale comment in `media/src/storage/multipart.ts` (8.3.h replaced `media/temp-files`), `discardSentFile` simplified
   - [ ] 8.3.e **Check:** a public upload requires localised alt text and lands in the brand bucket; `masters` is a **plain collection** (not an upload collection) whose files go straight to the private bucket by presigned PUT — never through the app server — and have no public URL; the shop's credentials can write only under `print-files/`; upload limits and allowed types are enforced.
 
 - [x] **8.4 What 8.1's and 8.3's reviews decided, in the docs and C9** · needs: — — ✅ 2026-10-01 9396e35
@@ -852,7 +854,7 @@ run beside the build line rather than in it.
   - [x] 8.4.e C1 or CONTENT-MODEL.md §3 names `MAKER_ROLES` and `DATE_PRECISIONS` (now declared in cms); "Beyond Indonesia" as a root region in EXPERIENCE-GALLERY.md §2's hierarchy is confirmed or corrected; PARALLEL-TRACKS.md §1 says cms keeps its unit tests beside the code
   - [x] 8.4.f **Check:** each decision above is in the doc that owns it, C9's version and changelog are bumped, `pnpm verify` is green, and nothing outside the Owns changed.
 
-- [ ] **8.5 Staging storage holds 8.3's layout before 8.3 reaches staging** · needs: 8.3, 8.4
+- [ ] **8.5 Staging storage holds 8.3's layout before 8.3 reaches staging** · needs: 8.3, 8.4 — 🔄 8·W2
   - **Lane** HAR (ops) · **Agent** devops · **Wave** W2 · on Helios under the standing go-ahead (OA-Helios); a new DNS name is 👤
   - **Owns** `scripts/ops/**` (the storage step), `docs/ops/helios-staging.md`, the hosts' storage plan files outside `engine/` (real brand slugs may not sit under `engine/`)
   - **Read** DEPLOYMENT.md §2, §8 (8.4's "Object storage" subsection), `engine/packages/media/src/storage/policies/**`, 8.3's review (#5), 8.4's report (Found 4, 5)
@@ -952,10 +954,11 @@ run beside the build line rather than in it.
   - **Lane** SCH · **Agent** senior-db (SCH lead) · **Wave** after each wave's merge in phases 8–10
   - **Owns** `engine/packages/cms/src/migrations/**`, `engine/packages/cms/payload-types.ts` (generated)
   - _Requirements: 1.5, 19.7_
-  - [ ] 10.3.a wave A migration
+  - [x] 10.3.a wave A migration
   - [ ] 10.3.b wave B migration
   - [ ] 10.3.c wave C migration (incl. the `inventory_movements` engine table)
   - [ ] 10.3.d a verify script creating a work + product through the Local API with hooks (NOW! `verify-*` pattern), then reading them **as the public** (`overrideAccess: false`) to prove a draft and a `physical` field never come back; run in CI
+  - [ ] 10.3.f From 8·W1's SCH lead: the remaining test support (`pushed-database.test-support.ts`, `admins.db.test.ts`, `instance.db.test.ts`) builds with `buildEngineConfig()`; the media, masters and places db tests run on migrated databases now that `wave_a` exists; a compound index's name carries its table (Payload names `(kind, slug)` `kind_slug_idx` — a second collection with the same pair would collide); HAR (on request) caps `*.db.test.ts` file parallelism — CREATE DATABASE checkpoints on a dev Postgres of ~54 databases time out under parallel runs
   - [ ] 10.3.e **Check:** each wave has exactly one generated migration, `payload migrate:create` reports "No schema changes detected" after it, the one `engine/packages/cms/payload-types.ts` is regenerated, and `schema-hash --all` is equal.
 
 - [ ] **10.4 Catalogue gate** · needs: phase 8, phase 9, 10.1–10.3
@@ -2394,7 +2397,7 @@ fails the build when the import map is stale. This holds for phases 23, 24 and 3
   - [ ] 41.1.b Rate limits (auth, forms, offers, checkout, order lookup); webhook replay protection; admin lockout
   - [ ] 41.1.c Dependency and secret scanning in CI; the OWASP Top 10 checklist
   - [ ] 41.1.e the foundation gate's N1 and N3: CloudPanel's vhost adds its own security headers, so `X-Content-Type-Options` and others go out twice where the app sets them (`curl -sD- https://old-east-indies.gaiada.com/api/health` shows `nosniff, nosniff`) — the provision script drops those `add_header` lines from our vhosts; and route parity refuses a non-literal `config.matcher` statically (today only `next build` catches it)
-  - [ ] 41.1.f nginx `client_max_body_size` small by default and about 100 MB only for `/api/media` and `/admin` (8.3's review: multipart bodies are parsed before access is checked)
+  - [ ] 41.1.f nginx `client_max_body_size` (or the proxy) small by default — about 4 MiB — and about 100 MB only for `/api/media` and `/admin`: since 8.3.h no temp file outlives its request, but a request still holds up to ~94 MiB of disk while it streams, anonymous ones included; never refuse multipart outright (the admin saves every document as multipart) (8.3's review: multipart bodies are parsed before access is checked)
   - [ ] 41.1.d **Check:** the CSP is **built per request** from brand config by the one builder (payment-provider, analytics and sister origins only; adding a provider needs a restart, not a rebuild), the request carrying the same header the answer does, security headers ship with tests, rate limits cover auth/forms/offers/checkout/order lookup, webhook replay protection and admin lockout are tested, dependency and secret scanning run in CI, and an OWASP Top 10 checklist is complete; card data never reaches our servers.
 
 - [ ] **41.2 👤 Production provisioning, backups, restore drill, monitoring** · needs: 5.1 · 👤 the Helios go-ahead for each target
