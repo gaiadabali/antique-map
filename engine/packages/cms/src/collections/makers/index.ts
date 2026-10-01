@@ -12,7 +12,8 @@
  *   is no placeholder: Payload 3.90's admin drops an empty block list from the client config and
  *   then maps over it, so the whole edit view renders blank. It lands, additively, with the blocks.
  * - `sameAs`: Wikidata, ULAN — the maker page's JSON-LD `sameAs`.
- * - Drafts, the slug, access and versions are the vocabulary's own (`../terms/vocabulary`).
+ * - The slug and translation status are the shared `fields/`; drafts, access and versions the
+ *   vocabulary's own (`../terms/vocabulary/access`).
  */
 import type { CollectionConfig, Validate } from 'payload'
 
@@ -22,8 +23,9 @@ import {
   VOCABULARY_ACCESS,
   VOCABULARY_VERSIONS,
 } from '../terms/vocabulary/access'
-import { isBlank, translationStatusField, webUrl } from '../terms/vocabulary/fields'
-import { slugField } from '../terms/vocabulary/slug'
+import { slugField } from '../../fields/slug'
+import { translationStatusField } from '../../fields/translation-status'
+import { isBlank, webUrl } from '../../fields/validate'
 import { lifeDateGroup } from './life-dates'
 import { MAKER_ROLE_LABELS, MAKER_ROLES } from './roles'
 

@@ -20,12 +20,13 @@ import {
   VOCABULARY_ACCESS,
   VOCABULARY_VERSIONS,
 } from './vocabulary/access'
+import { slugField } from '../../fields/slug'
+import { translationStatusField } from '../../fields/translation-status'
 import {
+  IN_DEFAULT_LOCALE_NOTE,
   requiredInDefaultLocale,
   requiredToPublish,
-  translationStatusField,
-} from './vocabulary/fields'
-import { slugField } from './vocabulary/slug'
+} from '../../fields/validate'
 
 const isGrade = (data: unknown) => (data as { kind?: unknown } | undefined)?.kind === 'grade'
 
@@ -80,6 +81,7 @@ export const Terms: CollectionConfig = {
       localized: true,
       maxLength: 120,
       validate: requiredInDefaultLocale('Give the term’s name, such as "Batik" or "VG+".'),
+      admin: { description: `As a visitor reads it: "Batik", "VG+". ${IN_DEFAULT_LOCALE_NOTE}` },
     },
     slugField({ from: 'label', scope: 'kind' }),
     {

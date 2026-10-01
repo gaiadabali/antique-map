@@ -8,7 +8,8 @@
  * - `citation` is the full bibliographic entry; publishing a source needs one.
  * - Nothing here is translated — a citation is quoted as published — so the collection has no
  *   localised field and no translation status.
- * - Drafts, the slug, access and versions are the vocabulary's own (`../terms/vocabulary`).
+ * - The slug is the shared `fields/slug`; drafts, access and versions the vocabulary's own
+ *   (`../terms/vocabulary/access`).
  */
 import type { CollectionConfig, Validate } from 'payload'
 
@@ -22,8 +23,8 @@ import {
   VOCABULARY_ACCESS,
   VOCABULARY_VERSIONS,
 } from '../terms/vocabulary/access'
-import { requiredToPublish, webUrl } from '../terms/vocabulary/fields'
-import { slugField } from '../terms/vocabulary/slug'
+import { slugField } from '../../fields/slug'
+import { requiredToPublish, webUrl } from '../../fields/validate'
 
 const validateShortCite: Validate = (value) =>
   shortCiteError(typeof value === 'string' ? value : null) ?? true

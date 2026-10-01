@@ -11,8 +11,8 @@
  * typo fix would break every link to it. An editor may still set one by hand (normalised to the
  * same shape); clearing it keeps the one it had.
  *
- * These helpers serve four collections, so they sit here, inside 8.1's own folders, until SCH
- * promotes them to a shared `fields/` module (8.1's report, Follow-ups).
+ * Shared: the four vocabulary collections use it (TASKS.md 8.1), and any collection whose records
+ * have a non-localised address may.
  */
 import type { CollectionSlug, FieldHook, PayloadRequest, TextField, Validate, Where } from 'payload'
 
@@ -94,8 +94,17 @@ function scopeOf(
   return value === undefined || value === null ? undefined : { field: options.scope, value }
 }
 
-/** Whether another document of `collection` already holds `candidate` (in the same scope). */
-async function slugTaken(input: {
+function hasDrafts(req: PayloadRequest, collection: CollectionSlug): boolean {
+  const versions = req.payload.collections[collection]?.config.versions
+  return typeof versions === 'object' && versions !== null && Boolean(versions.drafts)
+}
+
+/**
+ * Whether another document of `collection` already holds `candidate` (in the same scope) — as
+ * stored, or in its latest draft: an address typed into a draft is held for that record, so it
+ * is never handed to another one and the draft left unable to publish.
+ */
+export async function slugTaken(input: {
   req: PayloadRequest
   collection: CollectionSlug
   candidate: string
@@ -106,13 +115,19 @@ async function slugTaken(input: {
   const and: Where[] = [{ slug: { equals: candidate } }]
   if (scope) and.push({ [scope.field]: { equals: scope.value } })
   if (id !== undefined) and.push({ id: { not_equals: id } })
-  const { totalDocs } = await req.payload.count({
+  const stored = await req.payload.count({ collection, overrideAccess: true, req, where: { and } })
+  if (stored.totalDocs > 0) return true
+  if (!hasDrafts(req, collection)) return false
+  const drafted: Where[] = [{ latest: { equals: true } }, { 'version.slug': { equals: candidate } }]
+  if (scope) drafted.push({ [`version.${scope.field}`]: { equals: scope.value } })
+  if (id !== undefined) drafted.push({ parent: { not_equals: id } })
+  const latest = await req.payload.countVersions({
     collection,
     overrideAccess: true,
     req,
-    where: { and },
+    where: { and: drafted },
   })
-  return totalDocs > 0
+  return latest.totalDocs > 0
 }
 
 /** Derives the slug on the first save and keeps it after; normalises one typed by hand. */

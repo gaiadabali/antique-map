@@ -17,7 +17,7 @@ import {
   nameKey,
   type HistoricalName,
 } from '../../validators/place-historical-names'
-import { slugify, SLUG_PATTERN } from '../terms/vocabulary/slug'
+import { slugify, SLUG_PATTERN } from '../../fields/slug'
 import { PLACE_TYPES } from './place-types'
 
 type SeedPlace = {

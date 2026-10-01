@@ -5,14 +5,14 @@
  * only; a contributor cannot publish.
  *
  * It makes its own database on the server `CMS_TEST_POSTGRES_URL` names and **pushes** the
- * schema (`./pushed-database`) — these collections reach a migration only after the wave
+ * schema (`./pushed-database.test-support`) — these collections reach a migration only after the wave
  * merges (TASKS.md 10.3.a) — then drops it. Without that variable it skips:
  * a setup state; a server that is named and refuses is a failure (CONVENTIONS.md §8).
  */
 import { APIError, getPayload, type Payload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { createPushedDatabase, refusedWith, type Pool } from './pushed-database'
+import { createPushedDatabase, refusedWith, type Pool } from './pushed-database.test-support'
 
 const server = process.env.CMS_TEST_POSTGRES_URL
 

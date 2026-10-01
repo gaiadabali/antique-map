@@ -12,7 +12,8 @@
  * - `geo` is a point and a box in plain degrees (`./fields`).
  * - `description`, the essay of how it was mapped, is a run of C4 blocks and lands with them
  *   (TASKS.md 9.3.a), as `makers.bio` does — `../makers` says why there is no placeholder.
- * - Drafts, the slug, access and versions are the vocabulary's own (`../terms/vocabulary`).
+ * - The slug and translation status are the shared `fields/`; drafts, access and versions the
+ *   vocabulary's own (`../terms/vocabulary/access`).
  */
 import type { CollectionConfig } from 'payload'
 
@@ -21,8 +22,9 @@ import {
   VOCABULARY_ACCESS,
   VOCABULARY_VERSIONS,
 } from '../terms/vocabulary/access'
-import { requiredInDefaultLocale, translationStatusField } from '../terms/vocabulary/fields'
-import { slugField } from '../terms/vocabulary/slug'
+import { slugField } from '../../fields/slug'
+import { translationStatusField } from '../../fields/translation-status'
+import { IN_DEFAULT_LOCALE_NOTE, requiredInDefaultLocale } from '../../fields/validate'
 import { guardAncestry, keepChildrenAttached } from './ancestry'
 import { geoField, historicalNamesField } from './fields'
 import { PLACE_TYPE_LABELS, PLACE_TYPES } from './place-types'
@@ -48,7 +50,9 @@ export const Places: CollectionConfig = {
       localized: true,
       maxLength: 160,
       validate: requiredInDefaultLocale('Give the place’s modern name, such as "Jakarta".'),
-      admin: { description: 'The modern name, in each language: Jakarta, Sulawesi, Maluku.' },
+      admin: {
+        description: `The modern name, in each language: Jakarta, Sulawesi, Maluku. ${IN_DEFAULT_LOCALE_NOTE}`,
+      },
     },
     slugField({ from: 'name' }),
     historicalNamesField,

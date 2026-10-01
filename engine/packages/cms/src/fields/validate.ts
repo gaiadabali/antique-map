@@ -1,29 +1,9 @@
 /**
- * Fields and validators the four vocabulary collections share (TASKS.md 8.1; CONTENT-MODEL.md
- * intro, §9). Kept beside 8.1's collections until SCH promotes them (8.1's report).
+ * Shared field validators (TASKS.md 8.1; CONTENT-MODEL.md §9): what is required where — in the
+ * default locale, or only to publish — and the shape of a web address. Pure but for the request
+ * they read the default locale from.
  */
-import type { PayloadRequest, SelectField, Validate } from 'payload'
-
-/** CONTENT-MODEL.md: machine translation is allowed, and shown to editors as such until reviewed. */
-export const TRANSLATION_STATUSES = ['entered', 'machine', 'reviewed'] as const
-export type TranslationStatus = (typeof TRANSLATION_STATUSES)[number]
-
-const TRANSLATION_LABELS: Record<TranslationStatus, string> = {
-  entered: 'Entered by hand',
-  machine: 'Machine translation — not yet reviewed',
-  reviewed: 'Reviewed',
-}
-
-/** Per locale: how this locale's text came to be. Only on collections with localised text. */
-export const translationStatusField: SelectField = {
-  name: 'translationStatus',
-  type: 'select',
-  localized: true,
-  required: true,
-  defaultValue: 'entered',
-  options: TRANSLATION_STATUSES.map((value) => ({ value, label: TRANSLATION_LABELS[value] })),
-  admin: { position: 'sidebar' },
-}
+import type { PayloadRequest, Validate } from 'payload'
 
 export function isBlank(value: unknown): boolean {
   return value === null || value === undefined || (typeof value === 'string' && value.trim() === '')
@@ -40,6 +20,8 @@ function defaultLocaleOf(req: PayloadRequest): string | undefined {
  * back to the default locale's (the config's `fallback: true`).
  */
 export function requiredInDefaultLocale(message: string): Validate {
+  // No `required: true`: Payload would demand the text in every locale saved. The field's admin
+  // description says it is required in the default locale (`IN_DEFAULT_LOCALE_NOTE`).
   return (value, { operation, req }) => {
     if (!isBlank(value)) return true
     const defaultLocale = defaultLocaleOf(req)
@@ -47,6 +29,10 @@ export function requiredInDefaultLocale(message: string): Validate {
     return operation === 'create' || savingDefault ? message : true
   }
 }
+
+/** Appended to the admin description of a field `requiredInDefaultLocale` guards. */
+export const IN_DEFAULT_LOCALE_NOTE =
+  'Required in English, the default language; another language left blank shows the English.'
 
 /** Whether this save publishes the record (`_status: 'published'`), as opposed to a draft. */
 export function isPublishing(data: unknown): boolean {

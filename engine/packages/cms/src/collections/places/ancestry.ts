@@ -1,7 +1,8 @@
 /**
- * The hooks that apply the gazetteer's cycle guard (`validators/place-ancestry`, pure) on every
- * write path — the admin, REST, the Local API, the seed and the importer — because a hook, unlike
+ * The hooks that apply the gazetteer's guards (`validators/place-ancestry`, pure) on every write
+ * path — the admin, REST, the Local API, the seed and the importer — because a hook, unlike
  * access or a field validator, is never skipped (CONTENT-MODEL.md §9: guards run on every write).
+ * Each first takes the place-tree lock (`./tree`), so concurrent writes are judged one at a time.
  *
  * **Both versions of the tree are walked.** With drafts, a place has a published parent (the
  * main row) and its latest draft's parent, and either may later be the one in force: a draft
@@ -10,80 +11,32 @@
  * the place being saved. A swap is two steps — publish the move out first, then the move in —
  * and the message says which place is in the way.
  *
- * A place with places under it cannot be deleted: its children would silently become roots and
- * their addresses would change. Move or delete them first.
+ * **Depth is judged on a move only**, for the subtree the place carries; a save that keeps its
+ * parent is checked for cycles alone, so a place is never left un-editable (senior-be review, S2).
+ *
+ * **A place with places under it cannot be deleted** — under it as stored or in a child's latest
+ * draft (S3): those children would silently become roots and their addresses would change.
  */
 import {
   APIError,
   ValidationError,
   type CollectionBeforeChangeHook,
   type CollectionBeforeDeleteHook,
-  type PayloadRequest,
 } from 'payload'
 
-import {
-  ancestryMessage,
-  ancestryProblem,
-  MAX_PLACE_DEPTH,
-  type PlaceId,
-} from '../../validators/place-ancestry'
+import { ancestryMessage, ancestryProblem, type PlaceId } from '../../validators/place-ancestry'
+import { chainAbove, childrenOf, idOf, lockPlaceTree, subtreeHeight } from './tree'
+
+export { idOf } from './tree'
 
 const PLACES = 'places'
 
-type PlaceRow = { id: PlaceId; parent?: unknown; name?: unknown }
-
-/** A relationship value as an id: Payload hands one over as an id or as the populated document. */
-export function idOf(value: unknown): PlaceId | null {
-  if (value === null || value === undefined || value === '') return null
-  if (typeof value === 'number' || typeof value === 'string') return value
-  if (typeof value === 'object' && 'id' in value) return idOf((value as { id: unknown }).id)
-  return null
-}
-
-async function readPlace(
-  req: PayloadRequest,
-  id: PlaceId,
-  draft: boolean,
-): Promise<PlaceRow | null> {
-  const doc = await req.payload.findByID({
-    collection: PLACES,
-    id,
-    depth: 0,
-    draft,
-    overrideAccess: true,
-    disableErrors: true,
-    req,
-    select: { parent: true, name: true },
-  })
-  return (doc as PlaceRow | null) ?? null
-}
-
-/** One version of the chain above `parent`, as a lookup the pure guard reads, plus the names. */
-async function chainAbove(
-  req: PayloadRequest,
-  parent: PlaceId,
-  draft: boolean,
-): Promise<{ parentOf: Map<string, PlaceId | null>; names: Map<string, string> }> {
-  const parentOf = new Map<string, PlaceId | null>()
-  const names = new Map<string, string>()
-  let current: PlaceId | null = parent
-  // One more than the deepest legal chain, so a chain that never ends is seen as too deep.
-  for (let step = 0; current !== null && step <= MAX_PLACE_DEPTH; step += 1) {
-    if (parentOf.has(String(current))) break
-    const row = await readPlace(req, current, draft)
-    if (!row) break
-    const next = idOf(row.parent)
-    parentOf.set(String(current), next)
-    if (typeof row.name === 'string') names.set(String(current), row.name)
-    current = next
-  }
-  return { parentOf, names }
-}
+type PlaceDoc = { id?: unknown; parent?: unknown }
 
 /** The effective parent of this save: the one sent, else the one it already had. */
 function proposedParent(data: Record<string, unknown>, originalDoc: unknown): PlaceId | null {
   if ('parent' in data) return idOf(data.parent)
-  return idOf((originalDoc as { parent?: unknown } | undefined)?.parent)
+  return idOf((originalDoc as PlaceDoc | undefined)?.parent)
 }
 
 export const guardAncestry: CollectionBeforeChangeHook = async ({
@@ -93,15 +46,21 @@ export const guardAncestry: CollectionBeforeChangeHook = async ({
   req,
 }) => {
   const parent = proposedParent(data as Record<string, unknown>, originalDoc)
+  const id = operation === 'update' ? idOf((originalDoc as PlaceDoc | undefined)?.id) : null
+  const before = operation === 'update' ? idOf((originalDoc as PlaceDoc | undefined)?.parent) : null
+  const moving = operation === 'create' || String(parent) !== String(before)
   if (parent === null) return data
-  const id =
-    operation === 'update' ? (idOf((originalDoc as PlaceRow | undefined)?.id) ?? null) : null
+  await lockPlaceTree(req)
+  // Only a move needs the height of what it carries; a new place carries nothing yet.
+  const height = moving && id !== null ? await subtreeHeight(req, id) : 1
   const ownName = (data as { name?: unknown }).name
   for (const draft of [false, true]) {
     const { parentOf, names } = await chainAbove(req, parent, draft)
     const problem = ancestryProblem({
       id,
       parent,
+      moving,
+      height,
       parentOf: (each) => parentOf.get(String(each)),
     })
     if (!problem) continue
@@ -109,27 +68,26 @@ export const guardAncestry: CollectionBeforeChangeHook = async ({
       id !== null && String(each) === String(id) && typeof ownName === 'string'
         ? ownName
         : (names.get(String(each)) ?? `#${each}`)
-    throw new ValidationError({
-      collection: PLACES,
-      ...(id === null ? {} : { id }),
-      errors: [{ path: 'parent', message: ancestryMessage(problem, nameOf) }],
-      req,
-    })
+    throw new ValidationError(
+      {
+        collection: PLACES,
+        ...(id === null ? {} : { id }),
+        errors: [{ path: 'parent', message: ancestryMessage(problem, nameOf) }],
+        req,
+      },
+      req.t,
+    )
   }
   return data
 }
 
 export const keepChildrenAttached: CollectionBeforeDeleteHook = async ({ id, req }) => {
-  const { totalDocs } = await req.payload.count({
-    collection: PLACES,
-    overrideAccess: true,
-    req,
-    where: { parent: { equals: id } },
-  })
-  if (totalDocs === 0) return
-  const places = totalDocs === 1 ? 'one place is' : `${totalDocs} places are`
+  await lockPlaceTree(req)
+  const children = (await childrenOf(req, [id])).filter((child) => String(child) !== String(id))
+  if (children.length === 0) return
+  const places = children.length === 1 ? 'one place is' : `${children.length} places are`
   throw new APIError(
-    `This place cannot be deleted while ${places} under it. Move or delete those first.`,
+    `This place cannot be deleted while ${places} under it (published or in a draft). Move or delete those first.`,
     409,
     null,
     true,
