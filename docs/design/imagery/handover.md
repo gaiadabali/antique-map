@@ -1,5 +1,7 @@
 # Handing over photographs — files, names, folders
 
+*Bahasa Indonesia:* [handover.id.md](handover.id.md)
+
 For the owner, the staff and the reviewer. How photos travel from the camera to the
 platform without losing quality on the way, and what happens to them after.
 

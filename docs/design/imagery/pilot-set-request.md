@@ -6,9 +6,12 @@
 **Prepared:** 1 October 2026 · **Status:** not yet sent (TASKS.md OA3, 6.2.b)
 
 > **Before sending** (the orchestrator — this box is not part of the message): fill the
-> four `{…}` placeholders; attach or link `gallery-guide.md`, the three gallery shot
-> lists, `shop-guide.md`, `shot-lists/merch-product.md` and `handover.md`, exported as
-> PDF or shared read-only. The owner interview (OA2, `docs/design/journeys/owner-interview.md`)
+> four `{…}` placeholders; attach or link [gallery-guide.md](gallery-guide.md), the three
+> gallery shot lists ([map](shot-lists/map.md), [print](shot-lists/print.md),
+> [photograph](shot-lists/photograph.md)), [shop-guide.md](shop-guide.md),
+> [shot-lists/merch-product.md](shot-lists/merch-product.md) and [handover.md](handover.md),
+> exported as PDF or shared read-only (the Indonesian request attaches their `.id.md`
+> versions, drafts awaiting native review). The owner interview (OA2, `docs/design/journeys/owner-interview.md`)
 > asks nothing about equipment, so the two do not overlap; its S14 (filming how prints
 > are made) is the same photo day — if the owner says yes there, add `showroom_making`
 > shots here. Everything from "Dear" onward is the message.

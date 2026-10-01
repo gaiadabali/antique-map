@@ -1,5 +1,7 @@
 # Shot list — a photograph
 
+*Bahasa Indonesia:* [photograph.id.md](photograph.id.md)
+
 For albumen prints, gelatin silver prints and other historic photographs, loose or on
 their original mounts. Set up as in the [gallery guide](../gallery-guide.md) §4–§6,
 with three differences:

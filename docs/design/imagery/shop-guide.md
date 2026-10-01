@@ -1,5 +1,7 @@
 # Photographing the shop — a guide for Old East Indies
 
+*Bahasa Indonesia:* [shop-guide.id.md](shop-guide.id.md)
+
 For the owner and staff of Old East Indies. The gallery photographs originals like
 museum objects; the shop photographs **products in life** — in sunlight, in hands,
 in rooms, wrapped as gifts, on the showroom walls. Warm, real and giftable, and

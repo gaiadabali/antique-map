@@ -8,10 +8,14 @@
 
 > **Sebelum dikirim** (untuk orkestrator — kotak ini bukan bagian dari pesan): isi keempat
 > placeholder `{…}`, bersamaan dengan versi bahasa Inggris, dan pilih "Bapak" atau "Ibu"
-> di salam pembuka; lampirkan atau tautkan `gallery-guide.md`, ketiga shot list galeri,
-> `shop-guide.md`, `shot-lists/merch-product.md` dan `handover.md`, diekspor sebagai PDF
-> atau dibagikan hanya-baca (read-only). Panduan-panduan itu saat ini hanya ada dalam
-> bahasa Inggris. Wawancara pemilik (OA2, `docs/design/journeys/owner-interview.id.md` dan
+> di salam pembuka; lampirkan atau tautkan versi bahasa Indonesia panduan-panduannya —
+> [gallery-guide.id.md](gallery-guide.id.md), ketiga shot list galeri
+> ([peta](shot-lists/map.id.md), [cetakan](shot-lists/print.id.md),
+> [foto bersejarah](shot-lists/photograph.id.md)), [shop-guide.id.md](shop-guide.id.md),
+> [shot-lists/merch-product.id.md](shot-lists/merch-product.id.md) dan
+> [handover.id.md](handover.id.md) — diekspor sebagai PDF atau dibagikan hanya-baca
+> (read-only). Panduan-panduan itu juga masih draf yang menunggu tinjauan penutur asli
+> (D20); versi bahasa Inggrisnya dilampirkan pada pesan bahasa Inggris. Wawancara pemilik (OA2, `docs/design/journeys/owner-interview.id.md` dan
 > `owner-interview-toko.id.md`) tidak menanyakan apa pun tentang peralatan, jadi keduanya
 > tidak tumpang tindih; pertanyaan S14 di sana (merekam cara cetakan dibuat) memakai hari
 > pemotretan yang sama — jika pemilik menjawab ya, tambahkan foto `showroom_making` di
