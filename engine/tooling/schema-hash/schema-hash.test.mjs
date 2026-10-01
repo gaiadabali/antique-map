@@ -75,7 +75,7 @@ describe.skipIf(!stackUp)(
           // best-effort cleanup
         }
       }
-    })
+    }, 60_000) // two DROP DATABASEs through docker: slow under load (qa 5.4 re-gate, L1)
 
     it('hashes two identical schemas equal, then drifted, then equal again', () => {
       for (const db of [dbA, dbB]) {
