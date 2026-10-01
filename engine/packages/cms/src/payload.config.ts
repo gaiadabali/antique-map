@@ -18,6 +18,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { LOCALE_CODES, type BrandConfig, type LocaleCode } from '@engine/config/schema'
+import { multipartUploadOptions } from '@engine/media/storage'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { buildConfig, type Config, type EmailAdapter } from 'payload'
 import { en } from 'payload/i18n/en'
@@ -132,6 +133,9 @@ export function engineConfig(env: Env = process.env): Config {
       // The v4 default, adopted now.
       strictDraftTypes: true,
     },
+    // How a multipart body is parsed: the media upload limit, streamed to the OS temp folder
+    // rather than held in memory (`@engine/media/storage` `multipartUploadOptions`, TASKS.md 8.3).
+    upload: multipartUploadOptions(),
   }
 }
 
