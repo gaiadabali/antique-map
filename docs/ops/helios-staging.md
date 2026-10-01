@@ -97,20 +97,27 @@ The two broken releases were removed, so a rollback cannot land on them.
   The host itself was not rebooted, because it serves other clients' sites.
 - **Rollback rehearsed** on both sites. `current` was pointed back to `2c3b37a`,
   `pm2 reload <user>` gave health 200, and the sites were then rolled forward to `1eddcaf`,
-  also 200.
+  also 200. Once the tool was fixed (below), its own `--rollback` was rehearsed on the gallery
+  too.
 
-## A defect in the shared deploy tool
+  To roll back: `gaiada-deploy --rollback --site-user uig --domain indies-gallery.gaiada.com
+  --type node --subdir indies-gallery` (or `uoei`, `old-east-indies`).
 
-`gaiada-deploy --rollback` is a no-op for a `subdir` target like ours. Its `previous_release`
-leaves out `basename(readlink -f current)`, which is the `subdir` name (`indies-gallery`), not
-the release directory. So it picks the newest release, which is the current one.
+## A defect in the shared deploy tool — fixed 2026-10-01
 
-- The rehearsal above did by hand what the tool means to do.
-- The tool's own automatic rollback after a failed health check is unaffected: it resolves the
-  previous release before switching.
-- `gaiada-deploy` is shared by every site on Helios, so it was not patched from here. The fix
-  is to compare against the release directory: `$(dirname "$(readlink -f current)")` when a
-  `subdir` is set.
+`gaiada-deploy --rollback` was a no-op for a `subdir` target like ours. Its `previous_release`
+left out `basename(readlink -f current)`, which is the `subdir` name (`indies-gallery`), not
+the release directory, so it picked the newest release: the current one. The tool's automatic
+rollback after a failed health check was unaffected.
+
+With the owner's go-ahead, one block at its line 95 was patched to resolve `current` to its
+release directory (the first component under `releases/`).
+
+- **Other sites:** one without a `subdir` resolves to the same directory as before, and a
+  `current` outside `releases/` is left as it was.
+- **Backup:** `/usr/local/bin/gaiada-deploy.bak-20261001T050150Z`.
+- **Proven:** on the gallery, `--rollback` now gives `ROLLBACK to …2c3b37a` with health 200,
+  and `--tag …1eddcaf` rolls forward, also 200.
 
 ## Running it again
 
