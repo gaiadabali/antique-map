@@ -161,6 +161,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.1 Product briefs and journeys (6.1.a, 6.1.c) | senior-uiux | `antique-map-p6-ux` / `feat/p6-ux` | 2026-10-01 | phase 6 opened (3 open: 5, 6, 7); 6.1.b waits on 👤 OA2 — 6.1.a produces its questions |
 | 6·W1 | 6.2 Image direction, capture standards and the pilot set (6.2.a, 6.2.c) | senior-uiux | `antique-map-p6-img` / `feat/p6-img` | 2026-10-01 | D19: the owner supplies the photographs; 6.2.b waits on 👤 OA3 |
 | 6·W1 | 6.3 Voice and lexicon | — (merged e9463ae) | `antique-map-p6-voice` / `feat/p6-voice` | 2026-10-01 | ⛔ 👤 OA4 native review (6.3.c), OA2 answers; 6.3.f after the catalogue schema |
+| 5·W2 | 5.6 The foundation gate's local failures | medior | `antique-map-p5-har-fixes` / `feat/p5-har-fixes` | 2026-10-01 | |
 | 7·W1 | 7.1 The old catalogue export (mock dump + public read) | senior-integrator | `antique-map-p7-mig-a` / `feat/p7-mig-a` | 2026-09-30 | OA9 outstanding: mock dump per D42; the public read runs per D41; `LEGACY_DATA_DIR` = `../indies-legacy-data/<brand>` |
 | 7·W1 | 7.3 Old East Indies legacy URL discovery | — (merged d2a3d05, 4a3168a) | `antique-map-p7-mig-b` / `feat/p7-mig-b` | 2026-09-30 | ⛔ 👤 OA11 (the Search Console half of 7.3.a and the Check); 7.3.d done |
 
@@ -632,7 +633,7 @@ Each agent's prompt, and the before- and after-wave checklists, are in [DISPATCH
   - [x] 5.5.e a CI step after the artifact build scans every `api/x/**` route's synchronously loaded chunks through their source maps and fails if one bundles `engine/packages/cms` or `payload` (qa's `route-chunks.mjs` from the third gate as the start)
   - [x] 5.5.f **Check:** each of qa's missed forms in 5.4's third gate is planted and fails its gate naming the file, then passes once removed; the CI chunk scan fails on the `react-server` plant and passes on clean `main`; `pnpm verify` green.
 
-- [ ] **5.6 The foundation gate's local failures** · needs: 5.3
+- [ ] **5.6 The foundation gate's local failures** · needs: 5.3 — 🔄 5·W2
   - **Lane** HAR · **Agent** medior · **Wave** W2
   - **Owns** `engine/tooling/dev/**`, `engine/tooling/brand-literals/**` (or wherever 2.2.b's gate lives), `engine/tooling/tasks-lint/**`, `engine/tooling/client-safe/**` (its tests' timeouts), `tests/e2e/a11y/**`, both apps' `next.config.ts` (`agentRules` only, keeping 5.4.d's one-file parity), `README.md` (the dev command)
   - **Read** `docs/gates/foundation.md` (F1, F3–F5, F7, M1, each with its reproduction)

@@ -50,7 +50,7 @@ smtp_greets() {
   timeout 5 bash -c 'exec 3<>"/dev/tcp/127.0.0.1/$1" && head -c 3 <&3' _ "$MAILPIT_SMTP_PORT" 2>/dev/null |
     grep -qx 220
 }
-pm2_online() { pm2_daemon_live && pm2_summary | grep -q "^$S_USER [a-z_]* instances=[0-9]* online "; }
+pm2_online() { pm2_daemon_live && pm2_summary | grep -q "^$S_USER [a-z_]* instances=[^ ]* online "; }
 pm2_daemon_gone() { ! pm2_daemon_live; }
 pm2_pid() { user_read "$S_HOME/.pm2/pm2.pid" | tr -dc 0-9; }
 
@@ -91,7 +91,8 @@ verify_pm2() {
   if pm2_daemon_live; then site_run pm2 kill >/dev/null 2>&1 || true; fi
   wait_for 10 pm2_daemon_gone || true
   systemctl restart "$unit" || true
-  if wait_for 30 pm2_online && wait_for 30 answers "http://127.0.0.1:$S_PORT/api/health" &&
+  # A cold Next start plus the boot check's database probe can pass 30 s (measured on Helios).
+  if wait_for 90 pm2_online && wait_for 90 answers "http://127.0.0.1:$S_PORT/api/health" &&
     systemctl is-active --quiet "$unit"; then
     after="$(pm2_pid)"
     if [ "$after" != "$before" ]; then
