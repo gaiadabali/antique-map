@@ -9,7 +9,7 @@
 //
 // The runner also resolves with the conditions Next's route handlers use (`NEXT_ROUTE_CONDITIONS`).
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { join, relative } from 'node:path'
 
 import { payloadReached } from './payload-hook.mjs'
 
@@ -39,17 +39,30 @@ export const NEXT_ROUTE_CONDITIONS = ['react-server', 'node', 'import', 'module'
  */
 export const ALLOWED_EXPORT_CONDITIONS = []
 
-/** Every `engine/packages/*` with a package.json: `{ name, dir, file, json }`. */
-export function readEnginePackages(packagesDir) {
-  if (!existsSync(packagesDir)) return []
-  return readdirSync(packagesDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => join(packagesDir, entry.name, 'package.json'))
-    .filter((file) => existsSync(file))
-    .map((file) => {
+const SKIPPED_DIRS = new Set(['node_modules', '.next'])
+
+/**
+ * Every package.json under `rootDir` (`engine/` in CI), at any depth — a package's own, one nested
+ * inside its source, `engine/tooling`'s, each app's — skipping `node_modules` and `.next` (qa's
+ * 5.4 third gate, L1: Node and Next honour a nested package.json's `imports`/`exports` for the
+ * files beneath it). Each is `{ name, dir, file, json }`: `name` is that of the nearest named
+ * package.json at or above it, the one an allowlist entry and the cms exemption go by.
+ */
+export function readEnginePackages(rootDir) {
+  const found = []
+  const walk = (dir, owner) => {
+    const file = join(dir, 'package.json')
+    let here = owner
+    if (existsSync(file)) {
       const json = JSON.parse(readFileSync(file, 'utf8'))
-      return { name: json.name, dir: dirname(file), file, json }
-    })
+      here = json.name ?? owner
+      found.push({ name: here, dir, file, json })
+    }
+    for (const entry of readdirSync(dir, { withFileTypes: true }))
+      if (entry.isDirectory() && !SKIPPED_DIRS.has(entry.name)) walk(join(dir, entry.name), here)
+  }
+  if (existsSync(rootDir)) walk(rootDir, undefined)
+  return found.sort((a, b) => a.file.localeCompare(b.file))
 }
 
 /** Each conditional branch: `{ field, subpath, conditions: [outer, …, inner], target }`. */

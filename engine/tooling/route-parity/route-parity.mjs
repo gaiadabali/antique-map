@@ -28,7 +28,7 @@ const MANIFEST_PATH = [...HTTP_SRC, 'manifest.ts']
  * root whose `engine/packages/cms` is read for slugs), `opts.httpSrcAbsDir`
  * (where a handler's `src/<area>/route.ts` is looked for) and `opts.alias`
  * (Vite aliases for a fixture's `@engine/http/*`) and `opts.packagesAbsDir`
- * (the packages whose `exports` are judged) let a test point at
+ * (the tree whose every package.json's `exports`/`imports` are judged; `engine/` by default) let a test point at
  * fixtures outside `repoRoot` (the real manifest, `engine/apps/*`, http and
  * CMS are what CI checks; production code never overrides them). Every load
  * runs under the Payload hook (5.4.a), the manifest's and the proxy's too.
@@ -40,7 +40,7 @@ export async function checkRouteParity(repoRoot, opts = {}) {
   const appsAbsDir = opts.appsAbsDir ?? join(repoRoot, 'engine', 'apps')
   const collectionsRoot = opts.collectionsRoot ?? repoRoot
   const httpSrcDir = opts.httpSrcAbsDir ?? join(repoRoot, ...HTTP_SRC)
-  const packagesDir = opts.packagesAbsDir ?? join(repoRoot, 'engine', 'packages')
+  const packagesDir = opts.packagesAbsDir ?? join(repoRoot, 'engine')
   const runner = {
     plugins: [payloadHook(repoRoot)],
     alias: opts.alias,
