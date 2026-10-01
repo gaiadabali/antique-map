@@ -22,7 +22,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **3** Config spine and Payload boot | Foundation | 2 | ✅ done | 5/5 | 31/31 | 0 | `██████████` 100% |
 | **4** App shells and the Cache Components spike | Foundation | 3 | ✅ done | 8/8 | 42/42 | 0 | `██████████` 100% |
 | **5** Staging and the foundation gate 👤 | Foundation | 4 | ✅ done | 6/6 | 37/37 | 0 | `██████████` 100% |
-| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 16/35 | 4 | `█████░░░░░`  46% |
+| **6** Briefs, image direction and voice | Design | 4 | 🔄 in progress | 0/4 | 16/36 | 4 | `████░░░░░░`  44% |
 | **7** The old catalogue export and the shop's URL discovery 👤 | Migration | 2 | 🔄 in progress | 2/5 | 16/23 | 2 | `███████░░░`  70% |
 | **8** Makers, places, terms, works and media | Catalogue | 3, 4 | 🔄 in progress | 0/3 | 12/18 | 0 | `███████░░░`  67% |
 | **9** Products, merchandise, editorial and people | Catalogue | 8 | · not started | 0/4 | 0/24 | 0 | `░░░░░░░░░░`   0% |
@@ -61,7 +61,7 @@ Rebuilt from the checkboxes by `node scripts/progress.mjs` — run it after ever
 | **42** Old East Indies: readiness, the gallery's dark import and launch 👤 | Launch | 29, 32, 37, 38, 40, 41 | · not started | 0/8 | 0/22 | 7 | `░░░░░░░░░░`   0% |
 | **43** Indies Gallery: readiness, the content sprint and cutover 👤 | Launch | 35, 42 | · not started | 0/8 | 0/22 | 6 | `░░░░░░░░░░`   0% |
 | **44** The launch gate and the 30-day iteration 👤 | Launch | 43 | · not started | 0/2 | 0/9 | 1 | `░░░░░░░░░░`   0% |
-| **All** | 44 phases | | | **28/178** | **200/851** | **47** | `██░░░░░░░░`  24% |
+| **All** | 44 phases | | | **28/178** | **200/852** | **47** | `██░░░░░░░░`  23% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -232,6 +232,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | # | Answer | Date |
 | --- | --- | --- |
+| **D52** | **Old East Indies' stock is one pool at launch** (the developer, 2026-10-01): all merchandise stock counts as one quantity per variant — no split by shop, location or owner, no transfers between locations, no "In the showroom now" badge. The merchandise sells through **hundreds of shops across Bali**; they report sales and restocking over WhatsApp today and keep doing so at launch, and staff correct the pool in the admin. Showroom pickup of online orders (S4) and a counter sale recorded against the pool (24.4.c) stay. Splitting stock by shop — and who owns a shop's shelf stock (wholesale, consignment, branch) — waits for the **POS phase on our engine** (v2.19). ARC to decide whether `stock_levels` keeps a location key with one shop location configured, so the POS adds locations without a migration — 6.4.g. | 2026-10-01 |
+| **D51** | **The gallery's negotiation runs on WhatsApp, and its invoice is paid on our site** (the developer, 2026-10-01; refines D50): staff build the invoice on a phone (24.5) and send its link into the buyer's WhatsApp chat (`wa.me` share — no WhatsApp API needed); the buyer pays on the gallery's own `/pay/{token}` page, in the gallery's design, with the Stripe Payment Element embedded or bank-transfer instructions — **never a page hosted by Stripe** (Stripe Invoicing / Payment Links are out). The pay page is a designed surface: open with "On hold until {due date}", paid, expired or voided, bank transfer pending — 6.4.g. | 2026-10-01 |
 | **D50** | **The gallery is enquiry-only** (owner interview G3, G4, 2026-10-01; supersedes D30): no cart, no reserve button, no online offers, and **no price shown on any original** — every original leads to a call or WhatsApp to negotiate (Singapore). Once a price is agreed, **staff issue an invoice and the buyer pays it online through the site's gateway**; the piece shows "On hold" until the invoice is due (G5), and ships only when paid in full, shipping and duties the buyer's (G11). Merchandise (the shop) keeps its checkout. ARC replans the gallery's commerce — 6.4. | 2026-10-01 |
 | **D45** | **An invoice holds its piece until the invoice's due date**, set by the staff who issue it; released automatically if unpaid (G5). The hold starts when staff issue the invoice — staff-approved by construction. | 2026-10-01 |
 | **D22** | **No online offers on the gallery** (moot after D50): a price is negotiated by phone or WhatsApp and paid by invoice. The shop has no offers either. | 2026-10-01 |
@@ -716,14 +718,15 @@ run beside the build line rather than in it.
 - [ ] **6.4 Replan from the owner's answers** · needs: 6.1.b — 🔄 6·W2
   - **Lane** ARC · **Agent** architect · **Wave** W2
   - **Owns** `docs/{EXPERIENCE-GALLERY,EXPERIENCE-SHOP,COMMERCE,PAYMENTS,ANALYTICS,COMPLIANCE,CONTENT-MODEL}.md`, `.claude/specs/indies-platform/{requirements,design}.md`, the contract files (C1–C13, ARC's)
-  - **Read** `docs/design/journeys/owner-answers.md`, TASKS.md Decisions D50, D45, D22, D47, D32 and Voice, the journeys, 6.3.f's contract notes (6.4.d)
+  - **Read** `docs/design/journeys/owner-answers.md`, TASKS.md Decisions D50, D51, D52, D45, D22, D47, D32 and Voice, the journeys, 6.3.f's contract notes (6.4.d), the developer's input `.claude/specs/indies-platform/reviews/6.4-input-developer.md`
   - _Requirements: 6.1, 7.1_
   - [ ] 6.4.a D50 — the gallery enquiry-only: EXPERIENCE-GALLERY.md (the purchase panel's modes, no shown price, the invoice-and-pay path, the hold until the invoice is due), COMMERCE.md and PAYMENTS.md (the staff-issued invoice paid through the gateway — 24.5's order builder or a pay link — and what of reserve, cart and offers the gallery no longer uses), requirements.md's affected criteria, and C1/C2's purchase actions for an original
   - [ ] 6.4.b S3 and S7 — the shop sells within Indonesia at launch and from stock: EXPERIENCE-SHOP.md, COMMERCE.md §3, PAYMENTS.md §6 (PayPal at launch or not), the configurator's framed options against "everything in stock"
   - [ ] 6.4.c G10, G12, G13, S4, S5, S6, S12, S13 — what the docs promise: no institution named, first-party analytics in the admin dashboard (and whether GA4/Meta still fire after consent — a question back to the owner if the answer is not plain), the showroom's hours, pickup and QRIS, case-by-case partner terms, a separate online WhatsApp number, no refunds but a damaged print replaced, free shipping over Rp 500.000 and a welcome code
   - [ ] 6.4.d 6.3.f's contract notes: C2 `MessageVM` names `message.<code>`; `DeliveryPromiseVM.holiday` names `holidayDelay` `{holiday, date}`; whether a controlled list's label lives in the view model (`TermVM`, `FacetOptionVM.label`) or the app's lexicon — pick one; `lifeDates` keeps "c." for a circa date
-  - [ ] 6.4.e a proposed board diff for the orchestrator — which tasks and Done-when lines in phases 18, 19, 24, 32, 34, 35, 39 and 40 change, are cut (✂️) or are added, with ids; agents never edit TASKS.md
-  - [ ] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report.
+  - [ ] 6.4.e a proposed board diff for the orchestrator — which tasks and Done-when lines in phases 18, 19, 24, 25, 28, 32, 33, 34, 35, 38, 39 and 40 change, are cut (✂️) or are added, with ids; agents never edit TASKS.md
+  - [ ] 6.4.g D51 and D52 (the developer's input, gaps A–C): the gallery's `/pay/{token}` invoice page on our site with the Payment Element embedded — PAYMENTS.md §6 drops "Stripe Invoicing / Payment Links"; the gallery-checkout leftovers in 25.1.b–c (authorise-then-capture, Checkout Sessions against a lock), 28.1.c and 28.2.b/d (cart merge, my offers, holds, price requests), 33.1 (cart, checkout and order-lookup loaders, viewer-relative purchase states, `hold`/`quote` actions) and 38.2.b ("an accepted offer" → "a WhatsApp-negotiated invoice → a working pay page"); the shop's one stock pool across COMMERCE.md §4 and §8, EXPERIENCE-SHOP.md and 24.4
+  - [ ] 6.4.f **Check:** every answer in `owner-answers.md` whose Changes column names a doc is reflected in that doc or routed with a reason; no doc still promises online buying, a shown price or an online offer on a gallery original, a payment page hosted by the provider, several shop stock locations, or shop checkout abroad at launch; contract changes are versioned per CONTRACTS.md with `pnpm verify` green; the board diff is in the report.
 
 ---
 
@@ -2545,13 +2548,14 @@ agents are assigned then.
 - [ ] v2.9 The full "Print from the Archive" range and the gallery-wall builder — _Requirements: 7.7_
 - [ ] v2.10 Personalised old maps of Indonesian towns — _Requirements: 7.2_
 - [ ] v2.11 Loyalty and referrals; showroom visits earning points — _Requirements: 13.7_
-- [ ] v2.12 A showroom till on the same stock (QRIS) — _Requirements: 9.1_
+- [ ] v2.12 A showroom till on the same stock (QRIS) — _Requirements: 9.1_ — ✂️ cut: folded into v2.19 (D52)
 - [ ] v2.13 Marketplace sync through an omnichannel hub (Jubelio/Ginee), merchandise only — _Requirements: 3.1_
 - [ ] v2.14 Georeferenced then/now overlays (Allmaps, IIIF) — _Requirements: 4.2_
 - [ ] v2.15 The Parry cartobibliography online — _Requirements: 3.5_
 - [ ] v2.16 A verifiable QR certificate of authenticity — _Requirements: 10.5_
 - [ ] v2.17 Image licensing for institutions and publishers — _Requirements: 4.3_
 - [ ] v2.18 Print-on-demand abroad: Prodigi and Gelato adapters behind the 26.3 router, switched on with `fulfilment.pod` (D23) — _Requirements: 12.4, 12.5_
+- [ ] v2.19 **The Bali shops on our engine — the POS** (D52): the hundreds of shops as stock locations with their own logins; a till screen they sell from (QRIS); stock shared with the website in real time; each shop's ownership model (wholesale, consignment, branch) and its settlement; replacing today's WhatsApp reporting. Overlaps v2.7's trade portal for the same partners — the two may merge when scheduled — _Requirements: 9.1, 7.8_
 
 ---
 
@@ -2627,6 +2631,7 @@ One box per run of phases in a stage; an arrow means the later box needs the ear
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan. Entries before the replan use the old ids.
 
+- 2026-10-01 — **The developer's input to 6.4** (`.claude/specs/indies-platform/reviews/6.4-input-developer.md`): **D51** — the gallery's negotiation runs on WhatsApp and its invoice is paid on our own `/pay/{token}` page, never one hosted by Stripe; **D52** — the shop's stock is one pool at launch (hundreds of Bali shops report over WhatsApp; per-shop stock waits for the POS, new v2.19, which absorbs v2.12 ✂️). 6.4 widened: its board diff now covers phases 25, 28, 33 and 38 too, new 6.4.g, its Check names the provider-hosted pay page and several stock locations.
 - 2026-10-01 — 7.4 reported partial (2a14caa): 7.4.a ticked (`./normalise` export, `legacy:normalise`, `src/index.ts`, `csv-products/index.ts` as typed data — `.mjs` cannot be re-exported with `allowJs` false); C2 type checks in `contracts.test-d.ts` fail on planted drift; `legacy:normalise` reproduces 7.2's counts exactly. **Blocked:** `node --experimental-strip-types` cannot load `@engine/config/constants` (its `index.ts` imports `./currencies` without an extension). Orchestrator's call: 7.4.b reworded — the exponents stay in the tables, pinned to `CURRENCY_EXPONENT` by a vitest drift test, and the currency is typed `CurrencyCode` by a type-only import (stripped at run time) — no change to the config package. Found for ARC/HAR: any strip-types CLI that imports an engine package at run time hits the same wall (`.ts` extensions in `config/src/constants`, or a resolver hook, is the general fix). Added 7.4.e (`laravel-catalogue/index.ts`). 7.4.d (fixture tests for §4's new cases) had not reached the agent; sent back with 7.4.b/e.
 - 2026-10-01 — ✅ 7.5 — merged to `main` (6fab928, branch b9cddc0); doc-only, tasks-lint and brand-literals green. MIGRATION.md §1 (sitemap 404; 1,823 distinct products, the ≈2,090 category sum double-counting; the maker route — **127 makers**, 813 URLs, which corrects this Log's "305", the fetched count; `/new-additions` queries; image size variants), §4 (the dirty data the real records showed; the circa range open for ARC), §6 (redirect rows for maker pages, `/new-additions`, image variants), §10 (SIRCLO 2020–21 then Squarespace 2022–24; 673 paths; the archived sitemap; Search Console fills the rest). Each statement traced to a Log entry, a committed README or the committed inventory; details seen only in the raw crawl kept without their numbers. Follow-ups: 7.4.d added — fixture tests for §4's new cases (given to 7.4's agent); for 6.4/ARC, the preamble's "Old East Indies has no website, so it starts clean" contradicts §10, and §9's "any Squarespace export" could name SIRCLO; Markdown is outside `format:check`.
 - 2026-10-01 — 6.1.f (a8d6dee), 6.2.h (b7754af) and 6.3.g–i (db741cb) merged; `pnpm verify` green on main (1544 tests; copy 587 gallery / 562 shop keys). The shop speaks *Anda*; J-G6 retired for J-G8, the negotiated invoice; the making is photographed in the Denpasar showroom. 6.4 (ARC) stopped on the session usage limit and resumes with the developer's input. Follow-ups 6.1.i, 6.2.i, 6.3.k–l.
