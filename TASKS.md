@@ -94,6 +94,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db | `w/3.5` | 2026-10-03 | |
 | 8·W3 | 8.4 The safety evaluation and the red-team set | qa | `w/8.4a` | 2026-10-03 | |
 | 6·W2 | 6.3 Checkout, the map pin, the nearest store and the atomic stock | senior-be | `w/6.3core` | 2026-10-03 | |
+| 4·W3 | 4.3 Chrome and home pages from the design team's drawings | senior-fe | `w/4.3` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -438,7 +439,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
   - [ ] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
 
-- [ ] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2
+- [ ] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — 🔄 4·W3
   - **Lane** DSG · **Agent** senior-fe · **Wave** W3
   - **Owns** `engine/apps/web/src/app/(gallery)/**`, `engine/apps/web/src/app/(shop)/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`, `engine/apps/web/src/sites/{gallery,shop}/home/**`
   - **Read** the design team's `Home - Antique Maps Indonesia`, `Home - Old East Indies` and `Old East Indies/Partnership` pages and `CLAUDE.md` in `docs/design/input/claude-design-2026-09/`, EXPERIENCE-GALLERY.md §Home, EXPERIENCE-SHOP.md §Home and §Partnership
