@@ -19,7 +19,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
-| **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
@@ -80,6 +80,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | copy merged (da4e214); the delete commit 4f259f1 lands last, right after 2.2, then the Check |
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | 2.2.a–d done; fixing the senior-integrator review's must-fix (CORS/CSRF trusted the gallery origin) and two should-fixes (`/api/x/*` fall-through to Payload, boot check vs DEPLOYMENT §8); then merge |
+| 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -403,7 +404,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Built to be restyled.** The first-run UI is the real UI, so it has to be right: every colour, size, space, radius, shadow and motion value comes from a token; pages are thin compositions of shared components; copy comes from the lexicon. A later redesign then edits `sites/*/tokens` and the shared components. The design team's material is in `docs/design/input/claude-design-2026-09/`.
 
-- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2
+- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — 🔄 4·W1
   - **Lane** DSG · **Agent** senior-uiux · **Wave** W1
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
