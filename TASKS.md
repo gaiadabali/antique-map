@@ -24,10 +24,10 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 3/16 | 0 | `██░░░░░░░░`  19% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **57/200** | **8** | `███░░░░░░░`  28% |
+| **All** | 11 phases | | | **9/49** | **60/200** | **8** | `███░░░░░░░`  30% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -682,9 +682,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/server/seo/**`, `engine/apps/web/src/app/api/x/{sitemap,robots}/**`
   - **Read** EXPERIENCE-GALLERY.md §SEO, EXPERIENCE-SHOP.md §SEO
   - _Requirements: 14.1, 14.2, 14.4_
-  - [ ] 9.3.a localised title, description, canonical, `hreflang` alternates and Open Graph for every page type; absolute URLs from `SITES`
-  - [ ] 9.3.b JSON-LD: gallery items as `CreativeWork`/`Product` **without** `offers` or price; shop products with price and availability; breadcrumbs and organisation
-  - [ ] 9.3.c a sitemap and `robots` per site listing only published pages in both languages; sold antiques stay listed; tracking and admin paths excluded
+  - [x] 9.3.a localised title, description, canonical, `hreflang` alternates and Open Graph for every page type; absolute URLs from `SITES`
+  - [x] 9.3.b JSON-LD: gallery items as `CreativeWork`/`Product` **without** `offers` or price; shop products with price and availability; breadcrumbs and organisation
+  - [x] 9.3.c a sitemap and `robots` per site listing only published pages in both languages; sold antiques stay listed; tracking and admin paths excluded
   - [ ] 9.3.d **Check:** a crawl of the built staging sites finds a canonical, alternates and a description on every page; no gallery JSON-LD contains `price` or `offers`; each sitemap's URLs return 200 and match the published counts.
 
 - [ ] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5
