@@ -16,6 +16,7 @@
 // From an agent's worktree (writes the MAIN checkout's board, under its lock; scripts/board/agent.mjs):
 //   node scripts/progress.mjs --start 5.2 [--agent senior-fe]   mark the task 🔄 and add its Now row   (pnpm tasks:start)
 //   node scripts/progress.mjs --report 5.2.a 5.2.b              tick finished subtasks, never a Check   (pnpm tasks:report)
+// Both also commit TASKS.md alone in the main checkout, so git shows the live board; add --no-commit to skip.
 //
 // Writes only the main checkout's TASKS.md; --check and --print read any copy.
 import { readFileSync } from 'node:fs'
@@ -23,7 +24,7 @@ import { join } from 'node:path'
 
 import { execFileSync } from 'node:child_process'
 
-import { guardReport, mainCheckoutRoot, startTask } from './board/agent.mjs'
+import { commitBoard, guardReport, mainCheckoutRoot, startTask } from './board/agent.mjs'
 import { ROOT, computeBoard, editBoard, runSync, today } from './board/run.mjs'
 
 const args = process.argv.slice(2)
@@ -43,6 +44,13 @@ const started = listAfter('--start')
 const agentAt = args.indexOf('--agent')
 const agent = agentAt === -1 ? undefined : args[agentAt + 1]
 const quiet = flag('--quiet')
+const autoCommit = !flag('--no-commit')
+function commitNote(root, message) {
+  if (!autoCommit) return
+  const outcome = commitBoard(root, message)
+  if (outcome.startsWith('error'))
+    console.error(`progress.mjs: the board was updated but not committed (${outcome})`)
+}
 
 function fail(message) {
   console.error(`progress.mjs: ${message}`)
@@ -67,6 +75,7 @@ if (flag('--report') || flag('--start')) {
         (done.ticked.length ? ` — ticked ${done.ticked.join(', ')}` : '') +
         (done.already.length ? `; already ticked ${done.already.join(', ')}` : ''),
     )
+    if (done.ticked.length) commitNote(root, `docs(board): ${done.ticked.join(', ')} done`)
   } else {
     if (started.length !== 1) fail('--start needs one task id, e.g. --start 5.2')
     let branch = ''
@@ -90,6 +99,7 @@ if (flag('--report') || flag('--start')) {
         ? `${started[0]} is already in flight`
         : `${started[0]} marked in flight on the board`,
     )
+    if (res.status === 'started') commitNote(root, `docs(board): ${started[0]} started`)
   }
   process.exit(0)
 }

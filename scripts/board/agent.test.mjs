@@ -53,3 +53,36 @@ describe('startTask', () => {
     expect(startTask(BOARD, '7.7', { date: '2026-10-02' }).status).toBe('unknown')
   })
 })
+
+describe('commitBoard', () => {
+  it('commits only TASKS.md, leaves other staged files alone, and reports a clean board', async () => {
+    const { execFileSync } = await import('node:child_process')
+    const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs')
+    const { tmpdir } = await import('node:os')
+    const { join } = await import('node:path')
+    const { commitBoard } = await import('./agent.mjs')
+    const repo = mkdtempSync(join(tmpdir(), 'commit-board-'))
+    const git = (...a) => execFileSync('git', a, { cwd: repo }).toString()
+    try {
+      git('init', '-q')
+      git('config', 'user.email', 't@example.com')
+      git('config', 'user.name', 't')
+      git('config', 'commit.gpgsign', 'false')
+      writeFileSync(join(repo, 'TASKS.md'), 'one\n')
+      writeFileSync(join(repo, 'other.txt'), 'x\n')
+      git('add', '.')
+      git('commit', '-q', '-m', 'init')
+      expect(commitBoard(repo, 'nothing')).toBe('clean')
+      writeFileSync(join(repo, 'TASKS.md'), 'two\n')
+      writeFileSync(join(repo, 'other.txt'), 'changed\n')
+      git('add', 'other.txt')
+      expect(commitBoard(repo, 'docs(board): tick')).toBe('committed')
+      expect(git('show', '--name-only', '--format=%s', 'HEAD').trim()).toBe(
+        'docs(board): tick\n\nTASKS.md',
+      )
+      expect(git('diff', '--cached', '--name-only').trim()).toBe('other.txt')
+    } finally {
+      rmSync(repo, { recursive: true, force: true })
+    }
+  })
+})

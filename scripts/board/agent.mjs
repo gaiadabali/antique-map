@@ -95,3 +95,33 @@ export function startTask(text, taskId, { agent = '—', branch = '', date }) {
   }
   return { text: lines.join(eol), status: 'started' }
 }
+
+/**
+ * Commits just `TASKS.md` in `root` (by explicit path, so nothing else staged goes with it) when it
+ * differs from HEAD, so git and every other view of the board stay as current as the file itself.
+ * Retries a few times if another agent holds the index lock. Returns `committed`, `clean` or an
+ * `error: …` string; it never throws, because a ticked box matters more than its commit.
+ */
+export function commitBoard(root, message) {
+  const git = (args) =>
+    execFileSync('git', args, { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] }).toString()
+  try {
+    git(['diff', '--quiet', 'HEAD', '--', 'TASKS.md'])
+    return 'clean'
+  } catch {
+    // the board differs from HEAD: commit it
+  }
+  let last = ''
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      git(['commit', '-q', '-m', message, '--', 'TASKS.md'])
+      return 'committed'
+    } catch (error) {
+      last = String(error.stderr || error.message)
+        .trim()
+        .split('\n')[0]
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 400)
+    }
+  }
+  return `error: ${last}`
+}
