@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 2/18 | 0 | `█░░░░░░░░░`  11% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 3/18 | 0 | `██░░░░░░░░`  17% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **4/48** | **22/194** | **8** | `█░░░░░░░░░`  11% |
+| **All** | 11 phases | | | **4/48** | **23/194** | **8** | `█░░░░░░░░░`  12% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -265,7 +265,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 1.1, 1.4, 15.1_
   - [x] 2.1.a `git mv engine/apps/gallery engine/apps/web`; port the emporium's `lexicon/shop.ts` and tokens into it; delete `engine/apps/emporium`; delete both apps' old `PRODUCT.md` (the root `PRODUCT.md` replaces them)
   - [x] 2.1.b one `build`, one Lighthouse file, one release artifact subdirectory and one `.gaiadeploy.yml` entry; Playwright runs `gallery.localhost` and `shop.localhost` on one port at 390 px and 1280 px
-  - [ ] 2.1.c CI: one e2e database, `next build` with no `DATABASE_URL` or `PAYLOAD_SECRET`, plus `pnpm audit --prod --audit-level=high`, a gitleaks scan and CodeQL; regenerate `pnpm-lock.yaml` with `pnpm install`
+  - [x] 2.1.c CI: one e2e database, `next build` with no `DATABASE_URL` or `PAYLOAD_SECRET`, plus `pnpm audit --prod --audit-level=high`, a gitleaks scan and CodeQL; regenerate `pnpm-lock.yaml` with `pnpm install`
   - [ ] 2.1.d **Check:** a fresh clone runs `pnpm install && pnpm verify` and a production build with the database variables unset, and the app starts on one port.
 
 - [ ] **2.2 Site replaces brand: host to site, one admin host** · needs: 2.1
