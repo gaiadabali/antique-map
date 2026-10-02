@@ -1,0 +1,27 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font: var(--text-small);
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border-color: var(--color-accent);
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.chip[aria-pressed='true'] .count {
+  color: inherit;
+}
