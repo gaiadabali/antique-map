@@ -1,8 +1,0 @@
-{
-  "//": "Input to the legacy URL discovery tool (engine/packages/migrate/src/sources/csv-products/legacy-urls). The domain lives here, not in engine code (CONVENTIONS.md §1). kindOverrides settles what a URL's shape cannot: a store page archived without any product under it. An override covers the path and everything under it.",
-  "domain": "oldeastindies.com",
-  "kindOverrides": {
-    "/framed-art-works": "category",
-    "/mounted-art-prints": "category"
-  }
-}
