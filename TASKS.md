@@ -24,7 +24,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **All** | 11 phases | | | **9/49** | **50/200** | **8** | `███░░░░░░░`  25% |
@@ -85,6 +85,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 3·W3 | 3.7 Spreadsheet import and the seed data | senior-be | `w/3.7c` | 2026-10-03 | |
 | 6·W1 | 6.2 The bag, the delivery fee and the welcome code | senior-be | `task/6.2-pricing-core` | 2026-10-03 | |
 | 4·W2 | 4.2 Shared components from the design team's kit | senior-fe | `w/4.2a` | 2026-10-03 | |
+| 9·W1 | 9.3 Metadata, structured data and sitemaps | senior-fe | `w/9.3a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -676,7 +677,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 9.2.c a build check that no Google Analytics or Meta Pixel script or domain appears in the output
   - [ ] 9.2.d **Check:** driving the seeded sites produces events; the dashboard counts equal the database; a bot user-agent adds none; the built HTML contains no third-party tracker domain.
 
-- [ ] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6
+- [ ] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6 — 🔄 9·W1
   - **Lane** PLT · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/server/seo/**`, `engine/apps/web/src/app/api/x/{sitemap,robots}/**`
   - **Read** EXPERIENCE-GALLERY.md §SEO, EXPERIENCE-SHOP.md §SEO
