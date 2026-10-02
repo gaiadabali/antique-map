@@ -1,42 +1,34 @@
 /**
  * The engine's proxy (Next 16's `proxy` convention, formerly middleware) — `@engine/http/proxy`.
- * Each app's `src/proxy.ts` re-exports it and declares C13's `PROXY_MATCHER` literally:
+ * The app's `src/proxy.ts` re-exports it and declares the manifest's `PROXY_MATCHER` literally:
  *
  *   export { proxy } from '@engine/http/proxy'
- *   export const config = { matcher: ['/((?!api/|_next/|brand-assets/).*)'] }
+ *   export const config = { matcher: ['/((?!_next/|__nextjs).*)'] }
  *
- * It rewrites, sets headers and its own not-found's status, nothing else (`./decide`, C13): no
- * redirect, no database — the brand config it reads is the file, loaded once per process.
- * Nothing runs at import: the build has no brand, and the config is read on the first request.
+ * It picks the site from `Host`, rewrites, sets headers and answers its own 404s and alias
+ * redirects, nothing else (`./decide`): no database, no file. The allow-list is read from the
+ * environment on each request (parsed once per distinct value), so nothing runs at import.
  */
-import { loadBrandConfig } from '@engine/config/loader'
-import { decideProxy, type DecideOptions, type ProxyConfig, type ProxyDecision } from './decide'
+import { decideProxy, type DecideOptions, type ProxyDecision } from './decide'
 import { toResponse } from './respond'
 
 export { decideProxy, NOT_FOUND_SEGMENT, notFoundPath } from './decide'
 export type {
   ContentSecurityPolicy,
   DecideOptions,
-  ProxyConfig,
   ProxyDecision,
   ProxyRequest,
+  ProxyWhy,
 } from './decide'
 export { toResponse } from './respond'
 
-/** The CSP builder (TASKS.md 41.1.a; until it lands, no CSP is set) and Payload's cookie prefix. */
-export type ProxyOptions = DecideOptions & {
-  /** Where the brand config comes from; the process's own file by default. */
-  readonly config?: () => ProxyConfig
-}
+/** The CSP builder (until it lands, no CSP is set), Payload's cookie prefix and the env. */
+export type ProxyOptions = DecideOptions
 
 export function createProxy(options: ProxyOptions = {}): (request: Request) => Response {
-  // Read on the first request, then kept: the proxy's hot path touches no disk either.
-  let loaded: ProxyConfig | undefined
-  const config = options.config ?? (() => (loaded ??= loadBrandConfig()))
   return (request) => {
     const decision: ProxyDecision = decideProxy(
-      config(),
-      { url: new URL(request.url), headers: request.headers },
+      { url: new URL(request.url), headers: request.headers, method: request.method },
       options,
     )
     return toResponse(decision, request)

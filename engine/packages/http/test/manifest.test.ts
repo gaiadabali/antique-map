@@ -4,17 +4,12 @@ import { describe, expect, it } from 'vitest'
 
 import { ENGINE_ROUTES, handlerOf } from '../src/manifest'
 
-describe('C13 manifest', () => {
+describe('the engine routes manifest', () => {
   it('lists unique paths and handlers', () => {
     const paths = ENGINE_ROUTES.map((r) => r.path)
     expect(new Set(paths).size).toBe(paths.length)
     expect(
-      ENGINE_ROUTES.every(
-        (r) =>
-          r.path.startsWith('/api/x/') ||
-          r.path === '/api/health' ||
-          r.path.startsWith('/brand-assets/'),
-      ),
+      ENGINE_ROUTES.every((r) => r.path.startsWith('/api/x/') || r.path === '/api/health'),
     ).toBe(true)
     expect(ENGINE_ROUTES.every((r) => r.handler === handlerOf(r.path))).toBe(true)
   })

@@ -20,11 +20,11 @@ import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vitest'
 
 import {
-  availabilityTag,
+  productStockTag,
   invalidate,
   invalidationBatch,
-  itemTag,
-  priceTag,
+  productTag,
+  productPriceTag,
   workTag,
   type CacheTag,
 } from '../src/index'
@@ -82,9 +82,9 @@ function request() {
 }
 
 const TAGS: CacheTag[] = [
-  itemTag(1706),
-  availabilityTag(1706),
-  priceTag(1706),
+  productTag(1706),
+  productStockTag(1706),
+  productPriceTag(1706),
   workTag('FX-000123'),
 ]
 
@@ -94,7 +94,7 @@ describe('inside a request, with no collector', () => {
     req.run(() => {
       // An `afterChange` hook: Payload has not committed yet.
       invalidate(TAGS)
-      invalidate([itemTag(1706)]) // a second hook naming the same tag
+      invalidate([productTag(1706)]) // a second hook naming the same tag
       req.state.committed = true // the operation commits, the handler answers
     })
     expect(req.expired).toEqual([])
@@ -103,24 +103,32 @@ describe('inside a request, with no collector', () => {
     await req.close()
     expect(req.errors).toEqual([])
     expect(req.expired).toEqual([
-      { tags: ['item:1706', 'work:FX-000123'], durations: { expire: 31_536_000 }, committed: true },
-      { tags: ['availability:1706', 'price:1706'], durations: { expire: 0 }, committed: true },
+      {
+        tags: ['product:1706', 'work:FX-000123'],
+        durations: { expire: 31_536_000 },
+        committed: true,
+      },
+      {
+        tags: ['product-stock:1706', 'product-price:1706'],
+        durations: { expire: 0 },
+        committed: true,
+      },
     ])
   })
 
   it('takes each profile from the tag kind: nothing a caller passes can change it', async () => {
     const req = request()
-    req.run(() => invalidate([availabilityTag(7)]))
+    req.run(() => invalidate([productStockTag(7)]))
     await req.close()
     expect(req.expired).toEqual([
-      { tags: ['availability:7'], durations: { expire: 0 }, committed: false },
+      { tags: ['product-stock:7'], durations: { expire: 0 }, committed: false },
     ])
   })
 
   it('refuses, before scheduling anything, a tag no builder makes', async () => {
     const req = request()
-    expect(() => req.run(() => invalidate([itemTag(1), 'item:01' as CacheTag]))).toThrow(
-      'not a cache tag @engine/cache makes: "item:01"',
+    expect(() => req.run(() => invalidate([productTag(1), 'product:01' as CacheTag]))).toThrow(
+      'not a cache tag @engine/cache makes: "product:01"',
     )
     await req.close()
     expect(req.expired).toEqual([])
@@ -129,9 +137,11 @@ describe('inside a request, with no collector', () => {
 
 describe('outside a request', () => {
   it('with no collector, throws after()`s error rather than doing nothing', () => {
-    expect(() => invalidate([itemTag(1706)])).toThrow(/`after` was called outside a request scope/)
-    expect(() => invalidate([itemTag(1706)], {})).toThrow(/outside a request scope/)
-    expect(() => invalidate([itemTag(1706)], null)).toThrow(/outside a request scope/)
+    expect(() => invalidate([productTag(1706)])).toThrow(
+      /`after` was called outside a request scope/,
+    )
+    expect(() => invalidate([productTag(1706)], {})).toThrow(/outside a request scope/)
+    expect(() => invalidate([productTag(1706)], null)).toThrow(/outside a request scope/)
     // A forgotten collector is an error even when there is nothing to expire.
     expect(() => invalidate([])).toThrow(/outside a request scope/)
   })
@@ -151,7 +161,7 @@ describe('outside a request', () => {
   })
 
   it('refuses a context whose collector key holds anything but a collector', () => {
-    expect(() => invalidate([itemTag(1)], { '@engine/cache:collector': { add() {} } })).toThrow(
+    expect(() => invalidate([productTag(1)], { '@engine/cache:collector': { add() {} } })).toThrow(
       /is not an invalidation collector/,
     )
   })
@@ -161,9 +171,9 @@ describe('inside a request, with a collector', () => {
   it('collects: the explicit mode wins, and after() is never asked', async () => {
     const req = request()
     const batch = invalidationBatch({ target: { origin: 'http://localhost:1', secret: 's' } })
-    await req.run(() => batch.operation((context) => invalidate([priceTag(3)], context)))
+    await req.run(() => batch.operation((context) => invalidate([productPriceTag(3)], context)))
     await req.close()
     expect(req.expired).toEqual([])
-    expect(batch.pending).toEqual(['price:3'])
+    expect(batch.pending).toEqual(['product-price:3'])
   })
 })

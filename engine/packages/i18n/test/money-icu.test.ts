@@ -3,7 +3,7 @@
 // amount's digits never depend on the runtime (C5, CONVENTIONS.md §3). Its symbol and spacing
 // still may, which is why a Client Component shows the server's string (CONVENTIONS.md §6).
 // Its own file: formatMoney caches its formatters per module, so the stub goes in first.
-import { CURRENCY_CODES, CURRENCY_EXPONENT } from '@engine/config/schema'
+import { CURRENCY_CODES, CURRENCY_EXPONENT } from '@engine/config/constants'
 import { afterAll, describe, expect, it, vi } from 'vitest'
 
 import { formatMoney } from '../src/index'

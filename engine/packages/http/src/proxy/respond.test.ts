@@ -4,39 +4,34 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { loadBrandConfig } from '@engine/config/loader'
 import { PROXY_NOT_FOUND_STATUS, PROXY_USER_AGENT } from '../manifest'
 import { createProxy, proxy } from './route'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url))
-const testBrand = { BRAND: 'test', BRAND_ROOT: './test', TEST_STOREFRONT: 'gallery' }
+const ENV = { GALLERY_HOSTS: 'gallery.localhost', SHOP_HOSTS: 'shop.localhost' }
 
 describe('the proxy’s answer — the protocol NextResponse.rewrite()/.next() writes', () => {
-  const config = loadBrandConfig({ env: testBrand, cwd: REPO_ROOT })
-  const answer = (path: string, headers: Record<string, string> = {}) =>
-    createProxy({ config: () => config })(
-      new Request(`https://shop.example.com${path}`, { headers }),
+  const answer = (path: string, headers: Record<string, string> = {}, host = 'gallery.localhost') =>
+    createProxy({ env: ENV })(
+      new Request(`http://localhost:4230${path}`, { headers: { host, ...headers } }),
     )
 
-  it('a rewrite names its absolute destination and forwards every request header, the proxy’s included', () => {
-    const response = answer('/category/7?s=sold', {
-      cookie: 'cart=abc',
-      'x-public-path': '/forged',
-    })
+  it('a rewrite names its destination on Next’s own origin, never the client’s Host', () => {
+    const response = answer('/category/7?s=sold', { cookie: 'a=1', 'x-public-path': '/forged' })
     expect(response.status).toBe(200)
     expect(response.headers.get('x-middleware-rewrite')).toBe(
-      'https://shop.example.com/api/x/legacy/category/7?s=sold',
+      'http://localhost:4230/api/x/legacy/category/7?s=sold',
     )
     expect(response.headers.get('x-middleware-next')).toBeNull()
     const forwarded = response.headers.get('x-middleware-override-headers')?.split(',') ?? []
-    expect(forwarded).toEqual(expect.arrayContaining(['cookie', 'x-public-path', 'x-locale']))
-    expect(response.headers.get('x-middleware-request-cookie')).toBe('cart=abc')
+    expect(forwarded).toEqual(expect.arrayContaining(['cookie', 'x-public-path', 'x-site']))
+    expect(response.headers.get('x-middleware-request-cookie')).toBe('a=1')
     expect(response.headers.get('x-middleware-request-x-public-path')).toBe('/category/7')
-    expect(response.headers.get('x-middleware-request-x-locale')).toBe('en')
+    expect(response.headers.get('x-middleware-request-x-site')).toBe('gallery')
   })
 
   it('a pass-through carries x-middleware-next, and a removed header is left off the list', () => {
-    const response = answer('/admin', { 'content-security-policy': 'forged' })
+    const response = answer('/admin', { 'content-security-policy': 'forged' }, 'shop.localhost')
     expect(response.headers.get('x-middleware-next')).toBe('1')
     expect(response.headers.get('x-middleware-rewrite')).toBeNull()
     expect(response.headers.get('x-middleware-override-headers')?.split(',')).not.toContain(
@@ -45,7 +40,7 @@ describe('the proxy’s answer — the protocol NextResponse.rewrite()/.next() w
     expect(response.headers.get('x-middleware-request-accept-language')).toBe('en')
   })
 
-  it('answers the proxy’s own not-found with PROXY_NOT_FOUND_STATUS on its rewrite (C13 v1.3)', () => {
+  it('answers the site’s own not-found with PROXY_NOT_FOUND_STATUS on its rewrite', () => {
     for (const path of [
       '/nope/deeper',
       '/en/item/1706',
@@ -55,13 +50,13 @@ describe('the proxy’s answer — the protocol NextResponse.rewrite()/.next() w
       const response = answer(path)
       expect(response.status, path).toBe(PROXY_NOT_FOUND_STATUS)
       expect(response.headers.get('x-middleware-rewrite'), path).toBe(
-        'https://shop.example.com/en/not-found',
+        'http://localhost:4230/gallery/en/not-found',
       )
     }
   })
 
   it('answers every other rewrite and pass-through 200, so the status Next’s render gives stands', () => {
-    for (const path of ['/product/1706-bali', '/nope', '/category/7', '/robots.txt', '/admin']) {
+    for (const path of ['/product/1706-bali', '/category/7', '/robots.txt', '/gallery/logo.svg']) {
       expect(answer(path).status, path).toBe(200)
     }
   })
@@ -70,39 +65,39 @@ describe('the proxy’s answer — the protocol NextResponse.rewrite()/.next() w
     for (const headers of [{}, { 'user-agent': '' }] as Record<string, string>[]) {
       const response = answer('/nope', headers)
       expect(response.headers.get('x-middleware-request-user-agent')).toBe(PROXY_USER_AGENT)
-      expect(response.headers.get('x-middleware-override-headers')?.split(',')).toContain(
-        'user-agent',
-      )
     }
-    const own = answer('/nope', { 'user-agent': 'curl/8.9.1' })
-    expect(own.headers.get('x-middleware-request-user-agent')).toBe('curl/8.9.1')
+    expect(
+      answer('/nope', { 'user-agent': 'curl/8.9.1' }).headers.get(
+        'x-middleware-request-user-agent',
+      ),
+    ).toBe('curl/8.9.1')
   })
 
-  it('forwards x-public-search: the item’s query on its rewrite, "" on every other request', () => {
-    const forged = { 'x-public-search': '?token=forged' }
-    const search = (path: string) =>
-      answer(path, forged).headers.get('x-middleware-request-x-public-search')
-    expect(search('/product/1706-old?utm_source=mail')).toBe('?utm_source=mail')
-    expect(search('/product/1706-bali')).toBe('')
-    for (const path of ['/pay/abc?t=secret', '/old-maps?page=2', '/nope?q=1', '/admin?x=1']) {
-      expect(search(path), path).toBe('')
-    }
+  it('answers an alias with a redirect of its own, its Location from the allow-list', () => {
+    const env = { ...ENV, GALLERY_HOSTS: 'gallery.localhost,old.localhost', PORT: '4230' }
+    const response = createProxy({ env })(
+      new Request('http://localhost:4230/x?y=1', { headers: { host: 'old.localhost:4230' } }),
+    )
+    expect(response.status).toBe(301)
+    expect(response.headers.get('location')).toBe('http://gallery.localhost:4230/x?y=1')
+    expect(response.headers.get('x-middleware-rewrite')).toBeNull()
   })
 })
 
 describe('the proxy never touches the database', () => {
-  /** `@engine/config/<entry>` → its source file, through the package's own exports map. */
-  const configDir = join(REPO_ROOT, 'engine', 'packages', 'config')
-  const configExports = (
-    JSON.parse(readFileSync(join(configDir, 'package.json'), 'utf8')) as {
-      exports: Record<string, string>
-    }
-  ).exports
+  const packageDir = (name: string) => join(REPO_ROOT, 'engine', 'packages', name)
+  const exportsOf = (name: string) =>
+    (
+      JSON.parse(readFileSync(join(packageDir(name), 'package.json'), 'utf8')) as {
+        exports: Record<string, string>
+      }
+    ).exports
 
   /** Every module the proxy's entry reaches, followed through relative and config imports. */
   function importGraph(): { files: string[]; packages: Set<string> } {
     const files: string[] = []
     const packages = new Set<string>()
+    const configExports = exportsOf('config')
     const visit = (file: string) => {
       if (files.includes(file)) return
       files.push(file)
@@ -114,12 +109,11 @@ describe('the proxy never touches the database', () => {
           packages.add(specifier)
           const entry = /^@engine\/config(\/.+)$/.exec(specifier)?.[1]
           const target = entry === undefined ? undefined : configExports[`.${entry}`]
-          if (target) visit(join(configDir, target))
+          if (target) visit(join(packageDir('config'), target))
           continue
         }
         const base = resolve(dirname(file), specifier)
-        const candidates = [`${base}.ts`, join(base, 'index.ts'), base]
-        const found = candidates.find((candidate) => {
+        const found = [`${base}.ts`, join(base, 'index.ts'), base].find((candidate) => {
           try {
             return readFileSync(candidate) !== undefined
           } catch {
@@ -133,44 +127,34 @@ describe('the proxy never touches the database', () => {
     return { files, packages }
   }
 
-  it('imports no database driver, no Payload, no domain — only config, zod and node:fs/path', () => {
+  it('imports no database driver, no Payload, no file reader and no brand — only the sites and zod', () => {
     const { files, packages } = importGraph()
     expect(files.length).toBeGreaterThan(5)
-    const allowed = [
-      '@engine/config/loader',
-      '@engine/config/routes',
-      '@engine/config/schema',
-      'node:fs',
-      'node:path',
-      'zod',
-    ]
+    const allowed = ['@engine/config/constants', '@engine/config/sites', 'zod']
     expect([...packages].filter((name) => !allowed.includes(name))).toEqual([])
-    expect(packages).toContain('@engine/config/routes') // the graph really was followed…
-    expect(files.some((file) => /[\\/]loader[\\/]load\.ts$/.test(file))).toBe(true) // …into the loader
+    expect(packages).toContain('@engine/config/sites') // the graph really was followed…
+    expect(files.some((file) => /[\\/]sites[\\/]hosts\.ts$/.test(file))).toBe(true) // …into hosts
     const driver =
-      /\b(?:from|import|require)\s*\(?\s*['"](?:payload|@payloadcms\/|pg|postgres|drizzle)/
+      /\b(?:from|import|require)\s*\(?\s*['"](?:payload|@payloadcms\/|pg|postgres|drizzle|node:fs)/
     for (const file of files) {
       const source = readFileSync(file, 'utf8')
-      expect(source, file).not.toMatch(driver) // no import of a database or the CMS, dynamic included
-      expect(source, file).not.toMatch(/\bDATABASE_URL\b/) // no connection string read, however spelt
+      expect(source, file).not.toMatch(driver)
+      expect(source, file).not.toMatch(/\bDATABASE_URL\b|\bBRAND(?:_ROOT)?\b/)
     }
-    // The checks bite: each would catch what it is for.
     expect("const pool = await import('pg')").toMatch(driver)
-    expect('const url = process.env.DATABASE_URL').toMatch(/\bDATABASE_URL\b/)
   })
 
   it('answers with no database configured at all', () => {
     const env = process.env
-    process.env = {
-      ...env,
-      DATABASE_URL: undefined,
-      ...testBrand,
-      BRAND_ROOT: join(REPO_ROOT, 'test'),
-    }
+    process.env = { ...env, DATABASE_URL: undefined, ...ENV }
     try {
-      const response = proxy(new Request('https://shop.example.com/product/1706-bali'))
+      const response = proxy(
+        new Request('http://localhost:4230/product/1706-bali', {
+          headers: { host: 'gallery.localhost:4230' },
+        }),
+      )
       expect(response.headers.get('x-middleware-rewrite')).toBe(
-        'https://shop.example.com/en/item/1706-bali',
+        'http://localhost:4230/gallery/en/item/1706-bali',
       )
     } finally {
       process.env = env

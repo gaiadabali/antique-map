@@ -3,7 +3,6 @@
  * fails on a failed gating check, never on the queue, and never leaks a finding's text.
  */
 import { createHash } from 'node:crypto'
-import { fileURLToPath } from 'node:url'
 
 import type { BootReport } from '@engine/config/boot-check'
 import { describe, expect, it } from 'vitest'
@@ -11,18 +10,17 @@ import { describe, expect, it } from 'vitest'
 import { checkHealth, type HealthPorts } from './health'
 import { healthPorts, storageCheck, unloadedPayloadPorts } from './ports'
 
-/** The synthetic brand as a workstation runs it, for the real boot check. */
-const TEST_BRAND_ENV = {
-  BRAND: 'test',
-  BRAND_ROOT: fileURLToPath(new URL('../../../../../test', import.meta.url)),
-  TEST_STOREFRONT: 'gallery',
-  SITE_URL: 'http://localhost:4206',
+/** Both sites' local hosts, as a workstation runs them, for the real boot check. */
+const LOCAL_ENV = {
+  GALLERY_HOSTS: 'gallery.localhost',
+  SHOP_HOSTS: 'shop.localhost',
+  PORT: '4206',
 }
 
 /** The same, with everything the boot check requires set, so a database outage is its only problem. */
 const COMPLETE_ENV = {
-  ...TEST_BRAND_ENV,
-  DATABASE_URL: 'postgres://app@localhost:5432/test_gallery',
+  ...LOCAL_ENV,
+  DATABASE_URL: 'postgres://app@localhost:5432/indies_test',
   PAYLOAD_SECRET: 'x'.repeat(40),
   LINK_TOKEN_KEYS: `k1:${createHash('sha256').update('health-test').digest().toString('base64url')}`,
 }
@@ -169,7 +167,7 @@ describe('checkHealth()', () => {
     const { status, body } = await checkHealth(
       ports({
         boot: async () => {
-          throw new Error('BRAND_ROOT unreadable')
+          throw new Error('boot check unreadable')
         },
         storage: () => {
           throw new Error('bucket?')

@@ -4,7 +4,6 @@
  * `no-store` JSON, and runs one check at a time behind a ~5 s memo (4.1 senior-be #5).
  */
 import { randomBytes } from 'node:crypto'
-import { fileURLToPath } from 'node:url'
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -17,10 +16,9 @@ vi.mock('./payload-ports', () => {
 })
 
 const ENV = {
-  BRAND: 'test',
-  BRAND_ROOT: fileURLToPath(new URL('../../../../../test', import.meta.url)),
-  TEST_STOREFRONT: 'gallery',
-  SITE_URL: 'http://localhost:4206',
+  GALLERY_HOSTS: 'gallery.localhost',
+  SHOP_HOSTS: 'shop.localhost',
+  PORT: '4206',
   DATABASE_URL: 'postgres://u:p@127.0.0.1:1/none',
   PAYLOAD_SECRET: 'x'.repeat(40),
   LOCAL_PRODUCTION_BUILD: '1',

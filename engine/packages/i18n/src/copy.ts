@@ -1,9 +1,9 @@
 /**
- * A brand's copy: `<brand>/site/copy/<locale>.json`, the values for the message keys an app
- * defines (BRANDS.md §2: apps own keys; brands own words). A flat object of key → text;
- * `{name}` marks a value the app fills. The folder is found by `@engine/config`'s loader
- * (`BrandPaths.copyDir`) and read at runtime, never at build — it ships inside the brand
- * folder, so a brand's voice changes with a deploy of its folder, not a rebuild of the app.
+ * A site's copy: the values for the message keys the app defines (CONVENTIONS.md §6: keys in code,
+ * values in files) — `engine/apps/web/src/sites/<site>/lexicon/<locale>.json`, a flat object of
+ * key → text; `{name}` marks a value the app fills. The app imports each file (bundled, never read
+ * from disk at runtime) and joins it with `createMessages()`; this entry keeps the file readers
+ * the copy gate and the tests use: `readCopyFile()`, `checkCopy()` and `loadMessages()`.
  *
  * Server only: this entry (`@engine/i18n/copy`) reads files, so it is kept out of the root
  * entry, which a Client Component may import for the formatters.
@@ -11,7 +11,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { LocaleCode } from '@engine/config/schema'
+import type { LocaleCode } from '@engine/config/constants'
 
 import {
   createMessages,
@@ -31,7 +31,7 @@ export class CopyFileError extends Error {
 
 const memo = new Map<string, CopyValues | null>()
 
-/** The file's values, or `null` when the brand has no copy for the locale yet. */
+/** The file's values, or `null` when there is no copy for the locale yet. */
 export function readCopyFile(
   copyDir: string,
   locale: LocaleCode,
@@ -79,7 +79,7 @@ export type CopyIssue = {
 }
 
 /**
- * What a brand's copy lacks or gets wrong against an app's keys, per locale — for CI and the
+ * What a site's copy lacks or gets wrong against the app's keys, per locale — for CI and the
  * lexicon (TASKS.md 6.3): a key with no value, `''` included (the app's neutral default would
  * show); a value for a key the app does not define (a typo, or a key the app dropped); and a
  * value whose `{placeholders}` differ from the default's (the app fills names the text must
@@ -135,7 +135,7 @@ export function checkCopy(input: {
   return issues
 }
 
-/** Joins an app's keys with the brand's copy files in `copyDir` (`BrandPaths.copyDir`). */
+/** Joins the app's keys with the copy files in `copyDir`. */
 export function loadMessages<K extends string>(
   source: MessageSource<K> & { readonly copyDir: string },
 ): Messages<K> {
