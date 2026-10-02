@@ -59,7 +59,7 @@ describe('registry entries', () => {
   })
 })
 
-/** The collections the config holds after TASKS.md 2.4: the stubs and their frozen order are gone. */
+/** The collections the config holds after TASKS.md 3.4 (2.4's stubs are gone; 3.4 adds pages, redirects, leads, partners, chat-sessions, events). */
 const SLUGS = [
   'users',
   'stores',
@@ -70,12 +70,21 @@ const SLUGS = [
   'sources',
   'media',
   'masters',
+  'pages',
+  'redirects',
+  'leads',
+  'partners',
+  'chat-sessions',
+  'events',
 ]
 
 describe('the registered collections', () => {
-  it('are the built collections, in the sidebar order, and no global yet', () => {
+  it('are the built collections, in the sidebar order', () => {
     expect(registeredCollections().map((c) => c.slug)).toEqual(SLUGS)
-    expect(registeredGlobals()).toEqual([])
+  })
+
+  it('lists the site-settings global', () => {
+    expect(registeredGlobals().map((g) => g.slug)).toEqual(['site-settings'])
   })
 
   it('give every collection its own collections/<slug>/index.ts, its slug written literally', () => {

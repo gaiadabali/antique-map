@@ -76,6 +76,12 @@ export interface Config {
     sources: Source
     media: Media
     masters: Master
+    pages: Page
+    redirects: Redirect
+    leads: Lead
+    partners: Partner
+    'chat-sessions': ChatSession
+    events: Event
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -96,6 +102,12 @@ export interface Config {
     sources: SourcesSelect<false> | SourcesSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
     masters: MastersSelect<false> | MastersSelect<true>
+    pages: PagesSelect<false> | PagesSelect<true>
+    redirects: RedirectsSelect<false> | RedirectsSelect<true>
+    leads: LeadsSelect<false> | LeadsSelect<true>
+    partners: PartnersSelect<false> | PartnersSelect<true>
+    'chat-sessions': ChatSessionsSelect<false> | ChatSessionsSelect<true>
+    events: EventsSelect<false> | EventsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -106,8 +118,12 @@ export interface Config {
     defaultIDType: number
   }
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'id') | ('en' | 'id')[]
-  globals: {}
-  globalsSelect: {}
+  globals: {
+    'site-settings': SiteSetting
+  }
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>
+  }
   locale: 'en' | 'id'
   widgets: {
     collections: CollectionsWidget
@@ -927,6 +943,239 @@ export interface Source {
   _status?: ('draft' | 'published') | null
 }
 /**
+ * Information and editorial pages for either site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number
+  site: 'gallery' | 'shop'
+  kind: 'page' | 'story' | 'collection'
+  title: string
+  /**
+   * The page address, such as "about-us" or "delivery".
+   */
+  slug: string
+  intro?: string | null
+  hero?: (number | null) | Media
+  /**
+   * Plain text for now. Rich-text blocks come with task 9.3.
+   */
+  body?: string | null
+  /**
+   * For a curated collection page.
+   */
+  works?: (number | Work)[] | null
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Per-site URL redirects. The from path must start with /.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects".
+ */
+export interface Redirect {
+  id: number
+  site: 'gallery' | 'shop'
+  /**
+   * The path to redirect from, such as /old-page.
+   */
+  from: string
+  /**
+   * Where it redirects to: a path on the same site or an absolute URL.
+   */
+  to: string
+  code: '301' | '302'
+  source: 'legacy' | 'editor' | 'slug-change'
+  hits?: number | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * People the client should reply to: enquiries, sellers, partners and chat hand-offs.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads".
+ */
+export interface Lead {
+  id: number
+  /**
+   * What the person wants.
+   */
+  kind: 'ask' | 'sell' | 'partnership' | 'contact' | 'chat'
+  site: 'gallery' | 'shop'
+  source: 'chat' | 'form' | 'page'
+  payload?: {
+    name?: string | null
+    whatsapp?: string | null
+    email?: string | null
+    preferredChannel?: ('whatsapp' | 'email') | null
+    message?: string | null
+    locale?: ('en' | 'id') | null
+    consentVersion?: string | null
+    consentAt?: string | null
+  }
+  /**
+   * Works or products the person asked about.
+   */
+  items?: (number | Work)[] | null
+  chatSession?: (number | null) | ChatSession
+  status: 'new' | 'contacted' | 'in_progress' | 'closed' | 'spam'
+  /**
+   * Appended automatically when status changes.
+   */
+  statusHistory?:
+    | {
+        status: 'new' | 'contacted' | 'in_progress' | 'closed' | 'spam'
+        by?: (number | null) | User
+        at: string
+        id?: string | null
+      }[]
+    | null
+  firstReplyAt?: string | null
+  notes?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Visitor AI chat transcripts. Deleted 30 days after the last message.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chat-sessions".
+ */
+export interface ChatSession {
+  id: number
+  site: 'gallery' | 'shop'
+  locale: 'en' | 'id'
+  startedAt: string
+  lastMessageAt: string
+  /**
+   * Works or products the visitor asked about.
+   */
+  items?: (number | Work)[] | null
+  transcript?:
+    | {
+        role: 'user' | 'assistant'
+        at: string
+        text: string
+        id?: string | null
+      }[]
+    | null
+  ipHash?: string | null
+  labels?: string[] | null
+  usage?: {
+    inputTokens?: number | null
+    outputTokens?: number | null
+    costUsd?: number | null
+  }
+  outcome?: ('refused' | 'blocked' | 'handoff' | 'lead') | null
+  lead?: (number | null) | Lead
+  expiresAt?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Resellers and partners the owner works with. No login here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners".
+ */
+export interface Partner {
+  id: number
+  name: string
+  kind: 'hotel' | 'shop' | 'restaurant' | 'other'
+  site: 'gallery' | 'shop'
+  contact?: {
+    person?: string | null
+    whatsapp?: string | null
+    email?: string | null
+    phone?: string | null
+  }
+  address?: string | null
+  /**
+   * Negotiated case by case.
+   */
+  terms?: string | null
+  /**
+   * Product SKUs or names for now. Task 3.3 relates this to products.
+   */
+  productsCarried?: string[] | null
+  status: 'prospect' | 'active' | 'paused' | 'ended'
+  notes?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * First-party analytics events. Append-only; nobody edits or deletes them through the API.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number
+  site: 'gallery' | 'shop'
+  name:
+    | 'page.viewed'
+    | 'search.submitted'
+    | 'listing.viewed'
+    | 'item.viewed'
+    | 'item.zoomed'
+    | 'product.viewed'
+    | 'ask.clicked'
+    | 'sell.clicked'
+    | 'partnership.clicked'
+    | 'lead.created'
+    | 'chat.started'
+    | 'chat.handedOff'
+    | 'chat.leadCreated'
+    | 'cart.added'
+    | 'cart.removed'
+    | 'checkout.started'
+    | 'checkout.stepCompleted'
+    | 'checkout.blocked'
+    | 'payment.opened'
+    | 'order.created'
+    | 'order.paid'
+    | 'order.statusChanged'
+    | 'tracking.viewed'
+    | 'vitals.reported'
+  at: string
+  path?: string | null
+  ref?: string | null
+  props?:
+    | {
+        [k: string]: unknown
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null
+  /**
+   * YYYY-MM-DD in UTC+8 (WITA / Singapore time).
+   */
+  day: string
+  source: 'beacon' | 'server'
+  sessionId?: string | null
+  deviceClass?: ('mobile' | 'tablet' | 'desktop') | null
+  locale?: ('en' | 'id') | null
+  referrerHost?: string | null
+  utm?: {
+    source?: string | null
+    medium?: string | null
+    campaign?: string | null
+  }
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -985,6 +1234,30 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'masters'
         value: number | Master
+      } | null)
+    | ({
+        relationTo: 'pages'
+        value: number | Page
+      } | null)
+    | ({
+        relationTo: 'redirects'
+        value: number | Redirect
+      } | null)
+    | ({
+        relationTo: 'leads'
+        value: number | Lead
+      } | null)
+    | ({
+        relationTo: 'partners'
+        value: number | Partner
+      } | null)
+    | ({
+        relationTo: 'chat-sessions'
+        value: number | ChatSession
+      } | null)
+    | ({
+        relationTo: 'events'
+        value: number | Event
       } | null)
   globalSlug?: string | null
   user: {
@@ -1456,6 +1729,163 @@ export interface MastersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  site?: T
+  kind?: T
+  title?: T
+  slug?: T
+  intro?: T
+  hero?: T
+  body?: T
+  works?: T
+  seo?:
+    | T
+    | {
+        title?: T
+        description?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects_select".
+ */
+export interface RedirectsSelect<T extends boolean = true> {
+  site?: T
+  from?: T
+  to?: T
+  code?: T
+  source?: T
+  hits?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  kind?: T
+  site?: T
+  source?: T
+  payload?:
+    | T
+    | {
+        name?: T
+        whatsapp?: T
+        email?: T
+        preferredChannel?: T
+        message?: T
+        locale?: T
+        consentVersion?: T
+        consentAt?: T
+      }
+  items?: T
+  chatSession?: T
+  status?: T
+  statusHistory?:
+    | T
+    | {
+        status?: T
+        by?: T
+        at?: T
+        id?: T
+      }
+  firstReplyAt?: T
+  notes?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners_select".
+ */
+export interface PartnersSelect<T extends boolean = true> {
+  name?: T
+  kind?: T
+  site?: T
+  contact?:
+    | T
+    | {
+        person?: T
+        whatsapp?: T
+        email?: T
+        phone?: T
+      }
+  address?: T
+  terms?: T
+  productsCarried?: T
+  status?: T
+  notes?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chat-sessions_select".
+ */
+export interface ChatSessionsSelect<T extends boolean = true> {
+  site?: T
+  locale?: T
+  startedAt?: T
+  lastMessageAt?: T
+  items?: T
+  transcript?:
+    | T
+    | {
+        role?: T
+        at?: T
+        text?: T
+        id?: T
+      }
+  ipHash?: T
+  labels?: T
+  usage?:
+    | T
+    | {
+        inputTokens?: T
+        outputTokens?: T
+        costUsd?: T
+      }
+  outcome?: T
+  lead?: T
+  expiresAt?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  site?: T
+  name?: T
+  at?: T
+  path?: T
+  ref?: T
+  props?: T
+  day?: T
+  source?: T
+  sessionId?: T
+  deviceClass?: T
+  locale?: T
+  referrerHost?: T
+  utm?:
+    | T
+    | {
+        source?: T
+        medium?: T
+        campaign?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1493,6 +1923,165 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T
   updatedAt?: T
   createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number
+  gallery?: {
+    contact?: {
+      whatsapp?: string | null
+      email?: string | null
+      phone?: string | null
+    }
+    replyPromise?: string | null
+    hours?: string | null
+    announcement?: string | null
+    social?:
+      | {
+          platform: string
+          url: string
+          id?: string | null
+        }[]
+      | null
+    leadNotifyEmails?: string[] | null
+    ai?: {
+      chatEnabled?: boolean | null
+      draftingEnabled?: boolean | null
+      dailyBudgetUsd?: number | null
+      sessionTokenCap?: number | null
+    }
+  }
+  shop?: {
+    contact?: {
+      whatsapp?: string | null
+      email?: string | null
+      phone?: string | null
+    }
+    replyPromise?: string | null
+    hours?: string | null
+    announcement?: string | null
+    social?:
+      | {
+          platform: string
+          url: string
+          id?: string | null
+        }[]
+      | null
+    leadNotifyEmails?: string[] | null
+    ai?: {
+      chatEnabled?: boolean | null
+      draftingEnabled?: boolean | null
+      dailyBudgetUsd?: number | null
+      sessionTokenCap?: number | null
+    }
+    checkoutEnabled?: boolean | null
+    delivery?: {
+      bands?:
+        | {
+            upToKm: number
+            feeIdr: number
+            id?: string | null
+          }[]
+        | null
+      freeOverIdr?: number | null
+    }
+    /**
+     * The welcome code text for now. Task 3.3 relates this to discounts.
+     */
+    welcomeDiscount?: string | null
+    orderExpiryMinutes?: number | null
+    storeAlerts?: boolean | null
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  gallery?:
+    | T
+    | {
+        contact?:
+          | T
+          | {
+              whatsapp?: T
+              email?: T
+              phone?: T
+            }
+        replyPromise?: T
+        hours?: T
+        announcement?: T
+        social?:
+          | T
+          | {
+              platform?: T
+              url?: T
+              id?: T
+            }
+        leadNotifyEmails?: T
+        ai?:
+          | T
+          | {
+              chatEnabled?: T
+              draftingEnabled?: T
+              dailyBudgetUsd?: T
+              sessionTokenCap?: T
+            }
+      }
+  shop?:
+    | T
+    | {
+        contact?:
+          | T
+          | {
+              whatsapp?: T
+              email?: T
+              phone?: T
+            }
+        replyPromise?: T
+        hours?: T
+        announcement?: T
+        social?:
+          | T
+          | {
+              platform?: T
+              url?: T
+              id?: T
+            }
+        leadNotifyEmails?: T
+        ai?:
+          | T
+          | {
+              chatEnabled?: T
+              draftingEnabled?: T
+              dailyBudgetUsd?: T
+              sessionTokenCap?: T
+            }
+        checkoutEnabled?: T
+        delivery?:
+          | T
+          | {
+              bands?:
+                | T
+                | {
+                    upToKm?: T
+                    feeIdr?: T
+                    id?: T
+                  }
+              freeOverIdr?: T
+            }
+        welcomeDiscount?: T
+        orderExpiryMinutes?: T
+        storeAlerts?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
