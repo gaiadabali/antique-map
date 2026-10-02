@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/5 | 9/20 | 0 | `█████░░░░░`  45% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/5 | 10/20 | 0 | `█████░░░░░`  50% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **5/49** | **29/196** | **8** | `██░░░░░░░░`  15% |
+| **All** | 11 phases | | | **5/49** | **30/196** | **8** | `██░░░░░░░░`  15% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -278,7 +278,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 1.2, 1.3, 11.2_
   - [x] 2.2.a gut `@engine/config` to a typed `SITES` table and `siteFromHost()` checked against an env allow-list (`GALLERY_HOSTS`, `SHOP_HOSTS`); keep `constants`, `routes`, the environment half of the boot check and `hostname`; delete the brand schema, modules, sellers, markets, trade, validators and loader
   - [x] 2.2.b the proxy rewrites by `Host` into `app/(gallery)` or `app/(shop)` trees (internal prefixes that 404 when requested directly); an unknown or unlisted host is a plain 404 and never builds a URL; copy `instant = false` and the `connection()`-first read onto both root layouts
-  - [ ] 2.2.c pin the admin and Payload REST to one host, `ADMIN_HOST` (the shop's host, Q1 answered); on the other host `/admin` and `/api/*` outside `/api/x/` and `/api/health` are 404; CSRF and CORS list each site's origin; absolute URLs for emails, canonical tags and Open Graph come from `SITES`, never from the request
+  - [x] 2.2.c pin the admin and Payload REST to one host, `ADMIN_HOST` (the shop's host, Q1 answered); on the other host `/admin` and `/api/*` outside `/api/x/` and `/api/health` are 404; CSRF and CORS list each site's origin; absolute URLs for emails, canonical tags and Open Graph come from `SITES`, never from the request
   - [ ] 2.2.d delete `access/brand.ts`, `access/modules.ts` and every `BRAND` and `BRAND_ROOT` use in the Owns (2.4 removes the CMS's own, and merges first); repoint the config and http tests off the root `test/` (2.3 deletes it); cache tags are namespaced by collection and carry the site where one record renders on both
   - [ ] 2.2.e **Check:** an e2e on a production build proves: each host serves its own site; an unknown `Host` is 404; `/admin` is 200 on the admin host and 404 on the other; a spoofed `X-Forwarded-Host` changes nothing; the 404 and 308 statuses survive Cache Components (`tests/e2e/status`).
 
