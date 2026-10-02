@@ -132,7 +132,7 @@ describe('the config the apps run', () => {
     const posts = endpoints.filter((e) => e.method === 'post' || e.method === 'patch')
     expect(posts.length).toBeGreaterThan(config.collections.length)
     expect(endpoints.filter((e) => !cleansUp(e.handler))).toEqual([])
-  })
+  }, 30_000) // a cold import of the whole Payload config takes over 5 s on a slow disk
 
   it('gives each collection endpoint objects of its own — Payload shares its built-in ones', () => {
     const shared = { method: 'post' as const, path: '/', handler: () => new Response('ok') }
