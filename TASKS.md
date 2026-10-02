@@ -94,7 +94,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **Q12** | Counsel's wording: the no-refund notice (S12, UU 8/1999 art. 18), the authenticity guarantee (G6), terms and privacy (UU PDP) | placeholder text marked as draft; nothing live without counsel | counsel | 11.1 |
 | **Q13** | The production host (the launch order is answered: both together) | the same pull pipeline and host family as staging unless the owner names another | owner | 11.1 |
 | **Q14** | The currency of the owner-only asking price on an antique | USD | owner | 3.2 |
-| **Q15** | The reading typeface: the design team's system uses Inter, but their project notes say the client loves Karla and wants it kept | Inter now; the family is one token, so Karla is a one-line swap | client | before launch |
 | **Q16** | The brands' final colours (the client has not chosen) | the two palettes of 4.1.b; each is one token file | client | before launch |
 
 ### Owner actions (not questions)
@@ -126,7 +125,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **Q8** | No two-factor sign-in at launch (backlog v2.8) | 2026-10-02 |
 | **Q10** | A damaged item is replaced by staff off the site: the buyer sends a photo on WhatsApp and staff create a free replacement order | 2026-10-02 |
 | **Launch** | Both sites launch together on one cutover day | 2026-10-02 |
-| **Fonts and colours** | Cormorant Garamond + Inter (the design team's); a different palette per site now, the client's final colours later (Q15, Q16) | 2026-10-02 |
+| **Fonts** | **Cormorant Garamond + Karla**, the pair from the client's deck slide 7, loaded from Google Fonts at build (self-hosted at runtime). Cormorant: H1 Regular 40–80 px fluid, −0.015em; H2 Regular 38 px; product card title Medium 25 px; decorative numbers Regular 40 px; logo name SemiBold, 0.04em. Karla: body 14–15 px; price Bold 15 px; logo tagline Medium capitals, 0.14em; announcement bar 13 px. The design system's Inter is not used (`docs/DESIGN-SYSTEM.md` §2) | 2026-10-02 |
+| **Colours** | A different palette per site now; the client's final colours later (Q16) | 2026-10-02 |
 | **Replan** | One app, one CMS, one database, two hostnames; the gallery is enquiry-only and shows no price; deals with antique sellers and partners happen on WhatsApp or email; the shop is a real store with per-store stock, a nearest-store rule and simple status tracking; the AI chat guides, hands off and captures leads (DR-1 … DR-15) | 2026-10-01 |
 | **Roles** | `owner` and `editor` both manage and reassign orders (the owner's team acts as editors); leads, partners, discounts and site settings are owner-only; `store` users see only their own store's orders; a store can hand an order back to the owner or an editor with a reason. `docs/SECURITY.md` and `docs/COMMERCE.md` follow this | 2026-10-01 |
 | **Delivery** | Only a pin inside the last delivery band can check out; there is no split order; no online pickup at launch; no wishlists on either site | 2026-10-01 |
@@ -393,7 +393,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
   - _Requirements: 12.1, 12.5_
-  - [ ] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the self-hosted fonts (Cormorant Garamond for display, Inter for text — the family is one token, so Karla is a one-line swap if the client insists, Q15); components read only the semantic aliases
+  - [ ] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
   - [ ] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
   - [ ] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
   - [ ] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
