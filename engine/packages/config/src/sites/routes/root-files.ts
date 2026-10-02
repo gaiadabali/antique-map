@@ -1,10 +1,10 @@
 /**
- * @contract C10 — the route map: what is answered before it · owner: ARC · entry: `@engine/config/routes`
+ * What the proxy answers before a site's route map (`./index`).
  *
  * The public paths the proxy answers before it reads the route map (C13, ARCHITECTURE.md §11), so
  * that no surface, form, named facet, CMS page or legacy rule is ever one of them — it would be
  * dead, the proxy having answered first (3.4 senior-be #8, senior-fe #7):
- * - `ROOT_FILES` — the root files C13's `ROOT_REWRITES` answers (robots, the sitemaps,
+ * - `ROOT_FILES` — the root files the proxy's root rewrites (`@engine/http/manifest`) answers (robots, the sitemaps,
  *   `.well-known`, the favicon, the home-screen icons, the web manifest), as its patterns: `:name`
  *   one segment's worth, `:path*` the rest. C13's rewrites take exactly these as their `from`,
  *   which its test pins;

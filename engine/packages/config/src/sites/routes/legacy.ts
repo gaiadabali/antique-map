@@ -1,5 +1,5 @@
 /**
- * @contract C10 — the route map: an old site's URLs · owner: ARC · entry: `@engine/config/routes`
+ * An old site's URLs (`./index`).
  *
  * What the proxy hands to the legacy handler (C13 `/api/x/legacy/…`), which answers 301, 404 or
  * 410 from the `redirects` collection (MIGRATION.md §6). Two shapes, both matched on the path as
@@ -57,7 +57,7 @@ export function legacyIssues(
       return `starts with "${first}", which Next or the proxy answers first`
     }
     if (exact && rootFileOf(rule) !== null) {
-      return 'is a root file, which the proxy answers first (C13 ROOT_REWRITES)'
+      return 'is a root file, which the proxy answers first'
     }
     return everyRoot.has(first.toLowerCase()) ? `shadows the live root segment "${first}"` : null
   }

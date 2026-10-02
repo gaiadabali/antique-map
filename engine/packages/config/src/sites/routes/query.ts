@@ -1,5 +1,5 @@
 /**
- * @contract C10 — the route map: reading and writing query values · owner: ARC · entry: `@engine/config/routes`
+ * Reading and writing query values (`./parse`).
  *
  * What `./parse.ts` reads from a query string, and how it writes the canonical one back: a
  * `URLSearchParams` or a Next page's `searchParams` record read alike, values kept only in the

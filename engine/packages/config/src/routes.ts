@@ -18,8 +18,8 @@ import { z } from 'zod'
 import { facetKeySchema, sortKeySchema } from './schema/facets'
 import { LOCALE_CODES, localeCodeSchema } from './schema/locales'
 import type { ModuleKey } from './schema/modules'
-import { LEGACY_PATH, LEGACY_PREFIX, legacyIssues } from './routes/legacy'
-import { CLAIMED_SEGMENTS } from './routes/root-files'
+import { LEGACY_PATH, LEGACY_PREFIX, legacyIssues } from './sites/routes/legacy'
+import { CLAIMED_SEGMENTS } from './sites/routes/root-files'
 import {
   FORM_KINDS,
   RESERVED_SEGMENTS,
@@ -30,10 +30,10 @@ import {
 } from './routes/surfaces'
 
 export * from './routes/href'
-export { legacyTarget, type LegacyRoutes } from './routes/legacy'
+export { legacyTarget, type LegacyRoutes } from './sites/routes/legacy'
 export * from './routes/parse'
-export * from './routes/root-files'
-export { decodeSegments } from './routes/segments'
+export * from './sites/routes/root-files'
+export { decodeSegments } from './sites/routes/segments'
 export * from './routes/surfaces'
 
 const segmentSchema = z

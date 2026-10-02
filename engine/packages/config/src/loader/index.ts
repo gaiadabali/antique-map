@@ -18,4 +18,4 @@ export {
 } from './globals-parts'
 export { loadBrand, loadBrandConfig, type LoadedBrand, type LoadOptions } from './load'
 export { BrandConfigError, resolveBrandPaths, type BrandEnv, type BrandPaths } from './paths'
-export { describeError, redactCredentials } from './redact'
+export { describeError, redactCredentials } from '../boot-check/redact'

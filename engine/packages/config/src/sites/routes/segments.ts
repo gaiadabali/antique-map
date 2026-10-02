@@ -1,5 +1,5 @@
 /**
- * @contract C10 — the route map: a public path's segments, read strictly · owner: ARC · entry: `@engine/config/routes`
+ * A public path's segments, read strictly (`./index`).
  *
  * `href()` writes every segment one way — `encodeURIComponent` of its text — so a path is read
  * only in that spelling: a segment that does not survive decode-then-encode is no address of any

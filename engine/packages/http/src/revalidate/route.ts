@@ -22,7 +22,7 @@
  * — a tag kind this process does not know yet, mid-deploy — and is logged here by its reason alone.
  */
 import { invalidate, type CacheTag } from '@engine/cache'
-import { describeError } from '@engine/config/loader'
+import { describeError } from '@engine/config/boot-check'
 
 import { refuseBearer } from '../shared/bearer'
 import { plain } from '../shared/respond'

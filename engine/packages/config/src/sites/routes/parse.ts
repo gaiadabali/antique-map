@@ -1,21 +1,20 @@
 /**
- * @contract C10 — the route map: the inverse of href() · owner: ARC · entry: `@engine/config/routes`
- *
- * What the proxy (PLT) runs on each public request — after C13's `ROOT_REWRITES` — to learn
- * which surface a URL names and the app route to rewrite it to, and what a listing page runs
- * on its search params. `parsePublicPath(config, href(s, p, l))` gives back `s` and `p` in
- * canonical form (a round-trip test proves it). Anything else — an internal path asked for
- * directly, a default-locale or unsupported-locale prefix, an extra segment, a segment spelt
+ * The inverse of `href()`: what the proxy runs on each public page request of a site — after its
+ * root files — to learn which surface a URL names and the internal route to rewrite it to, and
+ * what a listing page runs on its search params. `parsePublicPath(site, href(s, p, l))` gives back
+ * `s` and `p` in canonical form (a round-trip test proves it). Anything else — an internal path
+ * asked for directly, a default-locale or unserved-locale prefix, an extra segment, a segment spelt
  * otherwise than `href()` spells it (`./segments`; an old item link's slug is the one exception,
- * `oldItemLink()`), a first segment the proxy answers first (`./root-files`) — is `notFound`, so
- * no page has two addresses. An old site's URL goes to the legacy handler first (`./legacy`). The
- * internal URL carries a listing's whole canonical state as its query (named-path facets
- * included), so a listing page reads `parseListingQuery()` and never the public path. Pure: no
- * database, no request object.
+ * `oldItemLink()`), a first segment the proxy answers first (`./root-files`) — is `notFound`, so no
+ * page has two addresses. An old site's URL goes to the legacy handler first (`./legacy`).
+ *
+ * The internal path is relative to the site's tree: the proxy prefixes it with the site
+ * (`/gallery/en/item/1706-…`). It carries a listing's whole canonical state as its query (named
+ * path facets included), so a listing page reads `parseListingQuery()` and never the public path.
+ * Pure: no database, no request object.
  */
-import { FACET_KEYS, SORT_KEYS, type FacetKey, type SortKey } from '../schema/facets'
-import { LOCALE_CODES, type LocaleCode } from '../constants'
-import type { RouteMap } from '../routes'
+import { LOCALE_CODES, type LocaleCode } from '../../constants'
+import { FACET_KEYS, SORT_KEYS, type FacetKey, type SortKey } from '../../schema/facets'
 import {
   canonicalListing,
   listingSearch,
@@ -23,29 +22,21 @@ import {
   type ListingState,
   type ListingSurface,
 } from './href'
-import { legacyTarget } from '../sites/routes/legacy'
-import { positive, query, reader, uuid, type SearchInput } from '../sites/routes/query'
-import { CLAIMED_SEGMENTS } from '../sites/routes/root-files'
-import { readSegments, type ReadSegment } from '../sites/routes/segments'
+import { legacyTarget } from './legacy'
+import { reader, type SearchInput } from './query'
+import { CLAIMED_SEGMENTS } from './root-files'
+import { readSegments, type ReadSegment } from './segments'
 import {
-  ACCOUNT_SECTIONS,
-  FORM_KINDS,
+  hasIndex,
   RESERVED_SEGMENTS,
   SEGMENT_SURFACES,
   SURFACE_ROUTES,
-  type AccountSection,
-  type FormKind,
   type LinkSurface,
   type SegmentSurface,
 } from './surfaces'
+import type { RouteConfig, RouteMap } from './types'
 
-export type { SearchInput } from '../sites/routes/query'
-
-/** What parsing reads from a brand config. */
-export type ParseConfig = {
-  routes: RouteMap
-  locales: { default: LocaleCode; supported: readonly LocaleCode[] }
-}
+export type { SearchInput } from './query'
 
 type SurfaceMatch = {
   [S in LinkSurface]: {
@@ -53,17 +44,15 @@ type SurfaceMatch = {
     surface: S
     locale: LocaleCode
     params: HrefParams[S]
-    /** The app route under `src/app/(site)/[locale]/` to rewrite to, with its canonical query. */
+    /** The route under the site's tree to rewrite to, `/<locale>/…`, with its canonical query. */
     internal: string
   }
 }[LinkSurface]
 
 export type ParsedPath =
   | SurfaceMatch
-  /** An old site's URL: rewritten to the legacy handler (C13), which answers 301, 404 or 410. */
+  /** An old site's URL: rewritten to the legacy handler, which answers 301, 404 or 410. */
   | { kind: 'legacy'; internal: string }
-  /** The app's own route beside the route map (`/admin`, `/style-guide`): left alone. */
-  | { kind: 'app' }
   | { kind: 'notFound' }
 
 const NOT_FOUND = { kind: 'notFound' } as const
@@ -89,9 +78,9 @@ export function parseListingQuery(
   })
 }
 
-/** The surface a public path names, and where the proxy rewrites it. */
+/** The surface a public path names on a site, and where the proxy rewrites it. */
 export function parsePublicPath(
-  config: ParseConfig,
+  config: RouteConfig,
   pathname: string,
   search: SearchInput = {},
 ): ParsedPath {
@@ -113,29 +102,10 @@ export function parsePublicPath(
   const [head, ...rest] = parts
   if (!segments) return NOT_FOUND
   if (head === undefined) return match('home', locale, {}, '')
-  if (RESERVED_SEGMENTS.includes(head))
-    return locale === locales.default ? { kind: 'app' } : NOT_FOUND
+  if (RESERVED_SEGMENTS.includes(head)) return NOT_FOUND
   if ((CLAIMED_SEGMENTS as readonly string[]).includes(head)) return NOT_FOUND
   const surface = SEGMENT_SURFACES.find((each) => segments[each] === head)
   if (surface) return segmentSurface(config, locale, surface, rest, search)
-  const kind = (Object.keys(FORM_KINDS) as FormKind[]).find((each) => segments.forms[each] === head)
-  if (kind) {
-    if (rest.length > 0) return NOT_FOUND
-    const all = reader(search)
-    const [item, variant] = [positive(all('item')[0]), positive(all('variant')[0])]
-    const [topic] = all('topic')
-    const appointment = uuid(all('appointment')[0])
-    const params: HrefParams['form'] = {
-      kind,
-      ...(item ? { item } : {}),
-      ...(variant ? { variant } : {}),
-      ...(topic ? { topic } : {}),
-      ...(appointment ? { appointment } : {}),
-    }
-    // The canonical query, in href()'s order: whatever was dropped above is dropped here too.
-    const q = query({ ...params, kind: undefined })
-    return match('form', locale, params, `/${kind}${q}`)
-  }
   const named = namedFacets(routes, locale, parts)
   if (named) {
     const state = parseListingQuery(routes, 'browse', search)
@@ -150,23 +120,18 @@ export function parsePublicPath(
 }
 
 /**
- * An old link to an item — `/product/{id}-{anything}` (MIGRATION.md §6) — whose slug part is not
+ * An old link to a gallery item — `/product/{id}-{anything}` (DATA.md §6) — whose slug part is not
  * in `href()`'s spelling (`%27`, `(…)`, `%61` for `a`, a `+`), every segment before it canonical.
  * It reaches the item route by its id with its slug as asked for, which contains a character no
- * slug has, so it never matches and the route answers a permanent redirect — `permanentRedirect()`,
- * a 308 — to the current URL: never a second 200 address, never a lost link (3.4 senior-fe #1).
- * The id itself must be canonical, and a segment that picks a surface or a locale always is.
+ * slug has, so it never matches and the route answers a permanent redirect (`permanentRedirect()`,
+ * a 308) to the current URL: never a second 200 address, never a lost link.
  *
  * A lower-case escape is no odd spelling in practice: RFC 3986 §6.2.2.1 makes `%c3%a9` the same
  * URI as `%C3%A9`, and Next upper-cases an escape's hex digits before the proxy runs, so such a
- * request is served at the one address, 200 (the 4.1.e spike §3). Handed one directly, this parser
- * reads it as another spelling. A slug part that does not decode as UTF-8 — `%FF`, a Latin-1
- * `caf%E9`, raw bytes — fails `readSegments()` first and is not found: C10's next minor version
- * sends it to the item route by its id with a fixed ASCII slug no item has, never the bytes as
- * asked, which Next cannot decode into the route's param and would answer with a bare 500
- * (TASKS.md 22.7; MIGRATION.md §6; 4.3's senior-fe review #4).
+ * request is served at the one address, 200 (the Cache Components spike §3). A slug part that
+ * does not decode as UTF-8 fails `readSegments()` first and is not found.
  */
-function oldItemLink(config: ParseConfig, read: readonly ReadSegment[]): ParsedPath | null {
+function oldItemLink(config: RouteConfig, read: readonly ReadSegment[]): ParsedPath | null {
   const [first] = read
   const prefixed =
     first !== undefined && isLocaleCode(first.text) && first.text !== config.locales.default
@@ -174,7 +139,9 @@ function oldItemLink(config: ParseConfig, read: readonly ReadSegment[]): ParsedP
   if (prefixed && !config.locales.supported.includes(locale)) return null
   const [head, item, ...more] = prefixed ? read.slice(1) : read
   const segments = config.routes[locale]
-  if (!head?.canonical || !item || more.length > 0 || head.text !== segments?.item) return null
+  const itemSegment = segments?.item
+  if (!head?.canonical || !item || more.length > 0 || itemSegment === undefined) return null
+  if (head.text !== itemSegment) return null
   if (read.slice(0, -1).some((segment) => !segment.canonical)) return null
   const id = /^([1-9]\d*)-(.+)$/.exec(item.raw)
   const publicId = Number(id?.[1])
@@ -184,7 +151,7 @@ function oldItemLink(config: ParseConfig, read: readonly ReadSegment[]): ParsedP
 }
 
 function segmentSurface(
-  config: ParseConfig,
+  config: RouteConfig,
   locale: LocaleCode,
   surface: SegmentSurface,
   rest: string[],
@@ -206,36 +173,20 @@ function segmentSurface(
       if (!id || !Number.isSafeInteger(publicId)) return NOT_FOUND
       return match('item', locale, { publicId, slug: id[2] ?? '' }, path(id[0]))
     }
+    case 'product': {
+      if (one === undefined || more.length > 0 || !SLUG.test(one)) return NOT_FOUND
+      return match('product', locale, { slug: one }, path(one))
+    }
     case 'place':
       return match('place', locale, rest.length > 0 ? { path: rest } : {}, path(...rest))
-    case 'account': {
-      const sections = Object.keys(ACCOUNT_SECTIONS) as AccountSection[]
-      const section = one === undefined ? 'overview' : sections.find((s) => segmentOf(s) === one)
-      if (!section || more.length > 0) return NOT_FOUND
-      return match('account', locale, one === undefined ? {} : { section }, path(section))
-    }
-    case 'wantList': {
-      if (one !== undefined) return NOT_FOUND
-      const all = reader(search)
-      const [watch] = all('watch')
-      const like = positive(all('like')[0])
-      // Two subjects are no page: one subject, one URL.
-      if (watch && like) return NOT_FOUND
-      const params: HrefParams['wantList'] = watch ? { watch } : like ? { like } : {}
-      return match('wantList', locale, params, query({ watch, like: like ?? undefined }))
-    }
-    case 'design':
-    case 'order':
-    case 'pay':
-    case 'quote': {
-      if (one === undefined || more.length > 0) return NOT_FOUND
-      const key = surface === 'design' ? 'slug' : surface === 'order' ? 'number' : 'token'
-      return match(surface, locale, { [key]: one } as HrefParams[typeof surface], path(one))
+    case 'tracking': {
+      if (more.length > 0) return NOT_FOUND
+      return match('tracking', locale, one === undefined ? {} : { token: one }, path(...rest))
     }
     default: {
-      const indexed = 'index' in SURFACE_ROUTES[surface]
-      if (more.length > 0 || (one !== undefined && !indexed)) return NOT_FOUND
-      return match(surface, locale, one === undefined ? {} : { slug: one }, path(...rest))
+      if (more.length > 0 || (one !== undefined && !hasIndex(surface))) return NOT_FOUND
+      const params = one === undefined ? {} : { slug: one }
+      return match(surface, locale, params as HrefParams[typeof surface], path(...rest))
     }
   }
 }
@@ -267,10 +218,6 @@ function match<S extends LinkSurface>(
   const base = SURFACE_ROUTES[surface].internal.split('/')[0]
   const internal = `/${locale}${base ? `/${base}` : ''}${rest}`
   return { kind: 'surface', surface, locale, params, internal } as SurfaceMatch
-}
-
-function segmentOf(section: AccountSection): string | null {
-  return ACCOUNT_SECTIONS[section].segment
 }
 
 const isLocaleCode = (value: string): value is LocaleCode =>

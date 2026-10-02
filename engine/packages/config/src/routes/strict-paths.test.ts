@@ -143,8 +143,7 @@ describe('C10 — exact legacy paths (MIGRATION.md §6)', () => {
     }
     expect(issues({ legacyPaths: ['/robots.txt', '/sitemap-2019.xml', '/favicon.ico'] })).toEqual(
       ['/robots.txt', '/sitemap-2019.xml', '/favicon.ico'].map(
-        (path) =>
-          `legacy path "${path}" is a root file, which the proxy answers first (C13 ROOT_REWRITES)`,
+        (path) => `legacy path "${path}" is a root file, which the proxy answers first`,
       ),
     )
     expect(issues({ legacyPaths: ['/apple-touch-icon-120x120.png'] })).toHaveLength(1)

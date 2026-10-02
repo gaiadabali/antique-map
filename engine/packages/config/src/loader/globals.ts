@@ -16,7 +16,7 @@ import { collectIssues, formatIssue } from '../validate/issues'
 import { checkRoutes } from '../validate/rules/routes'
 import { parseEditorialGlobals, type EditorialOverrides, type EditorialPart } from './globals-parts'
 import { loadBrandConfig, type LoadOptions } from './load'
-import { describeError } from './redact'
+import { describeError } from '../boot-check/redact'
 
 export type GlobalsLog = (message: string) => void
 
