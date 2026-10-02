@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
-| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -81,6 +81,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | copy merged (da4e214); the delete commit 4f259f1 lands last, right after 2.2, then the Check |
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | 2.2.a–d done; fixing the senior-integrator review's must-fix (CORS/CSRF trusted the gallery origin) and two should-fixes (`/api/x/*` fall-through to Payload, boot check vs DEPLOYMENT §8); then merge |
 | 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
+| 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -342,7 +343,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
   - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
-- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2
+- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{products,stores,stock-levels,orders,payment-events,discounts}/**`
   - **Read** CONTENT-MODEL.md §3–§4, COMMERCE.md §1–§4
