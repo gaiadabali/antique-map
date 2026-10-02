@@ -17,7 +17,6 @@ import type {
   MakerCreditVM,
   Money,
   PriceVM,
-  ProductPublicId,
   SeoVM,
   SellerIdentityVM,
   Streamed,
