@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 5/33 | 0 | `██░░░░░░░░`  15% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 7/33 | 0 | `██░░░░░░░░`  21% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 5/14 | 0 | `████░░░░░░`  36% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **53/200** | **8** | `███░░░░░░░`  27% |
+| **All** | 11 phases | | | **9/49** | **55/200** | **8** | `███░░░░░░░`  28% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -354,8 +354,8 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 5.1, 5.4, 7.1_
   - [x] 3.3.a `products`: SKU, localised name and description, category term, images, price in integer rupiah, variants as an array field, optional `relatedWork`, a `site` of `shop`
   - [x] 3.3.b `stores` (code, name, address, `lat`/`lng`, WhatsApp, hours, active, public flag) and `stock-levels` unique on store, product and variant SKU with a non-negative `quantity` check — `quantity` is the physical count minus units held by orders from `pending_payment` to `waiting_driver`, so a recount cannot oversell held units (DATA.md §3)
-  - [ ] 3.3.c `orders` (guest contact, delivery address with pin, assigned store, status and history, driver image, payment state, hashed tracking token, the amounts it was priced with), `payment-events` (append-only, unique dedupe key) and `discounts` (the welcome code) — schema and access only; behaviour is phases 6–7
-  - [ ] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
+  - [x] 3.3.c `orders` (guest contact, delivery address with pin, assigned store, status and history, driver image, payment state, hashed tracking token, the amounts it was priced with), `payment-events` (append-only, unique dedupe key) and `discounts` (the welcome code) — schema and access only; behaviour is phases 6–7
+  - [x] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
   - [ ] 3.3.e **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
 
 - [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2 — 🔄 3·W1
