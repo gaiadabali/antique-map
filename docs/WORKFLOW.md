@@ -47,6 +47,8 @@ the last-owner trigger) lives in the initial migration and is tested by a `*.db.
 ## 4. Dispatch (the orchestrator)
 
 1. Open a phase when every phase in its heading's `needs` is ✅; at most **three** phases are open at once.
+   _Since 2026-10-03 the build runs contract-first on three model lanes and phases overlap — see
+   `.claude/specs/indies-platform/WORKERS.md`, which overrides this step and step 3's agent choice._
 2. Take the phase's first wave that is not all ✅. `pnpm tasks:lint` must be green. Mark each task
    `— 🔄 N·Wk`, add its row to **Now**.
 3. One agent per task: the task's agent type, `model: "opus"`, `isolation: "worktree"`, the prompt in
