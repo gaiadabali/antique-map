@@ -3,8 +3,13 @@
 Read by every headless worker the global launcher starts here (`~/.claude/workers/run.sh`). The plan is
 `.claude/specs/indies-platform/WORKERS.md`; the dispatch rules are `docs/WORKFLOW.md` and `DISPATCH.md`.
 
-- **Setup:** run `pnpm worktree:env` once for your own `PORT` and `DB_SUFFIX`; create your database with
-  `pnpm db:fresh` (your suffix only). Never drop another suffix's database.
+- **Setup:** run `pnpm install --frozen-lockfile`, then `pnpm worktree:env <phase> <ticket id without dots>` once
+  (e.g. `pnpm worktree:env 3 w34`) for your own `PORT` and `DB_SUFFIX`; create your database with `pnpm db:fresh`
+  (your suffix only). Never drop another suffix's database. `pnpm --filter @engine/cms test` runs nothing — run
+  tests with `pnpm vitest run <path>` (database tests with `--maxWorkers=2`; full parallelism overloads Postgres).
+- **Migrated-database tests** (`admins.db.test.ts`, `instance.db.test.ts`, `owner-backstop.db.test.ts`) fail on any
+  branch that adds or changes collections until the schema lead's migration lands (3.5). Report them as expected;
+  do not try to fix them and never write a migration to make them pass.
 - **Database tests:** `*.db.test.ts` need `CMS_TEST_POSTGRES_URL=postgres://postgres:postgres@localhost:5432/postgres`
   (the local dev stack's container `indies-platform-dev-postgres-1`; each test creates and drops its own pushed
   database). Never touch any other container — the other Postgres servers on this machine belong to other projects.
