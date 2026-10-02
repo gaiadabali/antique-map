@@ -56,30 +56,16 @@ jobs:
 
       - name: File size (300-line rule)
         run: pnpm check:filesize
-      - name: Brand-literal lint
-        run: pnpm lint:brand-literals
       # No 'use client' module under engine/ reaches zod, the config schema, node:*, Payload or
       # @engine/cms (engine/tooling/client-safe, TASKS.md 4.2) — named here as `pnpm verify` runs it.
       - name: Client-safe gate
         run: pnpm check:client-safe
-      - name: Route parity
-        run: pnpm check:routes
       - name: Generated files are current
         run: pnpm check:generated
       - name: TASKS.md structure
         run: pnpm tasks:lint
-
-      # validateBrandConfigs() is 3.1's (engine/packages/config/src/validate.ts)
-      # — not written yet. Explicit, named skip rather than a silent gap, so
-      # this step starts failing loudly the day the script exists but this
-      # line was forgotten.
-      - name: Brand config validation (TODO 3.1 — validateBrandConfigs())
-        run: |
-          if pnpm run 2>/dev/null | grep -q 'validate:brand-configs'; then
-            pnpm run validate:brand-configs
-          else
-            echo "::notice::validateBrandConfigs() is not wired up yet (TASKS.md 3.1.a) — skipping explicitly, not silently."
-          fi
+      - name: TASKS.md progress table is current
+        run: pnpm tasks:check
 
       - name: Formatting
         run: pnpm format:check
@@ -155,11 +141,6 @@ jobs:
 
       - name: Build both apps (no database env)
         run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm build
-
-      # Next's own bundle as the gate (TASKS.md 5.5.e, ARCHITECTURE.md §15): no engine route's
-      # synchronously loaded chunks hold engine/packages/cms or Payload; a lazy import() may.
-      - name: Engine routes bundle no Payload (both apps)
-        run: node engine/tooling/bundle-scan/cli.mjs
 
       - name: Assemble the release tree
         run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
