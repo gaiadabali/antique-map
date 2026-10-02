@@ -20,8 +20,13 @@ const WIDTHS = [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
 ] as const
-/** A path no shell serves, so the not-found page renders with its 404. */
-const MISSING = 'a11y-no-such-page'
+/**
+ * The not-found route, asked for by name: the proxy rewrites it with a 404 and the designed page
+ * renders inside the site's shell. A one-segment path a CMS page will own (`a11y-no-such-page`) is
+ * instead Next's recovery document — empty body, no `lang`, UI built only in the browser — until
+ * its designed surface lands (22.4.e; the Cache Components spike §8).
+ */
+const MISSING = 'not-found'
 
 function localesOf(testInfo: TestInfo): SmokeMetadata['locales'] {
   return (testInfo.project.metadata as SmokeMetadata).locales
