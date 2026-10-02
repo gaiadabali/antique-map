@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 2/5 | 16/20 | 0 | `████████░░`  80% |
-| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/32 | 0 | `░░░░░░░░░░`   0% |
+| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **6/49** | **36/199** | **8** | `██░░░░░░░░`  18% |
+| **All** | 11 phases | | | **6/49** | **36/200** | **8** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -308,7 +308,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** CARRY-OVER.md §3 step 7 and §6.4, the 1.1 triage file on 8.5's staging state
   - _Requirements: 1.1, 11.1_
   - [x] 2.5.a reset the migrations: delete them all, run `migrate:create initial` once on a clean `main`, and re-add by hand `unaccent`/`pg_trgm`, the last-owner constraint trigger (advisory-lock key equal to `ADMINS_LOCK_KEY`, now testing `'owner'`) and the truncate refusal; regenerate `payload-types.ts` and `importMap.js` in the same commit
-  - [ ] 2.5.b drop every existing local and staging database after a `pg_dump` (their `payload_migrations` rows name the old files)
+  - [ ] 2.5.b drop every existing local database after a `pg_dump` (their `payload_migrations` rows name the old files); the staging databases move to 3.1.d, because the old staging releases still run on them
   - [ ] 2.5.c **Check:** `admins.db.test.ts` passes against the migrated database (deleting or demoting the last owner is refused by the database itself, not only the hook); a fresh `pnpm db:fresh` builds the schema from the one initial migration; `pnpm check:generated` is clean.
 
 ---
@@ -327,7 +327,8 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.1.a one site user, pm2 process, port and database (`indies_db`), one media bucket (public only under `derivatives/` and `iiif/`) and the `archive-masters` bucket on Helios's RustFS; apply 8.5's RustFS parity checks; confirm the four rotated storage secrets are closed
   - [ ] 3.1.b both staging hostnames on one CloudPanel site through nginx `server_name`; remove the `uig` and `uoei` entries; the release goes through the pull pipeline
   - [ ] 3.1.c Mailpit stays loopback-only; host-only secrets; a nightly `pg_dump` and a bucket copy to an off-box place (Open: where — DEPLOYMENT.md)
-  - [ ] 3.1.d **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
+  - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
+  - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
 - [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
