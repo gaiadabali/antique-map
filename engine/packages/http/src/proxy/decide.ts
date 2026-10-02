@@ -1,38 +1,53 @@
 /**
- * What the proxy does with one request (ARCHITECTURE.md §11) — decided purely, from the brand
- * config and the request's URL and headers, so it is tested without Next and never touches a
- * database. It only rewrites or passes the request on; it never redirects, so the root is the
- * default locale whatever `Accept-Language` says, and crawlers see one answer.
+ * What the proxy does with one request (ARCHITECTURE.md §2, §5) — decided purely, from the site
+ * allow-list in the environment and the request's URL, method and headers, so it is tested without
+ * Next and never touches a database. In order:
  *
- * In order: C13's `ROOT_REWRITES` (robots, sitemaps, `.well-known`, the favicon); then C10's
- * `parsePublicPath()` — a legacy prefix goes to `/api/x/legacy/…` with its query, a surface to
- * its internal app route (default locale unprefixed, others under their prefix), the app's
- * own routes (`/admin`, `/style-guide`) pass through, and anything else — an internal path
- * asked for directly, a default-locale prefix, a page whose module is off (its surface, form
- * kind or account section), the not-found route itself — rewrites to the locale's not-found
- * route with C13's `PROXY_NOT_FOUND_STATUS` on the rewrite, so no page has two addresses and the
- * designed page answers 404 in its own body. Every other decision carries no status: the one
- * Next's render gives it stands (a 200, a page's `notFound()`, an item's 308).
+ * 1. Next's own `/_next/…`, and the machine routes (`HOST_FREE_PATHS`: health, cron, revalidate,
+ *    called on loopback by the host itself) pass on, whatever the `Host`.
+ * 2. The `Host` header — never `X-Forwarded-Host` — picks the site (`siteFromHost()`). A host on
+ *    no list is a plain 404 from the proxy: it picks no site, reaches no page and builds no URL.
+ * 3. A site's other hosts (an alias) answer a permanent redirect to its canonical host, the
+ *    `Location` built from the allow-list alone.
+ * 4. `/api/…`: an engine route (`/api/x/…`, `/api/health`) passes on; Payload's REST passes on
+ *    only on `ADMIN_HOST`, and is a plain 404 elsewhere. `/admin` passes on only on `ADMIN_HOST`
+ *    (in English unless its user chose otherwise) and is the site's designed 404 elsewhere — so
+ *    staff cookies are only ever set and sent on the one host (SECURITY.md X2).
+ * 5. The site's own files (`/<site>/logo.svg`, …) pass on; its root files (robots, sitemaps,
+ *    `.well-known`, favicon, touch icon, manifest) are rewritten to their routes and files.
+ * 6. The site's route map (`parsePublicPath()`): an old site's URL goes to `/api/x/legacy/…` with
+ *    its query, a surface to `/<site>/<locale>/…` in the site's tree, and anything else — an
+ *    internal path asked for directly included — to the site's not-found route with
+ *    `PROXY_NOT_FOUND_STATUS` on the rewrite. Every public page path is rewritten, so nothing under
+ *    `/gallery/` or `/shop/` is ever served at its internal address.
  *
- * On every request it sets C13's `PROXY_REQUEST_HEADERS`, overwriting whatever a client sent —
- * `x-public-search` the item route's query and `''` everywhere else, so no other page's query (a
- * capability's included) is copied into a header — and C13's `PROXY_USER_AGENT` when the request
- * has no `User-Agent` or an empty one, never over a client's own: Next renders in full per request
- * only for an agent `htmlLimitedBots` matches, and counts a missing one as none, so without it a
- * 404, a permanent redirect and this not-found's status would all be lost (ARCHITECTURE.md §9).
- * It drops any CSP header a client sent — Next takes a nonce from either CSP request header,
- * report-only included; on a `sensitive` surface's answer, `Referrer-Policy: no-referrer` and
- * `X-Robots-Tag: noindex`; and, once 41.1.a's builder is passed in, the per-request CSP on the
- * answer and the request.
+ * On every request it passes on it sets `PROXY_REQUEST_HEADERS`, overwriting whatever a client
+ * sent, `PROXY_USER_AGENT` when the request has no `User-Agent` (Next renders in full per request
+ * only for an agent `htmlLimitedBots` matches), drops any CSP header a client sent, and — once a
+ * CSP builder is passed in — sets the per-request policy on the answer and the request. A surface
+ * marked `sensitive` (a tracking token) answers with `Referrer-Policy: no-referrer` and
+ * `X-Robots-Tag: noindex`.
  */
-import { parsePublicPath, SURFACE_ROUTES, type ParseConfig } from '@engine/config/routes'
-import type { BrandConfig, LocaleCode, ModuleFlags } from '@engine/config/schema'
+import type { LocaleCode } from '@engine/config/constants'
+import {
+  isSensitive,
+  parsePublicPath,
+  siteFromHost,
+  siteOrigin,
+  SITES,
+  type HostMatch,
+  type SiteKey,
+} from '@engine/config/sites'
 
 import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
 import {
-  closedModule,
   hasCookie,
   hasUserAgent,
+  isAdminPath,
+  isApiPath,
+  isEngineRoute,
+  isHostFree,
+  isSiteAsset,
   namesNotFoundRoute,
   notFoundPath,
   rootRewrite,
@@ -40,36 +55,58 @@ import {
 
 export { NOT_FOUND_SEGMENT, notFoundPath } from './gates'
 
-/** What the proxy reads from a brand config. */
-export type ProxyConfig = ParseConfig & {
-  readonly assets: Pick<BrandConfig['assets'], 'favicon'>
-  readonly modules: ModuleFlags
+type Env = Readonly<Record<string, string | undefined>>
+
+export type ProxyRequest = {
+  readonly url: URL
+  readonly headers: Headers
+  /** The request's method; `GET` when absent. */
+  readonly method?: string
 }
 
-export type ProxyRequest = { readonly url: URL; readonly headers: Headers }
-
-/** The one CSP builder (41.1.a), per request; `null` sets none. */
+/** The one CSP builder, per request; `null` sets none. */
 export type ContentSecurityPolicy = (context: {
-  readonly config: ProxyConfig
+  readonly site: SiteKey
   readonly locale: LocaleCode
   readonly pathname: string
 }) => string | null
 
 export type DecideOptions = {
+  /** Where the allow-list is read from: the process's own environment by default. */
+  readonly env?: Env | undefined
   readonly contentSecurityPolicy?: ContentSecurityPolicy | undefined
-  /** Payload's `cookiePrefix` (3.2's config); its language cookie is `<prefix>-lng`. */
+  /** Payload's `cookiePrefix`; its language cookie is `<prefix>-lng`. */
   readonly cookiePrefix?: string | undefined
 }
 
+export type ProxyWhy =
+  | 'next-internal'
+  | 'machine'
+  | 'unknown-host'
+  | 'alias'
+  | 'api'
+  | 'not-admin-host'
+  | 'admin'
+  | 'site-asset'
+  | 'root-file'
+  | 'legacy'
+  | 'surface'
+  | 'not-found'
+
 export type ProxyDecision = {
-  /** `rewrite`: serve `to` (a path and query) at the public URL; `next`: serve the URL as is. */
-  readonly kind: 'rewrite' | 'next'
-  readonly to: string | null
-  readonly why: 'root-file' | 'legacy' | 'surface' | 'app' | 'not-found' | 'next-internal'
-  readonly locale: LocaleCode
   /**
-   * The status on the rewrite: C13's `PROXY_NOT_FOUND_STATUS` for the proxy's own not-found,
-   * which Next keeps through a normal render; `null` keeps the status Next's render gives.
+   * `rewrite`: serve `to` (a path and query) at the public URL; `next`: serve the URL as is;
+   * `respond`: answer at once with `status` — a plain 404, or a redirect to `to`.
+   */
+  readonly kind: 'rewrite' | 'next' | 'respond'
+  readonly to: string | null
+  readonly why: ProxyWhy
+  /** The site the `Host` picked; `null` for a machine route or an unknown host. */
+  readonly site: SiteKey | null
+  readonly locale: LocaleCode | null
+  /**
+   * The status on a rewrite — `PROXY_NOT_FOUND_STATUS` for the proxy's own not-found, which Next
+   * keeps through a normal render, `null` to keep the render's own — or a `respond`'s status.
    */
   readonly status: number | null
   /** Headers set on the request passed on, overwriting a client's. */
@@ -87,90 +124,172 @@ const CSP_REQUEST_HEADERS = [
   'content-security-policy-report-only',
 ] as const
 
-type Decided = Omit<ProxyDecision, 'status' | 'setRequest' | 'removeRequest' | 'setResponse'>
+type Routed = {
+  readonly kind: 'rewrite' | 'next'
+  readonly to: string | null
+  readonly why: ProxyWhy
+  readonly locale: LocaleCode
+  readonly status?: number
+  readonly setRequest?: Record<string, string>
+  readonly setResponse?: Record<string, string>
+  /** The item route's own query, for its permanent redirect to carry on. */
+  readonly publicSearch?: string
+}
 
-export function decideProxy(
-  config: ProxyConfig,
-  request: ProxyRequest,
-  options: DecideOptions = {},
-): ProxyDecision {
-  const { pathname, search, searchParams } = request.url
-  const base = { kind: 'rewrite' as const, locale: config.locales.default }
-  const notFound = (): Decided => {
-    const locale = localeOfPrefix(config, pathname)
-    return { ...base, to: notFoundPath(locale), why: 'not-found', locale }
+export function decideProxy(request: ProxyRequest, options: DecideOptions = {}): ProxyDecision {
+  const { pathname } = request.url
+  const env = options.env ?? process.env
+  if (pathname.startsWith('/_next/')) return passOn(request, 'next-internal')
+  if (isHostFree(pathname)) return passOn(request, 'machine')
+  const host = siteFromHost(request.headers.get('host'), env)
+  if (host === null) return respond('unknown-host', 404, null)
+  if (!host.canonical) {
+    // Built from the allow-list, never the request: `siteOrigin()` is the canonical host's.
+    const location = `${siteOrigin(host.site, env)}${pathname}${request.url.search}`
+    const method = (request.method ?? 'GET').toUpperCase()
+    return respond('alias', method === 'GET' || method === 'HEAD' ? 301 : 308, location)
   }
-  let decision: Decided
-  let setResponse: Record<string, string> = {}
-  let setRequest: Record<string, string> = {}
-  // The item's own query, for its permanent redirect to carry on; `''` on every other request.
-  let publicSearch = ''
+  if (isApiPath(pathname) && !isEngineRoute(pathname) && !host.admin) {
+    return respond('not-admin-host', 404, null)
+  }
+  return finish(request, options, host, route(request, options, host))
+}
 
-  const root = rootRewrite(config.assets.favicon, pathname)
-  if (pathname.startsWith('/_next/')) {
-    decision = { ...base, kind: 'next', to: null, why: 'next-internal' }
-  } else if (root !== null) {
-    decision = { ...base, to: `${root}${search}`, why: 'root-file' }
-  } else if (namesNotFoundRoute(pathname)) {
-    decision = notFound()
-  } else {
-    const parsed = parsePublicPath(config, pathname, searchParams)
-    switch (parsed.kind) {
-      case 'legacy':
-        // The old site's query is part of the mapping (`?s=sold`, MIGRATION.md §6): keep it.
-        decision = { ...base, to: `${parsed.internal}${search}`, why: 'legacy' }
-        break
-      case 'app':
-        decision = { ...base, kind: 'next', to: null, why: 'app' }
-        if (
-          isAdmin(pathname) &&
-          !hasCookie(request.headers, `${options.cookiePrefix ?? 'payload'}-lng`)
-        ) {
-          // The admin starts in English unless its user chose otherwise (KOI): Payload reads the
-          // browser's Accept-Language, which on an Indonesian laptop is Indonesian.
-          setRequest = { 'accept-language': 'en' }
-        }
-        break
-      case 'surface':
-        if (closedModule(config, parsed)) {
-          decision = notFound()
-          break
-        }
-        decision = { ...base, to: parsed.internal, why: 'surface', locale: parsed.locale }
-        if ('sensitive' in SURFACE_ROUTES[parsed.surface]) setResponse = { ...SENSITIVE_HEADERS }
-        if (parsed.surface === 'item') publicSearch = search
-        break
-      case 'notFound':
-        decision = notFound()
-        break
+/** Where a request for a site goes, once its host is known to be the site's canonical one. */
+function route(request: ProxyRequest, options: DecideOptions, host: HostMatch): Routed {
+  const { pathname, search, searchParams } = request.url
+  const site = SITES[host.site]
+  const locale = site.locales.default
+  const notFound = (): Routed => {
+    const asked = localeOfPrefix(host.site, pathname)
+    return {
+      kind: 'rewrite',
+      to: notFoundPath(host.site, asked),
+      why: 'not-found',
+      locale: asked,
+      status: PROXY_NOT_FOUND_STATUS,
     }
   }
+  if (isApiPath(pathname)) return { kind: 'next', to: null, why: 'api', locale }
+  if (isAdminPath(pathname)) {
+    if (!host.admin) return notFound()
+    // The admin starts in English unless its user chose otherwise (KOI): Payload reads the
+    // browser's Accept-Language, which on an Indonesian laptop is Indonesian.
+    const chosen = hasCookie(request.headers, `${options.cookiePrefix ?? 'payload'}-lng`)
+    return {
+      kind: 'next',
+      to: null,
+      why: 'admin',
+      locale,
+      ...(chosen ? {} : { setRequest: { 'accept-language': 'en' } }),
+    }
+  }
+  if (isSiteAsset(host.site, pathname)) return { kind: 'next', to: null, why: 'site-asset', locale }
+  const root = rootRewrite(host.site, pathname)
+  if (root !== null) return { kind: 'rewrite', to: `${root}${search}`, why: 'root-file', locale }
+  if (namesNotFoundRoute(pathname)) return notFound()
+  const parsed = parsePublicPath(site, pathname, searchParams)
+  switch (parsed.kind) {
+    case 'legacy':
+      // The old site's query is part of the mapping (`?s=sold`, DATA.md §6): keep it.
+      return { kind: 'rewrite', to: `${parsed.internal}${search}`, why: 'legacy', locale }
+    case 'surface':
+      return {
+        kind: 'rewrite',
+        to: `/${host.site}${parsed.internal}`,
+        why: 'surface',
+        locale: parsed.locale,
+        ...(isSensitive(parsed.surface) ? { setResponse: { ...SENSITIVE_HEADERS } } : {}),
+        ...(parsed.surface === 'item' ? { publicSearch: search } : {}),
+      }
+    case 'notFound':
+      return notFound()
+  }
+}
 
-  const csp = options.contentSecurityPolicy?.({ config, locale: decision.locale, pathname }) ?? null
+/** A decision for a known site: the headers every page and engine route is handed. */
+function finish(
+  request: ProxyRequest,
+  options: DecideOptions,
+  host: HostMatch,
+  routed: Routed,
+): ProxyDecision {
+  const { pathname } = request.url
+  const csp =
+    options.contentSecurityPolicy?.({ site: host.site, locale: routed.locale, pathname }) ?? null
   const headers = PROXY_REQUEST_HEADERS
   return {
-    ...decision,
-    status: decision.why === 'not-found' ? PROXY_NOT_FOUND_STATUS : null,
+    kind: routed.kind,
+    to: routed.to,
+    why: routed.why,
+    site: host.site,
+    locale: routed.locale,
+    status: routed.status ?? null,
     setRequest: {
-      ...setRequest,
-      ...(hasUserAgent(request.headers) ? {} : { 'user-agent': PROXY_USER_AGENT }),
-      [headers.publicPath]: pathname,
-      [headers.publicSearch]: publicSearch,
-      [headers.locale]: decision.locale,
+      ...routed.setRequest,
+      ...baseHeaders(request),
+      [headers.site]: host.site,
+      [headers.publicSearch]: routed.publicSearch ?? '',
+      [headers.locale]: routed.locale,
       ...(csp === null ? {} : { [headers.contentSecurityPolicy]: csp }),
     },
     removeRequest: [...CSP_REQUEST_HEADERS],
-    setResponse: { ...setResponse, ...(csp === null ? {} : { 'Content-Security-Policy': csp }) },
+    setResponse: {
+      ...routed.setResponse,
+      ...(csp === null ? {} : { 'Content-Security-Policy': csp }),
+    },
   }
 }
 
-function isAdmin(pathname: string): boolean {
-  return pathname === '/admin' || pathname.startsWith('/admin/')
+/** A request passed on with no site: Next's own, or a machine route. */
+function passOn(request: ProxyRequest, why: ProxyWhy): ProxyDecision {
+  return {
+    kind: 'next',
+    to: null,
+    why,
+    site: null,
+    locale: null,
+    status: null,
+    // A client's `x-site` or `x-locale` never reaches a handler as though the proxy had set it.
+    setRequest: {
+      ...baseHeaders(request),
+      [PROXY_REQUEST_HEADERS.site]: '',
+      [PROXY_REQUEST_HEADERS.locale]: '',
+    },
+    removeRequest: [...CSP_REQUEST_HEADERS],
+    setResponse: {},
+  }
 }
 
-/** A not-found page speaks the locale its prefix asked for, when the brand serves it. */
-function localeOfPrefix(config: ProxyConfig, pathname: string): LocaleCode {
+/** The proxy's answer of its own: a plain 404, or a redirect to `location`. */
+function respond(why: ProxyWhy, status: number, location: string | null): ProxyDecision {
+  return {
+    kind: 'respond',
+    to: location,
+    why,
+    site: null,
+    locale: null,
+    status,
+    setRequest: {},
+    removeRequest: [],
+    setResponse: {},
+  }
+}
+
+/** What every request passed on carries: the public path, the true host, a User-Agent. */
+function baseHeaders(request: ProxyRequest): Record<string, string> {
+  return {
+    ...(hasUserAgent(request.headers) ? {} : { 'user-agent': PROXY_USER_AGENT }),
+    [PROXY_REQUEST_HEADERS.publicPath]: request.url.pathname,
+    [PROXY_REQUEST_HEADERS.publicSearch]: '',
+    // The `Host` the site was picked by, so Next's own origin checks see it, not a client's claim.
+    [PROXY_REQUEST_HEADERS.forwardedHost]: request.headers.get('host') ?? '',
+  }
+}
+
+/** A not-found page speaks the locale its prefix asked for, when the site serves it. */
+function localeOfPrefix(site: SiteKey, pathname: string): LocaleCode {
+  const { locales } = SITES[site]
   const first = pathname.split('/')[1]
-  const supported = config.locales.supported.find((locale) => locale === first)
-  return supported ?? config.locales.default
+  return locales.supported.find((locale) => locale === first) ?? locales.default
 }

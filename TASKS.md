@@ -17,17 +17,17 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
-| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
-| **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
-| **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 5/33 | 0 | `██░░░░░░░░`  15% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 4/14 | 0 | `███░░░░░░░`  29% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **7/49** | **38/200** | **8** | `██░░░░░░░░`  19% |
+| **All** | 11 phases | | | **9/49** | **50/200** | **8** | `███░░░░░░░`  25% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,8 +78,12 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | copy merged (da4e214); the delete commit 4f259f1 lands last, right after 2.2, then the Check |
-| 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | 2.2.a–d done; fixing the senior-integrator review's must-fix (CORS/CSRF trusted the gallery origin) and two should-fixes (`/api/x/*` fall-through to Payload, boot check vs DEPLOYMENT §8); then merge |
+| 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
+| 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
+| 3·W1 | 3.2 Catalogue collections: makers, places, terms and the antiques | senior-db | `w/3.2` | 2026-10-03 | |
+| 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
+| 3·W3 | 3.7 Spreadsheet import and the seed data | senior-be | `w/3.7c` | 2026-10-03 | |
+| 6·W1 | 6.2 The bag, the delivery fee and the welcome code | senior-be | `task/6.2-pricing-core` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -270,7 +274,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.1.c CI: one e2e database, `next build` with no `DATABASE_URL` or `PAYLOAD_SECRET`, plus `pnpm audit --prod --audit-level=high`, a gitleaks scan and CodeQL; regenerate `pnpm-lock.yaml` with `pnpm install`
   - [x] 2.1.d **Check:** a fresh clone runs `pnpm install && pnpm verify` and a production build with the database variables unset, and the app starts on one port.
 
-- [ ] **2.2 Site replaces brand: host to site, one admin host** · needs: 2.1 — 🔄 2·W2
+- [x] **2.2 Site replaces brand: host to site, one admin host** · needs: 2.1 — ✅ 2026-10-03 ad5e3bb
   - **Lane** PLT · **Agent** senior-be with senior-fe, **opus**, second reviewer senior-integrator · **Wave** W2
   - **Owns** `engine/packages/{config,http,cache,i18n}/**`, `engine/apps/web/{next.config.ts,package.json,tsconfig.json,test/**}`, `engine/apps/web/src/{proxy.ts,boot.ts,instrumentation.ts}`, `engine/apps/web/src/{app,server,shell,messages,item}/**`, `engine/packages/cms/src/access/**`, `engine/packages/view-models/src/shell.ts`, `engine/tooling/{config-drift,db}/**`, `.github/{scripts,workflows}/**`, `engine/tooling/copy-complete/**`, `playwright.config.ts`, `.env.example`, `tests/e2e/{status,hosts,smoke,a11y}/**`
   - **Read** CARRY-OVER.md §2.1 `config`, `http`, §3 step 5 and §6.5, ARCHITECTURE.md, SECURITY.md §2.1, `docs/spikes/cache-components.md`
@@ -279,9 +283,9 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.2.b the proxy rewrites by `Host` into `app/(gallery)` or `app/(shop)` trees (internal prefixes that 404 when requested directly); an unknown or unlisted host is a plain 404 and never builds a URL; copy `instant = false` and the `connection()`-first read onto both root layouts
   - [x] 2.2.c pin the admin and Payload REST to one host, `ADMIN_HOST` (the shop's host, Q1 answered); on the other host `/admin` and `/api/*` outside `/api/x/` and `/api/health` are 404; CSRF and CORS list the admin's origin only (the senior-integrator review of 2.2: listing the gallery's origin let gallery script make credentialed admin calls on staging, where both hosts are same-site); absolute URLs for emails, canonical tags and Open Graph come from `SITES`, never from the request
   - [x] 2.2.d delete `access/brand.ts`, `access/modules.ts` and every `BRAND` and `BRAND_ROOT` use in the Owns (2.4 removes the CMS's own, and merges first); repoint the config and http tests off the root `test/` (2.3 deletes it); cache tags are namespaced by collection and carry the site where one record renders on both
-  - [ ] 2.2.e **Check:** an e2e on a production build proves: each host serves its own site; an unknown `Host` is 404; `/admin` is 200 on the admin host and 404 on the other; a spoofed `X-Forwarded-Host` changes nothing; the 404 and 308 statuses survive Cache Components (`tests/e2e/status`).
+  - [x] 2.2.e **Check:** an e2e on a production build proves: each host serves its own site; an unknown `Host` is 404; `/admin` is 200 on the admin host and 404 on the other; a spoofed `X-Forwarded-Host` changes nothing; the 404 and 308 statuses survive Cache Components (`tests/e2e/status`).
 
-- [ ] **2.3 Dissolve the brand directories** · needs: 2.1 — 🔄 2·W2
+- [x] **2.3 Dissolve the brand directories** · needs: 2.1 — ✅ 2026-10-03 ad5e3bb
   - **Lane** PLT · **Agent** junior · **Wave** W2
   - **Owns** `indies-gallery/**`, `old-east-indies/**`, `test/**`, `engine/packages/migrate/**`, `engine/apps/web/public/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`
   - **Read** CARRY-OVER.md §2.6 and §3 step 6
@@ -289,7 +293,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.3.a copy → `apps/web/src/sites/{gallery,shop}/lexicon/`; assets → `apps/web/public/{gallery,shop}/`; legacy inventories and schema notes → `packages/migrate/data/{gallery,shop}/`; fix the paths in the migrate READMEs and `public-read.json`
   - [x] 2.3.b before deleting, show nothing outside the brand directories and `test/` still reads them (2.4.c moves the gazetteer seed and the CMS fixtures, 2.2.d the config and http fixtures); this task merges last in W2
   - [x] 2.3.c delete `indies-gallery/`, `old-east-indies/` and `test/`
-  - [ ] 2.3.d **Check:** no directory outside `engine/`, `docs/`, `tests/` and `scripts/` holds site content; `pnpm verify` is green; the migrate tests read their moved data.
+  - [x] 2.3.d **Check:** no directory outside `engine/`, `docs/`, `tests/` and `scripts/` holds site content; `pnpm verify` is green; the migrate tests read their moved data.
 
 - [x] **2.4 Collections trimmed, the CMS without brands** · needs: 2.1 — ✅ 2026-10-02 038e0e7
   - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W2
@@ -329,7 +333,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
   - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
-- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2
+- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{works,makers,places,terms,media,masters}/**`
   - **Read** CONTENT-MODEL.md §3–§5, CARRY-OVER.md §2.5
@@ -341,25 +345,25 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
   - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
-- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2
+- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{products,stores,stock-levels,orders,payment-events,discounts}/**`
   - **Read** CONTENT-MODEL.md §3–§4, COMMERCE.md §1–§4
   - _Requirements: 5.1, 5.4, 7.1_
-  - [ ] 3.3.a `products`: SKU, localised name and description, category term, images, price in integer rupiah, variants as an array field, optional `relatedWork`, a `site` of `shop`
-  - [ ] 3.3.b `stores` (code, name, address, `lat`/`lng`, WhatsApp, hours, active, public flag) and `stock-levels` unique on store, product and variant SKU with a non-negative `quantity` check — `quantity` is the physical count minus units held by orders from `pending_payment` to `waiting_driver`, so a recount cannot oversell held units (DATA.md §3)
+  - [x] 3.3.a `products`: SKU, localised name and description, category term, images, price in integer rupiah, variants as an array field, optional `relatedWork`, a `site` of `shop`
+  - [x] 3.3.b `stores` (code, name, address, `lat`/`lng`, WhatsApp, hours, active, public flag) and `stock-levels` unique on store, product and variant SKU with a non-negative `quantity` check — `quantity` is the physical count minus units held by orders from `pending_payment` to `waiting_driver`, so a recount cannot oversell held units (DATA.md §3)
   - [ ] 3.3.c `orders` (guest contact, delivery address with pin, assigned store, status and history, driver image, payment state, hashed tracking token, the amounts it was priced with), `payment-events` (append-only, unique dedupe key) and `discounts` (the welcome code) — schema and access only; behaviour is phases 6–7
   - [ ] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
   - [ ] 3.3.e **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
 
-- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2
+- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{leads,partners,chat-sessions,events,pages,redirects}/**`, `engine/packages/cms/src/globals/**`
   - **Read** CONTENT-MODEL.md §6, AI.md §3, ANALYTICS.md
   - _Requirements: 4.4, 14.3_
-  - [ ] 3.4.a `leads` (kind `ask|sell|partnership|contact|chat`, site, source, payload, status New → In progress → Closed, notes) and `partners` (contact, terms, products carried, notes)
-  - [ ] 3.4.b `chat-sessions` with a transcript retention field and `events` (first-party analytics) shaped for append and aggregation
-  - [ ] 3.4.c `pages` and `redirects` carry a `site`; the `site-settings` global holds, per site, the WhatsApp number and hours, email, delivery-fee bands, the free-shipping threshold and the AI flags
+  - [x] 3.4.a `leads` (kind `ask|sell|partnership|contact|chat`, site, source, payload, status New → In progress → Closed, notes) and `partners` (contact, terms, products carried, notes)
+  - [x] 3.4.b `chat-sessions` with a transcript retention field and `events` (first-party analytics) shaped for append and aggregation
+  - [x] 3.4.c `pages` and `redirects` carry a `site`; the `site-settings` global holds, per site, the WhatsApp number and hours, email, delivery-fee bands, the free-shipping threshold and the AI flags
   - [ ] 3.4.d **Check:** db tests prove: a lead without a kind is refused; `leads`, `partners` and `site-settings` are readable only by the owner; a redirect's `from` is unique per site.
 
 - [ ] **3.5 Schema lead: the migration, roles and access** · needs: 3.2, 3.3, 3.4
@@ -383,7 +387,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.6.c a dashboard shell with "orders to act on" and "new leads" panels (counts only; the full dashboard is 9.2)
   - [ ] 3.6.d **Check:** driven in a browser at 1280 px as owner, editor and store: each sees the right sidebar; an invalid save shows a plain message in both languages; the dashboard counts match the database.
 
-- [ ] **3.7 Spreadsheet import and the seed data** · needs: 3.5
+- [ ] **3.7 Spreadsheet import and the seed data** · needs: 3.5 — 🔄 3·W3
   - **Lane** CMS · **Agent** senior-be · **Wave** W3
   - **Owns** `engine/packages/cms/src/import/**`, `engine/packages/cms/src/seed/**`, `engine/packages/migrate/src/**`
   - **Read** DATA.md, CONTENT-MODEL.md §9, CARRY-OVER.md §5, `engine/packages/migrate/README.md`
@@ -403,15 +407,15 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Built to be restyled.** The first-run UI is the real UI, so it has to be right: every colour, size, space, radius, shadow and motion value comes from a token; pages are thin compositions of shared components; copy comes from the lexicon. A later redesign then edits `sites/*/tokens` and the shared components. The design team's material is in `docs/design/input/claude-design-2026-09/`.
 
-- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2
+- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — 🔄 4·W1
   - **Lane** DSG · **Agent** senior-uiux · **Wave** W1
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
   - _Requirements: 12.1, 12.5_
-  - [ ] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
-  - [ ] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
-  - [ ] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
-  - [ ] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
+  - [x] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
+  - [x] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
+  - [x] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
+  - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
   - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
 - [ ] **4.2 Shared components from the design team's kit** · needs: 4.1
@@ -458,7 +462,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/product/**`, `engine/packages/media/src/{derivatives,tiles}/**`
   - **Read** EXPERIENCE-GALLERY.md §Item, ARCHITECTURE.md §Media and deep zoom, CARRY-OVER.md §5
   - _Requirements: 2.4, 3.2, 3.4, 14.4_
-  - [ ] 5.2.a derivatives with `sharp` on upload (320–2400 px, AVIF and WebP, EXIF location removed) and static zoom tiles under `iiif/`; the full-resolution master stays private
+  - [x] 5.2.a derivatives with `sharp` on upload (320–2400 px, AVIF and WebP, EXIF location removed) and static zoom tiles under `iiif/`; the full-resolution master stays private
   - [ ] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
   - [ ] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
   - [ ] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
@@ -510,7 +514,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 6.1.b category pages, search and the product page with options, price in rupiah, the "from the archive" link to a `relatedWork`
   - [ ] 6.1.c **Check:** on a production build a seeded product page works at 390 px with its variant picker; a product with zero stock in every store shows "Out of stock" and cannot be added; axe is clean.
 
-- [ ] **6.2 The bag, the delivery fee and the welcome code** · needs: phase 3, phase 4
+- [ ] **6.2 The bag, the delivery fee and the welcome code** · needs: phase 3, phase 4 — 🔄 6·W1
   - **Lane** SHP + PLT · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/shop/cart/**`, `engine/packages/cms/src/shop/pricing/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/bag/**`
   - **Read** COMMERCE.md §Cart and §Pricing, SECURITY.md §Server-side pricing
@@ -809,6 +813,12 @@ Each line is a thing we chose not to build now; design it against the real need 
 ## Log
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
+
+- 2026-10-03 — ✅ **phase 2** — merged `main` 036548a: `pnpm verify` green (1,354 tests; one board-script git test timed out at 5 s under load and passes 4/4 alone), the production build with no `DATABASE_URL`/`PAYLOAD_SECRET` exits 0, the root holds only `engine/`, `docs/`, `tests/`, `scripts/`.
+- 2026-10-03 — ✅ 2.3 — brand folders' copy, assets and legacy data moved; `indies-gallery/`, `old-east-indies/`, `test/` deleted after a reader scan found nothing; verify green on the branch rebased on 2.2 (1,344 tests).
+- 2026-10-03 — ✅ 2.2 — on a production build: each host serves its own site, an unknown `Host` is a plain 404 with no Location, `/admin` 200 on the shop host and 404 on the gallery's, a spoofed `X-Forwarded-Host` changes nothing, 404/308 survive Cache Components (`tests/e2e/hosts`, `tests/e2e/status`: 38 passed; smoke + a11y 36 passed). Found → follow-up: a one-segment unknown path (`/nope`) is a 404 but renders Next's recovery document, not the designed page (5.4 owns the catch-all).
+- 2026-10-03 — ✅ 5.2.a (GLM worker) — derivative ladder in AVIF and WebP, never upscaled, metadata (EXIF GPS) stripped, keys from the media contract; static IIIF 3 level-0 tiles; `sharp` 0.35.5 added to `@engine/media`. Wiring into the upload hook stays with 5.2.
+- 2026-10-03 — **Pace and lanes (user away 12 h, full authority).** Phases overlap contract-first on three lanes — Kimi (bulk), GLM (mid), Claude Opus (cores) — run by `~/.claude/workers/run.sh` (`.claude/specs/indies-platform/WORKERS.md`); the Hermes replay pilot is retired here. Decisions taken: workers regenerate `payload-types.ts`/`importMap.js` on their branches and the orchestrator regenerates on merge (migrations stay with the schema lead, 3.5); new collections import role helpers from `collections/users/roles.ts`, never the deleted brand helpers; `sources` become plain-text `references` on works (3.2); `askingPrice` is whole US dollars (Q14); the shop's mock seed uses fixed seed `20261003`.
 
 - 2026-10-02 — **Phase 2 reviews.** The senior-be review of 2.4 found the users bulk guard ran before access with `overrideAccess: true` (anyone could take the owner lock and learn from 400 vs 403): fixed and merged (142d1af). The senior-integrator review of 2.2 found CORS/CSRF trusted the gallery origin (gallery script could make credentialed admin calls on staging): 2.2.c now lists the admin's origin only, fix in flight. Later-phase findings are subtasks 3.2.e, 3.3.d, 3.5.d; the staging database retirement is 3.1.d.
 - 2026-10-02 — ✅ 2.5 — one initial migration (`20261002_073156_initial`) builds the same schema as the old chain; the last-owner backstop is per statement (`INITIALLY IMMEDIATE`, so a refusal reaches the caller), covers INSERT, refuses outside READ COMMITTED and pins `search_path`; TRUNCATE refused on `users` and `stores`. 114 local databases dumped, checked and dropped (dumps in `Backup antique map/db-dumps-2026-10-02`); staging left running for 3.1.d. db tests 93/93 re-run on `main` b0fe334. 2.5 ran beside 2.2 once 2.4 merged (needs relaxed to 2.4).

@@ -1,8 +1,8 @@
 /**
  * `@engine/i18n` (PLT, TASKS.md 3.1.b): the engine's locales, the message-key joiner — the
- * app's keys, the brand's values — and the formatters every surface shows money, dates and
+ * app's keys, each site's values — and the formatters every surface shows money, dates and
  * dimensions through. This entry reads no file and queries nothing, so a Client Component may
- * import it; reading a brand's copy files — `loadMessages()`, `readCopyFile()`, `checkCopy()` —
+ * import it; reading a site's copy files — `loadMessages()`, `readCopyFile()`, `checkCopy()` —
  * is the server's, at `@engine/i18n/copy`.
  */
 export {

@@ -109,6 +109,12 @@ a {
   margin: 0 0 var(--space-4);
 }
 
+.site-lede {
+  font: var(--text-body-large);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
 .site-footer {
   padding: var(--space-5) var(--gutter);
   border-top: var(--rule-hair) solid var(--color-border);

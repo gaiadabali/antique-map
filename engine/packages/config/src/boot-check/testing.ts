@@ -1,34 +1,11 @@
 /**
- * Test helpers for the boot-check tests — never imported by shipped code: a config that can
- * run anywhere (the synthetic brand's, given domains and no drafts) and a complete, valid
- * environment for each deployment environment.
+ * Test helpers for the boot-check tests — never imported by shipped code: a complete, valid
+ * environment for each deployment environment, its hosts the ones `SITES` commits.
  */
 import { createHash } from 'node:crypto'
 
-import { brandConfigSchema, type BrandConfig } from '../schema'
-import { REPO_ROOT, testBrandConfig } from '../validate/testing/fixtures'
+import { SITES } from '../sites/table'
 import type { DeploymentEnvironment } from './findings'
-import {
-  FULFILMENT_SECRETS,
-  PAYMENT_SECRETS,
-  secretPrefix,
-  SHIPPING_SECRETS,
-} from './provider-secrets'
-
-export { REPO_ROOT }
-
-export const DOMAINS = { production: 'shop.example.com', staging: 'staging.example.com' }
-
-/** The synthetic gallery config, deployable: real-looking domains, no drafts. */
-export function deployableConfig(
-  change: (raw: ReturnType<typeof testBrandConfig>) => void = () => {},
-): BrandConfig {
-  const raw = testBrandConfig('gallery')
-  raw.domains = { ...DOMAINS, aliases: ['alias.example.com'] }
-  ;(raw.sellers as { draft: boolean }[]).forEach((seller) => (seller.draft = false))
-  change(raw)
-  return brandConfigSchema.parse(raw)
-}
 
 /**
  * A well-formed secret: 32 bytes that look random (a hash of the seed), since a pattern — a
@@ -37,57 +14,22 @@ export function deployableConfig(
 export const secret = (seed: number) =>
   createHash('sha256').update(`link-key-${seed}`).digest().toString('base64url')
 
-const SAMPLE: Record<string, { sandbox: string; live: string }> = {
-  SECRET_KEY: { sandbox: 'sk_test_51Fixture', live: 'sk_live_51Fixture' },
-  PUBLISHABLE_KEY: { sandbox: 'pk_test_51Fixture', live: 'pk_live_51Fixture' },
-  WEBHOOK_SECRET: { sandbox: 'whsec_fixture', live: 'whsec_fixture' },
-  SERVER_KEY: { sandbox: 'SB-Mid-server-fixture', live: 'Mid-server-fixture' },
-  CLIENT_KEY: { sandbox: 'SB-Mid-client-fixture', live: 'Mid-client-fixture' },
-}
-const XENDIT = { sandbox: 'xnd_development_fixture', live: 'xnd_production_fixture' }
-
-/** Every provider secret the config needs, valid for `mode`. */
-export function providerEnv(config: BrandConfig, mode: 'sandbox' | 'live'): Record<string, string> {
-  const env: Record<string, string> = {}
-  const fill = (
-    prefix: string,
-    spec: (typeof PAYMENT_SECRETS)[keyof typeof PAYMENT_SECRETS],
-    provider: string,
-  ) => {
-    for (const { name } of spec.secrets) {
-      const sample = provider === 'xendit' && name === 'SECRET_KEY' ? XENDIT : SAMPLE[name]
-      env[`${prefix}_${name}`] = sample?.[mode] ?? `fixture-${name.toLowerCase()}`
-    }
-    if (spec.modeVariable) env[`${prefix}_MODE`] = mode
-  }
-  for (const seller of config.sellers) {
-    for (const p of seller.payments)
-      fill(secretPrefix('PAYMENT', seller.id, p), PAYMENT_SECRETS[p], p)
-    for (const p of seller.shipping.providers)
-      fill(secretPrefix('SHIPPING', seller.id, p), SHIPPING_SECRETS[p], p)
-  }
-  for (const p of config.fulfilment.providers)
-    fill(secretPrefix('FULFILMENT', p), FULFILMENT_SECRETS[p], p)
-  return env
-}
-
 const STRONG = 'x'.repeat(40)
 
-/** A complete environment for `environment`, provider secrets included. */
-export function fullEnv(
-  config: BrandConfig,
-  environment: DeploymentEnvironment,
-): Record<string, string> {
-  const site =
-    environment === 'local'
-      ? 'http://localhost:4166'
-      : `https://${environment === 'staging' ? DOMAINS.staging : DOMAINS.production}`
+/** Each site's hosts in `environment`: its committed names, canonical first, plus an alias. */
+export function hostsEnv(environment: DeploymentEnvironment): Record<string, string> {
+  const { gallery, shop } = SITES
+  const [galleryHost, shopHost] = [gallery, shop].map((site) => site.hostnames[environment][0])
+  const alias = environment === 'local' ? '' : `,www.${galleryHost}`
+  return { GALLERY_HOSTS: `${galleryHost}${alias}`, SHOP_HOSTS: `${shopHost}` }
+}
+
+/** A complete environment for `environment`. */
+export function fullEnv(environment: DeploymentEnvironment): Record<string, string> {
   return {
     NODE_ENV: environment === 'local' ? 'development' : 'production',
-    BRAND: 'test',
-    BRAND_ROOT: '/srv/site/test',
-    SITE_URL: site,
-    DATABASE_URL: 'postgres://app:pw@localhost:5432/test_gallery',
+    ...hostsEnv(environment),
+    DATABASE_URL: 'postgres://app:pw@localhost:5432/indies_test',
     PAYLOAD_SECRET: `payload-${STRONG}`,
     REVALIDATE_SECRET: `revalidate-${STRONG}`,
     CRON_SECRET: `cron-${STRONG}`,
@@ -103,13 +45,5 @@ export function fullEnv(
     SMTP_PORT: '587',
     SMTP_FROM_ADDRESS: 'desk@example.com',
     LINK_TOKEN_KEYS: `k2:${secret(2)},k1:${secret(1)}:2026-01-01`,
-    ...(config.sisters.length > 0
-      ? { SISTER_API_KEY: `sister-${STRONG}`, SISTER_WEBHOOK_SECRET: `sister-hook-${STRONG}` }
-      : {}),
-    // Production syncs with its sister's production site, never the committed staging one.
-    ...(config.sisters.length > 0 && environment === 'production'
-      ? { SISTER_BASE_URL: 'https://sister-production.example.com' }
-      : {}),
-    ...providerEnv(config, environment === 'production' ? 'live' : 'sandbox'),
   }
 }

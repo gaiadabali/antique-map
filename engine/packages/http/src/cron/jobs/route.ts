@@ -14,7 +14,7 @@
  * throws is logged, its cause redacted, and answered with a plain 500 — never Next's error page,
  * never the cause.
  */
-import { describeError } from '@engine/config/loader'
+import { describeError } from '@engine/config/boot-check'
 
 import { plain } from '../../shared/respond'
 import { refuseCron } from '../auth'

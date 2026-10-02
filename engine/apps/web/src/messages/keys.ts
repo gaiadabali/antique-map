@@ -4,19 +4,18 @@
  * its surfaces show (TASKS.md 6.3.b), and the contracts’ value lists — facets, sorts, object types,
  * maker roles, account sections, enquiry topics, returns (6.3.f), colourings, place roles,
  * directories (6.3.i) — and the form fields' labels (6.3.h), one module per area in `./lexicon/`.
- * Apps own keys; brands own words (BRANDS.md §2): the values are
- * `<brand>/site/copy/<locale>.json`, and how they sound is `docs/design/gallery/voice.md` and
+ * Keys in code, values in files (CONVENTIONS.md §6): the values are each site's
+ * `src/sites/<site>/lexicon/<locale>.json`, and how they sound is `docs/design/gallery/voice.md` and
  * `docs/design/emporium/voice.md`. The shop's own area (`./lexicon/shop`) came over from the
- * emporium app when the two apps became one (TASKS.md 2.1.a); 2.3 moves the lexicon per site. A key
+ * emporium app when the two apps became one (TASKS.md 2.1.a). A key
  * whose last segment names a contract code spells it as the code (`order.status.${status}`), a
  * loader’s `MessageVM` reads `message.<code>`, and a form field's label is its C2 `name`. Money,
  * dates, counts and hours are placeholders the page fills: copy never carries a figure of its own.
  */
-import { defineMessages, type Messages } from '@engine/i18n'
-import { loadMessages } from '@engine/i18n/copy'
-import type { LocaleCode } from '@engine/config/schema'
+import { SITES, type SiteKey, type SiteLocale } from '@engine/config/sites'
+import { createMessages, defineMessages, type Messages } from '@engine/i18n'
 
-import { currentBrand } from '../shell/brand'
+import { SITE_COPY } from '../shell/copy'
 import { ITEM_KEYS } from './lexicon/item'
 import { LISTING_KEYS } from './lexicon/listing'
 import { RECORD_KEYS } from './lexicon/record'
@@ -43,12 +42,11 @@ export const LEXICON_MESSAGES = defineMessages({
 
 export type LexiconMessageKey = keyof typeof LEXICON_MESSAGES
 
-export async function lexiconMessages(locale: LocaleCode): Promise<Messages<LexiconMessageKey>> {
-  const { config, paths } = await currentBrand()
-  return loadMessages({
+export function lexiconMessages(site: SiteKey, locale: SiteLocale): Messages<LexiconMessageKey> {
+  return createMessages({
     defaults: LEXICON_MESSAGES,
     locale,
-    defaultLocale: config.locales.default,
-    copyDir: paths.copyDir,
+    defaultLocale: SITES[site].locales.default,
+    copy: SITE_COPY[site],
   })
 }

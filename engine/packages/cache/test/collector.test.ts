@@ -6,11 +6,11 @@
 import { describe, expect, it } from 'vitest'
 
 import {
-  availabilityTag,
+  productStockTag,
   invalidate,
   invalidationBatch,
-  itemTag,
-  priceTag,
+  productTag,
+  productPriceTag,
   REVALIDATE_ROUTE,
   RevalidatePostError,
   workTag,
@@ -42,11 +42,13 @@ describe('a batch flushes only when told', () => {
   it('posts nothing when an operation returns, and everything once flushed', async () => {
     const { posts, fetch } = recorder()
     const batch = invalidationBatch({ target, fetch })
-    const result = await batch.operation((context) => save(context, itemTag(1), priceTag(1)))
+    const result = await batch.operation((context) =>
+      save(context, productTag(1), productPriceTag(1)),
+    )
     expect(result).toEqual({ saved: true })
-    await batch.operation((context) => save(context, workTag('FX-1'), itemTag(1)))
+    await batch.operation((context) => save(context, workTag('FX-1'), productTag(1)))
     expect(posts).toEqual([])
-    expect(batch.pending).toEqual(['price:1', 'work:FX-1', 'item:1'])
+    expect(batch.pending).toEqual(['product-price:1', 'work:FX-1', 'product:1'])
 
     expect(await batch.flush()).toBe(3)
     expect(posts).toHaveLength(1)
@@ -56,7 +58,7 @@ describe('a batch flushes only when told', () => {
       headers: { authorization: 'Bearer revalidate-secret', 'content-type': 'application/json' },
       redirect: 'error',
     })
-    expect(posts[0]!.tags).toEqual(['price:1', 'work:FX-1', 'item:1'])
+    expect(posts[0]!.tags).toEqual(['product-price:1', 'work:FX-1', 'product:1'])
     expect(batch.pending).toEqual([])
   })
 
@@ -68,7 +70,7 @@ describe('a batch flushes only when told', () => {
   it('drop() forgets what was kept, posting none', async () => {
     const { posts, fetch } = recorder()
     const batch = invalidationBatch({ target, fetch })
-    await batch.operation((context) => save(context, itemTag(9)))
+    await batch.operation((context) => save(context, productTag(9)))
     batch.drop()
     expect(await batch.flush()).toBe(0)
     expect(posts).toEqual([])
@@ -79,39 +81,39 @@ describe('an operation that throws', () => {
   it('keeps its tags and rethrows: a throw does not prove nothing committed', async () => {
     const { posts, fetch } = recorder()
     const batch = invalidationBatch({ target, fetch })
-    await batch.operation((context) => save(context, itemTag(1)))
+    await batch.operation((context) => save(context, productTag(1)))
     const failure = new Error('a later hook failed')
     await expect(
       batch.operation(async (context) => {
-        await save(context, itemTag(2), availabilityTag(2))
+        await save(context, productTag(2), productStockTag(2))
         throw failure
       }),
     ).rejects.toBe(failure)
-    expect(batch.pending).toEqual(['item:1', 'item:2', 'availability:2'])
+    expect(batch.pending).toEqual(['product:1', 'product:2', 'product-stock:2'])
     await batch.flush()
-    expect(posts.map((post) => post.tags)).toEqual([['item:1', 'item:2', 'availability:2']])
+    expect(posts.map((post) => post.tags)).toEqual([['product:1', 'product:2', 'product-stock:2']])
   })
 
   it('a synchronous throw keeps them the same way', async () => {
     const batch = invalidationBatch({ target, fetch: recorder().fetch })
     await expect(
       batch.operation((context) => {
-        invalidate([itemTag(3)], context)
+        invalidate([productTag(3)], context)
         throw new Error('no')
       }),
     ).rejects.toThrow('no')
-    expect(batch.pending).toEqual(['item:3'])
+    expect(batch.pending).toEqual(['product:3'])
   })
 
   it('keeps nothing before the operation has returned or thrown', async () => {
     const batch = invalidationBatch({ target, fetch: recorder().fetch })
     let during: readonly string[] = ['unread']
     await batch.operation(async (context) => {
-      await save(context, itemTag(4))
+      await save(context, productTag(4))
       during = batch.pending // a concurrent flush now would post nothing of this one
     })
     expect(during).toEqual([])
-    expect(batch.pending).toEqual(['item:4'])
+    expect(batch.pending).toEqual(['product:4'])
   })
 })
 
@@ -122,7 +124,7 @@ describe('a hook after its operation returned', () => {
     await batch.operation((context) => {
       leaked = context
     })
-    expect(() => invalidate([itemTag(5)], leaked)).toThrow(/operation has already returned/)
+    expect(() => invalidate([productTag(5)], leaked)).toThrow(/operation has already returned/)
   })
 })
 
@@ -130,22 +132,22 @@ describe('operations and Payload contexts', () => {
   it('carries its collector through a context Payload spreads into req.context', async () => {
     const batch = invalidationBatch({ target, fetch: recorder().fetch })
     // `createLocalReq()` merges an existing req.context with the one passed: `{ ...a, ...b }`.
-    await batch.operation((context) => save({ locale: 'en', ...context }, itemTag(5)))
-    expect(batch.pending).toEqual(['item:5'])
+    await batch.operation((context) => save({ locale: 'en', ...context }, productTag(5)))
+    expect(batch.pending).toEqual(['product:5'])
   })
 
   it('runs concurrent operations apart, each kept as it ends', async () => {
     const batch = invalidationBatch({ target, fetch: recorder().fetch })
     const results = await Promise.allSettled([
-      batch.operation((context) => save(context, itemTag(6))),
+      batch.operation((context) => save(context, productTag(6))),
       batch.operation(async (context) => {
-        await save(context, itemTag(7))
+        await save(context, productTag(7))
         throw new Error('rolled back')
       }),
-      batch.operation((context) => save(context, itemTag(8))),
+      batch.operation((context) => save(context, productTag(8))),
     ])
     expect(results.map((result) => result.status)).toEqual(['fulfilled', 'rejected', 'fulfilled'])
-    expect([...batch.pending].sort()).toEqual(['item:6', 'item:7', 'item:8'])
+    expect([...batch.pending].sort()).toEqual(['product:6', 'product:7', 'product:8'])
   })
 })
 
@@ -153,7 +155,7 @@ describe('posting', () => {
   it(`posts at most ${REVALIDATE_ROUTE.maxTags} tags a body, in order`, async () => {
     const { posts, fetch } = recorder()
     const batch = invalidationBatch({ target, fetch })
-    const tags = Array.from({ length: 600 }, (_, i) => itemTag(i))
+    const tags = Array.from({ length: 600 }, (_, i) => productTag(i + 1))
     await batch.operation((context) => save(context, ...tags))
     expect(await batch.flush()).toBe(600)
     expect(posts.map((post) => post.tags.length)).toEqual([256, 256, 88])
@@ -168,7 +170,7 @@ describe('posting', () => {
   it('a refused post rejects, keeping every tag the route had not accepted', async () => {
     const { posts, fetch } = recorder([204, 503])
     const batch = invalidationBatch({ target, fetch })
-    const tags = Array.from({ length: 300 }, (_, i) => priceTag(i))
+    const tags = Array.from({ length: 300 }, (_, i) => productPriceTag(i + 1))
     await batch.operation((context) => save(context, ...tags))
     const failure = batch.flush()
     await expect(failure).rejects.toBeInstanceOf(RevalidatePostError)
@@ -186,11 +188,11 @@ describe('posting', () => {
       target,
       fetch: () => Promise.reject(new TypeError('fetch failed')),
     })
-    await batch.operation((context) => save(context, itemTag(1)))
+    await batch.operation((context) => save(context, productTag(1)))
     await expect(batch.flush()).rejects.toThrow(
       /POST \/api\/x\/revalidate failed: TypeError: fetch failed/,
     )
-    expect(batch.pending).toEqual(['item:1'])
+    expect(batch.pending).toEqual(['product:1'])
   })
 
   it('a tag kept again while a post holding it is in flight stays for the next flush', async () => {
@@ -202,16 +204,16 @@ describe('posting', () => {
       return new Response(null, { status: 204 })
     }) as typeof globalThis.fetch
     const batch = invalidationBatch({ target, fetch })
-    await batch.operation((context) => save(context, itemTag(1)))
+    await batch.operation((context) => save(context, productTag(1)))
     const first = batch.flush()
     await new Promise((resolve) => setTimeout(resolve, 0))
     // Committed after that post may already have been served: its tag must go again.
-    await batch.operation((context) => save(context, itemTag(1)))
+    await batch.operation((context) => save(context, productTag(1)))
     release()
     expect(await first).toBe(1)
-    expect(batch.pending).toEqual(['item:1'])
+    expect(batch.pending).toEqual(['product:1'])
     expect(await batch.flush()).toBe(1)
-    expect(posts).toEqual([['item:1'], ['item:1']])
+    expect(posts).toEqual([['product:1'], ['product:1']])
   })
 
   it('flushes run one after another', async () => {
@@ -224,11 +226,11 @@ describe('posting', () => {
       return new Response(null, { status: 204 })
     }) as typeof globalThis.fetch
     const batch = invalidationBatch({ target, fetch })
-    await batch.operation((context) => save(context, itemTag(1)))
+    await batch.operation((context) => save(context, productTag(1)))
     const first = batch.flush()
-    await batch.operation((context) => save(context, itemTag(2)))
+    await batch.operation((context) => save(context, productTag(2)))
     const second = batch.flush()
     expect([await first, await second]).toEqual([1, 1])
-    expect(order).toEqual(['start item:1', 'end item:1', 'start item:2', 'end item:2'])
+    expect(order).toEqual(['start product:1', 'end product:1', 'start product:2', 'end product:2'])
   })
 })

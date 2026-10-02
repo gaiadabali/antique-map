@@ -1,34 +1,26 @@
 /**
- * `bootCheck()` — what a process checks as it starts (BRANDS.md §3, TASKS.md 3.1.a): the
- * environment it runs in, every secret it needs present and well-formed (per seller for each
- * payment provider, the link-key ring), sandbox vs live keys against that environment, the
- * loader source, and nothing draft or synthetic where buyers pay. A problem refuses the start
- * and fails the health check; the build never runs it (it has no brand and no secrets).
+ * `bootCheck()` — what a process checks as it starts (DEPLOYMENT.md §7–§8): the environment it
+ * runs in, judged from its site allow-list; every secret it needs present and well-formed (the
+ * link-key ring included); the loader source; and the allow-list itself. A problem refuses the
+ * start and fails the health check; the build never runs it (it has no secrets).
  *
- * `bootCheck()` itself is pure — an environment and a config in, a report out. `runBootCheck()`
- * loads the brand first, and takes an optional database probe for the checks that need one
- * (reachable; READ COMMITTED, which `reserve()`'s lock order assumes — ARCHITECTURE.md §6). A
- * database that does not answer is an outage, not a refusal: the report fails, but it says the
- * database is unavailable, never that the boot check refused to start (`isRefused()`, 5.3.f).
- * This package imports no database driver: the caller, which owns the connection, passes the
- * probe (TASKS.md 3.2, 4.1).
+ * `bootCheck()` itself is pure — an environment in, a report out. `runBootCheck()` takes an
+ * optional database probe for the checks that need one (reachable; READ COMMITTED, which the
+ * domain transactions assume — ARCHITECTURE.md §7). A database that does not answer is an outage,
+ * not a refusal: the report fails, but it says the database is unavailable, never that the boot
+ * check refused to start (`isRefused()`). This package imports no database driver: the caller,
+ * which owns the connection, passes the probe.
  */
-import { loadBrand, type LoadOptions } from '../loader/load'
-import { describeError } from '../loader/redact'
-import type { BrandConfig } from '../schema'
 import { deploymentEnvironment } from './environment'
 import { collectFindings, type BootFinding, type DeploymentEnvironment } from './findings'
 import { checkHostname } from './hostname'
 import { checkPlatform, type LoadersSource } from './platform'
-import { checkProviderSecrets } from './provider-secrets'
+import { describeError } from './redact'
 
 type Env = Readonly<Record<string, string | undefined>>
 
 export type BootCheckInput = {
   readonly env: Env
-  readonly config: BrandConfig
-  /** The config came from a per-storefront brand folder — the synthetic brand, never deployed. */
-  readonly perStorefront?: boolean
   readonly now?: Date
 }
 
@@ -52,17 +44,10 @@ export class BootCheckError extends Error {
 
 export function bootCheck(input: BootCheckInput): BootReport {
   const findings = collectFindings()
-  const { env, config } = input
-  const environment = deploymentEnvironment(env, config, findings)
+  const { env } = input
+  const environment = deploymentEnvironment(env, findings)
   checkHostname(env, findings)
-  if (input.perStorefront && environment !== 'local') {
-    findings.refuse(
-      'BRAND',
-      `"${config.slug}" keeps one config per storefront — the synthetic brand, which is never deployed`,
-    )
-  }
-  const loadersSource = checkPlatform(env, config, environment, findings, input.now ?? new Date())
-  checkProviderSecrets(env, config, environment, findings)
+  const loadersSource = checkPlatform(env, environment, findings, input.now ?? new Date())
   return report(environment, loadersSource, findings.problems, findings.warnings)
 }
 
@@ -74,7 +59,7 @@ export async function checkDatabase(probe: DatabaseProbe): Promise<BootFinding[]
     return [
       {
         subject: 'DATABASE_URL',
-        message: `default_transaction_isolation is "${transactionIsolation}"; the engine runs on READ COMMITTED, which reserve()'s lock order assumes (ARCHITECTURE.md §6)`,
+        message: `default_transaction_isolation is "${transactionIsolation}"; the domain transactions run READ COMMITTED (ARCHITECTURE.md §7)`,
       },
     ]
   } catch (error) {
@@ -85,25 +70,12 @@ export async function checkDatabase(probe: DatabaseProbe): Promise<BootFinding[]
   }
 }
 
-/** Loads the brand, checks it and the environment, and probes the database if given one. */
+/** Checks the environment, and probes the database if given one. */
 export async function runBootCheck(
-  options: LoadOptions & { readonly database?: DatabaseProbe; readonly now?: Date } = {},
+  options: { readonly env?: Env; readonly database?: DatabaseProbe; readonly now?: Date } = {},
 ): Promise<BootReport> {
   const env = options.env ?? process.env
-  let loaded
-  try {
-    loaded = loadBrand({ ...options, env })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    const environment = env.NODE_ENV === 'production' ? 'production' : 'local'
-    return report(environment, 'payload', [{ subject: 'BRAND', message }], [])
-  }
-  const checked = bootCheck({
-    env,
-    config: loaded.config,
-    perStorefront: loaded.paths.perStorefront !== null,
-    ...(options.now ? { now: options.now } : {}),
-  })
+  const checked = bootCheck({ env, ...(options.now ? { now: options.now } : {}) })
   if (!options.database) return checked
   const database = await checkDatabase(options.database)
   return report(

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // `pnpm check:generated` — TASKS.md 1.3.c: the CMS package's real generators in one context
-// (no DATABASE_URL, no brand), compared with the committed payload-types.ts and importMap.js.
+// (no DATABASE_URL, no host allow-list), compared with the committed payload-types.ts and importMap.js.
 import { runConfigDrift } from './config-drift.mjs'
 import { realGenerators } from './generators.mjs'
 
