@@ -88,6 +88,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.3 Metadata, structured data and sitemaps | senior-fe | `w/9.3a` | 2026-10-03 | |
 | 3·W2 | 3.6 The admin experience: both languages, plain errors, a dashboard shell | senior-fe | `w/3.6` | 2026-10-03 | |
 | 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `worktree-agent-a586c01642ef4da70` | 2026-10-03 | |
+| 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -689,7 +690,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 9.3.c a sitemap and `robots` per site listing only published pages in both languages; sold antiques stay listed; tracking and admin paths excluded
   - [ ] 9.3.d **Check:** a crawl of the built staging sites finds a canonical, alternates and a description on every page; no gallery JSON-LD contains `price` or `offers`; each sitemap's URLs return 200 and match the published counts.
 
-- [ ] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5
+- [ ] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5 — 🔄 9·W1
   - **Lane** CMS + PLT · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/migrate/src/redirects/**`, `engine/apps/web/src/server/redirects/**`
   - **Read** DATA.md §Redirects, CARRY-OVER.md §5 (7,665 and 673 URLs)
