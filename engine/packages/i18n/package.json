@@ -15,7 +15,6 @@
     "@engine/config": "workspace:*"
   },
   "devDependencies": {
-    "@engine/view-models": "workspace:*",
     "@types/node": "26.6.3"
   }
 }

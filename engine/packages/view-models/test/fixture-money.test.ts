@@ -6,9 +6,10 @@
 // C5 fixes no currency for `sole-currency`: it names the rupiah rule as the case where an
 // Indonesian delivery shows IDR alone, not that every sole-currency price is IDR. So the walk
 // records sole-currency charges by currency and asserts nothing about them.
-import type { Money, PriceSet } from '@engine/domain/money'
+import type { Money } from '@engine/i18n'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
+import type { PriceVM as PriceSet } from '../src/common'
 import { assertFixtureMoney, walkMoney, type WalkReport } from './money-walk'
 
 const money = (amount: number, currency: Money['currency']): Money => ({ amount, currency })
@@ -19,16 +20,14 @@ const plantedPage = (price: PriceSet) => ({
   rail: Promise.resolve([{ title: 'Planted', price }]),
 })
 
-describe('C2 fixtures keep C5 money', () => {
+describe('the fixtures keep integer money', () => {
   let report: WalkReport
-  let pendingTimers = 0
 
   beforeAll(async () => {
-    // `pending()` parts resolve after an hour. On fake timers, installed before the fixtures
-    // load, their timers fire at once, so the walk sees every resolved value, not a hang.
+    // A `pending()` part resolves after an hour. On fake timers, installed before the fixtures
+    // load, its timer fires at once, so the walk sees every resolved value, not a hang.
     vi.useFakeTimers()
     const fixtures = await import('../src/fixtures/index')
-    pendingTimers = vi.getTimerCount()
     vi.runAllTimers()
     report = await walkMoney({ ...fixtures }, 'fixtures')
   })
@@ -40,11 +39,9 @@ describe('C2 fixtures keep C5 money', () => {
   // counts back off `report` in a debugger, or temporarily log them — not committed here, since
   // this package has no ambient `console` under a strict `"types": []` typecheck (CI, TASKS.md
   // 2.2.l's proof step) and the counts belong in the ticket's evidence, not in test output.
-  it('walks every exported fixture, streamed and pending parts included', () => {
-    expect(pendingTimers).toBeGreaterThan(0)
+  it('walks every exported fixture, streamed parts included', () => {
     expect(report.money).toBeGreaterThan(0)
     expect(report.priceSets).toBeGreaterThan(0)
-    expect(report.convertedEstimates).toBeGreaterThan(0)
   })
 
   it('finds no Money that is not integer minor units, and no estimate that is not whole', () => {

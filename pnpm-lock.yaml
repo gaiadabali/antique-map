@@ -296,9 +296,6 @@ importers:
         specifier: workspace:*
         version: link:../config
     devDependencies:
-      '@engine/view-models':
-        specifier: workspace:*
-        version: link:../view-models
       '@types/node':
         specifier: 26.6.3
         version: 26.6.3
@@ -370,9 +367,9 @@ importers:
       '@engine/config':
         specifier: workspace:*
         version: link:../config
-      '@engine/domain':
+      '@engine/i18n':
         specifier: workspace:*
-        version: link:../domain
+        version: link:../i18n
       '@engine/media':
         specifier: workspace:*
         version: link:../media

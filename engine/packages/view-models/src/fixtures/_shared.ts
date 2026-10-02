@@ -14,7 +14,6 @@ import type {
   DatePrecision,
   FuzzyDateVM,
   ImageVM,
-  LineIntent,
   MakerCreditVM,
   Money,
   PriceVM,
@@ -22,7 +21,6 @@ import type {
   SeoVM,
   SellerIdentityVM,
   Streamed,
-  VariantId,
 } from '../common'
 
 export const MEDIA = 'https://media.example.test'
@@ -74,7 +72,7 @@ export function image(
 export const money = (amount: number, currency: CurrencyCode): Money => ({ amount, currency })
 
 /**
- * A C5 `PriceSet`, tax included: with an estimate it is `converted`; an IDR charge is the
+ * A `PriceVM`, tax included: with an estimate it is `converted`; an IDR charge is the
  * rupiah rule's `sole-currency` (every IDR fixture is an Indonesian destination); any other
  * charge is already in its market's currency.
  */
@@ -82,16 +80,6 @@ export function price(charge: Money, estimate: Money | null = null): PriceVM {
   if (estimate) return { charge, taxIncluded: true, basis: 'converted', estimate }
   const basis = charge.currency === 'IDR' ? 'sole-currency' : 'market-currency'
   return { charge, taxIncluded: true, basis, estimate: null }
-}
-
-/** A C6 line: ids and a quantity, never a price. */
-export function line(
-  productId: ProductPublicId,
-  variantId: VariantId | null = null,
-  options: Readonly<Record<string, string>> | null = null,
-  quantity = 1,
-): LineIntent {
-  return { productId, variantId, quantity, options, giftCard: null, wraps: null }
 }
 
 export function date(
@@ -177,7 +165,6 @@ export function card(publicId: number, title: string, overrides: Partial<CardVM>
     isReproduction: false,
     archiveNumber: null,
     swatches: [],
-    quickAdd: null,
     wishlist: { productId: publicId, saved: false },
     sister: null,
     ...overrides,

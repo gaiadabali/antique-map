@@ -2,14 +2,16 @@
 // "an amount is an integer" or "an estimate is a whole major unit", so this walks a fixture's
 // whole object graph at run time and checks every C5 `Money` and `PriceSet` it finds.
 //
-// Detection is structural and traces to `@engine/domain/money` (C5), never to a field name:
+// Detection is structural and traces to `Money` (`@engine/i18n`) and `PriceVM`, never to a field name:
 // - a `Money` is an object whose own keys are exactly C5's two, `amount` and `currency`;
 // - a `PriceSet` is an object whose own keys are exactly C5's four, `charge`, `taxIncluded`,
 //   `basis` and `estimate` (`PriceBase` plus the discriminated union's two).
 // The key lists below are typed against C5, so a field added to or dropped from the contract
 // fails to compile here before a walk could silently stop recognising the shape.
 import { CURRENCY_EXPONENT, type CurrencyCode } from '@engine/config/schema'
-import type { Money, PriceSet } from '@engine/domain/money'
+import type { Money } from '@engine/i18n'
+
+import type { PriceVM as PriceSet } from '../src/common'
 
 type Equals<A, B> =
   (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false
