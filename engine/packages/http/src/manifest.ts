@@ -11,8 +11,9 @@
  * shadows Payload's REST API; `/api/health` and `/brand-assets/…` (outside `/api/`) are the named
  * exceptions. Payload's own mounts, in each app's `(payload)` group, are its admin
  * (`admin/[[...segments]]`) and that REST API (`api/[...slug]`) alone: GraphQL is off.
- * A route is mounted only once its handler exists — the one placeholder left is robots'
- * (`UNBUILT_HANDLER`), which fails closed. What the proxy sets and answers is `./manifest/proxy`.
+ * A route is mounted only once its handler exists, but for the targets of `ROOT_REWRITES`
+ * (robots, the sitemaps, `.well-known`): each keeps a placeholder (`UNBUILT_HANDLER`) so its root
+ * URL answers a plain 404 — robots fails closed — rather than reaching Payload's REST catch-all. What the proxy sets and answers is `./manifest/proxy`.
  *
  * A handler that reads the database reaches Payload through `@engine/cms` alone — never a
  * `payload` dependency of its own — from a `payload-*.ts` module it loads with `import()` after it
@@ -47,11 +48,12 @@ export function handlerOf(path: string): string {
 }
 
 /**
- * The placeholder a mount re-exports while its route's handler is unbuilt. Only robots waits
- * (`byPath`): until its handler is built it fails closed — `User-agent: *`, `Disallow: /` —
- * since a crawler reads a 404 as "allow everything" and staging is public (4.1 senior-be #2).
- * Every other unbuilt route is simply not mounted. `specifier` is the default a route without a
- * `byPath` entry would name; no mount names it and no module is left there.
+ * The placeholder a mount re-exports while its route's handler is unbuilt: a plain `no-store` 404
+ * for every method (`http/src/unbuilt/`), kept only where a root file is rewritten (the sitemaps,
+ * `.well-known`), since an unmounted `/api/x/*` path falls to Payload's REST catch-all, which
+ * answers 500. Robots waits otherwise (`byPath`): it fails closed — `User-agent: *`, `Disallow: /`
+ * — since a crawler reads a 404 as "allow everything" and staging is public (4.1 senior-be #2).
+ * Every other unbuilt route is not mounted.
  */
 export const UNBUILT_HANDLER = {
   specifier: '@engine/http/unbuilt',
@@ -103,8 +105,11 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // `REVALIDATE_REQUEST`: invalidate(tags) from outside a request
   // the site user's crontab (DEPLOYMENT.md §5): the Payload jobs queue, a per-run limit
   route('/api/x/cron/jobs', 'WEB', 'cron', POST),
+  // Root files (`ROOT_REWRITES`), each on its placeholder until its handler is built.
   // staging disallows all; until its handler is built, `UNBUILT_HANDLER.byPath` does everywhere
   route('/api/x/robots', 'SEO', 'public', GET),
+  route('/api/x/sitemap/[[...path]]', 'SEO', 'public', GET), // index and per-locale sitemaps
+  route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
 ]
 
 /**
