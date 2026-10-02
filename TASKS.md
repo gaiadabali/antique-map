@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 8/33 | 0 | `██░░░░░░░░`  24% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 13/33 | 0 | `████░░░░░░`  39% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 3/16 | 0 | `██░░░░░░░░`  19% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **60/200** | **8** | `███░░░░░░░`  30% |
+| **All** | 11 phases | | | **9/49** | **65/200** | **8** | `███░░░░░░░`  33% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -90,6 +90,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `worktree-agent-a586c01642ef4da70` | 2026-10-03 | |
 | 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
 | 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
+| 9·W1 | 9.2 First-party analytics and the dashboard | senior-be | `w/9.2a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -344,11 +345,11 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/collections/{works,makers,places,terms,media,masters}/**`
   - **Read** CONTENT-MODEL.md §3–§5, CARRY-OVER.md §2.5
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
-  - [ ] 3.2.a `terms` keep four kinds (subject, technique, grade, category); `sources` become plain-text references on a work; places keep historical names, a parent and the cycle guard
-  - [ ] 3.2.b `works` (admin label **Antiques**) follow CONTENT-MODEL: stock number, status `available|on-hold|sold`, `location` (Singapore or Jakarta), a unique `publicId` (the old site's product id for a migrated work, else a sequence from 100000 — it is part of the item URL), localised text, an owner-only `askingPrice` in USD (Q14) that no public read can select
-  - [ ] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
-  - [ ] 3.2.d media keep their roles and localised alt text; masters stay private with the presigned PUT and checksum
-  - [ ] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
+  - [x] 3.2.a `terms` keep four kinds (subject, technique, grade, category); `sources` become plain-text references on a work; places keep historical names, a parent and the cycle guard
+  - [x] 3.2.b `works` (admin label **Antiques**) follow CONTENT-MODEL: stock number, status `available|on-hold|sold`, `location` (Singapore or Jakarta), a unique `publicId` (the old site's product id for a migrated work, else a sequence from 100000 — it is part of the item URL), localised text, an owner-only `askingPrice` in USD (Q14) that no public read can select
+  - [x] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
+  - [x] 3.2.d media keep their roles and localised alt text; masters stay private with the presigned PUT and checksum
+  - [x] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
   - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
 - [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2 — 🔄 3·W1
@@ -671,7 +672,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 9.1.d a retention job that deletes expired chat transcripts, closed leads past retention and delivered orders' driver images on schedule
   - [ ] 9.1.e **Check:** a partnership form creates a lead the owner can move to Closed; an editor cannot open the inbox; the retention job deletes only what is past its date (tested with a fixed clock) and logs counts without personal data.
 
-- [ ] **9.2 First-party analytics and the dashboard** · needs: phase 5, phase 6
+- [ ] **9.2 First-party analytics and the dashboard** · needs: phase 5, phase 6 — 🔄 9·W1
   - **Lane** CMS + PLT · **Agent** senior-be with senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/server/analytics/**`, `engine/apps/web/src/shared/beacon/**`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/apps/web/src/app/(payload)/admin/dashboard/**`
   - **Read** ANALYTICS.md, Requirement 13
@@ -820,6 +821,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 — 4.1 merged (bbe4163, Kimi worker + orchestrator merge fix): three-tier tokens, gallery and shop palettes as tier-2 files scoped by `data-site`, Cormorant Garamond + Karla via `next/font/google` applied on `<html>`, `pnpm check:tokens` in `verify`, `DESIGN.md`; gate green with the production build. The Check (both palettes rendered, font budget) is ticked with the 4.2 screenshots.
+- 2026-10-03 — 3.7.c merged (13e6e2f, GLM worker): deterministic mock shop seed (seed `20261003`) — 120 stores inside Bali's bounds, ~80 products with variants at whole Rp 5.000 steps, stock per store with ≥ 3 products out of stock everywhere, `WELCOME10`; every row marked as mock; the real spreadsheets replace it through 3.7.a.
 - 2026-10-03 — **Integration branches (decision).** Branches that add collections fail the migrated-database tests (`admins`, `instance`) until the wave's migration exists, so phase 3 W1 collects on `int/3-w1` (3.3 + 3.4 merged, 3.2 to come) and 3.5 writes the migration there; the wave lands on `main` in one merge and `main` stays green. The UI collects the same way on `int/4` (4.1 + 4.2a + 4.2b; 4.2c renames 4.2a's PascalCase folders to kebab-case per CONVENTIONS). Workers 3.6 (from `int/3-w1`) and 4.2c (from `int/4`) are cut from them.
 - 2026-10-03 — 6.2 core merged (6c4fa36; 6.2.a, 6.2.c reported): signed bag cookie with no prices in it, `quoteBag` re-prices from the catalogue only, delivery bands (free exactly at the threshold), the welcome code; one rounding step (percentage half-up on the subtotal); 72 tests, 7 planted bugs each caught. `@engine/cms` exports `./shop/pricing`. Open for the shell: the lexicon key `codeInvalid.already-used`, and `BAG_COOKIE_KEY` in the boot check.
 - 2026-10-03 — ✅ **phase 2** — merged `main` 036548a: `pnpm verify` green (1,354 tests; one board-script git test timed out at 5 s under load and passes 4/4 alone), the production build with no `DATABASE_URL`/`PAYLOAD_SECRET` exits 0, the root holds only `engine/`, `docs/`, `tests/`, `scripts/`.
