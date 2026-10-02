@@ -28,6 +28,10 @@
  *   `@payloadcms/db-postgres/dist/connect.js`) checks a client out to prove the database answers
  *   and to hang its reconnect-on-`ECONNRESET` listener on it, and never releases it: that client is
  *   the adapter's liveness watch, so at most `max - 1` (pg's default `max` is 10) serve queries.
+ * - **Constraints Payload cannot express** — CHECKs, a unique key over several columns — are
+ *   declared beside each collection and added to the drizzle schema in `afterSchemaInit`
+ *   (`./constraints`), so a dev push, a test's pushed database and `migrate:create` all carry
+ *   them (CONVENTIONS.md §13).
  * - **Never a database it cannot find** (S4). Payload would `CREATE DATABASE` a `DATABASE_URL`
  *   that names none and boot on it empty — a typo migrated into an empty shop whose health check
  *   is green. `disableCreateDatabase` makes it refuse; `pnpm db:fresh` and a host's provisioning
@@ -37,6 +41,7 @@ import { postgresAdapter, type PostgresAdapter } from '@payloadcms/db-postgres'
 import type { DatabaseAdapterObj } from 'payload'
 
 import { MIGRATION_LOCK_KEY, withAdvisoryLock, type LockPool } from './advisory-lock'
+import { declareConstraints } from './constraints'
 
 export type DatabaseEnv = Readonly<Record<string, string | undefined>>
 
@@ -82,6 +87,7 @@ export function buildDatabaseAdapter(
     disableCreateDatabase: true,
     push: devPushRequested(env),
     migrationDir,
+    afterSchemaInit: [declareConstraints],
     ...(runsMigrationsOnBoot(env) ? { prodMigrations: [...migrations] } : {}),
   })
   return withMigrationLock(adapter)

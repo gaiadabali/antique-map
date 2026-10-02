@@ -1,7 +1,7 @@
 /**
- * TASKS.md 8.2.g on a real Postgres: a maker, place, term or source a work still references —
- * as stored or in its latest draft — cannot be deleted ("still used by N works"); and a work's
- * duplicate is a new object, its stock number held to the gallery's pattern. The schema is pushed
+ * TASKS.md 8.2.g on a real Postgres: a maker, place or term a work still references — as stored
+ * or in its latest draft — cannot be deleted ("still used by N works"); and a work's duplicate is
+ * a new object, its stock number held to the gallery's pattern. The schema is pushed
  * (`./works.test-support`); without `CMS_TEST_POSTGRES_URL` it skips.
  */
 import { APIError, getPayload, ValidationError } from 'payload'
@@ -18,20 +18,20 @@ describe.skipIf(!server)('works: references and duplicates on a real database', 
       getPayload({ config, key }),
     )
     ids = await vocabulary(stack.api)
-    // A work that references the place, both terms and the source.
+    // A work that references the place, both terms and a bibliography citation.
     await stack.api.create({
       collection: 'works',
       data: {
         places: [{ place: ids.place, role: 'depicts', primary: true }],
         subjects: [ids.subject],
         condition: { grade: ids.grade },
-        references: [{ source: ids.source, ref: '1268' }],
+        references: [{ citation: 'Tooley (Australia) 1268' }],
       },
     })
   }, 180_000)
   afterAll(() => stack?.stop(), 60_000)
 
-  it('refuses to delete a maker, place, term or source a work references — stored or drafted', async () => {
+  it('refuses to delete a maker, place or term a work references — stored or drafted', async () => {
     const { api } = stack
     const maker = await api.create({
       collection: 'makers',
@@ -52,7 +52,6 @@ describe.skipIf(!server)('works: references and duplicates on a real database', 
       ['places', ids.place],
       ['terms', ids.grade],
       ['terms', ids.subject],
-      ['sources', ids.source],
     ] as const) {
       await expect(api.delete({ collection, id })).rejects.toThrow(/still used by \d+ works? /)
     }

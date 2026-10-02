@@ -15,6 +15,7 @@
     "@engine/config": "workspace:*",
     "@engine/http": "workspace:*",
     "@engine/i18n": "workspace:*",
+    "@engine/migrate": "workspace:*",
     "@engine/view-models": "workspace:*",
     "@payloadcms/next": "3.90.2",
     "@payloadcms/storage-s3": "3.90.2",

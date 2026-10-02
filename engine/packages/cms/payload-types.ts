@@ -69,13 +69,23 @@ export interface Config {
   collections: {
     users: User
     stores: Store
+    'stock-levels': StockLevel
+    orders: Order
+    'payment-events': PaymentEvent
+    discounts: Discount
+    products: Product
     works: Work
     makers: Maker
     places: Place
     terms: Term
-    sources: Source
     media: Media
     masters: Master
+    pages: Page
+    redirects: Redirect
+    leads: Lead
+    partners: Partner
+    'chat-sessions': ChatSession
+    events: Event
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -89,13 +99,23 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>
     stores: StoresSelect<false> | StoresSelect<true>
+    'stock-levels': StockLevelsSelect<false> | StockLevelsSelect<true>
+    orders: OrdersSelect<false> | OrdersSelect<true>
+    'payment-events': PaymentEventsSelect<false> | PaymentEventsSelect<true>
+    discounts: DiscountsSelect<false> | DiscountsSelect<true>
+    products: ProductsSelect<false> | ProductsSelect<true>
     works: WorksSelect<false> | WorksSelect<true>
     makers: MakersSelect<false> | MakersSelect<true>
     places: PlacesSelect<false> | PlacesSelect<true>
     terms: TermsSelect<false> | TermsSelect<true>
-    sources: SourcesSelect<false> | SourcesSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
     masters: MastersSelect<false> | MastersSelect<true>
+    pages: PagesSelect<false> | PagesSelect<true>
+    redirects: RedirectsSelect<false> | RedirectsSelect<true>
+    leads: LeadsSelect<false> | LeadsSelect<true>
+    partners: PartnersSelect<false> | PartnersSelect<true>
+    'chat-sessions': ChatSessionsSelect<false> | ChatSessionsSelect<true>
+    events: EventsSelect<false> | EventsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -106,8 +126,12 @@ export interface Config {
     defaultIDType: number
   }
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'id') | ('en' | 'id')[]
-  globals: {}
-  globalsSelect: {}
+  globals: {
+    'site-settings': SiteSetting
+  }
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>
+  }
   locale: 'en' | 'id'
   widgets: {
     collections: CollectionsWidget
@@ -190,6 +214,204 @@ export interface Store {
    */
   code: string
   name: string
+  /**
+   * Where buyers know it by, e.g. Ubud or Sanur. Shown on the store list and the tracking page.
+   */
+  area?: string | null
+  address?: string | null
+  /**
+   * Decimal degrees, e.g. -8.5069. Orders are sent from the nearest active store.
+   */
+  lat?: number | null
+  /**
+   * Decimal degrees, e.g. 115.2625.
+   */
+  lng?: number | null
+  /**
+   * The store’s own number, +62… — for staff. Buyers contact the shop’s online number.
+   */
+  whatsapp?: string | null
+  hours?: string | null
+  images?:
+    | {
+        image: number | Media
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Only an active store is sent orders. Needs the address and pin. Switch it off to retire a store — never delete one with stock or orders.
+   */
+  active?: boolean | null
+  /**
+   * Shown on the shop’s Stores page while it is active.
+   */
+  listed?: boolean | null
+  notes?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number
+  /**
+   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
+   */
+  alt: string
+  /**
+   * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
+   */
+  altSource?: ('baseline' | 'cataloguer' | 'ai-draft') | null
+  translationStatus?: ('entered' | 'machine' | 'reviewed') | null
+  caption?: string | null
+  credit?: string | null
+  licence?: string | null
+  /**
+   * What it is an image of — a work, a product, a store, or something else. Set at intake, with the role.
+   */
+  subject: 'work' | 'product' | 'store' | 'other'
+  /**
+   * What the image is — set at intake, the same as its master’s.
+   */
+  role:
+    | 'recto'
+    | 'verso'
+    | 'detail'
+    | 'raking'
+    | 'transmitted'
+    | 'framed'
+    | 'in-room'
+    | 'scale'
+    | 'flat'
+    | 'lifestyle'
+    | 'packaging'
+    | 'showroom'
+    | 'editorial'
+  /**
+   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
+   */
+  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
+  /**
+   * The capture this image was processed from.
+   */
+  master?: (number | null) | Master
+  /**
+   * Derived from the file: the address its derivatives and tiles are stored under.
+   */
+  assetId?: string | null
+  derivatives?: {
+    status?: ('pending' | 'ready' | 'failed') | null
+    /**
+     * The ladder's version once built (now v1).
+     */
+    version?: string | null
+    blurDataUri?: string | null
+  }
+  iiif?: {
+    status?: ('none' | 'pending' | 'ready' | 'failed') | null
+  }
+  prefix?: string | null
+  _objectKey?: string | null
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
+}
+/**
+ * The private files images are made from: every capture as received. Never shown on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "masters".
+ */
+export interface Master {
+  id: number
+  kind: 'capture'
+  /**
+   * Where the file is in the private masters bucket. It has no public URL.
+   */
+  storageKey: string
+  /**
+   * The file's SHA-256: checked against what the bucket holds.
+   */
+  checksum: string
+  /**
+   * From the bucket.
+   */
+  byteSize?: number | null
+  contentType?: string | null
+  widthPx?: number | null
+  heightPx?: number | null
+  colourProfile?: string | null
+  work?: (number | null) | Work
+  /**
+   * What the capture is, as the intake judged it.
+   */
+  role?:
+    | (
+        | 'recto'
+        | 'verso'
+        | 'detail'
+        | 'raking'
+        | 'transmitted'
+        | 'framed'
+        | 'in-room'
+        | 'scale'
+        | 'flat'
+        | 'lifestyle'
+        | 'packaging'
+        | 'showroom'
+        | 'editorial'
+        | 'reference'
+      )
+    | null
+  /**
+   * How it was made — declared at intake, never inferred. No default.
+   */
+  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
+  /**
+   * The object's bounding box in the frame's pixels — a sheet's outer edge, margins included.
+   */
+  objectBox?: {
+    x?: number | null
+    y?: number | null
+    width?: number | null
+    height?: number | null
+  }
+  /**
+   * The object's pixels over its real size, from the ruler — never the file's DPI tag.
+   */
+  objectPpi?: number | null
+  captureTier?: ('good' | 'better' | 'best') | null
+  intake?: {
+    batch?: string | null
+    /**
+     * A stock number, a product, "showroom".
+     */
+    reference?: string | null
+    /**
+     * The name it was handed over under.
+     */
+    receivedAs?: string | null
+    verdict?: ('pass' | 'fix-owner' | 'legacy') | null
+    retouching?: ('none' | 'unknown' | 'retouched-legacy') | null
+    notes?:
+      | {
+          note: string
+          id?: string | null
+        }[]
+      | null
+  }
   updatedAt: string
   createdAt: string
 }
@@ -201,6 +423,10 @@ export interface Store {
  */
 export interface Work {
   id: number
+  /**
+   * Made when the work is first saved — the old site’s product id for a migrated work, otherwise from 100000 — and never changed: the item’s address carries it.
+   */
+  publicId?: number | null
   /**
    * Made when the work is first saved, and never changed: redirects key on it.
    */
@@ -347,6 +573,14 @@ export interface Work {
     | null
   colour?: ('publishers' | 'original-hand' | 'old-hand' | 'later' | 'printed' | 'uncoloured') | null
   /**
+   * Whether the antique is on offer. Set it; never imply it.
+   */
+  status?: ('available' | 'on-hold' | 'sold') | null
+  /**
+   * Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.
+   */
+  location?: ('singapore' | 'jakarta') | null
+  /**
    * In millimetres, height before width. Inches are worked out for you.
    */
   dimensions?: {
@@ -404,12 +638,11 @@ export interface Work {
    */
   subjects?: (number | Term)[] | null
   /**
-   * "Tooley (Australia) 1268", Koeman, Parry numbers.
+   * Text, as catalogued: "Tooley (Australia) 1268", Koeman, Parry numbers — the bibliography in the catalogue’s own words.
    */
   references?:
     | {
-        source: number | Source
-        ref?: string | null
+        citation: string
         note?: string | null
         id?: string | null
       }[]
@@ -458,6 +691,10 @@ export interface Work {
    */
   master?: (number | null) | Master
   /**
+   * Whole US dollars — the start of a negotiation and the insured value. Never on a page, a feed or an AI answer.
+   */
+  askingPrice?: number | null
+  /**
    * From the owner’s item register. Left blank, the item still publishes: the gallery sells nothing online.
    */
   physical?: {
@@ -501,24 +738,87 @@ export interface Work {
     cataloguer?: (number | null) | User
     verifiedAt?: string | null
     /**
-     * The work cannot publish while any field is listed here.
+     * One entry per field the drafting tool filled. The work cannot publish while an entry is drafted and has no verified time.
      */
-    aiDraft?:
-      | (
-          | 'title'
-          | 'originalTitle'
-          | 'publication'
-          | 'date'
-          | 'makers'
-          | 'places'
-          | 'subjects'
-          | 'technique'
-          | 'colour'
-          | 'condition'
-          | 'references'
-          | 'seo'
-        )[]
-      | null
+    aiDraft?: {
+      title?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      description?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      objectType?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      date?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      places?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      subjects?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      dimensions?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+    }
   }
   legacy?: {
     /**
@@ -620,167 +920,6 @@ export interface Maker {
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
-}
-/**
- * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number
-  /**
-   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
-   */
-  alt: string
-  /**
-   * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
-   */
-  altSource?: ('baseline' | 'cataloguer' | 'ai-draft') | null
-  translationStatus?: ('entered' | 'machine' | 'reviewed') | null
-  caption?: string | null
-  credit?: string | null
-  licence?: string | null
-  /**
-   * What the image is — set at intake, the same as its master’s.
-   */
-  role:
-    | 'recto'
-    | 'verso'
-    | 'detail'
-    | 'raking'
-    | 'transmitted'
-    | 'framed'
-    | 'in-room'
-    | 'scale'
-    | 'flat'
-    | 'lifestyle'
-    | 'packaging'
-    | 'showroom'
-    | 'editorial'
-  /**
-   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
-   */
-  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
-  /**
-   * The capture this image was processed from.
-   */
-  master?: (number | null) | Master
-  /**
-   * Derived from the file: the address its derivatives and tiles are stored under.
-   */
-  assetId?: string | null
-  derivatives?: {
-    status?: ('pending' | 'ready' | 'failed') | null
-    /**
-     * The ladder's version once built (now v1).
-     */
-    version?: string | null
-    blurDataUri?: string | null
-  }
-  iiif?: {
-    status?: ('none' | 'pending' | 'ready' | 'failed') | null
-  }
-  prefix?: string | null
-  _objectKey?: string | null
-  updatedAt: string
-  createdAt: string
-  url?: string | null
-  thumbnailURL?: string | null
-  filename?: string | null
-  mimeType?: string | null
-  filesize?: number | null
-  width?: number | null
-  height?: number | null
-  focalX?: number | null
-  focalY?: number | null
-}
-/**
- * The private files images are made from: every capture as received. Never shown on the site.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "masters".
- */
-export interface Master {
-  id: number
-  kind: 'capture'
-  /**
-   * Where the file is in the private masters bucket. It has no public URL.
-   */
-  storageKey: string
-  /**
-   * The file's SHA-256: checked against what the bucket holds.
-   */
-  checksum: string
-  /**
-   * From the bucket.
-   */
-  byteSize?: number | null
-  contentType?: string | null
-  widthPx?: number | null
-  heightPx?: number | null
-  colourProfile?: string | null
-  work?: (number | null) | Work
-  /**
-   * What the capture is, as the intake judged it.
-   */
-  role?:
-    | (
-        | 'recto'
-        | 'verso'
-        | 'detail'
-        | 'raking'
-        | 'transmitted'
-        | 'framed'
-        | 'in-room'
-        | 'scale'
-        | 'flat'
-        | 'lifestyle'
-        | 'packaging'
-        | 'showroom'
-        | 'editorial'
-        | 'reference'
-      )
-    | null
-  /**
-   * How it was made — declared at intake, never inferred. No default.
-   */
-  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
-  /**
-   * The object's bounding box in the frame's pixels — a sheet's outer edge, margins included.
-   */
-  objectBox?: {
-    x?: number | null
-    y?: number | null
-    width?: number | null
-    height?: number | null
-  }
-  /**
-   * The object's pixels over its real size, from the ruler — never the file's DPI tag.
-   */
-  objectPpi?: number | null
-  captureTier?: ('good' | 'better' | 'best') | null
-  intake?: {
-    batch?: string | null
-    /**
-     * A stock number, a product, "showroom".
-     */
-    reference?: string | null
-    /**
-     * The name it was handed over under.
-     */
-    receivedAs?: string | null
-    verdict?: ('pass' | 'fix-owner' | 'legacy') | null
-    retouching?: ('none' | 'unknown' | 'retouched-legacy') | null
-    notes?:
-      | {
-          note: string
-          id?: string | null
-        }[]
-      | null
-  }
-  updatedAt: string
-  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -897,34 +1036,496 @@ export interface Term {
   _status?: ('draft' | 'published') | null
 }
 /**
+ * What each store can still sell. Enter what is on the shelf; units waiting for a driver are taken off for you.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sources".
+ * via the `definition` "stock-levels".
  */
-export interface Source {
+export interface StockLevel {
+  id: number
+  store: number | Store
+  product: number | Product
+  /**
+   * For a product with variants, the variant this row counts. Empty for a product without.
+   */
+  variantSku?: string | null
+  /**
+   * The shelf count less the units held by orders not yet collected by a driver.
+   */
+  quantity: number
+  /**
+   * Enter what you count on the shelf today, including units packed for an order but not yet collected.
+   */
+  physicalCount?: number | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * What the shop sells. Stock is entered per store under Stock.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
   id: number
   /**
-   * How references cite it: "Tooley", "Koeman", "Tooley (Australia)".
+   * The code the product and stock spreadsheets match on. Also the SKU of a product without variants.
    */
-  shortCite: string
+  sku: string
+  /**
+   * Required in English, the default language; another language left blank shows the English.
+   */
+  name?: string | null
   /**
    * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
    */
   slug: string
+  description?: string | null
+  category?: (number | null) | Term
+  images?:
+    | {
+        image: number | Media
+        caption?: string | null
+        id?: string | null
+      }[]
+    | null
   /**
-   * The full entry: author, title, place, publisher, year.
+   * Whole rupiah: 95000 for Rp 95.000. The checkout always prices from here, never from the page.
    */
-  citation?: string | null
+  price?: number | null
   /**
-   * The year it was published (the first, for a multi-volume work).
+   * Optional: sizes or colours sold under this product, each with its own SKU. A variant without a price takes the product’s.
    */
-  year?: number | null
+  variants?:
+    | {
+        sku: string
+        label?: string | null
+        price?: number | null
+        active?: boolean | null
+        id?: string | null
+      }[]
+    | null
   /**
-   * Where it can be read or bought online, if anywhere.
+   * The antique this is made from, if any — linked only while that antique is published.
    */
-  url?: string | null
+  relatedWork?: (number | null) | Work
+  site: 'shop'
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  translationStatus: 'entered' | 'machine' | 'reviewed'
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
+}
+/**
+ * Orders from the shop. Store staff see their own store’s orders only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number
+  number: number
+  site: 'shop'
+  channel: 'web' | 'replacement'
+  replacementOf?: (number | null) | Order
+  lines: {
+    product: number | Product
+    variantSku?: string | null
+    sku: string
+    name: string
+    variantLabel?: string | null
+    unitPrice: number
+    qty: number
+    lineTotal: number
+    image?: (number | null) | Media
+    id?: string | null
+  }[]
+  contact: {
+    name: string
+    whatsapp: string
+    email: string
+    locale: 'en' | 'id'
+  }
+  delivery: {
+    address: string
+    notes?: string | null
+    lat: number
+    lng: number
+  }
+  giftNote?: string | null
+  store: number | Store
+  storeSnapshot?: {
+    code?: string | null
+    name?: string | null
+    area?: string | null
+  }
+  distanceKm?: number | null
+  totals: {
+    subtotal: number
+    discount: number
+    deliveryFee: number
+    total: number
+  }
+  discount?: {
+    code?: string | null
+    kind?: ('percent' | 'fixed') | null
+    value?: number | null
+  }
+  status:
+    | 'pending_payment'
+    | 'paid'
+    | 'processing'
+    | 'waiting_driver'
+    | 'on_the_way'
+    | 'delivered'
+    | 'cancelled'
+    | 'expired'
+  history?:
+    | {
+        from?:
+          | (
+              | 'pending_payment'
+              | 'paid'
+              | 'processing'
+              | 'waiting_driver'
+              | 'on_the_way'
+              | 'delivered'
+              | 'cancelled'
+              | 'expired'
+            )
+          | null
+        to:
+          | 'pending_payment'
+          | 'paid'
+          | 'processing'
+          | 'waiting_driver'
+          | 'on_the_way'
+          | 'delivered'
+          | 'cancelled'
+          | 'expired'
+        at: string
+        actor: 'user' | 'midtrans' | 'system'
+        by?: (number | null) | User
+        note?: string | null
+        id?: string | null
+      }[]
+    | null
+  payment?: {
+    attempts?:
+      | {
+          midtransOrderId: string
+          snapToken?: string | null
+          createdAt: string
+          state?: string | null
+          id?: string | null
+        }[]
+      | null
+    method?: string | null
+    transactionId?: string | null
+    paidAt?: string | null
+  }
+  driverImage?: {
+    key?: string | null
+    contentType?: string | null
+    width?: number | null
+    height?: number | null
+    uploadedAt?: string | null
+    uploadedBy?: (number | null) | User
+  }
+  trackingTokenHash: string
+  expiresAt?: string | null
+  /**
+   * Store staff: hand the order back with a reason if your store cannot send it.
+   */
+  needsAttention?: {
+    flag?: boolean | null
+    reason?: string | null
+  }
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * What the payment provider reported, in order. A record only: never edited.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-events".
+ */
+export interface PaymentEvent {
+  id: number
+  provider: 'midtrans'
+  dedupeKey: string
+  order?: (number | null) | Order
+  midtransOrderId?: string | null
+  transactionStatus?: string | null
+  fraudStatus?: string | null
+  statusCode?: string | null
+  grossAmount?: number | null
+  source: 'webhook' | 'reconcile' | 'simulate'
+  outcome?: string | null
+  payloadHash?: string | null
+  receivedAt: string
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Codes buyers type at checkout. A discount applies to the items, never the delivery fee.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts".
+ */
+export interface Discount {
+  id: number
+  code: string
+  kind: 'percent' | 'fixed'
+  /**
+   * For a percent code, 1 to 100. For a rupiah code, whole rupiah: 50000 for Rp 50.000.
+   */
+  value: number
+  minSpend?: number | null
+  oncePerBuyer?: boolean | null
+  startsAt?: string | null
+  endsAt?: string | null
+  usageLimit?: number | null
+  usedCount: number
+  active?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Information and editorial pages for either site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number
+  site: 'gallery' | 'shop'
+  kind: 'page' | 'story' | 'collection'
+  title: string
+  /**
+   * The page address, such as "about-us" or "delivery".
+   */
+  slug: string
+  intro?: string | null
+  hero?: (number | null) | Media
+  /**
+   * Plain text for now. Rich-text blocks come with task 9.3.
+   */
+  body?: string | null
+  /**
+   * For a curated collection page.
+   */
+  works?: (number | Work)[] | null
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Per-site URL redirects. The from path must start with /.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects".
+ */
+export interface Redirect {
+  id: number
+  site: 'gallery' | 'shop'
+  /**
+   * The path to redirect from, such as /old-page.
+   */
+  from: string
+  /**
+   * Where it redirects to: a path on the same site or an absolute URL.
+   */
+  to: string
+  code: '301' | '302'
+  source: 'legacy' | 'editor' | 'slug-change'
+  hits?: number | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * People the client should reply to: enquiries, sellers, partners and chat hand-offs.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads".
+ */
+export interface Lead {
+  id: number
+  /**
+   * What the person wants.
+   */
+  kind: 'ask' | 'sell' | 'partnership' | 'contact' | 'chat'
+  site: 'gallery' | 'shop'
+  source: 'chat' | 'form' | 'page'
+  payload?: {
+    name?: string | null
+    whatsapp?: string | null
+    email?: string | null
+    preferredChannel?: ('whatsapp' | 'email') | null
+    message?: string | null
+    locale?: ('en' | 'id') | null
+    consentVersion?: string | null
+    consentAt?: string | null
+  }
+  /**
+   * Works or products the person asked about.
+   */
+  items?: (number | Work)[] | null
+  chatSession?: (number | null) | ChatSession
+  status: 'new' | 'contacted' | 'in_progress' | 'closed' | 'spam'
+  /**
+   * Appended automatically when status changes.
+   */
+  statusHistory?:
+    | {
+        status: 'new' | 'contacted' | 'in_progress' | 'closed' | 'spam'
+        by?: (number | null) | User
+        at: string
+        id?: string | null
+      }[]
+    | null
+  firstReplyAt?: string | null
+  notes?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Visitor AI chat transcripts. Deleted 30 days after the last message.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chat-sessions".
+ */
+export interface ChatSession {
+  id: number
+  site: 'gallery' | 'shop'
+  locale: 'en' | 'id'
+  startedAt: string
+  lastMessageAt: string
+  /**
+   * Works or products the visitor asked about.
+   */
+  items?: (number | Work)[] | null
+  transcript?:
+    | {
+        role: 'user' | 'assistant'
+        at: string
+        text: string
+        id?: string | null
+      }[]
+    | null
+  ipHash?: string | null
+  labels?: string[] | null
+  usage?: {
+    inputTokens?: number | null
+    outputTokens?: number | null
+    costUsd?: number | null
+  }
+  outcome?: ('refused' | 'blocked' | 'handoff' | 'lead') | null
+  lead?: (number | null) | Lead
+  expiresAt?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Resellers and partners the owner works with. No login here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners".
+ */
+export interface Partner {
+  id: number
+  name: string
+  kind: 'hotel' | 'shop' | 'restaurant' | 'other'
+  site: 'gallery' | 'shop'
+  contact?: {
+    person?: string | null
+    whatsapp?: string | null
+    email?: string | null
+    phone?: string | null
+  }
+  address?: string | null
+  /**
+   * Negotiated case by case.
+   */
+  terms?: string | null
+  /**
+   * Product SKUs or names for now. Task 3.3 relates this to products.
+   */
+  productsCarried?: string[] | null
+  status: 'prospect' | 'active' | 'paused' | 'ended'
+  notes?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * First-party analytics events. Append-only; nobody edits or deletes them through the API.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number
+  site: 'gallery' | 'shop'
+  name:
+    | 'page.viewed'
+    | 'search.submitted'
+    | 'listing.viewed'
+    | 'item.viewed'
+    | 'item.zoomed'
+    | 'product.viewed'
+    | 'ask.clicked'
+    | 'sell.clicked'
+    | 'partnership.clicked'
+    | 'lead.created'
+    | 'chat.started'
+    | 'chat.handedOff'
+    | 'chat.leadCreated'
+    | 'cart.added'
+    | 'cart.removed'
+    | 'checkout.started'
+    | 'checkout.stepCompleted'
+    | 'checkout.blocked'
+    | 'payment.opened'
+    | 'order.created'
+    | 'order.paid'
+    | 'order.statusChanged'
+    | 'tracking.viewed'
+    | 'vitals.reported'
+  at: string
+  path?: string | null
+  ref?: string | null
+  props?:
+    | {
+        [k: string]: unknown
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null
+  /**
+   * YYYY-MM-DD in UTC+8 (WITA / Singapore time).
+   */
+  day: string
+  source: 'beacon' | 'server'
+  sessionId?: string | null
+  deviceClass?: ('mobile' | 'tablet' | 'desktop') | null
+  locale?: ('en' | 'id') | null
+  referrerHost?: string | null
+  utm?: {
+    source?: string | null
+    medium?: string | null
+    campaign?: string | null
+  }
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -959,6 +1560,26 @@ export interface PayloadLockedDocument {
         value: number | Store
       } | null)
     | ({
+        relationTo: 'stock-levels'
+        value: number | StockLevel
+      } | null)
+    | ({
+        relationTo: 'orders'
+        value: number | Order
+      } | null)
+    | ({
+        relationTo: 'payment-events'
+        value: number | PaymentEvent
+      } | null)
+    | ({
+        relationTo: 'discounts'
+        value: number | Discount
+      } | null)
+    | ({
+        relationTo: 'products'
+        value: number | Product
+      } | null)
+    | ({
         relationTo: 'works'
         value: number | Work
       } | null)
@@ -975,16 +1596,36 @@ export interface PayloadLockedDocument {
         value: number | Term
       } | null)
     | ({
-        relationTo: 'sources'
-        value: number | Source
-      } | null)
-    | ({
         relationTo: 'media'
         value: number | Media
       } | null)
     | ({
         relationTo: 'masters'
         value: number | Master
+      } | null)
+    | ({
+        relationTo: 'pages'
+        value: number | Page
+      } | null)
+    | ({
+        relationTo: 'redirects'
+        value: number | Redirect
+      } | null)
+    | ({
+        relationTo: 'leads'
+        value: number | Lead
+      } | null)
+    | ({
+        relationTo: 'partners'
+        value: number | Partner
+      } | null)
+    | ({
+        relationTo: 'chat-sessions'
+        value: number | ChatSession
+      } | null)
+    | ({
+        relationTo: 'events'
+        value: number | Event
       } | null)
   globalSlug?: string | null
   user: {
@@ -1061,14 +1702,234 @@ export interface UsersSelect<T extends boolean = true> {
 export interface StoresSelect<T extends boolean = true> {
   code?: T
   name?: T
+  area?: T
+  address?: T
+  lat?: T
+  lng?: T
+  whatsapp?: T
+  hours?: T
+  images?:
+    | T
+    | {
+        image?: T
+        id?: T
+      }
+  active?: T
+  listed?: T
+  notes?: T
   updatedAt?: T
   createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-levels_select".
+ */
+export interface StockLevelsSelect<T extends boolean = true> {
+  store?: T
+  product?: T
+  variantSku?: T
+  quantity?: T
+  physicalCount?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  number?: T
+  site?: T
+  channel?: T
+  replacementOf?: T
+  lines?:
+    | T
+    | {
+        product?: T
+        variantSku?: T
+        sku?: T
+        name?: T
+        variantLabel?: T
+        unitPrice?: T
+        qty?: T
+        lineTotal?: T
+        image?: T
+        id?: T
+      }
+  contact?:
+    | T
+    | {
+        name?: T
+        whatsapp?: T
+        email?: T
+        locale?: T
+      }
+  delivery?:
+    | T
+    | {
+        address?: T
+        notes?: T
+        lat?: T
+        lng?: T
+      }
+  giftNote?: T
+  store?: T
+  storeSnapshot?:
+    | T
+    | {
+        code?: T
+        name?: T
+        area?: T
+      }
+  distanceKm?: T
+  totals?:
+    | T
+    | {
+        subtotal?: T
+        discount?: T
+        deliveryFee?: T
+        total?: T
+      }
+  discount?:
+    | T
+    | {
+        code?: T
+        kind?: T
+        value?: T
+      }
+  status?: T
+  history?:
+    | T
+    | {
+        from?: T
+        to?: T
+        at?: T
+        actor?: T
+        by?: T
+        note?: T
+        id?: T
+      }
+  payment?:
+    | T
+    | {
+        attempts?:
+          | T
+          | {
+              midtransOrderId?: T
+              snapToken?: T
+              createdAt?: T
+              state?: T
+              id?: T
+            }
+        method?: T
+        transactionId?: T
+        paidAt?: T
+      }
+  driverImage?:
+    | T
+    | {
+        key?: T
+        contentType?: T
+        width?: T
+        height?: T
+        uploadedAt?: T
+        uploadedBy?: T
+      }
+  trackingTokenHash?: T
+  expiresAt?: T
+  needsAttention?:
+    | T
+    | {
+        flag?: T
+        reason?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-events_select".
+ */
+export interface PaymentEventsSelect<T extends boolean = true> {
+  provider?: T
+  dedupeKey?: T
+  order?: T
+  midtransOrderId?: T
+  transactionStatus?: T
+  fraudStatus?: T
+  statusCode?: T
+  grossAmount?: T
+  source?: T
+  outcome?: T
+  payloadHash?: T
+  receivedAt?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts_select".
+ */
+export interface DiscountsSelect<T extends boolean = true> {
+  code?: T
+  kind?: T
+  value?: T
+  minSpend?: T
+  oncePerBuyer?: T
+  startsAt?: T
+  endsAt?: T
+  usageLimit?: T
+  usedCount?: T
+  active?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  sku?: T
+  name?: T
+  slug?: T
+  description?: T
+  category?: T
+  images?:
+    | T
+    | {
+        image?: T
+        caption?: T
+        id?: T
+      }
+  price?: T
+  variants?:
+    | T
+    | {
+        sku?: T
+        label?: T
+        price?: T
+        active?: T
+        id?: T
+      }
+  relatedWork?: T
+  site?: T
+  seo?:
+    | T
+    | {
+        title?: T
+        description?: T
+      }
+  translationStatus?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "works_select".
  */
 export interface WorksSelect<T extends boolean = true> {
+  publicId?: T
   workUid?: T
   stockNumber?: T
   title?: T
@@ -1120,6 +1981,8 @@ export interface WorksSelect<T extends boolean = true> {
       }
   technique?: T
   colour?: T
+  status?: T
+  location?: T
   dimensions?:
     | T
     | {
@@ -1166,8 +2029,7 @@ export interface WorksSelect<T extends boolean = true> {
   references?:
     | T
     | {
-        source?: T
-        ref?: T
+        citation?: T
         note?: T
         id?: T
       }
@@ -1201,6 +2063,7 @@ export interface WorksSelect<T extends boolean = true> {
         id?: T
       }
   master?: T
+  askingPrice?: T
   physical?:
     | T
     | {
@@ -1236,7 +2099,59 @@ export interface WorksSelect<T extends boolean = true> {
         status?: T
         cataloguer?: T
         verifiedAt?: T
-        aiDraft?: T
+        aiDraft?:
+          | T
+          | {
+              title?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              description?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              objectType?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              date?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              places?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              subjects?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              dimensions?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+            }
       }
   legacy?:
     | T
@@ -1357,20 +2272,6 @@ export interface TermsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sources_select".
- */
-export interface SourcesSelect<T extends boolean = true> {
-  shortCite?: T
-  slug?: T
-  citation?: T
-  year?: T
-  url?: T
-  updatedAt?: T
-  createdAt?: T
-  _status?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -1380,6 +2281,7 @@ export interface MediaSelect<T extends boolean = true> {
   caption?: T
   credit?: T
   licence?: T
+  subject?: T
   role?: T
   provenance?: T
   master?: T
@@ -1456,6 +2358,163 @@ export interface MastersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  site?: T
+  kind?: T
+  title?: T
+  slug?: T
+  intro?: T
+  hero?: T
+  body?: T
+  works?: T
+  seo?:
+    | T
+    | {
+        title?: T
+        description?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects_select".
+ */
+export interface RedirectsSelect<T extends boolean = true> {
+  site?: T
+  from?: T
+  to?: T
+  code?: T
+  source?: T
+  hits?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "leads_select".
+ */
+export interface LeadsSelect<T extends boolean = true> {
+  kind?: T
+  site?: T
+  source?: T
+  payload?:
+    | T
+    | {
+        name?: T
+        whatsapp?: T
+        email?: T
+        preferredChannel?: T
+        message?: T
+        locale?: T
+        consentVersion?: T
+        consentAt?: T
+      }
+  items?: T
+  chatSession?: T
+  status?: T
+  statusHistory?:
+    | T
+    | {
+        status?: T
+        by?: T
+        at?: T
+        id?: T
+      }
+  firstReplyAt?: T
+  notes?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners_select".
+ */
+export interface PartnersSelect<T extends boolean = true> {
+  name?: T
+  kind?: T
+  site?: T
+  contact?:
+    | T
+    | {
+        person?: T
+        whatsapp?: T
+        email?: T
+        phone?: T
+      }
+  address?: T
+  terms?: T
+  productsCarried?: T
+  status?: T
+  notes?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chat-sessions_select".
+ */
+export interface ChatSessionsSelect<T extends boolean = true> {
+  site?: T
+  locale?: T
+  startedAt?: T
+  lastMessageAt?: T
+  items?: T
+  transcript?:
+    | T
+    | {
+        role?: T
+        at?: T
+        text?: T
+        id?: T
+      }
+  ipHash?: T
+  labels?: T
+  usage?:
+    | T
+    | {
+        inputTokens?: T
+        outputTokens?: T
+        costUsd?: T
+      }
+  outcome?: T
+  lead?: T
+  expiresAt?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  site?: T
+  name?: T
+  at?: T
+  path?: T
+  ref?: T
+  props?: T
+  day?: T
+  source?: T
+  sessionId?: T
+  deviceClass?: T
+  locale?: T
+  referrerHost?: T
+  utm?:
+    | T
+    | {
+        source?: T
+        medium?: T
+        campaign?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1493,6 +2552,165 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T
   updatedAt?: T
   createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number
+  gallery?: {
+    contact?: {
+      whatsapp?: string | null
+      email?: string | null
+      phone?: string | null
+    }
+    replyPromise?: string | null
+    hours?: string | null
+    announcement?: string | null
+    social?:
+      | {
+          platform: string
+          url: string
+          id?: string | null
+        }[]
+      | null
+    leadNotifyEmails?: string[] | null
+    ai?: {
+      chatEnabled?: boolean | null
+      draftingEnabled?: boolean | null
+      dailyBudgetUsd?: number | null
+      sessionTokenCap?: number | null
+    }
+  }
+  shop?: {
+    contact?: {
+      whatsapp?: string | null
+      email?: string | null
+      phone?: string | null
+    }
+    replyPromise?: string | null
+    hours?: string | null
+    announcement?: string | null
+    social?:
+      | {
+          platform: string
+          url: string
+          id?: string | null
+        }[]
+      | null
+    leadNotifyEmails?: string[] | null
+    ai?: {
+      chatEnabled?: boolean | null
+      draftingEnabled?: boolean | null
+      dailyBudgetUsd?: number | null
+      sessionTokenCap?: number | null
+    }
+    checkoutEnabled?: boolean | null
+    delivery?: {
+      bands?:
+        | {
+            upToKm: number
+            feeIdr: number
+            id?: string | null
+          }[]
+        | null
+      freeOverIdr?: number | null
+    }
+    /**
+     * The welcome code text for now. Task 3.3 relates this to discounts.
+     */
+    welcomeDiscount?: string | null
+    orderExpiryMinutes?: number | null
+    storeAlerts?: boolean | null
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  gallery?:
+    | T
+    | {
+        contact?:
+          | T
+          | {
+              whatsapp?: T
+              email?: T
+              phone?: T
+            }
+        replyPromise?: T
+        hours?: T
+        announcement?: T
+        social?:
+          | T
+          | {
+              platform?: T
+              url?: T
+              id?: T
+            }
+        leadNotifyEmails?: T
+        ai?:
+          | T
+          | {
+              chatEnabled?: T
+              draftingEnabled?: T
+              dailyBudgetUsd?: T
+              sessionTokenCap?: T
+            }
+      }
+  shop?:
+    | T
+    | {
+        contact?:
+          | T
+          | {
+              whatsapp?: T
+              email?: T
+              phone?: T
+            }
+        replyPromise?: T
+        hours?: T
+        announcement?: T
+        social?:
+          | T
+          | {
+              platform?: T
+              url?: T
+              id?: T
+            }
+        leadNotifyEmails?: T
+        ai?:
+          | T
+          | {
+              chatEnabled?: T
+              draftingEnabled?: T
+              dailyBudgetUsd?: T
+              sessionTokenCap?: T
+            }
+        checkoutEnabled?: T
+        delivery?:
+          | T
+          | {
+              bands?:
+                | T
+                | {
+                    upToKm?: T
+                    feeIdr?: T
+                    id?: T
+                  }
+              freeOverIdr?: T
+            }
+        welcomeDiscount?: T
+        orderExpiryMinutes?: T
+        storeAlerts?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
