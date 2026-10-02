@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 2/33 | 0 | `█░░░░░░░░░`   6% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 4/14 | 0 | `███░░░░░░░`  29% |
-| **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **7/49** | **44/200** | **8** | `██░░░░░░░░`  22% |
+| **All** | 11 phases | | | **7/49** | **45/200** | **8** | `██░░░░░░░░`  23% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -462,7 +462,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/product/**`, `engine/packages/media/src/{derivatives,tiles}/**`
   - **Read** EXPERIENCE-GALLERY.md §Item, ARCHITECTURE.md §Media and deep zoom, CARRY-OVER.md §5
   - _Requirements: 2.4, 3.2, 3.4, 14.4_
-  - [ ] 5.2.a derivatives with `sharp` on upload (320–2400 px, AVIF and WebP, EXIF location removed) and static zoom tiles under `iiif/`; the full-resolution master stays private
+  - [x] 5.2.a derivatives with `sharp` on upload (320–2400 px, AVIF and WebP, EXIF location removed) and static zoom tiles under `iiif/`; the full-resolution master stays private
   - [ ] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
   - [ ] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
   - [ ] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
