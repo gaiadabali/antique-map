@@ -78,8 +78,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | |
-| 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | |
+| 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | copy merged (da4e214); the delete commit 4f259f1 lands last, right after 2.2, then the Check |
+| 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | 2.2.a–d done; fixing the senior-integrator review's must-fix (CORS/CSRF trusted the gallery origin) and two should-fixes (`/api/x/*` fall-through to Payload, boot check vs DEPLOYMENT §8); then merge |
 
 ## Decisions for the owner
 
@@ -810,6 +810,9 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-02 — **Phase 2 reviews.** The senior-be review of 2.4 found the users bulk guard ran before access with `overrideAccess: true` (anyone could take the owner lock and learn from 400 vs 403): fixed and merged (142d1af). The senior-integrator review of 2.2 found CORS/CSRF trusted the gallery origin (gallery script could make credentialed admin calls on staging): 2.2.c now lists the admin's origin only, fix in flight. Later-phase findings are subtasks 3.2.e, 3.3.d, 3.5.d; the staging database retirement is 3.1.d.
+- 2026-10-02 — ✅ 2.5 — one initial migration (`20261002_073156_initial`) builds the same schema as the old chain; the last-owner backstop is per statement (`INITIALLY IMMEDIATE`, so a refusal reaches the caller), covers INSERT, refuses outside READ COMMITTED and pins `search_path`; TRUNCATE refused on `users` and `stores`. 114 local databases dumped, checked and dropped (dumps in `Backup antique map/db-dumps-2026-10-02`); staging left running for 3.1.d. db tests 93/93 re-run on `main` b0fe334. 2.5 ran beside 2.2 once 2.4 merged (needs relaxed to 2.4).
+- 2026-10-02 — ✅ 2.4 — 9 collections left (users, stores, works, makers, places, terms, sources, media, masters); one `users.role` (`owner|editor|store`) and `users.store`; a minimal `stores`; one media and one masters bucket; no brand use in the CMS; the gazetteer seed moved into `cms/src/seed`. Admin opened on a production build: each role assigned, a store user sees only its store, the last owner cannot demote themselves. Review fix (142d1af): the bulk guard runs only for callers access lets through; stores and self-edit access tests fail on planted violations.
 - 2026-10-02 — **Phase 2 replanned for speed.** 2.4 (collections trimmed, the CMS without brands) moves into W2 beside 2.2 and 2.3; its migration reset becomes the new 2.5 in W3. W2 merges in the order 2.4 → 2.2 → 2.3 so each deletion lands after nothing reads it; 2.2 takes the CI, Playwright, db-tooling and copy-gate readers 2.3 found; 2.3.b becomes the reader list (2.4 moves the gazetteer seed).
 - 2026-10-02 — ✅ 2.1 — one app at `engine/apps/web` (`@engine/web`, a `git mv` of the gallery with the shop lexicon ported, emporium deleted); one build, Lighthouse file, release subdir and deploy entry; CI gains the sentinel build (no DB variables, PGPORT=1), `pnpm audit` (undici pinned 7.29.1, nodemailer's two advisories allow-listed until 2026-11-02), gitleaks and CodeQL; 8.6's `serverExternalPackages: ['payload']` ported and proven (a refused publish keeps `data.errors` when `/admin` boots Payload first). `pnpm verify` green on `main` f9b57e1 (1,563 tests); both hosts opened at 390 and 1280 px.
 - 2026-10-02 — ✅ **phase 1** — qa on merged `main` 5fb2229: `pnpm verify` green (1,567 tests) with only the eight kept gates; `engine/packages` is exactly the eight kept packages; both apps build with no database variables; the crawl backup's 14,064 checksums match; `git worktree list` holds only kept worktrees. Pushed to `origin` (as web-gaiada).
