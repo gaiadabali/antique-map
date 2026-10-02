@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 3/18 | 0 | `██░░░░░░░░`  17% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/4 | 4/18 | 0 | `██░░░░░░░░`  22% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **4/48** | **23/194** | **8** | `█░░░░░░░░░`  12% |
+| **All** | 11 phases | | | **5/48** | **24/194** | **8** | `█░░░░░░░░░`  12% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 2·W1 | 2.1 One app: rename, merge and re-point the build | senior-fe | `feat/2.1-one-app` | 2026-10-02 | |
+| 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | |
+| 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | |
 
 ## Decisions for the owner
 
@@ -258,7 +259,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** `pnpm dev` serves `gallery.localhost:3000` and `shop.localhost:3000` from one process with two different placeholder home pages, in English and Indonesian; an unknown host is a 404; `/admin` answers only on the admin host; one initial migration builds the database; no `BRAND`, `brand.config.json` or brand directory remains; `pnpm verify` and a production build with no database variables are green.
 **Waves:** W1 — 2.1 · W2 — 2.2, 2.3 · W3 — 2.4
 
-- [ ] **2.1 One app: rename, merge and re-point the build** · needs: phase 1 — 🔄 2·W1
+- [x] **2.1 One app: rename, merge and re-point the build** · needs: phase 1 — ✅ 2026-10-02 f9b57e1
   - **Lane** PLT + OPS · **Agent** senior-fe, with devops for CI · **Wave** W1
   - **Owns** `engine/apps/**`, `.github/**`, `.gaiadeploy.yml`, `playwright.config.ts`, `lighthouserc.*.json`, root `package.json`, `scripts/ops/lib/**`
   - **Read** CARRY-OVER.md §2.2, §2.4 and §3 step 4, ARCHITECTURE.md §Topology
@@ -266,9 +267,9 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.1.a `git mv engine/apps/gallery engine/apps/web`; port the emporium's `lexicon/shop.ts` and tokens into it; delete `engine/apps/emporium`; delete both apps' old `PRODUCT.md` (the root `PRODUCT.md` replaces them)
   - [x] 2.1.b one `build`, one Lighthouse file, one release artifact subdirectory and one `.gaiadeploy.yml` entry; Playwright runs `gallery.localhost` and `shop.localhost` on one port at 390 px and 1280 px
   - [x] 2.1.c CI: one e2e database, `next build` with no `DATABASE_URL` or `PAYLOAD_SECRET`, plus `pnpm audit --prod --audit-level=high`, a gitleaks scan and CodeQL; regenerate `pnpm-lock.yaml` with `pnpm install`
-  - [ ] 2.1.d **Check:** a fresh clone runs `pnpm install && pnpm verify` and a production build with the database variables unset, and the app starts on one port.
+  - [x] 2.1.d **Check:** a fresh clone runs `pnpm install && pnpm verify` and a production build with the database variables unset, and the app starts on one port.
 
-- [ ] **2.2 Site replaces brand: host to site, one admin host** · needs: 2.1
+- [ ] **2.2 Site replaces brand: host to site, one admin host** · needs: 2.1 — 🔄 2·W2
   - **Lane** PLT · **Agent** senior-be with senior-fe, **opus**, second reviewer senior-integrator · **Wave** W2
   - **Owns** `engine/packages/{config,http,cache,i18n}/**`, `engine/apps/web/src/{proxy.ts,server/**}`, `engine/apps/web/src/app/**`, `engine/apps/web/next.config.ts`, `engine/packages/cms/src/access/**`
   - **Read** CARRY-OVER.md §2.1 `config`, `http`, §3 step 5 and §6.5, ARCHITECTURE.md, SECURITY.md §2.1, `docs/spikes/cache-components.md`
@@ -279,7 +280,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 2.2.d delete `access/brand.ts`, `access/modules.ts` and every `BRAND` and `BRAND_ROOT` use; cache tags are namespaced by collection and carry the site where one record renders on both
   - [ ] 2.2.e **Check:** an e2e on a production build proves: each host serves its own site; an unknown `Host` is 404; `/admin` is 200 on the admin host and 404 on the other; a spoofed `X-Forwarded-Host` changes nothing; the 404 and 308 statuses survive Cache Components (`tests/e2e/status`).
 
-- [ ] **2.3 Dissolve the brand directories** · needs: 2.1
+- [ ] **2.3 Dissolve the brand directories** · needs: 2.1 — 🔄 2·W2
   - **Lane** PLT · **Agent** junior · **Wave** W2
   - **Owns** `indies-gallery/**`, `old-east-indies/**`, `test/**`, `engine/packages/migrate/data/**`, `engine/apps/web/public/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`
   - **Read** CARRY-OVER.md §2.6 and §3 step 6
