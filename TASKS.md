@@ -84,6 +84,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
 | 3·W1 | 3.2 Catalogue collections: makers, places, terms and the antiques | senior-db | `w/3.2` | 2026-10-03 | |
 | 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
+| 3·W3 | 3.7 Spreadsheet import and the seed data | senior-be | `w/3.7c` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -387,7 +388,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.6.c a dashboard shell with "orders to act on" and "new leads" panels (counts only; the full dashboard is 9.2)
   - [ ] 3.6.d **Check:** driven in a browser at 1280 px as owner, editor and store: each sees the right sidebar; an invalid save shows a plain message in both languages; the dashboard counts match the database.
 
-- [ ] **3.7 Spreadsheet import and the seed data** · needs: 3.5
+- [ ] **3.7 Spreadsheet import and the seed data** · needs: 3.5 — 🔄 3·W3
   - **Lane** CMS · **Agent** senior-be · **Wave** W3
   - **Owns** `engine/packages/cms/src/import/**`, `engine/packages/cms/src/seed/**`, `engine/packages/migrate/src/**`
   - **Read** DATA.md, CONTENT-MODEL.md §9, CARRY-OVER.md §5, `engine/packages/migrate/README.md`
