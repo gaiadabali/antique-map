@@ -9,7 +9,6 @@ import { describe, expect, it } from 'vitest'
 import {
   EDITORIAL_EXPIRY,
   IMMEDIATE_EXPIRY,
-  itemTag,
   MAX_TAG_LENGTH,
   parseCacheTag,
   productPriceTag,
@@ -42,11 +41,6 @@ describe('the record-id builders: product, product-stock, product-price', () => 
     for (const id of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, 1e21]) {
       expect(() => build(id), String(id)).toThrow(new RegExp(`^${kind} tag: .* is not a record id`))
     }
-  })
-
-  it('keeps itemTag only as productTag’s old name, building a product: tag', () => {
-    expect(itemTag).toBe(productTag)
-    expect(itemTag(3)).toBe('product:3')
   })
 })
 

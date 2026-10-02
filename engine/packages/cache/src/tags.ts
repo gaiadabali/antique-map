@@ -105,12 +105,6 @@ export const settingsTag = (site: TagSite): CacheTag => build('settings', site)
 export const redirectsTag = (site: TagSite): CacheTag => build('redirects', site)
 
 /**
- * @deprecated `productTag()`'s name while one process served one brand (`item:<id>`). Kept only
- * for `cms/src/instance.db.test.ts`, which is not this lane's; it builds a `product:` tag.
- */
-export const itemTag = productTag
-
-/**
  * The tag `value` spells, or `null` when no builder makes it — the check `/api/x/revalidate`
  * runs on every posted tag before it expires any (400 on one `null`).
  */
