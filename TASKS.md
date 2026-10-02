@@ -92,6 +92,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
 | 9·W1 | 9.2 First-party analytics and the dashboard | senior-be | `w/9.2a` | 2026-10-03 | |
 | 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db | `w/3.5` | 2026-10-03 | |
+| 8·W3 | 8.4 The safety evaluation and the red-team set | qa | `w/8.4a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -644,7 +645,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 8.3.c the publish guard from 3.2.c refuses while any drafted field is unverified, naming the fields
   - [ ] 8.3.d **Check:** with a test model, drafting fills fields marked unverified; publishing is refused until each is verified; a draft never writes grade, provenance or price; the tool is owner/editor only.
 
-- [ ] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2
+- [ ] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2 — 🔄 8·W3
   - **Lane** AIX + QA · **Agent** senior-integrator, qa · **Wave** W3
   - **Owns** `engine/apps/web/src/server/chat/eval/**`, `tests/ai/**`, `docs/gates/ai.md`
   - **Read** AI.md §Evaluation
