@@ -16,7 +16,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 1/4 | 16/20 | 1 | `████████░░`  80% |
+| **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 1/18 | 0 | `█░░░░░░░░░`   6% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **1/48** | **17/194** | **9** | `█░░░░░░░░░`   9% |
+| **All** | 11 phases | | | **4/48** | **21/194** | **8** | `█░░░░░░░░░`  11% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,9 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 1·W1 | 1.2 Merge Works (8.2) so later steps simplify it in place | senior-db | `feat/1.2-works` | 2026-10-02 | |
-| 1·W1 | 1.1 Triage the work in flight and protect the data | devops | `worktree-agent-acdeee22b96e4b154` | 2026-10-02 | |
-| 1·W3 | 1.4 Delete the contracts, the placeholders and the dead collections | medior | `feat/1.4-contracts` | 2026-10-02 | |
 | 2·W1 | 2.1 One app: rename, merge and re-point the build | senior-fe | `feat/2.1-one-app` | 2026-10-02 | |
 
 ## Decisions for the owner
@@ -209,19 +206,19 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** no old-plan agent or unmerged branch of value is left behind; `pnpm verify` is green with the brand gates gone; `engine/packages` holds only `cms`, `config`, `http`, `media`, `i18n`, `cache`, `migrate` and a trimmed `view-models`; the legacy crawl is backed up; `main` builds.
 **Waves:** W1 — 1.1, 1.2 · W2 — 1.3 · W3 — 1.4
 
-- [ ] **1.1 Triage the work in flight and protect the data** · needs: — — 🔄 1·W1
+- [x] **1.1 Triage the work in flight and protect the data** · needs: — — ✅ 2026-10-02 5fb2229
   - **Lane** OPS · **Agent** devops · **Wave** W1
   - **Owns** `docs/ops/triage-2026-10.md`
   - **Read** CARRY-OVER.md §3 step 0 and §6.1–6.2, §6.6
   - _Requirements: 15.1_
   - [x] 1.1.a list every git worktree and branch (about 80) with its last commit, whether it is merged to `main`, and whether it holds unmerged work; write the list to `docs/ops/triage-2026-10.md` and keep `replay/7.2`, `replay/7.4` and the Works branch
-  - [ ] 1.1.b 👤 the owner approves the list; remove the merged and abandoned worktrees and branches (never one with unmerged work the list marks as wanted)
+  - [x] 1.1.b 👤 the owner approves the list; remove the merged and abandoned worktrees and branches (never one with unmerged work the list marks as wanted)
   - [x] 1.1.c 8.6 (a refusal keeps its plain reason): merge the branch if its gate is green, else record its finding for 3.5 (`ValidationError` messages must survive the admin-first path)
   - [x] 1.1.d 8.5 (staging storage): do **not** merge its per-brand plan files; record its RustFS parity findings and the four rotated secrets' state in the triage file for 2.5 and 3.1
   - [x] 1.1.e 👤 back up `../indies-legacy-data` (6.0 GB: 1,823 records, 2,289 originals) to the place the owner names (OA6) and verify the copy by checksum — copied 2026-10-02 to `C:\Users\Hansel\Documents\Hansel\Backup antique map\indies-legacy-data`, robocopy comparison clean; the checksum pass remains
-  - [ ] 1.1.f **Check:** `git worktree list` shows only the kept worktrees; the triage file lists every removal with its reason; the backup's checksums match; nothing unmerged and wanted was lost.
+  - [x] 1.1.f **Check:** `git worktree list` shows only the kept worktrees; the triage file lists every removal with its reason; the backup's checksums match; nothing unmerged and wanted was lost.
 
-- [ ] **1.2 Merge Works (8.2) so later steps simplify it in place** · needs: — — 🔄 1·W1
+- [x] **1.2 Merge Works (8.2) so later steps simplify it in place** · needs: — — ✅ 2026-10-02 5fb2229
   - **Lane** CMS · **Agent** senior-db, reviewed by senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/works/**`, `engine/packages/cms/src/validators/**`
   - **Read** CARRY-OVER.md §2.5 `works`, CONTENT-MODEL.md §3, the `feat/p8-sch-8.2-works` branch
@@ -230,7 +227,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 1.2.b review the diff like a pull request (4,360 lines): validators (date order and precision, positive dimensions), the publish guard, access, and that no blank location or export status blocks publishing
   - [x] 1.2.c run `pnpm verify` and the `*.db.test.ts` suite against Postgres; fix only what the review finds
   - [x] 1.2.d merge to `main` in a clean worktree and re-run `pnpm verify`
-  - [ ] 1.2.e **Check:** on merged `main` the `works` collection saves with validation in the admin, an incomplete work is refused on publish with a plain reason, and the db tests pass.
+  - [x] 1.2.e **Check:** on merged `main` the `works` collection saves with validation in the admin, an incomplete work is refused on publish with a plain reason, and the db tests pass.
 
 - [x] **1.3 Drop the brand-era gates and slim the board tooling** · needs: 1.2 — ✅ 2026-10-02 8cbdf6e
   - **Lane** OPS · **Agent** medior · **Wave** W2
@@ -243,7 +240,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 1.3.d slim `tasks-lint`: keep unique ids, `needs` that resolve, a Check last in every task, Owns overlap inside a wave and requirements coverage; drop lane codes and per-phase size limits
   - [x] 1.3.e **Check:** `pnpm verify` is green on `main` with only `format:check`, `lint`, `typecheck`, `test`, `check:filesize`, `check:generated`, `tasks:lint` and `tasks:check`; a planted file over 300 lines, a planted `import 'payload'` in a page and a planted second `**Check:**` each fail.
 
-- [ ] **1.4 Delete the contracts, the placeholders and the dead collections** · needs: 1.3 — 🔄 1·W3
+- [x] **1.4 Delete the contracts, the placeholders and the dead collections** · needs: 1.3 — ✅ 2026-10-02 5fb2229
   - **Lane** PLT · **Agent** medior · **Wave** W3
   - **Owns** `engine/packages/{domain,payments,shipping,fulfilment,sister,analytics,ui,view-models}/**`, `engine/apps/*/src/app/**` placeholders and `engine/apps/*/src/spike/**`, `engine/packages/http/src/{unbuilt,cron}/**`, `engine/packages/CONTRACTS.md`
   - **Read** CARRY-OVER.md §2.1, §2.2 and §3 step 3
@@ -251,7 +248,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 1.4.a trim `view-models` to the kept subset (record, condition, fuzzy date, dimensions, image, cards, listing, discovery, editorial, blocks, shell); add a ten-line `Money` type to `i18n`
   - [x] 1.4.b delete `domain`, `payments`, `shipping`, `fulfilment`, `sister`, `analytics`, `ui` and `CONTRACTS.md` (archive a copy)
   - [x] 1.4.c delete the 36 placeholder route mounts in each app, their http manifest rows, the cron stubs, the `brand-assets` mount and the gallery's `src/spike/` (keep the findings in `docs/spikes/cache-components.md`)
-  - [ ] 1.4.d **Check:** `pnpm typecheck`, `pnpm build` for both apps and `pnpm verify` are green; a search finds no import of a deleted package; `engine/packages` lists exactly `cms config http media i18n cache migrate view-models`.
+  - [x] 1.4.d **Check:** `pnpm typecheck`, `pnpm build` for both apps and `pnpm verify` are green; a search finds no import of a deleted package; `engine/packages` lists exactly `cms config http media i18n cache migrate view-models`.
 
 ---
 
@@ -798,5 +795,11 @@ Each line is a thing we chose not to build now; design it against the real need 
 ## Log
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
+
+- 2026-10-02 — ✅ **phase 1** — qa on merged `main` 5fb2229: `pnpm verify` green (1,567 tests) with only the eight kept gates; `engine/packages` is exactly the eight kept packages; both apps build with no database variables; the crawl backup's 14,064 checksums match; `git worktree list` holds only kept worktrees. Pushed to `origin` (as web-gaiada).
+- 2026-10-02 — ✅ 1.4 — seven contract packages, `CONTRACTS.md`, 33 placeholder mounts per app, the cron stubs and the spike deleted; `view-models` trimmed; `Money` in `i18n`. Kept on purpose: `/brand-assets` (the shell's logo, fonts, manifest) and the robots, sitemap and well-known mounts (without them `/sitemap.xml` was a 500). Grep finds no import of a deleted package.
+- 2026-10-02 — ✅ 1.3 — the brand-era gates gone; `verify` is format, lint, typecheck, test, filesize, generated, tasks:lint, tasks:check; planted 301-line file, page `import 'payload'` and second Check each fail. Note: `check:generated` no longer runs `schema:check`, so a collection change without its migration is not caught by `verify`.
+- 2026-10-02 — ✅ 1.2 — Works (8.2) merged with review fixes (fuzzy dates order by every reading; `rights` and `origin` staff-only) and its migration `20261002_033256_works`; in the admin on a production build an empty work is refused on publish with six plain reasons and a valid draft saves (`IG-000001`). Found: the 8.6 refusal defect reproduces when the admin boots Payload first (→ 2.1, 3.5).
+- 2026-10-02 — ✅ 1.1 — triage (`docs/ops/triage-2026-10.md`): 74 worktrees and 61 merged branches removed on the owner's approval; the cancelled 6.3.k and 6.7 work and 8.6 saved as patches in `Backup antique map/triage-2026-10/`; 8.6 on `fix/8.6-refusal-reason`; the crawl backup verified by SHA-256 (14,064 files, 6.46 GB, 0 mismatches).
 
 - 2026-10-01 — **Replan.** The 44-phase, multi-brand plan (186 tasks, 907 subtasks; 35 tasks and 227 subtasks done) was replaced by this 11-phase plan for one app, one CMS and one database serving two sites by hostname. Sessions on old phases 6 and 8 were stopped. The old board, specs, docs and decisions are in `docs/archive/2026-10-replan/`; the audit of what the code keeps is `docs/CARRY-OVER.md`. Old work that carries over: phases 1–5 and 7 foundations, 8.1 (vocabulary), 8.3 (media and masters), the migrate pipeline, the cache spike. Old 8.2 (Works) merges in 1.2.
