@@ -139,14 +139,31 @@ export const keepAnOwnerOnDelete: CollectionBeforeDeleteHook = async ({ id, req 
 }
 
 /**
+ * Whether this operation can get past the collection's access at all: a system call with access
+ * overridden, or the owner (the only role `users`' bulk update and delete allow).
+ */
+function mayPassAccess(req: PayloadRequest, overrideAccess: boolean | undefined): boolean {
+  return overrideAccess === true || hasRole(req.user, OWNER)
+}
+
+/**
  * A bulk update or delete (`where`, no `id`) judged as a whole: the owners it would remove,
  * against every owner it leaves. A single-document operation is left to the per-document hooks.
+ *
+ * **Only for a caller access will let through** (senior-be review of 2.4). Payload 3.90 runs
+ * `beforeOperation` *before* collection access on a bulk update or delete, so without this check
+ * anyone — anonymous, an editor, store staff — reached it: took `ADMINS_LOCK_KEY` (a free lever
+ * on every owner write), ran their own `where` under `overrideAccess: true` (past Payload's
+ * where-field checks), and learnt from a 400 rather than a 403 whether it covered every owner.
+ * Everyone else is handed straight on, to be refused by access with nothing locked or read.
  */
 export const keepAnOwnerInBulk: CollectionBeforeOperationHook = async ({
   args,
   operation,
+  overrideAccess,
   req,
 }) => {
+  if (!mayPassAccess(req, overrideAccess)) return args
   const bulk = args as { id?: Id; where?: Where; data?: { role?: unknown } }
   if (bulk.id !== undefined || bulk.where === undefined) return args
   if (operation !== 'delete' && operation !== 'update') return args

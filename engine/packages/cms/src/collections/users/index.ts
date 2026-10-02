@@ -9,8 +9,9 @@
  *   (`./guards`, and the migration's constraint trigger on `users`).
  * - **Lockout**: five failed sign-ins lock the account for fifteen minutes; the owner can unlock
  *   it sooner (SECURITY.md A3: the admin sits on a public path).
- * - Editors and store staff see and edit themselves — their name and password; the owner sees and
- *   manages everyone (CONTENT-MODEL.md §7).
+ * - Editors and store staff see and edit themselves — their name and password, never their email,
+ *   role or store (`./self-edit`, `./roles-field`); the owner sees and manages everyone
+ *   (CONTENT-MODEL.md §7).
  */
 import type { Access, CollectionConfig } from 'payload'
 
@@ -23,6 +24,7 @@ import {
 } from './guards'
 import { roleField, storeField } from './roles-field'
 import { hasRole, isOwner } from './roles'
+import { ownerChangesEmail } from './self-edit'
 import { oneStoreForStoreStaff } from './store-rule'
 
 export const MAX_LOGIN_ATTEMPTS = 5
@@ -87,7 +89,7 @@ export const Users: CollectionConfig = {
   ],
   hooks: {
     beforeOperation: [keepAnOwnerInBulk],
-    beforeChange: [firstUserIsOwner, oneStoreForStoreStaff, keepAnOwnerOnUpdate],
+    beforeChange: [firstUserIsOwner, ownerChangesEmail, oneStoreForStoreStaff, keepAnOwnerOnUpdate],
     beforeDelete: [keepAnOwnerOnDelete],
   },
 }
