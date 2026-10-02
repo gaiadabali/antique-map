@@ -3,7 +3,7 @@
  * skips without CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT):
  * 1. the media limit is the one REST enforces, streamed to the OS temp folder and cleaned up;
  * 2. only staff read media over REST — the loaders read it on the Local API;
- * 3. what intake set (role, provenance) only an admin or a manager corrects.
+ * 3. what intake set (role, provenance) only the owner corrects.
  */
 import { existsSync, readdirSync } from 'node:fs'
 
@@ -40,15 +40,23 @@ describe.skipIf(!stackAvailable)('media over REST (the 8.3 review, findings 1–
 
   beforeAll(async () => {
     stack = await startStack({
-      storefront: 'gallery',
-      mastersUser: 'test-masters-origin',
       connect: (config, key) => getPayload({ config, key }),
     })
-    for (const role of ['admin', 'manager', 'cataloguer', 'contributor']) {
+    const shop = await stack.payload.create({
+      collection: 'stores',
+      data: { code: 'SNR-01', name: 'Sanur' },
+    })
+    for (const role of ['owner', 'editor', 'store'] as const) {
       const email = `${role}@access.test`
       await stack.payload.create({
         collection: 'users',
-        data: { email, name: role, roles: [role], password: PASSWORD } as never,
+        data: {
+          email,
+          name: role,
+          role,
+          ...(role === 'store' ? { store: shop.id } : {}),
+          password: PASSWORD,
+        } as never,
       })
       tokens[role] = await stack.login(email, PASSWORD)
     }
@@ -59,7 +67,7 @@ describe.skipIf(!stackAvailable)('media over REST (the 8.3 review, findings 1–
     await stack?.stop()
   }, 60_000)
 
-  const post = async (bytes: Buffer, data: object = valid, as = 'cataloguer') => {
+  const post = async (bytes: Buffer, data: object = valid, as = 'editor') => {
     const response = await stack.rest('POST', '/api/media', {
       token: tokens[as],
       form: form(data, { bytes, name: 'large-sheet.jpg', type: 'image/jpeg' }),
@@ -101,13 +109,14 @@ describe.skipIf(!stackAvailable)('media over REST (the 8.3 review, findings 1–
       id = body.doc!.id as number
     }, 60_000)
 
-    it('refuses an anonymous REST list or fetch, and a customer’s', async () => {
+    it('refuses an anonymous REST list or fetch; store staff read media, never write it', async () => {
       expect((await stack.rest('GET', '/api/media?depth=0&limit=1')).status).toBe(403)
       expect((await stack.rest('GET', `/api/media/${id}`)).status).toBe(403)
       expect((await stack.rest('GET', '/api/media/count')).status).toBe(403)
-      expect(
-        (await stack.rest('GET', '/api/media?depth=0', { token: tokens.contributor })).status,
-      ).toBe(200)
+      expect((await stack.rest('GET', '/api/media?depth=0', { token: tokens.store })).status).toBe(
+        200,
+      )
+      expect((await post(sized(16 * 1024), valid, 'store')).status).toBe(403)
     })
 
     it('lets the loaders read it on the Local API, access enforced and no staff user', async () => {
@@ -134,39 +143,32 @@ describe.skipIf(!stackAvailable)('media over REST (the 8.3 review, findings 1–
   })
 
   describe('3. what intake set stays set', () => {
-    it('refuses a contributor or a cataloguer who would make an AI image a photograph', async () => {
+    it('refuses an editor who would make an AI image a photograph; the owner corrects it', async () => {
       const synthetic = { alt: 'A street at dusk', role: 'editorial', provenance: 'ai-generated' }
-      const { status, body } = await post(sized(32 * 1024), synthetic, 'contributor')
+      const { status, body } = await post(sized(32 * 1024), synthetic, 'editor')
       expect(status).toBe(201)
       const route = `/api/media/${String(body.doc!.id)}`
-      for (const as of ['contributor', 'cataloguer']) {
-        const change = await stack.rest('PATCH', route, {
-          token: tokens[as],
-          json: { provenance: 'photograph' },
-        })
-        expect(change.status).toBe(400)
-        expect(JSON.stringify(await change.json())).toMatch(/only an admin or a manager/)
-      }
+      const change = await stack.rest('PATCH', route, {
+        token: tokens.editor,
+        json: { provenance: 'photograph' },
+      })
+      expect(change.status).toBe(400)
+      expect(JSON.stringify(await change.json())).toMatch(/only the owner may correct it/)
       const caption = await stack.rest('PATCH', route, {
-        token: tokens.contributor,
+        token: tokens.editor,
         json: { caption: 'Still editable' },
       })
       expect(caption.status).toBe(200)
-      const manager = await stack.rest('PATCH', route, {
-        token: tokens.manager,
+      const owner = await stack.rest('PATCH', route, {
+        token: tokens.owner,
         json: { provenance: 'composite' },
       })
-      expect(manager.status).toBe(200)
-      const admin = await stack.rest('PATCH', route, {
-        token: tokens.admin,
-        json: { role: 'room-plate' },
-      })
-      expect(admin.status).toBe(200)
+      expect(owner.status).toBe(200)
       expect(
         await stack.payload.findByID({ collection: 'media', id: body.doc!.id as number }),
       ).toMatchObject({
         provenance: 'composite',
-        role: 'room-plate',
+        role: 'editorial',
         caption: 'Still editable',
       })
     }, 60_000)

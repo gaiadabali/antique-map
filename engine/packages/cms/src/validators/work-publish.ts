@@ -10,8 +10,7 @@
  * - a primary image — the first photographed recto, never a synthetic image, a detail or a
  *   photograph of its own (C9 `primaryImageIndex()`) — with alt text; no image whose capture waits
  *   on a re-take; no AI-drafted description unchecked (`./work-images`);
- * - a condition grade, for an original — every work the brand holds itself; a provenance copy is
- *   no original here, and its condition is not synced;
+ * - a condition grade;
  * - no field an AI drafted that a person has not checked (`cataloguing.aiDraft`).
  *
  * **A blank location or export status never blocks publishing** (requirement 16.8, COMMERCE.md
@@ -32,8 +31,6 @@ export type PublishFacts = {
   readonly hasPrimaryPlace: boolean
   /** The image rows, in order, as their media records say. */
   readonly images: readonly ImageFacts[]
-  /** A provenance copy of a sister's work (`origin.workUid` set). */
-  readonly isCopy: boolean
   readonly hasGrade: boolean
   readonly aiDraft: readonly string[]
 }
@@ -85,11 +82,11 @@ export function publishProblems(facts: PublishFacts): PublishProblem[] {
   for (const { row, ...issue } of imagePublishProblems(facts.images)) {
     problems.push({ path: row === null ? 'images' : `images.${row}.media`, ...issue })
   }
-  if (!facts.isCopy && !facts.hasGrade) {
+  if (!facts.hasGrade) {
     problems.push({
       path: 'condition.grade',
       message: 'Grade the condition: an original is published with its grade.',
-      summary: 'Condition — grade it from the brand’s scale',
+      summary: 'Condition — grade it from the gallery’s scale',
     })
   }
   if (facts.aiDraft.length > 0) {

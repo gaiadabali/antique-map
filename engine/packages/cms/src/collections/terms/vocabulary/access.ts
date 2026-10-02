@@ -1,56 +1,46 @@
 /**
- * Who reads and writes the discovery vocabulary (CONTENT-MODEL.md §8), shared by makers, places,
- * terms and sources.
+ * Who reads and writes the catalogue (CONTENT-MODEL.md §7), shared by works and the vocabulary
+ * that describes them — makers, places, terms and sources.
  *
- * - **Read**: `DRAFTED_ACCESS` — the public sees published records only, staff see drafts, and
- *   only staff read `/versions` (`@engine/cms/access`, ARCHITECTURE.md §12). Loaders add their
- *   own `overrideAccess: false`, `_status: 'published'` and `select` on top.
- * - **Write**: the cataloguing roles — admin, manager, cataloguer — and the contributor, who
- *   saves drafts only: publishing is refused to a contributor by `refuseContributorPublish`, a
- *   hook, because access alone cannot guard the draft → published transition (KOI, §8).
- * - **Delete**: admin and manager. A maker, place, term or source is pointed at by works; a
- *   cataloguer merging duplicates re-points the works and leaves the delete to them.
+ * - **Read**: `DRAFTED_ACCESS` — the public sees published records only, the owner and the
+ *   editors see drafts, and only they read `/versions` (`@engine/cms/access`, ARCHITECTURE.md
+ *   §12). Loaders add their own `overrideAccess: false`, `_status: 'published'` and `select` on
+ *   top.
+ * - **Store staff read none of it** (CONTENT-MODEL.md §7: "—"): `DRAFTED_ACCESS` counts every
+ *   `users` document as staff, which would show a store user every draft and every staff-only
+ *   field, so their role is refused here before it is consulted.
+ * - **Write, publish and delete**: the owner and the editors (DR-10: "editor — catalogue, content
+ *   and orders").
  */
-import { APIError, type CollectionBeforeChangeHook } from 'payload'
+import type { Access } from 'payload'
 
 import { DRAFTED_ACCESS } from '../../../access/published'
-import { hasRole, isStaffUser, staffWithRoles, type StaffRole } from '../../../access/roles'
+import { roleOf, staffWithRoles, type UserRole } from '../../users/roles'
 
-/** The roles that publish a vocabulary record. */
-export const VOCABULARY_PUBLISHERS = [
-  'admin',
-  'manager',
-  'cataloguer',
-] as const satisfies readonly StaffRole[]
+/** The roles that write, publish and delete a catalogue record. */
+export const VOCABULARY_PUBLISHERS = ['owner', 'editor'] as const satisfies readonly UserRole[]
+
+const publishers = staffWithRoles(...VOCABULARY_PUBLISHERS)
+
+/** `access`, except for a store user, who is refused. */
+const notForStoreStaff =
+  (access: Access): Access =>
+  (args) =>
+    roleOf(args.req.user) === 'store' ? false : access(args)
 
 export const VOCABULARY_ACCESS = {
-  ...DRAFTED_ACCESS,
-  create: staffWithRoles(...VOCABULARY_PUBLISHERS, 'contributor'),
-  update: staffWithRoles(...VOCABULARY_PUBLISHERS, 'contributor'),
-  delete: staffWithRoles('admin', 'manager'),
+  read: notForStoreStaff(DRAFTED_ACCESS.read),
+  readVersions: notForStoreStaff(DRAFTED_ACCESS.readVersions),
+  create: publishers,
+  update: publishers,
+  delete: publishers,
 } as const
 
 /** The versions every vocabulary collection keeps: drafts, validated on every save. */
 export const VOCABULARY_VERSIONS = {
   // `validate: true`: Payload would otherwise skip every field validator on a draft save, and
-  // CONTENT-MODEL.md §9's every-save rules (dates in order, a valid address, a parent that is
+  // CONTENT-MODEL.md §8's every-save rules (dates in order, a valid address, a parent that is
   // no descendant) must hold on drafts too. What only publishing demands is checked against
   // `_status` in the validator itself (`./fields`, `requiredToPublish`).
   drafts: { validate: true },
 } as const
-
-/**
- * A contributor saves drafts; a signed-in member of staff without a publishing role who sends
- * `_status: 'published'` is refused. A write with no user — a seed, the migration importer, a
- * script — is not a person's publish and is left to its caller (they land drafts, §10).
- */
-export const refuseContributorPublish: CollectionBeforeChangeHook = ({ data, req }) => {
-  if ((data as { _status?: unknown })?._status !== 'published') return data
-  if (!isStaffUser(req.user) || hasRole(req.user, ...VOCABULARY_PUBLISHERS)) return data
-  throw new APIError(
-    'Contributors save drafts. A cataloguer, a manager or an admin publishes it.',
-    403,
-    null,
-    true,
-  )
-}

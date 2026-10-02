@@ -2,7 +2,7 @@
   "name": "@engine/cms",
   "version": "0.0.0",
   "private": true,
-  "description": "The one Payload config (TASKS.md 3.2): brand-independent, instantiated once per brand process against that brand's database. Collections, access helpers, the engine-table DDL seam (db/), the job/view/plugin registries and the one migration set. SCH's, except admin/** (ADM).",
+  "description": "The one Payload config: one CMS and one database serving both sites (the gallery and the shop). Collections, access helpers, the database adapter (db/), the job/view/plugin registries and the one migration set.",
   "type": "module",
   "exports": {
     "./payload.config": "./src/payload.config.ts",

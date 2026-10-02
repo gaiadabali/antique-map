@@ -28,8 +28,8 @@ function useEnv(values: Record<string, string | undefined>) {
   }
 }
 
-/** Every variable that could make the config migrate, push or pick a brand, cleared. */
-const QUIET = { RUN_MIGRATIONS: undefined, PAYLOAD_DEV_PUSH: undefined, BRAND: undefined }
+/** Every variable that could make the config migrate or push, cleared. */
+const QUIET = { RUN_MIGRATIONS: undefined, PAYLOAD_DEV_PUSH: undefined }
 
 /** A fresh evaluation of the module and its config, under the environment set now. */
 async function importInstance(): Promise<Instance> {

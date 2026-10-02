@@ -1,6 +1,6 @@
 /**
  * `media` on a real database and the dev stack's MinIO (TASKS.md 8.3.a, 8.3.d, 8.3.e, 8.3.g),
- * through Payload's REST handler with the brand's scoped media key. Runs when both
+ * through Payload's REST handler with the scoped media key. Runs when both
  * CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT are set (`./test-stack.test-support`), after the local storage
  * policies are applied; otherwise it skips.
  */
@@ -27,7 +27,7 @@ import {
 const PASSWORD = 'storage-test-password-1'
 
 describe.skipIf(!stackAvailable)(
-  'media, stored in the brand bucket (on Postgres and MinIO)',
+  'media, stored in the media bucket (on Postgres and MinIO)',
   () => {
     let stack: Stack
     let staff: string
@@ -35,13 +35,11 @@ describe.skipIf(!stackAvailable)(
 
     beforeAll(async () => {
       stack = await startStack({
-        storefront: 'gallery',
-        mastersUser: 'test-masters-origin',
         connect: (config, key) => getPayload({ config, key }),
       })
       const users = [
         { email: 'owner@storage.test', name: 'Owner' },
-        { email: 'cataloguer@storage.test', name: 'Cataloguer', roles: ['cataloguer'] },
+        { email: 'cataloguer@storage.test', name: 'Cataloguer', role: 'editor' },
       ]
       for (const user of users) {
         await stack.payload.create({
@@ -81,7 +79,7 @@ describe.skipIf(!stackAvailable)(
       expect((await upload({ ...valid, role: 'primary' })).status).toBe(400)
     }, 60_000)
 
-    it('lands in the brand bucket under uploads/, and is served to staff alone (8.3.g)', async () => {
+    it('lands in the media bucket under uploads/, and is served to staff alone (8.3.g)', async () => {
       const bytes = jpeg('lands-in-the-bucket')
       const response = await upload(valid, bytes)
       expect(response.status).toBe(201)

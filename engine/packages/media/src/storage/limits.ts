@@ -10,7 +10,7 @@
  *   presigned URL whose signature covers its length and its SHA-256 (`./masters-store`), so the
  *   storage itself refuses a larger file or other bytes. Its cap is the largest single PUT S3
  *   accepts. The types are what the owner may hand over (handover.md: RAW, TIFF, JPEG, HEIC, PNG,
- *   a scanner's PDF) for a capture, and what a print partner takes for a print file.
+ *   a scanner's PDF) for a capture. The configurator's print files went with it (TASKS.md 2.4.b).
  */
 import type { MasterKind } from './master-kinds'
 
@@ -55,7 +55,6 @@ const RASTER: Record<string, string> = {
 /** Each kind's allowed extensions, with the content type its presigned PUT is signed for. */
 export const MASTER_TYPES: Readonly<Record<MasterKind, Readonly<Record<string, string>>>> = {
   capture: { ...RAW, ...RASTER, heic: 'image/heic', pdf: 'application/pdf' },
-  'print-file': { ...RASTER, pdf: 'application/pdf' },
 }
 
 /** The content type a master of this kind and extension is stored under, or null if refused. */

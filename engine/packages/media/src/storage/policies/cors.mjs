@@ -1,11 +1,11 @@
 // The masters bucket's CORS as data (TASKS.md 8.3.i; DEPLOYMENT.md §2). Pure, like ./plan.mjs.
 //
 // A master goes from the admin's browser straight into the masters bucket by a presigned PUT
-// (`../masters-store.ts` presignPut), so the bucket admits each brand's admin origin — its
+// (`../masters-store.ts` presignPut), so the bucket admits the admin origin — its
 // SITE_URL — for that PUT and the headers it signs, and no other origin, method or header. A
 // plan names the origins:
 //
-//   "mastersCors": { "adminOrigins": ["https://<brand host>", …], "ifUnsupported": "fail" }
+//   "mastersCors": { "adminOrigins": ["https://<admin host>", …], "ifUnsupported": "fail" }
 //
 // An origin is `https://<host>[:port]`, or — a workstation's — `http://localhost` or
 // `http://127.0.0.1` with a port or `*` for any port: a worktree's port is allocated per phase and

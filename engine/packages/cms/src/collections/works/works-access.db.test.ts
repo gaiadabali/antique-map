@@ -1,7 +1,7 @@
 /**
  * TASKS.md 8.2.d–8.2.f on a real Postgres, over REST through Payload's own handler: the public
- * reads published works only; `physical` is invisible to the public and to every role without
- * access; a contributor saves drafts only; a copy's synced fields reject a person's edit; and,
+ * reads published works only; `physical` is invisible to the public and to store staff, who read
+ * no work at all; the acquisition is the owner's alone; an editor writes and publishes; and,
  * outside a request with a collector on `req.context`, a refused save flushes nothing while a
  * committed one's tags are posted only once its operation has returned.
  */
@@ -68,30 +68,26 @@ describe.skipIf(!server)('works: access and invalidation on a real database', ()
       Record<string, unknown>
     >
 
-  it('reads published works to the public, and drafts to staff (publishedOrStaff)', async () => {
+  it('reads published works to the public, drafts to the owner and editors, nothing to stores', async () => {
     expect((await list()).map((doc) => doc.id)).toEqual([published.id])
     expect((await stack.rest('GET', `/api/works/${draft.id}`)).status).toBe(404)
-    expect((await list('contributor')).map((doc) => doc.id).sort()).toEqual(
+    expect((await list('editor')).map((doc) => doc.id).sort()).toEqual(
       [published.id, draft.id].sort(),
     )
     expect((await stack.rest('GET', '/api/works/versions')).status).toBe(403)
+    expect((await stack.rest('GET', '/api/works?depth=0', { role: 'store' })).status).toBe(403)
+    expect(
+      (await stack.rest('GET', `/api/works/${published.id}?depth=0`, { role: 'store' })).status,
+    ).toBe(403)
   })
 
-  it('never shows physical to the public, nor to an editor, an analyst or a contributor', async () => {
+  it('never shows physical to the public or the loaders', async () => {
     const [publicDoc] = await list()
     expect(publicDoc).not.toHaveProperty('physical')
     expect(publicDoc).not.toHaveProperty('cataloguing')
     expect(publicDoc).not.toHaveProperty('legacy')
-    // The rights a reproduction rests on and a copy's origin are staff's too (1.2.b).
+    // The rights a reproduction rests on are staff's too (1.2.b).
     expect(publicDoc).not.toHaveProperty('rights')
-    expect(publicDoc).not.toHaveProperty('origin')
-    for (const role of ['editor', 'analyst', 'contributor'] as const) {
-      const doc = await json(
-        await stack.rest('GET', `/api/works/${published.id}?depth=0`, { role }),
-      )
-      expect(doc.id, role).toBe(published.id)
-      expect(doc, role).not.toHaveProperty('physical')
-    }
     // The loaders' read: the Local API with access on and no user.
     const loader = await stack.api.findByID({
       collection: 'works',
@@ -101,30 +97,29 @@ describe.skipIf(!server)('works: access and invalidation on a real database', ()
     })
     expect(loader).not.toHaveProperty('physical')
     expect(loader).not.toHaveProperty('rights')
-    expect(loader).not.toHaveProperty('origin')
     expect(loader.title).toBe('Bali by François Valentijn, c. 1726')
   })
 
-  it('shows physical to a cataloguer and fulfilment, and the acquisition to an admin alone', async () => {
-    for (const role of ['cataloguer', 'fulfilment'] as const) {
+  it('shows physical to an editor, and the acquisition to the owner alone', async () => {
+    for (const role of ['editor'] as const) {
       const doc = await json(
         await stack.rest('GET', `/api/works/${published.id}?depth=0`, { role }),
       )
       expect(doc.physical, role).toMatchObject({ exportStatus: 'domestic-only', coaIssued: true })
       expect(doc.physical, role).not.toHaveProperty('acquisition')
     }
-    const admin = await json(
-      await stack.rest('GET', `/api/works/${published.id}?depth=0`, { role: 'admin' }),
+    const owner = await json(
+      await stack.rest('GET', `/api/works/${published.id}?depth=0`, { role: 'owner' }),
     )
-    expect(admin.physical).toMatchObject({
+    expect(owner.physical).toMatchObject({
       acquisition: { consignor: 'A. Consignor', cost: { amount: 1_500_000, currency: 'IDR' } },
     })
   })
 
-  it('lets a contributor save a draft — without physical — and never publish', async () => {
+  it('lets an editor save a draft and publish it; store staff write nothing', async () => {
     const created = await stack.rest('POST', '/api/works?draft=true', {
-      role: 'contributor',
-      json: { title: 'A contributor’s draft', physical: { exportStatus: 'cleared' } },
+      role: 'editor',
+      json: { title: 'An editor’s draft', physical: { exportStatus: 'cleared' } },
     })
     expect(created.status).toBe(201)
     const { doc } = (await created.json()) as { doc: { id: number } }
@@ -134,45 +129,38 @@ describe.skipIf(!server)('works: access and invalidation on a real database', ()
       draft: true,
       depth: 0,
     })
-    expect(stored.physical).toMatchObject({ exportStatus: null })
-    const publish = await stack.rest('PATCH', `/api/works/${doc.id}`, {
-      role: 'contributor',
-      json: { ...make(), _status: 'published' },
+    expect(stored.physical).toMatchObject({ exportStatus: 'cleared' })
+    // Published on the Local API as the editor, access on: a publish over REST here has no
+    // request scope for the cache's after-commit flush (`hooks/work-invalidate`).
+    const { docs: editors } = await stack.api.find({
+      collection: 'users',
+      where: { role: { equals: 'editor' } },
+      depth: 0,
     })
-    expect(publish.status).toBe(403)
-    expect(JSON.stringify(await publish.json())).toMatch(/Contributors save drafts/)
+    const editor = { ...editors[0]!, collection: 'users' }
+    const published = await invalidationBatch().operation((context) =>
+      stack.api.update({
+        collection: 'works',
+        id: doc.id,
+        data: { ...make(), _status: 'published' },
+        overrideAccess: false,
+        user: editor,
+        context,
+      }),
+    )
+    expect(published._status).toBe('published')
     expect(
-      (await stack.rest('POST', '/api/works', { role: 'editor', json: { title: 'x' } })).status,
+      (await stack.rest('POST', '/api/works', { role: 'store', json: { title: 'x' } })).status,
+    ).toBe(403)
+    expect(
+      (
+        await stack.rest('PATCH', `/api/works/${doc.id}`, {
+          role: 'store',
+          json: { title: 'Renamed by a store' },
+        })
+      ).status,
     ).toBe(403)
   }, 60_000)
-
-  it('refuses a person’s edit of a copy’s synced fields over REST, and lets its own fields change', async () => {
-    const copy = await stack.api.create({
-      collection: 'works',
-      data: {
-        title: 'Bali, 1726',
-        objectType: 'map',
-        origin: { brand: 'sister', workUid: 'IG-000001' },
-      },
-      context: { '@engine/sister:sync': true },
-    })
-    const edit = await stack.rest('PATCH', `/api/works/${copy.id}?draft=true`, {
-      role: 'admin',
-      json: { title: 'Bali, c. 1726', origin: { brand: 'sister', workUid: 'IG-000002' } },
-    })
-    expect(edit.status).toBe(400)
-    const paths = (
-      (await edit.json()) as { errors: Array<{ data?: { errors?: Array<{ path: string }> } }> }
-    ).errors
-      .flatMap((error) => error.data?.errors ?? [])
-      .map((error) => error.path)
-    expect(paths.sort()).toEqual(['origin', 'title'])
-    const own = await stack.rest('PATCH', `/api/works/${copy.id}?draft=true`, {
-      role: 'admin',
-      json: { seo: { title: 'From the archive' } },
-    })
-    expect(own.status).toBe(200)
-  })
 
   describe('after the commit, outside a request: a collector on req.context (ARCHITECTURE.md §9)', () => {
     const posts: string[][] = []

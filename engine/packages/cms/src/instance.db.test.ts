@@ -78,6 +78,9 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
   let payload: Payload
   let proof: Payload
   let slug: CollectionSlug
+  let made = 0
+  /** A store's required fields, its code unique per call. */
+  const fresh = () => ({ code: `PROOF-${++made}`, name: 'Proof' })
 
   /** What a second connection sees of a document: its `updated_at`, or null while it is not there. */
   const seen = async (id: unknown) =>
@@ -90,7 +93,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
     await admin.query(`CREATE DATABASE "${database}"`)
     const saved = { ...process.env }
     Object.assign(process.env, env)
-    for (const key of ['RUN_MIGRATIONS', 'PAYLOAD_DEV_PUSH', 'BRAND', 'PGHOST', 'PGPORT'])
+    for (const key of ['RUN_MIGRATIONS', 'PAYLOAD_DEV_PUSH', 'PGHOST', 'PGPORT'])
       delete process.env[key]
     vi.resetModules()
     const { cms } = await import('@engine/cms/instance')
@@ -99,15 +102,11 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
     await payload.db.migrate({ migrations: [...migrations] } as never)
     observer = new PgPool({ connectionString: env.DATABASE_URL })
 
-    // A second instance of the one config, with a hook on a stub collection (id and timestamps).
+    // A second instance of the one config, with a hook on `stores` — the smallest collection, with
+    // no hooks of its own — since TASKS.md 2.4 removed the field-less stubs this hung on before.
     const input = engineConfig(env)
-    // A stub's own fields are none; the first config's sanitising has added Payload's to the shared
-    // objects (id, timestamps), so count those out.
-    const payloadFields = new Set(['id', 'createdAt', 'updatedAt'])
-    const stub = input.collections?.find((each) =>
-      each.fields.every((field) => 'name' in field && payloadFields.has(field.name)),
-    )
-    if (!stub) throw new Error('no stub collection left to hang the proof hook on: pick another')
+    const stub = input.collections?.find((each) => each.slug === 'stores')
+    if (!stub) throw new Error('no stores collection to hang the proof hook on: pick another')
     slug = stub.slug as CollectionSlug
     const hook: NonNullable<
       NonNullable<CollectionConfig['hooks']>['afterChange']
@@ -118,7 +117,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
         // Its own transaction (no req): commits before the parent's later hook throws.
         await req.payload.create({
           collection: slug,
-          data: {},
+          data: fresh(),
           context: { ...context, nested: false, fail: false },
         })
       }
@@ -197,7 +196,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
 
   describe('the collector against Payload transactions', () => {
     const create = (context: Record<string, unknown>, extra: object = {}) =>
-      proof.create({ collection: slug, data: {}, context, ...extra })
+      proof.create({ collection: slug, data: fresh(), context, ...extra })
 
     it('a create: the hook runs before the commit; its tag is kept once the call returned', async () => {
       const batch = invalidationBatch()
@@ -270,9 +269,12 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       await killTransaction(open)
 
       const req = await createLocalReq({}, proof)
-      const doc = await batch.operation(() => proof.create({ collection: slug, data: {}, req }), {
-        req,
-      })
+      const doc = await batch.operation(
+        () => proof.create({ collection: slug, data: fresh(), req }),
+        {
+          req,
+        },
+      )
       expect(atHook.at(-1)).toEqual({ id: doc.id, visible: null })
       expect(batch.pending).toEqual([`item:${doc.id}`])
       expect(Object.keys(req.context ?? {})).toEqual([])
@@ -281,8 +283,8 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
     it("a jobs run's batch.context() on its req keeps each tag; without a collector a save fails", async () => {
       const batch = invalidationBatch()
       const req = await createLocalReq({ context: batch.context() }, proof)
-      const a = await proof.create({ collection: slug, data: {}, req })
-      const b = await proof.create({ collection: slug, data: {}, req })
+      const a = await proof.create({ collection: slug, data: fresh(), req })
+      const b = await proof.create({ collection: slug, data: fresh(), req })
       expect(batch.pending).toEqual([`item:${a.id}`, `item:${b.id}`])
 
       expect(await settle(create({}))).toMatch(/outside a request scope/)

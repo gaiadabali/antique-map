@@ -1,6 +1,6 @@
 /**
- * `pnpm --filter @engine/cms migrate:create <name>` — the SCH lead's one migration per wave
- * (PARALLEL-TRACKS.md §3.2), generated in a clean worktree with `BRAND` unset. Payload's own
+ * `pnpm --filter @engine/cms migrate:create <name>` — the schema lead's one migration per wave
+ * (WORKFLOW.md §2), generated in a clean worktree. Payload's own
  * `migrate:create`, plus three things it does not do:
  *
  * - it says "No schema changes detected" and writes nothing when there are none (Payload's

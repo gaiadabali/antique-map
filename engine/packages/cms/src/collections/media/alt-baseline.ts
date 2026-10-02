@@ -13,7 +13,7 @@
  * An alt written elsewhere — the old site's, or a baseline from before v1.6 — may already open with
  * a label's words; `withoutLabel()` takes them off before it is stored, so the stored alt describes
  * the image and the rendered one is labelled once. The words are the caller's: the CMS holds no
- * lexicon (the brand folder's `site/copy/<locale>.json`, `image.synthetic.<label>`).
+ * lexicon (each site's `sites/<site>/lexicon` in the app, `image.synthetic.<label>`).
  */
 import { opensWithLabel } from '@engine/media/contract'
 

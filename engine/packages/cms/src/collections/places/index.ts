@@ -17,11 +17,7 @@
  */
 import type { CollectionConfig } from 'payload'
 
-import {
-  refuseContributorPublish,
-  VOCABULARY_ACCESS,
-  VOCABULARY_VERSIONS,
-} from '../terms/vocabulary/access'
+import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { translationStatusField } from '../../fields/translation-status'
 import { IN_DEFAULT_LOCALE_NOTE, requiredInDefaultLocale } from '../../fields/validate'
@@ -41,7 +37,7 @@ export const Places: CollectionConfig = {
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
   hooks: {
-    beforeChange: [refuseContributorPublish, guardAncestry],
+    beforeChange: [guardAncestry],
     beforeDelete: [keepChildrenAttached, refuseDeleteWhileUsed],
   },
   fields: [

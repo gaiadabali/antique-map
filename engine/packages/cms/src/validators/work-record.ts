@@ -1,6 +1,6 @@
 /**
- * A work's identifiers and single values (TASKS.md 8.2.a; CONTENT-MODEL.md §1): the `workUid`
- * sister sync and redirects key on, the stock number the gallery has always used, a language tag,
+ * A work's identifiers and single values (TASKS.md 8.2.a; CONTENT-MODEL.md §3): the `workUid`
+ * redirects and the cache's work tag key on, the stock number the gallery has always used, a language tag,
  * the rights a reproduction rests on and an acquisition's cost. Every save. Pure.
  */
 import { CURRENCY_CODES } from '@engine/config/constants'
@@ -8,8 +8,18 @@ import { CURRENCY_CODES } from '@engine/config/constants'
 import { PRINTABLE_RIGHTS, type RightsStatus } from '../collections/works/vocabulary'
 
 /**
- * `<prefix>-<digits>` — the prefix is C1's `ids.workUidPrefix` (`^[A-Z][A-Z0-9]{1,7}$`), the
- * digits at least six. `@engine/cache`'s `workTag()` checks the same shape (a test holds them).
+ * Works are the gallery's alone, so their ids are the gallery's: the uid prefix the gallery's
+ * brand config held, `IG`, and its stock numbers — `M.1044`, `P.2098`, `F.…` (CONTENT-MODEL.md §3).
+ * Constants now that no brand config is loaded (TASKS.md 2.4.c); 3.2.b replaces the uid with
+ * `publicId`.
+ */
+// TODO(2.2): read SITES.gallery.works (`uidPrefix`, `stockNumberPattern`) once 2.2 has merged.
+export const WORK_UID_PREFIX = 'IG'
+export const STOCK_NUMBER_PATTERN = '^[MPF]\\.[A-Za-z0-9]+$'
+
+/**
+ * `<prefix>-<digits>` — the prefix `^[A-Z][A-Z0-9]{1,7}$`, the digits at least six.
+ * `@engine/cache`'s `workTag()` checks the same shape (a test holds them).
  */
 export const WORK_UID_PATTERN = /^[A-Z][A-Z0-9]{1,7}-[0-9]{6,16}$/
 export const WORK_UID_DIGITS = 6
@@ -24,22 +34,22 @@ export function formatWorkUid(prefix: string, n: number): string {
 
 export function workUidError(value: unknown, prefix: string | null): string | null {
   if (typeof value !== 'string' || !WORK_UID_PATTERN.test(value)) {
-    return 'A work uid is the brand’s prefix, a hyphen and its number: IG-000123.'
+    return 'A work uid is the gallery’s prefix, a hyphen and its number: IG-000123.'
   }
   if (prefix !== null && !value.startsWith(`${prefix}-`)) {
-    return `This brand’s work uids start with ${prefix}-.`
+    return `The gallery’s work uids start with ${prefix}-.`
   }
   return null
 }
 
-/** The stock number against the brand's own pattern (C1 `ids.stockNumberPattern`), if it has one. */
+/** The stock number against a pattern — the gallery's, `STOCK_NUMBER_PATTERN` — if one is given. */
 export function stockNumberError(value: unknown, pattern: string | null): string | null {
   if (value === null || value === undefined || value === '') return null
   if (typeof value !== 'string' || value.trim() !== value || value.length > 40) {
     return 'A stock number is a short code with no spaces around it, such as M.1044.'
   }
   if (pattern !== null && !new RegExp(pattern).test(value)) {
-    return `This is not one of this brand’s stock numbers (they match ${pattern}).`
+    return `This is not one of the gallery’s stock numbers (they match ${pattern}).`
   }
   return null
 }

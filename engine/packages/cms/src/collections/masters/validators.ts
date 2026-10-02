@@ -7,7 +7,7 @@
  *   for, nor climb out of its prefix.
  * - A capture says what the intake measured: its role and provenance at least.
  * - The object's box lies inside the frame (C9 `boxFits()`), in whole pixels.
- * - An intake key's brand and batch are the record's own.
+ * - An intake key's batch is the record's own.
  */
 import { boxFits, INTAKE_MASTERS_PREFIX } from '@engine/media/contract'
 import { isSha256Hex, kindPrefix, masterContentType, type MasterKind } from '@engine/media/storage'
@@ -19,7 +19,6 @@ export type MasterInput = {
   readonly kind?: unknown
   readonly storageKey?: unknown
   readonly checksum?: unknown
-  readonly brand?: unknown
   readonly widthPx?: unknown
   readonly heightPx?: unknown
   readonly role?: unknown
@@ -29,16 +28,15 @@ export type MasterInput = {
   readonly intake?: { readonly batch?: unknown } | null
 }
 
-const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const isSet = (value: unknown) => value !== undefined && value !== null && value !== ''
 const isWhole = (value: unknown, min: number) =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= min
 
-/** `masters/intake/<brand>/<batch>/<file>` → its brand and batch; null for any other key. */
-export function intakeSegments(key: string): { brand: string; batch: string } | null {
+/** `masters/intake/<batch>/<file>` → its batch; null for any other key. */
+export function intakeSegments(key: string): { batch: string } | null {
   if (!key.startsWith(INTAKE_MASTERS_PREFIX)) return null
-  const [brand, batch, file, ...rest] = key.slice(INTAKE_MASTERS_PREFIX.length).split('/')
-  return brand && batch && file && rest.length === 0 ? { brand, batch } : null
+  const [batch, file, ...rest] = key.slice(INTAKE_MASTERS_PREFIX.length).split('/')
+  return batch && file && rest.length === 0 ? { batch } : null
 }
 
 function keyProblems(kind: MasterKind, key: string, checksum: string): FieldProblem[] {
@@ -94,8 +92,8 @@ function boxProblems(input: MasterInput): FieldProblem[] {
 
 export function masterProblems(input: MasterInput): FieldProblem[] {
   const problems: FieldProblem[] = []
-  const kind = input.kind === 'capture' || input.kind === 'print-file' ? input.kind : null
-  if (!kind) problems.push({ path: 'kind', message: 'A master is a capture or a print file.' })
+  const kind = input.kind === 'capture' ? input.kind : null
+  if (!kind) problems.push({ path: 'kind', message: 'A master is a capture.' })
   const checksum = isSha256Hex(input.checksum) ? input.checksum : null
   if (!checksum) {
     problems.push({ path: 'checksum', message: "The file's SHA-256, as 64 lower-case hex digits." })
@@ -104,9 +102,6 @@ export function masterProblems(input: MasterInput): FieldProblem[] {
     problems.push({ path: 'storageKey', message: 'Where the file is in the masters bucket.' })
   } else if (kind && checksum) {
     problems.push(...keyProblems(kind, input.storageKey, checksum))
-  }
-  if (typeof input.brand !== 'string' || !KEBAB.test(input.brand)) {
-    problems.push({ path: 'brand', message: "The owning brand's slug." })
   }
   for (const field of ['widthPx', 'heightPx', 'objectPpi'] as const) {
     if (isSet(input[field]) && !isWhole(input[field], 1)) {
@@ -126,9 +121,6 @@ export function masterProblems(input: MasterInput): FieldProblem[] {
   problems.push(...boxProblems(input))
   const intake = typeof input.storageKey === 'string' ? intakeSegments(input.storageKey) : null
   if (intake) {
-    if (input.brand !== intake.brand) {
-      problems.push({ path: 'brand', message: `This intake key belongs to "${intake.brand}".` })
-    }
     if (input.intake?.batch !== intake.batch) {
       problems.push({
         path: 'intake.batch',

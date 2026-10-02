@@ -88,8 +88,7 @@ export type LocationImageArea = (typeof LOCATION_IMAGE_AREAS)[number]
 
 /**
  * `media.role`: what an image is, set at intake — every role above but the `primary`
- * designation, a configurator room plate (`./room-plates`), or an editorial image that documents
- * no work, product or location (a story's illustration, a banner, a portrait of a maker).
+ * designation, or an editorial image that documents no work, product or location (a story's illustration, a banner, a portrait of a maker).
  */
 export const MEDIA_ROLES = [
   ...WORK_IMAGE_ROLES,
@@ -97,7 +96,6 @@ export const MEDIA_ROLES = [
   'lifestyle',
   'packaging',
   'showroom',
-  'room-plate',
   'editorial',
 ] as const
 export type MediaRole = (typeof MEDIA_ROLES)[number]
@@ -106,12 +104,12 @@ export type MediaRole = (typeof MEDIA_ROLES)[number]
 export const IMAGE_SUBJECTS = ['work', 'product', 'location', 'other'] as const
 export type ImageSubject = (typeof IMAGE_SUBJECTS)[number]
 
-/** The media roles each subject's images may carry; `other` is a room plate or an editorial image. */
+/** The media roles each subject's images may carry; `other` is an editorial image. */
 export const ROLES_BY_SUBJECT = {
   work: WORK_IMAGE_ROLES,
   product: PRODUCT_IMAGE_ROLES,
   location: LOCATION_IMAGE_ROLES,
-  other: ['room-plate', 'editorial'],
+  other: ['editorial'],
 } as const satisfies Readonly<Record<ImageSubject, readonly MediaRole[]>>
 
 export function roleAllowed(subject: ImageSubject, role: MediaRole): boolean {
@@ -184,14 +182,13 @@ export function renderedAlt(
 
 /**
  * Whether an image of this provenance may be placed under this role on this subject
- * (retouching-and-labelling.md §5, room-scenes.md §10). A photograph always may; otherwise:
+ * (retouching-and-labelling.md §5). A photograph always may; otherwise:
  * - on a work, only an `in-room` view — a composite or a render, labelled and never first — since
  *   every other image shows the object itself, and no AI-generated image ever shows an original;
  * - on a location, never: its photographs are the shop's proof that the place is real;
  * - on a product, any, labelled: whether an AI image shows a product the shop really makes is a
  *   person's judgement, not the schema's;
- * - a room plate is rendered or photographed, never AI-generated or a composite — a plate whose
- *   scale cannot be trusted misleads — and an editorial image may be anything, labelled.
+ * - an editorial image may be anything, labelled.
  * Whether the subject takes the role at all is `roleAllowed()`'s answer.
  */
 export function provenanceAllowed(
@@ -208,7 +205,7 @@ export function provenanceAllowed(
     case 'product':
       return true
     case 'other':
-      return role === 'room-plate' ? provenance === 'rendered' : true
+      return true
   }
 }
 

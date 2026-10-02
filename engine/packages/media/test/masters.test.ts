@@ -95,7 +95,6 @@ describe('what the intake records', () => {
       objectPpi: null,
     }
     const manifest: IntakeManifest = {
-      brand: 'brand-a',
       batch: 'pilot-2026-10',
       receivedAt: '2026-10-20T10:00:00+08:00',
       entries: [colourCard, entry],

@@ -1,11 +1,11 @@
 /**
- * What of a brand's public media bucket the public may read (TASKS.md 8.3.g; 6.2.e's Found 11).
+ * What of the public media bucket the public may read (TASKS.md 8.3.g; 6.2.e's Found 11).
  *
  * The bucket is "public" only under two prefixes: the derivative ladder (C9 `derivativeKey()`) and
  * the capped IIIF tiles (C9 `iiifPublicKey()`). Everything else in it — above all the file an
  * editor uploaded to a `media` record, which lands under `UPLOADS_PREFIX` — is private: an upload
- * is the full-resolution processed image, so serving it would bypass the brand's
- * `media.publicZoomMaxPx` cap (C1), and it may still carry the camera's metadata — GPS, serial
+ * is the full-resolution processed image, so serving it would bypass the
+ * public zoom cap, and it may still carry the camera's metadata — GPS, serial
  * numbers, editing history — which nothing public may (intake-spec.md §9.3, F6). The derivative
  * and tile jobs (TASKS.md 15.1, 15.2) write their output without that metadata.
  *
@@ -14,8 +14,8 @@
  */
 
 /**
- * Where every upload collection's files land in the brand bucket (the storage plugin's collection
- * prefix, `@engine/cms` `registries/storage.ts`). The same for every brand and environment, so the
+ * Where every upload collection's files land in the media bucket (the storage plugin's collection
+ * prefix, `@engine/cms` `registries/storage.ts`). The same in every environment, so the
  * `prefix` column's default — written into the DDL — never differs between two databases.
  */
 export const UPLOADS_PREFIX = 'uploads'

@@ -2,7 +2,7 @@
  * TASKS.md 8.1.e on a real Postgres: makers, places, terms and sources save with validation,
  * localisation and slugs; a place stores historical names and a parent; re-parenting a place
  * under its own descendant is refused — published or draft; the public reads published records
- * only; a contributor cannot publish.
+ * only; an editor publishes and store staff read none of it.
  *
  * It makes its own database on the server `CMS_TEST_POSTGRES_URL` names and **pushes** the
  * schema (`./pushed-database.test-support`) — these collections reach a migration only after the wave
@@ -246,39 +246,42 @@ describe.skipIf(!server)('the discovery vocabulary on a real database', () => {
     expect(source.slug).toBe('tooley-australia')
   })
 
-  it('shows the public published records only, and lets no contributor publish', async () => {
+  it('shows the public published records only; an editor publishes, store staff touch nothing', async () => {
     const pub = await db.payload.find({ collection: 'places', overrideAccess: false, depth: 0 })
     expect(pub.docs.map((doc) => doc.name).sort()).toEqual(['Jakarta', 'Java'])
     await db.payload.create({
       collection: 'users',
       data: { email: 'owner@test.example', password: 'correct horse 42', name: 'Owner' },
     })
-    const contributor = await db.payload.create({
-      collection: 'users',
-      data: {
-        email: 'c@test.example',
-        password: 'correct horse 42',
-        name: 'C',
-        roles: ['contributor'],
-      },
-    })
-    const user = { ...contributor, collection: 'users' as const }
+    const shop = await db.payload.create({ collection: 'stores', data: { code: 'K-1', name: 'K' } })
+    const asUser = async (role: 'editor' | 'store') => {
+      const store = role === 'store' ? { store: shop.id } : {}
+      const data = { email: `${role}@test.example`, password: 'correct horse 42', name: role, role }
+      const user = await db.payload.create({ collection: 'users', data: { ...data, ...store } })
+      return { ...user, collection: 'users' as const }
+    }
+    const [editor, store] = [await asUser('editor'), await asUser('store')]
+    const as = (user: typeof editor) => ({ overrideAccess: false, user })
     const draft = await db.payload.create({
       collection: 'sources',
-      overrideAccess: false,
-      user,
+      ...as(editor),
       draft: true,
       data: { shortCite: 'Parry' },
     })
+    const published = await db.payload.update({
+      collection: 'sources',
+      id: draft.id,
+      ...as(editor),
+      data: { citation: 'Parry, P. Cartobibliography.', _status: 'published' },
+    })
+    expect(published._status).toBe('published')
     await expect(
-      db.payload.update({
-        collection: 'sources',
-        id: draft.id,
-        overrideAccess: false,
-        user,
-        data: { citation: 'Parry, P. Cartobibliography.', _status: 'published' },
-      }),
-    ).rejects.toThrow(/Contributors save drafts/)
+      db.payload.create({ collection: 'sources', ...as(store), data: { shortCite: 'Tooley' } }),
+    ).rejects.toThrow()
+    // Store staff read no catalogue record (CONTENT-MODEL.md §7): refused, not merely empty.
+    await expect(
+      db.payload.find({ collection: 'places', ...as(store), depth: 0 }),
+    ).rejects.toThrow()
     const tables = await db.pool.query(
       `SELECT count(*)::int AS n FROM information_schema.tables WHERE table_name IN ('makers', 'places', 'terms', 'sources', '_places_v')`,
     )

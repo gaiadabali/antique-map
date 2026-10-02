@@ -2,9 +2,9 @@
  * The work as catalogued (CONTENT-MODEL.md §1, the Sanderus model; C2 `RecordVM`): what it is
  * called, what it is, who made it and when, how it was published and printed, and its size.
  *
- * - `workUid` is the stable id sister sync and redirects key on: made once, from the brand's
- *   prefix, and never changed (`hooks/work-uid`). `stockNumber` is the gallery's own M./P./F.
- *   number, checked against the brand's pattern.
+ * - `workUid` is the stable id redirects key on: made once, from the gallery's prefix, and never
+ *   changed (`hooks/work-uid`). `stockNumber` is the gallery's own M./P./F. number, checked
+ *   against the gallery's pattern (`STOCK_NUMBER_PATTERN`).
  * - `title` is the **hook title** buyers read; `originalTitle` the diplomatic transcription, in
  *   its own language (`originalTitleLanguage`, the `lang` the page sets on it).
  * - `makers` credit a maker with a role and a certainty, never implied certain.
@@ -12,10 +12,13 @@
  */
 import type { ArrayField, Field, Validate } from 'payload'
 
-import { activeBrand } from '../../access/brand'
 import { IN_DEFAULT_LOCALE_NOTE } from '../../fields/validate'
 import { creditRowErrors, refId, type CreditRow } from '../../validators/work-credits'
-import { languageTagError, stockNumberError } from '../../validators/work-record'
+import {
+  languageTagError,
+  STOCK_NUMBER_PATTERN,
+  stockNumberError,
+} from '../../validators/work-record'
 import { MAKER_ROLE_LABELS, MAKER_ROLES } from '../makers/roles'
 import { dimensionsField, fuzzyDateGroup } from './dates-and-sizes'
 import {
@@ -32,11 +35,8 @@ export const rowOf = (path: readonly (number | string)[]) => Number(path[path.le
 const message = (error: string | null) => error ?? true
 const clear = () => null
 
-const validateStockNumber: Validate = (value, { data }) => {
-  // A provenance copy carries its origin's number, under the origin's pattern.
-  if ((data as { origin?: { workUid?: unknown } })?.origin?.workUid) return true
-  return message(stockNumberError(value, activeBrand()?.ids.stockNumberPattern ?? null))
-}
+const validateStockNumber: Validate = (value) =>
+  message(stockNumberError(value, STOCK_NUMBER_PATTERN))
 
 const validateLanguage: Validate = (value) => message(languageTagError(value))
 
@@ -88,8 +88,7 @@ export const RECORD_FIELDS: Field[] = [
     admin: {
       position: 'sidebar',
       readOnly: true,
-      description:
-        'Made when the work is first saved, and never changed: sister sync and redirects key on it.',
+      description: 'Made when the work is first saved, and never changed: redirects key on it.',
     },
     hooks: { beforeDuplicate: [clear] },
   },

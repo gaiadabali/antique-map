@@ -1,60 +1,64 @@
 /**
- * `users.roles` — C1's `STAFF_ROLES` as a many-valued select (C1 `schema/accounts.ts` names it).
- * The option list is C1's, never redeclared, so a role added there reaches the admin and the
- * database enum together, in one migration. Wording for non-developers is 10.1's; the rights
- * are CONTENT-MODEL.md §8's.
+ * `users.role` and `users.store` (CONTENT-MODEL.md §6; DR-10). One role per person (`./roles`),
+ * and for a `store` user the one store they work in — required for that role and empty for the
+ * others (`./store-rule`).
  *
- * Saved to the session token so access checks read roles without a query. Only an admin sets
- * them: a member of staff cannot grant themselves more (field access), and the first user's
- * and last admin's cases are the collection's hooks (`./guards`).
+ * Both are saved to the session token so access checks read them without a query, and only the
+ * owner sets them (field access, SECURITY.md R7): a member of staff cannot grant themselves more,
+ * or move themselves to another store. The first user's and the last owner's cases are the
+ * collection's hooks (`./guards`).
  *
- * The default says what will happen: `admin` while nobody has an account — the create-first-user
- * screen would otherwise offer "Contributor" for an account the hook then makes an admin — and
- * `contributor` for everyone after. A function default reaches neither the DDL nor the types.
+ * The default says what will happen: `owner` while nobody has an account — the create-first-user
+ * screen would otherwise offer "Editor" for an account the hook then makes an owner — and
+ * `editor` for everyone after. A function default reaches neither the DDL nor the types.
  */
 import type { Field, PayloadRequest } from 'payload'
 
-import {
-  adminOnlyField,
-  DEFAULT_STAFF_ROLE,
-  STAFF_ROLES,
-  USERS_SLUG,
-  type StaffRole,
-} from '../../access/roles'
+import { USERS_SLUG } from '../../access/roles'
+import { DEFAULT_ROLE, ownerOnlyField, ROLE_LABELS, USER_ROLES, type UserRole } from './roles'
 
-export const ROLE_LABELS: Record<StaffRole, string> = {
-  admin: 'Admin',
-  manager: 'Manager',
-  cataloguer: 'Cataloguer',
-  editor: 'Editor',
-  fulfilment: 'Fulfilment',
-  analyst: 'Analyst',
-  contributor: 'Contributor',
-}
-
-export async function defaultRoles(req: PayloadRequest): Promise<StaffRole[]> {
+export async function defaultRole(req: PayloadRequest): Promise<UserRole> {
   const { totalDocs } = await req.payload.count({
     collection: USERS_SLUG,
     overrideAccess: true,
     req,
   })
-  return totalDocs === 0 ? ['admin'] : [DEFAULT_STAFF_ROLE]
+  return totalDocs === 0 ? 'owner' : DEFAULT_ROLE
 }
 
-export const rolesField: Field = {
-  name: 'roles',
+const OWNER_SETS_IT = { create: ownerOnlyField, update: ownerOnlyField } as const
+
+export const roleField: Field = {
+  name: 'role',
   type: 'select',
-  hasMany: true,
+  label: { en: 'Role', id: 'Peran' },
   required: true,
-  defaultValue: ({ req }: { req: PayloadRequest }) => defaultRoles(req),
+  index: true,
+  defaultValue: ({ req }: { req: PayloadRequest }) => defaultRole(req),
   saveToJWT: true,
-  options: STAFF_ROLES.map((role) => ({ label: ROLE_LABELS[role], value: role })),
-  access: {
-    create: adminOnlyField,
-    update: adminOnlyField,
-  },
+  options: USER_ROLES.map((role) => ({ label: ROLE_LABELS[role], value: role })),
+  access: OWNER_SETS_IT,
   admin: {
-    description:
-      'Admin: everything, including staff and settings. Manager: catalogue, prices, orders, refunds. Cataloguer: works, makers, places, media — no prices or orders. Editor: stories, pages, curations; publishes. Fulfilment: orders, shipments, returns. Analyst: read-only and dashboards. Contributor: drafts only.',
+    description: {
+      en: 'Owner: everything, including staff, stores, settings, leads and partners. Editor: the catalogue, the content and every order. Store staff: their own store’s orders and stock only.',
+      id: 'Pemilik: semuanya, termasuk staf, toko, pengaturan, prospek, dan mitra. Editor: katalog, konten, dan semua pesanan. Staf toko: hanya pesanan dan stok tokonya sendiri.',
+    },
+  },
+}
+
+export const storeField: Field = {
+  name: 'store',
+  type: 'relationship',
+  relationTo: 'stores',
+  label: { en: 'Store', id: 'Toko' },
+  index: true,
+  saveToJWT: true,
+  access: OWNER_SETS_IT,
+  admin: {
+    condition: (data) => (data as { role?: unknown } | undefined)?.role === 'store',
+    description: {
+      en: 'The one store this person works in. Required for store staff; other roles have none.',
+      id: 'Satu toko tempat orang ini bekerja. Wajib untuk staf toko; peran lain tidak memilikinya.',
+    },
   },
 }

@@ -3,36 +3,20 @@
  *
  * A works database for the real-database tests (TASKS.md 8.2.f): a pushed database of its own
  * (`../places/pushed-database.test-support`; the wave's migration is generated after the merge),
- * the synthetic brand loaded so a work gets its uid (`TG-…`), staff of each role signed in over
- * REST through Payload's own handler, and the records a work points at. Media and master records
+ * a user of each role — the store user with a store — signed in over REST through Payload's own
+ * handler, and the records a work points at. Media and master records
  * are written straight through the adapter — their files and buckets are 8.3's, proven there — so
  * a work's image rules read real rows without an upload.
  */
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { handleEndpoints, type Payload, type SanitizedConfig } from 'payload'
 
 import { createPushedDatabase, type Pool } from '../places/pushed-database.test-support'
 
 export const server = process.env.CMS_TEST_POSTGRES_URL
 export const PASSWORD = 'works-db-test-password-1'
-export const ROLES = [
-  'admin',
-  'cataloguer',
-  'fulfilment',
-  'editor',
-  'analyst',
-  'contributor',
-] as const
+/** The owner first: the first account is made an owner whatever it asks (`users/guards`). */
+export const ROLES = ['owner', 'editor', 'store'] as const
 export type Role = (typeof ROLES)[number]
-
-const here = path.dirname(fileURLToPath(import.meta.url))
-const BRAND_ENV = {
-  BRAND: 'test',
-  TEST_STOREFRONT: 'gallery',
-  BRAND_ROOT: path.resolve(here, '../../../../../../test'),
-}
 
 /** Untyped Local API calls: the works types are generated after the wave merges (10.3.b). */
 export type Api = {
@@ -65,7 +49,6 @@ export type Connect = (config: SanitizedConfig, key: string) => Promise<Payload>
 
 export async function startWorksStack(prefix: string, connect: Connect): Promise<WorksStack> {
   const saved = { ...process.env }
-  Object.assign(process.env, BRAND_ENV)
   const pushed = await createPushedDatabase(server!, prefix)
   const payload = await connect(pushed.config, pushed.database)
   const api = payload as unknown as Api
@@ -89,11 +72,18 @@ export async function startWorksStack(prefix: string, connect: Connect): Promise
     })
   }
 
+  const shop = await api.create({ collection: 'stores', data: { code: 'UBD-01', name: 'Ubud' } })
   for (const role of ROLES) {
     const email = `${role}@works.test`
     await api.create({
       collection: 'users',
-      data: { email, password: PASSWORD, name: role, roles: [role] },
+      data: {
+        email,
+        password: PASSWORD,
+        name: role,
+        role,
+        ...(role === 'store' ? { store: shop.id } : {}),
+      },
     })
     const response = await rest('POST', '/api/users/login', { json: { email, password: PASSWORD } })
     const { token } = (await response.json()) as { token?: string }
@@ -110,11 +100,10 @@ export async function startWorksStack(prefix: string, connect: Connect): Promise
         collection: 'masters',
         data: {
           kind: 'capture',
-          storageKey: `masters/intake/test/batch/${checksum}.tif`,
+          storageKey: `masters/intake/batch/${checksum}.tif`,
           checksum,
           role,
           provenance,
-          brand: 'test',
           intake: { verdict: extra.verdict },
         },
       })) as { id: number }

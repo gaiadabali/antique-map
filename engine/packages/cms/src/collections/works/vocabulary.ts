@@ -1,16 +1,29 @@
 /**
- * A work's controlled lists (CONTENT-MODEL.md §1), each declared once here with the admin's words
- * for it. The object types are C1's `OBJECT_TYPES` and a credit's role is the makers' own
- * `MAKER_ROLES` — imported, never repeated; what C1 does not hold yet (technique, colouring,
- * certainty, place roles, export status, rights status) is declared here until C1 takes it in
- * beside `OBJECT_TYPES`, the home its rule gives every catalogue vocabulary (8.2's report).
+ * A work's controlled lists (CONTENT-MODEL.md §3), each declared once here with the admin's words
+ * for it; a credit's role is the makers' own `MAKER_ROLES`, imported, never repeated. The object
+ * types lived in the brand schema (`@engine/config/schema`, C1), which TASKS.md 2.2 deletes, so
+ * they are declared here now, with the same values (TASKS.md 2.4.c); 3.2.b aligns them with
+ * CONTENT-MODEL.md §3.
  *
  * Values are kebab-case: they become Postgres enum labels, URL facet values and C2 keys alike, so
  * the publisher's colour is `publishers` (C2 `Colouring`), never `publisher's`.
  */
-import { OBJECT_TYPES, type ObjectType } from '@engine/config/schema'
-
-export { OBJECT_TYPES, type ObjectType }
+/** `works.objectType` — how the item page reads. */
+export const OBJECT_TYPES = [
+  'map',
+  'sea-chart',
+  'city-plan',
+  'view',
+  'print',
+  'photograph',
+  'book',
+  'atlas',
+  'poster',
+  'document',
+  'ethnographic',
+  'other',
+] as const
+export type ObjectType = (typeof OBJECT_TYPES)[number]
 
 type Option = { readonly value: string; readonly label: string }
 const optionsOf = <V extends string>(values: readonly V[], labels: Record<V, string>): Option[] =>

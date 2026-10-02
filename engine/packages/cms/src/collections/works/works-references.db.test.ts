@@ -1,7 +1,7 @@
 /**
  * TASKS.md 8.2.g on a real Postgres: a maker, place, term or source a work still references —
  * as stored or in its latest draft — cannot be deleted ("still used by N works"); and a work's
- * duplicate is a new object, its stock number held to the brand's pattern. The schema is pushed
+ * duplicate is a new object, its stock number held to the gallery's pattern. The schema is pushed
  * (`./works.test-support`); without `CMS_TEST_POSTGRES_URL` it skips.
  */
 import { APIError, getPayload, ValidationError } from 'payload'
@@ -82,22 +82,22 @@ describe.skipIf(!server)('works: references and duplicates on a real database', 
   it('makes a duplicate a new object: a new uid, no stock number, no physical record', async () => {
     const original = await stack.api.create({
       collection: 'works',
-      data: { title: 'Original', stockNumber: 'T.1', legacy: { productId: 501 } },
+      data: { title: 'Original', stockNumber: 'M.1044', legacy: { productId: 501 } },
     })
     const copy = await (
       stack.payload as unknown as {
         duplicate: (args: object) => Promise<Record<string, unknown>>
       }
     ).duplicate({ collection: 'works', id: original.id })
-    expect(original).toMatchObject({ stockNumber: 'T.1', legacy: { productId: 501 } })
+    expect(original).toMatchObject({ stockNumber: 'M.1044', legacy: { productId: 501 } })
     expect(copy.workUid).not.toBe(original.workUid)
     expect(copy).toMatchObject({ title: 'Original', stockNumber: null })
     expect((copy.legacy as { productId?: unknown }).productId ?? null).toBeNull()
   })
 
-  it('refuses a stock number off the brand’s pattern', async () => {
+  it('refuses a stock number off the gallery’s pattern', async () => {
     const error = await stack.api
-      .create({ collection: 'works', data: { stockNumber: 'M.1044' } })
+      .create({ collection: 'works', data: { stockNumber: 'T.1' } })
       .catch((e: unknown) => e)
     expect(error).toBeInstanceOf(ValidationError)
   })

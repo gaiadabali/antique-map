@@ -29,7 +29,7 @@ const sha = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
 describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres and MinIO)', () => {
   let stack: Stack
   let staff: string
-  let analyst: string
+  let storeStaff: string
   const sentToApp: number[] = []
   const stored: string[] = []
   // The stack's own multipart folder, so a file left behind by any request is seen (8.3.h, 8.3.i).
@@ -37,23 +37,31 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
 
   beforeAll(async () => {
     stack = await startStack({
-      storefront: 'gallery',
-      mastersUser: 'test-masters-origin',
       connect: (config, key) => getPayload({ config, key }),
       tempFileDir: tempDir,
     })
-    for (const [email, roles] of [
-      ['owner@storage.test', ['admin']],
-      ['cataloguer@storage.test', ['cataloguer']],
-      ['analyst@storage.test', ['analyst']],
+    const shop = await stack.payload.create({
+      collection: 'stores',
+      data: { code: 'UBD-01', name: 'Ubud' },
+    })
+    for (const [email, role] of [
+      ['owner@storage.test', 'owner'],
+      ['editor@storage.test', 'editor'],
+      ['store@storage.test', 'store'],
     ] as const) {
       await stack.payload.create({
         collection: 'users',
-        data: { email, name: email, roles: [...roles], password: PASSWORD } as never,
+        data: {
+          email,
+          name: email,
+          role,
+          ...(role === 'store' ? { store: shop.id } : {}),
+          password: PASSWORD,
+        } as never,
       })
     }
-    staff = await stack.login('cataloguer@storage.test', PASSWORD)
-    analyst = await stack.login('analyst@storage.test', PASSWORD)
+    staff = await stack.login('editor@storage.test', PASSWORD)
+    storeStaff = await stack.login('store@storage.test', PASSWORD)
   }, 180_000)
 
   afterAll(async () => {
@@ -102,7 +110,7 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
       byteSize: bytes.length,
       contentType: 'image/tiff',
     })
-    expect(doc.brand).toBe('test')
+    expect(doc).not.toHaveProperty('brand')
     // Everything the app received is a few small JSON bodies; the file is 256 KiB.
     expect(Math.max(...sentToApp)).toBeLessThan(1024)
     expect(sentToApp.reduce((a, b) => a + b, 0)).toBeLessThan(bytes.length / 100)
@@ -176,7 +184,9 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
     expect(
       (await stack.rest('POST', '/api/masters/upload-url', { json: declare(bytes) })).status,
     ).toBe(401)
-    expect((await api('POST', '/api/masters/upload-url', declare(bytes), analyst)).status).toBe(403)
+    expect((await api('POST', '/api/masters/upload-url', declare(bytes), storeStaff)).status).toBe(
+      403,
+    )
     const tooBig = { ...declare(bytes), byteSize: 6 * 1024 ** 3 }
     expect((await api('POST', '/api/masters/upload-url', tooBig)).status).toBe(400)
     expect(
@@ -193,18 +203,17 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
       { checksum: 'b'.repeat(64) },
       { kind: 'print-file' },
       { storageKey: 'masters/x/y.tif' },
-      { brand: 'test-emporium' },
       { role: 'verso' },
       { provenance: 'composite' },
     ]) {
       expect((await api('PATCH', `/api/masters/${id}`, change)).status).toBe(400)
     }
-    // What intake set, an admin may correct; the brand and the checksum, nobody.
+    // What intake set, the owner may correct; the kind and the checksum, nobody.
     const owner = await stack.login('owner@storage.test', PASSWORD)
     expect((await api('PATCH', `/api/masters/${id}`, { role: 'detail' }, owner)).status).toBe(200)
-    expect(
-      (await api('PATCH', `/api/masters/${id}`, { brand: 'test-emporium' }, owner)).status,
-    ).toBe(400)
+    expect((await api('PATCH', `/api/masters/${id}`, { kind: 'print-file' }, owner)).status).toBe(
+      400,
+    )
     const box = await api('PATCH', `/api/masters/${id}`, {
       widthPx: 100,
       heightPx: 80,
@@ -239,9 +248,9 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
       retouching: 'none',
       notes: ['print ceiling 60 cm'],
     }))
-    // Copied in with the origin's key before any record could exist — so no stored SHA-256.
+    // Copied in with the masters key before any record could exist — so no stored SHA-256.
     for (const [i, bytes] of files.entries()) {
-      const key = intakeMasterKey('test', batch, entries[i]!.checksum, 'cr3')
+      const key = intakeMasterKey(batch, entries[i]!.checksum, 'cr3')
       expect(await asRoot(MASTERS_BUCKET).put(key, bytes)).toBe('written')
       stored.push(key)
     }
@@ -251,7 +260,6 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
       receivedAs: 'never-arrived.cr3',
     }
     const manifest = {
-      brand: 'test',
       batch,
       receivedAt: '2026-10-01T09:00:00+08:00',
       entries: [...entries, missing],
@@ -261,10 +269,6 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
     expect(first[2]!.reason).toMatch(/no file at/)
     const again = await importIntakeManifest(stack.payload, manifest)
     expect(again.map((o) => o.outcome)).toEqual(['existing', 'existing', 'failed'])
-    // Only a brand this archive keeps — its own, or its sister's.
-    await expect(
-      importIntakeManifest(stack.payload, { ...manifest, brand: 'stranger' }),
-    ).rejects.toThrow(/not "stranger"/)
     const { docs, totalDocs } = await stack.payload.find({
       collection: 'masters',
       where: { 'intake.batch': { equals: batch } },
@@ -272,7 +276,7 @@ describe.skipIf(!stackAvailable)('masters, in the private bucket (on Postgres an
     })
     expect(totalDocs).toBe(2)
     expect(docs.find((d) => d.role === 'recto')).toMatchObject({
-      storageKey: intakeMasterKey('test', batch, entries[0]!.checksum, 'cr3'),
+      storageKey: intakeMasterKey(batch, entries[0]!.checksum, 'cr3'),
       objectPpi: 312,
       intake: { verdict: 'pass', reference: 'M.9999', notes: [{ note: 'print ceiling 60 cm' }] },
     })
