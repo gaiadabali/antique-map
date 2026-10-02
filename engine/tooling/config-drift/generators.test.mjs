@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import { limiter } from './cms-scripts.mjs'
 import { runConfigDrift } from './config-drift.mjs'
-import { brandContexts, contextEnv, WITHHELD_KEYS } from './contexts.mjs'
+import { generatorEnv, WITHHELD_KEYS } from './contexts.mjs'
 import { appsWithAdminMount, realGenerators } from './generators.mjs'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url))
@@ -18,45 +18,7 @@ afterEach(() => {
   sandbox = undefined
 })
 
-/** A brand folder: README.md, and `configs` as file names under site/. */
-function brandFolder(root, name, configs) {
-  mkdirSync(join(root, name, 'site'), { recursive: true })
-  writeFileSync(join(root, name, 'README.md'), `# ${name}\n`)
-  for (const file of configs) writeFileSync(join(root, name, 'site', file), '{}\n')
-}
-
-describe('brandContexts (3.5.b)', () => {
-  it('is BRAND unset, then each brand, then each storefront of a per-storefront brand', () => {
-    sandbox = mkdtempSync(join(tmpdir(), 'cd-ctx-'))
-    brandFolder(sandbox, 'fixture-atlas', ['brand.config.json'])
-    brandFolder(sandbox, 'fixture-synthetic', ['brand.emporium.json', 'brand.gallery.json'])
-    brandFolder(sandbox, 'fixture-empty', [])
-    const contexts = brandContexts(sandbox)
-    expect(contexts.map((c) => c.label)).toEqual([
-      'BRAND unset',
-      'BRAND=fixture-atlas',
-      'BRAND=fixture-empty',
-      'BRAND=fixture-synthetic TEST_STOREFRONT=emporium',
-      'BRAND=fixture-synthetic TEST_STOREFRONT=gallery',
-    ])
-    expect(contexts[0].brandEnv).toEqual({})
-    expect(contexts[1].brandEnv).toEqual({
-      BRAND: 'fixture-atlas',
-      BRAND_ROOT: join(sandbox, 'fixture-atlas'),
-    })
-    expect(contexts[2].problem).toMatch(/no brand.config.json/)
-    expect(contexts[4].brandEnv.TEST_STOREFRONT).toBe('gallery')
-  })
-
-  it('covers every brand folder of the real repository, one context per config file', () => {
-    const contexts = brandContexts(REPO_ROOT)
-    expect(contexts[0].label).toBe('BRAND unset')
-    expect(contexts.filter((c) => c.problem)).toEqual([])
-    expect(contexts.length).toBeGreaterThanOrEqual(4) // two brands and two test storefronts
-  })
-})
-
-describe('contextEnv — no generator is given a database (3.5.b)', () => {
+describe('generatorEnv — no generator is given a database (1.3.c)', () => {
   it('withholds DATABASE_URL, secrets, brand and dev-push variables, in any case', () => {
     const parent = {
       PATH: '/bin',
@@ -69,28 +31,18 @@ describe('contextEnv — no generator is given a database (3.5.b)', () => {
       RUN_MIGRATIONS: '1',
       PGPASSWORD: 'pw',
     }
-    const env = contextEnv({ label: 'BRAND unset', brandEnv: {} }, parent)
-    expect(env).toEqual({ PATH: '/bin' })
-    const branded = contextEnv({ label: 'b', brandEnv: { BRAND: 'fixture' } }, parent)
-    expect(branded).toEqual({ PATH: '/bin', BRAND: 'fixture' })
+    expect(generatorEnv(parent)).toEqual({ PATH: '/bin' })
     expect(WITHHELD_KEYS).toContain('DATABASE_URL')
   })
 })
 
-/** Fixture scripts standing in for the CMS package's, from a table of outputs per context. */
-function fixtureScripts({ snapshots, types, maps = {}, schemaOk = true }) {
+/** Fixture scripts standing in for the CMS package's. */
+function fixtureScripts({ types, maps = {} }) {
   return {
-    schemaCheck: async () => ({ ok: schemaOk, detail: schemaOk ? 'none' : 'would write SQL' }),
-    snapshot: async (context) => snapshots[context.label],
-    payloadTypes: async (context) => types[context.label],
-    importMap: async (context, app) => maps[`${app} ${context.label}`],
+    payloadTypes: async () => types,
+    importMap: async (app) => maps[app],
   }
 }
-
-const CONTEXTS = [
-  { label: 'BRAND unset', brandEnv: {} },
-  { label: 'BRAND=fixture-atlas', brandEnv: { BRAND: 'fixture-atlas' } },
-]
 
 function repoWithTypes(text) {
   sandbox = mkdtempSync(join(tmpdir(), 'cd-gen-'))
@@ -100,58 +52,45 @@ function repoWithTypes(text) {
 }
 
 describe('realGenerators — against fixture scripts', () => {
-  it('passes when every context agrees with BRAND unset and the committed files', async () => {
+  it('passes when the types match the committed file; no admin mount is a notice', async () => {
     const root = repoWithTypes('types v1\n')
-    const scripts = fixtureScripts({
-      snapshots: { 'BRAND unset': 'snap', 'BRAND=fixture-atlas': 'snap' },
-      types: { 'BRAND unset': 'types v1\n', 'BRAND=fixture-atlas': 'types v1\n' },
-    })
-    const result = await runConfigDrift(root, realGenerators(root, { scripts, contexts: CONTEXTS }))
+    const scripts = fixtureScripts({ types: 'types v1\n' })
+    const result = await runConfigDrift(root, realGenerators(root, { scripts }))
     expect(result.violations).toEqual([])
-    expect(result.degraded).toEqual([expect.stringMatching(/^importmap: .*4\.1\.a/)])
+    expect(result.degraded).toEqual([expect.stringMatching(/^importmap: .*no admin mount/)])
   })
 
-  it('fails on a brand-shaped snapshot and on types that drifted from the committed file', async () => {
+  it('fails on types that drifted from the committed file', async () => {
     const root = repoWithTypes('types v1\n')
-    const scripts = fixtureScripts({
-      snapshots: { 'BRAND unset': 'snap', 'BRAND=fixture-atlas': 'snap + a brand-only column' },
-      types: { 'BRAND unset': 'types v2\n', 'BRAND=fixture-atlas': 'types v2\n' },
-      schemaOk: false,
-    })
-    const { violations } = await runConfigDrift(
-      root,
-      realGenerators(root, { scripts, contexts: CONTEXTS }),
-    )
-    expect(violations.map((v) => v.name)).toEqual([
-      'migration-snapshot',
-      'migration-snapshot [BRAND=fixture-atlas]',
-      'payload-types [BRAND unset]',
-      'payload-types [BRAND=fixture-atlas]',
+    const scripts = fixtureScripts({ types: 'types v2\n' })
+    const { violations } = await runConfigDrift(root, realGenerators(root, { scripts }))
+    expect(violations).toEqual([
+      {
+        name: 'payload-types',
+        path: 'engine/packages/cms/payload-types.ts',
+        detail: 'first difference at line 1: committed "types v1", regenerated "types v2"',
+      },
     ])
   })
 
-  it('runs generate:importmap per app once an app mounts the admin, against its committed map', async () => {
+  it('runs generate:importmap per app that mounts the admin, against its committed map', async () => {
     const root = repoWithTypes('types\n')
     const admin = join(root, 'engine', 'apps', 'fixture-app', 'src', 'app', '(payload)', 'admin')
     mkdirSync(admin, { recursive: true })
     writeFileSync(join(admin, 'importMap.js'), 'export const importMap = {}\n')
     expect(appsWithAdminMount(root)).toEqual(['fixture-app'])
     const scripts = fixtureScripts({
-      snapshots: { 'BRAND unset': 's', 'BRAND=fixture-atlas': 's' },
-      types: { 'BRAND unset': 'types\n', 'BRAND=fixture-atlas': 'types\n' },
-      maps: {
-        'fixture-app BRAND unset': 'export const importMap = {}\n',
-        'fixture-app BRAND=fixture-atlas': 'export const importMap = { brandOnly }\n',
-      },
+      types: 'types\n',
+      maps: { 'fixture-app': 'export const importMap = { added }\n' },
     })
-    const result = await runConfigDrift(root, realGenerators(root, { scripts, contexts: CONTEXTS }))
+    const result = await runConfigDrift(root, realGenerators(root, { scripts }))
     expect(result.degraded).toEqual([])
     expect(result.violations).toEqual([
       {
-        name: 'importmap.fixture-app [BRAND=fixture-atlas]',
+        name: 'importmap.fixture-app',
         path: 'engine/apps/fixture-app/src/app/(payload)/admin/importMap.js',
         detail:
-          'first difference at line 1: committed "export const importMap = {}", regenerated "export const importMap = { brandOnly }"',
+          'first difference at line 1: committed "export const importMap = {}", regenerated "export const importMap = { added }"',
       },
     ])
   })
@@ -167,7 +106,6 @@ describe('the CMS scripts check:generated drives (3.2.c–d)', () => {
       'payload generate:types && prettier --write --log-level warn payload-types.ts',
     )
     expect(scripts.payload).toBe('payload')
-    expect(scripts['schema:check']).toBe('payload run src/db/schema-check.ts')
     expect(scripts['generate:importmap']).toBe('payload run src/registries/import-map.ts')
   })
 })
