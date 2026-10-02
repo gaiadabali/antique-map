@@ -7,6 +7,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./normalise": "./src/normalise/index.ts",
+    "./redirects": "./src/redirects/index.ts",
     "./sources/*": "./src/sources/*/index.ts"
   },
   "scripts": {
