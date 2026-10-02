@@ -10,12 +10,27 @@ import { PRINTABLE_RIGHTS, type RightsStatus } from '../collections/works/vocabu
 /**
  * Works are the gallery's alone, so their ids are the gallery's: the uid prefix the gallery's
  * brand config held, `IG`, and its stock numbers — `M.1044`, `P.2098`, `F.…` (CONTENT-MODEL.md §3).
- * Constants now that no brand config is loaded (TASKS.md 2.4.c); 3.2.b replaces the uid with
- * `publicId`.
+ * Constants now that no brand config is loaded (TASKS.md 2.4.c); the 2.2 merge points them at
+ * `SITES.gallery.works` (`uidPrefix`, `stockNumberPattern`).
  */
-// TODO(2.2): read SITES.gallery.works (`uidPrefix`, `stockNumberPattern`) once 2.2 has merged.
+// TODO(2.2-merge): read SITES.gallery.works (`uidPrefix`, `stockNumberPattern`) once 2.2 has merged.
 export const WORK_UID_PREFIX = 'IG'
 export const STOCK_NUMBER_PATTERN = '^[MPF]\\.[A-Za-z0-9]+$'
+
+/** The first `works.publicId` a sequence starts at (DATA.md §3): the old site's ids sit below it. */
+export const PUBLIC_ID_FLOOR = 100_000
+
+/**
+ * The next `publicId`: one above the highest in use, never below the floor (TASKS.md 3.2.b).
+ * A migrated work keeps the old site's id — the importer hands it over — so `currentMax` may sit
+ * below the floor and the floor is what follows it.
+ */
+export function nextPublicId(currentMax: number | null): number {
+  if (currentMax !== null && (!Number.isSafeInteger(currentMax) || currentMax < 0)) {
+    throw new TypeError(`not a public id it could have followed: ${currentMax}`)
+  }
+  return Math.max((currentMax ?? 0) + 1, PUBLIC_ID_FLOOR)
+}
 
 /**
  * `<prefix>-<digits>` — the prefix `^[A-Z][A-Z0-9]{1,7}$`, the digits at least six.

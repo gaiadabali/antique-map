@@ -16,7 +16,6 @@ import { Makers } from '../collections/makers'
 import { Masters } from '../collections/masters'
 import { Media } from '../collections/media'
 import { Places } from '../collections/places'
-import { Sources } from '../collections/sources'
 import { Stores } from '../collections/stores'
 import { Terms } from '../collections/terms'
 import { Users } from '../collections/users'
@@ -30,7 +29,6 @@ const COLLECTIONS: readonly CollectionConfig[] = [
   Makers,
   Places,
   Terms,
-  Sources,
   Media,
   Masters,
 ]

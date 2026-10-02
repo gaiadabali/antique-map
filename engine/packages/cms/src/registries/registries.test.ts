@@ -60,17 +60,7 @@ describe('registry entries', () => {
 })
 
 /** The collections the config holds after TASKS.md 2.4: the stubs and their frozen order are gone. */
-const SLUGS = [
-  'users',
-  'stores',
-  'works',
-  'makers',
-  'places',
-  'terms',
-  'sources',
-  'media',
-  'masters',
-]
+const SLUGS = ['users', 'stores', 'works', 'makers', 'places', 'terms', 'media', 'masters']
 
 describe('the registered collections', () => {
   it('are the built collections, in the sidebar order, and no global yet', () => {

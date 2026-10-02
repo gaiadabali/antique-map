@@ -40,6 +40,15 @@ export const TRANSLATION_STATES = ['entered', 'machine', 'reviewed'] as const
 const label = (value: string) => value.charAt(0).toUpperCase() + value.slice(1).replace('-', ' ')
 const plain = (values: readonly string[]) => values.map((value) => ({ value, label: label(value) }))
 
+/**
+ * What the image is an image **of** (CONTENT-MODEL.md §5's subject table; TASKS.md 3.2.e): work,
+ * product, store or other. Set once, at intake, with the role — the two decide together what a
+ * work may show and what store staff may read (work images are the gallery's alone).
+ */
+export const MEDIA_SUBJECTS = ['work', 'product', 'store', 'other'] as const
+export type MediaSubject = (typeof MEDIA_SUBJECTS)[number]
+export const SUBJECT_OPTIONS = plain(MEDIA_SUBJECTS)
+
 export const MEDIA_FIELDS: Field[] = [
   {
     name: 'alt',
@@ -76,6 +85,16 @@ export const MEDIA_FIELDS: Field[] = [
   { name: 'caption', type: 'textarea', localized: true },
   { name: 'credit', type: 'text' },
   { name: 'licence', type: 'text' },
+  {
+    name: 'subject',
+    type: 'select',
+    required: true,
+    options: SUBJECT_OPTIONS,
+    admin: {
+      description:
+        'What it is an image of — a work, a product, a store, or something else. Set at intake, with the role.',
+    },
+  },
   {
     name: 'role',
     type: 'select',

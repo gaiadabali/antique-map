@@ -34,7 +34,7 @@ describe.skipIf(!server)('works on a real database', () => {
     makers: [{ maker: ids.maker, role: 'cartographer', certainty: 'attributed' }],
     places: [{ place: ids.place, role: 'depicts', primary: true }],
     subjects: [ids.subject],
-    references: [{ source: ids.source, ref: '1268' }],
+    references: [{ citation: 'Tooley (Australia) 1268' }],
     condition: { grade: ids.grade, notes: 'Light toning.' },
     images: [{ media: recto }, { media: verso, caption: 'Verso: blank' }],
     dimensions: { image: { height: 280, width: 360 }, sheet: { height: 310, width: 400 } },
@@ -50,6 +50,9 @@ describe.skipIf(!server)('works on a real database', () => {
     const second = await stack.api.create({ collection: 'works', data: { title: 'Another' } })
     expect(first.workUid).toMatch(/^IG-\d{6}$/)
     expect(Number(String(second.workUid).slice(3))).toBe(Number(String(first.workUid).slice(3)) + 1)
+    // The public id: the sequence starts at 100000 and never looks back (DATA.md §3).
+    expect(first.publicId).toBeGreaterThanOrEqual(100_000)
+    expect(second.publicId).toBe((first.publicId as number) + 1)
     const stored = await stack.api.findByID({
       collection: 'works',
       id: first.id,
@@ -58,10 +61,27 @@ describe.skipIf(!server)('works on a real database', () => {
     })
     expect(stored).toMatchObject({
       _status: 'draft',
+      status: 'available',
+      publicId: first.publicId,
       date: { precision: 'circa', from: 1726 },
       images: [{ media: recto }, { media: verso, caption: 'Verso: blank' }],
+      references: [{ citation: 'Tooley (Australia) 1268' }],
       physical: { exportStatus: null },
     })
+  })
+
+  it('keeps its public id for ever, and takes the old site’s id from a script', async () => {
+    const work = await stack.api.create({ collection: 'works', data: { title: 'Kept' } })
+    const errors = await refusedWith(() =>
+      stack.api.update({ collection: 'works', id: work.id, data: { publicId: 999_999 } }),
+    )
+    expect(errors).toEqual({ publicId: expect.stringMatching(/keeps its public id for ever/) })
+    // The migration importer: a script, no one signed in, handing over the old site's product id.
+    const migrated = await stack.api.create({
+      collection: 'works',
+      data: { title: 'From the old site', publicId: 4211 },
+    })
+    expect(migrated.publicId).toBe(4211)
   })
 
   it('gives two works saved at once two uids', async () => {
@@ -173,11 +193,19 @@ describe.skipIf(!server)('works on a real database', () => {
       'images.0.media': expect.stringMatching(/An AI drafted this image’s description/),
     })
     const unchecked = await refusedWith(() =>
-      publish({ ...complete(), cataloguing: { aiDraft: ['title'] } }),
+      publish({ ...complete(), cataloguing: { aiDraft: { title: { drafted: true } } } }),
     )
     expect(unchecked).toEqual({
       'cataloguing.aiDraft': expect.stringMatching(/An AI drafted Title/),
     })
+    // The same field, verified — who and when recorded: it no longer blocks the publish.
+    const work = await publish({
+      ...complete(),
+      cataloguing: {
+        aiDraft: { title: { drafted: true, verifiedAt: '2026-09-01T00:00:00.000Z' } },
+      },
+    })
+    expect(work._status).toBe('published')
   })
 
   it('takes a grade from the grade vocabulary only', async () => {
@@ -185,5 +213,44 @@ describe.skipIf(!server)('works on a real database', () => {
       stack.api.create({ collection: 'works', data: { condition: { grade: ids.subject } } }),
     )
     expect(Object.keys(errors)).toEqual(['condition.grade'])
+  })
+
+  /** Publishing a complete work but for the one field taken out. */
+  const publishMissing = async (leaveOut: (work: object) => object) =>
+    refusedWith(() => publish(leaveOut(complete())))
+
+  it('refuses publishing a work missing its title, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, title: '  ' }))
+    expect(errors.title).toMatch(/[Tt]itle/)
+    expect(errors.title).toMatch(/judul/)
+  })
+
+  it('refuses publishing a work missing its object type, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, objectType: null }))
+    expect(errors.objectType).toMatch(/[Oo]bject type|jenis/)
+  })
+
+  it('refuses publishing a work missing its date, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, date: { from: 1726 } }))
+    expect(errors['date.precision']).toMatch(/[Dd]ate|tanggal/)
+  })
+
+  it('refuses publishing a work whose primary image lacks an alt text a person checked', async () => {
+    const drafted = await stack.media('recto', 'photograph', { altSource: 'ai-draft' })
+    const errors = await publishMissing((work) => ({ ...work, images: [{ media: drafted }] }))
+    expect(errors['images.0.media']).toMatch(/AI drafted this image’s description/)
+  })
+
+  it('refuses publishing a work missing a primary image at all, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, images: [{ media: verso }] }))
+    expect(errors.images).toMatch(/whole front|photograph/)
+  })
+
+  it('refuses publishing a work missing its condition grade, and names the field', async () => {
+    const errors = await publishMissing((work) => ({
+      ...work,
+      condition: { notes: 'Light toning.' },
+    }))
+    expect(errors['condition.grade']).toMatch(/[Gg]rade|kondisi/)
   })
 })
