@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 14/33 | 0 | `████░░░░░░`  42% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 17/33 | 0 | `█████░░░░░`  52% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 5/18 | 0 | `███░░░░░░░`  28% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **77/200** | **8** | `████░░░░░░`  39% |
+| **All** | 11 phases | | | **9/49** | **80/200** | **8** | `████░░░░░░`  40% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -384,9 +384,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** SECURITY.md §2.2, CONTENT-MODEL.md §7
   - _Requirements: 1.3, 2.5, 8.2, 11.1_
   - [x] 3.5.a generate the wave's migration once, in a clean worktree on merged `main`; regenerate `payload-types.ts` and `importMap.js`; add to the initial set only if the reset is not yet released
-  - [ ] 3.5.b enforce `owner`, `editor` and `store` in collection and field access with `overrideAccess:false` helpers: editors manage catalogue, content and orders; leads, partners, discounts, settings and `askingPrice` are owner-only; `store` users get a `Where` rule on their store's orders and stock
-  - [ ] 3.5.c an order status can only move forward for a store user; `ValidationError` messages stay plain on every path (the 8.6 finding)
-  - [ ] 3.5.d from the phase 2 reviews: `payload-locked-documents` gets owner/editor-only access (today any signed-in user, store users included, can list and delete locks across collections); role and store changes are recorded (SECURITY R7); REST tests prove a store user and an editor cannot change their own `role` or `store`
+  - [x] 3.5.b enforce `owner`, `editor` and `store` in collection and field access with `overrideAccess:false` helpers: editors manage catalogue, content and orders; leads, partners, discounts, settings and `askingPrice` are owner-only; `store` users get a `Where` rule on their store's orders and stock
+  - [x] 3.5.c an order status can only move forward for a store user; `ValidationError` messages stay plain on every path (the 8.6 finding)
+  - [x] 3.5.d from the phase 2 reviews: `payload-locked-documents` gets owner/editor-only access (today any signed-in user, store users included, can list and delete locks across collections); role and store changes are recorded (SECURITY R7); REST tests prove a store user and an editor cannot change their own `role` or `store`
   - [ ] 3.5.e **Check:** db tests prove: a store user cannot read, update or list another store's order or stock (by id and by query); an editor cannot read a lead; an anonymous request reads only published, projected fields; the last owner cannot be removed.
 
 - [ ] **3.6 The admin experience: both languages, plain errors, a dashboard shell** · needs: 3.2, 3.3, 3.4 — 🔄 3·W2
