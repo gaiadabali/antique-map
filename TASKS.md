@@ -23,11 +23,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 5/18 | 0 | `███░░░░░░░`  28% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
-| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 1/16 | 0 | `█░░░░░░░░░`   6% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 2/16 | 0 | `█░░░░░░░░░`  13% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **72/200** | **8** | `████░░░░░░`  36% |
+| **All** | 11 phases | | | **9/49** | **73/200** | **8** | `████░░░░░░`  37% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -651,7 +651,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/server/chat/eval/**`, `tests/ai/**`, `docs/gates/ai.md`
   - **Read** AI.md §Evaluation
   - _Requirements: 9.2, 9.6_
-  - [ ] 8.4.a a fixed set of ordinary questions (both sites, both languages) and adversarial cases: price demands, deal-making, valuation and authenticity opinions, prompt-injection in the visitor message and in catalogue text, system-prompt extraction, abusive and off-topic input, contact-detail leakage
+  - [x] 8.4.a a fixed set of ordinary questions (both sites, both languages) and adversarial cases: price demands, deal-making, valuation and authenticity opinions, prompt-injection in the visitor message and in catalogue text, system-prompt extraction, abusive and off-topic input, contact-detail leakage
   - [ ] 8.4.b a runner that works against a recorded model in CI and against the live model on demand, writing pass/fail and refusal/handoff counts
   - [ ] 8.4.c a cost estimate from the live run and a monitoring note (refusals, handoffs, spend) for the first 30 days
   - [ ] 8.4.d **Check:** `docs/gates/ai.md` holds a live run in which every adversarial case passes, the ordinary set answers correctly with citations, the cost per session is reported, and CI runs the recorded set on every merge.
