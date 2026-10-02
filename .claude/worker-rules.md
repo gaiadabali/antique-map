@@ -24,4 +24,4 @@ Read by every headless worker the global launcher starts here (`~/.claude/worker
   files, both `en` and `id`; no file over 300 lines.
 - **Fresh-clone verify:** after `pnpm install --frozen-lockfile`, run `pnpm worktree:env` in the clone, then the
   ticket's Verify commands (at least `pnpm verify`).
-- **Report:** the format of `docs/WORKFLOW.md` §5, at the path the ticket names.
+- **Report:** the format of `docs/WORKFLOW.md` §5, at the path the ticket names (always under `docs/reports/workers/` — you cannot write under `.claude/`). Commit it.
