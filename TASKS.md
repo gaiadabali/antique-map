@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 13/33 | 0 | `████░░░░░░`  39% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 5/18 | 0 | `███░░░░░░░`  28% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
-| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 1/16 | 0 | `█░░░░░░░░░`   6% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 4/16 | 0 | `███░░░░░░░`  25% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **66/200** | **8** | `███░░░░░░░`  33% |
+| **All** | 11 phases | | | **9/49** | **70/200** | **8** | `████░░░░░░`  35% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -91,6 +91,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
 | 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
 | 9·W1 | 9.2 First-party analytics and the dashboard | senior-be | `w/9.2a` | 2026-10-03 | |
+| 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db | `w/3.5` | 2026-10-03 | |
+| 8·W3 | 8.4 The safety evaluation and the red-team set | qa | `w/8.4a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -373,7 +375,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.4.c `pages` and `redirects` carry a `site`; the `site-settings` global holds, per site, the WhatsApp number and hours, email, delivery-fee bands, the free-shipping threshold and the AI flags
   - [ ] 3.4.d **Check:** db tests prove: a lead without a kind is refused; `leads`, `partners` and `site-settings` are readable only by the owner; a redirect's `from` is unique per site.
 
-- [ ] **3.5 Schema lead: the migration, roles and access** · needs: 3.2, 3.3, 3.4
+- [ ] **3.5 Schema lead: the migration, roles and access** · needs: 3.2, 3.3, 3.4 — 🔄 3·W2
   - **Lane** CMS · **Agent** senior-db, **opus**, second reviewer senior-be · **Wave** W2
   - **Owns** `engine/packages/cms/src/{migrations,access,db}/**`, `engine/packages/cms/src/payload-types.ts`
   - **Read** SECURITY.md §2.2, CONTENT-MODEL.md §7
@@ -546,9 +548,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/shop/payments/**`, `engine/apps/web/src/app/api/x/{webhooks,cron}/**`
   - **Read** COMMERCE.md §Payment, SECURITY.md §Webhooks, OA7
   - _Requirements: 6.3, 6.4, 6.5_
-  - [ ] 6.4.a a Midtrans Snap adapter (QRIS, virtual account, card) behind a small interface, and a simulator selected by `MIDTRANS_MODE=simulate` that needs no credential; production refuses the simulator
-  - [ ] 6.4.b the webhook: verifies the signature, then in one transaction records the event in `payment-events` (unique dedupe key) and moves the order; a replay is a 200 with no change; a late payment on an expired order is flagged for staff, never silently applied
-  - [ ] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
+  - [x] 6.4.a a Midtrans Snap adapter (QRIS, virtual account, card) behind a small interface, and a simulator selected by `MIDTRANS_MODE=simulate` that needs no credential; production refuses the simulator
+  - [x] 6.4.b the webhook: verifies the signature, then in one transaction records the event in `payment-events` (unique dedupe key) and moves the order; a replay is a 200 with no change; a late payment on an expired order is flagged for staff, never silently applied
+  - [x] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
   - [ ] 6.4.d **Check:** tests prove: a bad signature is rejected; the same webhook ten times in parallel changes the order once; an expired order's stock returns exactly once; a settled payment moves the order to `paid` and stores the paid amount.
 
 - [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4
@@ -618,7 +620,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/server/chat/**`, `engine/apps/web/src/app/api/x/chat/**`
   - **Read** AI.md (all), SECURITY.md §AI, OA8, Q7
   - _Requirements: 9.1, 9.2, 9.3, 9.4_
-  - [ ] 8.1.a the streaming route on the Claude API with the key host-only and model ids in env; a per-site persona and bilingual system prompt; Turnstile on chat start; per-IP and per-session limits; input length limits; a refused question goes to a handoff, not to another model
+  - [x] 8.1.a the streaming route on the Claude API with the key host-only and model ids in env; a per-site persona and bilingual system prompt; Turnstile on chat start; per-IP and per-session limits; input length limits; a refused question goes to a handoff, not to another model
   - [ ] 8.1.b the read-only tools — `search_catalogue`, `get_item`, `store_info`, `delivery_info` — whose projections never contain a price for an antique, an internal field or another visitor's data; `handoff_link` builds a `wa.me` or `mailto:` link with the subject and item attached
   - [ ] 8.1.c `create_lead` only after an explicit consent click in the UI (the model never sees the contact details, which are masked before reaching it); a transcript is stored in `chat-sessions` and expires after the retention period
   - [ ] 8.1.d cost caps per session and per day with a kill switch in `site-settings`; output checks (no markup, links only to our domains, `wa.me`, `mailto:`)
@@ -643,7 +645,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 8.3.c the publish guard from 3.2.c refuses while any drafted field is unverified, naming the fields
   - [ ] 8.3.d **Check:** with a test model, drafting fills fields marked unverified; publishing is refused until each is verified; a draft never writes grade, provenance or price; the tool is owner/editor only.
 
-- [ ] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2
+- [ ] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2 — 🔄 8·W3
   - **Lane** AIX + QA · **Agent** senior-integrator, qa · **Wave** W3
   - **Owns** `engine/apps/web/src/server/chat/eval/**`, `tests/ai/**`, `docs/gates/ai.md`
   - **Read** AI.md §Evaluation

@@ -68,6 +68,9 @@ importers:
       '@engine/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@engine/migrate':
+        specifier: workspace:*
+        version: link:../../packages/migrate
       '@engine/view-models':
         specifier: workspace:*
         version: link:../../packages/view-models
