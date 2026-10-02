@@ -16,8 +16,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 0/4 | 6/20 | 1 | `███░░░░░░░`  30% |
-| **2** One app, one database, two hosts | Foundation | 1 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 0/4 | 12/20 | 1 | `██████░░░░`  60% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **0/48** | **6/194** | **9** | `░░░░░░░░░░`   3% |
+| **All** | 11 phases | | | **0/48** | **12/194** | **9** | `█░░░░░░░░░`   6% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -80,6 +80,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 1·W1 | 1.2 Merge Works (8.2) so later steps simplify it in place | senior-db | `feat/1.2-works` | 2026-10-02 | |
 | 1·W1 | 1.1 Triage the work in flight and protect the data | devops | `worktree-agent-acdeee22b96e4b154` | 2026-10-02 | |
+| 1·W3 | 1.4 Delete the contracts, the placeholders and the dead collections | medior | `feat/1.4-contracts` | 2026-10-02 | |
+| 1·W2 | 1.3 Drop the brand-era gates and slim the board tooling | medior | `feat/1.3-gates` | 2026-10-02 | |
+| 2·W1 | 2.1 One app: rename, merge and re-point the build | senior-fe | `feat/2.1-one-app` | 2026-10-02 | |
 
 ## Decisions for the owner
 
@@ -230,24 +233,24 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 1.2.d merge to `main` in a clean worktree and re-run `pnpm verify`
   - [ ] 1.2.e **Check:** on merged `main` the `works` collection saves with validation in the admin, an incomplete work is refused on publish with a plain reason, and the db tests pass.
 
-- [ ] **1.3 Drop the brand-era gates and slim the board tooling** · needs: 1.2
+- [ ] **1.3 Drop the brand-era gates and slim the board tooling** · needs: 1.2 — 🔄 1·W2
   - **Lane** OPS · **Agent** medior · **Wave** W2
   - **Owns** `engine/tooling/**`, root `package.json`, `eslint.config.mjs`, `.github/workflows/ci.yml`, `.githooks/**`
   - **Read** CARRY-OVER.md §2.3 and §4, CONVENTIONS.md
   - _Requirements: 1.5_
-  - [ ] 1.3.a remove `lint:brand-literals`, `check:brands`, `check:routes`, `brand:create`, `schema-hash`, `bundle-scan`, `next-config-parity` and `dev` from `verify`, CI and the repo; in the same commit delete the `eslint.config.mjs` fences that import them; keep `check-brands`' idea as a unit test that every message key has an `en` and an `id` value
-  - [ ] 1.3.b replace `check:client-safe` with `import 'server-only'` at the top of every module under `apps/web/src/server/**` (not in `@engine/cms`, which the Payload CLI loads in plain Node), plus one ESLint import rule (apps import Payload only under `src/server/**` and `(payload)`; packages never import apps; no `next/link` or `next/form` prefetch)
-  - [ ] 1.3.c cut `check:generated` to one context (regenerate `payload-types.ts` and `importMap.js`, fail on a diff); keep `check:filesize`
-  - [ ] 1.3.d slim `tasks-lint`: keep unique ids, `needs` that resolve, a Check last in every task, Owns overlap inside a wave and requirements coverage; drop lane codes and per-phase size limits
+  - [x] 1.3.a remove `lint:brand-literals`, `check:brands`, `check:routes`, `brand:create`, `schema-hash`, `bundle-scan`, `next-config-parity` and `dev` from `verify`, CI and the repo; in the same commit delete the `eslint.config.mjs` fences that import them; keep `check-brands`' idea as a unit test that every message key has an `en` and an `id` value
+  - [x] 1.3.b replace `check:client-safe` with `import 'server-only'` at the top of every module under `apps/web/src/server/**` (not in `@engine/cms`, which the Payload CLI loads in plain Node), plus one ESLint import rule (apps import Payload only under `src/server/**` and `(payload)`; packages never import apps; no `next/link` or `next/form` prefetch)
+  - [x] 1.3.c cut `check:generated` to one context (regenerate `payload-types.ts` and `importMap.js`, fail on a diff); keep `check:filesize`
+  - [x] 1.3.d slim `tasks-lint`: keep unique ids, `needs` that resolve, a Check last in every task, Owns overlap inside a wave and requirements coverage; drop lane codes and per-phase size limits
   - [ ] 1.3.e **Check:** `pnpm verify` is green on `main` with only `format:check`, `lint`, `typecheck`, `test`, `check:filesize`, `check:generated`, `tasks:lint` and `tasks:check`; a planted file over 300 lines, a planted `import 'payload'` in a page and a planted second `**Check:**` each fail.
 
-- [ ] **1.4 Delete the contracts, the placeholders and the dead collections** · needs: 1.3
+- [ ] **1.4 Delete the contracts, the placeholders and the dead collections** · needs: 1.3 — 🔄 1·W3
   - **Lane** PLT · **Agent** medior · **Wave** W3
   - **Owns** `engine/packages/{domain,payments,shipping,fulfilment,sister,analytics,ui,view-models}/**`, `engine/apps/*/src/app/**` placeholders and `engine/apps/*/src/spike/**`, `engine/packages/http/src/{unbuilt,cron}/**`, `engine/packages/CONTRACTS.md`
   - **Read** CARRY-OVER.md §2.1, §2.2 and §3 step 3
   - _Requirements: 1.5_
-  - [ ] 1.4.a trim `view-models` to the kept subset (record, condition, fuzzy date, dimensions, image, cards, listing, discovery, editorial, blocks, shell); add a ten-line `Money` type to `i18n`
-  - [ ] 1.4.b delete `domain`, `payments`, `shipping`, `fulfilment`, `sister`, `analytics`, `ui` and `CONTRACTS.md` (archive a copy)
+  - [x] 1.4.a trim `view-models` to the kept subset (record, condition, fuzzy date, dimensions, image, cards, listing, discovery, editorial, blocks, shell); add a ten-line `Money` type to `i18n`
+  - [x] 1.4.b delete `domain`, `payments`, `shipping`, `fulfilment`, `sister`, `analytics`, `ui` and `CONTRACTS.md` (archive a copy)
   - [ ] 1.4.c delete the 36 placeholder route mounts in each app, their http manifest rows, the cron stubs, the `brand-assets` mount and the gallery's `src/spike/` (keep the findings in `docs/spikes/cache-components.md`)
   - [ ] 1.4.d **Check:** `pnpm typecheck`, `pnpm build` for both apps and `pnpm verify` are green; a search finds no import of a deleted package; `engine/packages` lists exactly `cms config http media i18n cache migrate view-models`.
 
@@ -259,7 +262,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** `pnpm dev` serves `gallery.localhost:3000` and `shop.localhost:3000` from one process with two different placeholder home pages, in English and Indonesian; an unknown host is a 404; `/admin` answers only on the admin host; one initial migration builds the database; no `BRAND`, `brand.config.json` or brand directory remains; `pnpm verify` and a production build with no database variables are green.
 **Waves:** W1 — 2.1 · W2 — 2.2, 2.3 · W3 — 2.4
 
-- [ ] **2.1 One app: rename, merge and re-point the build** · needs: phase 1
+- [ ] **2.1 One app: rename, merge and re-point the build** · needs: phase 1 — 🔄 2·W1
   - **Lane** PLT + OPS · **Agent** senior-fe, with devops for CI · **Wave** W1
   - **Owns** `engine/apps/**`, `.github/**`, `.gaiadeploy.yml`, `playwright.config.ts`, `lighthouserc.*.json`, root `package.json`, `scripts/ops/lib/**`
   - **Read** CARRY-OVER.md §2.2, §2.4 and §3 step 4, ARCHITECTURE.md §Topology
