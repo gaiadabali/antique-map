@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Legacy URL discovery for a brand's old domain (MIGRATION.md §10).
 //
-//   node <this file> fetch-cdx  --site <brand>/content/legacy/discovery.json [--refresh] [--interval-ms 1500]
+//   node <this file> fetch-cdx  --site engine/packages/migrate/data/<site>/discovery.json [--refresh] [--interval-ms 1500]
 //   node <this file> fetch-sitemaps --site …   (the archived sitemaps, via Wayback playback)
 //   node <this file> import-gsc --site … --file Pages.csv [--from YYYY-MM-DD --to YYYY-MM-DD]
 //   node <this file> build      --site …

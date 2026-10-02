@@ -1,7 +1,7 @@
 /**
  * The reader's configuration. Everything store-specific — the origin, the
- * route shapes, the paths never to request — is data, read from the brand's
- * `content/legacy/inventory/` folder or given on the command line; this file
+ * route shapes, the paths never to request — is data, read from the site's
+ * `data/<site>/inventory/` folder or given on the command line; this file
  * holds only the rules any configuration must satisfy (D41).
  */
 

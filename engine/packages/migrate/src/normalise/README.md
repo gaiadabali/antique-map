@@ -37,8 +37,8 @@ tables because this package does not depend on `@engine/config`.
 
 **Store wording is data.** The defaults hold no store's phrase: the D10 scale,
 USD, "On Request"/"Price on Request", "-" for no price, "Unknown" as a
-placeholder, the public read's panel labels. A brand's
-`content/legacy/mapping/normalise.json` adds its condition boilerplate, SEO
+placeholder, the public read's panel labels. A site's
+`data/<site>/mapping/normalise.json` adds its condition boilerplate, SEO
 suffixes, SKU prefixes, grade aliases and colour mapping; `parseTables`
 refuses an unknown key or a wrong shape.
 

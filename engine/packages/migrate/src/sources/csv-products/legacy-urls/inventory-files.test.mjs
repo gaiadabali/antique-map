@@ -1,6 +1,6 @@
-// Every committed legacy URL inventory this tool wrote — any brand folder with
-// `content/legacy/discovery.json` — is well-formed and carries nothing
-// personal. Brands are found on disk; none is named here (CONVENTIONS.md §1).
+// Every committed legacy URL inventory this tool wrote — any site folder under
+// this package's `data/` with a `discovery.json` — is well-formed and carries
+// nothing personal. Sites are found on disk; none is named here (CONVENTIONS.md §1).
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, URLSearchParams } from 'node:url'
@@ -11,19 +11,19 @@ import { KINDS } from './classify-path.mjs'
 import { parseCsv } from './csv.mjs'
 import { INVENTORY_COLUMNS } from './inventory.mjs'
 
-const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../../..')
-const brands = readdirSync(REPO, { withFileTypes: true })
+const DATA = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../data')
+const sites = readdirSync(DATA, { withFileTypes: true })
   .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
-  .map((entry) => join(REPO, entry.name, 'content', 'legacy'))
+  .map((entry) => join(DATA, entry.name))
   .filter((dir) => existsSync(join(dir, 'discovery.json')))
 
 describe('committed legacy URL inventories', () => {
-  it('exist for at least one brand', () => {
-    expect(brands.length).toBeGreaterThan(0)
+  it('exist for at least one site', () => {
+    expect(sites.length).toBeGreaterThan(0)
   })
 
-  for (const dir of brands) {
-    const label = dir.slice(REPO.length + 1).split(/[\\/]/)[0]
+  for (const dir of sites) {
+    const label = dir.slice(DATA.length + 1).split(/[\\/]/)[0]
     it(`${label}: every row is distinct, sorted, classified and sourced`, () => {
       const [header, ...rows] = parseCsv(readFileSync(join(dir, 'inventory', 'urls.csv'), 'utf8'))
       expect(header).toEqual(INVENTORY_COLUMNS)

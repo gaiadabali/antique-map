@@ -28,11 +28,11 @@ the category tree, and the raw URL list with referrer counts.
 ```sh
 cd engine/packages/migrate
 # read (resumes from the cache: nothing already fetched is asked for again; Ctrl-C stops cleanly)
-pnpm legacy:public-read crawl --config ../../../indies-gallery/content/legacy/inventory/public-read.json \
-  --inventory-out ../../../indies-gallery/content/legacy/inventory
+pnpm legacy:public-read crawl --config data/gallery/inventory/public-read.json \
+  --inventory-out data/gallery/inventory
 # rebuild the records and this inventory from the cache alone — no network
-pnpm legacy:public-read build --config ../../../indies-gallery/content/legacy/inventory/public-read.json \
-  --inventory-out ../../../indies-gallery/content/legacy/inventory
+pnpm legacy:public-read build --config data/gallery/inventory/public-read.json \
+  --inventory-out data/gallery/inventory
 ```
 
 The export (OA9), when it arrives, adds what no public page shows — the

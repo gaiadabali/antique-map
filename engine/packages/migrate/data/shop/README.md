@@ -84,13 +84,13 @@ From the repo root, in a worktree whose `.env.local` sets `LEGACY_DATA_DIR`:
 
 ```sh
 # the archive (resumes from the cache; --refresh refetches)
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-cdx --site old-east-indies/content/legacy/discovery.json
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-cdx --site engine/packages/migrate/data/shop/discovery.json
 
 # the archived sitemaps, through Wayback playback (resumes from the cache)
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-sitemaps --site old-east-indies/content/legacy/discovery.json
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-sitemaps --site engine/packages/migrate/data/shop/discovery.json
 
 # rebuild from the cache alone, no network
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs build --site old-east-indies/content/legacy/discovery.json
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs build --site engine/packages/migrate/data/shop/discovery.json
 ```
 
 ## When the Search Console export arrives (OA11)
@@ -102,7 +102,7 @@ the longest available (16 months), opens the **Pages** tab, and chooses
 in the UI:
 
 ```sh
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs import-gsc --site old-east-indies/content/legacy/discovery.json --file ~/Downloads/Pages.csv --from 2025-05-30 --to 2026-09-29
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs import-gsc --site engine/packages/migrate/data/shop/discovery.json --file ~/Downloads/Pages.csv --from 2025-05-30 --to 2026-09-29
 ```
 
 Expected columns: `Top pages, Clicks, Impressions, CTR, Position` (the

@@ -21,11 +21,11 @@ copy the owner hands over (MIGRATION.md §3).
 ```sh
 cd engine/packages/migrate
 pnpm legacy:mysql restore <path/to/dump.sql[.gz]>          # container migrate-legacy-catalogue
-pnpm legacy:mysql schema --notes ../../../indies-gallery/content/legacy/schema/catalogue-schema.md --title "Old catalogue schema"
+pnpm legacy:mysql schema --notes data/gallery/schema/catalogue-schema.md --title "Old catalogue schema"
 pnpm legacy:mysql tables                                    # every table as JSON Lines, secrets left out
-# write indies-gallery/content/legacy/schema/queries/*.sql against the real columns
+# write engine/packages/migrate/data/gallery/schema/queries/*.sql against the real columns
 # (start from the mock's), then:
-pnpm legacy:mysql extract --queries ../../../indies-gallery/content/legacy/schema/queries
+pnpm legacy:mysql extract --queries data/gallery/schema/queries
 pnpm legacy:mysql destroy
 ```
 

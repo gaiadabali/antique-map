@@ -2,7 +2,7 @@
  * The tables the normalisers read. Everything one store says its own way — the
  * wording of its condition scale, its SKU prefixes, the SEO phrases it tacked
  * onto titles, how it wrote colouring, the labels on its product pages — is
- * data in the brand's `content/legacy/` folder, passed in here (MIGRATION.md
+ * data in the site's `data/<site>/` folder, passed in here (MIGRATION.md
  * §4: engine code is source-shaped, never brand-shaped). The defaults are
  * neutral: the D10 grading scale, US dollars, "On Request", and no
  * store-specific phrase at all — so with the defaults, anything store-specific
