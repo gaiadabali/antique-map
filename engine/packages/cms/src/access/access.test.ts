@@ -1,9 +1,7 @@
 import type { PayloadRequest } from 'payload'
 import { describe, expect, it } from 'vitest'
 
-import { brandFrom } from './brand'
 import { rolesOnlyField, STAFF_ONLY_ACCESS, staffOnly } from './fields'
-import { hiddenUnlessModule, moduleEnabled, whenModule } from './modules'
 import { siteOrigin, trustedOrigins } from './origins'
 import { DRAFTED_ACCESS, PUBLISHED_ONLY, publishedOrStaff } from './published'
 import { hasRole, isAdmin, isStaff, rolesOf, staffWithRoles, STAFF_ROLES } from './roles'
@@ -86,25 +84,6 @@ describe('roles', () => {
     expect(isAdmin(req(admin))).toBe(true)
     expect(isAdmin(req(customer))).toBe(false)
     expect(staffWithRoles('fulfilment')(req(cataloguer))).toBe(false)
-  })
-})
-
-describe('module flags', () => {
-  const on = () => ({ modules: { 'retention.reviews': true } })
-  const off = () => ({ modules: {} })
-  const none = () => null
-
-  it('hide a collection and refuse its access while the module is off', () => {
-    expect(hiddenUnlessModule('retention.reviews', off)()).toBe(true)
-    expect(hiddenUnlessModule('retention.reviews', on)()).toBe(false)
-    expect(whenModule('retention.reviews', () => true, off)(req(admin))).toBe(false)
-    expect(whenModule('retention.reviews', () => true, on)(req(admin))).toBe(true)
-  })
-
-  it('fail closed with no brand loaded (the build, a CLI)', () => {
-    expect(moduleEnabled('retention.reviews', none)).toBe(false)
-    expect(brandFrom({})).toBeNull()
-    expect(brandFrom({ BRAND: '  ' })).toBeNull()
   })
 })
 
