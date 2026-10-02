@@ -1,7 +1,7 @@
 /**
  * The idempotency area's engine tables (TASKS.md 3.2.e, 3.2.g; 17.1.b amends additively).
- * `idempotency_keys` proves the DDL seam. Its shape is the one `@engine/domain/storage` (C5–C8)
- * asks the database to enforce:
+ * `idempotency_keys` proves the DDL seam. Its shape is the one the old C5–C8 contracts (archived in
+ * `docs/archive/2026-10-replan/`) asked the database to enforce:
  *
  * - `(operation, key)` unique — the caller is NOT in the key, so another caller's reuse meets the
  *   row instead of starting afresh. A unique constraint over NOT NULL columns, not a composite

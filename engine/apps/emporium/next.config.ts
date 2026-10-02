@@ -26,7 +26,6 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     '@engine/cms',
     '@engine/config',
-    '@engine/domain',
     '@engine/http',
     '@engine/i18n',
     '@engine/view-models',

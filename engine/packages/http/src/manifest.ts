@@ -1,62 +1,30 @@
 /**
- * @contract C13 — the HTTP handler manifest · owner: ARC · consumers: WEB, UXG, UXE, PLT, HAR, handler lanes
+ * @contract C13 — the HTTP handler manifest · consumers: the apps, the proxy, route parity
  *
  * Every engine route an app mounts, and the proxy matcher every app declares
  * (ARCHITECTURE.md §11). An app mounts a route with one file, `src/app{path}/route.ts`,
- * exporting exactly `methods` — `export { GET, POST } from '@engine/http/commerce/cart'`.
- * Route parity (TASKS.md 2.2.d) fails CI on a missing file, a missing or extra method, a
- * matcher that differs from `PROXY_MATCHER`, or a route whose first segment after `/api/` —
- * `x` for every engine route, `health` for the health route — equals a collection slug,
- * `payload-jobs` or `graphql`: Payload's catch-all REST mount reads a collection from that
- * segment and a static route there wins, so no collection may be named `x` or `health`.
- * Engine routes live under `/api/x/` so none shadows Payload's REST API; `/api/health` and
- * `/brand-assets/…` (outside `/api/`, compared with nothing) are the named exceptions.
- * Payload's own mounts, in each app's `(payload)` group, are its admin (`admin/[[...segments]]`)
- * and that REST API (`api/[...slug]`) alone: GraphQL is off (`graphQL.disable` — the loaders read
- * through the Local API and the sister API is REST), so no app mounts `api/graphql` or its
- * playground, and `graphql` stays a reserved first segment should it ever be switched on.
- * Every app mounts every route whatever the brand's modules: a handler whose `module` is off
- * answers 404 — so does an operation whose module is off, at a sub-path of a mounted route —
- * and parity never depends on config. Until its lane builds it, a route's mount names the
- * placeholder (`UNBUILT_HANDLER`). The parts: the commerce API and its addresses
- * (`./manifest/commerce`), customer accounts (`./manifest/auth`), form posts and saved items
- * (`./manifest/forms`), and what the proxy sets and answers (`./manifest/proxy`).
+ * exporting exactly `methods` — `export { POST } from '@engine/http/revalidate'`.
+ * A route whose first segment after `/api/` — `x` for every engine route, `health` for the
+ * health route — equals a collection slug, `payload-jobs` or `graphql` would be shadowed:
+ * Payload's catch-all REST mount reads a collection from that segment and a static route there
+ * wins, so no collection may be named `x` or `health`. Engine routes live under `/api/x/` so none
+ * shadows Payload's REST API; `/api/health` and `/brand-assets/…` (outside `/api/`) are the named
+ * exceptions. Payload's own mounts, in each app's `(payload)` group, are its admin
+ * (`admin/[[...segments]]`) and that REST API (`api/[...slug]`) alone: GraphQL is off.
+ * A route is mounted only once its handler exists — the one placeholder left is robots'
+ * (`UNBUILT_HANDLER`), which fails closed. What the proxy sets and answers is `./manifest/proxy`.
  *
  * A handler that reads the database reaches Payload through `@engine/cms` alone — never a
  * `payload` dependency of its own — from a `payload-*.ts` module it loads with `import()` after it
- * has read its request (TASKS.md 4.3.a, ARCHITECTURE.md §15): so a mount, route parity's runner, a
- * unit test and `next build` load a handler without loading Payload, and `@engine/cms` never
- * imports `@engine/http`. Content reaches a handler the same way, through its own `payload-*.ts`
- * module, never through `@engine/loaders` (which reaches cms statically), and the loaders import
- * nothing of `@engine/http` but this manifest; route parity loads every mount under a hook that
- * refuses `payload`, `@payloadcms/*` and `@engine/cms`, so a static path to Payload fails CI
- * however indirect.
- *
- * Handlers log a request's path without its query string. A lookupToken or a payment's scope
- * never travels in a URL (`ORDER_ACCESS`; `payment.status` is a POST). A pay-link or quote
- * token is the capability its page's own URL already carries (C10 `sensitive`), so
- * `payLink.get` and `quote.get` read it from the query; the one-hop links an email carries
- * (`ORDER_ACCESS.link`, `APPOINTMENT_ACCESS.link`, `WANT_LIST_ACCESS.link`, the auth routes' GET
- * links — `APPLICATION_ACCESS`,
- * `PASSWORD_LINK`, email verification — and one-click unsubscribe) are the only other credentials
- * in a URL, and each but the unsubscribe moves its token into a cookie and answers 303 to a clean
- * page. Every such token is a derived capability link (C6 `links`), stored nowhere and never in an
- * outbox row, but `PASSWORD_LINK`'s single-use nonce. RFC 8058's one-click unsubscribe — a want
- * list's (`wantList.unsubscribe`), the newsletter's — is the one POST that carries its token in its
- * URL, from the mail client, on `ONE_CLICK_UNSUBSCRIBE`'s terms. Every
- * operation a page calls is a GET or a POST (`FormMethod`), so a form reaches it without
- * JavaScript and comes back to its page through `FORM_RESULT`. The files hold
- * type imports of other packages only, and route parity reads them with the workspace's
- * TypeScript runner.
+ * has read its request (ARCHITECTURE.md §15): so a mount, a unit test and `next build` load a
+ * handler without loading Payload, and `@engine/cms` never imports `@engine/http`. Handlers log a
+ * request's path without its query string. The files hold type imports of other packages only.
  */
 import type { RootFile } from '@engine/config/routes'
 import type { ModuleKey } from '@engine/config/schema'
 
-import { AUTH_ROUTE_AUTH, AUTH_ROUTE_METHODS } from './manifest/auth'
-import { COMMERCE_AREAS, type CommerceRoute } from './manifest/commerce'
 import {
   GET,
-  GET_POST,
   POST,
   type EngineRoute,
   type HttpMethod,
@@ -64,15 +32,12 @@ import {
   type RouteAuth,
 } from './manifest/types'
 
-export * from './manifest/auth'
-export * from './manifest/commerce'
-export * from './manifest/forms'
 export * from './manifest/proxy'
 export * from './manifest/types'
 
 /**
  * The handler specifier for a mount path: the static segments after `/api/x/`, `/api/` or
- * `/`, under `@engine/http/`. `/api/x/commerce/cart/[[...path]]` → `@engine/http/commerce/cart`;
+ * `/`, under `@engine/http/`. `/api/x/cron/jobs` → `@engine/http/cron/jobs`;
  * `/api/health` → `@engine/http/health`; `/brand-assets/[...path]` → `@engine/http/brand-assets`.
  */
 export function handlerOf(path: string): string {
@@ -82,22 +47,11 @@ export function handlerOf(path: string): string {
 }
 
 /**
- * The placeholder a mount re-exports while its route's handler is unbuilt (TASKS.md 4.3.b; 4.1
- * mounted 34 routes per app on it). A handler is its owning lane's to build, in its own folder,
- * and until it is, the mount names this with a comment naming the handler that replaces it: WEB's
- * module (`http/src/unbuilt/`), never a C13 route and never another route's handler — a plain
- * `no-store` 404 for every method, which reads its request first, so no mount is prerendered, and
- * never its body, so a write reaches nothing: what a route with nothing behind it answers, as one
- * whose module is off does. One route waits otherwise (`byPath`): robots fails closed —
- * `User-agent: *`, `Disallow: /` — since a crawler reads a 404 as "allow everything" and staging is
- * public (4.1 senior-be #2).
- *
- * The policy, which route parity checks (HAR): a mount names `handlerOf(path)`, or — only while
- * `handlerOf(path)` has no module (`src/<area>/route.ts`) — `unbuiltHandlerOf(path)`; and every app
- * names the same one. So the lane that lands a handler repoints both apps' mounts in the same
- * change, and a mount left on the placeholder once its handler exists fails CI rather than
- * answering 404 in production (4.1 senior-fe #16). A stub a lane keeps at `handlerOf(path)` — the
- * cron routes', which authenticate like the real ones — is that lane's own file, not a placeholder.
+ * The placeholder a mount re-exports while its route's handler is unbuilt. Only robots waits
+ * (`byPath`): until its handler is built it fails closed — `User-agent: *`, `Disallow: /` —
+ * since a crawler reads a 404 as "allow everything" and staging is public (4.1 senior-be #2).
+ * Every other unbuilt route is simply not mounted. `specifier` is the default a route without a
+ * `byPath` entry would name; no mount names it and no module is left there.
  */
 export const UNBUILT_HANDLER = {
   specifier: '@engine/http/unbuilt',
@@ -140,52 +94,17 @@ function route(
   return { path, handler: handlerOf(path), methods, owner, auth: auths, sameOrigin, ...gated }
 }
 
-const commerceRoutes = Object.entries(COMMERCE_AREAS).map(([area, spec]: [string, CommerceRoute]) =>
-  route(`/api/x/commerce/${area}/[[...path]]`, 'DOM', spec.auth, spec.methods, spec.module),
-)
-
 export const ENGINE_ROUTES: readonly EngineRoute[] = [
-  // Platform
   // app, DB, storage, queue lag (reported, never gating); initialises Payload through @engine/cms
   route('/api/health', 'WEB', 'public', GET),
   // BRAND_ROOT assets — `immutable` only at a versioned URL (`BRAND_ASSET_URL`), never a root file
   route('/brand-assets/[...path]', 'WEB', 'public', GET),
-  route('/api/x/well-known/[...path]', 'WEB', 'public', GET), // brand files for /.well-known/*
   route('/api/x/legacy/[...path]', 'WEB', 'public', GET), // legacy URLs: 301 · 404 · 410
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // `REVALIDATE_REQUEST`: invalidate(tags) from outside a request
-  // customer accounts: `AUTH_OPERATIONS`, each 404 without its module
-  route('/api/x/auth/[...path]', 'WEB', AUTH_ROUTE_AUTH, AUTH_ROUTE_METHODS),
-  route('/api/x/privacy/[...path]', 'WEB', ['customer', 'token'], GET_POST), // export · erase
-  // uploads (C6 photos), newsletter (double opt-in, one-click unsubscribe), back-in-stock
-  // alerts, and `FORM_OPERATIONS` (saved items); want lists are C6's (`want-lists`)
-  route('/api/x/forms/[...path]', 'WEB', ['public', 'customer', 'token'], GET_POST),
-
-  // Scheduled — the site user's crontab (DEPLOYMENT.md §5)
-  route('/api/x/cron/jobs', 'WEB', 'cron', POST), // the Payload jobs queue, a per-run limit
-  route('/api/x/cron/sweeps', 'DOM', 'cron', POST), // C8 DomainSweeps: expiry, notices, lapses
-  route('/api/x/cron/reconcile', 'PAY', 'cron', POST), // retrieve() attempts past their window
-  route('/api/x/cron/outbox', 'DOM', 'cron', POST), // dispatch committed domain events
-
-  // Provider webhooks: parse → verify → retrieve where advised → the domain (PAYMENTS.md §4).
-  // Payment and courier accounts are a seller's, so their secrets are too: the route names the
-  // seller whose secret verifies it, and events dedupe on (provider, seller_id, provider_event_id).
-  route('/api/x/webhooks/payments/[provider]/[seller]', 'PAY', 'signature', POST),
-  route('/api/x/webhooks/shipping/[provider]/[seller]', 'LOG', 'signature', POST),
-  route('/api/x/webhooks/fulfilment/[provider]', 'LOG', 'signature', POST, 'fulfilment.pod'),
-
-  // Commerce — `COMMERCE_AREAS`
-  ...commerceRoutes,
-
-  // Discovery, media, sister, SEO
-  route('/api/x/search/[[...path]]', 'SRC', 'public', GET), // results, facet counts, suggestions
-  route('/api/x/media/[...path]', 'MED', ['public', 'staff'], GET), // IIIF manifests; staff full-res
-  route('/api/x/sister/[...path]', 'SIS', 'sister', GET_POST, 'sister.links'), // archive API, work.*
-  route('/api/x/collect', 'SEO', 'public', POST), // the beacon: paths only, query strings stripped
-  route('/api/x/sitemap/[[...path]]', 'SEO', 'public', GET), // index and per-locale sitemaps
-  // per environment: staging disallows all; until SEO builds it, `UNBUILT_HANDLER.byPath` does too
+  // the site user's crontab (DEPLOYMENT.md §5): the Payload jobs queue, a per-run limit
+  route('/api/x/cron/jobs', 'WEB', 'cron', POST),
+  // staging disallows all; until its handler is built, `UNBUILT_HANDLER.byPath` does everywhere
   route('/api/x/robots', 'SEO', 'public', GET),
-  route('/api/x/feeds/[...path]', 'SEO', 'public', GET), // merchant and catalogue feeds
-  route('/api/x/og/[...path]', 'SEO', 'public', GET), // request-time Open Graph images
 ]
 
 /**

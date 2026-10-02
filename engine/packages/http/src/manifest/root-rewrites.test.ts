@@ -63,8 +63,13 @@ describe('C13 — ROOT_REWRITES', () => {
     expect(filled.every((path) => rootFileOf(path) !== null)).toBe(true)
   })
 
-  it('lands every root file on a mounted engine route', () => {
-    for (const { to } of ROOT_REWRITES) {
+  // The sitemaps and `.well-known` have no handler yet, so no route is mounted for them (TASKS.md
+  // 1.4): their rewrites land on Payload's REST catch-all, which answers 404.
+  const UNMOUNTED = ['/api/x/sitemap', '/api/x/sitemap/:name', '/api/x/well-known/:path*']
+
+  it('lands every other root file on a mounted engine route', () => {
+    expect(ROOT_REWRITES.filter(({ to }) => UNMOUNTED.includes(to)).length).toBe(UNMOUNTED.length)
+    for (const { to } of ROOT_REWRITES.filter((rewrite) => !UNMOUNTED.includes(rewrite.to))) {
       const url = to.replace(/:\w+\*?/g, 'x')
       expect(
         ENGINE_ROUTES.some((route) => serves(route.path, url)),

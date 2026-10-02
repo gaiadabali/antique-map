@@ -96,9 +96,6 @@ importers:
         specifier: 0.35.5
         version: 0.35.5(@types/node@26.6.3)
     devDependencies:
-      '@engine/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@types/node':
         specifier: 26.6.3
         version: 26.6.3
@@ -157,9 +154,6 @@ importers:
         specifier: 0.35.5
         version: 0.35.5(@types/node@26.6.3)
     devDependencies:
-      '@engine/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@types/node':
         specifier: 26.6.3
         version: 26.6.3
@@ -172,18 +166,6 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
-
-  engine/packages/analytics:
-    devDependencies:
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../config
-      '@engine/domain':
-        specifier: workspace:*
-        version: link:../domain
-      '@engine/media':
-        specifier: workspace:*
-        version: link:../media
 
   engine/packages/cache:
     devDependencies:
@@ -256,21 +238,6 @@ importers:
         specifier: 26.6.3
         version: 26.6.3
 
-  engine/packages/domain:
-    devDependencies:
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../config
-
-  engine/packages/fulfilment:
-    devDependencies:
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../config
-      '@engine/domain':
-        specifier: workspace:*
-        version: link:../domain
-
   engine/packages/http:
     dependencies:
       '@engine/cache':
@@ -282,9 +249,6 @@ importers:
       '@engine/config':
         specifier: workspace:*
         version: link:../config
-      '@engine/domain':
-        specifier: workspace:*
-        version: link:../domain
     devDependencies:
       '@types/node':
         specifier: 26.6.3
@@ -328,39 +292,6 @@ importers:
       '@types/node':
         specifier: 26.6.3
         version: 26.6.3
-
-  engine/packages/payments:
-    devDependencies:
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../config
-      '@engine/domain':
-        specifier: workspace:*
-        version: link:../domain
-
-  engine/packages/shipping:
-    devDependencies:
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../config
-      '@engine/domain':
-        specifier: workspace:*
-        version: link:../domain
-
-  engine/packages/sister:
-    devDependencies:
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../config
-      '@engine/domain':
-        specifier: workspace:*
-        version: link:../domain
-
-  engine/packages/ui:
-    dependencies:
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../config
 
   engine/packages/view-models:
     devDependencies:
