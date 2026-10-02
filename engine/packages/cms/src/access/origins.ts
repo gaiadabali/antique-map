@@ -1,35 +1,35 @@
 /**
- * Which origins Payload trusts with its session cookie (CSRF) and answers cross-origin (CORS) —
- * one of the few things `BRAND` may shape (ARCHITECTURE.md §2). The process's own origin
- * (`SITE_URL`, DEPLOYMENT.md §8) and the brand's hostnames (C1 `domains`: production, staging
- * and every alias), https only. Payload compares a request's `Origin` header with these exactly,
- * so each is a bare origin — scheme and host, no path, no trailing slash.
+ * The origins Payload is told about (ARCHITECTURE.md §2, SECURITY.md B4, B5, X2), all from the
+ * host allow-list in the environment (`GALLERY_HOSTS`, `SHOP_HOSTS`, `ADMIN_HOST` —
+ * `@engine/config/sites`), never from a request:
+ * - `siteOrigin()` — Payload's `serverURL`: the admin host's origin, where `/admin` and the REST
+ *   API answer and staff cookies stay; every absolute URL Payload builds (an email's reset link,
+ *   say) starts here;
+ * - `trustedOrigins()` — Payload's CSRF and CORS lists: each site's canonical origin, so a staff
+ *   member's cookie is accepted from either site's pages and nothing else. Payload compares a
+ *   request's `Origin` with these exactly, so each is a bare origin — scheme, host and, for a
+ *   `*.localhost` host, the process's `PORT`.
  *
- * With no brand and no `SITE_URL` (the build, a CLI) the list is empty; a serving process always
- * has both, or its boot check refuses it.
+ * With no usable allow-list (the build, a CLI, `generate:types`) both are empty; a serving process
+ * always has one, or its boot check refuses it. The lists never depend on anything else, so the
+ * config — and the types, import map and migration snapshot made from it — is the same in every
+ * environment.
  */
-import type { BrandConfig } from '@engine/config/schema'
+import { adminOrigin, siteOrigins } from '@engine/config/sites'
 
 type Env = Readonly<Record<string, string | undefined>>
 
-/** `SITE_URL` as a bare origin, or `undefined` when unset or not an absolute URL. */
+/** Payload's `serverURL`: the admin host's origin, or `undefined` while there is none. */
 export function siteOrigin(env: Env): string | undefined {
-  const raw = env.SITE_URL?.trim()
-  if (!raw) return undefined
-  try {
-    return new URL(raw).origin
-  } catch {
-    return undefined
-  }
+  return adminOrigin(env) ?? undefined
 }
 
-export function trustedOrigins(env: Env, brand: Pick<BrandConfig, 'domains'> | null): string[] {
-  const hosts = brand
-    ? [brand.domains.production, brand.domains.staging, ...brand.domains.aliases]
-    : []
-  const origins = [
-    siteOrigin(env),
-    ...hosts.filter((host): host is string => Boolean(host)).map((host) => `https://${host}`),
-  ]
-  return [...new Set(origins.filter((origin): origin is string => origin !== undefined))]
+/**
+ * Payload's CSRF and CORS lists: each site's canonical origin, once each.
+ *
+ * The second argument is ignored: it is the brand config `payload.config.ts` passed before the
+ * sites replaced the brands, accepted until that file (2.4's) stops passing it.
+ */
+export function trustedOrigins(env: Env, _ignored?: unknown): string[] {
+  return [...new Set(siteOrigins(env))]
 }

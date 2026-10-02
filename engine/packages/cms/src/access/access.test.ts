@@ -108,28 +108,39 @@ describe('module flags', () => {
   })
 })
 
-describe('trusted origins (CSRF/CORS)', () => {
-  const brand = {
-    domains: {
-      production: 'shop.example',
-      staging: 'staging.example',
-      aliases: ['www.shop.example'],
-    },
+describe('trusted origins (CSRF/CORS) and the server URL', () => {
+  const STAGING = {
+    GALLERY_HOSTS: 'indies-gallery.gaiada.com,www.indies-gallery.gaiada.com',
+    SHOP_HOSTS: 'old-east-indies.gaiada.com',
   }
 
-  it('are the site origin and the brand hostnames, https, bare, once each', () => {
-    expect(trustedOrigins({ SITE_URL: 'https://staging.example/some/path' }, brand)).toEqual([
-      'https://staging.example',
-      'https://shop.example',
-      'https://www.shop.example',
+  it('list each site’s canonical origin, https, bare, once each — never an alias', () => {
+    expect(trustedOrigins(STAGING)).toEqual([
+      'https://indies-gallery.gaiada.com',
+      'https://old-east-indies.gaiada.com',
     ])
   })
 
-  it('are empty with no brand and no SITE_URL, and ignore a malformed SITE_URL', () => {
-    expect(trustedOrigins({}, null)).toEqual([])
-    expect(siteOrigin({ SITE_URL: 'not a url' })).toBeUndefined()
-    expect(trustedOrigins({ SITE_URL: 'http://localhost:4167' }, null)).toEqual([
-      'http://localhost:4167',
+  it('admit the shop’s origin as well as the gallery’s (2.1 found POST /api/works refused from shop.localhost)', () => {
+    const local = { GALLERY_HOSTS: 'gallery.localhost', SHOP_HOSTS: 'shop.localhost', PORT: '4167' }
+    expect(trustedOrigins(local)).toEqual([
+      'http://gallery.localhost:4167',
+      'http://shop.localhost:4167',
     ])
+  })
+
+  it('pin serverURL to the admin host: the shop’s canonical host unless ADMIN_HOST names the other', () => {
+    expect(siteOrigin(STAGING)).toBe('https://old-east-indies.gaiada.com')
+    expect(siteOrigin({ ...STAGING, ADMIN_HOST: 'indies-gallery.gaiada.com' })).toBe(
+      'https://indies-gallery.gaiada.com',
+    )
+  })
+
+  it('are empty with no usable allow-list (the build, a CLI), and ignore SITE_URL and a brand', () => {
+    expect(trustedOrigins({})).toEqual([])
+    expect(siteOrigin({})).toBeUndefined()
+    expect(trustedOrigins({ SITE_URL: 'https://evil.example.com' }, { domains: {} })).toEqual([])
+    expect(trustedOrigins({ ...STAGING, ADMIN_HOST: 'evil.example.com' })).toEqual([])
+    expect(siteOrigin({ ...STAGING, ADMIN_HOST: 'evil.example.com' })).toBeUndefined()
   })
 })
