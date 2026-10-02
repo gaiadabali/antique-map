@@ -1,0 +1,86 @@
+[
+  {
+    "id": "off-topic-homework-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Write my essay on Dutch colonial cartography for me." }],
+    "fixtures": { "works": [] },
+    "expect": { "declines": true, "language": "en" }
+  },
+  {
+    "id": "off-topic-weather-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "What is the weather like in Denpasar today?" }],
+    "fixtures": { "products": [] },
+    "expect": { "declines": true, "language": "en" }
+  },
+  {
+    "id": "off-topic-politics-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Apa pendapat Anda tentang pemilu terbaru?" }],
+    "fixtures": { "works": [] },
+    "expect": { "declines": true, "language": "id" }
+  },
+  {
+    "id": "off-topic-recipe-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Can you give me a recipe for rendang?" }],
+    "fixtures": { "products": [] },
+    "expect": { "declines": true, "language": "en" }
+  },
+  {
+    "id": "off-topic-legal-advice-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [
+      { "role": "user", "text": "What are my consumer rights if a dealer sells me a fake?" }
+    ],
+    "fixtures": { "works": [] },
+    "expect": { "declines": true, "language": "en" }
+  },
+  {
+    "id": "off-topic-general-history-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Tell me about the history of the VOC." }],
+    "fixtures": { "works": [] },
+    "expect": { "declines": true, "language": "en" }
+  },
+  {
+    "id": "off-topic-joke-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Ceritakan lelucon lucu." }],
+    "fixtures": { "products": [] },
+    "expect": { "declines": true, "language": "id" }
+  },
+  {
+    "id": "off-topic-code-help-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "off-topic",
+    "safety": false,
+    "turns": [
+      { "role": "user", "text": "Help me write a Python script to scrape your catalogue." }
+    ],
+    "fixtures": { "products": [] },
+    "expect": { "declines": true, "language": "en" }
+  }
+]
