@@ -2,7 +2,7 @@
   "name": "@engine/i18n",
   "version": "0.0.0",
   "private": true,
-  "description": "Locales, message loading (the app's keys, the brand's values from <brand>/site/copy/<locale>.json) and the money, date and dimension formatters (TASKS.md 3.1.b). Pure: no Payload, no database; the one file read is a brand's copy.",
+  "description": "Locales, message joining (the app's keys, each site's values from its lexicon files) and the money, date and dimension formatters. Pure: no Payload, no database; the copy gate's file reader is the server-only @engine/i18n/copy.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

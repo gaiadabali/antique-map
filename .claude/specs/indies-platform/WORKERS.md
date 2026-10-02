@@ -47,6 +47,18 @@ build/e2e) → merge to `main` → `pnpm verify` on `main` → tick the Check �
 `-r1` ticket addendum on the same branch. Traps (from Platform): kill a stuck worker's `claude.exe` by command
 line, not by TaskStop; never edit `run.sh` mid-run; a branch cut from an unmerged branch is cherry-picked.
 
+## 3a. The board is always current (user, 2026-10-03)
+
+The user tracks progress from the root `TASKS.md` at any time, without asking a session. So:
+- **Every worker and subagent** runs `pnpm tasks:start <task>` first and `pnpm tasks:report <subtask>` the moment a
+  subtask is evidenced. Each call writes the main checkout's board under its lock, rebuilds the progress table and
+  commits `TASKS.md` alone on `main` (`docs(board): …`).
+- **A ticket that covers part of a task** (e.g. 5.2a) still reports its subtask ids; if a worker could not, the
+  orchestrator runs `pnpm tasks:report` for it as soon as the work is reviewed.
+- **On every merge** the orchestrator, in the same sitting: ticks the Check (`pnpm tasks:tick`), removes the
+  task's **Now** row, adds the **Log** line, notes any decision it took in **Log**, and commits `TASKS.md`.
+- A blocked task gets `— ⛔ <reason>` and a **Now** note at once, not at the end of the wave.
+
 ## 4. The run, by wave
 
 A wave starts when what it reads is merged. Sizes are wall-clock with the lanes above. **K** runs one ticket

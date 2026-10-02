@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- PLACEHOLDER until design phase 14.1 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60" role="img" aria-label="Test Storefront">
-  <title>Test Storefront</title>
-  <rect width="240" height="60" rx="6" fill="#5b21b6"/>
-  <rect x="10" y="48" width="220" height="2" fill="#22d3ee"/>
-  <text x="120" y="38" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="26" fill="#ffffff" textLength="216" lengthAdjust="spacingAndGlyphs">Test Storefront</text>
-</svg>

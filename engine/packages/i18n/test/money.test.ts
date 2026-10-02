@@ -1,4 +1,4 @@
-import { CURRENCY_CODES, CURRENCY_EXPONENT, LOCALE_CODES } from '@engine/config/schema'
+import { CURRENCY_CODES, CURRENCY_EXPONENT, LOCALE_CODES } from '@engine/config/constants'
 import { describe, expect, it } from 'vitest'
 
 import { formatMoney, formatPrice, toDecimal } from '../src/index'

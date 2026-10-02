@@ -122,9 +122,9 @@ jobs:
     timeout-minutes: 25
     # Lighthouse audits both sites' home pages (lighthouserc.web.json) on the release's own tree,
     # ONE server started as a host runs it (.github/scripts/start-server.sh) and asked for by each
-    # hostname, gallery.localhost and shop.localhost, on one port. Until 2.2 it serves BRAND on
-    # both hosts. LOCAL_PRODUCTION_BUILD=1: a production build at a loopback SITE_URL is judged
-    # production without it (DEPLOYMENT.md §8); start-server.sh sets it on the server.
+    # hostname, gallery.localhost and shop.localhost, on one port, each host its own site.
+    # LOCAL_PRODUCTION_BUILD=1: a production build at local hosts is judged production without
+    # it (DEPLOYMENT.md §7); start-server.sh sets it on the server.
     env:
       LOCAL_PRODUCTION_BUILD: '1'
       PGHOST: 127.0.0.1
@@ -132,7 +132,6 @@ jobs:
       POSTGRES_USER: postgres
       PGPASSWORD: postgres
       DB_SUFFIX: ci
-      LHCI_BRAND: indies-gallery
     services:
       postgres:
         image: postgres:18.0
@@ -153,7 +152,7 @@ jobs:
         run: sudo apt-get install -y postgresql-client
 
       - name: db:fresh — the one database (created and migrated)
-        run: pnpm db:fresh --brand "$LHCI_BRAND" --suffix "$DB_SUFFIX"
+        run: pnpm db:fresh --suffix "$DB_SUFFIX"
 
       # No DATABASE_URL or PAYLOAD_SECRET, and pg's PGHOST fallback at a refusing port
       # (CONVENTIONS.md §12): the job's PGHOST/PGPORT above point at the real Postgres.
@@ -169,7 +168,7 @@ jobs:
       - name: Start the server (both hosts, one port)
         run: >-
           bash .github/scripts/start-server.sh web "$RUNNER_TEMP/artifact/web" 4200
-          "${LHCI_BRAND//-/_}_$DB_SUFFIX" "$LHCI_BRAND"
+          "indies_$DB_SUFFIX"
 
       - name: Lighthouse budgets (both hosts)
         run: pnpm lhci

@@ -5,14 +5,15 @@
 # release smoke (smoke-artifact.sh) all start their server here, so each tests the tree a host
 # runs, not `next start` from the workspace.
 #
-#   start-server.sh <name> <release-dir> <port> <database> <brand> [KEY=VALUE ...]
+#   start-server.sh <name> <release-dir> <port> <database> [KEY=VALUE ...]
 #
 #   release-dir  the assembled subdir (…/artifact/web); copied to $SERVERS_DIR/<name> first, so two
 #                servers never share a `.next` cache
-#   brand        BRAND, the brand folder the release ships at <release-dir>/<brand>/site — until
-#                TASKS.md 2.2 picks the site from the request's host, one process serves one brand
-#                on every hostname it answers (gallery.localhost and shop.localhost alike)
 #   KEY=VALUE    extra environment
+#
+# The one process serves both sites, picked by each request's Host (TASKS.md 2.2): GALLERY_HOSTS is
+# gallery.localhost and SHOP_HOSTS shop.localhost — the shop's host the admin's (ADMIN_HOST) — on
+# <port>; a KEY=VALUE overrides them.
 #
 # The database URL is built from PGHOST/PGPORT/POSTGRES_USER/PGPASSWORD (the job's Postgres).
 # PAYLOAD_SECRET and a `ci:` LINK_TOKEN_KEYS ring are generated here per server and per run,
@@ -24,12 +25,12 @@
 # server starts from an empty environment.
 set -euo pipefail
 
-if [ "$#" -lt 5 ]; then
-  echo "usage: start-server.sh <name> <release-dir> <port> <database> <brand> [KEY=VALUE ...]" >&2
+if [ "$#" -lt 4 ]; then
+  echo "usage: start-server.sh <name> <release-dir> <port> <database> [KEY=VALUE ...]" >&2
   exit 2
 fi
-name="$1" release="$2" port="$3" database="$4" brand="$5"
-shift 5
+name="$1" release="$2" port="$3" database="$4"
+shift 4
 app=engine/apps/web
 
 SERVERS_DIR="${SERVERS_DIR:-${RUNNER_TEMP:-/tmp}/servers}"
@@ -39,10 +40,6 @@ log="$SERVERS_DIR/$name.log"
 
 test -f "$release/$app/server.js" || {
   echo "::error::$release/$app/server.js missing — run assemble-artifact.sh first"
-  exit 1
-}
-test -d "$release/$brand/site" || {
-  echo "::error::$release/$brand/site missing — the release ships no brand folder named $brand"
   exit 1
 }
 rm -rf "$tree"
@@ -65,18 +62,19 @@ database_url="postgres://${POSTGRES_USER}:${PGPASSWORD}@${PGHOST}:${PGPORT:-5432
     PATH="$PATH" HOME="${HOME:-/tmp}" TMPDIR="${TMPDIR:-/tmp}" \
     NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 \
     PORT="$port" HOSTNAME=0.0.0.0 \
-    BRAND="$brand" BRAND_ROOT="$tree/$brand" \
+    GALLERY_HOSTS=gallery.localhost SHOP_HOSTS=shop.localhost \
     DATABASE_URL="$database_url" PAYLOAD_SECRET="$payload_secret" \
     LINK_TOKEN_KEYS="ci:$link_key" \
-    SITE_URL="http://localhost:$port" LOCAL_PRODUCTION_BUILD=1 \
+    LOCAL_PRODUCTION_BUILD=1 \
     "$@" \
     node server.js
 ) > "$log" 2>&1 &
 pid=$!
 echo "$pid" > "$SERVERS_DIR/$name.pid"
 
-# Up when it answers at all (any status: the boot check has run by then). A process that exits
-# first — a refused boot — fails the step with its log.
+# Up when it answers at all (any status: the boot check has run by then — `/api/health` answers on
+# any host, a plain `localhost` included). A process that exits first — a refused boot — fails the
+# step with its log.
 for _ in $(seq 1 120); do
   if ! kill -0 "$pid" 2>/dev/null; then
     echo "::error::$name exited before answering on :$port"
@@ -85,7 +83,7 @@ for _ in $(seq 1 120); do
   fi
   code="$(curl -s -o /dev/null -m 5 -w '%{http_code}' "http://localhost:$port/" || true)"
   if [ "$code" != "000" ] && [ -n "$code" ]; then
-    echo "$name up on :$port (pid $pid, BRAND=$brand${*:+, $*}) — / answered $code"
+    echo "$name up on :$port (pid $pid${*:+, $*}) — / answered $code"
     sed -n '1,3p' "$log"
     exit 0
   fi

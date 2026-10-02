@@ -6,7 +6,9 @@
   "type": "module",
   "exports": {
     "./contract": "./src/contract.ts",
-    "./storage": "./src/storage/index.ts"
+    "./derivatives": "./src/derivatives/index.ts",
+    "./storage": "./src/storage/index.ts",
+    "./tiles": "./src/tiles/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -14,7 +16,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1141.0",
-    "@aws-sdk/s3-request-presigner": "3.1141.0"
+    "@aws-sdk/s3-request-presigner": "3.1141.0",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@types/node": "26.6.3"

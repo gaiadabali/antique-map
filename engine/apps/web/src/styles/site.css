@@ -1,4 +1,4 @@
-/* The placeholder shell's layout: roles only, every value a C3 token (./tokens.css). */
+/* The placeholder shell's layout: roles only, every value a token (./tokens.css). */
 *,
 *::before,
 *::after {
@@ -106,6 +106,12 @@ a {
   font-size: var(--t-display);
   line-height: 1.15;
   margin: 0 0 var(--space-4);
+}
+
+.site-lede {
+  font-size: var(--t-lede);
+  color: var(--c-ink-soft);
+  margin: 0;
 }
 
 .site-footer {

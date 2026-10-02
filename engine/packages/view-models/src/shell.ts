@@ -2,16 +2,37 @@
  * @contract C2 — view models: the shell · owner: ARC · consumers: WEB, UXG, UXE, SEO
  *
  * The app's root layout (DESIGN-SYSTEM.md §2): header, navigation, footer, announcement
- * bar, consent banner, locale switcher, the ship-to selector (the only way the currency
- * changes — there is no free currency switcher), cart indicator and sister strip. Brand
- * identity is runtime data read from `BRAND` at request time — never baked into a build —
- * so a third brand on the same app renders its own name, assets and tokens. The analytics
- * ids are runtime values too, loaded only after marketing consent (never NEXT_PUBLIC_*) — and
- * set by no brand at launch, whose analytics are first-party only (G12).
+ * bar, consent banner, locale switcher, cart indicator. Which site it is comes from the host
+ * the request named (`SITES`, TASKS.md 2.2), never from the build.
+ *
+ * `SiteShellVM` is the placeholder shell both sites render today (the site's name and files,
+ * the locale switcher). `ShellVM` is the full shell phase 4 builds; it still carries the old
+ * multi-brand fields (`brand`, `modules`, `tokens`, `sellers`, `sister`) its fixtures hold, as
+ * plain local types, until those fixtures are trimmed with it.
  */
-import type { LocaleCode, ModuleKey, Storefront, TokenOverrides } from '@engine/config/schema'
+import type { LocaleCode } from '@engine/config/constants'
 
 import type { LinkVM, SellerIdentityVM, ShipToVM, Streamed } from './common'
+
+/** The site a shell belongs to; `emporium` is the shop's old name, which the fixtures still use. */
+export type Storefront = 'gallery' | 'shop' | 'emporium'
+
+/** The placeholder shell (TASKS.md 2.2.b): what a site's root layout renders around its page. */
+export type SiteShellVM = {
+  site: {
+    key: 'gallery' | 'shop'
+    name: string
+    /** The site's canonical origin, from the host allow-list — never the request's `Host`. */
+    origin: string | null
+  }
+  locale: LocaleCode
+  /** The site's home in this locale, built by `href()`. */
+  homeHref: string
+  /** The locale switcher: each locale the site serves, at its own home. */
+  locales: readonly { locale: LocaleCode; href: string; current: boolean }[]
+  /** The site's logo, at `/<site>/logo.svg` (`@engine/http/manifest` `SITE_ASSETS`). */
+  logo: string
+}
 
 export type NavItemVM = LinkVM & {
   /** A mega-menu column or a drill-down level (the place tree on a phone). */
@@ -32,11 +53,10 @@ export type ShellVM = {
   /** The switcher's choices; each page's own alternates come from its `SeoVM`. */
   locales: readonly LocaleCode[]
   /**
-   * Every brand-asset URL a page links, each at its versioned address under `/brand-assets/`
-   * (C13 `BRAND_ASSET_URL`: `?v=` the file's version), minted where the shell's view model is
-   * built and never written by a template. A page links its icons and manifest through its
-   * metadata (`icons`, `manifest`), never Next's file conventions, which are one build's; fonts
-   * load through a runtime `@font-face`.
+   * Every site file a page links — `/<site>/<file>` in `public/` (`@engine/http/manifest`
+   * `SITE_ASSETS`), built where the shell's view model is built and never written by a template.
+   * A page links its icons and manifest through its metadata (`icons`, `manifest`), never Next's
+   * file conventions, which are one build's; fonts load through a runtime `@font-face`.
    */
   assets: {
     logo: string
@@ -55,10 +75,10 @@ export type ShellVM = {
     ogImage: string
     fonts: readonly { family: string; src: string; weight: string; style: 'normal' | 'italic' }[]
   }
-  /** Validated brand overrides (C1/C3) — empty when the contrast gate rejected them. */
-  tokens: TokenOverrides
-  /** Capabilities, for the rare shell decision a loader cannot make (a wishlist icon). */
-  modules: readonly ModuleKey[]
+  /** Token overrides (custom property → value); a site's palette is its own token file. */
+  tokens: Readonly<Record<string, string>>
+  /** The old module flags the fixtures list; nothing switches on them any more. */
+  modules: readonly string[]
   nav: { header: readonly NavItemVM[]; footer: readonly NavItemVM[] }
   announcement: string | null
   contact: {

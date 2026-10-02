@@ -1,5 +1,5 @@
 /**
- * @contract C1 — the catalogue vocabulary · owner: ARC · entry: `@engine/config/schema`
+ * The catalogue vocabulary · entry: `@engine/config/schema`
  *
  * CONTENT-MODEL.md §1's controlled lists, declared once in the leaf so every contract reads
  * the same words: SCH's selects (`works.objectType`, `products.kind`), the view models (C2),

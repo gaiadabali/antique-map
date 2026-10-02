@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
 import { bootCheck, formatBootReport, isLoopbackIp, normaliseHost } from './index'
-import { deployableConfig, fullEnv } from './testing'
+import { fullEnv } from './testing'
 
 const NOW = new Date('2026-09-29T12:00:00Z')
-const config = deployableConfig()
 const ENVIRONMENTS = ['local', 'staging', 'production'] as const
 
 const withHost = (environment: (typeof ENVIRONMENTS)[number], host: string | undefined) =>
-  bootCheck({ env: { ...fullEnv(config, environment), HOSTNAME: host }, config, now: NOW })
+  bootCheck({ env: { ...fullEnv(environment), HOSTNAME: host }, now: NOW })
 const hostnameFinding = (report: ReturnType<typeof bootCheck>) =>
   report.problems.find((problem) => problem.subject === 'HOSTNAME')
 

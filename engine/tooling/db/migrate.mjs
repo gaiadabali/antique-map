@@ -13,17 +13,9 @@
 //                    local stack's defaults, .env.example)
 //   PAYLOAD_SECRET   a development placeholder: migrating signs nothing, and a
 //                    real secret is never handed to a tool
-//   BRAND, BRAND_ROOT, TEST_STOREFRONT
-//                    the brand the database is for, as its process would run —
-//                    the config loads and validates; the schema does not depend
-//                    on it (ARCHITECTURE.md §2). None of the three when the
-//                    brand keeps one config per storefront and none was named
-//                    (`brandless`): the brand-independent config migrates, as
-//                    `migrate:create` generates
-// and never RUN_MIGRATIONS (the web process's mark), PAYLOAD_DEV_PUSH or
+// — the one config, the same for both sites (ARCHITECTURE.md §2), as
+// `migrate:create` generates — and never RUN_MIGRATIONS (the web process's mark), PAYLOAD_DEV_PUSH or
 // NODE_ENV. The URL's password never reaches the log.
-import { join } from 'node:path'
-
 import { runPnpm, withoutKeys } from './pnpm.mjs'
 
 export const CMS_PACKAGE = '@engine/cms'
@@ -32,9 +24,6 @@ export const DEV_PAYLOAD_SECRET = 'db-fresh-dev-only-never-signs-anything'
 const WITHHELD = [
   'DATABASE_URL',
   'PAYLOAD_SECRET',
-  'BRAND',
-  'BRAND_ROOT',
-  'TEST_STOREFRONT',
   'RUN_MIGRATIONS',
   'PAYLOAD_DEV_PUSH',
   'NODE_ENV',
@@ -61,35 +50,13 @@ export function redactUrl(text, url) {
   return text.split(password).join('***')
 }
 
-/** The migrate child's environment: `env` minus WITHHELD, plus the database, the dev secret and the brand. */
-export function migrateEnv({
-  database,
-  brand,
-  storefront = null,
-  brandless = false,
-  repoRoot,
-  env,
-}) {
-  const brandEnv = brandless
-    ? {}
-    : {
-        BRAND: brand,
-        BRAND_ROOT: join(repoRoot, brand),
-        ...(storefront ? { TEST_STOREFRONT: storefront } : {}),
-      }
+/** The migrate child's environment: `env` minus WITHHELD, plus the database and the dev secret. */
+export function migrateEnv({ database, env }) {
   return {
     ...withoutKeys(env, WITHHELD),
     DATABASE_URL: databaseUrl(database, env),
     PAYLOAD_SECRET: DEV_PAYLOAD_SECRET,
-    ...brandEnv,
   }
-}
-
-function brandNote({ brand, storefront, brandless }) {
-  if (brandless) {
-    return `BRAND unset (${brand} keeps one config per storefront and none was named; --storefront migrates as its process would)`
-  }
-  return storefront ? `BRAND=${brand} TEST_STOREFRONT=${storefront}` : `BRAND=${brand}`
 }
 
 /**
@@ -100,18 +67,14 @@ function brandNote({ brand, storefront, brandless }) {
  */
 export async function runMigrations({
   database,
-  brand,
-  storefront = null,
-  brandless = false,
   repoRoot,
   env = process.env,
   log = console.log,
   run = runPnpm,
 }) {
-  const childEnv = migrateEnv({ database, brand, storefront, brandless, repoRoot, env })
+  const childEnv = migrateEnv({ database, env })
   const url = childEnv.DATABASE_URL
-  const note = brandNote({ brand, storefront, brandless })
-  log(`[db] migrate ${database}: pnpm --filter ${CMS_PACKAGE} migrate, ${note}`)
+  log(`[db] migrate ${database}: pnpm --filter ${CMS_PACKAGE} migrate`)
   const { code, stdout, stderr } = await run(['--silent', '--filter', CMS_PACKAGE, 'migrate'], {
     cwd: repoRoot,
     env: childEnv,

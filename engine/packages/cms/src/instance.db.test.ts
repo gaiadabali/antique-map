@@ -30,7 +30,7 @@ import {
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 // cms depends on @engine/cache from 8.2's hooks on; until then its source is reached directly.
-import { invalidate, invalidationBatch, itemTag } from '../../cache/src/index'
+import { invalidate, invalidationBatch, productTag } from '../../cache/src/index'
 import { POOL_CONNECT_TIMEOUT_MS } from './db/adapter'
 import { databaseProbe } from './db/probe'
 import { migrations } from './migrations'
@@ -112,7 +112,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       NonNullable<CollectionConfig['hooks']>['afterChange']
     >[number] = async ({ doc, context, req }) => {
       atHook.push({ id: doc.id, visible: await seen(doc.id) })
-      invalidate([itemTag(doc.id)], context)
+      invalidate([productTag(doc.id)], context)
       if (context.nested) {
         // Its own transaction (no req): commits before the parent's later hook throws.
         await req.payload.create({
@@ -207,7 +207,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       })
       expect(atHook.at(-1)).toEqual({ id: doc.id, visible: null })
       expect(await seen(doc.id)).not.toBeNull()
-      expect(batch.pending).toEqual([`item:${doc.id}`])
+      expect(batch.pending).toEqual([`product:${doc.id}`])
     })
 
     it('an update: the hook sees the old row; its tag is kept once the call returned', async () => {
@@ -220,7 +220,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       )
       expect(atHook.at(-1)).toEqual({ id: doc.id, visible: before })
       expect((await seen(doc.id))?.getTime()).toBe(new Date(updated.updatedAt).getTime())
-      expect(batch.pending).toEqual([`item:${doc.id}`])
+      expect(batch.pending).toEqual([`product:${doc.id}`])
     })
 
     it('a rollback: the save is gone, and its tag is kept all the same', async () => {
@@ -230,7 +230,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       )
       const { id } = atHook.at(-1)!
       expect(await seen(id)).toBeNull()
-      expect(batch.pending).toEqual([`item:${id}`])
+      expect(batch.pending).toEqual([`product:${id}`])
     })
 
     it('disableTransaction: the write committed before the throw, and its tag is kept', async () => {
@@ -242,7 +242,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       const { id, visible } = atHook.at(-1)!
       expect(visible).not.toBeNull() // no transaction: visible at the hook already
       expect(await seen(id)).not.toBeNull()
-      expect(batch.pending).toEqual([`item:${id}`])
+      expect(batch.pending).toEqual([`product:${id}`])
     })
 
     it("a hook's nested write commits in its own transaction; both tags are kept", async () => {
@@ -256,7 +256,9 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       const [parent, child] = atHook.slice(from)
       expect(await seen(parent!.id)).toBeNull()
       expect(await seen(child!.id)).not.toBeNull()
-      expect([...batch.pending].sort()).toEqual([`item:${child!.id}`, `item:${parent!.id}`].sort())
+      expect([...batch.pending].sort()).toEqual(
+        [`product:${child!.id}`, `product:${parent!.id}`].sort(),
+      )
     })
 
     it('a req goes in through { req }: refused with its transaction open, clean after', async () => {
@@ -276,7 +278,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
         },
       )
       expect(atHook.at(-1)).toEqual({ id: doc.id, visible: null })
-      expect(batch.pending).toEqual([`item:${doc.id}`])
+      expect(batch.pending).toEqual([`product:${doc.id}`])
       expect(Object.keys(req.context ?? {})).toEqual([])
     })
 
@@ -285,7 +287,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       const req = await createLocalReq({ context: batch.context() }, proof)
       const a = await proof.create({ collection: slug, data: fresh(), req })
       const b = await proof.create({ collection: slug, data: fresh(), req })
-      expect(batch.pending).toEqual([`item:${a.id}`, `item:${b.id}`])
+      expect(batch.pending).toEqual([`product:${a.id}`, `product:${b.id}`])
 
       expect(await settle(create({}))).toMatch(/outside a request scope/)
       expect(await seen(atHook.at(-1)!.id)).toBeNull()

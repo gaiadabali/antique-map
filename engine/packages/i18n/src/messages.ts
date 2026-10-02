@@ -1,17 +1,17 @@
 /**
- * The message-key loader (BRANDS.md §2). An app defines its keys with neutral defaults
- * (`defineMessages`); the brand supplies the values in its copy files, which `loadMessages()`
- * (`@engine/i18n/copy`) reads on the server; `createMessages()` joins them for one locale: the
- * brand's value in that locale, else in the brand's default locale, else the app's neutral
+ * The message-key joiner (CONVENTIONS.md §6). The app defines its keys with neutral defaults
+ * (`defineMessages`); each site supplies the values in its lexicon files, which the app imports
+ * on the server; `createMessages()` joins them for one locale: the
+ * site's value in that locale, else in the site's default locale, else the app's neutral
  * default — and records each key that fell back, so a gap is visible rather than silently
- * English. Brand voice never sits inside `engine/`. This file reads nothing, so it is safe in a
+ * English. A component never holds a word. This file reads nothing, so it is safe in a
  * Client Component given the values it renders.
  *
  * `{name}` is filled from the params (a number in the locale's digits). A count picks a plural
  * form: `t('cart.items', { count })` reads `cart.items.one` or `cart.items.other` by the
  * locale's plural rules.
  */
-import type { LocaleCode } from '@engine/config/schema'
+import type { LocaleCode } from '@engine/config/constants'
 
 import { formattingTag } from './locales'
 
@@ -20,7 +20,7 @@ export function defineMessages<const T extends Record<string, string>>(defaults:
   return defaults
 }
 
-/** One locale's values from a brand's copy, key → text. */
+/** One locale's values from a site's copy, key → text. */
 export type CopyValues = Readonly<Record<string, string>>
 
 export type MessageParams = Readonly<Record<string, string | number>>
@@ -38,14 +38,14 @@ export type PluralBase<K extends string, All extends string = K> = K extends `${
 export type Messages<K extends string> = {
   readonly locale: LocaleCode
   t(key: K | PluralBase<K>, params?: MessageParams): string
-  /** Keys this locale's copy lacks: each shows the brand default locale's value or the app's. */
+  /** Keys this locale's copy lacks: each shows the default locale's value or the app's. */
   readonly missing: readonly K[]
 }
 
 export type MessageSource<K extends string> = {
   readonly defaults: Readonly<Record<K, string>>
   readonly locale: LocaleCode
-  /** The brand's default locale, the first fallback. */
+  /** The site's default locale, the first fallback. */
   readonly defaultLocale: LocaleCode
 }
 
@@ -69,7 +69,7 @@ const CATEGORIES = ['zero', 'one', 'two', 'few', 'many'] as const
  * `one` and `other`, so every real set carries `.one` (`photosHint`, `listing.showResults`,
  * `message.available`, `message.works`); a code set such as `objectType.*` has neither the
  * sibling nor the `{count}`. A key outside a set is a plain key: required in every locale, and
- * a stray `objectType.one` in a brand's copy is unknown, not a plural form.
+ * a stray `objectType.one` in a site's copy is unknown, not a plural form.
  */
 export function pluralFormOf(
   key: string,
@@ -110,7 +110,7 @@ export function createMessages<K extends string>(
     if (needed && textOf(own, key) === undefined) missing.push(key)
     values.set(key, value)
   }
-  // A brand may write a form its locale selects that the app's defaults lack (a `few`).
+  // A site's copy may write a form its locale selects that the app's defaults lack (a `few`).
   for (const key of Object.keys(own)) {
     const form = pluralFormOf(key, source.defaults)
     const text = textOf(own, key)

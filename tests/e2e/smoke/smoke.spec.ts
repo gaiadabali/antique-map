@@ -1,141 +1,89 @@
 /**
- * The first smoke per server (TASKS.md 4.4.b), on the release's own tree started as a host runs it
- * (`.github/scripts/start-server.sh`): the home page in English and Indonesian with the brand's
- * name, `/admin/login`, and `/brand-assets/` — each file's type and caching (C13
- * `BRAND_ASSET_URL`). What the brand is — its name, locales and asset files — comes from its
- * committed config (the project's `metadata`, playwright.config.ts), never from this file.
- *
- * Brand assets follow the brand folder, not a switch: a file the folder ships must be linked at
- * its versioned URL and served `immutable` with its type; a file it does not ship yet (no brand
- * commits `site/assets/` before TASKS.md 4.5) must be linked bare and answer an uncached 404. So
- * the day 4.5 merges, the same cases start asserting the served files, with nothing to turn on.
+ * The smoke per host (TASKS.md 4.4.b, 2.2), on the release's own tree started as a host runs it
+ * (`.github/scripts/start-server.sh`): the host's own site — its home in English and Indonesian
+ * with its name, its own line and its own files — `/admin/login` on the admin host alone, and
+ * `/api/health`. What the site is comes from the project's `metadata` (`SITES`,
+ * playwright.config.ts), never from this file.
  */
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-
-import { expect, test, type APIRequestContext, type TestInfo } from '@playwright/test'
+import { expect, test, type TestInfo } from '@playwright/test'
 
 import type { SmokeMetadata } from '../../../playwright.config'
 
-type BrandFacts = {
-  readonly name: string
-  readonly locales: { readonly default: string; readonly supported: readonly string[] }
-  readonly assets: { readonly logo: string; readonly favicon: string }
-}
-
-/** C1 `BRAND_ASSET_TYPES`, restated: the smoke checks the route against the contract, not itself. */
-const TYPES: Record<string, string> = {
-  '.avif': 'image/avif',
-  '.ico': 'image/x-icon',
-  '.jpg': 'image/jpeg',
-  '.png': 'image/png',
-  '.svg': 'image/svg+xml',
-  '.webmanifest': 'application/manifest+json',
-  '.webp': 'image/webp',
-  '.woff2': 'font/woff2',
-}
-const IMMUTABLE = 'public, max-age=31536000, immutable'
-const SHORT = 'public, max-age=300'
-
-function brandOf(testInfo: TestInfo): { config: BrandFacts; assetsDir: string } {
-  const { brandRoot, configFile } = testInfo.project.metadata as SmokeMetadata
-  const site = join(dirname(testInfo.config.configFile!), brandRoot, 'site')
-  const config = JSON.parse(readFileSync(join(site, configFile), 'utf8')) as BrandFacts
-  return { config, assetsDir: join(site, 'assets') }
-}
+const siteOf = (testInfo: TestInfo) => testInfo.project.metadata as SmokeMetadata
 
 /** The default locale is unprefixed (ARCHITECTURE.md §11); every other one is `/<locale>`. */
-const homeOf = (config: BrandFacts, locale: string) =>
-  locale === config.locales.default ? '/' : `/${locale}`
+const homeOf = (site: SmokeMetadata, locale: string) =>
+  locale === site.locales.default ? '/' : `/${locale}`
 
-/** The page title holds the brand's name (its metadata's `title.default`, or a page's template). */
-const titleWith = (name: string) => new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 for (const locale of ['en', 'id']) {
-  test(`the home page in ${locale} answers 200 with the brand's name`, async ({
+  test(`the home page in ${locale} answers 200 with this host's own site`, async ({
     page,
   }, testInfo) => {
-    const { config } = brandOf(testInfo)
-    expect(config.locales.supported, `the brand serves ${locale}`).toContain(locale)
-    const response = await page.goto(homeOf(config, locale))
+    const site = siteOf(testInfo)
+    expect(site.locales.supported, `the site serves ${locale}`).toContain(locale)
+    const response = await page.goto(homeOf(site, locale))
     expect(response?.status()).toBe(200)
     await expect(page.locator('html')).toHaveAttribute('lang', locale)
-    await expect(page).toHaveTitle(titleWith(config.name))
-    await expect(page.locator('header')).toContainText(config.name)
-    await expect(page.locator('h1')).toBeVisible()
+    await expect(page.locator('html')).toHaveAttribute('data-site', site.site)
+    await expect(page).toHaveTitle(new RegExp(escape(site.name)))
+    await expect(page.locator('header')).toContainText(site.name)
+    await expect(page.locator('h1')).toHaveText(site.name)
+    await expect(page.locator('.site-lede')).not.toBeEmpty()
   })
 }
 
-test('/admin/login answers 200', async ({ request }) => {
-  const response = await request.get('/admin/login', { maxRedirects: 0 })
-  expect(response.status()).toBe(200)
-  expect(response.headers()['content-type']).toContain('text/html')
+test('each site’s home says its own line, in each language', async ({ page }, testInfo) => {
+  const site = siteOf(testInfo)
+  const ledes: string[] = []
+  for (const locale of site.locales.supported) {
+    await page.goto(homeOf(site, locale))
+    ledes.push((await page.locator('.site-lede').textContent()) ?? '')
+  }
+  expect(new Set(ledes).size, 'one line per language').toBe(site.locales.supported.length)
+  // The other site's home, asked for by its own host, says something else.
+  await page.goto(`http://${site.otherHost}:${new URL(page.url()).port}/`)
+  expect(await page.locator('.site-lede').textContent()).not.toBe(ledes[0])
 })
 
-/** Every `/brand-assets/…` URL a page links, as its HTML spells it. */
-async function linkedAssets(request: APIRequestContext, path: string): Promise<URL[]> {
-  const html = await (await request.get(path)).text()
-  const found = [...html.matchAll(/(?:src|href)="(\/brand-assets\/[^"]+)"/g)]
-  return [...new Set(found.map((match) => match[1]!.replaceAll('&amp;', '&')))].map(
-    (href) => new URL(href, 'http://brand.invalid'),
-  )
-}
+test('the home links its canonical and alternates on the site’s own origin', async ({
+  page,
+}, testInfo) => {
+  const site = siteOf(testInfo)
+  // The server's allow-list names this host, on this port: its origin is the site's canonical one.
+  const { origin } = new URL(testInfo.project.use.baseURL ?? '')
+  await page.goto('/id')
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `${origin}/id`)
+  // The English home is the origin itself; Next writes it without the trailing `/`.
+  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', origin)
+  await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', site.name)
+})
 
-const assetPathOf = (url: URL) =>
-  url.pathname.slice('/brand-assets/'.length).split('/').map(decodeURIComponent)
+test('the site’s own files are served, at its root URLs too', async ({ request }, testInfo) => {
+  const { site } = siteOf(testInfo)
+  for (const [path, type] of [
+    [`/${site}/logo.svg`, 'image/svg+xml'],
+    [`/${site}/og.png`, 'image/png'],
+    ['/favicon.ico', 'image/'],
+    ['/apple-touch-icon.png', 'image/png'],
+    ['/site.webmanifest', 'manifest'],
+  ] as const) {
+    const response = await request.get(path)
+    expect(response.status(), path).toBe(200)
+    expect(response.headers()['content-type'] ?? '', path).toContain(type)
+  }
+  // The other site's files are not this host's: an internal path, so not found.
+  const other = site === 'gallery' ? 'shop' : 'gallery'
+  expect((await request.get(`/${other}/logo.svg`)).status()).toBe(404)
+})
 
-test('the brand files the home page links are served with their type and caching', async ({
+test('/admin/login answers 200 on the admin host, and 404 on the other', async ({
   request,
 }, testInfo) => {
-  const { config, assetsDir } = brandOf(testInfo)
-  const urls = await linkedAssets(request, homeOf(config, config.locales.default))
-  const linked = urls.map((url) => assetPathOf(url).join('/'))
-  // The shell links its logo and favicon through the route, shipped or not.
-  expect(linked).toContain(config.assets.logo)
-  expect(linked).toContain(config.assets.favicon)
-
-  for (const url of urls) {
-    const segments = assetPathOf(url)
-    const extension = /\.[^./]+$/.exec(url.pathname)?.[0].toLowerCase() ?? ''
-    const shipped = existsSync(join(assetsDir, ...segments))
-    const version = url.searchParams.get('v')
-    const at = `${url.pathname}${url.search}`
-    if (!shipped) {
-      expect(version, `${at}: a file the brand does not ship is linked bare`).toBeNull()
-      const missing = await request.get(at)
-      expect(missing.status(), at).toBe(404)
-      expect(missing.headers()['cache-control'], at).toBe('no-store')
-      continue
-    }
-    expect(version, `${at}: a shipped file is linked at its version`).toMatch(/^[0-9a-f]{8}$/)
-    const served = await request.get(at)
-    expect(served.status(), at).toBe(200)
-    const headers = served.headers()
-    expect(headers['content-type'], at).toBe(TYPES[extension])
-    expect(headers['x-content-type-options'], at).toBe('nosniff')
-    expect(headers['cache-control'], at).toBe(IMMUTABLE)
-    if (extension === '.svg') expect(headers['content-security-policy'], at).toContain("'none'")
-    const etag = headers['etag']
-    expect(etag, at).toMatch(/^"[0-9a-f]{64}"$/)
-
-    const stale = await request.get(`${url.pathname}?v=00000000`)
-    expect(stale.status(), `${url.pathname}, a stale version`).toBe(200)
-    expect(stale.headers()['cache-control']).toBe(SHORT)
-    const revalidated = await request.get(url.pathname, { headers: { 'if-none-match': etag! } })
-    expect(revalidated.status(), `${url.pathname}, If-None-Match`).toBe(304)
-  }
-})
-
-test('/brand-assets/ serves nothing outside the brand’s assets or of another type', async ({
-  request,
-}) => {
-  for (const path of [
-    '/brand-assets/..%2Fbrand.config.json',
-    '/brand-assets/%2e%2e/brand.config.json',
-    '/brand-assets/notes.txt',
-  ]) {
-    expect((await request.get(path)).status(), path).toBe(404)
-  }
+  const response = await request.get('/admin/login', { maxRedirects: 0 })
+  expect(response.status()).toBe(siteOf(testInfo).admin ? 200 : 404)
+  expect(response.headers()['content-type']).toContain('text/html')
 })
 
 test('/api/health answers 200 with app, database, storage and the environment', async ({
