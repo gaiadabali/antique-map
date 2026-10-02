@@ -106,6 +106,8 @@ export const STAFF_FIELDS: Field[] = [
   {
     name: 'rights',
     type: 'group',
+    // Staff only, as the header says (1.2.b: it had no access, so a public read returned it).
+    access: STAFF_ONLY_ACCESS,
     admin: { description: 'Whether reproductions may be made and sold from this work.' },
     fields: [
       {
@@ -142,6 +144,8 @@ export const STAFF_FIELDS: Field[] = [
     name: 'origin',
     type: 'group',
     label: 'Provenance copy',
+    // The importer writes it on the Local API with no user, which skips field access.
+    access: STAFF_ONLY_ACCESS,
     admin: {
       readOnly: true,
       description:

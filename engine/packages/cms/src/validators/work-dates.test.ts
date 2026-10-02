@@ -67,6 +67,60 @@ describe('a work’s dates (8.2.b): order and precision', () => {
     ).toEqual({})
   })
 
+  it('refuses only what no reading allows: before, after and circa are open on their side (1.2.b)', () => {
+    const issueCirca1726 = { precision: 'circa', from: 1726 } as const
+    // "before 1730" allows 1725: a plate dated so beside an issue c. 1726 passes.
+    expect(
+      workDateErrors(
+        { date: issueCirca1726, dateOnPlate: { precision: 'before', from: 1730 } },
+        LATEST,
+      ),
+    ).toEqual({})
+    // "after 1750" allows 1765: a plate of 1760 may precede it.
+    expect(
+      workDateErrors(
+        {
+          date: { precision: 'after', from: 1750 },
+          dateOnPlate: { precision: 'exact', from: 1760 },
+        },
+        LATEST,
+      ),
+    ).toEqual({})
+    // A first edition "before 1740" may be 1720, before an issue of 1726.
+    expect(
+      workDateErrors(
+        {
+          date: { precision: 'exact', from: 1726 },
+          firstEdition: { precision: 'before', from: 1740 },
+        },
+        LATEST,
+      ),
+    ).toEqual({})
+    // Two circa years a little apart may be one year; far apart they cannot.
+    expect(
+      workDateErrors(
+        { date: issueCirca1726, dateOnPlate: { precision: 'circa', from: 1730 } },
+        LATEST,
+      ),
+    ).toEqual({})
+    expect(
+      workDateErrors(
+        { date: issueCirca1726, dateOnPlate: { precision: 'exact', from: 1790 } },
+        LATEST,
+      ),
+    ).toEqual({ 'dateOnPlate.from': expect.stringMatching(/plate comes after/) })
+    // An open side never opens the other: "after 1750" still cannot follow an issue of 1726.
+    expect(
+      workDateErrors(
+        {
+          date: { precision: 'exact', from: 1726 },
+          firstEdition: { precision: 'after', from: 1750 },
+        },
+        LATEST,
+      ),
+    ).toEqual({ 'firstEdition.from': expect.stringMatching(/first edition comes after/) })
+  })
+
   it('refuses a first edition after this issue, and never compares the plate with it', () => {
     expect(
       workDateErrors(

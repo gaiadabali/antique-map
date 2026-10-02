@@ -82,6 +82,9 @@ describe.skipIf(!server)('works: access and invalidation on a real database', ()
     expect(publicDoc).not.toHaveProperty('physical')
     expect(publicDoc).not.toHaveProperty('cataloguing')
     expect(publicDoc).not.toHaveProperty('legacy')
+    // The rights a reproduction rests on and a copy's origin are staff's too (1.2.b).
+    expect(publicDoc).not.toHaveProperty('rights')
+    expect(publicDoc).not.toHaveProperty('origin')
     for (const role of ['editor', 'analyst', 'contributor'] as const) {
       const doc = await json(
         await stack.rest('GET', `/api/works/${published.id}?depth=0`, { role }),
@@ -97,6 +100,8 @@ describe.skipIf(!server)('works: access and invalidation on a real database', ()
       depth: 0,
     })
     expect(loader).not.toHaveProperty('physical')
+    expect(loader).not.toHaveProperty('rights')
+    expect(loader).not.toHaveProperty('origin')
     expect(loader.title).toBe('Bali by François Valentijn, c. 1726')
   })
 
