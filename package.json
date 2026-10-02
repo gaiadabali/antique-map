@@ -9,7 +9,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run check:filesize && pnpm run check:generated && pnpm run tasks:lint && pnpm run tasks:check",
+    "verify": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run check:filesize && pnpm run check:generated && pnpm run tasks:lint && pnpm run tasks:check && pnpm run check:tokens",
     "format": "prettier --write --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"**/*.{js,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,yaml,yml}\" \"!pnpm-lock.yaml\" \"!.claude/**\"",
     "lint": "eslint --max-warnings=0 .",
@@ -24,6 +24,7 @@
     "db:list": "node engine/tooling/db/cli.mjs list",
     "check:filesize": "node engine/tooling/check-file-size/cli.mjs",
     "check:generated": "node engine/tooling/config-drift/cli.mjs",
+    "check:tokens": "node engine/tooling/token-lint/cli.mjs",
     "tasks:lint": "node engine/tooling/tasks-lint/cli.mjs",
     "tasks:sync": "node scripts/progress.mjs",
     "tasks:tick": "node scripts/progress.mjs --tick",

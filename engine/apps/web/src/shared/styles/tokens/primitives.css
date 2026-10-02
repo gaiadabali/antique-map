@@ -1,0 +1,74 @@
+/* =====================================================================
+   Tier 1 primitives — raw scales shared by both sites.
+   Colours are the design team's starting points (DESIGN-SYSTEM.md §1, §4);
+   the two brand files override the public-facing roles, not these names.
+   ponytail: if the palette grows, split this into colours/shape/motion files.
+   ===================================================================== */
+
+:root {
+  /* colour ramp */
+  --primitive-linen: #f4f1ea;
+  --primitive-paper: #ffffff;
+  --primitive-cream: #f1e5d3;
+  --primitive-off-black: #1a1916;
+  --primitive-brown: #593d21;
+  --primitive-ink-soft: #5a564f;
+  --primitive-warm-grey: #8c877d;
+  --primitive-bronze: #6e5a43;
+  --primitive-champagne: #a39174;
+  --primitive-gold: #c4a86b;
+  --primitive-positive: #2e6b3a;
+  --primitive-caution: #8a5a00;
+  --primitive-critical: #a3261f;
+  --primitive-scrim: #12121299;
+
+  /* typography sizes (px values in comments are the 16px-rem baseline) */
+  --primitive-size-h1: clamp(2.5rem, 1.6rem + 3.75vw, 5rem); /* 40–80 */
+  --primitive-size-h2: 2.375rem; /* 38 */
+  --primitive-size-h3: 1.5rem; /* 24 */
+  --primitive-size-card-title: 1.5625rem; /* 25 */
+  --primitive-size-number: 2.5rem; /* 40 */
+  --primitive-size-body-large: 1.125rem; /* 18 */
+  --primitive-size-body: 0.9375rem; /* 15 */
+  --primitive-size-small: 0.875rem; /* 14 */
+  --primitive-size-micro: 0.8125rem; /* 13 */
+  --primitive-size-caption: 0.75rem; /* 12 */
+
+  --primitive-line-h1: 1.15;
+  --primitive-line-h2: 1.2;
+  --primitive-line-h3: 1.25;
+  --primitive-line-body: 1.6;
+  --primitive-line-small: 1.5;
+
+  --primitive-tracking-h1: -0.015em;
+  --primitive-tracking-tagline: 0.14em;
+  --primitive-tracking-eyebrow: 0.1em;
+
+  /* 4px space scale */
+  --primitive-space-1: 0.25rem;
+  --primitive-space-2: 0.5rem;
+  --primitive-space-3: 0.75rem;
+  --primitive-space-4: 1rem;
+  --primitive-space-5: 1.5rem;
+  --primitive-space-6: 2rem;
+  --primitive-space-7: 3rem;
+  --primitive-space-8: 4rem;
+  --primitive-space-9: 6rem;
+  --primitive-space-10: 8rem;
+
+  /* shape */
+  --primitive-radius-none: 0;
+  --primitive-radius-control: 2px;
+  --primitive-rule-hair: 1px;
+  --primitive-rule-strong: 2px;
+  --primitive-focus-width: 2px;
+  --primitive-shadow-header: 0 2px 10px #0000000d;
+
+  /* motion */
+  --primitive-dur-in: 320ms;
+  --primitive-dur-out: 200ms;
+  --primitive-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* numeric style */
+  --primitive-numeric-tabular: tabular-nums;
+}
