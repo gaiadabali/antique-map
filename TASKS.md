@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/5 | 14/20 | 0 | `███████░░░`  70% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 2/5 | 15/20 | 0 | `████████░░`  75% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **5/49** | **34/196** | **8** | `██░░░░░░░░`  17% |
+| **All** | 11 phases | | | **6/49** | **35/196** | **8** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -80,7 +80,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | |
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | |
-| 2·W2 | 2.4 Collections trimmed, the CMS without brands | senior-db | `feat/2.4-cms` | 2026-10-02 | |
 
 ## Decisions for the owner
 
@@ -259,7 +258,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Goal:** the hostname picks the site, there is one app and one database, and the brand machinery is gone from the code.
 **Done when:** `pnpm dev` serves `gallery.localhost:3000` and `shop.localhost:3000` from one process with two different placeholder home pages, in English and Indonesian; an unknown host is a 404; `/admin` answers only on the admin host; one initial migration builds the database; no `BRAND`, `brand.config.json` or brand directory remains; `pnpm verify` and a production build with no database variables are green.
 **Waves:** W1 — 2.1 · W2 — 2.2, 2.3, 2.4 · W3 — 2.5
-**W2 merge order (2026-10-02):** 2.4, then 2.2, then 2.3 — each deletion lands only after nothing reads what it deletes: 2.4 drops the CMS's brand uses, 2.2 then deletes the brand loader and `access/brand.ts`, 2.3 last deletes `test/` and the brand directories. A later branch is re-applied on merged `main` before it merges. Only 2.4 regenerates `payload-types.ts` and `importMap.js` in W2; its interim migration is thrown away by 2.5.
+**W2 merge order (2026-10-02):** 2.4, then 2.2, then 2.3 — each deletion lands only after nothing reads what it deletes: 2.4 drops the CMS's brand uses, 2.2 then deletes the brand loader and `access/brand.ts`, 2.3 last deletes `test/` and the brand directories. A later branch is re-applied on merged `main` before it merges. 2.5 needs only 2.4's schema (2.2 changes access and config, 2.3 deletes folders), so it runs beside 2.2 and merges after it. Only 2.4 regenerates `payload-types.ts` and `importMap.js` in W2; its interim migration is thrown away by 2.5.
 
 - [x] **2.1 One app: rename, merge and re-point the build** · needs: phase 1 — ✅ 2026-10-02 f9b57e1
   - **Lane** PLT + OPS · **Agent** senior-fe, with devops for CI · **Wave** W1
@@ -292,7 +291,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.3.c delete `indies-gallery/`, `old-east-indies/` and `test/`
   - [ ] 2.3.d **Check:** no directory outside `engine/`, `docs/`, `tests/` and `scripts/` holds site content; `pnpm verify` is green; the migrate tests read their moved data.
 
-- [ ] **2.4 Collections trimmed, the CMS without brands** · needs: 2.1 — 🔄 2·W2
+- [x] **2.4 Collections trimmed, the CMS without brands** · needs: 2.1 — ✅ 2026-10-02 038e0e7
   - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W2
   - **Owns** `engine/packages/cms/{package.json,payload-types.ts}`, `engine/packages/cms/src/{payload.config.ts,instance.ts,instance.test.ts,instance.db.test.ts}`, `engine/packages/cms/src/{collections,globals,db,fields,hooks,seed,registries,validators,migrations}/**`, `engine/packages/media/**`
   - **Read** CARRY-OVER.md §2.5, §3 step 7 and §6.4, CONTENT-MODEL.md §3–§7
@@ -300,9 +299,9 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.4.a delete the 31 stub collections and six stub globals, the frozen-slug assertion, `engine-tables.ts`, `idempotency.ts` and the `nl` locale; keep `assertDraftAccess`, `publishedOrStaff`, the users guards and `hooks/request-temp-files`
   - [x] 2.4.b users get the roles `owner`, `editor` and `store` (a `store` relation); media and masters lose the brand segment and the outlet logic (one media bucket, one masters bucket); remove room plates; strip the works sister-sync guard
   - [x] 2.4.c remove every brand use in the Owns: imports of `access/brand`, `access/modules` and the `@engine/config` brand loader, `BRAND` and `BRAND_ROOT`; move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json` and repoint every CMS test off the root `test/`; as W2's schema lead, generate one interim migration and regenerate `payload-types.ts` and `importMap.js`
-  - [ ] 2.4.d **Check:** `pnpm verify` is green; a search finds no `BRAND`, no `access/brand` or `access/modules` import and no brand-loader import in the CMS outside `src/access/`, and no CMS test reading the root `test/`; the works and users `*.db.test.ts` pass against Postgres.
+  - [x] 2.4.d **Check:** `pnpm verify` is green; a search finds no `BRAND`, no `access/brand` or `access/modules` import and no brand-loader import in the CMS outside `src/access/`, and no CMS test reading the root `test/`; the works and users `*.db.test.ts` pass against Postgres.
 
-- [ ] **2.5 The migrations reset** · needs: 2.2, 2.3, 2.4
+- [ ] **2.5 The migrations reset** · needs: 2.4
   - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W3
   - **Owns** `engine/packages/cms/src/{migrations,db}/**`, `engine/packages/cms/src/payload-types.ts`, the generated `importMap.js`
   - **Read** CARRY-OVER.md §3 step 7 and §6.4, the 1.1 triage file on 8.5's staging state
