@@ -3,10 +3,10 @@
  * shown as "1750" (DESIGN-SYSTEM.md §10, C2 `FuzzyDateVM`), and the cataloguer's own wording
  * ("1724–26") wins over any formatter. Years are written as years — never grouped as `1,750`.
  *
- * The words are neutral defaults per locale; an app passes the brand's own (from its copy,
- * the lexicon of TASKS.md 6.3) when the brand words them differently — "ca." for "c.".
+ * The words are neutral defaults per locale; an app passes the site's own (from its copy,
+ * the lexicon of TASKS.md 6.3) when the site words them differently — "ca." for "c.".
  */
-import type { LocaleCode } from '@engine/config/schema'
+import type { LocaleCode } from '@engine/config/constants'
 
 import { formattingTag } from './locales'
 

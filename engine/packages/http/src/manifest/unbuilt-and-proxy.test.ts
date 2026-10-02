@@ -1,22 +1,26 @@
-// C13 v1.3 (TASKS.md 4.3.b): the placeholder a mount names while its handler is unbuilt, the brand
-// files the root URLs are answered from, and what the proxy sets beyond its rewrite — a missing
-// User-Agent, the public query and its own not-found's status.
+// The placeholder a mount names while its handler is unbuilt, the site files the root URLs are
+// answered from, and what the proxy sets beyond its rewrite — a missing User-Agent, the public
+// query, the true host and its own not-found's status.
+import { existsSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
+import { SITE_KEYS } from '@engine/config/sites'
 import { describe, expect, it } from 'vitest'
 
 import {
-  BRAND_ASSET_URL,
-  BRAND_ROOT_ASSETS,
   ENGINE_ROUTES,
+  HOST_FREE_PATHS,
+  PROXY_MATCHER,
   PROXY_NOT_FOUND_STATUS,
   PROXY_REQUEST_HEADERS,
   PROXY_USER_AGENT,
   REVALIDATE_REQUEST,
-  ROOT_REWRITES,
+  SITE_ASSETS,
   UNBUILT_HANDLER,
   unbuiltHandlerOf,
 } from '../manifest'
 
-describe('C13 — the placeholder for an unbuilt handler', () => {
+describe('the placeholder for an unbuilt handler', () => {
   it('is one module, with robots’ fail-closed answer its one exception', () => {
     expect(unbuiltHandlerOf('/api/x/sitemap/[[...path]]')).toBe('@engine/http/unbuilt')
     expect(unbuiltHandlerOf('/api/x/well-known/[...path]')).toBe('@engine/http/unbuilt')
@@ -45,19 +49,41 @@ describe('C13 — the placeholder for an unbuilt handler', () => {
   })
 })
 
-describe('C13 — the brand files a root URL is answered from', () => {
-  it('answers every brand-file root URL from a file BRAND_ROOT_ASSETS names, or the favicon', () => {
-    const named = Object.values(BRAND_ROOT_ASSETS).map((file) => `${BRAND_ASSET_URL.path}${file}`)
-    const brandFiles = ROOT_REWRITES.filter((row) => row.to.startsWith(BRAND_ASSET_URL.path))
-    expect(brandFiles.length).toBeGreaterThan(0)
-    for (const { from, to } of brandFiles) {
-      expect(named.includes(to) || to === `${BRAND_ASSET_URL.path}:favicon`, from).toBe(true)
+describe('the site files a page links and the root URLs answer from', () => {
+  const PUBLIC = fileURLToPath(new URL('../../../../apps/web/public/', import.meta.url))
+
+  it('are shipped by every site, under its own folder of the app’s public/', () => {
+    for (const site of SITE_KEYS) {
+      for (const file of Object.values(SITE_ASSETS)) {
+        expect(existsSync(`${PUBLIC}${site}/${file}`), `${site}/${file}`).toBe(true)
+      }
     }
-    expect(named).toEqual(['/brand-assets/apple-touch-icon.png', '/brand-assets/site.webmanifest'])
   })
 })
 
-describe('C13 — what the proxy sets beyond its rewrite', () => {
+describe('what the proxy lets through on any host, and its matcher', () => {
+  it('lets through only the mounted health route and bearer-authenticated machine routes', () => {
+    for (const path of HOST_FREE_PATHS) {
+      const mounted = ENGINE_ROUTES.filter((route) => (route.path + '/').startsWith(path))
+      expect(mounted.length, path).toBeGreaterThan(0)
+      for (const route of mounted) {
+        const machine = route.auth.every((auth) => auth === 'cron' || auth === 'revalidate')
+        expect(route.path === '/api/health' || machine, route.path).toBe(true)
+      }
+    }
+  })
+
+  it('runs on /api/ too, so Payload’s REST is checked against ADMIN_HOST', () => {
+    const [matcher = ''] = PROXY_MATCHER
+    const runs = (path: string) => new RegExp(`^${matcher}$`).test(path)
+    expect(runs('/api/users')).toBe(true)
+    expect(runs('/admin')).toBe(true)
+    expect(runs('/')).toBe(true)
+    expect(runs('/_next/static/chunk.js')).toBe(false)
+  })
+})
+
+describe('what the proxy sets beyond its rewrite', () => {
   it('names each request header once, in the lower case Next hands a page', () => {
     const names = Object.values(PROXY_REQUEST_HEADERS)
     expect(new Set(names).size).toBe(names.length)
@@ -77,7 +103,7 @@ describe('C13 — what the proxy sets beyond its rewrite', () => {
   })
 })
 
-describe('C13 — the revalidate route invalidate(tags) posts to from outside a request', () => {
+describe('the revalidate route invalidate(tags) posts to from outside a request', () => {
   it('is a mounted POST behind its own secret, with bounded bodies', () => {
     const route = ENGINE_ROUTES.find((each) => each.path === '/api/x/revalidate')
     expect(route).toMatchObject({ methods: ['POST'], auth: ['revalidate'], owner: 'WEB' })

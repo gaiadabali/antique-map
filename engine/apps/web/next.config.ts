@@ -1,9 +1,9 @@
 /**
  * The one app's config (ARCHITECTURE.md §4): one build serves both sites, so nothing here may
- * name a site, read `BRAND`, or bake a site's value in — what a process serves is runtime config
- * (today `BRAND` / `BRAND_ROOT`; the request's host from TASKS.md 2.2). No `NEXT_PUBLIC_*`, no
- * `headers()` CSP (the proxy builds it per request, SECURITY.md), no route segment config but the
- * root layout's `instant = false` (Cache Components rejects the rest, ARCHITECTURE.md §6).
+ * name a site or bake a site's value in — which site a request is for is its `Host`, picked by the
+ * proxy at runtime against the env allow-list (TASKS.md 2.2). No `NEXT_PUBLIC_*`, no `headers()`
+ * CSP (the proxy builds it per request, SECURITY.md), no route segment config but each site root
+ * layout's `instant = false` (Cache Components rejects the rest, ARCHITECTURE.md §6).
  *
  * The build touches no database (CONVENTIONS.md §12): `output: 'standalone'` is assembled into
  * the deploy artifact by `.github/scripts/assemble-artifact.sh`.
@@ -56,8 +56,8 @@ const payloadHeaders = withAdmin.headers
 /**
  * `withPayload` sends `Accept-CH`, `Critical-CH` and `Vary: Sec-CH-Prefers-Color-Scheme` on every
  * path (`/:path*`) for the admin's colour theme. On the storefront `Critical-CH` makes Chromium
- * request every first visit twice, and the `Vary` splits each `immutable` brand asset in a shared
- * cache (4.1 reviews: senior-fe #3, senior-be #11). The admin keeps them; nothing else gets them.
+ * request every first visit twice, and the `Vary` splits each site file in a shared cache (4.1
+ * reviews: senior-fe #3, senior-be #11). The admin keeps them; nothing else gets them.
  */
 export default {
   ...withAdmin,
