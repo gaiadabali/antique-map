@@ -2,11 +2,12 @@
  * `pages` — information and editorial pages for both sites (CONTENT-MODEL.md §6).
  *
  * Drafts enabled, so public reads see published only (`publishedOrStaff`). Owner and editor write;
- * the public reads published. Unique `(site, slug)`.
+ * the public reads published; store staff read none. Unique `(site, slug)`.
  */
 import type { CollectionConfig } from 'payload'
 
 import { DRAFTED_ACCESS } from '../../access/published'
+import { notForStoreStaff } from '../../access/store-staff'
 import { hasRole } from '../users/roles'
 import { PAGE_KIND_LABELS, PAGE_KINDS } from './kinds'
 import { pagePublishGuard } from './publish-guard'
@@ -15,8 +16,10 @@ const pagesPublishers = ({ req }: Parameters<import('payload').Access>[0]) =>
   hasRole(req.user, 'owner', 'editor')
 
 export const PAGES_ACCESS = {
-  read: DRAFTED_ACCESS.read,
-  readVersions: DRAFTED_ACCESS.readVersions,
+  // Store staff read no pages (CONTENT-MODEL.md §7: "—"; TASKS.md 3.5.b): signed in, they would
+  // otherwise get the public's published read through the API.
+  read: notForStoreStaff(DRAFTED_ACCESS.read),
+  readVersions: notForStoreStaff(DRAFTED_ACCESS.readVersions),
   create: pagesPublishers,
   update: pagesPublishers,
   delete: pagesPublishers,
