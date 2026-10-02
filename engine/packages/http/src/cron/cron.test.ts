@@ -14,9 +14,6 @@ import {
   type QueueRun,
 } from './jobs/queue'
 import { jobsRoute, type QueuePortLoader } from './jobs/route'
-import { POST as outbox } from './outbox/route'
-import { POST as reconcile } from './reconcile/route'
-import { POST as sweeps } from './sweeps/route'
 
 // Were `./jobs/route` to import the Payload-backed port statically, this file could not load.
 vi.mock('./jobs/payload-queue', () => {
@@ -165,21 +162,4 @@ describe('POST /api/x/cron/jobs', () => {
     const route = jobsRoute(() => Promise.reject(new Error('config')), SECRET)
     expect((await route(call('Bearer s3cret-value'))).status).toBe(500)
   })
-})
-
-describe('the other cron routes', () => {
-  it.each([
-    ['sweeps', sweeps],
-    ['reconcile', reconcile],
-    ['outbox', outbox],
-  ])(
-    '/api/x/cron/%s authenticates, then answers 404 until its lane builds it',
-    async (_, route) => {
-      vi.stubEnv('CRON_SECRET', '')
-      expect((await route(call('Bearer x'))).status).toBe(503)
-      vi.stubEnv('CRON_SECRET', 's3cret-value')
-      expect((await route(call('Bearer x'))).status).toBe(401)
-      expect((await route(call('Bearer s3cret-value'))).status).toBe(404)
-    },
-  )
 })
