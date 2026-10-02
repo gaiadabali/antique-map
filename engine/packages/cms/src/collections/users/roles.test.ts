@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest'
 import { firstUserIsOwner, keepAnOwnerOnUpdate } from './guards'
 import { Users } from './index'
 import { roleOf, storeOf } from './roles'
+import { ownerChangesEmail } from './self-edit'
 import { oneStoreForStoreStaff } from './store-rule'
 
 type Hook = (args: never) => unknown
@@ -50,8 +51,40 @@ describe('a store user has exactly one store', () => {
   it('runs after the first-user rule, before the last-owner rule', () => {
     expect(Users.hooks?.beforeChange).toEqual([
       firstUserIsOwner,
+      ownerChangesEmail,
       oneStoreForStoreStaff,
       keepAnOwnerOnUpdate,
     ])
+  })
+})
+
+describe('staff change their own name and password, never their email', () => {
+  const save = async (user: unknown, data: object) =>
+    call(ownerChangesEmail, {
+      data,
+      operation: 'update',
+      originalDoc: { id: 4, email: 'ayu@indies.test' },
+      req: { ...req, user } as unknown as PayloadRequest,
+    })
+  const editor = { id: 4, collection: 'users', role: 'editor' }
+  const store = { id: 4, collection: 'users', role: 'store', store: 1 }
+
+  it('refuses an editor’s or a store user’s new email, naming the field', async () => {
+    for (const user of [editor, store]) {
+      await expect(save(user, { email: 'me@elsewhere.test' })).rejects.toBeInstanceOf(
+        ValidationError,
+      )
+      // The admin re-sends every field: the same email, however written, is no change.
+      expect(await save(user, { email: 'AYU@indies.test', name: 'Ayu' })).toEqual({
+        email: 'AYU@indies.test',
+        name: 'Ayu',
+      })
+    }
+  })
+
+  it('lets the owner, and a script with no user, change it', async () => {
+    const owner = { id: 1, collection: 'users', role: 'owner' }
+    expect(await save(owner, { email: 'new@indies.test' })).toEqual({ email: 'new@indies.test' })
+    expect(await save(null, { email: 'new@indies.test' })).toEqual({ email: 'new@indies.test' })
   })
 })
