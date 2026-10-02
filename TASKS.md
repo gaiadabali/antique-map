@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/4 | 4/18 | 0 | `██░░░░░░░░`  22% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/4 | 5/18 | 0 | `███░░░░░░░`  28% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **5/48** | **24/194** | **8** | `█░░░░░░░░░`  12% |
+| **All** | 11 phases | | | **5/48** | **25/194** | **8** | `█░░░░░░░░░`  13% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -285,7 +285,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `indies-gallery/**`, `old-east-indies/**`, `test/**`, `engine/packages/migrate/data/**`, `engine/apps/web/public/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`
   - **Read** CARRY-OVER.md §2.6 and §3 step 6
   - _Requirements: 12.2_
-  - [ ] 2.3.a copy → `apps/web/src/sites/{gallery,shop}/lexicon/`; assets → `apps/web/public/{gallery,shop}/`; legacy inventories and schema notes → `packages/migrate/data/{gallery,shop}/`; fix the paths in the migrate READMEs and `public-read.json`
+  - [x] 2.3.a copy → `apps/web/src/sites/{gallery,shop}/lexicon/`; assets → `apps/web/public/{gallery,shop}/`; legacy inventories and schema notes → `packages/migrate/data/{gallery,shop}/`; fix the paths in the migrate READMEs and `public-read.json`
   - [ ] 2.3.b move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json`
   - [ ] 2.3.c delete `indies-gallery/`, `old-east-indies/` and `test/`
   - [ ] 2.3.d **Check:** no directory outside `engine/`, `docs/`, `tests/` and `scripts/` holds site content; `pnpm verify` is green; the migrate tests read their moved data.
