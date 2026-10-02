@@ -71,11 +71,14 @@ describe.skipIf(!stackAvailable)(
       expect(await messages(inIndonesianOnly)).toMatch(/default language \(en\) first/)
     }, 60_000)
 
-    it('requires a role and a provenance, with no default for provenance', async () => {
+    it('requires a role, a provenance and a subject, with no default for provenance', async () => {
       expect(await messages(await upload({ alt: valid.alt, role: 'recto' }))).toMatch(/provenance/)
       expect(await messages(await upload({ alt: valid.alt, provenance: 'photograph' }))).toMatch(
         /role/,
       )
+      expect(
+        await messages(await upload({ alt: valid.alt, role: 'recto', provenance: 'photograph' })),
+      ).toMatch(/subject/)
       expect((await upload({ ...valid, role: 'primary' })).status).toBe(400)
     }, 60_000)
 

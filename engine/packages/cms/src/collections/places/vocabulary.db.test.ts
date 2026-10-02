@@ -80,7 +80,7 @@ describe.skipIf(!server)('the discovery vocabulary on a real database', () => {
     expect(both.slug).toBe('java')
   })
 
-  it('refuses to put a place under its own descendant — published or as a draft', async () => {
+  it('a place cannot be its own ancestor — directly or two levels down — published or as a draft', async () => {
     const { docs } = await db.payload.find({
       collection: 'places',
       where: { slug: { equals: 'java' } },
@@ -226,26 +226,6 @@ describe.skipIf(!server)('the discovery vocabulary on a real database', () => {
     ).toMatch(/keeps its vocabulary/)
   })
 
-  it('saves a source, and publishes it only with its full citation', async () => {
-    const errors = await refusedWith(() =>
-      db.payload.create({
-        collection: 'sources',
-        data: { shortCite: 'Koeman', _status: 'published' },
-      }),
-    )
-    expect(Object.keys(errors)).toEqual(['citation'])
-    const source = await db.payload.create({
-      collection: 'sources',
-      data: {
-        shortCite: 'Tooley (Australia)',
-        citation: 'Tooley, R. V. The Mapping of Australia. London, 1979.',
-        year: 1979,
-        _status: 'published',
-      },
-    })
-    expect(source.slug).toBe('tooley-australia')
-  })
-
   it('shows the public published records only; an editor publishes, store staff touch nothing', async () => {
     const pub = await db.payload.find({ collection: 'places', overrideAccess: false, depth: 0 })
     expect(pub.docs.map((doc) => doc.name).sort()).toEqual(['Jakarta', 'Java'])
@@ -263,28 +243,33 @@ describe.skipIf(!server)('the discovery vocabulary on a real database', () => {
     const [editor, store] = [await asUser('editor'), await asUser('store')]
     const as = (user: typeof editor) => ({ overrideAccess: false, user })
     const draft = await db.payload.create({
-      collection: 'sources',
+      collection: 'makers',
       ...as(editor),
       draft: true,
-      data: { shortCite: 'Parry' },
+      data: { name: 'Parry', sortName: 'PARRY' },
     })
     const published = await db.payload.update({
-      collection: 'sources',
+      collection: 'makers',
       id: draft.id,
       ...as(editor),
-      data: { citation: 'Parry, P. Cartobibliography.', _status: 'published' },
+      data: { _status: 'published' },
     })
     expect(published._status).toBe('published')
     await expect(
-      db.payload.create({ collection: 'sources', ...as(store), data: { shortCite: 'Tooley' } }),
+      db.payload.create({
+        collection: 'makers',
+        ...as(store),
+        data: { name: 'Tooley', sortName: 'TOOLEY' },
+      }),
     ).rejects.toThrow()
     // Store staff read no catalogue record (CONTENT-MODEL.md §7): refused, not merely empty.
     await expect(
       db.payload.find({ collection: 'places', ...as(store), depth: 0 }),
     ).rejects.toThrow()
+    // The `sources` collection is gone (TASKS.md 3.2.a): its tables never existed here.
     const tables = await db.pool.query(
       `SELECT count(*)::int AS n FROM information_schema.tables WHERE table_name IN ('makers', 'places', 'terms', 'sources', '_places_v')`,
     )
-    expect(tables.rows[0]!.n).toBe(5)
+    expect(tables.rows[0]!.n).toBe(4)
   })
 })
