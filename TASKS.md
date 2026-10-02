@@ -93,6 +93,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.2 First-party analytics and the dashboard | senior-be | `w/9.2a` | 2026-10-03 | |
 | 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db | `w/3.5` | 2026-10-03 | |
 | 8·W3 | 8.4 The safety evaluation and the red-team set | qa | `w/8.4a` | 2026-10-03 | |
+| 6·W2 | 6.3 Checkout, the map pin, the nearest store and the atomic stock | senior-be | `w/6.3core` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -533,7 +534,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.2.c the welcome code: validated and applied by the server, single-use rules from `discounts`
   - [ ] 6.2.d **Check:** unit tests prove: a tampered price or quantity in the request is ignored; totals match hand-computed cases to the rupiah; free delivery switches on exactly at the threshold; an expired or unknown code is refused with a plain message.
 
-- [ ] **6.3 Checkout, the map pin, the nearest store and the atomic stock** · needs: 6.1, 6.2
+- [ ] **6.3 Checkout, the map pin, the nearest store and the atomic stock** · needs: 6.1, 6.2 — 🔄 6·W2
   - **Lane** SHP + PLT · **Agent** senior-be with senior-fe, **opus**, second reviewer senior-db · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/checkout/**`, `engine/packages/cms/src/shop/orders/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/checkout/**`
   - **Read** COMMERCE.md §Checkout, §Nearest store and §Stock, EXPERIENCE-SHOP.md §Checkout, Q4
