@@ -16,7 +16,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 0/4 | 12/20 | 1 | `██████░░░░`  60% |
+| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 1/4 | 15/20 | 1 | `████████░░`  75% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **0/48** | **12/194** | **9** | `█░░░░░░░░░`   6% |
+| **All** | 11 phases | | | **1/48** | **15/194** | **9** | `█░░░░░░░░░`   8% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,7 +81,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 1·W1 | 1.2 Merge Works (8.2) so later steps simplify it in place | senior-db | `feat/1.2-works` | 2026-10-02 | |
 | 1·W1 | 1.1 Triage the work in flight and protect the data | devops | `worktree-agent-acdeee22b96e4b154` | 2026-10-02 | |
 | 1·W3 | 1.4 Delete the contracts, the placeholders and the dead collections | medior | `feat/1.4-contracts` | 2026-10-02 | |
-| 1·W2 | 1.3 Drop the brand-era gates and slim the board tooling | medior | `feat/1.3-gates` | 2026-10-02 | |
 | 2·W1 | 2.1 One app: rename, merge and re-point the build | senior-fe | `feat/2.1-one-app` | 2026-10-02 | |
 
 ## Decisions for the owner
@@ -229,11 +228,11 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 2.1, 2.2, 2.3_
   - [x] 1.2.a rebase `feat/p8-sch-8.2-works` onto `main`; resolve conflicts only inside the Owns paths
   - [x] 1.2.b review the diff like a pull request (4,360 lines): validators (date order and precision, positive dimensions), the publish guard, access, and that no blank location or export status blocks publishing
-  - [ ] 1.2.c run `pnpm verify` and the `*.db.test.ts` suite against Postgres; fix only what the review finds
-  - [ ] 1.2.d merge to `main` in a clean worktree and re-run `pnpm verify`
+  - [x] 1.2.c run `pnpm verify` and the `*.db.test.ts` suite against Postgres; fix only what the review finds
+  - [x] 1.2.d merge to `main` in a clean worktree and re-run `pnpm verify`
   - [ ] 1.2.e **Check:** on merged `main` the `works` collection saves with validation in the admin, an incomplete work is refused on publish with a plain reason, and the db tests pass.
 
-- [ ] **1.3 Drop the brand-era gates and slim the board tooling** · needs: 1.2 — 🔄 1·W2
+- [x] **1.3 Drop the brand-era gates and slim the board tooling** · needs: 1.2 — ✅ 2026-10-02 8cbdf6e
   - **Lane** OPS · **Agent** medior · **Wave** W2
   - **Owns** `engine/tooling/**`, root `package.json`, `eslint.config.mjs`, `.github/workflows/ci.yml`, `.githooks/**`
   - **Read** CARRY-OVER.md §2.3 and §4, CONVENTIONS.md
@@ -242,7 +241,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 1.3.b replace `check:client-safe` with `import 'server-only'` at the top of every module under `apps/web/src/server/**` (not in `@engine/cms`, which the Payload CLI loads in plain Node), plus one ESLint import rule (apps import Payload only under `src/server/**` and `(payload)`; packages never import apps; no `next/link` or `next/form` prefetch)
   - [x] 1.3.c cut `check:generated` to one context (regenerate `payload-types.ts` and `importMap.js`, fail on a diff); keep `check:filesize`
   - [x] 1.3.d slim `tasks-lint`: keep unique ids, `needs` that resolve, a Check last in every task, Owns overlap inside a wave and requirements coverage; drop lane codes and per-phase size limits
-  - [ ] 1.3.e **Check:** `pnpm verify` is green on `main` with only `format:check`, `lint`, `typecheck`, `test`, `check:filesize`, `check:generated`, `tasks:lint` and `tasks:check`; a planted file over 300 lines, a planted `import 'payload'` in a page and a planted second `**Check:**` each fail.
+  - [x] 1.3.e **Check:** `pnpm verify` is green on `main` with only `format:check`, `lint`, `typecheck`, `test`, `check:filesize`, `check:generated`, `tasks:lint` and `tasks:check`; a planted file over 300 lines, a planted `import 'payload'` in a page and a planted second `**Check:**` each fail.
 
 - [ ] **1.4 Delete the contracts, the placeholders and the dead collections** · needs: 1.3 — 🔄 1·W3
   - **Lane** PLT · **Agent** medior · **Wave** W3
