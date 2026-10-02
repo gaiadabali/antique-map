@@ -29,7 +29,7 @@ The core merges first; the shell's ticket quotes the core's exact signature.
 A ticket is `.claude/specs/indies-platform/tickets/<id>.md`: the filled `DISPATCH.md` prompt **plus**, for K and
 G lanes, the exact file list, exported signatures, the tests to write by name, and the Verify commands. Kimi
 needed one review round on most Platform tickets when the ticket left a choice open — so a K ticket leaves
-none. Report: `.claude/specs/indies-platform/reports/<id>.md`.
+none. Report: `docs/reports/workers/<id>.md`.
 
 ## 3. Launch and collect
 
