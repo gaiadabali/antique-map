@@ -1,4 +1,9 @@
-/* The placeholder shell's layout: roles only, every value a C3 token (./tokens.css). */
+/* =====================================================================
+   Site-wide shell styles. No raw colours, no font-family declarations,
+   no ad-hoc lengths — every value is a token from shared/styles/tokens/
+   or the site brand files. Components use the semantic aliases only.
+   ===================================================================== */
+
 *,
 *::before,
 *::after {
@@ -6,11 +11,9 @@
 }
 
 html {
-  background: var(--c-ground);
-  color: var(--c-ink);
-  font-family: var(--font-text);
-  font-size: 100%;
-  line-height: 1.5;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--text-body);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -22,11 +25,11 @@ body {
 }
 
 a {
-  color: var(--c-accent);
+  color: var(--color-accent);
 }
 
 :focus-visible {
-  outline: var(--focus-width) solid var(--c-focus);
+  outline: var(--focus-width) solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -35,8 +38,8 @@ a {
   left: var(--space-4);
   top: calc(-1 * var(--space-9));
   padding: var(--space-2) var(--space-4);
-  background: var(--c-surface);
-  font-family: var(--font-ui);
+  background: var(--color-surface-raised);
+  font: var(--text-small);
 }
 
 .skip-link:focus {
@@ -50,18 +53,17 @@ a {
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-4) var(--gutter);
-  background: var(--c-surface);
-  border-bottom: var(--rule-hair) solid var(--c-rule);
+  background: var(--color-surface-raised);
+  border-bottom: var(--rule-hair) solid var(--color-border);
 }
 
 .site-brand {
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
-  color: var(--c-ink);
+  color: var(--color-text);
   text-decoration: none;
-  font-family: var(--font-display);
-  font-size: var(--t-title);
+  font: var(--text-h2);
   min-height: 44px;
 }
 
@@ -78,8 +80,7 @@ a {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: var(--font-ui);
-  font-size: var(--t-small);
+  font: var(--text-small);
 }
 
 .site-locales a {
@@ -88,32 +89,31 @@ a {
 }
 
 .site-locales a[aria-current='true'] {
-  color: var(--c-ink);
-  font-weight: 600;
+  color: var(--color-text);
+  font-weight: 700;
   text-decoration: none;
 }
 
 .site-main {
   flex: 1;
   width: 100%;
-  max-width: calc(var(--measure) + 2 * var(--gutter));
+  max-width: calc(var(--measure, 66ch) + 2 * var(--gutter));
   margin: 0 auto;
   padding: var(--space-7) var(--gutter);
 }
 
 .site-main h1 {
-  font-family: var(--font-display);
-  font-size: var(--t-display);
-  line-height: 1.15;
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+  line-height: var(--primitive-line-h1);
   margin: 0 0 var(--space-4);
 }
 
 .site-footer {
   padding: var(--space-5) var(--gutter);
-  border-top: var(--rule-hair) solid var(--c-rule);
-  color: var(--c-ink-soft);
-  font-family: var(--font-ui);
-  font-size: var(--t-small);
+  border-top: var(--rule-hair) solid var(--color-border);
+  color: var(--color-text-muted);
+  font: var(--text-small);
 }
 
 .site-footer p {
