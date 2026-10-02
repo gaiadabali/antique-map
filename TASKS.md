@@ -19,7 +19,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 4/14 | 0 | `███░░░░░░░`  29% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **7/49** | **38/200** | **8** | `██░░░░░░░░`  19% |
+| **All** | 11 phases | | | **7/49** | **42/200** | **8** | `██░░░░░░░░`  21% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -412,10 +412,10 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
   - _Requirements: 12.1, 12.5_
-  - [ ] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
-  - [ ] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
-  - [ ] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
-  - [ ] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
+  - [x] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
+  - [x] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
+  - [x] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
+  - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
   - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
 - [ ] **4.2 Shared components from the design team's kit** · needs: 4.1
