@@ -87,6 +87,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 4·W2 | 4.2 Shared components from the design team's kit | senior-fe | `w/4.2a` | 2026-10-03 | |
 | 9·W1 | 9.3 Metadata, structured data and sitemaps | senior-fe | `w/9.3a` | 2026-10-03 | |
 | 3·W2 | 3.6 The admin experience: both languages, plain errors, a dashboard shell | senior-fe | `w/3.6` | 2026-10-03 | |
+| 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `worktree-agent-a586c01642ef4da70` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -537,7 +538,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 6.3.c order creation in one transaction: re-price, pick the store, decrement each line's `stock-levels` row with `UPDATE … WHERE quantity >= n` (zero rows updated aborts), create the order in `pending_payment` with the 60-minute payment window and a hashed tracking token
   - [ ] 6.3.d **Check:** a db test fires 20 concurrent orders for the last unit and exactly one succeeds; a pin in Ubud picks the nearer of two stores; a basket no single store can fill is refused before payment; a pin outside Indonesia is refused.
 
-- [ ] **6.4 Midtrans: payment, webhook, simulator and expiry** · needs: phase 3
+- [ ] **6.4 Midtrans: payment, webhook, simulator and expiry** · needs: phase 3 — 🔄 6·W2
   - **Lane** SHP + PLT · **Agent** senior-integrator with senior-be, second reviewer senior-db · **Wave** W2
   - **Owns** `engine/packages/cms/src/shop/payments/**`, `engine/apps/web/src/app/api/x/{webhooks,cron}/**`
   - **Read** COMMERCE.md §Payment, SECURITY.md §Webhooks, OA7
