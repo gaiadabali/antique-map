@@ -91,6 +91,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
 | 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
 | 9·W1 | 9.2 First-party analytics and the dashboard | senior-be | `w/9.2a` | 2026-10-03 | |
+| 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db | `w/3.5` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -373,7 +374,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.4.c `pages` and `redirects` carry a `site`; the `site-settings` global holds, per site, the WhatsApp number and hours, email, delivery-fee bands, the free-shipping threshold and the AI flags
   - [ ] 3.4.d **Check:** db tests prove: a lead without a kind is refused; `leads`, `partners` and `site-settings` are readable only by the owner; a redirect's `from` is unique per site.
 
-- [ ] **3.5 Schema lead: the migration, roles and access** · needs: 3.2, 3.3, 3.4
+- [ ] **3.5 Schema lead: the migration, roles and access** · needs: 3.2, 3.3, 3.4 — 🔄 3·W2
   - **Lane** CMS · **Agent** senior-db, **opus**, second reviewer senior-be · **Wave** W2
   - **Owns** `engine/packages/cms/src/{migrations,access,db}/**`, `engine/packages/cms/src/payload-types.ts`
   - **Read** SECURITY.md §2.2, CONTENT-MODEL.md §7
