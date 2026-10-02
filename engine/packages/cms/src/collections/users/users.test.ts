@@ -1,47 +1,16 @@
 import { Forbidden, ValidationError, type PayloadRequest } from 'payload'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
+import { anOwner, call, fakeReq } from './fake-req.test-support'
 import {
   ADMINS_LOCK_KEY,
   firstUserIsOwner,
-  keepAnOwnerInBulk,
   keepAnOwnerOnDelete,
   keepAnOwnerOnUpdate,
 } from './guards'
 import { LOCK_TIME_MS, MAX_LOGIN_ATTEMPTS, Users } from './index'
 import { roleField, storeField } from './roles-field'
 import { USER_ROLES } from './roles'
-
-type Hook = (args: never) => unknown
-const call = (hook: Hook, args: Record<string, unknown>) => hook(args as never)
-
-/**
- * A request whose Local API answers `count` with `counts` in turn, `findByID` with `doc` and `find`
- * with `docs`; `as` sets who is asking and through which API.
- */
-function fakeReq(
-  counts: number[],
-  doc: Record<string, unknown> = {},
-  as: { user?: unknown; payloadAPI?: string; docs?: Array<Record<string, unknown>> } = {},
-) {
-  const execute = vi.fn(async () => ({ rows: [] }))
-  const count = vi.fn(async () => ({ totalDocs: counts.shift() ?? 0 }))
-  const find = vi.fn(async () => ({ docs: as.docs ?? [] }))
-  const req = {
-    transactionID: 'tx-1',
-    user: as.user ?? null,
-    payloadAPI: as.payloadAPI ?? 'REST',
-    payload: {
-      count,
-      find,
-      findByID: vi.fn(async () => doc),
-      db: { sessions: { 'tx-1': { db: 'the-transaction' } }, execute },
-    },
-    t: (key: string) => key,
-  } as unknown as PayloadRequest
-  return { req, count, execute, find }
-}
-const anOwner = { id: 9, collection: 'users', role: 'owner' }
 
 describe('the users collection', () => {
   it('is staff, with sessions and a lockout after five failures', () => {
@@ -212,54 +181,5 @@ describe('the last owner', () => {
     await expect(
       call(keepAnOwnerOnDelete, { id: 2, req: fakeReq([0], { role: 'editor' }).req }),
     ).resolves.toBeUndefined()
-  })
-})
-
-describe('the last owner, in bulk', () => {
-  const where = { role: { equals: 'owner' } }
-
-  it('refuses a bulk demotion or delete that would leave no owner', async () => {
-    const docs = [
-      { id: 1, role: 'owner' },
-      { id: 2, role: 'owner' },
-    ]
-    for (const [operation, data] of [
-      ['update', { role: 'editor' }],
-      ['delete', undefined],
-    ] as const) {
-      const { req, count, execute } = fakeReq([0], {}, { docs })
-      await expect(
-        call(keepAnOwnerInBulk, { args: { where, data }, operation, req }),
-      ).rejects.toBeInstanceOf(ValidationError)
-      expect(execute).toHaveBeenCalled()
-      expect(count).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { and: [{ role: { equals: 'owner' } }, { id: { not_in: [1, 2] } }] },
-        }),
-      )
-    }
-  })
-
-  it('lets it through while an owner outside the set remains', async () => {
-    const { req } = fakeReq([1], {}, { docs: [{ id: 1, role: 'owner' }] })
-    const args = { where, data: { role: 'editor' } }
-    expect(await call(keepAnOwnerInBulk, { args, operation: 'update', req })).toBe(args)
-  })
-
-  it('leaves single-document operations and role-less updates to the other hooks', async () => {
-    const { req, find } = fakeReq([0])
-    const byId = { id: 1, data: { role: 'editor' } }
-    expect(await call(keepAnOwnerInBulk, { args: byId, operation: 'update', req })).toBe(byId)
-    const renames = { where, data: { name: 'x' } }
-    expect(await call(keepAnOwnerInBulk, { args: renames, operation: 'update', req })).toBe(renames)
-    const keepsOwner = { where, data: { role: 'owner' } }
-    expect(await call(keepAnOwnerInBulk, { args: keepsOwner, operation: 'update', req })).toBe(
-      keepsOwner,
-    )
-    expect(find).not.toHaveBeenCalled()
-  })
-
-  it('is wired as the collection’s beforeOperation hook', () => {
-    expect(Users.hooks?.beforeOperation).toContain(keepAnOwnerInBulk)
   })
 })

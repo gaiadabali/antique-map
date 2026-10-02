@@ -132,12 +132,15 @@ describe.skipIf(!server)('the owner guards on a migrated database', () => {
     await setRole('b@test.example', 'owner')
   })
 
-  it('refuses, at COMMIT, raw SQL that removes every owner past the hooks (the trigger)', async () => {
+  it('refuses raw SQL that removes every owner past the hooks, at the statement (the trigger)', async () => {
+    // Immediate, not deferred to COMMIT: Payload swallows a failed COMMIT, so the refusal must
+    // come from the statement for a caller to see it.
     const client = await pool.connect()
     try {
       await client.query('BEGIN')
-      await client.query(`UPDATE users SET role = 'editor' WHERE role = 'owner'`)
-      await expect(client.query('COMMIT')).rejects.toThrow(/last owner/)
+      await expect(
+        client.query(`UPDATE users SET role = 'editor' WHERE role = 'owner'`),
+      ).rejects.toThrow(/last owner/)
     } finally {
       await client.query('ROLLBACK').catch(() => {})
       client.release()
@@ -145,16 +148,35 @@ describe.skipIf(!server)('the owner guards on a migrated database', () => {
     expect(await owners()).toBe(2)
   })
 
-  it('refuses the second of two raw demotions committed at once (the trigger takes the lock)', async () => {
+  it('refuses the second of two raw demotions racing (the trigger takes the lock)', async () => {
     const [one, two] = [await pool.connect(), await pool.connect()]
     try {
       const [a, b] = [await idOf('a@test.example'), await idOf('b@test.example')]
       await one.query('BEGIN')
       await two.query('BEGIN')
+      // One demotes A and holds the owners lock until it commits; two's demotion of B waits on it,
+      // then counts afresh (READ COMMITTED) and finds A gone.
       await one.query(`UPDATE users SET role = 'editor' WHERE role = 'owner' AND id = $1`, [a])
-      await two.query(`UPDATE users SET role = 'editor' WHERE role = 'owner' AND id = $1`, [b])
-      const commits = await Promise.allSettled([one.query('COMMIT'), two.query('COMMIT')])
-      expect(commits.filter((c) => c.status === 'rejected')).toHaveLength(1)
+      // Settled into a value at once, so its refusal is never an unhandled rejection meanwhile.
+      const second = two
+        .query(`UPDATE users SET role = 'editor' WHERE role = 'owner' AND id = $1`, [b])
+        .catch((error: unknown) => error)
+      const waiting = async () =>
+        Number(
+          (
+            await pool.query(
+              `SELECT count(*) AS n FROM pg_locks WHERE locktype = 'advisory' AND NOT granted`,
+            )
+          ).rows[0]!.n,
+        )
+      for (let tries = 0; (await waiting()) === 0 && tries < 100; tries++) {
+        await new Promise((resolve) => setTimeout(resolve, 20))
+      }
+      expect(await waiting()).toBe(1)
+      await one.query('COMMIT')
+      const refused = await second
+      expect(refused).toBeInstanceOf(Error)
+      expect((refused as Error).message).toMatch(/last owner/)
     } finally {
       for (const client of [one, two]) {
         await client.query('ROLLBACK').catch(() => {})
