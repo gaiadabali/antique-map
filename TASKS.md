@@ -84,6 +84,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
 | 3·W3 | 3.7 Spreadsheet import and the seed data | senior-be | `w/3.7c` | 2026-10-03 | |
 | 6·W1 | 6.2 The bag, the delivery fee and the welcome code | senior-be | `task/6.2-pricing-core` | 2026-10-03 | |
+| 4·W2 | 4.2 Shared components from the design team's kit | senior-fe | `w/4.2a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -418,7 +419,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
   - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
-- [ ] **4.2 Shared components from the design team's kit** · needs: 4.1
+- [ ] **4.2 Shared components from the design team's kit** · needs: 4.1 — 🔄 4·W2
   - **Lane** DSG · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/shared/**`
   - **Read** the design system's `components/components.css` and readme, DESIGN-SYSTEM.md §Components
