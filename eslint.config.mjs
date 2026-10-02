@@ -1,13 +1,19 @@
 // ESLint 9 flat config for the whole workspace (HAR). Formatting belongs to
 // Prettier; eslint-config-prettier switches off every rule that would fight it.
 //
-// The import boundaries below are the ones CONVENTIONS.md §5 and AGENTS.md
-// depend on:
-//   1. apps never import Payload outside their (payload) admin mount,
+// One import rule, `@typescript-eslint/no-restricted-imports`, scoped below
+// (CARRY-OVER.md §2.3, TASKS.md 1.3.b):
+//   1. apps import Payload (and @engine/cms) only under src/server/** and
+//      their (payload) admin mount — plus next.config, which wraps the config
+//      with withPayload; src/server/** modules start with `import 'server-only'`,
+//      so Next fails the build when a Client Component reaches one,
 //   2. packages never import an app,
-//   3. view-models has no runtime dependencies (type imports only; its
+//   3. no next/link or next/form: every page renders per request, so a
+//      prefetch costs a database read (a storefront link is a plain <a>),
+//   4. view-models has no runtime dependencies (type imports only; its
 //      package.json declares no dependencies).
-// Each is proven by a planted violation in the 0.1 report.
+// A later config replaces a rule's options for the files it matches, so each
+// scope below lists every pattern that applies to it.
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -22,6 +28,11 @@ import tseslint from 'typescript-eslint'
 
 const root = dirname(fileURLToPath(import.meta.url))
 const CODE = ['**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}']
+const code = (dir) => `${dir}/**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}`
+// Code files only: a `files` glob that matched a stylesheet would have ESLint parse it.
+const APP_SERVER = code('engine/apps/*/src/server')
+const APP_PAYLOAD = code('engine/apps/*/src/app/(payload)')
+const APP_NEXT_CONFIG = 'engine/apps/*/next.config.{js,mjs,cjs,ts,mts,cts}'
 
 // App package names, read from disk so rule 2 keeps up as apps are added or
 // renamed; no name is hard-coded here.
@@ -45,8 +56,20 @@ const payloadImports = {
     '@engine/cms/**',
   ],
   message:
-    'Apps never import Payload outside src/app/(payload)/: render view models from @engine/view-models and read through @engine/loaders (CONVENTIONS.md §5).',
+    "Apps import Payload only under src/server/** (each module there starts with `import 'server-only'`) and src/app/(payload)/: render view models from @engine/view-models (CONVENTIONS.md §5).",
 }
+
+const PREFETCH_WHY =
+  'every page renders per request, so a prefetch costs a database read: use a plain <a> or <form> (CARRY-OVER.md §2.3).'
+const nextLinkImport = {
+  group: ['next/link', 'next/link/**'],
+  message: `No next/link: ${PREFETCH_WHY}`,
+}
+const nextFormImport = {
+  group: ['next/form', 'next/form/**'],
+  message: `No next/form, whose <Form> prefetches its action: ${PREFETCH_WHY}`,
+}
+const prefetchImports = [nextLinkImport, nextFormImport]
 
 const appImportMessage =
   'Packages never import an app: move the shared code into a package both can use (PARALLEL-TRACKS.md §1).'
@@ -138,36 +161,67 @@ export default defineConfig([
   },
 
   {
-    name: 'boundary 1: apps import Payload only in (payload)',
-    files: ['engine/apps/**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}'],
-    ignores: ['engine/apps/*/src/app/(payload)/**', 'engine/apps/*/next.config.*'],
-    rules: {
-      '@typescript-eslint/no-restricted-imports': ['error', { patterns: [payloadImports] }],
-    },
-  },
-  {
-    name: 'boundary 2: packages never import apps',
-    files: ['engine/packages/**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}'],
-    rules: {
-      '@typescript-eslint/no-restricted-imports': ['error', { patterns: appImports }],
-    },
-  },
-  {
-    // Repeats boundary 2's patterns: a later config replaces a rule's options.
-    name: 'boundary 3: view-models imports types only',
-    files: ['engine/packages/view-models/**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}'],
-    // Its tests run the fixtures (vitest, CURRENCY_EXPONENT) and ship to no consumer; boundary
-    // 2 still applies to them.
-    ignores: ['engine/packages/view-models/test/**'],
+    name: 'imports: apps — Payload only in src/server and (payload); no prefetch',
+    files: [code('engine/apps')],
+    ignores: [APP_SERVER, APP_PAYLOAD, APP_NEXT_CONFIG],
     rules: {
       '@typescript-eslint/no-restricted-imports': [
         'error',
-        { patterns: [...appImports, viewModelRuntimeImports] },
+        { patterns: [payloadImports, ...prefetchImports] },
       ],
     },
   },
   {
-    name: 'boundary 3: view-models declares no runtime dependencies',
+    name: 'imports: apps — src/server and next.config may import Payload; no prefetch',
+    files: [APP_SERVER, APP_NEXT_CONFIG],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': ['error', { patterns: prefetchImports }],
+    },
+  },
+  {
+    name: 'imports: apps — the (payload) admin mount; no next/form',
+    files: [APP_PAYLOAD],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': ['error', { patterns: [nextFormImport] }],
+    },
+  },
+  {
+    name: 'imports: packages never import apps; no prefetch',
+    files: [code('engine/packages')],
+    ignores: ['engine/packages/cms/**'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        { patterns: [...appImports, ...prefetchImports] },
+      ],
+    },
+  },
+  {
+    // The admin's own components live in cms and may link inside the admin.
+    name: 'imports: cms never imports apps; no next/form',
+    files: [code('engine/packages/cms')],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        { patterns: [...appImports, nextFormImport] },
+      ],
+    },
+  },
+  {
+    name: 'imports: view-models imports types only',
+    files: [code('engine/packages/view-models')],
+    // Its tests run the fixtures (vitest, CURRENCY_EXPONENT) and ship to no consumer; the
+    // package scope above still applies to them.
+    ignores: ['engine/packages/view-models/test/**'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        { patterns: [...appImports, ...prefetchImports, viewModelRuntimeImports] },
+      ],
+    },
+  },
+  {
+    name: 'view-models declares no runtime dependencies',
     files: ['engine/packages/view-models/package.json'],
     plugins: { json, boundaries },
     language: 'json/json',

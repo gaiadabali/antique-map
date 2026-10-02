@@ -1,12 +1,10 @@
-// The walk and the discovery on their own (moved with the walk from the i18n test: 3.4
-// senior-fe #5). The gate's planted violations are in check.test.mjs.
+// The walk on its own (moved from the i18n test: 3.4 senior-fe #5).
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { findClientModules, isClientModule } from './discover.mjs'
 import { forbiddenReason } from './rules.mjs'
 import { findReaches, moduleFile, runtimeReach } from './walk.mjs'
 
@@ -123,50 +121,5 @@ describe('forbiddenReason — the rules of 4.2.a', () => {
     './zod',
   ])('allows %s', (specifier) => {
     expect(forbiddenReason(specifier)).toBeNull()
-  })
-})
-
-describe("isClientModule — the first statement is 'use client'", () => {
-  it.each([
-    ["'use client'\nimport x from 'y'\n"],
-    ['"use client";\n'],
-    ["﻿// a comment first\n/* and a block */\n'use client'\n"],
-    ["'use strict'\n'use client'\n"],
-  ])('sees %j', (source) => {
-    expect(isClientModule(source)).toBe(true)
-  })
-
-  it.each([
-    ["import x from 'y'\n'use client'\n"],
-    ["'use server'\n"],
-    ["const a = 'use client'\n"],
-    ["'use client'.trim()\n"],
-    ["// 'use client'\nexport {}\n"],
-    ['`use client`\n'],
-    [''],
-  ])('does not see %j', (source) => {
-    expect(isClientModule(source)).toBe(false)
-  })
-})
-
-describe('findClientModules', () => {
-  it('finds every client module under engine/, skipping dependencies and build output', () => {
-    const at = plant({
-      'engine/apps/one/src/a.tsx': "'use client'\n",
-      'engine/apps/one/src/server.tsx': 'export default function Page() {}\n',
-      'engine/packages/ui/src/b.ts': '"use client"\n',
-      'engine/apps/one/.next/chunk.js': "'use client'\n",
-      'engine/apps/one/node_modules/dep/index.js': "'use client'\n",
-      'engine/packages/ui/src/types.d.ts': "'use client'\n",
-    })
-    expect(findClientModules(at('engine'))).toEqual(
-      [at('engine/apps/one/src/a.tsx'), at('engine/packages/ui/src/b.ts')].sort(),
-    )
-  })
-
-  it('finds none where there is no engine/apps yet', () => {
-    const at = plant({ 'engine/packages/ui/src/b.ts': 'export {}\n' })
-    expect(findClientModules(at('engine'))).toEqual([])
-    expect(findClientModules(at('engine/apps'))).toEqual([])
   })
 })

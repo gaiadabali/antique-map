@@ -56,10 +56,6 @@ jobs:
 
       - name: File size (300-line rule)
         run: pnpm check:filesize
-      # No 'use client' module under engine/ reaches zod, the config schema, node:*, Payload or
-      # @engine/cms (engine/tooling/client-safe, TASKS.md 4.2) — named here as `pnpm verify` runs it.
-      - name: Client-safe gate
-        run: pnpm check:client-safe
       - name: Generated files are current
         run: pnpm check:generated
       - name: TASKS.md structure
