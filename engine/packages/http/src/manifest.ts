@@ -112,6 +112,10 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // `REVALIDATE_REQUEST`: invalidate(tags) from outside a request
   // the site user's crontab (DEPLOYMENT.md §5): the Payload jobs queue, a per-run limit
   route('/api/x/cron/jobs', 'WEB', 'cron', POST),
+  // payments (TASKS.md 6.4): the Midtrans notification, the expiry sweep (every minute), reconcile (every 10 min)
+  route('/api/x/webhooks/midtrans', 'PAY', 'signature', POST),
+  route('/api/x/cron/sweeps', 'PAY', 'cron', POST),
+  route('/api/x/cron/reconcile', 'PAY', 'cron', POST),
   // Root files (`ROOT_REWRITES`), each on its placeholder until its handler is built.
   // staging disallows all; until its handler is built, `UNBUILT_HANDLER.byPath` does everywhere
   route('/api/x/robots', 'SEO', 'public', GET),
