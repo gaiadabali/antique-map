@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 2/5 | 15/20 | 0 | `████████░░`  75% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 2/5 | 16/20 | 0 | `████████░░`  80% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/32 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **6/49** | **35/199** | **8** | `██░░░░░░░░`  18% |
+| **All** | 11 phases | | | **6/49** | **36/199** | **8** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -307,7 +307,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/{migrations,db}/**`, `engine/packages/cms/src/payload-types.ts`, the generated `importMap.js`
   - **Read** CARRY-OVER.md §3 step 7 and §6.4, the 1.1 triage file on 8.5's staging state
   - _Requirements: 1.1, 11.1_
-  - [ ] 2.5.a reset the migrations: delete them all, run `migrate:create initial` once on a clean `main`, and re-add by hand `unaccent`/`pg_trgm`, the last-owner constraint trigger (advisory-lock key equal to `ADMINS_LOCK_KEY`, now testing `'owner'`) and the truncate refusal; regenerate `payload-types.ts` and `importMap.js` in the same commit
+  - [x] 2.5.a reset the migrations: delete them all, run `migrate:create initial` once on a clean `main`, and re-add by hand `unaccent`/`pg_trgm`, the last-owner constraint trigger (advisory-lock key equal to `ADMINS_LOCK_KEY`, now testing `'owner'`) and the truncate refusal; regenerate `payload-types.ts` and `importMap.js` in the same commit
   - [ ] 2.5.b drop every existing local and staging database after a `pg_dump` (their `payload_migrations` rows name the old files)
   - [ ] 2.5.c **Check:** `admins.db.test.ts` passes against the migrated database (deleting or demoting the last owner is refused by the database itself, not only the hook); a fresh `pnpm db:fresh` builds the schema from the one initial migration; `pnpm check:generated` is clean.
 
