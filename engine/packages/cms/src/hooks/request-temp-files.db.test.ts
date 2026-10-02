@@ -89,7 +89,7 @@ describe.skipIf(!server)('upload temp files, on every endpoint (on Postgres)', (
     expect((await post('/api/stores', form({}, FILE))).status).toBe(403)
     expect((await post('/api/stores', form({}, FILE), true)).status).toBe(400)
     expect([403, 404]).toContain((await patch('/api/stores/1', form({}, FILE))).status)
-    expect((await post('/api/products', form({}, FILE), true)).status).toBe(404)
+    expect((await post('/api/no-such-collection', form({}, FILE), true)).status).toBe(404)
     expect(probe.leftovers()).toEqual([])
   }, 30_000)
 

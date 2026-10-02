@@ -12,20 +12,27 @@
  */
 import type { CollectionConfig, GlobalConfig } from 'payload'
 
+import { ChatSessions } from '../collections/chat-sessions'
 import { Discounts } from '../collections/discounts'
+import { Events } from '../collections/events'
+import { Leads } from '../collections/leads'
 import { Makers } from '../collections/makers'
 import { Masters } from '../collections/masters'
 import { Media } from '../collections/media'
 import { Orders } from '../collections/orders'
+import { Pages } from '../collections/pages'
+import { Partners } from '../collections/partners'
 import { PaymentEvents } from '../collections/payment-events'
 import { Places } from '../collections/places'
 import { Products } from '../collections/products'
+import { Redirects } from '../collections/redirects'
 import { Sources } from '../collections/sources'
 import { StockLevels } from '../collections/stock-levels'
 import { Stores } from '../collections/stores'
 import { Terms } from '../collections/terms'
 import { Users } from '../collections/users'
 import { Works } from '../collections/works'
+import { SiteSettings } from '../globals/site-settings'
 
 /** The admin sidebar's order. */
 const COLLECTIONS: readonly CollectionConfig[] = [
@@ -43,9 +50,15 @@ const COLLECTIONS: readonly CollectionConfig[] = [
   Sources,
   Media,
   Masters,
+  Pages,
+  Redirects,
+  Leads,
+  Partners,
+  ChatSessions,
+  Events,
 ]
 
-const GLOBALS: readonly GlobalConfig[] = []
+const GLOBALS: readonly GlobalConfig[] = [SiteSettings]
 
 type Drafted = Pick<CollectionConfig | GlobalConfig, 'slug' | 'versions'> & {
   access?: { read?: unknown; readVersions?: unknown }
