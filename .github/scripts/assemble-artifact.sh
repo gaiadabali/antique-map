@@ -8,16 +8,10 @@
 #     engine/apps/web/.next/static     workspace path); `.next/static` and `public` beside it
 #     engine/apps/web/node_modules/    sharp with its own dependencies (@img/*, detect-libc, …)
 #     node_modules/                    what Next traced (pnpm's .pnpm layout)
-#     <brand>/site/                    each brand folder's site/ (config, copy, assets), until
-#                                      TASKS.md 2.2–2.3 move the sites into the app
 #
-# so a host runs `node <current>/engine/apps/web/server.js`. Until the host picks the site (2.2)
-# a process still serves one brand: BRAND=<slug>, with BRAND_ROOT=<current>/<slug> — or unset, as
-# the loader finds `<slug>/site` from the server's folder upward (@engine/config/loader paths).
-#
-# Every repository-root folder holding `site/brand.config.json` ships — never a hard-coded list,
-# so the day 2.3 dissolves the brand folders this copies none and needs no edit. The synthetic
-# `test` brand keeps one config per storefront and ships in no release.
+# so a host runs `node <current>/engine/apps/web/server.js`. Both sites ship inside the build:
+# their copy is bundled, their files are `public/<site>/`, and the request's Host picks one
+# (GALLERY_HOSTS, SHOP_HOSTS — TASKS.md 2.2). Nothing beside the build is read at runtime.
 #
 # Usage: assemble-artifact.sh [out-dir]   (default: $RUNNER_TEMP/artifact). Run from the repo root
 # after the app's `next build`.
@@ -77,15 +71,5 @@ sharp_version="$(cd "$SERVER_DIR" && node -e "import('sharp').then((s) => consol
   exit 1
 }
 
-# The brand folders beside the build, never baked into it.
-brands=()
-for config in */site/brand.config.json; do
-  [ -f "$config" ] || continue
-  brand="${config%%/*}"
-  mkdir -p "$OUT/$brand"
-  cp -r "$brand/site" "$OUT/$brand/site"
-  brands+=("$brand")
-done
-
-echo "web assembled: $(du -sh "$OUT" | cut -f1), sharp $sharp_version, entry $APP_DIR/server.js, brands: ${brands[*]:-none}"
+echo "web assembled: $(du -sh "$OUT" | cut -f1), sharp $sharp_version, entry $APP_DIR/server.js, sites: $(cd "$SERVER_DIR/public" 2>/dev/null && printf '%s ' */)"
 echo "artifact staged at $STAGE"

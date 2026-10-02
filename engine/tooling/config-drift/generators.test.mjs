@@ -27,6 +27,7 @@ describe('generatorEnv — no generator is given a database (1.3.c)', () => {
       PAYLOAD_SECRET: 'real',
       BRAND: 'from-the-shell',
       TEST_STOREFRONT: 'gallery',
+      SHOP_HOSTS: 'shop.localhost',
       PAYLOAD_DEV_PUSH: '1',
       RUN_MIGRATIONS: '1',
       PGPASSWORD: 'pw',

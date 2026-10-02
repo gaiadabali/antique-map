@@ -1,50 +1,58 @@
 /**
- * Each builder's grammar and profile (TASKS.md 4.8.c, 4.8.d): what it makes, what it refuses,
- * that `parseCacheTag()` — the revalidate route's check — accepts exactly what the builders make,
- * and that a tag's expiry is its kind's.
+ * Each builder's grammar and profile: what it makes, what it refuses, that `parseCacheTag()` — the
+ * revalidate route's check — accepts exactly what the builders make, that a tag's expiry is its
+ * kind's, and that tags are namespaced by collection with the site only where one record holds a
+ * part for each site (TASKS.md 2.2.d).
  */
 import { describe, expect, it } from 'vitest'
 
 import {
-  availabilityTag,
   EDITORIAL_EXPIRY,
   IMMEDIATE_EXPIRY,
   itemTag,
   MAX_TAG_LENGTH,
   parseCacheTag,
-  priceTag,
+  productPriceTag,
+  productStockTag,
+  productTag,
+  redirectsTag,
   requireCacheTag,
+  settingsTag,
   TAG_KINDS,
   tagExpiry,
   tagKind,
   workTag,
 } from '../src/index'
 
-const byPublicId = [
-  ['item', itemTag],
-  ['availability', availabilityTag],
-  ['price', priceTag],
+const byRecordId = [
+  ['product', productTag],
+  ['product-stock', productStockTag],
+  ['product-price', productPriceTag],
 ] as const
 
-describe('the publicId builders: item, availability, price', () => {
-  it.each(byPublicId)('%s:<publicId> for every non-negative safe integer', (kind, build) => {
-    for (const id of [0, 1, 1706, 2_000_000, Number.MAX_SAFE_INTEGER]) {
+describe('the record-id builders: product, product-stock, product-price', () => {
+  it.each(byRecordId)('%s:<id> for every positive safe integer', (kind, build) => {
+    for (const id of [1, 1706, 2_000_000, Number.MAX_SAFE_INTEGER]) {
       expect(build(id)).toBe(`${kind}:${id}`)
       expect(parseCacheTag(`${kind}:${id}`)).toBe(`${kind}:${id}`)
     }
-    expect(build(-0)).toBe(`${kind}:0`)
   })
 
-  it.each(byPublicId)('%s refuses anything that is not a publicId', (kind, build) => {
-    for (const id of [-1, 1.5, NaN, Infinity, -Infinity, Number.MAX_SAFE_INTEGER + 1, 1e21]) {
-      expect(() => build(id), String(id)).toThrow(new RegExp(`^${kind} tag: .* is not a publicId`))
+  it.each(byRecordId)('%s refuses anything that is not a record id', (kind, build) => {
+    for (const id of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1, 1e21]) {
+      expect(() => build(id), String(id)).toThrow(new RegExp(`^${kind} tag: .* is not a record id`))
     }
+  })
+
+  it('keeps itemTag only as productTag’s old name, building a product: tag', () => {
+    expect(itemTag).toBe(productTag)
+    expect(itemTag(3)).toBe('product:3')
   })
 })
 
 describe('work:<workUid>', () => {
-  it('takes a workUid: the C1 prefix, a hyphen, digits', () => {
-    for (const uid of ['FX-000123', 'ABC-1', 'A1-0', 'ABCDEFGH-1234567890123456', 'X9-42']) {
+  it('takes a workUid: the gallery’s prefix, a hyphen, digits', () => {
+    for (const uid of ['IG-000123', 'ABC-1', 'A1-0', 'ABCDEFGH-1234567890123456', 'X9-42']) {
       expect(workTag(uid)).toBe(`work:${uid}`)
       expect(parseCacheTag(`work:${uid}`)).toBe(`work:${uid}`)
     }
@@ -53,21 +61,18 @@ describe('work:<workUid>', () => {
   it('refuses anything else', () => {
     for (const uid of [
       '',
-      'FX',
-      'FX-',
+      'IG',
+      'IG-',
       '-000123',
-      'fx-000123', // lower case
+      'ig-000123', // lower case
       'I-000123', // a one-character prefix
       'ABCDEFGHI-1', // nine
       '1X-000123', // a digit first
-      'FX-12a',
-      'FX_000123',
-      'FX-000123 ',
-      ' FX-000123',
-      'FX-000123\n',
-      'FX-00012345678901234', // seventeen digits
-      'FX-000123:item:1',
-      'FX-１２３', // full-width digits
+      'IG-12a',
+      'IG_000123',
+      'IG-000123 ',
+      'IG-000123:product:1',
+      'IG-１２３', // full-width digits
     ]) {
       expect(() => workTag(uid), JSON.stringify(uid)).toThrow(/^work tag: .* is not a workUid/)
       expect(parseCacheTag(`work:${uid}`), JSON.stringify(uid)).toBeNull()
@@ -75,40 +80,62 @@ describe('work:<workUid>', () => {
   })
 })
 
+describe('the site-scoped tags: one record, a part per site', () => {
+  it('name a site, and only a site', () => {
+    expect(settingsTag('gallery')).toBe('settings:gallery')
+    expect(redirectsTag('shop')).toBe('redirects:shop')
+    for (const value of [
+      'settings:',
+      'settings:emporium',
+      'settings:Gallery',
+      'redirects:gallery ',
+    ]) {
+      expect(parseCacheTag(value), value).toBeNull()
+    }
+    expect(() => settingsTag('brand' as never)).toThrow(/^settings tag: "brand" is not a site/)
+  })
+
+  it('leave every other kind site-free, so one invalidation reaches both sites', () => {
+    for (const tag of [workTag('IG-1'), productTag(1), productStockTag(1), productPriceTag(1)]) {
+      expect(tag).not.toMatch(/gallery|shop/)
+    }
+  })
+})
+
 describe('parseCacheTag(): the grammar the revalidate route checks', () => {
   it('accepts no second spelling of a tag', () => {
     for (const value of [
-      'item:01', // a leading zero
-      'item:+1',
-      'item:-1',
-      'item:1.0',
-      'item:1e3',
-      'item:0x10',
-      'item: 1',
-      'item:1 ',
-      'item:',
-      'ITEM:1',
-      'Item:1',
-      'item::1',
-      'item:1:2',
-      'item:9007199254740992', // past the largest safe integer
-      'item:99999999999999999',
-      'availability:١٢', // Arabic-Indic digits
+      'product:01', // a leading zero
+      'product:0',
+      'product:+1',
+      'product:-1',
+      'product:1.0',
+      'product:1e3',
+      'product:0x10',
+      'product: 1',
+      'product:1 ',
+      'product:',
+      'PRODUCT:1',
+      'product::1',
+      'product:1:2',
+      'product:9007199254740992', // past the largest safe integer
+      'product-stock:١٢', // Arabic-Indic digits
     ]) {
       expect(parseCacheTag(value), value).toBeNull()
     }
   })
 
-  it('accepts no kind it has no builder for', () => {
+  it('accepts no kind it has no builder for — the one-brand kinds included', () => {
     for (const value of [
+      'item:1',
+      'availability:1',
+      'price:1',
       'maker:1',
       'constructor:1',
-      'toString:1',
       '__proto__:1',
-      'hasOwnProperty:1',
       '_N_T_/en/item/1', // a Next implicit (path) tag
       '1',
-      'item',
+      'product',
       '',
     ]) {
       expect(parseCacheTag(value), value).toBeNull()
@@ -116,45 +143,56 @@ describe('parseCacheTag(): the grammar the revalidate route checks', () => {
   })
 
   it('refuses a value that is not a string, and reads nothing past MAX_TAG_LENGTH', () => {
-    for (const value of [undefined, null, 1, ['item:1'], { tag: 'item:1' }, Symbol('item:1')]) {
+    for (const value of [undefined, null, 1, ['product:1'], { tag: 'product:1' }]) {
       expect(parseCacheTag(value)).toBeNull()
     }
-    expect(parseCacheTag(`item:${'1'.repeat(MAX_TAG_LENGTH)}`)).toBeNull()
+    expect(parseCacheTag(`product:${'1'.repeat(MAX_TAG_LENGTH)}`)).toBeNull()
     expect(MAX_TAG_LENGTH).toBeLessThanOrEqual(256) // Next's own limit on a tag
-    expect(`work:ABCDEFGH-${'9'.repeat(16)}`.length).toBeLessThanOrEqual(MAX_TAG_LENGTH)
+    expect(`product-price:${'9'.repeat(16)}`.length).toBeLessThanOrEqual(MAX_TAG_LENGTH)
   })
 
   it('requireCacheTag() throws naming what it was given', () => {
-    expect(requireCacheTag('price:7')).toBe('price:7')
-    expect(() => requireCacheTag('price:07')).toThrow(
-      'not a cache tag @engine/cache makes: "price:07"',
+    expect(requireCacheTag('product-price:7')).toBe('product-price:7')
+    expect(() => requireCacheTag('product-price:07')).toThrow(
+      'not a cache tag @engine/cache makes: "product-price:07"',
     )
   })
 })
 
 describe('each kind has its expiry', () => {
-  it('editorial — item, work — stale-while-revalidate', () => {
+  it('editorial — work, product, settings, redirects — stale-while-revalidate', () => {
     expect(EDITORIAL_EXPIRY).toBe('max')
-    expect(tagExpiry(itemTag(1706))).toBe('max')
-    expect(tagExpiry(workTag('FX-000123'))).toBe('max')
+    for (const tag of [
+      workTag('IG-1'),
+      productTag(1706),
+      settingsTag('shop'),
+      redirectsTag('gallery'),
+    ]) {
+      expect(tagExpiry(tag), tag).toBe('max')
+    }
   })
 
-  it('availability and price — gone at once, { expire: 0 }', () => {
+  it('stock and price — gone at once, { expire: 0 }', () => {
     expect(IMMEDIATE_EXPIRY).toEqual({ expire: 0 })
     expect(Object.isFrozen(IMMEDIATE_EXPIRY)).toBe(true)
-    expect(tagExpiry(availabilityTag(1706))).toEqual({ expire: 0 })
-    expect(tagExpiry(priceTag(1706))).toEqual({ expire: 0 })
+    expect(tagExpiry(productStockTag(1706))).toEqual({ expire: 0 })
+    expect(tagExpiry(productPriceTag(1706))).toEqual({ expire: 0 })
   })
 
-  it('the kinds known today, each named by its builder', () => {
-    expect(Object.keys(TAG_KINDS).sort()).toEqual(['availability', 'item', 'price', 'work'])
-    expect(tagKind(itemTag(1))).toBe('item')
-    expect(tagKind(availabilityTag(1))).toBe('availability')
-    expect(tagKind(priceTag(1))).toBe('price')
-    expect(tagKind(workTag('FX-1'))).toBe('work')
+  it('the kinds known today, each named by its collection', () => {
+    expect(Object.keys(TAG_KINDS).sort()).toEqual([
+      'product',
+      'product-price',
+      'product-stock',
+      'redirects',
+      'settings',
+      'work',
+    ])
+    expect(tagKind(productStockTag(1))).toBe('product-stock')
+    expect(tagKind(settingsTag('gallery'))).toBe('settings')
   })
 
   it('a kind is read from the tag, never from a caller: a forged tag has none', () => {
-    expect(() => tagExpiry('availability:1 max' as never)).toThrow(/not a cache tag/)
+    expect(() => tagExpiry('product-stock:1 max' as never)).toThrow(/not a cache tag/)
   })
 })

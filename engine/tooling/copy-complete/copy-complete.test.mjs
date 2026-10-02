@@ -1,7 +1,7 @@
 // Every message key has an English and an Indonesian value (TASKS.md 1.3.a): what was left of
-// `check:brands`' copy half once the brand machinery went (CARRY-OVER.md §2.3). Every copy folder
-// in the repository — a folder named `copy` holding an `en.json` — is found on disk, never named,
-// so a folder that moves (phase 2 moves the copy into the app) is still checked.
+// `check:brands`' copy half once the brand machinery went (CARRY-OVER.md §2.3). Each site's copy
+// is its lexicon folder, `engine/apps/web/src/sites/<site>/lexicon/` (CONVENTIONS.md §6), found on
+// disk, never named, so a site added there is checked too.
 //
 // The English file is the reference: `checkCopy()` (`@engine/i18n/copy`, the same rules the app
 // loads copy by) refuses an empty English value, an Indonesian key with no value, an Indonesian
@@ -18,22 +18,18 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { checkCopy } from '../../packages/i18n/src/copy.ts'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url))
-const SKIP = new Set(['node_modules', '.git', '.claude', '.next', 'dist', '.turbo', 'coverage'])
+const SITES_DIR = join(REPO_ROOT, 'engine', 'apps', 'web', 'src', 'sites')
 const REQUIRED = ['en', 'id']
 
-/** Every `copy/` folder under `root` that holds an `en.json`, relative to `root`, sorted. */
+/** Every site's `lexicon/` folder that holds an `en.json`, relative to `root`, sorted. */
 function findCopyFolders(root) {
-  const found = []
-  const walk = (dir) => {
-    for (const entry of readdirSync(dir, { withFileTypes: true })) {
-      if (!entry.isDirectory() || SKIP.has(entry.name)) continue
-      const path = join(dir, entry.name)
-      if (entry.name === 'copy' && existsSync(join(path, 'en.json'))) found.push(path)
-      walk(path)
-    }
-  }
-  walk(root)
-  return found.map((path) => relative(root, path).split('\\').join('/')).sort()
+  if (!existsSync(SITES_DIR)) return []
+  return readdirSync(SITES_DIR, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => join(SITES_DIR, entry.name, 'lexicon'))
+    .filter((path) => existsSync(join(path, 'en.json')))
+    .map((path) => relative(root, path).split('\\').join('/'))
+    .sort()
 }
 
 /** Every problem with one copy folder's English and Indonesian values, as readable lines. */
@@ -56,8 +52,11 @@ function copyProblems(copyDir) {
 describe('every message key has an en and an id value (1.3.a)', () => {
   const folders = findCopyFolders(REPO_ROOT)
 
-  it('finds the copy folders on disk', () => {
-    expect(folders.length).toBeGreaterThan(0)
+  it('finds each site’s lexicon folder on disk', () => {
+    expect(folders).toEqual([
+      'engine/apps/web/src/sites/gallery/lexicon',
+      'engine/apps/web/src/sites/shop/lexicon',
+    ])
   })
 
   it.each(folders)('%s', (folder) => {

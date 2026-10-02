@@ -10,7 +10,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   invalidate,
   invalidationBatch,
-  itemTag,
+  productTag,
   postTags,
   revalidateBodies,
   revalidateTargetFrom,
@@ -45,27 +45,29 @@ describe('a flush over HTTP', () => {
 
   it('POSTs the tags as JSON with the bearer, and resolves on 204', async () => {
     answer = 204
-    expect(await postTags({ origin, secret: 'a-secret' }, [itemTag(1706), workTag('FX-9')])).toBe(2)
+    expect(
+      await postTags({ origin, secret: 'a-secret' }, [productTag(1706), workTag('FX-9')]),
+    ).toBe(2)
     const post = seen.at(-1)!
     expect(post.method).toBe('POST')
     expect(post.url).toBe('/api/x/revalidate')
     expect(post.headers.authorization).toBe('Bearer a-secret')
     expect(post.headers['content-type']).toBe('application/json')
-    expect(JSON.parse(post.body)).toEqual({ tags: ['item:1706', 'work:FX-9'] })
+    expect(JSON.parse(post.body)).toEqual({ tags: ['product:1706', 'work:FX-9'] })
   })
 
   it('a batch flushed to it posts the same', async () => {
     answer = 204
     const batch = invalidationBatch({ target: { origin, secret: 'a-secret' } })
-    await batch.operation(async (context) => invalidate([itemTag(1)], context))
+    await batch.operation(async (context) => invalidate([productTag(1)], context))
     expect(seen.length).toBe(1)
     expect(await batch.flush()).toBe(1)
-    expect(JSON.parse(seen.at(-1)!.body)).toEqual({ tags: ['item:1'] })
+    expect(JSON.parse(seen.at(-1)!.body)).toEqual({ tags: ['product:1'] })
   })
 
   it('rejects any other answer, quoting it', async () => {
     answer = 400
-    await expect(postTags({ origin, secret: 's' }, [itemTag(1)])).rejects.toThrow(
+    await expect(postTags({ origin, secret: 's' }, [productTag(1)])).rejects.toThrow(
       'POST /api/x/revalidate answered 400: unknown tag',
     )
   })
@@ -73,7 +75,7 @@ describe('a flush over HTTP', () => {
   it('never follows a redirect: the bearer stays on this origin', async () => {
     answer = 308
     const before = seen.length
-    await expect(postTags({ origin, secret: 's' }, [itemTag(1)])).rejects.toThrow(/failed/)
+    await expect(postTags({ origin, secret: 's' }, [productTag(1)])).rejects.toThrow(/failed/)
     expect(seen.length).toBe(before + 1)
   })
 })
