@@ -12,8 +12,8 @@
  *   by a `Where` on `store`, so lists, counts, lookups and updates by query are scoped.
  * - **Field by field**: what the order was priced and sold with — lines, totals, discount, store,
  *   contact, delivery, payment, driver image, tracking — is the server's (`SERVER_ONLY`); a person
- *   moves the status (the owner and editors for now; 3.5.c gives store staff their forward-only
- *   step) and hands an order back with a reason (`needsAttention`). The tracking token's hash and a
+ *   moves the status (store staff one step forward only, `./status-moves`) and hands an order
+ *   back with a reason (`needsAttention`). The tracking token's hash and a
  *   payment attempt's Snap token are never in any API response (`NEVER_EXPOSED`; COMMERCE.md §8).
  */
 import type { Access, FieldAccess } from 'payload'
@@ -38,7 +38,6 @@ export const ORDERS_ACCESS = {
 } as const
 
 const nobodyField: FieldAccess = () => false
-const ownerOrEditor: FieldAccess = ({ req }) => hasRole(req.user, 'owner', 'editor')
 const anyStaff: FieldAccess = ({ req }) => hasRole(req.user, 'owner', 'editor', 'store')
 
 /** Written by the server's order code (with access overridden), read by whoever reads the order. */
@@ -51,8 +50,11 @@ export const NEVER_EXPOSED = {
   update: nobodyField,
 } as const
 
-/** The status: moved by the owner and editors (TASKS.md 3.5.c adds store staff's forward step). */
-export const STATUS_ACCESS = { create: nobodyField, update: ownerOrEditor } as const
+/**
+ * The status: moved by any member of staff who can update the order — which move each may make
+ * (store staff one step forward only) is `./status-moves`, judged on every write path.
+ */
+export const STATUS_ACCESS = { create: nobodyField, update: anyStaff } as const
 
 /** Handing an order back for reassignment: any staff member who can update the order. */
 export const ATTENTION_ACCESS = { create: nobodyField, update: anyStaff } as const
