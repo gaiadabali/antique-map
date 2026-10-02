@@ -19,14 +19,12 @@ afterEach(() => {
 })
 
 describe('generatorEnv — no generator is given a database (1.3.c)', () => {
-  it('withholds DATABASE_URL, secrets, brand and dev-push variables, in any case', () => {
+  it('withholds DATABASE_URL, secrets, the host allow-list and dev-push variables, in any case', () => {
     const parent = {
       PATH: '/bin',
       DATABASE_URL: 'postgres://x',
       database_url: 'postgres://y',
       PAYLOAD_SECRET: 'real',
-      BRAND: 'from-the-shell',
-      TEST_STOREFRONT: 'gallery',
       SHOP_HOSTS: 'shop.localhost',
       PAYLOAD_DEV_PUSH: '1',
       RUN_MIGRATIONS: '1',

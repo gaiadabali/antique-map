@@ -1,5 +1,5 @@
 /**
- * @contract C1 — the accounts vocabulary · owner: ARC · entry: `@engine/config/schema`
+ * The accounts vocabulary · entry: `@engine/config/schema`
  *
  * Who may hold an account is a pair of modules (`./modules`): `accounts.buyers` opens sign-up
  * to buyers (the gallery's collectors); `accounts.retailers` admits retailers only, by an
