@@ -5,7 +5,6 @@
  *
  * And, with a connection, a live database against the migration set: every bundled migration
  * applied, and none recorded that the code does not know (a database migrated by another branch).
- * Structural equality across the brands' databases is `schema-hash --all`'s (TASKS.md 2.2.c).
  * drizzle-kit's own database comparison (the one a dev push uses) is not used: this checks what
  * CI needs without depending on drizzle-kit introspecting every construct we declare.
  */

@@ -1,7 +1,7 @@
 /**
  * What `/api/health` answers (DEPLOYMENT.md §3, §7; TASKS.md 4.1.b, 4.6.a), decided from ports so
  * it is tested without a database: the app, the boot check — and the environment it judged
- * (`production`, `staging` or `local`), so the release flow's check at the brand's domain sees
+ * (`production`, `staging` or `local`), so the release flow's check at a site's host sees
  * what the process decided (DEPLOYMENT.md §8) — the database (reached through `@engine/cms`'s
  * `cms()`, which initialises Payload and, in the web process of a production build with
  * `RUN_MIGRATIONS=1`, applies pending migrations under the advisory lock), media storage and the
@@ -19,12 +19,12 @@
  * TASKS.md 5.3.f). A configuration fault beside an outage is still `refused`.
  */
 import {
+  describeError,
   isRefused,
   type BootReport,
   type DatabaseProbe,
   type DeploymentEnvironment,
 } from '@engine/config/boot-check'
-import { describeError } from '@engine/config/loader'
 
 import type { QueueCheck } from './queue'
 

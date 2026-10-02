@@ -1,6 +1,6 @@
 /**
  * The post a flush makes, over a real socket (C13 `REVALIDATE_REQUEST`): the path, the bearer,
- * the JSON body, no redirect followed; and where it posts, from `SITE_URL` and
+ * the JSON body, no redirect followed; and where it posts, from `REVALIDATE_ORIGIN` or `PORT` and
  * `REVALIDATE_SECRET`, refusing — without naming a value — when either is missing.
  */
 import { createServer, type IncomingMessage, type Server } from 'node:http'
@@ -10,7 +10,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   invalidate,
   invalidationBatch,
-  itemTag,
+  productTag,
   postTags,
   revalidateBodies,
   revalidateTargetFrom,
@@ -45,27 +45,29 @@ describe('a flush over HTTP', () => {
 
   it('POSTs the tags as JSON with the bearer, and resolves on 204', async () => {
     answer = 204
-    expect(await postTags({ origin, secret: 'a-secret' }, [itemTag(1706), workTag('FX-9')])).toBe(2)
+    expect(
+      await postTags({ origin, secret: 'a-secret' }, [productTag(1706), workTag('FX-9')]),
+    ).toBe(2)
     const post = seen.at(-1)!
     expect(post.method).toBe('POST')
     expect(post.url).toBe('/api/x/revalidate')
     expect(post.headers.authorization).toBe('Bearer a-secret')
     expect(post.headers['content-type']).toBe('application/json')
-    expect(JSON.parse(post.body)).toEqual({ tags: ['item:1706', 'work:FX-9'] })
+    expect(JSON.parse(post.body)).toEqual({ tags: ['product:1706', 'work:FX-9'] })
   })
 
   it('a batch flushed to it posts the same', async () => {
     answer = 204
     const batch = invalidationBatch({ target: { origin, secret: 'a-secret' } })
-    await batch.operation(async (context) => invalidate([itemTag(1)], context))
+    await batch.operation(async (context) => invalidate([productTag(1)], context))
     expect(seen.length).toBe(1)
     expect(await batch.flush()).toBe(1)
-    expect(JSON.parse(seen.at(-1)!.body)).toEqual({ tags: ['item:1'] })
+    expect(JSON.parse(seen.at(-1)!.body)).toEqual({ tags: ['product:1'] })
   })
 
   it('rejects any other answer, quoting it', async () => {
     answer = 400
-    await expect(postTags({ origin, secret: 's' }, [itemTag(1)])).rejects.toThrow(
+    await expect(postTags({ origin, secret: 's' }, [productTag(1)])).rejects.toThrow(
       'POST /api/x/revalidate answered 400: unknown tag',
     )
   })
@@ -73,7 +75,7 @@ describe('a flush over HTTP', () => {
   it('never follows a redirect: the bearer stays on this origin', async () => {
     answer = 308
     const before = seen.length
-    await expect(postTags({ origin, secret: 's' }, [itemTag(1)])).rejects.toThrow(/failed/)
+    await expect(postTags({ origin, secret: 's' }, [productTag(1)])).rejects.toThrow(/failed/)
     expect(seen.length).toBe(before + 1)
   })
 })
@@ -103,7 +105,7 @@ describe('revalidateTargetFrom()', () => {
       revalidateTargetFrom({
         ...S,
         REVALIDATE_ORIGIN: ' http://127.0.0.1:4030 ',
-        SITE_URL: 'https://shop.example',
+        PORT: '4199',
       }),
     ).toEqual({ origin: 'http://127.0.0.1:4030', secret: 's' })
     expect(revalidateTargetFrom({ ...S, REVALIDATE_ORIGIN: 'http://[::1]:4030/x' })).toEqual({
@@ -116,20 +118,17 @@ describe('revalidateTargetFrom()', () => {
     )
   })
 
-  it('falls back to SITE_URL only while it is loopback: a workstation', () => {
-    for (const SITE_URL of [
-      'http://localhost:4199',
-      'http://127.0.0.1:4199',
-      'http://app.localhost:3000',
-    ]) {
-      expect(revalidateTargetFrom({ ...S, SITE_URL }).origin, SITE_URL).toBe(
-        new URL(SITE_URL).origin,
-      )
-    }
-    expect(() => revalidateTargetFrom({ ...S, SITE_URL: 'https://shop.example' })).toThrow(
-      /REVALIDATE_ORIGIN unset, and SITE_URL is not loopback/,
-    )
-    expect(() => revalidateTargetFrom({ ...S })).toThrow(/REVALIDATE_ORIGIN unset/)
+  it('falls back to the process’s own PORT on loopback, never to a site’s public origin', () => {
+    expect(revalidateTargetFrom({ ...S, PORT: '4199' }).origin).toBe('http://127.0.0.1:4199')
+    // A site's hosts are never a target: a mis-set allow-list cannot post to another environment.
+    expect(() =>
+      revalidateTargetFrom({
+        ...S,
+        GALLERY_HOSTS: 'antiquemapsindonesia.com',
+        SITE_URL: 'https://x',
+      }),
+    ).toThrow(/REVALIDATE_ORIGIN unset, and no PORT/)
+    expect(() => revalidateTargetFrom({ ...S, PORT: '43; rm' })).toThrow(/no PORT/)
   })
 
   it('never sends the bearer over plain http off loopback', () => {

@@ -19,7 +19,7 @@ import {
 } from './work-record'
 
 describe('the work uid (CONTENT-MODEL.md §1)', () => {
-  it('is the brand prefix and a zero-padded number, a shape @engine/cache tags', () => {
+  it('is a prefix and a zero-padded number, a shape @engine/cache tags', () => {
     expect(formatWorkUid('IG', 123)).toBe('IG-000123')
     expect(formatWorkUid('TG', 1_234_567)).toBe('TG-1234567')
     expect(workTag(formatWorkUid('OEI', 1))).toBe('work:OEI-000001')
@@ -27,7 +27,7 @@ describe('the work uid (CONTENT-MODEL.md §1)', () => {
     expect(() => formatWorkUid('IG', 0)).toThrow(/not a work number/)
   })
 
-  it('accepts a script’s uid only in this brand’s shape', () => {
+  it('accepts a script’s uid only in the gallery’s shape', () => {
     expect(workUidError('TG-000004', 'TG')).toBeNull()
     expect(workUidError('IG-000004', 'TG')).toMatch(/start with TG-/)
     expect(workUidError('TG-4', 'TG')).toMatch(/prefix, a hyphen/)
@@ -36,9 +36,9 @@ describe('the work uid (CONTENT-MODEL.md §1)', () => {
 })
 
 describe('a work’s single values', () => {
-  it('holds a stock number to the brand’s pattern, when it has one', () => {
+  it('holds a stock number to the gallery’s pattern, when one is given', () => {
     expect(stockNumberError('M.1044', '^[MPF]\\.[A-Za-z0-9]+$')).toBeNull()
-    expect(stockNumberError('X.1', '^[MPF]\\.[A-Za-z0-9]+$')).toMatch(/not one of this brand/)
+    expect(stockNumberError('X.1', '^[MPF]\\.[A-Za-z0-9]+$')).toMatch(/not one of the gallery’s/)
     expect(stockNumberError('anything-goes', null)).toBeNull()
     expect(stockNumberError(' M.1', null)).toMatch(/no spaces/)
     expect(stockNumberError(null, '^M')).toBeNull()

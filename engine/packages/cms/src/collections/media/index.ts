@@ -4,7 +4,7 @@
  * outside the object — that the derivatives and tiles are made from (C9, phase 15). The capture
  * itself is a `masters` record, privately kept.
  *
- * - **Stored in the brand's bucket** through `@payloadcms/storage-s3` (`registries/storage`), under
+ * - **Stored in the one media bucket** through `@payloadcms/storage-s3` (`registries/storage`), under
  *   the private `uploads/` prefix. The bucket serves the public derivatives and capped tiles only;
  *   the upload — full resolution, possibly still carrying GPS and camera metadata — is fetched
  *   through Payload's file route, which `./access` opens to staff alone (8.3.g). The record is
@@ -17,10 +17,9 @@
  *   fetch whatever it names.
  * - **No Payload image sizes and no crop**: the derivative ladder is C9's, built by 15.1 from this
  *   file; cropping happened at intake. The focal point stays, for the derivatives' art direction.
- * - **Role and provenance are set once**, at intake; only an admin or a manager corrects them
+ * - **Role and provenance are set once**, at intake; only the owner corrects them
  *   (`./frozen`) — provenance decides the synthetic label, which no other writer may take off.
- * - **Staff only make images**, a customer never: a consignment's or a return's photographs are
- *   private, session-bound uploads, never `media` records (6.2.e's Found 10).
+ * - **The owner and the editors make images**; store staff read them (`./access`).
  */
 import { MEDIA_UPLOAD_MIME_TYPES } from '@engine/media/storage'
 import type { CollectionConfig } from 'payload'

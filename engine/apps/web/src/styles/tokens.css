@@ -1,9 +1,9 @@
 /*
- * Placeholder values for every C3 token (engine/packages/ui/src/tokens/contract.ts), so the shell
- * renders before the design exists. Deliberately neutral — greys, system faces, no accent worth
- * keeping — because nothing is designed by default in code (design decision 10): the Design stage
- * picks the real values (DESIGN.md, TASKS.md 14.1) and the token pipeline replaces this file
- * (11.2). Every text pairing clears WCAG 2.2 AA; `tokens.test.ts` proves each token is defined.
+ * Placeholder values for every token, so the shell renders before the design exists. Deliberately
+ * neutral — greys, system faces — because nothing is designed by default in code: phase 4 ports
+ * the design team's tokens and gives each site its own palette file (DESIGN-SYSTEM.md, DR-14).
+ * Until then each site differs only by the accent and ground below, keyed by the root layout's
+ * `data-site`. Every text pairing clears WCAG 2.2 AA.
  */
 :root {
   --c-ground: #f4f4f2;
@@ -57,4 +57,14 @@
   --dur-out: 200ms;
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --reveal-distance: 8px;
+}
+
+/* Each site's placeholder palette, until its own token file (phase 4). */
+:root[data-site='gallery'] {
+  --c-accent: #1f2f40;
+}
+
+:root[data-site='shop'] {
+  --c-ground: #f6f1ea;
+  --c-accent: #6b2b1c;
 }

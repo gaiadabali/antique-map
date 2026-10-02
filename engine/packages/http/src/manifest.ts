@@ -1,15 +1,15 @@
 /**
  * @contract C13 — the HTTP handler manifest · consumers: the apps, the proxy, route parity
  *
- * Every engine route an app mounts, and the proxy matcher every app declares
- * (ARCHITECTURE.md §11). An app mounts a route with one file, `src/app{path}/route.ts`,
+ * Every engine route the app mounts, and the proxy matcher it declares (ARCHITECTURE.md §5).
+ * The app mounts a route with one file, `src/app{path}/route.ts`,
  * exporting exactly `methods` — `export { POST } from '@engine/http/revalidate'`.
  * A route whose first segment after `/api/` — `x` for every engine route, `health` for the
  * health route — equals a collection slug, `payload-jobs` or `graphql` would be shadowed:
  * Payload's catch-all REST mount reads a collection from that segment and a static route there
  * wins, so no collection may be named `x` or `health`. Engine routes live under `/api/x/` so none
- * shadows Payload's REST API; `/api/health` and `/brand-assets/…` (outside `/api/`) are the named
- * exceptions. Payload's own mounts, in each app's `(payload)` group, are its admin
+ * shadows Payload's REST API; `/api/health` is the named exception. Payload's own mounts, in the
+ * app's `(payload)` group, are its admin
  * (`admin/[[...segments]]`) and that REST API (`api/[...slug]`) alone: GraphQL is off.
  * A route is mounted only once its handler exists, but for the targets of `ROOT_REWRITES`
  * (robots, the sitemaps, `.well-known`): each keeps a placeholder (`UNBUILT_HANDLER`) so its root
@@ -21,8 +21,7 @@
  * handler without loading Payload, and `@engine/cms` never imports `@engine/http`. Handlers log a
  * request's path without its query string. The files hold type imports of other packages only.
  */
-import type { RootFile } from '@engine/config/routes'
-import type { ModuleKey } from '@engine/config/schema'
+import type { RootFile } from '@engine/config/sites'
 
 import {
   GET,
@@ -39,7 +38,7 @@ export * from './manifest/types'
 /**
  * The handler specifier for a mount path: the static segments after `/api/x/`, `/api/` or
  * `/`, under `@engine/http/`. `/api/x/cron/jobs` → `@engine/http/cron/jobs`;
- * `/api/health` → `@engine/http/health`; `/brand-assets/[...path]` → `@engine/http/brand-assets`.
+ * `/api/health` → `@engine/http/health`.
  */
 export function handlerOf(path: string): string {
   const rest = path.replace(/^\/api\/x\/|^\/api\/|^\//, '')
@@ -59,6 +58,18 @@ export const UNBUILT_HANDLER = {
   specifier: '@engine/http/unbuilt',
   byPath: { '/api/x/robots': '@engine/http/unbuilt/robots' },
 } as const satisfies { specifier: string; byPath: Readonly<Record<string, string>> }
+
+/**
+ * What answers an `/api/x/…` path no engine route serves: a plain 404 for every method, mounted at
+ * `src/app/api/x/[...rest]` (`@engine/http/unrouted`). Every engine route is a more specific mount
+ * and wins; without it such a path would fall through to Payload's REST catch-all, on any host.
+ * It is no route of its own, so it is not in `ENGINE_ROUTES`.
+ */
+export const UNROUTED_HANDLER = {
+  mount: '/api/x/[...rest]',
+  specifier: '@engine/http/unrouted',
+  methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+} as const
 
 /** The placeholder a mount at `path` names while `handlerOf(path)` is unbuilt. */
 export function unbuiltHandlerOf(path: string): string {
@@ -87,20 +98,16 @@ function route(
   owner: Lane,
   auth: RouteAuth | readonly RouteAuth[],
   methods: readonly HttpMethod[],
-  module?: ModuleKey,
 ): EngineRoute {
   const auths = typeof auth === 'string' ? [auth] : auth
   const writes = methods.some((method) => method !== 'GET')
   const sameOrigin = writes && auths.some((each) => COOKIE_AUTH.includes(each))
-  const gated = module === undefined ? {} : { module }
-  return { path, handler: handlerOf(path), methods, owner, auth: auths, sameOrigin, ...gated }
+  return { path, handler: handlerOf(path), methods, owner, auth: auths, sameOrigin }
 }
 
 export const ENGINE_ROUTES: readonly EngineRoute[] = [
   // app, DB, storage, queue lag (reported, never gating); initialises Payload through @engine/cms
   route('/api/health', 'WEB', 'public', GET),
-  // BRAND_ROOT assets — `immutable` only at a versioned URL (`BRAND_ASSET_URL`), never a root file
-  route('/brand-assets/[...path]', 'WEB', 'public', GET),
   route('/api/x/legacy/[...path]', 'WEB', 'public', GET), // legacy URLs: 301 · 404 · 410
   route('/api/x/revalidate', 'WEB', 'revalidate', POST), // `REVALIDATE_REQUEST`: invalidate(tags) from outside a request
   // the site user's crontab (DEPLOYMENT.md §5): the Payload jobs queue, a per-run limit
@@ -113,63 +120,40 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
 ]
 
 /**
- * The brand files a root URL is answered from, by the name every brand folder gives them: the
- * home-screen icon (a 180 × 180 PNG) and the web manifest — the favicon is C1's `assets.favicon`,
- * which may be any served type. `ROOT_REWRITES` points at them, and the shell's loader links each at
- * its versioned URL (C2 `ShellVM.assets.touchIcon`, `.manifest`), or `null` when the brand ships
- * none (v1.3, TASKS.md 4.3.b; 4.1 senior-fe #11: the names live here, never in an app).
+ * Each site's own files, by the name both sites give them, in `public/<site>/`: the favicon, the
+ * home-screen icon (a 180 × 180 PNG), the web manifest, the logo and the Open Graph base. A page
+ * links them at `/<site>/<file>` — the one path under a site's internal prefix the proxy passes
+ * through, and only on that site's own host — and the root URLs below answer from them. No page
+ * links one through Next's file conventions (`app/icon.*`, `app/manifest.ts`), which one build
+ * would make for both sites.
  */
-export const BRAND_ROOT_ASSETS = {
+export const SITE_ASSETS = {
+  favicon: 'favicon.ico',
   touchIcon: 'apple-touch-icon.png',
   manifest: 'site.webmanifest',
+  logo: 'logo.svg',
+  ogImage: 'og.png',
 } as const
 
 /**
- * Root files the proxy rewrites to engine routes, so each keeps its conventional public
- * URL (a sitemap may list only URLs at or below its own path). `:favicon` is the brand's
- * `assets.favicon` (C1), read at runtime. The proxy applies these before C10's parser, and their
- * `from` patterns are exactly C10's `ROOT_FILES`, so no route-map segment or legacy rule is one.
+ * Root files the proxy rewrites, so each keeps its conventional public URL (a sitemap may list
+ * only URLs at or below its own path), per site: `:site` is the request host's site. The proxy
+ * applies these before the site's route map, and their `from` patterns are exactly the routes'
+ * `ROOT_FILES`, so no route-map segment or legacy rule is one.
  *
  * iOS asks for a home-screen icon at the root whatever a page links — `/apple-touch-icon.png`
  * and, older or sized, `-precomposed`, `-180x180`, `-180x180-precomposed` (one pattern takes every
- * suffix) — and crawlers probe `/site.webmanifest`. Each is answered from the brand's assets
- * folder by the file `BRAND_ROOT_ASSETS` names (the touch icon serving them all), and one a brand
- * lacks is a plain 404 from the brand-assets route, never the designed not-found page and its
- * loader (3.1 senior-fe #12, 3.4 senior-fe #7). A page links its icons and manifest through
- * `generateMetadata()` (`icons`, `manifest`) from C2 `ShellVM.assets` — never Next's file
- * conventions (`app/icon.*`, `app/apple-icon.*`, `app/favicon.ico`, `app/manifest.ts`), which are
- * made once per build, not per brand. Every file here keeps an unversioned public URL, so none is
- * served `immutable`.
+ * suffix) — and crawlers probe `/site.webmanifest`; each site's manifest points its icon at
+ * `/apple-touch-icon.png`, which this answers per host. A file a site lacks is a plain 404 from
+ * Next's static files, never the designed not-found page and its loader.
  */
 export const ROOT_REWRITES = [
   { from: '/robots.txt', to: '/api/x/robots' },
   { from: '/sitemap.xml', to: '/api/x/sitemap' },
   { from: '/sitemap-:name.xml', to: '/api/x/sitemap/:name' },
   { from: '/.well-known/:path*', to: '/api/x/well-known/:path*' },
-  { from: '/favicon.ico', to: '/brand-assets/:favicon' },
-  { from: '/apple-touch-icon.png', to: `/brand-assets/${BRAND_ROOT_ASSETS.touchIcon}` },
-  { from: '/apple-touch-icon-:size.png', to: `/brand-assets/${BRAND_ROOT_ASSETS.touchIcon}` },
-  { from: '/site.webmanifest', to: `/brand-assets/${BRAND_ROOT_ASSETS.manifest}` },
+  { from: '/favicon.ico', to: `/:site/${SITE_ASSETS.favicon}` },
+  { from: '/apple-touch-icon.png', to: `/:site/${SITE_ASSETS.touchIcon}` },
+  { from: '/apple-touch-icon-:size.png', to: `/:site/${SITE_ASSETS.touchIcon}` },
+  { from: '/site.webmanifest', to: `/:site/${SITE_ASSETS.manifest}` },
 ] as const satisfies readonly { from: RootFile; to: string }[]
-
-/**
- * A brand file's public URL and how it is cached (TASKS.md 4.1.f, 3.4 senior-fe #2). A page links
- * the logo, a font, the OG base, the touch icon and the manifest at
- * `/brand-assets/<path>?v=<version>`, `<version>` the first 8
- * hex digits of the file's SHA-256, minted where the shell's view model is built (C2 `ShellVM`
- * carries every brand-asset URL a page links; no template writes one). The route answers
- * `versioned` only when `v` is the file's current version; with no `v` — a root file, whose
- * public URL is fixed — or another one — a page cached before the file changed — `unversioned`,
- * with a strong `ETag` (the full SHA-256) and a 304 on `If-None-Match`. It serves only C1's
- * `BRAND_ASSET_TYPES`, each with its type and `X-Content-Type-Options: nosniff`, an SVG under
- * `Content-Security-Policy: default-src 'none'`, and never a path outside the brand's assets
- * folder: a `..`, an absolute path or a link out is a 404.
- */
-export const BRAND_ASSET_URL = {
-  path: '/brand-assets/',
-  version: { param: 'v', hexDigits: 8 },
-  cacheControl: {
-    versioned: 'public, max-age=31536000, immutable',
-    unversioned: 'public, max-age=300',
-  },
-} as const

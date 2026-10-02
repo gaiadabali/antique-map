@@ -1,11 +1,11 @@
 /**
- * The proxy's answer against Next itself (C13 v1.3, TASKS.md 5.3): `@engine/http` does not depend
- * on `next`, so these tests load the version each app installs, through that app's own resolution
+ * The proxy's answer against Next itself: `@engine/http` does not depend on `next`, so these
+ * tests load the version the app installs, through the app's own resolution
  * — `next/server`'s `NextResponse.rewrite()`, whose protocol `./respond` writes by hand, and the
  * adapter Next runs every proxy under, which strips its internal `_rsc` search param before the
  * proxy sees the URL. That strip is what keeps `_rsc` out of `x-public-search`, and it holds only
  * while `skipProxyUrlNormalize` stays off (Next's build defines `__NEXT_NO_MIDDLEWARE_URL_NORMALIZE`
- * from it), so the apps' configs are checked for it too.
+ * from it), so the app's config is checked for it too.
  */
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -14,14 +14,14 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { loadBrandConfig } from '@engine/config/loader'
 import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS } from '../manifest'
 import { createProxy } from './route'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url))
-/** The one app (TASKS.md 2.1); each storefront's brand still runs on it until 2.2. */
+/** The one app (TASKS.md 2.1), serving both sites by host (2.2). */
 const APP = 'web'
-const APPS = ['gallery', 'emporium'] as const
+const APPS = ['gallery', 'shop'] as const
+const ENV = { GALLERY_HOSTS: 'gallery.localhost', SHOP_HOSTS: 'shop.localhost' }
 const NO_NORMALIZE = '__NEXT_NO_MIDDLEWARE_URL_NORMALIZE'
 
 type RewriteInit = { status?: number; request?: { headers: Headers } }
@@ -41,11 +41,7 @@ function fromApp<T>(_storefront: (typeof APPS)[number], specifier: string): T {
   return createRequire(join(REPO_ROOT, 'engine', 'apps', APP, 'package.json'))(specifier) as T
 }
 
-const proxyFor = (storefront: (typeof APPS)[number]) => {
-  const env = { BRAND: 'test', BRAND_ROOT: './test', TEST_STOREFRONT: storefront }
-  const config = loadBrandConfig({ env, cwd: REPO_ROOT })
-  return createProxy({ config: () => config })
-}
+const proxy = createProxy({ env: ENV })
 
 /** The request-header overrides an answer carries, as Next's router applies them. */
 function overrides(response: Response): Record<string, string | null> {
@@ -55,15 +51,14 @@ function overrides(response: Response): Record<string, string | null> {
   )
 }
 
-describe.each(APPS)('the proxy’s answer against the %s app’s Next', (app) => {
+describe.each(APPS)('the proxy’s answer on the %s host against the app’s Next', (app) => {
   // Before any other module of Next's: its server sets the AsyncLocalStorage global first.
   fromApp(app, 'next/dist/server/node-environment-baseline')
-  const proxy = proxyFor(app)
 
   it('is what NextResponse.rewrite(url, { status, request: { headers } }) builds, status included', () => {
     const { NextResponse } = fromApp<NextServer>(app, 'next/server')
-    const request = new Request('https://shop.example.com/nope/deeper?q=1', {
-      headers: { cookie: 'a=1', 'x-public-search': '?forged' },
+    const request = new Request('http://localhost:4230/nope/deeper?q=1', {
+      headers: { host: `${app}.localhost`, cookie: 'a=1', 'x-public-search': '?forged' },
     })
     const ours = proxy(request)
     expect(ours.status).toBe(PROXY_NOT_FOUND_STATUS)
@@ -84,14 +79,15 @@ describe.each(APPS)('the proxy’s answer against the %s app’s Next', (app) =>
         handler: proxy,
         request: {
           url: `http://localhost:4230${path}`,
-          headers: { rsc: '1', 'user-agent': 'Mozilla/5.0' }, // a client navigation's RSC fetch
+          // a client navigation's RSC fetch; the item route (whose query is kept) is the gallery's
+          headers: { host: 'gallery.localhost', rsc: '1', 'user-agent': 'Mozilla/5.0' },
           method: 'GET',
           nextConfig: {},
         },
       })
       return response.headers.get(`x-middleware-request-${PROXY_REQUEST_HEADERS.publicSearch}`)
     }
-    const item = app === 'gallery' ? '/product/1706-old' : '/produk/1706-lama'
+    const item = app === 'gallery' ? '/product/1706-old' : '/id/produk/1706-lama'
     expect(await run(`${item}?_rsc=1a2b3&utm_source=mail`)).toBe('?utm_source=mail')
     expect(await run(`${item}?_rsc=1a2b3`)).toBe('')
 

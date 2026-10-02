@@ -17,9 +17,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 3/18 | 0 | `██░░░░░░░░`  17% |
-| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
-| **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 4/14 | 0 | `███░░░░░░░`  29% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **4/48** | **23/194** | **8** | `█░░░░░░░░░`  12% |
+| **All** | 11 phases | | | **7/49** | **42/200** | **8** | `██░░░░░░░░`  21% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,12 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 2·W1 | 2.1 One app: rename, merge and re-point the build | senior-fe | `feat/2.1-one-app` | 2026-10-02 | |
+| 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | copy merged (da4e214); the delete commit 4f259f1 lands last, right after 2.2, then the Check |
+| 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | 2.2.a–d done; fixing the senior-integrator review's must-fix (CORS/CSRF trusted the gallery origin) and two should-fixes (`/api/x/*` fall-through to Payload, boot check vs DEPLOYMENT §8); then merge |
+| 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
+| 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
+| 3·W1 | 3.2 Catalogue collections: makers, places, terms and the antiques | senior-db | `w/3.2` | 2026-10-03 | |
+| 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -256,9 +261,10 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Goal:** the hostname picks the site, there is one app and one database, and the brand machinery is gone from the code.
 **Done when:** `pnpm dev` serves `gallery.localhost:3000` and `shop.localhost:3000` from one process with two different placeholder home pages, in English and Indonesian; an unknown host is a 404; `/admin` answers only on the admin host; one initial migration builds the database; no `BRAND`, `brand.config.json` or brand directory remains; `pnpm verify` and a production build with no database variables are green.
-**Waves:** W1 — 2.1 · W2 — 2.2, 2.3 · W3 — 2.4
+**Waves:** W1 — 2.1 · W2 — 2.2, 2.3, 2.4 · W3 — 2.5
+**W2 merge order (2026-10-02):** 2.4, then 2.2, then 2.3 — each deletion lands only after nothing reads what it deletes: 2.4 drops the CMS's brand uses, 2.2 then deletes the brand loader and `access/brand.ts`, 2.3 last deletes `test/` and the brand directories. A later branch is re-applied on merged `main` before it merges. 2.5 needs only 2.4's schema (2.2 changes access and config, 2.3 deletes folders), so it runs beside 2.2 and merges after it. Once 2.4 merged, its CMS instance test passed to 2.2 for the cache-tag rename (`item:` → `product:`). Only 2.4 regenerates `payload-types.ts` and `importMap.js` in W2; its interim migration is thrown away by 2.5.
 
-- [ ] **2.1 One app: rename, merge and re-point the build** · needs: phase 1 — 🔄 2·W1
+- [x] **2.1 One app: rename, merge and re-point the build** · needs: phase 1 — ✅ 2026-10-02 f9b57e1
   - **Lane** PLT + OPS · **Agent** senior-fe, with devops for CI · **Wave** W1
   - **Owns** `engine/apps/**`, `.github/**`, `.gaiadeploy.yml`, `playwright.config.ts`, `lighthouserc.*.json`, root `package.json`, `scripts/ops/lib/**`
   - **Read** CARRY-OVER.md §2.2, §2.4 and §3 step 4, ARCHITECTURE.md §Topology
@@ -266,39 +272,47 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.1.a `git mv engine/apps/gallery engine/apps/web`; port the emporium's `lexicon/shop.ts` and tokens into it; delete `engine/apps/emporium`; delete both apps' old `PRODUCT.md` (the root `PRODUCT.md` replaces them)
   - [x] 2.1.b one `build`, one Lighthouse file, one release artifact subdirectory and one `.gaiadeploy.yml` entry; Playwright runs `gallery.localhost` and `shop.localhost` on one port at 390 px and 1280 px
   - [x] 2.1.c CI: one e2e database, `next build` with no `DATABASE_URL` or `PAYLOAD_SECRET`, plus `pnpm audit --prod --audit-level=high`, a gitleaks scan and CodeQL; regenerate `pnpm-lock.yaml` with `pnpm install`
-  - [ ] 2.1.d **Check:** a fresh clone runs `pnpm install && pnpm verify` and a production build with the database variables unset, and the app starts on one port.
+  - [x] 2.1.d **Check:** a fresh clone runs `pnpm install && pnpm verify` and a production build with the database variables unset, and the app starts on one port.
 
-- [ ] **2.2 Site replaces brand: host to site, one admin host** · needs: 2.1
+- [ ] **2.2 Site replaces brand: host to site, one admin host** · needs: 2.1 — 🔄 2·W2
   - **Lane** PLT · **Agent** senior-be with senior-fe, **opus**, second reviewer senior-integrator · **Wave** W2
-  - **Owns** `engine/packages/{config,http,cache,i18n}/**`, `engine/apps/web/src/{proxy.ts,server/**}`, `engine/apps/web/src/app/**`, `engine/apps/web/next.config.ts`, `engine/packages/cms/src/access/**`
+  - **Owns** `engine/packages/{config,http,cache,i18n}/**`, `engine/apps/web/{next.config.ts,package.json,tsconfig.json,test/**}`, `engine/apps/web/src/{proxy.ts,boot.ts,instrumentation.ts}`, `engine/apps/web/src/{app,server,shell,messages,item}/**`, `engine/packages/cms/src/access/**`, `engine/packages/view-models/src/shell.ts`, `engine/tooling/{config-drift,db}/**`, `.github/{scripts,workflows}/**`, `engine/tooling/copy-complete/**`, `playwright.config.ts`, `.env.example`, `tests/e2e/{status,hosts,smoke,a11y}/**`
   - **Read** CARRY-OVER.md §2.1 `config`, `http`, §3 step 5 and §6.5, ARCHITECTURE.md, SECURITY.md §2.1, `docs/spikes/cache-components.md`
   - _Requirements: 1.2, 1.3, 11.2_
-  - [ ] 2.2.a gut `@engine/config` to a typed `SITES` table and `siteFromHost()` checked against an env allow-list (`GALLERY_HOSTS`, `SHOP_HOSTS`); keep `constants`, `routes`, the environment half of the boot check and `hostname`; delete the brand schema, modules, sellers, markets, trade, validators and loader
-  - [ ] 2.2.b the proxy rewrites by `Host` into `app/(gallery)` or `app/(shop)` trees (internal prefixes that 404 when requested directly); an unknown or unlisted host is a plain 404 and never builds a URL; copy `instant = false` and the `connection()`-first read onto both root layouts
-  - [ ] 2.2.c pin the admin and Payload REST to one host, `ADMIN_HOST` (the shop's host, Q1 answered); on the other host `/admin` and `/api/*` outside `/api/x/` and `/api/health` are 404; CSRF and CORS list each site's origin; absolute URLs for emails, canonical tags and Open Graph come from `SITES`, never from the request
-  - [ ] 2.2.d delete `access/brand.ts`, `access/modules.ts` and every `BRAND` and `BRAND_ROOT` use; cache tags are namespaced by collection and carry the site where one record renders on both
+  - [x] 2.2.a gut `@engine/config` to a typed `SITES` table and `siteFromHost()` checked against an env allow-list (`GALLERY_HOSTS`, `SHOP_HOSTS`); keep `constants`, `routes`, the environment half of the boot check and `hostname`; delete the brand schema, modules, sellers, markets, trade, validators and loader
+  - [x] 2.2.b the proxy rewrites by `Host` into `app/(gallery)` or `app/(shop)` trees (internal prefixes that 404 when requested directly); an unknown or unlisted host is a plain 404 and never builds a URL; copy `instant = false` and the `connection()`-first read onto both root layouts
+  - [x] 2.2.c pin the admin and Payload REST to one host, `ADMIN_HOST` (the shop's host, Q1 answered); on the other host `/admin` and `/api/*` outside `/api/x/` and `/api/health` are 404; CSRF and CORS list the admin's origin only (the senior-integrator review of 2.2: listing the gallery's origin let gallery script make credentialed admin calls on staging, where both hosts are same-site); absolute URLs for emails, canonical tags and Open Graph come from `SITES`, never from the request
+  - [x] 2.2.d delete `access/brand.ts`, `access/modules.ts` and every `BRAND` and `BRAND_ROOT` use in the Owns (2.4 removes the CMS's own, and merges first); repoint the config and http tests off the root `test/` (2.3 deletes it); cache tags are namespaced by collection and carry the site where one record renders on both
   - [ ] 2.2.e **Check:** an e2e on a production build proves: each host serves its own site; an unknown `Host` is 404; `/admin` is 200 on the admin host and 404 on the other; a spoofed `X-Forwarded-Host` changes nothing; the 404 and 308 statuses survive Cache Components (`tests/e2e/status`).
 
-- [ ] **2.3 Dissolve the brand directories** · needs: 2.1
+- [ ] **2.3 Dissolve the brand directories** · needs: 2.1 — 🔄 2·W2
   - **Lane** PLT · **Agent** junior · **Wave** W2
-  - **Owns** `indies-gallery/**`, `old-east-indies/**`, `test/**`, `engine/packages/migrate/data/**`, `engine/apps/web/public/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`
+  - **Owns** `indies-gallery/**`, `old-east-indies/**`, `test/**`, `engine/packages/migrate/**`, `engine/apps/web/public/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`
   - **Read** CARRY-OVER.md §2.6 and §3 step 6
   - _Requirements: 12.2_
-  - [ ] 2.3.a copy → `apps/web/src/sites/{gallery,shop}/lexicon/`; assets → `apps/web/public/{gallery,shop}/`; legacy inventories and schema notes → `packages/migrate/data/{gallery,shop}/`; fix the paths in the migrate READMEs and `public-read.json`
-  - [ ] 2.3.b move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json`
-  - [ ] 2.3.c delete `indies-gallery/`, `old-east-indies/` and `test/`
+  - [x] 2.3.a copy → `apps/web/src/sites/{gallery,shop}/lexicon/`; assets → `apps/web/public/{gallery,shop}/`; legacy inventories and schema notes → `packages/migrate/data/{gallery,shop}/`; fix the paths in the migrate READMEs and `public-read.json`
+  - [x] 2.3.b before deleting, show nothing outside the brand directories and `test/` still reads them (2.4.c moves the gazetteer seed and the CMS fixtures, 2.2.d the config and http fixtures); this task merges last in W2
+  - [x] 2.3.c delete `indies-gallery/`, `old-east-indies/` and `test/`
   - [ ] 2.3.d **Check:** no directory outside `engine/`, `docs/`, `tests/` and `scripts/` holds site content; `pnpm verify` is green; the migrate tests read their moved data.
 
-- [ ] **2.4 Collections trimmed and the migrations reset** · needs: 2.2, 2.3
-  - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W3
-  - **Owns** `engine/packages/cms/src/{collections,globals,db,migrations,fields,hooks,seed}/**`, `engine/packages/cms/src/payload.config.ts`, `engine/packages/media/**`
+- [x] **2.4 Collections trimmed, the CMS without brands** · needs: 2.1 — ✅ 2026-10-02 038e0e7
+  - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W2
+  - **Owns** `engine/packages/cms/{package.json,payload-types.ts}`, `engine/packages/cms/src/{payload.config.ts,instance.ts,instance.test.ts,instance.db.test.ts}`, `engine/packages/cms/src/{collections,globals,db,fields,hooks,seed,registries,validators,migrations}/**`, `engine/packages/media/**`
   - **Read** CARRY-OVER.md §2.5, §3 step 7 and §6.4, CONTENT-MODEL.md §3–§7
-  - _Requirements: 1.1, 1.3, 11.1_
-  - [ ] 2.4.a delete the 31 stub collections and six stub globals, the frozen-slug assertion, `engine-tables.ts`, `idempotency.ts` and the `nl` locale; keep `assertDraftAccess`, `publishedOrStaff`, the users guards and `hooks/request-temp-files`
-  - [ ] 2.4.b users get the roles `owner`, `editor` and `store` (a `store` relation); media and masters lose the brand segment and the outlet logic (one media bucket, one masters bucket); remove room plates; strip the works sister-sync guard
-  - [ ] 2.4.c reset the migrations: delete both, run `migrate:create initial` once on a clean `main`, and re-add by hand `unaccent`/`pg_trgm`, the last-owner constraint trigger (advisory-lock key equal to `ADMINS_LOCK_KEY`, now testing `'owner'`) and the truncate refusal; regenerate `payload-types.ts` and `importMap.js` in the same commit
-  - [ ] 2.4.d drop every existing local and staging database after a `pg_dump` (their `payload_migrations` rows name the old files)
-  - [ ] 2.4.e **Check:** `admins.db.test.ts` passes against the migrated database (deleting or demoting the last owner is refused by the database itself, not only the hook); a fresh `pnpm db:fresh` builds the schema from the one initial migration; `pnpm check:generated` is clean.
+  - _Requirements: 1.1, 1.3_
+  - [x] 2.4.a delete the 31 stub collections and six stub globals, the frozen-slug assertion, `engine-tables.ts`, `idempotency.ts` and the `nl` locale; keep `assertDraftAccess`, `publishedOrStaff`, the users guards and `hooks/request-temp-files`
+  - [x] 2.4.b users get the roles `owner`, `editor` and `store` (a `store` relation); media and masters lose the brand segment and the outlet logic (one media bucket, one masters bucket); remove room plates; strip the works sister-sync guard
+  - [x] 2.4.c remove every brand use in the Owns: imports of `access/brand`, `access/modules` and the `@engine/config` brand loader, `BRAND` and `BRAND_ROOT`; move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json` and repoint every CMS test off the root `test/`; as W2's schema lead, generate one interim migration and regenerate `payload-types.ts` and `importMap.js`
+  - [x] 2.4.d **Check:** `pnpm verify` is green; a search finds no `BRAND`, no `access/brand` or `access/modules` import and no brand-loader import in the CMS outside `src/access/`, and no CMS test reading the root `test/`; the works and users `*.db.test.ts` pass against Postgres.
+
+- [x] **2.5 The migrations reset** · needs: 2.4 — ✅ 2026-10-02 b0fe334
+  - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W3
+  - **Owns** `engine/packages/cms/src/{migrations,db}/**`, `engine/packages/cms/src/payload-types.ts`, the generated `importMap.js`
+  - **Read** CARRY-OVER.md §3 step 7 and §6.4, the 1.1 triage file on 8.5's staging state
+  - _Requirements: 1.1, 11.1_
+  - [x] 2.5.a reset the migrations: delete them all, run `migrate:create initial` once on a clean `main`, and re-add by hand `unaccent`/`pg_trgm`, the last-owner constraint trigger (advisory-lock key equal to `ADMINS_LOCK_KEY`, now testing `'owner'`) and the truncate refusal; regenerate `payload-types.ts` and `importMap.js` in the same commit
+  - [x] 2.5.b drop every existing local database after a `pg_dump` (their `payload_migrations` rows name the old files); the staging databases move to 3.1.d, because the old staging releases still run on them
+  - [x] 2.5.c **Check:** `admins.db.test.ts` passes against the migrated database (deleting or demoting the last owner is refused by the database itself, not only the hook); a fresh `pnpm db:fresh` builds the schema from the one initial migration; `pnpm check:generated` is clean.
 
 ---
 
@@ -316,9 +330,10 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.1.a one site user, pm2 process, port and database (`indies_db`), one media bucket (public only under `derivatives/` and `iiif/`) and the `archive-masters` bucket on Helios's RustFS; apply 8.5's RustFS parity checks; confirm the four rotated storage secrets are closed
   - [ ] 3.1.b both staging hostnames on one CloudPanel site through nginx `server_name`; remove the `uig` and `uoei` entries; the release goes through the pull pipeline
   - [ ] 3.1.c Mailpit stays loopback-only; host-only secrets; a nightly `pg_dump` and a bucket copy to an off-box place (Open: where — DEPLOYMENT.md)
-  - [ ] 3.1.d **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
+  - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
+  - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
-- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2
+- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{works,makers,places,terms,media,masters}/**`
   - **Read** CONTENT-MODEL.md §3–§5, CARRY-OVER.md §2.5
@@ -327,9 +342,10 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.2.b `works` (admin label **Antiques**) follow CONTENT-MODEL: stock number, status `available|on-hold|sold`, `location` (Singapore or Jakarta), a unique `publicId` (the old site's product id for a migrated work, else a sequence from 100000 — it is part of the item URL), localised text, an owner-only `askingPrice` in USD (Q14) that no public read can select
   - [ ] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
   - [ ] 3.2.d media keep their roles and localised alt text; masters stay private with the presigned PUT and checksum
-  - [ ] 3.2.e **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
+  - [ ] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
+  - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
-- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2
+- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{products,stores,stock-levels,orders,payment-events,discounts}/**`
   - **Read** CONTENT-MODEL.md §3–§4, COMMERCE.md §1–§4
@@ -337,9 +353,10 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.3.a `products`: SKU, localised name and description, category term, images, price in integer rupiah, variants as an array field, optional `relatedWork`, a `site` of `shop`
   - [ ] 3.3.b `stores` (code, name, address, `lat`/`lng`, WhatsApp, hours, active, public flag) and `stock-levels` unique on store, product and variant SKU with a non-negative `quantity` check — `quantity` is the physical count minus units held by orders from `pending_payment` to `waiting_driver`, so a recount cannot oversell held units (DATA.md §3)
   - [ ] 3.3.c `orders` (guest contact, delivery address with pin, assigned store, status and history, driver image, payment state, hashed tracking token, the amounts it was priced with), `payment-events` (append-only, unique dedupe key) and `discounts` (the welcome code) — schema and access only; behaviour is phases 6–7
-  - [ ] 3.3.d **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
+  - [ ] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
+  - [ ] 3.3.e **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
 
-- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2
+- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{leads,partners,chat-sessions,events,pages,redirects}/**`, `engine/packages/cms/src/globals/**`
   - **Read** CONTENT-MODEL.md §6, AI.md §3, ANALYTICS.md
@@ -357,7 +374,8 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.5.a generate the wave's migration once, in a clean worktree on merged `main`; regenerate `payload-types.ts` and `importMap.js`; add to the initial set only if the reset is not yet released
   - [ ] 3.5.b enforce `owner`, `editor` and `store` in collection and field access with `overrideAccess:false` helpers: editors manage catalogue, content and orders; leads, partners, discounts, settings and `askingPrice` are owner-only; `store` users get a `Where` rule on their store's orders and stock
   - [ ] 3.5.c an order status can only move forward for a store user; `ValidationError` messages stay plain on every path (the 8.6 finding)
-  - [ ] 3.5.d **Check:** db tests prove: a store user cannot read, update or list another store's order or stock (by id and by query); an editor cannot read a lead; an anonymous request reads only published, projected fields; the last owner cannot be removed.
+  - [ ] 3.5.d from the phase 2 reviews: `payload-locked-documents` gets owner/editor-only access (today any signed-in user, store users included, can list and delete locks across collections); role and store changes are recorded (SECURITY R7); REST tests prove a store user and an editor cannot change their own `role` or `store`
+  - [ ] 3.5.e **Check:** db tests prove: a store user cannot read, update or list another store's order or stock (by id and by query); an editor cannot read a lead; an anonymous request reads only published, projected fields; the last owner cannot be removed.
 
 - [ ] **3.6 The admin experience: both languages, plain errors, a dashboard shell** · needs: 3.2, 3.3, 3.4
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
@@ -389,15 +407,15 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Built to be restyled.** The first-run UI is the real UI, so it has to be right: every colour, size, space, radius, shadow and motion value comes from a token; pages are thin compositions of shared components; copy comes from the lexicon. A later redesign then edits `sites/*/tokens` and the shared components. The design team's material is in `docs/design/input/claude-design-2026-09/`.
 
-- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2
+- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — 🔄 4·W1
   - **Lane** DSG · **Agent** senior-uiux · **Wave** W1
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
   - _Requirements: 12.1, 12.5_
-  - [ ] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
-  - [ ] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
-  - [ ] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
-  - [ ] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
+  - [x] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
+  - [x] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
+  - [x] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
+  - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
   - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
 - [ ] **4.2 Shared components from the design team's kit** · needs: 4.1
@@ -796,6 +814,11 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-02 — **Phase 2 reviews.** The senior-be review of 2.4 found the users bulk guard ran before access with `overrideAccess: true` (anyone could take the owner lock and learn from 400 vs 403): fixed and merged (142d1af). The senior-integrator review of 2.2 found CORS/CSRF trusted the gallery origin (gallery script could make credentialed admin calls on staging): 2.2.c now lists the admin's origin only, fix in flight. Later-phase findings are subtasks 3.2.e, 3.3.d, 3.5.d; the staging database retirement is 3.1.d.
+- 2026-10-02 — ✅ 2.5 — one initial migration (`20261002_073156_initial`) builds the same schema as the old chain; the last-owner backstop is per statement (`INITIALLY IMMEDIATE`, so a refusal reaches the caller), covers INSERT, refuses outside READ COMMITTED and pins `search_path`; TRUNCATE refused on `users` and `stores`. 114 local databases dumped, checked and dropped (dumps in `Backup antique map/db-dumps-2026-10-02`); staging left running for 3.1.d. db tests 93/93 re-run on `main` b0fe334. 2.5 ran beside 2.2 once 2.4 merged (needs relaxed to 2.4).
+- 2026-10-02 — ✅ 2.4 — 9 collections left (users, stores, works, makers, places, terms, sources, media, masters); one `users.role` (`owner|editor|store`) and `users.store`; a minimal `stores`; one media and one masters bucket; no brand use in the CMS; the gazetteer seed moved into `cms/src/seed`. Admin opened on a production build: each role assigned, a store user sees only its store, the last owner cannot demote themselves. Review fix (142d1af): the bulk guard runs only for callers access lets through; stores and self-edit access tests fail on planted violations.
+- 2026-10-02 — **Phase 2 replanned for speed.** 2.4 (collections trimmed, the CMS without brands) moves into W2 beside 2.2 and 2.3; its migration reset becomes the new 2.5 in W3. W2 merges in the order 2.4 → 2.2 → 2.3 so each deletion lands after nothing reads it; 2.2 takes the CI, Playwright, db-tooling and copy-gate readers 2.3 found; 2.3.b becomes the reader list (2.4 moves the gazetteer seed).
+- 2026-10-02 — ✅ 2.1 — one app at `engine/apps/web` (`@engine/web`, a `git mv` of the gallery with the shop lexicon ported, emporium deleted); one build, Lighthouse file, release subdir and deploy entry; CI gains the sentinel build (no DB variables, PGPORT=1), `pnpm audit` (undici pinned 7.29.1, nodemailer's two advisories allow-listed until 2026-11-02), gitleaks and CodeQL; 8.6's `serverExternalPackages: ['payload']` ported and proven (a refused publish keeps `data.errors` when `/admin` boots Payload first). `pnpm verify` green on `main` f9b57e1 (1,563 tests); both hosts opened at 390 and 1280 px.
 - 2026-10-02 — ✅ **phase 1** — qa on merged `main` 5fb2229: `pnpm verify` green (1,567 tests) with only the eight kept gates; `engine/packages` is exactly the eight kept packages; both apps build with no database variables; the crawl backup's 14,064 checksums match; `git worktree list` holds only kept worktrees. Pushed to `origin` (as web-gaiada).
 - 2026-10-02 — ✅ 1.4 — seven contract packages, `CONTRACTS.md`, 33 placeholder mounts per app, the cron stubs and the spike deleted; `view-models` trimmed; `Money` in `i18n`. Kept on purpose: `/brand-assets` (the shell's logo, fonts, manifest) and the robots, sitemap and well-known mounts (without them `/sitemap.xml` was a 500). Grep finds no import of a deleted package.
 - 2026-10-02 — ✅ 1.3 — the brand-era gates gone; `verify` is format, lint, typecheck, test, filesize, generated, tasks:lint, tasks:check; planted 301-line file, page `import 'payload'` and second Check each fail. Note: `check:generated` no longer runs `schema:check`, so a collection change without its migration is not caught by `verify`.

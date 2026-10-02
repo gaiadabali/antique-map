@@ -62,9 +62,8 @@ jobs:
 
       # One tarball, one subdir, web/ (DEPLOYMENT.md §3): the standalone server with its
       # `.next/static`/`public` (Next's tracing does not follow files that are only served),
-      # sharp and its @img/* binaries beside the server (a native addon no traced module names),
-      # and, until TASKS.md 2.2–2.3 move the sites into the app, each brand folder's site/ at
-      # <current>/<brand>/site — BRAND picks the one a process serves.
+      # sharp and its @img/* binaries beside the server (a native addon no traced module names).
+      # Both sites ship inside the build; the request's Host picks one (TASKS.md 2.2).
       - name: Assemble web/
         run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
 
@@ -86,11 +85,12 @@ jobs:
         run: sudo apt-get install -y postgresql-client
 
       - name: db:fresh — the smoke's database (created and migrated)
-        run: pnpm db:fresh --brand indies-gallery --suffix "$DB_SUFFIX"
+        run: pnpm db:fresh --suffix "$DB_SUFFIX"
 
       # The tarball, extracted as a host extracts it, boots web/ on one port and answers both
-      # hostnames: home 200 with the brand's name, /admin/login 200, /api/health 200, sharp
-      # loading — before anything is published (TASKS.md 4.4.f, 2.1.b).
+      # hostnames, each with its own site: home 200 with the site's name in en and id,
+      # /admin/login 200 on the shop's host and 404 on the gallery's, an unknown host 404,
+      # /api/health 200, sharp loading — before anything is published (TASKS.md 4.4.f, 2.2).
       - name: Release smoke — web/ boots from the tarball and answers both hosts
         run: bash .github/scripts/smoke-artifact.sh "${{ steps.pack.outputs.name }}.tar.gz"
 

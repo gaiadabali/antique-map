@@ -37,8 +37,6 @@ describe.skipIf(!stackAvailable)('media uploads leave no temp file (on Postgres 
 
   beforeAll(async () => {
     stack = await startStack({
-      storefront: 'gallery',
-      mastersUser: 'test-masters-origin',
       connect: (config, key) => getPayload({ config, key }),
       tempFileDir: tempDir,
     })
@@ -51,7 +49,7 @@ describe.skipIf(!stackAvailable)('media uploads leave no temp file (on Postgres 
       data: {
         email: 'cataloguer@temp-files.test',
         name: 'Cataloguer',
-        roles: ['cataloguer'],
+        role: 'editor',
         password: PASSWORD,
       } as never,
     })

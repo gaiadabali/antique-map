@@ -18,7 +18,6 @@ import {
   type PayloadRequest,
 } from 'payload'
 
-import { activeBrand } from '../../access/brand'
 import { mastersStoreFromEnv, STORE_MISSING, type StoreSource } from './store'
 import { intakeSegments, masterProblems, type FieldProblem, type MasterInput } from './validators'
 
@@ -45,15 +44,13 @@ export const dropSentFile: CollectionBeforeOperationHook = ({ args, req }) => {
 }
 
 /**
- * On a create, what the key already says: the owning brand (an intake key's own, else this
- * process's brand) and an intake key's batch — so the import and the upload flow need not repeat
- * them, and can never contradict them.
+ * On a create, what the key already says: an intake key's batch — so the import and the upload
+ * flow need not repeat it, and can never contradict it.
  */
 export const fillFromKey: CollectionBeforeValidateHook = ({ data, operation }) => {
   if (operation !== 'create' || !data) return data
   const next: Data = { ...data }
   const intake = typeof next.storageKey === 'string' ? intakeSegments(next.storageKey) : null
-  next.brand ??= intake?.brand ?? activeBrand()?.slug
   if (intake) {
     const group = (next.intake ?? {}) as Data
     next.intake = { ...group, batch: group.batch ?? intake.batch }
@@ -70,7 +67,7 @@ export const checkConsistency: CollectionBeforeValidateHook = ({ data, originalD
 }
 
 /**
- * What a master is never changes: its kind, its checksum and its owning brand. Its key moves once — a capture filed
+ * What a master is never changes: its kind and its checksum. Its key moves once — a capture filed
  * from its intake key under its work's uid (TASKS.md 15.4) — and only on the Local API, where the
  * filing job runs; a request through the admin or REST never re-points a record at another file.
  */
@@ -82,7 +79,7 @@ export const keepWhatIsFixed: CollectionBeforeChangeHook = ({
 }) => {
   if (operation !== 'update' || !originalDoc) return data
   const errors: FieldProblem[] = []
-  for (const field of ['kind', 'checksum', 'brand'] as const) {
+  for (const field of ['kind', 'checksum'] as const) {
     if (field in data && data[field] !== originalDoc[field]) {
       errors.push({ path: field, message: `A master's ${field} never changes: make a new record.` })
     }

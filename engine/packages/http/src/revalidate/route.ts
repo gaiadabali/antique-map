@@ -6,8 +6,9 @@
  *
  * - **Who**: `Authorization: Bearer <REVALIDATE_SECRET>`, compared in constant time as the cron
  *   routes compare theirs (`../shared/bearer`): 503 while it is unset, 401 when it is wrong — both
- *   before a byte of the body is read. No cookie authenticates it, so no same-origin check applies,
- *   and the proxy never sees it (`/api/` is outside its matcher).
+ *   before a byte of the body is read. No cookie authenticates it, so no same-origin check applies;
+ *   the proxy passes it on whatever the `Host` (`HOST_FREE_PATHS`: jobs post it on loopback), and
+ *   sets nothing it reads.
  * - **What**: `./body` — JSON `{ "tags": [...] }`, one to `maxTags` tags within `maxBodyBytes`, each
  *   one `@engine/cache` makes; anything else a 400, and then nothing is expired.
  * - **How**: `invalidate(tags)` in its in-request mode — no collector — so each tag expires at its
@@ -22,7 +23,7 @@
  * — a tag kind this process does not know yet, mid-deploy — and is logged here by its reason alone.
  */
 import { invalidate, type CacheTag } from '@engine/cache'
-import { describeError } from '@engine/config/loader'
+import { describeError } from '@engine/config/boot-check'
 
 import { refuseBearer } from '../shared/bearer'
 import { plain } from '../shared/respond'

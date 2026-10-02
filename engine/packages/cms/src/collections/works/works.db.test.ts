@@ -1,7 +1,7 @@
 /**
  * TASKS.md 8.2 on a real Postgres: a work saves with its validation, takes its uid once, refuses
- * an incomplete publish with every reason at once, holds its images to what a work may show,
- * refuses edits of a copy's synced fields (the deletes it guards: `./works-references.db.test`).
+ * an incomplete publish with every reason at once, and holds its images to what a work may show
+ * (the deletes it guards: `./works-references.db.test`).
  * The schema is pushed (`./works.test-support`); without `CMS_TEST_POSTGRES_URL` it skips — a
  * setup state; a named server that refuses is a failure.
  */
@@ -45,10 +45,10 @@ describe.skipIf(!server)('works on a real database', () => {
       stack.api.create({ collection: 'works', data: { ...data, _status: 'published' }, context }),
     )
 
-  it('saves a draft with a circa date and a verso image, and gives it the brand’s next uid', async () => {
+  it('saves a draft with a circa date and a verso image, and gives it the gallery’s next uid', async () => {
     const first = await stack.api.create({ collection: 'works', data: complete() })
     const second = await stack.api.create({ collection: 'works', data: { title: 'Another' } })
-    expect(first.workUid).toMatch(/^TG-\d{6}$/)
+    expect(first.workUid).toMatch(/^IG-\d{6}$/)
     expect(Number(String(second.workUid).slice(3))).toBe(Number(String(first.workUid).slice(3)) + 1)
     const stored = await stack.api.findByID({
       collection: 'works',
@@ -60,7 +60,7 @@ describe.skipIf(!server)('works on a real database', () => {
       _status: 'draft',
       date: { precision: 'circa', from: 1726 },
       images: [{ media: recto }, { media: verso, caption: 'Verso: blank' }],
-      physical: { location: null, exportStatus: null },
+      physical: { exportStatus: null },
     })
   })
 
@@ -76,7 +76,7 @@ describe.skipIf(!server)('works on a real database', () => {
   it('never changes a uid once made', async () => {
     const work = await stack.api.create({ collection: 'works', data: { title: 'Kept' } })
     const errors = await refusedWith(() =>
-      stack.api.update({ collection: 'works', id: work.id, data: { workUid: 'TG-999999' } }),
+      stack.api.update({ collection: 'works', id: work.id, data: { workUid: 'IG-999999' } }),
     )
     expect(errors).toEqual({ workUid: expect.stringMatching(/keeps its uid for ever/) })
   })
@@ -124,11 +124,11 @@ describe.skipIf(!server)('works on a real database', () => {
     expect(stored._status).toBe('draft')
   })
 
-  it('publishes a complete work with a blank location and export status: enquiry-only, never blocked', async () => {
+  it('publishes a complete work with a blank export status: never blocked', async () => {
     const work = await publish(complete())
     expect(work).toMatchObject({
       _status: 'published',
-      physical: { location: null, exportStatus: null },
+      physical: { exportStatus: null },
     })
   })
 
@@ -185,46 +185,5 @@ describe.skipIf(!server)('works on a real database', () => {
       stack.api.create({ collection: 'works', data: { condition: { grade: ids.subject } } }),
     )
     expect(Object.keys(errors)).toEqual(['condition.grade'])
-  })
-
-  it('makes a copy only through the sister sync, and refuses edits of its synced fields', async () => {
-    const madeByHand = await refusedWith(() =>
-      stack.api.create({ collection: 'works', data: { origin: { workUid: 'IG-000001' } } }),
-    )
-    expect(madeByHand).toEqual({ origin: expect.stringMatching(/Only the sister sync/) })
-    const sync = { '@engine/sister:sync': true }
-    const copy = await stack.api.create({
-      collection: 'works',
-      data: {
-        title: 'Bali, 1726',
-        objectType: 'map',
-        origin: { brand: 'sister', workUid: 'IG-000001' },
-      },
-      context: sync,
-    })
-    const edit = await refusedWith(() =>
-      stack.api.update({
-        collection: 'works',
-        id: copy.id,
-        data: { title: 'Bali, c. 1726', objectType: 'print' },
-      }),
-    )
-    expect(edit).toEqual({
-      title: expect.stringMatching(/takes it from the sister archive/),
-      objectType: expect.stringMatching(/takes it from the sister archive/),
-    })
-    const own = await stack.api.update({
-      collection: 'works',
-      id: copy.id,
-      data: { seo: { title: 'Bali, from the archive' } },
-    })
-    expect(own).toMatchObject({ title: 'Bali, 1726', seo: { title: 'Bali, from the archive' } })
-    const synced = await stack.api.update({
-      collection: 'works',
-      id: copy.id,
-      data: { title: 'Bali, c. 1726' },
-      context: sync,
-    })
-    expect(synced.title).toBe('Bali, c. 1726')
   })
 })

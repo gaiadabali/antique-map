@@ -1,5 +1,5 @@
 /**
- * @contract C1 — brand config: facet keys and sort orders · owner: ARC · entry: `@engine/config/schema`
+ * Facet keys and sort orders · entry: `@engine/config/schema`
  *
  * The listing vocabulary (CONTENT-MODEL.md §3), named once for the route map (C10), the listing
  * view models (C2) and the search port. A leaf. Facet keys are also the query-string names

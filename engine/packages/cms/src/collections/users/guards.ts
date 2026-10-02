@@ -1,22 +1,23 @@
 /**
- * The rules that keep a brand's admin administrable (TASKS.md 3.2.b; senior-db review of 3.2,
- * B1, S2), on every write path — the admin, REST, the Local API, a seed — because they are hooks
- * and a database trigger, not access rules (access is skipped by `overrideAccess`):
+ * The rules that keep the admin administrable (SECURITY.md A7; senior-db review of 3.2, B1, S2),
+ * on every write path — the admin, REST, the Local API, a seed — because they are hooks and a
+ * database trigger, not access rules (access is skipped by `overrideAccess`):
  *
- * 1. **The first user is an admin.** New accounts default to `contributor`, so the account the
+ * 1. **The first user is an owner.** New accounts default to `editor`, so the account the
  *    create-first-user screen makes would otherwise leave nobody able to add staff. Payload's
  *    first-register checks for users before this hook, unlocked, and creates with
  *    `overrideAccess: true`, so a racer that loses must be refused here: under the lock, a user
- *    already exists and this request is neither the Local API nor an admin's → Forbidden.
- * 2. **The last admin stays one.** Removing the role from — or deleting — the only admin is
- *    refused with a field error, per document (`beforeChange`, `beforeDelete`) and for a bulk
- *    `where` as a whole (`beforeOperation`: Payload runs a bulk operation's documents in parallel
- *    inside one transaction, where each would count the others as still admins).
+ *    already exists and this request is neither the Local API nor an owner's → Forbidden.
+ * 2. **The last owner stays one.** Taking the role from — or deleting — the only owner is refused
+ *    with a field error, per document (`beforeChange`, `beforeDelete`) and for a bulk `where` as a
+ *    whole (`beforeOperation`: Payload runs a bulk operation's documents in parallel inside one
+ *    transaction, where each would count the others as still owners).
  *
  * Every count runs under one transaction-scoped advisory lock, `ADMINS_LOCK_KEY`, so concurrent
- * operations are serialised: the second counts after the first has committed. The initial
- * migration's deferred constraint trigger on `users_roles` takes the same lock at commit and
- * refuses any transaction that leaves users and no admin — the backstop for a path no hook sees.
+ * operations are serialised: the second counts after the first has committed. The migration's
+ * deferred constraint trigger on `users` takes the same lock at commit and refuses any
+ * transaction that leaves users and no owner — the backstop for a path no hook sees. The key's
+ * name and value are the ones the trigger was written with (TASKS.md 2.5.a keeps them equal).
  */
 import {
   Forbidden,
@@ -28,20 +29,21 @@ import {
   type Where,
 } from 'payload'
 
-import { hasRole, USERS_SLUG, type StaffRole } from '../../access/roles'
+import { USERS_SLUG } from '../../access/roles'
 import { advisoryLockKey } from '../../db/advisory-lock'
+import { hasRole, type UserRole } from './roles'
 
-/** Also written, as a literal, into the initial migration's `users_keep_an_admin()` trigger. */
+/** Also written, as a literal, into the migration's `users_keep_an_owner()` trigger. */
 export const ADMINS_LOCK_KEY = advisoryLockKey('engine/users/admins')
 
-type UserDoc = { id: number | string; roles?: unknown }
+const OWNER: UserRole = 'owner'
+
+type UserDoc = { id: number | string; role?: unknown }
 type Id = number | string
 
-function holdsAdmin(roles: unknown): boolean {
-  return Array.isArray(roles) && roles.includes('admin' satisfies StaffRole)
-}
+const holdsOwner = (role: unknown): boolean => role === OWNER
 
-/** Serialises every admin count inside the operation's own transaction (released at COMMIT). */
+/** Serialises every owner count inside the operation's own transaction (released at COMMIT). */
 export async function lockAdmins(req: PayloadRequest): Promise<void> {
   const { db } = req.payload
   const transactionID = req.transactionID ? await req.transactionID : undefined
@@ -54,14 +56,14 @@ export async function lockAdmins(req: PayloadRequest): Promise<void> {
   })
 }
 
-async function countAdmins(req: PayloadRequest, excluding: readonly Id[] = []): Promise<number> {
+async function countOwners(req: PayloadRequest, excluding: readonly Id[] = []): Promise<number> {
   const { totalDocs } = await req.payload.count({
     collection: USERS_SLUG,
     overrideAccess: true,
     req,
     where: {
       and: [
-        { roles: { in: ['admin'] } },
+        { role: { equals: OWNER } },
         ...(excluding.length === 0 ? [] : [{ id: { not_in: [...excluding] } }]),
       ],
     },
@@ -69,22 +71,22 @@ async function countAdmins(req: PayloadRequest, excluding: readonly Id[] = []): 
   return totalDocs
 }
 
-function lastAdminError(req: PayloadRequest, id: Id | undefined): ValidationError {
+function lastOwnerError(req: PayloadRequest, id: Id | undefined): ValidationError {
   return new ValidationError({
     collection: USERS_SLUG,
     ...(id === undefined ? {} : { id }),
     errors: [
       {
-        path: 'roles',
+        path: 'role',
         message:
-          'This is the only admin. Make another user an admin first, so someone can still manage staff.',
+          'This is the only owner. Make another user an owner first, so someone can still manage staff.',
       },
     ],
     req,
   })
 }
 
-export const firstUserIsAdmin: CollectionBeforeChangeHook<UserDoc> = async ({
+export const firstUserIsOwner: CollectionBeforeChangeHook<UserDoc> = async ({
   data,
   operation,
   req,
@@ -96,31 +98,32 @@ export const firstUserIsAdmin: CollectionBeforeChangeHook<UserDoc> = async ({
     overrideAccess: true,
     req,
   })
-  if (totalDocs === 0) return { ...data, roles: ['admin'] }
-  // Someone is already here: only the Local API (a seed, a script) or an admin adds staff. This
+  if (totalDocs === 0) return { ...data, role: OWNER }
+  // Someone is already here: only the Local API (a seed, a script) or an owner adds staff. This
   // is what refuses the loser of a first-register race, which Payload lets through unlocked.
-  if (req.payloadAPI !== 'local' && !hasRole(req.user, 'admin')) throw new Forbidden(req.t)
+  if (req.payloadAPI !== 'local' && !hasRole(req.user, OWNER)) throw new Forbidden(req.t)
   return data
 }
 
-export const keepAnAdminOnUpdate: CollectionBeforeChangeHook<UserDoc> = async ({
+export const keepAnOwnerOnUpdate: CollectionBeforeChangeHook<UserDoc> = async ({
   data,
   operation,
   originalDoc,
   req,
 }) => {
-  if (operation !== 'update' || !('roles' in data) || !holdsAdmin(originalDoc?.roles)) return data
-  // Any save of an admin's roles, keeping admin or not: Payload rewrites them delete-then-insert,
-  // so the deferred trigger fires and takes this lock at COMMIT. Taken here first — before the row
-  // locks the save acquires — so two writers never wait on each other in opposite orders (R1).
+  if (operation !== 'update' || !('role' in data) || !holdsOwner(originalDoc?.role)) return data
+  // Any save of an owner's role, kept or not, takes the lock here — before the row lock the save
+  // acquires — so a writer never holds the row and then waits on the lock while another holds
+  // the lock and waits on the row (R1). The trigger fires only on a real demotion, but taking the
+  // lock more often never reorders it.
   await lockAdmins(req)
-  if (holdsAdmin(data.roles)) return data
+  if (holdsOwner(data.role)) return data
   const id = originalDoc?.id
-  if ((await countAdmins(req, id === undefined ? [] : [id])) === 0) throw lastAdminError(req, id)
+  if ((await countOwners(req, id === undefined ? [] : [id])) === 0) throw lastOwnerError(req, id)
   return data
 }
 
-export const keepAnAdminOnDelete: CollectionBeforeDeleteHook = async ({ id, req }) => {
+export const keepAnOwnerOnDelete: CollectionBeforeDeleteHook = async ({ id, req }) => {
   await lockAdmins(req)
   const doomed = await req.payload.findByID({
     collection: USERS_SLUG,
@@ -128,30 +131,46 @@ export const keepAnAdminOnDelete: CollectionBeforeDeleteHook = async ({ id, req 
     depth: 0,
     overrideAccess: true,
     req,
-    select: { roles: true },
+    select: { role: true },
   })
-  if (holdsAdmin((doomed as { roles?: unknown }).roles) && (await countAdmins(req, [id])) === 0) {
-    throw lastAdminError(req, id)
+  if (holdsOwner((doomed as { role?: unknown }).role) && (await countOwners(req, [id])) === 0) {
+    throw lastOwnerError(req, id)
   }
 }
 
 /**
- * A bulk update or delete (`where`, no `id`) judged as a whole: the admins it would remove,
- * against every admin it leaves. A single-document operation is left to the per-document hooks.
+ * Whether this operation can get past the collection's access at all: a system call with access
+ * overridden, or the owner (the only role `users`' bulk update and delete allow).
  */
-export const keepAnAdminInBulk: CollectionBeforeOperationHook = async ({
+function mayPassAccess(req: PayloadRequest, overrideAccess: boolean | undefined): boolean {
+  return overrideAccess === true || hasRole(req.user, OWNER)
+}
+
+/**
+ * A bulk update or delete (`where`, no `id`) judged as a whole: the owners it would remove,
+ * against every owner it leaves. A single-document operation is left to the per-document hooks.
+ *
+ * **Only for a caller access will let through** (senior-be review of 2.4). Payload 3.90 runs
+ * `beforeOperation` *before* collection access on a bulk update or delete, so without this check
+ * anyone — anonymous, an editor, store staff — reached it: took `ADMINS_LOCK_KEY` (a free lever
+ * on every owner write), ran their own `where` under `overrideAccess: true` (past Payload's
+ * where-field checks), and learnt from a 400 rather than a 403 whether it covered every owner.
+ * Everyone else is handed straight on, to be refused by access with nothing locked or read.
+ */
+export const keepAnOwnerInBulk: CollectionBeforeOperationHook = async ({
   args,
   operation,
+  overrideAccess,
   req,
 }) => {
-  const bulk = args as { id?: Id; where?: Where; data?: { roles?: unknown } }
+  if (!mayPassAccess(req, overrideAccess)) return args
+  const bulk = args as { id?: Id; where?: Where; data?: { role?: unknown } }
   if (bulk.id !== undefined || bulk.where === undefined) return args
   if (operation !== 'delete' && operation !== 'update') return args
-  if (operation === 'update' && (!bulk.data || !('roles' in bulk.data))) return args
-  // Before any row lock, for the same reason as a single save (R1): a bulk write of roles may
-  // rewrite an admin's, and the deferred trigger would otherwise take the lock last.
+  if (operation === 'update' && (!bulk.data || !('role' in bulk.data))) return args
+  // Before any row lock, for the same reason as a single save (R1).
   await lockAdmins(req)
-  if (operation === 'update' && holdsAdmin(bulk.data?.roles)) return args
+  if (operation === 'update' && holdsOwner(bulk.data?.role)) return args
   const { docs } = await req.payload.find({
     collection: USERS_SLUG,
     where: bulk.where,
@@ -160,11 +179,11 @@ export const keepAnAdminInBulk: CollectionBeforeOperationHook = async ({
     pagination: false,
     overrideAccess: true,
     req,
-    select: { roles: true },
+    select: { role: true },
   })
   const targets = docs.map((doc) => doc.id as Id)
-  const removesAnAdmin = docs.some((doc) => holdsAdmin((doc as { roles?: unknown }).roles))
-  if (removesAnAdmin && (await countAdmins(req, targets)) === 0)
-    throw lastAdminError(req, undefined)
+  const removesAnOwner = docs.some((doc) => holdsOwner((doc as { role?: unknown }).role))
+  if (removesAnOwner && (await countOwners(req, targets)) === 0)
+    throw lastOwnerError(req, undefined)
   return args
 }

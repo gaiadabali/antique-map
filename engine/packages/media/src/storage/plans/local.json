@@ -1,16 +1,13 @@
 {
-  "$comment": "The workstation's MinIO (docker-compose.dev.yml), mirroring production's layout (DEPLOYMENT.md §2): each brand's media key writes only its own public bucket; the masters keys are the synthetic brand's two storefronts in production's two roles — the origin reads every master, writes captures and its own print files, deletes nothing; the outlet reads masters and writes only print-files/<its slug>/. A masters key names its brand's slug, which no file under engine/ may spell for a real brand (CONVENTIONS.md §1), so the real brands' masters keys belong to each host's own plan (TASKS.md 41.2), applied with --secrets env. Applied by `pnpm --filter @engine/media storage:policies`.",
+  "$comment": "The workstation's MinIO (docker-compose.dev.yml), mirroring the hosts' layout (DEPLOYMENT.md §2): one public media bucket and one private masters bucket serve both sites. The app's media key writes only the media bucket; its masters key reads every master, writes captures under masters/ and deletes nothing. The media bucket is the dev container's test-media, which docker-compose.dev.yml already makes and .env.example names, until OPS renames it (TASKS.md 2.4's report). Applied by `pnpm --filter @engine/media storage:policies`.",
   "mastersBucket": "archive-masters",
-  "mediaBuckets": ["ig-media", "oei-media", "test-media"],
+  "mediaBucket": "test-media",
   "users": [
-    { "user": "ig-media-writer", "policy": "media-writer", "bucket": "ig-media" },
-    { "user": "oei-media-writer", "policy": "media-writer", "bucket": "oei-media" },
-    { "user": "test-media-writer", "policy": "media-writer", "bucket": "test-media" },
-    { "user": "test-masters-origin", "policy": "masters-origin", "brand": "test" },
-    { "user": "test-masters-outlet", "policy": "masters-outlet", "brand": "test" }
+    { "user": "indies-media-writer", "policy": "media-writer" },
+    { "user": "indies-masters", "policy": "masters-writer" }
   ],
   "mastersCors": {
-    "$comment": "Each storefront's admin origin (its SITE_URL) may send the presigned PUT of a master (DEPLOYMENT.md §2). A worktree's port is allocated per phase and lane, so locally any loopback port is admitted, and nothing else. MinIO's community edition implements no per-bucket CORS (PutBucketCors: NotImplemented; it answers CORS from its server-wide api cors_allow_origin, `*` by default), so on the dev container apply warns and goes on; a host's plan says nothing here, and fails instead (TASKS.md 41.2.e).",
+    "$comment": "The admin origin (its SITE_URL) may send the presigned PUT of a master (DEPLOYMENT.md §2). A worktree's port is allocated per phase and lane, so locally any loopback port is admitted, and nothing else. MinIO's community edition implements no per-bucket CORS (PutBucketCors: NotImplemented; it answers CORS from its server-wide api cors_allow_origin, `*` by default), so on the dev container apply warns and goes on; a host's plan says nothing here, and fails instead.",
     "adminOrigins": ["http://localhost:*", "http://127.0.0.1:*"],
     "ifUnsupported": "warn"
   }

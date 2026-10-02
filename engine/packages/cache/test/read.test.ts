@@ -13,10 +13,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   AVAILABILITY_STATUS_LIFE,
-  availabilityTag,
+  productStockTag,
   CACHE_TAG_BATCH,
   cacheTags,
-  itemTag,
+  productTag,
   type CacheTag,
 } from '../src/index'
 
@@ -36,7 +36,7 @@ function tagsOfScope(tagging: () => void): string[] {
 }
 
 const cards = (count: number): CacheTag[] =>
-  Array.from({ length: count }, (_, i) => availabilityTag(10_000 + i))
+  Array.from({ length: count }, (_, i) => productStockTag(10_000 + i))
 
 describe('cacheTags()', () => {
   const useCache = process.env.__NEXT_USE_CACHE
@@ -81,7 +81,7 @@ describe('cacheTags()', () => {
   })
 
   it('refuses a tag no builder makes', () => {
-    expect(() => tagsOfScope(() => cacheTags([itemTag(1), 'item:1 ' as CacheTag]))).toThrow(
+    expect(() => tagsOfScope(() => cacheTags([productTag(1), 'product:1 ' as CacheTag]))).toThrow(
       /not a cache tag/,
     )
   })

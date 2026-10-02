@@ -7,13 +7,12 @@ import type { Field } from 'payload'
 import { describe, expect, it } from 'vitest'
 
 import { DRAFTED_ACCESS, publishedOrStaff } from '../../access/published'
+import { VOCABULARY_ACCESS } from '../terms/vocabulary/access'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'
 import { holdWorkReferences } from '../../hooks/work-references'
-import { keepSyncedFields } from '../../hooks/work-synced'
 import { assignWorkUid } from '../../hooks/work-uid'
-import { refuseContributorPublish } from './access'
 import { Works } from './index'
 
 type Named = Field & { name: string; fields?: Field[]; access?: Record<string, unknown> }
@@ -73,7 +72,6 @@ const CONTENT_MODEL_FIELDS = [
   'images.media',
   'images.caption',
   'master',
-  'physical.location',
   'physical.exportStatus',
   'physical.acquisition.source',
   'physical.acquisition.cost.amount',
@@ -85,9 +83,6 @@ const CONTENT_MODEL_FIELDS = [
     (part) => `rights.${part}`,
   ),
   'sameEdition',
-  'origin.brand',
-  'origin.workUid',
-  'origin.syncedAt',
   'cataloguing.status',
   'cataloguing.cataloguer',
   'cataloguing.verifiedAt',
@@ -125,9 +120,9 @@ describe('the works collection (8.2.a): every field CONTENT-MODEL.md §1 names',
     }
   })
 
-  it('gives physical no defaults: location and export status stay blank until the register sets them', () => {
+  it('gives physical no defaults: the export status stays blank until the register sets it', () => {
     const physical = fieldAt(Works.fields, 'physical')!
-    for (const part of ['location', 'exportStatus', 'coaIssued']) {
+    for (const part of ['exportStatus', 'coaIssued']) {
       expect(fieldAt([physical], `physical.${part}`)).not.toHaveProperty('defaultValue')
     }
     expect(fieldAt(Works.fields, 'date.precision')).not.toHaveProperty('defaultValue')
@@ -150,44 +145,42 @@ describe('the works collection (8.2.a): every field CONTENT-MODEL.md §1 names',
 describe('access (8.2.d)', () => {
   const read = (field: string, user: unknown) =>
     (fieldAt(Works.fields, field)!.access!.read as (a: unknown) => boolean)({ req: { user } })
-  const staff = (...roles: string[]) => ({ collection: 'users', roles })
+  const staff = (role: string) => ({ collection: 'users', role, store: 1 })
+  const as = (user: unknown) => ({ req: { user } }) as never
 
-  it('reads published works to the public and drafts to staff (publishedOrStaff)', () => {
-    expect(Works.access?.read).toBe(publishedOrStaff)
-    expect(Works.access?.readVersions).toBe(DRAFTED_ACCESS.readVersions)
+  it('reads published works to the public, drafts to the owner and editors, nothing to stores', () => {
+    expect(Works.access).toBe(VOCABULARY_ACCESS)
+    const readWorks = Works.access!.read!
+    expect(readWorks(as(null))).toEqual(publishedOrStaff(as(null)))
+    expect(readWorks(as(staff('editor')))).toBe(true)
+    expect(readWorks(as(staff('store')))).toBe(false)
+    expect(Works.access!.readVersions!(as(staff('owner')))).toBe(
+      DRAFTED_ACCESS.readVersions(as(staff('owner'))),
+    )
     expect(Works.versions).toMatchObject({ drafts: { validate: true } })
   })
 
-  it('shows physical to those who catalogue, sell or ship it — never the public or other staff', () => {
-    for (const roles of [['admin'], ['manager'], ['cataloguer'], ['fulfilment']]) {
-      expect(read('physical', staff(...roles))).toBe(true)
-    }
-    for (const user of [
-      null,
-      { collection: 'customers', roles: ['admin'] },
-      staff('editor'),
-      staff('analyst'),
-      staff('contributor'),
-    ]) {
+  it('shows physical to the owner and the editors — never the public or store staff', () => {
+    for (const role of ['owner', 'editor']) expect(read('physical', staff(role))).toBe(true)
+    for (const user of [null, { collection: 'customers', role: 'owner' }, staff('store')]) {
       expect(read('physical', user)).toBe(false)
     }
   })
 
-  it('shows an acquisition — its source, cost and consignor — to admin and manager alone', () => {
+  it('shows an acquisition — its source, cost and consignor — to the owner alone', () => {
     const acquisition = (user: unknown) =>
       (fieldAt(Works.fields, 'physical.acquisition')!.access!.read as (a: unknown) => boolean)({
         req: { user },
       })
-    expect(acquisition(staff('admin'))).toBe(true)
-    expect(acquisition(staff('manager'))).toBe(true)
-    expect(acquisition(staff('cataloguer'))).toBe(false)
-    expect(acquisition(staff('fulfilment'))).toBe(false)
+    expect(acquisition(staff('owner'))).toBe(true)
+    expect(acquisition(staff('editor'))).toBe(false)
+    expect(acquisition(staff('store'))).toBe(false)
   })
 
   it('keeps cataloguing, legacy and the master to staff', () => {
     for (const field of ['cataloguing', 'legacy', 'master']) {
       expect(read(field, null)).toBe(false)
-      expect(read(field, staff('contributor'))).toBe(true)
+      expect(read(field, staff('editor'))).toBe(true)
     }
   })
 })
@@ -195,10 +188,8 @@ describe('access (8.2.d)', () => {
 describe('every save passes the same hooks, on every write path', () => {
   it('runs the guards before the save and invalidates after it', () => {
     expect(Works.hooks?.beforeChange).toEqual([
-      refuseContributorPublish,
       holdWorkReferences,
       assignWorkUid,
-      keepSyncedFields,
       stampCataloguing,
       guardWork,
     ])

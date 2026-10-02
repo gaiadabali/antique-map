@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 
 import { ADMINS_LOCK_KEY } from '../collections/users/guards'
 import { migrations } from '../migrations'
+import { advisoryLockKey } from './advisory-lock'
 import { finishMigrationSource, typeOnlyImports, withLockTimeout } from './migration-template'
 
 const migrationDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../migrations')
@@ -41,35 +42,103 @@ describe('the migration set', () => {
     }
   })
 
-  it('carries the engine table: unique (operation, key), no primary key, a nullable response', () => {
+  describe('the last-owner backstop (2.4 review)', () => {
     const text = source(migrations[0]!.name)
-    const table = text.slice(text.indexOf('CREATE TABLE "idempotency_keys"'))
-    const body = table.slice(0, table.indexOf(');'))
-    expect(body).toContain(
-      'CONSTRAINT "idempotency_keys_operation_key_unique" UNIQUE("operation","key")',
-    )
-    expect(body).not.toContain('PRIMARY KEY')
-    expect(body).toContain('"operation" text COLLATE "C" NOT NULL')
-    expect(body).toContain('"key" text COLLATE "C" NOT NULL')
-    expect(body).toMatch(/"response" jsonb,/)
-    expect(text).toContain('"idempotency_keys_created_at_idx"')
-    expect(text).toContain(
-      'CREATE INDEX "idempotency_keys_caller_ref_idx" ON "idempotency_keys" USING btree ("caller_ref") WHERE "caller_ref" IS NOT NULL',
-    )
+    /** Each constraint trigger the migration writes: its event, timing and condition. */
+    const triggers = [
+      ...text.matchAll(
+        /CREATE CONSTRAINT TRIGGER "(\w+)"\s+AFTER (INSERT|UPDATE OF "role"|DELETE) ON "public"\."users"\s+(DEFERRABLE INITIALLY \w+|NOT DEFERRABLE)\s+FOR EACH ROW\s+WHEN \((.+)\)\s+EXECUTE FUNCTION "public"\."users_keep_an_owner"\(\);/g,
+      ),
+    ].map(([, name, event, timing, when]) => ({ name, event, timing, when }))
+
+    it('judges every change that can lose the last owner: insert, update of role, delete', () => {
+      expect(triggers).toEqual([
+        {
+          name: 'users_keep_an_owner_on_insert',
+          event: 'INSERT',
+          timing: 'DEFERRABLE INITIALLY IMMEDIATE',
+          when: `NEW."role" IS DISTINCT FROM 'owner'`,
+        },
+        {
+          name: 'users_keep_an_owner_on_update',
+          event: 'UPDATE OF "role"',
+          timing: 'DEFERRABLE INITIALLY IMMEDIATE',
+          // Only a real loss of the owner role — never a sign-in's lockout-counter update.
+          when: `OLD."role" = 'owner' AND NEW."role" IS DISTINCT FROM 'owner'`,
+        },
+        {
+          name: 'users_keep_an_owner_on_delete',
+          event: 'DELETE',
+          timing: 'DEFERRABLE INITIALLY IMMEDIATE',
+          when: `OLD."role" = 'owner'`,
+        },
+      ])
+    })
+
+    it('fires at the end of each statement, so a refusal reaches the caller (never at COMMIT)', () => {
+      // Payload's commitTransaction swallows a failed COMMIT: a deferred refusal answered success.
+      expect(text).not.toMatch(/INITIALLY DEFERRED/)
+    })
+
+    it('takes the lock the hooks take, computed from its name', () => {
+      // The trigger and the hooks serialise on one key; if they drifted, two writers could race.
+      const key = advisoryLockKey('engine/users/admins')
+      expect(key).toBe('-9011197146015594413')
+      expect(ADMINS_LOCK_KEY).toBe(key)
+      expect(text).toContain(`PERFORM pg_catalog.pg_advisory_xact_lock(${key});`)
+      expect(text.match(/pg_advisory_xact_lock\((-?\d+)\)/g)).toEqual([
+        `pg_advisory_xact_lock(${key})`,
+      ])
+    })
+
+    it('refuses to judge outside READ COMMITTED, where the lock would not serialise', () => {
+      const body = text.slice(
+        text.indexOf('$keep_an_owner$\n'),
+        text.lastIndexOf('$keep_an_owner$'),
+      )
+      const isolation = body.indexOf(
+        "IF current_setting('transaction_isolation') <> 'read committed' THEN",
+      )
+      expect(isolation).toBeGreaterThan(-1)
+      expect(isolation).toBeLessThan(body.indexOf('pg_advisory_xact_lock'))
+      expect(body).toContain(`SELECT 1 FROM "public"."users" WHERE "role" = 'owner'`)
+    })
+
+    it('pins search_path on every hand-written function', () => {
+      const functions = [...text.matchAll(/CREATE FUNCTION "public"\."(\w+)"\(\)[^$]*/g)]
+      expect(functions.map(([, name]) => name)).toEqual([
+        'users_keep_an_owner',
+        'users_refuse_truncate',
+      ])
+      for (const [declaration] of functions) {
+        expect(declaration).toContain('SET search_path = pg_catalog, public')
+      }
+    })
+
+    it('refuses TRUNCATE of users and of stores, statement by statement (R2)', () => {
+      for (const table of ['users', 'stores']) {
+        expect(text).toMatch(
+          new RegExp(
+            `CREATE TRIGGER "${table}_no_truncate"\\s+BEFORE TRUNCATE ON "public"\\."${table}"\\s+FOR EACH STATEMENT\\s+EXECUTE FUNCTION "public"\\."users_refuse_truncate"\\(\\);`,
+          ),
+        )
+      }
+    })
+
+    it('is dropped by down(), triggers with their functions', () => {
+      const down = text.slice(text.indexOf('export async function down('))
+      expect(down).toContain('DROP FUNCTION IF EXISTS "public"."users_keep_an_owner"() CASCADE')
+      expect(down).toContain('DROP FUNCTION IF EXISTS "public"."users_refuse_truncate"() CASCADE')
+    })
   })
 
-  it('carries the last-admin trigger: deferred, on users_roles, under the hooks’ own lock', () => {
-    const text = source(migrations[0]!.name)
-    expect(text).toContain('CREATE CONSTRAINT TRIGGER "users_roles_keep_an_admin"')
-    expect(text).toContain('AFTER UPDATE OR DELETE ON "users_roles"')
-    expect(text).toContain('DEFERRABLE INITIALLY DEFERRED')
-    // The trigger and the hooks serialise on one key; if they drifted, two commits could race.
-    expect(text).toContain(`PERFORM pg_advisory_xact_lock(${ADMINS_LOCK_KEY});`)
-    expect(text).toContain('DROP FUNCTION IF EXISTS "users_keep_an_admin"() CASCADE')
-    // TRUNCATE fires no row trigger: a statement-level one refuses it (R2), and down() drops it.
-    expect(text).toContain('BEFORE TRUNCATE ON "users_roles"')
-    expect(text).toContain('FOR EACH STATEMENT')
-    expect(text).toContain('DROP FUNCTION IF EXISTS "users_roles_refuse_truncate"() CASCADE')
+  it('carries no trace of the brand-era schema the reset dropped', () => {
+    const full = source(migrations[0]!.name)
+    // The code only: the header comment names what was left behind, and why.
+    const text = full.slice(full.indexOf('export async function up('))
+    for (const gone of ['users_roles', 'idempotency_keys', "'nl'", "'admin'"]) {
+      expect(text).not.toContain(gone)
+    }
   })
 })
 

@@ -1,7 +1,7 @@
 /**
  * Where the work sits in the discovery vocabulary, and the object itself (CONTENT-MODEL.md §1):
  * its places, subjects and references; its provenance and other examples; its condition, with the
- * grade a **term** of the brand's own published scale (never a shared enum); its images; and the
+ * grade a **term** of the gallery's own published scale (never a shared enum); its images; and the
  * master its reproductions are made from.
  *
  * - **Images**: a row orders and captions an image; what the image is — its role — and how it was
@@ -147,7 +147,7 @@ export const OBJECT_FIELDS: Field[] = [
         type: 'relationship',
         relationTo: 'terms',
         filterOptions: grades,
-        admin: { description: 'From the brand’s published scale (Terms → Condition grade).' },
+        admin: { description: 'From the gallery’s published scale (Terms → Condition grade).' },
       },
       { name: 'notes', type: 'textarea', localized: true, maxLength: 2000 },
       {

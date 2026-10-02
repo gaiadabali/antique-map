@@ -4,22 +4,16 @@
  * failure, or on a manifest that grew, it creates only what is missing and never a duplicate (the
  * checksum is unique in the table, so even two runs at once make one record).
  *
- * Each entry's file is already in the bucket, at `intakeMasterKey(brand, batch, checksum, ext)`,
- * put there with the origin's credentials when the batch was received. The record's own hook
+ * Each entry's file is already in the bucket, at `intakeMasterKey(batch, checksum, ext)`, put
+ * there with the masters key when the batch was received. The record's own hook
  * checks it is there and is the file the checksum names; a file copied in without a stored
  * checksum is hashed — the one path allowed to (`context.verifyByHash`, Local API only).
- *
- * It runs on the archive's origin, for a batch of its own captures or its sister outlet's
- * (`./attribution` `importRefusal()`): refused on an outlet, or for a brand it does not keep.
  *
  * It never files a capture under its work (`masterKey()`): that move, with its checksum-verified
  * copy, is TASKS.md 15.4's.
  */
 import { intakeMasterKey, type IntakeEntry, type IntakeManifest } from '@engine/media/contract'
 import { ValidationError, type Payload } from 'payload'
-
-import { activeBrand } from '../../access/brand'
-import { importRefusal, type Brand } from './attribution'
 
 export type ImportOutcome = {
   readonly checksum: string
@@ -34,7 +28,6 @@ function recordOf(manifest: IntakeManifest, entry: IntakeEntry, storageKey: stri
     kind: 'capture' as const,
     storageKey,
     checksum: entry.checksum,
-    brand: manifest.brand,
     widthPx: entry.widthPx,
     heightPx: entry.heightPx,
     role: entry.role,
@@ -76,18 +69,10 @@ async function existingId(payload: Payload, checksum: string): Promise<number | 
 export async function importIntakeManifest(
   payload: Payload,
   manifest: IntakeManifest,
-  brand: Brand | null = activeBrand(),
 ): Promise<ImportOutcome[]> {
-  const refusal = importRefusal(manifest.brand, brand)
-  if (refusal) throw new Error(refusal)
   const outcomes: ImportOutcome[] = []
   for (const entry of manifest.entries) {
-    const storageKey = intakeMasterKey(
-      manifest.brand,
-      manifest.batch,
-      entry.checksum,
-      entry.extension,
-    )
+    const storageKey = intakeMasterKey(manifest.batch, entry.checksum, entry.extension)
     const base = { checksum: entry.checksum, storageKey }
     const before = await existingId(payload, entry.checksum)
     if (before !== null) {

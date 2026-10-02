@@ -1,16 +1,12 @@
 /**
- * The process's own environment (DEPLOYMENT.md §8) and what the config may not be where it
- * runs: the database and Payload secrets, storage, mail, the cron and revalidation secrets,
- * the link-key ring, the sister's secrets and origin (`./sister`), the loader source, and no
- * placeholder anywhere a buyer can pay. A development default such as `dev-only-not-a-secret`
- * (`.env.example`) or MinIO's `minioadmin` is refused on a deployed host.
+ * The process's own environment (DEPLOYMENT.md §8) and what may not be so where it runs: the
+ * database and Payload secrets, storage, mail, the cron and revalidation secrets, the link-key
+ * ring when one is set, the loader source, and the site allow-list (`../sites/hosts`). A development default such
+ * as `dev-only-not-a-secret` (`.env.example`) or MinIO's `minioadmin` is refused on a deployed host.
  */
-import { isAbsolute } from 'node:path'
-
-import type { BrandConfig } from '../schema'
+import { siteHostProblems } from '../sites/hosts'
 import { read, type DeploymentEnvironment, type Findings } from './findings'
 import { parseLinkTokenKeys } from './link-keys'
-import { checkSister } from './sister'
 
 type Env = Readonly<Record<string, string | undefined>>
 
@@ -36,19 +32,12 @@ const DEPLOYED = [
   'CRON_SECRET',
 ] as const
 /** Shared secrets that must be long and not a development default once deployed. */
-const STRONG = [
-  'PAYLOAD_SECRET',
-  'REVALIDATE_SECRET',
-  'CRON_SECRET',
-  'SISTER_API_KEY',
-  'SISTER_WEBHOOK_SECRET',
-] as const
+const STRONG = ['PAYLOAD_SECRET', 'REVALIDATE_SECRET', 'CRON_SECRET'] as const
 const DEV_DEFAULTS = /dev-only|not-a-secret|^minioadmin$|^changeme$|^secret$/i
 const MIN_SECRET_LENGTH = 32
 
 export function checkPlatform(
   env: Env,
-  config: BrandConfig,
   environment: DeploymentEnvironment,
   findings: Findings,
   now: Date,
@@ -56,17 +45,8 @@ export function checkPlatform(
   for (const name of ALWAYS) {
     if (read(env, name) === undefined) findings.refuse(name, 'is not set (DEPLOYMENT.md §8)')
   }
-  const brandRoot = read(env, 'BRAND_ROOT')
-  if (environment !== 'local' && (brandRoot === undefined || !isAbsolute(brandRoot))) {
-    // Unset or relative, the loader searches upwards from the working directory, as far as the
-    // filesystem root: fine on a workstation, never on a host, which names the folder it ships.
-    findings.refuse(
-      'BRAND_ROOT',
-      brandRoot === undefined
-        ? 'is not set: a deployed process names the brand folder its artifact ships (DEPLOYMENT.md §8)'
-        : 'must be an absolute path on a deployed host, never one searched for',
-    )
-  }
+  // Wherever it runs: a host the allow-list cannot name picks no site, so every page is a 404.
+  for (const { subject, message } of siteHostProblems(env)) findings.refuse(subject, message)
   for (const name of DEPLOYED) {
     if (read(env, name) === undefined)
       findings.require(name, 'is not set (DEPLOYMENT.md §8)', environment)
@@ -117,38 +97,16 @@ export function checkPlatform(
     }
   }
 
-  const ring = parseLinkTokenKeys(read(env, 'LINK_TOKEN_KEYS'), now)
-  for (const problem of ring.problems) findings.refuse('LINK_TOKEN_KEYS', problem)
-  for (const warning of ring.warnings) findings.warn('LINK_TOKEN_KEYS', warning)
-
-  checkSister(env, config, environment, findings)
-  checkPlaceholders(config, environment, findings)
-  return loadersSource(env, environment, findings)
-}
-
-function checkPlaceholders(
-  config: BrandConfig,
-  environment: DeploymentEnvironment,
-  findings: Findings,
-): void {
-  const drafts = [
-    ...(config.draft ? [{ subject: 'draft', what: 'the brand config is a draft' }] : []),
-    ...config.sellers.flatMap((seller, i) =>
-      seller.draft
-        ? [
-            {
-              subject: `sellers[${i}].draft`,
-              what: `seller "${seller.id}" is a placeholder legal entity (D1–D3)`,
-            },
-          ]
-        : [],
-    ),
-  ]
-  for (const { subject, what } of drafts) {
-    if (environment === 'production')
-      findings.refuse(subject, `${what}: production sells under real entities only`)
-    else if (environment === 'staging') findings.warn(subject, `${what}; staging shows it as it is`)
+  // Optional (DEPLOYMENT.md §8 lists no link-key ring; nothing derives a link from one yet), but a
+  // ring that is set is checked: a malformed one is refused rather than used later.
+  const ringValue = read(env, 'LINK_TOKEN_KEYS')
+  if (ringValue !== undefined) {
+    const ring = parseLinkTokenKeys(ringValue, now)
+    for (const problem of ring.problems) findings.refuse('LINK_TOKEN_KEYS', problem)
+    for (const warning of ring.warnings) findings.warn('LINK_TOKEN_KEYS', warning)
   }
+
+  return loadersSource(env, environment, findings)
 }
 
 function loadersSource(

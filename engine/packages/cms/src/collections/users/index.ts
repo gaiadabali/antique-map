@@ -1,47 +1,57 @@
 /**
- * `users` — staff, and only staff (ARCHITECTURE.md §12, CONTENT-MODEL.md §8, TASKS.md 3.2.b).
- * Customers are a separate auth collection (`customers`) with their own session cookie, so a
- * buyer is never one wrong role value away from an admin session.
+ * `users` — the only people who sign in (SECURITY.md A1; CONTENT-MODEL.md §6). No visitor, buyer
+ * or partner has an account.
  *
- * - **Roles**: C1's seven `STAFF_ROLES`, several per person (a small team wears two hats), new
- *   accounts `contributor` — the least that lets someone work. Only an admin changes a role.
- * - **First user**: Payload's create-first-user screen makes an admin, a losing racer is refused,
- *   and the last admin can neither lose the role nor be deleted — one document or in bulk
- *   (`./guards`, and the initial migration's constraint trigger on `users_roles`).
- * - **Lockout**: five failed sign-ins lock the account for fifteen minutes; an admin can unlock
- *   it sooner (ARCHITECTURE.md §13: the admin sits on a public path).
- * - Staff see and edit themselves; an admin sees and manages everyone.
+ * - **Roles** (`./roles`): `owner`, `editor` or `store`, one per person; new accounts are editors.
+ *   A store user has exactly one store (`./store-rule`). Only the owner sets a role or a store.
+ * - **First user**: Payload's create-first-user screen makes an owner, a losing racer is refused,
+ *   and the last owner can neither lose the role nor be deleted — one document or in bulk
+ *   (`./guards`, and the migration's constraint trigger on `users`).
+ * - **Lockout**: five failed sign-ins lock the account for fifteen minutes; the owner can unlock
+ *   it sooner (SECURITY.md A3: the admin sits on a public path).
+ * - Editors and store staff see and edit themselves — their name and password, never their email,
+ *   role or store (`./self-edit`, `./roles-field`); the owner sees and manages everyone
+ *   (CONTENT-MODEL.md §7).
  */
 import type { Access, CollectionConfig } from 'payload'
 
-import { hasRole, isAdmin, isStaffUser, type USERS_SLUG } from '../../access/roles'
+import { isStaffUser, type USERS_SLUG } from '../../access/roles'
 import {
-  firstUserIsAdmin,
-  keepAnAdminInBulk,
-  keepAnAdminOnDelete,
-  keepAnAdminOnUpdate,
+  firstUserIsOwner,
+  keepAnOwnerInBulk,
+  keepAnOwnerOnDelete,
+  keepAnOwnerOnUpdate,
 } from './guards'
-import { rolesField } from './roles-field'
+import { roleField, storeField } from './roles-field'
+import { hasRole, isOwner } from './roles'
+import { ownerChangesEmail } from './self-edit'
+import { oneStoreForStoreStaff } from './store-rule'
 
 export const MAX_LOGIN_ATTEMPTS = 5
 export const LOCK_TIME_MS = 15 * 60 * 1000
 
-/** An admin: everyone. Other staff: their own account. Anyone else: nothing. */
-const selfOrAdmin: Access = ({ req }) => {
-  if (hasRole(req.user, 'admin')) return true
+/** The owner: everyone. Other staff: their own account. Anyone else: nothing. */
+const selfOrOwner: Access = ({ req }) => {
+  if (hasRole(req.user, 'owner')) return true
   if (!isStaffUser(req.user) || req.user?.id === undefined) return false
   return { id: { equals: req.user.id } }
 }
 
 export const Users: CollectionConfig = {
-  // Literal on purpose: route parity reads collection slugs from these files
-  // (engine/tooling/route-parity/collections.mjs); `satisfies` keeps it equal to USERS_SLUG.
+  // Literal on purpose: `registries/registries.test.ts` reads each slug from its own file;
+  // `satisfies` keeps it equal to USERS_SLUG.
   slug: 'users' satisfies typeof USERS_SLUG,
-  labels: { singular: 'Staff member', plural: 'Staff' },
+  labels: {
+    singular: { en: 'Staff member', id: 'Anggota staf' },
+    plural: { en: 'Staff', id: 'Staf' },
+  },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['name', 'email', 'roles'],
-    description: 'Who can sign in to this admin, and what each person may do.',
+    defaultColumns: ['name', 'email', 'role', 'store'],
+    description: {
+      en: 'Who can sign in to this admin, and what each person may do.',
+      id: 'Siapa yang dapat masuk ke admin ini, dan apa yang boleh dilakukan setiap orang.',
+    },
   },
   auth: {
     maxLoginAttempts: MAX_LOGIN_ATTEMPTS,
@@ -55,24 +65,31 @@ export const Users: CollectionConfig = {
   },
   access: {
     admin: ({ req }) => isStaffUser(req.user),
-    create: isAdmin,
-    read: selfOrAdmin,
-    update: selfOrAdmin,
-    delete: isAdmin,
-    unlock: isAdmin,
+    create: isOwner,
+    read: selfOrOwner,
+    update: selfOrOwner,
+    delete: isOwner,
+    unlock: isOwner,
   },
   fields: [
     {
       name: 'name',
       type: 'text',
+      label: { en: 'Name', id: 'Nama' },
       required: true,
-      admin: { description: 'As colleagues know you — shown on the records you change.' },
+      admin: {
+        description: {
+          en: 'As colleagues know you — shown on the records you change.',
+          id: 'Seperti rekan kerja mengenal Anda — ditampilkan pada catatan yang Anda ubah.',
+        },
+      },
     },
-    rolesField,
+    roleField,
+    storeField,
   ],
   hooks: {
-    beforeOperation: [keepAnAdminInBulk],
-    beforeChange: [firstUserIsAdmin, keepAnAdminOnUpdate],
-    beforeDelete: [keepAnAdminOnDelete],
+    beforeOperation: [keepAnOwnerInBulk],
+    beforeChange: [firstUserIsOwner, ownerChangesEmail, oneStoreForStoreStaff, keepAnOwnerOnUpdate],
+    beforeDelete: [keepAnOwnerOnDelete],
   },
 }

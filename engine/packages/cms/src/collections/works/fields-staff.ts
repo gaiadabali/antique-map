@@ -1,16 +1,15 @@
 /**
  * What the public never reads of a work, and what governs it (CONTENT-MODEL.md §1; COMPLIANCE.md
- * §1, §8; requirement 3.8): the object's physical record, the rights in its image, its origin if
- * it is a sister's copy, the cataloguing workflow, the migration's legacy ids and the SEO overrides.
+ * §1, §8; requirement 3.8): the object's physical record, the rights in its image, the cataloguing
+ * workflow, the migration's legacy ids and the SEO overrides.
  *
- * - **`physical` has no defaults.** Location and export status stay blank until the owner's item
- *   register sets them; a blank one never blocks publishing — it makes the item enquiry-only,
- *   routable to no destination (COMMERCE.md §2, requirement 16.8). `not-applicable` (held outside
- *   Indonesia) is set explicitly, never assumed. It is the origin's alone: never synced (C12), and
- *   a provenance copy holds none. Staff-only, narrower by part (`./access`).
+ * - **`physical` has no defaults.** The export status stays blank until the owner's item register
+ *   sets it; a blank one never blocks publishing (requirement 16.8). `not-applicable` (held
+ *   outside Indonesia) is set explicitly, never assumed. Staff-only, narrower by part (`./access`).
+ *   Its `location` relation went with the `locations` stub (TASKS.md 2.4.a); CONTENT-MODEL.md §3's
+ *   `location` (Singapore or Jakarta) is TASKS.md 3.2.b's.
  * - **`rights`** decide whether a reproduction may publish (COMPLIANCE.md §8): printing is allowed
  *   only on rights that allow it, and defaults to not allowed.
- * - **`origin`** is set by the sister importer alone, on a provenance copy (`hooks/work-synced`).
  */
 import { CURRENCY_CODES } from '@engine/config/constants'
 import type { Field, Validate } from 'payload'
@@ -46,32 +45,21 @@ export const physicalField: Field = {
   access: PHYSICAL_ACCESS,
   admin: {
     description:
-      'From the owner’s item register. Left blank, the item publishes as enquiry-only and sells nowhere online.',
+      'From the owner’s item register. Left blank, the item still publishes: the gallery sells nothing online.',
   },
   hooks: { beforeDuplicate: [cleared] },
   fields: [
     {
-      type: 'row',
-      fields: [
-        {
-          name: 'location',
-          type: 'relationship',
-          relationTo: 'locations',
-          admin: { description: 'Where the object is now.' },
-        },
-        {
-          name: 'exportStatus',
-          type: 'select',
-          options: EXPORT_STATUS_OPTIONS,
-          admin: { description: 'Never assumed: set it from the register.' },
-        },
-      ],
+      name: 'exportStatus',
+      type: 'select',
+      options: EXPORT_STATUS_OPTIONS,
+      admin: { description: 'Never assumed: set it from the register.' },
     },
     { name: 'coaIssued', type: 'checkbox', label: 'Certificate of authenticity issued' },
     {
       name: 'acquisition',
       type: 'group',
-      label: 'Acquisition (admin and manager only)',
+      label: 'Acquisition (owner only)',
       access: ACQUISITION_ACCESS,
       fields: [
         {
@@ -137,28 +125,6 @@ export const STAFF_FIELDS: Field[] = [
         defaultValue: false,
         validate: rightsPart('printAllowed'),
         admin: { description: 'A reproduction of this work cannot publish while this is off.' },
-      },
-    ],
-  },
-  {
-    name: 'origin',
-    type: 'group',
-    label: 'Provenance copy',
-    // The importer writes it on the Local API with no user, which skips field access.
-    access: STAFF_ONLY_ACCESS,
-    admin: {
-      readOnly: true,
-      description:
-        'Set by the sister sync on a copy of a sister’s work: its synced fields are read-only here.',
-    },
-    fields: [
-      {
-        type: 'row',
-        fields: [
-          { name: 'brand', type: 'text', maxLength: 64 },
-          { name: 'workUid', type: 'text', index: true, maxLength: 30 },
-          { name: 'syncedAt', type: 'date' },
-        ],
       },
     ],
   },

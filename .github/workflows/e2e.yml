@@ -26,14 +26,13 @@ jobs:
     # (engine/tooling/db/transport.mjs) instead of `docker compose exec` —
     # there is no compose project here for `exec` to reach.
     #
-    # DB_SUFFIX names the one database (`indies_gallery_ci`, TASKS.md 2.1.c):
-    # one app, one database. Until 2.2 the process serves one brand (BRAND),
-    # and `db:fresh` still names a database after it.
+    # DB_SUFFIX names the one database (`indies_ci`): one app, one database,
+    # both sites picked by each request's Host (TASKS.md 2.2).
     #
     # LOCAL_PRODUCTION_BUILD=1: this job serves the production build on a
     # loopback port for Playwright, which bootCheck() judges local only with
-    # it (DEPLOYMENT.md §8) — without it it is judged production and refuses
-    # to start on sandbox keys and draft configs. Only CI and a worktree's
+    # it (DEPLOYMENT.md §7) — without it it is judged production and refuses
+    # to start on sandbox keys. Only CI and a worktree's
     # .env.local set it; never a host. start-server.sh sets it on the server
     # again, from an empty environment.
     env:
@@ -44,7 +43,6 @@ jobs:
       POSTGRES_USER: postgres
       PGPASSWORD: postgres
       DB_SUFFIX: ci
-      E2E_BRAND: indies-gallery
       E2E_PORT: '4200'
     services:
       postgres:
@@ -76,11 +74,11 @@ jobs:
       # this job's PGHOST/PGPORT/POSTGRES_USER/PGPASSWORD and a dev
       # PAYLOAD_SECRET of its own. A failed migration fails the step.
       - name: db:fresh — the one e2e database (created and migrated)
-        run: pnpm db:fresh --brand "$E2E_BRAND" --suffix "$DB_SUFFIX"
+        run: pnpm db:fresh --suffix "$DB_SUFFIX"
 
       - name: unaccent and pg_trgm in the e2e database
         run: |
-          db="${E2E_BRAND//-/_}_$DB_SUFFIX"
+          db="indies_$DB_SUFFIX"
           found=$(psql -U "$POSTGRES_USER" -d "$db" -tAc "select string_agg(extname, ',' order by extname) from pg_extension where extname in ('pg_trgm','unaccent')")
           echo "$db: $found"
           [ "$found" = "pg_trgm,unaccent" ] || { echo "::error::$db lacks unaccent or pg_trgm"; exit 1; }
@@ -115,21 +113,22 @@ jobs:
 
       # ONE server on one port answers both hostnames (start-server.sh: `node server.js` from an
       # empty environment, HOSTNAME=0.0.0.0, a PAYLOAD_SECRET and a `ci:` LINK_TOKEN_KEYS ring
-      # generated for it). Until 2.2 it serves BRAND on both hosts.
+      # generated for it), each host its own site.
       - name: Start the server (both hosts, one port)
         run: >-
           bash .github/scripts/start-server.sh web "$RUNNER_TEMP/artifact/web" "$E2E_PORT"
-          "${E2E_BRAND//-/_}_$DB_SUFFIX" "$E2E_BRAND"
+          "indies_$DB_SUFFIX"
 
       - name: Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      # playwright.config.ts: the smoke on {gallery, shop} × {390, 1280 px}; the status spec on the
-      # gallery host and its @any-app cases on the shop host; axe on each host at both widths. The
+      # playwright.config.ts: the smoke on {gallery, shop} × {390, 1280 px}; the status spec and
+      # axe on each host; the host-trust spec (unknown host, spoofed X-Forwarded-Host, the admin
+      # host) once. Chromium and the `request` fixture both reach *.localhost on loopback. The
       # proxy sets a missing User-Agent since 5.3, so E2E_EXPECT_UA_FIX=1 runs the no-User-Agent
       # cases. E2E_EXPECT_NOT_FOUND_BODY stays unset until 22.4.e (a 404's non-empty <main>),
       # E2E_EXPECT_CSP until 41.1.a: their cases are `fixme` until then.
-      - name: Playwright (smoke, status and axe on both hosts)
+      - name: Playwright (smoke, status, hosts and axe on both hosts)
         env:
           E2E_EXPECT_UA_FIX: '1'
         run: pnpm test:e2e

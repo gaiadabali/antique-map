@@ -1,9 +1,9 @@
 /**
  * Which bucket a process writes, read from its environment (DEPLOYMENT.md §2, §8) — never from
- * code: the brand's public media bucket (`S3_*`) and the shared private masters bucket
- * (`MASTERS_*`), both on the one S3-compatible endpoint (`S3_ENDPOINT`: MinIO locally, RustFS on
- * staging, D12). Each has its own key pair, so the outlet brand's masters key can be the one that
- * writes only under `print-files/` (`policies/`), while its media key writes only its own bucket.
+ * code: the one public media bucket (`S3_*`) and the one private masters bucket (`MASTERS_*`),
+ * both on the one S3-compatible endpoint (`S3_ENDPOINT`: MinIO locally, RustFS on staging, D12).
+ * Each has its own key pair, so the media key reaches the media bucket only and the masters key
+ * the masters bucket only (`policies/`).
  *
  * Read at request time, never while the Payload config is built: what is configured changes how a
  * file is stored, never the schema.
@@ -37,7 +37,7 @@ function target(env: Env, bucketVar: string, keyVar: string, secretVar: string):
   }
 }
 
-/** The brand's public media bucket, or null while no bucket and endpoint are configured. */
+/** The public media bucket, or null while no bucket and endpoint are configured. */
 export function mediaStorageTarget(env: Env): S3Target | null {
   return target(env, 'S3_BUCKET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY')
 }

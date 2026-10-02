@@ -1,23 +1,20 @@
 /**
  * Field-level access (CONTENT-MODEL.md §8, requirement 3.8). A work's `physical` (location,
- * export status), acquisition cost and consignor are staff-only: never in a public response,
- * never in a view model, never in a sister snapshot (C12). `staffOnly` goes on each such field's
- * `read`, `create` and `update`, so the REST API, the admin and every Local API call made
- * with `overrideAccess: false` drop it for anyone who is not staff.
+ * export status), acquisition cost and consignor, a media record's master, a translation's status
+ * are staff-only: never in a public response, never in a view model. `staffOnly` goes on each
+ * such field's `read`, `create` and `update`, so the REST API, the admin and every Local API call
+ * made with `overrideAccess: false` drop it for anyone who is not the owner or an editor — a store
+ * user included, who may enter the admin but keeps no catalogue (`./roles`).
  *
  * Field access is skipped by the Local API's default `overrideAccess: true` — which is why public
- * reads never use that default (`./published`).
+ * reads never use that default (`./published`). A field narrower still (an antique's asking
+ * price, owner-only) takes `rolesOnlyField()` / `ownerOnlyField` from the role vocabulary.
  */
 import type { Field, FieldAccess } from 'payload'
 
-import { hasRole, isStaffUser, type StaffRole } from './roles'
+import { isCatalogueStaff } from './roles'
 
-export const staffOnly: FieldAccess = ({ req }) => isStaffUser(req.user)
-
-/** Staff holding one of `roles` — for fields narrower than all staff (prices, refunds). */
-export function rolesOnlyField(...roles: readonly StaffRole[]): FieldAccess {
-  return ({ req }) => hasRole(req.user, ...roles)
-}
+export const staffOnly: FieldAccess = ({ req }) => isCatalogueStaff(req.user)
 
 /** The access block a staff-only field carries, in one piece so none of the three is forgotten. */
 export const STAFF_ONLY_ACCESS = {
