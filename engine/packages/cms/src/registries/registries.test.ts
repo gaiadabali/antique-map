@@ -63,6 +63,11 @@ describe('registry entries', () => {
 const SLUGS = [
   'users',
   'stores',
+  'stock-levels',
+  'orders',
+  'payment-events',
+  'discounts',
+  'products',
   'works',
   'makers',
   'places',
