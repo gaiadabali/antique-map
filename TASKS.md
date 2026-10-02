@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 2/33 | 0 | `█░░░░░░░░░`   6% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 5/33 | 0 | `██░░░░░░░░`  15% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 4/14 | 0 | `███░░░░░░░`  29% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **47/200** | **8** | `██░░░░░░░░`  24% |
+| **All** | 11 phases | | | **9/49** | **50/200** | **8** | `███░░░░░░░`  25% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -360,9 +360,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/collections/{leads,partners,chat-sessions,events,pages,redirects}/**`, `engine/packages/cms/src/globals/**`
   - **Read** CONTENT-MODEL.md §6, AI.md §3, ANALYTICS.md
   - _Requirements: 4.4, 14.3_
-  - [ ] 3.4.a `leads` (kind `ask|sell|partnership|contact|chat`, site, source, payload, status New → In progress → Closed, notes) and `partners` (contact, terms, products carried, notes)
-  - [ ] 3.4.b `chat-sessions` with a transcript retention field and `events` (first-party analytics) shaped for append and aggregation
-  - [ ] 3.4.c `pages` and `redirects` carry a `site`; the `site-settings` global holds, per site, the WhatsApp number and hours, email, delivery-fee bands, the free-shipping threshold and the AI flags
+  - [x] 3.4.a `leads` (kind `ask|sell|partnership|contact|chat`, site, source, payload, status New → In progress → Closed, notes) and `partners` (contact, terms, products carried, notes)
+  - [x] 3.4.b `chat-sessions` with a transcript retention field and `events` (first-party analytics) shaped for append and aggregation
+  - [x] 3.4.c `pages` and `redirects` carry a `site`; the `site-settings` global holds, per site, the WhatsApp number and hours, email, delivery-fee bands, the free-shipping threshold and the AI flags
   - [ ] 3.4.d **Check:** db tests prove: a lead without a kind is refused; `leads`, `partners` and `site-settings` are readable only by the owner; a redirect's `from` is unique per site.
 
 - [ ] **3.5 Schema lead: the migration, roles and access** · needs: 3.2, 3.3, 3.4
