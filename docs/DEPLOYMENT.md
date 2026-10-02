@@ -1,412 +1,259 @@
 # Deployment
 
-One repository, one CI run, **one release artifact holding both brands' builds**,
-deployed as two processes with two databases. The release mechanics are KOI's
-(pull-based GDA pipeline on Helios); the topology is NOW!'s (one engine, an
-instance per tenant).
-
----
+**Purpose:** where the platform runs and how a change gets there — environments, the Helios staging host, the one
+release artifact, migrations, scheduled jobs, storage, mail, environment variables, backups, monitoring and the
+production outline. The design is [ARCHITECTURE.md](ARCHITECTURE.md); the controls are [SECURITY.md](SECURITY.md);
+the record and runbook of staging is [ops/helios-staging.md](ops/helios-staging.md).
 
 ## 1. Environments
 
-| | Where | Data | Deploys from |
-| - | ----- | ---- | ------------ |
-| **local** | each worktree, `docker-compose.dev.yml` — Postgres 18, Mailpit, MinIO | per-lane databases (`ig_dev_<lane>`) seeded from fixtures | — |
-| **staging** | Helios — `indies-gallery.gaiada.com`, `old-east-indies.gaiada.com` | seeded + rehearsal migration imports; payment **sandboxes** | a green push to `production` (the GDA pipeline's only Helios branch) |
-| **production** | Helios — the brands' real domains, added at cutover (MIGRATION.md §8) | live | the same, once cutover moves the targets |
+| | Where | Hostnames | Data | Payments | Mail |
+| --- | --- | --- | --- | --- | --- |
+| **local** | each worktree; `docker-compose.dev.yml` runs Postgres 18, Mailpit and MinIO for the machine | `gallery.localhost`, `shop.localhost` on the worktree's `PORT` (browsers resolve `*.localhost` to loopback) | the seed (DATA.md §2), one database per worktree, `indies_<suffix>` | the simulator | Mailpit |
+| **staging** | Helios | `indies-gallery.gaiada.com`, `old-east-indies.gaiada.com` (DR-1) | the seed, then rehearsal imports of the owner's data | the simulator until the owner's Midtrans sandbox keys arrive, then sandbox | Mailpit (D13): nothing is delivered |
+| **production** | Open (Q13): the same pull pipeline and host family as staging (Helios) unless the owner names another host | `antiquemapsindonesia.com`, `oldeastindies.com`, with aliases (Open) | the owner's data, imported | Midtrans live, with the owner's go-ahead | Open (D13) |
 
-Two of `docker-compose.dev.yml`'s pins are load-bearing, not arbitrary
-(`docker-compose.dev.yml` on `main`): MinIO runs `bitnamilegacy/minio`, Bitnami's
-frozen "legacy" line, because the upstream `minio/minio` image now requires a
-registered pull and would fail an anonymous one in CI; and Postgres's data
-volume mounts at `/var/lib/postgresql` — one level above where earlier majors
-put it — because 18+ nests its version number beneath that path and refuses to
-start if the volume is mounted at the old, more specific location.
+Staging deploys from a green merge to `production`, the pipeline's only Helios branch, as KOI's staging does;
+production joins the same pipeline at cutover (§11). Writes to Helios staging fall under the owner's standing
+go-ahead (DR-15); production provisioning, DNS and live credentials each need their own (👤 in TASKS.md).
 
-Staging on Helios mirrors what KOI does today (`koi.gaiada.com` is staging on
-the production pipeline, by decision). At cutover the production domains become
-new targets with their own site users and databases; staging can move to Delphi
-on the `staging` branch if a permanent staging tier is wanted (open decision).
+## 2. Staging on Helios
 
-## 2. Topology — per brand
+| | |
+| --- | --- |
+| Site | one CloudPanel Node.js site; its nginx vhost serves both staging hostnames (`server_name`) and passes `Host` through, which the site choice depends on |
+| Site user · pm2 process | `uindies` |
+| App port | 4030, on 127.0.0.1 only |
+| Database · role | `indies_db` · `indies` (LOGIN only, `CONNECTION LIMIT 20`), Postgres 18.6 |
+| Media bucket | `indies-media`: anonymous GET only under `derivatives/` and `iiif/`, no listing; served at `/_media/` (§6) |
+| Private bucket | `archive-masters`: masters, `orders/`, `imports/`; no anonymous access; versioned |
+| Shared services | RustFS 1.0.0 on 127.0.0.1:4032 (its console off; 4033), data in a 50 GiB ext4 loop image so it cannot fill `/`; Mailpit 1.31.3 on 4034 (SMTP) and 4035 (UI), both behind auth |
+| Firewall | ufw, default `INPUT DROP`: 22, 80 and 443 public; 4030–4035 answer on loopback alone |
+| Secrets | host-only, in the site user's `shared/.env` (mode 600) and `/etc/indies/*` (D49); never printed |
+| First owner | created at provisioning, so the open first-user form is closed; credentials in `/etc/indies/staging-admin/` (600, root) |
 
-| | Indies Gallery | Old East Indies |
-| - | -------------- | --------------- |
-| Site user / pm2 process | `uig` | `uoei` |
-| App port | 4030 (verify free with `ss -ltn` at provisioning) | 4031 |
-| Database / role | `ig_db` / `ig` | `oei_db` / `oei` |
-| Media bucket | `ig-media` → `media.<domain>` via Cloudflare (CORS for the viewer's origins), public **only** under `derivatives/` and `iiif/` (below) | `oei-media` → `media.<domain>`, the same |
-| Private masters bucket | `archive-masters`, no anonymous access: IG's key reads and writes and **never deletes**; OEI's key reads masters and writes **only** under `print-files/old-east-indies/`; its CORS admits each brand's admin origin (below) | ← |
-| `shared/.env` | `BRAND=indies-gallery`, `BRAND_ROOT`, `DATABASE_URL`, `RUN_MIGRATIONS=1`, per-seller provider secrets | `BRAND=old-east-indies`, … |
+Everything above is made by `scripts/ops/helios-provision.sh`: idempotent (a second run plans `changes: 0`), with
+`--dry-run`, `--report` (a read-only inventory) and `--verify-restart`. Compare the packed script's sha256 with
+the reviewed commit before piping it to the host. *Reshape note:* staging runs two site users (`uig`, `uoei`), two
+ports, `ig_db` and `oei_db` and two media buckets today; task 3.1 provisions this shape, drops the old databases
+after a `pg_dump` and removes the two users (CARRY-OVER.md §3, step 8).
 
-**Everything a brand serves is its one Next.js process** — public site, `/admin`,
-API routes, webhooks and the analytics beacon (KOI's owner decision: one process,
-one thing to supervise). **Jobs do not run inside page renders**: the queue is run
-by a cron-called route with a per-run limit and `sharp.concurrency` capped, and
-bulk work — tiling the migration's archive — runs **off-box** as a CLI that writes
-straight to the bucket (ARCHITECTURE.md §10). If measurements say the cron route
-still competes with renders, a second pm2 app running `payload jobs:run` from the
-same artifact is the escape hatch — it never runs migrations.
-
-### Why media is not on the Helios disk
-
-KOI keeps uploads in `shared/uploads`. That does not scale to this catalogue:
-~9,500 works × several images × derivatives × IIIF tiles is tens to hundreds of
-GB, and Helios's disk hit **93%** in September 2026. Media goes to **S3-compatible
-object storage** — **RustFS**, self-hosted (D12, 2026-09-30; staging runs it on
-Helios bound to loopback, and where it lives for the full archive is to be
-confirmed before 37.2 — this disk is why) — through
-`@payloadcms/storage-s3`; local dev uses MinIO (the `bitnamilegacy/minio` image,
-since `minio/minio` no longer allows an anonymous pull, §1); switching provider
-is an endpoint change — to one that enforces a bucket policy by prefix (below).
-
-### Object storage: what is public, and who holds which key
-
-- **A media bucket is public only under `derivatives/` and `iiif/`** — the
-  derivative ladder and the capped tiles (C9) — and lists nothing to anyone
-  anonymous. Everything else in it is private: the uploads under `uploads/` (every
-  upload collection's prefix: the full-resolution processed image, perhaps still
-  with the camera's metadata) and the uncapped pyramid under `iiif-full/` (C9
-  `iiifFullKey()`), which the engine streams to staff. The policy names `iiif/`
-  with its slash, so `iiif-full/` never matches it.
-- **A CDN never bypasses the bucket policy.** `media.<domain>` fetches from the
-  bucket anonymously, as any visitor would, so the policy is the only gate: the
-  CDN holds no storage key and serves nothing an anonymous `GET` is refused. A
-  provider whose public access opens a whole bucket or nothing (R2's) cannot hold
-  this layout; moving to one puts the private prefixes in a bucket of their own
-  first — a design change, not an endpoint change.
-- **The policies are data, applied from `@engine/media`'s plan files**
-  (`engine/packages/media/src/storage/`: the policy documents, and a plan per
-  environment) by `pnpm --filter @engine/media storage:policies --plan <file>`,
-  bucket policies first, so no bucket is ever wholly public while its keys are
-  made. On a host, each key's secret comes from that host's own secrets
-  (`--secrets env`: `STORAGE_SECRET_<USER>`, from Infisical), never derived and
-  never written down; staging's and production's plans are TASKS.md 41.2.e.
-  Locally the plan is `plans/local.json`, applied to the dev container with each
-  secret derived from its root secret (`--secrets derive`), so a worktree may run
-  on its brand's scoped keys in `.env.local`, as a host does, rather than the
-  container's root key, `minioadmin` — which the boot check refuses on any host.
-- **Each process holds two keys** (§8): its media key, which reads and writes its
-  own media bucket and nothing else, and its masters key — the origin's reads and
-  writes the archive and deletes nothing; the outlet's reads masters and print
-  files and writes or deletes only under `print-files/<its slug>/`. **The
-  archive's delete-capable key is separate from the web process's**: filing an
-  intake capture deletes its intake copy once the filed copy is verified (TASKS.md
-  15.4.c), so that step runs outside the web process with a key of its own, which
-  no host's `shared/.env` holds. `archive-masters` is versioned, so no key
-  destroys a master by overwriting it either (41.2.e).
-- **A master goes from the admin's browser straight into the masters bucket** by
-  a presigned `PUT` (ARCHITECTURE.md §7). So the masters bucket's CORS admits each
-  brand's admin origin (its `SITE_URL`) for that `PUT` and the headers it signs,
-  and no other origin; and on a host the storage answers that `PUT` at the HTTPS
-  address the presign is signed for (`S3_ENDPOINT`, §8) — never through the CDN,
-  whose request limit is why the file bypasses the app. A storage bound to
-  loopback, as staging's RustFS is today, cannot take it (41.2.e).
-
-## 3. Release flow
+## 3. The release
 
 ```
-push to main
-  → CI: static checks · unit · contract · e2e (both brands + test brand) · Lighthouse
-  → merge to production → `artifact` job builds each storefront app with NO database:
-        engine/apps/gallery   next build → standalone + indies-gallery/site  → indies-gallery/
-        engine/apps/emporium  next build → standalone + old-east-indies/site → old-east-indies/
-    and packs both into ONE tarball + .sha256
-    (the brand is runtime config — BRAND in shared/.env — so nothing brand-specific is baked in)
-  → `publish` creates a deploy/production-* release
-  → gaiada-poll on Helios (60 s) picks it up, verifies the checksum
-  → per .gaiadeploy.yml target: unpack its `subdir`, symlink `current`, pm2 reload <site user>
-  → the new process boots and reads shared/.env
-  → health check https://<domain>/api/health — it calls getPayload(), which initialises
-    Payload and applies pending migrations (web process only: RUN_MIGRATIONS=1 in a
-    production build — Payload migrates on boot only when NODE_ENV=production, which
-    the standalone server.js sets — under a Postgres advisory lock); on failure, roll back
-    and reload
+push to main ──► CI (ci.yml, e2e.yml): static checks · unit · *.db.test.ts · e2e on both hosts · Lighthouse
+PR main → production ──► release.yml:
+    build engine/apps/web   no PAYLOAD_SECRET; DATABASE_URL and PGHOST at a sentinel that refuses connections
+    assemble web/           standalone server + .next/static + public/ + sharp's native binaries
+    smoke                   boot the tarball on a migrated database: each host's home 200 with its site's name,
+                            /admin/login 200 on the admin host and 404 on the other, sharp loads
+    publish                 one tarball + .sha256 as release deploy/production-<UTC stamp>-<sha> (2 kept)
+Helios ──► gaiada-poll (60 s): verify the sha256 → unpack under ~/releases/ → point current at web/
+           → pm2 reload uindies → check https://<domain>/ (6 tries, 5 s apart, 20 s each) → else roll back
 ```
 
-**What pm2 runs** (TASKS.md 4.4, 4.3). The release is Next's standalone output, which nests
-the server under the app's workspace path (`outputFileTracingRoot` is the repository root),
-with the brand folder beside it (`assemble-artifact.sh`). So each target's pm2 process — `uig`
-for the gallery app, `uoei` for the emporium — runs, from its `current` release:
+The first `/api/health` after a reload initialises Payload and applies pending migrations (§4). After a deploy,
+`/api/health` must answer 200 on **both** hostnames; the poller checks only the one it names.
 
-```
-script     <current>/engine/apps/<app>/server.js       <app>: gallery for uig, emporium for uoei
-node_args  --dns-result-order=ipv4first                so `localhost` binds 127.0.0.1 (below)
-exec_mode  fork                                        one process per brand, never cluster
-instances  1
-
-HOSTNAME=localhost             the address server.js binds (§8): set, never left to the shell
-PORT=<the site's port>         §2's app port; server.js falls back to 3000 without it
-BRAND_ROOT=<current>/brand     the folder holding site/: brand.config.json, copy/, assets/
-```
-
-and `shared/.env` supplies the rest (§2, §8). That `server.js` sets `NODE_ENV=production`
-itself; `next start` never runs on a host.
-
-**One process, in fork mode.** 4.6's single-flight jobs run, §7's in-process rate limits
-and the health check's ~5 s memo are exact only with one process per brand; a pm2 or
-CloudPanel template running `-i max` or cluster mode would break all three without a word,
-so the entry pins `exec_mode: 'fork'` and `instances: 1`.
-
-**Bound behind nginx, on loopback alone.** The app port is reached only through nginx,
-which terminates TLS and sets `X-Forwarded-For`, on which the rate limits key — a direct
-hit could forge it. So a host never binds `0.0.0.0`, which would put 4030 and 4031 on the
-public interface (4.3's senior-be review #8), and never a loopback IP literal
-(`127.0.0.1`, `::1`): at one of those, Next renames the host to `localhost` when it re-reads
-the proxy's rewrite but builds its own URL from the raw address, so every rewrite looks
-external, is proxied to itself, and every storefront page hangs with nothing logged — which
-no choice of origin in the proxy fixes (4.4.g), so the boot check refuses one (TASKS.md
-5.3.d, C13 `PROXY_MATCHER`). The host binds **`localhost`, pinned to IPv4**: measured in
-4.3 on Next 16.3.6, `localhost` alone listened on `[::1]` only, where an nginx upstream at
-`127.0.0.1` is refused (a 502); with `--dns-result-order=ipv4first` it listened on
-`127.0.0.1` alone, answered through `127.0.0.1` and `localhost`, and did not hang, since
-both of Next's URLs then say `localhost`. nginx's upstream is `http://127.0.0.1:<port>`,
-which 5.1 confirms in the site's CloudPanel vhost. 5.1 verifies the bind on Helios:
-`ss -ltnp` shows the port on `127.0.0.1` only, a page answers
-through nginx, and `curl http://<public-ip>:4030` from outside is refused — the host
-firewall (CloudPanel's allows 22, 80 and 443) is 5.1's to confirm, with the owner's
-go-ahead (👤). CI's servers, on an ephemeral runner with no nginx, bind `0.0.0.0`
-(`start-server.sh`).
-
-`.gaiadeploy.yml`, using the pipeline's monorepo support (`subdir`, added
-2026-08-19 for exactly this):
+`.gaiadeploy.yml`, the poller's manifest:
 
 ```yaml
 production:
   - server: helios
-    site_user: uig
-    domain: indies-gallery.gaiada.com
-    type: node
-    subdir: indies-gallery
-  - server: helios
-    site_user: uoei
+    site_user: uindies
     domain: old-east-indies.gaiada.com
     type: node
-    subdir: old-east-indies
+    subdir: web
 ```
 
-**Never commit `TBD`** in this file — a committed placeholder had Helios's
-poller failing every 60 seconds for weeks on another repo (GDA STAGES-AND-TYPES).
-`site_user` must equal the pm2 process name exactly, or the agent skips the
-reload silently and the old code keeps serving.
+- **Never commit a placeholder value** in it: one on another repository had Helios's poller failing every 60
+  seconds for weeks. CI refuses one.
+- **`site_user` must equal the pm2 process name exactly**, or the agent skips the reload silently and the old code
+  keeps serving.
+- **Rollback** is pointing `current` back and reloading: seconds, no rebuild, three releases kept on the host.
+  `gaiada-deploy --rollback --site-user uindies --domain old-east-indies.gaiada.com --type node --subdir web`.
 
-Rollback is repointing `current` and reloading — seconds, no rebuild. Two
-releases are kept per target.
+**What pm2 runs**, from the `current` release:
 
-**Staging on Helios, as built and proven** — the hosts, the poller's health check (`/`, 6 × 5 s,
-20 s each), the first deploys, the restart and rollback rehearsals, and a defect in the shared
-`gaiada-deploy --rollback` for `subdir` targets — is recorded in
-[ops/helios-staging.md](ops/helios-staging.md) (TASKS.md 5.1.c).
+```
+script     <current>/engine/apps/web/server.js     Next's standalone server; it sets NODE_ENV=production
+node_args  --dns-result-order=ipv4first            so `localhost` binds 127.0.0.1
+exec_mode  fork    instances 1                     one process, never cluster
+env        HOSTNAME=localhost  PORT=4030           the rest from shared/.env (§8)
+```
+
+- **One process, in fork mode.** The jobs run's single-flight, the in-process rate limits and the health check's
+  memo are exact only with one process; a template running cluster mode or `-i max` breaks all three silently.
+- **Bound behind nginx, on loopback alone.** nginx terminates TLS and sets `X-Forwarded-For`, on which the rate
+  limits key; a direct hit could forge it. So a host never binds `0.0.0.0`, and never a loopback IP literal: at
+  `127.0.0.1` Next sees every proxy rewrite as external and every page hangs, so the boot check refuses one.
+  `localhost` with IPv4 first binds 127.0.0.1 alone; nginx's upstream is `http://127.0.0.1:4030`. CI binds
+  `0.0.0.0` on a runner with no nginx. `next start` never runs on a host.
 
 ## 4. Migrations
 
-The same rules as KOI, applied to two databases:
-
-0. **One migration set, two databases.** Each brand's web process applies the
-   same pending migrations when its first health check initialises Payload —
-   one process per database, under an advisory lock, never a worker.
-   `RUN_MIGRATIONS=1` hands Payload the bundled set, and Payload applies it on
-   boot only in a production build (`NODE_ENV=production`, which `next start`
-   sets): a dev server never migrates on boot, whatever it is given, so a
-   workstation's database is migrated by `pnpm --filter @engine/cms migrate`,
-   which `db:fresh` runs, and the boot check warns of `RUN_MIGRATIONS=1` on a dev
-   server. `pnpm db:schema-hash --all` in CI and after every deploy proves the
-   schemas are identical.
-1. **Additive first.** Add, backfill, switch reads, and drop only in a later
-   release. A failed migration rolls back its transaction, the process fails to
-   boot, the health check fails, and the agent rolls back to a release that
-   knows the old schema — which only holds while migrations are additive.
-2. **Local Postgres matches production (18).** Anything version-sensitive is
-   checked against 18.
-3. A release carrying a migration gets a manual `pg_dump` of **both** databases
-   just before it merges, kept 7 days. Deploys are automatic; nothing takes
-   this dump for you.
-4. `payload migrate:create` against a migrated database must report "No schema
-   changes detected" before and after — or the snapshot chain has drifted.
-5. **Payload dev "push" is off** (`push: false`). Schema reaches every database
-   anyone shares through migrations only. The one exception is a schema author's
-   own suffixed database, pushed with `PAYLOAD_DEV_PUSH=1` (PARALLEL-TRACKS.md
-   §3.2) — never a production build. No table declares a composite primary key,
-   which drizzle-kit 0.31.7 cannot introspect. KOI lost time to a dev server
-   generating a migration that carried another session's schema change.
+- **The web process applies them**: `RUN_MIGRATIONS=1` hands Payload the bundled set, which it applies on boot
+  only in a production build, under a Postgres advisory lock, at the first `/api/health`. A worker never migrates;
+  a dev server never migrates on boot (`pnpm db:fresh` migrates a workstation's database).
+- **The poller allows about 30 seconds.** A release whose migration may outlast that is migrated before the reload,
+  from the new release with `RUN_MIGRATIONS=1`.
+- **Additive first** (CONVENTIONS.md §13): a failed migration rolls back its transaction, the process fails its
+  health check, and the agent rolls back to a release that knows the old schema — sound only while migrations add.
+- **A manual `pg_dump` just before a release that carries a migration**, kept 7 days (SECURITY.md BK4). Nothing
+  takes it for you.
+- *Reshape note:* phase 2 resets the migrations to one `initial`, with the extensions and the last-owner trigger
+  added by hand, and drops every existing database (CARRY-OVER.md §3, step 7).
 
 ## 5. Scheduled jobs
 
-HTTP routes inside the app (so they use its pool and config — a cron script with
-its own connection is a second place for credentials to be wrong), called by the
-site user's crontab with `Authorization: Bearer $CRON_SECRET`. With the secret
-unset the route answers 503 and does nothing.
+The site user's crontab, a managed block the provisioning script writes, calls `~/bin/indies-cron <route>`, which
+posts to `http://127.0.0.1:4030/api/x/cron/<route>` with `Authorization: Bearer $CRON_SECRET` (read from
+`shared/.env` through stdin, never on a command line). One call per route is in flight at a time, and it logs only
+when the outcome changes. With the secret unset the route answers 503 and does nothing.
 
-| Job | Every | Why it cannot be skipped |
-| --- | ----- | ------------------------ |
-| run the Payload jobs queue (derivatives, tiles, PDFs, sister sync, emails, outbox dispatch) | 1 min | nothing else runs the queue — `autoRun` inside renders is off by design |
-| sweep expired checkout locks and holds | 1 min | housekeeping — `reserve()` already expires stale rows for its own target, so correctness never waits on this |
-| payment status reconciliation | 10 min | a webhook that never arrived must not leave an order "pending" forever |
-| FX rates refresh | daily 06:00 WIB | display prices in other currencies |
-| want-list / saved-search alerts | matched on publish through the outbox and the queue (≤ 15 min end to end); digest daily | "tell me when a Valentijn of Bali arrives" — the first collector to hear gets the map |
-| an address's want-list confirmation | sent from the outbox on `wantList.requested`, the moment it is asked for | the double opt-in link, so an unowned inbox is never subscribed on someone else's say-so (D39) |
-| idempotency-key sweep | daily | a stored answer can hold a buyer's contact or a tax id, so none outlives `IDEMPOTENCY_KEY_RETENTION` (7 days) — longer than any retry |
-| unconfirmed want-list purge | daily | an address's list never confirmed within `WANT_LIST_PENDING_DAYS` (7) is erased whole — address, query and consent — so a stale invitation can never be revived |
-| abandoned-cart email (consented only) | hourly | |
-| events partition + retention roll-up | nightly | KOI analytics pattern |
-| sitemap + merchant feed regeneration | nightly | also on publish via tag revalidation |
+| Route | Schedule | Counts as success | Runs |
+| --- | --- | --- | --- |
+| `jobs` | every minute | 200, 409 (a run in flight) | the Payload jobs queue (ARCHITECTURE.md §10) |
+| `sweeps` | every minute | 200, 204 | expiring unpaid orders after asking Midtrans |
+| `reconcile` | every 10 minutes | 200, 204 | Midtrans status for pending orders |
+| `nightly` | 18:00 UTC (02:00 WITA) | 200, 204 | the retention purge and the roll-ups |
 
-## 6. Backups
+CloudPanel's cron screen rewrites a site's crontab: if someone saves jobs there, re-run the script, and `--report`
+fails while the block is missing. A route stays commented out until its handler lands.
 
-| What | How | Where | Retention |
-| ---- | --- | ----- | --------- |
-| Postgres (each brand) | nightly `pg_dump --format=custom` | off-box | 30 days |
-| Object storage | bucket versioning + weekly replication to a second provider | off-box | 30 days of versions |
-| Master scans | write-once, replicated | two providers | forever |
-| `shared/.env` | Infisical | — | — |
+## 6. Object storage and mail
 
-**A backup that has never been restored is not a backup.** A restore drill of one
-brand database and a sample of media is in the calendar quarterly, and the
-runbook records how long it actually took.
+- **RustFS** (D12), S3-compatible, through `@payloadcms/storage-s3`; MinIO locally (`bitnamilegacy/minio`, since
+  the upstream image refuses anonymous pulls). Changing provider is an endpoint change only to one that enforces
+  policies by prefix: a provider whose public access is all of a bucket or nothing cannot hold this layout.
+- **The media bucket is public only under `derivatives/` and `iiif/`**, the slash included, and lists nothing.
+  Its public origin is `MEDIA_PUBLIC_URL`, one for both sites: on staging `https://old-east-indies.gaiada.com/_media`,
+  an nginx location passing GET and HEAD to the bucket with authorisation and cookies stripped, added through
+  CloudPanel's vhost editor, never a file edit. Its CORS admits both sites' origins, since the viewer fetches
+  `info.json`. Whatever sits in front fetches anonymously and holds no key, so the bucket policy is the only gate.
+- **The private bucket admits no anonymous request** and is versioned, so no key destroys a master by overwriting
+  it. The app's one key reads and writes both buckets, never deletes under `masters/`, and may delete under
+  `orders/` and `imports/` for the retention purge. The workstation intake key writes only under
+  `masters/intake/` and the media bucket's public prefixes, for bulk tiling (DATA.md §5), and is in no host's
+  `.env`. The policies are data, applied by `@engine/media`'s `storage:policies` plan, bucket policies first.
+- **Browser uploads straight to storage** (masters, the Import screen's photos) need the storage at an HTTPS
+  address the presigned URL is signed for, never through a CDN. Staging's RustFS answers on loopback alone, so
+  until it has such a host, large handovers go through the intake CLI (Open).
+- **Mail** is Payload's nodemailer adapter over SMTP, one server and a sender per site (`MAIL_FROM_GALLERY`,
+  `MAIL_FROM_SHOP`). Staging and local send to **Mailpit**; on Helios its UI is reached by a tunnel
+  (`ssh -L 4035:127.0.0.1:4035 helios`, user `indies`, password in `/etc/indies/mailpit/ui-password`).
 
-## 7. Health, monitoring, security
+## 7. Which environment a process is in
 
-- `/api/health` returns app, database, storage, job-queue lag and payment
-  provider reachability; the lag and the providers are reported and never gate
-  its status, because a failed health check rolls a deploy back (§3). Alloy on
-  the box watches it; alert on p95 > 1 s, 5xx rate, disk > 80%, pm2 restart
-  loop, job-queue lag > 10 min, **any webhook signature failure**.
-- **The 5xx rate sets one series apart** (TASKS.md 4.3, 41.2.c): a `500` whose
-  path is under `^/(brand-assets|api/x)/` and contains `%` is Next's own answer to
-  a path it cannot decode, before any engine code runs (ARCHITECTURE.md §13) — no
-  brand asset or engine API path carries a `%` of its own, since brand-asset
-  segments are checked and legacy URLs are logged under their public path. The
-  rule is evaluable as written (a status, a prefix and a character, no decoding),
-  and those 500s are counted as their own series — ticketed past a rate, never
-  paging and never dropped, so a Next change that 500s every `%` path still shows —
-  while every other 500 still counts toward the paging rate. nginx may answer a
-  malformed escape (`%A.`) with its own 400 first, leaving only well-formed escapes
-  of invalid UTF-8 (`%C0%AE`, `%FF`) to reach Next; 41.2.c measures that through
-  CloudPanel's nginx.
-- Security headers and the CSP are sent by the app
-  (`engine/packages/http/src/security/`), never by the CloudPanel vhost, which
-  regenerates its nginx config (KOI). The CSP is **built per request** from brand
-  config — payment-provider and analytics origins are runtime values — so adding a
-  provider is a config change and a restart, not a rebuild.
-- Rate limits on sign-in, forms, offers and checkout endpoints — in-process while
-  there is one process per brand, Postgres-backed the day there are two.
-- Card data never touches our servers: hosted fields / redirect only (PCI
-  SAQ-A). Webhooks are signature-verified and idempotent (PAYMENTS.md §4).
+The environment is judged, never declared, and never read from `NODE_ENV` (staging runs production builds). The
+boot check compares the canonical hosts with the hostnames committed in `SITES`: both production names mean
+**production**, both staging names **staging**, and `*.localhost` on a dev server **local**. A production build at
+a loopback host is local only with `LOCAL_PRODUCTION_BUILD=1`, which only a worktree's `.env.local` and CI set.
+Anything else — a mix, an unknown host, none — is refused and judged production, so the strictest rules apply.
+
+| | Refused at boot |
+| --- | --- |
+| production | `MIDTRANS_MODE=simulate`, a sandbox Midtrans key, `LOADERS_SOURCE=fixtures`, a development placeholder secret, any missing secret |
+| staging | a live Midtrans key, a placeholder secret, a missing secret (the Midtrans keys may be absent while `MIDTRANS_MODE=simulate`) |
+| local | a live Midtrans key; a missing secret only warns |
+
+`/api/health` reports the environment it judged, so the deploy's check sees what the process decided.
 
 ## 8. Environment variables
 
-```
-BRAND                       indies-gallery | old-east-indies | test
-BRAND_ROOT                  the brand folder, the one holding site/: <current>/brand on a host — the release
-                            ships brand/site/ beside engine/apps/<app>/server.js (assemble-artifact.sh)
-HOSTNAME                    localhost on a host, where pm2 runs node with --dns-result-order=ipv4first so it
-                            binds 127.0.0.1 alone, behind nginx (§3); 0.0.0.0 in CI. The address
-                            `node server.js` binds, never an origin. Never a loopback IP — at 127.0.0.1 every
-                            proxy rewrite looks external to Next and the page hangs (TASKS.md 4.4.g, 5.3.d) —
-                            and never left to the shell, which exports the machine's name as HOSTNAME
-TEST_STOREFRONT             CI only: gallery | emporium — which test config to load
-DATABASE_URL                PAYLOAD_SECRET
-SITE_URL                    the origin this process serves: https://<its domain> on a host; the boot
-                            check reads the environment from it (below)
-LOCAL_PRODUCTION_BUILD      1 in a worktree's .env.local and in CI only: a production build at a
-                            loopback SITE_URL runs as local; never in a host's shared/.env
-RUN_MIGRATIONS              1 in the web process only
-S3_ENDPOINT                 the S3-compatible storage both buckets are on (MinIO locally, RustFS on Helios,
-                            D12); on a host, the HTTPS address an admin's browser puts a master to, which every
-                            presign is signed for — never through the CDN (§2)
-S3_BUCKET  S3_ACCESS_KEY_ID  S3_SECRET_ACCESS_KEY   the brand's media bucket and its media key, which reads and
-                            writes that bucket and no other
-MEDIA_PUBLIC_URL            https://media.<domain>: the CDN in front of the media bucket's public prefixes (§2)
-MASTERS_BUCKET  MASTERS_ACCESS_KEY_ID  MASTERS_SECRET_ACCESS_KEY   the archive and this brand's masters key: the
-                            origin's reads and writes and deletes nothing; the outlet's writes only under
-                            print-files/<its slug>/ (§2). The archive's delete-capable key is in no host's shared/.env
-STORAGE_SECRET_<USER>       storage:policies --secrets env only: a plan user's secret, from the host's secrets, in
-                            the shell that applies the plan (§2) — never in shared/.env
-SMTP_HOST/PORT/USER/PASS    SMTP_FROM_ADDRESS  SMTP_FROM_NAME
-PAYMENT_<SELLER>_<PROVIDER>_*   per seller, per enabled provider, per environment (PAYMENTS.md §8)
-SHIPPING_<SELLER>_<PROVIDER>_*  per seller, for each of its own couriers (sellers[].shipping, all of the
-                                brand's when it names none) — a shipping webhook is per seller too
-FULFILMENT_<PROVIDER>_*     no seller: fulfilment providers are brand-level, not per seller
-<PREFIX>_MODE               sandbox | live, for a provider whose keys cannot say which; simulate outside production (below)
-WHATSAPP_*                  SISTER_API_KEY  SISTER_WEBHOOK_SECRET
-SISTER_BASE_URL             the sister's origin this process syncs with: required in production (the
-                            sister's production site, never sisters[0].baseUrl, which is its staging
-                            site); staging may leave it unset; a workstation may name a local sister
-                            at http://localhost:<port>; ignored, with a warning, by a brand with none
-REVALIDATE_SECRET  CRON_SECRET
-REVALIDATE_ORIGIN           http://127.0.0.1:<PORT> on a host (§2's app port): where a worker, a seed or an import posts
-                            cache invalidations (/api/x/revalidate), the web process on loopback; the IP literal, never
-                            localhost. Unset on a workstation (a loopback SITE_URL serves); https only off loopback
-LINK_TOKEN_KEYS             the capability links' key ring (C6 links), one per brand and per environment,
-                            never shared: comma-separated kid:secret (the one current key),
-                            kid:secret:YYYY-MM-DD (retired that UTC day; verifies LINK_TOKEN.keyOverlapDays
-                            more) and kid:revoked (refuses at once: a leak); secrets base64url — never
-                            standard base64's "+" or "/" — of ≥ 32 random bytes, made with
-                            node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"
-                            and never a pattern: a counter, a stride, zeros padding a short key, a block
-                            repeated; a kid is never reused; a restart applies a change
-LEGACY_DATA_DIR             workstations only: where the old site's raw extracts live
-```
+Live values reach each process through its own `shared/.env` — never the repository, a build argument, a log or a
+chat. **No `NEXT_PUBLIC_*` variable at all**: those are inlined at build, and one artifact serves staging and
+production, so public config (Midtrans's client key, Turnstile's site key, the Google Maps browser key) reaches
+the page at request time, in server-rendered props or from a runtime-config endpoint (SECURITY.md K2).
 
-**Which environment a process is in** is read from `SITE_URL` against the
-brand's `domains` (C1), never from `NODE_ENV` alone, because staging runs
-production builds (§1). The brand's production domain or an alias is
-**production**, its staging domain **staging**, and a dev server **local**. A
-production build is local only where it says so: at a loopback origin
-(`localhost`, `*.localhost`, `127.0.0.1`, `[::1]`) **and** with
-`LOCAL_PRODUCTION_BUILD=1` — how a worktree and CI open a production build on
-their own port, with draft configs and sandbox keys, the boot report warning all
-the same. A worktree's `.env.local` and CI's jobs set it; a host's `shared/.env`
-never does, and on a brand's own domain it is ignored. Every other production
-build — a loopback one without it, any other host, no usable `SITE_URL` — is
-refused and judged production, so the strictest rules apply to whatever it is:
-a staging host provisioned from `.env.example`, whose `SITE_URL` is loopback and
-whose secrets are development defaults, cannot start as a workstation would
-(TASKS.md 3.4, senior-be #1). `0.0.0.0` is a bind address, never an origin, and
-always production. Every host's `shared/.env` sets `SITE_URL=https://<its
-domain>`, and `/api/health` should report the environment judged, so the release
-flow's check at the brand's domain (§3) sees what the process decided (a
-follow-up for TASKS.md 4.1.b).
+| Variable | What |
+| --- | --- |
+| `GALLERY_HOSTS`, `SHOP_HOSTS` | each site's hostnames, comma-separated, the first canonical (§1) |
+| `ADMIN_HOST` | the one host serving `/admin` and Payload's REST (Payload's `serverURL`); default the shop's canonical host, the first of `SHOP_HOSTS` (`old-east-indies.gaiada.com` on staging); both answer 404 on the other host |
+| `DATABASE_URL`, `PAYLOAD_SECRET` | the one database; a secret per environment |
+| `RUN_MIGRATIONS` · `PAYLOAD_DEV_PUSH` | `1` in the web process on a host · `1` for a schema author's own database only |
+| `HOSTNAME`, `PORT` | `localhost` and the app port on a host (§3); `0.0.0.0` in CI; never a loopback IP |
+| `LOCAL_PRODUCTION_BUILD` | `1` in a worktree's `.env.local` and CI only (§7) |
+| `LOADERS_SOURCE` | `payload` (the default) or `fixtures`; fixtures are refused in production |
+| `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | the storage and the app's one key |
+| `S3_BUCKET`, `MEDIA_PUBLIC_URL`, `MASTERS_BUCKET` | the media bucket and its public origin; the private bucket |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM_GALLERY`, `MAIL_FROM_SHOP` | mail (§6) |
+| `MIDTRANS_MODE` | `simulate` selects the payment simulator, which needs no key: local (CI included) and staging only, refused in production (§7); unset, Midtrans runs on the keys below |
+| `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY` | `SB-Mid-…` sandbox keys off production, live keys in production only (COMMERCE.md §6) |
+| `ANTHROPIC_API_KEY`, `AI_CHAT_MODEL`, `AI_CLASSIFY_MODEL`, `AI_DRAFT_MODEL`, `AI_CHAT_EFFORT` | one key per environment, each in its own workspace with a spend limit (AI.md §1) |
+| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET` | bot protection on lead forms and the chat |
+| `GOOGLE_MAPS_BROWSER_KEY`, `GOOGLE_MAPS_SERVER_KEY` | the checkout's map and place search (the browser key, restricted by referrer to the shop's hosts, handed to the checkout page as a server-rendered prop) · `GET /api/x/geocode` (the server key, Geocoding only, never sent to a browser); a pair per environment, host-only (SECURITY.md S4) |
+| `CRON_SECRET`, `REVALIDATE_SECRET`, `REVALIDATE_ORIGIN` | §5; the invalidation secret; `http://127.0.0.1:4030` on a host, where jobs and imports post invalidations |
+| `LEGACY_DATA_DIR` | workstations only: the crawl and the owner's export, outside git (DATA.md §8) |
 
-**Provider secrets**, by the names the adapters read — declared in
-`@engine/config`'s `boot-check/provider-secrets.ts`, the seller and provider ids
-upper-cased with `-` as `_` (`SHIPPING_SG_DHL_EXPRESS_API_KEY`):
+*Reshape note:* `BRAND`, `BRAND_ROOT`, `TEST_STOREFRONT`, `SITE_URL`, `SISTER_*`, `LINK_TOKEN_KEYS`, the
+per-seller provider variables and the separate masters key go; `.env.example` lists exactly the table above.
 
-| Provider | Variables | Sandbox or live |
+## 9. Backups and restore
+
+| What | How | Kept |
 | --- | --- | --- |
-| payments (per seller) | PAYMENTS.md §8: `stripe`, `midtrans`, `xendit`, `paypal`, `doku` | the keys, or `PAYMENT_<SELLER>_<PROVIDER>_MODE` |
-| `biteship` (per seller) | `SHIPPING_<SELLER>_BITESHIP_API_KEY`, `_WEBHOOK_SECRET` | `SHIPPING_<SELLER>_BITESHIP_MODE` |
-| `dhl-express` (per seller) | `SHIPPING_<SELLER>_DHL_EXPRESS_API_KEY`, `_API_SECRET`, `_ACCOUNT_NUMBER` | `SHIPPING_<SELLER>_DHL_EXPRESS_MODE` |
-| `prodigi`, `gelato` (per brand, v2) | `FULFILMENT_PRODIGI_API_KEY`, `FULFILMENT_GELATO_API_KEY` | `FULFILMENT_<PROVIDER>_MODE` |
-| `bank-transfer`, `manual`, `flat`, `quote`, `collect`, `own-stock`, `local-production` | none | — |
+| The database | nightly `pg_dump --format=custom` at 19:40 UTC (03:40 WITA), checked with `pg_restore --list`, root-only, never half-written; refused under 10% free disk | 7 days on the host; 30 days off-box, encrypted (SECURITY.md BK1) |
+| Masters | versioning, plus replication to a second provider | forever |
+| `uploads/`, `orders/`, `imports/` | versioning, replicated with the masters | per COMPLIANCE.md §1; 30 days of versions |
+| Derivatives and tiles | not backed up | rebuilt from uploads and masters by a job |
+| Secrets | host-only `.env` on staging (D49); Infisical from production provisioning | — |
 
-A seller needs its own payment providers' secrets and its own couriers' — the
-brand's couriers when it names none (C1 `sellers[].shipping`) — and no other: a
-Singapore seller shipping its own stock by DHL Express needs no Biteship key. A
-`*_MODE` is `sandbox` or `live` — or, outside production, `simulate`. A missing
-secret refuses a deployed process and only warns a workstation; a key of the wrong
-kind refuses anywhere — production runs on live keys, staging and local on sandbox
-keys — and so does a seller whose keys for one provider mix the two.
-**`<PREFIX>_MODE=simulate`** stands in for a provider whose sandbox account the
-client has not handed over yet (OA14; the owner's call, 2026-10-01): no credential
-is read, the boot report warns, nothing may reach the provider — its adapter, when
-built, simulates the call — and production refuses it. Staging runs every provider
-simulated until its sandbox keys arrive; each then replaces its `simulate` line.
+- **The off-box target does not exist yet** (Open). The backup script hands each finished dump to
+  `/etc/indies/backup-offbox` when that is present, and fails the run if it fails, so the timer shows it.
+- **A backup that has never been restored is not a backup.** Before launch and then quarterly (SECURITY.md BK3):
+  restore the latest dump into a scratch database (`pg_restore --clean --if-exists -d indies_restore`), point a
+  release at it, compare record counts, open pages and images on both hosts, and write down how long it took.
+- **A real restore:** `pm2 stop uindies`; restore into a new database; switch `DATABASE_URL`; start; check
+  `/api/health` on both hosts; restore objects from their versions or the replica.
 
-**No `NEXT_PUBLIC_*` per brand.** Those are inlined at `next build`, and one
-gallery build serves several brands (and the artifact is built with none), so GA4
-and Meta ids are **runtime** brand config, handed to the page through `ShellVM`,
-and the CSP that allows them is built per request.
+## 10. Health and monitoring
 
-Live values go in Infisical and reach each process through its own
-`shared/.env`. **Never** in the repo, never in a build argument, never in chat.
-A sandbox key in production — or a live key in staging — fails the boot check.
+- **`/api/health`** reports the database, storage, queue lag and the environment judged, with no secret in its body
+  and one probe per check behind a five-second memo. The lag never gates its status: a failed check rolls a deploy
+  back.
+- **Alert on:** `/api/health` failing on either host; p95 above 1 s; the 5xx rate; disk above 80% (Helios reached
+  93% in September 2026); a pm2 restart loop; queue lag above 10 minutes; any webhook signature failure
+  (SECURITY.md W1); a failed backup; the AI's daily budget at 80% (AI.md §3.2); the Google Maps budget at 80%
+  (SECURITY.md S5).
+- **Next answers an undecodable path itself** (`%C0%AE`, `%FF`) with a bare 500 before any engine code runs. Count
+  the 500s whose path holds a `%` as their own series — ticketed, never paging, never dropped — so a scanner cannot
+  page anyone and a Next change still shows.
+- **The 30 days after the launch** (requirement 15.4): errors, payments (flagged, mismatched, late) and the chat's
+  blocked and refused sessions are reviewed daily, and every fix is logged.
 
-## 9. What needs the owner before it can happen
+## 11. Production outline
 
-Helios writes need the owner's explicit go-ahead **each time** (KOI memory);
-provisioning is an idempotent script, `scripts/ops/helios-provision.sh`, reviewed
-and then run with permission. Also needed: DNS for the staging and production
-hostnames, the object-storage account, SMTP credentials for each brand's domain
-(with SPF, DKIM and DMARC — `gaiada.com` publishes no DKIM, NOW! F140), and
-every payment/shipping merchant account.
+1. **Decide** (👤 owner): the host (Q13; by default the same pull pipeline and host family as staging) and its
+   storage capacity — the full archive with tiles outgrows staging's 50 GiB image; the off-box backup target; the
+   mail provider, with SPF, DKIM and DMARC on both domains; any CDN in front; each domain's aliases and canonical
+   form.
+2. **Accounts** (👤): Midtrans production, live keys only at go-ahead; an Anthropic production workspace with a
+   spend limit; Turnstile keys and the two Google Maps keys for the production hosts, with quota caps and a budget
+   alert (SECURITY.md S4–S5); one Infisical project with `staging` and `production` environments.
+3. **Provision** with `helios-provision.sh --env production` (or its port to another host), the dry run reviewed
+   first: site user, pm2 entry, port, database and role, buckets with policies and versioning, the crontab block,
+   backups with the off-box hook, an nginx `server_name` for every production host, TLS for each.
+4. **Load and verify before DNS**: the owner's data through the import (DATA.md §3), the images, the redirects;
+   every legacy URL requested against production with the real `Host` (`curl --resolve`), zero failures.
+5. **Cut over both sites together**, on one day (requirement 15.3), after the owner's written go-ahead: the TTLs
+   lowered two days before, both domains and the gallery's aliases pointed, health checked on each real hostname,
+   both sitemaps submitted. Rollback is pointing DNS back; the old sites are untouched.
+
+## Open
+
+- **Production hosting** (Q13; the launch order is answered: both sites together) — default: the same pull
+  pipeline and host family as staging (Helios), with RustFS on a dedicated volume sized for the archive, unless the
+  owner names another host; decided before the phase 10 rehearsal. *Owner, DevOps.*
+- **Production hostnames** — aliases (`www.`, `indiesgallery.com`) and the canonical form; default: the apex
+  canonical, the rest 301 to it. *Owner.*
+- **The production media origin** — default `/_media/` on the shop's canonical host, as on staging; a dedicated
+  media host behind a CDN if traffic asks for it. *Owner, DevOps.*
+- **An HTTPS storage host** for browser uploads straight to the bucket — default: none on staging, large handovers
+  by the intake CLI. *DevOps.*
+- **The off-box backup target and the second storage provider.** *Owner.*
+- **The production mail sender** (D13) — default: SMTP of the owner's mail domain, else a transactional provider.
+  *Owner.*
+- **Monitoring and error reporting** — default: an external uptime check on both hosts' `/api/health` every minute,
+  host alerts by email, structured logs; a hosted error reporter only with the owner's OK, as it is a processor
+  (COMPLIANCE.md §1). *Owner, DevOps.*

@@ -1,7 +1,5 @@
 # Research — the evidence behind the plan
 
-> **Background only.** Market research from the earlier plan; its references to MIGRATION.md, PAYMENTS.md and two brands are stale. Current decisions are in [PLAN.md](PLAN.md).
-
 Four research streams run on 2026-09-25, each against live sites, registries and
 primary sources rather than memory: the gallery benchmark (with a full audit of
 the live Indies Gallery store), the merchandise benchmark, the commerce platform

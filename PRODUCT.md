@@ -1,172 +1,115 @@
-# Product — the Indies Platform (shared engine and admin)
+# Product — Indies Gallery and Old East Indies
 
 <!-- impeccable:product-schema 1 -->
 
-This file covers what both brands share: the platform and **the admin**. Each
-storefront has its own brief — `engine/apps/gallery/PRODUCT.md` (Indies Gallery)
-and `engine/apps/emporium/PRODUCT.md` (Old East Indies). Drafted from research on
-2026-09-25; conformed to impeccable's product schema on 2026-10-01 (TASKS.md 6.1.a)
-against the decisions answered by then (TASKS.md, Decisions › Answered); the owner's
-interview answers folded in on 2026-10-01 (TASKS.md 6.1.f,
-`docs/design/journeys/owner-answers.md`, cited as **Gn / Sn**); the replan's decisions
-(D50–D56) folded in on 2026-10-01 (TASKS.md 6.6).
-
-**How to read the marks.** A statement with a source is a fact. The owner interview
-is answered; where an answer names something the owner still has to send, the
-storefront's brief marks it open, with its question number and what is still owed, and
-nothing is invented in its place. This file has no such mark.
+The product brief for both sites and the admin behind them. The spine is [docs/PLAN.md](docs/PLAN.md) (DR-1…DR-15);
+the owner's answers are [owner-answers.md](docs/design/journeys/owner-answers.md) (cited **G1–G15**, **S1–S15**).
+Behaviour: [EXPERIENCE-GALLERY.md](docs/EXPERIENCE-GALLERY.md), [EXPERIENCE-SHOP.md](docs/EXPERIENCE-SHOP.md),
+[CONTENT-OPERATIONS.md](docs/CONTENT-OPERATIONS.md); look: [DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md).
 
 ## Platform
 
-web
+web — one Next.js app with Payload, two hostnames, one admin at `/admin` (DR-1). Phone first.
 
 ## Users
 
-**Primary: the two companies' staff, working in the admin.** A cataloguer at
-Indies Gallery works through drawers of originals — maps, prints, photographs —
-entering title, maker, date, technique, dimensions, condition and references,
-often from the object in hand; there are ~9,500 in inventory and ~2,090 online
-today (MIGRATION.md §1). A shop manager at Old East Indies turns archive works into
-products, keeps the shop's one stock pool right — the showroom's, corrected from the sales
-and restocking that hundreds of partner shops across Bali report over WhatsApp (D52) — and
-answers WhatsApp. Managers answer the gallery's enquiries, issue its invoices from a phone
-and share their pay links into the buyer's chat (D50, D51), and handle partners'
-quotes. None of
-them are developers. **The admin is in English and Indonesian for every staff member**
-— not split by team; each user picks a language (G15). Who exactly does each job and
-how many people there are was not answered; the two observation sessions (OA13,
-TASKS.md 23.1.a) watch a real cataloguer and the real shop manager.
+**Indies Gallery** (`antiquemapsindonesia.com`, G1): **collectors** who read Latin and Dutch titles and want
+collation, state, condition and references before they talk price; **institutions** whose acquisitions offices
+write by email (none is named in public, G10); **interior designers, villas and hotels** buying by place, size and
+look; **heritage buyers** searching for the town their family knew, often under its old name; and **people who want
+to sell an antique** to the client (DR-4). Most land on one item page from search, on a phone.
 
-**Secondary: the buyers**, for whom the staff's work is the product — described
-in each storefront's brief.
+**Old East Indies** (`oldeastindies.com`): **Instagram visitors** on a phone inside the app's browser; **tourists in
+Bali** sending something to a villa before they fly; **residents and expats** buying for a home or a gift; **store
+walk-ins**, the main buyers today (S9); and **hotels, villas, cafés and shops** that want to resell or furnish with
+the client's goods (DR-8).
 
-**Third: a maintaining developer or agent** who did not build this and must add a
-field, a module, a provider or a third brand without archaeology.
+**The client's team in the admin** — the owner, editors, and staff in 100+ Bali stores who take orders on their
+phones (DR-10). None are developers. Each works in English or Indonesian (G15).
 
 ## Product Purpose
 
-One engine and one CMS for two sister companies that sell the same archive to
-two markets — originals to collectors and institutions, merchandise to tourists,
-expats, gift buyers and retail partners — with separate databases, sellers of
-record, payment gateways and accents. What the client asked for in its first form
-(design input, `project-notes.md`): sell online, look credible to serious buyers,
-explain what they actually do, **save admin time**, and bring old customers back. The
-shop sells online through its checkout; the gallery sells by conversation and takes
-payment online by a staff-issued invoice (D50). Success is **both sites filling up
-without developer help**, every one-of-one
-object selling exactly once, and every sale lawful where it is made.
+The web home of one owner's business, bridging it to the people who matter to it (DR-2).
+
+- **The gallery** shows antique maps, prints and photographs held in Singapore and Jakarta — a dealer trading
+  **since 2001**, holding **over 9,500 authentic antiques**, each original with **a certificate** from its curator,
+  Dr David E. Parry, under a **lifetime authenticity guarantee** (G6, G7, G13). It sells nothing online: every
+  original is "Price on request" and every sale is a conversation on WhatsApp or email (DR-3, G3, G4).
+- **The shop** is a real store for merchandise made from the archive: guest checkout in rupiah, delivery within
+  reach of the nearest store that has the items, by Gojek or Grab, and one tracking link (DR-5…DR-7).
+- **The AI guide** answers from the catalogue, hands visitors to the client with the item attached and records
+  leads; the admin's drafting tool turns photos into listings a person verifies (DR-9).
 
 ## Positioning
 
-Not two websites and not a marketplace: one archive, told twice. The gallery is
-the authority on the originals; the shop makes the archive affordable and
-giftable; each links to the other — the client asked for a two-way bridge between
-the sites (`project-notes.md`; BRANDS.md §5). A third site for the same client,
-Kingdoms of Indonesia, is **not** part of this platform and shares nothing with it
-(TASKS.md Log, 2026-09-28).
+One archive, told twice. The gallery is the authority on the cartography and imagery of the East Indies — deeper
+in this region than the international marketplaces, with a certificate no competitor offers and a dealer you talk
+to before you buy. The shop makes the same archive affordable and giftable: Indonesian archive imagery **with
+provenance** at lifestyle prices, each product linked to the original it reproduces. Each site links to the other.
 
 ## Operating Context
 
-The admin is where both products are actually made. Cataloguing accretes —
-a work is publishable with a title, object type, date (any precision), a place or
-maker and a primary image, and deepens later. Corrections are daily work: a
-misattributed maker, a better date, a new verso photograph. Merchandise is made
-in bursts: one engraving becomes a dozen products in one sitting. WhatsApp is a
-primary channel in Indonesia (RESEARCH.md §1.6–1.9, §3.2). The gallery sells by
-conversation — a call or WhatsApp to Singapore, then a staff-issued invoice paid online
-(D50) — and **replies the same working day, Singapore time** (G9). The shop's online
-shoppers message their own WhatsApp number, separate from the showroom's (S6; the
-number and its hours are still owed — the shop's brief marks them). Enquiries and
-orders arrive from several time zones (Singapore UTC+8, Jakarta UTC+7, Bali UTC+8 —
-EXPERIENCE-GALLERY.md §9).
+The gallery's sale closes off the site: a WhatsApp message, an email or a call to the client, who negotiates; the
+reply promise is **the same working day, Singapore time** (G9); shipping and duties are the buyer's, paid in full
+before sending (G11). The shop's sale closes on the site: Midtrans (QRIS, bank transfer, cards); the server picks
+the nearest store holding every item; the store books a driver and uploads the driver's details; the buyer follows
+the status. Online shoppers message their own WhatsApp number (S6). Real catalogue, stock and store data arrive
+later as spreadsheets; the sites are built on seed data first (DR-11).
 
-## Capabilities and Constraints
+## Brand Personality
 
-- Payload CMS 3 embedded in Next.js 16 apps, PostgreSQL 18, Node 22 on a shared
-  CloudPanel VPS (Helios), one process per brand, pull-based deploys.
-- One Payload config and one migration set for both brands; modules switch
-  capabilities on and off per brand without changing the schema (BRANDS.md §4).
-- Bilingual throughout (English and Indonesian; Dutch-ready). The default locale
-  is English for both, Indonesian at `/id/…` — D18's default, still open.
-- Purpose-built admin screens beside the standard collection UI: the desk,
-  fast cataloguing, bulk image upload, AI-assisted drafting (flagged,
-  human-verified; D16 open), the merch-from-work wizard, order operations, the
-  enquiries and holds inbox, the invoice a gallery sale ends in (D50; TASKS.md 24.5) —
-  due in three days unless staff set another date, its buyer reminded 24 hours before
-  (D45) — partner applications (D31), the shop's one stock pool and its showroom sales
-  (D52; TASKS.md 24.4.c), customer records, homepage editing with preview. No offers
-  inbox: neither brand takes online offers (D22).
-- **Customer sign-in exists only for the shop's approved partners** (D31). The gallery
-  has no sign-up, sign-in or account area (D54); the old site's customers become
-  staff-side customer records with no account and no claim email (MIGRATION.md §5), and a
-  request to see, correct or erase one's data is done by staff (COMPLIANCE.md §7).
-- **First-party analytics only, shown in the admin dashboard** (G12, D55; ANALYTICS.md,
-  phase 40): no GA4 and no Meta Pixel at launch, even after consent.
-- **Never imply certainty the record lacks**: dates carry precision,
-  attributions carry certainty, AI drafts stay flagged until verified.
-- Legal constraints are enforced, not documented: IDR-only for Indonesian
-  delivery, export-status gating for antiques held in Indonesia, payment caps,
-  separate consents (COMPLIANCE.md).
-- **Undecided, and owned by advisers rather than the owner interview:** the selling
-  entities and their tax registrations (D1, D2, D4), export clearance (D5), returns
-  wording (D11) — the owner intends no returns of originals (D56) and no refunds at the
-  shop (S12), and counsel is still to confirm either under UU 8/1999 art. 18 — Hofker
-  rights (D6); each has a default in TASKS.md, Decisions.
+**Shared:** exact, courteous, unhurried. Cormorant Garamond for display, Inter for reading (the design team's system; the client's liking for Karla is TASKS.md Q15)
+(DR-14). British spelling; Indonesian in the *Anda* register (DR-12, S15).
 
-## Brand Commitments
+- **Gallery:** a good dealer's letter — quiet, scholarly, super premium. The sheet leads; the interface recedes.
+  *Bahasa baku* in Indonesian.
+- **Shop:** a friendly shopkeeper who knows the archive — warm, sunlit, a little playful in headings, never in a
+  price or an error. Spoken, everyday Indonesian.
 
-- **One shared base, distinct accents (D9's shape, answered 2026-09-28):** both
-  sites share layout, components, buttons and type — **Cormorant Garamond + Karla**,
-  which the client asked to keep — and differ only in palette and signature details,
-  inside the token contract's overridable subset. The references are Etalage and
-  Everart, mixed, not copied; the owner's draft (`docs/design/input/claude-design-2026-09/`)
-  is the lead candidate, as draft input. The owner still picks the base candidate
-  and each brand's accents (D9, TASKS.md 13.1).
-- Each brand's admin wears its own storefront's accents (the KOI owner directive:
-  the CMS matches the public site's world) — chrome and accents only (TASKS.md 13.3).
-- Plain language on every screen a non-developer sees, in English and
-  Indonesian: "Web address", not "slug"; "What it depicts", not "places".
-- **British spelling** in English on both sites and in the admin; Indonesian in the
-  *Anda* register on both (British spelling: the owner's answer, 2026-10-01; *Anda*: the
-  shop's by the owner, S15, the gallery's in its voice, docs/design/gallery/voice.md).
-- **No VOC imagery beyond the items themselves**, on either brand (S15 and the
-  gallery's matching answer, 2026-10-01).
-- Status is shown as form and colour and text — never colour alone.
+## Anti-references
 
-## Evidence on Hand
+- The vintage-poster print-on-demand look (Art Deco travel posters, stock "retro" type).
+- Colonial nostalgia: VOC emblems, *tempo doeloe*, "the exotic Orient" — **no VOC imagery beyond the items
+  themselves**, on either site.
+- Dealer sites that oversell ("a stunning rare treasure"), and marketplace clutter around a one-of-one object.
+- Gold-on-black "luxury" templates; default theme storefronts; carousels as a home page.
+- Invented urgency — countdowns that reset, "12 people are looking", exit pop-ups.
+- The current state of the shop: a Linktree, a WhatsApp catalogue and PDFs on Drive.
+- References to *mix, not copy*: Etalage (detailed showcase catalogue), Everart (consistent framed catalogue,
+  complete filters).
 
-- The live Indies Gallery store's catalogue shape, category tree, fields and URLs,
-  as measured from its public pages (MIGRATION.md §1), and four research streams
-  (RESEARCH.md). The old catalogue export itself is outstanding (OA9; D42's mock
-  dump stands in).
-- The owner's first design draft and the client's decisions of 11 Sept 2026
-  (`docs/design/input/claude-design-2026-09/`, `project-notes.md`) — draft input:
-  its copy (years in trade, prices, production claims) is not confirmed fact, except
-  where an interview answer confirms it ("since 2001", G13; free shipping over
-  Rp 500.000, S13).
-- The owner's interview answers of 1 October 2026
-  (`docs/design/journeys/owner-answers.md`).
-- **Absences that must not be invented:** the selling entities and their tax
-  registrations; real prices for merchandise (the price list is still owed, S2); the
-  grading scale's wording; the returns policy (counsel's, D11 — the owner's intentions,
-  D56 and S12, are not yet confirmed); Hofker rights; photography of the showroom; the
-  staff roster.
+## Success Measures
+
+Measured in the first-party analytics in the admin dashboard (DR-13, G12).
+
+| Area | Measure |
+| --- | --- |
+| Gallery | item views that end in a WhatsApp, email or chat handoff; leads answered within the reply promise; sold pages still drawing visits and handoffs |
+| Shop | Instagram visitor to paid order in **under 3 minutes**; checkout completion inside in-app browsers; paid orders accepted by a store within 30 minutes of opening |
+| AI | chats that end in a handoff or a lead; **no price quoted, no deal agreed** by the guide — ever (AI.md) |
+| Admin | the timed-test targets in CONTENT-OPERATIONS.md §7 met by people who never saw the admin; both sites filling up without developer help |
+| Quality | WCAG 2.2 AA at 390 and 1280; LCP under 2.5 s on a mid-range Android over 4G |
 
 ## Product Principles
 
-1. **The admin is half the product.** If cataloguing or making merchandise is
-   slow, neither site fills up — and the client asked, in its own words, to save
-   admin time.
-2. **Correcting is as cheap as creating.**
-3. **A one-of-one object sells once** — through every channel, guaranteed by the
-   database.
-4. **Never imply certainty the record lacks.**
-5. **A brand is configuration, never code.**
+1. **The object leads.** Never crop a sheet; collation before persuasion.
+2. **The conversation is the sale** on the gallery — WhatsApp and email are the path, not a fallback.
+3. **Short and certain** on the shop — few steps, a clear fee, a status the buyer can follow.
+4. **Never imply what the record lacks** — dates carry precision, attributions certainty, AI drafts stay marked
+   until a person accepts them.
+5. **The admin is half the product** — the client asked, in his own words, to save admin time.
+6. **Ordinary where it can be** — Payload's built-ins first; effort goes to the AI, ease of use, safety and design.
 
 ## Accessibility & Inclusion
 
-WCAG 2.2 AA is an acceptance criterion for the admin as much as the storefronts:
-keyboard-complete screens, visible focus, AA contrast validated in code, 44 px
-touch targets, `prefers-reduced-motion` honoured. Cataloguers work long sessions,
-so contrast, density and target size are ergonomic requirements, not only
-compliance ones.
+WCAG 2.2 AA is acceptance for both sites and the store staff's screens: keyboard-complete, visible focus, status as
+text, 44 px touch targets, `prefers-reduced-motion` honoured absolutely, tested in the Instagram, WhatsApp and TikTok
+in-app browsers. English and Indonesian throughout; dimensions in cm and inches; no dark mode (DR-14).
+
+## Evidence on Hand
+
+The owner's answers of 1 October 2026; the client's first form and the decisions of 11 September 2026
+(`docs/design/input/claude-design-2026-09/project-notes.md`); the owner's design draft (draft input — its copy is not
+fact unless an answer confirms it); the 1,823 crawled gallery records (DR-11). **Not to be invented:** prices and the
+product list (S1, S2), store addresses and hours, the WhatsApp numbers and reply hours (S6), the welcome code's value
+(S13), the condition-grade wording, the guarantee and any returns or refund wording (counsel), testimonials.

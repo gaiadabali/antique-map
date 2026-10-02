@@ -1,508 +1,256 @@
 # Content model
 
-Every collection below is a Payload 3 collection in **each** brand's database,
-with **one schema for both** (BRANDS.md §6): a module that is off hides its
-collections in the admin and its routes on the site, but never removes a table.
-User-facing text fields are **localised** (`en` default, `id`; `nl`-ready) and
-carry `translationStatus` (`entered` · `machine` · `reviewed`) — machine
-translation is allowed, and shown to editors as such until reviewed (KOI).
+**Purpose:** every Payload collection and global, its key fields, relations, languages, who may read and write
+it, and what must be true before it publishes. This file is also the glossary: the names below are used
+everywhere, exactly. How orders and stock move is [COMMERCE.md](COMMERCE.md); analytics events are
+[ANALYTICS.md](ANALYTICS.md); how spreadsheets are loaded is [DATA.md](DATA.md) (this file defines the columns it
+maps to, §8).
 
-This file is also the **glossary**: *work*, *product*, *variant*, *design*,
-*hold* and *checkout lock* mean exactly what is written here, everywhere — and so,
-for images, do *capture*, *master*, *print file*, *role*, *provenance* and *primary*
-(§1, §6).
+## 1. Ground rules
 
-**Drafts are Payload's `_status`, and only that.** A document is a draft or
-published through Payload's versions; no collection carries a second "draft"
-value in its own status field. Every public read — loaders and the sister API —
-filters `_status: 'published'`, passes `overrideAccess: false` and selects only
-the fields its view model needs (ARCHITECTURE.md §12).
+- **One database, one schema** (DR-1). A record that belongs to one site carries `site` (`gallery` | `shop`); the
+  hostname picks the site, and every public read filters by it.
+- **Drafts are Payload's `_status`, and only that.** Collections with drafts: `works`, `products`, `makers`,
+  `places`, `terms`, `pages`. No status field holds a second "draft" value.
+- **Public reads are published-only and projected**: `overrideAccess: false`, `_status: 'published'`, and a
+  `select` of the fields the page shows. Fields marked *staff* below are never selected by a public read.
+- **Languages** (DR-12): `en` is the default and required where a field is required; `id` is optional and falls
+  back to `en`. Localised fields are marked **L**. Each localised collection has `translationStatus` per locale
+  (`entered` · `machine` · `reviewed`, staff only) — machine translation is allowed and shown as such to staff.
+- **Slugs** are one string for every locale (never localised), lower-case ASCII kebab-case, made once from the
+  English title on first save and **never re-derived on edit**; staff may set one by hand. Unique per collection
+  and site. A changed slug writes a `redirects` row.
+- **Money** is an integer in minor units. For rupiah the minor unit is one rupiah (Rp 95.000 is `95000`).
+- **Long text** is Payload's rich text (Lexical) with a restricted feature set: headings, paragraphs, lists,
+  links, bold/italic, and an inline image from `media`. No raw HTML, no embeds.
+- **Guards run on every write path** — admin, REST, import, seed. Publish guards live in a `beforeChange` hook,
+  because access control alone cannot protect the draft → published transition.
 
-### The frozen slug list
-
-Collections relate to each other across tasks that run in parallel, so every
-slug exists from the Foundation stage as a **stub** in a registry the SCH lead owns (TASKS.md
-3.2.e): hidden in the admin, readable by admins only, writable by nobody — a table
-with an id and timestamps in the first migration, which the owning task's wave
-widens with columns, additively. Each slug has its own folder,
-`collections/<slug>/`, that its task fills in (PARALLEL-TRACKS.md §1); tasks fill in
-fields, never invent slugs. Slugs are kebab-case:
-
-`users` · `customers` · `addresses` · `saved-items` · `want-lists` ·
-`subscribers` · `reviews` · `makers` · `places` · `terms` · `sources` ·
-`curations` · `works` · `designs` · `products` · `product-types` · `variants` ·
-`locations` · `stock-levels` · `media` · `masters` · `stories` · `pages` ·
-`exhibitions` · `redirects` · `carts` · `reservations` · `orders` ·
-`payment-attempts` · `refunds` · `shipments` · `returns` · `offers` ·
-`enquiries` · `consignments` · `appointments` · `invoices` · `discounts` ·
-`gift-cards` — and the globals `brand-settings` · `navigation` · `homepage` ·
-`commerce-settings` · `consent` · `seo-defaults` · `room-plates` (added
-2026-10-01 by TASKS.md 6.2.e, before any global is built: SCH registers its stub
-beside the others, §6).
-
----
-
-## 1. The spine: works and products
-
-**A work is the object. A product is how it is sold.** The 1726 Valentijn map of
-Bali is a work; the original on offer at the gallery is one product; the giclée
-print and the tote bag made from it at the merch shop are others.
+## 2. One-glance overview
 
 ```
-                 ┌──────── Indies Gallery DB ────────┐      ┌──── Old East Indies DB ────┐
-makers ─┐        │                                   │      │                            │
-places ─┼─→   works ───1:1──→ products (original)    │ sync │ works (provenance copy)    │
-sources ┘        │   └─ sameEdition → other copies   │ ───→ │   └─→ designs ─→ products  │
-                 │                                   │      │         (crops)   └ variants
-                 └───────────────────────────────────┘      └────────────────────────────┘
+ GALLERY                                          SHOP
+ makers ─┐                                         terms(category) ─→ products ─┬─ variants[] (rows)
+ places ─┼─→ works ◄──────── relatedWork ──────────────────────────────────────┘     │
+ terms ──┘   │  (subject, technique, grade)                                         │
+             └─ images[] ─→ media ─→ masters (private)   stores ◄── stock-levels ───┘ (store × product/variant)
+                               ▲                           ▲  ▲
+           products.images ────┘                           │  └─ users (role store → one store)
+                                                           │
+ leads ◄── chat-sessions        orders ── assigned store ──┘ ── payment-events (Midtrans ledger)
+   │  (kind ask|sell|partnership|contact|chat)  │ └─ status history, driver image, tracking token
+   └─→ item (works | products)                  └─ discounts (welcome code)
+ partners ─→ products carried     pages · redirects · events (analytics) · site-settings (global)
 ```
 
-### Works
+## 3. Catalogue
+
+### `works` — admin label **Antiques** (gallery)
 
 | Field | Type | Notes |
-| ----- | ---- | ----- |
-| `workUid` | text, unique, immutable | e.g. `<prefix>-000123`, the prefix from brand config — the stable id sister sync and redirects key on |
-| `stockNumber` | text | the gallery's `M.1044` / `P.2098` / `F.…` numbers, preserved from the old site |
-| `title` | localised text | the **hook title** buyers read: "Bali by François Valentijn, 1726 — the first large-scale map of the island" |
+| --- | --- | --- |
+| `stockNumber` | text, unique, required | as the gallery writes it: `M.1044`, `P.2098`, `F.…`; trimmed, case kept. The import's key |
+| `publicId` | integer, unique, required | the old site's product id for a migrated work, otherwise a number from a sequence starting at 100000 (DATA.md §3); part of the item's address, `/product/{publicId}-{slug}` (ARCHITECTURE.md §5) |
+| `title` **L** | text, required | the title buyers read: "Bali by François Valentijn, 1726" |
 | `originalTitle` | text | diplomatic transcription: *Kaart van het Eyland Bali* |
-| `objectType` | select | `map` · `sea-chart` · `city-plan` · `view` · `print` · `photograph` · `book` · `atlas` · `poster` · `document` · `ethnographic` · `other` — drives HS code and behaviour |
-| `makers` | array `{ maker → makers, role, certainty }` | role: cartographer · engraver · publisher · author · artist · photographer · studio · printer; certainty: `certain` · `attributed` · `after` · `workshop` |
-| `date` | group `{ from, to, precision, display }` | precision: `exact` · `circa` · `before` · `after` · `range` · `unknown` — **never implied certain** |
-| `firstEdition`, `dateOnPlate` | dates, same shape | collation (Sanderus model) |
-| `publication` | group `{ place, publisher, sourceWork, edition, state, textLanguage, verso }` | "From: *Oud en Nieuw Oost-Indiën*, 1724–26" · "Verso: blank" |
-| `book` | group (books and atlases) `{ binding, pagination, plates, completeness, openings[] }` | a volume's collation; `openings` are image refs of spreads |
-| `technique` | select (controlled) | woodcut · copperplate engraving · etching · steel engraving · lithograph · chromolithograph · aquatint · albumen print · gelatin silver print · collotype · photogravure · manuscript… |
-| `colour` | select | `publisher's` · `original-hand` · `old-hand` · `later` · `printed` · `uncoloured` |
-| `dimensions` | group `{ image{h,w}, sheet{h,w}, framed{h,w,d} }` in mm | inches are **derived**, never typed |
-| `places` | array `{ place → places, role }` | one `primary` + capped secondaries; role: `depicts` · `published-at` · `photographed-at` |
-| `subjects` | relationship → terms (subject) | Wayang, Batik, Temples, Spices, VOC, Costume… |
-| `description` | blocks (C4) | the essay |
-| `references` | array `{ source → sources, ref, note }` | "Tooley (Australia) 1268", Koeman, **Parry** numbers |
-| `provenance` | array `{ holder, period, note }` | |
-| `condition` | group `{ grade → terms (grade), notes, defects[], restoration }` | the grade is a **vocabulary term**, not a select — each brand's published scale (IG: VG+ · VG · G+ · G · Fair · As-is, each with a definition and an A–D equivalent) lives in data, so two scales never become one shared enum |
-| `images` | array `{ media → media, caption }` | the role is the media's own (`media.role`, §6), one of C9 `WORK_IMAGE_ROLES`: `recto` · `verso` · `detail` · `raking` · `transmitted` · `framed` · `in-room` · `scale` — the row only orders and captions it; the page shows them in C9 `orderImages()` order. **The primary is the first photographed `recto`** (C9 `primaryImageIndex()`): the recto's capture cropped outside the sheet, never into it — never a photograph of its own, a detail or a synthetic image, and `primary` is no image's role. Every image of condition (`recto` · `verso` · `detail` · `raking` · `transmitted`, C9 `CONDITION_ROLES`) is a photograph, never retouched; only an `in-room` view may be a composite or a render — labelled, never first — and nothing on a work is AI-generated (C9 `provenanceAllowed()`, `docs/design/imagery/retouching-and-labelling.md` §5). A migrated item's one legacy image is its `recto` — assessed (intake verdict `legacy`), never rejected, "in its mat" where it shows the mat — so every migrated item can publish (`docs/design/imagery/intake-spec.md` §8) |
-| `master` | relationship → masters | the capture reproductions are made from — the recto's master, or a better scan of the recto (a sectioned or professional one); its object box bounds every design's crop (§2), and a design's print ceiling comes from that crop, never from this file's long edge |
-| `physical` | group (IG only, **never synced**) | `location` (→ locations), `exportStatus` (`cleared` · `domestic-only` · `permit-pending` · `not-applicable`), `acquisition` (source, cost, consignor, date — private), `coaIssued`. **No defaults**: a blank location or export status makes the item routable to no destination — it publishes as enquiry-only (COMMERCE.md §2). `not-applicable` (held outside Indonesia) must be set explicitly, from the owner's item register. |
-| `rights` | group `{ status, holder, licenceRef, territories, expires, printAllowed }` | a reproduction cannot publish if `printAllowed` is false (COMPLIANCE.md §8) |
-| `sameEdition` | relationship → works (hasMany) | "another example of this map" for sold-archive alternatives |
-| `origin` | group `{ brand, workUid, syncedAt }` | set on provenance copies; synced fields are read-only there (BRANDS.md §5) |
-| `cataloguing` | group `{ status, cataloguer, verifiedAt, aiDraft }` | `draft` · `catalogued` · `verified`; AI-drafted fields stay flagged until a human verifies them |
-| `legacy` | group `{ id, sku, url, categories[] }` | from the migration; `legacy.id` is the public product id (MIGRATION.md §6) |
-| `seo` | group | title / description / image overrides |
+| `slug` | text | §1 |
+| `objectType` | select, required | `map` · `sea-chart` · `city-plan` · `view` · `print` · `photograph` · `book` · `atlas` · `poster` · `document` · `other` |
+| `makers` | array `{ maker → makers, role, certainty }` | role: `cartographer` · `engraver` · `publisher` · `author` · `artist` · `photographer` · `studio` · `printer`; certainty: `certain` · `attributed` · `after` · `workshop` |
+| `date` | group `{ from, to, precision, display }` | precision: `exact` · `circa` · `before` · `after` · `range` · `unknown` — a date is never implied certain; `display` ("1724–26") wins over the formatter |
+| `places` | array `{ place → places, role }` | the first row is the primary place; role: `depicts` · `published-at` · `photographed-at` |
+| `technique` | → terms (`technique`) | engraving, lithograph, albumen print… |
+| `colour` | select | `original-hand` · `later-hand` · `printed` · `uncoloured` · `unknown` |
+| `dimensions` | group `{ image {h, w}, sheet {h, w} }`, mm | inches are derived on the page, never typed |
+| `condition` | group `{ grade → terms (grade), notes L }` | the grade is the gallery's published scale (VG+ · VG · G+ · G · Fair · As-is), each term with its definition |
+| `subjects` | → terms (`subject`), many | Wayang, Batik, Temples, Spices, VOC… |
+| `description` **L** | rich text | the essay |
+| `references` | array `{ citation, note }` | "Tooley (Australia) 1268", Parry numbers — text, as catalogued |
+| `images` | array `{ media → media, caption L }` | roles and the primary: §5 |
+| `status` | select, required | `available` · `on-hold` · `sold` — set by staff; default `available` |
+| `location` | select, required | `singapore` · `jakarta` (G2) |
+| `askingPrice` | group `{ amount, currency }` | **owner only** (read and write) — the start of a negotiation and the insured value. Never on a page, a feed, structured data, an event or an AI answer (DR-3, G4) |
+| `aiDraft` | group `{ fields[] { path, state, model, promptVersion, at, verifiedBy, verifiedAt }, runs[] }` *staff* | what the drafting tool filled (AI.md §5); `state` is `drafted` until a person ticks **Verified** |
+| `legacy` | group `{ id, url }` *staff* | the old site's product id and URL — the redirect source (DR-11) |
+| `seo` | group `{ title L, description L }` | overrides; the image is always the primary |
+| `notes` | textarea *staff* | internal |
 
-### Products
+### `products` (shop)
 
 | Field | Type | Notes |
-| ----- | ---- | ----- |
-| `publicId` | integer, unique | the id in `/product/{id}-{slug}`; legacy ids preserved |
-| `slug` | localised text | derived once from the title, **never re-derived on edit** (NOW! S1 lesson) |
-| `title` | localised text | defaults from the work or design |
-| `kind` | select | `original` · `edition` · `reproduction` · `merchandise` · `book` · `service` · `gift-card` |
-| `inventoryModel` | select | `unique` · `edition` · `stocked` · `made-to-order` · `pod` · `service` (COMMERCE.md §4) |
-| `work` | → works | required for `original`; `design` required for `reproduction`/`merchandise` |
-| `design` | → designs | |
-| `productType` | → product-types | reproductions and merchandise |
-| `status` | select | `available` · `not-for-sale` · `archived` — drafts are Payload's `_status`; *on hold* and *sold* for unique items are **derived** by the availability machine from reservations (COMMERCE.md §6), never typed |
-| `pricing` | group `{ mode, base (Money), marketPrices[], multiplier, offerFloorPct }` | mode: `fixed` · `on-request` · `offer-only`; `offerFloorPct` private. Where the brand's unique prices are on request (C1 `commerce.uniquePrices`, the gallery: D50) a unique product's `base` is the **private asking price** — staff's, shown in the admin and the order builder, the insured value — and no public read selects it, whatever its `mode`; the importer sets `on-request` on every original it loads |
-| `purchaseModes` | derived | from tier + status + modules + `commerce.uniquePrices` (COMMERCE.md §7) |
-| `shippingProfile` | select | COMMERCE.md §8 |
-| `taxClass` | select | `standard` · `zero` · `exempt` |
-| `hsCode` | text (derived, overridable) | from object type and age, or the product type |
-| `badges` | multi-select | `hero` · `printed-in-bali` · `limited-edition` · `new` (derived from `publishedAt`) |
-| `channels` | multi-select | `web` · `showroom` · `marketplace` — originals can never be `marketplace` |
-| `images` | array `{ media → media, caption }` | every kind but `original`: the media's role is one of C9 `PRODUCT_IMAGE_ROLES`, in the product page's order — `in-room` · `flat` · `detail` · `lifestyle` · `scale` · `packaging` · `showroom` (EXPERIENCE-SHOP.md §4); the page leads with its first photographed `in-room` or `flat` image, and with a labelled mockup only until one exists (C9 `primaryImageIndex()`); any image may be synthetic, labelled. **An original has no images of its own** — it shows its work's, so its primary is its work's recto. Requirement 7.12's launch set (`flat`, `in-room`, `detail`) is a launch report, not a publish guard |
-| `variants` | join ← variants | |
-| `seo` | group | |
+| --- | --- | --- |
+| `sku` | text, unique, required | the import's key; also the SKU of a product without variants |
+| `name` **L** | text, required | |
+| `slug` | text | §1 |
+| `description` **L** | rich text | |
+| `category` | → terms (`category`), required | prints, stationery, homeware, gifts… |
+| `images` | array `{ media → media, caption L }` | §5 |
+| `price` | integer IDR, required, > 0 | the one list price; priced on the server only (COMMERCE.md §2) |
+| `variants` | array `{ sku (unique across all products), label L, price?, active }` | optional: "A3", "Indigo". A variant without its own price takes the product's |
+| `relatedWork` | → works, optional | "See the original" — shown only while that work is published |
+| `seo` | group `{ title L, description L }` | |
 
-## 2. Merchandise: designs, product types, variants, stock
+Availability is never typed on a product: it is read from `stock-levels` (COMMERCE.md §4).
 
-### Designs
+### Vocabularies
 
-A design is **a treatment of a work** made for reproduction: the whole sheet, or
-a crop ("Batavia harbour" from a larger plan), cleaned and colour-managed.
+| Collection | Key fields | Notes |
+| --- | --- | --- |
+| `makers` | `name`, `sortName` ("BLAEU, Willem Janszoon"), `slug`, `aliases[]` (Valentyn, Valentijn), `roles` (the list above), `born`/`died` `{ precision, from, to, display }`, `nationality` **L**, `bio` **L** rich text, `portrait` → media, `sameAs[]` (Wikidata, ULAN; https only) | a maker page per maker |
+| `places` | `name` **L**, `slug`, `type` (`region` · `country` · `island-group` · `island` · `province` · `kingdom` · `city` · `town` · `sea` · `strait` · `ocean`), `parent` → places, `historicalNames[] { name, language, period }` (Batavia, Iava, Celebes), `geo { lat, lng, bbox }` (WGS 84) | the gazetteer; search finds a place under every historical name; no cycles in `parent` |
+| `terms` | `kind` (`subject` · `technique` · `grade` · `category`, fixed once created), `label` **L**, `slug` (unique within its kind), `position`, and for a grade `definition` **L** + `equivalent` (A–D) | `category` serves the shop; the rest the gallery |
 
-`work` (→ works) · `title` · `crop` `{ x, y, w, h, rotation }` — in the pixels of
-the work's `master`, inside its object box, so a print never carries the
-background, the colour card or the ruler; the whole sheet is the object box itself ·
-`printFile` (→ masters, `kind: print-file`: a colour-managed file under the
-`print-files/` prefix — a derived copy, never the capture restored in place) ·
-`restoration` `{ steps, note, restoredBy, restoredAt }` — what was done to the print
-file: `steps` from C9 `PRINT_RESTORATIONS` (foxing and stains · folds and creases ·
-tears closed · losses filled · tone rebalanced · paper neutralised · digitally
-coloured · sheets joined), `note` localised; no steps is a print from the scan as it
-is. Every product made from the design says it beside the Reproduction label, in the
-lexicon's words, and its "The original" block shows the untouched photograph beside
-it (`docs/design/imagery/retouching-and-labelling.md` §2) · `aspect` · `printCeiling`
-(derived from **the crop's own long edge in the master's pixels** at the product
-types' minimum ppi — C9 `printCeilingOf()` — never from the master file's long edge,
-which also holds the background, the card and the ruler, and never from the print
-file's pixel count, which a resample could inflate; enforced in phase 15, TASKS.md
-15.4) · `story` (short, localised — the 100–150-word PDP story) · `archiveNumber`
-(shown on every product, the provenance tag) · `status`.
+Reshape note: the code's `terms` kinds (`mood`, `room`, `occasion`, `recipient`) and the `sources` collection give
+way to `technique`, `category` and text references.
 
-### Product types
+## 4. Shop operations
 
-The template that turns a design into sellable variants, so a print is never
-sixty hand-made variants.
+| Collection | Key fields | Notes |
+| --- | --- | --- |
+| `stores` | `code` (unique, required — the import's key), `name`, `address`, `area` ("Ubud"), `lat`, `lng` (required, decimal degrees, inside Indonesia), `whatsapp` (+62…), `hours` **L** (text), `images[]` (role `showroom`, photographs only), `active`, `notes` *staff* | an inactive store is never assigned an order |
+| `stock-levels` | `store` → stores, `product` → products, `variantSku` (null for a product without variants), `quantity` (integer ≥ 0): what the store can still sell — its physical count less the units held by its orders in `pending_payment`, `paid`, `processing` or `waiting_driver` | unique `(store, product, variantSku)`. Written by the atomic decrement and its release (COMMERCE.md §4); a staff count or the stock import enters the physical count and the server stores count − held (DATA.md §3), so a count never re-sells a held unit |
+| `orders` | `number`, `site` (`shop`), `lines[]` (snapshots), `contact`, `delivery { address, notes, lat, lng }`, `store` → stores, `distanceKm`, totals, `discount`, `status`, `history[]`, `driverImage`, `payment`, `trackingTokenHash`, `expiresAt` | the full shape and its rules are COMMERCE.md §8. Written only by the server's order code and the staff actions it allows |
+| `payment-events` | `provider` (`midtrans`), `dedupeKey` (unique), `order` → orders, `transactionStatus`, `fraudStatus`, `grossAmount`, `source` (`webhook` · `reconcile` · `simulate`), `outcome`, `payloadHash`, `receivedAt` | append-only ledger (COMMERCE.md §6); the payload itself is never stored or logged. Nobody edits a row |
+| `discounts` | `code` (unique, stored upper-case), `kind` (`percent` · `fixed`), `value`, `minSpend`, `oncePerBuyer`, `startsAt`, `endsAt`, `usageLimit`, `usedCount` (server only), `active` | the welcome code (S13). Free shipping is a setting, not a discount |
+| `partners` | `name`, `kind` (`hotel` · `shop` · `restaurant` · `other`), `site`, `contact { person, whatsapp, email, phone }`, `address`, `terms` (textarea — negotiated case by case, S5), `productsCarried` → products (many), `status` (`prospect` · `active` · `paused` · `ended`), `notes` | records only, no login (DR-8) |
 
-`name` ("Giclée print", "Poster", "Postcard set", "Tote") · `axes`
-(`format` · `size` · `paper` · `frame` · `mount` · `glazing` · `colour` ·
-`apparelSize`, each with options) · `priceTable` (option combination × market →
-price) · `constraints` (mount only with frame; glass only for pickup or Bali
-delivery; size ≤ the design's print ceiling at `minPpi`) · `fulfilment`
-(route per destination: own stock / local made-to-order / POD provider + SKU
-template) · `shippingProfile` · `hsCode` · `materials` (localised copy) ·
-`roomView` (a wall-art type: the configurator's On-a-wall view and the wizard's
-mockups hang it in the one shared plate set, the `room-plates` global, §6 — a type
-has no plates of its own, so the earlier per-type `mockupScenes` is gone).
+## 5. Images: media and masters
 
-Generating variants from a design and a product type is an **admin tool**
-(PLAN.md, the Admin stage), not a manual process.
+**The words.** A **capture** is a file as a camera or scanner made it, kept privately as a **master**. The
+**media** record is the public image processed from it — colour-corrected, straightened, cropped outside the
+object — from which the derivatives and deep-zoom tiles are made. An image's **role** says what it is and its
+**provenance** how it was made; both are set once, at intake, on the master and its media alike.
 
-### Variants
+**`media`** — `alt` **L** (required, not blank, ≤ 500 characters), `altSource` (`baseline` · `cataloguer` ·
+`ai-draft`), `caption` **L**, `credit`, `licence`, `role` (required), `provenance` (required, **no default**),
+`master` → masters (*staff*), focal point, and the pipeline's read-only `assetId`, `derivatives { status,
+version, blurDataUri }` and `iiif { status }` (deep zoom). `role` and `provenance` never change after creation.
 
-`product` · `options` (axis → value) · `sku` (`artwork × format × size × frame ×
-mount`) · `marketPrices` (explicit, when the table is overridden) · `weight`,
-`dimensions` · `barcode` · `fulfilment` `{ model, provider, providerSku }` ·
-`active`.
+- **The upload is never public.** It lands under the private `uploads/` prefix; the public reads only
+  `derivatives/` and capped `iiif/` tiles, written without camera metadata. A public REST or GraphQL read of
+  `media` is refused: images are reached through the published record that places them.
+- **Alt text** has a deterministic baseline built from the record ("Engraved map of Bali by François Valentijn,
+  1726, hand-coloured, recto"), which can publish; staff improve it. An `ai-draft` alt cannot publish until a
+  person verifies it.
+- **A synthetic image is labelled at render, from `provenance`** ("Digital mockup", "AI-generated image") — on
+  the image, at the start of the rendered alt and in the caption. The label is never stored in `alt`.
 
-### Stock
+| Subject | Roles, in page order | Provenance allowed |
+| --- | --- | --- |
+| work | `recto` · `verso` · `detail` · `raking` · `transmitted` · `framed` · `in-room` · `scale` | photographs only, except an `in-room` view, which may be a labelled composite or render and is never first. **Nothing AI-generated on a work**; the images of condition (`recto` to `transmitted`) are never retouched |
+| product | `in-room` · `flat` · `detail` · `lifestyle` · `scale` · `packaging` | any, labelled; photographs sort before mockups within a role |
+| store | `showroom` | photographs only — they prove the place is real |
+| other | `editorial` (a story image, a banner, a maker's portrait) | any, labelled |
 
-- **`locations`** — the gallery's Jakarta gallery and Singapore storage (they route an
-  original's seller, COMMERCE.md §2); the shop's **one** at launch, the Denpasar
-  showroom, which holds its whole stock pool (COMMERCE.md §4 — the Bali partner shops
-  become locations in the point-of-sale phase, with no migration); and a virtual
-  `print-on-demand` for when POD opens: address, published opening `hours` (the
-  showroom's, S4 — empty until the owner gives them, and the page then says
-  "message us before you visit"), `contact { phone, whatsapp }` — the place's own
-  numbers, which the Visit page and a pickup's instructions show (S6: the
-  showroom's WhatsApp is not the online shop's, C1 `identity.contact`) — `pickup`
-  flag, the seller it belongs to, and `images` `{ media → media, area, caption }` — the place as a
-  visitor meets it, each media of role `showroom` (C9 `LOCATION_IMAGE_ROLES`), each
-  row's `area` one of C9 `LOCATION_IMAGE_AREAS` (street · entrance · wide · wall ·
-  counter · vignette · making) and shown in that order, so the visit band and a
-  pickup's instructions lead with the entrance. Photographs only, never a mockup
-  (C9 `provenanceAllowed()`: the photographs are the shop's proof that the place is
-  real).
-- **`stock-levels`** — `variant × location`: `onHand`, `reserved` (changed only by
-  `reserve()`), `reorderPoint`.
-- **`inventory_movements`** (engine table, append-only) — every change with its
-  reason: sale, return, count, transfer, damage.
+**The primary** a page leads with (its LCP, card and social image): for a work, its first photographed `recto`
+— never a detail or a synthetic image; for a product, its first photographed `in-room` or `flat`, else its first
+image in page order. A migrated item's one legacy image is its `recto`.
 
-## 3. Discovery vocabulary
+**`masters`** — a plain collection (not an upload collection), one record per private file: `kind` (`capture`),
+`storageKey` (unique), `checksum` (SHA-256, unique), `byteSize`, `widthPx` × `heightPx`, `colourProfile`,
+`work` → works (null until filed), `role` (a media role, or `reference` — a colour-card frame, never
+published), `provenance`, `objectBox { x, y, width, height }` (the sheet's edge in the frame's pixels),
+`objectPpi` (measured from the ruler, never the file's DPI tag), `captureTier` (`good` · `better` · `best`), and
+`intake { batch, reference (a stock number or SKU), receivedAs, verdict, retouching, notes[] }`. `verdict`:
+`pass` · `fix-owner` (kept, never shown under its role until re-taken) · `legacy` (assessed, never rejected).
+Files go straight to the private bucket by presigned URL; a master is never publicly addressable.
 
-| Collection | Holds | Notes |
-| ---------- | ----- | ----- |
-| **makers** | name, sortName ("BLAEU, Willem Janszoon"), aliases (Valentyn, Valentijn), roles (`MAKER_ROLES`, below), life dates with precision (`DATE_PRECISIONS`, below), nationality, bio (blocks), portrait, `sameAs` (Wikidata, ULAN) | a maker page per maker — raremaps' strongest SEO asset |
-| **places** | the **gazetteer**: modern name (localised), `historicalNames[] { name, language, period }` (Batavia, Iava, Celebes, Moluccas…), type, parent, `geo { lat, lng, bbox }`, description | hierarchy two levels deeper than any competitor (Java → Batavia/Jakarta, Buitenzorg/Bogor…); drives search expansion |
-| **terms** | editable vocabularies: `subject`, `mood`, `room`, `occasion`, `recipient`, `grade` (each grade with its definition and A–D equivalent) | objectType and technique are controlled selects because behaviour depends on them |
-| **sources** | the bibliography: short cite (Tooley, Koeman, Parry, Schilder, Suárez, Tibbetts), full citation, year, url | each reference on a work links to its source page |
-| **curations** | `kind`: `collection` · `catalogue` · `exhibition` · `gift-guide` · `wall-set`; title, intro (blocks), hero, members (manual list **or** a saved facet query), dates, `pdf` (catalogues) | "Spice Islands", "Hofker's Bali Hotel", the End-of-Year Catalogue; a price-named curation ("Gifts under $350") stores **a threshold per market**, so an Indonesian-delivery page reads "Hadiah di bawah Rp 5 juta" and never shows dollars |
+Reshape note: the code's `masters.brand`, `design` and the `print-file` kind, and the `room-plate` media role, go
+(no multi-brand, no designs, no configurator). The code's `location` subject is `store` here.
 
-**The makers' two value lists** are each declared once and imported, never retyped:
-**`MAKER_ROLES`** — `cartographer` · `engraver` · `publisher` · `author` · `artist` ·
-`photographer` · `studio` · `printer`, C2's `MakerRole` and C12's `SnapshotMaker.role` —
-is what a maker is known for and the role a work's credit names (§1 `makers`);
-**`DATE_PRECISIONS`** — `exact` · `circa` · `before` · `after` · `range` · `unknown`,
-C2's `DatePrecision` — is a maker's life dates' precision and a work's `date.precision`
-alike (§1: a date is never implied certain). Both are in `@engine/cms`
-(TASKS.md 8.1: `collections/makers/roles.ts`, `validators/maker-life-dates.ts`), where
-works import them (8.2), until C1 takes them in beside `OBJECT_TYPES` — the home its rule
-gives every catalogue vocabulary — and C2 derives its two types from them.
+## 6. People, leads and site
 
-**Facets** exposed on browse (both brands, per module): object type · place
-(hierarchical, historical names searchable) · maker · date range / century /
-"VOC era 1602–1799" · technique · colour · condition grade · size (cm and
-inches) · price in the **market's** currency (incl. "price on request") — only where
-prices are shown: a listing of unique items whose prices are on request (the
-gallery, D50) has no price facet and no price sort · availability computed at
-query time (available · on hold ·
-sold · new in 30/60/90 days) · subject · and, for merchandise, format · size ·
-orientation · dominant colour · room · mood · occasion · recipient ·
-"in the showroom now" · "ships today" · made to order — the first and the last not
-at the shop's launch, whose stock is one pool at the showroom and all of it in stock
-(COMMERCE.md §4, S7).
+| Collection | Key fields | Notes |
+| --- | --- | --- |
+| `users` | `email`, `name`, `role` (`owner` · `editor` · `store`), `store` → stores (required when role is `store`, empty otherwise), `language` (`en` · `id` — the admin's language, G15), `active` | Payload auth. Only the owner sets `role` or `store`; nobody can remove the last owner |
+| `leads` | `kind` (`ask` · `sell` · `partnership` · `contact` · `chat`), `site`, `source` (`chat` · `form` · `page`), `payload` (name, WhatsApp in E.164 and/or email, preferred channel, message, locale, the consent text's version and time), `items` → works or products, `chatSession` → chat-sessions, `status` (`new` · `contacted` · `in_progress` · `closed` · `spam`, each change with who and when), `firstReplyAt`, `notes` | the shape is AI.md §4's. Created only by the server's lead service, never by a public REST write. The sell form takes **no files**: photos travel on WhatsApp or email |
+| `chat-sessions` | `site`, `locale`, `startedAt`, `lastMessageAt`, `items` → works or products, `transcript[]` (masked text), `ipHash` (daily-salted), labels, usage, `outcome` (`refused` · `blocked` · `handoff` · `lead`), `lead` → leads | written by the chat only; deleted 30 days after the last message (AI.md §3.4) |
+| `pages` | `site`, `kind` (`page` · `story` · `collection`), `title` **L**, `slug`, `intro` **L**, `hero` → media, `body` **L** rich text, `products[]` / `works[]` (a `collection` lists them), `seo` | `page`: about, visit, FAQ, delivery, legal pages (counsel's words) · `story`: a gallery or shop article at `/stories/{slug}` · `collection`: a curated shop list at `/collections/{slug}`. Bodies are the restricted rich text of §1 — no blocks, no embeds |
+| `redirects` | `site`, `from` (path, unique per site), `to`, `code` (301 · 302), `source` (`legacy` · `editor` · `slug-change`), `hits` | Payload's redirects plugin with `site` added |
+| `events` | ANALYTICS.md §4 | append-only; read by the dashboard |
 
-## 4. Transactions
+**Global `site-settings`** — one group per site (`gallery`, `shop`), each: `contact { whatsapp, email, phone }`,
+`replyPromise` **L** (G9: "the same working day, Singapore time"), `hours` **L**, `announcement` **L**,
+`social[]`, `leadNotifyEmails[]`, `ai { chatEnabled, draftingEnabled, dailyBudgetUsd, sessionTokenCap }` (AI.md).
+The shop's group adds `checkoutEnabled` (the kill switch, SECURITY.md), `delivery { bands[] { upToKm, feeIdr },
+freeOverIdr }` (the last band's `upToKm` is the delivery reach; free over Rp 500.000, S13), `welcomeDiscount` →
+discounts, `orderExpiryMinutes` (the payment window, COMMERCE.md §4), `storeAlerts`.
 
-| Collection | Holds | Notes |
-| ---------- | ----- | ----- |
-| **carts** | owner (customer or hashed guest token), market, destination, lines `{ product, variant, qty, configuration }`, codes, gift options, `expiresAt` | never reserves |
-| **reservations** | `targetKey` (scalar, e.g. `product:123`, written only by `reserve()`), target (product / edition unit / variant+location), qty, kind, owner refs (cart, order, customer, hold request + who granted it, offer, invoice), `expiresAt`, status (`active` · `converted` · `released` · `expired` · `reversed`), createdBy | the partial unique index on `target_key` for `active` + `converted` exclusive targets (ARCHITECTURE.md §6), declared through the adapter's schema hook; holds are visible and grantable in the admin |
-| **orders** | `number` (gapless per seller, prefix from the seller's config), channel (`web` · `showroom` · `manual` · `marketplace` · `legacy`), seller snapshot, customer + contact snapshot, market, `fx`, lines (snapshots), totals (every pipeline step), tax lines, addresses, shipping choice, status, notes, documents, `legacyOrderId` | written only by the domain — never by a public caller |
-| **payment-attempts** | order, seller, `attemptRef` (our own reference, committed before the provider hears of it), provider, method, charge + display Money, fx, `providerRef` (write-once: null until the provider names it), the stored `SessionResult` (replayed on retry), status, `expiresAt`, `expectedBy` (past it, the reconciler asks) | order, seller, provider and `attemptRef` are immutable once inserted, enforced by a trigger — applying a payment event reads them without a lock |
-| **refunds** | attempt, amount, reason, status, `refundRef` (the provider's own id, or `retrieve:<cumulative>` for one learnt from `retrieve()`), `idempotencyKey` (`late:` · `dup:` · `staff:`, for a refund the domain owes), `manual` flag + bank details task | unique `(attempt, refundRef)`; unique `idempotencyKey` |
-| **shipments** | order, lines, carrier/service, tracking, label, insured + declared value, HS codes, POD job ref, events | |
-| **returns** | order line, reason, photos, status, inspection, restock location | |
-| **offers** | product, contact / customer, amount (Money), message, history of counters, status, `expiresAt`, resulting reservation + payment link | engine capability; no brand takes offers at launch (D22, D50) — the slug stays, hidden while `purchase.offers` is off |
-| **enquiries** | `topic`: `general` · `price-request` · `condition` · `shipping-quote` · `framing` · `export` (C6 `EnquiryTopic`) — no trade topic: every business buyer applies as a partner (D36); product, contact, message, attachments, status, assignee | **stored, not merely forwarded** (KOI) |
-| **consignments** | "sell to us": contact, description, photos (item, titles, verso), condition notes, status (`received` · `reviewing` · `offer-made` · `accepted` · `declined`) | |
-| **appointments** | location, slot, contact, purpose (viewing — with a pull list: the pieces saved on the booker's device, posted with the booking, D35, D54), status | changed through its confirmation's link or by staff, never an account (D54) |
-| **invoices** | proforma / final, number per seller, customer (an institution, a collector), PO number, lines — each unique line's agreed figure (C5 `AgreedPrice`, source `quote`), insured shipping as quoted, duties where the seller ships DDP — currency, bank details **on the document only**, **due date**, status (`requested` · `issued` · `accepted` · `paid` · `expired` · `cancelled`), its `invoice` reservations, the order it places (`pending_payment` from issue), its payment link, PDF, issued by (staff user) | **the gallery's one way to sell an original** (D50): staff issue it from the order builder on a phone once a price is agreed; its page is the brand's own `/pay/{token}` (COMMERCE.md §7); it holds its unique lines through `reserve()` until the due date (D45), and lapses by itself if unpaid. Wire details are never on a public page (fraud) |
-| **discounts** · **gift-cards** | COMMERCE.md §10 | gift-card ledger is append-only |
+## 7. Who may do what
 
-Every record a derived link names (C6 `links`) — an order, a pay link, a quote
-or proforma, an offer, a hold request, an appointment, a return, an enquiry, a
-consignment — has a `ref` (a random UUID), a `token_version` and a
-`links_anchor_at`: the latest instant its link was issued, from which its window
-runs (C6 `LINK_WINDOW_DAYS`). No column holds a token or a hash of one.
+Public means a visitor on the site, through the server's projected reads; nobody signs in but staff (DR-10).
 
-Engine tables (in `public`, beside Payload's tables and under these plain names —
-never an `engine` schema — created by the same migrations, written by the SCH lead
-only, never edited by hand; none declares a composite primary key, which
-drizzle-kit cannot introspect — a key of several columns is a unique constraint over
-NOT NULL columns): `payment_events` (unique `provider,
-seller_id, provider_event_id` — secrets, and so webhook routes, are per
-seller, C13 `/api/x/webhooks/payments/[provider]/[seller]`), a matched event's
-outcome (`ApplyPaymentEventOutcome`) and a hash of its redacted payload;
-`payment_events_unmatched` (an event for no attempt this seller knows, kept
-apart so it never consumes a dedupe key: the normalised event itself, so it
-can be re-driven once its attempt turns up, first/last seen, a count);
-**`domain_events`** (the outbox, COMMERCE.md §6); `idempotency_keys` (unique
-`operation, key` over NOT NULL columns — the caller kept outside it, so another
-caller's reuse meets the row rather than starting afresh — with `caller_ref`, a
-sha256 of the decoded request, the response — written by the same transaction
-after the dedupe insert, so nullable until it commits — with its tokens left out
-(re-derived on replay) and `created_at`: the same key from another caller or with
-another request answers `invalid`, never the stored response; swept
-`IDEMPOTENCY_KEY_RETENTION`, 7 days,
-after `created_at`, and indexed on `created_at` and on `caller_ref` for the sweep
-and an erasure, C6 `IdempotencyKey`); `fx_rates`, `search_documents` (with per-market price columns), a
-per-seller `document_sequences`, `inventory_movements`, `analytics_events` (+
-rollups), `sister_sync_log`.
+| Collection | Public | `owner` | `editor` | `store` |
+| --- | --- | --- | --- | --- |
+| works | published, projected (no `askingPrice`, `aiDraft`, `legacy`, `notes`) | all, incl. `askingPrice` | all but `askingPrice` (not readable) | — |
+| products | published, projected | all | all | read |
+| makers, places, terms, pages, redirects | published, projected | all | all | — |
+| media, masters | through published records only; masters never | all | all | read media |
+| stores | name, area and hours of active stores, through the server | all | read | read own store |
+| stock-levels | never directly — "in stock" is computed on the server | all | read and update: enter the physical count at any store | read own store's rows; update only their counts |
+| orders | the tracking page only, by token, projected (COMMERCE.md §10) | all | read all; move any status, reassign, cancel, upload the driver image (COMMERCE.md §7) | read own store's; move them forward only, upload the driver image, hand one back with a reason |
+| payment-events | — | read | — | — |
+| leads, chat-sessions, partners, discounts, events, site-settings | — (the server writes and reads them) | all | — | — |
+| users | — | all | own name, language, password | own name, language, password |
 
-## 5. People
+Store staff see their store's orders and stock only — enforced by a `Where` on `store` in the access function, so
+lists, counts and lookups are all scoped, never by hiding menu items (SECURITY.md §2.2). Reassigning an order is
+the owner's or an editor's. Whoever enters a count enters the physical count, stored less held units (§4).
 
-- **customers** (auth) — separate from staff, always (KOI). **Only the shop's
-  approved retailers sign in at launch** (D31, D54): the gallery has no buyer
-  accounts, so its customers — collectors and institutions, and the old site's,
-  imported (MIGRATION.md §5) — are staff-side records that hold a buyer's details,
-  invoices, orders and consents and never a usable password (Payload's required one
-  is random and unusable, and no link ever sets another). Fields: email (unique,
-  normalised), name, `type` (`collector` · `institution` · `trade` · `retail`),
-  organisation, tax id, phone/WhatsApp, locale, preferred market, price list
-  (trade), consents (per purpose, with timestamp and policy version),
-  `legacyId`, `claimedAt` (a claimed account, where a brand has buyer accounts;
-  none at launch), staff notes; a `ref`, a
-  `token_version` and a `links_anchor_at` for the links that name it (an
-  application's status link, whose window runs from its latest email, C6
-  `links`), and a pending password link's nonce **hash** and expiry — the
-  one link kept at all, single-use, because it sets a credential (C13
-  `PASSWORD_LINK`).
-- **addresses** — per customer, shaped per country (Indonesia down to
-  sub-district + courier area id).
-- **saved-items** (wishlist) — customer, product, note; a saved item that sells
-  becomes a want-list suggestion. An account's wishlist (`retention.wishlist`):
-  **no brand at launch** — both brands keep the wishlist on the visitor's device
-  (`retention.deviceWishlist`, D35, D54), which writes no row at all.
-- **want-lists** — a saved search or "tell me when another example arrives"
-  (D39): a customer **or** an email address (never both) — at launch always an
-  email address, since no buyer signs in (D54) — status (`pending` ·
-  `active`), a `ref` (a random UUID) and a `token_version` — no token and no hash
-  of one: every link to it is derived as its email is sent (C6 `links`) — its
-  subject (a listing's public path, or
-  the product it watches another example of), a budget in its own market
-  currency — only where prices are shown (none at the gallery, D50) — frequency
-  (`instant` · `daily`), consent (alerts; marketing email,
-  separate), `lastNotifiedAt`. Stopping erases the row whole — its address, its
-  query and its consent — a `pending` row never confirmed is purged after
-  `WANT_LIST_PENDING_DAYS` (7), and at most `WANT_LIST_PENDING_PER_ADDRESS` (10)
-  of one address's rows wait at once.
-- **subscribers** — newsletter without an account: double opt-in, source,
-  status, a `ref` and a `token_version` (its confirm and stop links derived, never
-  stored, C6 `links`), legacy flag (KOI).
-- **reviews** (emporium) — product, verified order, rating, text, photos,
-  moderation status.
-- **users** (staff) — roles below.
+## 8. Validation — on save and on publish
 
-## 6. Editorial and site
-
-- **stories** — journal: title, slug, excerpt, body (blocks), hero, authors,
-  related works / products / makers / places / curations, publishedAt, SEO.
-  "Shop the story" rails come from the relations.
-- **pages** — about, visit, FAQ, shipping, returns, guarantee, framing guide,
-  authentication, privacy, terms: body (blocks), template hint, SEO.
-- **exhibitions** — fairs, exhibitions, viewings, pop-ups (the Tong Tong Fair):
-  dates, location, description, related curations.
-
-**Images — the words** (C9, `docs/design/imagery/`): a **capture** is a file as a
-camera, a scanner or a renderer made it, kept privately as a **master**; the
-**media** record is the public image processed from it — colour-corrected from the
-card, straightened, cropped outside the object — which the derivatives and tiles
-are made from; a **print file** is a design's derived copy for reproduction, the only
-file ever restored; an image's **role** says what it is and its **provenance** how it
-was made, both set once at intake, on the master and on its media alike.
-
-- **media** — the images pages show: `alt` (localised, **required**), caption, credit,
-  licence, `role` (**required**, C9 `MEDIA_ROLES` — a work's, a product's, a
-  location's, `room-plate` or `editorial` — its master's role; never `primary`),
-  `provenance` (**required, no default**, C9 `MEDIA_PROVENANCES`: `photograph` ·
-  `composite` · `rendered` · `ai-generated`, declared at intake — intake-spec.md H4 —
-  and never inferred; it replaces KOI's `aiGenerated` flag, its last value),
-  `master` (→ masters, staff-only, nullable: the capture it was processed from — an
-  editorial upload has none), focal point, derivatives + blur (derived), IIIF status
-  and tile source. `role` and `provenance` are set once, when the record is made,
-  and no edit in the admin or over REST may change either. **The upload itself is
-  never public**: it lands in the brand's media bucket under the private `uploads/`
-  prefix — full resolution, perhaps still with the camera's metadata — and the
-  public sees only its derivatives and capped tiles (ARCHITECTURE.md §7).
-  **A record is read on the server alone**: by staff in the admin, and by the
-  loaders and the sister API on the Local API, each reaching an image through the
-  published record or global that places it. A public REST or GraphQL read of
-  `media` is refused: a record has no draft of its own, so a public list would name
-  an unpublished work's images too. A synthetic image shows C9's `SYNTHETIC_LABEL`
-  — "Digital mockup" or "AI-generated image", in the lexicon's words — on the
-  image, at the start of its **rendered** alt text, in its caption and in the
-  filmstrip, wherever it appears. The label is **added at render, from
-  `provenance`** (`image.synthetic.<label>`, `image.syntheticAlt.<label>`; C9
-  `renderedAlt()`), and **never stored in `alt`**, which describes the image and
-  nothing else: no edit of the alt can remove the label, and an alt that already
-  opens with its words is not labelled twice. Alt text has a **deterministic
-  baseline** built from the record ("Engraved map of Bali by François Valentijn,
-  1726, hand-coloured, recto" — the description alone, a synthetic image's too) —
-  not AI, so it can publish — which a cataloguer improves over time;
-  AI-drafted alt stays flagged until verified. The CMS guide carries alt-writing
-  guidance for maps and prints (region, cartouche, colour, notable features).
-  Without the baseline, the migration's 2,090 items could not publish.
-- **No video at launch** (decided 2026-10-01, TASKS.md 6.2.i). Media and masters hold
-  still images only: C9 models no video master, derivative, poster frame or player. The
-  making (S14, in the Denpasar showroom) is photographed — role `showroom`, area
-  `making` — and a clip the owner films is published on the brand's YouTube or Vimeo
-  channel with its captions there, then placed on a story or the showroom page by the
-  `embed` block (§7, C4 `kind: 'video'`); the block's `file` provider waits for a
-  pipeline that transcodes, frames and captions a self-hosted video.
-- **masters** — a **plain collection, not an upload collection**, one record per
-  private file: `kind` (`capture` — a file as received — or `print-file` — a design's
-  print file under `print-files/<brand>/`), `storageKey` (C9 `masterKey()` for a work's
-  capture, `intakeMasterKey()` for a capture with no work yet or none at all,
-  `printFileKey()` for a print file), `checksum` (SHA-256, unique), `widthPx` ×
-  `heightPx` (the whole frame's pixels), colour profile, owning brand (the brand
-  whose process made the record, which a print file's key names; never changed),
-  `work` (→ works, nullable until filed), `design` (→ designs, a print file's),
-  access log. An outlet records print files only, its own: it names an origin's
-  capture by the key in the sister snapshot (C12), never by a record of its own.
-  **What the intake measured, on a capture** (`docs/design/imagery/intake-spec.md`;
-  C9 `IntakeEntry`): `role` (C9 `MasterRole` — a media role, or a `reference` frame:
-  the grey board, the card alone, a scene's colour reference, kept and never
-  published), `provenance`, `objectBox` `{ x, y, width, height }` (the object's
-  bounding box in the frame's pixels — a sheet's outer edge, margins included — null
-  until measured, C9 `boxFits()`), `objectPpi` (the object's pixels over its real
-  size, measured from the ruler and cross-checked against the catalogue's
-  dimensions; never the file's DPI tag — this is the ppi the record always meant, C9
-  `objectPpi()`), `captureTier` (C9 `CAPTURE_TIERS`: good · better · best; null for a
-  legacy file) and `intake` `{ batch, reference, receivedAs, verdict, retouching,
-  notes }` — `verdict` from C9 `INTAKE_VERDICTS` (`pass` · `fix-owner`: used for
-  design work, never published under its role until re-taken · `legacy`: assessed,
-  never rejected; a rejected file is not kept), `retouching` from C9
-  `RETOUCHING_STATES` (`none` · `unknown` · `retouched-legacy`, which puts the item on
-  the re-shoot list). Files go straight to the private bucket through presigned URLs
-  (a large TIFF exceeds the CDN's request limit in front of the admin); provenance
-  copies reference a master by storage key without re-uploading it. Never publicly
-  addressable.
-  - **A capture is filed once.** One received before its work exists — the owner's
-    pilot set (OA3), a migration batch not yet loaded — lands at
-    `masters/intake/<brand>/<batch>/<sha256>.<ext>` (C9 `intakeMasterKey()`), with the
-    batch's `IntakeManifest` beside its files (`intakeManifestKey()`), written with the
-    origin's credentials. When its work exists — created by the migration or a
-    cataloguer, matched by the stock number in `intake.reference` — it is copied to
-    `masterKey(workUid, …)`, the copy verified by checksum, the record re-pointed and
-    the intake object deleted: the one move a master makes, so every master a work
-    names lives under its uid and a sister snapshot names a `masterKey()` (C12). A
-    capture of anything else — a showroom photograph, a room plate's render — keeps
-    its intake key. **The pilot set needs no collection to arrive**: it is kept by
-    key and manifest from the day it is received, and TASKS.md 8.3's import makes one
-    record per manifest entry, by checksum, idempotently.
-- **redirects** — from, to, code, source (`legacy` · `editor`), hits.
-
-**Globals:** `brandSettings` (identity overrides: contact, social, announcement
-bar, trust badges, WhatsApp templates, and the **reply promises** beside every
-enquiry button — per channel, a promise of one of three shapes: within N hours,
-within N days, or the same working day in a named time zone, as the gallery's is,
-Singapore time (G9); the online WhatsApp's reply hours, the shop's (S6) — read into
-C2 `reply` as a message, never a bare number) · `navigation` (header,
-mega menu, footer) · `homepage` (ordered bands) · `commerceSettings` (checkout
-copy, bank transfer instructions, hold/offer policy text, **holiday calendar**
-that delivery promises read — no prices: the free-shipping threshold is an
-automatic discount and gift wrap is a product, COMMERCE.md §10) · `consent`
-(banner copy, policy version) · `seoDefaults` · `roomPlates` — the configurator's
-**one shared set of room plates** (`docs/design/imagery/room-scenes.md`; shown in the
-admin while `configurator.framing` is on, D46 for who renders them): `plates[]`, each
-a C9 `RoomPlate` — `key`, `framing` (`near` · `wide`), `maxOuterLongEdgeCm`,
-`wallWidthCm`, `wall` `{ name, hex, lab }`, `anchorMode` (`centre` · `bottom`),
-`crops[]` `{ crop (landscape · square), media (→ media, role room-plate), widthPx,
-heightPx, pxPerCm, anchor { x, y }, artBox { x, y, width, height } }`, `lightFrom`,
-`shadow` `{ offsetXPerCm, offsetYPerCm, blurPerCm, opacity }` and `props[]` `{ name,
-widthCm, heightCm }` — and a plate is `rendered` or a `photograph`, never AI-generated,
-never stock photography. Every wall-art product type (`roomView`, §2) uses this one
-set; the preview (C2, TASKS.md 22.7, 30.4) and the wizard's mockups (24.1.c) place a
-print through C9's `framingFor()` and `placeArt()`, so both hang it at the same place.
-Its renders' masters are captures under `intakeMasterKey()`.
-
-## 7. Content blocks
-
-The frozen list is DESIGN-SYSTEM.md §5 (C4) — fifteen blocks: `prose` (with note
-marks citing sources) · `figure` · `zoomFigure` · `compare` · `shoppableImage` ·
-`gallery` · `pullQuote` · `productRail` · `timeline` · `callout` · `faq` · `cta` ·
-`embed` · `newsletter` · `divider`. Long-form fields are **runs of these blocks** — a work's
-`description`, a maker's `bio`, a story's `body`, a page's `body` — never an open
-rich-text field.
-
-## 8. Roles
-
-| Role | Can |
-| ---- | --- |
-| `admin` | everything, including users, settings, sellers' secrets references |
-| `manager` | catalogue, prices, orders, refunds, holds, offers, discounts, customers |
-| `cataloguer` | works, makers, places, sources, media, masters; drafts and **verify**; cannot change prices or orders |
-| `editor` | stories, pages, curations, globals; publish |
-| `fulfilment` | orders (read), shipments, returns, pickups, stock counts; no prices, no refunds above a limit |
-| `analyst` | read-only + dashboards |
-| `contributor` | create and edit drafts only (default for new accounts — the least that lets someone work, KOI) |
-
-The draft → published transition is guarded in a publish hook, not only by
-access control (KOI: Payload access cannot protect that transition on its own).
-
-## 9. Validation — on save vs on publish
-
-**Saving stays cheap** so a cataloguer working through a drawer of prints can type
-what they have and come back. **Publishing is when a claim becomes public.**
+Saving stays cheap, so staff can type what they have and come back; publishing is when a claim becomes public.
 
 | Rule | When |
-| ---- | ---- |
-| date `to` ≥ `from`; plate date ≤ issue date; dimensions positive; image ≤ sheet | every save |
-| a unique product has exactly one work and a stock number | every save |
-| a reproduction's size ≤ the design's print ceiling | every save (variant generation refuses it) |
-| slug unique per locale (validated in a field, not a column — one document, two locales) | every save |
-| synced fields on a provenance copy are unchanged | every save |
-| an image's role is one its subject takes, and its provenance one that role allows there — on a work, a product, a location and in the `room-plates` global (C9 `roleAllowed()`, `provenanceAllowed()`): nothing synthetic on a work but a labelled in-room view, nothing AI-generated on a work, nothing synthetic on a location; an original product holds no images of its own | every save |
-| a capture's object box lies inside its frame; a design's crop inside its master's object box; a room plate has one crop per C9 `ROOM_CROPS`, each art box inside its image and each crop's media the size its geometry was measured on (C9 `boxFits()`) | every save |
-| work publish: title, object type, date (any precision), primary place **or** maker, **a primary image — the first recto, a photograph (C9 `primaryImageIndex()`), never a synthetic image, a detail or a photograph of its own — with alt text**, condition grade (originals) | publish |
-| no image on a published work or product is shown under its role while the master it was made from waits on a re-take (intake verdict `fix-owner`) | publish |
-| product publish: pricing mode, a price unless on-request, shipping profile, tax class, and a seller routable for at least one destination — **except** a unique item with no recorded location or export status, which publishes as enquiry-only (COMMERCE.md §2) so its URL and page stay live | publish |
-| reproduction publish: the work's `rights.printAllowed` is true | publish |
-| AI-drafted fields verified by a human | publish |
+| --- | --- |
+| `stockNumber`, `sku`, variant `sku`, store `code`, discount `code` unique (variant SKUs across all products) | save |
+| date: a typed year needs a precision; `to` ≥ `from`; dimensions positive, image ≤ sheet | save |
+| prices and quantities are whole numbers; price > 0; quantity ≥ 0; `askingPrice` ≥ 0 | save |
+| store `lat`/`lng` are numbers inside Indonesia's bounds; a `store` user has exactly one store | save |
+| an image's role is one its subject takes, and its provenance one that role allows there (§5) | save |
+| media alt not blank; a place's parent is not itself or a descendant | save |
+| **antique**: `title` (en), `objectType`, a date (a precision other than `unknown`, or a `display` such as "undated"), a **primary image with alt text**, a condition `grade`, a `location` | publish |
+| **antique**: no `aiDraft` field still `drafted` and no `ai-draft` alt on its images — AI-drafted text cannot publish unverified (DR-9) | publish |
+| no image is shown under its role while its master's verdict is `fix-owner` | publish |
+| **product**: `name` (en), `category`, `price`, at least one image with alt text, no unverified AI draft | publish |
+| a grade term has its `definition` and `equivalent` | publish |
 
-Validation modules are pure and unit-tested (`engine/packages/cms/src/validators`);
-hooks only fetch what they need. **Guards run on every write path** — the admin,
-the REST API, the seed and the migration importer all pass the same gates.
+Validators are pure functions with unit tests (`engine/packages/cms/src/validators`); hooks only fetch what they
+need. A record the seed or the import creates arrives as a **draft**; a change to an existing record applies only
+on the previewed **Apply**, and one that would fail the record's publish checks rejects its row (DATA.md §3).
+Nothing goes public without a person's click.
 
-## 10. Seed data
+## 9. Spreadsheet columns
 
-`pnpm seed --brand <slug>` loads **real** shapes, chosen for the cases they force:
+The owner's real data arrives as spreadsheets (DR-11). [DATA.md](DATA.md) owns the import: matching, dry run,
+review queue, report. These are the columns and the fields they fill. `*` is required; `L` columns come in
+`_en` / `_id` pairs; lists are separated by `;`.
 
-- **Indies Gallery**: ~20 works across object types, every original on request
-  with a private asking price (D50), including a sold item with an available
-  `sameEdition` alternative, a work with an uncertain attribution and a circa
-  date, one held in Jakarta with `domestic-only` export status, a photograph with
-  a verso, and an issued invoice holding one piece until its due date — its
-  customer a staff-side record, with no account (D54).
-- **Old East Indies**: 3 designs (one Hofker line **flagged rights-pending**, and one
-  with a restoration note), 4 product types, ~40 variants, **every one stocked** in
-  the one pool at the showroom (S7, COMMERCE.md §4), the showroom with its
-  photographs, a product whose `in-room` image is a labelled mockup, and the
-  room-plate set (provisional plates until D46's renders) — no gift card (S10).
-- **test** brand: everything on, fictional catalogue — shown and on-request prices,
-  stocked, made-to-order and POD variants, so the engine's every path is exercised —
-  a fictional room-plate set, used by CI only.
+**Antiques** (key `stock_number`): `stock_number*` · `title_en*`, `title_id` · `original_title` ·
+`object_type*` · `makers` (`name | role | certainty`; …) · `date_display`, `date_from`, `date_to`,
+`date_precision` · `places` (first is primary) · `technique` · `colour` · `image_h_mm`, `image_w_mm`,
+`sheet_h_mm`, `sheet_w_mm` · `grade*` · `condition_notes_en`, `_id` · `description_en`, `_id` · `subjects` ·
+`references` · `location*` · `status` · `asking_price`, `asking_currency` (owner's sheet only) · `legacy_id`,
+`legacy_url` · `image_files` (first is the recto).
 
-Everything seeds as a **draft**; nothing is public on a script's authority.
+**Products** (key `sku`; one row per product, and one per variant with `parent_sku` set): `sku*` · `parent_sku` ·
+`name_en*`, `name_id` · `variant_label_en`, `_id` · `category*` · `description_en`, `_id` · `price_idr*` (whole
+rupiah: `95000`) · `related_stock_number` · `image_files` · `active`.
+
+**Stores** (key `store_code`): `store_code*` · `name*` · `address*` · `area` · `lat*`, `lng*` · `whatsapp` ·
+`hours_en`, `hours_id` · `active`.
+
+**Stock** (key `store_code` + `sku`): `store_code*` · `sku*` (a product's or a variant's) · `quantity*` — the
+physical count on the shelf, units packed for an order not yet collected included; the import stores it less the
+units the store's open orders hold (DATA.md §3), and never adds to it.
+
+Makers, places, techniques, subjects and categories are matched by name, alias or historical name; what does not
+match goes to DATA.md's review queue and is never created by guess.
+
+## Open
+
+- **Asking-price currency** — default `USD` (the old site's prices); the owner confirms. *Owner.*
+- **Public store list** — default: active stores are listed on `/stores` (ARCHITECTURE.md §5) with their area and
+  hours, as EXPERIENCE-SHOP.md describes; the tracking page names the sending store. *Owner.*
+- **Photos on the sell form** — default none (WhatsApp/email carry them); revisit if leads arrive without
+  photos. *Owner.*
+- **Lead retention** — default 24 months after `closed`, then purged (COMPLIANCE.md §1). *Owner, counsel.*

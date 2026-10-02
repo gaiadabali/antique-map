@@ -1,367 +1,222 @@
 # Conventions
 
-This codebase will be maintained by people — and agents — who did not write it.
-Optimise for the reader. Most rules here were inherited from Kingdom of Indonesia
-(KOI) and NOW!, and each was written after a defect it would have prevented.
+**Purpose:** how code is written here, for the people and agents who maintain it without having written it. Most
+rules were learned on earlier projects (KOI, NOW!) from a defect each would have prevented. The architecture they
+serve is [ARCHITECTURE.md](ARCHITECTURE.md); how work is dispatched and reported is [WORKFLOW.md](WORKFLOW.md).
 
----
+## 1. TypeScript
 
-## 1. The two rules that make "one engine, two brands" true
-
-### No brand literal in engine code
-
-No source file under `engine/` — the code, styles and JSON of packages **and**
-storefront apps: anything a build compiles, bundles or serves — may contain a
-brand's slug, name or domain as a literal:
-`indies-gallery`, `old-east-indies`, `Indies Gallery`, `Old East Indies`,
-`antiquemapsindonesia`, `oldeastindies`. Enforced by `pnpm lint:brand-literals`
-in CI (the NOW! `lint:site-literals` pattern, ARCHITECTURE.md §2), which scans
-`.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.css` and `.json`.
-
-```ts
-if (brand.slug === 'indies-gallery') { … }        // ✗ fails CI
-if (hasModule(brand, 'purchase.offers')) { … }     // ✓ a capability, set in config (BRANDS.md §4)
-if (product.inventoryModel === 'unique') { … }     // ✓ a property of the data
-```
-
-Module keys are a typed union generated from the config schema, so a misspelt
-flag is a type error, not a feature silently switched off.
-
-Every behavioural difference between the brands must be expressible as a
-`brand.config.json` field, a module flag, or a property of the data. If it
-cannot be, that is a design bug in the config schema, not a licence to branch.
-
-Excluded from the scan, deliberately: `indies-gallery/**`, `old-east-indies/**`,
-`test/**` (they *are* the brands), generated migrations, test fixtures that carry
-real catalogue text, and `.env*` files, whose values are per-deployment data.
-**Markdown is documentation, not source**, and is not scanned: an app's
-`PRODUCT.md` and `DESIGN.md` — the design context the Design stage reads at the
-app's root, which no build reads — name the brand the app serves today, as a
-decision record may. The rule they must keep is the one the lint cannot see:
-nothing a build reads imports or embeds Markdown, so no brand's words reach a
-bundle through one. The owner agreed this reading of requirement 1.3 — source,
-not docs — as D44 (TASKS.md, Answered; 4.3.d).
-
-### The synthetic third brand runs every build
-
-`test/` is a brand with every module its app supports switched on and a
-fictional catalogue. A config names one storefront, so it has **two configs** —
-`brand.gallery.json` and `brand.emporium.json`, chosen by `TEST_STOREFRONT` — and
-CI runs the full e2e suite against each, on its own database. Anything implicitly
-shaped like one real brand — a hard-coded currency, a route segment, a missing
-module check — fails there long before it fails in production.
+- **Strict**, as `tsconfig.base.json` sets it: `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`,
+  `noImplicitReturns`, `useUnknownInCatchVariables`, `verbatimModuleSyntax`. No `any`: take `unknown` and narrow.
+- ESM only. Named exports, except where a framework requires a default (Next's pages and layouts, the Payload
+  config).
+- Payload generates the content types (`payload-types.ts`): import them, never re-declare a content shape by hand.
+  Pages and components never see them; they take view models (§4).
+- Types live beside their domain (`cms/src/commerce/order-status.ts`), not in one `types.ts` bin.
 
 ## 2. The 300-line rule
 
-No source file exceeds **300 lines**. Enforced in CI (`pnpm check:filesize`) over
-`*.ts`, `*.tsx`, `*.js`, `*.mjs` and `*.css` under `engine/` and `scripts/`.
-Generated files (`payload-types.ts`, `importMap.js`, migrations), fixtures,
-Markdown and JSON are out of scope.
+No source file exceeds **300 lines**: `*.ts`, `*.tsx`, `*.js`, `*.mjs` and `*.css` under `engine/` and
+`scripts/`, checked by `pnpm check:filesize`. Generated files, migrations and fixtures are out of scope; docs keep
+to the same limit by habit.
 
-It is a design rule, not a formatting rule. A file approaching 300 lines is
-almost always doing two jobs. Split by _responsibility_:
+It is a design rule, not a formatting rule: a file nearing 300 lines is almost always doing two jobs. Split by
+responsibility — a component that fetches, shapes and renders puts the shaping in a loader; a collection keeps its
+fields in its file, its hooks in `hooks/` and its validators in `validators/` (pure, unit-tested); an order's
+steps are one module per transition. Splitting `foo.ts` into `foo-1.ts` and `foo-2.ts` satisfies the check and
+defeats it. Don't.
 
-- a component that fetches, transforms and renders → transform into `lib/` or a
-  loader, keep the component rendering
-- a Payload collection → fields in the collection file, hooks in `hooks/`,
-  validation in `validators/` (pure, unit-tested)
-- a checkout step → one module per state transition, the machine in its own file
+## 3. Naming and the domain's words
 
-Splitting a 400-line file into `foo-1.ts` and `foo-2.ts` satisfies the linter
-and defeats the point. Don't.
+- Files and folders `kebab-case.ts`; components `PascalCase` exports from kebab-case files. Booleans read as
+  assertions (`isSold`, `hasVariants`); handlers are `handleX`, the prop `onX`. No abbreviation a reader must
+  decode: `cartographer`, not `carto`.
+- **The domain's words, exactly** — [CONTENT-MODEL.md](CONTENT-MODEL.md) is the glossary. An antique is a `works`
+  record (the admin says *Antiques*); a product is what the shop sells and a variant one form of it; a store is a
+  physical shop; a lead is a person the owner should talk to; a partner is a reseller's record. Order statuses
+  are COMMERCE.md §7's (`pending_payment` … `delivered`, `cancelled`, `expired`).
+- The sites are `gallery` and `shop`; the roles `owner`, `editor`, `store`. New code never says "brand",
+  "emporium", "seller", "reservation" or "offer": those belong to the archived plan.
 
-## 3. Money is never a float
+## 4. Boundaries: pages, loaders, view models
 
-- `Money = { amount: number, currency: CurrencyCode }`, where `amount` is a
-  **safe integer** of minor units — asserted with `Number.isSafeInteger` at every
-  boundary (Postgres `bigint` columns are read through a guard, never as a
-  string, never as a `BigInt` across the wire). Rp 1.25 billion is far inside
-  the range. **The exponent is the engine's, not ISO 4217's** — read
-  `CURRENCY_EXPONENT` from `@engine/config/constants` (zod-free, so client code
-  may; `@engine/config/schema` re-exports it), never `@engine/domain/money`
-  (which imports it and asserts against it, but never redeclares it), and never
-  hard-code 100: IDR is 0 here though ISO lists two, USD/SGD/EUR/AUD/GBP are 2
-  as ISO has them. A provider that counts in other units (IDR in hundredths)
-  converts both ways in its own adapter — never in the domain, never twice.
-  `formatMoney` (`@engine/i18n`) pins an amount's fraction digits to the
-  exponent itself, never the runtime's ICU default, so a price's precision never
-  depends on where it was formatted — its symbol and spacing still may, which is
-  why a Client Component gets the server's string (§6); a display **estimate**
-  carries no fraction digits at all — it is a whole major unit, never charged,
-  never summed (COMMERCE.md §3).
-- **Prices are computed on the server, every time.** The browser sends product
-  ids, variant ids and quantities — never a price, a total, a discount amount or
-  a shipping cost (KOI `lib/commerce/pricing.ts` rule). A basket that arrives
-  carrying its own prices buys nothing. The configurator may *display* a price
-  looked up from a table the server sent for that destination; the bag re-prices
-  on the server and shows any difference (COMMERCE.md §1).
-- Order lines **snapshot** everything sold: title, chosen options with their
-  labels as read, stock number, the reproduction label, an image by its C9
-  asset id (never a URL a new derivative version would leave behind), unit
-  price, tax and discount. An order must still read correctly after the
-  product is edited or deleted.
-- **Rounding happens only at the named rounding points** (COMMERCE.md §3) —
-  market price point, line discount, order-discount allocation, tax per line,
-  FX conversion, partial-refund allocation — each with its documented method
-  (half-even, or largest-remainder so parts sum to the whole). A value rounded
-  anywhere else, or rounded twice, is a reconciliation bug.
+- **Components render view models** (`src/view-models`), built and reviewed against fixtures with no database;
+  they never import Payload, `@engine/cms` or `src/server/**`. A page or layout calls its loaders and passes the
+  view models down.
+- **Loaders are the only readers a page has** (`src/server/loaders`): the Local API with `overrideAccess: false`,
+  `_status: 'published'`, the site's filter and a `select` of exactly the fields the view model shows. They return
+  view models, cached by tag (ARCHITECTURE.md §6). A field marked *staff* in CONTENT-MODEL.md is never selected;
+  `works.askingPrice` never leaves the owner's admin.
+- **Every module in `src/server/` starts with `import 'server-only'`**, so a Client Component that reaches one
+  fails the build; Vitest aliases it to an empty module. `@engine/cms` does not import it — the Payload CLI loads
+  cms in plain Node, where `server-only` throws — and ESLint keeps cms out of client modules instead.
+- **Server Components by default.** `'use client'` is a deliberate act, pushed as far down the tree as it goes;
+  a client wrapper around a static subtree is a bug. Client-side by design: the viewer, the chat panel, the map
+  pin, the facet sheet, the bag's quantity control, the language banner.
+- **A Client Component gets what it renders**, never a whole document. Money, dates and dimensions arrive
+  formatted by the server (the browser's ICU differs from Node's); links arrive built by `href()`; a listing's
+  state comes from the page's server-side `searchParams`, never `useSearchParams()`, which sees the public URL.
+- Each component answers one question. If its props need a comment to explain a combination, it is two.
 
-## 4. Naming
+## 5. Money
 
-- Files and folders: `kebab-case.ts`. Components: `PascalCase` exports from
-  kebab-case files.
-- Booleans read as assertions: `isSold`, `hasVerso`, `canOffer`.
-- Event handlers: `handleX` for the implementation, `onX` for the prop.
-- No abbreviations a new reader must decode: `cartographer`, not `carto`;
-  `reservation`, not `resv`.
-- The domain's own words, consistently: a **work** is the object (the map, the
-  print, the photograph); a **product** is what is sold; a **variant** is one
-  purchasable form of a product; a **hold** is a reservation a human granted; a
-  **checkout lock** is the one a checkout takes automatically. CONTENT-MODEL.md
-  is the glossary.
+- Money is a **safe integer of minor units** (`Number.isSafeInteger`, asserted at every boundary); for rupiah the
+  minor unit is one rupiah (`95000` is Rp 95.000; the IDR exponent is 0 in `@engine/config`, whatever ISO says).
+  Never a float; a `bigint` column is read through a guard.
+- **Priced on the server, every time.** A request carries ids and quantities; a price, total, fee or discount
+  in it is never read as one (SECURITY.md P1–P2). The page may display a price the server sent; the server
+  prices again.
+- **Rounding happens once**, where COMMERCE.md §2 names it. Order lines snapshot name, variant, SKU, unit price
+  and image, so an order reads correctly after its product changes.
+- `formatMoney` pins the fraction digits to the currency's exponent. The gallery shows no price anywhere: no price
+  in a work's view model, an event, structured data or an AI tool's result (DR-3).
 
-## 5. TypeScript
+## 6. Copy and languages
 
-Strict mode, no `any` (use `unknown` and narrow). Payload generates types —
-import them, never re-declare a content shape by hand. **App components never
-import Payload types**: they consume view models from `@engine/view-models`
-(DESIGN-SYSTEM.md §3), so a surface can be built, tested and reviewed against a
-fixture without a database. Only `@engine/loaders`, `@engine/cms` and the domain
-packages touch Payload.
+- **Keys in code, values in files.** Each site's interface strings are lexicon keys with neutral defaults, one
+  module per area (`src/sites/<site>/lexicon/`); their values live in `en` and `id` files beside them. Marketing
+  text (headings, page bodies, home bands) lives in the CMS. A component never holds a word.
+- **Every key has both values**, with the same `{placeholders}`: `checkCopy()` runs in `pnpm test` and fails on
+  a missing value, an unknown key or a placeholder mismatch.
+- **No figure typed into copy**: prices, dates, counts, hours and numbers are placeholders filled from data or
+  `site-settings`. A promise the data does not hold is not shown.
+- British spelling; Indonesian in the *Anda* register, never *kamu*; sentence case; controls name their outcome
+  ("Ask on WhatsApp", "Pay Rp 185.000"), never "Submit". Each site's voice is `docs/design/gallery/voice.md` and
+  `docs/design/emporium/voice.md`; the shared rules are DESIGN-SYSTEM.md §11.
+- The admin is bilingual too (G15): every collection, field, option and validation message carries an `en` and
+  an `id` label.
 
-Domain types live beside their domain (`domain/pricing/types.ts`), not in one
-`types.ts` bin.
+## 7. Errors, messages and logs
 
-## 6. Components
+- **Expected failures are values** (`{ ok: false, reason }`): a short line, a refused code, an out-of-area pin.
+  Exceptions are for the unexpected, and a route turns them into a designed error with a reference id.
+- **A message names the field and the fix** (requirement 10.1): "Add a WhatsApp number or an email so we can
+  reply", not "Invalid input". A hook throws Payload's `ValidationError` with the field's path, so the admin
+  marks the field.
+- **A visitor never sees a stack trace**, an internal id or a framework's error page: every error state is
+  designed (EXPERIENCE-GALLERY.md §9, EXPERIENCE-SHOP.md).
+- **Logs are structured and carry no personal data**: no request bodies from checkout, leads, the chat or the
+  webhook; phones, emails, addresses and tokens redacted by the logger (SECURITY.md §2.13).
 
-Server Components by default. `"use client"` is a deliberate act, pushed as far
-down the tree as it will go — a client wrapper around a static subtree is a bug.
-Only these are client-side by design: the deep-zoom viewer, the variant/frame
-configurator, the cart drawer, facet panel interactions, the search box, the
-consent banner, and preference toggles.
+## 8. Forms and validation
 
-Props to a Client Component are serialised into the HTML: pass what it renders,
-never a whole document or dictionary. **Money, dates and dimensions arrive
-preformatted** — the server calls the formatter and passes the string — since
-only the fraction digits are pinned, and symbols, spaces and month names still
-differ between the server's ICU and the browser's (§3). The ICU-dependent
-formatters — `formatMoney` / `formatPrice`, `formatCalendarDate` and
-`formatDimensions` — never run in a Client Component; `formatDate` (a fuzzy
-date's words) is deterministic, and its string is passed all the same. **A price
-shown after an interaction** — the configurator's as options change
-(DESIGN-SYSTEM.md §7), a bag drawer's total — ships as the server's display
-strings beside the `Money` (one row per variant, looked up, never summed), or
-comes back formatted in the action's answer. **Links arrive as props**, built by
-`href()` on the server: a Client Component never imports `@engine/config/routes`,
-`@engine/config/schema` or `zod` (`createHref` alone pulls in C1's schema, ~28 KB
-gzip of the 150 KB budget), and never derives state from `usePathname()`, which
-sees the public path, not the canonical state C10 rewrote it to. **A listing's
-state comes from the page's server `searchParams`**, the canonical query C10
-rewrote to, never from `useSearchParams()`, which sees the public URL — whose
-named facets sit in its path, not its query — so the facet panel takes its state
-as props.
+- **One zod schema per form or route body**, used by the server as the authority. The browser gets its
+  constraints from that schema as HTML attributes (`required`, `maxlength`, `type`, `inputmode`, `pattern`): zod
+  never ships to a client bundle.
+- **A form works without JavaScript**: it posts, answers 303 to its page and shows the result in the page body,
+  keeping every value on an error (ARCHITECTURE.md §7).
+- Unknown fields are refused, not ignored; every string has a maximum length; phones normalise to E.164; a submit
+  a double tap could repeat carries an idempotency key (SECURITY.md §2.7).
 
-Every component answers one question. If its props need a comment to explain a
-combination, it is two components.
+## 9. Comments
 
-## 7. Comments
+Explain **why**, never what. `// loop through lines` is noise. `// stock is taken at order creation, not at
+payment — taking it later lets two buyers pay for the last unit` saves an afternoon. Every non-obvious decision in
+pricing, stock, webhooks, access, cache invalidation and the AI's guards gets a sentence: those are the files where
+a maintainer is least sure and a plausible wrong answer costs money.
 
-Explain **why**, never what. `// loop through variants` is noise.
-`// a unique item's checkout lock is taken before the payment intent — taking it
-after lets two buyers pay for one map` is the comment that saves an afternoon.
+## 10. Tests
 
-Every non-obvious decision in pricing, tax, reservations, webhooks and the IIIF
-pipeline gets a sentence. Those are the files where a future maintainer is least
-confident and a silent wrong answer costs money.
+| Kind | Covers | Runs |
+| --- | --- | --- |
+| Unit (Vitest) | money, totals, delivery fee, discounts, `assignStore`, the status machine, tokens, parsers and normalisers, import rows, the AI's output checks, redaction, copy completeness | every push |
+| Integration (`*.db.test.ts`, Postgres 18) | the access matrix and store scoping, published-only reads, the decrement under 50 parallel orders, webhook idempotency, import idempotency, the migration's triggers | CI; a workstation with `CMS_TEST_POSTGRES_URL` |
+| End to end (Playwright, production build, both hosts, 390 and 1280 px) | browse → item → ask; bag → checkout → simulator → paid → tracking; store staff's steps; each role's admin; 404, 308 and 301 statuses; forms with JavaScript off; axe | every pull request |
+| AI evaluation | mocked on every pull request, the real model on change (AI.md §6) | as stated |
+| Lighthouse | the budgets of DESIGN-SYSTEM.md §9 | every pull request |
 
-## 8. Tests
+- **Write the test for the criterion as stated.** If the criterion is "a buyer can pay by QRIS", a test that an
+  order row exists passes while the QR code never renders.
+- **A conditional skip is a test that switches itself off exactly when the environment drifts.** A missing
+  sandbox key is a setup state and may skip; a present key that is refused is a defect and fails.
+- **Open the thing.** Green gates can answer a different question: KOI shipped an admin with no stylesheet and a
+  dashboard failing every request through a fully green board. Before calling a screen done, load it on a
+  production build (`next build && next start`, `LOCAL_PRODUCTION_BUILD=1`, your own port), signed in, at 390 px,
+  and look at it. `next dev` hides prerender and request-time failures that only a production build has.
 
-| Kind             | Covers                                                                                                                                                         |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit (Vitest)    | money & rounding, FX, tax, order state machine, reservation expiry, facet counts, gazetteer synonyms, date/dimension parsers, config validation, webhook parsing |
-| Contract         | every `PaymentGateway`, `ShippingProvider` and `FulfilmentProvider` adapter against one shared contract suite + recorded sandbox fixtures                         |
-| Concurrency      | two checkouts on one unique item → exactly one order; a sold item cannot be reserved again; webhook delivered twice → one payment; a crash after the dedupe insert → rollback, retry, applied once |
-| Component        | interaction states, keyboard paths, reduced motion, the configurator's price/preview agreement                                                                  |
-| E2E (Playwright) | per brand, desktop + mobile: browse → PDP → buy; offer → accept → pay; hold → expire; CMS publish → live; legacy URL → 301                                        |
-| Visual           | each app's `/style-guide` (components, surfaces, states) at 360, 768 and 1440 px                                                                               |
+## 11. Accessibility and performance
 
-The pure modules (money, tax, reservations, state machines, parsers) are
-non-negotiably tested — they are where a plausible wrong answer costs a client
-money or sells one map twice.
-
-**A conditional skip is a test that disables itself precisely when the
-environment drifts.** Absent sandbox credentials are a setup state and may skip;
-credentials that are present and refused are a defect and must fail.
-
-## 9. Git — one worktree per lane
-
-Parallel agents **never share a checkout**. KOI lost a day to three sessions in
-one working tree: a shared git index swept another session's half-staged work
-into a commit, one `.next` was overwritten mid-e2e, and a stale dev server on
-port 3000 answered for code that no longer existed.
-
-- Every lane works in its own `git worktree` on its own `feat/<phase>-<lane>`
-  branch (the Agent tool's `isolation: "worktree"` does this).
-- Each worktree uses its **own local databases** (`pnpm db:fresh --suffix <lane>`)
-  and its **own port** (`PORT` from `.env.local`). Never trust whatever is on
-  3000.
-- **Stage and commit in one step, with explicit paths**: `git commit -- <paths>`.
-  Never `git add -A`.
-- Trunk-based off `main`, squash merge, Conventional Commits (`feat:`, `fix:`,
-  `perf:`, `docs:`, `chore:`). `production` is the deploy branch; nothing lands
-  there except a merge from `main`.
-- **Verify a merge in a clean worktree**, not in the tree it was built in.
-- Commit messages say why. "fix cart" tells the next person nothing.
-
-## 10. Accessibility and performance are acceptance criteria
-
-A feature is not done if it is keyboard-inaccessible, fails WCAG 2.2 AA
-contrast, ignores `prefers-reduced-motion`, or pushes a budget in
-DESIGN-SYSTEM.md §7 over its limit. Not a later phase — part of "done", every
-time.
-
-## 11. Green gates can be answering a different question
-
-KOI shipped three defects through a fully green board: an admin with no layout
-stylesheet, a dashboard returning 500 on every request, and five admin views
-with no navigation. Each survived build, typecheck, lint, hundreds of unit tests
-and an e2e suite. **A missing stylesheet is not an error, and an unopened page
-is not a failure.**
-
-1. **Open the thing.** Before calling a screen done, load it — signed in, in a
-   browser, on a phone viewport — and look at it. Not the status code. The screen.
-2. **Write the test for the criterion as stated.** If the criterion is "a buyer
-   can pay by QRIS", a test asserting "a payment intent row exists" passes while
-   the QR code never renders.
-3. **Verify against a production build** (`pnpm build && pnpm start` on your own
-   port), never `next dev` — dev hides prerender and dynamic-usage failures that
-   only exist in production (KOI memory: *build never touches the DB*).
+A feature is not done if it fails WCAG 2.2 AA, cannot be used by keyboard alone, ignores
+`prefers-reduced-motion`, or pushes a page over its budget (DESIGN-SYSTEM.md §9–§10). Not a later pass: part of
+"done", every time.
 
 ## 12. The build never touches a database
 
-The deploy artifact is built in CI with no `DATABASE_URL` and no
-`PAYLOAD_SECRET`. Nothing prerenders from the CMS at build time. CI's e2e build
-unsets both variables to catch regressions — and a check that must prove no
-connection is opened points `DATABASE_URL` (and `PGHOST`) at a sentinel listener
-that must accept none, or builds with no network at all, because an unset
-`DATABASE_URL` is not an absent database: `pg` then falls back to `PGHOST` and to
-`localhost:5432`, a workstation's own Postgres.
+The artifact is built with no `DATABASE_URL` and no `PAYLOAD_SECRET`, and CI proves it by pointing `DATABASE_URL`
+and `PGHOST` at a port that refuses every connection: an *unset* `DATABASE_URL` proves nothing, since `pg` falls
+back to `PGHOST` and then `localhost:5432`, a workstation's own Postgres. What that asks of code:
 
-The apps run with **Cache Components** (ARCHITECTURE.md §9), confirmed by the
-phase 4 spike (`docs/spikes/cache-components.md`), which changes the rules you may
-remember:
+- **One route segment config**: `export const instant = false` on each site's root `[locale]` layout, nothing else
+  anywhere — no `dynamic`, `revalidate`, `fetchCache`, `prefetch`, `runtime` or `maxDuration`. ESLint holds it.
+- **A `GET` handler reads its request first** (`void request.headers.get('host')`), or `next build` runs it, and
+  loads Payload with `import()` only after that.
+- `instrumentation.ts` is compiled for the Edge runtime too: Node-only code sits in a module it imports only when
+  `process.env.NEXT_RUNTIME === 'nodejs'`. A module-level read of a runtime path carries
+  `/*turbopackIgnore: true*/`, or Turbopack traces the whole repository into the standalone output.
+- The rest of ARCHITECTURE.md §6 binds code as well: `htmlLimitedBots` stays, reads that decide a purchase are
+  never cached, and storefront links never prefetch.
 
-- **One route segment config, in one place.** `export const instant = false` on
-  `(site)/[locale]/layout.tsx` — Cache Components' own opt-out, without which a
-  `connection()` outside `<Suspense>` fails the build — and none anywhere else: no
-  `dynamic`, `revalidate` or `fetchCache` (Cache Components rejects them at build;
-  `force-dynamic` does not exist here), and no `prefetch`, `runtime`,
-  `preferredRegion`, `maxDuration` or other `instant`, which it would accept. That
-  layout alone exports `generateStaticParams`: its root parameter, `[locale]`, lists
-  every engine locale (brand-independent; it prerenders nothing). An ESLint rule
-  and a parity test hold this (TASKS.md 5.4).
-- **Every page renders in full per request.** Each app's `next.config.ts` sets
-  `htmlLimitedBots: /.*/`. Next 16.3 otherwise serves a route's prerendered shell —
-  even an empty one — under the status it had at build, so a `notFound()` or a
-  `permanentRedirect()` would reach the page only as a meta tag. Next counts a
-  request with no `User-Agent` as no bot at all, so for it a 404, a permanent
-  redirect and the proxy's own not-found status are all lost; the proxy sets one
-  (C13 `PROXY_USER_AGENT`). The status spec (`tests/e2e/status/status.spec.ts`,
-  on both apps) fails the day a Next release changes this.
-- **Nothing reads the brand at build.** The brand read awaits `connection()`
-  itself (the app's `currentBrand()`): Next renders a layout and its page
-  concurrently, so the layout's own `connection()` does not hold the page back.
-- **A route handler reads its request first.** A `GET` handler that never reads
-  its request (or awaits `connection()`) is prerendered — `next build` runs it to
-  bake its answer — so every engine `GET` reads it before anything else
-  (`atRequestTime(request)`), a placeholder's too. A handler reaches Payload, and
-  content, only through a `payload-*.ts` module it `import()`s after that — never
-  through `@engine/loaders` (C13; ARCHITECTURE.md §15) — so the build, route parity
-  and a unit test load it without Payload.
-- **A route reads only ASCII from its params.** Next hands a page a segment still
-  percent-encoded and its `generateMetadata` the same segment decoded once, for
-  every param (the 4.1.e spike §3; 4.3's senior-fe review #3). So a route takes
-  from `params` only what is ASCII by construction — the locale, a numeric id —
-  and any other input, a slug or a place path, from C10's parse of the public path
-  the proxy passed on (`parsePublicPath()` over `x-public-path`), decoded once. It
-  never hands a raw `params` segment to a loader and never compares one.
-- **What the first flush must carry is read in the page body; only slow reads
-  that no form depends on stream.** A form, its current value (from a cookie), a
-  post's result (C13 `FORM_RESULT`), the canonical check (a request header) — and
-  **the purchase panel**, whose live availability decides which purchase forms it
-  shows — are read at request time in the page's own body, so a visitor without
-  JavaScript sees them and can buy: a streamed part stays hidden until a script
-  swaps it in. The availability read is one indexed read, bounded by a short
-  timeout after which the panel resolves to `unverified` (C2), so a slow database
-  never holds the first byte for long. Only slow reads no form depends on —
-  related works, reviews, a courier's live quote, a remote rate — run inside
-  `<Suspense>`, whose fallback reserves their space, and a streamed part never
-  holds a form or a post's result. `generateMetadata` reads cached data only: it
-  gates every visitor's first byte.
-- **Cacheable reads** are functions marked `'use cache'` with `cacheTag(...)` and
-  an explicit `cacheLife`, their tags built by `@engine/cache` and never written by
-  hand. A `cacheTag()` call takes at most 128 tags — Next drops the rest with only a
-  console warning — so a scope that tags every card of a long page batches its
-  calls. Invalidation goes through one helper, `@engine/cache`'s
-  `invalidate(tags)`, called from Payload `afterChange`/`afterDelete` hooks and
-  domain events, and it runs **after the write commits**: Payload runs
-  `afterChange` before it commits, so inside a request `invalidate()` schedules the
-  revalidation with `after()`, which runs once the response has been sent; outside
-  one, the caller hands it a collector and flushes it once its operation returns,
-  dropping it on a throw — an import once per batch. Editorial tags use
-  `revalidateTag(tag, 'max')`
-  (stale-while-revalidate); **availability and price tags expire immediately**
-  (`{ expire: 0 }`).
-- **The availability that decides a purchase is never cached**: it changes with
-  no write to announce it — a checkout lock or a hold lapses at its `expiresAt`,
-  which no tag can expire. Every cached scope that shows an availability status — a
-  card's *Sold*, a catalogue's *on hold* — tags it `availability:<id>`, expired
-  immediately by every write, and declares as **its own** `cacheLife` the
-  one-minute backstop `@engine/cache` exports, `AVAILABILITY_STATUS_LIFE`
-  (`{ stale: 30, revalidate: 30, expire: 60 }`), so a missed invalidation or a
-  lapsed lock heals by itself: an
-  explicit outer `cacheLife` wins over any inner one, so a status read nested in a
-  `'max'` listing would otherwise keep the listing's lifetime. No purchase control
-  acts on a cached status, and `reserve()` refuses a sold item regardless.
-- **Storefront links never prefetch.** Under `htmlLimitedBots` a router prefetch
-  is a full render with the page's reads — a 48-card grid in view would be 48
-  renders — so a storefront link is an `<a>` or the link primitive (TASKS.md
-  11.1.c), which renders `next/link` with `prefetch={false}` and takes no
-  `prefetch` prop. `next/form`'s `<Form>`, which prefetches its action by default,
-  and `useRouter().prefetch()` are fenced like a bare `next/link` (TASKS.md 5.4). A
-  render that is not the visitor's own document navigation never consumes a post's
-  result (C13 `FORM_RESULT`).
-- **The build rules the spike found.** `instrumentation.ts` is compiled for the
-  Edge runtime too, so Node-only code sits in a module it `import()`s only when
-  `process.env.NEXT_RUNTIME === 'nodejs'`, and never while `next build` runs; a
-  module-level read of a runtime path (`readFileSync`) carries
-  `/*turbopackIgnore: true*/`, or Turbopack traces the whole project into the
-  standalone output; and `withPayload`'s client hints (`Accept-CH`, `Critical-CH`,
-  `Vary`) stay on `/admin/:path*` — on the storefront, `Critical-CH` makes Chromium
-  load every first visit twice.
-- The fallback in ARCHITECTURE.md §9 (Cache Components off) was not needed and is
-  not adopted; the two models are never mixed.
+## 13. Schema, migrations and generated files
 
-## 13. Secrets
+- **One migration set**, `engine/packages/cms/src/migrations`. **One person generates a wave's migration**, on a
+  clean checkout of `main` after the wave merges (`pnpm --filter @engine/cms migrate:create`). Never commit a
+  migration a dev server generated: KOI lost days to one that carried another session's schema.
+- **A schema author** sees their work on their own suffixed database through Payload's dev push
+  (`PAYLOAD_DEV_PUSH=1`), never on a shared one and never in a production build. What only a migration carries
+  (extensions, triggers) is tested on a migrated database.
+- **Additive first**: add, backfill, switch reads, and drop only in a later release, so a rollback still works.
+- **A constraint that guards correctness is declared in the schema** through the Postgres adapter's hook, so a
+  pushed database has it too. No table declares a composite primary key, which drizzle-kit cannot introspect: a key
+  of several columns is a unique constraint.
+- **Edited by nobody**: `payload-types.ts`, `importMap.js`, `next-env.d.ts`, the migrations' JSON snapshots, and
+  `pnpm-lock.yaml`, which changes only through `pnpm add` or `pnpm install`. `check:generated` regenerates the
+  first two and fails on a diff: a component missing from the import map renders as nothing, with no error.
+- **A new dependency** is named in its pull request with why (SECURITY.md D4), pinned exactly (`savePrefix: ''`),
+  and a native build is approved in `allowBuilds`.
 
-Never in the repo, never in a build argument, never pasted into chat or a log.
-Local: `.env.local` (gitignored). Servers: Infisical → `shared/.env`. Payment and
-courier keys are per brand and per environment; a sandbox key in production, or
-the reverse, must fail the boot check loudly.
+## 14. Git and worktrees
 
-## 14. Documentation duties
+- **One worktree per agent**, each on its own branch with its own database suffix (`pnpm db:fresh --suffix
+  <lane>`) and its own `PORT`. Never trust whatever answers on port 3000.
+- **Commit explicit paths in one step**: `git commit -- <paths>`. Never `git add -A`.
+- Trunk-based off `main`, squash merge, Conventional Commits (`feat:`, `fix:`, `perf:`, `docs:`, `chore:`), and a
+  message that says why. `production` is the deploy branch: nothing lands there but a merge from `main`.
+- **Verify a merge in a clean worktree**, never in the tree it was built in.
 
-When you change behaviour, update the doc that describes it **in the same PR**:
+## 15. `pnpm verify`, and what CI adds
 
-| Change                                  | Update                                               |
-| --------------------------------------- | ---------------------------------------------------- |
-| a collection or field                   | `docs/CONTENT-MODEL.md` + `manual/cms-guide.md`      |
-| a checkout, pricing, tax or order rule  | `docs/COMMERCE.md`                                   |
-| an interaction, page or motion          | `docs/EXPERIENCE-GALLERY.md` / `EXPERIENCE-SHOP.md`  |
-| a token, block or surface contract      | `docs/DESIGN-SYSTEM.md`                              |
-| a brand config field or module flag     | `docs/BRANDS.md`                                     |
-| a stack or infrastructure decision      | `docs/ARCHITECTURE.md` or `docs/DEPLOYMENT.md`       |
-| a new analytics event                   | `docs/ANALYTICS.md` — and never rename an existing one |
-| a task's status                         | `TASKS.md` — the orchestrator ticks it (`pnpm tasks:tick`); the board syncs itself |
+`pnpm verify` = `format:check && lint && typecheck && test && check:filesize && check:generated && tasks:lint &&
+tasks:check`.
+
+| Step | What it holds |
+| --- | --- |
+| `format:check` | Prettier |
+| `lint` | ESLint with typescript-eslint; the import boundaries (Payload and `@engine/cms` only in `src/server/**` and `(payload)`; packages never import the app; a `'use client'` module never reaches server-only code); the rendering rules (one segment config; no prefetching link, `next/form` or `router.prefetch()`) |
+| `typecheck` | `tsc --noEmit` per package, with `next typegen` for the app |
+| `test` | Vitest: unit tests, `checkCopy()`, the reserved `/api/` segment test, the mocked AI evaluation; the `*.db.test.ts` suite as well when `CMS_TEST_POSTGRES_URL` is set |
+| `check:filesize` | §2 |
+| `check:generated` | `payload-types.ts`, `importMap.js`, and the Payload config against the latest migration snapshot — a collection changed without its migration fails |
+| `tasks:lint`, `tasks:check` | the board's shape and its generated progress table |
+
+**CI adds** what needs a network or a database: the `*.db.test.ts` suite on Postgres 18; the sentinel build
+(§12); the release smoke booting the tarball; Playwright on both hosts; Lighthouse; `pnpm audit --prod` (high
+and critical fail, SECURITY.md D2); a secret scan on every push (SECURITY.md K3); GitHub's default CodeQL; the
+frozen lockfile; the deploy-manifest check (DEPLOYMENT.md §3).
+
+## 16. Documentation duties
+
+When you change behaviour, update the doc that describes it **in the same pull request**:
+
+| Change | Update |
+| --- | --- |
+| a collection, a field, an import column | CONTENT-MODEL.md (and DATA.md for import behaviour) |
+| an order, stock, payment or delivery rule | COMMERCE.md |
+| a page, an interaction or a state | EXPERIENCE-GALLERY.md or EXPERIENCE-SHOP.md |
+| a token, a component or a budget | DESIGN-SYSTEM.md |
+| the chat's or the drafting tool's rules | AI.md |
+| a control, a limit, a secret | SECURITY.md |
+| an analytics event (added, never renamed) | ANALYTICS.md |
+| the stack, a route, the layout · hosts, releases, environment | ARCHITECTURE.md · DEPLOYMENT.md |
+| a task's status | nothing: the orchestrator ticks TASKS.md from your report |
 
 Documentation drift is how a tidy project becomes an untrustworthy one.

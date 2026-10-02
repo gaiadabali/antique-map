@@ -1,217 +1,151 @@
-# Analytics, consent and commerce data
+# Analytics
 
-**Goal:** first-party behavioural and commerce data that each brand owns
-outright, and dashboards inside its own admin. Ad attribution through third-party
-tags is engine capability, not part of the launch (G12, below).
-The pipeline is KOI's (a beacon into an append-only, partitioned `events` table,
-read by admin dashboards), extended with commerce funnels and the lead flows a
-gallery lives on.
+**Purpose:** what the two sites measure, how, where it is kept and what the owner sees in the admin. Analytics are
+**first-party only** (DR-13, the owner's G12: "log all our analytics ourselves and visible in the dashboard"). No
+GA4, no Meta Pixel, no third-party analytics or advertising tag, for anyone, consent or not (the map on the checkout page is the one third-party script, COMPLIANCE.md).
 
-**The first-party record is the analytics (the owner's answer to G12,
-2026-10-01):** "we need to log all our analytics ourselves and visible in the
-dashboard". Every number the owner reads comes from this pipeline and the domain's
-records, in each brand's admin (§3); nothing depends on an export from, or an
-account at, Google Analytics. **No GA4 and no Meta Pixel at launch, even after
-consent** (D55, the owner's answer to G12, 2026-10-01): the analytics are first-party only.
-Neither brand config names a GA4 or a Meta id, so no third-party tag loads for
-anyone, and the consent banner offers **no marketing-tag category** — it asks only
-what the first-party beacon needs (the analytics row below). The third layer stays
-in the engine, off: a brand that later wants ad attribution sets the ids in its
-config, and with them the banner gains its marketing category, the CSP its
-origins and D38's rule its subject — a build then (TASKS.md 40.2's cut work), not
-only a switch.
+## 1. Two sources, one rule
 
----
+| Source | What | Written by |
+| --- | --- | --- |
+| **The beacon** | behaviour on the page: views, searches, zooms, clicks to WhatsApp or email | the page, through `POST /api/x/collect` |
+| **The server** | facts: a lead stored, a chat handed off, an item added to the cart, an order created, paid or moved | the server code that made the change, in the **same transaction**, into the same `events` table |
 
-## 1. Three layers
+**Business numbers are counted from business records** — revenue and orders from `orders`, leads and reply times
+from `leads`, chats from `chat-sessions` — never from the beacon, which a blocked script or a closed tab can miss.
+The beacon explains *how people got there*; the records say *what happened*. A WhatsApp or email tap leaves no
+record on the site, so its beacon event is counted as a tap, never as a lead or a sale.
 
-| Layer | What | Where | Consent |
-| ----- | ---- | ----- | ------- |
-| **Domain events** | server-side facts: order paid, offer accepted, hold expired, refund issued | written by `@engine/domain` to the outbox `domain_events` **in the same transaction as the change**, then dispatched by the jobs queue to analytics, email and the sister webhook (COMMERCE.md §13) | none needed — they are business records, not tracking |
-| **First-party beacon** | page and interaction events | `POST /api/x/collect` → `analytics_events` (monthly partitions) | **cookieless until consent**: a per-session hashed id only, so every visit is counted with no consent at all — which is what G12 asks; **analytics consent** (C2 `ConsentVM` `analytics`) adds only the persistent first-party anonymous id that links a visitor's visits, still kept by the brand alone |
-| **GA4 + Meta Pixel** — not at launch | ad attribution, audiences | client tags, loaded only after marketing consent and only where the brand config names an id — none does: the owner keeps analytics first-party (G12) | marketing consent, per EU/Indonesian rules (COMPLIANCE.md §7) — a banner category that exists only once an id is set |
+## 2. Cookieless by design
 
-The GA4 measurement id and the Meta Pixel id are **runtime brand config**
-(`analytics.ga4Id`, `analytics.metaPixelId`, BRANDS.md §3), handed to the page
-through `ShellVM` — never `NEXT_PUBLIC_*`, which would be baked into a build that
-serves more than one brand — and the per-request CSP allows exactly their origins
-(ARCHITECTURE.md §13). Both are `null` for both brands at launch (G12).
+- **No cookie, no localStorage id, no fingerprint kept.** The browser sends no identifier at all.
+- `/api/x/collect` derives a **`sessionId`** at request time: a hash of a secret salt, the site, the client's
+  address and its user agent. The salt rotates daily and the old one is discarded, so a session cannot be
+  followed across days and nothing stored can be reversed to an address.
+- The address and user agent are used for that hash, for bot filtering and for `deviceClass` (`mobile` ·
+  `tablet` · `desktop`), then dropped: **neither is stored**.
+- With nothing stored on the device and nothing personal in the table, the sites show no analytics consent
+  banner. *Open: counsel confirms under UU PDP and PDPA.*
 
-**The page sends only what it can know; `/api/x/collect` stamps the rest.** A
-beacon event carries its own props from the page's own view model, plus `at`,
-`surface`, `locale` and `deviceClass` — never a session, an anonymous id or a
-market, which the page cannot know and could forge. Collect **derives**
-`sessionId` itself, at request time: a hash of a secret salt that rotates daily
-and is then discarded, the site, the client's address and its user agent —
-nothing is stored that could reverse it. `anonymousId` is the persistent id
-collect keeps in its own HttpOnly `anon_id` cookie (390 days), set and read
-only once analytics consent allows it. `market` is the ship-to market's id,
-read from the `shipTo` cookie — `null` before one is set (C11
-`CollectedContext`).
+## 3. The beacon
 
-A domain event is never emitted from the browser and never from a webhook
-handler directly: an `order.paid` that reached GA4 while its transaction rolled
-back would be revenue that does not exist. The outbox dispatcher is the only
-thing that sends a domain event anywhere, and it sends each one at least once
-with its event id, so every consumer dedupes.
+- The page sends only what it knows from its own view model: the event name and its props, plus `at`, `locale`
+  and `surface`. **Collect stamps the rest**: `site` (from the hostname), `sessionId`, `deviceClass`, `path`
+  (normalised: query string dropped except `utm_*` and the search page's `q`, which is redacted; the tracking
+  token removed from `/track/…` and `/id/lacak/…`), `referrerHost` (the host only, never the full URL) and
+  `utm { source, medium, campaign }` from the landing URL.
+- Events are batched, sent with `navigator.sendBeacon`, at most one request per 5 seconds per tab, flushed on
+  `visibilitychange`; fire-and-forget — a failed post never breaks a page.
+- Collect validates every event against the catalogue (§4): an unknown name or a prop outside its schema drops
+  the event; a batch is at most 20 events and 8 KB.
 
-The beacon is batched, sent with `navigator.sendBeacon`, at most one request per
-5 s per tab, flushed on `visibilitychange`, fire-and-forget; bots are filtered
-server-side; `ensure_partition(ts)` runs before every insert (KOI — a partition
-created only by cron can fail silently at midnight on the first). **No PII in
-events** — ids and categories only; an email address never enters the events
+## 4. Event catalogue
+
+Names are `object.verb`, past tense. Add to the list; **never rename** — the dashboard depends on the string.
+`B` = beacon, `S` = server.
+
+| Event | Src | Site | Props |
+| --- | --- | --- | --- |
+| `page.viewed` | B | both | `pageType` (home · listing · item · product · search · page · track · cart · checkout) |
+| `search.submitted` | B | both | `query` (redacted, ≤ 100 chars), `resultCount`, `zeroResults` |
+| `listing.viewed` | B | both | `listing` (type · maker · place · subject · category · all; `type` is the gallery's `objectType`, `category` the shop's), `facets[]` (keys and values), `resultCount` |
+| `item.viewed` | B | gallery | `workId`, `objectType`, `status` — **no price, no price band**, ever |
+| `item.zoomed` | B | gallery | `workId`, `imageRole`, `maxZoom` |
+| `product.viewed` | B | shop | `productId`, `categorySlug`, `inStock` |
+| `ask.clicked` | B | both | `channel` (whatsapp · email · form), `context` (item · product · page · footer · chat), `workId` or `productId` |
+| `sell.clicked` | B | gallery | `channel` (whatsapp · email · form) |
+| `partnership.clicked` | B | shop | `channel` |
+| `lead.created` | S | both | `kind` (ask · sell · partnership · contact · chat), `source` (form · chat), `leadId` |
+| `chat.started` | S | both | `chatSessionId`, `context` (item · product · page) |
+| `chat.handedOff` | S | both | `chatSessionId`, `channel` (whatsapp · email), `hasItem` |
+| `chat.leadCreated` | S | both | `chatSessionId`, `leadId` |
+| `cart.added` | S | shop | `productId`, `variantSku`, `qty`, `value` (the server's unit price × qty) |
+| `cart.removed` | S | shop | `productId`, `variantSku`, `qty` |
+| `checkout.started` | S | shop | `lines`, `subtotal` |
+| `checkout.stepCompleted` | S | shop | `step` (contact · delivery · review) |
+| `checkout.blocked` | S | shop | `reason` (no-single-store · out-of-area · out-of-stock · price-changed · code-refused) |
+| `payment.opened` | B | shop | `orderId`, `attempt` |
+| `order.created` | S | shop | `orderId`, `lines`, `total`, `storeCode`, `distanceBand`, `hasDiscount` |
+| `order.paid` | S | shop | `orderId`, `total`, `method` (Midtrans `payment_type`) |
+| `order.statusChanged` | S | shop | `orderId`, `from`, `to`, `byRole` (owner · editor · store · system), `minutesSincePaid` |
+| `tracking.viewed` | B | shop | `status` |
+| `vitals.reported` | B | both | `pageType`, `lcp`, `inp`, `cls` |
+
+`order.paid` is written inside the webhook's transaction (COMMERCE.md §6), so a payment that rolls back is never
+counted. `value` and `total` are integer rupiah, as on the order.
+
+## 5. Privacy: no personal data in events
+
+- **Never in an event:** a name, email, phone or WhatsApp number, address, map pin, free text (but the redacted
+  search query), an IP address, a user agent, a full referrer URL, a tracking token, a chat transcript or an
+  asking price.
+- **Search queries are redacted** before storage: anything shaped like an email address, a phone number or a run
+  of 6 or more digits is replaced with `[removed]`, then the query is cut to 100 characters.
+- **Ids only:** events may carry record ids (`workId`, `orderId`, `leadId`, `chatSessionId`), which mean nothing
+  without staff access to the records, and the store code and a distance **band** — never the distance or the pin.
+- Staff are not visitors: a request carrying an admin session (sent only on `ADMIN_HOST`) is not counted.
+
+## 6. Bot filtering
+
+At collect, before anything is written:
+
+1. **Origin check** — `Origin` must be one of the two site hostnames (or their staging names on staging); the
+   request must be `POST` with a JSON body.
+2. **User agent** — a maintained list of crawlers, monitors, headless browsers and HTTP libraries is dropped; an
+   empty user agent is dropped.
+3. **Rate** — more than 120 events a minute from one `sessionId`, or a burst from one address, is dropped for that
+   session.
+4. **Shape** — unknown names, bad props, impossible values (negative counts, LCP over 60 s) are dropped.
+
+Server events are not filtered by user agent (a bot cannot pay), but a lead flagged as spam is excluded from the
+dashboard's lead counts. Dropped beacon events are counted per reason, so a filter that eats real traffic shows.
+
+## 7. Storage and retention
+
+- **`events`** — a Payload collection, hidden from editing, read by the dashboard: `at`, `site`, `name`,
+  `source` (`beacon` · `server`), `sessionId`, `path`, `locale`, `deviceClass`, `referrerHost`, `utm { source,
+  medium, campaign }`, `props` (JSON, ≤ 2 KB). Collect inserts with one SQL statement per batch; indexes on
+  `(site, name, at)` and `(sessionId)`.
+- **Retention:** raw events are kept **14 months** (COMPLIANCE.md §1), enough to compare a month with the same
+  month a year before, and then deleted by a nightly job, in batches. If dashboard queries outgrow the raw table,
+  daily totals move to a SQL materialised view refreshed nightly — a database view, not a new collection.
+- Orders, payment events, leads and chat transcripts follow their own retention (COMPLIANCE.md §1; the accountant
+  for orders). Deleting events never touches a business record.
+
+## 8. The dashboard
+
+A custom view at the top of `/admin`, one tab per site, each labelled with its site. The owner sees it; editors
+and store users do not (`events` is owner-only, DR-10; SECURITY.md §2.2). Periods: 7, 30 and 90 days, or a range,
+compared with the period before. **Days are counted in UTC+8** — Bali's WITA and Singapore time are the same offset.
+
+**Gallery**
+
+| Panel | Shows |
+| --- | --- |
+| Visitors | sessions and page views a day; top pages; referrers and `utm` sources; phone vs desktop; English vs Indonesian |
+| Search | top queries; **zero-result queries** — the buying list: what collectors want that is not in the drawers |
+| Antiques | most viewed and most zoomed; views → ask rate per antique; by object type, maker and place |
+| Asks and sells | taps by channel (WhatsApp · email · form) and context; leads by kind from `leads`; time to first reply (`firstReplyAt`) against the same-working-day promise (G9) |
+| Chat | sessions, hand-offs by channel, leads captured, hand-off rate, refusals and blocks, AI cost a day (from `chat-sessions` and `leads`; AI.md §6) |
+
+**Shop**
+
+| Panel | Shows |
+| --- | --- |
+| Visitors | as the gallery's |
+| Funnel | product viewed → added to cart → checkout started → delivery step → paid, with the drop at each step, by device; `checkout.blocked` by reason |
+| Sales | from `orders`: paid orders, revenue, average order, by category and product, by store, by distance band; discount use; the share with free delivery |
+| Fulfilment | from `orders.history`: time from paid to processing, to on the way, to delivered, per store; orders waiting now; expired and cancelled share |
+| Payments | method mix; expired-unpaid rate; flagged payments (amount mismatch, challenge, late) |
+| Chat and leads | as the gallery's, plus partnership leads |
+| Web vitals | LCP, INP and CLS at the 75th percentile by page type and device |
+
+**Done means visible:** a panel is done when it renders for a real session on staging, not when rows exist in the
 table.
 
-## 2. Event taxonomy (C11)
+## Open
 
-Naming is `object.verb`, past tense. Add to this list; **never rename** an
-existing event — dashboards depend on the string.
-
-**Discovery**
-`listing.viewed` (facets, result count) · `facet.applied` · `search.submitted`
-(query — redacted and capped at `/api/x/collect` before it is stored, because a
-visitor can type an email address or a phone number into a search box — result
-count, `zeroResults`) · `place.viewed` · `maker.viewed` ·
-`curation.viewed` · `story.viewed` · `reading.depth` (25/50/75/100 on stories and
-essays)
-
-**Item**
-`item.viewed` (product id, kind, inventory model, price band, status) — sent
-once the purchase panel **resolves**: `priceBand` and `status` are its own
-`analytics` (C2 `PurchaseVM`), which only the streamed part knows, and
-`status` is `null` when availability could not be read (the `unverified`
-panel); where a brand's unique prices are on request (the gallery, D50) every
-unique item's band is `on-request` — a tier worked out from a private price would
-tell anyone reading the page's beacon what range the price lies in ·
-`item.zoomed` (image role, max zoom) · `item.versoViewed` ·
-`item.roomViewOpened` · `item.factsheetDownloaded` · `item.shared` (channel) ·
-`item.saved` · `item.unsaved` (both: product id, variant id, the list's new
-size — the wishlist's contents never leave the device, D35) · `alert.created`
-(want-list · item-alert, from which surface — the demand dashboard counts the
-domain's `wantList.started` instead, never this) ·
-`sister.clicked` (direction: to-original · to-prints, the link's own `workUid`) ·
-`configurator.changed` (axis) · `configurator.completed`
-
-**Leads — the gallery's real funnel, and at launch its only one** (D50: every
-original is sold by conversation and invoice)
-`price.requested` · `offer.submitted` · `hold.requested` · `enquiry.submitted`
-(topic) · `viewing.booked` · `consignment.submitted` · `whatsapp.clicked`
-(context: item · checkout · footer · business) · `call.clicked` (context: item ·
-footer — the gallery's Call button, added with C11 v1.5) ·
-`retailerApplication.submitted` (shop type only, never who it is). No brand sends
-`offer.submitted` or `hold.requested` at launch (D22, D50); the names stay. These
-feed the funnel's steps (and GA4's `generate_lead` and Meta's `Lead` once a brand sets a tag
-id — none at launch, G12); the **Leads
-dashboard's own counts** (§3) come from the domain's stored records instead, which
-a blocked script, a failed beacon post or a reload cannot move. A call or a
-WhatsApp chat leaves no record on the site, so its tap is the one lead step only
-the beacon can see — counted, never mistaken for a sale.
-
-**Purchase**
-`cart.added` (product id, variant id, quantity, `value` — the added line's own
-subtotal as the cart's answer states it, the unit's charge × quantity, never
-an estimate and never recomputed in the page) · `cart.removed` · `cart.viewed` ·
-`checkout.started` · `checkout.stepCompleted` (step) · `checkout.lockTaken` ·
-`checkout.lockExpired` · `payment.methodSelected` · `payment.attempted` ·
-`payment.failed` (`reasonClass`, C7's failure class) · and, from the domain:
-`order.paid` · `order.refunded` · `order.partiallyRefunded` · `proforma.issued` and
-`invoiceHold.expired` (the gallery's invoice issued, and lapsed unpaid, D50) ·
-`offer.accepted` · `hold.granted` · `hold.expired` (no brand at launch: D22, D50 — the
-names stay for a brand that takes offers or reserve requests) ·
-`reservation.conflicted` (someone else was
-first) · the leads as stored — `offer.received` · `holdRequest.received` (neither at
-launch) · `priceRequest.received` · `enquiry.received` · `consignment.received` ·
-`appointment.booked` · `quote.requested` (a partner's brief or reorder, an
-institution's request: who asked and how, never who they are) · `retailer.applied` · `retailer.reapplied` · `retailer.approved` ·
-`retailer.declined` (the shop's partner funnel, D31: applications — first and
-again — and staff's decisions, with the hours they took; never the applicant's
-name, NPWP or contact) · `wantList.started` (a saved search or item alert kept
-— an address's once confirmed, D39, or an account's once saved where a brand has
-buyer accounts, none at launch, D54; what the demand dashboard counts as unmet
-demand, §3).
-
-The two refund events reverse revenue, so the domain emits them only for the
-payment that paid the order: giving back a late or a duplicate payment is the
-payment's own fact (`payment.refunded`) and never reaches a dashboard as a
-refund of revenue that was never counted.
-
-**People and performance**
-`newsletter.subscribed` · `newsletter.confirmed` · `account.created` ·
-`account.signedIn` (at launch the shop's partners alone sign in: the gallery has no
-accounts, D54) · `consent.updated` · `vitals.reported` (LCP/INP/CLS per
-surface and device class — field data, not just lab)
-
-### Mapping to GA4 and Meta (consented only — not at launch, G12)
-
-Kept for the day a brand sets a tag id; no brand does at launch, so nothing below
-fires.
-
-| Ours | GA4 | Meta |
-| ---- | --- | ---- |
-| `listing.viewed` | `view_item_list` | — |
-| `item.viewed` | `view_item` | `ViewContent` |
-| `item.saved` | `add_to_wishlist` | `AddToWishlist` |
-| `cart.added` / `cart.removed` | `add_to_cart` / `remove_from_cart` | `AddToCart` |
-| `checkout.started` | `begin_checkout` | `InitiateCheckout` |
-| shipping / payment step | `add_shipping_info` / `add_payment_info` | `AddPaymentInfo` |
-| `order.paid` | `purchase` | `Purchase` |
-| `order.refunded` · `order.partiallyRefunded` | `refund` (with the refunded value) | — |
-| `price.requested` · `offer.submitted` (a brand that takes offers) · `enquiry.submitted` · `viewing.booked` · `retailerApplication.submitted` | `generate_lead` | `Lead` |
-| `search.submitted` | `search` | `Search` |
-| `newsletter.confirmed` | `sign_up` | `Subscribe` |
-
-Purchase values are sent in the **charge currency** with the order's FX snapshot
-recorded server-side, never recomputed in the browser. The browser's `purchase`
-tag fires from the order-confirmation page with the order id as GA4's
-`transaction_id` and Meta's `eventID` (so each dedupes a reload) — and when the
-payment lands while the payment-pending page polls, from its re-render once the
-poll answers paid, since the poll's answer carries no conversion; a server-side conversion API, if added later, reads
-from the outbox, not from the webhook. Every tag converts a `Money` to the
-decimal figure GA4 and Meta expect by its currency's exponent
-(`CURRENCY_EXPONENT`, @engine/config/schema) — IDR 95000 is `95000`, USD 1000
-is `10.00` — the one place in the pipeline a minor-unit integer becomes a
-float, and only for the platforms that require one.
-
-## 3. Dashboards (in each brand's admin)
-
-**These are the analytics** (G12): with no third-party tag at launch, every figure
-the owner reads about traffic, leads and sales is on these screens, from the beacon
-and the domain's records alone — no number waits on, or is checked against, GA4.
-
-One brand per dashboard, labelled as such — a Payload process binds one
-database, so a cross-brand total would be a claim the screen cannot back (NOW!
-DESIGN-SYSTEM §5).
-
-- **Funnels** — each brand's own, by market, destination, device class and
-  source. The shop's: listing → item → cart → checkout → paid. **The gallery's**
-  (D50): listing → item → lead (a WhatsApp or call tap, a price request, an
-  enquiry, a viewing, a proforma request) → **invoice issued** (`proforma.issued`)
-  → **paid** (`order.paid`), or **lapsed unpaid** (`invoiceHold.expired`) — so the
-  owner sees how many conversations become invoices and how many invoices are paid.
-- **Demand the stock does not meet** — zero-result searches and want-lists kept
-  (the domain's `wantList.started`, never the beacon's `alert.created`)
-  grouped by maker and place — and by budget only where prices are shown (the
-  gallery's want-lists take none, D50). For the gallery this is a **buying list**:
-  what collectors want that is not in the drawers.
-- **Leads** — price requests, enquiries, viewings, proforma and quote requests and
-  retailer applications (and offers and holds, where a brand takes them), counted
-  from the domain's stored records (§2), with response time to first reply — the
-  gallery promises the same working day, Singapore time (G9) — and conversion to an
-  invoice and to paid.
-- **The sold archive** — traffic to sold pages and the alerts they create.
-- **Payments** — method mix, failure reasons, reconciliation corrections,
-  late-payment refunds.
-- **Merchandise** — configurator completion, top designs, format ladder mix,
-  attach rate of frames and gift wrap, showroom vs online, pickup share.
-- **Web Vitals** by surface and device class, against DESIGN-SYSTEM.md §7.
-
-**Done means visible:** a funnel is "done" when it renders in the dashboard for a
-real session, not when rows exist in the table (KOI CONVENTIONS — the dashboard
-that 500'd behind a green test).
-
-## 4. Retention
-
-Raw events 14 months, then rolled up into `analytics_rollups` (per day ×
-event × entity × locale × device class: count and sessions) **before** anything
-is dropped. Domain events and orders follow the retention the accountant and
-COMPLIANCE.md require, not the analytics window.
+- **No consent banner** — counsel confirms that cookieless, non-personal measurement needs none (UU PDP, PDPA).
+  *Counsel.*
+- **Country of visitors** — not measured at launch (no IP geolocation database); add one if the owner wants it.
+  *Owner.*
