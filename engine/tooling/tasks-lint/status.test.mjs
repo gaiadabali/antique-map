@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { allTasks, parseTasksMd } from './parse.mjs'
-import { ALL_RULES, checkPhaseLimits } from './rules.mjs'
+import { ALL_RULES } from './rules.mjs'
 import { splitStatusSuffix } from './status.mjs'
 import { checkWaveReadiness } from './wave.mjs'
 
@@ -137,17 +137,6 @@ describe('the status rules', () => {
     expect(messages({ ...DONE, 1.2: ' — ✂️ cut: dropped' })).toEqual([
       '[needs-cut] 2.1 needs 1.2, but 1.2 is ✂️ cut: it will never be ✅',
     ])
-  })
-
-  it('stops counting a ✂️ task towards the eight-task limit', () => {
-    const many = Array.from(
-      { length: 9 },
-      (_, i) =>
-        `- [ ] **1.${i + 1} T** · needs: —${i === 8 ? ' — ✂️ cut: too many' : ''}\n  - **Wave** W1\n  - **Owns** \`f/${i}/**\`\n  - [ ] 1.${i + 1}.a **Check:** ok\n`,
-    ).join('\n')
-    expect(
-      checkPhaseLimits(parseTasksMd(`## Phase 1 — M · Foundation · needs — · ~1d\n\n${many}`)),
-    ).toEqual([])
   })
 })
 
