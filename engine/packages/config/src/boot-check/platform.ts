@@ -1,7 +1,7 @@
 /**
  * The process's own environment (DEPLOYMENT.md §8) and what may not be so where it runs: the
  * database and Payload secrets, storage, mail, the cron and revalidation secrets, the link-key
- * ring, the loader source, and the site allow-list (`../sites/hosts`). A development default such
+ * ring when one is set, the loader source, and the site allow-list (`../sites/hosts`). A development default such
  * as `dev-only-not-a-secret` (`.env.example`) or MinIO's `minioadmin` is refused on a deployed host.
  */
 import { siteHostProblems } from '../sites/hosts'
@@ -97,9 +97,14 @@ export function checkPlatform(
     }
   }
 
-  const ring = parseLinkTokenKeys(read(env, 'LINK_TOKEN_KEYS'), now)
-  for (const problem of ring.problems) findings.refuse('LINK_TOKEN_KEYS', problem)
-  for (const warning of ring.warnings) findings.warn('LINK_TOKEN_KEYS', warning)
+  // Optional (DEPLOYMENT.md §8 lists no link-key ring; nothing derives a link from one yet), but a
+  // ring that is set is checked: a malformed one is refused rather than used later.
+  const ringValue = read(env, 'LINK_TOKEN_KEYS')
+  if (ringValue !== undefined) {
+    const ring = parseLinkTokenKeys(ringValue, now)
+    for (const problem of ring.problems) findings.refuse('LINK_TOKEN_KEYS', problem)
+    for (const warning of ring.warnings) findings.warn('LINK_TOKEN_KEYS', warning)
+  }
 
   return loadersSource(env, environment, findings)
 }

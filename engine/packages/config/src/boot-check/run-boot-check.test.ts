@@ -72,7 +72,7 @@ describe('runBootCheck() — at process start', () => {
 
   it('assertBootable() throws a BootCheckError listing every problem', async () => {
     const report = await runBootCheck({
-      env: workstation({ LINK_TOKEN_KEYS: undefined, DATABASE_URL: undefined }),
+      env: workstation({ PAYLOAD_SECRET: undefined, DATABASE_URL: undefined }),
       now: NOW,
     })
     expect(() => assertBootable(report)).toThrow(BootCheckError)
@@ -82,7 +82,7 @@ describe('runBootCheck() — at process start', () => {
       const message = (error as Error).message
       expect(message).toMatch(/^boot check refused to start \(local\): 2 problem\(s\)/)
       expect(message).toContain('✗ DATABASE_URL: is not set')
-      expect(message).toContain('✗ LINK_TOKEN_KEYS: is not set')
+      expect(message).toContain('✗ PAYLOAD_SECRET: is not set')
     }
   })
 })

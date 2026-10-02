@@ -14,9 +14,16 @@ const refusal = (report: BootReport, subject: string) => {
 }
 
 describe('bootCheck() — missing secrets refuse the start', () => {
-  it('refuses a missing database, Payload secret or link-key ring anywhere, a workstation included', () => {
-    for (const name of ['DATABASE_URL', 'PAYLOAD_SECRET', 'LINK_TOKEN_KEYS']) {
+  it('refuses a missing database or Payload secret anywhere, a workstation included', () => {
+    for (const name of ['DATABASE_URL', 'PAYLOAD_SECRET']) {
       expect(refusal(check({ ...fullEnv('local'), [name]: undefined }), name)).toMatch(/is not set/)
+    }
+  })
+
+  it('needs no link-key ring, on a host or a workstation (DEPLOYMENT.md §8), but checks one that is set', () => {
+    for (const environment of ['local', 'staging', 'production'] as const) {
+      const report = check({ ...fullEnv(environment), LINK_TOKEN_KEYS: undefined })
+      expect(report.problems, formatBootReport(report)).toEqual([])
     }
   })
 
