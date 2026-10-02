@@ -555,22 +555,362 @@ export interface Master {
   createdAt: string
 }
 /**
+ * The objects themselves — each map, print, photograph or book. How one is sold is its product.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "works".
  */
 export interface Work {
   id: number
+  /**
+   * Made when the work is first saved, and never changed: sister sync and redirects key on it.
+   */
+  workUid?: string | null
+  /**
+   * The gallery’s own number: M.1044, P.2098.
+   */
+  stockNumber?: string | null
+  /**
+   * The hook title buyers read: "Bali by François Valentijn, 1726 — the first large-scale map of the island". Needed to publish. Required in English, the default language; another language left blank shows the English.
+   */
+  title?: string | null
+  /**
+   * As printed, letter for letter: Kaart van het Eyland Bali.
+   */
+  originalTitle?: string | null
+  /**
+   * Its language: nl, la, ms.
+   */
+  originalTitleLanguage?: string | null
+  /**
+   * What kind of object it is: it decides the HS code and how the page reads.
+   */
+  objectType?:
+    | (
+        | 'map'
+        | 'sea-chart'
+        | 'city-plan'
+        | 'view'
+        | 'print'
+        | 'photograph'
+        | 'book'
+        | 'atlas'
+        | 'poster'
+        | 'document'
+        | 'ethnographic'
+        | 'other'
+      )
+    | null
+  /**
+   * Who made it, in what role, and how certain the attribution is.
+   */
+  makers?:
+    | {
+        maker: number | Maker
+        role:
+          | 'cartographer'
+          | 'engraver'
+          | 'publisher'
+          | 'author'
+          | 'artist'
+          | 'photographer'
+          | 'studio'
+          | 'printer'
+        certainty: 'certain' | 'attributed' | 'after' | 'workshop'
+        id?: string | null
+      }[]
+    | null
+  /**
+   * When this sheet was printed or issued. Needed to publish.
+   */
+  date?: {
+    precision?: ('exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown') | null
+    from?: number | null
+    to?: number | null
+    /**
+     * Your own wording, if the year alone says it wrong: "1724–26".
+     */
+    display?: string | null
+  }
+  /**
+   * When the work first appeared, if earlier.
+   */
+  firstEdition?: {
+    precision?: ('exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown') | null
+    from?: number | null
+    to?: number | null
+    /**
+     * Your own wording, if the year alone says it wrong: "1724–26".
+     */
+    display?: string | null
+  }
+  /**
+   * The date the plate itself bears, if any.
+   */
+  dateOnPlate?: {
+    precision?: ('exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown') | null
+    from?: number | null
+    to?: number | null
+    /**
+     * Your own wording, if the year alone says it wrong: "1724–26".
+     */
+    display?: string | null
+  }
+  /**
+   * As the imprint and the book it came from say.
+   */
+  publication?: {
+    /**
+     * Amsterdam
+     */
+    place?: string | null
+    /**
+     * As printed
+     */
+    publisher?: string | null
+    /**
+     * From: Oud en Nieuw Oost-Indiën, 1724–26.
+     */
+    sourceWork?: string | null
+    edition?: string | null
+    state?: string | null
+    /**
+     * Of the printed text: nl, la.
+     */
+    textLanguage?: string | null
+    /**
+     * "Verso: blank", or the text printed on the back.
+     */
+    verso?: string | null
+  }
+  technique?:
+    | (
+        | 'woodcut'
+        | 'wood-engraving'
+        | 'copperplate-engraving'
+        | 'etching'
+        | 'steel-engraving'
+        | 'mezzotint'
+        | 'aquatint'
+        | 'lithograph'
+        | 'chromolithograph'
+        | 'offset-lithograph'
+        | 'screenprint'
+        | 'salt-print'
+        | 'albumen-print'
+        | 'gelatin-silver-print'
+        | 'collotype'
+        | 'photogravure'
+        | 'cyanotype'
+        | 'manuscript'
+        | 'other'
+      )
+    | null
+  colour?: ('publishers' | 'original-hand' | 'old-hand' | 'later' | 'printed' | 'uncoloured') | null
+  /**
+   * In millimetres, height before width. Inches are worked out for you.
+   */
+  dimensions?: {
+    /**
+     * The printed area: to the plate mark, or the neat line.
+     */
+    image?: {
+      height?: number | null
+      width?: number | null
+    }
+    /**
+     * The whole sheet, margins included.
+     */
+    sheet?: {
+      height?: number | null
+      width?: number | null
+    }
+    /**
+     * The frame’s outer size, if it is framed.
+     */
+    framed?: {
+      height?: number | null
+      width?: number | null
+      depth?: number | null
+    }
+  }
+  /**
+   * A volume’s collation.
+   */
+  book?: {
+    binding?: string | null
+    pagination?: string | null
+    plates?: string | null
+    completeness?: string | null
+    /**
+     * Photographs of spreads, in order.
+     */
+    openings?: (number | Media)[] | null
+    spine?: (number | null) | Media
+    cover?: (number | null) | Media
+  }
+  /**
+   * One primary place, and up to 5 more as tags.
+   */
+  places?:
+    | {
+        place: number | Place
+        role: 'depicts' | 'published-at' | 'photographed-at'
+        primary?: boolean | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Wayang, Batik, Temples, Spices, VOC, Costume …
+   */
+  subjects?: (number | Term)[] | null
+  /**
+   * "Tooley (Australia) 1268", Koeman, Parry numbers.
+   */
+  references?:
+    | {
+        source: number | Source
+        ref?: string | null
+        note?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Who held it before, and when.
+   */
+  provenance?:
+    | {
+        holder: string
+        period?: string | null
+        note?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Other copies of this map: offered when this one has sold.
+   */
+  sameEdition?: (number | Work)[] | null
+  condition?: {
+    /**
+     * From the brand’s published scale (Terms → Condition grade).
+     */
+    grade?: (number | null) | Term
+    notes?: string | null
+    defects?:
+      | {
+          defect: string
+          id?: string | null
+        }[]
+      | null
+    restoration?: string | null
+  }
+  /**
+   * Each image’s role — recto, verso, detail … — is the image’s own. The page leads with the first photographed recto; nothing on a work is AI-generated.
+   */
+  images?:
+    | {
+        media: number | Media
+        caption?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * The recto’s capture its reproductions are made from.
+   */
+  master?: (number | null) | Master
+  /**
+   * From the owner’s item register. Left blank, the item publishes as enquiry-only and sells nowhere online.
+   */
+  physical?: {
+    /**
+     * Where the object is now.
+     */
+    location?: (number | null) | Location
+    /**
+     * Never assumed: set it from the register.
+     */
+    exportStatus?: ('cleared' | 'domestic-only' | 'permit-pending' | 'not-applicable') | null
+    coaIssued?: boolean | null
+    acquisition?: {
+      source?: string | null
+      consignor?: string | null
+      date?: string | null
+      /**
+       * In the currency’s smallest unit: cents, or whole rupiah.
+       */
+      cost?: {
+        amount?: number | null
+        currency?: ('IDR' | 'USD' | 'SGD' | 'EUR' | 'AUD' | 'GBP') | null
+      }
+    }
+  }
+  /**
+   * Whether reproductions may be made and sold from this work.
+   */
+  rights?: {
+    status?: ('public-domain' | 'licensed' | 'rights-pending' | 'restricted' | 'unknown') | null
+    holder?: string | null
+    licenceRef?: string | null
+    /**
+     * Two-letter country codes, or WORLD.
+     */
+    territories?: string[] | null
+    expires?: string | null
+    /**
+     * A reproduction of this work cannot publish while this is off.
+     */
+    printAllowed?: boolean | null
+  }
+  /**
+   * Set by the sister sync on a copy of a sister’s work: its synced fields are read-only here.
+   */
+  origin?: {
+    brand?: string | null
+    workUid?: string | null
+    syncedAt?: string | null
+  }
+  cataloguing?: {
+    status?: ('draft' | 'catalogued' | 'verified') | null
+    cataloguer?: (number | null) | User
+    verifiedAt?: string | null
+    /**
+     * The work cannot publish while any field is listed here.
+     */
+    aiDraft?:
+      | (
+          | 'title'
+          | 'originalTitle'
+          | 'publication'
+          | 'date'
+          | 'makers'
+          | 'places'
+          | 'subjects'
+          | 'technique'
+          | 'colour'
+          | 'condition'
+          | 'references'
+          | 'seo'
+        )[]
+      | null
+  }
+  legacy?: {
+    /**
+     * The old site’s product id: the public id it keeps.
+     */
+    productId?: number | null
+    sku?: string | null
+    url?: string | null
+    categories?: string[] | null
+  }
+  seo?: {
+    title?: string | null
+    description?: string | null
+    image?: (number | null) | Media
+  }
+  translationStatus: 'entered' | 'machine' | 'reviewed'
   updatedAt: string
   createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "designs".
- */
-export interface Design {
-  id: number
-  updatedAt: string
-  createdAt: string
+  _status?: ('draft' | 'published') | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -718,6 +1058,24 @@ export interface Source {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations".
+ */
+export interface Location {
+  id: number
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "designs".
+ */
+export interface Design {
+  id: number
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "curations".
  */
 export interface Curation {
@@ -748,15 +1106,6 @@ export interface ProductType {
  * via the `definition` "variants".
  */
 export interface Variant {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "locations".
- */
-export interface Location {
   id: number
   updatedAt: string
   createdAt: string
@@ -1351,8 +1700,202 @@ export interface CurationsSelect<T extends boolean = true> {
  * via the `definition` "works_select".
  */
 export interface WorksSelect<T extends boolean = true> {
+  workUid?: T
+  stockNumber?: T
+  title?: T
+  originalTitle?: T
+  originalTitleLanguage?: T
+  objectType?: T
+  makers?:
+    | T
+    | {
+        maker?: T
+        role?: T
+        certainty?: T
+        id?: T
+      }
+  date?:
+    | T
+    | {
+        precision?: T
+        from?: T
+        to?: T
+        display?: T
+      }
+  firstEdition?:
+    | T
+    | {
+        precision?: T
+        from?: T
+        to?: T
+        display?: T
+      }
+  dateOnPlate?:
+    | T
+    | {
+        precision?: T
+        from?: T
+        to?: T
+        display?: T
+      }
+  publication?:
+    | T
+    | {
+        place?: T
+        publisher?: T
+        sourceWork?: T
+        edition?: T
+        state?: T
+        textLanguage?: T
+        verso?: T
+      }
+  technique?: T
+  colour?: T
+  dimensions?:
+    | T
+    | {
+        image?:
+          | T
+          | {
+              height?: T
+              width?: T
+            }
+        sheet?:
+          | T
+          | {
+              height?: T
+              width?: T
+            }
+        framed?:
+          | T
+          | {
+              height?: T
+              width?: T
+              depth?: T
+            }
+      }
+  book?:
+    | T
+    | {
+        binding?: T
+        pagination?: T
+        plates?: T
+        completeness?: T
+        openings?: T
+        spine?: T
+        cover?: T
+      }
+  places?:
+    | T
+    | {
+        place?: T
+        role?: T
+        primary?: T
+        id?: T
+      }
+  subjects?: T
+  references?:
+    | T
+    | {
+        source?: T
+        ref?: T
+        note?: T
+        id?: T
+      }
+  provenance?:
+    | T
+    | {
+        holder?: T
+        period?: T
+        note?: T
+        id?: T
+      }
+  sameEdition?: T
+  condition?:
+    | T
+    | {
+        grade?: T
+        notes?: T
+        defects?:
+          | T
+          | {
+              defect?: T
+              id?: T
+            }
+        restoration?: T
+      }
+  images?:
+    | T
+    | {
+        media?: T
+        caption?: T
+        id?: T
+      }
+  master?: T
+  physical?:
+    | T
+    | {
+        location?: T
+        exportStatus?: T
+        coaIssued?: T
+        acquisition?:
+          | T
+          | {
+              source?: T
+              consignor?: T
+              date?: T
+              cost?:
+                | T
+                | {
+                    amount?: T
+                    currency?: T
+                  }
+            }
+      }
+  rights?:
+    | T
+    | {
+        status?: T
+        holder?: T
+        licenceRef?: T
+        territories?: T
+        expires?: T
+        printAllowed?: T
+      }
+  origin?:
+    | T
+    | {
+        brand?: T
+        workUid?: T
+        syncedAt?: T
+      }
+  cataloguing?:
+    | T
+    | {
+        status?: T
+        cataloguer?: T
+        verifiedAt?: T
+        aiDraft?: T
+      }
+  legacy?:
+    | T
+    | {
+        productId?: T
+        sku?: T
+        url?: T
+        categories?: T
+      }
+  seo?:
+    | T
+    | {
+        title?: T
+        description?: T
+        image?: T
+      }
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

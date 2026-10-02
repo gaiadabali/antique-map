@@ -85,10 +85,10 @@ describe.skipIf(!server)('upload temp files, on every endpoint (on Postgres)', (
     expect(probe.leftovers()).toEqual([])
   }, 30_000)
 
-  it('the works stub, anonymous and signed in: refused, nothing left', async () => {
-    expect((await post('/api/works', form({}, FILE))).status).toBe(403)
-    expect((await post('/api/works', form({}, FILE), true)).status).toBe(403)
-    expect([403, 404]).toContain((await patch('/api/works/1', form({}, FILE), true)).status)
+  it('a stub collection, anonymous and signed in: refused, nothing left', async () => {
+    expect((await post('/api/products', form({}, FILE))).status).toBe(403)
+    expect((await post('/api/products', form({}, FILE), true)).status).toBe(403)
+    expect([403, 404]).toContain((await patch('/api/products/1', form({}, FILE), true)).status)
     expect(probe.leftovers()).toEqual([])
   }, 30_000)
 
