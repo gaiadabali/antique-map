@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 5/33 | 0 | `██░░░░░░░░`  15% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 5/14 | 0 | `████░░░░░░`  36% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **51/200** | **8** | `███░░░░░░░`  26% |
+| **All** | 11 phases | | | **9/49** | **53/200** | **8** | `███░░░░░░░`  27% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -521,9 +521,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/cart/**`, `engine/packages/cms/src/shop/pricing/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/bag/**`
   - **Read** COMMERCE.md §Cart and §Pricing, SECURITY.md §Server-side pricing
   - _Requirements: 5.3, 5.5, 6.2_
-  - [ ] 6.2.a the bag in a cookie holding only product, variant and quantity; every price, fee and total is computed by the server from the database; integer rupiah, rounded once
+  - [x] 6.2.a the bag in a cookie holding only product, variant and quantity; every price, fee and total is computed by the server from the database; integer rupiah, rounded once
   - [ ] 6.2.b the delivery-fee quote: distance bands from `site-settings` measured from the nearest eligible store (6.3.b) against the admin-maintained fee table (Q3, filled in from the local courier price); free over the threshold after the discount; a pin beyond the last band is refused with a WhatsApp handoff
-  - [ ] 6.2.c the welcome code: validated and applied by the server, single-use rules from `discounts`
+  - [x] 6.2.c the welcome code: validated and applied by the server, single-use rules from `discounts`
   - [ ] 6.2.d **Check:** unit tests prove: a tampered price or quantity in the request is ignored; totals match hand-computed cases to the rupiah; free delivery switches on exactly at the threshold; an expired or unknown code is refused with a plain message.
 
 - [ ] **6.3 Checkout, the map pin, the nearest store and the atomic stock** · needs: 6.1, 6.2
