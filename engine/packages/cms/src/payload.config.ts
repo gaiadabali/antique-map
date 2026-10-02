@@ -1,30 +1,25 @@
 /**
- * The one Payload config (TASKS.md 3.2.a, ARCHITECTURE.md §2), instantiated once per brand
- * process against that brand's database. It is **brand-independent** in everything that reaches
- * the schema, the generated types or the import map: Payload stores `_locale` as a Postgres
- * enum, adds storage fields only while a plugin is enabled and writes admin components into a
- * generated import map, so a config shaped by `BRAND` would give two brands two schemas. CI
- * regenerates all three with `BRAND` unset and once per brand, and fails on a diff (2.2.g).
+ * The one Payload config (ARCHITECTURE.md §2): one CMS and one database serving both sites, the
+ * gallery and the shop, from one process. Nothing in it depends on which site a request is for:
+ * the schema, the generated types and the import map are the same in every context, and CI
+ * regenerates the last two and fails on a diff (`pnpm check:generated`).
  *
- * `BRAND` may set only: the server URL, CSRF/CORS, the email sender, and admin branding through
- * admin components that read the brand at runtime (ADM) — plus, at request time, module
- * visibility and access (`access/modules`). Everything else is the same for every brand.
+ * What the environment may set: the server URL and CSRF/CORS (`SITE_URL`, `access/origins`), the
+ * mail transport and sender (`SMTP_*`), the database and the buckets.
  *
- * Importing this never touches a database, never needs a brand and never throws for want of a
- * secret: the build imports it with none of them (CONVENTIONS.md §12). The pool opens, and
- * pending migrations apply, on the first `getPayload()` (`db/adapter`).
+ * Importing this never touches a database and never throws for want of a secret: the build
+ * imports it with none of them (CONVENTIONS.md §12). The pool opens, and pending migrations
+ * apply, on the first `getPayload()` (`db/adapter`).
  */
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { LOCALE_CODES, type BrandConfig, type LocaleCode } from '@engine/config/schema'
 import { multipartUploadOptions } from '@engine/media/storage'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { buildConfig, type Config, type EmailAdapter, type SanitizedConfig } from 'payload'
 import { en } from 'payload/i18n/en'
 import { id } from 'payload/i18n/id'
 
-import { activeBrand, brandFrom } from './access/brand'
 import { siteOrigin, trustedOrigins } from './access/origins'
 import { USERS_SLUG } from './access/roles'
 import { buildDatabaseAdapter } from './db/adapter'
@@ -46,30 +41,35 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
  */
 export const COOKIE_PREFIX = 'payload'
 
-/** The database default and the admin's editing default; each brand's own set is its routes'. */
-const DEFAULT_LOCALE: LocaleCode = 'en'
-const LOCALE_LABELS: Record<LocaleCode, string> = {
+/**
+ * The content locales, both sites alike (DR-12): English — the default and the fallback — and
+ * Indonesian. `nl` went with the multi-brand plan (TASKS.md 2.4.a). Declared here, not read from
+ * `@engine/config/constants`, whose list still carries `nl` until TASKS.md 2.2 trims it.
+ */
+export const CMS_LOCALES = ['en', 'id'] as const
+export type CmsLocale = (typeof CMS_LOCALES)[number]
+const DEFAULT_LOCALE: CmsLocale = 'en'
+const LOCALE_LABELS: Record<CmsLocale, string> = {
   en: 'English',
   id: 'Bahasa Indonesia',
-  nl: 'Nederlands',
 }
 
 /**
- * Mail through SMTP — Mailpit locally, the brand's provider on a host. With no `SMTP_HOST`,
- * Payload writes mail to the console (never an ethereal test account, which would call out to
- * the network). The transport is not verified at start: that would open a connection while the
- * config loads; `/api/health` is where reachability is reported.
+ * Mail through SMTP — Mailpit locally, the provider on a host. With no `SMTP_HOST` or no
+ * `SMTP_FROM_ADDRESS`, Payload writes mail to the console (never an ethereal test account, which
+ * would call out to the network). The transport is not verified at start: that would open a
+ * connection while the config loads; `/api/health` is where reachability is reported.
  */
-function emailAdapter(env: Env, brand: BrandConfig | null): Promise<EmailAdapter> | undefined {
+function emailAdapter(env: Env): Promise<EmailAdapter> | undefined {
   const host = env.SMTP_HOST?.trim()
-  const fromAddress = env.SMTP_FROM_ADDRESS?.trim() || brand?.identity.contact.email
+  const fromAddress = env.SMTP_FROM_ADDRESS?.trim()
   if (!host || !fromAddress) return undefined
   const port = Number(env.SMTP_PORT?.trim() || 587)
   const user = env.SMTP_USER?.trim()
   const pass = env.SMTP_PASS
   return nodemailerAdapter({
     defaultFromAddress: fromAddress,
-    defaultFromName: env.SMTP_FROM_NAME?.trim() || brand?.name || fromAddress,
+    defaultFromName: env.SMTP_FROM_NAME?.trim() || fromAddress,
     skipVerify: true,
     transportOptions: {
       host,
@@ -80,11 +80,11 @@ function emailAdapter(env: Env, brand: BrandConfig | null): Promise<EmailAdapter
   })
 }
 
-/** The config's input, before Payload sanitises it — `env` injectable so tests compare brands. */
+/** The config's input, before Payload sanitises it — `env` injectable so tests compare contexts. */
 export function engineConfig(env: Env = process.env): Config {
-  const brand = brandFrom(env)
-  const origins = trustedOrigins(env, brand)
-  const email = emailAdapter(env, brand)
+  // No brand any more: `SITE_URL`'s origin until `access/origins` lists both sites' (TASKS.md 2.2.c).
+  const origins = trustedOrigins(env, null)
+  const email = emailAdapter(env)
   return {
     admin: {
       user: USERS_SLUG,
@@ -104,32 +104,25 @@ export function engineConfig(env: Env = process.env): Config {
       migrations,
     }),
     ...(email ? { email } : {}),
-    // Nothing reads content through GraphQL: loaders use the Local API, the sister API is REST.
+    // Nothing reads content through GraphQL: loaders use the Local API.
     graphQL: { disable: true },
     // The admin in English unless the user picks Indonesian (ARCHITECTURE.md §11).
     i18n: { supportedLanguages: { en, id }, fallbackLanguage: 'en' },
     // Run by the cron-called route (/api/x/cron/jobs), never autoRun (ARCHITECTURE.md §10).
     jobs: { tasks: jobTasks(), workflows: jobWorkflows() },
     localization: {
-      // The superset in every database; a brand's own locales are enforced by its routes, and
-      // the admin's locale picker offers only those (read per request, so the schema is shared).
-      locales: LOCALE_CODES.map((code) => ({ code, label: LOCALE_LABELS[code] })),
+      // Both sites serve both locales, so the admin offers both to everyone.
+      locales: CMS_LOCALES.map((code) => ({ code, label: LOCALE_LABELS[code] })),
       defaultLocale: DEFAULT_LOCALE,
       fallback: true,
-      filterAvailableLocales: ({ locales }) => {
-        const supported = activeBrand()?.locales.supported
-        return supported
-          ? locales.filter((locale) => supported.includes(locale.code as LocaleCode))
-          : locales
-      },
     },
     plugins: registeredPlugins(env),
     secret: env.PAYLOAD_SECRET ?? '',
     telemetry: false,
     typescript: {
       outputFile: path.resolve(dirname, '../payload-types.ts'),
-      // Only `generate:types`, run by the SCH lead after a wave merges, writes the shared file —
-      // never a lane's dev server (PARALLEL-TRACKS.md §3.2).
+      // Only `generate:types`, run by the wave's schema lead, writes the shared file — never a
+      // lane's dev server (WORKFLOW.md §2).
       autoGenerate: false,
       // The v4 default, adopted now.
       strictDraftTypes: true,
@@ -142,7 +135,7 @@ export function engineConfig(env: Env = process.env): Config {
 }
 
 /**
- * The config every process runs — the apps, the CLI and the tests that drive REST: Payload's
+ * The config every process runs — the app, the CLI and the tests that drive REST: Payload's
  * `buildConfig()`, then every endpoint made to remove its request's upload temp files, which only
  * the built config holds (`hooks/request-temp-files`, TASKS.md 8.3.h). A test that calls
  * `buildConfig()` itself runs without that clean-up.

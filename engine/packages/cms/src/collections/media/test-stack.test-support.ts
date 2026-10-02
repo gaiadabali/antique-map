@@ -6,7 +6,7 @@
  * `CMS_TEST_POSTGRES_URL` names, its schema pushed from this config (`PAYLOAD_DEV_PUSH=1`: the
  * wave's migration is generated after the merge, PARALLEL-TRACKS.md §3.2), and the dev stack's
  * MinIO at `STORAGE_TEST_ENDPOINT`, with the local plan's scoped keys — never the root key — as
- * the brand process would hold them (`@engine/media` `storage:policies`, applied beforehand).
+ * the app's process would hold them (`@engine/media` `storage:policies`, applied beforehand).
  *
  * REST requests go through Payload's own `handleEndpoints`, the handler Next's `/api/[...slug]`
  * route calls, so access, multipart parsing and the file route are Payload's real ones.
@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url'
 import { multipartUploadOptions, s3BucketObjects, type BucketObjects } from '@engine/media/storage'
 import { handleEndpoints, type Payload, type SanitizedConfig } from 'payload'
 
+import { testOrigin } from '../../db/test-origin.test-support'
 import { buildEngineConfig, engineConfig } from '../../payload.config'
 
 type Pool = { query: (text: string) => Promise<unknown>; end: () => Promise<void> }
@@ -32,7 +33,11 @@ const rootSecret = process.env.STORAGE_TEST_ROOT_SECRET || 'minioadmin'
 
 export const MEDIA_BUCKET = 'test-media'
 export const MASTERS_BUCKET = 'archive-masters'
-export const ORIGIN = 'http://localhost:4199'
+/** The local plan's two keys (`@engine/media` `plans/local.json`). */
+export const MEDIA_USER = 'indies-media-writer'
+export const MASTERS_USER = 'indies-masters'
+const admin = testOrigin(4199)
+export const ORIGIN = admin.origin
 
 /** The local plan's secret for a user — `@engine/media`'s `deriveLocalSecret()`, restated. */
 export const localSecret = (user: string) =>
@@ -80,8 +85,6 @@ export type Stack = {
 export type Connect = (config: SanitizedConfig, key: string) => Promise<Payload>
 
 export async function startStack(options: {
-  storefront: 'gallery' | 'emporium'
-  mastersUser: string
   connect: Connect
   /** Where multipart files stream to, if not the process's shared folder — for a test that counts them. */
   tempFileDir?: string
@@ -89,26 +92,23 @@ export async function startStack(options: {
   const database = `cms_storage_test_${process.pid}_${Date.now()}`
   const url = new URL(server!)
   url.pathname = `/${database}`
-  const admin = new PgPool({ connectionString: server })
-  await admin.query(`CREATE DATABASE "${database}"`)
+  const pg = new PgPool({ connectionString: server })
+  await pg.query(`CREATE DATABASE "${database}"`)
   const env: Record<string, string> = {
     DATABASE_URL: url.href,
     PAYLOAD_SECRET: 'storage-db-test-only-never-signs-anything'.padEnd(48, 'x'),
-    SITE_URL: ORIGIN,
+    ...admin.env,
     PAYLOAD_DEV_PUSH: '1',
-    BRAND: 'test',
-    TEST_STOREFRONT: options.storefront,
-    BRAND_ROOT: path.resolve(here, '../../../../../../test'),
     S3_ENDPOINT: endpoint!,
     S3_BUCKET: MEDIA_BUCKET,
-    S3_ACCESS_KEY_ID: 'test-media-writer',
-    S3_SECRET_ACCESS_KEY: localSecret('test-media-writer'),
+    S3_ACCESS_KEY_ID: MEDIA_USER,
+    S3_SECRET_ACCESS_KEY: localSecret(MEDIA_USER),
     MEDIA_PUBLIC_URL: `${endpoint}/${MEDIA_BUCKET}`,
     MASTERS_BUCKET,
-    MASTERS_ACCESS_KEY_ID: options.mastersUser,
-    MASTERS_SECRET_ACCESS_KEY: localSecret(options.mastersUser),
+    MASTERS_ACCESS_KEY_ID: MASTERS_USER,
+    MASTERS_SECRET_ACCESS_KEY: localSecret(MASTERS_USER),
   }
-  // The hooks read the brand and the buckets at request time, from the process.
+  // The hooks read the buckets at request time, from the process.
   const saved = { ...process.env }
   Object.assign(process.env, env)
   delete process.env.RUN_MIGRATIONS
@@ -151,8 +151,8 @@ export async function startStack(options: {
         () => {},
       )
       await payload.destroy()
-      await admin.query(`DROP DATABASE IF EXISTS "${database}" WITH (FORCE)`)
-      await admin.end()
+      await pg.query(`DROP DATABASE IF EXISTS "${database}" WITH (FORCE)`)
+      await pg.end()
       process.env = saved
     },
   }

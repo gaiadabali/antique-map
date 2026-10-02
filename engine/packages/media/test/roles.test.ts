@@ -69,7 +69,9 @@ describe('the role lists', () => {
     expect(CONDITION_ROLES.every((role) => roleAllowed('work', role))).toBe(true)
     expect(roleAllowed('work', 'flat')).toBe(false)
     expect(roleAllowed('location', 'in-room')).toBe(false)
-    expect(roleAllowed('other', 'room-plate')).toBe(true)
+    expect(roleAllowed('other', 'editorial')).toBe(true)
+    // The configurator's room plates went with it (TASKS.md 2.4.b).
+    expect(MEDIA_ROLES).not.toContain('room-plate')
   })
 })
 
@@ -99,12 +101,9 @@ describe('provenance', () => {
     expect(provenanceAllowed('work', 'in-room', 'rendered')).toBe(true)
   })
 
-  it('keeps a location real, lets a product be labelled, and a plate only rendered', () => {
+  it('keeps a location real, lets a product and an editorial image be labelled', () => {
     expect(provenanceAllowed('location', 'showroom', 'rendered')).toBe(false)
     expect(provenanceAllowed('product', 'flat', 'ai-generated')).toBe(true)
-    expect(provenanceAllowed('other', 'room-plate', 'rendered')).toBe(true)
-    expect(provenanceAllowed('other', 'room-plate', 'composite')).toBe(false)
-    expect(provenanceAllowed('other', 'room-plate', 'ai-generated')).toBe(false)
     expect(provenanceAllowed('other', 'editorial', 'ai-generated')).toBe(true)
   })
 })

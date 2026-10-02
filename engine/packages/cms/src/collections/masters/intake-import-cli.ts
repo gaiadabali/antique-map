@@ -2,11 +2,11 @@
  * Imports an intake batch's manifest into `masters` (TASKS.md 8.3.f), from the bucket — where the
  * batch's `intake.json` sits beside its files (C9 `intakeManifestKey()`) — or from a file:
  *
- *   pnpm --filter @engine/cms exec payload run src/collections/masters/intake-import-cli.ts <brand> <batch>
+ *   pnpm --filter @engine/cms exec payload run src/collections/masters/intake-import-cli.ts <batch>
  *   pnpm --filter @engine/cms exec payload run src/collections/masters/intake-import-cli.ts file=<path>
  *
- * Words, not `--flags`: `payload run` drops flags before the script sees them. It needs the
- * brand's DATABASE_URL and PAYLOAD_SECRET, and S3_ENDPOINT with the origin's MASTERS_* key. Safe
+ * Words, not `--flags`: `payload run` drops flags before the script sees them. It needs
+ * DATABASE_URL and PAYLOAD_SECRET, and S3_ENDPOINT with the MASTERS_* key. Safe
  * to run again: what is already recorded is left as it is (`./intake-import`). Exits 1 if any
  * entry failed, each failure named.
  */
@@ -25,11 +25,11 @@ const MANIFEST_MAX_BYTES = 10 * 1024 * 1024
 async function readManifest(words: string[]): Promise<unknown> {
   const file = words.find((word) => word.startsWith('file='))?.slice('file='.length)
   if (file) return JSON.parse(readFileSync(file, 'utf8'))
-  const [brand, batch] = words
-  if (!brand || !batch) throw new Error('name the batch: <brand> <batch>, or file=<path>')
+  const [batch] = words
+  if (!batch) throw new Error('name the batch: <batch>, or file=<path>')
   const store = mastersStoreFromEnv()
   if (!store) throw new Error(STORE_MISSING)
-  const key = intakeManifestKey(brand, batch)
+  const key = intakeManifestKey(batch)
   const text = await store.readText(key, MANIFEST_MAX_BYTES)
   if (text === null) throw new Error(`no manifest at ${key} in ${store.bucket}`)
   return JSON.parse(text)
@@ -44,7 +44,7 @@ try {
   const outcomes = await importIntakeManifest(payload, parsed.manifest)
   const count = (outcome: string) => outcomes.filter((o) => o.outcome === outcome).length
   console.log(
-    `intake-import: ${parsed.manifest.brand}/${parsed.manifest.batch} — ${count('created')} created, ${count('existing')} already recorded, ${count('failed')} failed`,
+    `intake-import: ${parsed.manifest.batch} — ${count('created')} created, ${count('existing')} already recorded, ${count('failed')} failed`,
   )
   for (const failure of outcomes.filter((o) => o.outcome === 'failed')) {
     code = 1

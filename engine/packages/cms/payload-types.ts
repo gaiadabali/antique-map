@@ -68,44 +68,14 @@ export interface Config {
   blocks: {}
   collections: {
     users: User
-    customers: Customer
-    addresses: Address
-    'saved-items': SavedItem
-    'want-lists': WantList
-    subscribers: Subscriber
-    reviews: Review
+    stores: Store
+    works: Work
     makers: Maker
     places: Place
     terms: Term
     sources: Source
-    curations: Curation
-    works: Work
-    designs: Design
-    products: Product
-    'product-types': ProductType
-    variants: Variant
-    locations: Location
-    'stock-levels': StockLevel
     media: Media
     masters: Master
-    stories: Story
-    pages: Page
-    exhibitions: Exhibition
-    redirects: Redirect
-    carts: Cart
-    reservations: Reservation
-    orders: Order
-    'payment-attempts': PaymentAttempt
-    refunds: Refund
-    shipments: Shipment
-    returns: Return
-    offers: Offer
-    enquiries: Enquiry
-    consignments: Consignment
-    appointments: Appointment
-    invoices: Invoice
-    discounts: Discount
-    'gift-cards': GiftCard
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -118,44 +88,14 @@ export interface Config {
   }
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>
-    customers: CustomersSelect<false> | CustomersSelect<true>
-    addresses: AddressesSelect<false> | AddressesSelect<true>
-    'saved-items': SavedItemsSelect<false> | SavedItemsSelect<true>
-    'want-lists': WantListsSelect<false> | WantListsSelect<true>
-    subscribers: SubscribersSelect<false> | SubscribersSelect<true>
-    reviews: ReviewsSelect<false> | ReviewsSelect<true>
+    stores: StoresSelect<false> | StoresSelect<true>
+    works: WorksSelect<false> | WorksSelect<true>
     makers: MakersSelect<false> | MakersSelect<true>
     places: PlacesSelect<false> | PlacesSelect<true>
     terms: TermsSelect<false> | TermsSelect<true>
     sources: SourcesSelect<false> | SourcesSelect<true>
-    curations: CurationsSelect<false> | CurationsSelect<true>
-    works: WorksSelect<false> | WorksSelect<true>
-    designs: DesignsSelect<false> | DesignsSelect<true>
-    products: ProductsSelect<false> | ProductsSelect<true>
-    'product-types': ProductTypesSelect<false> | ProductTypesSelect<true>
-    variants: VariantsSelect<false> | VariantsSelect<true>
-    locations: LocationsSelect<false> | LocationsSelect<true>
-    'stock-levels': StockLevelsSelect<false> | StockLevelsSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
     masters: MastersSelect<false> | MastersSelect<true>
-    stories: StoriesSelect<false> | StoriesSelect<true>
-    pages: PagesSelect<false> | PagesSelect<true>
-    exhibitions: ExhibitionsSelect<false> | ExhibitionsSelect<true>
-    redirects: RedirectsSelect<false> | RedirectsSelect<true>
-    carts: CartsSelect<false> | CartsSelect<true>
-    reservations: ReservationsSelect<false> | ReservationsSelect<true>
-    orders: OrdersSelect<false> | OrdersSelect<true>
-    'payment-attempts': PaymentAttemptsSelect<false> | PaymentAttemptsSelect<true>
-    refunds: RefundsSelect<false> | RefundsSelect<true>
-    shipments: ShipmentsSelect<false> | ShipmentsSelect<true>
-    returns: ReturnsSelect<false> | ReturnsSelect<true>
-    offers: OffersSelect<false> | OffersSelect<true>
-    enquiries: EnquiriesSelect<false> | EnquiriesSelect<true>
-    consignments: ConsignmentsSelect<false> | ConsignmentsSelect<true>
-    appointments: AppointmentsSelect<false> | AppointmentsSelect<true>
-    invoices: InvoicesSelect<false> | InvoicesSelect<true>
-    discounts: DiscountsSelect<false> | DiscountsSelect<true>
-    'gift-cards': GiftCardsSelect<false> | GiftCardsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -165,25 +105,10 @@ export interface Config {
   db: {
     defaultIDType: number
   }
-  fallbackLocale:
-    ('false' | 'none' | 'null') | false | null | ('en' | 'id' | 'nl') | ('en' | 'id' | 'nl')[]
-  globals: {
-    'brand-settings': BrandSetting
-    navigation: Navigation
-    homepage: Homepage
-    'commerce-settings': CommerceSetting
-    consent: Consent
-    'seo-defaults': SeoDefault
-  }
-  globalsSelect: {
-    'brand-settings': BrandSettingsSelect<false> | BrandSettingsSelect<true>
-    navigation: NavigationSelect<false> | NavigationSelect<true>
-    homepage: HomepageSelect<false> | HomepageSelect<true>
-    'commerce-settings': CommerceSettingsSelect<false> | CommerceSettingsSelect<true>
-    consent: ConsentSelect<false> | ConsentSelect<true>
-    'seo-defaults': SeoDefaultsSelect<false> | SeoDefaultsSelect<true>
-  }
-  locale: 'en' | 'id' | 'nl'
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'id') | ('en' | 'id')[]
+  globals: {}
+  globalsSelect: {}
+  locale: 'en' | 'id'
   widgets: {
     collections: CollectionsWidget
   }
@@ -225,11 +150,13 @@ export interface User {
    */
   name: string
   /**
-   * Admin: everything, including staff and settings. Manager: catalogue, prices, orders, refunds. Cataloguer: works, makers, places, media — no prices or orders. Editor: stories, pages, curations; publishes. Fulfilment: orders, shipments, returns. Analyst: read-only and dashboards. Contributor: drafts only.
+   * Owner: everything, including staff, stores, settings, leads and partners. Editor: the catalogue, the content and every order. Store staff: their own store’s orders and stock only.
    */
-  roles: (
-    'admin' | 'manager' | 'cataloguer' | 'editor' | 'fulfilment' | 'analyst' | 'contributor'
-  )[]
+  role: 'owner' | 'editor' | 'store'
+  /**
+   * The one store this person works in. Required for store staff; other roles have none.
+   */
+  store?: (number | null) | Store
   updatedAt: string
   createdAt: string
   email: string
@@ -251,306 +178,18 @@ export interface User {
   collection: 'users'
 }
 /**
+ * The shops that hold stock and send orders. Each store’s staff see only their own store.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers".
+ * via the `definition` "stores".
  */
-export interface Customer {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "addresses".
- */
-export interface Address {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "saved-items".
- */
-export interface SavedItem {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "want-lists".
- */
-export interface WantList {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "subscribers".
- */
-export interface Subscriber {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews".
- */
-export interface Review {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "makers".
- */
-export interface Maker {
+export interface Store {
   id: number
   /**
-   * As the maker is known: "François Valentijn", "Woodbury & Page".
+   * The code the store list and the stock spreadsheets match on, e.g. UBD-01.
    */
+  code: string
   name: string
-  /**
-   * As a collector’s maker line reads, surname first: "BLAEU, Willem Janszoon".
-   */
-  sortName: string
-  /**
-   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
-   */
-  slug: string
-  /**
-   * Valentyn beside Valentijn: the spellings a search should also find.
-   */
-  aliases?:
-    | {
-        name: string
-        id?: string | null
-      }[]
-    | null
-  /**
-   * What the maker is known for. A work names the role on that work.
-   */
-  roles?:
-    | (
-        | 'cartographer'
-        | 'engraver'
-        | 'publisher'
-        | 'author'
-        | 'artist'
-        | 'photographer'
-        | 'studio'
-        | 'printer'
-      )[]
-    | null
-  born: {
-    precision: 'exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown'
-    from?: number | null
-    to?: number | null
-    /**
-     * Your own wording, if the year alone says it wrong: "1724–26".
-     */
-    display?: string | null
-  }
-  died: {
-    precision: 'exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown'
-    from?: number | null
-    to?: number | null
-    /**
-     * Your own wording, if the year alone says it wrong: "1724–26".
-     */
-    display?: string | null
-  }
-  /**
-   * "Dutch", "Belanda" — in each language.
-   */
-  nationality?: string | null
-  /**
-   * A portrait, if one exists.
-   */
-  portrait?: (number | null) | Media
-  /**
-   * The same maker elsewhere: Wikidata, the Getty ULAN.
-   */
-  sameAs?:
-    | {
-        url: string
-        id?: string | null
-      }[]
-    | null
-  translationStatus: 'entered' | 'machine' | 'reviewed'
-  updatedAt: string
-  createdAt: string
-  _status?: ('draft' | 'published') | null
-}
-/**
- * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number
-  /**
-   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
-   */
-  alt: string
-  /**
-   * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
-   */
-  altSource?: ('baseline' | 'cataloguer' | 'ai-draft') | null
-  translationStatus?: ('entered' | 'machine' | 'reviewed') | null
-  caption?: string | null
-  credit?: string | null
-  licence?: string | null
-  /**
-   * What the image is — set at intake, the same as its master’s.
-   */
-  role:
-    | 'recto'
-    | 'verso'
-    | 'detail'
-    | 'raking'
-    | 'transmitted'
-    | 'framed'
-    | 'in-room'
-    | 'scale'
-    | 'flat'
-    | 'lifestyle'
-    | 'packaging'
-    | 'showroom'
-    | 'room-plate'
-    | 'editorial'
-  /**
-   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
-   */
-  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
-  /**
-   * The capture this image was processed from.
-   */
-  master?: (number | null) | Master
-  /**
-   * Derived from the file: the address its derivatives and tiles are stored under.
-   */
-  assetId?: string | null
-  derivatives?: {
-    status?: ('pending' | 'ready' | 'failed') | null
-    /**
-     * The ladder's version once built (now v1).
-     */
-    version?: string | null
-    blurDataUri?: string | null
-  }
-  iiif?: {
-    status?: ('none' | 'pending' | 'ready' | 'failed') | null
-  }
-  prefix?: string | null
-  _objectKey?: string | null
-  updatedAt: string
-  createdAt: string
-  url?: string | null
-  thumbnailURL?: string | null
-  filename?: string | null
-  mimeType?: string | null
-  filesize?: number | null
-  width?: number | null
-  height?: number | null
-  focalX?: number | null
-  focalY?: number | null
-}
-/**
- * The private files images and print files are made from: every capture as received, and each design’s print file. Never shown on the site.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "masters".
- */
-export interface Master {
-  id: number
-  kind: 'capture' | 'print-file'
-  /**
-   * Where the file is in the private masters bucket. It has no public URL.
-   */
-  storageKey: string
-  /**
-   * The file's SHA-256: checked against what the bucket holds.
-   */
-  checksum: string
-  /**
-   * From the bucket.
-   */
-  byteSize?: number | null
-  contentType?: string | null
-  widthPx?: number | null
-  heightPx?: number | null
-  colourProfile?: string | null
-  /**
-   * The owning brand's slug.
-   */
-  brand: string
-  work?: (number | null) | Work
-  design?: (number | null) | Design
-  /**
-   * What the capture is, as the intake judged it.
-   */
-  role?:
-    | (
-        | 'recto'
-        | 'verso'
-        | 'detail'
-        | 'raking'
-        | 'transmitted'
-        | 'framed'
-        | 'in-room'
-        | 'scale'
-        | 'flat'
-        | 'lifestyle'
-        | 'packaging'
-        | 'showroom'
-        | 'room-plate'
-        | 'editorial'
-        | 'reference'
-      )
-    | null
-  /**
-   * How it was made — declared at intake, never inferred. No default.
-   */
-  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
-  /**
-   * The object's bounding box in the frame's pixels — a sheet's outer edge, margins included.
-   */
-  objectBox?: {
-    x?: number | null
-    y?: number | null
-    width?: number | null
-    height?: number | null
-  }
-  /**
-   * The object's pixels over its real size, from the ruler — never the file's DPI tag.
-   */
-  objectPpi?: number | null
-  captureTier?: ('good' | 'better' | 'best') | null
-  intake?: {
-    batch?: string | null
-    /**
-     * A stock number, a product, "showroom".
-     */
-    reference?: string | null
-    /**
-     * The name it was handed over under.
-     */
-    receivedAs?: string | null
-    verdict?: ('pass' | 'fix-owner' | 'legacy') | null
-    retouching?: ('none' | 'unknown' | 'retouched-legacy') | null
-    notes?:
-      | {
-          note: string
-          id?: string | null
-        }[]
-      | null
-  }
   updatedAt: string
   createdAt: string
 }
@@ -563,7 +202,7 @@ export interface Master {
 export interface Work {
   id: number
   /**
-   * Made when the work is first saved, and never changed: sister sync and redirects key on it.
+   * Made when the work is first saved, and never changed: redirects key on it.
    */
   workUid?: string | null
   /**
@@ -792,7 +431,7 @@ export interface Work {
   sameEdition?: (number | Work)[] | null
   condition?: {
     /**
-     * From the brand’s published scale (Terms → Condition grade).
+     * From the gallery’s published scale (Terms → Condition grade).
      */
     grade?: (number | null) | Term
     notes?: string | null
@@ -819,13 +458,9 @@ export interface Work {
    */
   master?: (number | null) | Master
   /**
-   * From the owner’s item register. Left blank, the item publishes as enquiry-only and sells nowhere online.
+   * From the owner’s item register. Left blank, the item still publishes: the gallery sells nothing online.
    */
   physical?: {
-    /**
-     * Where the object is now.
-     */
-    location?: (number | null) | Location
     /**
      * Never assumed: set it from the register.
      */
@@ -860,14 +495,6 @@ export interface Work {
      * A reproduction of this work cannot publish while this is off.
      */
     printAllowed?: boolean | null
-  }
-  /**
-   * Set by the sister sync on a copy of a sister’s work: its synced fields are read-only here.
-   */
-  origin?: {
-    brand?: string | null
-    workUid?: string | null
-    syncedAt?: string | null
   }
   cataloguing?: {
     status?: ('draft' | 'catalogued' | 'verified') | null
@@ -911,6 +538,249 @@ export interface Work {
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "makers".
+ */
+export interface Maker {
+  id: number
+  /**
+   * As the maker is known: "François Valentijn", "Woodbury & Page".
+   */
+  name: string
+  /**
+   * As a collector’s maker line reads, surname first: "BLAEU, Willem Janszoon".
+   */
+  sortName: string
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * Valentyn beside Valentijn: the spellings a search should also find.
+   */
+  aliases?:
+    | {
+        name: string
+        id?: string | null
+      }[]
+    | null
+  /**
+   * What the maker is known for. A work names the role on that work.
+   */
+  roles?:
+    | (
+        | 'cartographer'
+        | 'engraver'
+        | 'publisher'
+        | 'author'
+        | 'artist'
+        | 'photographer'
+        | 'studio'
+        | 'printer'
+      )[]
+    | null
+  born: {
+    precision: 'exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown'
+    from?: number | null
+    to?: number | null
+    /**
+     * Your own wording, if the year alone says it wrong: "1724–26".
+     */
+    display?: string | null
+  }
+  died: {
+    precision: 'exact' | 'circa' | 'before' | 'after' | 'range' | 'unknown'
+    from?: number | null
+    to?: number | null
+    /**
+     * Your own wording, if the year alone says it wrong: "1724–26".
+     */
+    display?: string | null
+  }
+  /**
+   * "Dutch", "Belanda" — in each language.
+   */
+  nationality?: string | null
+  /**
+   * A portrait, if one exists.
+   */
+  portrait?: (number | null) | Media
+  /**
+   * The same maker elsewhere: Wikidata, the Getty ULAN.
+   */
+  sameAs?:
+    | {
+        url: string
+        id?: string | null
+      }[]
+    | null
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number
+  /**
+   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
+   */
+  alt: string
+  /**
+   * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
+   */
+  altSource?: ('baseline' | 'cataloguer' | 'ai-draft') | null
+  translationStatus?: ('entered' | 'machine' | 'reviewed') | null
+  caption?: string | null
+  credit?: string | null
+  licence?: string | null
+  /**
+   * What the image is — set at intake, the same as its master’s.
+   */
+  role:
+    | 'recto'
+    | 'verso'
+    | 'detail'
+    | 'raking'
+    | 'transmitted'
+    | 'framed'
+    | 'in-room'
+    | 'scale'
+    | 'flat'
+    | 'lifestyle'
+    | 'packaging'
+    | 'showroom'
+    | 'editorial'
+  /**
+   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
+   */
+  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
+  /**
+   * The capture this image was processed from.
+   */
+  master?: (number | null) | Master
+  /**
+   * Derived from the file: the address its derivatives and tiles are stored under.
+   */
+  assetId?: string | null
+  derivatives?: {
+    status?: ('pending' | 'ready' | 'failed') | null
+    /**
+     * The ladder's version once built (now v1).
+     */
+    version?: string | null
+    blurDataUri?: string | null
+  }
+  iiif?: {
+    status?: ('none' | 'pending' | 'ready' | 'failed') | null
+  }
+  prefix?: string | null
+  _objectKey?: string | null
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
+}
+/**
+ * The private files images are made from: every capture as received. Never shown on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "masters".
+ */
+export interface Master {
+  id: number
+  kind: 'capture'
+  /**
+   * Where the file is in the private masters bucket. It has no public URL.
+   */
+  storageKey: string
+  /**
+   * The file's SHA-256: checked against what the bucket holds.
+   */
+  checksum: string
+  /**
+   * From the bucket.
+   */
+  byteSize?: number | null
+  contentType?: string | null
+  widthPx?: number | null
+  heightPx?: number | null
+  colourProfile?: string | null
+  work?: (number | null) | Work
+  /**
+   * What the capture is, as the intake judged it.
+   */
+  role?:
+    | (
+        | 'recto'
+        | 'verso'
+        | 'detail'
+        | 'raking'
+        | 'transmitted'
+        | 'framed'
+        | 'in-room'
+        | 'scale'
+        | 'flat'
+        | 'lifestyle'
+        | 'packaging'
+        | 'showroom'
+        | 'editorial'
+        | 'reference'
+      )
+    | null
+  /**
+   * How it was made — declared at intake, never inferred. No default.
+   */
+  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
+  /**
+   * The object's bounding box in the frame's pixels — a sheet's outer edge, margins included.
+   */
+  objectBox?: {
+    x?: number | null
+    y?: number | null
+    width?: number | null
+    height?: number | null
+  }
+  /**
+   * The object's pixels over its real size, from the ruler — never the file's DPI tag.
+   */
+  objectPpi?: number | null
+  captureTier?: ('good' | 'better' | 'best') | null
+  intake?: {
+    batch?: string | null
+    /**
+     * A stock number, a product, "showroom".
+     */
+    reference?: string | null
+    /**
+     * The name it was handed over under.
+     */
+    receivedAs?: string | null
+    verdict?: ('pass' | 'fix-owner' | 'legacy') | null
+    retouching?: ('none' | 'unknown' | 'retouched-legacy') | null
+    notes?:
+      | {
+          note: string
+          id?: string | null
+        }[]
+      | null
+  }
+  updatedAt: string
+  createdAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1058,231 +928,6 @@ export interface Source {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "locations".
- */
-export interface Location {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "designs".
- */
-export interface Design {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "curations".
- */
-export interface Curation {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products".
- */
-export interface Product {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "product-types".
- */
-export interface ProductType {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "variants".
- */
-export interface Variant {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "stock-levels".
- */
-export interface StockLevel {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "stories".
- */
-export interface Story {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exhibitions".
- */
-export interface Exhibition {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "redirects".
- */
-export interface Redirect {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "carts".
- */
-export interface Cart {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reservations".
- */
-export interface Reservation {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders".
- */
-export interface Order {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payment-attempts".
- */
-export interface PaymentAttempt {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "refunds".
- */
-export interface Refund {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "shipments".
- */
-export interface Shipment {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "returns".
- */
-export interface Return {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "offers".
- */
-export interface Offer {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enquiries".
- */
-export interface Enquiry {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "consignments".
- */
-export interface Consignment {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "appointments".
- */
-export interface Appointment {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "invoices".
- */
-export interface Invoice {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "discounts".
- */
-export interface Discount {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gift-cards".
- */
-export interface GiftCard {
-  id: number
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1310,28 +955,12 @@ export interface PayloadLockedDocument {
         value: number | User
       } | null)
     | ({
-        relationTo: 'customers'
-        value: number | Customer
+        relationTo: 'stores'
+        value: number | Store
       } | null)
     | ({
-        relationTo: 'addresses'
-        value: number | Address
-      } | null)
-    | ({
-        relationTo: 'saved-items'
-        value: number | SavedItem
-      } | null)
-    | ({
-        relationTo: 'want-lists'
-        value: number | WantList
-      } | null)
-    | ({
-        relationTo: 'subscribers'
-        value: number | Subscriber
-      } | null)
-    | ({
-        relationTo: 'reviews'
-        value: number | Review
+        relationTo: 'works'
+        value: number | Work
       } | null)
     | ({
         relationTo: 'makers'
@@ -1350,116 +979,12 @@ export interface PayloadLockedDocument {
         value: number | Source
       } | null)
     | ({
-        relationTo: 'curations'
-        value: number | Curation
-      } | null)
-    | ({
-        relationTo: 'works'
-        value: number | Work
-      } | null)
-    | ({
-        relationTo: 'designs'
-        value: number | Design
-      } | null)
-    | ({
-        relationTo: 'products'
-        value: number | Product
-      } | null)
-    | ({
-        relationTo: 'product-types'
-        value: number | ProductType
-      } | null)
-    | ({
-        relationTo: 'variants'
-        value: number | Variant
-      } | null)
-    | ({
-        relationTo: 'locations'
-        value: number | Location
-      } | null)
-    | ({
-        relationTo: 'stock-levels'
-        value: number | StockLevel
-      } | null)
-    | ({
         relationTo: 'media'
         value: number | Media
       } | null)
     | ({
         relationTo: 'masters'
         value: number | Master
-      } | null)
-    | ({
-        relationTo: 'stories'
-        value: number | Story
-      } | null)
-    | ({
-        relationTo: 'pages'
-        value: number | Page
-      } | null)
-    | ({
-        relationTo: 'exhibitions'
-        value: number | Exhibition
-      } | null)
-    | ({
-        relationTo: 'redirects'
-        value: number | Redirect
-      } | null)
-    | ({
-        relationTo: 'carts'
-        value: number | Cart
-      } | null)
-    | ({
-        relationTo: 'reservations'
-        value: number | Reservation
-      } | null)
-    | ({
-        relationTo: 'orders'
-        value: number | Order
-      } | null)
-    | ({
-        relationTo: 'payment-attempts'
-        value: number | PaymentAttempt
-      } | null)
-    | ({
-        relationTo: 'refunds'
-        value: number | Refund
-      } | null)
-    | ({
-        relationTo: 'shipments'
-        value: number | Shipment
-      } | null)
-    | ({
-        relationTo: 'returns'
-        value: number | Return
-      } | null)
-    | ({
-        relationTo: 'offers'
-        value: number | Offer
-      } | null)
-    | ({
-        relationTo: 'enquiries'
-        value: number | Enquiry
-      } | null)
-    | ({
-        relationTo: 'consignments'
-        value: number | Consignment
-      } | null)
-    | ({
-        relationTo: 'appointments'
-        value: number | Appointment
-      } | null)
-    | ({
-        relationTo: 'invoices'
-        value: number | Invoice
-      } | null)
-    | ({
-        relationTo: 'discounts'
-        value: number | Discount
-      } | null)
-    | ({
-        relationTo: 'gift-cards'
-        value: number | GiftCard
       } | null)
   globalSlug?: string | null
   user: {
@@ -1509,7 +1034,8 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T
-  roles?: T
+  role?: T
+  store?: T
   updatedAt?: T
   createdAt?: T
   email?: T
@@ -1530,168 +1056,11 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers_select".
+ * via the `definition` "stores_select".
  */
-export interface CustomersSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "addresses_select".
- */
-export interface AddressesSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "saved-items_select".
- */
-export interface SavedItemsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "want-lists_select".
- */
-export interface WantListsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "subscribers_select".
- */
-export interface SubscribersSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews_select".
- */
-export interface ReviewsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "makers_select".
- */
-export interface MakersSelect<T extends boolean = true> {
+export interface StoresSelect<T extends boolean = true> {
+  code?: T
   name?: T
-  sortName?: T
-  slug?: T
-  aliases?:
-    | T
-    | {
-        name?: T
-        id?: T
-      }
-  roles?: T
-  born?:
-    | T
-    | {
-        precision?: T
-        from?: T
-        to?: T
-        display?: T
-      }
-  died?:
-    | T
-    | {
-        precision?: T
-        from?: T
-        to?: T
-        display?: T
-      }
-  nationality?: T
-  portrait?: T
-  sameAs?:
-    | T
-    | {
-        url?: T
-        id?: T
-      }
-  translationStatus?: T
-  updatedAt?: T
-  createdAt?: T
-  _status?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "places_select".
- */
-export interface PlacesSelect<T extends boolean = true> {
-  name?: T
-  slug?: T
-  historicalNames?:
-    | T
-    | {
-        name?: T
-        language?: T
-        period?: T
-        id?: T
-      }
-  type?: T
-  parent?: T
-  children?: T
-  geo?:
-    | T
-    | {
-        lat?: T
-        lng?: T
-        bbox?:
-          | T
-          | {
-              west?: T
-              south?: T
-              east?: T
-              north?: T
-            }
-      }
-  translationStatus?: T
-  updatedAt?: T
-  createdAt?: T
-  _status?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "terms_select".
- */
-export interface TermsSelect<T extends boolean = true> {
-  kind?: T
-  label?: T
-  slug?: T
-  definition?: T
-  equivalent?: T
-  position?: T
-  translationStatus?: T
-  updatedAt?: T
-  createdAt?: T
-  _status?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sources_select".
- */
-export interface SourcesSelect<T extends boolean = true> {
-  shortCite?: T
-  slug?: T
-  citation?: T
-  year?: T
-  url?: T
-  updatedAt?: T
-  createdAt?: T
-  _status?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "curations_select".
- */
-export interface CurationsSelect<T extends boolean = true> {
   updatedAt?: T
   createdAt?: T
 }
@@ -1835,7 +1204,6 @@ export interface WorksSelect<T extends boolean = true> {
   physical?:
     | T
     | {
-        location?: T
         exportStatus?: T
         coaIssued?: T
         acquisition?:
@@ -1861,13 +1229,6 @@ export interface WorksSelect<T extends boolean = true> {
         territories?: T
         expires?: T
         printAllowed?: T
-      }
-  origin?:
-    | T
-    | {
-        brand?: T
-        workUid?: T
-        syncedAt?: T
       }
   cataloguing?:
     | T
@@ -1899,51 +1260,114 @@ export interface WorksSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "designs_select".
+ * via the `definition` "makers_select".
  */
-export interface DesignsSelect<T extends boolean = true> {
+export interface MakersSelect<T extends boolean = true> {
+  name?: T
+  sortName?: T
+  slug?: T
+  aliases?:
+    | T
+    | {
+        name?: T
+        id?: T
+      }
+  roles?: T
+  born?:
+    | T
+    | {
+        precision?: T
+        from?: T
+        to?: T
+        display?: T
+      }
+  died?:
+    | T
+    | {
+        precision?: T
+        from?: T
+        to?: T
+        display?: T
+      }
+  nationality?: T
+  portrait?: T
+  sameAs?:
+    | T
+    | {
+        url?: T
+        id?: T
+      }
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products_select".
+ * via the `definition` "places_select".
  */
-export interface ProductsSelect<T extends boolean = true> {
+export interface PlacesSelect<T extends boolean = true> {
+  name?: T
+  slug?: T
+  historicalNames?:
+    | T
+    | {
+        name?: T
+        language?: T
+        period?: T
+        id?: T
+      }
+  type?: T
+  parent?: T
+  children?: T
+  geo?:
+    | T
+    | {
+        lat?: T
+        lng?: T
+        bbox?:
+          | T
+          | {
+              west?: T
+              south?: T
+              east?: T
+              north?: T
+            }
+      }
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "product-types_select".
+ * via the `definition` "terms_select".
  */
-export interface ProductTypesSelect<T extends boolean = true> {
+export interface TermsSelect<T extends boolean = true> {
+  kind?: T
+  label?: T
+  slug?: T
+  definition?: T
+  equivalent?: T
+  position?: T
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "variants_select".
+ * via the `definition` "sources_select".
  */
-export interface VariantsSelect<T extends boolean = true> {
+export interface SourcesSelect<T extends boolean = true> {
+  shortCite?: T
+  slug?: T
+  citation?: T
+  year?: T
+  url?: T
   updatedAt?: T
   createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "locations_select".
- */
-export interface LocationsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "stock-levels_select".
- */
-export interface StockLevelsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1999,9 +1423,7 @@ export interface MastersSelect<T extends boolean = true> {
   widthPx?: T
   heightPx?: T
   colourProfile?: T
-  brand?: T
   work?: T
-  design?: T
   role?: T
   provenance?: T
   objectBox?:
@@ -2029,150 +1451,6 @@ export interface MastersSelect<T extends boolean = true> {
               id?: T
             }
       }
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "stories_select".
- */
-export interface StoriesSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
- */
-export interface PagesSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "exhibitions_select".
- */
-export interface ExhibitionsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "redirects_select".
- */
-export interface RedirectsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "carts_select".
- */
-export interface CartsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reservations_select".
- */
-export interface ReservationsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders_select".
- */
-export interface OrdersSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payment-attempts_select".
- */
-export interface PaymentAttemptsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "refunds_select".
- */
-export interface RefundsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "shipments_select".
- */
-export interface ShipmentsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "returns_select".
- */
-export interface ReturnsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "offers_select".
- */
-export interface OffersSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enquiries_select".
- */
-export interface EnquiriesSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "consignments_select".
- */
-export interface ConsignmentsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "appointments_select".
- */
-export interface AppointmentsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "invoices_select".
- */
-export interface InvoicesSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "discounts_select".
- */
-export interface DiscountsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "gift-cards_select".
- */
-export interface GiftCardsSelect<T extends boolean = true> {
   updatedAt?: T
   createdAt?: T
 }
@@ -2215,114 +1493,6 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T
   updatedAt?: T
   createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "brand-settings".
- */
-export interface BrandSetting {
-  id: number
-  updatedAt?: string | null
-  createdAt?: string | null
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation".
- */
-export interface Navigation {
-  id: number
-  updatedAt?: string | null
-  createdAt?: string | null
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage".
- */
-export interface Homepage {
-  id: number
-  updatedAt?: string | null
-  createdAt?: string | null
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "commerce-settings".
- */
-export interface CommerceSetting {
-  id: number
-  updatedAt?: string | null
-  createdAt?: string | null
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "consent".
- */
-export interface Consent {
-  id: number
-  updatedAt?: string | null
-  createdAt?: string | null
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "seo-defaults".
- */
-export interface SeoDefault {
-  id: number
-  updatedAt?: string | null
-  createdAt?: string | null
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "brand-settings_select".
- */
-export interface BrandSettingsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-  globalType?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "navigation_select".
- */
-export interface NavigationSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-  globalType?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage_select".
- */
-export interface HomepageSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-  globalType?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "commerce-settings_select".
- */
-export interface CommerceSettingsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-  globalType?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "consent_select".
- */
-export interface ConsentSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-  globalType?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "seo-defaults_select".
- */
-export interface SeoDefaultsSelect<T extends boolean = true> {
-  updatedAt?: T
-  createdAt?: T
-  globalType?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

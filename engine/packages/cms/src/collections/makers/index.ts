@@ -18,11 +18,7 @@
 import type { CollectionConfig, Validate } from 'payload'
 
 import { aliasErrors, sameAsErrors } from '../../validators/maker-names'
-import {
-  refuseContributorPublish,
-  VOCABULARY_ACCESS,
-  VOCABULARY_VERSIONS,
-} from '../terms/vocabulary/access'
+import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { translationStatusField } from '../../fields/translation-status'
 import { isBlank, webUrl } from '../../fields/validate'
@@ -68,7 +64,7 @@ export const Makers: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeChange: [refuseContributorPublish], beforeDelete: [refuseDeleteWhileUsed] },
+  hooks: { beforeDelete: [refuseDeleteWhileUsed] },
   fields: [
     {
       name: 'name',

@@ -1,12 +1,13 @@
 /**
  * The cataloguing workflow (CONTENT-MODEL.md §1 `cataloguing`, §8): `draft` → `catalogued` →
- * `verified`. Verifying is a cataloguer's claim — a cataloguer, a manager or an admin makes it, a
- * contributor never — and it cannot stand while a field an AI drafted is still unchecked. The
+ * `verified`. Verifying is a cataloguer's claim — the owner or an editor makes it — and it cannot
+ * stand while a field an AI drafted is still unchecked. The
  * moment of verification is recorded by the server, never typed.
  */
 import { ValidationError, type CollectionBeforeChangeHook } from 'payload'
 
-import { hasRole, isStaffUser } from '../access/roles'
+import { isStaffUser } from '../access/roles'
+import { hasRole } from '../collections/users/roles'
 import { WORK_PUBLISHERS } from '../collections/works/access'
 import { asLabel, mergeOver, type Doc } from './work-facts'
 
@@ -26,7 +27,7 @@ export const stampCataloguing: CollectionBeforeChangeHook = ({
   if (verifying && isStaffUser(req.user) && !hasRole(req.user, ...WORK_PUBLISHERS)) {
     errors.push({
       path: 'cataloguing.status',
-      message: 'A cataloguer, a manager or an admin verifies a record.',
+      message: 'The owner or an editor verifies a record.',
     })
   }
   const unchecked = Array.isArray(merged.aiDraft) && merged.aiDraft.length > 0

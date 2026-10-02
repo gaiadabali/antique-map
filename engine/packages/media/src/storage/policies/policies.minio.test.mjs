@@ -20,7 +20,13 @@ import {
 } from '@aws-sdk/client-s3'
 import { afterAll, describe, expect, it } from 'vitest'
 
-import { derivativeKey, iiifFullKey, iiifPublicKey, masterKey, printFileKey } from '../../contract'
+import {
+  derivativeKey,
+  iiifFullKey,
+  iiifPublicKey,
+  intakeMasterKey,
+  masterKey,
+} from '../../contract'
 import { s3MastersStore } from '../masters-store'
 import { UPLOADS_PREFIX } from '../prefixes'
 import { CORS_NOT_IMPLEMENTED, mastersCorsRules } from './cors.mjs'
@@ -33,7 +39,8 @@ const rootSecret = process.env.STORAGE_TEST_ROOT_SECRET || 'minioadmin'
 const here = dirname(fileURLToPath(import.meta.url))
 const plan = JSON.parse(readFileSync(join(here, '..', 'plans', 'local.json'), 'utf8'))
 const MASTERS = plan.mastersBucket
-const MEDIA = 'test-media'
+const MEDIA = plan.mediaBucket
+// Any other bucket the dev container makes: the media key must not reach it.
 const OTHER_MEDIA = 'ig-media'
 
 const client = (accessKeyId, secretAccessKey) =>
@@ -85,48 +92,29 @@ const anonymous = async (method, bucket, key) =>
 
 describe.skipIf(!endpoint)('the applied storage policies, on MinIO', () => {
   const root = client(rootUser, rootSecret)
-  const outlet = as('test-masters-outlet')
-  const origin = as('test-masters-origin')
-  const media = as('test-media-writer')
+  const masters = as('indies-masters')
+  const media = as('indies-media-writer')
   const capture = masterKey(`${run}-w1`, sha('capture'), 'cr3')
-  const printFile = printFileKey('test', `${run}-d1`, sha('print'), 'tif')
 
   afterAll(async () => {
     for (const { Bucket, Key } of written) await remove(root, Bucket, Key)
   })
 
-  it("the origin's web key writes captures and its own print files, and deletes nothing", async () => {
-    expect(await put(origin, MASTERS, capture)).toBe('written')
-    expect(await get(origin, MASTERS, capture)).toBe('read')
-    expect(await put(origin, MASTERS, printFileKey('test', `${run}-d0`, sha('p0'), 'tif'))).toBe(
-      'written',
-    )
-    expect(await put(origin, MASTERS, printFileKey('other-brand', 'd-1', sha('p1'), 'tif'))).toBe(
-      'AccessDenied',
-    )
+  it('the masters key writes captures, nothing else, and deletes nothing', async () => {
+    expect(await put(masters, MASTERS, capture)).toBe('written')
+    expect(await get(masters, MASTERS, capture)).toBe('read')
+    expect(await put(masters, MASTERS, intakeMasterKey(run, sha('intake'), 'cr3'))).toBe('written')
+    // The configurator's print files are gone, and with them the prefix any key wrote them under.
+    expect(await put(masters, MASTERS, `print-files/${run}/${sha('p')}.tif`)).toBe('AccessDenied')
+    expect(await put(masters, MASTERS, `${run}/anywhere-else.txt`)).toBe('AccessDenied')
     // The archive is irreplaceable: its web process cannot erase a capture.
-    expect(await remove(origin, MASTERS, capture)).toBe('AccessDenied')
-    expect(await get(origin, MASTERS, capture)).toBe('read')
+    expect(await remove(masters, MASTERS, capture)).toBe('AccessDenied')
+    expect(await get(masters, MASTERS, capture)).toBe('read')
+    expect(await put(masters, MEDIA, `${UPLOADS_PREFIX}/${run}.jpg`)).toBe('AccessDenied')
   })
 
-  it("the shop's masters key writes only its own print files (8.3.c)", async () => {
-    expect(await put(outlet, MASTERS, printFile)).toBe('written')
-    expect(await put(outlet, MASTERS, printFileKey('other-brand', 'd-2', sha('p2'), 'tif'))).toBe(
-      'AccessDenied',
-    )
-    expect(await put(outlet, MASTERS, `print-files/${run}.tif`)).toBe('AccessDenied')
-    expect(await put(outlet, MASTERS, masterKey(`${run}-w2`, sha('x'), 'cr3'))).toBe('AccessDenied')
-    expect(await put(outlet, MASTERS, `masters/intake/test/${run}/${sha('y')}.cr3`)).toBe(
-      'AccessDenied',
-    )
-    expect(await put(outlet, MASTERS, `${run}/anywhere-else.txt`)).toBe('AccessDenied')
-    expect(await remove(outlet, MASTERS, capture)).toBe('AccessDenied')
-    expect(await get(outlet, MASTERS, capture)).toBe('read')
-    expect(await put(outlet, MEDIA, `${UPLOADS_PREFIX}/${run}.jpg`)).toBe('AccessDenied')
-  })
-
-  it('a presigned PUT signed with the shop key is refused by the storage outside print-files/', async () => {
-    const store = s3MastersStore({ endpoint, region: 'auto', bucket: MASTERS }, outlet)
+  it('a presigned PUT signed with the masters key is refused by the storage outside masters/', async () => {
+    const store = s3MastersStore({ endpoint, region: 'auto', bucket: MASTERS }, masters)
     const body = Buffer.from(`capture ${run}`)
     const checksum = sha(body)
     const send = async (key) => {
@@ -140,8 +128,8 @@ describe.skipIf(!endpoint)('the applied storage policies, on MinIO', () => {
       if (response.ok) written.push({ Bucket: MASTERS, Key: key })
       return response.status
     }
-    expect(await send(masterKey(`${run}-w3`, checksum, 'tif'))).toBe(403)
-    expect(await send(printFileKey('test', `${run}-d2`, checksum, 'tif'))).toBe(200)
+    expect(await send(masterKey(`${run}-w3`, checksum, 'tif'))).toBe(200)
+    expect(await send(`print-files/${run}/${checksum}.tif`)).toBe(403)
   })
 
   it('a media key writes its own bucket only', async () => {
@@ -163,16 +151,15 @@ describe.skipIf(!endpoint)('the applied storage policies, on MinIO', () => {
     expect(await anonymous('GET', MEDIA, tile)).toBe(200)
     expect(await anonymous('GET', MEDIA, original)).toBe(403)
     expect(await anonymous('GET', MASTERS, capture)).toBe(403)
-    expect(await anonymous('GET', MASTERS, printFile)).toBe(403)
     expect(await anonymous('PUT', MEDIA, `derivatives/${run}.webp`)).toBe(403)
     expect(await anonymous('GET', MEDIA, '')).toBe(403)
   })
 
   it('anonymously: the uncapped pyramid under iiif-full/ is refused, beside the public iiif/ (8.3.i)', async () => {
     const id = sha(`${run}-pyramid`).slice(0, 32)
-    // The brand writes its own uncapped pyramid with its media key (C9 v1.6 iiifFullKey()).
-    const full = `${iiifFullKey('test', id)}/info.json`
-    const fullTile = `${iiifFullKey('test', id)}/full/max/0/default.jpg`
+    // The app writes the uncapped pyramid with its media key (C9 iiifFullKey()).
+    const full = `${iiifFullKey(id)}/info.json`
+    const fullTile = `${iiifFullKey(id)}/full/max/0/default.jpg`
     expect(await put(media, MEDIA, full)).toBe('written')
     expect(await put(media, MEDIA, fullTile)).toBe('written')
     const capped = `${iiifPublicKey(id)}/info.json`

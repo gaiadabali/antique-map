@@ -33,7 +33,6 @@ export const ROLE_LABELS: Readonly<Record<string, string>> = {
   lifestyle: 'In use (a product)',
   packaging: 'Gift wrap and parcel',
   showroom: 'In the showroom',
-  'room-plate': 'Configurator room plate',
   editorial: 'Editorial — a story, a banner, a portrait',
   reference: 'Reference frame — grey board or colour card, never published',
 }

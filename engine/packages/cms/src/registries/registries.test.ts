@@ -6,13 +6,7 @@ import type { AdminViewConfig, Plugin, TaskConfig } from 'payload'
 import { describe, expect, it } from 'vitest'
 
 import { DRAFTED_ACCESS } from '../access/published'
-import {
-  COLLECTION_SLUGS,
-  GLOBAL_SLUGS,
-  registeredCollections,
-  registeredGlobals,
-  stubSlugs,
-} from './collections'
+import { registeredCollections, registeredGlobals } from './collections'
 import { DuplicateRegistryEntry, uniqueEntries, type RegistryEntry } from './entries'
 import { jobTasks } from './jobs'
 import { registeredPlugins } from './plugins'
@@ -65,62 +59,46 @@ describe('registry entries', () => {
   })
 })
 
-describe('the frozen slug list', () => {
-  it('holds CONTENT-MODEL.md’s 39 collections and 6 globals, kebab-case and unique', () => {
-    expect(COLLECTION_SLUGS).toHaveLength(39)
-    expect(GLOBAL_SLUGS).toHaveLength(6)
-    for (const slug of [...COLLECTION_SLUGS, ...GLOBAL_SLUGS]) {
-      expect(slug).toMatch(/^[a-z]+(?:-[a-z]+)*$/)
-    }
-    expect(new Set([...COLLECTION_SLUGS, ...GLOBAL_SLUGS]).size).toBe(45)
+/** The collections the config holds after TASKS.md 2.4: the stubs and their frozen order are gone. */
+const SLUGS = [
+  'users',
+  'stores',
+  'works',
+  'makers',
+  'places',
+  'terms',
+  'sources',
+  'media',
+  'masters',
+]
+
+describe('the registered collections', () => {
+  it('are the built collections, in the sidebar order, and no global yet', () => {
+    expect(registeredCollections().map((c) => c.slug)).toEqual(SLUGS)
+    expect(registeredGlobals()).toEqual([])
   })
 
-  it('registers every collection and global, whatever the modules', () => {
-    expect(registeredCollections().map((c) => c.slug)).toEqual([...COLLECTION_SLUGS])
-    expect(registeredGlobals().map((g) => g.slug)).toEqual([...GLOBAL_SLUGS])
-  })
-
-  it('keeps every unbuilt slug a stub: hidden, admins may read, nobody may write', () => {
-    // A task that builds a collection replaces its stub, so the stub list shrinks as the
-    // Catalogue stage lands; what holds for each one left is its shape, never a count.
-    const stubs = new Set<string>(stubSlugs())
-    expect(stubs.has('users')).toBe(false)
-    const as = (user: unknown) => ({ req: { user } }) as never
-    for (const collection of registeredCollections().filter((c) => stubs.has(c.slug))) {
-      expect(collection.admin?.hidden, collection.slug).toBe(true)
-      expect(collection.fields, collection.slug).toEqual([])
-      expect(collection.access!.read!(as({ collection: 'users', roles: ['admin'] }))).toBe(true)
-      expect(collection.access!.read!(as({ collection: 'users', roles: ['editor'] }))).toBe(false)
-      expect(collection.access!.create!(as({ collection: 'users', roles: ['admin'] }))).toBe(false)
-    }
-  })
-
-  it('stores only upload collections in the bucket — media alone; masters is plain (8.3)', () => {
-    expect(uploadCollectionSlugs({ collections: registeredCollections() })).toEqual(['media'])
-    expect(
-      uploadCollectionSlugs({ collections: [{ slug: 'media', upload: true, fields: [] }] }),
-    ).toEqual(['media'])
-  })
-})
-
-describe('one folder per frozen slug (3.2.g)', () => {
-  const collectionsDir = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    '../collections',
-  )
-
-  it('gives every slug its own collections/<slug>/index.ts, its slug written literally', () => {
-    for (const slug of COLLECTION_SLUGS) {
+  it('give every collection its own collections/<slug>/index.ts, its slug written literally', () => {
+    const collectionsDir = path.resolve(
+      path.dirname(fileURLToPath(import.meta.url)),
+      '../collections',
+    )
+    for (const slug of SLUGS) {
       const file = path.join(collectionsDir, slug, 'index.ts')
       expect(fs.existsSync(file), file).toBe(true)
       expect(fs.readFileSync(file, 'utf8')).toMatch(new RegExp(`slug: '${slug}'`))
     }
   })
 
-  it('refuses a registry out of the frozen order, or short of a slug', () => {
+  it('refuse a slug listed twice', () => {
     const all = registeredCollections()
-    expect(() => registeredCollections([all[1]!, all[0]!, ...all.slice(2)])).toThrow(/position 0/)
-    expect(() => registeredCollections(all.slice(1))).toThrow(/38 collections for 39/)
+    expect(() => registeredCollections([...all, all[0]!])).toThrow(/"users" is listed twice/)
+    const global = { slug: 'site-settings', fields: [] }
+    expect(() => registeredGlobals([global, global])).toThrow(/listed twice/)
+  })
+
+  it('store only upload collections in the bucket — media alone; masters is plain (8.3)', () => {
+    expect(uploadCollectionSlugs({ collections: registeredCollections() })).toEqual(['media'])
   })
 })
 
@@ -128,21 +106,16 @@ describe('drafts need staff-only draft access (S4)', () => {
   const drafted = { slug: 'works', fields: [], versions: { drafts: true } }
 
   it('refuses a drafts collection or global without read and readVersions', () => {
-    const all = registeredCollections()
-    const bare = [...all.slice(0, 12), drafted, ...all.slice(13)]
-    expect(() => registeredCollections(bare)).toThrow(/access\.read \/ access\.readVersions/)
+    expect(() => registeredCollections([drafted])).toThrow(/access\.read \/ access\.readVersions/)
     const readOnly = { ...drafted, access: { read: DRAFTED_ACCESS.read } }
-    expect(() => registeredCollections([...all.slice(0, 12), readOnly, ...all.slice(13)])).toThrow(
-      /readVersions/,
-    )
+    expect(() => registeredCollections([readOnly])).toThrow(/readVersions/)
     expect(() =>
       registeredGlobals([{ slug: 'homepage', fields: [], versions: { drafts: true } }]),
     ).toThrow(/global "homepage"/)
   })
 
   it('accepts DRAFTED_ACCESS', () => {
-    const all = registeredCollections()
     const ok = { ...drafted, access: { ...DRAFTED_ACCESS } }
-    expect(registeredCollections([...all.slice(0, 12), ok, ...all.slice(13)])[12]).toBe(ok)
+    expect(registeredCollections([ok])[0]).toBe(ok)
   })
 })

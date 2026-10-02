@@ -39,7 +39,7 @@ describe.skipIf(!server)('upload temp files, on every endpoint (on Postgres)', (
     probe = await startProbe(server!, (config, key) => getPayload({ config, key }))
     const admin = await probe.payload.create({
       collection: 'users',
-      data: { email: 'admin@temp-files.test', password: PASSWORD, name: 'Admin', roles: ['admin'] },
+      data: { email: 'admin@temp-files.test', password: PASSWORD, name: 'Admin', role: 'owner' },
     })
     adminId = admin.id as number
     const login = await probe.rest('POST', '/api/users/login', {
@@ -85,16 +85,17 @@ describe.skipIf(!server)('upload temp files, on every endpoint (on Postgres)', (
     expect(probe.leftovers()).toEqual([])
   }, 30_000)
 
-  it('a stub collection, anonymous and signed in: refused, nothing left', async () => {
-    expect((await post('/api/products', form({}, FILE))).status).toBe(403)
-    expect((await post('/api/products', form({}, FILE), true)).status).toBe(403)
-    expect([403, 404]).toContain((await patch('/api/products/1', form({}, FILE), true)).status)
+  it('a collection refusing the caller, or none at all: refused, nothing left', async () => {
+    expect((await post('/api/stores', form({}, FILE))).status).toBe(403)
+    expect((await post('/api/stores', form({}, FILE), true)).status).toBe(400)
+    expect([403, 404]).toContain((await patch('/api/stores/1', form({}, FILE))).status)
+    expect((await post('/api/products', form({}, FILE), true)).status).toBe(404)
     expect(probe.leftovers()).toEqual([])
   }, 30_000)
 
-  it('globals: a stub refuses, a writable one saves, and neither leaves anything', async () => {
-    expect((await post('/api/globals/brand-settings', form({}, FILE))).status).toBe(403)
-    expect((await post('/api/globals/brand-settings', form({}, FILE), true)).status).toBe(403)
+  it('globals: an unknown one refuses, a writable one saves, and neither leaves anything', async () => {
+    expect((await post('/api/globals/brand-settings', form({}, FILE))).status).toBe(404)
+    expect((await post('/api/globals/brand-settings', form({}, FILE), true)).status).toBe(404)
     const saved = await post(`/api/globals/${PROBE_GLOBAL}`, form({ note: 'n' }, FILE))
     expect(saved.status).toBe(200)
     expect(probe.leftovers()).toEqual([])
@@ -102,7 +103,7 @@ describe.skipIf(!server)('upload temp files, on every endpoint (on Postgres)', (
 
   it('endpoints that are no operation — document access — leave nothing', async () => {
     expect((await post(`/api/users/access/${adminId}`, form({}, FILE))).status).toBe(200)
-    expect((await post('/api/globals/brand-settings/access', form({}, FILE))).status).toBe(200)
+    expect((await post(`/api/globals/${PROBE_GLOBAL}/access`, form({}, FILE))).status).toBe(200)
     expect((await post('/api/users/logout', form({}, FILE), true)).status).toBe(200)
     expect(probe.leftovers()).toEqual([])
   }, 30_000)

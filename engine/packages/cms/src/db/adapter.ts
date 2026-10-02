@@ -7,8 +7,8 @@
  * - **No schema push.** Schema reaches a database through migrations only (DEPLOYMENT.md §4.5).
  *   The one exception is PARALLEL-TRACKS.md §3.2's opt-in for an agent's own suffixed database,
  *   `PAYLOAD_DEV_PUSH=1`, and never in a production build (Payload itself never pushes there).
- *   It survives a second boot now that no engine table has a composite primary key — the thing
- *   drizzle-kit 0.31.7's push introspection could not read (`42P02`, senior-db review of 3.2, S1).
+ *   It survives a second boot only while no table has a composite primary key — the thing
+ *   drizzle-kit 0.31.7's push introspection cannot read (`42P02`, senior-db review of 3.2, S1).
  * - **Migrations in the web process only**: the bundled set (`prodMigrations` — a standalone
  *   build has no migration folder to read) is handed to Payload only when `RUN_MIGRATIONS=1`,
  *   so a worker, a CLI or a second pm2 app never migrates (ARCHITECTURE.md §10). Payload applies
@@ -16,8 +16,6 @@
  * - **Under an advisory lock**: every migration command — the web process's `migrate()` and the
  *   CLI's `migrate`, `migrate:down`, `:fresh`, `:refresh`, `:reset` — takes `MIGRATION_LOCK_KEY`
  *   first (`./advisory-lock`).
- * - **Engine tables** Payload cannot express are declared in `afterSchemaInit` (`./engine-tables`),
- *   so the one migration set carries them (PARALLEL-TRACKS.md §1).
  * - **Bounded waits** (the independent senior-db review of 4.8, S3). A pool connect — a new
  *   connection, or a free client when every one is out — gives up after `POOL_CONNECT_TIMEOUT_MS`,
  *   and a query after `QUERY_TIMEOUT_MS`, so a full pool or a black-holed connection answers
@@ -39,7 +37,6 @@ import { postgresAdapter, type PostgresAdapter } from '@payloadcms/db-postgres'
 import type { DatabaseAdapterObj } from 'payload'
 
 import { MIGRATION_LOCK_KEY, withAdvisoryLock, type LockPool } from './advisory-lock'
-import { declareEngineTables } from './engine-tables'
 
 export type DatabaseEnv = Readonly<Record<string, string | undefined>>
 
@@ -86,7 +83,6 @@ export function buildDatabaseAdapter(
     push: devPushRequested(env),
     migrationDir,
     ...(runsMigrationsOnBoot(env) ? { prodMigrations: [...migrations] } : {}),
-    afterSchemaInit: [declareEngineTables],
   })
   return withMigrationLock(adapter)
 }

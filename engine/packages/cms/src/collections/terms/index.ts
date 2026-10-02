@@ -1,7 +1,7 @@
 /**
  * `terms` — the editable vocabularies (TASKS.md 8.1.c; CONTENT-MODEL.md §3): a work's subjects
  * (Wayang, Batik, Temples, Spices, VOC, Costume), the shop's moods, rooms, occasions and
- * recipients, and each brand's published condition scale — the grades a work's
+ * recipients, and the gallery's published condition scale — the grades a work's
  * `condition.grade` points at (8.2.a; the gallery's VG+ · VG · G+ · G · Fair · As-is, D10).
  *
  * - `kind` says which vocabulary a term belongs to and never changes after it is created: works
@@ -15,11 +15,7 @@ import type { CollectionConfig, Validate } from 'payload'
 
 import { gradeEquivalentError } from '../../validators/term-grade'
 import { TERM_KIND_LABELS, TERM_KINDS } from './kinds'
-import {
-  refuseContributorPublish,
-  VOCABULARY_ACCESS,
-  VOCABULARY_VERSIONS,
-} from './vocabulary/access'
+import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from './vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { translationStatusField } from '../../fields/translation-status'
 import {
@@ -63,7 +59,7 @@ export const Terms: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeChange: [refuseContributorPublish], beforeDelete: [refuseDeleteWhileUsed] },
+  hooks: { beforeDelete: [refuseDeleteWhileUsed] },
   // A slug is unique within its vocabulary: "warm" may be a mood and a room's colour both.
   indexes: [{ fields: ['kind', 'slug'], unique: true }],
   fields: [

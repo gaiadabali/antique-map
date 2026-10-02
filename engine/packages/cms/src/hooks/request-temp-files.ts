@@ -41,7 +41,11 @@ type RequestFiles = Pick<PayloadRequest, 'file' | 'files'>
 const PAYLOAD_DEFAULT_TEMP_DIR = 'tmp'
 
 export function tempFileDirOf(config: Pick<SanitizedConfig, 'upload'>): string {
-  return path.resolve(config.upload?.tempFileDir ?? PAYLOAD_DEFAULT_TEMP_DIR)
+  // A runtime path: traced, it would pull the whole project into the standalone output
+  // (CONVENTIONS.md §12; the 2.1 build's warning).
+  return path.resolve(
+    /*turbopackIgnore: true*/ config.upload?.tempFileDir ?? PAYLOAD_DEFAULT_TEMP_DIR,
+  )
 }
 
 function isInside(dir: string, file: string): boolean {

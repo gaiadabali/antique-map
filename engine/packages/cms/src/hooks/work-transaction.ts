@@ -5,7 +5,7 @@
  *
  * Two locks, both released at the operation's COMMIT or ROLLBACK:
  *
- * - **`WORK_UID_LOCK_KEY`**, exclusive: a new work's uid is the brand's next number, read and
+ * - **`WORK_UID_LOCK_KEY`**, exclusive: a new work's uid is the next number, read and
  *   taken under it, so two works saved at once never take one number.
  * - **`WORK_REFERENCES_LOCK_KEY`**, shared by every work save and exclusive for a delete of a
  *   maker, place, term or source (`./work-references`). A save that still holds it shared has not

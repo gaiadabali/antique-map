@@ -18,7 +18,6 @@ import { isPublishing } from '../fields/validate'
 import { hasPrimaryPlace, refId } from '../validators/work-credits'
 import { imageRowErrors } from '../validators/work-images'
 import { publishProblems } from '../validators/work-publish'
-import { isProvenanceCopy } from '../validators/work-synced'
 import {
   asLabel,
   defaultLocaleTitle,
@@ -104,7 +103,6 @@ export const guardWork: CollectionBeforeChangeHook = async ({
       hasPlaces: places.length > 0,
       hasPrimaryPlace: hasPrimaryPlace(places),
       images: facts,
-      isCopy: isProvenanceCopy(merged.origin as never),
       hasGrade: refId(condition.grade) !== null,
       aiDraft: Array.isArray(cataloguing.aiDraft) ? (cataloguing.aiDraft as string[]) : [],
     })

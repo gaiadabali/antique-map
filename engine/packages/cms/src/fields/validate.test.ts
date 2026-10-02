@@ -52,10 +52,10 @@ describe('translationStatus (senior-be review of 8.1, N3)', () => {
   const access = translationStatusField.access!
 
   it('is staff-only: neither read nor written by the public or a customer', () => {
-    for (const user of [null, { collection: 'customers', roles: ['admin'] }]) {
+    for (const user of [null, { collection: 'customers', role: 'owner' }]) {
       expect(access.read!(as(user))).toBe(false)
       expect(access.update!(as(user))).toBe(false)
     }
-    expect(access.read!(as({ collection: 'users', roles: ['contributor'] }))).toBe(true)
+    expect(access.read!(as({ collection: 'users', role: 'editor' }))).toBe(true)
   })
 })
