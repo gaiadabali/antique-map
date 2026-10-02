@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/5 | 11/20 | 0 | `██████░░░░`  55% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 1/5 | 14/20 | 0 | `███████░░░`  70% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **5/49** | **31/196** | **8** | `██░░░░░░░░`  16% |
+| **All** | 11 phases | | | **5/49** | **34/196** | **8** | `██░░░░░░░░`  17% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -297,9 +297,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/{package.json,payload-types.ts}`, `engine/packages/cms/src/{payload.config.ts,instance.ts,instance.test.ts,instance.db.test.ts}`, `engine/packages/cms/src/{collections,globals,db,fields,hooks,seed,registries,validators,migrations}/**`, `engine/packages/media/**`
   - **Read** CARRY-OVER.md §2.5, §3 step 7 and §6.4, CONTENT-MODEL.md §3–§7
   - _Requirements: 1.1, 1.3_
-  - [ ] 2.4.a delete the 31 stub collections and six stub globals, the frozen-slug assertion, `engine-tables.ts`, `idempotency.ts` and the `nl` locale; keep `assertDraftAccess`, `publishedOrStaff`, the users guards and `hooks/request-temp-files`
-  - [ ] 2.4.b users get the roles `owner`, `editor` and `store` (a `store` relation); media and masters lose the brand segment and the outlet logic (one media bucket, one masters bucket); remove room plates; strip the works sister-sync guard
-  - [ ] 2.4.c remove every brand use in the Owns: imports of `access/brand`, `access/modules` and the `@engine/config` brand loader, `BRAND` and `BRAND_ROOT`; move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json` and repoint every CMS test off the root `test/`; as W2's schema lead, generate one interim migration and regenerate `payload-types.ts` and `importMap.js`
+  - [x] 2.4.a delete the 31 stub collections and six stub globals, the frozen-slug assertion, `engine-tables.ts`, `idempotency.ts` and the `nl` locale; keep `assertDraftAccess`, `publishedOrStaff`, the users guards and `hooks/request-temp-files`
+  - [x] 2.4.b users get the roles `owner`, `editor` and `store` (a `store` relation); media and masters lose the brand segment and the outlet logic (one media bucket, one masters bucket); remove room plates; strip the works sister-sync guard
+  - [x] 2.4.c remove every brand use in the Owns: imports of `access/brand`, `access/modules` and the `@engine/config` brand loader, `BRAND` and `BRAND_ROOT`; move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json` and repoint every CMS test off the root `test/`; as W2's schema lead, generate one interim migration and regenerate `payload-types.ts` and `importMap.js`
   - [ ] 2.4.d **Check:** `pnpm verify` is green; a search finds no `BRAND`, no `access/brand` or `access/modules` import and no brand-loader import in the CMS outside `src/access/`, and no CMS test reading the root `test/`; the works and users `*.db.test.ts` pass against Postgres.
 
 - [ ] **2.5 The migrations reset** · needs: 2.2, 2.3, 2.4
