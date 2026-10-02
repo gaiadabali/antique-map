@@ -1,7 +1,7 @@
 /**
- * TASKS.md 8.1.d: the gazetteer seed (`test/content/seed/gazetteer.json`, the shape every brand
- * reuses) passes the `places` collection's own rules — addresses, a tree with no loop, historical
- * names, geo — and holds what the two docs it encodes ask for: EXPERIENCE-GALLERY.md §2's
+ * TASKS.md 8.1.d: the gazetteer seed (`../../seed/gazetteer.json`, TASKS.md 2.4.c) passes the
+ * `places` collection's own rules — addresses, a tree with no loop, historical names, geo — and
+ * holds what the two docs it encodes ask for: EXPERIENCE-GALLERY.md §2's
  * hierarchy and ARCHITECTURE.md §8's historical ↔ modern pairs.
  */
 import fs from 'node:fs'
@@ -30,14 +30,10 @@ type SeedPlace = {
   geo: Geo | null
 }
 
-const repoRoot = (() => {
-  let dir = path.dirname(fileURLToPath(import.meta.url))
-  while (!fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) dir = path.dirname(dir)
-  return dir
-})()
+const here = path.dirname(fileURLToPath(import.meta.url))
 
 const seed = JSON.parse(
-  fs.readFileSync(path.join(repoRoot, 'test', 'content', 'seed', 'gazetteer.json'), 'utf8'),
+  fs.readFileSync(path.join(here, '..', '..', 'seed', 'gazetteer.json'), 'utf8'),
 ) as { shape: number; places: SeedPlace[] }
 const places = seed.places
 const bySlug = new Map(places.map((place) => [place.slug, place]))

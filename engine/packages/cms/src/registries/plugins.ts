@@ -3,9 +3,9 @@
  * here; a lane that needs a Payload plugin exports it from its package's barrel
  * (`@engine/<pkg>/plugins`) and the SCH lead adds the barrel's line.
  *
- * A plugin must not shape the schema by brand or by environment: whatever it adds, it adds the
- * same with `BRAND` unset (TASKS.md 2.2.g) — the storage plugin's `alwaysInsertFields` is the
- * example (`./storage`). `@payloadcms/plugin-ecommerce` is never registered (ARCHITECTURE.md §5).
+ * A plugin must not shape the schema by environment: whatever it adds, it adds the same in the
+ * build as in a serving process — the storage plugin's `alwaysInsertFields` is the example
+ * (`./storage`). `@payloadcms/plugin-ecommerce` is never registered (ARCHITECTURE.md §5).
  */
 import type { Plugin } from 'payload'
 

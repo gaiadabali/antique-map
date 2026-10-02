@@ -72,7 +72,6 @@ export function parseIntakeManifest(
 ): { manifest: IntakeManifest } | { problems: string[] } {
   const raw = (json ?? {}) as Raw
   const problems: string[] = []
-  if (!isText(raw.brand) || !KEBAB.test(raw.brand)) problems.push("brand: the brand's slug")
   if (!isText(raw.batch) || !KEBAB.test(raw.batch)) problems.push('batch: a kebab-case id')
   if (!isText(raw.receivedAt) || Number.isNaN(Date.parse(raw.receivedAt))) {
     problems.push('receivedAt: an ISO 8601 date and time')

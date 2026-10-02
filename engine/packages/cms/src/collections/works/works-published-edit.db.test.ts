@@ -1,11 +1,10 @@
 /**
  * TASKS.md 1.2.b on a real Postgres: an edit of a work that is already published — a save that
  * sends no `_status` and is no draft, so Payload keeps the record published — is a publish, and
- * meets the publish guard and the contributor's drafts-only rule like one. Both guards read
- * `data._status`, which Payload 3.90 fills from the stored record before a collection's
- * `beforeChange` hooks run; were that to change, a REST `PATCH` leaving `_status` out would strip
- * a live work's title or recto unrefused and a contributor would edit the live record. These
- * tests pin it.
+ * meets the publish guard like one. The guard reads `data._status`, which Payload 3.90 fills from
+ * the stored record before a collection's `beforeChange` hooks run; were that to change, a REST
+ * `PATCH` leaving `_status` out would strip a live work's title or recto unrefused. These tests
+ * pin it, and that store staff cannot edit a live work at all.
  */
 import { invalidationBatch } from '@engine/cache'
 import { getPayload } from 'payload'
@@ -48,7 +47,7 @@ describe.skipIf(!server)('works: editing a published work on a real database', (
   it('refuses a REST edit that leaves _status out and would strip a live work’s title and recto', async () => {
     const work = await publishOne()
     const response = await stack.rest('PATCH', `/api/works/${work.id}`, {
-      role: 'cataloguer',
+      role: 'editor',
       json: { title: '', images: [] },
     })
     expect(response.status).toBe(400)
@@ -101,14 +100,13 @@ describe.skipIf(!server)('works: editing a published work on a real database', (
     })
   }, 60_000)
 
-  it('refuses a contributor’s direct edit of a live work over REST', async () => {
+  it('refuses a store user’s direct edit of a live work over REST', async () => {
     const work = await publishOne()
     const live = await stack.rest('PATCH', `/api/works/${work.id}`, {
-      role: 'contributor',
-      json: { title: 'Retitled by a contributor' },
+      role: 'store',
+      json: { title: 'Retitled by a store' },
     })
     expect(live.status).toBe(403)
-    expect(JSON.stringify(await live.json())).toMatch(/Contributors save drafts/)
     expect((await stored(work.id)).title).toBe('Bali by François Valentijn, c. 1726')
   }, 60_000)
 })

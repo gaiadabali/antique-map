@@ -26,9 +26,11 @@ import {
 } from 'payload'
 
 import { buildEngineConfig, engineConfig } from '../payload.config'
+import { testOrigin } from '../db/test-origin.test-support'
 
 export const LIMIT = 1024 * 1024
-export const ORIGIN = 'http://localhost:4181'
+const admin = testOrigin(4181)
+export const ORIGIN = admin.origin
 export const PROBES = 'temp-file-probes'
 export const PROBE_GLOBAL = 'temp-file-probe'
 
@@ -109,7 +111,7 @@ export async function startProbe(server: string, connect: Connect): Promise<Prob
     DATABASE_URL: url.toString(),
     PAYLOAD_SECRET: 't'.repeat(48),
     PAYLOAD_DEV_PUSH: '1',
-    SITE_URL: ORIGIN,
+    ...admin.env,
   }
   const base = engineConfig(env)
   const config = await buildEngineConfig({
@@ -122,9 +124,9 @@ export async function startProbe(server: string, connect: Connect): Promise<Prob
       requestSizeLimit: LIMIT + MULTIPART_ENVELOPE_BYTES,
     },
   })
-  const admin = pgPool(server)
-  await admin.query(`CREATE DATABASE "${database}"`)
-  await admin.end()
+  const creator = pgPool(server)
+  await creator.query(`CREATE DATABASE "${database}"`)
+  await creator.end()
   const payload = await connect(config, database)
 
   const rest: Probe['rest'] = async (method, route, init = {}) => {

@@ -13,7 +13,6 @@ import {
   intakeMasterKey,
   masterKey,
   PRESIGN_TTL_SECONDS,
-  printFileKey,
 } from '../contract'
 import {
   isPublicMediaKey,
@@ -54,7 +53,7 @@ describe('the public part of a media bucket (8.3.g)', () => {
   it("is never an upload's original, the uncapped pyramid, or a key that climbs out", () => {
     expect(isPublicMediaKey(`${UPLOADS_PREFIX}/M-9999_recto_01.jpg`)).toBe(false)
     expect(isPublicMediaKey(`${UPLOADS_PREFIX}/abc/M-9999_recto_01.tif`)).toBe(false)
-    expect(isPublicMediaKey(`${iiifFullKey('test', ID)}/info.json`)).toBe(false)
+    expect(isPublicMediaKey(`${iiifFullKey(ID)}/info.json`)).toBe(false)
     expect(isPublicMediaKey('derivatives/../uploads/x.jpg')).toBe(false)
     expect(isPublicMediaKey('/derivatives/v1/x.avif')).toBe(false)
     expect(isPublicMediaKey('derivatives/')).toBe(false)
@@ -104,10 +103,8 @@ describe('upload limits and types (8.3.d)', () => {
     ]) {
       expect(masterContentType('capture', ext)).not.toBeNull()
     }
-    expect(Object.keys(MASTER_TYPES['print-file']).sort()).toEqual(
-      ['jpeg', 'jpg', 'pdf', 'png', 'tif', 'tiff'].sort(),
-    )
-    expect(masterContentType('print-file', 'cr3')).toBeNull()
+    // One kind now: the configurator's print files went with it (TASKS.md 2.4.b).
+    expect(Object.keys(MASTER_TYPES)).toEqual(['capture'])
     expect(masterContentType('capture', 'svg')).toBeNull()
     expect(masterContentType('capture', 'exe')).toBeNull()
     expect(masterContentType('capture', 'toString')).toBeNull()
@@ -133,17 +130,16 @@ describe('upload limits and types (8.3.d)', () => {
     expect(masterUploadProblems({ kind: 'capture', extension: 'tif', byteSize: 1.5 })).toHaveLength(
       1,
     )
-    expect(masterUploadProblems({ kind: 'print-file', extension: 'heic', byteSize: 10 })).toEqual([
-      expect.stringMatching(/cannot be a \.heic file/),
+    expect(masterUploadProblems({ kind: 'capture', extension: 'svg', byteSize: 10 })).toEqual([
+      expect.stringMatching(/cannot be a \.svg file/),
     ])
   })
 
-  it('files each kind under its own prefix, as C9 builds the keys', () => {
+  it('files every capture under its prefix, as C9 builds the keys', () => {
     expect(masterKey('m-000123', SHA, 'cr3').startsWith(kindPrefix('capture'))).toBe(true)
-    expect(
-      intakeMasterKey('test', 'pilot-2026-10', SHA, 'cr3').startsWith(kindPrefix('capture')),
-    ).toBe(true)
-    expect(printFileKey('test', 'd-1', SHA, 'tif').startsWith(kindPrefix('print-file'))).toBe(true)
+    expect(intakeMasterKey('pilot-2026-10', SHA, 'cr3').startsWith(kindPrefix('capture'))).toBe(
+      true,
+    )
   })
 })
 

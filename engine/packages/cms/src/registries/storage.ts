@@ -1,6 +1,6 @@
 /**
  * Media storage (DEPLOYMENT.md §2, ARCHITECTURE.md §2, §7; TASKS.md 8.3): every upload
- * collection's files go to the brand's S3-compatible public media bucket — RustFS on a host
+ * collection's files go to the one S3-compatible public media bucket — RustFS on a host
  * (D12), MinIO locally (`docker-compose.dev.yml`) — never the Helios disk. Switching provider is
  * an endpoint change. Which bucket, endpoint and key: `@engine/media/storage`'s
  * `mediaStorageTarget()`, the one reading of `S3_*` for every caller.
@@ -13,13 +13,13 @@
  * a file's `url` is Payload's own file route, which the collection's `read` access answers — for
  * `media`, staff only (`collections/media/access`).
  *
- * **`alwaysInsertFields: true` is what keeps the schema brand- and environment-independent.**
+ * **`alwaysInsertFields: true` is what keeps the schema environment-independent.**
  * The storage plugin adds its own fields (`prefix`, `_objectKey`, `url`) to each upload
  * collection only while it is enabled; with it off — no bucket configured, as in the build or a
  * workstation without MinIO — those columns would vanish, and one database would drift from the
  * other. With the flag, the columns exist either way and only the file handling switches. The
  * collection prefix is a constant, `UPLOADS_PREFIX`: the `prefix` column's default is written into
- * the DDL, so it is the same for every brand and environment, the plugin on or off.
+ * the DDL, so it is the same in every environment, the plugin on or off.
  *
  * Which collections: every collection with `upload` in the config, found when the plugin runs —
  * today `media`. `masters` is a plain collection whose files go to the private masters bucket by

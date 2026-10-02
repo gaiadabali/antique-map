@@ -10,33 +10,26 @@
  *   its content address — the secret part of its public derivative keys (C9 `derivativeKey()`).
  *   `master` is staff-only at the field besides.
  * - **The file is not.** `isReadingStaticFile` is Payload's own flag for `/api/media/file/…`: the
- *   upload behind it is the full-resolution processed image, which would bypass the brand's
- *   `publicZoomMaxPx` cap and may carry GPS and camera metadata, so only staff fetch it — the
- *   admin's preview. The public sees derivatives and capped tiles, from the bucket's public
+ *   upload behind it is the full-resolution processed image, which would bypass the public zoom
+ *   cap and may carry GPS and camera metadata, so only staff fetch it — the admin's preview. The public sees derivatives and capped tiles, from the bucket's public
  *   prefixes (`@engine/media/storage`).
- * - **Only staff create images.** A customer's photographs — a consignment's, a return's — are
- *   private, session-bound uploads that never become `media` records (6.2.e's Found 10), so no
- *   customer and no anonymous visitor can make one, by any API.
+ * - **The owner and the editors make and remove images** (CONTENT-MODEL.md §7); store staff read
+ *   them, to see what they stock and ship, and no anonymous visitor can make one, by any API.
  */
 import type { Access } from 'payload'
 
-import { isStaffUser, staffWithRoles } from '../../access/roles'
+import { isStaffUser } from '../../access/roles'
+import { staffWithRoles } from '../users/roles'
 
 /** Staff, by any API; the loaders, on the Local API; the file behind it, staff alone. */
 export const readMedia: Access = ({ req, isReadingStaticFile }) =>
   isStaffUser(req.user) || (!isReadingStaticFile && req.payloadAPI === 'local')
 
-/** Whoever places images: the catalogue, the editorial side, and a contributor's drafts. */
-export const writeMedia: Access = staffWithRoles(
-  'admin',
-  'manager',
-  'cataloguer',
-  'editor',
-  'contributor',
-)
+/** Whoever places images: the owner and the editors, who keep the catalogue and the content. */
+export const writeMedia: Access = staffWithRoles('owner', 'editor')
 
-/** Removing an image can empty a published page: the catalogue's owners only. */
-export const deleteMedia: Access = staffWithRoles('admin', 'manager', 'cataloguer')
+/** Removing an image can empty a published page: the same two roles, never store staff. */
+export const deleteMedia: Access = staffWithRoles('owner', 'editor')
 
 export const MEDIA_ACCESS = {
   read: readMedia,

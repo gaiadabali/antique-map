@@ -14,13 +14,10 @@
       "Resource": ["arn:aws:s3:::{{mastersBucket}}/*"]
     },
     {
-      "Sid": "WriteCapturesAndItsOwnPrintFilesDeleteNothing",
+      "Sid": "WriteCapturesDeleteNothing",
       "Effect": "Allow",
       "Action": ["s3:PutObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"],
-      "Resource": [
-        "arn:aws:s3:::{{mastersBucket}}/masters/*",
-        "arn:aws:s3:::{{mastersBucket}}/print-files/{{brand}}/*"
-      ]
+      "Resource": ["arn:aws:s3:::{{mastersBucket}}/masters/*"]
     }
   ]
 }

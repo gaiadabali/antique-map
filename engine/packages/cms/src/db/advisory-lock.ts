@@ -9,7 +9,7 @@
  * The lock is held on a dedicated connection, never one the migrations use, so it cannot be
  * released early by a migration's own COMMIT or ROLLBACK. A process that dies mid-migration
  * drops its connection and Postgres releases the lock with it — no stale lock survives a crash.
- * Advisory locks are scoped to the current database, so the two brands never wait on each other.
+ * Advisory locks are scoped to the current database: two databases never wait on each other.
  *
  * Two things this needs of the connection (senior-db review of 3.2, N2):
  * - **`DATABASE_URL` reaches Postgres directly, or through a session-mode pooler** — never a

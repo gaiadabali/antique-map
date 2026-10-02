@@ -2,22 +2,21 @@
 // runs, built from a plan file and the policy documents beside this file, with nothing executed.
 //
 // The documents:
-//   media-public-read.json  each media bucket's bucket policy: anonymous GET of derivatives/ and
+//   media-public-read.json  the media bucket's bucket policy: anonymous GET of derivatives/ and
 //                           iiif/ — the derivative ladder and the capped tiles — and nothing else,
 //                           so an upload's full-resolution original is never served (8.3.g)
-//   media-writer.json       a brand's media key: reads and writes its own media bucket only
-//   masters-origin.json     the origin brand's masters key: reads every master, writes captures and
-//                           its own print files (print-files/<brand>/), and deletes nothing
-//   masters-outlet.json     the outlet brand's masters key: reads captures and print files, and
-//                           writes only its own print files, under print-files/<brand>/ (C9
-//                           printFileKey())
-// The masters bucket gets no anonymous access at all: a master has no public URL — and a CORS
-// rule admitting each brand's admin origin for the presigned PUT alone (./cors.mjs). No web key may
+//   media-writer.json       the app's media key: reads and writes the media bucket only
+//   masters-writer.json     the app's masters key: reads every master, writes captures under
+//                           masters/, and deletes nothing
+// One media bucket and one masters bucket serve both sites (TASKS.md 2.4.b): the outlet brand's
+// print-file key and the brand segment in the keys are gone. The masters bucket gets no anonymous
+// access at all: a master has no public URL — and a CORS rule admitting the admin origin for the
+// presigned PUT alone (./cors.mjs). No web key may
 // delete a capture: the archive is irreplaceable, and the one deletion it needs — an intake copy
 // once filed and verified (TASKS.md 15.4) — is a job's, with a key of its own when 15.4 asks.
 //
-// Placeholders are `{{mediaBucket}}`, `{{mastersBucket}}` and `{{brand}}` (a masters key's brand
-// slug) — never `${…}`, which IAM itself reads as a policy variable.
+// Placeholders are `{{mediaBucket}}` and `{{mastersBucket}}` — never `${…}`, which IAM itself
+// reads as a policy variable.
 import { createHmac } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -30,8 +29,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 /** Each key policy a plan's user may hold, and the placeholders its document needs. */
 export const KEY_POLICIES = {
   'media-writer': ['mediaBucket'],
-  'masters-origin': ['mastersBucket', 'brand'],
-  'masters-outlet': ['mastersBucket', 'brand'],
+  'masters-writer': ['mastersBucket'],
 }
 export const BUCKET_POLICY = 'media-public-read'
 
@@ -39,7 +37,6 @@ const BUCKET_NAME = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/
 // MinIO's access keys are 3–20 characters here; a user's name is its access key.
 const USER_NAME = /^[a-z0-9][a-z0-9-]{1,18}[a-z0-9]$/
 const PLACEHOLDER = /\{\{([A-Za-z]+)\}\}/g
-const BRAND_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 /** A policy document from this folder, parsed. */
 export function loadDocument(name) {
@@ -69,11 +66,12 @@ export function planProblems(plan) {
   const problems = []
   if (!plan || typeof plan !== 'object') return ['a plan is a JSON object']
   if (!BUCKET_NAME.test(plan.mastersBucket ?? '')) problems.push('mastersBucket: a bucket name')
-  const buckets = Array.isArray(plan.mediaBuckets) ? plan.mediaBuckets : []
-  if (buckets.length === 0) problems.push('mediaBuckets: at least one bucket')
-  for (const bucket of buckets) {
-    if (!BUCKET_NAME.test(bucket)) problems.push(`mediaBuckets: "${bucket}" is not a bucket name`)
-    if (bucket === plan.mastersBucket) problems.push(`"${bucket}" cannot be public and private`)
+  if (plan.mediaBuckets !== undefined) {
+    problems.push('mediaBuckets: one media bucket now (mediaBucket), for both sites')
+  }
+  if (!BUCKET_NAME.test(plan.mediaBucket ?? '')) problems.push('mediaBucket: a bucket name')
+  if (plan.mediaBucket !== undefined && plan.mediaBucket === plan.mastersBucket) {
+    problems.push(`"${plan.mediaBucket}" cannot be public and private`)
   }
   const seen = new Set()
   for (const [i, entry] of (Array.isArray(plan.users) ? plan.users : []).entries()) {
@@ -83,25 +81,17 @@ export function planProblems(plan) {
     seen.add(entry?.user)
     if (!Object.hasOwn(KEY_POLICIES, entry?.policy ?? '')) {
       problems.push(`${at}.policy: one of ${Object.keys(KEY_POLICIES).join(', ')}`)
-    } else if (entry.policy === 'media-writer' && !buckets.includes(entry.bucket)) {
-      problems.push(`${at}.bucket: a media-writer names one of mediaBuckets`)
-    } else if (entry.policy !== 'media-writer' && entry.bucket !== undefined) {
-      problems.push(`${at}.bucket: only a media-writer names a bucket`)
-    } else if (entry.policy !== 'media-writer' && !BRAND_SLUG.test(entry.brand ?? '')) {
-      problems.push(`${at}.brand: a masters key names its brand's slug`)
-    } else if (entry.policy === 'media-writer' && entry.brand !== undefined) {
-      problems.push(`${at}.brand: a media-writer is scoped by its bucket, not a brand`)
+    } else if (entry.bucket !== undefined || entry.brand !== undefined) {
+      problems.push(`${at}: a key names its policy only — the plan's two buckets are the only ones`)
     }
   }
   problems.push(...corsProblems(plan.mastersCors))
   return problems
 }
 
-/** The name a user's policy is created under: one per media bucket, or per brand for masters. */
+/** The name a user's policy is created under: its document's, since each exists once. */
 export function policyName(entry) {
-  return entry.policy === 'media-writer'
-    ? `media-writer-${entry.bucket}`
-    : `${entry.policy}-${entry.brand}`
+  return entry.policy
 }
 
 /**
@@ -132,11 +122,13 @@ export function secretVariable(user) {
 export function planOperations(plan, { secretFor, read = loadDocument }) {
   const problems = planProblems(plan)
   if (problems.length > 0) throw new Error(`the plan is not valid:\n  ${problems.join('\n  ')}`)
-  const operations = plan.mediaBuckets.map((bucket) => ({
-    kind: 'bucket-policy',
-    bucket,
-    document: renderPolicy(read(BUCKET_POLICY), { mediaBucket: bucket }),
-  }))
+  const operations = [
+    {
+      kind: 'bucket-policy',
+      bucket: plan.mediaBucket,
+      document: renderPolicy(read(BUCKET_POLICY), { mediaBucket: plan.mediaBucket }),
+    },
+  ]
   operations.push({ kind: 'bucket-private', bucket: plan.mastersBucket })
   operations.push(corsOperation(plan))
   const created = new Set()
@@ -144,11 +136,7 @@ export function planOperations(plan, { secretFor, read = loadDocument }) {
     const name = policyName(entry)
     if (created.has(name)) continue
     created.add(name)
-    const vars = {
-      mediaBucket: entry.bucket,
-      mastersBucket: plan.mastersBucket,
-      brand: entry.brand,
-    }
+    const vars = { mediaBucket: plan.mediaBucket, mastersBucket: plan.mastersBucket }
     operations.push({ kind: 'key-policy', name, document: renderPolicy(read(entry.policy), vars) })
   }
   for (const entry of plan.users) {

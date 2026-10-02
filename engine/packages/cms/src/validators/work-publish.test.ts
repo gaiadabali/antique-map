@@ -38,7 +38,6 @@ const complete: PublishFacts = {
   hasPlaces: true,
   hasPrimaryPlace: true,
   images: [image(), image({ id: '2', role: 'verso' })],
-  isCopy: false,
   hasGrade: true,
   aiDraft: [],
 }
@@ -115,7 +114,6 @@ describe('the work publish guard (CONTENT-MODEL.md §9)', () => {
       hasPlaces: false,
       hasPrimaryPlace: false,
       images: [],
-      isCopy: false,
       hasGrade: false,
       aiDraft: ['title', 'condition'],
     })
@@ -179,11 +177,10 @@ describe('the work publish guard (CONTENT-MODEL.md §9)', () => {
     expect(imagePublishProblems([image({ altSource: 'baseline' })])).toEqual([])
   })
 
-  it('wants a grade for an original, never for a provenance copy', () => {
+  it('wants a grade', () => {
     expect(publishProblems({ ...complete, hasGrade: false })).toMatchObject([
       { path: 'condition.grade', message: expect.stringMatching(/Grade the condition/) },
     ])
-    expect(publishProblems({ ...complete, hasGrade: false, isCopy: true })).toEqual([])
   })
 
   it('never reads a location or an export status: a blank one makes the item enquiry-only', () => {

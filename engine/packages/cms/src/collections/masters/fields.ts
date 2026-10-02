@@ -19,10 +19,7 @@ import {
 /** C9 `MasterRole`: a media role, or a `reference` frame kept to correct the shots it goes with. */
 export const MASTER_ROLES = [...MEDIA_ROLES, 'reference'] as const
 
-const KIND_OPTIONS = optionsOf(MASTER_KINDS, {
-  capture: 'Capture — a file as received',
-  'print-file': "Print file — a design's file for reproduction",
-})
+const KIND_OPTIONS = optionsOf(MASTER_KINDS, { capture: 'Capture — a file as received' })
 const pixels = (name: string, label: string): Field => ({
   name,
   type: 'number',
@@ -56,14 +53,7 @@ export const MASTER_FIELDS: Field[] = [
     fields: [pixels('widthPx', 'Frame width (px)'), pixels('heightPx', 'Frame height (px)')],
   },
   { name: 'colourProfile', type: 'text' },
-  {
-    name: 'brand',
-    type: 'text',
-    required: true,
-    admin: { position: 'sidebar', description: "The owning brand's slug." },
-  },
   { name: 'work', type: 'relationship', relationTo: 'works', admin: { position: 'sidebar' } },
-  { name: 'design', type: 'relationship', relationTo: 'designs', admin: { position: 'sidebar' } },
   {
     name: 'role',
     type: 'select',

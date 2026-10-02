@@ -2,7 +2,6 @@ import { MEDIA_PROVENANCES, MEDIA_ROLES } from '@engine/media/contract'
 import { MEDIA_UPLOAD_MAX_BYTES, MEDIA_UPLOAD_MIME_TYPES } from '@engine/media/storage'
 import { describe, expect, it, vi } from 'vitest'
 
-import { STAFF_ROLES } from '../../access/roles'
 import { MEDIA_ACCESS } from './access'
 import { MEDIA_FIELDS, validateAlt } from './fields'
 import { freezeAfterCreate, mayCorrectIntake } from './frozen'
@@ -19,7 +18,7 @@ type Hook = (args: never) => unknown
 const call = (hook: Hook, args: Record<string, unknown>) => hook(args as never)
 const field = (name: string) =>
   MEDIA_FIELDS.find((f) => 'name' in f && f.name === name) as Record<string, unknown>
-const staff = (...roles: string[]) => ({ collection: 'users', roles })
+const staff = (role: string) => ({ collection: 'users', role, store: 1 })
 const access = (fn: unknown, user: unknown, extra: object = {}) =>
   (fn as (a: unknown) => unknown)({ req: { user }, ...extra })
 
@@ -76,7 +75,7 @@ describe('who reaches an image and its file (8.3.g, Found 10)', () => {
     expect(over('REST', null)).toBe(false)
     expect(over('REST', { collection: 'customers' })).toBe(false)
     expect(over('GraphQL', null)).toBe(false)
-    expect(over('REST', staff('contributor'))).toBe(true)
+    expect(over('REST', staff('editor'))).toBe(true)
     expect(over('local', null, { isReadingStaticFile: true })).toBe(false)
   })
 
@@ -85,20 +84,20 @@ describe('who reaches an image and its file (8.3.g, Found 10)', () => {
     expect(
       access(MEDIA_ACCESS.read, { collection: 'customers' }, { isReadingStaticFile: true }),
     ).toBe(false)
-    expect(access(MEDIA_ACCESS.read, staff('analyst'), { isReadingStaticFile: true })).toBe(true)
+    expect(access(MEDIA_ACCESS.read, staff('store'), { isReadingStaticFile: true })).toBe(true)
   })
 
-  it('lets staff who place images create them, and never a customer or a visitor', () => {
-    for (const role of ['admin', 'manager', 'cataloguer', 'editor', 'contributor']) {
+  it('lets the owner and the editors place and remove images, never store staff or a visitor', () => {
+    for (const role of ['owner', 'editor']) {
       expect(access(MEDIA_ACCESS.create, staff(role))).toBe(true)
+      expect(access(MEDIA_ACCESS.update, staff(role))).toBe(true)
+      expect(access(MEDIA_ACCESS.delete, staff(role))).toBe(true)
     }
-    for (const role of STAFF_ROLES.filter((r) => ['analyst', 'fulfilment'].includes(r))) {
-      expect(access(MEDIA_ACCESS.create, staff(role))).toBe(false)
+    for (const operation of ['create', 'update', 'delete'] as const) {
+      expect(access(MEDIA_ACCESS[operation], staff('store'))).toBe(false)
     }
-    expect(access(MEDIA_ACCESS.create, { collection: 'customers', roles: ['admin'] })).toBe(false)
+    expect(access(MEDIA_ACCESS.create, { collection: 'customers', role: 'owner' })).toBe(false)
     expect(access(MEDIA_ACCESS.create, null)).toBe(false)
-    expect(access(MEDIA_ACCESS.delete, staff('editor'))).toBe(false)
-    expect(access(MEDIA_ACCESS.delete, staff('cataloguer'))).toBe(true)
   })
 })
 
@@ -209,26 +208,26 @@ describe('what intake set stays set (finding 3)', () => {
       req: { user, payloadAPI },
     })
 
-  it('refuses a contributor, a cataloguer or an editor who would change a provenance or a role', () => {
-    for (const role of ['contributor', 'cataloguer', 'editor']) {
+  it('refuses an editor or store staff who would change a provenance or a role', () => {
+    for (const role of ['editor', 'store']) {
       expect(() => update(staff(role), { provenance: 'photograph' })).toThrow()
       expect(() => update(staff(role), { role: 'recto' })).toThrow()
       expect(() => update(staff(role), { role: 'recto' }, 'local')).toThrow()
     }
   })
 
-  it('lets an admin or a manager correct them, and a script with no user', () => {
-    expect(update(staff('admin'), { provenance: 'photograph' })).toEqual({
+  it('lets the owner correct them, and a script with no user', () => {
+    expect(update(staff('owner'), { provenance: 'photograph' })).toEqual({
       provenance: 'photograph',
     })
-    expect(update(staff('manager'), { role: 'recto' })).toEqual({ role: 'recto' })
+    expect(update(staff('owner'), { role: 'recto' })).toEqual({ role: 'recto' })
     expect(update(null, { provenance: 'composite' }, 'local')).toEqual({ provenance: 'composite' })
     expect(() => update(null, { provenance: 'composite' })).toThrow()
   })
 
   it('lets anyone resend the stored values, and touches a create not at all', () => {
     const same = { role: 'in-room', provenance: 'ai-generated', alt: 'x' }
-    expect(update(staff('contributor'), same)).toEqual(same)
+    expect(update(staff('editor'), same)).toEqual(same)
     expect(
       call(freeze, { operation: 'create', data: { provenance: 'photograph' }, req: {} }),
     ).toEqual({ provenance: 'photograph' })
