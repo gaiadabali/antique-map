@@ -16,7 +16,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Triage, gates and the deleted contracts | Foundation | — | · not started | 0/4 | 0/20 | 2 | `░░░░░░░░░░`   0% |
+| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 0/4 | 6/20 | 1 | `███░░░░░░░`  30% |
 | **2** One app, one database, two hosts | Foundation | 1 | · not started | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **0/48** | **0/194** | **10** | `░░░░░░░░░░`   0% |
+| **All** | 11 phases | | | **0/48** | **6/194** | **9** | `░░░░░░░░░░`   3% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,6 +78,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 1·W1 | 1.2 Merge Works (8.2) so later steps simplify it in place | senior-db | `feat/1.2-works` | 2026-10-02 | |
+| 1·W1 | 1.1 Triage the work in flight and protect the data | devops | `worktree-agent-acdeee22b96e4b154` | 2026-10-02 | |
 
 ## Decisions for the owner
 
@@ -205,25 +207,25 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** no old-plan agent or unmerged branch of value is left behind; `pnpm verify` is green with the brand gates gone; `engine/packages` holds only `cms`, `config`, `http`, `media`, `i18n`, `cache`, `migrate` and a trimmed `view-models`; the legacy crawl is backed up; `main` builds.
 **Waves:** W1 — 1.1, 1.2 · W2 — 1.3 · W3 — 1.4
 
-- [ ] **1.1 Triage the work in flight and protect the data** · needs: —
+- [ ] **1.1 Triage the work in flight and protect the data** · needs: — — 🔄 1·W1
   - **Lane** OPS · **Agent** devops · **Wave** W1
   - **Owns** `docs/ops/triage-2026-10.md`
   - **Read** CARRY-OVER.md §3 step 0 and §6.1–6.2, §6.6
   - _Requirements: 15.1_
-  - [ ] 1.1.a list every git worktree and branch (about 80) with its last commit, whether it is merged to `main`, and whether it holds unmerged work; write the list to `docs/ops/triage-2026-10.md` and keep `replay/7.2`, `replay/7.4` and the Works branch
+  - [x] 1.1.a list every git worktree and branch (about 80) with its last commit, whether it is merged to `main`, and whether it holds unmerged work; write the list to `docs/ops/triage-2026-10.md` and keep `replay/7.2`, `replay/7.4` and the Works branch
   - [ ] 1.1.b 👤 the owner approves the list; remove the merged and abandoned worktrees and branches (never one with unmerged work the list marks as wanted)
-  - [ ] 1.1.c 8.6 (a refusal keeps its plain reason): merge the branch if its gate is green, else record its finding for 3.5 (`ValidationError` messages must survive the admin-first path)
-  - [ ] 1.1.d 8.5 (staging storage): do **not** merge its per-brand plan files; record its RustFS parity findings and the four rotated secrets' state in the triage file for 2.5 and 3.1
-  - [ ] 1.1.e 👤 back up `../indies-legacy-data` (6.0 GB: 1,823 records, 2,289 originals) to the place the owner names (OA6) and verify the copy by checksum — copied 2026-10-02 to `C:\Users\Hansel\Documents\Hansel\Backup antique map\indies-legacy-data`, robocopy comparison clean; the checksum pass remains
+  - [x] 1.1.c 8.6 (a refusal keeps its plain reason): merge the branch if its gate is green, else record its finding for 3.5 (`ValidationError` messages must survive the admin-first path)
+  - [x] 1.1.d 8.5 (staging storage): do **not** merge its per-brand plan files; record its RustFS parity findings and the four rotated secrets' state in the triage file for 2.5 and 3.1
+  - [x] 1.1.e 👤 back up `../indies-legacy-data` (6.0 GB: 1,823 records, 2,289 originals) to the place the owner names (OA6) and verify the copy by checksum — copied 2026-10-02 to `C:\Users\Hansel\Documents\Hansel\Backup antique map\indies-legacy-data`, robocopy comparison clean; the checksum pass remains
   - [ ] 1.1.f **Check:** `git worktree list` shows only the kept worktrees; the triage file lists every removal with its reason; the backup's checksums match; nothing unmerged and wanted was lost.
 
-- [ ] **1.2 Merge Works (8.2) so later steps simplify it in place** · needs: —
+- [ ] **1.2 Merge Works (8.2) so later steps simplify it in place** · needs: — — 🔄 1·W1
   - **Lane** CMS · **Agent** senior-db, reviewed by senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/works/**`, `engine/packages/cms/src/validators/**`
   - **Read** CARRY-OVER.md §2.5 `works`, CONTENT-MODEL.md §3, the `feat/p8-sch-8.2-works` branch
   - _Requirements: 2.1, 2.2, 2.3_
-  - [ ] 1.2.a rebase `feat/p8-sch-8.2-works` onto `main`; resolve conflicts only inside the Owns paths
-  - [ ] 1.2.b review the diff like a pull request (4,360 lines): validators (date order and precision, positive dimensions), the publish guard, access, and that no blank location or export status blocks publishing
+  - [x] 1.2.a rebase `feat/p8-sch-8.2-works` onto `main`; resolve conflicts only inside the Owns paths
+  - [x] 1.2.b review the diff like a pull request (4,360 lines): validators (date order and precision, positive dimensions), the publish guard, access, and that no blank location or export status blocks publishing
   - [ ] 1.2.c run `pnpm verify` and the `*.db.test.ts` suite against Postgres; fix only what the review finds
   - [ ] 1.2.d merge to `main` in a clean worktree and re-run `pnpm verify`
   - [ ] 1.2.e **Check:** on merged `main` the `works` collection saves with validation in the admin, an incomplete work is refused on publish with a plain reason, and the db tests pass.
