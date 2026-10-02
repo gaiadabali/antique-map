@@ -12,10 +12,13 @@
  * - Editors and store staff see and edit themselves — their name and password, never their email,
  *   role or store (`./self-edit`, `./roles-field`); the owner sees and manages everyone
  *   (CONTENT-MODEL.md §7).
+ * - **Role and store changes are recorded** (`./access-changes`, SECURITY.md R7): who, when, from
+ *   what to what — read by the owner alone.
  */
 import type { Access, CollectionConfig } from 'payload'
 
 import { isStaffUser, type USERS_SLUG } from '../../access/roles'
+import { accessChangesField, recordAccessChanges } from './access-changes'
 import {
   firstUserIsOwner,
   keepAnOwnerInBulk,
@@ -86,10 +89,18 @@ export const Users: CollectionConfig = {
     },
     roleField,
     storeField,
+    accessChangesField,
   ],
   hooks: {
     beforeOperation: [keepAnOwnerInBulk],
-    beforeChange: [firstUserIsOwner, ownerChangesEmail, oneStoreForStoreStaff, keepAnOwnerOnUpdate],
+    beforeChange: [
+      firstUserIsOwner,
+      ownerChangesEmail,
+      oneStoreForStoreStaff,
+      keepAnOwnerOnUpdate,
+      // Last: records the role and store as they will be saved (SECURITY.md R7).
+      recordAccessChanges,
+    ],
     beforeDelete: [keepAnOwnerOnDelete],
   },
 }
