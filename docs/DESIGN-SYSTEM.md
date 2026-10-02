@@ -64,34 +64,41 @@ on the site.
 
 ## 2. Type
 
-- **Cormorant Garamond** — display only: page titles, item titles, section headings, large quotes. Its small x-height
-  makes it hard to read small, so **never below 20 px**, never for body text, buttons, form fields, prices or
-  long Indonesian compounds in narrow columns.
-- **Inter** — everything else: body, interface, labels, prices, the record (the design team's system and the
-  owner's choice, 2026-10-02). Numbers that are compared — prices, dimensions, stock numbers, times — use **tabular
-  figures**.
-- **Italic** Cormorant for transcribed original titles (gallery) — the one italic in the system.
-- Each family is one token (`--font-display`, `--font-body`), so the reading face is a one-line change (Open).
+**The owner's font decision (2026-10-02): Cormorant Garamond + Karla** — the pair from the client's deck, slide 7,
+which the client likes. Both load from Google Fonts through `next/font/google`, which fetches them at build time
+and serves them from our own origin, so the browser makes no request to Google. The design system's Inter is not
+used on either site (it belongs to the separate Kingdoms of Indonesia project).
 
-| Role (design team's token) | Family | Size / line | Use |
+**Cormorant Garamond** — headings and numerals. It is hard to read small: never below 20 px, never for body text,
+buttons, form fields or prices.
+
+| Use | Weight | Size | Notes |
 | --- | --- | --- | --- |
-| Hero | Cormorant | fluid, `clamp()` up to 80–92 px (the home pages' hero) | home hero, one per page at most |
-| Display (`h1`) | Cormorant | 40/60 | page H1 |
-| Title (`h2` · `h3`) | Cormorant | 32/50 · 24/40 | section headings · subsections and card titles |
-| Lede (`body-lg`) | Inter | 18/30 | the first paragraph, the status line |
-| Body (`body-md`) | Inter | 16/25 | running text, the record |
-| Small (`body-sm`) | Inter | 14/25 | captions, metadata, helper text; nav and button labels in bold |
-| Caption (`caption`) | Inter | 12/18 | eyebrows and badges only, uppercase with `0.10em` tracking; never a sentence |
+| H1 | Regular 400 | fluid, 40 px to 80 px by screen width (`clamp()`) | letter-spacing −0.015em |
+| H2 | Regular 400 | 38 px | |
+| Product card title | Medium 500 | 25 px | |
+| Decorative numbers (01, 02, 03) | Regular 400 | 40 px | |
+| "Old East Indies" in the logo | SemiBold 600 | by the logo lock-up | letter-spacing 0.04em |
 
-The hero steps fluidly (`clamp()`), never by breakpoint jumps. One reading measure (about 65 characters) for running
-text. The home pages tighten some steps (H2 38/44, body 15/25); the port keeps one value per token and never sets
-running text below 16 px on a phone.
+**Karla** — everything that is read or clicked.
 
-**Fonts are self-hosted**, subset to Latin plus Latin Extended for Indonesian and Dutch diacritics, checked against
-real original titles (long s `ſ`, ligatures, accents). Fallback fonts carry metric overrides so the swap causes no
-layout shift. The design team delivered Cormorant Garamond Regular and Bold as TTF (about 640 KB each) and Inter
-Regular and Bold as WOFF (about 180 KB each), and their pages load Google Fonts; the port serves subset WOFF2 files
-of its own within §9's budget, and adds Cormorant's italic.
+| Use | Weight | Size | Notes |
+| --- | --- | --- | --- |
+| Body text | Regular 400 | 14 px to 15 px | numbers that are compared (dimensions, stock numbers, times) use tabular figures |
+| Price | Bold 700 | 15 px | tabular figures, rupiah |
+| Logo tagline | Medium 500 | by the logo lock-up | capitals, letter-spacing 0.14em |
+| Announcement bar (top of page) | Regular 400 | 13 px | |
+| Buttons, navigation, labels, forms | Medium–Bold | 14 px to 15 px | never below 14 px; eyebrows and badges are capitals with `0.10em` tracking and are not sentences |
+
+- **Italic** Cormorant for transcribed original titles (gallery) — the one italic in the system.
+- Each family is one token (`--font-display`, `--font-body`) and each role in the tables is a token, so a later
+  change of face or size is an edit to the token file. The sizes above are the owner's; keep one value per token.
+- One reading measure (about 65 characters); the hero steps fluidly (`clamp()`). Text stays user-resizable (no `maximum-scale`); body at 14–15 px on a phone is held to WCAG 2.2 AA contrast, and
+  the readability check in phase 4's gate confirms it (Open).
+
+**Fonts are subset** to Latin plus Latin Extended for Indonesian and Dutch diacritics, checked against real original
+titles (long s `ſ`, ligatures, accents), with fallback fonts carrying metric overrides so the swap causes no layout
+shift. Weights loaded: Cormorant 400, 500, 600 and italic 400; Karla 400, 500, 700 — within §9's budget.
 
 ## 3. Space, grid and shape
 
@@ -226,7 +233,7 @@ real phone in Bali before each site phase closes.
 | First-party JS (gzip) | < 150 KB | < 180 KB — viewer, chat and map load on intent | < 200 KB — the payment script only on the payment step, the map only once the delivery section opens |
 
 - **Fonts:** at most **3 files on first paint** (Cormorant roman, Cormorant italic where used above the fold,
-  Inter), together under 150 KB, `font-display: swap`, the display face preloaded.
+  Karla), together under 150 KB, `font-display: swap`, the display face preloaded.
 - **No third-party scripts** beyond the payment provider on the payment step and Google Maps once the checkout's
   delivery section opens (SECURITY.md B6); analytics are first-party (DR-13).
 - The chat, the zoom viewer, the map and the hero film never load on first paint.
@@ -288,8 +295,6 @@ the UI/UX pass after the build (DR-16).
 
 - **The client's final colours** (Q16) — before launch. Default: phase 4's two palettes (§4); the change is an
   edit to the two palette files.
-- **Karla for reading** (Q15) — the design team's notes (`CLAUDE.md`, 11 Sept 2026) say the client loves Karla as
-  the reading face and wants it kept, and their home pages set text in it; their system, and the owner on
-  2026-10-02, chose Inter. Default Inter; `--font-body` is one token, so Karla is a one-line change.
+- ~~Karla for reading~~ — decided 2026-10-02: Cormorant Garamond + Karla (§2).
 - **Which Cormorant weights** (and whether the variable font fits the font budget) — phase 4, measured.
 - **The shop's cultural review** — who reviews (Indonesian designers and buyers), owner to name them.

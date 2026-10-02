@@ -58,7 +58,7 @@ later as spreadsheets; the sites are built on seed data first (DR-11).
 
 ## Brand Personality
 
-**Shared:** exact, courteous, unhurried. Cormorant Garamond for display, Inter for reading (the design team's system; the client's liking for Karla is TASKS.md Q15)
+**Shared:** exact, courteous, unhurried. Cormorant Garamond for display, Karla for reading (the owner's decision, 2026-10-02)
 (DR-14). British spelling; Indonesian in the *Anda* register (DR-12, S15).
 
 - **Gallery:** a good dealer's letter — quiet, scholarly, super premium. The sheet leads; the interface recedes.

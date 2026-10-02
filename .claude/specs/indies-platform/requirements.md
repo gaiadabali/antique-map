@@ -167,7 +167,7 @@ question attached; as the owner, I want my enquiries captured and my listings wr
 
 #### Acceptance Criteria
 
-1. The sites SHALL share one base — the design team's tokens and components, with Cormorant Garamond and Inter — and differ in palette, each palette living in its own token file, as `DESIGN.md` records.
+1. The sites SHALL share one base — the design team's tokens and components, with Cormorant Garamond and Karla — and differ in palette, each palette living in its own token file, as `DESIGN.md` records.
 2. Every page SHALL be available in English and Indonesian, the default unprefixed, with copy as keyed lexicon values and no copy in components.
 3. Every screen SHALL be checked at 390 px and 1280 px with axe clean and WCAG 2.2 AA contrast, and operable by keyboard.
 4. On a production build the item and product pages SHALL meet a Lighthouse mobile score of 90 for performance and 100 for accessibility on the staging host.

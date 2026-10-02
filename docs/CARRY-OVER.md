@@ -246,7 +246,7 @@ New `verify`:
   set, handover).
 - **Owner answers.** `docs/design/journeys/owner-answers.md`, unchanged. The file is not edited; the answers the new
   target supersedes are listed in §6.12.
-- **Design input.** `docs/design/input/claude-design-2026-09/` (Cormorant Garamond and Inter).
+- **Design input.** `docs/design/input/claude-design-2026-09/` (design system, home pages and notes; type is Cormorant Garamond + Karla).
 - **Infrastructure knowledge.** The Cache Components spike, `scripts/ops` (idempotent CloudPanel, pm2, RustFS,
   Mailpit, cron and backups), and the security guards in §2.1 and §2.5.
 

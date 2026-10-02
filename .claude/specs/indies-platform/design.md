@@ -39,7 +39,7 @@ engine/packages/           cms (collections, access, the shop's writes, jobs, im
 | Rendering | Cache Components; `instant = false`; the build touches no database; availability that decides a purchase is never cached |
 | Analytics | First-party, cookieless, in the admin dashboard; no GA, no Meta Pixel |
 | Locales | en (unprefixed) + id; *Anda*; British spelling; copy in keyed files |
-| Design | The design team's system (Cormorant Garamond + Inter); a palette per site in its own token file; UI only from tokens and shared components; no dark mode; phone first |
+| Design | The design team's system (type: Cormorant Garamond + Karla); a palette per site in its own token file; UI only from tokens and shared components; no dark mode; phone first |
 
 ## Reading order for a task
 
