@@ -80,6 +80,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | |
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | |
+| 2·W2 | 2.4 Collections trimmed, the CMS without brands | senior-db | `feat/2.4-cms` | 2026-10-02 | |
 
 ## Decisions for the owner
 
@@ -291,7 +292,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.3.c delete `indies-gallery/`, `old-east-indies/` and `test/`
   - [ ] 2.3.d **Check:** no directory outside `engine/`, `docs/`, `tests/` and `scripts/` holds site content; `pnpm verify` is green; the migrate tests read their moved data.
 
-- [ ] **2.4 Collections trimmed, the CMS without brands** · needs: 2.1
+- [ ] **2.4 Collections trimmed, the CMS without brands** · needs: 2.1 — 🔄 2·W2
   - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W2
   - **Owns** `engine/packages/cms/{package.json,payload-types.ts}`, `engine/packages/cms/src/{payload.config.ts,instance.ts,instance.test.ts,instance.db.test.ts}`, `engine/packages/cms/src/{collections,globals,db,fields,hooks,seed,registries,validators,migrations}/**`, `engine/packages/media/**`
   - **Read** CARRY-OVER.md §2.5, §3 step 7 and §6.4, CONTENT-MODEL.md §3–§7
