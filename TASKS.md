@@ -90,6 +90,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `worktree-agent-a586c01642ef4da70` | 2026-10-03 | |
 | 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
 | 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
+| 9·W1 | 9.2 First-party analytics and the dashboard | senior-be | `w/9.2a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -671,7 +672,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 9.1.d a retention job that deletes expired chat transcripts, closed leads past retention and delivered orders' driver images on schedule
   - [ ] 9.1.e **Check:** a partnership form creates a lead the owner can move to Closed; an editor cannot open the inbox; the retention job deletes only what is past its date (tested with a fixed clock) and logs counts without personal data.
 
-- [ ] **9.2 First-party analytics and the dashboard** · needs: phase 5, phase 6
+- [ ] **9.2 First-party analytics and the dashboard** · needs: phase 5, phase 6 — 🔄 9·W1
   - **Lane** CMS + PLT · **Agent** senior-be with senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/server/analytics/**`, `engine/apps/web/src/shared/beacon/**`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/apps/web/src/app/(payload)/admin/dashboard/**`
   - **Read** ANALYTICS.md, Requirement 13
