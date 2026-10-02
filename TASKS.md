@@ -23,11 +23,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
-| **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 3/16 | 0 | `██░░░░░░░░`  19% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **57/200** | **8** | `███░░░░░░░`  28% |
+| **All** | 11 phases | | | **9/49** | **60/200** | **8** | `███░░░░░░░`  30% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -86,6 +86,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 The bag, the delivery fee and the welcome code | senior-be | `task/6.2-pricing-core` | 2026-10-03 | |
 | 4·W2 | 4.2 Shared components from the design team's kit | senior-fe | `w/4.2a` | 2026-10-03 | |
 | 9·W1 | 9.3 Metadata, structured data and sitemaps | senior-fe | `w/9.3a` | 2026-10-03 | |
+| 3·W2 | 3.6 The admin experience: both languages, plain errors, a dashboard shell | senior-fe | `w/3.6` | 2026-10-03 | |
+| 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `worktree-agent-a586c01642ef4da70` | 2026-10-03 | |
+| 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
+| 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -379,7 +383,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.5.d from the phase 2 reviews: `payload-locked-documents` gets owner/editor-only access (today any signed-in user, store users included, can list and delete locks across collections); role and store changes are recorded (SECURITY R7); REST tests prove a store user and an editor cannot change their own `role` or `store`
   - [ ] 3.5.e **Check:** db tests prove: a store user cannot read, update or list another store's order or stock (by id and by query); an editor cannot read a lead; an anonymous request reads only published, projected fields; the last owner cannot be removed.
 
-- [ ] **3.6 The admin experience: both languages, plain errors, a dashboard shell** · needs: 3.2, 3.3, 3.4
+- [ ] **3.6 The admin experience: both languages, plain errors, a dashboard shell** · needs: 3.2, 3.3, 3.4 — 🔄 3·W2
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/app/(payload)/**`, `engine/packages/cms/src/{admin,i18n}/**`
   - **Read** CONTENT-OPERATIONS.md, DESIGN-SYSTEM.md §Admin
@@ -536,7 +540,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 6.3.c order creation in one transaction: re-price, pick the store, decrement each line's `stock-levels` row with `UPDATE … WHERE quantity >= n` (zero rows updated aborts), create the order in `pending_payment` with the 60-minute payment window and a hashed tracking token
   - [ ] 6.3.d **Check:** a db test fires 20 concurrent orders for the last unit and exactly one succeeds; a pin in Ubud picks the nearer of two stores; a basket no single store can fill is refused before payment; a pin outside Indonesia is refused.
 
-- [ ] **6.4 Midtrans: payment, webhook, simulator and expiry** · needs: phase 3
+- [ ] **6.4 Midtrans: payment, webhook, simulator and expiry** · needs: phase 3 — 🔄 6·W2
   - **Lane** SHP + PLT · **Agent** senior-integrator with senior-be, second reviewer senior-db · **Wave** W2
   - **Owns** `engine/packages/cms/src/shop/payments/**`, `engine/apps/web/src/app/api/x/{webhooks,cron}/**`
   - **Read** COMMERCE.md §Payment, SECURITY.md §Webhooks, OA7
@@ -608,7 +612,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, the chat on both sites answers catalogue questions in English and Indonesian, never gives an antique a price, hands off to WhatsApp or email with the item attached, and records a lead only after the visitor consents; an injection attempt in a visitor message or in catalogue text changes nothing; the cost cap and kill switch work; the CMS drafts a new antique from photographs and refuses to publish it until each drafted field is verified; the adversarial set passes in CI.
 **Waves:** W1 — 8.1, 8.3 · W2 — 8.2 · W3 — 8.4
 
-- [ ] **8.1 The chat core: route, tools and guardrails** · needs: phase 3
+- [ ] **8.1 The chat core: route, tools and guardrails** · needs: phase 3 — 🔄 8·W1
   - **Lane** AIX · **Agent** senior-integrator, **opus**, second reviewer senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/server/chat/**`, `engine/apps/web/src/app/api/x/chat/**`
   - **Read** AI.md (all), SECURITY.md §AI, OA8, Q7
@@ -682,12 +686,12 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/server/seo/**`, `engine/apps/web/src/app/api/x/{sitemap,robots}/**`
   - **Read** EXPERIENCE-GALLERY.md §SEO, EXPERIENCE-SHOP.md §SEO
   - _Requirements: 14.1, 14.2, 14.4_
-  - [ ] 9.3.a localised title, description, canonical, `hreflang` alternates and Open Graph for every page type; absolute URLs from `SITES`
-  - [ ] 9.3.b JSON-LD: gallery items as `CreativeWork`/`Product` **without** `offers` or price; shop products with price and availability; breadcrumbs and organisation
-  - [ ] 9.3.c a sitemap and `robots` per site listing only published pages in both languages; sold antiques stay listed; tracking and admin paths excluded
+  - [x] 9.3.a localised title, description, canonical, `hreflang` alternates and Open Graph for every page type; absolute URLs from `SITES`
+  - [x] 9.3.b JSON-LD: gallery items as `CreativeWork`/`Product` **without** `offers` or price; shop products with price and availability; breadcrumbs and organisation
+  - [x] 9.3.c a sitemap and `robots` per site listing only published pages in both languages; sold antiques stay listed; tracking and admin paths excluded
   - [ ] 9.3.d **Check:** a crawl of the built staging sites finds a canonical, alternates and a description on every page; no gallery JSON-LD contains `price` or `offers`; each sitemap's URLs return 200 and match the published counts.
 
-- [ ] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5
+- [ ] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5 — 🔄 9·W1
   - **Lane** CMS + PLT · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/migrate/src/redirects/**`, `engine/apps/web/src/server/redirects/**`
   - **Read** DATA.md §Redirects, CARRY-OVER.md §5 (7,665 and 673 URLs)
@@ -816,6 +820,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 — **Integration branches (decision).** Branches that add collections fail the migrated-database tests (`admins`, `instance`) until the wave's migration exists, so phase 3 W1 collects on `int/3-w1` (3.3 + 3.4 merged, 3.2 to come) and 3.5 writes the migration there; the wave lands on `main` in one merge and `main` stays green. The UI collects the same way on `int/4` (4.1 + 4.2a + 4.2b; 4.2c renames 4.2a's PascalCase folders to kebab-case per CONVENTIONS). Workers 3.6 (from `int/3-w1`) and 4.2c (from `int/4`) are cut from them.
+- 2026-10-03 — 6.2 core merged (6c4fa36; 6.2.a, 6.2.c reported): signed bag cookie with no prices in it, `quoteBag` re-prices from the catalogue only, delivery bands (free exactly at the threshold), the welcome code; one rounding step (percentage half-up on the subtotal); 72 tests, 7 planted bugs each caught. `@engine/cms` exports `./shop/pricing`. Open for the shell: the lexicon key `codeInvalid.already-used`, and `BAG_COOKIE_KEY` in the boot check.
 - 2026-10-03 — ✅ **phase 2** — merged `main` 036548a: `pnpm verify` green (1,354 tests; one board-script git test timed out at 5 s under load and passes 4/4 alone), the production build with no `DATABASE_URL`/`PAYLOAD_SECRET` exits 0, the root holds only `engine/`, `docs/`, `tests/`, `scripts/`.
 - 2026-10-03 — ✅ 2.3 — brand folders' copy, assets and legacy data moved; `indies-gallery/`, `old-east-indies/`, `test/` deleted after a reader scan found nothing; verify green on the branch rebased on 2.2 (1,344 tests).
 - 2026-10-03 — ✅ 2.2 — on a production build: each host serves its own site, an unknown `Host` is a plain 404 with no Location, `/admin` 200 on the shop host and 404 on the gallery's, a spoofed `X-Forwarded-Host` changes nothing, 404/308 survive Cache Components (`tests/e2e/hosts`, `tests/e2e/status`: 38 passed; smoke + a11y 36 passed). Found → follow-up: a one-segment unknown path (`/nope`) is a 404 but renders Next's recovery document, not the designed page (5.4 owns the catch-all).
