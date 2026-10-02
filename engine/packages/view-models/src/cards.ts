@@ -12,7 +12,6 @@ import type {
   Id,
   ImageVM,
   IsoDateTime,
-  LineIntent,
   LinkVM,
   PriceVM,
   ProductPublicId,
@@ -50,8 +49,6 @@ export type CardVM = {
   archiveNumber: string | null
   /** Frame swatches, each named (DESIGN-SYSTEM.md §9). */
   swatches: readonly { label: string; colour: string }[]
-  /** For a product without options: the line the card adds to the bag. */
-  quickAdd: LineIntent | null
   /**
    * The heart: `null` with neither wishlist module on. `saved` is this visitor's — the buyer
    * account's (`retention.wishlist`) or the device's (`retention.deviceWishlist`, D35; C13

@@ -45,6 +45,7 @@ export {
   formatPrice,
   toDecimal,
   type FormatMoneyOptions,
+  type Money,
   type MoneyValue,
   type PriceValue,
 } from './money'

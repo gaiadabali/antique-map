@@ -18,10 +18,9 @@ import {
 
 describe('C13 — the placeholder for an unbuilt handler', () => {
   it('is one module, with robots’ fail-closed answer its one exception', () => {
-    expect(unbuiltHandlerOf('/api/x/commerce/cart/[[...path]]')).toBe('@engine/http/unbuilt')
-    expect(unbuiltHandlerOf('/api/x/webhooks/payments/[provider]/[seller]')).toBe(
-      '@engine/http/unbuilt',
-    )
+    expect(unbuiltHandlerOf('/api/x/sitemap/[[...path]]')).toBe('@engine/http/unbuilt')
+    expect(unbuiltHandlerOf('/api/x/well-known/[...path]')).toBe('@engine/http/unbuilt')
+    expect(UNBUILT_HANDLER.byPath).toEqual({ '/api/x/robots': '@engine/http/unbuilt/robots' })
     expect(unbuiltHandlerOf('/api/x/robots')).toBe('@engine/http/unbuilt/robots')
   })
 

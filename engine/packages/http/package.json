@@ -14,8 +14,7 @@
   "dependencies": {
     "@engine/cache": "workspace:*",
     "@engine/cms": "workspace:*",
-    "@engine/config": "workspace:*",
-    "@engine/domain": "workspace:*"
+    "@engine/config": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "26.6.3"

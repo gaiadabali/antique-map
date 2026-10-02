@@ -2,14 +2,7 @@
 // into the package it tests (TASKS.md 2.2.j), so `pnpm test` runs it.
 import { describe, expect, it } from 'vitest'
 
-import {
-  COMMERCE_AREAS,
-  COMMERCE_OPERATIONS,
-  commerceUrl,
-  ENGINE_ROUTES,
-  handlerOf,
-  WANT_LIST_ACCESS,
-} from '../src/manifest'
+import { ENGINE_ROUTES, handlerOf } from '../src/manifest'
 
 describe('C13 manifest', () => {
   it('lists unique paths and handlers', () => {
@@ -23,25 +16,9 @@ describe('C13 manifest', () => {
           r.path.startsWith('/brand-assets/'),
       ),
     ).toBe(true)
-    console.log(ENGINE_ROUTES.length, 'routes')
+    expect(ENGINE_ROUTES.every((r) => r.handler === handlerOf(r.path))).toBe(true)
   })
-  it('mounts one route per commerce area and addresses every operation inside its area', () => {
-    for (const area of Object.keys(COMMERCE_AREAS)) {
-      const r = ENGINE_ROUTES.find((x) => x.path === `/api/x/commerce/${area}/[[...path]]`)
-      expect(r?.handler).toBe(`@engine/http/commerce/${area}`)
-    }
-    for (const [op, a] of Object.entries(COMMERCE_OPERATIONS)) {
-      const r = ENGINE_ROUTES.find((x) => x.path === `/api/x/commerce/${a.area}/[[...path]]`)
-      expect(r?.methods, op).toContain(a.method)
-    }
-    expect(commerceUrl('cart.addLines')).toBe('/api/x/commerce/cart/lines')
-    expect(commerceUrl('shipTo.set')).toBe('/api/x/commerce/destination')
-    expect(handlerOf('/api/x/webhooks/payments/[provider]/[seller]')).toBe(
-      '@engine/http/webhooks/payments',
-    )
-    expect(commerceUrl('payment.status')).toBe('/api/x/commerce/payments/status')
-    expect(COMMERCE_OPERATIONS['payment.status'].method).toBe('POST')
-    expect(COMMERCE_OPERATIONS['payLink.get']).toEqual({ area: 'pay', method: 'GET', path: '' })
+  it('refuses a cross-site write a cookie could authenticate, never a bearer', () => {
     const writesByCookie = ENGINE_ROUTES.filter(
       (r) =>
         r.methods.some((m) => m !== 'GET') &&
@@ -49,45 +26,9 @@ describe('C13 manifest', () => {
     )
     expect(writesByCookie.every((r) => r.sameOrigin)).toBe(true)
     expect(
-      ENGINE_ROUTES.filter((r) => r.auth.includes('signature')).every((r) => !r.sameOrigin),
+      ENGINE_ROUTES.filter((r) => r.auth.includes('cron') || r.auth.includes('revalidate')).every(
+        (r) => !r.sameOrigin,
+      ),
     ).toBe(true)
-    // no GET operation takes a credential in its query
-    for (const [op, a] of Object.entries(COMMERCE_OPERATIONS))
-      if (a.method === 'GET')
-        expect(['cart.get', 'payLink.get', 'appointment.slots', 'quote.get'], op).toContain(op)
-    // every area method is used by an operation, except orders (document downloads)
-    for (const [area, spec] of Object.entries(COMMERCE_AREAS)) {
-      for (const m of spec.methods) {
-        const used = Object.values(COMMERCE_OPERATIONS).some(
-          (o) => o.area === area && o.method === m,
-        )
-        if (!used) console.log('unused', area, m)
-      }
-    }
-  })
-})
-
-describe('C13 want-lists area and WANT_LIST_ACCESS (D39)', () => {
-  it('mounts want-lists and addresses its three operations', () => {
-    const r = ENGINE_ROUTES.find((x) => x.path === '/api/x/commerce/want-lists/[[...path]]')
-    expect(r?.handler).toBe('@engine/http/commerce/want-lists')
-    expect(r?.methods).toEqual(expect.arrayContaining(['GET', 'POST']))
-    expect(commerceUrl('wantList.subscribe')).toBe('/api/x/commerce/want-lists')
-    expect(commerceUrl('wantList.confirm')).toBe('/api/x/commerce/want-lists/confirm')
-    expect(commerceUrl('wantList.unsubscribe')).toBe('/api/x/commerce/want-lists/unsubscribe')
-    for (const op of ['wantList.subscribe', 'wantList.confirm', 'wantList.unsubscribe'] as const) {
-      expect(COMMERCE_OPERATIONS[op].area).toBe('want-lists')
-      expect(COMMERCE_OPERATIONS[op].method).toBe('POST')
-    }
-  })
-  it("WANT_LIST_ACCESS carries the list's cookie and its emailed link, same origin only", () => {
-    expect(WANT_LIST_ACCESS).toEqual({
-      cookie: 'want_list_access',
-      link: '/api/x/commerce/want-lists/access',
-      maxAgeDays: 30,
-    })
-    const r = ENGINE_ROUTES.find((x) => x.path === '/api/x/commerce/want-lists/[[...path]]')
-    expect(r?.auth).toEqual(expect.arrayContaining(['public', 'customer', 'token']))
-    expect(r?.sameOrigin).toBe(true) // a write a cookie authenticates, refused cross-origin
   })
 })

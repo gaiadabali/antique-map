@@ -2,7 +2,7 @@
   "name": "@engine/view-models",
   "version": "0.0.0",
   "private": true,
-  "description": "Every surface's view model (C2), the content-block union (C4), the loader signatures and typed fixtures for every surface. Types and fixtures only: no runtime dependency, so apps build against fixtures and never against the database. One entry for the contract (`@engine/view-models`), one for the fixtures (`@engine/view-models/fixtures`); `./<module>` reaches a single file.",
+  "description": "The view models the two sites keep (a work's record and condition, fuzzy dates, dimensions, images, cards, listing, discovery, editorial, the content blocks and the shell) and typed fixtures for them. Types and fixtures only: no runtime dependency. One entry for the types (`@engine/view-models`), one for the fixtures (`@engine/view-models/fixtures`); `./<module>` reaches a single file.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -15,7 +15,7 @@
   "dependencies": {},
   "devDependencies": {
     "@engine/config": "workspace:*",
-    "@engine/domain": "workspace:*",
+    "@engine/i18n": "workspace:*",
     "@engine/media": "workspace:*"
   }
 }

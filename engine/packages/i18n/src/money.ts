@@ -1,5 +1,5 @@
 /**
- * `formatMoney` — the one place a `Money` becomes text (C5, CONVENTIONS.md §3). A component
+ * `formatMoney` — the one place a `Money` becomes text (CONVENTIONS.md §3). A component
  * never formats, rounds or sums a Money itself.
  *
  * The fraction digits are pinned to the ENGINE's exponent (`CURRENCY_EXPONENT`, IDR 0) on
@@ -10,17 +10,28 @@
  * Component receives the finished string rather than formatting again — the one way the
  * server's render and the browser's stay identical. The amount reaches `Intl` as an exact decimal string built from the
  * integer minor units — never a float, so nothing is rounded on the way, not even at 2^53.
- * A display estimate (`PriceSet.estimate`, C5) is a whole major unit and shows no fraction
+ * A display estimate (`PriceValue.estimate`) is a whole major unit and shows no fraction
  * digits at all; one that is not whole is a bug upstream and throws rather than rounding.
  */
 import { CURRENCY_EXPONENT, type CurrencyCode, type LocaleCode } from '@engine/config/constants'
 
 import { formattingTag } from './locales'
 
-/** C5's `Money`: a safe integer of minor units and a currency. */
-export type MoneyValue = { readonly amount: number; readonly currency: CurrencyCode }
+/**
+ * Money: a safe, non-negative integer of the currency's minor units (rupiah have none, so an
+ * IDR amount is whole rupiah) and its currency. Never a float, never a preformatted string;
+ * priced on the server, never trusted from a request, rounded at most once, and shown only
+ * through `formatMoney` (AGENTS.md, CONVENTIONS.md §3).
+ */
+export type Money<C extends CurrencyCode = CurrencyCode> = {
+  readonly amount: number
+  readonly currency: C
+}
 
-/** C5's `PriceSet`, as far as display reads it. */
+/** What a formatter takes: a `Money`. */
+export type MoneyValue = Money
+
+/** A price as display reads it: the charge, and a converted estimate or `null`. */
 export type PriceValue = { readonly charge: MoneyValue; readonly estimate: MoneyValue | null }
 
 export type FormatMoneyOptions = {
