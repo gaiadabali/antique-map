@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
 | 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
 | 3·W1 | 3.2 Catalogue collections: makers, places, terms and the antiques | senior-db | `w/3.2` | 2026-10-03 | |
+| 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -355,7 +356,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
   - [ ] 3.3.e **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
 
-- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2
+- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{leads,partners,chat-sessions,events,pages,redirects}/**`, `engine/packages/cms/src/globals/**`
   - **Read** CONTENT-MODEL.md §6, AI.md §3, ANALYTICS.md
