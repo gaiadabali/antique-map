@@ -16,8 +16,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 <!-- progress:start -->
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 1/4 | 15/20 | 1 | `████████░░`  75% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **1** Triage, gates and the deleted contracts | Foundation | — | 🔄 in progress | 1/4 | 16/20 | 1 | `████████░░`  80% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 0/4 | 1/18 | 0 | `█░░░░░░░░░`   6% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **1/48** | **15/194** | **9** | `█░░░░░░░░░`   8% |
+| **All** | 11 phases | | | **1/48** | **17/194** | **9** | `█░░░░░░░░░`   9% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -250,7 +250,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 1.5_
   - [x] 1.4.a trim `view-models` to the kept subset (record, condition, fuzzy date, dimensions, image, cards, listing, discovery, editorial, blocks, shell); add a ten-line `Money` type to `i18n`
   - [x] 1.4.b delete `domain`, `payments`, `shipping`, `fulfilment`, `sister`, `analytics`, `ui` and `CONTRACTS.md` (archive a copy)
-  - [ ] 1.4.c delete the 36 placeholder route mounts in each app, their http manifest rows, the cron stubs, the `brand-assets` mount and the gallery's `src/spike/` (keep the findings in `docs/spikes/cache-components.md`)
+  - [x] 1.4.c delete the 36 placeholder route mounts in each app, their http manifest rows, the cron stubs, the `brand-assets` mount and the gallery's `src/spike/` (keep the findings in `docs/spikes/cache-components.md`)
   - [ ] 1.4.d **Check:** `pnpm typecheck`, `pnpm build` for both apps and `pnpm verify` are green; a search finds no import of a deleted package; `engine/packages` lists exactly `cms config http media i18n cache migrate view-models`.
 
 ---
@@ -266,7 +266,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/**`, `.github/**`, `.gaiadeploy.yml`, `playwright.config.ts`, `lighthouserc.*.json`, root `package.json`, `scripts/ops/lib/**`
   - **Read** CARRY-OVER.md §2.2, §2.4 and §3 step 4, ARCHITECTURE.md §Topology
   - _Requirements: 1.1, 1.4, 15.1_
-  - [ ] 2.1.a `git mv engine/apps/gallery engine/apps/web`; port the emporium's `lexicon/shop.ts` and tokens into it; delete `engine/apps/emporium`; delete both apps' old `PRODUCT.md` (the root `PRODUCT.md` replaces them)
+  - [x] 2.1.a `git mv engine/apps/gallery engine/apps/web`; port the emporium's `lexicon/shop.ts` and tokens into it; delete `engine/apps/emporium`; delete both apps' old `PRODUCT.md` (the root `PRODUCT.md` replaces them)
   - [ ] 2.1.b one `build`, one Lighthouse file, one release artifact subdirectory and one `.gaiadeploy.yml` entry; Playwright runs `gallery.localhost` and `shop.localhost` on one port at 390 px and 1280 px
   - [ ] 2.1.c CI: one e2e database, `next build` with no `DATABASE_URL` or `PAYLOAD_SECRET`, plus `pnpm audit --prod --audit-level=high`, a gitleaks scan and CodeQL; regenerate `pnpm-lock.yaml` with `pnpm install`
   - [ ] 2.1.d **Check:** a fresh clone runs `pnpm install && pnpm verify` and a production build with the database variables unset, and the app starts on one port.
