@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 13/33 | 0 | `████░░░░░░`  39% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 5/18 | 0 | `███░░░░░░░`  28% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 4/16 | 0 | `███░░░░░░░`  25% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **66/200** | **8** | `███░░░░░░░`  33% |
+| **All** | 11 phases | | | **9/49** | **69/200** | **8** | `████░░░░░░`  35% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -548,9 +548,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/shop/payments/**`, `engine/apps/web/src/app/api/x/{webhooks,cron}/**`
   - **Read** COMMERCE.md §Payment, SECURITY.md §Webhooks, OA7
   - _Requirements: 6.3, 6.4, 6.5_
-  - [ ] 6.4.a a Midtrans Snap adapter (QRIS, virtual account, card) behind a small interface, and a simulator selected by `MIDTRANS_MODE=simulate` that needs no credential; production refuses the simulator
-  - [ ] 6.4.b the webhook: verifies the signature, then in one transaction records the event in `payment-events` (unique dedupe key) and moves the order; a replay is a 200 with no change; a late payment on an expired order is flagged for staff, never silently applied
-  - [ ] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
+  - [x] 6.4.a a Midtrans Snap adapter (QRIS, virtual account, card) behind a small interface, and a simulator selected by `MIDTRANS_MODE=simulate` that needs no credential; production refuses the simulator
+  - [x] 6.4.b the webhook: verifies the signature, then in one transaction records the event in `payment-events` (unique dedupe key) and moves the order; a replay is a 200 with no change; a late payment on an expired order is flagged for staff, never silently applied
+  - [x] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
   - [ ] 6.4.d **Check:** tests prove: a bad signature is rejected; the same webhook ten times in parallel changes the order once; an expired order's stock returns exactly once; a settled payment moves the order to `paid` and stores the paid amount.
 
 - [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4
