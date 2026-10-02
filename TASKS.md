@@ -95,6 +95,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 8·W3 | 8.4 The safety evaluation and the red-team set | qa | `w/8.4a` | 2026-10-03 | |
 | 6·W2 | 6.3 Checkout, the map pin, the nearest store and the atomic stock | senior-be | `w/6.3core` | 2026-10-03 | |
 | 4·W3 | 4.3 Chrome and home pages from the design team's drawings | senior-fe | `w/4.3` | 2026-10-03 | |
+| 6·W1 | 6.1 Shop browse, search and the product page | senior-fe | `w/6.1` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -516,7 +517,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, on a phone, a guest adds two products, drops a pin in Bali, sees the delivery fee and total, pays with the simulator (and once with the Midtrans sandbox), and lands on a confirmation; the order exists with the nearest store holding every line and that store's stock reduced; an unpaid order releases its stock when it expires; a duplicate webhook changes nothing.
 **Waves:** W1 — 6.1, 6.2 · W2 — 6.3, 6.4 · W3 — 6.5
 
-- [ ] **6.1 Shop browse, search and the product page** · needs: phase 3, phase 4
+- [ ] **6.1 Shop browse, search and the product page** · needs: phase 3, phase 4 — 🔄 6·W1
   - **Lane** SHP · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/shop/{browse,product}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{shop,collections,search,product}/**`, `engine/apps/web/src/server/shop/catalogue/**`
   - **Read** EXPERIENCE-SHOP.md §Browse and §Product
