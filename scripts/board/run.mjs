@@ -90,3 +90,18 @@ export function runSync({ root = ROOT, tick = [], sha, date = today(), write = t
   }
   return write ? withLock(join(root, 'TASKS.md.lock'), work) : work()
 }
+
+/**
+ * One locked read-modify-write of `<root>/TASKS.md` for an edit that is not a tick (an agent
+ * starting a task): `edit(text)` returns `{ text, … }`; the progress table is rebuilt after.
+ */
+export function editBoard(root, edit) {
+  const file = join(root, 'TASKS.md')
+  return withLock(join(root, 'TASKS.md.lock'), () => {
+    const text = readFileSync(file, 'utf8')
+    const edited = edit(text)
+    const result = computeBoard(edited.text, { date: today(), sha: headSha(root) })
+    if (result.next !== text) writeFileSync(file, result.next)
+    return { ...edited, total: result.total }
+  })
+}

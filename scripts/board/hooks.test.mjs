@@ -15,6 +15,7 @@ const FILES = [
   'scripts/progress.mjs',
   'scripts/board/run.mjs',
   'scripts/board/sync.mjs',
+  'scripts/board/agent.mjs',
   'scripts/board/table.mjs',
   'scripts/board/claude-hook.mjs',
   'engine/tooling/tasks-lint/parse.mjs',

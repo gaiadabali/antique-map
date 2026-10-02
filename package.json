@@ -37,7 +37,9 @@
     "tasks:check": "node scripts/progress.mjs --check",
     "prepare": "node scripts/board/install-hooks.mjs",
     "worktree": "node engine/tooling/worktree/cli.mjs",
-    "worktree:env": "node engine/tooling/worktree/cli.mjs env"
+    "worktree:env": "node engine/tooling/worktree/cli.mjs env",
+    "tasks:start": "node scripts/progress.mjs --start",
+    "tasks:report": "node scripts/progress.mjs --report"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.10.2",
