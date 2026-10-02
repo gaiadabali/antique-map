@@ -1,0 +1,14 @@
+# Reviewed gitleaks findings that are not secrets (TASKS.md 2.1.c), one fingerprint per line
+# (<commit>:<file>:<rule>:<line>), read by .github/workflows/secrets.yml. Each is a test vector or
+# fixture in a commit already on main — fake link tokens (`test.<uuid>.<mac>`), fixture lookup
+# tokens (`lk_fixture_*`), a UUID, and a `curl -u` whose password is read from a file at run time.
+# Nothing is added here without a review: a real secret is rotated first, never ignored.
+3e7f515d6aa317e9379f2fb6972aaa74fb855962:scripts/ops/test/in-container.sh:curl-auth-user:143
+d5b7739776d5a7f54c5d6a45f8447b47ccf1dd1f:engine/packages/view-models/src/fixtures/form.ts:generic-api-key:115
+d5b7739776d5a7f54c5d6a45f8447b47ccf1dd1f:engine/packages/domain/src/contracts/links.ts:generic-api-key:154
+d5b7739776d5a7f54c5d6a45f8447b47ccf1dd1f:engine/packages/domain/src/contracts/links.ts:generic-api-key:160
+d5b7739776d5a7f54c5d6a45f8447b47ccf1dd1f:engine/packages/domain/src/contracts/links.ts:generic-api-key:166
+ef7264343361ad830463c207a605eade7336e359:engine/packages/view-models/src/fixtures/order.ts:generic-api-key:134
+ef7264343361ad830463c207a605eade7336e359:engine/packages/view-models/src/fixtures/order.ts:generic-api-key:161
+8d10ac6cb69ef0df44b2e435f3d1a6658d527221:engine/packages/view-models/src/fixtures/order-lookup.ts:generic-api-key:32
+8d10ac6cb69ef0df44b2e435f3d1a6658d527221:engine/packages/view-models/src/fixtures/pay.ts:generic-api-key:54

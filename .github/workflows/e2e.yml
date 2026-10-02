@@ -1,8 +1,8 @@
 name: E2E (reusable)
 
 # Split out of ci.yml to keep both files under the 300-line rule
-# (CONVENTIONS.md §2, applied to workflows per this task's instructions).
-# Called only from ci.yml's `e2e` job, never triggered directly.
+# (CONVENTIONS.md §2, applied to workflows). Called only from ci.yml's `e2e`
+# job, never triggered directly.
 on:
   workflow_call:
 
@@ -17,23 +17,25 @@ jobs:
     # A bare Postgres 18 service container (no docker-compose stack behind
     # it) — the image's own docker-entrypoint-initdb.d never runs here
     # (GitHub Actions `services:` supports no volume mounts), so the
-    # `unaccent`/`pg_trgm` extensions this job's four databases need
-    # (2.1.d's CI clause) are created explicitly by `db:fresh`'s
-    # `createDatabase()` (engine/tooling/db/psql.mjs), not by
-    # docker-compose.dev.yml's init script.
+    # `unaccent`/`pg_trgm` extensions the one e2e database needs are created
+    # explicitly by `db:fresh`'s `createDatabase()`
+    # (engine/tooling/db/psql.mjs), not by docker-compose.dev.yml's init
+    # script.
     #
-    # PGHOST switches `psql.mjs`/`schema-hash/dump.mjs` to the direct
-    # transport (engine/tooling/db/transport.mjs) instead of `docker compose
-    # exec` — there is no compose project here for `exec` to reach.
+    # PGHOST switches `psql.mjs` to the direct transport
+    # (engine/tooling/db/transport.mjs) instead of `docker compose exec` —
+    # there is no compose project here for `exec` to reach.
     #
-    # DB_SUFFIX names the four databases (`<brand>_ci`, `test_ci_<storefront>`).
+    # DB_SUFFIX names the one database (`indies_gallery_ci`, TASKS.md 2.1.c):
+    # one app, one database. Until 2.2 the process serves one brand (BRAND),
+    # and `db:fresh` still names a database after it.
     #
-    # LOCAL_PRODUCTION_BUILD=1: this job serves the production builds on
-    # loopback ports for Playwright, which bootCheck() judges local only with
-    # it (DEPLOYMENT.md §8, TASKS.md 3.5.g) — without it they are judged
-    # production and refuse to start on sandbox keys and draft configs. Only
-    # CI and a worktree's .env.local set it; never a host. start-server.sh
-    # sets it on each server again, from an empty environment.
+    # LOCAL_PRODUCTION_BUILD=1: this job serves the production build on a
+    # loopback port for Playwright, which bootCheck() judges local only with
+    # it (DEPLOYMENT.md §8) — without it it is judged production and refuses
+    # to start on sandbox keys and draft configs. Only CI and a worktree's
+    # .env.local set it; never a host. start-server.sh sets it on the server
+    # again, from an empty environment.
     env:
       LOCAL_PRODUCTION_BUILD: '1'
       NEXT_TELEMETRY_DISABLED: '1'
@@ -42,6 +44,8 @@ jobs:
       POSTGRES_USER: postgres
       PGPASSWORD: postgres
       DB_SUFFIX: ci
+      E2E_BRAND: indies-gallery
+      E2E_PORT: '4200'
     services:
       postgres:
         image: postgres:18.0
@@ -58,109 +62,79 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node
 
-      # pg_dump must be >= the server's major version (18) — schema-hash's
-      # normaliser already strips the `\restrict`/`\unrestrict` wrapper pg_dump
-      # 18 adds, so an older client here would silently dump a schema in an
-      # older dialect. The distro repo on ubuntu-latest ships 16; PGDG's own
-      # repo is the documented way to get a matching 18 client.
+      # A client matching the server's major version (18): the distro repo on
+      # ubuntu-latest ships 16; PGDG's own repo is the documented way to get 18.
       - name: Install postgresql-client-18 (PGDG)
         run: |
           sudo apt-get install -y postgresql-common
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get install -y postgresql-client-18
 
-      # ig, oei, and the synthetic `test` brand once per storefront config
-      # (CONVENTIONS.md §1): `--storefront` names `test_<suffix>_<storefront>`.
-      # Each call creates the database, then migrates it (TASKS.md 3.5.c):
-      # `pnpm --filter @engine/cms migrate` — the committed migration set,
-      # under the advisory lock, with BRAND (and TEST_STOREFRONT) as that
-      # brand's process runs — with a DATABASE_URL the hook builds from this
-      # job's PGHOST/PGPORT/POSTGRES_USER/PGPASSWORD and a dev PAYLOAD_SECRET
-      # of its own; everything it needs is the frozen install above. A failed
-      # migration fails the step. The seed hook is still a no-op (10.2).
-      - name: db:fresh — ig, oei, test-gallery, test-emporium (created and migrated)
+      # The one e2e database: created, then migrated with the committed
+      # migration set under the advisory lock (`pnpm --filter @engine/cms
+      # migrate`, TASKS.md 3.5.c), with a DATABASE_URL the hook builds from
+      # this job's PGHOST/PGPORT/POSTGRES_USER/PGPASSWORD and a dev
+      # PAYLOAD_SECRET of its own. A failed migration fails the step.
+      - name: db:fresh — the one e2e database (created and migrated)
+        run: pnpm db:fresh --brand "$E2E_BRAND" --suffix "$DB_SUFFIX"
+
+      - name: unaccent and pg_trgm in the e2e database
         run: |
-          pnpm db:fresh --brand indies-gallery --suffix "$DB_SUFFIX"
-          pnpm db:fresh --brand old-east-indies --suffix "$DB_SUFFIX"
-          pnpm db:fresh --brand test --storefront gallery --suffix "$DB_SUFFIX"
-          pnpm db:fresh --brand test --storefront emporium --suffix "$DB_SUFFIX"
+          db="${E2E_BRAND//-/_}_$DB_SUFFIX"
+          found=$(psql -U "$POSTGRES_USER" -d "$db" -tAc "select string_agg(extname, ',' order by extname) from pg_extension where extname in ('pg_trgm','unaccent')")
+          echo "$db: $found"
+          [ "$found" = "pg_trgm,unaccent" ] || { echo "::error::$db lacks unaccent or pg_trgm"; exit 1; }
 
-      # 2.1.d's and 3.2.f's CI clause, proven the same way the local Check
-      # is: one schema across the four migrated databases (schema-hash
-      # --all's own comparison, 2.2.c), so a migration that applied
-      # differently anywhere fails here. Named, so the step compares exactly
-      # this job's databases.
-      - name: schema-hash --all
-        run: >-
-          pnpm schema-hash --all
-          "indies_gallery_$DB_SUFFIX" "old_east_indies_$DB_SUFFIX"
-          "test_${DB_SUFFIX}_gallery" "test_${DB_SUFFIX}_emporium"
-
-      # 2.1.d's CI clause, stated in the log: every database has both extensions.
-      - name: unaccent and pg_trgm in every database
-        run: |
-          for db in "indies_gallery_$DB_SUFFIX" "old_east_indies_$DB_SUFFIX" "test_${DB_SUFFIX}_gallery" "test_${DB_SUFFIX}_emporium"; do
-            found=$(psql -U "$POSTGRES_USER" -d "$db" -tAc "select string_agg(extname, ',' order by extname) from pg_extension where extname in ('pg_trgm','unaccent')")
-            echo "$db: $found"
-            [ "$found" = "pg_trgm,unaccent" ] || { echo "::error::$db lacks unaccent or pg_trgm"; exit 1; }
-          done
-
-      # The CMS's real-database tests (`*.db.test.ts`, TASKS.md 3.2's senior-db
-      # review): the unit job has no Postgres, so they run here, where the
-      # service is. Each makes its own database on the server
-      # CMS_TEST_POSTGRES_URL names (the maintenance database; the role must
-      # be able to CREATE DATABASE), migrates it and drops it WITH (FORCE).
-      # Without the variable they skip, so this step is what runs them.
+      # The CMS's real-database tests (`*.db.test.ts`): the unit job has no
+      # Postgres, so they run here, where the service is. Each makes its own
+      # database on the server CMS_TEST_POSTGRES_URL names (the maintenance
+      # database; the role must be able to CREATE DATABASE), migrates it and
+      # drops it WITH (FORCE). Without the variable they skip, so this step is
+      # what runs them.
       - name: CMS real-database tests
         env:
           CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
         run: pnpm exec vitest run --project packages .db.test
 
-      - name: Build both apps (no database env — like the deploy artifact)
-        run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm build
+      # The build touches no database (CONVENTIONS.md §12): no DATABASE_URL or
+      # PAYLOAD_SECRET, and PGHOST/PGPORT — which this job sets for the steps
+      # above, and which `pg` falls back to — pointed at a port that refuses
+      # every connection, so a build that tried to connect fails here.
+      - name: Build the app (no database env — like the deploy artifact)
+        run: env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build
 
       # The release's own tree (release.yml runs the same script), so every push to main
       # proves the artifact a `production` push would publish boots and serves.
       - name: Assemble the release tree
         run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
 
-      # The four brand/storefront pairs as a host runs them (start-server.sh: `node server.js`
-      # from an empty environment, HOSTNAME=0.0.0.0, a PAYLOAD_SECRET and a `ci:` LINK_TOKEN_KEYS
-      # ring generated per server), plus a fifth gallery with the spike's fixture routes on for
-      # status.spec.ts — SPIKE_ROUTES is allowed only where the boot check judges the host local,
-      # which LOCAL_PRODUCTION_BUILD=1 at a loopback SITE_URL is. The real brands boot from their
-      # own brand/ in the release; `test` from its repo folder, which no release ships.
-      - name: Start the servers (ig, oei, test-gallery, test-emporium, spike)
-        run: |
-          set -euo pipefail
-          start=.github/scripts/start-server.sh
-          art="$RUNNER_TEMP/artifact"
-          bash $start ig "$art/indies-gallery" gallery 4200 "indies_gallery_$DB_SUFFIX" indies-gallery "$art/indies-gallery/brand"
-          bash $start oei "$art/old-east-indies" emporium 4201 "old_east_indies_$DB_SUFFIX" old-east-indies "$art/old-east-indies/brand"
-          bash $start test-gallery "$art/indies-gallery" gallery 4202 "test_${DB_SUFFIX}_gallery" test test TEST_STOREFRONT=gallery
-          bash $start test-emporium "$art/old-east-indies" emporium 4203 "test_${DB_SUFFIX}_emporium" test test TEST_STOREFRONT=emporium
-          bash $start spike "$art/indies-gallery" gallery 4204 "test_${DB_SUFFIX}_gallery" test test TEST_STOREFRONT=gallery SPIKE_ROUTES=1
+      # Chromium resolves *.localhost to loopback by itself; Node's resolver, which
+      # Playwright's `request` fixture uses, is mapped here so it never depends on the image.
+      - name: Map gallery.localhost and shop.localhost to loopback
+        run: echo '127.0.0.1 gallery.localhost shop.localhost' | sudo tee -a /etc/hosts
+
+      # ONE server on one port answers both hostnames (start-server.sh: `node server.js` from an
+      # empty environment, HOSTNAME=0.0.0.0, a PAYLOAD_SECRET and a `ci:` LINK_TOKEN_KEYS ring
+      # generated for it). Until 2.2 it serves BRAND on both hosts.
+      - name: Start the server (both hosts, one port)
+        run: >-
+          bash .github/scripts/start-server.sh web "$RUNNER_TEMP/artifact/web" "$E2E_PORT"
+          "${E2E_BRAND//-/_}_$DB_SUFFIX" "$E2E_BRAND"
 
       - name: Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      # playwright.config.ts: the smoke (tests/e2e/smoke/) on {ig, oei, test-gallery,
-      # test-emporium} × {desktop, mobile}; the status spec (tests/e2e/status/) on the spike server
-      # (status-gallery) and its @any-app cases on test-emporium (status-emporium). The proxy sets a
-      # missing User-Agent since 5.3, so E2E_EXPECT_UA_FIX=1 runs the no-User-Agent cases on both
-      # apps. E2E_EXPECT_NOT_FOUND_BODY stays unset until 22.4.e (a 404's non-empty <main>),
+      # playwright.config.ts: the smoke on {gallery, shop} × {390, 1280 px}; the status spec on the
+      # gallery host and its @any-app cases on the shop host; axe on each host at both widths. The
+      # proxy sets a missing User-Agent since 5.3, so E2E_EXPECT_UA_FIX=1 runs the no-User-Agent
+      # cases. E2E_EXPECT_NOT_FOUND_BODY stays unset until 22.4.e (a 404's non-empty <main>),
       # E2E_EXPECT_CSP until 41.1.a: their cases are `fixme` until then.
-      - name: Playwright (smoke × 8 projects, status on the spike gallery and an emporium)
+      - name: Playwright (smoke, status and axe on both hosts)
         env:
-          E2E_GALLERY_URL: http://localhost:4200
-          E2E_EMPORIUM_URL: http://localhost:4201
-          E2E_TEST_GALLERY_URL: http://localhost:4202
-          E2E_TEST_EMPORIUM_URL: http://localhost:4203
-          E2E_SPIKE_URL: http://localhost:4204
           E2E_EXPECT_UA_FIX: '1'
         run: pnpm test:e2e
 
-      - name: Server logs
+      - name: Server log
         if: always()
         run: |
           for log in "$RUNNER_TEMP"/servers/*.log; do
