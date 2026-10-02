@@ -24,10 +24,10 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 5/18 | 0 | `███░░░░░░░`  28% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 1/16 | 0 | `█░░░░░░░░░`   6% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 4/16 | 0 | `███░░░░░░░`  25% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **70/200** | **8** | `████░░░░░░`  35% |
+| **All** | 11 phases | | | **9/49** | **72/200** | **8** | `████░░░░░░`  36% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -680,9 +680,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/server/analytics/**`, `engine/apps/web/src/shared/beacon/**`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/apps/web/src/app/(payload)/admin/dashboard/**`
   - **Read** ANALYTICS.md, Requirement 13
   - _Requirements: 13.1, 13.2, 13.3, 10.5_
-  - [ ] 9.2.a a cookieless beacon (no visitor id, no personal data, bots filtered) emitting the events of ANALYTICS.md §Catalogue: views, searches, Ask and Sell clicks by channel, chat started, handoff and lead, bag, checkout steps, paid, status
+  - [x] 9.2.a a cookieless beacon (no visitor id, no personal data, bots filtered) emitting the events of ANALYTICS.md §Catalogue: views, searches, Ask and Sell clicks by channel, chat started, handoff and lead, bag, checkout steps, paid, status
   - [ ] 9.2.b the owner's dashboard per site: visitors, top items and searches, enquiry clicks by channel, leads, and for the shop the funnel and orders by status
-  - [ ] 9.2.c a build check that no Google Analytics or Meta Pixel script or domain appears in the output
+  - [x] 9.2.c a build check that no Google Analytics or Meta Pixel script or domain appears in the output
   - [ ] 9.2.d **Check:** driving the seeded sites produces events; the dashboard counts equal the database; a bot user-agent adds none; the built HTML contains no third-party tracker domain.
 
 - [ ] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6 — 🔄 9·W1
