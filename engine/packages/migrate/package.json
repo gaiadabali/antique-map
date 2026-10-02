@@ -2,7 +2,7 @@
   "name": "@engine/migrate",
   "version": "0.0.0",
   "private": true,
-  "description": "Legacy migration: source adapters (a restored MySQL dump, a read-only public read, a product spreadsheet), then normalisers, the loader, redirects and the report. Source-shaped, never brand-shaped: every store-specific value arrives as data from the brand's content/legacy/ folder or the command line (MIGRATION.md §4).",
+  "description": "Legacy migration: source adapters (a restored MySQL dump, a read-only public read, a product spreadsheet), then normalisers, the loader, redirects and the report. Source-shaped, never brand-shaped: every store-specific value arrives as data from the site's data/<site>/ folder or the command line (MIGRATION.md §4).",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

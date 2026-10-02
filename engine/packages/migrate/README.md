@@ -7,7 +7,7 @@ and the report (phase 36–37).
 
 Engine code is source-shaped, never brand-shaped: every store-specific value
 (an origin, route shapes, CSS selectors, extraction queries, mappings) is data
-in the brand's `content/legacy/` folder or a command-line argument. Raw
+in the site's `data/<site>/` folder (`data/gallery/`, `data/shop/`) or a command-line argument. Raw
 output — HTML, JSON, images, table extracts — goes to `LEGACY_DATA_DIR`
 (environment or the workspace `.env.local`), outside git; the CLIs refuse a
 data directory inside the checkout unless it is a gitignored
@@ -25,8 +25,8 @@ data directory inside the checkout unless it is a gitignored
 
 ```sh
 cd engine/packages/migrate
-pnpm legacy:public-read crawl --config ../../../<brand>/content/legacy/inventory/public-read.json \
-  --inventory-out ../../../<brand>/content/legacy/inventory
+pnpm legacy:public-read crawl --config data/<site>/inventory/public-read.json \
+  --inventory-out data/<site>/inventory
 pnpm legacy:public-read build --config …   # no network: product JSON, images, inventory from the cache
 ```
 

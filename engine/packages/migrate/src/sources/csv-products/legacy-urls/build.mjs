@@ -135,7 +135,7 @@ export function buildInventory({ domain, dataDir, kindOverrides = {} }) {
 }
 
 /**
- * @param {string} outDir e.g. `<brand>/content/legacy/inventory`
+ * @param {string} outDir e.g. `engine/packages/migrate/data/<site>/inventory`
  * @param {ReturnType<typeof buildInventory>} built
  */
 export function writeInventory(outDir, { rows, summary }) {

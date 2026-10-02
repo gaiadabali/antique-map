@@ -1,0 +1,93 @@
+{
+  "total": 673,
+  "byKind": {
+    "product": 503,
+    "category": 125,
+    "page": 11,
+    "blog": 10,
+    "asset": 3,
+    "system": 21
+  },
+  "bySource": {
+    "cdx": 303,
+    "cdx|sitemap": 8,
+    "sitemap": 362
+  },
+  "byHost": {
+    "@": 673
+  },
+  "cdx": {
+    "endpoint": "https://web.archive.org/cdx/search/cdx",
+    "fetchedFrom": "2026-09-30T02:32:15.937Z",
+    "fetchedTo": "2026-09-30T02:32:58.375Z",
+    "queries": [
+      {
+        "id": "domain",
+        "url": "oldeastindies.com",
+        "matchType": "domain",
+        "captures": 1561,
+        "distinct": 311,
+        "missingFromDomain": 0
+      },
+      {
+        "id": "apex-prefix",
+        "url": "oldeastindies.com/",
+        "matchType": "prefix",
+        "captures": 1561,
+        "distinct": 311,
+        "missingFromDomain": 0
+      },
+      {
+        "id": "www-prefix",
+        "url": "www.oldeastindies.com/",
+        "matchType": "prefix",
+        "captures": 1561,
+        "distinct": 311,
+        "missingFromDomain": 0
+      },
+      {
+        "id": "http-apex",
+        "url": "http://oldeastindies.com/*",
+        "matchType": "prefix (wildcard)",
+        "captures": 1561,
+        "distinct": 311,
+        "missingFromDomain": 0
+      },
+      {
+        "id": "https-www",
+        "url": "https://www.oldeastindies.com/*",
+        "matchType": "prefix (wildcard)",
+        "captures": 1561,
+        "distinct": 311,
+        "missingFromDomain": 0
+      }
+    ]
+  },
+  "gsc": {
+    "exports": []
+  },
+  "sitemap": {
+    "captures": [
+      {
+        "timestamp": "20240624134228",
+        "original": "https://www.oldeastindies.com/sitemap.xml",
+        "parent": null,
+        "type": "urlset",
+        "file": "20240624134228-www.oldeastindies.com_sitemap.xml",
+        "entries": 370,
+        "accepted": 370
+      },
+      {
+        "timestamp": "20240808221041",
+        "original": "https://www.oldeastindies.com/sitemap.xml",
+        "parent": null,
+        "type": "urlset",
+        "file": "20240808221041-www.oldeastindies.com_sitemap.xml",
+        "entries": 370,
+        "accepted": 370
+      }
+    ],
+    "unarchivedChildren": []
+  },
+  "rejected": {}
+}

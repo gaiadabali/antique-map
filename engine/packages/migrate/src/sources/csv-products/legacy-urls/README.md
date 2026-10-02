@@ -10,7 +10,7 @@ sources, all copies — **nothing is ever requested from the old site**:
 | `sitemap` | the domain's `/sitemap.xml` as the Wayback Machine archived it, read through playback (`web.archive.org/web/<timestamp>id_/<url>`) | read by `fetch-sitemaps` |
 | `gsc`     | a Google Search Console export the owner hands over                                                                                | read by `import-gsc`     |
 
-The domain is data: it lives in the brand's `content/legacy/discovery.json` and
+The domain is data: it lives in the site's `data/<site>/discovery.json` and
 is never written in this code (CONVENTIONS.md §1).
 
 ## Commands
@@ -18,10 +18,10 @@ is never written in this code (CONVENTIONS.md §1).
 Run from the repo root with plain `node` (no build step, Node built-ins only):
 
 ```sh
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-cdx  --site <brand>/content/legacy/discovery.json
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-sitemaps --site <brand>/content/legacy/discovery.json
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs import-gsc --site <brand>/content/legacy/discovery.json --file Pages.csv --from 2025-05-01 --to 2026-08-31
-node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs build      --site <brand>/content/legacy/discovery.json
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-cdx  --site engine/packages/migrate/data/<site>/discovery.json
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs fetch-sitemaps --site engine/packages/migrate/data/<site>/discovery.json
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs import-gsc --site engine/packages/migrate/data/<site>/discovery.json --file Pages.csv --from 2025-05-01 --to 2026-08-31
+node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs build      --site engine/packages/migrate/data/<site>/discovery.json
 ```
 
 - `--data-dir` is the raw cache, default `LEGACY_DATA_DIR` (from the environment
@@ -115,6 +115,6 @@ under the root config's `packages` project:
 pnpm exec vitest run engine/packages/migrate
 ```
 
-`inventory-files.test.mjs` also checks every committed inventory (any brand
-folder with `content/legacy/discovery.json`): columns, unique sorted rows, valid
+`inventory-files.test.mjs` also checks every committed inventory (any
+`data/<site>/` folder with a `discovery.json`): columns, unique sorted rows, valid
 kinds and sources, summary counts, and nothing personal.

@@ -26,7 +26,7 @@ a plain mysqldump 5.7-style file (no `CREATE DATABASE`/`USE`), Laravel-shaped
 `failed_jobs`). **Every row is invented**: fictional people at
 `example.invalid`, placeholder strings where passwords and tokens would be.
 `fixtures/mock-queries/*.sql` are its extraction queries — the starting point
-for the real dump's, which live in the brand's `content/legacy/schema/queries/`.
+for the real dump's, which live in `data/<site>/schema/queries/`.
 
 The dirty data of MIGRATION.md §4, by row (`products.id`):
 
