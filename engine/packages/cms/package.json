@@ -22,6 +22,7 @@
     "schema:check": "payload run src/db/schema-check.ts"
   },
   "dependencies": {
+    "@engine/cache": "workspace:*",
     "@engine/config": "workspace:*",
     "@engine/media": "workspace:*",
     "@payloadcms/db-postgres": "3.90.2",

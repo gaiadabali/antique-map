@@ -25,6 +25,7 @@ import {
 } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { requiredToPublish, webUrl } from '../../fields/validate'
+import { refuseDeleteWhileUsed } from './still-used'
 
 const validateShortCite: Validate = (value) =>
   shortCiteError(typeof value === 'string' ? value : null) ?? true
@@ -42,7 +43,7 @@ export const Sources: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeChange: [refuseContributorPublish] },
+  hooks: { beforeChange: [refuseContributorPublish], beforeDelete: [refuseDeleteWhileUsed] },
   fields: [
     {
       name: 'shortCite',

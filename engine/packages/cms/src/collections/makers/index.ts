@@ -28,6 +28,7 @@ import { translationStatusField } from '../../fields/translation-status'
 import { isBlank, webUrl } from '../../fields/validate'
 import { lifeDateGroup } from './life-dates'
 import { MAKER_ROLE_LABELS, MAKER_ROLES } from './roles'
+import { refuseDeleteWhileUsed } from './still-used'
 
 /** The row index of an array field's sub-field, from the path Payload validates it under. */
 const rowOf = (path: readonly (number | string)[]) => Number(path[path.length - 2])
@@ -67,7 +68,7 @@ export const Makers: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeChange: [refuseContributorPublish] },
+  hooks: { beforeChange: [refuseContributorPublish], beforeDelete: [refuseDeleteWhileUsed] },
   fields: [
     {
       name: 'name',
