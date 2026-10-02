@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  undici: 7.29.1
+
 importers:
 
   .:
@@ -51,65 +54,7 @@ importers:
         specifier: 5.0.1
         version: 5.0.1(@types/node@26.6.3)(vite@8.3.0(@types/node@26.6.3)(esbuild@0.28.2)(sass@1.77.4)(tsx@4.22.4))
 
-  engine/apps/emporium:
-    dependencies:
-      '@engine/cms':
-        specifier: workspace:*
-        version: link:../../packages/cms
-      '@engine/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@engine/http':
-        specifier: workspace:*
-        version: link:../../packages/http
-      '@engine/i18n':
-        specifier: workspace:*
-        version: link:../../packages/i18n
-      '@engine/view-models':
-        specifier: workspace:*
-        version: link:../../packages/view-models
-      '@payloadcms/next':
-        specifier: 3.90.2
-        version: 3.90.2(@types/react@19.3.0)(graphql@16.11.0)(monaco-editor@0.57.0)(next@16.3.6(@playwright/test@1.56.1)(@types/node@26.6.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@16.11.0)(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)
-      '@payloadcms/storage-s3':
-        specifier: 3.90.2
-        version: 3.90.2(@types/react@19.3.0)(monaco-editor@0.57.0)(next@16.3.6(@playwright/test@1.56.1)(@types/node@26.6.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@16.11.0)(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)
-      '@payloadcms/ui':
-        specifier: 3.90.2
-        version: 3.90.2(@types/react@19.3.0)(monaco-editor@0.57.0)(next@16.3.6(@playwright/test@1.56.1)(@types/node@26.6.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@16.11.0)(typescript@5.9.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)
-      graphql:
-        specifier: 16.11.0
-        version: 16.11.0
-      next:
-        specifier: 16.3.6
-        version: 16.3.6(@playwright/test@1.56.1)(@types/node@26.6.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4)
-      payload:
-        specifier: 3.90.2
-        version: 3.90.2(graphql@16.11.0)(typescript@5.9.3)
-      react:
-        specifier: 19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
-      sharp:
-        specifier: 0.35.5
-        version: 0.35.5(@types/node@26.6.3)
-    devDependencies:
-      '@types/node':
-        specifier: 26.6.3
-        version: 26.6.3
-      '@types/react':
-        specifier: 19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 19.3.0
-        version: 19.3.0(@types/react@19.3.0)
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-
-  engine/apps/gallery:
+  engine/apps/web:
     dependencies:
       '@engine/cms':
         specifier: workspace:*
@@ -3961,8 +3906,8 @@ packages:
   undici-types@8.9.0:
     resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
 
-  undici@7.29.0:
-    resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
+  undici@7.29.1:
+    resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
     engines: {node: '>=20.18.1'}
 
   unique-string@2.0.0:
@@ -7245,7 +7190,7 @@ snapshots:
       sax: 1.6.1
       ts-essentials: 10.0.3(typescript@5.9.3)
       tsx: 4.22.4
-      undici: 7.29.0
+      undici: 7.29.1
       uuid: 13.0.2
       ws: 8.22.0
     transitivePeerDependencies:
@@ -7977,7 +7922,7 @@ snapshots:
 
   undici-types@8.9.0: {}
 
-  undici@7.29.0: {}
+  undici@7.29.1: {}
 
   unique-string@2.0.0:
     dependencies:

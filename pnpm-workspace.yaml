@@ -18,3 +18,19 @@ allowBuilds:
   esbuild: true
   '@tailwindcss/oxide': true
   unrs-resolver: true
+
+# Security overrides for `pnpm audit --prod --audit-level=high` (ci.yml `audit`).
+# undici 7.29.0 arrives through payload; 7.29.1 fixes GHSA-rfgv-xxqx-mfg5 and
+# GHSA-w293-vg96-wgc3 and is a patch release. Drop this once payload ships it.
+overrides:
+  undici: 7.29.1
+
+# Allowed advisories, each with its reason. Recheck by 2026-11-02 or on the next
+# Payload upgrade, whichever comes first.
+# - nodemailer 9.1.1 comes through @payloadcms/email-nodemailer; the fix is in
+#   nodemailer 10.x, a major version the adapter does not support yet. Staging
+#   mail goes to Mailpit (D13); production mail is decided under Q6.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-v53p-9fqp-m79j
+    - GHSA-prgh-xp8r-p3m5
