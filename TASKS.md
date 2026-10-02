@@ -18,16 +18,16 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 5/33 | 0 | `██░░░░░░░░`  15% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 4/14 | 0 | `███░░░░░░░`  29% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 8/33 | 0 | `██░░░░░░░░`  24% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **50/200** | **8** | `███░░░░░░░`  25% |
+| **All** | 11 phases | | | **9/49** | **57/200** | **8** | `███░░░░░░░`  28% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -84,6 +84,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
 | 3·W3 | 3.7 Spreadsheet import and the seed data | senior-be | `w/3.7c` | 2026-10-03 | |
 | 6·W1 | 6.2 The bag, the delivery fee and the welcome code | senior-be | `task/6.2-pricing-core` | 2026-10-03 | |
+| 4·W2 | 4.2 Shared components from the design team's kit | senior-fe | `w/4.2a` | 2026-10-03 | |
+| 9·W1 | 9.3 Metadata, structured data and sitemaps | senior-fe | `w/9.3a` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -352,8 +354,8 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 5.1, 5.4, 7.1_
   - [x] 3.3.a `products`: SKU, localised name and description, category term, images, price in integer rupiah, variants as an array field, optional `relatedWork`, a `site` of `shop`
   - [x] 3.3.b `stores` (code, name, address, `lat`/`lng`, WhatsApp, hours, active, public flag) and `stock-levels` unique on store, product and variant SKU with a non-negative `quantity` check — `quantity` is the physical count minus units held by orders from `pending_payment` to `waiting_driver`, so a recount cannot oversell held units (DATA.md §3)
-  - [ ] 3.3.c `orders` (guest contact, delivery address with pin, assigned store, status and history, driver image, payment state, hashed tracking token, the amounts it was priced with), `payment-events` (append-only, unique dedupe key) and `discounts` (the welcome code) — schema and access only; behaviour is phases 6–7
-  - [ ] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
+  - [x] 3.3.c `orders` (guest contact, delivery address with pin, assigned store, status and history, driver image, payment state, hashed tracking token, the amounts it was priced with), `payment-events` (append-only, unique dedupe key) and `discounts` (the welcome code) — schema and access only; behaviour is phases 6–7
+  - [x] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
   - [ ] 3.3.e **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
 
 - [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2 — 🔄 3·W1
@@ -394,7 +396,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 10.2, 10.3, 2.1_
   - [ ] 3.7.a the import: antiques by stock number, products by SKU, stores by code and stock per store from CSV or XLSX; idempotent upserts, a dry run, and a report listing every rejected row and why; admin action and CLI
   - [ ] 3.7.b seed the gallery from the 1,823 normalised legacy records (rows marked `review` flagged, prices **never** loaded into a public field), with the pilot set's images as media
-  - [ ] 3.7.c seed the shop with the mock set of DATA.md §1 (about 80 products, 120 stores across Bali with coordinates, stock per store, a welcome code), generated with a fixed random seed and committed as import files; the real data replaces them through 3.7.a without a code change
+  - [x] 3.7.c seed the shop with the mock set of DATA.md §1 (about 80 products, 120 stores across Bali with coordinates, stock per store, a welcome code), generated with a fixed random seed and committed as import files; the real data replaces them through 3.7.a without a code change
   - [ ] 3.7.d **Check:** importing the same file twice changes nothing; a file with five bad rows imports the rest and reports the five; after seeding, the admin lists 1,823 antiques and the mock catalogue; no price from the legacy data appears in any public projection.
 
 ---
@@ -418,13 +420,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
   - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
-- [ ] **4.2 Shared components from the design team's kit** · needs: 4.1
+- [ ] **4.2 Shared components from the design team's kit** · needs: 4.1 — 🔄 4·W2
   - **Lane** DSG · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/shared/**`
   - **Read** the design system's `components/components.css` and readme, DESIGN-SYSTEM.md §Components
   - _Requirements: 12.1, 12.3_
-  - [ ] 4.2.a port `components.css` into CSS Modules per component: button, link, input, select, checkbox, textarea, card, badge, eyebrow, hairline, header, footer, form messages, dialog, toast, skeleton; no prefetching link
-  - [ ] 4.2.b the components the drawings do not have, in the same language: status timeline, map-pin picker shell, zoom viewer shell, chat panel shell, facet chip, pagination, breadcrumbs, rupiah price display, image with `sizes`
+  - [x] 4.2.a port `components.css` into CSS Modules per component: button, link, input, select, checkbox, textarea, card, badge, eyebrow, hairline, header, footer, form messages, dialog, toast, skeleton; no prefetching link
+  - [x] 4.2.b the components the drawings do not have, in the same language: status timeline, map-pin picker shell, zoom viewer shell, chat panel shell, facet chip, pagination, breadcrumbs, rupiah price display, image with `sizes`
   - [ ] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
   - [ ] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
 
@@ -519,9 +521,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/cart/**`, `engine/packages/cms/src/shop/pricing/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/bag/**`
   - **Read** COMMERCE.md §Cart and §Pricing, SECURITY.md §Server-side pricing
   - _Requirements: 5.3, 5.5, 6.2_
-  - [ ] 6.2.a the bag in a cookie holding only product, variant and quantity; every price, fee and total is computed by the server from the database; integer rupiah, rounded once
+  - [x] 6.2.a the bag in a cookie holding only product, variant and quantity; every price, fee and total is computed by the server from the database; integer rupiah, rounded once
   - [ ] 6.2.b the delivery-fee quote: distance bands from `site-settings` measured from the nearest eligible store (6.3.b) against the admin-maintained fee table (Q3, filled in from the local courier price); free over the threshold after the discount; a pin beyond the last band is refused with a WhatsApp handoff
-  - [ ] 6.2.c the welcome code: validated and applied by the server, single-use rules from `discounts`
+  - [x] 6.2.c the welcome code: validated and applied by the server, single-use rules from `discounts`
   - [ ] 6.2.d **Check:** unit tests prove: a tampered price or quantity in the request is ignored; totals match hand-computed cases to the rupiah; free delivery switches on exactly at the threshold; an expired or unknown code is refused with a plain message.
 
 - [ ] **6.3 Checkout, the map pin, the nearest store and the atomic stock** · needs: 6.1, 6.2
@@ -675,7 +677,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 9.2.c a build check that no Google Analytics or Meta Pixel script or domain appears in the output
   - [ ] 9.2.d **Check:** driving the seeded sites produces events; the dashboard counts equal the database; a bot user-agent adds none; the built HTML contains no third-party tracker domain.
 
-- [ ] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6
+- [ ] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6 — 🔄 9·W1
   - **Lane** PLT · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/server/seo/**`, `engine/apps/web/src/app/api/x/{sitemap,robots}/**`
   - **Read** EXPERIENCE-GALLERY.md §SEO, EXPERIENCE-SHOP.md §SEO
