@@ -4,14 +4,13 @@
  * A 404 is a 404 and a stale item slug one permanent redirect only because every page renders in
  * full per request (`htmlLimitedBots: /.*\/` with `instant = false`, ARCHITECTURE.md §9) — Next's
  * bypass of the prerendered shell, which a minor release could change. Nothing else in CI requests
- * a page for its status; this spec does, on a production build. It outlives the spike: the item
- * addresses it asks for are the fixture route's until phase 33 gives them real items.
+ * a page for its status; this spec does, on a production build. The spike's fixture item route is
+ * gone (TASKS.md 1.4.c), so its 200 and 308 cases went with it; 2.2.e rebuilds this spec per host.
  *
- * Two Playwright projects run it (playwright.config.ts). `status-gallery`, on a gallery production
- * build with `SPIKE_ROUTES=1` (the fixture item route — allowed only where the boot check judges
- * the host local), runs every case. `status-emporium`, on an emporium production build, runs the
+ * Two Playwright projects run it (playwright.config.ts), on the one app's production build:
+ * `status-gallery` on the gallery host runs every case; `status-shop` on the shop host runs the
  * cases tagged `@any-app` — a path that names no page, a not-found route, an unsupported locale
- * prefix, robots and the admin-only client hints — which no app may answer differently.
+ * prefix, robots and the admin-only client hints — which no host may answer differently.
  *
  * `E2E_EXPECT_UA_FIX=1` since the proxy sets a missing User-Agent (C13 `PROXY_USER_AGENT`, 5.3);
  * `E2E_EXPECT_NOT_FOUND_BODY=1` once the not-found page renders the designed surface (22.4.e);
@@ -26,7 +25,6 @@ const BROWSER_UA =
   'Mozilla/5.0 (Linux; Android 14; SM-A155F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36'
 const CAFE = '/product/1706-caf%C3%A9-de-java' // a slug outside ASCII: encoded once in its URL
 const BALI = '/product/1726-bali'
-const STALE_BALI = '/product/1726-old-bali'
 const ANY_APP = { tag: '@any-app' }
 
 /**
@@ -92,50 +90,9 @@ test.describe('status codes, on any app', ANY_APP, () => {
   }
 })
 
-test.describe('status codes, on the spike gallery', () => {
+test.describe('status codes, on the gallery', () => {
   test('/en/item/1726-bali answers 404', async ({ request }) => {
     expect((await ask(request, '/en/item/1726-bali')).status()).toBe(404)
-  })
-
-  test('the canonical item address answers 200', async ({ request }) => {
-    expect((await ask(request, CAFE)).status()).toBe(200)
-    expect((await ask(request, BALI)).status()).toBe(200)
-  })
-
-  for (const [asked, canonical] of [
-    ['/product/1706-caf%C3%A9-java', CAFE], // an old encoded slug
-    ['/product/1706-van-t%27hoff', CAFE], // an old link's odd slug
-    ['/product/1706', CAFE],
-    ['/product/1726-b%61li', BALI], // never a second 200 for `bali`
-  ] as const) {
-    test(`${asked} is one permanent redirect, encoded once, to a 200`, async ({ request }) => {
-      const response = await ask(request, asked)
-      expect(response.status()).toBe(308)
-      expect(response.headers()['location']).toBe(canonical)
-      expect((await ask(request, canonical)).status()).toBe(200)
-    })
-  }
-
-  test("a stale slug's permanent redirect keeps its query (5.3.e)", async ({ request }) => {
-    const response = await ask(request, `${STALE_BALI}?utm_source=mail`)
-    expect(response.status()).toBe(308)
-    expect(response.headers()['location']).toBe(`${BALI}?utm_source=mail`)
-  })
-
-  test('a stale slug with no User-Agent header is still a permanent redirect (C13, 5.3)', async ({
-    baseURL,
-  }) => {
-    expectUaFix()
-    expect(await askWithNoAgent(baseURL, STALE_BALI)).toEqual({ status: 308, location: BALI })
-  })
-
-  test('a stale slug with an empty User-Agent is still a permanent redirect', async ({
-    request,
-  }) => {
-    expectUaFix()
-    const response = await askWithEmptyAgent(request, STALE_BALI)
-    expect(response.status()).toBe(308)
-    expect(response.headers()['location']).toBe(BALI)
   })
 
   for (const path of [`${BALI}/`, '/product//1726-bali']) {

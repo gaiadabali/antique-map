@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": ["http://localhost:4201/"],
+      "url": ["http://gallery.localhost:4200/", "http://shop.localhost:4200/"],
       "numberOfRuns": 3,
       "settings": {
         "formFactor": "mobile"
@@ -10,7 +10,7 @@
     "assert": {
       "assertMatrix": [
         {
-          "matchingUrlPattern": "^http://localhost:4201/$",
+          "matchingUrlPattern": "^http://(gallery|shop)\\.localhost:4200/$",
           "assertions": {
             "largest-contentful-paint": [
               "error",
@@ -42,7 +42,7 @@
     },
     "upload": {
       "target": "filesystem",
-      "outputDir": "./.lighthouseci/emporium"
+      "outputDir": "./.lighthouseci/web"
     }
   }
 }

@@ -28,9 +28,10 @@ jobs:
     timeout-minutes: 30
     outputs:
       name: ${{ steps.pack.outputs.name }}
-    # The release smoke boots each brand's subdir from the packed tarball, which needs a migrated
-    # database per brand (the admin initialises Payload). The builds themselves never see it: they
-    # run with DATABASE_URL and PAYLOAD_SECRET unset (CONVENTIONS.md §12).
+    # The release smoke boots the one subdir, web/, from the packed tarball, which needs a migrated
+    # database (the admin initialises Payload). The build itself never sees it: it runs with
+    # DATABASE_URL and PAYLOAD_SECRET unset and pg's PGHOST fallback at a port that refuses every
+    # connection (CONVENTIONS.md §12).
     env:
       PGHOST: 127.0.0.1
       PGPORT: '5432'
@@ -56,17 +57,15 @@ jobs:
       # signature keys node 22.13.0 no longer trusts), then a frozen install.
       - uses: ./.github/actions/setup-pnpm-node
 
-      - name: Build gallery (no database env — the artifact never touches a database)
-        run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm --filter ./engine/apps/gallery run build
+      - name: Build the app (no database env — the artifact never touches a database)
+        run: env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build
 
-      - name: Build emporium (no database env)
-        run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm --filter ./engine/apps/emporium run build
-
-      # One tarball, two brand subdirs (DEPLOYMENT.md §3): each standalone server with its
+      # One tarball, one subdir, web/ (DEPLOYMENT.md §3): the standalone server with its
       # `.next/static`/`public` (Next's tracing does not follow files that are only served),
       # sharp and its @img/* binaries beside the server (a native addon no traced module names),
-      # and the brand's own folder at brand/site/ — BRAND_ROOT=<current>/brand on the host.
-      - name: Assemble indies-gallery/ and old-east-indies/
+      # and, until TASKS.md 2.2–2.3 move the sites into the app, each brand folder's site/ at
+      # <current>/<brand>/site — BRAND picks the one a process serves.
+      - name: Assemble web/
         run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
 
       - name: Package
@@ -77,7 +76,7 @@ jobs:
           stamp="$(date -u +%Y%m%dT%H%M%SZ)"
           name="production-${stamp}-${sha}"
           echo "name=$name" >> "$GITHUB_OUTPUT"
-          tar -czf "${name}.tar.gz" -C "$RUNNER_TEMP/artifact" indies-gallery old-east-indies
+          tar -czf "${name}.tar.gz" -C "$RUNNER_TEMP/artifact" web
           sha256sum "${name}.tar.gz" > "${name}.sha256"
           sha256sum -c "${name}.sha256"
           ls -lh "${name}.tar.gz"
@@ -86,14 +85,13 @@ jobs:
       - name: Postgres client
         run: sudo apt-get install -y postgresql-client
 
-      - name: db:fresh — the smoke's ig and oei databases (created and migrated)
-        run: |
-          pnpm db:fresh --brand indies-gallery --suffix "$DB_SUFFIX"
-          pnpm db:fresh --brand old-east-indies --suffix "$DB_SUFFIX"
+      - name: db:fresh — the smoke's database (created and migrated)
+        run: pnpm db:fresh --brand indies-gallery --suffix "$DB_SUFFIX"
 
-      # The tarball, extracted as a host extracts it, boots each brand: home 200 with its name,
-      # /admin/login 200, sharp loading — before anything is published (TASKS.md 4.4.f).
-      - name: Release smoke — each subdir boots from the tarball
+      # The tarball, extracted as a host extracts it, boots web/ on one port and answers both
+      # hostnames: home 200 with the brand's name, /admin/login 200, /api/health 200, sharp
+      # loading — before anything is published (TASKS.md 4.4.f, 2.1.b).
+      - name: Release smoke — web/ boots from the tarball and answers both hosts
         run: bash .github/scripts/smoke-artifact.sh "${{ steps.pack.outputs.name }}.tar.gz"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
