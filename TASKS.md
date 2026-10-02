@@ -23,7 +23,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
-| **8** AI | AI | 3, 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 3/16 | 0 | `██░░░░░░░░`  19% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
@@ -89,6 +89,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 3·W2 | 3.6 The admin experience: both languages, plain errors, a dashboard shell | senior-fe | `w/3.6` | 2026-10-03 | |
 | 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `worktree-agent-a586c01642ef4da70` | 2026-10-03 | |
 | 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
+| 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -611,7 +612,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, the chat on both sites answers catalogue questions in English and Indonesian, never gives an antique a price, hands off to WhatsApp or email with the item attached, and records a lead only after the visitor consents; an injection attempt in a visitor message or in catalogue text changes nothing; the cost cap and kill switch work; the CMS drafts a new antique from photographs and refuses to publish it until each drafted field is verified; the adversarial set passes in CI.
 **Waves:** W1 — 8.1, 8.3 · W2 — 8.2 · W3 — 8.4
 
-- [ ] **8.1 The chat core: route, tools and guardrails** · needs: phase 3
+- [ ] **8.1 The chat core: route, tools and guardrails** · needs: phase 3 — 🔄 8·W1
   - **Lane** AIX · **Agent** senior-integrator, **opus**, second reviewer senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/server/chat/**`, `engine/apps/web/src/app/api/x/chat/**`
   - **Read** AI.md (all), SECURITY.md §AI, OA8, Q7
