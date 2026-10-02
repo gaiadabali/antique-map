@@ -18,8 +18,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
-| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
-| **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 4/14 | 0 | `███░░░░░░░`  29% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **7/49** | **38/200** | **8** | `██░░░░░░░░`  19% |
+| **All** | 11 phases | | | **7/49** | **42/200** | **8** | `██░░░░░░░░`  21% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -80,6 +80,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | copy merged (da4e214); the delete commit 4f259f1 lands last, right after 2.2, then the Check |
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | 2.2.a–d done; fixing the senior-integrator review's must-fix (CORS/CSRF trusted the gallery origin) and two should-fixes (`/api/x/*` fall-through to Payload, boot check vs DEPLOYMENT §8); then merge |
+| 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
+| 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
+| 3·W1 | 3.2 Catalogue collections: makers, places, terms and the antiques | senior-db | `w/3.2` | 2026-10-03 | |
+| 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -329,7 +333,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
   - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
-- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2
+- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{works,makers,places,terms,media,masters}/**`
   - **Read** CONTENT-MODEL.md §3–§5, CARRY-OVER.md §2.5
@@ -341,7 +345,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
   - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
-- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2
+- [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{products,stores,stock-levels,orders,payment-events,discounts}/**`
   - **Read** CONTENT-MODEL.md §3–§4, COMMERCE.md §1–§4
@@ -352,7 +356,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
   - [ ] 3.3.e **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
 
-- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2
+- [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{leads,partners,chat-sessions,events,pages,redirects}/**`, `engine/packages/cms/src/globals/**`
   - **Read** CONTENT-MODEL.md §6, AI.md §3, ANALYTICS.md
@@ -403,15 +407,15 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Built to be restyled.** The first-run UI is the real UI, so it has to be right: every colour, size, space, radius, shadow and motion value comes from a token; pages are thin compositions of shared components; copy comes from the lexicon. A later redesign then edits `sites/*/tokens` and the shared components. The design team's material is in `docs/design/input/claude-design-2026-09/`.
 
-- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2
+- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — 🔄 4·W1
   - **Lane** DSG · **Agent** senior-uiux · **Wave** W1
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
   - _Requirements: 12.1, 12.5_
-  - [ ] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
-  - [ ] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
-  - [ ] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
-  - [ ] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
+  - [x] 4.1.a port the three-tier tokens (primitives, brand variables, semantic aliases), the spacing and typography scales and the fonts as the owner decided (Cormorant Garamond for display and numerals, Karla for everything read or clicked — sizes and weights in DESIGN-SYSTEM.md §2, each role a token; loaded with `next/font/google`, self-hosted at runtime); components read only the semantic aliases
+  - [x] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
+  - [x] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
+  - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
   - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
 - [ ] **4.2 Shared components from the design team's kit** · needs: 4.1
