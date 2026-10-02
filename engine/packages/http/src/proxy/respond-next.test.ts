@@ -19,6 +19,8 @@ import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS } from '../manifest'
 import { createProxy } from './route'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../../', import.meta.url))
+/** The one app (TASKS.md 2.1); each storefront's brand still runs on it until 2.2. */
+const APP = 'web'
 const APPS = ['gallery', 'emporium'] as const
 const NO_NORMALIZE = '__NEXT_NO_MIDDLEWARE_URL_NORMALIZE'
 
@@ -35,8 +37,8 @@ type Adapter = {
 }
 
 /** A module of the `next` an app installs, resolved from that app, as its build resolves it. */
-function fromApp<T>(app: (typeof APPS)[number], specifier: string): T {
-  return createRequire(join(REPO_ROOT, 'engine', 'apps', app, 'package.json'))(specifier) as T
+function fromApp<T>(_storefront: (typeof APPS)[number], specifier: string): T {
+  return createRequire(join(REPO_ROOT, 'engine', 'apps', APP, 'package.json'))(specifier) as T
 }
 
 const proxyFor = (storefront: (typeof APPS)[number]) => {
@@ -103,7 +105,7 @@ describe.each(APPS)('the proxy’s answer against the %s app’s Next', (app) =>
   })
 
   it('keeps skipProxyUrlNormalize off in the app’s next.config.ts, the setting the strip rests on', () => {
-    const source = readFileSync(join(REPO_ROOT, 'engine', 'apps', app, 'next.config.ts'), 'utf8')
+    const source = readFileSync(join(REPO_ROOT, 'engine', 'apps', APP, 'next.config.ts'), 'utf8')
     expect(source).not.toMatch(/skip(?:Proxy|Middleware)UrlNormalize/)
   })
 })
