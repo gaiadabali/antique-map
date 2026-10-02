@@ -53,11 +53,10 @@ export type ShellVM = {
   /** The switcher's choices; each page's own alternates come from its `SeoVM`. */
   locales: readonly LocaleCode[]
   /**
-   * Every brand-asset URL a page links, each at its versioned address under `/brand-assets/`
-   * (C13 `BRAND_ASSET_URL`: `?v=` the file's version), minted where the shell's view model is
-   * built and never written by a template. A page links its icons and manifest through its
-   * metadata (`icons`, `manifest`), never Next's file conventions, which are one build's; fonts
-   * load through a runtime `@font-face`.
+   * Every site file a page links — `/<site>/<file>` in `public/` (`@engine/http/manifest`
+   * `SITE_ASSETS`), built where the shell's view model is built and never written by a template.
+   * A page links its icons and manifest through its metadata (`icons`, `manifest`), never Next's
+   * file conventions, which are one build's; fonts load through a runtime `@font-face`.
    */
   assets: {
     logo: string
