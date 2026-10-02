@@ -9,7 +9,8 @@
     "./instance": "./src/instance.ts",
     "./access": "./src/access/index.ts",
     "./registries": "./src/registries/index.ts",
-    "./db/probe": "./src/db/probe.ts"
+    "./db/probe": "./src/db/probe.ts",
+    "./shop/pricing": "./src/shop/pricing/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
