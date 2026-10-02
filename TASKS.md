@@ -17,7 +17,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | Phase | Stage | Needs | Status | Tasks | Subtasks | 👤 open | Progress |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
-| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 2/5 | 16/20 | 0 | `████████░░`  80% |
+| **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
 | **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/33 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **6/49** | **36/200** | **8** | `██░░░░░░░░`  18% |
+| **All** | 11 phases | | | **7/49** | **38/200** | **8** | `██░░░░░░░░`  19% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -80,7 +80,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | |
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | |
-| 2·W3 | 2.5 The migrations reset | senior-db | `feat/2.5-migrations` | 2026-10-02 | |
 
 ## Decisions for the owner
 
@@ -278,7 +277,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 1.2, 1.3, 11.2_
   - [x] 2.2.a gut `@engine/config` to a typed `SITES` table and `siteFromHost()` checked against an env allow-list (`GALLERY_HOSTS`, `SHOP_HOSTS`); keep `constants`, `routes`, the environment half of the boot check and `hostname`; delete the brand schema, modules, sellers, markets, trade, validators and loader
   - [x] 2.2.b the proxy rewrites by `Host` into `app/(gallery)` or `app/(shop)` trees (internal prefixes that 404 when requested directly); an unknown or unlisted host is a plain 404 and never builds a URL; copy `instant = false` and the `connection()`-first read onto both root layouts
-  - [x] 2.2.c pin the admin and Payload REST to one host, `ADMIN_HOST` (the shop's host, Q1 answered); on the other host `/admin` and `/api/*` outside `/api/x/` and `/api/health` are 404; CSRF and CORS list each site's origin; absolute URLs for emails, canonical tags and Open Graph come from `SITES`, never from the request
+  - [x] 2.2.c pin the admin and Payload REST to one host, `ADMIN_HOST` (the shop's host, Q1 answered); on the other host `/admin` and `/api/*` outside `/api/x/` and `/api/health` are 404; CSRF and CORS list the admin's origin only (the senior-integrator review of 2.2: listing the gallery's origin let gallery script make credentialed admin calls on staging, where both hosts are same-site); absolute URLs for emails, canonical tags and Open Graph come from `SITES`, never from the request
   - [x] 2.2.d delete `access/brand.ts`, `access/modules.ts` and every `BRAND` and `BRAND_ROOT` use in the Owns (2.4 removes the CMS's own, and merges first); repoint the config and http tests off the root `test/` (2.3 deletes it); cache tags are namespaced by collection and carry the site where one record renders on both
   - [ ] 2.2.e **Check:** an e2e on a production build proves: each host serves its own site; an unknown `Host` is 404; `/admin` is 200 on the admin host and 404 on the other; a spoofed `X-Forwarded-Host` changes nothing; the 404 and 308 statuses survive Cache Components (`tests/e2e/status`).
 
@@ -302,14 +301,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.4.c remove every brand use in the Owns: imports of `access/brand`, `access/modules` and the `@engine/config` brand loader, `BRAND` and `BRAND_ROOT`; move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json` and repoint every CMS test off the root `test/`; as W2's schema lead, generate one interim migration and regenerate `payload-types.ts` and `importMap.js`
   - [x] 2.4.d **Check:** `pnpm verify` is green; a search finds no `BRAND`, no `access/brand` or `access/modules` import and no brand-loader import in the CMS outside `src/access/`, and no CMS test reading the root `test/`; the works and users `*.db.test.ts` pass against Postgres.
 
-- [ ] **2.5 The migrations reset** · needs: 2.4 — 🔄 2·W3
+- [x] **2.5 The migrations reset** · needs: 2.4 — ✅ 2026-10-02 b0fe334
   - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W3
   - **Owns** `engine/packages/cms/src/{migrations,db}/**`, `engine/packages/cms/src/payload-types.ts`, the generated `importMap.js`
   - **Read** CARRY-OVER.md §3 step 7 and §6.4, the 1.1 triage file on 8.5's staging state
   - _Requirements: 1.1, 11.1_
   - [x] 2.5.a reset the migrations: delete them all, run `migrate:create initial` once on a clean `main`, and re-add by hand `unaccent`/`pg_trgm`, the last-owner constraint trigger (advisory-lock key equal to `ADMINS_LOCK_KEY`, now testing `'owner'`) and the truncate refusal; regenerate `payload-types.ts` and `importMap.js` in the same commit
-  - [ ] 2.5.b drop every existing local database after a `pg_dump` (their `payload_migrations` rows name the old files); the staging databases move to 3.1.d, because the old staging releases still run on them
-  - [ ] 2.5.c **Check:** `admins.db.test.ts` passes against the migrated database (deleting or demoting the last owner is refused by the database itself, not only the hook); a fresh `pnpm db:fresh` builds the schema from the one initial migration; `pnpm check:generated` is clean.
+  - [x] 2.5.b drop every existing local database after a `pg_dump` (their `payload_migrations` rows name the old files); the staging databases move to 3.1.d, because the old staging releases still run on them
+  - [x] 2.5.c **Check:** `admins.db.test.ts` passes against the migrated database (deleting or demoting the last owner is refused by the database itself, not only the hook); a fresh `pnpm db:fresh` builds the schema from the one initial migration; `pnpm check:generated` is clean.
 
 ---
 
