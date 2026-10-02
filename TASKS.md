@@ -80,6 +80,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 2·W2 | 2.3 Dissolve the brand directories | junior | `feat/2.3-dirs` | 2026-10-02 | |
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | |
+| 2·W3 | 2.5 The migrations reset | senior-db | `feat/2.5-migrations` | 2026-10-02 | |
 
 ## Decisions for the owner
 
@@ -301,7 +302,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 2.4.c remove every brand use in the Owns: imports of `access/brand`, `access/modules` and the `@engine/config` brand loader, `BRAND` and `BRAND_ROOT`; move the gazetteer seed to `engine/packages/cms/src/seed/gazetteer.json` and repoint every CMS test off the root `test/`; as W2's schema lead, generate one interim migration and regenerate `payload-types.ts` and `importMap.js`
   - [x] 2.4.d **Check:** `pnpm verify` is green; a search finds no `BRAND`, no `access/brand` or `access/modules` import and no brand-loader import in the CMS outside `src/access/`, and no CMS test reading the root `test/`; the works and users `*.db.test.ts` pass against Postgres.
 
-- [ ] **2.5 The migrations reset** · needs: 2.4
+- [ ] **2.5 The migrations reset** · needs: 2.4 — 🔄 2·W3
   - **Lane** CMS · **Agent** senior-db, **opus**, reviewed by senior-be · **Wave** W3
   - **Owns** `engine/packages/cms/src/{migrations,db}/**`, `engine/packages/cms/src/payload-types.ts`, the generated `importMap.js`
   - **Read** CARRY-OVER.md §3 step 7 and §6.4, the 1.1 triage file on 8.5's staging state
