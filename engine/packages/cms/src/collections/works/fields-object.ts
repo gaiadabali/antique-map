@@ -13,12 +13,7 @@
 import type { ArrayField, Field, Validate } from 'payload'
 
 import { STAFF_ONLY_ACCESS } from '../../access/fields'
-import {
-  placeRowErrors,
-  referenceRowErrors,
-  refId,
-  type PlaceRow,
-} from '../../validators/work-credits'
+import { placeRowErrors, refId, type PlaceRow } from '../../validators/work-credits'
 import { rowOf } from './fields-record'
 import { MAX_SECONDARY_PLACES, PLACE_ROLE_OPTIONS } from './vocabulary'
 
@@ -35,13 +30,11 @@ const validatePrimary: Validate = (_value, { data, path }) => {
   return message(placeRowErrors(rows).primary[rowOf(path)])
 }
 
-const validateReference: Validate = (value, { data, path }) => {
-  if (typeof value !== 'string' || value.trim() === '') {
-    return 'Give the number or page in the source: "1268", "pl. 14".'
-  }
-  const rows = ((data as { references?: [] })?.references ?? []) as []
-  return message(referenceRowErrors(rows)[rowOf(path)])
-}
+/** A reference is text, as catalogued: "Tooley (Australia) 1268", never a row in a source table. */
+const validateCitation: Validate = (value) =>
+  typeof value === 'string' && value.trim() === ''
+    ? 'Give the citation as the catalogue writes it: "Tooley (Australia) 1268".'
+    : true
 
 const grades = { kind: { equals: 'grade' } } as const
 const subjects = { kind: { equals: 'subject' } } as const
@@ -100,16 +93,19 @@ export const OBJECT_FIELDS: Field[] = [
     name: 'references',
     type: 'array',
     labels: { singular: 'Reference', plural: 'References' },
-    admin: { description: '"Tooley (Australia) 1268", Koeman, Parry numbers.' },
+    admin: {
+      description:
+        'Text, as catalogued: "Tooley (Australia) 1268", Koeman, Parry numbers — the bibliography in the catalogue’s own words.',
+    },
     fields: [
       {
-        type: 'row',
-        fields: [
-          { name: 'source', type: 'relationship', relationTo: 'sources', required: true },
-          { name: 'ref', type: 'text', maxLength: 120, validate: validateReference },
-        ],
+        name: 'citation',
+        type: 'text',
+        required: true,
+        maxLength: 300,
+        validate: validateCitation,
       },
-      { name: 'note', type: 'text', localized: true, maxLength: 300 },
+      { name: 'note', type: 'textarea', localized: true, maxLength: 600 },
     ],
   },
   {

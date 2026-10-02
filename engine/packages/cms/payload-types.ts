@@ -78,7 +78,6 @@ export interface Config {
     makers: Maker
     places: Place
     terms: Term
-    sources: Source
     media: Media
     masters: Master
     pages: Page
@@ -109,7 +108,6 @@ export interface Config {
     makers: MakersSelect<false> | MakersSelect<true>
     places: PlacesSelect<false> | PlacesSelect<true>
     terms: TermsSelect<false> | TermsSelect<true>
-    sources: SourcesSelect<false> | SourcesSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
     masters: MastersSelect<false> | MastersSelect<true>
     pages: PagesSelect<false> | PagesSelect<true>
@@ -273,6 +271,10 @@ export interface Media {
   credit?: string | null
   licence?: string | null
   /**
+   * What it is an image of — a work, a product, a store, or something else. Set at intake, with the role.
+   */
+  subject: 'work' | 'product' | 'store' | 'other'
+  /**
    * What the image is — set at intake, the same as its master’s.
    */
   role:
@@ -422,6 +424,10 @@ export interface Master {
 export interface Work {
   id: number
   /**
+   * Made when the work is first saved — the old site’s product id for a migrated work, otherwise from 100000 — and never changed: the item’s address carries it.
+   */
+  publicId?: number | null
+  /**
    * Made when the work is first saved, and never changed: redirects key on it.
    */
   workUid?: string | null
@@ -567,6 +573,14 @@ export interface Work {
     | null
   colour?: ('publishers' | 'original-hand' | 'old-hand' | 'later' | 'printed' | 'uncoloured') | null
   /**
+   * Whether the antique is on offer. Set it; never imply it.
+   */
+  status?: ('available' | 'on-hold' | 'sold') | null
+  /**
+   * Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.
+   */
+  location?: ('singapore' | 'jakarta') | null
+  /**
    * In millimetres, height before width. Inches are worked out for you.
    */
   dimensions?: {
@@ -624,12 +638,11 @@ export interface Work {
    */
   subjects?: (number | Term)[] | null
   /**
-   * "Tooley (Australia) 1268", Koeman, Parry numbers.
+   * Text, as catalogued: "Tooley (Australia) 1268", Koeman, Parry numbers — the bibliography in the catalogue’s own words.
    */
   references?:
     | {
-        source: number | Source
-        ref?: string | null
+        citation: string
         note?: string | null
         id?: string | null
       }[]
@@ -678,6 +691,10 @@ export interface Work {
    */
   master?: (number | null) | Master
   /**
+   * Whole US dollars — the start of a negotiation and the insured value. Never on a page, a feed or an AI answer.
+   */
+  askingPrice?: number | null
+  /**
    * From the owner’s item register. Left blank, the item still publishes: the gallery sells nothing online.
    */
   physical?: {
@@ -721,24 +738,87 @@ export interface Work {
     cataloguer?: (number | null) | User
     verifiedAt?: string | null
     /**
-     * The work cannot publish while any field is listed here.
+     * One entry per field the drafting tool filled. The work cannot publish while an entry is drafted and has no verified time.
      */
-    aiDraft?:
-      | (
-          | 'title'
-          | 'originalTitle'
-          | 'publication'
-          | 'date'
-          | 'makers'
-          | 'places'
-          | 'subjects'
-          | 'technique'
-          | 'colour'
-          | 'condition'
-          | 'references'
-          | 'seo'
-        )[]
-      | null
+    aiDraft?: {
+      title?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      description?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      objectType?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      date?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      places?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      subjects?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+      dimensions?: {
+        drafted?: boolean | null
+        /**
+         * Who checked it.
+         */
+        verifiedBy?: (number | null) | User
+        /**
+         * When they checked it.
+         */
+        verifiedAt?: string | null
+      }
+    }
   }
   legacy?: {
     /**
@@ -951,36 +1031,6 @@ export interface Term {
    */
   position?: number | null
   translationStatus: 'entered' | 'machine' | 'reviewed'
-  updatedAt: string
-  createdAt: string
-  _status?: ('draft' | 'published') | null
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sources".
- */
-export interface Source {
-  id: number
-  /**
-   * How references cite it: "Tooley", "Koeman", "Tooley (Australia)".
-   */
-  shortCite: string
-  /**
-   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
-   */
-  slug: string
-  /**
-   * The full entry: author, title, place, publisher, year.
-   */
-  citation?: string | null
-  /**
-   * The year it was published (the first, for a multi-volume work).
-   */
-  year?: number | null
-  /**
-   * Where it can be read or bought online, if anywhere.
-   */
-  url?: string | null
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
@@ -1546,10 +1596,6 @@ export interface PayloadLockedDocument {
         value: number | Term
       } | null)
     | ({
-        relationTo: 'sources'
-        value: number | Source
-      } | null)
-    | ({
         relationTo: 'media'
         value: number | Media
       } | null)
@@ -1883,6 +1929,7 @@ export interface ProductsSelect<T extends boolean = true> {
  * via the `definition` "works_select".
  */
 export interface WorksSelect<T extends boolean = true> {
+  publicId?: T
   workUid?: T
   stockNumber?: T
   title?: T
@@ -1934,6 +1981,8 @@ export interface WorksSelect<T extends boolean = true> {
       }
   technique?: T
   colour?: T
+  status?: T
+  location?: T
   dimensions?:
     | T
     | {
@@ -1980,8 +2029,7 @@ export interface WorksSelect<T extends boolean = true> {
   references?:
     | T
     | {
-        source?: T
-        ref?: T
+        citation?: T
         note?: T
         id?: T
       }
@@ -2015,6 +2063,7 @@ export interface WorksSelect<T extends boolean = true> {
         id?: T
       }
   master?: T
+  askingPrice?: T
   physical?:
     | T
     | {
@@ -2050,7 +2099,59 @@ export interface WorksSelect<T extends boolean = true> {
         status?: T
         cataloguer?: T
         verifiedAt?: T
-        aiDraft?: T
+        aiDraft?:
+          | T
+          | {
+              title?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              description?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              objectType?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              date?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              places?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              subjects?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+              dimensions?:
+                | T
+                | {
+                    drafted?: T
+                    verifiedBy?: T
+                    verifiedAt?: T
+                  }
+            }
       }
   legacy?:
     | T
@@ -2171,20 +2272,6 @@ export interface TermsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sources_select".
- */
-export interface SourcesSelect<T extends boolean = true> {
-  shortCite?: T
-  slug?: T
-  citation?: T
-  year?: T
-  url?: T
-  updatedAt?: T
-  createdAt?: T
-  _status?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -2194,6 +2281,7 @@ export interface MediaSelect<T extends boolean = true> {
   caption?: T
   credit?: T
   licence?: T
+  subject?: T
   role?: T
   provenance?: T
   master?: T

@@ -79,12 +79,16 @@ describe('who reaches an image and its file (8.3.g, Found 10)', () => {
     expect(over('local', null, { isReadingStaticFile: true })).toBe(false)
   })
 
-  it('serves the file — the full-resolution upload — to staff alone', () => {
+  it('serves the file — the full-resolution upload — to the owner and the editors alone (3.2.e)', () => {
     expect(access(MEDIA_ACCESS.read, null, { isReadingStaticFile: true })).toBe(false)
     expect(
       access(MEDIA_ACCESS.read, { collection: 'customers' }, { isReadingStaticFile: true }),
     ).toBe(false)
-    expect(access(MEDIA_ACCESS.read, staff('store'), { isReadingStaticFile: true })).toBe(true)
+    // A store user reads the record list, never the full-resolution file behind it.
+    expect(access(MEDIA_ACCESS.read, staff('store'), { isReadingStaticFile: true })).toBe(false)
+    for (const role of ['owner', 'editor']) {
+      expect(access(MEDIA_ACCESS.read, staff(role), { isReadingStaticFile: true })).toBe(true)
+    }
   })
 
   it('lets the owner and the editors place and remove images, never store staff or a visitor', () => {
@@ -199,19 +203,20 @@ describe('the hooks', () => {
 })
 
 describe('what intake set stays set (finding 3)', () => {
-  const freeze = freezeAfterCreate('media', ['role', 'provenance'], mayCorrectIntake)
+  const freeze = freezeAfterCreate('media', ['role', 'provenance', 'subject'], mayCorrectIntake)
   const update = (user: unknown, data: object, payloadAPI = 'REST') =>
     call(freeze, {
       operation: 'update',
       data,
-      originalDoc: { role: 'in-room', provenance: 'ai-generated' },
+      originalDoc: { role: 'in-room', provenance: 'ai-generated', subject: 'work' },
       req: { user, payloadAPI },
     })
 
-  it('refuses an editor or store staff who would change a provenance or a role', () => {
+  it('refuses an editor or store staff who would change a provenance, a role or a subject', () => {
     for (const role of ['editor', 'store']) {
       expect(() => update(staff(role), { provenance: 'photograph' })).toThrow()
       expect(() => update(staff(role), { role: 'recto' })).toThrow()
+      expect(() => update(staff(role), { subject: 'product' })).toThrow()
       expect(() => update(staff(role), { role: 'recto' }, 'local')).toThrow()
     }
   })
@@ -226,7 +231,7 @@ describe('what intake set stays set (finding 3)', () => {
   })
 
   it('lets anyone resend the stored values, and touches a create not at all', () => {
-    const same = { role: 'in-room', provenance: 'ai-generated', alt: 'x' }
+    const same = { role: 'in-room', provenance: 'ai-generated', subject: 'work', alt: 'x' }
     expect(update(staff('editor'), same)).toEqual(same)
     expect(
       call(freeze, { operation: 'create', data: { provenance: 'photograph' }, req: {} }),

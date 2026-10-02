@@ -115,7 +115,7 @@ describe('the work publish guard (CONTENT-MODEL.md §9)', () => {
       hasPrimaryPlace: false,
       images: [],
       hasGrade: false,
-      aiDraft: ['title', 'condition'],
+      aiDraft: ['title', 'date'],
     })
     expect(problems.map((problem) => problem.path)).toEqual([
       'title',
@@ -130,7 +130,7 @@ describe('the work publish guard (CONTENT-MODEL.md §9)', () => {
       /Add a photograph of the whole front/,
     )
     expect(problems.find((p) => p.path === 'cataloguing.aiDraft')?.message).toMatch(
-      /An AI drafted Title and Condition, and nobody has checked them/,
+      /An AI drafted Title and Date, and nobody has checked them/,
     )
     for (const { message, summary } of problems) {
       expect(message).toMatch(/^[A-Z].*[.:]/)
