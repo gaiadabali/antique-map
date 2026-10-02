@@ -59,6 +59,18 @@ export const UNBUILT_HANDLER = {
   byPath: { '/api/x/robots': '@engine/http/unbuilt/robots' },
 } as const satisfies { specifier: string; byPath: Readonly<Record<string, string>> }
 
+/**
+ * What answers an `/api/x/…` path no engine route serves: a plain 404 for every method, mounted at
+ * `src/app/api/x/[...rest]` (`@engine/http/unrouted`). Every engine route is a more specific mount
+ * and wins; without it such a path would fall through to Payload's REST catch-all, on any host.
+ * It is no route of its own, so it is not in `ENGINE_ROUTES`.
+ */
+export const UNROUTED_HANDLER = {
+  mount: '/api/x/[...rest]',
+  specifier: '@engine/http/unrouted',
+  methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+} as const
+
 /** The placeholder a mount at `path` names while `handlerOf(path)` is unbuilt. */
 export function unbuiltHandlerOf(path: string): string {
   const byPath: Readonly<Record<string, string>> = UNBUILT_HANDLER.byPath

@@ -68,9 +68,11 @@ export const PROXY_NOT_FOUND_STATUS = 404
  * host itself — the deploy's and monitors' health check, the site user's crontab, a job's cache
  * invalidation — at `127.0.0.1:<port>`, a host no allow-list names. None builds a URL or reads a
  * site, `/api/health` answers no secret, and cron and revalidate take a bearer. Every other path on
- * an unknown host is a plain 404. A prefix ends in `/`; any other entry is an exact path.
+ * an unknown host is a plain 404. Each entry is an exact path — never a prefix, which would hand
+ * any path under it to whatever answers it (2.2's second review) — and a cron route joins the list
+ * the day it is mounted (`sweeps`, `reconcile`, `nightly`: ARCHITECTURE.md §10).
  */
-export const HOST_FREE_PATHS = ['/api/health', '/api/x/cron/', '/api/x/revalidate'] as const
+export const HOST_FREE_PATHS = ['/api/health', '/api/x/cron/jobs', '/api/x/revalidate'] as const
 
 /**
  * The literal the app's `src/proxy.ts` declares — Next reads `config.matcher` statically, so it is

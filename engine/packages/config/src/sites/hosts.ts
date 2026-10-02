@@ -129,7 +129,14 @@ export function siteHostProblems(env: Env = process.env): readonly HostProblem[]
   return result.ok ? [] : result.problems
 }
 
-/** A `Host` header's hostname: lower case, its port and a trailing dot dropped; `null` if none. */
+/**
+ * A `Host` header's hostname: lower case, its port and a trailing dot dropped; `null` if none.
+ *
+ * Only the header is read, never the request line: Next answers a `/foo/` or `//x` path with its
+ * own 308 before the proxy runs, and builds the proxy's request URL from the address it binds, so
+ * an absolute-form request URI (`GET http://evil.example/ HTTP/1.1`) names no host here — and nginx
+ * forwards the path alone, with `Host` as the client sent it.
+ */
 export function requestHostname(host: string | null | undefined): string | null {
   const match = HOST_HEADER.exec((host ?? '').trim().toLowerCase())
   const hostname = match?.[1]

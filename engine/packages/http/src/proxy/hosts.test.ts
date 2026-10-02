@@ -74,8 +74,15 @@ describe('a host on no list', () => {
     for (const path of ['/api/health', '/api/x/cron/jobs', '/api/x/revalidate']) {
       expect(decide('127.0.0.1:4030', path), path).toMatchObject({ kind: 'next', why: 'machine' })
     }
+    // Passed on with no site: a client's own x-site or x-locale is blanked, never forwarded.
+    const forged = decide('127.0.0.1:4030', '/api/health', { 'x-site': 'shop', 'x-locale': 'id' })
+    expect(forged.setRequest).toMatchObject({ 'x-site': '', 'x-locale': '' })
     // …and only those: a prefix match is not an exact path's.
     expect(decide('127.0.0.1:4030', '/api/x/revalidate-all').kind).toBe('respond')
+    // Exact paths only: nothing under a machine route is one (2.2's second review).
+    for (const path of ['/api/x/cron/foo', '/api/x/cron/', '/api/x/cron', '/api/health/x']) {
+      expect(decide('127.0.0.1:4030', path), path).toMatchObject({ kind: 'respond', status: 404 })
+    }
     expect(decide('127.0.0.1:4030', '/api/healthz').kind).toBe('respond')
   })
 

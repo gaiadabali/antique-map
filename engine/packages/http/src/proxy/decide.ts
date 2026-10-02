@@ -250,8 +250,12 @@ function passOn(request: ProxyRequest, why: ProxyWhy): ProxyDecision {
     site: null,
     locale: null,
     status: null,
-    // A client's `x-site` never reaches a handler as though the proxy had set it.
-    setRequest: { ...baseHeaders(request), [PROXY_REQUEST_HEADERS.site]: '' },
+    // A client's `x-site` or `x-locale` never reaches a handler as though the proxy had set it.
+    setRequest: {
+      ...baseHeaders(request),
+      [PROXY_REQUEST_HEADERS.site]: '',
+      [PROXY_REQUEST_HEADERS.locale]: '',
+    },
     removeRequest: [...CSP_REQUEST_HEADERS],
     setResponse: {},
   }

@@ -50,9 +50,7 @@ export function isEngineRoute(pathname: string): boolean {
 
 /** A machine route (`HOST_FREE_PATHS`), answered whatever the `Host`. */
 export function isHostFree(pathname: string): boolean {
-  return HOST_FREE_PATHS.some((path) =>
-    path.endsWith('/') ? pathname.startsWith(path) : pathname === path,
-  )
+  return (HOST_FREE_PATHS as readonly string[]).includes(pathname)
 }
 
 const ASSET_NAMES: readonly string[] = Object.values(SITE_ASSETS)

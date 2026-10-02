@@ -1,7 +1,7 @@
 // The placeholder a mount names while its handler is unbuilt, the site files the root URLs are
 // answered from, and what the proxy sets beyond its rewrite — a missing User-Agent, the public
 // query, the true host and its own not-found's status.
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 import { SITE_KEYS } from '@engine/config/sites'
@@ -11,6 +11,7 @@ import {
   ENGINE_ROUTES,
   HOST_FREE_PATHS,
   PROXY_MATCHER,
+  UNROUTED_HANDLER,
   PROXY_NOT_FOUND_STATUS,
   PROXY_REQUEST_HEADERS,
   PROXY_USER_AGENT,
@@ -62,14 +63,13 @@ describe('the site files a page links and the root URLs answer from', () => {
 })
 
 describe('what the proxy lets through on any host, and its matcher', () => {
-  it('lets through only the mounted health route and bearer-authenticated machine routes', () => {
+  it('lets through exact paths only: the health route and bearer-authenticated machine routes', () => {
     for (const path of HOST_FREE_PATHS) {
-      const mounted = ENGINE_ROUTES.filter((route) => (route.path + '/').startsWith(path))
-      expect(mounted.length, path).toBeGreaterThan(0)
-      for (const route of mounted) {
-        const machine = route.auth.every((auth) => auth === 'cron' || auth === 'revalidate')
-        expect(route.path === '/api/health' || machine, route.path).toBe(true)
-      }
+      const route = ENGINE_ROUTES.find((each) => each.path === path)
+      expect(route, `${path} is a mounted route, exactly`).toBeDefined()
+      const machine = route?.auth.every((auth) => auth === 'cron' || auth === 'revalidate')
+      expect(path === '/api/health' || machine, path).toBe(true)
+      expect(path.endsWith('/'), `${path} is no prefix`).toBe(false)
     }
   })
 
@@ -112,5 +112,40 @@ describe('the revalidate route invalidate(tags) posts to from outside a request'
     expect(Number.isSafeInteger(REVALIDATE_REQUEST.maxTags)).toBe(true)
     expect(REVALIDATE_REQUEST.maxTags).toBeGreaterThan(0)
     expect(REVALIDATE_REQUEST.maxBodyBytes).toBeGreaterThan(0)
+  })
+})
+
+describe('an /api/x/ path no engine route serves', () => {
+  const MOUNT = fileURLToPath(
+    new URL('../../../../apps/web/src/app/api/x/[...rest]/route.ts', import.meta.url),
+  )
+
+  it('is mounted at api/x/[...rest], every method re-exported from @engine/http/unrouted', () => {
+    const source = readFileSync(MOUNT, 'utf8')
+    expect(UNROUTED_HANDLER.mount).toBe('/api/x/[...rest]')
+    expect(source).toContain(`from '${UNROUTED_HANDLER.specifier}'`)
+    for (const method of UNROUTED_HANDLER.methods)
+      expect(source, method).toMatch(new RegExp(`\\b${method}\\b`))
+    expect(ENGINE_ROUTES.some((route) => route.handler === UNROUTED_HANDLER.specifier)).toBe(false)
+  })
+
+  it('answers a plain, uncached 404 to every method, so Payload never sees it', async () => {
+    const handlers = (await import('../unrouted/route')) as Record<
+      string,
+      (r: Request) => Promise<Response>
+    >
+    for (const method of UNROUTED_HANDLER.methods) {
+      const handler = handlers[method]
+      expect(handler, method).toBeTypeOf('function')
+      const response = await handler!(
+        new Request('http://localhost/api/x/users/me', {
+          method,
+          headers: { origin: 'http://gallery.localhost', cookie: 'payload-token=x' },
+        }),
+      )
+      expect(response.status, method).toBe(404)
+      expect(response.headers.get('cache-control'), method).toBe('no-store')
+      expect(response.headers.get('access-control-allow-origin'), method).toBeNull()
+    }
   })
 })
