@@ -69,6 +69,11 @@ export interface Config {
   collections: {
     users: User
     stores: Store
+    'stock-levels': StockLevel
+    orders: Order
+    'payment-events': PaymentEvent
+    discounts: Discount
+    products: Product
     works: Work
     makers: Maker
     places: Place
@@ -89,6 +94,11 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>
     stores: StoresSelect<false> | StoresSelect<true>
+    'stock-levels': StockLevelsSelect<false> | StockLevelsSelect<true>
+    orders: OrdersSelect<false> | OrdersSelect<true>
+    'payment-events': PaymentEventsSelect<false> | PaymentEventsSelect<true>
+    discounts: DiscountsSelect<false> | DiscountsSelect<true>
+    products: ProductsSelect<false> | ProductsSelect<true>
     works: WorksSelect<false> | WorksSelect<true>
     makers: MakersSelect<false> | MakersSelect<true>
     places: PlacesSelect<false> | PlacesSelect<true>
@@ -190,6 +200,200 @@ export interface Store {
    */
   code: string
   name: string
+  /**
+   * Where buyers know it by, e.g. Ubud or Sanur. Shown on the store list and the tracking page.
+   */
+  area?: string | null
+  address?: string | null
+  /**
+   * Decimal degrees, e.g. -8.5069. Orders are sent from the nearest active store.
+   */
+  lat?: number | null
+  /**
+   * Decimal degrees, e.g. 115.2625.
+   */
+  lng?: number | null
+  /**
+   * The store’s own number, +62… — for staff. Buyers contact the shop’s online number.
+   */
+  whatsapp?: string | null
+  hours?: string | null
+  images?:
+    | {
+        image: number | Media
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Only an active store is sent orders. Needs the address and pin. Switch it off to retire a store — never delete one with stock or orders.
+   */
+  active?: boolean | null
+  /**
+   * Shown on the shop’s Stores page while it is active.
+   */
+  listed?: boolean | null
+  notes?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number
+  /**
+   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
+   */
+  alt: string
+  /**
+   * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
+   */
+  altSource?: ('baseline' | 'cataloguer' | 'ai-draft') | null
+  translationStatus?: ('entered' | 'machine' | 'reviewed') | null
+  caption?: string | null
+  credit?: string | null
+  licence?: string | null
+  /**
+   * What the image is — set at intake, the same as its master’s.
+   */
+  role:
+    | 'recto'
+    | 'verso'
+    | 'detail'
+    | 'raking'
+    | 'transmitted'
+    | 'framed'
+    | 'in-room'
+    | 'scale'
+    | 'flat'
+    | 'lifestyle'
+    | 'packaging'
+    | 'showroom'
+    | 'editorial'
+  /**
+   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
+   */
+  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
+  /**
+   * The capture this image was processed from.
+   */
+  master?: (number | null) | Master
+  /**
+   * Derived from the file: the address its derivatives and tiles are stored under.
+   */
+  assetId?: string | null
+  derivatives?: {
+    status?: ('pending' | 'ready' | 'failed') | null
+    /**
+     * The ladder's version once built (now v1).
+     */
+    version?: string | null
+    blurDataUri?: string | null
+  }
+  iiif?: {
+    status?: ('none' | 'pending' | 'ready' | 'failed') | null
+  }
+  prefix?: string | null
+  _objectKey?: string | null
+  updatedAt: string
+  createdAt: string
+  url?: string | null
+  thumbnailURL?: string | null
+  filename?: string | null
+  mimeType?: string | null
+  filesize?: number | null
+  width?: number | null
+  height?: number | null
+  focalX?: number | null
+  focalY?: number | null
+}
+/**
+ * The private files images are made from: every capture as received. Never shown on the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "masters".
+ */
+export interface Master {
+  id: number
+  kind: 'capture'
+  /**
+   * Where the file is in the private masters bucket. It has no public URL.
+   */
+  storageKey: string
+  /**
+   * The file's SHA-256: checked against what the bucket holds.
+   */
+  checksum: string
+  /**
+   * From the bucket.
+   */
+  byteSize?: number | null
+  contentType?: string | null
+  widthPx?: number | null
+  heightPx?: number | null
+  colourProfile?: string | null
+  work?: (number | null) | Work
+  /**
+   * What the capture is, as the intake judged it.
+   */
+  role?:
+    | (
+        | 'recto'
+        | 'verso'
+        | 'detail'
+        | 'raking'
+        | 'transmitted'
+        | 'framed'
+        | 'in-room'
+        | 'scale'
+        | 'flat'
+        | 'lifestyle'
+        | 'packaging'
+        | 'showroom'
+        | 'editorial'
+        | 'reference'
+      )
+    | null
+  /**
+   * How it was made — declared at intake, never inferred. No default.
+   */
+  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
+  /**
+   * The object's bounding box in the frame's pixels — a sheet's outer edge, margins included.
+   */
+  objectBox?: {
+    x?: number | null
+    y?: number | null
+    width?: number | null
+    height?: number | null
+  }
+  /**
+   * The object's pixels over its real size, from the ruler — never the file's DPI tag.
+   */
+  objectPpi?: number | null
+  captureTier?: ('good' | 'better' | 'best') | null
+  intake?: {
+    batch?: string | null
+    /**
+     * A stock number, a product, "showroom".
+     */
+    reference?: string | null
+    /**
+     * The name it was handed over under.
+     */
+    receivedAs?: string | null
+    verdict?: ('pass' | 'fix-owner' | 'legacy') | null
+    retouching?: ('none' | 'unknown' | 'retouched-legacy') | null
+    notes?:
+      | {
+          note: string
+          id?: string | null
+        }[]
+      | null
+  }
   updatedAt: string
   createdAt: string
 }
@@ -622,167 +826,6 @@ export interface Maker {
   _status?: ('draft' | 'published') | null
 }
 /**
- * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number
-  /**
-   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
-   */
-  alt: string
-  /**
-   * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
-   */
-  altSource?: ('baseline' | 'cataloguer' | 'ai-draft') | null
-  translationStatus?: ('entered' | 'machine' | 'reviewed') | null
-  caption?: string | null
-  credit?: string | null
-  licence?: string | null
-  /**
-   * What the image is — set at intake, the same as its master’s.
-   */
-  role:
-    | 'recto'
-    | 'verso'
-    | 'detail'
-    | 'raking'
-    | 'transmitted'
-    | 'framed'
-    | 'in-room'
-    | 'scale'
-    | 'flat'
-    | 'lifestyle'
-    | 'packaging'
-    | 'showroom'
-    | 'editorial'
-  /**
-   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
-   */
-  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
-  /**
-   * The capture this image was processed from.
-   */
-  master?: (number | null) | Master
-  /**
-   * Derived from the file: the address its derivatives and tiles are stored under.
-   */
-  assetId?: string | null
-  derivatives?: {
-    status?: ('pending' | 'ready' | 'failed') | null
-    /**
-     * The ladder's version once built (now v1).
-     */
-    version?: string | null
-    blurDataUri?: string | null
-  }
-  iiif?: {
-    status?: ('none' | 'pending' | 'ready' | 'failed') | null
-  }
-  prefix?: string | null
-  _objectKey?: string | null
-  updatedAt: string
-  createdAt: string
-  url?: string | null
-  thumbnailURL?: string | null
-  filename?: string | null
-  mimeType?: string | null
-  filesize?: number | null
-  width?: number | null
-  height?: number | null
-  focalX?: number | null
-  focalY?: number | null
-}
-/**
- * The private files images are made from: every capture as received. Never shown on the site.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "masters".
- */
-export interface Master {
-  id: number
-  kind: 'capture'
-  /**
-   * Where the file is in the private masters bucket. It has no public URL.
-   */
-  storageKey: string
-  /**
-   * The file's SHA-256: checked against what the bucket holds.
-   */
-  checksum: string
-  /**
-   * From the bucket.
-   */
-  byteSize?: number | null
-  contentType?: string | null
-  widthPx?: number | null
-  heightPx?: number | null
-  colourProfile?: string | null
-  work?: (number | null) | Work
-  /**
-   * What the capture is, as the intake judged it.
-   */
-  role?:
-    | (
-        | 'recto'
-        | 'verso'
-        | 'detail'
-        | 'raking'
-        | 'transmitted'
-        | 'framed'
-        | 'in-room'
-        | 'scale'
-        | 'flat'
-        | 'lifestyle'
-        | 'packaging'
-        | 'showroom'
-        | 'editorial'
-        | 'reference'
-      )
-    | null
-  /**
-   * How it was made — declared at intake, never inferred. No default.
-   */
-  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
-  /**
-   * The object's bounding box in the frame's pixels — a sheet's outer edge, margins included.
-   */
-  objectBox?: {
-    x?: number | null
-    y?: number | null
-    width?: number | null
-    height?: number | null
-  }
-  /**
-   * The object's pixels over its real size, from the ruler — never the file's DPI tag.
-   */
-  objectPpi?: number | null
-  captureTier?: ('good' | 'better' | 'best') | null
-  intake?: {
-    batch?: string | null
-    /**
-     * A stock number, a product, "showroom".
-     */
-    reference?: string | null
-    /**
-     * The name it was handed over under.
-     */
-    receivedAs?: string | null
-    verdict?: ('pass' | 'fix-owner' | 'legacy') | null
-    retouching?: ('none' | 'unknown' | 'retouched-legacy') | null
-    notes?:
-      | {
-          note: string
-          id?: string | null
-        }[]
-      | null
-  }
-  updatedAt: string
-  createdAt: string
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "places".
  */
@@ -927,6 +970,265 @@ export interface Source {
   _status?: ('draft' | 'published') | null
 }
 /**
+ * What each store can still sell. Enter what is on the shelf; units waiting for a driver are taken off for you.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-levels".
+ */
+export interface StockLevel {
+  id: number
+  store: number | Store
+  product: number | Product
+  /**
+   * For a product with variants, the variant this row counts. Empty for a product without.
+   */
+  variantSku?: string | null
+  /**
+   * The shelf count less the units held by orders not yet collected by a driver.
+   */
+  quantity: number
+  /**
+   * Enter what you count on the shelf today, including units packed for an order but not yet collected.
+   */
+  physicalCount?: number | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * What the shop sells. Stock is entered per store under Stock.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number
+  /**
+   * The code the product and stock spreadsheets match on. Also the SKU of a product without variants.
+   */
+  sku: string
+  /**
+   * Required in English, the default language; another language left blank shows the English.
+   */
+  name?: string | null
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  description?: string | null
+  category?: (number | null) | Term
+  images?:
+    | {
+        image: number | Media
+        caption?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Whole rupiah: 95000 for Rp 95.000. The checkout always prices from here, never from the page.
+   */
+  price?: number | null
+  /**
+   * Optional: sizes or colours sold under this product, each with its own SKU. A variant without a price takes the product’s.
+   */
+  variants?:
+    | {
+        sku: string
+        label?: string | null
+        price?: number | null
+        active?: boolean | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * The antique this is made from, if any — linked only while that antique is published.
+   */
+  relatedWork?: (number | null) | Work
+  site: 'shop'
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Orders from the shop. Store staff see their own store’s orders only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number
+  number: number
+  site: 'shop'
+  channel: 'web' | 'replacement'
+  replacementOf?: (number | null) | Order
+  lines: {
+    product: number | Product
+    variantSku?: string | null
+    sku: string
+    name: string
+    variantLabel?: string | null
+    unitPrice: number
+    qty: number
+    lineTotal: number
+    image?: (number | null) | Media
+    id?: string | null
+  }[]
+  contact: {
+    name: string
+    whatsapp: string
+    email: string
+    locale: 'en' | 'id'
+  }
+  delivery: {
+    address: string
+    notes?: string | null
+    lat: number
+    lng: number
+  }
+  giftNote?: string | null
+  store: number | Store
+  storeSnapshot?: {
+    code?: string | null
+    name?: string | null
+    area?: string | null
+  }
+  distanceKm?: number | null
+  totals: {
+    subtotal: number
+    discount: number
+    deliveryFee: number
+    total: number
+  }
+  discount?: {
+    code?: string | null
+    kind?: ('percent' | 'fixed') | null
+    value?: number | null
+  }
+  status:
+    | 'pending_payment'
+    | 'paid'
+    | 'processing'
+    | 'waiting_driver'
+    | 'on_the_way'
+    | 'delivered'
+    | 'cancelled'
+    | 'expired'
+  history?:
+    | {
+        from?:
+          | (
+              | 'pending_payment'
+              | 'paid'
+              | 'processing'
+              | 'waiting_driver'
+              | 'on_the_way'
+              | 'delivered'
+              | 'cancelled'
+              | 'expired'
+            )
+          | null
+        to:
+          | 'pending_payment'
+          | 'paid'
+          | 'processing'
+          | 'waiting_driver'
+          | 'on_the_way'
+          | 'delivered'
+          | 'cancelled'
+          | 'expired'
+        at: string
+        actor: 'user' | 'midtrans' | 'system'
+        by?: (number | null) | User
+        note?: string | null
+        id?: string | null
+      }[]
+    | null
+  payment?: {
+    attempts?:
+      | {
+          midtransOrderId: string
+          snapToken?: string | null
+          createdAt: string
+          state?: string | null
+          id?: string | null
+        }[]
+      | null
+    method?: string | null
+    transactionId?: string | null
+    paidAt?: string | null
+  }
+  driverImage?: {
+    key?: string | null
+    contentType?: string | null
+    width?: number | null
+    height?: number | null
+    uploadedAt?: string | null
+    uploadedBy?: (number | null) | User
+  }
+  trackingTokenHash: string
+  expiresAt?: string | null
+  /**
+   * Store staff: hand the order back with a reason if your store cannot send it.
+   */
+  needsAttention?: {
+    flag?: boolean | null
+    reason?: string | null
+  }
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * What the payment provider reported, in order. A record only: never edited.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-events".
+ */
+export interface PaymentEvent {
+  id: number
+  provider: 'midtrans'
+  dedupeKey: string
+  order?: (number | null) | Order
+  midtransOrderId?: string | null
+  transactionStatus?: string | null
+  fraudStatus?: string | null
+  statusCode?: string | null
+  grossAmount?: number | null
+  source: 'webhook' | 'reconcile' | 'simulate'
+  outcome?: string | null
+  payloadHash?: string | null
+  receivedAt: string
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Codes buyers type at checkout. A discount applies to the items, never the delivery fee.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts".
+ */
+export interface Discount {
+  id: number
+  code: string
+  kind: 'percent' | 'fixed'
+  /**
+   * For a percent code, 1 to 100. For a rupiah code, whole rupiah: 50000 for Rp 50.000.
+   */
+  value: number
+  minSpend?: number | null
+  oncePerBuyer?: boolean | null
+  startsAt?: string | null
+  endsAt?: string | null
+  usageLimit?: number | null
+  usedCount: number
+  active?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -957,6 +1259,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'stores'
         value: number | Store
+      } | null)
+    | ({
+        relationTo: 'stock-levels'
+        value: number | StockLevel
+      } | null)
+    | ({
+        relationTo: 'orders'
+        value: number | Order
+      } | null)
+    | ({
+        relationTo: 'payment-events'
+        value: number | PaymentEvent
+      } | null)
+    | ({
+        relationTo: 'discounts'
+        value: number | Discount
+      } | null)
+    | ({
+        relationTo: 'products'
+        value: number | Product
       } | null)
     | ({
         relationTo: 'works'
@@ -1061,8 +1383,227 @@ export interface UsersSelect<T extends boolean = true> {
 export interface StoresSelect<T extends boolean = true> {
   code?: T
   name?: T
+  area?: T
+  address?: T
+  lat?: T
+  lng?: T
+  whatsapp?: T
+  hours?: T
+  images?:
+    | T
+    | {
+        image?: T
+        id?: T
+      }
+  active?: T
+  listed?: T
+  notes?: T
   updatedAt?: T
   createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stock-levels_select".
+ */
+export interface StockLevelsSelect<T extends boolean = true> {
+  store?: T
+  product?: T
+  variantSku?: T
+  quantity?: T
+  physicalCount?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  number?: T
+  site?: T
+  channel?: T
+  replacementOf?: T
+  lines?:
+    | T
+    | {
+        product?: T
+        variantSku?: T
+        sku?: T
+        name?: T
+        variantLabel?: T
+        unitPrice?: T
+        qty?: T
+        lineTotal?: T
+        image?: T
+        id?: T
+      }
+  contact?:
+    | T
+    | {
+        name?: T
+        whatsapp?: T
+        email?: T
+        locale?: T
+      }
+  delivery?:
+    | T
+    | {
+        address?: T
+        notes?: T
+        lat?: T
+        lng?: T
+      }
+  giftNote?: T
+  store?: T
+  storeSnapshot?:
+    | T
+    | {
+        code?: T
+        name?: T
+        area?: T
+      }
+  distanceKm?: T
+  totals?:
+    | T
+    | {
+        subtotal?: T
+        discount?: T
+        deliveryFee?: T
+        total?: T
+      }
+  discount?:
+    | T
+    | {
+        code?: T
+        kind?: T
+        value?: T
+      }
+  status?: T
+  history?:
+    | T
+    | {
+        from?: T
+        to?: T
+        at?: T
+        actor?: T
+        by?: T
+        note?: T
+        id?: T
+      }
+  payment?:
+    | T
+    | {
+        attempts?:
+          | T
+          | {
+              midtransOrderId?: T
+              snapToken?: T
+              createdAt?: T
+              state?: T
+              id?: T
+            }
+        method?: T
+        transactionId?: T
+        paidAt?: T
+      }
+  driverImage?:
+    | T
+    | {
+        key?: T
+        contentType?: T
+        width?: T
+        height?: T
+        uploadedAt?: T
+        uploadedBy?: T
+      }
+  trackingTokenHash?: T
+  expiresAt?: T
+  needsAttention?:
+    | T
+    | {
+        flag?: T
+        reason?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-events_select".
+ */
+export interface PaymentEventsSelect<T extends boolean = true> {
+  provider?: T
+  dedupeKey?: T
+  order?: T
+  midtransOrderId?: T
+  transactionStatus?: T
+  fraudStatus?: T
+  statusCode?: T
+  grossAmount?: T
+  source?: T
+  outcome?: T
+  payloadHash?: T
+  receivedAt?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts_select".
+ */
+export interface DiscountsSelect<T extends boolean = true> {
+  code?: T
+  kind?: T
+  value?: T
+  minSpend?: T
+  oncePerBuyer?: T
+  startsAt?: T
+  endsAt?: T
+  usageLimit?: T
+  usedCount?: T
+  active?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  sku?: T
+  name?: T
+  slug?: T
+  description?: T
+  category?: T
+  images?:
+    | T
+    | {
+        image?: T
+        caption?: T
+        id?: T
+      }
+  price?: T
+  variants?:
+    | T
+    | {
+        sku?: T
+        label?: T
+        price?: T
+        active?: T
+        id?: T
+      }
+  relatedWork?: T
+  site?: T
+  seo?:
+    | T
+    | {
+        title?: T
+        description?: T
+      }
+  translationStatus?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

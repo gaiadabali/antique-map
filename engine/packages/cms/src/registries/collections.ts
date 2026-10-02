@@ -12,11 +12,16 @@
  */
 import type { CollectionConfig, GlobalConfig } from 'payload'
 
+import { Discounts } from '../collections/discounts'
 import { Makers } from '../collections/makers'
 import { Masters } from '../collections/masters'
 import { Media } from '../collections/media'
+import { Orders } from '../collections/orders'
+import { PaymentEvents } from '../collections/payment-events'
 import { Places } from '../collections/places'
+import { Products } from '../collections/products'
 import { Sources } from '../collections/sources'
+import { StockLevels } from '../collections/stock-levels'
 import { Stores } from '../collections/stores'
 import { Terms } from '../collections/terms'
 import { Users } from '../collections/users'
@@ -26,6 +31,11 @@ import { Works } from '../collections/works'
 const COLLECTIONS: readonly CollectionConfig[] = [
   Users,
   Stores,
+  StockLevels,
+  Orders,
+  PaymentEvents,
+  Discounts,
+  Products,
   Works,
   Makers,
   Places,
