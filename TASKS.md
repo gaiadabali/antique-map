@@ -82,6 +82,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 2·W2 | 2.2 Site replaces brand: host to site, one admin host | senior-be | `feat/2.2-sites` | 2026-10-02 | 2.2.a–d done; fixing the senior-integrator review's must-fix (CORS/CSRF trusted the gallery origin) and two should-fixes (`/api/x/*` fall-through to Payload, boot check vs DEPLOYMENT §8); then merge |
 | 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
 | 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
+| 3·W1 | 3.2 Catalogue collections: makers, places, terms and the antiques | senior-db | `w/3.2` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -331,7 +332,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
   - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
-- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2
+- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — 🔄 3·W1
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{works,makers,places,terms,media,masters}/**`
   - **Read** CONTENT-MODEL.md §3–§5, CARRY-OVER.md §2.5
