@@ -1,7 +1,10 @@
-// 2.2.f — every structural rule TASKS.md's own entry names, over the parsed
-// model (`parse.mjs`). Each rule returns `Finding[]`; `lintFullFile` runs all
-// of them. `--phase/--wave` mode (`wave.mjs`) reuses `allTasks` and the needs
-// resolver but asks a narrower question.
+// 2.2.f, slimmed in 1.3.d — the board's structural rules over the parsed model
+// (`parse.mjs`): unique ids, needs that resolve (and the phase chain and waves
+// they imply), Owns overlap inside a wave, one Check last in every task, the
+// status suffixes, and requirements coverage. Lane codes and per-phase size
+// limits are not linted. Each rule returns `Finding[]`. `--phase/--wave` mode
+// (`wave.mjs`) reuses `allTasks` and the needs resolver but asks a narrower
+// question.
 import { expandNeedsToken } from './needs.mjs'
 import { findWaveConflicts, overlapMessage } from './owns.mjs'
 import { findUncoveredRequirements } from './requirements.mjs'
@@ -206,35 +209,7 @@ export function checkOwnsOverlap(model) {
   return findings
 }
 
-/** At most eight tasks and three waves per phase — a ✂️ task stops counting (TASKS.md rule 7). */
-export function checkPhaseLimits(model) {
-  const findings = []
-  for (const phase of model.phases) {
-    const counted = phase.tasks.filter((t) => !isCut(t))
-    if (counted.length > 8) {
-      findings.push(
-        finding(
-          'phase-limits',
-          `phase ${phase.number} has ${counted.length} tasks, more than 8`,
-          phase.line,
-        ),
-      )
-    }
-    const waves = new Set(counted.map((t) => t.wave).filter(Boolean))
-    if (waves.size > 3) {
-      findings.push(
-        finding(
-          'phase-limits',
-          `phase ${phase.number} has ${waves.size} waves, more than 3`,
-          phase.line,
-        ),
-      )
-    }
-  }
-  return findings
-}
-
-/** Every task's last subtask must be its Check. */
+/** Every task has exactly one Check, and it is the task's last subtask. */
 export function checkEndsInCheck(model, tasks) {
   const findings = []
   for (const task of tasks) {
@@ -243,6 +218,17 @@ export function checkEndsInCheck(model, tasks) {
       findings.push(
         finding('ends-in-check', `${task.id} does not end in a **Check:** subtask`, task.line),
       )
+    }
+    for (const subtask of task.subtasks.slice(0, -1)) {
+      if (subtask.isCheck) {
+        findings.push(
+          finding(
+            'ends-in-check',
+            `${subtask.id} is a **Check:** but not ${task.id}'s last subtask: a task has one Check, last`,
+            subtask.line,
+          ),
+        )
+      }
     }
   }
   return findings
@@ -263,7 +249,6 @@ export const ALL_RULES = [
   checkPhaseNeedsMatchTasks,
   checkNoSameWaveDependency,
   checkOwnsOverlap,
-  checkPhaseLimits,
   checkEndsInCheck,
   checkTaskStatus,
   checkNeedsCut,

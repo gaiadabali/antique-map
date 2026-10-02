@@ -92,36 +92,23 @@ describe('runConfigDrift — the mechanism, proven on a fixture generator (2.2.g
     expect(after.violations).toEqual([])
   })
 
-  it('compares with expected() when given — a brand run against the BRAND-unset run', async () => {
+  it('compares with expected() when given — the committed file read before a rewrite', async () => {
     sandbox = mkdtempSync(join(tmpdir(), 'cd-'))
-    const perBrand = (brandOutput) => ({
-      name: 'snapshot [BRAND=fixture]',
-      committedPath: 'snapshots',
-      regenerate: async () => brandOutput,
+    const inPlace = (output) => ({
+      name: 'importmap.fixture',
+      committedPath: 'importMap.js',
+      regenerate: async () => output,
       expected: async () => '{ "a": 1 }\n',
     })
-    expect((await runConfigDrift(sandbox, [perBrand('{ "a": 1 }\n')])).violations).toEqual([])
-    const shaped = await runConfigDrift(sandbox, [perBrand('{ "a": 2 }\n')])
-    expect(shaped.violations).toEqual([
+    expect((await runConfigDrift(sandbox, [inPlace('{ "a": 1 }\n')])).violations).toEqual([])
+    const drifted = await runConfigDrift(sandbox, [inPlace('{ "a": 2 }\n')])
+    expect(drifted.violations).toEqual([
       {
-        name: 'snapshot [BRAND=fixture]',
-        path: 'snapshots',
+        name: 'importmap.fixture',
+        path: 'importMap.js',
         detail:
-          'first difference at line 1: with BRAND unset "{ \\"a\\": 1 }", regenerated "{ \\"a\\": 2 }"',
+          'first difference at line 1: committed "{ \\"a\\": 1 }", regenerated "{ \\"a\\": 2 }"',
       },
-    ])
-  })
-
-  it('takes a check() generator’s own verdict', async () => {
-    sandbox = mkdtempSync(join(tmpdir(), 'cd-'))
-    const verdict = (ok) => ({
-      name: 'schema',
-      committedPath: 'migrations',
-      check: async () => ({ ok, detail: ok ? 'none' : 'would write ALTER TABLE' }),
-    })
-    expect((await runConfigDrift(sandbox, [verdict(true)])).violations).toEqual([])
-    expect((await runConfigDrift(sandbox, [verdict(false)])).violations).toEqual([
-      { name: 'schema', path: 'migrations', detail: 'would write ALTER TABLE' },
     ])
   })
 
@@ -152,8 +139,8 @@ describe('firstDifference', () => {
     expect(firstDifference('a\n', 'a\nextra\n')).toBe(
       'first difference at line 2: committed "", regenerated "extra"',
     )
-    expect(firstDifference('a\nb', 'a', 'with BRAND unset')).toBe(
-      'first difference at line 2: with BRAND unset "b", regenerated "<end of file>"',
+    expect(firstDifference('a\nb', 'a', 'expected')).toBe(
+      'first difference at line 2: expected "b", regenerated "<end of file>"',
     )
   })
 })
