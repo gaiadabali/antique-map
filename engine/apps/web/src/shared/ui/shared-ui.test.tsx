@@ -18,7 +18,7 @@ import {
   Textarea,
   TextLink,
   Toast,
-} from '../index'
+} from './index'
 
 /**
  * The repo has no jsdom or @testing-library/react installed, so these tests use
@@ -202,7 +202,7 @@ describe('Dialog', () => {
       // SKIP: no DOM in this test environment
       return
     }
-    const { Dialog } = await import('../Dialog')
+    const { Dialog } = await import('./dialog')
     const onClose = vi.fn()
     const container = document.createElement('div')
     document.body.appendChild(container)

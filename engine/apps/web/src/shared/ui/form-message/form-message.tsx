@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import styles from './FormMessage.module.css'
+import styles from './form-message.module.css'
 
 type Props = {
   children: ReactNode

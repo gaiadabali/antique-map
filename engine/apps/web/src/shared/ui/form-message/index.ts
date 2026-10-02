@@ -1,1 +1,1 @@
-export { FormMessage } from './FormMessage'
+export { FormMessage } from './form-message'

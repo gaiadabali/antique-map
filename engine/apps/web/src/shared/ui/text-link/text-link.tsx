@@ -1,6 +1,6 @@
 import type { AnchorHTMLAttributes, ReactNode } from 'react'
 
-import styles from './TextLink.module.css'
+import styles from './text-link.module.css'
 
 type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
   children: ReactNode
