@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 10/33 | 0 | `███░░░░░░░`  30% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 11/33 | 0 | `███░░░░░░░`  33% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 2/18 | 0 | `█░░░░░░░░░`  11% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 3/16 | 0 | `██░░░░░░░░`  19% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **62/200** | **8** | `███░░░░░░░`  31% |
+| **All** | 11 phases | | | **9/49** | **63/200** | **8** | `███░░░░░░░`  32% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -347,7 +347,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
   - [x] 3.2.a `terms` keep four kinds (subject, technique, grade, category); `sources` become plain-text references on a work; places keep historical names, a parent and the cycle guard
   - [x] 3.2.b `works` (admin label **Antiques**) follow CONTENT-MODEL: stock number, status `available|on-hold|sold`, `location` (Singapore or Jakarta), a unique `publicId` (the old site's product id for a migrated work, else a sequence from 100000 — it is part of the item URL), localised text, an owner-only `askingPrice` in USD (Q14) that no public read can select
-  - [ ] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
+  - [x] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
   - [ ] 3.2.d media keep their roles and localised alt text; masters stay private with the presigned PUT and checksum
   - [ ] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
   - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
