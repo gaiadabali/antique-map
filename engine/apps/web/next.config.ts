@@ -1,9 +1,9 @@
 /**
- * One build serves every brand on this storefront (BRANDS.md §2): nothing here may name a
- * brand, read `BRAND`, or bake a brand's value in — the brand is runtime config, read from
- * `BRAND` / `BRAND_ROOT` per process (DEPLOYMENT.md §8). No `NEXT_PUBLIC_*`, no `headers()` CSP
- * (the proxy builds it per request, ARCHITECTURE.md §13), no route segment config anywhere
- * (Cache Components rejects it, ARCHITECTURE.md §9).
+ * The one app's config (ARCHITECTURE.md §4): one build serves both sites, so nothing here may
+ * name a site, read `BRAND`, or bake a site's value in — what a process serves is runtime config
+ * (today `BRAND` / `BRAND_ROOT`; the request's host from TASKS.md 2.2). No `NEXT_PUBLIC_*`, no
+ * `headers()` CSP (the proxy builds it per request, SECURITY.md), no route segment config but the
+ * root layout's `instant = false` (Cache Components rejects the rest, ARCHITECTURE.md §6).
  *
  * The build touches no database (CONVENTIONS.md §12): `output: 'standalone'` is assembled into
  * the deploy artifact by `.github/scripts/assemble-artifact.sh`.

@@ -1,8 +1,8 @@
 {
-  "name": "@engine/app-gallery",
+  "name": "@engine/web",
   "version": "0.0.0",
   "private": true,
-  "description": "The storefront for one-of-one catalogues (BRANDS.md §2): UI, the route tree and the Payload admin mount. A brand chooses it in brand.storefront; its identity arrives from config at runtime, never at build.",
+  "description": "The one Next.js app (ARCHITECTURE.md §4): both sites' UI and route trees, the engine routes and the Payload admin mount. What a site shows arrives at runtime, never at build.",
   "type": "module",
   "scripts": {
     "dev": "next dev",

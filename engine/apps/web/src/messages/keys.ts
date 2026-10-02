@@ -5,7 +5,9 @@
  * maker roles, account sections, enquiry topics, returns (6.3.f), colourings, place roles,
  * directories (6.3.i) — and the form fields' labels (6.3.h), one module per area in `./lexicon/`.
  * Apps own keys; brands own words (BRANDS.md §2): the values are
- * `<brand>/site/copy/<locale>.json`, and how they sound is `docs/design/gallery/voice.md`. A key
+ * `<brand>/site/copy/<locale>.json`, and how they sound is `docs/design/gallery/voice.md` and
+ * `docs/design/emporium/voice.md`. The shop's own area (`./lexicon/shop`) came over from the
+ * emporium app when the two apps became one (TASKS.md 2.1.a); 2.3 moves the lexicon per site. A key
  * whose last segment names a contract code spells it as the code (`order.status.${status}`), a
  * loader’s `MessageVM` reads `message.<code>`, and a form field's label is its C2 `name`. Money,
  * dates, counts and hours are placeholders the page fills: copy never carries a figure of its own.
@@ -23,6 +25,7 @@ import { BAG_AND_CHECKOUT_KEYS } from './lexicon/bag-and-checkout'
 import { PAYMENT_AND_ORDER_KEYS } from './lexicon/payment-and-order'
 import { CONVERSATION_KEYS } from './lexicon/conversations'
 import { FIELD_KEYS } from './lexicon/fields'
+import { SHOP_KEYS } from './lexicon/shop'
 import { WHATSAPP_AND_NOTE_KEYS } from './lexicon/whatsapp-and-notes'
 
 export const LEXICON_MESSAGES = defineMessages({
@@ -34,6 +37,7 @@ export const LEXICON_MESSAGES = defineMessages({
   ...CONVERSATION_KEYS,
   ...FIELD_KEYS,
   ...ACCOUNT_KEYS,
+  ...SHOP_KEYS,
   ...WHATSAPP_AND_NOTE_KEYS,
 })
 
