@@ -119,19 +119,21 @@ describe('trusted origins (CSRF/CORS) and the server URL', () => {
     SHOP_HOSTS: 'old-east-indies.gaiada.com',
   }
 
-  it('list each site’s canonical origin, https, bare, once each — never an alias', () => {
-    expect(trustedOrigins(STAGING)).toEqual([
-      'https://indies-gallery.gaiada.com',
-      'https://old-east-indies.gaiada.com',
-    ])
+  it('list the admin host’s origin alone: never the other site’s, never an alias', () => {
+    expect(trustedOrigins(STAGING)).toEqual(['https://old-east-indies.gaiada.com'])
+    // Same-site under gaiada.com: a Lax staff cookie rides a gallery page's request, so the
+    // gallery's origin must never be one Payload trusts with it (2.2's second review).
+    expect(trustedOrigins(STAGING)).not.toContain('https://indies-gallery.gaiada.com')
+    expect(trustedOrigins(STAGING)).not.toContain('https://www.indies-gallery.gaiada.com')
   })
 
-  it('admit the shop’s origin as well as the gallery’s (2.1 found POST /api/works refused from shop.localhost)', () => {
+  it('follow ADMIN_HOST, and carry the port for a local host', () => {
     const local = { GALLERY_HOSTS: 'gallery.localhost', SHOP_HOSTS: 'shop.localhost', PORT: '4167' }
-    expect(trustedOrigins(local)).toEqual([
+    expect(trustedOrigins(local)).toEqual(['http://shop.localhost:4167'])
+    expect(trustedOrigins({ ...local, ADMIN_HOST: 'gallery.localhost' })).toEqual([
       'http://gallery.localhost:4167',
-      'http://shop.localhost:4167',
     ])
+    expect(trustedOrigins(local, null)).toEqual(trustedOrigins(local))
   })
 
   it('pin serverURL to the admin host: the shop’s canonical host unless ADMIN_HOST names the other', () => {

@@ -5,8 +5,11 @@
  * - `siteOrigin()` — Payload's `serverURL`: the admin host's origin, where `/admin` and the REST
  *   API answer and staff cookies stay; every absolute URL Payload builds (an email's reset link,
  *   say) starts here;
- * - `trustedOrigins()` — Payload's CSRF and CORS lists: each site's canonical origin, so a staff
- *   member's cookie is accepted from either site's pages and nothing else. Payload compares a
+ * - `trustedOrigins()` — Payload's CSRF and CORS lists: the admin host's origin and nothing else.
+ *   A staff cookie authenticates a REST call only from the admin's own pages. Never a site's: on
+ *   staging both sites' hosts are one site under `gaiada.com`, so a `SameSite=Lax` cookie rides a
+ *   request from the gallery's pages, and with the gallery's origin listed any script there could
+ *   read and write as the signed-in staff member (2.2's second review). Payload compares a
  *   request's `Origin` with these exactly, so each is a bare origin — scheme, host and, for a
  *   `*.localhost` host, the process's `PORT`.
  *
@@ -15,7 +18,7 @@
  * config — and the types, import map and migration snapshot made from it — is the same in every
  * environment.
  */
-import { adminOrigin, siteOrigins } from '@engine/config/sites'
+import { adminOrigin } from '@engine/config/sites'
 
 type Env = Readonly<Record<string, string | undefined>>
 
@@ -25,11 +28,11 @@ export function siteOrigin(env: Env): string | undefined {
 }
 
 /**
- * Payload's CSRF and CORS lists: each site's canonical origin, once each.
+ * Payload's CSRF and CORS lists: exactly the admin host's origin, or `[]` while there is none.
  *
- * The second argument is ignored: it is the brand config `payload.config.ts` passed before the
- * sites replaced the brands, accepted until that file (2.4's) stops passing it.
+ * The second argument is ignored: `payload.config.ts` still passes one (`null`).
  */
 export function trustedOrigins(env: Env, _ignored?: unknown): string[] {
-  return [...new Set(siteOrigins(env))]
+  const origin = adminOrigin(env)
+  return origin === null ? [] : [origin]
 }
