@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | 🔄 in progress | 2/5 | 15/20 | 0 | `████████░░`  75% |
-| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/29 | 0 | `░░░░░░░░░░`   0% |
+| **3** The CMS and its data | Build | 2 | · not started | 0/7 | 0/32 | 0 | `░░░░░░░░░░`   0% |
 | **4** Early UI from the design team | Build | 2 | · not started | 0/3 | 0/14 | 0 | `░░░░░░░░░░`   0% |
 | **5** Gallery site | Gallery | 3, 4 | · not started | 0/5 | 0/20 | 0 | `░░░░░░░░░░`   0% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | · not started | 0/5 | 0/18 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | · not started | 0/4 | 0/16 | 0 | `░░░░░░░░░░`   0% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **6/49** | **35/196** | **8** | `██░░░░░░░░`  18% |
+| **All** | 11 phases | | | **6/49** | **35/199** | **8** | `██░░░░░░░░`  18% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -338,7 +338,8 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.2.b `works` (admin label **Antiques**) follow CONTENT-MODEL: stock number, status `available|on-hold|sold`, `location` (Singapore or Jakarta), a unique `publicId` (the old site's product id for a migrated work, else a sequence from 100000 — it is part of the item URL), localised text, an owner-only `askingPrice` in USD (Q14) that no public read can select
   - [ ] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
   - [ ] 3.2.d media keep their roles and localised alt text; masters stay private with the presigned PUT and checksum
-  - [ ] 3.2.e **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
+  - [ ] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
+  - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
 - [ ] **3.3 Shop collections: products, stores and stock** · needs: phase 2
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
@@ -348,7 +349,8 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.3.a `products`: SKU, localised name and description, category term, images, price in integer rupiah, variants as an array field, optional `relatedWork`, a `site` of `shop`
   - [ ] 3.3.b `stores` (code, name, address, `lat`/`lng`, WhatsApp, hours, active, public flag) and `stock-levels` unique on store, product and variant SKU with a non-negative `quantity` check — `quantity` is the physical count minus units held by orders from `pending_payment` to `waiting_driver`, so a recount cannot oversell held units (DATA.md §3)
   - [ ] 3.3.c `orders` (guest contact, delivery address with pin, assigned store, status and history, driver image, payment state, hashed tracking token, the amounts it was priced with), `payment-events` (append-only, unique dedupe key) and `discounts` (the welcome code) — schema and access only; behaviour is phases 6–7
-  - [ ] 3.3.d **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
+  - [ ] 3.3.d from the phase 2 reviews: refuse deleting a store that staff still reference (a hook plus a `role <> 'store' OR store_id IS NOT NULL` check), and restore a schema-constraint seam for the stock checks (2.4 removed `afterSchemaInit`; CONVENTIONS §13)
+  - [ ] 3.3.e **Check:** db tests prove: a duplicate store/product/variant stock row is refused; a negative quantity is refused by the database; an order cannot exist without a store or a priced total; `payment-events` refuses an update and a delete.
 
 - [ ] **3.4 Leads, partners, chats, events, settings and pages** · needs: phase 2
   - **Lane** CMS · **Agent** senior-be · **Wave** W1
@@ -368,7 +370,8 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.5.a generate the wave's migration once, in a clean worktree on merged `main`; regenerate `payload-types.ts` and `importMap.js`; add to the initial set only if the reset is not yet released
   - [ ] 3.5.b enforce `owner`, `editor` and `store` in collection and field access with `overrideAccess:false` helpers: editors manage catalogue, content and orders; leads, partners, discounts, settings and `askingPrice` are owner-only; `store` users get a `Where` rule on their store's orders and stock
   - [ ] 3.5.c an order status can only move forward for a store user; `ValidationError` messages stay plain on every path (the 8.6 finding)
-  - [ ] 3.5.d **Check:** db tests prove: a store user cannot read, update or list another store's order or stock (by id and by query); an editor cannot read a lead; an anonymous request reads only published, projected fields; the last owner cannot be removed.
+  - [ ] 3.5.d from the phase 2 reviews: `payload-locked-documents` gets owner/editor-only access (today any signed-in user, store users included, can list and delete locks across collections); role and store changes are recorded (SECURITY R7); REST tests prove a store user and an editor cannot change their own `role` or `store`
+  - [ ] 3.5.e **Check:** db tests prove: a store user cannot read, update or list another store's order or stock (by id and by query); an editor cannot read a lead; an anonymous request reads only published, projected fields; the last owner cannot be removed.
 
 - [ ] **3.6 The admin experience: both languages, plain errors, a dashboard shell** · needs: 3.2, 3.3, 3.4
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
