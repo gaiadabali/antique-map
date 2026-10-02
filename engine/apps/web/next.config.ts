@@ -30,6 +30,13 @@ const nextConfig: NextConfig = {
     '@engine/i18n',
     '@engine/view-models',
   ],
+  // One `payload` module per process (TASKS.md 8.6, carried here by 2.1). Bundled, it is compiled
+  // once for the admin's pages and again for the route handlers (Next's RSC and route layers),
+  // while `getPayload()` shares one instance through a global — so whichever layer made the
+  // instance made its errors, and the other layer's `formatErrors` (`instanceof ValidationError`)
+  // dropped a refusal's field reasons from every REST answer. Loaded by Node, as `withPayload`
+  // already does under `next dev`, every importer shares one copy. No storefront route reaches it.
+  serverExternalPackages: ['payload'],
   // Every request renders in full at request time, never from a prerendered shell resumed under
   // the build's 200: Next 16.3 serves a Cache Components route's shell — even an empty one — with
   // the status it had at build, so a page's `notFound()` or `permanentRedirect()` could only reach
