@@ -43,9 +43,15 @@ export const placesField: ArrayField = {
   name: 'places',
   type: 'array',
   maxRows: 1 + MAX_SECONDARY_PLACES,
-  labels: { singular: 'Place', plural: 'Places' },
+  labels: {
+    singular: { en: 'Place', id: 'Tempat' },
+    plural: { en: 'Places', id: 'Tempat' },
+  },
   admin: {
-    description: `One primary place, and up to ${MAX_SECONDARY_PLACES} more as tags.`,
+    description: {
+      en: `One primary place, and up to ${MAX_SECONDARY_PLACES} more as tags.`,
+      id: `Satu tempat utama, dan hingga ${MAX_SECONDARY_PLACES} lagi sebagai tag.`,
+    },
   },
   fields: [
     {
@@ -68,10 +74,15 @@ export const placesField: ArrayField = {
 export const imagesField: ArrayField = {
   name: 'images',
   type: 'array',
-  labels: { singular: 'Image', plural: 'Images' },
+  labels: {
+    singular: { en: 'Image', id: 'Gambar' },
+    plural: { en: 'Images', id: 'Gambar' },
+  },
   admin: {
-    description:
-      'Each image’s role — recto, verso, detail … — is the image’s own. The page leads with the first photographed recto; nothing on a work is AI-generated.',
+    description: {
+      en: 'Each image’s role — recto, verso, detail … — is the image’s own. The page leads with the first photographed recto; nothing on a work is AI-generated.',
+      id: 'Peran setiap gambar — recto, verso, detail … — adalah milik gambar itu sendiri. Halaman memulai dengan recto pertama yang difoto; tidak ada gambar pada karya yang dibuat AI.',
+    },
   },
   fields: [
     { name: 'media', type: 'upload', relationTo: 'media', required: true },
@@ -87,15 +98,25 @@ export const OBJECT_FIELDS: Field[] = [
     relationTo: 'terms',
     hasMany: true,
     filterOptions: subjects,
-    admin: { description: 'Wayang, Batik, Temples, Spices, VOC, Costume …' },
+    admin: {
+      description: {
+        en: 'Wayang, Batik, Temples, Spices, VOC, Costume …',
+        id: 'Wayang, Batik, Candi, Rempah, VOC, Pakaian …',
+      },
+    },
   },
   {
     name: 'references',
     type: 'array',
-    labels: { singular: 'Reference', plural: 'References' },
+    labels: {
+      singular: { en: 'Reference', id: 'Referensi' },
+      plural: { en: 'References', id: 'Referensi' },
+    },
     admin: {
-      description:
-        'Text, as catalogued: "Tooley (Australia) 1268", Koeman, Parry numbers — the bibliography in the catalogue’s own words.',
+      description: {
+        en: 'Text, as catalogued: "Tooley (Australia) 1268", Koeman, Parry numbers — the bibliography in the catalogue’s own words.',
+        id: 'Teks sebagaimana dikatalogkan: "Tooley (Australia) 1268", nomor Koeman, Parry — bibliografi dengan kata-kata katalognya sendiri.',
+      },
     },
     fields: [
       {
@@ -111,8 +132,16 @@ export const OBJECT_FIELDS: Field[] = [
   {
     name: 'provenance',
     type: 'array',
-    labels: { singular: 'Former owner', plural: 'Provenance' },
-    admin: { description: 'Who held it before, and when.' },
+    labels: {
+      singular: { en: 'Former owner', id: 'Pemilik sebelumnya' },
+      plural: { en: 'Provenance', id: 'Asal-usul' },
+    },
+    admin: {
+      description: {
+        en: 'Who held it before, and when.',
+        id: 'Siapa yang memilikinya sebelumnya, dan kapan.',
+      },
+    },
     fields: [
       {
         type: 'row',
@@ -129,10 +158,15 @@ export const OBJECT_FIELDS: Field[] = [
     type: 'relationship',
     relationTo: 'works',
     hasMany: true,
-    label: 'Other examples',
+    label: { en: 'Other examples', id: 'Contoh lain' },
     filterOptions: ({ id }) =>
       id === undefined || id === null ? true : { id: { not_equals: id } },
-    admin: { description: 'Other copies of this map: offered when this one has sold.' },
+    admin: {
+      description: {
+        en: 'Other copies of this map: offered when this one has sold.',
+        id: 'Salinan lain dari peta ini: ditawarkan ketika yang ini terjual.',
+      },
+    },
   },
   {
     name: 'condition',
@@ -143,13 +177,21 @@ export const OBJECT_FIELDS: Field[] = [
         type: 'relationship',
         relationTo: 'terms',
         filterOptions: grades,
-        admin: { description: 'From the gallery’s published scale (Terms → Condition grade).' },
+        admin: {
+          description: {
+            en: 'From the gallery’s published scale (Terms → Condition grade).',
+            id: 'Dari skala yang diterbitkan galeri (Terms → Condition grade).',
+          },
+        },
       },
       { name: 'notes', type: 'textarea', localized: true, maxLength: 2000 },
       {
         name: 'defects',
         type: 'array',
-        labels: { singular: 'Defect', plural: 'Defects' },
+        labels: {
+          singular: { en: 'Defect', id: 'Cacat' },
+          plural: { en: 'Defects', id: 'Cacat' },
+        },
         fields: [{ name: 'defect', type: 'text', localized: true, required: true, maxLength: 200 }],
       },
       { name: 'restoration', type: 'textarea', localized: true, maxLength: 1000 },
@@ -163,7 +205,10 @@ export const OBJECT_FIELDS: Field[] = [
     access: STAFF_ONLY_ACCESS,
     admin: {
       position: 'sidebar',
-      description: 'The recto’s capture its reproductions are made from.',
+      description: {
+        en: 'The recto’s capture its reproductions are made from.',
+        id: 'Hasil tangkapan recto yang menjadi dasar reproduksinya.',
+      },
     },
   },
 ]

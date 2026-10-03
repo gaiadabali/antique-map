@@ -33,8 +33,9 @@ describe('shared validators', () => {
     expect(validate('Koeman 1967', { data: { _status: 'published' } } as never)).toBe(true)
   })
 
-  it('say in the admin where the text is required', () => {
-    expect(IN_DEFAULT_LOCALE_NOTE).toMatch(/Required in English/)
+  it('say in the admin where the text is required, in both languages', () => {
+    expect(IN_DEFAULT_LOCALE_NOTE.en).toMatch(/Required in English/)
+    expect(IN_DEFAULT_LOCALE_NOTE.id).toMatch(/Wajib dalam bahasa Inggris/)
   })
 
   it('take only absolute web addresses', () => {

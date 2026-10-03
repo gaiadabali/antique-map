@@ -6,6 +6,8 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { DRAFTED_ACCESS } from '../../access/published'
 import { notForStoreStaff } from '../../access/store-staff'
 import { hasRole } from '../users/roles'
@@ -36,6 +38,8 @@ export const Pages: CollectionConfig = {
     plural: { en: 'Pages', id: 'Halaman' },
   },
   admin: {
+    group: ADMIN_GROUPS.content,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'title',
     defaultColumns: ['site', 'kind', 'slug', '_status', 'updatedAt'],
     description: {

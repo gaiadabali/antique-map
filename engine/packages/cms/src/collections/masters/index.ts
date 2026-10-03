@@ -22,6 +22,8 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { freezeAfterCreate, mayCorrectIntake } from '../media/frozen'
 import { MASTERS_ACCESS } from './access'
 import { MASTER_FIELDS } from './fields'
@@ -36,12 +38,19 @@ import { uploadUrlEndpoint } from './upload-url'
 
 export const Masters: CollectionConfig = {
   slug: 'masters',
-  labels: { singular: 'Master', plural: 'Masters' },
+  labels: {
+    singular: { en: 'Master', id: 'Master' },
+    plural: { en: 'Masters', id: 'Master' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'storageKey',
     defaultColumns: ['storageKey', 'kind', 'role', 'work', 'updatedAt'],
-    description:
-      'The private files images are made from: every capture as received. Never shown on the site.',
+    description: {
+      en: 'The private files images are made from: every capture as received. Never shown on the site.',
+      id: 'Berkas pribadi tempat gambar dibuat: setiap tangkapan sebagaimana diterima. Tidak pernah ditampilkan di situs.',
+    },
   },
   access: MASTERS_ACCESS,
   endpoints: [uploadUrlEndpoint()],

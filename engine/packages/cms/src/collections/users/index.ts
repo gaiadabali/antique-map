@@ -17,6 +17,8 @@
  */
 import type { Access, CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { isStaffUser, type USERS_SLUG } from '../../access/roles'
 import { accessChangesField, recordAccessChanges } from './access-changes'
 import {
@@ -49,6 +51,8 @@ export const Users: CollectionConfig = {
     plural: { en: 'Staff', id: 'Staf' },
   },
   admin: {
+    group: ADMIN_GROUPS.settings,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'email',
     defaultColumns: ['name', 'email', 'role', 'store'],
     description: {

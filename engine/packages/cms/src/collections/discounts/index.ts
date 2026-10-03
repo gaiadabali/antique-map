@@ -15,6 +15,8 @@
  */
 import type { CollectionConfig, FieldAccess, FieldHook } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
 import { wholeNumber } from '../products/money'
 import { isOwner } from '../users/roles'
@@ -41,6 +43,8 @@ export const Discounts: CollectionConfig = {
     plural: { en: 'Discount codes', id: 'Kode diskon' },
   },
   admin: {
+    group: ADMIN_GROUPS.shop,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'code',
     defaultColumns: ['code', 'kind', 'value', 'active', 'usedCount'],
     description: {

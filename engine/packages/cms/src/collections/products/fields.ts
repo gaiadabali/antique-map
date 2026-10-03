@@ -176,7 +176,7 @@ export const PRODUCT_FIELDS: Field[] = [
     name: 'site',
     type: 'select',
     label: { en: 'Site', id: 'Situs' },
-    options: [{ value: 'shop', label: 'Old East Indies' }],
+    options: [{ value: 'shop', label: { en: 'Old East Indies', id: 'Old East Indies' } }],
     required: true,
     defaultValue: 'shop',
     admin: { position: 'sidebar', readOnly: true },
