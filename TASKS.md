@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 3/7 | 24/33 | 0 | `███████░░░`  73% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 2/20 | 0 | `█░░░░░░░░░`  10% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **14/49** | **98/200** | **8** | `█████░░░░░`  49% |
+| **All** | 11 phases | | | **14/49** | **99/200** | **8** | `█████░░░░░`  50% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -451,7 +451,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`, `engine/apps/web/src/server/gallery/**`
   - **Read** EXPERIENCE-GALLERY.md §Browse and §Search, ARCHITECTURE.md §Search
   - _Requirements: 3.1_
-  - [ ] 5.1.a loaders (published only, projected, no price field) for the listing and the facets maker, place (including historical names), period, type and subject, with counts
+  - [x] 5.1.a loaders (published only, projected, no price field) for the listing and the facets maker, place (including historical names), period, type and subject, with counts
   - [ ] 5.1.b the browse page with facet chips, sort and pagination, usable at 390 px
   - [ ] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [ ] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
