@@ -89,7 +89,6 @@ load_site() {
   S_APP=web
   IFS=: read -r S_USER S_PORT S_DB S_ROLE <<<"$SITE_SPEC"
   S_DOMAIN="${SHOP_HOSTS%%,*}"
-  S_GALLERY_DOMAIN="${GALLERY_HOSTS%%,*}"
   S_HOME="/home/$S_USER"
   S_ENV="$S_HOME/shared/.env"
   S_CURRENT="$S_HOME/current"

@@ -194,11 +194,16 @@ vhost_check() {
     grep -vxF -e "$conf" || true)"
   [ -z "$others" ] || fail "port $S_PORT is already an upstream of another vhost: $others"
   # Another site's vhost answering one of our hosts would win nginx's choice for it.
-  while read -r h; do
-    others="$(grep -lE "^[[:space:]]*server_name[[:space:]]([^;]*[[:space:]])?${h//./\\.}([[:space:]]|;)" \
-      "$VHOST_DIR"/* 2>/dev/null | grep -vxF -e "$conf" || true)"
-    [ -z "$others" ] || fail "$h is a server_name of another vhost: $others (retire the old site first: docs/ops/helios-staging.md)"
-  done < <(all_hosts)
+  local f
+  for f in "$VHOST_DIR"/*; do
+    [ -f "$f" ] && [ "$f" != "$conf" ] || continue
+    names="$(vhost_server_names "$f")"
+    while read -r h; do
+      if grep -qxF "$h" <<<"$names"; then
+        fail "$h is a server_name of another vhost: $f (retire the old site first: docs/ops/helios-staging.md)"
+      fi
+    done < <(all_hosts)
+  done
 }
 
 # ensure_cloudpanel_site — only with --create-sites, only when the site user is missing. This

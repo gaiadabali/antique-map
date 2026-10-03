@@ -61,10 +61,7 @@ printf '#!/bin/sh\nexit 1\n' >/etc/indies/backup-offbox
 /usr/local/sbin/indies-db-backup 2>/tmp/offbox.err && die "a failing off-box copy passed"
 grep -q 'the off-box copy of .* failed' /tmp/offbox.err || die "the off-box failure not said"
 rm /etc/indies/backup-offbox
-printf 'ig_db\nindies_db\n' >/etc/indies/backup-databases
-run --env staging >"$(log backup-list)" 2>&1 && [ "$(changes "$(log backup-list)")" = 1 ] &&
-  [ "$(cat /etc/indies/backup-databases)" = indies_db ] || die "the stale backup list was not rewritten"
-pass "indies-db-backup: indies_db alone, pg_restore reads it, 600 in a 700 root dir; the off-box hook gets each dump and its failure fails the run; a stale list rewritten"
+pass "indies-db-backup: indies_db alone, pg_restore reads it, 600 in a 700 root dir; the off-box hook gets each dump and its failure fails the run"
 
 # 12. Drift the script must repair, and refusals that change nothing.
 crontab -u "$U" -r
@@ -77,6 +74,9 @@ rm "/home/$U/.pm2/dump.pm2"
 run --env staging >"$(log repair1)" 2>&1 || die "dump repair run failed"
 grep -q "DO     pm2 save, as $U" "$(log repair1)" && [ "$(changes "$(log repair1)")" = 1 ] || { grep -E "DO |changes|WARN|ERROR" "$(log repair1)"; die "dump.pm2 not re-saved"; }
 run --env staging >"$(log repair2)" 2>&1 && [ "$(changes "$(log repair2)")" = 0 ] || die "not idempotent after repair"
+printf 'ig_db\nindies_db\n' >/etc/indies/backup-databases
+run --env staging >"$(log backup-list)" 2>&1 && [ "$(changes "$(log backup-list)")" = 1 ] &&
+  [ "$(cat /etc/indies/backup-databases)" = indies_db ] || die "a stale backup list (the two-app databases) was not rewritten"
 before="$(snapshot)"
 runuser -u nobody -- python3 -m http.server 4036 --bind 0.0.0.0 >/dev/null 2>&1 &
 SQUAT=$!
@@ -111,7 +111,7 @@ grep -q 'name the one to use with --pg-port' "$(log clusters)" || die "cluster c
 unchanged "$before" "the cluster refusal changed the host"
 run --env staging --pg-port 5432 >"$(log pgport)" 2>&1 && [ "$(changes "$(log pgport)")" = 0 ] || die "--pg-port 5432 run"
 pg_dropcluster 18 second
-pass "lost crontab block and dump.pm2 repaired, then 0; taken port, disk floor, LOCAL_PRODUCTION_BUILD, an unmarked role, the two-app options, production without its specs or suffix or on a staging host, a host twice, two clusters — each refused, host unchanged"
+pass "lost crontab block, dump.pm2 and a stale backup list repaired, then 0; taken port, disk floor, LOCAL_PRODUCTION_BUILD, an unmarked role, the two-app options, production without its specs or suffix or on a staging host, a host twice, two clusters — each refused, host unchanged"
 
 # 13. --verify-restart: each of this script's services comes back after its restart; it never
 #     runs in a dry run; a unit that would not start at boot fails it.
