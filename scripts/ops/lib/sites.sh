@@ -1,21 +1,21 @@
 # shellcheck shell=bash
-# Who serves which brand, and where (DEPLOYMENT.md §2). A site is one storefront app, `gallery`
-# or `emporium`, and its spec is USER:PORT:DATABASE:ROLE:DOMAIN.
+# Who serves the platform, and where (DEPLOYMENT.md §2). One app serves both sites, chosen by
+# the request's Host: one CloudPanel site, one site user and pm2 process, one port, one database
+# and role. The site's spec is USER:PORT:DATABASE:ROLE; its hostnames are two comma-separated
+# lists, the first of each canonical, exactly as the app reads GALLERY_HOSTS and SHOP_HOSTS (§8).
+# The CloudPanel site is the shop's canonical host, which is also ADMIN_HOST and the host of
+# MEDIA_PUBLIC_URL (/_media/); its nginx vhost names every host in server_name and passes Host.
 #
-# Staging is DEPLOYMENT.md §2's users, ports and databases on the host names the owner chose on
-# 2026-10-01: indies-gallery.gaiada.com and old-east-indies.gaiada.com (the first run's ig. and
-# oei. sites go with --replace-site, replace.sh). Production is new site users, databases and
-# ports at cutover (§1), which no doc names yet, so a production run is refused until both specs
-# are passed explicitly (--gallery, --emporium) together with a bucket suffix, so production's
-# buckets can never be staging's.
+# Staging is §2's site on the host names the owner chose on 2026-10-01. Production is a new site
+# user, database, port and hostnames at cutover (§1), which no doc names yet, so a production run
+# is refused until the spec and both host lists are passed explicitly (--site, --shop-hosts,
+# --gallery-hosts) together with a bucket suffix, so production's buckets can never be staging's.
 
-declare -A SPEC=()
-declare -A OVERRIDE=()
-declare -A REPLACE_OF=() # app -> the old CloudPanel domain --replace-site removes (replace.sh)
 ENVIRONMENT=''
 BUCKET_SUFFIX=''
-ONLY=''
-APPS=(gallery emporium)
+SITE_SPEC=''
+SHOP_HOSTS=''
+GALLERY_HOSTS=''
 
 # Shared services on this host (all loopback; every port verified free at run time).
 RUSTFS_PORT=4032
@@ -23,110 +23,81 @@ RUSTFS_CONSOLE_PORT=4033
 MAILPIT_SMTP_PORT=4034
 MAILPIT_UI_PORT=4035
 
-brand_of() {
-  case "$1" in
-    gallery) printf 'indies-gallery' ;;
-    emporium) printf 'old-east-indies' ;;
-  esac
-}
-label_of() {
-  case "$1" in
-    gallery) printf 'Indies Gallery' ;;
-    emporium) printf 'Old East Indies' ;;
-  esac
-}
-sister_of() {
-  case "$1" in
-    gallery) printf 'emporium' ;;
-    emporium) printf 'gallery' ;;
-  esac
-}
-media_bucket_of() {
-  case "$1" in
-    gallery) printf 'ig-media%s' "$BUCKET_SUFFIX" ;;
-    emporium) printf 'oei-media%s' "$BUCKET_SUFFIX" ;;
-  esac
-}
+media_bucket() { printf 'indies-media%s' "$BUCKET_SUFFIX"; }
 masters_bucket() { printf 'archive-masters%s' "$BUCKET_SUFFIX"; }
+
+DOMAIN_RE='^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$'
 
 set_profile() {
   case "$ENVIRONMENT" in
     staging)
-      SPEC[gallery]='uig:4030:ig_db:ig:indies-gallery.gaiada.com'
-      SPEC[emporium]='uoei:4031:oei_db:oei:old-east-indies.gaiada.com'
+      [ -n "$SITE_SPEC" ] || SITE_SPEC='uindies:4030:indies_db:indies'
+      [ -n "$SHOP_HOSTS" ] || SHOP_HOSTS='old-east-indies.gaiada.com'
+      [ -n "$GALLERY_HOSTS" ] || GALLERY_HOSTS='indies-gallery.gaiada.com'
       ;;
     production)
-      if [ -z "${OVERRIDE[gallery]:-}" ] || [ -z "${OVERRIDE[emporium]:-}" ]; then
-        die "production needs --gallery and --emporium USER:PORT:DATABASE:ROLE:DOMAIN: its site users, databases and ports are new at cutover (DEPLOYMENT.md §1) and no doc names them yet"
+      if [ -z "$SITE_SPEC" ] || [ -z "$SHOP_HOSTS" ] || [ -z "$GALLERY_HOSTS" ]; then
+        die "production needs --site USER:PORT:DATABASE:ROLE, --shop-hosts and --gallery-hosts: its site user, database, port and hostnames are new at cutover (DEPLOYMENT.md §1) and no doc names them yet"
       fi
       [ -n "$BUCKET_SUFFIX" ] ||
         die "production needs --bucket-suffix (e.g. -live), so its buckets are never staging's"
       ;;
     *) die "--env staging|production is required" ;;
   esac
-  local app
-  for app in "${APPS[@]}"; do
-    if [ -n "${OVERRIDE[$app]:-}" ]; then SPEC[$app]="${OVERRIDE[$app]}"; fi
-    validate_spec "$app"
-  done
-  distinct_specs
+  validate_spec
+  validate_hosts
   [[ "$BUCKET_SUFFIX" =~ ^(-[a-z0-9]{1,16})?$ ]] || die "--bucket-suffix is '-' then 1-16 of a-z0-9"
-  case "$ONLY" in '' | gallery | emporium) ;; *) die "--only gallery|emporium" ;; esac
 }
 
 validate_spec() {
-  local app="$1" user port db role domain rest
-  IFS=: read -r user port db role domain rest <<<"${SPEC[$app]}"
-  [ -z "$rest" ] || die "$app: the spec has more than five fields"
-  [[ "$user" =~ ^[a-z][a-z0-9-]{1,30}$ ]] || die "$app: site user '$user' is not a Linux user name"
+  local user port db role rest
+  IFS=: read -r user port db role rest <<<"$SITE_SPEC"
+  [ -z "$rest" ] || die "--site: USER:PORT:DATABASE:ROLE, four fields (the hostnames are --shop-hosts and --gallery-hosts)"
+  [[ "$user" =~ ^[a-z][a-z0-9-]{1,30}$ ]] || die "site user '$user' is not a Linux user name"
   if ! [[ "$port" =~ ^[0-9]{4,5}$ ]] || [ "$port" -lt 1024 ] || [ "$port" -gt 65535 ]; then
-    die "$app: port '$port' is not 1024-65535"
+    die "port '$port' is not 1024-65535"
   fi
-  [[ "$db" =~ ^[a-z_][a-z0-9_]{1,62}$ ]] || die "$app: database '$db' is not a plain identifier"
-  [[ "$role" =~ ^[a-z_][a-z0-9_]{1,62}$ ]] || die "$app: role '$role' is not a plain identifier"
-  [[ "$domain" =~ ^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$ ]] || die "$app: '$domain' is not a domain"
-  if [ "$ENVIRONMENT" = production ] && [[ "$domain" == *.gaiada.com ]]; then
-    die "$app: $domain is a staging host name; production serves the brand's own domain"
-  fi
+  [[ "$db" =~ ^[a-z_][a-z0-9_]{1,62}$ ]] || die "database '$db' is not a plain identifier"
+  [[ "$role" =~ ^[a-z_][a-z0-9_]{1,62}$ ]] || die "role '$role' is not a plain identifier"
+  case "$port" in "$RUSTFS_PORT" | "$RUSTFS_CONSOLE_PORT" | "$MAILPIT_SMTP_PORT" | "$MAILPIT_UI_PORT")
+    die "app port $port is also a service port (RustFS $RUSTFS_PORT/$RUSTFS_CONSOLE_PORT, Mailpit $MAILPIT_SMTP_PORT/$MAILPIT_UI_PORT)" ;;
+  esac
 }
 
-distinct_specs() {
-  local a b i
-  IFS=: read -r -a a <<<"${SPEC[gallery]}"
-  IFS=: read -r -a b <<<"${SPEC[emporium]}"
-  for i in 0 1 2 3 4; do
-    [ "${a[$i]}" != "${b[$i]}" ] || die "gallery and emporium share '${a[$i]}': one of each per brand"
+# validate_hosts — each list holds plain domains, none twice, and no host is on both lists.
+validate_hosts() {
+  local h seen=' ' list
+  [[ "$SHOP_HOSTS" =~ ^[a-z0-9.-]+(,[a-z0-9.-]+)*$ ]] && [[ "$GALLERY_HOSTS" =~ ^[a-z0-9.-]+(,[a-z0-9.-]+)*$ ]] ||
+    die "--shop-hosts and --gallery-hosts are each one or more hosts, comma-separated, nothing else"
+  IFS=, read -r -a list <<<"$SHOP_HOSTS,$GALLERY_HOSTS"
+  for h in "${list[@]}"; do
+    [[ "$h" =~ $DOMAIN_RE ]] || die "'$h' is not a domain (--shop-hosts, --gallery-hosts: no scheme or port)"
+    case "$seen" in *" $h "*) die "$h is named twice: a host serves one site" ;; esac
+    seen="$seen$h "
+    if [ "$ENVIRONMENT" = production ] && [[ "$h" == *.gaiada.com ]]; then
+      die "$h is a staging host name; production serves the sites' own domains"
+    fi
   done
-  for i in "${a[1]}" "${b[1]}"; do
-    case "$i" in "$RUSTFS_PORT" | "$RUSTFS_CONSOLE_PORT" | "$MAILPIT_SMTP_PORT" | "$MAILPIT_UI_PORT")
-      die "app port $i is also a service port (RustFS $RUSTFS_PORT/$RUSTFS_CONSOLE_PORT, Mailpit $MAILPIT_SMTP_PORT/$MAILPIT_UI_PORT)" ;;
-    esac
-  done
 }
 
-# selected_apps — the apps this run provisions (--only narrows it).
-selected_apps() {
-  if [ -n "$ONLY" ]; then printf '%s\n' "$ONLY"; else printf '%s\n' "${APPS[@]}"; fi
-}
+# all_hosts — every hostname the vhost serves, one per line: the shop's, then the gallery's.
+all_hosts() { tr ',' '\n' <<<"$SHOP_HOSTS,$GALLERY_HOSTS"; }
 
-# load_site APP — sets the S_* globals every per-site step reads.
+# load_site — sets the S_* globals every per-site step reads (there is one site).
 load_site() {
-  S_APP="$1"
-  IFS=: read -r S_USER S_PORT S_DB S_ROLE S_DOMAIN <<<"${SPEC[$1]}"
-  S_BRAND="$(brand_of "$1")"
-  S_LABEL="$(label_of "$1")"
+  S_APP=web
+  IFS=: read -r S_USER S_PORT S_DB S_ROLE <<<"$SITE_SPEC"
+  S_DOMAIN="${SHOP_HOSTS%%,*}"
+  S_GALLERY_DOMAIN="${GALLERY_HOSTS%%,*}"
   S_HOME="/home/$S_USER"
   S_ENV="$S_HOME/shared/.env"
   S_CURRENT="$S_HOME/current"
   S_SITE_URL="https://$S_DOMAIN"
+  S_MEDIA_PUBLIC_URL="$S_SITE_URL/_media"
   S_REVALIDATE_ORIGIN="http://127.0.0.1:$S_PORT"
-  S_BRAND_ROOT="$S_CURRENT/brand"
-  S_SERVER_JS="$S_CURRENT/engine/apps/$1/server.js"
-  S_MEDIA_BUCKET="$(media_bucket_of "$1")"
-  S_MEDIA_KEY="$S_USER-media"
-  S_MASTERS_KEY="$S_USER-masters"
-  S_REPLACE="${REPLACE_OF[$1]:-}"
-  local sister
-  sister="$(sister_of "$1")"
-  IFS=: read -r _ _ _ _ S_SISTER_DOMAIN <<<"${SPEC[$sister]}"
+  S_SERVER_JS="$S_CURRENT/engine/apps/web/server.js"
+  S_MEDIA_BUCKET="$(media_bucket)"
+  # The app's one key reads and writes both buckets (DEPLOYMENT.md §6); its access key is the
+  # site user's name, so the inventory and RustFS's user list say whose it is.
+  S_KEY="$S_USER"
 }
