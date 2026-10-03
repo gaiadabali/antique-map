@@ -1,12 +1,12 @@
 /**
  * Who reaches `stores` (CONTENT-MODEL.md §7; SECURITY.md §2.2), without a database: the owner
  * manages stores, an editor reads every store, a store user reads only their own — by a `Where`,
- * so lists and counts are scoped too — and nobody else reads any. The database proof is
- * `./stores.db.test.ts`.
+ * so lists and counts are scoped too — and the public reads active, listed stores alone. The
+ * database proof is `./stores.db.test.ts`.
  */
 import { describe, expect, it } from 'vitest'
 
-import { readStores, Stores, STORES_ACCESS } from './index'
+import { PUBLIC_STORES, readStores, Stores, STORES_ACCESS } from './index'
 
 const as = (user: unknown) => ({ req: { user } }) as never
 const owner = { id: 1, collection: 'users', role: 'owner' }
@@ -26,15 +26,21 @@ describe('reading stores', () => {
     })
   })
 
-  it('shows nothing to a store user without a store, the public, or an unknown role', () => {
+  it('shows a store user without a store nothing', () => {
+    expect(readStores(as({ ...storeUser, store: null }))).toBe(false)
+  })
+
+  it('shows the public, an unknown role or another collection only active, listed stores', () => {
     for (const user of [
-      { ...storeUser, store: null },
       null,
       { id: 4, collection: 'users', role: 'admin' },
       { id: 5, collection: 'customers', role: 'owner' },
     ]) {
-      expect(readStores(as(user))).toBe(false)
+      expect(readStores(as(user))).toEqual(PUBLIC_STORES)
     }
+    expect(PUBLIC_STORES).toEqual({
+      and: [{ active: { equals: true } }, { listed: { equals: true } }],
+    })
   })
 })
 

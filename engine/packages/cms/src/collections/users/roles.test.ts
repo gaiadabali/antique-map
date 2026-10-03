@@ -4,6 +4,7 @@
 import { ValidationError, type PayloadRequest } from 'payload'
 import { describe, expect, it } from 'vitest'
 
+import { recordAccessChanges } from './access-changes'
 import { firstUserIsOwner, keepAnOwnerOnUpdate } from './guards'
 import { Users } from './index'
 import { roleOf, storeOf } from './roles'
@@ -48,12 +49,13 @@ describe('a store user has exactly one store', () => {
     expect(await run({ role: 'owner' })).toEqual({ role: 'owner' })
   })
 
-  it('runs after the first-user rule, before the last-owner rule', () => {
+  it('runs after the first-user rule, before the last-owner rule; the record of changes last', () => {
     expect(Users.hooks?.beforeChange).toEqual([
       firstUserIsOwner,
       ownerChangesEmail,
       oneStoreForStoreStaff,
       keepAnOwnerOnUpdate,
+      recordAccessChanges,
     ])
   })
 })

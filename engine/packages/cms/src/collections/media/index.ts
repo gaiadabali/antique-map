@@ -17,13 +17,16 @@
  *   fetch whatever it names.
  * - **No Payload image sizes and no crop**: the derivative ladder is C9's, built by 15.1 from this
  *   file; cropping happened at intake. The focal point stays, for the derivatives' art direction.
- * - **Role and provenance are set once**, at intake; only the owner corrects them
- *   (`./frozen`) — provenance decides the synthetic label, which no other writer may take off.
+ * - **Role, provenance and subject are set once**, at intake; only the owner corrects them
+ *   (`./frozen`) — provenance decides the synthetic label, which no other writer may take off,
+ *   and the subject keeps the gallery's own images out of a store user's read (`./access`).
  * - **The owner and the editors make images**; store staff read them (`./access`).
  */
 import { MEDIA_UPLOAD_MIME_TYPES } from '@engine/media/storage'
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { MEDIA_ACCESS } from './access'
 import { MEDIA_FIELDS } from './fields'
 import { freezeAfterCreate, mayCorrectIntake } from './frozen'
@@ -36,12 +39,19 @@ import {
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  labels: { singular: 'Image', plural: 'Images' },
+  labels: {
+    singular: { en: 'Image', id: 'Gambar' },
+    plural: { en: 'Images', id: 'Gambar' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'alt',
     defaultColumns: ['filename', 'alt', 'role', 'provenance', 'updatedAt'],
-    description:
-      'Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.',
+    description: {
+      en: 'Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.',
+      id: 'Gambar yang ditampilkan di situs. Masing-masing diolah dari tangkapan di Masters; situs menampilkan salinan berukuran yang diubah, bukan berkas ini sendiri.',
+    },
   },
   access: MEDIA_ACCESS,
   upload: {
@@ -54,7 +64,7 @@ export const Media: CollectionConfig = {
     beforeOperation: [refuseOversizedUpload],
     beforeValidate: [altInDefaultLocaleFirst, matchItsMaster],
     beforeChange: [
-      freezeAfterCreate('media', ['role', 'provenance'], mayCorrectIntake),
+      freezeAfterCreate('media', ['role', 'provenance', 'subject'], mayCorrectIntake),
       deriveFromFile,
     ],
   },

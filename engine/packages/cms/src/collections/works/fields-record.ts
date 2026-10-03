@@ -9,10 +9,11 @@
  *   its own language (`originalTitleLanguage`, the `lang` the page sets on it).
  * - `makers` credit a maker with a role and a certainty, never implied certain.
  * - The `book` group, a volume's collation, shows for books and atlases only.
+ *
+ * The fields' bilingual admin copy lives beside this file (`./record-copy`, TASKS.md 3.6.a).
  */
 import type { ArrayField, Field, Validate } from 'payload'
 
-import { IN_DEFAULT_LOCALE_NOTE } from '../../fields/validate'
 import { creditRowErrors, refId, type CreditRow } from '../../validators/work-credits'
 import {
   languageTagError,
@@ -21,16 +22,21 @@ import {
 } from '../../validators/work-record'
 import { MAKER_ROLE_LABELS, MAKER_ROLES } from '../makers/roles'
 import { dimensionsField, fuzzyDateGroup } from './dates-and-sizes'
+import { RECORD_NOTES } from './record-copy'
 import {
   BOUND_OBJECT_TYPES,
   CERTAINTY_OPTIONS,
   COLOURING_OPTIONS,
   OBJECT_TYPE_OPTIONS,
   TECHNIQUE_OPTIONS,
+  WORK_LOCATION_OPTIONS,
+  WORK_STATUS_OPTIONS,
 } from './vocabulary'
 
 /** The row index of an array field's sub-field, from the path Payload validates it under. */
 export const rowOf = (path: readonly (number | string)[]) => Number(path[path.length - 2])
+
+const described = (note: { en: string; id: string }) => ({ description: note })
 
 const message = (error: string | null) => error ?? true
 const clear = () => null
@@ -49,8 +55,16 @@ const validateCredit: Validate = (value, { data, path }) => {
 export const makersField: ArrayField = {
   name: 'makers',
   type: 'array',
-  labels: { singular: 'Credit', plural: 'Makers' },
-  admin: { description: 'Who made it, in what role, and how certain the attribution is.' },
+  labels: {
+    singular: { en: 'Credit', id: 'Kredit' },
+    plural: { en: 'Makers', id: 'Pembuat' },
+  },
+  admin: {
+    description: {
+      en: 'Who made it, in what role, and how certain the attribution is.',
+      id: 'Siapa yang membuatnya, dalam peran apa, dan seberapa pasti atribusinya.',
+    },
+  },
   fields: [
     {
       type: 'row',
@@ -81,15 +95,24 @@ const isBound = (data: unknown) =>
 
 export const RECORD_FIELDS: Field[] = [
   {
-    name: 'workUid',
-    type: 'text',
+    name: 'publicId',
+    type: 'number',
     unique: true,
     index: true,
     admin: {
       position: 'sidebar',
       readOnly: true,
-      description: 'Made when the work is first saved, and never changed: redirects key on it.',
+      description:
+        'Made when the work is first saved — the old site’s product id for a migrated work, otherwise from 100000 — and never changed: the item’s address carries it.',
     },
+    hooks: { beforeDuplicate: [clear] },
+  },
+  {
+    name: 'workUid',
+    type: 'text',
+    unique: true,
+    index: true,
+    admin: { position: 'sidebar', readOnly: true, ...described(RECORD_NOTES.workUid) },
     hooks: { beforeDuplicate: [clear] },
   },
   {
@@ -98,7 +121,7 @@ export const RECORD_FIELDS: Field[] = [
     index: true,
     maxLength: 40,
     validate: validateStockNumber,
-    admin: { position: 'sidebar', description: 'The gallery’s own number: M.1044, P.2098.' },
+    admin: { position: 'sidebar', ...described(RECORD_NOTES.stockNumber) },
     hooks: { beforeDuplicate: [clear] },
   },
   {
@@ -106,9 +129,7 @@ export const RECORD_FIELDS: Field[] = [
     type: 'text',
     localized: true,
     maxLength: 240,
-    admin: {
-      description: `The hook title buyers read: "Bali by François Valentijn, 1726 — the first large-scale map of the island". Needed to publish. ${IN_DEFAULT_LOCALE_NOTE}`,
-    },
+    admin: described(RECORD_NOTES.title),
   },
   {
     type: 'row',
@@ -117,17 +138,14 @@ export const RECORD_FIELDS: Field[] = [
         name: 'originalTitle',
         type: 'text',
         maxLength: 400,
-        admin: {
-          width: '70%',
-          description: 'As printed, letter for letter: Kaart van het Eyland Bali.',
-        },
+        admin: { width: '70%', ...described(RECORD_NOTES.originalTitle) },
       },
       {
         name: 'originalTitleLanguage',
         type: 'text',
         maxLength: 35,
         validate: validateLanguage,
-        admin: { width: '30%', description: 'Its language: nl, la, ms.' },
+        admin: { width: '30%', ...described(RECORD_NOTES.originalTitleLanguage) },
       },
     ],
   },
@@ -136,31 +154,47 @@ export const RECORD_FIELDS: Field[] = [
     type: 'select',
     index: true,
     options: OBJECT_TYPE_OPTIONS,
-    admin: {
-      description: 'What kind of object it is: it decides the HS code and how the page reads.',
-    },
+    admin: described(RECORD_NOTES.objectType),
   },
   makersField,
-  fuzzyDateGroup('date', 'Date', 'When this sheet was printed or issued. Needed to publish.'),
-  fuzzyDateGroup('firstEdition', 'First edition', 'When the work first appeared, if earlier.'),
-  fuzzyDateGroup('dateOnPlate', 'Date on the plate', 'The date the plate itself bears, if any.'),
+  fuzzyDateGroup('date', { en: 'Date', id: 'Tanggal' }, RECORD_NOTES.date),
+  fuzzyDateGroup(
+    'firstEdition',
+    { en: 'First edition', id: 'Edisi pertama' },
+    RECORD_NOTES.firstEdition,
+  ),
+  fuzzyDateGroup(
+    'dateOnPlate',
+    { en: 'Date on the plate', id: 'Tanggal pada pelat' },
+    RECORD_NOTES.dateOnPlate,
+  ),
   {
     name: 'publication',
     type: 'group',
-    admin: { description: 'As the imprint and the book it came from say.' },
+    admin: described(RECORD_NOTES.publication),
     fields: [
       {
         type: 'row',
         fields: [
-          { name: 'place', type: 'text', maxLength: 120, admin: { description: 'Amsterdam' } },
-          { name: 'publisher', type: 'text', maxLength: 200, admin: { description: 'As printed' } },
+          {
+            name: 'place',
+            type: 'text',
+            maxLength: 120,
+            admin: described(RECORD_NOTES.publicationPlace),
+          },
+          {
+            name: 'publisher',
+            type: 'text',
+            maxLength: 200,
+            admin: described(RECORD_NOTES.publicationPublisher),
+          },
         ],
       },
       {
         name: 'sourceWork',
         type: 'text',
         maxLength: 300,
-        admin: { description: 'From: Oud en Nieuw Oost-Indiën, 1724–26.' },
+        admin: described(RECORD_NOTES.sourceWork),
       },
       {
         type: 'row',
@@ -172,7 +206,7 @@ export const RECORD_FIELDS: Field[] = [
             type: 'text',
             maxLength: 35,
             validate: validateLanguage,
-            admin: { description: 'Of the printed text: nl, la.' },
+            admin: described(RECORD_NOTES.textLanguage),
           },
         ],
       },
@@ -181,7 +215,7 @@ export const RECORD_FIELDS: Field[] = [
         type: 'text',
         localized: true,
         maxLength: 300,
-        admin: { description: '"Verso: blank", or the text printed on the back.' },
+        admin: described(RECORD_NOTES.verso),
       },
     ],
   },
@@ -189,15 +223,45 @@ export const RECORD_FIELDS: Field[] = [
     type: 'row',
     fields: [
       { name: 'technique', type: 'select', options: TECHNIQUE_OPTIONS },
-      { name: 'colour', type: 'select', label: 'Colouring', options: COLOURING_OPTIONS },
+      {
+        name: 'colour',
+        type: 'select',
+        label: { en: 'Colouring', id: 'Pewarnaan' },
+        options: COLOURING_OPTIONS,
+      },
+    ],
+  },
+  {
+    type: 'row',
+    fields: [
+      {
+        name: 'status',
+        type: 'select',
+        // Not `enum_works_status`: toSnakeCase('_status') is 'status', so that name is taken by
+        // the drafts column's enum — this one needs its own.
+        enumName: 'work_status_vocabulary',
+        defaultValue: 'available',
+        index: true,
+        options: WORK_STATUS_OPTIONS,
+        admin: { description: 'Whether the antique is on offer. Set it; never imply it.' },
+      },
+      {
+        name: 'location',
+        type: 'select',
+        options: WORK_LOCATION_OPTIONS,
+        admin: {
+          description:
+            'Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.',
+        },
+      },
     ],
   },
   dimensionsField,
   {
     name: 'book',
     type: 'group',
-    label: 'Book or atlas',
-    admin: { condition: isBound, description: 'A volume’s collation.' },
+    label: { en: 'Book or atlas', id: 'Buku atau atlas' },
+    admin: { condition: isBound, ...described(RECORD_NOTES.book) },
     fields: [
       {
         type: 'row',
@@ -218,7 +282,7 @@ export const RECORD_FIELDS: Field[] = [
         type: 'upload',
         relationTo: 'media',
         hasMany: true,
-        admin: { description: 'Photographs of spreads, in order.' },
+        admin: described(RECORD_NOTES.bookOpenings),
       },
       {
         type: 'row',

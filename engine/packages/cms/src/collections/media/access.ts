@@ -1,5 +1,5 @@
 /**
- * Who reaches a `media` record and its file (CONTENT-MODEL.md §6, §8; TASKS.md 8.3.a, 8.3.g).
+ * Who reaches a `media` record and its file (CONTENT-MODEL.md §6, §8; TASKS.md 8.3.a, 8.3.g, 3.2.e).
  *
  * - **The record is read by the loaders, never by the public directly.** A page shows an image's
  *   alt text, caption and credit through the work, product or story that places it, read by
@@ -9,21 +9,37 @@
  *   public list would enumerate every image of every unpublished work, with its file name and
  *   its content address — the secret part of its public derivative keys (C9 `derivativeKey()`).
  *   `master` is staff-only at the field besides.
+ * - **Store staff read what they stock and ship** — products, stores, editorial — and none of the
+ *   gallery's own: their read is a `Where` on the subject (`subject: not 'work'`), not a menu
+ *   trick (TASKS.md 3.2.e, the senior-be review of 2.4, finding 6).
  * - **The file is not.** `isReadingStaticFile` is Payload's own flag for `/api/media/file/…`: the
  *   upload behind it is the full-resolution processed image, which would bypass the public zoom
- *   cap and may carry GPS and camera metadata, so only staff fetch it — the admin's preview. The public sees derivatives and capped tiles, from the bucket's public
- *   prefixes (`@engine/media/storage`).
- * - **The owner and the editors make and remove images** (CONTENT-MODEL.md §7); store staff read
- *   them, to see what they stock and ship, and no anonymous visitor can make one, by any API.
+ *   cap and may carry GPS and camera metadata, so only the owner and the editors fetch it — the
+ *   admin's preview (TASKS.md 3.2.e). The public sees derivatives and capped tiles, from the
+ *   bucket's public prefixes (`@engine/media/storage`).
+ * - **The owner and the editors make and remove images** (CONTENT-MODEL.md §7); no anonymous
+ *   visitor can make one, by any API.
  */
 import type { Access } from 'payload'
 
 import { isStaffUser } from '../../access/roles'
-import { staffWithRoles } from '../users/roles'
+import { hasRole, staffWithRoles } from '../users/roles'
 
-/** Staff, by any API; the loaders, on the Local API; the file behind it, staff alone. */
-export const readMedia: Access = ({ req, isReadingStaticFile }) =>
-  isStaffUser(req.user) || (!isReadingStaticFile && req.payloadAPI === 'local')
+/** The full-resolution file is the owner's and the editors' alone (3.2.e). */
+const fileReaders = staffWithRoles('owner', 'editor')
+
+/**
+ * Staff read the record — store staff only what is not of a work; the loaders, on the Local API
+ * with no user, read it whoever the visitor is. The file behind it, the owner and the editors.
+ */
+export const readMedia: Access = (args) => {
+  const { req, isReadingStaticFile } = args
+  if (isReadingStaticFile) return fileReaders(args)
+  if (isStaffUser(req.user)) {
+    return hasRole(req.user, 'store') ? { subject: { not_equals: 'work' } } : true
+  }
+  return req.payloadAPI === 'local'
+}
 
 /** Whoever places images: the owner and the editors, who keep the catalogue and the content. */
 export const writeMedia: Access = staffWithRoles('owner', 'editor')

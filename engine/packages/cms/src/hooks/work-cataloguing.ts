@@ -9,6 +9,7 @@ import { ValidationError, type CollectionBeforeChangeHook } from 'payload'
 import { isStaffUser } from '../access/roles'
 import { hasRole } from '../collections/users/roles'
 import { WORK_PUBLISHERS } from '../collections/works/access'
+import { unverifiedAiDraft } from '../collections/works/vocabulary'
 import { asLabel, mergeOver, type Doc } from './work-facts'
 
 export const stampCataloguing: CollectionBeforeChangeHook = ({
@@ -30,11 +31,11 @@ export const stampCataloguing: CollectionBeforeChangeHook = ({
       message: 'The owner or an editor verifies a record.',
     })
   }
-  const unchecked = Array.isArray(merged.aiDraft) && merged.aiDraft.length > 0
+  const unchecked = unverifiedAiDraft(merged.aiDraft).length > 0
   if (merged.status === 'verified' && unchecked) {
     errors.push({
       path: 'cataloguing.status',
-      message: 'Check the fields an AI drafted, and take them off the list, before verifying.',
+      message: 'Check the fields an AI drafted, and record who and when, before verifying.',
     })
   }
   if (errors.length > 0) {

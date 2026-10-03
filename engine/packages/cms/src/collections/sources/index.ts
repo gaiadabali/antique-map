@@ -13,6 +13,8 @@
  */
 import type { CollectionConfig, Validate } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import {
   shortCiteError,
   SHORT_CITE_MAX_LENGTH,
@@ -31,8 +33,13 @@ const validateYear: Validate = (value) =>
 
 export const Sources: CollectionConfig = {
   slug: 'sources',
-  labels: { singular: 'Source', plural: 'Sources' },
+  labels: {
+    singular: { en: 'Source', id: 'Sumber' },
+    plural: { en: 'Sources', id: 'Sumber' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'shortCite',
     defaultColumns: ['shortCite', 'year', '_status', 'updatedAt'],
     listSearchableFields: ['shortCite', 'citation', 'slug'],
@@ -48,7 +55,12 @@ export const Sources: CollectionConfig = {
       index: true,
       maxLength: SHORT_CITE_MAX_LENGTH,
       validate: validateShortCite,
-      admin: { description: 'How references cite it: "Tooley", "Koeman", "Tooley (Australia)".' },
+      admin: {
+        description: {
+          en: 'How references cite it: "Tooley", "Koeman", "Tooley (Australia)".',
+          id: 'Cara referensi mengutipnya: "Tooley", "Koeman", "Tooley (Australia)".',
+        },
+      },
     },
     slugField({ from: 'shortCite' }),
     {
@@ -56,7 +68,12 @@ export const Sources: CollectionConfig = {
       type: 'textarea',
       maxLength: 2000,
       validate: requiredToPublish('A published source gives its full citation.'),
-      admin: { description: 'The full entry: author, title, place, publisher, year.' },
+      admin: {
+        description: {
+          en: 'The full entry: author, title, place, publisher, year.',
+          id: 'Entri lengkap: penulis, judul, tempat, penerbit, tahun.',
+        },
+      },
     },
     {
       name: 'year',
@@ -64,7 +81,10 @@ export const Sources: CollectionConfig = {
       validate: validateYear,
       admin: {
         step: 1,
-        description: 'The year it was published (the first, for a multi-volume work).',
+        description: {
+          en: 'The year it was published (the first, for a multi-volume work).',
+          id: 'Tahun diterbitkannya (yang pertama, untuk karya banyak volume).',
+        },
       },
     },
     {
@@ -72,7 +92,12 @@ export const Sources: CollectionConfig = {
       type: 'text',
       maxLength: 2048,
       validate: webUrl(),
-      admin: { description: 'Where it can be read or bought online, if anywhere.' },
+      admin: {
+        description: {
+          en: 'Where it can be read or bought online, if anywhere.',
+          id: 'Di mana dapat dibaca atau dibeli secara online, jika ada.',
+        },
+      },
     },
   ],
 }

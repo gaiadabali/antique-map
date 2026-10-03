@@ -13,7 +13,10 @@ import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'
 import { holdWorkReferences } from '../../hooks/work-references'
 import { assignWorkUid } from '../../hooks/work-uid'
+import { assignPublicId } from './public-id'
 import { Works } from './index'
+import { AI_DRAFTABLE_FIELDS } from './vocabulary'
+import { nextPublicId } from '../../validators/work-record'
 
 type Named = Field & { name: string; fields?: Field[]; access?: Record<string, unknown> }
 
@@ -29,10 +32,14 @@ function fieldAt(fields: readonly Field[], path: string): Named | undefined {
   return fieldAt((found.fields ?? []) as Field[], rest.join('.'))
 }
 
-/** CONTENT-MODEL.md §1's works table, field by field and part by part. */
+/** CONTENT-MODEL.md §3's works table, field by field and part by part. */
 const CONTENT_MODEL_FIELDS = [
+  'publicId',
   'workUid',
   'stockNumber',
+  'status',
+  'location',
+  'askingPrice',
   'title',
   'originalTitle',
   'objectType',
@@ -59,8 +66,7 @@ const CONTENT_MODEL_FIELDS = [
   'places.role',
   'places.primary',
   'subjects',
-  'references.source',
-  'references.ref',
+  'references.citation',
   'references.note',
   'provenance.holder',
   'provenance.period',
@@ -87,6 +93,11 @@ const CONTENT_MODEL_FIELDS = [
   'cataloguing.cataloguer',
   'cataloguing.verifiedAt',
   'cataloguing.aiDraft',
+  'cataloguing.aiDraft.title.drafted',
+  'cataloguing.aiDraft.title.verifiedBy',
+  'cataloguing.aiDraft.title.verifiedAt',
+  'cataloguing.aiDraft.description.drafted',
+  'cataloguing.aiDraft.dimensions.verifiedAt',
   // CONTENT-MODEL.md's `legacy.id`: Payload 3.90 drops a field named `id` inside a group.
   'legacy.productId',
   'legacy.sku',
@@ -140,6 +151,27 @@ describe('the works collection (8.2.a): every field CONTENT-MODEL.md §1 names',
     const images = fieldAt(Works.fields, 'images')!
     expect((images.fields as Named[]).map((field) => field.name)).toEqual(['media', 'caption'])
   })
+
+  it('gives every field an AI may draft its own entry: drafted, verifiedBy, verifiedAt (3.2.c)', () => {
+    const group = fieldAt(Works.fields, 'cataloguing.aiDraft')!
+    expect((group.fields as Named[]).map((field) => field.name)).toEqual([...AI_DRAFTABLE_FIELDS])
+    for (const entry of group.fields as Named[]) {
+      expect((entry.fields as Named[]).map((field) => field.name)).toEqual([
+        'drafted',
+        'verifiedBy',
+        'verifiedAt',
+      ])
+    }
+  })
+
+  it('answers available until staff say otherwise, and sits nowhere until told', () => {
+    expect(fieldAt(Works.fields, 'status')).toMatchObject({
+      defaultValue: 'available',
+      type: 'select',
+    })
+    expect(fieldAt(Works.fields, 'location')).toMatchObject({ type: 'select' })
+    expect(fieldAt(Works.fields, 'location')).not.toHaveProperty('defaultValue')
+  })
 })
 
 describe('access (8.2.d)', () => {
@@ -177,6 +209,22 @@ describe('access (8.2.d)', () => {
     expect(acquisition(staff('store'))).toBe(false)
   })
 
+  it('shows the asking price to the owner alone, to read and to write (Q14)', () => {
+    const asking = fieldAt(Works.fields, 'askingPrice')!.access!
+    for (const key of ['read', 'update', 'create'] as const) {
+      const access = asking[key] as (a: unknown) => boolean
+      expect(access({ req: { user: staff('owner') } })).toBe(true)
+      for (const user of [
+        null,
+        { collection: 'customers', role: 'owner' },
+        staff('editor'),
+        staff('store'),
+      ]) {
+        expect(access({ req: { user } })).toBe(false)
+      }
+    }
+  })
+
   it('keeps cataloguing, legacy and the master to staff', () => {
     for (const field of ['cataloguing', 'legacy', 'master']) {
       expect(read(field, null)).toBe(false)
@@ -185,11 +233,27 @@ describe('access (8.2.d)', () => {
   })
 })
 
+describe('the public id (3.2.b): the next number, never below the floor', () => {
+  it('starts at 100000 on an empty catalogue, and never looks back', () => {
+    expect(nextPublicId(null)).toBe(100_000)
+    expect(nextPublicId(0)).toBe(100_000)
+    expect(nextPublicId(99_999)).toBe(100_000)
+    expect(nextPublicId(100_000)).toBe(100_001)
+    expect(nextPublicId(123_456)).toBe(123_457)
+  })
+
+  it('refuses to follow a number that is not an id', () => {
+    expect(() => nextPublicId(-1)).toThrow(/public id/)
+    expect(() => nextPublicId(1.5)).toThrow(/public id/)
+  })
+})
+
 describe('every save passes the same hooks, on every write path', () => {
   it('runs the guards before the save and invalidates after it', () => {
     expect(Works.hooks?.beforeChange).toEqual([
       holdWorkReferences,
       assignWorkUid,
+      assignPublicId,
       stampCataloguing,
       guardWork,
     ])

@@ -17,9 +17,10 @@ import type { Field, Validate } from 'payload'
 import { STAFF_ONLY_ACCESS } from '../../access/fields'
 import { translationStatusField } from '../../fields/translation-status'
 import { costErrors, rightsErrors, type Cost, type Rights } from '../../validators/work-record'
-import { ACQUISITION_ACCESS, PHYSICAL_ACCESS } from './access'
+import { OWNER_ONLY_ACCESS, ACQUISITION_ACCESS, PHYSICAL_ACCESS } from './access'
 import {
-  AI_DRAFTABLE_OPTIONS,
+  AI_DRAFTABLE_FIELDS,
+  AI_DRAFTABLE_LABELS,
   CATALOGUING_STATUS_OPTIONS,
   EXPORT_STATUS_OPTIONS,
   RIGHTS_STATUS_OPTIONS,
@@ -27,6 +28,18 @@ import {
 
 /** A duplicate is another object: its record, workflow and legacy ids start empty. */
 const cleared = () => ({})
+
+/**
+ * The owner's start of a negotiation and the insured value (Q14): whole US dollars, so an integer
+ * never a float. Read and updated by the owner alone (Q14; DR-10) — no editor, no store user, and
+ * no public read selects it: the loaders project the fields a page shows.
+ */
+const validateAskingPrice: Validate = (value) =>
+  value === null || value === undefined
+    ? true
+    : Number.isSafeInteger(value) && value >= 0
+      ? true
+      : 'Whole US dollars, 0 or more: there is no cent and no other currency here.'
 
 const rightsPart =
   (part: keyof Rights): Validate =>
@@ -41,11 +54,13 @@ const costPart =
 export const physicalField: Field = {
   name: 'physical',
   type: 'group',
-  label: 'Physical record (staff only)',
+  label: { en: 'Physical record (staff only)', id: 'Catatan fisik (khusus staf)' },
   access: PHYSICAL_ACCESS,
   admin: {
-    description:
-      'From the owner’s item register. Left blank, the item still publishes: the gallery sells nothing online.',
+    description: {
+      en: 'From the owner’s item register. Left blank, the item still publishes: the gallery sells nothing online.',
+      id: 'Dari daftar barang milik pemilik. Dibiarkan kosong, barang tetap diterbitkan: galeri tidak menjual apa pun secara online.',
+    },
   },
   hooks: { beforeDuplicate: [cleared] },
   fields: [
@@ -53,13 +68,22 @@ export const physicalField: Field = {
       name: 'exportStatus',
       type: 'select',
       options: EXPORT_STATUS_OPTIONS,
-      admin: { description: 'Never assumed: set it from the register.' },
+      admin: {
+        description: {
+          en: 'Never assumed: set it from the register.',
+          id: 'Tidak pernah diasumsikan: atur dari daftar.',
+        },
+      },
     },
-    { name: 'coaIssued', type: 'checkbox', label: 'Certificate of authenticity issued' },
+    {
+      name: 'coaIssued',
+      type: 'checkbox',
+      label: { en: 'Certificate of authenticity issued', id: 'Sertifikat keaslian diterbitkan' },
+    },
     {
       name: 'acquisition',
       type: 'group',
-      label: 'Acquisition (owner only)',
+      label: { en: 'Acquisition (owner only)', id: 'Akuisisi (khusus pemilik)' },
       access: ACQUISITION_ACCESS,
       fields: [
         {
@@ -73,7 +97,12 @@ export const physicalField: Field = {
         {
           name: 'cost',
           type: 'group',
-          admin: { description: 'In the currency’s smallest unit: cents, or whole rupiah.' },
+          admin: {
+            description: {
+              en: 'In the currency’s smallest unit: cents, or whole rupiah.',
+              id: 'Dalam unit terkecil mata uang: sen, atau rupiah utuh.',
+            },
+          },
           fields: [
             { name: 'amount', type: 'number', admin: { step: 1 }, validate: costPart('amount') },
             {
@@ -90,13 +119,31 @@ export const physicalField: Field = {
 }
 
 export const STAFF_FIELDS: Field[] = [
+  {
+    name: 'askingPrice',
+    type: 'number',
+    label: 'Asking price (USD)',
+    access: OWNER_ONLY_ACCESS,
+    validate: validateAskingPrice,
+    admin: {
+      position: 'sidebar',
+      description:
+        'Whole US dollars — the start of a negotiation and the insured value. Never on a page, a feed or an AI answer.',
+    },
+    hooks: { beforeDuplicate: [() => null] },
+  },
   physicalField,
   {
     name: 'rights',
     type: 'group',
     // Staff only, as the header says (1.2.b: it had no access, so a public read returned it).
     access: STAFF_ONLY_ACCESS,
-    admin: { description: 'Whether reproductions may be made and sold from this work.' },
+    admin: {
+      description: {
+        en: 'Whether reproductions may be made and sold from this work.',
+        id: 'Apakah reproduksi boleh dibuat dan dijual dari karya ini.',
+      },
+    },
     fields: [
       {
         type: 'row',
@@ -114,7 +161,12 @@ export const STAFF_FIELDS: Field[] = [
             type: 'text',
             hasMany: true,
             validate: rightsPart('territories'),
-            admin: { description: 'Two-letter country codes, or WORLD.' },
+            admin: {
+              description: {
+                en: 'Two-letter country codes, or WORLD.',
+                id: 'Kode negara dua huruf, atau WORLD.',
+              },
+            },
           },
           { name: 'expires', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
         ],
@@ -124,7 +176,12 @@ export const STAFF_FIELDS: Field[] = [
         type: 'checkbox',
         defaultValue: false,
         validate: rightsPart('printAllowed'),
-        admin: { description: 'A reproduction of this work cannot publish while this is off.' },
+        admin: {
+          description: {
+            en: 'A reproduction of this work cannot publish while this is off.',
+            id: 'Reproduksi karya ini tidak dapat diterbitkan selama ini mati.',
+          },
+        },
       },
     ],
   },
@@ -149,18 +206,44 @@ export const STAFF_FIELDS: Field[] = [
       },
       {
         name: 'aiDraft',
-        type: 'select',
-        hasMany: true,
-        label: 'Drafted by AI, not yet checked',
-        options: AI_DRAFTABLE_OPTIONS,
-        admin: { description: 'The work cannot publish while any field is listed here.' },
+        type: 'group',
+        label: { en: 'Drafted by AI, not yet checked', id: 'Dibuat draf oleh AI, belum diperiksa' },
+        admin: {
+          description: {
+            en: 'One entry per field the drafting tool filled. The work cannot publish while an entry is drafted and has no verified time.',
+            id: 'Satu entri per bidang yang diisi alat draf. Karya tidak dapat diterbitkan selama ada entri yang masih draf tanpa waktu verifikasi.',
+          },
+        },
+        hooks: { beforeDuplicate: [cleared] },
+        fields: AI_DRAFTABLE_FIELDS.map((field) => ({
+          name: field,
+          type: 'group',
+          label: AI_DRAFTABLE_LABELS[field],
+          fields: [
+            { name: 'drafted', type: 'checkbox', defaultValue: false },
+            {
+              name: 'verifiedBy',
+              type: 'relationship',
+              relationTo: 'users',
+              admin: { description: 'Who checked it.' },
+            },
+            {
+              name: 'verifiedAt',
+              type: 'date',
+              admin: {
+                date: { pickerAppearance: 'dayOnly' },
+                description: 'When they checked it.',
+              },
+            },
+          ],
+        })),
       },
     ],
   },
   {
     name: 'legacy',
     type: 'group',
-    label: 'From the old site',
+    label: { en: 'From the old site', id: 'Dari situs lama' },
     access: STAFF_ONLY_ACCESS,
     admin: { readOnly: true },
     hooks: { beforeDuplicate: [cleared] },
@@ -174,7 +257,12 @@ export const STAFF_FIELDS: Field[] = [
             type: 'number',
             unique: true,
             index: true,
-            admin: { description: 'The old site’s product id: the public id it keeps.' },
+            admin: {
+              description: {
+                en: 'The old site’s product id: the public id it keeps.',
+                id: 'Id produk situs lama: id publik yang dipertahankan.',
+              },
+            },
           },
           { name: 'sku', type: 'text', maxLength: 80 },
         ],
@@ -186,7 +274,7 @@ export const STAFF_FIELDS: Field[] = [
   {
     name: 'seo',
     type: 'group',
-    label: 'SEO',
+    label: { en: 'SEO', id: 'SEO' },
     fields: [
       { name: 'title', type: 'text', localized: true, maxLength: 70 },
       { name: 'description', type: 'textarea', localized: true, maxLength: 200 },
