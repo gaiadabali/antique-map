@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W2 | 3.6 The admin experience | senior-fe (Kimi → GLM) | `w/3.6` | 2026-10-03 | Kimi ran out of turns twice; GLM run `am-3.6-r2` in flight |
 | 3·W3 | 3.7 Import and seed | senior-be (GLM) | `w/3.7ab` | 2026-10-03 | 3.7.c merged; the 3.7.a/b run left ~2,700 lines uncommitted — continuation ticket `3.7ab-r1` written, launches when a GLM lane frees |
 | 4·W2 | 4.2 Shared components | senior-fe (Kimi) | `int/4` + `w/4.2c` | 2026-10-03 | kit kebab-cased, one barrel, `/style-guide` on both hosts; gate green with build; visual check of both palettes pending, then merge (closes the 4.1 Check too) |
 | 4·W3 | 4.3 Chrome and home pages | senior-fe (Kimi) | `w/4.3` | 2026-10-03 | second run done with 6 files uncommitted — review, commit, gate |
@@ -817,6 +816,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 ✅ 3.6 (a–c) — GLM finished the admin experience after Kimi's two turn-exhausted runs; bilingual labels and plain messages, role-based sidebar (store staff see only their orders and stock), dashboard widgets counted through `overrideAccess:false`; fresh-clone verify green, merged (`10fc55e`). The 3.6.d Check (browser pass as owner/editor/store) stays open for the qa wave.
 - 2026-10-03 ✅ 3.3, 3.4, 3.5, 6.4, 8.1 — the whole `int/3-w1` wave (3.2/3.3/3.4 collections, 3.5 migration+roles, 8.1 chat core, 6.4 Midtrans, 6.3core pickStore/atomic order) merged to `main` (`18bc46b`) after a full `pnpm verify` green on a fresh clone — the migrated-database tests pass on the 3.5 migration. Checks 3.3.e, 3.4.d, 3.5.e, 6.4.d, 8.1.e ticked.
 - 2026-10-03 ✅ 6.3.b/6.3.c (GLM `59564ae`) — pickStore and the one-transaction order with the 20-concurrent-orders-for-the-last-unit test green on pushed Postgres; 3.2/3.3/3.4 subtasks already ticked by their runs.
 
