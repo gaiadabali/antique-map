@@ -19,7 +19,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 17/33 | 0 | `█████░░░░░`  52% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 7/14 | 0 | `█████░░░░░`  50% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 7/18 | 0 | `████░░░░░░`  39% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **82/200** | **8** | `████░░░░░░`  41% |
+| **All** | 11 phases | | | **9/49** | **83/200** | **8** | `████░░░░░░`  42% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -441,7 +441,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(gallery)/**`, `engine/apps/web/src/app/(shop)/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`, `engine/apps/web/src/sites/{gallery,shop}/home/**`
   - **Read** the design team's `Home - Antique Maps Indonesia`, `Home - Old East Indies` and `Old East Indies/Partnership` pages and `CLAUDE.md` in `docs/design/input/claude-design-2026-09/`, EXPERIENCE-GALLERY.md §Home, EXPERIENCE-SHOP.md §Home and §Partnership
   - _Requirements: 12.2, 12.3, 4.3_
-  - [ ] 4.3.a each site's root layout: header, footer, language switch, the chat entry point (inert until phase 8), the contact from `site-settings`, and the two-way bridge links between the sites that the brief asks for
+  - [x] 4.3.a each site's root layout: header, footer, language switch, the chat entry point (inert until phase 8), the contact from `site-settings`, and the two-way bridge links between the sites that the brief asks for
   - [ ] 4.3.b the gallery home from the design team's page (hero film, featured items, makers and places entry points) and the shop home from theirs, on seeded data
   - [ ] 4.3.c the shop's partnership page from the design team's drawing, its last section an enquiry call to action (WhatsApp, email, a short form that creates a `partnership` lead in 9.1) in place of the drawn sign-up and sign-in
   - [ ] 4.3.d prune the lexicon: delete the dead keys (account, bag, payment, order, offers); a unit test that every key has `en` and `id` values and none is unused
