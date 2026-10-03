@@ -36,6 +36,7 @@ async function countOrders({ req }) {
       depth: 0,
       limit: 0,
       overrideAccess: false,
+      user: req.user,
       where: { status: { in: ACTING_STATUSES } },
     })
     return result.totalDocs ?? 0
@@ -44,14 +45,15 @@ async function countOrders({ req }) {
   }
 }
 
-async function countNewLeads({ req, user }) {
-  if (!hasRole(user, 'owner')) return 0
+async function countNewLeads({ req }) {
+  if (!hasRole(req.user, 'owner')) return 0
   try {
     const result = await req.payload.find({
       collection: 'leads',
       depth: 0,
       limit: 0,
       overrideAccess: false,
+      user: req.user,
       where: { status: { equals: 'new' } },
     })
     return result.totalDocs ?? 0

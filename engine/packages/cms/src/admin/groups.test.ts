@@ -56,9 +56,7 @@ describe('admin sidebar groups', () => {
   })
 
   it("a store user's visible collections are exactly orders, stores and stock-levels", () => {
-    expect(visibleTo(asUser('store', 3))).toEqual(
-      new Set(['orders', 'stores', 'stock-levels']),
-    )
+    expect(visibleTo(asUser('store', 3))).toEqual(new Set(['orders', 'stores', 'stock-levels']))
   })
 
   it('an editor does not see leads, partners, chat-sessions, events or site-settings', () => {
