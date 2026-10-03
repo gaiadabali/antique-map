@@ -85,6 +85,42 @@ describe('a tampered price or quantity in the request is ignored', () => {
   })
 })
 
+describe('the fee comes from the band table, never the request', () => {
+  const CLEAN = quote([line(PLAIN, 2)], 7.5)
+
+  it('a fee, a band or an is-free flag sent beside the ids changes nothing', () => {
+    const tampered = parseBagLines([
+      { productId: PLAIN, qty: 2, deliveryIdr: 0, deliveryFeeIdr: 1, isFreeDelivery: true },
+    ])
+    expect(quote(tampered, 7.5)).toEqual(CLEAN)
+    expect(CLEAN.deliveryIdr).toBe(25_000)
+  })
+
+  it('the same bag at another distance is priced by the table, not by what it sent before', () => {
+    expect(quote([line(PLAIN, 2)], 12).deliveryIdr).toBe(40_000)
+    expect(quote([line(PLAIN, 2)], 5).deliveryIdr).toBe(15_000)
+  })
+
+  it('only the owner’s table in site-settings can change the fee', () => {
+    const cheaper = quoteBag(
+      [line(PLAIN, 2)],
+      CATALOGUE,
+      {
+        delivery: {
+          bands: [
+            { upToKm: 5, feeIdr: 15_000 },
+            { upToKm: 10, feeIdr: 1 },
+            { upToKm: 20, feeIdr: 40_000 },
+          ],
+          freeOverIdr: 500_000,
+        },
+      },
+      { distanceKm: 7.5, discount: null },
+    )
+    expect(cheaper.deliveryIdr).toBe(1)
+  })
+})
+
 describe('refusals', () => {
   it('names an empty bag, a bag with nothing to buy, a pin beyond reach and a broken fee table', () => {
     expect(quote([], 3).refusal).toBe('empty_bag')
