@@ -66,7 +66,10 @@ describe('a pin beyond the last band refuses with the handoff', () => {
   // The page maps `beyond_reach` to the WhatsApp handoff copy (EXPERIENCE-SHOP.md §6); the core's
   // contract is the refusal itself: no fee, no delivery in the total, nothing to buy into.
   it('the quote refuses with beyond_reach and totals the items only', () => {
-    const quote = quoteBag([line(PLAIN, 2)], CATALOGUE, SETTINGS, { distanceKm: 20.1, discount: null })
+    const quote = quoteBag([line(PLAIN, 2)], CATALOGUE, SETTINGS, {
+      distanceKm: 20.1,
+      discount: null,
+    })
     expect(quote).toMatchObject({
       refusal: 'beyond_reach',
       deliveryIdr: null,

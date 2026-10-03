@@ -102,16 +102,21 @@ describe('the fee comes from the band table, never the request', () => {
   })
 
   it('only the owner’s table in site-settings can change the fee', () => {
-    const cheaper = quoteBag([line(PLAIN, 2)], CATALOGUE, {
-      delivery: {
-        bands: [
-          { upToKm: 5, feeIdr: 15_000 },
-          { upToKm: 10, feeIdr: 1 },
-          { upToKm: 20, feeIdr: 40_000 },
-        ],
-        freeOverIdr: 500_000,
+    const cheaper = quoteBag(
+      [line(PLAIN, 2)],
+      CATALOGUE,
+      {
+        delivery: {
+          bands: [
+            { upToKm: 5, feeIdr: 15_000 },
+            { upToKm: 10, feeIdr: 1 },
+            { upToKm: 20, feeIdr: 40_000 },
+          ],
+          freeOverIdr: 500_000,
+        },
       },
-    }, { distanceKm: 7.5, discount: null })
+      { distanceKm: 7.5, discount: null },
+    )
     expect(cheaper.deliveryIdr).toBe(1)
   })
 })
