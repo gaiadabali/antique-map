@@ -300,7 +300,6 @@
   "listing.periodTo": "Tahun akhir",
   "listing.previous": "Sebelumnya",
   "listing.removeFilter": "Hapus {label}",
-  "listing.showResults.one": "Tampilkan {count} karya",
   "listing.showResults.other": "Tampilkan {count} karya",
   "listing.sortBy": "Urutkan",
   "maker.certainty.after": "Berdasarkan karya {name}",
