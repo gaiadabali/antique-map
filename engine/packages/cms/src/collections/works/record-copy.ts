@@ -78,4 +78,12 @@ export const RECORD_NOTES = {
     en: 'Photographs of spreads, in order.',
     id: 'Foto penyebaran, berurutan.',
   },
+  status: {
+    en: 'Whether the antique is on offer. Set it; never imply it.',
+    id: 'Apakah barang antik ini dijual. Atur nilainya; jangan mengandaikan.',
+  },
+  location: {
+    en: 'Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.',
+    id: 'Di mana objek disimpan, Singapura atau Jakarta. Kosong sampai pemiliknya menentukan: tidak pernah menghalangi penerbitan.',
+  },
 } as const

@@ -8,42 +8,21 @@ import type { Problem } from './types'
 import { SKU_PATTERN } from '../collections/products/skus'
 import { optionProblem, pickOption, type PlannedRow, type Row, planned, refused } from './plan'
 import type { Vocabulary } from './vocabulary'
-import { yesNo } from './cells'
+import { wholeNumber, yesNo } from './cells'
 
 const clean = (raw: string | undefined) => (raw ?? '').trim()
 
 const nonEmpty = (row: Row, column: string, value: string): Problem | null =>
   value === '' ? { column, problem: `${column} is empty. It is required.` } : null
 
-/** A number cell as a whole number, or the plain problem. */
-function number_(
-  row: Row,
-  column: string,
-  raw: string,
-  min: number,
-  what: string,
-): number | undefined {
-  if (raw === '') return undefined
-  const digits = raw.replace(/[.,](?=\d{3}\b)/g, '')
-  if (/^\d+$/.test(digits)) {
-    const value = Number(digits)
-    if (value >= min) return value
-    problems(row, column, `${column} is ${value}, but ${what} is ${min} or more.`)
-    return undefined
-  }
-  problems(
-    row,
-    column,
-    `${column} is '${raw}'. ${what} is whole digits, optionally grouped in threes with '.' or ',': write 185000 for Rp 185.000.`,
-  )
-  return undefined
+/** A number cell as the shared reader answers it: a bad value refuses the row, empty stays out. */
+function numberCell(column: string, raw: string, min: number, what: string): number | undefined {
+  const read = wholeNumber(raw, column, { min, what })
+  if ('error' in read) throw new RowProblem({ column, problem: read.error })
+  return read.value
 }
 
-const problems = (row: Row, column: string, text: string) => {
-  throw new RowProblem({ column, problem: text })
-}
-
-/** Raised to carry a planning problem out of a helper; turned back into `problems` below. */
+/** Raised to carry a planning problem out of a helper; caught as the row's refusal below. */
 class RowProblem {
   constructor(readonly problem: Problem) {}
 }
@@ -85,7 +64,7 @@ export function planProductRow(row: Row, vocab: Vocabulary, variant: boolean): P
       const label: Record<string, unknown> = { en: labelEn }
       if (clean(row.cells.variant_label_id) !== '') label.id = clean(row.cells.variant_label_id)
       const data: Record<string, unknown> = { sku, parentSku, label }
-      const price = number_(row, 'price_idr', clean(row.cells.price_idr), 1, 'A variant price')
+      const price = numberCell('price_idr', clean(row.cells.price_idr), 1, 'A variant price')
       if (price !== undefined) data.price = price
       return planned(row.row, row.key, 'products', data)
     }
@@ -97,7 +76,7 @@ export function planProductRow(row: Row, vocab: Vocabulary, variant: boolean): P
     const category = clean(row.cells.category)
     const categoryEmpty = nonEmpty(row, 'category', category)
     if (categoryEmpty) problems_.push(categoryEmpty)
-    const price = number_(row, 'price_idr', clean(row.cells.price_idr), 1, 'The price')
+    const price = numberCell('price_idr', clean(row.cells.price_idr), 1, 'The price')
     if (price === undefined) {
       problems_.push({
         column: 'price_idr',
@@ -227,13 +206,7 @@ export function planStockRow(row: Row): PlannedRow {
     const sku = planSku(row, 'sku')
     if (sku === null)
       throw new RowProblem({ column: 'sku', problem: 'sku is empty. It is required.' })
-    const quantity = number_(
-      row,
-      'quantity',
-      clean(row.cells.quantity),
-      0,
-      'The count on the shelf',
-    )
+    const quantity = numberCell('quantity', clean(row.cells.quantity), 0, 'The count on the shelf')
     if (quantity === undefined) {
       throw new RowProblem({
         column: 'quantity',
@@ -261,7 +234,7 @@ export function planDiscountRow(row: Row): PlannedRow {
     const kind = pickOption(['percent', 'fixed'], clean(row.cells.kind), 'kind')
     if (!kind)
       throw new RowProblem(optionProblem('kind', clean(row.cells.kind), ['percent', 'fixed']))
-    const value = number_(row, 'value', clean(row.cells.value), 1, 'The discount value')
+    const value = numberCell('value', clean(row.cells.value), 1, 'The discount value')
     if (value === undefined) {
       throw new RowProblem({
         column: 'value',
@@ -270,7 +243,7 @@ export function planDiscountRow(row: Row): PlannedRow {
       })
     }
     const data: Record<string, unknown> = { code: code.toUpperCase(), kind, value }
-    const minSpend = number_(row, 'min_spend', clean(row.cells.min_spend), 0, 'The minimum spend')
+    const minSpend = numberCell('min_spend', clean(row.cells.min_spend), 0, 'The minimum spend')
     if (minSpend !== undefined) data.minSpend = minSpend
     const oncePerBuyer = yesNo(row.cells.once_per_buyer, 'once_per_buyer')
     if (oncePerBuyer.error)
@@ -287,8 +260,7 @@ export function planDiscountRow(row: Row): PlannedRow {
       }
       data[column === 'starts_at' ? 'startsAt' : 'endsAt'] = raw
     }
-    const usageLimit = number_(
-      row,
+    const usageLimit = numberCell(
       'usage_limit',
       clean(row.cells.usage_limit),
       1,

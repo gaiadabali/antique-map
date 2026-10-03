@@ -242,23 +242,13 @@ export const RECORD_FIELDS: Field[] = [
         defaultValue: 'available',
         index: true,
         options: WORK_STATUS_OPTIONS,
-        admin: {
-          description: {
-            en: 'Whether the antique is on offer. Set it; never imply it.',
-            id: 'Apakah barang antik ini dijual. Atur nilainya; jangan mengandaikan.',
-          },
-        },
+        admin: described(RECORD_NOTES.status),
       },
       {
         name: 'location',
         type: 'select',
         options: WORK_LOCATION_OPTIONS,
-        admin: {
-          description: {
-            en: 'Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.',
-            id: 'Di mana objek disimpan, Singapura atau Jakarta. Kosong sampai pemiliknya menentukan: tidak pernah menghalangi penerbitan.',
-          },
-        },
+        admin: described(RECORD_NOTES.location),
       },
     ],
   },
