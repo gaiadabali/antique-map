@@ -1,29 +1,28 @@
 /**
- * TASKS.md 3.5.c and 3.5.d, and the migration's hand-written steps (3.5.a), on a **migrated**
- * database (`./migrated-stack.test-support`):
+ * TASKS.md 3.5.d and the migration's hand-written steps (3.5.a), on a **migrated** database
+ * (`./migrated-stack.test-support`):
  *
- * - a store user moves their order one step forward and no further, refused with a plain field
- *   message over REST and through the Local API alike (the 8.6 finding); each move is recorded;
  * - role and store changes are recorded, the owner's alone to make (SECURITY.md R7); an editor and
  *   a store user cannot change their own role or store over REST, and nothing is recorded;
  * - the admin's locks: store staff reach their own alone, never another's;
  * - the payment ledger refuses UPDATE, DELETE and TRUNCATE in the database; order numbers come
  *   from `orders_number_seq`, from 100001.
+ *
+ * A store user's moves of an order's status (3.5.c) are `./order-status-moves.db.test.ts`; who may
+ * read whose records is 3.5.e (`./role-scoping.db.test.ts`).
  */
-import { getPayload, ValidationError } from 'payload'
+import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { asUser } from '../access/as-user'
 import { makeOrder, makeProduct } from '../collections/stock-levels/shop.test-support'
 import {
-  fieldError,
   idsOf,
   server,
   startMigratedStack,
   type MigratedStack,
 } from './migrated-stack.test-support'
 
-describe.skipIf(!server)('staff records on the migrated database (3.5.c, 3.5.d)', () => {
+describe.skipIf(!server)('staff records on the migrated database (3.5.d, 3.5.a)', () => {
   let stack: MigratedStack
   let product: number
 
@@ -35,116 +34,7 @@ describe.skipIf(!server)('staff records on the migrated database (3.5.c, 3.5.d)'
   }, 240_000)
   afterAll(() => stack?.stop(), 60_000)
 
-  const order = async (status = 'paid', store = stack.stores[0].id) =>
-    (await makeOrder(stack.payload, { store, product, qty: 1, status })).id
-  const stored = (id: number) =>
-    stack.payload.findByID({ collection: 'orders', id, depth: 0 }) as unknown as Promise<{
-      status: string
-      history?: Array<{ from: string; to: string; by: number; actor: string }>
-    }>
-
-  describe('an order’s status, moved by a store user (3.5.c)', () => {
-    it('moves one step forward, and records who moved it', async () => {
-      const id = await order('paid')
-      const moved = await stack.rest('PATCH', `/api/orders/${id}`, {
-        as: 'store',
-        json: { status: 'processing' },
-      })
-      expect(moved.status).toBe(200)
-      const after = await stored(id)
-      expect(after.status).toBe('processing')
-      expect(after.history?.at(-1)).toMatchObject({
-        from: 'paid',
-        to: 'processing',
-        actor: 'user',
-        by: stack.users.store.id,
-      })
-    })
-
-    it('refuses two steps, a step back and a cancel, with a plain message on status', async () => {
-      const id = await order('processing')
-      for (const status of ['on_the_way', 'paid', 'cancelled']) {
-        const refused = await stack.rest('PATCH', `/api/orders/${id}`, {
-          as: 'store',
-          json: { status },
-        })
-        expect(refused.status, status).toBe(400)
-        expect(fieldError(refused), status).toMatchObject({
-          path: 'status',
-          message: expect.stringMatching(
-            /^Store staff (move an order one step forward only|cannot move)/,
-          ),
-        })
-      }
-      expect((await stored(id)).status).toBe('processing')
-    })
-
-    it('answers the Local API with the same ValidationError and the same words', async () => {
-      const id = await order('paid')
-      const attempt = stack.payload.update({
-        collection: 'orders',
-        id,
-        data: { status: 'delivered' } as never,
-        ...asUser({ user: stack.users.store, payload: stack.payload } as never),
-      })
-      await expect(attempt).rejects.toBeInstanceOf(ValidationError)
-      await attempt.catch((error: ValidationError) => {
-        expect(error.data.errors[0]).toMatchObject({
-          path: 'status',
-          message:
-            'Store staff move an order one step forward only: from “Paid” the next step is “Processing”. Hand it back with a reason if something is wrong.',
-        })
-      })
-    })
-
-    it('refuses “on the way” until the driver’s details are uploaded', async () => {
-      const id = await order('waiting_driver')
-      const refused = await stack.rest('PATCH', `/api/orders/${id}`, {
-        as: 'store',
-        json: { status: 'on_the_way' },
-      })
-      expect(fieldError(refused)?.message).toMatch(/^Upload the driver’s details/)
-      // The server's upload route records them (with access overridden); then the step is theirs.
-      await stack.payload.update({
-        collection: 'orders',
-        id,
-        data: { driverImage: { key: `orders/${id}/driver.webp` } } as never,
-      })
-      const moved = await stack.rest('PATCH', `/api/orders/${id}`, {
-        as: 'store',
-        json: { status: 'on_the_way' },
-      })
-      expect(moved.status).toBe(200)
-    })
-
-    it('lets an editor cancel, step back once, and never reopen a cancelled order', async () => {
-      const id = await order('waiting_driver')
-      const back = await stack.rest('PATCH', `/api/orders/${id}`, {
-        as: 'editor',
-        json: { status: 'processing' },
-      })
-      expect(back.status).toBe(200)
-      expect(
-        (
-          await stack.rest('PATCH', `/api/orders/${id}`, {
-            as: 'editor',
-            json: { status: 'cancelled' },
-          })
-        ).status,
-      ).toBe(200)
-      const reopened = await stack.rest('PATCH', `/api/orders/${id}`, {
-        as: 'owner',
-        json: { status: 'paid' },
-      })
-      expect(fieldError(reopened)?.message).toMatch(/^An order cannot move from “Cancelled”/)
-    })
-
-    it('leaves the server’s own moves alone (no signed-in user): payment and expiry', async () => {
-      const id = await order('pending_payment')
-      await stack.payload.update({ collection: 'orders', id, data: { status: 'paid' } as never })
-      expect((await stored(id)).status).toBe('paid')
-    })
-  })
+  const order = () => makeOrder(stack.payload, { store: stack.stores[0].id, product, qty: 1 })
 
   describe('role and store changes (3.5.d, SECURITY.md R7)', () => {
     type Change = {
@@ -259,8 +149,8 @@ describe.skipIf(!server)('staff records on the migrated database (3.5.c, 3.5.d)'
       })) as { id: number }
 
     it('lets store staff list and release their own locks, and no one else’s', async () => {
-      const editors = await lock('editor', await order())
-      const mine = await lock('store', await order())
+      const editors = await lock('editor', (await order()).id)
+      const mine = await lock('store', (await order()).id)
       const list = await stack.rest('GET', '/api/payload-locked-documents?depth=0', { as: 'store' })
       expect(idsOf(list)).toEqual([mine.id])
       expect(
