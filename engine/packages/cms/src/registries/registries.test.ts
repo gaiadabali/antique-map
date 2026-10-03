@@ -72,7 +72,6 @@ const SLUGS = [
   'makers',
   'places',
   'terms',
-  'sources',
   'media',
   'masters',
   'pages',

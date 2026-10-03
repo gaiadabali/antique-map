@@ -29,6 +29,8 @@ import {
   COLOURING_OPTIONS,
   OBJECT_TYPE_OPTIONS,
   TECHNIQUE_OPTIONS,
+  WORK_LOCATION_OPTIONS,
+  WORK_STATUS_OPTIONS,
 } from './vocabulary'
 
 /** The row index of an array field's sub-field, from the path Payload validates it under. */
@@ -92,6 +94,19 @@ const isBound = (data: unknown) =>
   )
 
 export const RECORD_FIELDS: Field[] = [
+  {
+    name: 'publicId',
+    type: 'number',
+    unique: true,
+    index: true,
+    admin: {
+      position: 'sidebar',
+      readOnly: true,
+      description:
+        'Made when the work is first saved — the old site’s product id for a migrated work, otherwise from 100000 — and never changed: the item’s address carries it.',
+    },
+    hooks: { beforeDuplicate: [clear] },
+  },
   {
     name: 'workUid',
     type: 'text',
@@ -213,6 +228,31 @@ export const RECORD_FIELDS: Field[] = [
         type: 'select',
         label: { en: 'Colouring', id: 'Pewarnaan' },
         options: COLOURING_OPTIONS,
+      },
+    ],
+  },
+  {
+    type: 'row',
+    fields: [
+      {
+        name: 'status',
+        type: 'select',
+        // Not `enum_works_status`: toSnakeCase('_status') is 'status', so that name is taken by
+        // the drafts column's enum — this one needs its own.
+        enumName: 'work_status_vocabulary',
+        defaultValue: 'available',
+        index: true,
+        options: WORK_STATUS_OPTIONS,
+        admin: { description: 'Whether the antique is on offer. Set it; never imply it.' },
+      },
+      {
+        name: 'location',
+        type: 'select',
+        options: WORK_LOCATION_OPTIONS,
+        admin: {
+          description:
+            'Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.',
+        },
       },
     ],
   },

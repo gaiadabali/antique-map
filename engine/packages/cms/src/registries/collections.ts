@@ -26,7 +26,6 @@ import { PaymentEvents } from '../collections/payment-events'
 import { Places } from '../collections/places'
 import { Products } from '../collections/products'
 import { Redirects } from '../collections/redirects'
-import { Sources } from '../collections/sources'
 import { StockLevels } from '../collections/stock-levels'
 import { Stores } from '../collections/stores'
 import { Terms } from '../collections/terms'
@@ -47,7 +46,6 @@ const COLLECTIONS: readonly CollectionConfig[] = [
   Makers,
   Places,
   Terms,
-  Sources,
   Media,
   Masters,
   Pages,

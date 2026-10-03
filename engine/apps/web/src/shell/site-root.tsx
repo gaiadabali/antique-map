@@ -18,6 +18,8 @@ import type { ReactNode } from 'react'
 
 import { SITE_ASSETS } from '@engine/http/manifest'
 
+import { fontVariables } from '../shared/styles/fonts'
+
 import { siteLocale } from './messages'
 import { currentSite, shellOf, shellText, siteAsset, siteHref, type CurrentSite } from './site'
 import { SiteShell } from './site-shell'
@@ -76,7 +78,7 @@ export async function SiteRoot(props: {
   const locale = siteLocale(props.site, (await props.params).locale)
   if (locale === null) notFound()
   return (
-    <html lang={locale} data-site={site.key}>
+    <html lang={locale} data-site={site.key} className={fontVariables}>
       <body>
         <SiteShell shell={shellOf(site, locale)} t={shellText(site.key, locale)}>
           {props.children}

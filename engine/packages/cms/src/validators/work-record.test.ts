@@ -1,13 +1,7 @@
 import { workTag } from '@engine/cache'
 import { describe, expect, it } from 'vitest'
 
-import {
-  creditRowErrors,
-  hasPrimaryPlace,
-  placeRowErrors,
-  referenceRowErrors,
-  refId,
-} from './work-credits'
+import { creditRowErrors, hasPrimaryPlace, placeRowErrors, refId } from './work-credits'
 import {
   costErrors,
   formatWorkUid,
@@ -112,15 +106,5 @@ describe('a work’s credits, places and references', () => {
     expect(hasPrimaryPlace(rows)).toBe(true)
     expect(hasPrimaryPlace([{ place: 1, role: 'depicts' }])).toBe(false)
     expect(hasPrimaryPlace(undefined)).toBe(false)
-  })
-
-  it('refuses the same source and number twice', () => {
-    expect(
-      referenceRowErrors([
-        { source: 4, ref: '1268' },
-        { source: 4, ref: ' 1268 ' },
-        { source: 5, ref: '1268' },
-      ]),
-    ).toEqual([null, expect.stringMatching(/already listed/), null])
   })
 })

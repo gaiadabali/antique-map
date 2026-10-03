@@ -168,6 +168,7 @@ export const JPEG = Buffer.from(
 export const jpeg = (marker: string) => Buffer.concat([JPEG, Buffer.from(marker)])
 export const valid = {
   alt: 'Engraved map of Bali, 1726, hand-coloured, recto',
+  subject: 'work',
   role: 'recto',
   provenance: 'photograph',
 }

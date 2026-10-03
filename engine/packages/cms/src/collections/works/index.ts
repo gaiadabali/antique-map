@@ -4,11 +4,13 @@
  * is a work, the original on offer one product of it, a giclée print another (9.1). No price is
  * ever on a work.
  *
- * - **Fields** (`./fields-record`, `./fields-object`, `./fields-staff`): the record as catalogued,
- *   its place in the discovery vocabulary, the object — condition, images, master — and what the
- *   public never reads: `physical` (no defaults; staff-only, by role), rights, cataloguing,
- *   legacy ids, SEO. The essay, `description`, is a run of C4 blocks and lands with them (as
- *   `makers.bio` does — `../makers` says why there is no placeholder; 8.2's report).
+ * - **Fields** (`./fields-record`, `./fields-object`, `./fields-staff`): the record as catalogued —
+ *   `publicId` (the old site's number, from 100000, kept for ever — 3.2.b), `status` and
+ *   `location` (3.2.d) — its place in the discovery vocabulary, the object — condition, images,
+ *   master — and what the public never reads: `askingPrice` (whole US dollars, the owner's
+ *   alone — Q14), `physical` (no defaults; staff-only, by role), rights, cataloguing, legacy ids,
+ *   SEO. The essay, `description`, is a run of C4 blocks and lands with them (as `makers.bio`
+ *   does — `../makers` says why there is no placeholder; 8.2's report).
  * - **Every save** (drafts included, `drafts.validate`): dates in order and with their precision,
  *   sizes positive and the image on its sheet, credits and places without duplicates, images a work
  *   may show, a recto's master, the uid made once and kept.
@@ -17,8 +19,9 @@
  *   at once. A blank location or export status never blocks it: the item is enquiry-only.
  * - **Access** (`./access`): `publishedOrStaff`; owner and editors write; `physical` by role.
  * - **After the commit** (`hooks/work-invalidate`): the work's cache tags expire.
- * - **Deletes** of the makers, places, terms and sources a work references are refused while it
- *   does (`hooks/work-references`), and every work save holds the lock those deletes take.
+ * - **Deletes** of the makers, places and terms a work references are refused while it does
+ *   (`hooks/work-references`), and every work save holds the lock those deletes take. A work's
+ *   sources are plain-text `references` rows now (3.2.a) — no collection to delete.
  */
 import type { CollectionConfig } from 'payload'
 
@@ -33,19 +36,28 @@ import { WORKS_ACCESS, WORKS_VERSIONS } from './access'
 import { OBJECT_FIELDS } from './fields-object'
 import { RECORD_FIELDS } from './fields-record'
 import { STAFF_FIELDS } from './fields-staff'
+import { assignPublicId } from './public-id'
 
 export const Works: CollectionConfig = {
   slug: 'works',
   labels: {
-    singular: { en: 'Work', id: 'Karya' },
-    plural: { en: 'Works', id: 'Karya' },
+    singular: { en: 'Antique', id: 'Antik' },
+    plural: { en: 'Antiques', id: 'Antik' },
   },
   admin: {
     group: ADMIN_GROUPS.antiques,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'title',
-    defaultColumns: ['title', 'stockNumber', 'objectType', '_status', 'updatedAt'],
-    listSearchableFields: ['title', 'stockNumber', 'workUid', 'originalTitle'],
+    defaultColumns: [
+      'title',
+      'stockNumber',
+      'publicId',
+      'status',
+      'objectType',
+      '_status',
+      'updatedAt',
+    ],
+    listSearchableFields: ['title', 'stockNumber', 'workUid', 'publicId', 'originalTitle'],
     description: {
       en: 'The objects themselves — each map, print, photograph or book. How one is sold is its product.',
       id: 'Objeknya sendiri — setiap peta, cetakan, foto, atau buku. Cara menjualnya adalah produknya.',
@@ -54,7 +66,7 @@ export const Works: CollectionConfig = {
   access: WORKS_ACCESS,
   versions: WORKS_VERSIONS,
   hooks: {
-    beforeChange: [holdWorkReferences, assignWorkUid, stampCataloguing, guardWork],
+    beforeChange: [holdWorkReferences, assignWorkUid, assignPublicId, stampCataloguing, guardWork],
     afterChange: [invalidateWorkOnChange],
     afterDelete: [invalidateWorkOnDelete],
   },

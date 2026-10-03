@@ -1,0 +1,54 @@
+@import '../../../shared/styles/tokens/primitives.css';
+
+/* =====================================================================
+   Tier 2 brand variables — Old East Indies.
+   Warmer and friendlier than the gallery, but visibly a sibling: same
+   type, same shapes, same component language. The swap point is this file.
+   ===================================================================== */
+
+[data-site='shop'] {
+  --brand-surface: var(--primitive-cream);
+  --brand-surface-raised: var(--primitive-paper);
+  --brand-surface-deep: var(--primitive-linen);
+  --brand-surface-dark: var(--primitive-brown);
+  --brand-surface-dark-ink: var(--primitive-paper);
+
+  --brand-text: var(--primitive-brown);
+  --brand-text-muted: #7a5e3e; /* warm brown that passes AA on cream */
+  --brand-text-on-dark: var(--primitive-cream);
+
+  --brand-accent: var(--primitive-bronze);
+  --brand-accent-contrast: var(--primitive-paper);
+  --brand-accent-secondary: var(--primitive-champagne);
+
+  --brand-border: var(--primitive-champagne);
+  --brand-border-strong: color-mix(in srgb, var(--primitive-brown) 18%, transparent);
+  --brand-focus: var(--primitive-bronze);
+  --brand-scrim: #1a191699;
+
+  --brand-danger: var(--primitive-critical);
+  --brand-success: var(--primitive-positive);
+  --brand-caution: var(--primitive-caution);
+
+  --brand-space-1: var(--primitive-space-1);
+  --brand-space-2: var(--primitive-space-2);
+  --brand-space-3: var(--primitive-space-3);
+  --brand-space-4: var(--primitive-space-4);
+  --brand-space-5: var(--primitive-space-5);
+  --brand-space-6: var(--primitive-space-6);
+  --brand-space-7: var(--primitive-space-7);
+  --brand-space-8: var(--primitive-space-8);
+  --brand-space-9: var(--primitive-space-9);
+  --brand-space-10: var(--primitive-space-10);
+  --brand-gutter: clamp(1.25rem, 0.5rem + 3.5vw, 3.125rem);
+
+  --brand-radius-card: var(--primitive-radius-none);
+  --brand-radius-control: var(--primitive-radius-control);
+  --brand-rule-hair: var(--primitive-rule-hair);
+  --brand-rule-strong: var(--primitive-rule-strong);
+  --brand-focus-width: var(--primitive-focus-width);
+  --brand-shadow-header: var(--primitive-shadow-header);
+  --brand-dur-in: var(--primitive-dur-in);
+  --brand-dur-out: var(--primitive-dur-out);
+  --brand-ease: var(--primitive-ease);
+}

@@ -17,9 +17,10 @@ import type { Field, Validate } from 'payload'
 import { STAFF_ONLY_ACCESS } from '../../access/fields'
 import { translationStatusField } from '../../fields/translation-status'
 import { costErrors, rightsErrors, type Cost, type Rights } from '../../validators/work-record'
-import { ACQUISITION_ACCESS, PHYSICAL_ACCESS } from './access'
+import { OWNER_ONLY_ACCESS, ACQUISITION_ACCESS, PHYSICAL_ACCESS } from './access'
 import {
-  AI_DRAFTABLE_OPTIONS,
+  AI_DRAFTABLE_FIELDS,
+  AI_DRAFTABLE_LABELS,
   CATALOGUING_STATUS_OPTIONS,
   EXPORT_STATUS_OPTIONS,
   RIGHTS_STATUS_OPTIONS,
@@ -27,6 +28,18 @@ import {
 
 /** A duplicate is another object: its record, workflow and legacy ids start empty. */
 const cleared = () => ({})
+
+/**
+ * The owner's start of a negotiation and the insured value (Q14): whole US dollars, so an integer
+ * never a float. Read and updated by the owner alone (Q14; DR-10) — no editor, no store user, and
+ * no public read selects it: the loaders project the fields a page shows.
+ */
+const validateAskingPrice: Validate = (value) =>
+  value === null || value === undefined
+    ? true
+    : Number.isSafeInteger(value) && value >= 0
+      ? true
+      : 'Whole US dollars, 0 or more: there is no cent and no other currency here.'
 
 const rightsPart =
   (part: keyof Rights): Validate =>
@@ -106,6 +119,19 @@ export const physicalField: Field = {
 }
 
 export const STAFF_FIELDS: Field[] = [
+  {
+    name: 'askingPrice',
+    type: 'number',
+    label: 'Asking price (USD)',
+    access: OWNER_ONLY_ACCESS,
+    validate: validateAskingPrice,
+    admin: {
+      position: 'sidebar',
+      description:
+        'Whole US dollars — the start of a negotiation and the insured value. Never on a page, a feed or an AI answer.',
+    },
+    hooks: { beforeDuplicate: [() => null] },
+  },
   physicalField,
   {
     name: 'rights',
@@ -180,16 +206,37 @@ export const STAFF_FIELDS: Field[] = [
       },
       {
         name: 'aiDraft',
-        type: 'select',
-        hasMany: true,
+        type: 'group',
         label: { en: 'Drafted by AI, not yet checked', id: 'Dibuat draf oleh AI, belum diperiksa' },
-        options: AI_DRAFTABLE_OPTIONS,
         admin: {
           description: {
-            en: 'The work cannot publish while any field is listed here.',
-            id: 'Karya tidak dapat diterbitkan selama ada bidang yang tercantum di sini.',
+            en: 'One entry per field the drafting tool filled. The work cannot publish while an entry is drafted and has no verified time.',
+            id: 'Satu entri per bidang yang diisi alat draf. Karya tidak dapat diterbitkan selama ada entri yang masih draf tanpa waktu verifikasi.',
           },
         },
+        hooks: { beforeDuplicate: [cleared] },
+        fields: AI_DRAFTABLE_FIELDS.map((field) => ({
+          name: field,
+          type: 'group',
+          label: AI_DRAFTABLE_LABELS[field],
+          fields: [
+            { name: 'drafted', type: 'checkbox', defaultValue: false },
+            {
+              name: 'verifiedBy',
+              type: 'relationship',
+              relationTo: 'users',
+              admin: { description: 'Who checked it.' },
+            },
+            {
+              name: 'verifiedAt',
+              type: 'date',
+              admin: {
+                date: { pickerAppearance: 'dayOnly' },
+                description: 'When they checked it.',
+              },
+            },
+          ],
+        })),
       },
     ],
   },
