@@ -10,7 +10,8 @@ import {
   freeDeliveryRemainingIdr,
   type DeliveryBand,
 } from './delivery'
-import { SETTINGS } from './pricing.test-support'
+import { CATALOGUE, PLAIN, SETTINGS, line } from './pricing.test-support'
+import { quoteBag } from './quote'
 
 const { bands, freeOverIdr } = SETTINGS.delivery
 const fee = (distanceKm: number, afterDiscountIdr = 100_000) =>
@@ -58,6 +59,27 @@ describe('the band', () => {
     for (const d of [-1, Number.NaN, Number.POSITIVE_INFINITY])
       expect(() => fee(d)).toThrow(RangeError)
     expect(() => deliveryFeeFor(1, bands, freeOverIdr, 1.5)).toThrow(RangeError)
+  })
+})
+
+describe('a pin beyond the last band refuses with the handoff', () => {
+  // The page maps `beyond_reach` to the WhatsApp handoff copy (EXPERIENCE-SHOP.md §6); the core's
+  // contract is the refusal itself: no fee, no delivery in the total, nothing to buy into.
+  it('the quote refuses with beyond_reach and totals the items only', () => {
+    const quote = quoteBag([line(PLAIN, 2)], CATALOGUE, SETTINGS, { distanceKm: 20.1, discount: null })
+    expect(quote).toMatchObject({
+      refusal: 'beyond_reach',
+      deliveryIdr: null,
+      subtotalIdr: 190_000,
+      totalIdr: 190_000,
+    })
+  })
+
+  it('the fee alone refuses, so checkout can offer the handoff before pricing', () => {
+    expect(deliveryFeeFor(20.1, bands, freeOverIdr, 190_000)).toEqual({
+      ok: false,
+      refusal: 'beyond_reach',
+    })
   })
 })
 
