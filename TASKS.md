@@ -18,16 +18,16 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 3/7 | 24/33 | 0 | `███████░░░`  73% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 25/33 | 0 | `████████░░`  76% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 2/20 | 0 | `█░░░░░░░░░`  10% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 4/20 | 0 | `██░░░░░░░░`  20% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **14/49** | **99/200** | **8** | `█████░░░░░`  50% |
+| **All** | 11 phases | | | **15/49** | **102/200** | **8** | `█████░░░░░`  51% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,11 +78,13 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-03 | lane change to the user's Claude seat (2026-10-03); run 1 died at the turn limit after the full dry-run passed (1,823 planned, 0 rejected) and 3 commits — continuation `am-3.7b-c1` (ticket `3.7b-r1`) in flight: the 4 seed db tests, the evidence battery, gitignore the 2.8 GB local upload bucket |
+| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-03 | lane change to the user's Claude seat (2026-10-03); run 1 died at the turn limit after the full dry-run passed (1,823 planned, 0 rejected) and 3 commits — continuation `am-3.7b-c2` (ticket `3.7b-r1`) in flight: the 4 seed db tests, the evidence battery, gitignore the 2.8 GB local upload bucket |
+| 3·W1 | 3.1 Staging as one site | devops (claude seat) | `w/3.1` | 2026-10-03 | refocus (user): finish phases 3 and 4 — run `am-3.1-c1` (ticket `3.1.md`) in flight: the one-site provision reshape, the db retirement after dumps, the first release by scp, backups; the off-box backup target stays the owner's open decision |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
-| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | 5.1.a loaders committed (`dfc92b0`) and ticked; the lane change stopped run 1 mid-5.1.b — continuation `am-5.1-c1` (ticket `5.1-r1`) in flight: the pages (5.1.b) and gazetteer search (5.1.c) |
+| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | 5.1.a–c all ticked (`aa7199d`); run `am-5.1-c2` finishing its report and fresh-clone verify, then review and merge |
+| 3·W1 | 3.1 Staging as one site | devops | `w/3.1` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -321,7 +323,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** staging serves both hostnames from one app; as the owner, in the admin, a non-developer adds an antique with photos, a product with stock in two stores and a store; a `store` user sees only that store's orders; a spreadsheet of products and stock imports with a report of rejected rows; the seeded data is present for both sites; the admin is in English and Indonesian.
 **Waves:** W1 — 3.1, 3.2, 3.3, 3.4 · W2 — 3.5, 3.6 · W3 — 3.7
 
-- [ ] **3.1 Staging as one site** · needs: phase 2
+- [ ] **3.1 Staging as one site** · needs: phase 2 — 🔄 3·W1
   - **Lane** OPS · **Agent** devops · **Wave** W1
   - **Owns** `scripts/ops/**`, `docs/ops/**`, `.gaiadeploy.yml`
   - **Read** CARRY-OVER.md §3 step 8 and §6.6, DEPLOYMENT.md, `docs/ops/helios-staging.md`
@@ -332,7 +334,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
   - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
-- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — 🔄 3·W1
+- [x] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — ✅ 2026-10-03 46353c9
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{works,makers,places,terms,media,masters}/**`
   - **Read** CONTENT-MODEL.md §3–§5, CARRY-OVER.md §2.5
@@ -342,7 +344,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
   - [x] 3.2.d media keep their roles and localised alt text; masters stay private with the presigned PUT and checksum
   - [x] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
-  - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
+  - [x] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
 - [x] **3.3 Shop collections: products, stores and stock** · needs: phase 2 — ✅ 2026-10-03 18bc46b
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
@@ -452,8 +454,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** EXPERIENCE-GALLERY.md §Browse and §Search, ARCHITECTURE.md §Search
   - _Requirements: 3.1_
   - [x] 5.1.a loaders (published only, projected, no price field) for the listing and the facets maker, place (including historical names), period, type and subject, with counts
-  - [ ] 5.1.b the browse page with facet chips, sort and pagination, usable at 390 px
-  - [ ] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
+  - [x] 5.1.b the browse page with facet chips, sort and pagination, usable at 390 px
+  - [x] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [ ] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
 
 - [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4
@@ -813,7 +815,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
-- 2026-10-03 — **Lane change: the GLM runs stopped, the project back on the user's Claude seat** (the user's call, reversing the same-day GLM-only decision). `am-5.1-1` stopped mid-5.1.b with 5.1.a already committed and ticked (`dfc92b0`); `am-3.7b-r1` ran ~20 min and committed nothing. The surviving headless workers were killed and both worktrees verified unchanged. Continuation tickets `3.7b-r1` and `5.1-r1` written to the claude lane and merged into the worktrees (`a877bbb`, `d49f41e`); runs `am-3.7b-c1` and `am-5.1-c1` launch on the seat. The 9.2.b dashboard ticket relabelled with them.
+- 2026-10-03 — **Refocus (user): finish phases 3 and 4.** 3.2 closed — its Check ran locally, 32/32 db tests green on `main` (publish refusals naming every missing guard field; the place cycle guard; `askingPrice` owner-only; an editor publishes a complete work). 3.1 ticketed (`3.1.md`) and launched on the seat (`am-3.1-c1`, devops): the one-site staging reshape, the `ig_db`/`oei_db` retirement after dumps, the first release by scp (no push), backups. 4.2.c's code — the kebab-case kit, the barrel, `/style-guide` on both hosts — turns out to have merged with the int/4 wave and was never reported; the board takes it with the 4.2.d Check run. Remaining for the two phases: 3.6.d and 4.1.e/4.2.d/4.3.e Checks (local qa), 3.7.b in flight, 3.7.d after it, 3.1 in flight; the off-box backup target is the owner's open question.
+- 2026-10-03 — **Lane change: the GLM runs stopped, the project back on the user's Claude seat** (the user's call, reversing the same-day GLM-only decision). `am-5.1-1` stopped mid-5.1.b with 5.1.a already committed and ticked (`dfc92b0`); `am-3.7b-r1` ran ~20 min and committed nothing. The surviving headless workers were killed and both worktrees verified unchanged. Continuation tickets `3.7b-r1` and `5.1-r1` written to the claude lane and merged into the worktrees (`a877bbb`, `d49f41e`); runs `am-3.7b-c2` and `am-5.1-c2` launch on the seat, after a launcher fix: run.sh's claude lane inherited the ambient `ANTHROPIC_DEFAULT_*_MODEL` GLM 5.3 defaults and 404'd in six seconds — the unset now covers them, and the seat uses the login's own model. The 9.2.b dashboard ticket relabelled with them.
 - 2026-10-03 — **main fully green again** — the whole `pnpm verify` chain passes on `main` after the CRLF repair (11 phases parse, 1,911 tests, every gate). Two GLM lanes now run: 3.7.b seed layers (`am-3.7b-1`, `w/3.7b`) and 5.1 gallery browse and search (`am-5.1-1`, `w/5.1`, ticket `74608b7`).
 - 2026-10-03 — **Board CRLF bug found and fixed.** Four files sat CRLF on disk while the index stayed LF: git saw them clean (`eol=lf` normalises), so `git checkout --` would not rewrite them, and the board scripts kept the CRLF (they preserve the file's existing EOL). Symptom: `tasks:lint` parsed **0 phases** and flooded 74 false findings. Fixed by delete + restore; the gates are green again. If `tasks:lint` ever reports 0 phases, run `git ls-files --eol TASKS.md` first.
 - 2026-10-03 ✅ 6.2 (a–c) — the bag page merged (`e8deda8`): cookie-bag UI with the welcome-code form and delivery-fee quote; the code is re-validated against `discounts` on every read, display reads published/projected at `limit: 20`, money formatted server-side only; the shop-lexicon conflict with 4.3's prune resolved (en 683 / id 679, the four `.one` plurals the only legal gap); 85 bag/pricing tests green before the merge. The 6.2.d Check awaits qa; open: `BAG_COOKIE_KEY` in the boot check, checkout re-checks the code with contact (6.3).

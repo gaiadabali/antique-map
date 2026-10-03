@@ -1,0 +1,67 @@
+/* The gallery search (5.1.b): the form, the answer's lines and the Ask us handoff; the page
+   and the cards share the browse styles. Tokens only (DESIGN-SYSTEM.md). */
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.form > :first-of-type {
+  flex: 1 1 14rem;
+}
+
+.input {
+  width: 100%;
+}
+
+.submit {
+  flex: none;
+}
+
+.heading {
+  font: var(--text-h3);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.didYouMean {
+  font: var(--text-body);
+  margin: 0;
+}
+
+.prompt {
+  font: var(--text-body);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.ask {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-card);
+}
+
+.askBody {
+  font: var(--text-small);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.askActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
