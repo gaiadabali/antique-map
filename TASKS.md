@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 17/33 | 0 | `█████░░░░░`  52% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 6/14 | 0 | `████░░░░░░`  43% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 5/18 | 0 | `███░░░░░░░`  28% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 7/18 | 0 | `████░░░░░░`  39% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 0/4 | 5/16 | 0 | `███░░░░░░░`  31% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **80/200** | **8** | `████░░░░░░`  40% |
+| **All** | 11 phases | | | **9/49** | **82/200** | **8** | `████░░░░░░`  41% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -538,8 +538,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** COMMERCE.md §Checkout, §Nearest store and §Stock, EXPERIENCE-SHOP.md §Checkout, Q4
   - _Requirements: 5.5, 6.1, 7.2, 7.3, 7.4_
   - [ ] 6.3.a the checkout form (contact, address, notes) and a map pin picker on Google Maps (the Maps JavaScript API with Places autocomplete, its referrer-restricted key delivered from the server; `/api/x/geocode` validates and reverse-geocodes with the server key; the pasted-link fallback), validated on the server, Indonesia only
-  - [ ] 6.3.b `pickStore`: the nearest active store, by straight-line distance from the pin, that holds every line; ties broken by code; none → the buyer is told before paying (Q4)
-  - [ ] 6.3.c order creation in one transaction: re-price, pick the store, decrement each line's `stock-levels` row with `UPDATE … WHERE quantity >= n` (zero rows updated aborts), create the order in `pending_payment` with the 60-minute payment window and a hashed tracking token
+  - [x] 6.3.b `pickStore`: the nearest active store, by straight-line distance from the pin, that holds every line; ties broken by code; none → the buyer is told before paying (Q4)
+  - [x] 6.3.c order creation in one transaction: re-price, pick the store, decrement each line's `stock-levels` row with `UPDATE … WHERE quantity >= n` (zero rows updated aborts), create the order in `pending_payment` with the 60-minute payment window and a hashed tracking token
   - [ ] 6.3.d **Check:** a db test fires 20 concurrent orders for the last unit and exactly one succeeds; a pin in Ubud picks the nearer of two stores; a basket no single store can fill is refused before payment; a pin outside Indonesia is refused.
 
 - [ ] **6.4 Midtrans: payment, webhook, simulator and expiry** · needs: phase 3 — 🔄 6·W2
