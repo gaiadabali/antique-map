@@ -1,8 +1,10 @@
 /**
  * axe on every shell page of the site a project's host serves (TASKS.md 5.6.e, 2.2 — gate M1,
- * playwright.config.ts's promise that the e2e specs assert accessibility): the home page and the
- * not-found page in each of the site's locales, at a phone's 390 px and a desktop's 1280 px, each
- * with no axe violation at all (every rule axe runs by default, best practices included).
+ * playwright.config.ts's promise that the e2e specs assert accessibility): the home page, the style
+ * guide (4.2.d — every component of the kit on one page, noindexed but axe-clean like any public
+ * page) and the not-found page in each of the site's locales, at a phone's 390 px and a desktop's
+ * 1280 px, each with no axe violation at all (every rule axe runs by default, best practices
+ * included).
  *
  * Storefront pages only: Payload's own admin UI is not axe clean yet (the foundation gate's F6,
  * TASKS.md 23.x), so `/admin` is left to that task rather than excused here.
@@ -38,6 +40,7 @@ const prefixOf = (locales: SmokeMetadata['locales'], locale: string) =>
 
 const PAGES = [
   { page: 'home', path: (prefix: string) => prefix || '/', status: 200 },
+  { page: 'style-guide', path: (prefix: string) => `${prefix}/style-guide`, status: 200 },
   { page: 'not-found', path: (prefix: string) => `${prefix}/${MISSING}`, status: 404 },
 ] as const
 
