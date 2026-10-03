@@ -36,6 +36,7 @@ export function DomainShell(): React.ReactElement {
                 width: '100%',
                 aspectRatio: '4 / 3',
                 background: 'var(--color-surface-deep)',
+                color: 'var(--color-text)',
                 display: 'grid',
                 placeItems: 'center',
               }}

@@ -46,4 +46,9 @@
   position: absolute;
   inset: auto var(--space-3) var(--space-3) var(--space-3);
   z-index: 1;
+  /* The notice floats over the viewport (image or placeholder), so it must
+     carry its own opaque backdrop to stay readable. */
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-dark);
+  border-radius: var(--radius-control);
 }
