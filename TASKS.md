@@ -78,11 +78,11 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W3 | 3.7.b Seed layers | senior-be (GLM) | `w/3.7b` | 2026-10-03 | run 1 (`am-3.7b-1`) died at the turn limit after the full dry-run passed (1,823 planned, 0 rejected) and 3 commits; continuation `am-3.7b-r1` in flight — finish the 4 seed db tests, the evidence battery, gitignore the 2.8 GB local upload bucket |
+| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-03 | lane change to the user's Claude seat (2026-10-03); run 1 died at the turn limit after the full dry-run passed (1,823 planned, 0 rejected) and 3 commits — continuation `am-3.7b-c1` (ticket `3.7b-r1`) in flight: the 4 seed db tests, the evidence battery, gitignore the 2.8 GB local upload bucket |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
-| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) — dispatches when a GLM lane frees |
+| 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
-| 5·W1 | 5.1 Browse and search | senior-fe | `w/5.1` | 2026-10-03 | |
+| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | 5.1.a loaders committed (`dfc92b0`) and ticked; the lane change stopped run 1 mid-5.1.b — continuation `am-5.1-c1` (ticket `5.1-r1`) in flight: the pages (5.1.b) and gazetteer search (5.1.c) |
 
 ## Decisions for the owner
 
@@ -813,6 +813,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 — **Lane change: the GLM runs stopped, the project back on the user's Claude seat** (the user's call, reversing the same-day GLM-only decision). `am-5.1-1` stopped mid-5.1.b with 5.1.a already committed and ticked (`dfc92b0`); `am-3.7b-r1` ran ~20 min and committed nothing. The surviving headless workers were killed and both worktrees verified unchanged. Continuation tickets `3.7b-r1` and `5.1-r1` written to the claude lane and merged into the worktrees (`a877bbb`, `d49f41e`); runs `am-3.7b-c1` and `am-5.1-c1` launch on the seat. The 9.2.b dashboard ticket relabelled with them.
 - 2026-10-03 — **main fully green again** — the whole `pnpm verify` chain passes on `main` after the CRLF repair (11 phases parse, 1,911 tests, every gate). Two GLM lanes now run: 3.7.b seed layers (`am-3.7b-1`, `w/3.7b`) and 5.1 gallery browse and search (`am-5.1-1`, `w/5.1`, ticket `74608b7`).
 - 2026-10-03 — **Board CRLF bug found and fixed.** Four files sat CRLF on disk while the index stayed LF: git saw them clean (`eol=lf` normalises), so `git checkout --` would not rewrite them, and the board scripts kept the CRLF (they preserve the file's existing EOL). Symptom: `tasks:lint` parsed **0 phases** and flooded 74 false findings. Fixed by delete + restore; the gates are green again. If `tasks:lint` ever reports 0 phases, run `git ls-files --eol TASKS.md` first.
 - 2026-10-03 ✅ 6.2 (a–c) — the bag page merged (`e8deda8`): cookie-bag UI with the welcome-code form and delivery-fee quote; the code is re-validated against `discounts` on every read, display reads published/projected at `limit: 20`, money formatted server-side only; the shop-lexicon conflict with 4.3's prune resolved (en 683 / id 679, the four `.one` plurals the only legal gap); 85 bag/pricing tests green before the merge. The 6.2.d Check awaits qa; open: `BAG_COOKIE_KEY` in the boot check, checkout re-checks the code with contact (6.3).
