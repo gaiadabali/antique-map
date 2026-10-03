@@ -24,6 +24,7 @@
 import { MEDIA_UPLOAD_MIME_TYPES } from '@engine/media/storage'
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { MEDIA_ACCESS } from './access'
 import { MEDIA_FIELDS } from './fields'
 import { freezeAfterCreate, mayCorrectIntake } from './frozen'
@@ -36,12 +37,18 @@ import {
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  labels: { singular: 'Image', plural: 'Images' },
+  labels: {
+    singular: { en: 'Image', id: 'Gambar' },
+    plural: { en: 'Images', id: 'Gambar' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
     useAsTitle: 'alt',
     defaultColumns: ['filename', 'alt', 'role', 'provenance', 'updatedAt'],
-    description:
-      'Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.',
+    description: {
+      en: 'Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.',
+      id: 'Gambar yang ditampilkan di situs. Masing-masing diolah dari tangkapan di Masters; situs menampilkan salinan berukuran yang diubah, bukan berkas ini sendiri.',
+    },
   },
   access: MEDIA_ACCESS,
   upload: {

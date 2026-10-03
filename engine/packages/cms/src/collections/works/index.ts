@@ -22,6 +22,7 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'
@@ -34,13 +35,19 @@ import { STAFF_FIELDS } from './fields-staff'
 
 export const Works: CollectionConfig = {
   slug: 'works',
-  labels: { singular: 'Work', plural: 'Works' },
+  labels: {
+    singular: { en: 'Work', id: 'Karya' },
+    plural: { en: 'Works', id: 'Karya' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
     useAsTitle: 'title',
     defaultColumns: ['title', 'stockNumber', 'objectType', '_status', 'updatedAt'],
     listSearchableFields: ['title', 'stockNumber', 'workUid', 'originalTitle'],
-    description:
-      'The objects themselves — each map, print, photograph or book. How one is sold is its product.',
+    description: {
+      en: 'The objects themselves — each map, print, photograph or book. How one is sold is its product.',
+      id: 'Objeknya sendiri — setiap peta, cetakan, foto, atau buku. Cara menjualnya adalah produknya.',
+    },
   },
   access: WORKS_ACCESS,
   versions: WORKS_VERSIONS,

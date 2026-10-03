@@ -10,6 +10,7 @@
     "./access": "./src/access/index.ts",
     "./registries": "./src/registries/index.ts",
     "./db/probe": "./src/db/probe.ts",
+    "./admin/widgets": "./src/admin/widgets/index.ts",
     "./shop/pricing": "./src/shop/pricing/index.ts"
   },
   "scripts": {

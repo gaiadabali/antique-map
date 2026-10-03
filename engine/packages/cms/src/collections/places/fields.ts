@@ -26,10 +26,15 @@ function historicalNamePart(part: keyof RowErrors): Validate {
 export const historicalNamesField: ArrayField = {
   name: 'historicalNames',
   type: 'array',
-  labels: { singular: 'Historical name', plural: 'Historical names' },
+  labels: {
+    singular: { en: 'Historical name', id: 'Nama historis' },
+    plural: { en: 'Historical names', id: 'Nama historis' },
+  },
   admin: {
-    description:
-      'Batavia, Iava, Celebes, Moluccas — every name the place has gone by. Search finds the place under each.',
+    description: {
+      en: 'Batavia, Iava, Celebes, Moluccas — every name the place has gone by. Search finds the place under each.',
+      id: 'Batavia, Iava, Celebes, Maluku — setiap nama yang pernah dipakai tempat ini. Pencarian menemukan tempat di bawah masing-masing.',
+    },
   },
   fields: [
     {
@@ -47,13 +52,23 @@ export const historicalNamesField: ArrayField = {
           type: 'text',
           maxLength: 35,
           validate: historicalNamePart('language'),
-          admin: { description: 'A language code: nl, la, pt, ms, jv.' },
+          admin: {
+            description: {
+              en: 'A language code: nl, la, pt, ms, jv.',
+              id: 'Kode bahasa: nl, la, pt, ms, jv.',
+            },
+          },
         },
         {
           name: 'period',
           type: 'text',
           maxLength: 120,
-          admin: { description: 'When it was used: "1619–1942", "VOC era".' },
+          admin: {
+            description: {
+              en: 'When it was used: "1619–1942", "VOC era".',
+              id: 'Ketika digunakan: "1619–1942", "era VOC".',
+            },
+          },
         },
       ],
     },
@@ -68,7 +83,7 @@ function geoPart(path: Path): keyof GeoErrors {
 const validateGeo: Validate = (_value, { data, path }) =>
   geoErrors((data as { geo?: Geo } | undefined)?.geo)[geoPart(path)] ?? true
 
-function degrees(name: string, label: string): NumberField {
+function degrees(name: string, label: { en: string; id: string }): NumberField {
   return { name, type: 'number', label, validate: validateGeo, admin: { step: 0.000001 } }
 }
 
@@ -76,27 +91,37 @@ export const geoField: GroupField = {
   name: 'geo',
   type: 'group',
   admin: {
-    description:
-      'Where it is, in decimal degrees (WGS 84): the point a locator map pins and, if useful, the box a map of it frames.',
+    description: {
+      en: 'Where it is, in decimal degrees (WGS 84): the point a locator map pins and, if useful, the box a map of it frames.',
+      id: 'Lokasinya, dalam derajat desimal (WGS 84): titik yang ditandai peta penunjuk, dan, bila berguna, kotak yang dibingkai peta.',
+    },
   },
   fields: [
-    { type: 'row', fields: [degrees('lat', 'Latitude'), degrees('lng', 'Longitude')] },
+    {
+      type: 'row',
+      fields: [
+        degrees('lat', { en: 'Latitude', id: 'Lintang' }),
+        degrees('lng', { en: 'Longitude', id: 'Bujur' }),
+      ],
+    },
     {
       name: 'bbox',
       type: 'group',
-      label: 'Bounding box',
+      label: { en: 'Bounding box', id: 'Kotak batas' },
       admin: {
-        description:
-          'West, south, east and north edges. West may be greater than east for a box across the 180° meridian.',
+        description: {
+          en: 'West, south, east and north edges. West may be greater than east for a box across the 180° meridian.',
+          id: 'Tepi barat, selatan, timur, dan utara. Barat boleh lebih besar dari timur untuk kotak yang melintasi meridian 180°.',
+        },
       },
       fields: [
         {
           type: 'row',
           fields: [
-            degrees('west', 'West'),
-            degrees('south', 'South'),
-            degrees('east', 'East'),
-            degrees('north', 'North'),
+            degrees('west', { en: 'West', id: 'Barat' }),
+            degrees('south', { en: 'South', id: 'Selatan' }),
+            degrees('east', { en: 'East', id: 'Timur' }),
+            degrees('north', { en: 'North', id: 'Utara' }),
           ],
         },
       ],

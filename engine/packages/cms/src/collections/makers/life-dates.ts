@@ -42,7 +42,10 @@ function partError(part: Part, group: 'born' | 'died'): Validate {
   }
 }
 
-export function lifeDateGroup(name: 'born' | 'died', label: string): GroupField {
+export function lifeDateGroup(
+  name: 'born' | 'died',
+  label: { en: string; id: string },
+): GroupField {
   return {
     name,
     type: 'group',
@@ -59,14 +62,14 @@ export function lifeDateGroup(name: 'born' | 'died', label: string): GroupField 
       {
         name: 'from',
         type: 'number',
-        label: 'Year',
+        label: { en: 'Year', id: 'Tahun' },
         admin: { step: 1 },
         validate: partError('from', name),
       },
       {
         name: 'to',
         type: 'number',
-        label: 'Until (a range only)',
+        label: { en: 'Until (a range only)', id: 'Hingga (hanya rentang)' },
         admin: { step: 1 },
         validate: partError('to', name),
       },
@@ -74,8 +77,13 @@ export function lifeDateGroup(name: 'born' | 'died', label: string): GroupField 
         name: 'display',
         type: 'text',
         localized: true,
-        label: 'As written',
-        admin: { description: 'Your own wording, if the year alone says it wrong: "1724–26".' },
+        label: { en: 'As written', id: 'Seperti tertulis' },
+        admin: {
+          description: {
+            en: 'Your own wording, if the year alone says it wrong: "1724–26".',
+            id: 'Ungkapan Anda sendiri, bila tahun saja kurang tepat: "1724–26".',
+          },
+        },
       },
     ],
   }

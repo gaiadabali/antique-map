@@ -7,6 +7,7 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { isOwner } from '../users/roles'
 import { appendStatusHistory } from './status-history'
 import {
@@ -32,6 +33,7 @@ export const Leads: CollectionConfig = {
     plural: { en: 'Leads', id: 'Calon pembeli' },
   },
   admin: {
+    group: ADMIN_GROUPS.leadsAndPartners,
     useAsTitle: 'id',
     defaultColumns: ['kind', 'site', 'status', 'source', 'createdAt'],
     description: {

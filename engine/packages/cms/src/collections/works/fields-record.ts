@@ -49,8 +49,16 @@ const validateCredit: Validate = (value, { data, path }) => {
 export const makersField: ArrayField = {
   name: 'makers',
   type: 'array',
-  labels: { singular: 'Credit', plural: 'Makers' },
-  admin: { description: 'Who made it, in what role, and how certain the attribution is.' },
+  labels: {
+    singular: { en: 'Credit', id: 'Kredit' },
+    plural: { en: 'Makers', id: 'Pembuat' },
+  },
+  admin: {
+    description: {
+      en: 'Who made it, in what role, and how certain the attribution is.',
+      id: 'Siapa yang membuatnya, dalam peran apa, dan seberapa pasti atribusinya.',
+    },
+  },
   fields: [
     {
       type: 'row',
@@ -88,7 +96,10 @@ export const RECORD_FIELDS: Field[] = [
     admin: {
       position: 'sidebar',
       readOnly: true,
-      description: 'Made when the work is first saved, and never changed: redirects key on it.',
+      description: {
+        en: 'Made when the work is first saved, and never changed: redirects key on it.',
+        id: 'Dibuat saat karya pertama kali disimpan, dan tidak pernah berubah: kunci pengalihan menggunakannya.',
+      },
     },
     hooks: { beforeDuplicate: [clear] },
   },
@@ -98,7 +109,13 @@ export const RECORD_FIELDS: Field[] = [
     index: true,
     maxLength: 40,
     validate: validateStockNumber,
-    admin: { position: 'sidebar', description: 'The gallery’s own number: M.1044, P.2098.' },
+    admin: {
+      position: 'sidebar',
+      description: {
+        en: 'The gallery’s own number: M.1044, P.2098.',
+        id: 'Nomor milik galeri: M.1044, P.2098.',
+      },
+    },
     hooks: { beforeDuplicate: [clear] },
   },
   {
@@ -107,7 +124,10 @@ export const RECORD_FIELDS: Field[] = [
     localized: true,
     maxLength: 240,
     admin: {
-      description: `The hook title buyers read: "Bali by François Valentijn, 1726 — the first large-scale map of the island". Needed to publish. ${IN_DEFAULT_LOCALE_NOTE}`,
+      description: {
+        en: `The hook title buyers read: "Bali by François Valentijn, 1726 — the first large-scale map of the island". Needed to publish. ${(IN_DEFAULT_LOCALE_NOTE as { en: string }).en}`,
+        id: `Judul yang dibaca pembeli: "Bali by François Valentijn, 1726 — the first large-scale map of the island". Diperlukan untuk menerbitkan. ${(IN_DEFAULT_LOCALE_NOTE as { id: string }).id}`,
+      },
     },
   },
   {
@@ -119,7 +139,10 @@ export const RECORD_FIELDS: Field[] = [
         maxLength: 400,
         admin: {
           width: '70%',
-          description: 'As printed, letter for letter: Kaart van het Eyland Bali.',
+          description: {
+            en: 'As printed, letter for letter: Kaart van het Eyland Bali.',
+            id: 'Seperti tercetak, huruf demi huruf: Kaart van het Eyland Bali.',
+          },
         },
       },
       {
@@ -127,7 +150,13 @@ export const RECORD_FIELDS: Field[] = [
         type: 'text',
         maxLength: 35,
         validate: validateLanguage,
-        admin: { width: '30%', description: 'Its language: nl, la, ms.' },
+        admin: {
+          width: '30%',
+          description: {
+            en: 'Its language: nl, la, ms.',
+            id: 'Bahasanya: nl, la, ms.',
+          },
+        },
       },
     ],
   },
@@ -137,30 +166,84 @@ export const RECORD_FIELDS: Field[] = [
     index: true,
     options: OBJECT_TYPE_OPTIONS,
     admin: {
-      description: 'What kind of object it is: it decides the HS code and how the page reads.',
+      description: {
+        en: 'What kind of object it is: it decides the HS code and how the page reads.',
+        id: 'Jenis objeknya: menentukan kode HS dan cara halaman membacanya.',
+      },
     },
   },
   makersField,
-  fuzzyDateGroup('date', 'Date', 'When this sheet was printed or issued. Needed to publish.'),
-  fuzzyDateGroup('firstEdition', 'First edition', 'When the work first appeared, if earlier.'),
-  fuzzyDateGroup('dateOnPlate', 'Date on the plate', 'The date the plate itself bears, if any.'),
+  fuzzyDateGroup(
+    'date',
+    { en: 'Date', id: 'Tanggal' },
+    {
+      en: 'When this sheet was printed or issued. Needed to publish.',
+      id: 'Ketika lembar ini dicetak atau diterbitkan. Diperlukan untuk menerbitkan.',
+    },
+  ),
+  fuzzyDateGroup(
+    'firstEdition',
+    { en: 'First edition', id: 'Edisi pertama' },
+    {
+      en: 'When the work first appeared, if earlier.',
+      id: 'Ketika karya ini pertama kali muncul, jika lebih awal.',
+    },
+  ),
+  fuzzyDateGroup(
+    'dateOnPlate',
+    { en: 'Date on the plate', id: 'Tanggal pada pelat' },
+    {
+      en: 'The date the plate itself bears, if any.',
+      id: 'Tanggal yang tertera pada pelat itu sendiri, jika ada.',
+    },
+  ),
   {
     name: 'publication',
     type: 'group',
-    admin: { description: 'As the imprint and the book it came from say.' },
+    admin: {
+      description: {
+        en: 'As the imprint and the book it came from say.',
+        id: 'Seperti yang tertulis pada impresum dan buku asalnya.',
+      },
+    },
     fields: [
       {
         type: 'row',
         fields: [
-          { name: 'place', type: 'text', maxLength: 120, admin: { description: 'Amsterdam' } },
-          { name: 'publisher', type: 'text', maxLength: 200, admin: { description: 'As printed' } },
+          {
+            name: 'place',
+            type: 'text',
+            maxLength: 120,
+            admin: {
+              description: {
+                en: 'Amsterdam',
+                id: 'Amsterdam',
+              },
+            },
+          },
+          {
+            name: 'publisher',
+            type: 'text',
+            maxLength: 200,
+            admin: {
+              description: {
+                en: 'As printed',
+                id: 'Seperti tercetak',
+              },
+            },
+          },
         ],
       },
       {
         name: 'sourceWork',
         type: 'text',
         maxLength: 300,
-        admin: { description: 'From: Oud en Nieuw Oost-Indiën, 1724–26.' },
+        admin: {
+          description: {
+            en: 'From: Oud en Nieuw Oost-Indiën, 1724–26.',
+            id: 'Dari: Oud en Nieuw Oost-Indiën, 1724–26.',
+          },
+        },
       },
       {
         type: 'row',
@@ -172,7 +255,12 @@ export const RECORD_FIELDS: Field[] = [
             type: 'text',
             maxLength: 35,
             validate: validateLanguage,
-            admin: { description: 'Of the printed text: nl, la.' },
+            admin: {
+              description: {
+                en: 'Of the printed text: nl, la.',
+                id: 'Dari teks tercetak: nl, la.',
+              },
+            },
           },
         ],
       },
@@ -181,7 +269,12 @@ export const RECORD_FIELDS: Field[] = [
         type: 'text',
         localized: true,
         maxLength: 300,
-        admin: { description: '"Verso: blank", or the text printed on the back.' },
+        admin: {
+          description: {
+            en: '"Verso: blank", or the text printed on the back.',
+            id: '"Verso: kosong", atau teks yang tercetak di bagian belakang.',
+          },
+        },
       },
     ],
   },
@@ -189,15 +282,26 @@ export const RECORD_FIELDS: Field[] = [
     type: 'row',
     fields: [
       { name: 'technique', type: 'select', options: TECHNIQUE_OPTIONS },
-      { name: 'colour', type: 'select', label: 'Colouring', options: COLOURING_OPTIONS },
+      {
+        name: 'colour',
+        type: 'select',
+        label: { en: 'Colouring', id: 'Pewarnaan' },
+        options: COLOURING_OPTIONS,
+      },
     ],
   },
   dimensionsField,
   {
     name: 'book',
     type: 'group',
-    label: 'Book or atlas',
-    admin: { condition: isBound, description: 'A volume’s collation.' },
+    label: { en: 'Book or atlas', id: 'Buku atau atlas' },
+    admin: {
+      condition: isBound,
+      description: {
+        en: 'A volume’s collation.',
+        id: 'Kolasi sebuah volume.',
+      },
+    },
     fields: [
       {
         type: 'row',
@@ -218,7 +322,12 @@ export const RECORD_FIELDS: Field[] = [
         type: 'upload',
         relationTo: 'media',
         hasMany: true,
-        admin: { description: 'Photographs of spreads, in order.' },
+        admin: {
+          description: {
+            en: 'Photographs of spreads, in order.',
+            id: 'Foto penyebaran, berurutan.',
+          },
+        },
       },
       {
         type: 'row',

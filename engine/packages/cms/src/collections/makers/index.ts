@@ -17,6 +17,7 @@
  */
 import type { CollectionConfig, Validate } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { aliasErrors, sameAsErrors } from '../../validators/maker-names'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
@@ -56,8 +57,12 @@ const required =
 
 export const Makers: CollectionConfig = {
   slug: 'makers',
-  labels: { singular: 'Maker', plural: 'Makers' },
+  labels: {
+    singular: { en: 'Maker', id: 'Pembuat' },
+    plural: { en: 'Makers', id: 'Pembuat' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
     useAsTitle: 'name',
     defaultColumns: ['name', 'sortName', 'roles', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'sortName', 'aliases.name'],
@@ -71,8 +76,16 @@ export const Makers: CollectionConfig = {
       type: 'text',
       required: true,
       maxLength: 200,
-      validate: required('Give the name the maker is known by, such as "François Valentijn".'),
-      admin: { description: 'As the maker is known: "François Valentijn", "Woodbury & Page".' },
+      validate: required({
+        en: 'Give the name the maker is known by, such as "François Valentijn".',
+        id: 'Berikan nama yang dikenal pembuatnya, seperti "François Valentijn".',
+      }),
+      admin: {
+        description: {
+          en: 'As the maker is known: "François Valentijn", "Woodbury & Page".',
+          id: 'Seperti pembuat dikenal: "François Valentijn", "Woodbury & Page".',
+        },
+      },
     },
     {
       name: 'sortName',
@@ -80,17 +93,31 @@ export const Makers: CollectionConfig = {
       required: true,
       index: true,
       maxLength: 200,
-      validate: required('Give the name as a maker line sorts it, such as "VALENTIJN, François".'),
+      validate: required({
+        en: 'Give the name as a maker line sorts it, such as "VALENTIJN, François".',
+        id: 'Berikan nama seperti diurutkan dalam baris pembuat, seperti "VALENTIJN, François".',
+      }),
       admin: {
-        description: 'As a collector’s maker line reads, surname first: "BLAEU, Willem Janszoon".',
+        description: {
+          en: 'As a collector’s maker line reads, surname first: "BLAEU, Willem Janszoon".',
+          id: 'Seperti baris pembuat kolektor dibaca, marga dulu: "BLAEU, Willem Janszoon".',
+        },
       },
     },
     slugField({ from: 'name' }),
     {
       name: 'aliases',
       type: 'array',
-      labels: { singular: 'Other spelling', plural: 'Other spellings' },
-      admin: { description: 'Valentyn beside Valentijn: the spellings a search should also find.' },
+      labels: {
+        singular: { en: 'Other spelling', id: 'Ejaan lain' },
+        plural: { en: 'Other spellings', id: 'Ejaan lain' },
+      },
+      admin: {
+        description: {
+          en: 'Valentyn beside Valentijn: the spellings a search should also find.',
+          id: 'Valentyn di samping Valentijn: ejaan yang juga harus ditemukan pencarian.',
+        },
+      },
       fields: [{ name: 'name', type: 'text', required: true, validate: validateAlias }],
     },
     {
@@ -98,31 +125,57 @@ export const Makers: CollectionConfig = {
       type: 'select',
       hasMany: true,
       options: MAKER_ROLES.map((value) => ({ value, label: MAKER_ROLE_LABELS[value] })),
-      admin: { description: 'What the maker is known for. A work names the role on that work.' },
+      admin: {
+        description: {
+          en: 'What the maker is known for. A work names the role on that work.',
+          id: 'Apa yang dikenal dari pembuat. Karya menyebutkan peran pada karya itu.',
+        },
+      },
     },
     {
       type: 'row',
-      fields: [lifeDateGroup('born', 'Born'), lifeDateGroup('died', 'Died')],
+      fields: [
+        lifeDateGroup('born', { en: 'Born', id: 'Lahir' }),
+        lifeDateGroup('died', { en: 'Died', id: 'Wafat' }),
+      ],
     },
     {
       name: 'nationality',
       type: 'text',
       localized: true,
       maxLength: 120,
-      admin: { description: '"Dutch", "Belanda" — in each language.' },
+      admin: {
+        description: {
+          en: '"Dutch", "Belanda" — in each language.',
+          id: '"Dutch", "Belanda" — dalam setiap bahasa.',
+        },
+      },
     },
     {
       name: 'portrait',
       type: 'upload',
       relationTo: 'media',
-      admin: { description: 'A portrait, if one exists.' },
+      admin: {
+        description: {
+          en: 'A portrait, if one exists.',
+          id: 'Potret, jika ada.',
+        },
+      },
     },
     {
       name: 'sameAs',
       type: 'array',
       maxRows: 10,
-      labels: { singular: 'Authority record', plural: 'Authority records' },
-      admin: { description: 'The same maker elsewhere: Wikidata, the Getty ULAN.' },
+      labels: {
+        singular: { en: 'Authority record', id: 'Catatan otoritas' },
+        plural: { en: 'Authority records', id: 'Catatan otoritas' },
+      },
+      admin: {
+        description: {
+          en: 'The same maker elsewhere: Wikidata, the Getty ULAN.',
+          id: 'Pembuat yang sama di tempat lain: Wikidata, Getty ULAN.',
+        },
+      },
       fields: [{ name: 'url', type: 'text', required: true, validate: validateSameAs }],
     },
     translationStatusField,

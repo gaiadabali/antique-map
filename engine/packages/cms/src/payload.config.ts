@@ -91,6 +91,27 @@ export function engineConfig(env: Env = process.env): Config {
       // Gravatar would send a hash of each editor's email to a third party on every page.
       avatar: 'default',
       components: { views: adminViews() },
+      dashboard: {
+        defaultLayout: [
+          { widgetSlug: 'orders-to-act-on', width: 'medium' },
+          { widgetSlug: 'new-leads', width: 'medium' },
+          { widgetSlug: 'collections', width: 'full' },
+        ],
+        widgets: [
+          {
+            slug: 'orders-to-act-on',
+            label: { en: 'Orders to act on', id: 'Pesanan perlu tindakan' },
+            Component: '@engine/cms/admin/widgets#OrdersToActOnWidget',
+            minWidth: 'medium',
+          },
+          {
+            slug: 'new-leads',
+            label: { en: 'New leads', id: 'Calon pembeli baru' },
+            Component: '@engine/cms/admin/widgets#NewLeadsWidget',
+            minWidth: 'medium',
+          },
+        ],
+      },
     },
     collections: registeredCollections(),
     globals: registeredGlobals(),

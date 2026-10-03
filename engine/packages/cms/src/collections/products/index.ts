@@ -14,6 +14,7 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { dbConstraints } from '../../db/constraints'
 import { PRODUCTS_ACCESS } from './access'
 import { PRODUCT_CONSTRAINTS } from './constraints'
@@ -27,6 +28,7 @@ export const Products: CollectionConfig = {
     plural: { en: 'Products', id: 'Produk' },
   },
   admin: {
+    group: ADMIN_GROUPS.shop,
     useAsTitle: 'name',
     defaultColumns: ['name', 'sku', 'price', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'sku', 'variants.sku'],

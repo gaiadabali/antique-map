@@ -15,9 +15,15 @@ export type Option = { readonly label: string; readonly value: string }
 
 export function optionsOf(
   values: readonly string[],
-  labels: Readonly<Record<string, string>>,
+  labels: Readonly<Record<string, string | { en: string; id: string }>>,
 ): Option[] {
-  return values.map((value) => ({ value, label: labels[value] ?? value }))
+  return values.map((value) => {
+    const label = labels[value] ?? value
+    return {
+      value,
+      label: typeof label === 'string' ? { en: label, id: label } : label,
+    }
+  })
 }
 
 export const ROLE_LABELS: Readonly<Record<string, string>> = {

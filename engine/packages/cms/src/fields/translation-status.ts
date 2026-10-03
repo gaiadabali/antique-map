@@ -12,10 +12,13 @@ import { STAFF_ONLY_ACCESS } from '../access/fields'
 export const TRANSLATION_STATUSES = ['entered', 'machine', 'reviewed'] as const
 export type TranslationStatus = (typeof TRANSLATION_STATUSES)[number]
 
-const TRANSLATION_LABELS: Record<TranslationStatus, string> = {
-  entered: 'Entered by hand',
-  machine: 'Machine translation — not yet reviewed',
-  reviewed: 'Reviewed',
+const TRANSLATION_LABELS: Record<TranslationStatus, { en: string; id: string }> = {
+  entered: { en: 'Entered by hand', id: 'Diketik tangan' },
+  machine: {
+    en: 'Machine translation — not yet reviewed',
+    id: 'Terjemahan mesin — belum diperiksa',
+  },
+  reviewed: { en: 'Reviewed', id: 'Sudah diperiksa' },
 }
 
 export const translationStatusField: SelectField = {

@@ -6,6 +6,7 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { DRAFTED_ACCESS } from '../../access/published'
 import { hasRole } from '../users/roles'
 import { PAGE_KIND_LABELS, PAGE_KINDS } from './kinds'
@@ -33,6 +34,7 @@ export const Pages: CollectionConfig = {
     plural: { en: 'Pages', id: 'Halaman' },
   },
   admin: {
+    group: ADMIN_GROUPS.content,
     useAsTitle: 'title',
     defaultColumns: ['site', 'kind', 'slug', '_status', 'updatedAt'],
     description: {

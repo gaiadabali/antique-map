@@ -13,6 +13,7 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { dbConstraints } from '../../db/constraints'
 import { KEY_ACCESS, QUANTITY_ACCESS, STOCK_LEVELS_ACCESS } from './access'
 import { STOCK_LEVEL_CONSTRAINTS } from './constraints'
@@ -25,6 +26,7 @@ export const StockLevels: CollectionConfig = {
     plural: { en: 'Stock', id: 'Stok' },
   },
   admin: {
+    group: ADMIN_GROUPS.storesAndStock,
     defaultColumns: ['store', 'product', 'variantSku', 'quantity', 'updatedAt'],
     description: {
       en: 'What each store can still sell. Enter what is on the shelf; units waiting for a driver are taken off for you.',

@@ -4,6 +4,7 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
 import { hasRole } from '../users/roles'
 
 const redirectManagers = ({ req }: Parameters<import('payload').Access>[0]) =>
@@ -42,6 +43,7 @@ export const Redirects: CollectionConfig = {
     plural: { en: 'Redirects', id: 'Pengalihan' },
   },
   admin: {
+    group: ADMIN_GROUPS.content,
     useAsTitle: 'from',
     defaultColumns: ['site', 'from', 'to', 'code', 'source', 'hits', 'updatedAt'],
     description: {
