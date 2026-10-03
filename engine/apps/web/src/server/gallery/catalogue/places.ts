@@ -22,7 +22,10 @@ export type PlaceNode = {
 
 /** The published places, flat. `slug` is the modern name's slug; a place carries no per-locale
  * slug of its own — the seed's slugs are the gazetteer paths the docs name (`places`). */
-export async function loadPlaces(payload: Payload, locale: SiteLocale): Promise<readonly PlaceNode[]> {
+export async function loadPlaces(
+  payload: Payload,
+  locale: SiteLocale,
+): Promise<readonly PlaceNode[]> {
   const found = await payload.find({
     collection: 'places',
     overrideAccess: false,
@@ -39,7 +42,11 @@ export async function loadPlaces(payload: Payload, locale: SiteLocale): Promise<
     const parent = doc.parent
     parentOf.set(
       id,
-      typeof parent === 'number' ? parent : typeof parent === 'object' && parent !== null && 'id' in parent ? Number((parent as { id: unknown }).id) : null,
+      typeof parent === 'number'
+        ? parent
+        : typeof parent === 'object' && parent !== null && 'id' in parent
+          ? Number((parent as { id: unknown }).id)
+          : null,
     )
   }
   return (found.docs as readonly Record<string, unknown>[]).map((doc) => ({
@@ -51,10 +58,7 @@ export async function loadPlaces(payload: Payload, locale: SiteLocale): Promise<
 }
 
 /** The descendants of a place, including itself, as the ids a place filter covers. */
-export function descendantIdsOf(
-  places: readonly PlaceNode[],
-  placeId: number,
-): readonly number[] {
+export function descendantIdsOf(places: readonly PlaceNode[], placeId: number): readonly number[] {
   const childrenOf = new Map<number, number[]>()
   for (const place of places) {
     if (place.parentId === null) continue

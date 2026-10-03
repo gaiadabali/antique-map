@@ -1,11 +1,9 @@
 /**
- * A listing's facet state (5.1.a): what the URL said, parsed and closed over the contract's
- * vocabulary (`@engine/config/schema/facets`). The browse and search pages hand their
- * `searchParams` here; the loaders take this object and nothing rawer, so one state is one
- * canonical set of filters and a facet link is `href()` of a state.
- *
- * Values the URL invents — an unknown sort, an out-of-range century, a negative year — are
- * dropped, never guessed: a filter the page cannot name is not a filter the catalogue answers.
+ * A listing's facet state (5.1.a): what the URL said, closed over the contract's vocabulary
+ * (`@engine/config/schema/facets`). The loaders take this object and nothing rawer, so one state
+ * is one canonical set of filters; `./url-state` reads it from, and writes it back to, the
+ * listing query the route map parses (`parseListingQuery()`), so a facet link is `href()` of a
+ * state.
  */
 import type { SortKey } from '@engine/config/schema'
 
@@ -56,60 +54,6 @@ export const EMPTY_STATE: FacetState = {
   subject: [],
   sort: 'newest',
   page: 1,
-}
-
-const MAX_PAGE = 200
-const MAX_IDS = 40
-
-/** A search-param value as its first spelling, or the empty string. */
-export function firstOf(value: string | string[] | undefined): string {
-  return (Array.isArray(value) ? value[0] : value) ?? ''
-}
-
-/** A repeated search param as the values it names, deduped. */
-export function manyOf(value: string | string[] | undefined): readonly string[] {
-  return [...new Set((Array.isArray(value) ? value : [value]).filter((v): v is string => !!v))]
-}
-
-const toIds = (values: readonly string[]): readonly number[] =>
-  values
-    .map((value) => Number(value))
-    .filter((id) => Number.isSafeInteger(id) && id > 0)
-    .slice(0, MAX_IDS)
-
-/** The listing state one page's URL holds. A sort the gallery does not offer falls to `newest`. */
-export function stateOf(
-  input: {
-    objectType?: string | string[]
-    maker?: string | string[]
-    place?: string | string[]
-    date?: string | string[]
-    yearFrom?: string | string[]
-    yearTo?: string | string[]
-    subject?: string | string[]
-    sold?: string | string[]
-    sort?: string | string[]
-    page?: string | string[]
-  },
-  fallbackSort: WorkSort = 'newest',
-): FacetState {
-  const century = Number(firstOf(input.date))
-  const yearFrom = Number(firstOf(input.yearFrom))
-  const yearTo = Number(firstOf(input.yearTo))
-  const page = Number(firstOf(input.page))
-  const sort = WORK_SORTS.find((each) => each === firstOf(input.sort)) ?? fallbackSort
-  return {
-    includeSold: firstOf(input.sold) === '1',
-    objectType: manyOf(input.objectType),
-    maker: toIds(manyOf(input.maker)),
-    place: toIds(manyOf(input.place))[0] ?? null,
-    century: PERIOD_CHIPS.find((each) => each === century) ?? null,
-    yearFrom: Number.isSafeInteger(yearFrom) ? yearFrom : null,
-    yearTo: Number.isSafeInteger(yearTo) ? yearTo : null,
-    subject: toIds(manyOf(input.subject)),
-    sort,
-    page: Number.isSafeInteger(page) && page > 1 ? Math.min(page, MAX_PAGE) : 1,
-  }
 }
 
 /** Whether the state filters anything at all (the applied-filter chips' emptiness check). */

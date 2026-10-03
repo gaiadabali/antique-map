@@ -1,0 +1,83 @@
+/* The gallery's work cards and their grid (5.1.b): 390 px first, tokens only (DESIGN-SYSTEM.md). */
+
+/* Two columns on the phone, four on the desktop (EXPERIENCE-GALLERY.md §4). */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.card:focus-visible {
+  outline: var(--rule-hair) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+/* The mat: the sheet sits whole on a quiet ground, contained and never cropped. */
+.mat {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: var(--space-3);
+  background: var(--color-surface-raised);
+}
+
+.image {
+  height: 100%;
+}
+
+.image img {
+  object-fit: contain;
+}
+
+.noImage {
+  height: 100%;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font: var(--text-card-title);
+  color: var(--color-text);
+}
+
+.card:hover .title {
+  text-decoration: underline;
+}
+
+.meta {
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The ONE status line: availability said once, never a price. */
+.status {
+  font: var(--text-caption);
+  color: var(--color-text);
+}
+
+.status-sold {
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-4);
+  }
+}

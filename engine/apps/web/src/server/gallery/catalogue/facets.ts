@@ -25,7 +25,11 @@ const WORK_STATUSES = ['available', 'on-hold', 'sold'] as const
 
 type Counts = ReadonlyMap<string, number>
 
-async function countsOf(payload: Payload, sql: string, values: readonly unknown[]): Promise<Counts> {
+async function countsOf(
+  payload: Payload,
+  sql: string,
+  values: readonly unknown[],
+): Promise<Counts> {
   const pool = poolOf(payload)
   const { rows } = await pool.query(sql, [...values])
   return new Map(rows.map((row) => [String(row.value), Number(row.count)]))
@@ -107,7 +111,11 @@ async function availabilityCounts(
   )
 }
 
-async function typeCounts(payload: Payload, state: FacetState, ctx: FilterContext): Promise<Counts> {
+async function typeCounts(
+  payload: Payload,
+  state: FacetState,
+  ctx: FilterContext,
+): Promise<Counts> {
   const parts = filterParts(state, ctx, 'objectType')
   return countsOf(
     payload,
@@ -229,7 +237,13 @@ async function optionsForSubjects(
   const found = await payload.find({
     collection: 'terms',
     overrideAccess: false,
-    where: { and: [{ _status: { equals: 'published' } }, { kind: { equals: 'subject' } }] },
+    where: {
+      and: [
+        { _status: { equals: 'published' } },
+        { kind: { equals: 'subject' } },
+        { id: { in: [...counts.keys()].map(Number) } },
+      ],
+    },
     select: { label: true },
     depth: 0,
     limit: counts.size,

@@ -47,7 +47,6 @@ type CardDoc = {
 }
 
 const WORK_STATUSES = ['available', 'on-hold', 'sold'] as const
-type WorkStatus = (typeof WORK_STATUSES)[number]
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 const int = (value: unknown): number | null =>
@@ -61,7 +60,9 @@ const mm = (group: unknown): { height: number | null; width: number | null } | n
 
 /** A card's dimensions line: the image's, else the sheet's, in cm with the inches beside —
  * "28.5 × 40 cm (11.2 × 15.7 in)". `null` when neither is measured. */
-export function dimensionsLine(dimensions: Record<string, unknown> | null | undefined): string | null {
+export function dimensionsLine(
+  dimensions: Record<string, unknown> | null | undefined,
+): string | null {
   const size = mm(dimensions?.image) ?? mm(dimensions?.sheet)
   if (size === null || size.height === null || size.width === null) return null
   const cm = (value: number) => Math.round((value / 10) * 10) / 10
@@ -114,9 +115,7 @@ export async function projectCards(
     locale,
     limit: ids.length,
   })
-  const byId = new Map(
-    (found.docs as readonly CardDoc[]).map((doc) => [doc.id, doc]),
-  )
+  const byId = new Map((found.docs as readonly CardDoc[]).map((doc) => [doc.id, doc]))
   return ids.flatMap((id) => {
     const doc = byId.get(id)
     if (!doc) return []
@@ -127,7 +126,9 @@ export async function projectCards(
 function cardOf(doc: CardDoc, unknownDateText: string): WorkCardVM {
   const makers = (doc.makers ?? []).map(makerOf).filter((m): m is CardMaker => m !== null)
   const places = (doc.places ?? []).map(placeOf).filter((p): p is CardPlace => p !== null)
-  const images = (doc.images ?? []).map((row) => mediaOf(row.media)).filter((i): i is CardImage => i !== null)
+  const images = (doc.images ?? [])
+    .map((row) => mediaOf(row.media))
+    .filter((i): i is CardImage => i !== null)
   const status = WORK_STATUSES.find((each) => each === doc.status) ?? 'available'
   return {
     id: doc.id,

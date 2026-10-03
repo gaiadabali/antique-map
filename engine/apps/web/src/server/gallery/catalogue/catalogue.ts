@@ -22,7 +22,7 @@ import { listWorks } from './listing'
 import { loadPlaces, descendantIdsOf, type PlaceNode } from './places'
 import { projectCards } from './projection'
 import { searchWorkIds } from './search'
-import { EMPTY_STATE, type FacetState, stateOf } from './state'
+import { EMPTY_STATE, type FacetState } from './state'
 import type { FacetSetVM, SearchResultVM, WorkListingVM } from './view-models'
 
 /** The whole works collection's tag: an editorial change re-renders every listing that shows one. */
@@ -45,11 +45,17 @@ async function contextOf(payload: Payload): Promise<FilterContext> {
   return { placeIds: (placeId) => ids.get(placeId) ?? [placeId] }
 }
 
+/** The published gazetteer as the browse pages resolve place paths and name places, in one
+ * locale: cached under the works tag, so a gazetteer edit re-renders the pages that name one. */
+export async function placeTree(locale: SiteLocale): Promise<readonly PlaceNode[]> {
+  'use cache'
+  tagWorks()
+  const payload = await cms()
+  return loadPlaces(payload, locale)
+}
+
 /** One page of the browse listing, for one facet state. */
-export async function listing(
-  state: FacetState,
-  locale: SiteLocale,
-): Promise<WorkListingVM> {
+export async function listing(state: FacetState, locale: SiteLocale): Promise<WorkListingVM> {
   'use cache'
   tagWorks()
   const payload = await cms()
@@ -88,6 +94,5 @@ export async function search(options: {
   return { items, total: answer.ids.length, suggestion: answer.suggestion, jumpTo: answer.jumpTo }
 }
 
-/** The parsed state of one page's URL, closed here so pages parse one way only. */
-export { stateOf, EMPTY_STATE }
+export { EMPTY_STATE }
 export type { FacetState }

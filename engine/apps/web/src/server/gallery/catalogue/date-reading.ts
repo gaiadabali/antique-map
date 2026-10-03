@@ -33,11 +33,10 @@ export const SQL_LATEST_YEAR = `
   END`
 
 /** The earliest and latest years a work's date allows, as TypeScript reads the same columns. */
-export function dateRangeOf(date: {
-  precision?: unknown
-  from?: unknown
-  to?: unknown
-}): { earliest: number | null; latest: number | null } {
+export function dateRangeOf(date: { precision?: unknown; from?: unknown; to?: unknown }): {
+  earliest: number | null
+  latest: number | null
+} {
   const from = typeof date.from === 'number' ? date.from : null
   if (from === null) return { earliest: null, latest: null }
   switch (date.precision) {
@@ -77,9 +76,7 @@ export function dateTextOf(
     case 'after':
       return `after ${from}`
     case 'range':
-      return typeof date.to === 'number' && date.to !== from
-        ? `${from}–${date.to}`
-        : String(from)
+      return typeof date.to === 'number' && date.to !== from ? `${from}–${date.to}` : String(from)
     default:
       return unknownText
   }
