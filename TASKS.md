@@ -78,16 +78,16 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db (Opus → GLM) | `w/3.5` | 2026-10-03 | 3.5.a–d done and the 3.5.e test written (5 commits); Opus stopped at its rate limit — GLM finishes the last 3.3 test update, then `int/3-w1` merges to `main` |
-| 3·W1 | 3.2, 3.3, 3.4 collections | senior-db / senior-be | `int/3-w1` | 2026-10-03 | merged into the integration branch with 6.4; land on `main` together with 3.5's migration |
-| 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `int/3-w1` | 2026-10-03 | 6.4.a–c done; mounts wired; waits for the 3.5 merge |
-| 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | 8.1.a–d done, 102 tests, end-to-end run on a dev server; to merge into `int/3-w1` |
-| 3·W2 | 3.6 The admin experience | senior-fe (Kimi → GLM) | `w/3.6` | 2026-10-03 | Kimi ran out of turns twice with ~40 files uncommitted; GLM finishes and commits |
-| 6·W2 | 6.3 Checkout, nearest store, atomic stock | senior-be (Opus → GLM) | `w/6.3core` | 2026-10-03 | Opus stopped at its rate limit before committing; GLM redoes the core with the concurrency test |
+| 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db (Opus → GLM) | `w/3.5` | 2026-10-03 | 3.5.a–e done and verified on a fresh clone (`deb9883`); merged into `int/3-w1` — the wave's full gate is running now, then `main` |
+| 3·W1 | 3.2, 3.3, 3.4 collections | senior-db / senior-be | `int/3-w1` | 2026-10-03 | 3.2/3.3/3.4/8.1/3.5/6.3core all merged into the integration branch; full gate in flight, then `main` |
+| 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `int/3-w1` | 2026-10-03 | 6.4.a–c done; mounts wired; lands with the `int/3-w1` merge |
+| 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `int/3-w1` | 2026-10-03 | 8.1.a–d done, 102 tests, end-to-end run on a dev server; lands with the `int/3-w1` merge |
+| 3·W2 | 3.6 The admin experience | senior-fe (Kimi → GLM) | `w/3.6` | 2026-10-03 | Kimi ran out of turns twice; GLM run `am-3.6-r2` in flight |
+| 6·W2 | 6.3 Checkout, nearest store, atomic stock | senior-be (Opus → GLM) | `w/6.3core` | 2026-10-03 | GLM done (`59564ae`): pickStore, one-transaction order, 20-concurrency test green; merged into `int/3-w1`; merge to `main` with the wave |
 | 3·W3 | 3.7 Import and seed | senior-be (GLM) | `w/3.7ab` | 2026-10-03 | 3.7.c merged; the 3.7.a/b run committed nothing — rerun on GLM |
 | 4·W2 | 4.2 Shared components | senior-fe (Kimi) | `int/4` + `w/4.2c` | 2026-10-03 | kit kebab-cased, one barrel, `/style-guide` on both hosts; gate green with build; visual check of both palettes pending, then merge (closes the 4.1 Check too) |
 | 4·W3 | 4.3 Chrome and home pages | senior-fe (Kimi) | `w/4.3` | 2026-10-03 | second run done with 6 files uncommitted — review, commit, gate |
-| 6·W1 | 6.1 Shop browse, search and product page | senior-fe (Kimi) | `w/6.1` | 2026-10-03 | run done with 2 files uncommitted — review, commit, gate |
+| 6·W1 | 6.1 Shop browse, search and product page | senior-fe (GLM) | `w/6.1` | 2026-10-03 | the Kimi run died on the gateway's 429 before writing any code (only the `server-only` dep landed, committed `0d6ad3f`); GLM rerun `am-6.1-g1` in flight |
 | 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `w/9.2a` | 2026-10-03 | 9.2.a/c done (beacon, collector, no-tracker check); gate green but for the expected migrated-db tests; it changes `events` fields, so it merges after 3.5 with its own follow-up migration |
 | 8·W3 | 8.4 The safety evaluation | qa (Kimi) | `w/8.4a` | 2026-10-03 | merged on `main` (d6ae60e); the gate's `works.db.test.ts` failure was load — 9/9 alone on main |
 | 6·W1 | 6.2 The bag (shell) | — | — | — | core merged on `main`; the bag page waits for 6.1 |
