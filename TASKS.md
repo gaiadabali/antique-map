@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 3/7 | 24/33 | 0 | `███████░░░`  73% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 2/20 | 0 | `█░░░░░░░░░`  10% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **14/49** | **98/200** | **8** | `█████░░░░░`  49% |
+| **All** | 11 phases | | | **14/49** | **99/200** | **8** | `█████░░░░░`  50% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,10 +78,11 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W3 | 3.7.b Seed layers | senior-be (GLM) | `w/3.7b` | 2026-10-03 | run `am-3.7b-1` in flight: the DATA.md §2 seed layers — vocabulary, gallery sample 50 + full 1,823 from the legacy crawl (no asking price in any public field), shop mock through 3.7.a's importer |
+| 3·W3 | 3.7.b Seed layers | senior-be (GLM) | `w/3.7b` | 2026-10-03 | run 1 (`am-3.7b-1`) died at the turn limit after the full dry-run passed (1,823 planned, 0 rejected) and 3 commits; continuation `am-3.7b-r1` in flight — finish the 4 seed db tests, the evidence battery, gitignore the 2.8 GB local upload bucket |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
-| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); 9.2.b/d (dashboard, retention job) dispatch when a GLM lane frees |
+| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) — dispatches when a GLM lane frees |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
+| 5·W1 | 5.1 Browse and search | senior-fe | `w/5.1` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -445,12 +446,12 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, on a phone, a visitor searches by a place's old name, opens an item, zooms into its detail, taps "Ask about this" and lands in WhatsApp with the item in the message; "Sell to us" opens WhatsApp or sends a form that appears as a lead; a sold item is marked Sold; no price, cart or sign-in appears anywhere; axe is clean and Lighthouse mobile meets the budget.
 **Waves:** W1 — 5.1, 5.2 · W2 — 5.3, 5.4 · W3 — 5.5
 
-- [ ] **5.1 Browse and search** · needs: phase 3, phase 4
+- [ ] **5.1 Browse and search** · needs: phase 3, phase 4 — 🔄 5·W1
   - **Lane** GAL · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`, `engine/apps/web/src/server/gallery/**`
   - **Read** EXPERIENCE-GALLERY.md §Browse and §Search, ARCHITECTURE.md §Search
   - _Requirements: 3.1_
-  - [ ] 5.1.a loaders (published only, projected, no price field) for the listing and the facets maker, place (including historical names), period, type and subject, with counts
+  - [x] 5.1.a loaders (published only, projected, no price field) for the listing and the facets maker, place (including historical names), period, type and subject, with counts
   - [ ] 5.1.b the browse page with facet chips, sort and pagination, usable at 390 px
   - [ ] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [ ] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
@@ -812,6 +813,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 — **main fully green again** — the whole `pnpm verify` chain passes on `main` after the CRLF repair (11 phases parse, 1,911 tests, every gate). Two GLM lanes now run: 3.7.b seed layers (`am-3.7b-1`, `w/3.7b`) and 5.1 gallery browse and search (`am-5.1-1`, `w/5.1`, ticket `74608b7`).
 - 2026-10-03 — **Board CRLF bug found and fixed.** Four files sat CRLF on disk while the index stayed LF: git saw them clean (`eol=lf` normalises), so `git checkout --` would not rewrite them, and the board scripts kept the CRLF (they preserve the file's existing EOL). Symptom: `tasks:lint` parsed **0 phases** and flooded 74 false findings. Fixed by delete + restore; the gates are green again. If `tasks:lint` ever reports 0 phases, run `git ls-files --eol TASKS.md` first.
 - 2026-10-03 ✅ 6.2 (a–c) — the bag page merged (`e8deda8`): cookie-bag UI with the welcome-code form and delivery-fee quote; the code is re-validated against `discounts` on every read, display reads published/projected at `limit: 20`, money formatted server-side only; the shop-lexicon conflict with 4.3's prune resolved (en 683 / id 679, the four `.one` plurals the only legal gap); 85 bag/pricing tests green before the merge. The 6.2.d Check awaits qa; open: `BAG_COOKIE_KEY` in the boot check, checkout re-checks the code with contact (6.3).
 - 2026-10-03 — main repairs after the 3.7.a merge: both 300-line refounds fixed (the `RECORD_NOTES` sidecar; `number_` folded into `cells.ts`'s `wholeNumber`) in `889cb03`; shop `id` dropped the four `.one` plural keys Bahasa Indonesia cannot pick (`eac03ff`). The 3.7.b seed ticket committed (`7f4c79f`) and the `w/3.7b` worktree provisioned (port 4193, suffix `p3_w37b`); run `am-3.7b-1` launching.
