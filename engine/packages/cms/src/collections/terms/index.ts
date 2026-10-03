@@ -13,6 +13,8 @@
  */
 import type { CollectionConfig, Validate } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { gradeEquivalentError } from '../../validators/term-grade'
 import { TERM_KIND_LABELS, TERM_KINDS } from './kinds'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from './vocabulary/access'
@@ -51,8 +53,13 @@ const validatePosition: Validate = (value) =>
 
 export const Terms: CollectionConfig = {
   slug: 'terms',
-  labels: { singular: 'Term', plural: 'Terms' },
+  labels: {
+    singular: { en: 'Term', id: 'Istilah' },
+    plural: { en: 'Terms', id: 'Istilah' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'label',
     defaultColumns: ['label', 'kind', 'position', '_status', 'updatedAt'],
     listSearchableFields: ['label', 'slug'],
@@ -70,7 +77,13 @@ export const Terms: CollectionConfig = {
       index: true,
       options: TERM_KINDS.map((value) => ({ value, label: TERM_KIND_LABELS[value] })),
       validate: validateKind,
-      admin: { position: 'sidebar', description: 'Fixed once the term is created.' },
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Fixed once the term is created.',
+          id: 'Tetap setelah istilah dibuat.',
+        },
+      },
     },
     {
       name: 'label',
@@ -78,7 +91,12 @@ export const Terms: CollectionConfig = {
       localized: true,
       maxLength: 120,
       validate: requiredInDefaultLocale('Give the term’s name, such as "Batik" or "VG+".'),
-      admin: { description: `As a visitor reads it: "Batik", "VG+". ${IN_DEFAULT_LOCALE_NOTE}` },
+      admin: {
+        description: {
+          en: `As a visitor reads it: "Batik", "VG+". ${(IN_DEFAULT_LOCALE_NOTE as { en: string }).en}`,
+          id: 'Seperti pengunjung membacanya: "Batik", "VG+". Wajib dalam bahasa Inggris, bahasa default; bahasa lain yang kosong akan menunjukkan bahasa Inggris.',
+        },
+      },
     },
     slugField({ from: 'label', scope: 'kind' }),
     {
@@ -89,7 +107,10 @@ export const Terms: CollectionConfig = {
       validate: requiredToPublish('A published grade says what it means, in a sentence or two.'),
       admin: {
         condition: isGrade,
-        description: 'What the grade means, as the condition legend shows it.',
+        description: {
+          en: 'What the grade means, as the condition legend shows it.',
+          id: 'Apa arti tingkat ini, seperti ditunjukkan legenda kondisi.',
+        },
       },
     },
     {
@@ -97,14 +118,26 @@ export const Terms: CollectionConfig = {
       type: 'text',
       maxLength: 7,
       validate: validateEquivalent,
-      admin: { condition: isGrade, description: 'Its A–D equivalent: A, B+, C or B/C.' },
+      admin: {
+        condition: isGrade,
+        description: {
+          en: 'Its A–D equivalent: A, B+, C or B/C.',
+          id: 'Setara A–D-nya: A, B+, C, atau B/C.',
+        },
+      },
     },
     {
       name: 'position',
       type: 'number',
       index: true,
       validate: validatePosition,
-      admin: { step: 1, description: 'Order within its vocabulary: a grade scale best first.' },
+      admin: {
+        step: 1,
+        description: {
+          en: 'Order within its vocabulary: a grade scale best first.',
+          id: 'Urutan dalam kosakatanya: skala kondisi terbaik dulu.',
+        },
+      },
     },
     translationStatusField,
   ],

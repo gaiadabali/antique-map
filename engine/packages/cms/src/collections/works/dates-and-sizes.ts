@@ -14,13 +14,13 @@ import { DATE_PRECISIONS, type DatePrecision } from '../../validators/maker-life
 import { workDateErrors, type WorkDateField, type WorkDates } from '../../validators/work-dates'
 import { dimensionErrors, type WorkDimensions } from '../../validators/work-dimensions'
 
-const PRECISION_LABELS: Record<DatePrecision, string> = {
-  exact: 'Exact year',
-  circa: 'Circa (c.)',
-  before: 'Before',
-  after: 'After',
-  range: 'Between two years',
-  unknown: 'Unknown — said on purpose',
+const PRECISION_LABELS: Record<DatePrecision, { en: string; id: string }> = {
+  exact: { en: 'Exact year', id: 'Tahun pasti' },
+  circa: { en: 'Circa (c.)', id: 'Sekitar (c.)' },
+  before: { en: 'Before', id: 'Sebelum' },
+  after: { en: 'After', id: 'Setelah' },
+  range: { en: 'Between two years', id: 'Antara dua tahun' },
+  unknown: { en: 'Unknown — said on purpose', id: 'Tidak diketahui — dengan sengaja dinyatakan' },
 }
 
 function datePartError(group: WorkDateField, part: 'precision' | 'from' | 'to'): Validate {
@@ -29,8 +29,8 @@ function datePartError(group: WorkDateField, part: 'precision' | 'from' | 'to'):
 
 export function fuzzyDateGroup(
   name: WorkDateField,
-  label: string,
-  description: string,
+  label: { en: string; id: string },
+  description: { en: string; id: string },
 ): GroupField {
   return {
     name,
@@ -50,14 +50,14 @@ export function fuzzyDateGroup(
           {
             name: 'from',
             type: 'number',
-            label: 'Year',
+            label: { en: 'Year', id: 'Tahun' },
             admin: { step: 1 },
             validate: datePartError(name, 'from'),
           },
           {
             name: 'to',
             type: 'number',
-            label: 'Until (a range only)',
+            label: { en: 'Until (a range only)', id: 'Hingga (hanya rentang)' },
             admin: { step: 1 },
             validate: datePartError(name, 'to'),
           },
@@ -67,9 +67,14 @@ export function fuzzyDateGroup(
         name: 'display',
         type: 'text',
         localized: true,
-        label: 'As written',
+        label: { en: 'As written', id: 'Seperti tertulis' },
         maxLength: 80,
-        admin: { description: 'Your own wording, if the year alone says it wrong: "1724–26".' },
+        admin: {
+          description: {
+            en: 'Your own wording, if the year alone says it wrong: "1724–26".',
+            id: 'Ungkapan Anda sendiri, bila tahun saja kurang tepat: "1724–26".',
+          },
+        },
       },
     ],
   }
@@ -78,7 +83,7 @@ export function fuzzyDateGroup(
 type SizeName = 'image' | 'sheet' | 'framed'
 type Part = 'height' | 'width' | 'depth'
 
-function measure(size: SizeName, part: Part, label: string): NumberField {
+function measure(size: SizeName, part: Part, label: { en: string; id: string }): NumberField {
   return {
     name: part,
     type: 'number',
@@ -91,9 +96,16 @@ function measure(size: SizeName, part: Part, label: string): NumberField {
   }
 }
 
-function sizeGroup(name: SizeName, label: string, description: string): GroupField {
-  const parts: NumberField[] = [measure(name, 'height', 'Height'), measure(name, 'width', 'Width')]
-  if (name === 'framed') parts.push(measure(name, 'depth', 'Depth'))
+function sizeGroup(
+  name: SizeName,
+  label: { en: string; id: string },
+  description: { en: string; id: string },
+): GroupField {
+  const parts: NumberField[] = [
+    measure(name, 'height', { en: 'Height', id: 'Tinggi' }),
+    measure(name, 'width', { en: 'Width', id: 'Lebar' }),
+  ]
+  if (name === 'framed') parts.push(measure(name, 'depth', { en: 'Depth', id: 'Kedalaman' }))
   return {
     name,
     type: 'group',
@@ -107,11 +119,37 @@ function sizeGroup(name: SizeName, label: string, description: string): GroupFie
 export const dimensionsField: GroupField = {
   name: 'dimensions',
   type: 'group',
-  label: 'Dimensions (mm)',
-  admin: { description: 'In millimetres, height before width. Inches are worked out for you.' },
+  label: { en: 'Dimensions (mm)', id: 'Dimensi (mm)' },
+  admin: {
+    description: {
+      en: 'In millimetres, height before width. Inches are worked out for you.',
+      id: 'Dalam milimeter, tinggi sebelum lebar. Inci dihitungkan otomatis.',
+    },
+  },
   fields: [
-    sizeGroup('image', 'Image', 'The printed area: to the plate mark, or the neat line.'),
-    sizeGroup('sheet', 'Sheet', 'The whole sheet, margins included.'),
-    sizeGroup('framed', 'Framed', 'The frame’s outer size, if it is framed.'),
+    sizeGroup(
+      'image',
+      { en: 'Image', id: 'Gambar' },
+      {
+        en: 'The printed area: to the plate mark, or the neat line.',
+        id: 'Area tercetak: sampai tanda pelat atau garis tepi.',
+      },
+    ),
+    sizeGroup(
+      'sheet',
+      { en: 'Sheet', id: 'Lembar' },
+      {
+        en: 'The whole sheet, margins included.',
+        id: 'Seluruh lembar, termasuk margin.',
+      },
+    ),
+    sizeGroup(
+      'framed',
+      { en: 'Framed', id: 'Bingkai' },
+      {
+        en: 'The frame’s outer size, if it is framed.',
+        id: 'Ukuran luar bingkai, jika ada.',
+      },
+    ),
   ],
 }

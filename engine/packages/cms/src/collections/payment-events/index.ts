@@ -13,6 +13,8 @@
  */
 import type { Access, CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
 import { wholeCheck, wholeNumber } from '../products/money'
 import { isOwner } from '../users/roles'
@@ -34,6 +36,8 @@ export const PaymentEvents: CollectionConfig = {
     plural: { en: 'Payment events', id: 'Peristiwa pembayaran' },
   },
   admin: {
+    group: ADMIN_GROUPS.orders,
+    hidden: hiddenFromAllButOwner,
     useAsTitle: 'dedupeKey',
     defaultColumns: ['receivedAt', 'order', 'transactionStatus', 'outcome', 'source'],
     description: {

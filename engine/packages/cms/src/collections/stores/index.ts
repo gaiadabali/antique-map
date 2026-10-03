@@ -14,6 +14,8 @@
  */
 import type { Access, CollectionConfig, Where } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButAllStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
 import { hasRole, isOwner, roleOf, storeOf } from '../users/roles'
 import { STORE_CONSTRAINTS } from './constraints'
@@ -49,6 +51,8 @@ export const Stores: CollectionConfig = {
     plural: { en: 'Stores', id: 'Toko' },
   },
   admin: {
+    group: ADMIN_GROUPS.storesAndStock,
+    hidden: hiddenFromAllButAllStaff,
     useAsTitle: 'name',
     defaultColumns: ['code', 'name', 'area', 'active', 'updatedAt'],
     description: {

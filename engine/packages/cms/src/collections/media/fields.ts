@@ -38,7 +38,8 @@ export const ALT_SOURCES = ['baseline', 'cataloguer', 'ai-draft'] as const
 export const TRANSLATION_STATES = ['entered', 'machine', 'reviewed'] as const
 
 const label = (value: string) => value.charAt(0).toUpperCase() + value.slice(1).replace('-', ' ')
-const plain = (values: readonly string[]) => values.map((value) => ({ value, label: label(value) }))
+const plain = (values: readonly string[]) =>
+  values.map((value) => ({ value, label: { en: label(value), id: label(value) } }))
 
 /**
  * What the image is an image **of** (CONTENT-MODEL.md §5's subject table; TASKS.md 3.2.e): work,
@@ -58,8 +59,10 @@ export const MEDIA_FIELDS: Field[] = [
     maxLength: ALT_MAX_LENGTH,
     validate: validateAlt,
     admin: {
-      description:
-        'What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.',
+      description: {
+        en: 'What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.',
+        id: 'Apa yang ditunjukkan gambar, untuk seseorang yang tidak dapat melihatnya. Untuk peta atau cetakan: wilayahnya, kartusnya, pewarnaannya, apa pun yang mencolok. Untuk mockup digital atau gambar buatan AI, mulailah dengan apa itu.',
+      },
     },
   },
   {
@@ -70,8 +73,10 @@ export const MEDIA_FIELDS: Field[] = [
     options: plain(ALT_SOURCES),
     admin: {
       position: 'sidebar',
-      description:
-        'Baseline: built from the record. AI draft: stays flagged until a person has checked it.',
+      description: {
+        en: 'Baseline: built from the record. AI draft: stays flagged until a person has checked it.',
+        id: 'Garis dasar: dibuat dari catatan. Draf AI: tetap ditandai sampai seseorang memeriksanya.',
+      },
     },
   },
   {
@@ -100,7 +105,12 @@ export const MEDIA_FIELDS: Field[] = [
     type: 'select',
     required: true,
     options: ROLE_OPTIONS,
-    admin: { description: 'What the image is — set at intake, the same as its master’s.' },
+    admin: {
+      description: {
+        en: 'What the image is — set at intake, the same as its master’s.',
+        id: 'Apa gambar ini — diatur saat masuk, sama seperti master-nya.',
+      },
+    },
   },
   {
     name: 'provenance',
@@ -108,8 +118,10 @@ export const MEDIA_FIELDS: Field[] = [
     required: true,
     options: PROVENANCE_OPTIONS,
     admin: {
-      description:
-        'How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.',
+      description: {
+        en: 'How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.',
+        id: 'Cara pembuatannya. Apa pun selain foto diberi label di mana pun ditampilkan. Tidak ada default: pilih.',
+      },
     },
   },
   {
@@ -117,7 +129,13 @@ export const MEDIA_FIELDS: Field[] = [
     type: 'relationship',
     relationTo: 'masters',
     access: STAFF_ONLY_ACCESS,
-    admin: { position: 'sidebar', description: 'The capture this image was processed from.' },
+    admin: {
+      position: 'sidebar',
+      description: {
+        en: 'The capture this image was processed from.',
+        id: 'Tangkapan tempat gambar ini diolah.',
+      },
+    },
   },
   {
     name: 'assetId',
@@ -126,7 +144,10 @@ export const MEDIA_FIELDS: Field[] = [
     admin: {
       position: 'sidebar',
       readOnly: true,
-      description: 'Derived from the file: the address its derivatives and tiles are stored under.',
+      description: {
+        en: 'Derived from the file: the address its derivatives and tiles are stored under.',
+        id: 'Diperoleh dari berkas: alamat tempat turunan dan tile-nya disimpan.',
+      },
     },
   },
   {
@@ -143,7 +164,12 @@ export const MEDIA_FIELDS: Field[] = [
       {
         name: 'version',
         type: 'text',
-        admin: { description: `The ladder's version once built (now ${DERIVATIVE_VERSION}).` },
+        admin: {
+          description: {
+            en: `The ladder's version once built (now ${DERIVATIVE_VERSION}).`,
+            id: `Versi tangga setelah dibangun (sekarang ${DERIVATIVE_VERSION}).`,
+          },
+        },
       },
       { name: 'blurDataUri', type: 'textarea' },
     ],
@@ -151,7 +177,7 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'iiif',
     type: 'group',
-    label: 'Deep zoom',
+    label: { en: 'Deep zoom', id: 'Zoom dalam' },
     admin: { readOnly: true },
     fields: [{ name: 'status', type: 'select', defaultValue: 'none', options: plain(TILE_STATES) }],
   },

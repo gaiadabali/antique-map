@@ -17,6 +17,8 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { translationStatusField } from '../../fields/translation-status'
@@ -28,8 +30,13 @@ import { refuseDeleteWhileUsed } from './still-used'
 
 export const Places: CollectionConfig = {
   slug: 'places',
-  labels: { singular: 'Place', plural: 'Places' },
+  labels: {
+    singular: { en: 'Place', id: 'Tempat' },
+    plural: { en: 'Places', id: 'Tempat' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'name',
     defaultColumns: ['name', 'type', 'parent', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'slug', 'historicalNames.name'],
@@ -48,7 +55,10 @@ export const Places: CollectionConfig = {
       maxLength: 160,
       validate: requiredInDefaultLocale('Give the place’s modern name, such as "Jakarta".'),
       admin: {
-        description: `The modern name, in each language: Jakarta, Sulawesi, Maluku. ${IN_DEFAULT_LOCALE_NOTE}`,
+        description: {
+          en: `The modern name, in each language: Jakarta, Sulawesi, Maluku. ${(IN_DEFAULT_LOCALE_NOTE as { en: string }).en}`,
+          id: `Nama modern, dalam setiap bahasa: Jakarta, Sulawesi, Maluku. ${(IN_DEFAULT_LOCALE_NOTE as { id: string }).id}`,
+        },
       },
     },
     slugField({ from: 'name' }),
@@ -67,8 +77,10 @@ export const Places: CollectionConfig = {
       filterOptions: ({ id }) =>
         id === undefined || id === null ? true : { id: { not_equals: id } },
       admin: {
-        description:
-          'The place it lies in: Batavia lies in Java. Leave empty for a top-level place.',
+        description: {
+          en: 'The place it lies in: Batavia lies in Java. Leave empty for a top-level place.',
+          id: 'Tempat di mana ia berada: Batavia berada di Jawa. Kosongkan untuk tempat tingkat atas.',
+        },
       },
     },
     {
@@ -77,7 +89,12 @@ export const Places: CollectionConfig = {
       collection: 'places',
       on: 'parent',
       defaultLimit: 50,
-      admin: { description: 'The places that lie in this one.' },
+      admin: {
+        description: {
+          en: 'The places that lie in this one.',
+          id: 'Tempat-tempat yang berada di dalamnya.',
+        },
+      },
     },
     geoField,
     translationStatusField,

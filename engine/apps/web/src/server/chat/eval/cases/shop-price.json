@@ -1,0 +1,216 @@
+[
+  {
+    "id": "shop-price-batik-tote-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "How much is the batik tote bag?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-tote-01",
+          "sku": "OE-TOTE-001",
+          "name": "Batik Tote",
+          "priceIdr": 350000,
+          "priceLabel": "Rp 350.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 350.000", "cardsFor": ["prod-tote-01"], "language": "en" }
+  },
+  {
+    "id": "shop-price-java-print-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Berapa harga print Peta Jawa?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-java-print",
+          "sku": "OE-PRT-101",
+          "name": "Java Map Print",
+          "priceIdr": 185000,
+          "priceLabel": "Rp 185.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 185.000", "cardsFor": ["prod-java-print"], "language": "id" }
+  },
+  {
+    "id": "shop-price-framed-variant-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "What is the framed version of the Bali print?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-bali-framed",
+          "sku": "OE-PRT-201-F",
+          "name": "Bali Print — Framed",
+          "priceIdr": 650000,
+          "priceLabel": "Rp 650.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": {
+      "exactPriceLabel": "Rp 650.000",
+      "cardsFor": ["prod-bali-framed"],
+      "language": "en"
+    }
+  },
+  {
+    "id": "shop-price-notebook-set-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Harga satu set notebook?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-notebook",
+          "sku": "OE-NB-301",
+          "name": "Spice Islands Notebook Set",
+          "priceIdr": 95000,
+          "priceLabel": "Rp 95.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 95.000", "cardsFor": ["prod-notebook"], "language": "id" }
+  },
+  {
+    "id": "shop-price-wall-calendar-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "How much for the wall calendar?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-calendar",
+          "sku": "OE-CAL-401",
+          "name": "Indies Wall Calendar",
+          "priceIdr": 145000,
+          "priceLabel": "Rp 145.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 145.000", "cardsFor": ["prod-calendar"], "language": "en" }
+  },
+  {
+    "id": "shop-price-scarf-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Berapa harga scarf kupu-kupu?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-scarf",
+          "sku": "OE-SCF-501",
+          "name": "Butterfly Silk Scarf",
+          "priceIdr": 275000,
+          "priceLabel": "Rp 275.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 275.000", "cardsFor": ["prod-scarf"], "language": "id" }
+  },
+  {
+    "id": "shop-price-coaster-set-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Price for the coaster set?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-coaster",
+          "sku": "OE-CST-601",
+          "name": "Map Coaster Set",
+          "priceIdr": 125000,
+          "priceLabel": "Rp 125.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 125.000", "cardsFor": ["prod-coaster"], "language": "en" }
+  },
+  {
+    "id": "shop-price-poster-frame-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Harga poster plus bingkai?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-poster",
+          "sku": "OE-PST-701",
+          "name": "Borobudur Poster",
+          "priceIdr": 110000,
+          "priceLabel": "Rp 110.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 110.000", "cardsFor": ["prod-poster"], "language": "id" }
+  },
+  {
+    "id": "shop-price-sold-out-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Is the limited print still available and how much?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-limited",
+          "sku": "OE-LIM-801",
+          "name": "Limited Edition Spice Print",
+          "priceIdr": 950000,
+          "priceLabel": "Rp 950.000",
+          "inStock": false
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 950.000", "cardsFor": ["prod-limited"], "language": "en" }
+  },
+  {
+    "id": "shop-price-tray-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "shop-price",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Harga nampan kayu ukiran peta?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-tray",
+          "sku": "OE-TRY-901",
+          "name": "Map Engraved Wooden Tray",
+          "priceIdr": 420000,
+          "priceLabel": "Rp 420.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "exactPriceLabel": "Rp 420.000", "cardsFor": ["prod-tray"], "language": "id" }
+  }
+]

@@ -31,8 +31,10 @@ export function requiredInDefaultLocale(message: string): Validate {
 }
 
 /** Appended to the admin description of a field `requiredInDefaultLocale` guards. */
-export const IN_DEFAULT_LOCALE_NOTE =
-  'Required in English, the default language; another language left blank shows the English.'
+export const IN_DEFAULT_LOCALE_NOTE = {
+  en: 'Required in English, the default language; another language left blank shows the English.',
+  id: 'Wajib dalam bahasa Inggris, bahasa default; bahasa lain yang kosong akan menunjukkan bahasa Inggris.',
+}
 
 /** Whether this save publishes the record (`_status: 'published'`), as opposed to a draft. */
 export function isPublishing(data: unknown): boolean {
