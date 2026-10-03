@@ -78,14 +78,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W3 | 3.7 Import and seed | senior-be (GLM) | `w/3.7ab` | 2026-10-03 | 3.7.c merged; the 3.7.a/b run left ~2,700 lines uncommitted — continuation ticket `3.7ab-r1` written, launches when a GLM lane frees |
-| 4·W2 | 4.2 Shared components | senior-fe (Kimi) | `int/4` | 2026-10-03 | main merged in, regenerated files clean; production build + axe/keyboard pass on `/en/style-guide` of both hosts at 390/1280 in flight, then merge (closes the 4.1 Check too) |
-| 4·W3 | 4.3 Chrome and home pages | senior-fe (Kimi) | `w/4.3` | 2026-10-03 | second run done with 6 files uncommitted — review, commit, gate |
-| 6·W1 | 6.1 Shop browse, search and product page | senior-fe (GLM) | `w/6.1` | 2026-10-03 | the Kimi run died on the gateway's 429 before writing any code (only the `server-only` dep landed, committed `0d6ad3f`); GLM rerun `am-6.1-g1` in flight |
-| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c done and merged (`ab858c9`, verify green on `main`); the migration generator finds **no** schema change beyond wave_3_1, so no follow-up migration was needed; 9.2.b/d (dashboard, retention job) still to run |
-| 8·W3 | 8.4 The safety evaluation | qa (Kimi) | `w/8.4a` | 2026-10-03 | merged on `main` (d6ae60e); the gate's `works.db.test.ts` failure was load — 9/9 alone on main |
-| 6·W1 | 6.2 The bag (shell) | — | — | — | core merged on `main`; the bag page waits for 6.1 |
-| 9·W1 | 9.3 / 9.4 | — | `main` | — | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
+| 3·W3 | 3.7.b Seed layers | senior-be (GLM) | `w/3.7b` | 2026-10-03 | run `am-3.7b-1` in flight: the DATA.md §2 seed layers — vocabulary, gallery sample 50 + full 1,823 from the legacy crawl (no asking price in any public field), shop mock through 3.7.a's importer |
+| 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
+| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); 9.2.b/d (dashboard, retention job) dispatch when a GLM lane frees |
+| 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 
 ## Decisions for the owner
 
@@ -816,6 +812,10 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 — **Board CRLF bug found and fixed.** Four files sat CRLF on disk while the index stayed LF: git saw them clean (`eol=lf` normalises), so `git checkout --` would not rewrite them, and the board scripts kept the CRLF (they preserve the file's existing EOL). Symptom: `tasks:lint` parsed **0 phases** and flooded 74 false findings. Fixed by delete + restore; the gates are green again. If `tasks:lint` ever reports 0 phases, run `git ls-files --eol TASKS.md` first.
+- 2026-10-03 ✅ 6.2 (a–c) — the bag page merged (`e8deda8`): cookie-bag UI with the welcome-code form and delivery-fee quote; the code is re-validated against `discounts` on every read, display reads published/projected at `limit: 20`, money formatted server-side only; the shop-lexicon conflict with 4.3's prune resolved (en 683 / id 679, the four `.one` plurals the only legal gap); 85 bag/pricing tests green before the merge. The 6.2.d Check awaits qa; open: `BAG_COOKIE_KEY` in the boot check, checkout re-checks the code with contact (6.3).
+- 2026-10-03 — main repairs after the 3.7.a merge: both 300-line refounds fixed (the `RECORD_NOTES` sidecar; `number_` folded into `cells.ts`'s `wholeNumber`) in `889cb03`; shop `id` dropped the four `.one` plural keys Bahasa Indonesia cannot pick (`eac03ff`). The 3.7.b seed ticket committed (`7f4c79f`) and the `w/3.7b` worktree provisioned (port 4193, suffix `p3_w37b`); run `am-3.7b-1` launching.
+- 2026-10-03 ✅ 3.7.a — the spreadsheet import merged (`ba8a859`, with the admin's bilingual labels `2548741`): antiques by stock number, products by SKU, stores by code and stock per store, from CSV or XLSX — per-row refusals and holds, idempotent upserts, a dry run, and a report of every rejected row. The real spreadsheets replace 3.7.c's mock through it.
 - 2026-10-03 ✅ 4.3 (a–d) — GLM finished the chrome, both homes, the partnership page and the lexicon prune (46 dead keys, en/id parity + usage test); fresh-clone verify green, merged (`6077211` with 6.1).
 - 2026-10-03 ✅ 6.1 (a–b) — GLM full rerun (the Kimi run had died on the gateway 429 before writing code): published-only catalogue loaders with live availability, browse/search/product pages; fresh-clone verify green, merged; the 6.1.c Check (seeded product page on a production build) runs once the seed lands.
 - 2026-10-03 ✅ 3.6 (a–c) — GLM finished the admin experience after Kimi's two turn-exhausted runs; bilingual labels and plain messages, role-based sidebar (store staff see only their orders and stock), dashboard widgets counted through `overrideAccess:false`; fresh-clone verify green, merged (`10fc55e`). The 3.6.d Check (browser pass as owner/editor/store) stays open for the qa wave.
