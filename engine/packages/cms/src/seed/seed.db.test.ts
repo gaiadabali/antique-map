@@ -38,11 +38,17 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
     expect(second.vocabulary!.places.created).toBe(0)
     expect(second.vocabulary!.terms.created).toBe(0)
     expect(second.vocabulary!.makers.created).toBe(0)
-    expect(second.vocabulary!.places.present).toBe(first.vocabulary!.places.present)
+    // Every place, term and maker the first run created or found, the second finds present.
+    const total = (count: { created: number; present: number }) => count.created + count.present
+    expect(second.vocabulary!.places.present).toBe(total(first.vocabulary!.places))
+    expect(second.vocabulary!.terms.present).toBe(total(first.vocabulary!.terms))
+    expect(second.vocabulary!.makers.present).toBe(total(first.vocabulary!.makers))
   }, 180_000)
 
   it('the gallery sample imports its 50 rows: drafted, addressed, no price', async () => {
     const rows = sampleRows({ withImages: false })
+    // The file carries no price: every asking_price cell is empty (DR-3, Q14).
+    expect(rows.filter((row) => (row.cells.asking_price ?? '') !== '')).toEqual([])
     const report = await runImportFile('antiques', 'gallery-sample.csv', utf8(antiqueCsv(rows)), {
       payload: stack.payload,
       runner: 'seed',
@@ -65,17 +71,21 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
       // Keyed on the old record's address.
       expect(typeof doc.publicId).toBe('number')
       expect(Number.isInteger(doc.publicId)).toBe(true)
-      // The gallery never carries a price (DR-3, Q14).
-      expect(doc.askingPrice).toBeUndefined()
+      // The gallery never carries a price (DR-3, Q14): the column is empty — Postgres answers an
+      // empty number column as `null` on an overrideAccess read, never a figure.
+      expect(doc.askingPrice ?? null).toBeNull()
     }
 
-    // Idempotent: the same file again changes nothing new.
+    // Idempotent: the same file again changes nothing — nothing new, nothing updated (3.7.d).
     const again = await runImportFile('antiques', 'gallery-sample.csv', utf8(antiqueCsv(rows)), {
       payload: stack.payload,
       runner: 'seed',
     })
+    expect(again.rows.filter((row) => row.outcome === 'updated')).toEqual([])
     expect(again.counts.new).toBe(0)
+    expect(again.counts.updated).toBe(0)
     expect(again.counts.rejected).toBe(0)
+    expect(again.counts.unchanged).toBe(50)
   }, 300_000)
 
   it('the review marks and old categories ride into legacy.categories, once', async () => {
@@ -113,7 +123,11 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
       expect(report.counts.held).toBe(0)
     }
     const second = await seedLayer('shop', { payload: stack.payload })
-    for (const report of second.imports) expect(report.counts.new).toBe(0)
+    for (const report of second.imports) {
+      expect(report.rows.filter((row) => row.outcome === 'updated')).toEqual([])
+      expect(report.counts.new).toBe(0)
+      expect(report.counts.updated).toBe(0)
+    }
 
     const purge = await purgeSeed(stack.payload)
     expect(purge.products).toBeGreaterThan(0)

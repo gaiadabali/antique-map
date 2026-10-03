@@ -37,10 +37,11 @@ export function changes(
 ): Array<{ column: string; was: string; now: string }> {
   const out: Array<{ column: string; was: string; now: string }> = []
   for (const [key, now] of Object.entries(data)) {
-    const was = valueOf(doc[key])
+    // The record read into the row's shape (`pairAs`): only the keys, locales and array-row
+    // fields the row carries — so a second import of the same file finds nothing to change.
     const incoming = valueOf(now)
-    if (!same(pairAs(now as Record<string, unknown>, was), incoming))
-      out.push({ column: key, was: shown(was), now: shown(incoming) })
+    const was = valueOf(pairAs(incoming, valueOf(doc[key])))
+    if (!same(was, incoming)) out.push({ column: key, was: shown(was), now: shown(incoming) })
   }
   return out
 }
