@@ -56,6 +56,9 @@ importers:
 
   engine/apps/web:
     dependencies:
+      '@engine/cache':
+        specifier: workspace:*
+        version: link:../../packages/cache
       '@engine/cms':
         specifier: workspace:*
         version: link:../../packages/cms
