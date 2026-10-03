@@ -20,6 +20,7 @@ import { buildConfig, type Config, type EmailAdapter, type SanitizedConfig } fro
 import { en } from 'payload/i18n/en'
 import { id } from 'payload/i18n/id'
 
+import { restrictLockedDocuments } from './access/locked-documents'
 import { siteOrigin, trustedOrigins } from './access/origins'
 import { USERS_SLUG } from './access/roles'
 import { buildDatabaseAdapter } from './db/adapter'
@@ -91,6 +92,27 @@ export function engineConfig(env: Env = process.env): Config {
       // Gravatar would send a hash of each editor's email to a third party on every page.
       avatar: 'default',
       components: { views: adminViews() },
+      dashboard: {
+        defaultLayout: [
+          { widgetSlug: 'orders-to-act-on', width: 'medium' },
+          { widgetSlug: 'new-leads', width: 'medium' },
+          { widgetSlug: 'collections', width: 'full' },
+        ],
+        widgets: [
+          {
+            slug: 'orders-to-act-on',
+            label: { en: 'Orders to act on', id: 'Pesanan perlu tindakan' },
+            Component: '@engine/cms/admin/widgets#OrdersToActOnWidget',
+            minWidth: 'medium',
+          },
+          {
+            slug: 'new-leads',
+            label: { en: 'New leads', id: 'Calon pembeli baru' },
+            Component: '@engine/cms/admin/widgets#NewLeadsWidget',
+            minWidth: 'medium',
+          },
+        ],
+      },
     },
     collections: registeredCollections(),
     globals: registeredGlobals(),
@@ -137,11 +159,12 @@ export function engineConfig(env: Env = process.env): Config {
 /**
  * The config every process runs — the app, the CLI and the tests that drive REST: Payload's
  * `buildConfig()`, then every endpoint made to remove its request's upload temp files, which only
- * the built config holds (`hooks/request-temp-files`, TASKS.md 8.3.h). A test that calls
- * `buildConfig()` itself runs without that clean-up.
+ * the built config holds (`hooks/request-temp-files`, TASKS.md 8.3.h), and the access of the
+ * locks collection Payload adds while building (`access/locked-documents`, TASKS.md 3.5.d). A
+ * test that calls `buildConfig()` itself runs without either.
  */
 export async function buildEngineConfig(config: Config = engineConfig()): Promise<SanitizedConfig> {
-  return removingRequestTempFiles(await buildConfig(config))
+  return restrictLockedDocuments(removingRequestTempFiles(await buildConfig(config)))
 }
 
 export default buildEngineConfig()

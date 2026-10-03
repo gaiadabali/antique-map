@@ -186,8 +186,10 @@ export function slugField(options: SlugFieldOptions): TextField {
     validate: validateSlug(options),
     admin: {
       position: 'sidebar',
-      description:
-        'The address of its page. Made once from the name; renaming the record never changes it, so links keep working.',
+      description: {
+        en: 'The address of its page. Made once from the name; renaming the record never changes it, so links keep working.',
+        id: 'Alamat halamannya. Dibuat sekali dari nama; mengganti nama catatan tidak mengubahnya, jadi tautan tetap bekerja.',
+      },
     },
   }
 }

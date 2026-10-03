@@ -25,6 +25,8 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'
@@ -38,8 +40,13 @@ import { assignPublicId } from './public-id'
 
 export const Works: CollectionConfig = {
   slug: 'works',
-  labels: { singular: 'Antique', plural: 'Antiques' },
+  labels: {
+    singular: { en: 'Antique', id: 'Antik' },
+    plural: { en: 'Antiques', id: 'Antik' },
+  },
   admin: {
+    group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'title',
     defaultColumns: [
       'title',
@@ -51,8 +58,10 @@ export const Works: CollectionConfig = {
       'updatedAt',
     ],
     listSearchableFields: ['title', 'stockNumber', 'workUid', 'publicId', 'originalTitle'],
-    description:
-      'The objects themselves — each map, print, photograph or book. How one is sold is its product.',
+    description: {
+      en: 'The objects themselves — each map, print, photograph or book. How one is sold is its product.',
+      id: 'Objeknya sendiri — setiap peta, cetakan, foto, atau buku. Cara menjualnya adalah produknya.',
+    },
   },
   access: WORKS_ACCESS,
   versions: WORKS_VERSIONS,

@@ -6,6 +6,8 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../users/roles'
 
 export const PARTNERS_ACCESS = {
@@ -41,6 +43,8 @@ export const Partners: CollectionConfig = {
     plural: { en: 'Partners', id: 'Mitra' },
   },
   admin: {
+    group: ADMIN_GROUPS.leadsAndPartners,
+    hidden: hiddenFromAllButOwner,
     useAsTitle: 'name',
     defaultColumns: ['name', 'kind', 'status', 'site', 'updatedAt'],
     description: {

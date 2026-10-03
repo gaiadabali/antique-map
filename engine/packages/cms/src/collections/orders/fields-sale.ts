@@ -28,7 +28,7 @@ export const SALE_FIELDS: Field[] = [
   {
     name: 'site',
     type: 'select',
-    options: [{ value: 'shop', label: 'Old East Indies' }],
+    options: [{ value: 'shop', label: { en: 'Old East Indies', id: 'Old East Indies' } }],
     required: true,
     defaultValue: 'shop',
     access: SERVER_ONLY,

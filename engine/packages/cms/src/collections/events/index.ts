@@ -4,6 +4,8 @@
  */
 import type { CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../users/roles'
 
 export const EVENTS_ACCESS = {
@@ -83,6 +85,8 @@ export const Events: CollectionConfig = {
     plural: { en: 'Events', id: 'Peristiwa' },
   },
   admin: {
+    group: ADMIN_GROUPS.settings,
+    hidden: hiddenFromAllButOwner,
     useAsTitle: 'name',
     defaultColumns: ['name', 'site', 'source', 'at', 'day'],
     description: {

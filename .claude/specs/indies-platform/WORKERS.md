@@ -8,6 +8,13 @@ before merge, `pnpm verify` on merged `main`, qa opens every user-visible Check.
 
 Copied from the Airin Platform project, where the same split shipped nine tickets on 2026-10-02/03.
 
+## 0. Current lanes (2026-10-03, user)
+
+**GLM only.** Kimi and the Claude seat are at their limits. Every ticket — cores included — goes to GLM
+(up to 3 at once) with the tests that prove its invariants named in the ticket; the orchestrator gates and merges
+by script; Claude reviews the whole build at the end. The table below is the original split, kept for when the
+other lanes return.
+
 ## 1. The three lanes
 
 | Lane | Model | Speed / cost | Concurrency | Gets |

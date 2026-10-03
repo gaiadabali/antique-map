@@ -134,6 +134,8 @@ export interface Config {
   }
   locale: 'en' | 'id'
   widgets: {
+    'orders-to-act-on': OrdersToActOnWidget
+    'new-leads': NewLeadsWidget
     collections: CollectionsWidget
   }
   strictDraftTypes: true
@@ -181,6 +183,20 @@ export interface User {
    * The one store this person works in. Required for store staff; other roles have none.
    */
   store?: (number | null) | Store
+  /**
+   * Recorded automatically whenever this person’s role or store changes.
+   */
+  accessChanges?:
+    | {
+        at: string
+        by?: (number | null) | User
+        fromRole?: ('owner' | 'editor' | 'store') | null
+        toRole: 'owner' | 'editor' | 'store'
+        fromStore?: (number | null) | Store
+        toStore?: (number | null) | Store
+        id?: string | null
+      }[]
+    | null
   updatedAt: string
   createdAt: string
   email: string
@@ -1677,6 +1693,17 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T
   role?: T
   store?: T
+  accessChanges?:
+    | T
+    | {
+        at?: T
+        by?: T
+        fromRole?: T
+        toRole?: T
+        fromStore?: T
+        toStore?: T
+        id?: T
+      }
   updatedAt?: T
   createdAt?: T
   email?: T
@@ -2711,6 +2738,26 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   updatedAt?: T
   createdAt?: T
   globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders-to-act-on_widget".
+ */
+export interface OrdersToActOnWidget {
+  data?: {
+    [k: string]: unknown
+  }
+  width: 'medium' | 'large' | 'x-large' | 'full'
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "new-leads_widget".
+ */
+export interface NewLeadsWidget {
+  data?: {
+    [k: string]: unknown
+  }
+  width: 'medium' | 'large' | 'x-large' | 'full'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
