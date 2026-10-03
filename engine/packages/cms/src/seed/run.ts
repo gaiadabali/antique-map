@@ -67,12 +67,19 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
 const shopFile = (kind: ImportKind) =>
   fileURLToPath(new URL(`./shop/data/${kind}.csv`, import.meta.url))
 
-/** The committed sample: CSV and 640-px images ship with the seed (DATA.md §2). */
-function sampleLayer(): { bytes: Uint8Array; name: string; rows: readonly AntiqueRow[] } {
-  const csvUrl = new URL('./gallery/data/gallery-sample.csv', import.meta.url)
+/**
+ * The committed sample's rows, read back from the files the generator wrote (DATA.md §2): the
+ * CSV, with the marks sidecar attached by stock number. `withImages` resolves the image cells to
+ * the committed 640-px copies' paths; without it the cells are cleared (a test that cannot
+ * upload, whose rows then carry the `review:images` mark, which is the truth of it).
+ */
+export function sampleRows(options?: { withImages?: boolean }): readonly AntiqueRow[] {
+  const withImages = options?.withImages ?? true
   let csvText: string
   try {
-    csvText = new TextDecoder().decode(readFileSync(csvUrl))
+    csvText = new TextDecoder().decode(
+      readFileSync(new URL('./gallery/data/gallery-sample.csv', import.meta.url)),
+    )
   } catch {
     throw new ImportError(
       'The gallery-sample CSV is not in the repo (seed/gallery/data/gallery-sample.csv).',
@@ -81,22 +88,26 @@ function sampleLayer(): { bytes: Uint8Array; name: string; rows: readonly Antiqu
   }
   const sheet = parseCsv('gallery-sample.csv', utf8(csvText), 'antiques', ANTIQUE_COLUMNS)
   // The marks sidecar: what the generator carried beside the CSV, keyed by stock number (§4).
-  const marksUrl = new URL('./gallery/data/gallery-sample-marks.json', import.meta.url)
-  const marks = JSON.parse(new TextDecoder().decode(readFileSync(marksUrl))) as Record<
-    string,
-    { categories: readonly string[]; review: readonly string[] }
-  >
-  const rows: AntiqueRow[] = sheet.rows.map((sheetRow) => {
+  const marks = JSON.parse(
+    new TextDecoder().decode(
+      readFileSync(new URL('./gallery/data/gallery-sample-marks.json', import.meta.url)),
+    ),
+  ) as Record<string, { categories: readonly string[]; review: readonly string[] }>
+  return sheet.rows.map((sheetRow) => {
     const cells: Record<string, string> = {}
     ANTIQUE_COLUMNS.forEach((column, index) => {
       cells[column] = sheetRow.cells[index] ?? ''
     })
-    // The committed cells name files beside the CSV; the import reads paths from disk.
-    cells.image_files = cells
-      .image_files!.split(';')
-      .filter((file) => file !== '')
-      .map((file) => fileURLToPath(new URL(`./gallery/data/${file}`, import.meta.url)))
-      .join(';')
+    if (withImages) {
+      // The committed cells name files beside the CSV; the import reads paths from disk.
+      cells.image_files = cells
+        .image_files!.split(';')
+        .filter((file) => file !== '')
+        .map((file) => fileURLToPath(new URL(`./gallery/data/${file}`, import.meta.url)))
+        .join(';')
+    } else {
+      cells.image_files = ''
+    }
     const carried = marks[cells.stock_number ?? ''] ?? { categories: [], review: [] }
     return {
       cells,
@@ -104,6 +115,11 @@ function sampleLayer(): { bytes: Uint8Array; name: string; rows: readonly Antiqu
       reviewMarks: [...carried.review],
     }
   })
+}
+
+/** The committed sample as the import takes it: file name and bytes. */
+function sampleLayer(): { bytes: Uint8Array; name: string; rows: readonly AntiqueRow[] } {
+  const rows = sampleRows()
   return { bytes: utf8(antiqueCsv(rows)), name: 'gallery-sample.csv', rows }
 }
 
@@ -127,7 +143,7 @@ function utf8(text: string): Uint8Array {
  * (DATA.md §4) — the antiques template has no column for them, so the run carries them here, and
  * the review queue reads them. A work already carrying the same list is left alone.
  */
-async function carryMarks(payload: Payload, rows: readonly AntiqueRow[]): Promise<number> {
+export async function carryMarks(payload: Payload, rows: readonly AntiqueRow[]): Promise<number> {
   const wanted = rows
     .filter((row) => row.reviewMarks.length > 0 || row.legacyCategories.length > 0)
     .map((row) => ({

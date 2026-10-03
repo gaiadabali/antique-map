@@ -1,14 +1,15 @@
 /**
  * The seed purge (DATA.md §2): `pnpm data:purge-seed` deletes every row the shop seed layer
- * created — the `SEED-` products, their stock rows, the seed stores and the seed discounts —
- * identified by the seed's own committed sheets, so purge and seed always agree on what "seed
- * data" is. It refuses production outright (the codebase's fail-closed env check, as in
- * `db/adapter.ts`): a purge is for a development database being re-freshed, nothing else.
+ * created — the `SEED-` products, their stock rows and the seed stores — identified by the
+ * seed's own committed sheets, so purge and seed always agree on what "seed data" is. The
+ * welcome discount is not seed data and stays. It refuses production outright (the codebase's
+ * fail-closed env check, as in `db/adapter.ts`): a purge is for a development database being
+ * re-freshed, nothing else.
  */
 import { fileURLToPath } from 'node:url'
 
 import { readCsv } from '../import/csv'
-import { DISCOUNT_COLUMNS, PRODUCT_COLUMNS, STORE_COLUMNS } from '../import/kinds'
+import { PRODUCT_COLUMNS, STORE_COLUMNS } from '../import/kinds'
 import type { Payload } from 'payload'
 
 const SHOP_DATA = (file: string) => fileURLToPath(new URL(`./shop/data/${file}`, import.meta.url))
@@ -19,8 +20,8 @@ export function purgeRefusal(
 ): string | null {
   if (env.NODE_ENV === 'production') {
     return (
-      'data:purge-seed is refused in production: it deletes the seed products, stores, stock ' +
-      'rows and discounts by their SEED- identity, and production data is not seed data.'
+      'data:purge-seed is refused in production: it deletes the seed products, stores and ' +
+      'stock rows by their SEED- identity, and production data is not seed data.'
     )
   }
   return null
@@ -30,14 +31,12 @@ export type PurgeReport = {
   products: number
   stockLevels: number
   stores: number
-  discounts: number
 }
 
 /** Reads the seed shop sheets and returns the keys the seed layer created. */
 export function seedShopKeys(): {
   skus: readonly string[]
   storeCodes: readonly string[]
-  discountCodes: readonly string[]
 } {
   const column = (
     sheet: {
@@ -51,19 +50,17 @@ export function seedShopKeys(): {
   }
   const products = readCsv(SHOP_DATA('products.csv'), 'products', PRODUCT_COLUMNS)
   const stores = readCsv(SHOP_DATA('stores.csv'), 'stores', STORE_COLUMNS)
-  const discounts = readCsv(SHOP_DATA('discounts.csv'), 'discounts', DISCOUNT_COLUMNS)
   return {
     skus: [...new Set(column(products, 'sku'))].filter((sku) => sku !== ''),
     storeCodes: [...new Set(column(stores, 'store_code'))].filter((code) => code !== ''),
-    discountCodes: [...new Set(column(discounts, 'code'))].filter((code) => code !== ''),
   }
 }
 
 export async function purgeSeed(payload: Payload): Promise<PurgeReport> {
   const refusal = purgeRefusal()
   if (refusal !== null) throw new Error(refusal)
-  const { skus, storeCodes, discountCodes } = seedShopKeys()
-  const report: PurgeReport = { products: 0, stockLevels: 0, stores: 0, discounts: 0 }
+  const { skus, storeCodes } = seedShopKeys()
+  const report: PurgeReport = { products: 0, stockLevels: 0, stores: 0 }
 
   // Stock first (its rows reference the products and stores), then the rows it points at.
   for (const storeCode of storeCodes) {
@@ -105,19 +102,6 @@ export async function purgeSeed(payload: Payload): Promise<PurgeReport> {
     for (const doc of stores.docs) {
       await payload.delete({ collection: 'stores', id: doc.id as number, overrideAccess: true })
       report.stores += 1
-    }
-  }
-  for (const code of discountCodes) {
-    const found = await payload.find({
-      collection: 'discounts',
-      overrideAccess: true,
-      depth: 0,
-      limit: 10,
-      where: { code: { equals: code } },
-    })
-    for (const doc of found.docs) {
-      await payload.delete({ collection: 'discounts', id: doc.id as number, overrideAccess: true })
-      report.discounts += 1
     }
   }
   return report

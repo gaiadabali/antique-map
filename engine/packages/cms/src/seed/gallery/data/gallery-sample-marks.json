@@ -297,13 +297,14 @@
       "review:place"
     ]
   },
-  "B.0018": {
+  "M.L1207": {
     "categories": [
       "Antique Books",
       "Naval & Maritime Prints"
     ],
     "review": [
-      "review:colour"
+      "review:colour",
+      "review:stockNumber"
     ]
   },
   "P.1821": {
@@ -422,12 +423,13 @@
       "review:colour"
     ]
   },
-  "B.0031": {
+  "M.L1664": {
     "categories": [
       "Antique Books",
       "Exploration Prints"
     ],
     "review": [
+      "review:stockNumber",
       "review:title"
     ]
   },

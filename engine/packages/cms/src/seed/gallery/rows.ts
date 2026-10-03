@@ -113,13 +113,19 @@ export function antiqueRow(
   // the pattern refuses, or nothing at all, takes the fallback.
   const stock = record.fields.stockNumber
   const stockRaw = (stock.raw ?? '').trim()
-  const stockSaid =
-    stock.value?.value ??
-    (stock.status === 'review' && stockNumberError(stockRaw, STOCK_NUMBER_PATTERN) === null
-      ? stockRaw
-      : '')
+  // A normalised value the gallery's pattern refuses (the legacy data has book records keyed
+  // `B.<n>`) falls back like an empty one — the importer would refuse it as the key, and a row
+  // is never seeded with a key it cannot be found by again.
+  const stockSaid = (() => {
+    const candidate = ((stock.value?.value ?? '') || '').trim() ||
+      (stock.status === 'review' ? stockRaw : '')
+    return candidate !== '' && stockNumberError(candidate, STOCK_NUMBER_PATTERN) === null
+      ? candidate
+      : ''
+  })()
   cells.stock_number = stockSaid
-  if (stock.status === 'review') marks.push('review:stockNumber')
+  const stockRefused = stockSaid === '' && ((stock.value?.value ?? '') || '').trim() !== ''
+  if (stock.status === 'review' || stockRefused) marks.push('review:stockNumber')
 
   const title = record.fields.title
   cells.title_en = (title.value ?? title.proposal)?.title ?? ''

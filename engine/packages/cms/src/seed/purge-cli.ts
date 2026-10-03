@@ -16,7 +16,7 @@ async function main(): Promise<number> {
   const report = await purgeSeed(payload)
   console.log(
     `purge-seed: ${report.products} product(s), ${report.stockLevels} stock row(s), ` +
-      `${report.stores} store(s), ${report.discounts} discount(s) deleted.`,
+      `${report.stores} store(s) deleted.`,
   )
   return 0
 }
