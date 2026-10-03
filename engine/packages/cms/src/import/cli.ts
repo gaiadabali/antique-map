@@ -8,13 +8,11 @@
  * checks. The report prints to stdout; the process exits non-zero when the file was refused
  * before any row was read (the header wrong, the file not UTF-8) so a pipeline notices.
  */
-import { getPayload } from 'payload'
-
-import { runImportFile, runImportPath } from './apply'
+import { runImportFile } from './apply'
 import { ImportError, parseCsv } from './csv'
 import { template } from './kinds'
 import { render } from './report'
-import config from '../payload.config'
+import { cms } from '../instance'
 
 const USAGE =
   'Usage: pnpm --filter @engine/cms import --file <path> --kind <antiques|products|stores|stock|discounts> [--dry-run] [--publish]'
@@ -51,7 +49,8 @@ async function main(): Promise<number> {
   // The header is checked before the database is touched (DATA.md: refuse the file whole).
   parseCsv(name, bytes, parsed.kind as never, template(parsed.kind as never))
 
-  const payload = await getPayload({ config })
+  // cms() is the process's one instance (instance.ts); the CLI connects to the dev database.
+  const payload = await cms()
   const report = await runImportFile(parsed.kind as never, name, bytes, {
     payload,
     runner: 'cli',

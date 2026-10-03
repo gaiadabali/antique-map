@@ -45,7 +45,10 @@ export function wholeNumber(
 }
 
 /** A flag: `yes`/`no`, case-insensitive; empty means undefined. */
-export const yesNo = (raw: string | undefined, column: string): { value?: boolean; error?: string } => {
+export const yesNo = (
+  raw: string | undefined,
+  column: string,
+): { value?: boolean; error?: string } => {
   const value = cell(raw)?.toLowerCase()
   if (value === undefined) return {}
   if (value === 'yes') return { value: true }
@@ -74,4 +77,6 @@ export const shown = (value: unknown): string =>
       ? value
         ? 'yes'
         : 'no'
-      : String(value)
+      : typeof value === 'object'
+        ? JSON.stringify(value)
+        : String(value)

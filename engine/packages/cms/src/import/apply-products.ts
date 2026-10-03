@@ -4,21 +4,15 @@
  * variant's `active` stays as the catalogue has it when the file does not say. Only what the row
  * carries and what differs goes into the update; an empty cell never clears a field.
  */
-import type { PayloadRequest } from 'payload'
 import { ValidationError } from 'payload'
 
-import type { UpsertContext, UpsertResult } from './apply'
-import { changes } from './diff'
+import { freshReq, type UpsertContext, type UpsertResult } from './apply'
+import { asEnglish, pairAs, splitLocales } from './bilingual'
+import { changes, same } from './diff'
 import type { WritableRow } from './plan'
 import { nextFreeSlug, slugTaken, slugify } from '../fields/slug'
 
 type Doc = Record<string, unknown> & { id: number }
-
-const idOf = (value: unknown): unknown => {
-  if (value === null || value === undefined) return undefined
-  if (typeof value === 'object' && 'id' in (value as object)) return (value as Doc).id
-  return value
-}
 
 /** A variant row as it is stored and compared: `active` on, like the collection's default. */
 function asVariantRow(row: Record<string, unknown>): Record<string, unknown> {
@@ -29,15 +23,15 @@ function asVariantRow(row: Record<string, unknown>): Record<string, unknown> {
     active: true,
   }
 }
-
 async function findBySku(ctx: UpsertContext, sku: string): Promise<Doc | undefined> {
   const { docs } = await ctx.payload.find({
     collection: 'products',
     overrideAccess: true,
-    req: ctx.req,
+    req: await freshReq(ctx, 'all'),
     depth: 0,
     draft: true,
     limit: 1,
+    locale: 'all',
     where: { sku: { equals: sku } },
   })
   return docs[0] as Doc | undefined
@@ -57,7 +51,10 @@ function failure(error: unknown): UpsertResult {
   throw error
 }
 
-export async function applyProductRow(ctx: UpsertContext, planned: WritableRow & { collection: 'products' }): Promise<UpsertResult> {
+export async function applyProductRow(
+  ctx: UpsertContext,
+  planned: WritableRow & { collection: 'products' },
+): Promise<UpsertResult> {
   const data: Record<string, unknown> = { ...planned.data }
 
   // A variant row: merge it into its parent's variants, wherever the parent came from.
@@ -71,7 +68,7 @@ export async function applyProductRow(ctx: UpsertContext, planned: WritableRow &
     const { docs } = await ctx.payload.find({
       collection: 'works',
       overrideAccess: true,
-      req: ctx.req,
+      req: await freshReq(ctx),
       depth: 0,
       limit: 1,
       where: { stockNumber: { equals: stockNumber } },
@@ -81,10 +78,13 @@ export async function applyProductRow(ctx: UpsertContext, planned: WritableRow &
 
   const existing = await findBySku(ctx, planned.key)
   if (!existing) {
+    // The default locale's write first, then the Indonesian values (vocabulary.db.test.ts's idiom —
+    // the Local API does not take an `{ en, id }` pair on one write).
+    const split = splitLocales(data)
     const payloadData: Record<string, unknown> = {
-      ...data,
-      // The address is made once, here — the collection derives it from the (localised) name,
-      // which a Local API create inside an operation does not see.
+      ...split.en,
+      // The address is made once, here — the collection's own hook does not see the
+      // (localised) name of a Local API create inside an operation.
       slug: await freeSlug(ctx, nameOf(data, planned.key)),
       _status: ctx.publish ? 'published' : 'draft',
     }
@@ -93,7 +93,20 @@ export async function applyProductRow(ctx: UpsertContext, planned: WritableRow &
       payloadData.images = await imagesFor(ctx, planned.imageFiles, data)
     }
     try {
-      await ctx.payload.create({ collection: 'products', data: payloadData as never, req: ctx.req })
+      const created = (await ctx.payload.create({
+        collection: 'products',
+        data: payloadData as never,
+        req: await freshReq(ctx),
+      })) as unknown as Doc
+      if (Object.keys(split.id).length > 0) {
+        await ctx.payload.update({
+          collection: 'products',
+          id: created.id,
+          locale: 'id',
+          data: split.id as never,
+          req: await freshReq(ctx, 'id'),
+        })
+      }
       return { outcome: 'new' }
     } catch (error) {
       return failure(error)
@@ -107,7 +120,24 @@ export async function applyProductRow(ctx: UpsertContext, planned: WritableRow &
   const update: Record<string, unknown> = {}
   for (const { column } of changed) update[column] = incoming[column]
   try {
-    await ctx.payload.update({ collection: 'products', id: existing.id, data: update as never, req: ctx.req })
+    const split = splitLocales(update)
+    if (Object.keys(split.en).length > 0) {
+      await ctx.payload.update({
+        collection: 'products',
+        id: existing.id,
+        data: split.en as never,
+        req: await freshReq(ctx),
+      })
+    }
+    if (Object.keys(split.id).length > 0) {
+      await ctx.payload.update({
+        collection: 'products',
+        id: existing.id,
+        locale: 'id',
+        data: split.id as never,
+        req: await freshReq(ctx, 'id'),
+      })
+    }
     return { outcome: 'updated', changes: changed }
   } catch (error) {
     return failure(error)
@@ -132,30 +162,46 @@ async function applyVariantRow(
   }
   const variantSku = data.sku as string
   const existingRows = (parent.variants as Array<Record<string, unknown>> | null) ?? []
-  const current = existingRows.find((row) => row.sku === variantSku)
+  const currentIndex = existingRows.findIndex((row) => row.sku === variantSku)
+  const current = currentIndex >= 0 ? existingRows[currentIndex] : undefined
   const row = asVariantRow({
     ...data,
     ...(current?.active === false ? { active: false } : {}),
   })
-  const next = [...existingRows.filter((each) => each.sku !== variantSku), row]
+  // The row replaces its variant where it sits; a new one joins at the end. An idempotent
+  // re-run must leave the array exactly as it was — never reordered.
+  const next =
+    currentIndex >= 0
+      ? existingRows.map((each, i) => (i === currentIndex ? row : each))
+      : [...existingRows, row]
   const sameRows =
-    existingRows.length === next.length &&
-    next.every((each, i) =>
-      ['sku', 'label', 'price', 'active'].every(
-        (key) => JSON.stringify(each[key] ?? null) === JSON.stringify(existingRows[i]?.[key] ?? null),
-      ),
-    )
+    current !== undefined &&
+    row.sku === current.sku &&
+    same(pairAs(row.label as Record<string, unknown>, current.label), row.label) &&
+    (row.price === undefined || same(row.price ?? null, current.price ?? null)) &&
+    row.active === current.active
   if (sameRows) return { outcome: 'unchanged', changes: [] }
+  console.log('DBG sameRows', JSON.stringify({ row, current, existingRows }))
   try {
+    // The variants go back as one array in the default locale, each label as its English value
+    // (an array write is a whole-array write; a second, `locale: 'id'` pass would rebuild the
+    // rows). A variant_label_id is honoured by an editor in the CMS, not by the sheet.
+    const written = next.map((each) => ({ ...each, label: asEnglish(each.label) }))
     await ctx.payload.update({
       collection: 'products',
       id: parent.id,
-      data: { variants: next } as never,
+      data: { variants: written } as never,
       req: ctx.req,
     })
     return {
       outcome: 'updated',
-      changes: [{ column: `variants (${variantSku})`, was: current ? 'a variant of its own' : 'absent', now: 'as the file says' }],
+      changes: [
+        {
+          column: `variants (${variantSku})`,
+          was: current ? 'a variant of its own' : 'absent',
+          now: 'as the file says',
+        },
+      ],
     }
   } catch (error) {
     return failure(error)
@@ -163,12 +209,16 @@ async function applyVariantRow(
 }
 
 /** The images a published product shows, as `media` rows keyed by filename. */
-async function imagesFor(ctx: UpsertContext, files: readonly string[], data: Record<string, unknown>): Promise<unknown> {
+async function imagesFor(
+  ctx: UpsertContext,
+  files: readonly string[],
+  data: Record<string, unknown>,
+): Promise<unknown> {
   const { ensureMedia } = await import('./apply-works')
   const name = (data.name as { en?: string } | undefined)?.en ?? 'The product'
   const rows: Array<{ image: number }> = []
   for (const file of files) {
-    rows.push({ image: await ensureMedia(ctx, fileNameOf(file), file, name, 'flat') })
+    rows.push({ image: await ensureMedia(ctx, fileNameOf(file), file, name, 'product', 'flat') })
   }
   return rows
 }

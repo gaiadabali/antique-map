@@ -5,6 +5,7 @@
  * (DATA.md §3). `null` and a missing key mean the same: the field is empty.
  */
 import { shown } from './cells'
+import { pairAs } from './bilingual'
 
 /** Normalises for comparison: null→undefined, order-insensitive object keys, strings kept. */
 function norm(value: unknown): unknown {
@@ -38,7 +39,8 @@ export function changes(
   for (const [key, now] of Object.entries(data)) {
     const was = valueOf(doc[key])
     const incoming = valueOf(now)
-    if (!same(was, incoming)) out.push({ column: key, was: shown(was), now: shown(incoming) })
+    if (!same(pairAs(now as Record<string, unknown>, was), incoming))
+      out.push({ column: key, was: shown(was), now: shown(incoming) })
   }
   return out
 }

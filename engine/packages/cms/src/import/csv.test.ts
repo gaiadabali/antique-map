@@ -20,10 +20,13 @@ const STORE_HEADER = template('stores').join(',')
 
 describe('parseCsv', () => {
   it('splits records on the delimiter it sniffs from the header', () => {
-    const comma = parse(`${STORE_HEADER}\nUBD-01,Ubud,Address,,\"-8.5\",\"115.0\",,,,\"yes\",\"yes\"`)
+    const comma = parse(`${STORE_HEADER}\nUBD-01,Ubud,Address,,"-8.5","115.0",,,,"yes","yes"`)
     expect(comma.header).toEqual(template('stores'))
     expect(comma.rows).toEqual([
-      { row: 2, cells: ['UBD-01', 'Ubud', 'Address', '', '-8.5', '115.0', '', '', '', 'yes', 'yes'] },
+      {
+        row: 2,
+        cells: ['UBD-01', 'Ubud', 'Address', '', '-8.5', '115.0', '', '', '', 'yes', 'yes'],
+      },
     ])
 
     const headerSemi = template('stores').join(';')
@@ -32,7 +35,9 @@ describe('parseCsv', () => {
   })
 
   it('lets a quoted cell carry the delimiter, doubled quotes and newlines', () => {
-    const sheet = parse(`${STORE_HEADER}\nUBD-01,"Ubud ""gates"" store","line one\nline two",-8.5,115.0`)
+    const sheet = parse(
+      `${STORE_HEADER}\nUBD-01,"Ubud ""gates"" store","line one\nline two",-8.5,115.0`,
+    )
     expect(sheet.rows[0]!.cells[1]).toBe('Ubud "gates" store')
     expect(sheet.rows[0]!.cells[2]).toBe('line one\nline two')
   })
@@ -40,22 +45,33 @@ describe('parseCsv', () => {
   it('numbers rows by file line, counting newlines inside quoted cells', () => {
     const sheet = parse(`${STORE_HEADER}\nUBD-01,One,Addr,-8.5,115.0\nSNR-01,Two,Addr,-8.6,115.1`)
     expect(sheet.rows.map((row) => row.row)).toEqual([2, 3])
-    const quoted = parse(`${STORE_HEADER}\nUBD-01,\"Two\nlines\",Addr,,\"-8.5\",\"115.0\",,,,\"yes\",\"yes\"\nSNR-01,Two,Addr,,\"-8.6\",\"115.1\",,,,\"yes\",\"yes\"`)
+    const quoted = parse(
+      `${STORE_HEADER}\nUBD-01,"Two\nlines",Addr,,"-8.5","115.0",,,,"yes","yes"\nSNR-01,Two,Addr,,"-8.6","115.1",,,,"yes","yes"`,
+    )
     expect(quoted.rows.map((row) => row.row)).toEqual([2, 3])
   })
 
   it('accepts a byte-order mark and drops blank rows', () => {
-    const bom = parse(`﻿${STORE_HEADER}\nUBD-01,One,Addr,-8.5,115.0\n,,,,,,,`)
+    const bom = parse(`\uFEFF${STORE_HEADER}\nUBD-01,One,Addr,-8.5,115.0\n,,,,,,,`)
     expect(bom.header[0]).toBe(template('stores')[0])
     expect(bom.rows).toHaveLength(1)
   })
 
   it('refuses the file whole: not UTF-8, NUL bytes, wrong header, over the limits', () => {
-    expect(() => parseCsv('test.csv', new Uint8Array([0xff, 0xfe, 0x41]), 'stores', template('stores'))).toThrow(ImportError)
+    expect(() =>
+      parseCsv('test.csv', new Uint8Array([0xff, 0xfe, 0x41]), 'stores', template('stores')),
+    ).toThrow(ImportError)
     expect(() => parseCsv('test.csv', bytes('a\0b'), 'stores', template('stores'))).toThrow(/NUL/)
     expect(() => parse('stock_number\nM.01')).toThrow(/not the stores template/)
     expect(() => parse(`${STORE_HEADER}\n${'x'.repeat(MAX_BYTES)}`)).toThrow(/10 MB/)
-    expect(() => parseCsv('test.csv', bytes(`${STORE_HEADER}\n${'\n'.repeat(MAX_BYTES + 1)}`), 'stores', template('stores'))).toThrow(/over the/)
+    expect(() =>
+      parseCsv(
+        'test.csv',
+        bytes(`${STORE_HEADER}\n${'\n'.repeat(MAX_BYTES + 1)}`),
+        'stores',
+        template('stores'),
+      ),
+    ).toThrow(/over the/)
   })
 
   it('refuses a quoted cell that never closes', () => {
@@ -67,7 +83,9 @@ describe('headerErrorFor', () => {
   it('names the first missing column, and an unknown one', () => {
     const header = template('stores').filter((name) => name !== 'name')
     expect(headerErrorFor(header, 'stores', template('stores'))).toMatch(/name is missing/)
-    expect(headerErrorFor([...template('stores'), 'colour'], 'stores', template('stores'))).toMatch(/colour/)
+    expect(headerErrorFor([...template('stores'), 'colour'], 'stores', template('stores'))).toMatch(
+      /colour/,
+    )
   })
 })
 
@@ -75,17 +93,27 @@ describe('cell readers', () => {
   it('trims, and answers undefined for an empty cell — it never clears a field', () => {
     expect(text('  Ubud ', 'name', 100)).toEqual({ value: 'Ubud' })
     expect(text('   ', 'name', 100)).toEqual({ value: undefined as never })
-    expect(text('x'.repeat(101), 'name', 100)).toMatchObject({ error: expect.stringMatching(/101 characters/) })
+    expect(text('x'.repeat(101), 'name', 100)).toMatchObject({
+      error: expect.stringMatching(/101 characters/),
+    })
   })
 
   it('reads whole numbers with three-digit groupings, and refuses anything else', () => {
     expect(wholeNumber('185000', 'price', { min: 1, what: 'A price' })).toEqual({ value: 185000 })
     expect(wholeNumber('185.000', 'price', { min: 1, what: 'A price' })).toEqual({ value: 185000 })
     expect(wholeNumber('185,000', 'price', { min: 1, what: 'A price' })).toEqual({ value: 185000 })
-    expect(wholeNumber('0', 'price', { min: 1, what: 'A price' })).toMatchObject({ error: expect.stringMatching(/1 or more/) })
-    expect(wholeNumber('185.5', 'price', { min: 1, what: 'A price' })).toMatchObject({ error: expect.stringMatching(/whole digits/) })
-    expect(wholeNumber('abc', 'price', { min: 1, what: 'A price' })).toMatchObject({ error: expect.stringMatching(/whole digits/) })
-    expect(wholeNumber('', 'price', { min: 1, what: 'A price' })).toEqual({ value: undefined as never })
+    expect(wholeNumber('0', 'price', { min: 1, what: 'A price' })).toMatchObject({
+      error: expect.stringMatching(/1 or more/),
+    })
+    expect(wholeNumber('185.5', 'price', { min: 1, what: 'A price' })).toMatchObject({
+      error: expect.stringMatching(/whole digits/),
+    })
+    expect(wholeNumber('abc', 'price', { min: 1, what: 'A price' })).toMatchObject({
+      error: expect.stringMatching(/whole digits/),
+    })
+    expect(wholeNumber('', 'price', { min: 1, what: 'A price' })).toEqual({
+      value: undefined as never,
+    })
   })
 
   it('reads a flag as yes or no only', () => {

@@ -6,12 +6,7 @@
  */
 import type { Problem } from './types'
 
-export type ImportCollection =
-  | 'works'
-  | 'products'
-  | 'stores'
-  | 'stock-levels'
-  | 'discounts'
+export type ImportCollection = 'works' | 'products' | 'stores' | 'stock-levels' | 'discounts'
 
 /** A row that carries the data it would write. */
 export type WritableRow = {
@@ -70,7 +65,11 @@ export function rowOf(
 }
 
 /** Whether one option's value or label matches what the cell said (case-insensitive). */
-export function pickOption(options: readonly string[], raw: string, column: string): string | null {
+export function pickOption(
+  options: readonly string[],
+  raw: string,
+  _column: string,
+): string | null {
   const value = raw.trim()
   const lower = value.toLowerCase()
   const hit =

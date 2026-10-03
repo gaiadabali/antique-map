@@ -25,16 +25,29 @@ import { rowOf, type PlannedRow } from './plan'
 import { applyWork } from './apply-works'
 import { applyShopRow } from './apply-shop'
 import { Report } from './report'
-import { IMPORT_KINDS, hold, reject, type ImportKind, type ImportReport, type ReportRow } from './types'
+import {
+  IMPORT_KINDS,
+  hold,
+  reject,
+  type ImportKind,
+  type ImportReport,
+  type ReportRow,
+} from './types'
 import { buildVocabulary, type Vocabulary } from './vocabulary'
 
-export type UpsertResult = {
-  readonly outcome: 'new' | 'updated' | 'unchanged'
-  readonly changes?: ReadonlyArray<{ column: string; was: string; now: string }>
-} | {
-  readonly outcome: 'rejected' | 'held'
-  readonly problem: { readonly column?: string; readonly problem: string; readonly fix?: string }
-}
+export type UpsertResult =
+  | {
+      readonly outcome: 'new' | 'updated' | 'unchanged'
+      readonly changes?: ReadonlyArray<{ column: string; was: string; now: string }>
+    }
+  | {
+      readonly outcome: 'rejected' | 'held'
+      readonly problem: {
+        readonly column?: string
+        readonly problem: string
+        readonly fix?: string
+      }
+    }
 
 export type UpsertContext = {
   payload: Payload
@@ -51,22 +64,38 @@ export type RunOptions = {
   /** DATA.md's publish-these-records: save published, which runs the publish checks. */
   publish?: boolean
   /** The user the run is for — the owner in the admin; the seed runs with none. */
-  user?: PayloadRequest['user']
+  user?: PayloadRequest['user'] | undefined
 }
 
 /** Payload keeps its live transactions here; a run checks it to know a refusal killed one. */
 const sessions = (payload: Payload): Record<string, unknown> =>
   (payload.db.sessions ?? {}) as Record<string, unknown>
 
-function requestOf(payload: Payload, transactionID: string | undefined, user: PayloadRequest['user']): PayloadRequest {
+function requestOf(
+  payload: Payload,
+  transactionID: string | number | undefined,
+  user: PayloadRequest['user'] | undefined,
+  locale: 'en' | 'all' | 'id' = 'en',
+): PayloadRequest {
   return {
     payload,
     user: user ?? null,
-    locale: 'en',
+    locale,
     headers: new Headers(),
     transactionID,
     t: (key: string) => key,
   } as unknown as PayloadRequest
+}
+
+/**
+ * A fresh request in the file's transaction: Payload keeps the request's locale state, and both a
+ * `locale: 'all'` read and a `locale: 'id'` write made every later call on the same request stray
+ * (found against 3.90.2 — a bilingual create stored only its Indonesian half, and a later write
+ * landed in the Indonesian locale with its unlocalised fields lost). One request per call.
+ */
+export async function freshReq(ctx: UpsertContext, locale?: 'all' | 'id'): Promise<PayloadRequest> {
+  const transactionID = ctx.req.transactionID ? await ctx.req.transactionID : undefined
+  return requestOf(ctx.payload, transactionID, ctx.req.user ?? undefined, locale)
 }
 
 const MAX_ATTEMPTS = 8
@@ -98,7 +127,8 @@ export async function runImportFile(
   const report = new Report(kind, fileName, options.runner, options.dryRun === true)
   // Planning answers and duplicate keys are final before anything is written.
   for (const planned of plannedRows) {
-    if ('problems' in planned) report.record(reject(planned.row, planned.key, one(planned.problems)))
+    if ('problems' in planned)
+      report.record(reject(planned.row, planned.key, one(planned.problems)))
     else if ('hold' in planned) report.record(hold(planned.row, planned.key, one(planned.hold)))
   }
   const duplicated = markDuplicates(plannedRows, report)
@@ -115,30 +145,24 @@ export async function runImportFile(
       if (duplicated.has(planned.row) || report.has(planned.row)) continue
       const session = transactionID === undefined ? undefined : sessions(payload)[transactionID]
       if (session) {
-        await payload.db.execute({ db: (session as { db: unknown }).db as never, raw: `SAVEPOINT import_row_${planned.row}` })
+        await payload.db.execute({
+          db: (session as { db: unknown }).db as never,
+          raw: `SAVEPOINT import_row_${planned.row}`,
+        })
       }
+      let result: UpsertResult | undefined
       try {
-        const result =
+        result =
           planned.collection === 'works'
             ? await applyWork(ctx, planned as never)
             : await applyShopRow(ctx, planned as never)
-        if (session) {
-          await payload.db.execute({ db: (session as { db: unknown }).db as never, raw: `RELEASE SAVEPOINT import_row_${planned.row}` })
-        }
-        if (result.outcome === 'rejected') report.record(reject(planned.row, planned.key, result.problem))
-        else if (result.outcome === 'held') report.record(hold(planned.row, planned.key, result.problem))
-        else {
-          report.record({
-            row: planned.row,
-            key: planned.key,
-            outcome: result.outcome,
-            ...(result.outcome === 'updated' ? { changes: result.changes ?? [] } : {}),
-          } as ReportRow)
-        }
       } catch (error) {
         if (session) {
           try {
-            await payload.db.execute({ db: (session as { db: unknown }).db as never, raw: `ROLLBACK TO SAVEPOINT import_row_${planned.row}` })
+            await payload.db.execute({
+              db: (session as { db: unknown }).db as never,
+              raw: `ROLLBACK TO SAVEPOINT import_row_${planned.row}`,
+            })
           } catch {
             // The refusal already killed the transaction; the restart below re-applies the file.
           }
@@ -152,6 +176,38 @@ export async function runImportFile(
           killed = true
           break
         }
+        continue
+      }
+      // The release sits outside the apply's catch: a save Payload refused kills its own
+      // transaction (`killTransaction`), and a failed release must never mask the row's answer.
+      let released = true
+      if (session) {
+        try {
+          await payload.db.execute({
+            db: (session as { db: unknown }).db as never,
+            raw: `RELEASE SAVEPOINT import_row_${planned.row}`,
+          })
+        } catch {
+          released = false
+        }
+      }
+      if (result.outcome === 'rejected')
+        report.record(reject(planned.row, planned.key, result.problem))
+      else if (result.outcome === 'held')
+        report.record(hold(planned.row, planned.key, result.problem))
+      else {
+        report.record({
+          row: planned.row,
+          key: planned.key,
+          outcome: result.outcome,
+          ...(result.outcome === 'updated' ? { changes: result.changes ?? [] } : {}),
+        } as ReportRow)
+      }
+      if (!released) {
+        // A refusal Payload healed into an answer killed the transaction under us: the writes
+        // so far are gone, so forget the transient answers and re-apply the file from scratch.
+        killed = true
+        break
       }
     }
 
@@ -172,7 +228,11 @@ export async function runImportFile(
 }
 
 /** Planning: the rows of one file, in order, each refused or held or carrying its data. */
-function plan(kind: ImportKind, sheet: ReturnType<typeof parseCsv>, vocab: Vocabulary): PlannedRow[] {
+function plan(
+  kind: ImportKind,
+  sheet: ReturnType<typeof parseCsv>,
+  vocab: Vocabulary,
+): PlannedRow[] {
   const keys = keyColumns(kind)
   const plannedRows: PlannedRow[] = []
   for (const { row, cells } of sheet.rows) {

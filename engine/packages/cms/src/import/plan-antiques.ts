@@ -83,7 +83,7 @@ export function planAntiqueRow(row: Row, vocab: Vocabulary): PlannedRow {
 
   const titleEn = (c.title_en ?? '').trim()
   if (titleEn === '') {
-    problems.push(problem('title_en', "title_en is empty. The hook title in English is required."))
+    problems.push(problem('title_en', 'title_en is empty. The hook title in English is required.'))
   }
   const objectType = pickOption(OBJECT_TYPES, c.object_type ?? '', 'object_type')
   if (!objectType) problems.push(optionProblem('object_type', c.object_type ?? '', OBJECT_TYPES))
@@ -188,10 +188,8 @@ export function planAntiqueRow(row: Row, vocab: Vocabulary): PlannedRow {
     if ('id' in match) {
       const condition: Record<string, unknown> = { grade: match.id }
       const notes: Record<string, string> = {}
-      if ((c.condition_notes_en ?? '').trim() !== '')
-        notes.en = c.condition_notes_en!.trim()
-      if ((c.condition_notes_id ?? '').trim() !== '')
-        notes.id = c.condition_notes_id!.trim()
+      if ((c.condition_notes_en ?? '').trim() !== '') notes.en = c.condition_notes_en!.trim()
+      if ((c.condition_notes_id ?? '').trim() !== '') notes.id = c.condition_notes_id!.trim()
       if (Object.keys(notes).length > 0) condition.notes = notes
       data.condition = condition
     } else {
@@ -223,12 +221,18 @@ export function planAntiqueRow(row: Row, vocab: Vocabulary): PlannedRow {
   if (askingPrice !== '') {
     const digits = askingPrice.replace(/[.,](?=\d{3}\b)/g, '')
     if (/^\d+$/.test(digits)) data.askingPrice = Number(digits)
-    else problems.push(problem('asking_price', `asking_price is '${askingPrice}'. Whole US dollars, digits only.`))
+    else
+      problems.push(
+        problem('asking_price', `asking_price is '${askingPrice}'. Whole US dollars, digits only.`),
+      )
   }
   const askingCurrency = (c.asking_currency ?? '').trim().toUpperCase()
   if (askingCurrency !== '' && askingCurrency !== CURRENCY) {
     problems.push(
-      problem('asking_currency', `asking_currency is '${askingCurrency}'. The asking price is in ${CURRENCY} — there is no other currency here.`),
+      problem(
+        'asking_currency',
+        `asking_currency is '${askingCurrency}'. The asking price is in ${CURRENCY} — there is no other currency here.`,
+      ),
     )
   }
 
@@ -236,7 +240,10 @@ export function planAntiqueRow(row: Row, vocab: Vocabulary): PlannedRow {
   if ((c.legacy_id ?? '').trim() !== '') {
     const id = c.legacy_id!.trim()
     if (/^\d+$/.test(id)) legacy.productId = Number(id)
-    else problems.push(problem('legacy_id', `legacy_id is '${id}'. It is the old site's numeric product id.`))
+    else
+      problems.push(
+        problem('legacy_id', `legacy_id is '${id}'. It is the old site's numeric product id.`),
+      )
   }
   if ((c.legacy_url ?? '').trim() !== '') legacy.url = c.legacy_url!.trim()
   if (Object.keys(legacy).length > 0) data.legacy = legacy
@@ -253,7 +260,7 @@ function sizeOf(
   heightColumn: string,
   widthColumn: string,
   problems: Problem[],
-  row: Row,
+  _row: Row,
 ): { height: number; width: number } | null {
   const height = (c[heightColumn] ?? '').trim()
   const width = (c[widthColumn] ?? '').trim()

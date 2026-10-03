@@ -12,12 +12,7 @@ import type { Payload, PayloadRequest } from 'payload'
 
 /** Lowercase, accents folded, whitespace collapsed — how a name is matched. */
 export const fold = (value: string): string =>
-  value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim()
+  value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim()
 
 export type Match<T> = { readonly id: T } | { readonly suggestions: readonly string[] }
 
@@ -111,10 +106,12 @@ export async function buildVocabulary(payload: Payload, req: PayloadRequest): Pr
   }
 
   const makerIndex = new FoldIndex<number>()
-  for (const doc of await read('makers')) for (const name of namesOf(doc)) makerIndex.add(name, doc.id)
+  for (const doc of await read('makers'))
+    for (const name of namesOf(doc)) makerIndex.add(name, doc.id)
 
   const placeIndex = new FoldIndex<number>()
-  for (const doc of await read('places')) for (const name of namesOf(doc)) placeIndex.add(name, doc.id)
+  for (const doc of await read('places'))
+    for (const name of namesOf(doc)) placeIndex.add(name, doc.id)
 
   // A category matches any kind's label: the shop's categories are terms, and §9's category kind
   // is the `category` column's target once it exists. Ambiguity holds the row, never guesses.
@@ -125,19 +122,13 @@ export async function buildVocabulary(payload: Payload, req: PayloadRequest): Pr
     // `label` is localised: match the default locale's string, never the whole object.
     const label = doc.label as unknown
     const name =
-      typeof label === 'string'
-        ? label
-        : ((label as { en?: string } | undefined)?.en ?? '')
+      typeof label === 'string' ? label : ((label as { en?: string } | undefined)?.en ?? '')
     if (name.trim() === '') continue
     termIndex.add(name, doc.id)
     termKind.set(doc.id, kind)
   }
 
-  const resolve = <T>(
-    value: string,
-    index: FoldIndex<T>,
-    all: readonly string[],
-  ): Match<T> => {
+  const resolve = <T>(value: string, index: FoldIndex<T>, all: readonly string[]): Match<T> => {
     const unique = index.unique(value)
     if (unique !== null) return { id: unique }
     return { suggestions: nearest(value, all) }

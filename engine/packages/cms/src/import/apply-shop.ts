@@ -6,11 +6,11 @@
  * count less the units open orders hold), so a recount never re-sells a held unit. Codes the CMS
  * does not have hold the row — never guessed into a relationship.
  */
-import type { PayloadRequest } from 'payload'
 import { ValidationError } from 'payload'
 
 import { heldUnits } from '../collections/stock-levels/count'
-import type { UpsertContext, UpsertResult } from './apply'
+import { splitLocales } from './bilingual'
+import { freshReq, type UpsertContext, type UpsertResult } from './apply'
 import { applyProductRow } from './apply-products'
 import { changes } from './diff'
 import type { WritableRow } from './plan'
@@ -28,31 +28,45 @@ function failure(error: unknown): UpsertResult {
   throw error
 }
 
-const idOf = (value: unknown): unknown => {
-  if (value === null || value === undefined) return undefined
-  if (typeof value === 'object' && 'id' in (value as object)) return (value as Doc).id
-  return value
-}
-
 async function findStore(ctx: UpsertContext, code: string): Promise<Doc | undefined> {
   const { docs } = await ctx.payload.find({
     collection: 'stores',
     overrideAccess: true,
-    req: ctx.req,
+    req: await freshReq(ctx, 'all'),
     depth: 0,
     limit: 1,
+    locale: 'all',
     where: { code: { equals: code } },
   })
   return docs[0] as Doc | undefined
 }
 
 /** One stores row: a create, or an update of only what the file changes. */
-export async function applyStoreRow(ctx: UpsertContext, planned: WritableRow & { collection: 'stores' }): Promise<UpsertResult> {
+export async function applyStoreRow(
+  ctx: UpsertContext,
+  planned: WritableRow & { collection: 'stores' },
+): Promise<UpsertResult> {
   const data: Record<string, unknown> = { ...planned.data }
   const existing = await findStore(ctx, planned.key)
+  // The hours are localised, so the write splits: the default locale's first, then the
+  // Indonesian values (vocabulary.db.test.ts's idiom).
+  const split = splitLocales(data)
   if (!existing) {
     try {
-      await ctx.payload.create({ collection: 'stores', data: data as never, req: ctx.req })
+      const created = (await ctx.payload.create({
+        collection: 'stores',
+        data: split.en as never,
+        req: await freshReq(ctx),
+      })) as unknown as Doc
+      if (Object.keys(split.id).length > 0) {
+        await ctx.payload.update({
+          collection: 'stores',
+          id: created.id,
+          locale: 'id',
+          data: split.id as never,
+          req: await freshReq(ctx, 'id'),
+        })
+      }
       return { outcome: 'new' }
     } catch (error) {
       return failure(error)
@@ -63,7 +77,24 @@ export async function applyStoreRow(ctx: UpsertContext, planned: WritableRow & {
   const update: Record<string, unknown> = {}
   for (const { column } of changed) update[column] = data[column]
   try {
-    await ctx.payload.update({ collection: 'stores', id: existing.id, data: update as never, req: ctx.req })
+    const splitUpdate = splitLocales(update)
+    if (Object.keys(splitUpdate.en).length > 0) {
+      await ctx.payload.update({
+        collection: 'stores',
+        id: existing.id,
+        data: splitUpdate.en as never,
+        req: await freshReq(ctx),
+      })
+    }
+    if (Object.keys(splitUpdate.id).length > 0) {
+      await ctx.payload.update({
+        collection: 'stores',
+        id: existing.id,
+        locale: 'id',
+        data: splitUpdate.id as never,
+        req: await freshReq(ctx, 'id'),
+      })
+    }
     return { outcome: 'updated', changes: changed }
   } catch (error) {
     return failure(error)
@@ -71,7 +102,10 @@ export async function applyStoreRow(ctx: UpsertContext, planned: WritableRow & {
 }
 
 /** One stock row, written through the count hook in the file's transaction. */
-export async function applyStockRow(ctx: UpsertContext, planned: WritableRow & { collection: 'stock-levels' }): Promise<UpsertResult> {
+export async function applyStockRow(
+  ctx: UpsertContext,
+  planned: WritableRow & { collection: 'stock-levels' },
+): Promise<UpsertResult> {
   const data = planned.data as {
     storeCode: string
     sku: string
@@ -92,21 +126,19 @@ export async function applyStockRow(ctx: UpsertContext, planned: WritableRow & {
   }
   const product = await resolveProduct(ctx, data.sku, data.variantSku)
   if (product.problem) return product.problem
-  const productId = product.doc!.id
-  // The variant the row counts: its own SKU for a variant row, none for a product without variants.
-  const variantSku = data.variantSku !== null ? data.sku : null
+  // The variant the row counts, per the sheet's columns (CONTENT-MODEL.md §9): `sku` names the
+  // product, `variant_sku` the variant — or, when the sheet names the variant in `sku`, its own.
+  const variantSku = product.variantSku ?? null
 
   const { docs } = await ctx.payload.find({
     collection: 'stock-levels',
     overrideAccess: true,
-    req: ctx.req,
+    req: await freshReq(ctx),
     depth: 0,
     limit: 100,
-    where: { and: [{ store: { equals: store.id } }, { product: { equals: productId } }] },
+    where: { and: [{ store: { equals: store.id } }, { product: { equals: product.doc!.id } }] },
   })
-  const existing = (docs as Doc[]).find(
-    (row) => (row.variantSku ?? null) === variantSku,
-  )
+  const existing = (docs as Doc[]).find((row) => (row.variantSku ?? null) === variantSku)
 
   // The row's quantity as the count hook will store it: the shelf less the units held.
   const transactionID = ctx.req.transactionID ? await ctx.req.transactionID : undefined
@@ -116,7 +148,7 @@ export async function applyStockRow(ctx: UpsertContext, planned: WritableRow & {
       ? null
       : await heldUnits(ctx.req, session.db as never, {
           store: store.id,
-          product: productId,
+          product: product.doc!.id,
           variantSku,
         }).then((held) => Math.max(data.physicalCount - held, 0))
 
@@ -125,7 +157,7 @@ export async function applyStockRow(ctx: UpsertContext, planned: WritableRow & {
   }
   const write = {
     store: store.id,
-    product: productId,
+    product: product.doc!.id,
     variantSku,
     physicalCount: data.physicalCount,
   }
@@ -135,114 +167,92 @@ export async function applyStockRow(ctx: UpsertContext, planned: WritableRow & {
         collection: 'stock-levels',
         id: existing.id,
         data: write as never,
-        req: ctx.req,
+        req: await freshReq(ctx),
       })
     } else {
-      await ctx.payload.create({ collection: 'stock-levels', data: write as never, req: ctx.req })
+      await ctx.payload.create({
+        collection: 'stock-levels',
+        data: write as never,
+        req: await freshReq(ctx),
+      })
     }
   } catch (error) {
     return failure(error)
   }
+  if (!existing) return { outcome: 'new' }
   return {
     outcome: 'updated',
-    changes: existing
-      ? [{ column: 'physicalCount', was: String(existing.quantity), now: String(expected) }]
-      : [],
+    changes: [{ column: 'physicalCount', was: String(existing.quantity), now: String(expected) }],
   }
 }
 
-/** The product a stock row counts: by its own SKU, or by a variant's SKU with the row named. */
+/** The product a stock row counts, and the variant of it, or why the row is held. */
 type Resolved = {
   readonly doc?: Doc
+  readonly variantSku?: string | null
   readonly problem?: UpsertResult & { readonly outcome: 'held' }
 }
 
-async function resolveProduct(ctx: UpsertContext, sku: string, variantColumn: string | null): Promise<Resolved> {
-  const { docs: own } = await ctx.payload.find({
-    collection: 'products',
-    overrideAccess: true,
-    req: ctx.req,
-    depth: 0,
-    draft: true,
-    limit: 1,
-    where: { sku: { equals: sku } },
-  })
-  if (own.length > 0) {
-    if (variantColumn !== null) {
-      return {
-        problem: {
-          outcome: 'held',
-          problem: {
-            column: 'variant_sku',
-            problem: `'${sku}' is the product's own SKU: leave variant_sku empty.`,
-          },
-        },
-      }
+const heldSku = (column: string, problem: string, fix?: string): Resolved => ({
+  problem: { outcome: 'held', problem: { column, problem, ...(fix ? { fix } : {}) } },
+})
+
+/**
+ * `sku` names the product and `variant_sku` its variant (the seed's and template's shape); a
+ * sheet that names the variant itself in `sku` is accepted too. A code nothing carries holds the
+ * row — never guessed into a relationship. The variant's membership of the product is the count
+ * hook's check, which refuses with the product's variant SKUs named.
+ */
+async function resolveProduct(
+  ctx: UpsertContext,
+  sku: string,
+  variantColumn: string | null,
+): Promise<Resolved> {
+  const read = async (where: Record<string, unknown>) =>
+    ctx.payload.find({
+      collection: 'products',
+      overrideAccess: true,
+      req: await freshReq(ctx),
+      depth: 0,
+      draft: true,
+      limit: 2,
+      where: where as never,
+    })
+
+  // The product by its own SKU, with the row's variant as named.
+  const { docs: own } = await read({ sku: { equals: sku } })
+  if (own.length === 1) return { doc: own[0] as Doc, variantSku: variantColumn }
+
+  // The variant named in `sku`: the array's field is a `where` the Local API answers.
+  const { docs: parents } = await read({ 'variants.sku': { equals: sku } })
+  if (parents.length === 1) {
+    if (variantColumn !== null && variantColumn !== sku) {
+      return heldSku(
+        'variant_sku',
+        `variant_sku is '${variantColumn}' but the SKU matched is the variant '${sku}'.`,
+      )
     }
-    return { doc: own[0] as Doc }
+    return { doc: parents[0] as Doc, variantSku: variantColumn ?? sku }
   }
-  // A variant's parent: by the variants' own table — `variants.sku` is not a `where` the Local
-  // API answers, and the SKU is the row's own well-formed value.
-  const transactionID = ctx.req.transactionID ? await ctx.req.transactionID : undefined
-  const session = transactionID === undefined ? undefined : ctx.payload.db.sessions?.[transactionID]
-  const escaped = sku.replace(/'/g, "''")
-  const raw =
-    session === undefined
-      ? undefined
-      : ((await ctx.payload.db.execute({
-          db: session.db as never,
-          raw: `SELECT parent_id FROM products_variants WHERE sku = '${escaped}' LIMIT 2`,
-        })) as { rows?: Array<{ parent_id: number }> })
-  const parents = raw?.rows ?? []
-  if (parents.length !== 1) {
-    return {
-      problem: {
-        outcome: 'held',
-        problem: {
-          column: 'sku',
-          problem: `No product and no variant carries the SKU '${sku}'.`,
-          fix: 'Check the SKU, or import the product first.',
-        },
-      },
-    }
-  }
-  const { docs: found } = await ctx.payload.find({
-    collection: 'products',
-    overrideAccess: true,
-    req: ctx.req,
-    depth: 0,
-    draft: true,
-    limit: 1,
-    where: { id: { equals: parents[0]!.parent_id } },
-  })
-  if (found.length === 0) {
-    return {
-      problem: {
-        outcome: 'held',
-        problem: { column: 'sku', problem: `No product and no variant carries the SKU '${sku}'.` },
-      },
-    }
-  }
-  if (variantColumn !== null && variantColumn !== sku) {
-    return {
-      problem: {
-        outcome: 'held',
-        problem: {
-          column: 'variant_sku',
-          problem: `variant_sku is '${variantColumn}' but the SKU matched is '${sku}'.`,
-        },
-      },
-    }
-  }
-  return { doc: found[0] as Doc }
+  const vague =
+    own.length > 1 || parents.length > 1 ? ` More than one product carries '${sku}'.` : ''
+  return heldSku(
+    'sku',
+    `No product and no variant carries the SKU '${sku}'.${vague}`,
+    'Check the SKU, or import the product first.',
+  )
 }
 
 /** One discounts row: the owner's codes, upserted by code. */
-export async function applyDiscountRow(ctx: UpsertContext, planned: WritableRow & { collection: 'discounts' }): Promise<UpsertResult> {  const data: Record<string, unknown> = { ...planned.data }
+export async function applyDiscountRow(
+  ctx: UpsertContext,
+  planned: WritableRow & { collection: 'discounts' },
+): Promise<UpsertResult> {
+  const data: Record<string, unknown> = { ...planned.data }
   const { docs } = await ctx.payload.find({
     collection: 'discounts',
     overrideAccess: true,
-    req: ctx.req,
+    req: await freshReq(ctx),
     depth: 0,
     limit: 1,
     where: { code: { equals: planned.key } },
@@ -250,7 +260,11 @@ export async function applyDiscountRow(ctx: UpsertContext, planned: WritableRow 
   const existing = docs[0] as Doc | undefined
   if (!existing) {
     try {
-      await ctx.payload.create({ collection: 'discounts', data: data as never, req: ctx.req })
+      await ctx.payload.create({
+        collection: 'discounts',
+        data: data as never,
+        req: await freshReq(ctx),
+      })
       return { outcome: 'new' }
     } catch (error) {
       return failure(error)
@@ -261,7 +275,12 @@ export async function applyDiscountRow(ctx: UpsertContext, planned: WritableRow 
   const update: Record<string, unknown> = {}
   for (const { column } of changed) update[column] = data[column]
   try {
-    await ctx.payload.update({ collection: 'discounts', id: existing.id, data: update as never, req: ctx.req })
+    await ctx.payload.update({
+      collection: 'discounts',
+      id: existing.id,
+      data: update as never,
+      req: await freshReq(ctx),
+    })
     return { outcome: 'updated', changes: changed }
   } catch (error) {
     return failure(error)

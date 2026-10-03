@@ -6,7 +6,7 @@
  * rolled back is not applied). The report is what the owner reads and the seed prints; nothing
  * else.
  */
-import { emptyCounts, type ImportKind, type ImportReport, type Outcome, type ReportRow } from './types'
+import { emptyCounts, type ImportKind, type ImportReport, type ReportRow } from './types'
 
 export class Report {
   readonly kind: ImportKind
@@ -69,15 +69,19 @@ export function render(report: ImportReport): string {
   )
   for (const row of report.rows) {
     if (row.outcome === 'updated') {
-      const changes = (row.changes ?? []).map(({ column, was, now }) => `${column}: ${was} → ${now}`)
+      const changes = (row.changes ?? []).map(
+        ({ column, was, now }) => `${column}: ${was} → ${now}`,
+      )
       lines.push(`Row ${row.row} (${row.key}) updated — ${changes.join('; ')}`)
+      continue
+    }
+    if (row.outcome === 'new' || row.outcome === 'unchanged') {
+      lines.push(`Row ${row.row} (${row.key}) ${row.outcome}.`)
       continue
     }
     const fix = row.fix ? ` ${row.fix}` : ''
     const column = row.column ? ` ${row.column}:` : ''
-    lines.push(
-      `Row ${row.row} (${row.key}) ${row.outcome} —${column} ${row.problem}.${fix}`,
-    )
+    lines.push(`Row ${row.row} (${row.key}) ${row.outcome} —${column} ${row.problem}.${fix}`)
   }
   return lines.join('\n')
 }

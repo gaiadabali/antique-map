@@ -31,6 +31,7 @@ const stripBom = (text: string) => (text.charCodeAt(0) === 0xfeff ? text.slice(1
 
 /** Removes control characters other than tab, newline and carriage return (SECURITY.md §2.7). */
 export const cleanControl = (value: string) =>
+  // eslint-disable-next-line no-control-regex -- control characters are exactly what the check strips
   value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
 
 /**
@@ -84,11 +85,7 @@ export function parseCsv(
   return { header, rows: lines.slice(1) }
 }
 
-export function readCsv(
-  path: string,
-  kind: ImportKind,
-  expectedHeader: readonly string[],
-): Sheet {
+export function readCsv(path: string, kind: ImportKind, expectedHeader: readonly string[]): Sheet {
   let bytes: Uint8Array
   try {
     bytes = new Uint8Array(readFileSync(path))

@@ -5,11 +5,11 @@
  * would carry one. Images are turned into `media` rows keyed by filename, so a second run links
  * the same rows and changes nothing.
  */
-import type { PayloadRequest } from 'payload'
 import { ValidationError } from 'payload'
 
-import type { UpsertContext } from './apply'
+import { freshReq, type UpsertContext } from './apply'
 import type { Problem } from './types'
+import { splitLocales } from './bilingual'
 import { changes } from './diff'
 import type { WritableRow } from './plan'
 import type { UpsertResult } from './apply'
@@ -19,7 +19,9 @@ type Doc = Record<string, unknown> & { id: number }
 /** The first row of an array read as ids, in order — how a work's images are compared. */
 const imageIds = (doc: Doc): readonly number[] =>
   ((doc.images as Array<{ media?: unknown }> | null) ?? []).map((row) =>
-    typeof row?.media === 'object' && row.media !== null ? (row.media as Doc).id : (row?.media as number),
+    typeof row?.media === 'object' && row.media !== null
+      ? (row.media as Doc).id
+      : (row?.media as number),
   )
 
 /** The maker ids+roles the work credits, as they are compared. */
@@ -38,16 +40,17 @@ const idOf = (value: unknown): unknown => {
 
 /** Creates or finds the `media` row for one image file, keyed by filename, alt from the title. */
 export async function ensureMedia(
-  ctx: { payload: PayloadRequest['payload']; req: PayloadRequest },
+  ctx: UpsertContext,
   fileName: string,
   path: string,
   alt: string,
+  subject: 'work' | 'product',
   role: string,
 ): Promise<number> {
   const { docs } = await ctx.payload.find({
     collection: 'media',
     overrideAccess: true,
-    req: ctx.req,
+    req: await freshReq(ctx),
     depth: 0,
     limit: 1,
     where: { filename: { equals: fileName } },
@@ -55,9 +58,9 @@ export async function ensureMedia(
   if (docs.length > 0) return docs[0]!.id as number
   const created = (await ctx.payload.create({
     collection: 'media',
-    data: { alt: { en: alt }, subject: 'work', role, provenance: 'photograph' } as never,
+    data: { alt, subject, role, provenance: 'photograph' } as never,
     filePath: path,
-    req: ctx.req,
+    req: await freshReq(ctx),
   })) as unknown as Doc
   return created.id as number
 }
@@ -67,7 +70,7 @@ export async function applyWork(
   ctx: UpsertContext,
   planned: WritableRow & { collection: 'works' },
 ): Promise<UpsertResult> {
-  const { payload, req } = ctx
+  const { payload } = ctx
   const data: Record<string, unknown> = { ...planned.data }
   // `relatedStockNumber` is the products template's link to the original; a work row never carries it.
   delete data.relatedStockNumber
@@ -77,10 +80,11 @@ export async function applyWork(
     try {
       images.push({
         media: await ensureMedia(
-          { payload, req },
+          ctx,
           fileNameOf(file),
           file,
           altFor(data, index),
+          'work',
           index === 0 ? 'recto' : 'detail',
         ),
       })
@@ -100,22 +104,39 @@ export async function applyWork(
   const { docs } = await payload.find({
     collection: 'works',
     overrideAccess: true,
-    req,
+    req: await freshReq(ctx, 'all'),
     depth: 0,
     draft: true,
     limit: 1,
+    locale: 'all',
     where: { stockNumber: { equals: planned.key } },
   })
   const existing = docs[0] as Doc | undefined
 
   if (!existing) {
+    // The default locale's write first, then the Indonesian values — the Local API does not take
+    // an `{ en, id }` pair on one write (vocabulary.db.test.ts's idiom).
+    const split = splitLocales(data)
     const payloadData: Record<string, unknown> = {
-      ...data,
+      ...split.en,
       ...(images.length > 0 ? { images } : {}),
       _status: ctx.publish ? 'published' : 'draft',
     }
     try {
-      await payload.create({ collection: 'works', data: payloadData as never, req })
+      const created = (await payload.create({
+        collection: 'works',
+        data: payloadData as never,
+        req: await freshReq(ctx),
+      })) as unknown as Doc
+      if (Object.keys(split.id).length > 0) {
+        await payload.update({
+          collection: 'works',
+          id: created.id,
+          locale: 'id',
+          data: split.id as never,
+          req: await freshReq(ctx, 'id'),
+        })
+      }
       return { outcome: 'new' }
     } catch (error) {
       return failure(error)
@@ -125,10 +146,7 @@ export async function applyWork(
   const incoming: Record<string, unknown> = { ...data }
   if (images.length > 0) {
     const current = imageIds(existing)
-    if (
-      current.length !== images.length ||
-      images.some((row, i) => row.media !== current[i])
-    ) {
+    if (current.length !== images.length || images.some((row, i) => row.media !== current[i])) {
       incoming.images = images
     }
   }
@@ -148,7 +166,24 @@ export async function applyWork(
   const update: Record<string, unknown> = {}
   for (const { column } of changed) update[column] = incoming[column]
   try {
-    await payload.update({ collection: 'works', id: existing.id, data: update as never, req })
+    const split = splitLocales(update)
+    if (Object.keys(split.en).length > 0) {
+      await payload.update({
+        collection: 'works',
+        id: existing.id,
+        data: split.en as never,
+        req: await freshReq(ctx),
+      })
+    }
+    if (Object.keys(split.id).length > 0) {
+      await payload.update({
+        collection: 'works',
+        id: existing.id,
+        locale: 'id',
+        data: split.id as never,
+        req: await freshReq(ctx, 'id'),
+      })
+    }
     return { outcome: 'updated', changes: changed }
   } catch (error) {
     return failure(error)
@@ -172,7 +207,10 @@ function failure(error: unknown): UpsertResult {
       problem: String(first?.message ?? 'The row was refused.'),
     }
     if (String(first?.message ?? '').includes('publish')) {
-      return { outcome: 'held', problem: { ...problem, fix: 'Complete the record, then publish it in the CMS.' } }
+      return {
+        outcome: 'held',
+        problem: { ...problem, fix: 'Complete the record, then publish it in the CMS.' },
+      }
     }
     return { outcome: 'rejected', problem }
   }

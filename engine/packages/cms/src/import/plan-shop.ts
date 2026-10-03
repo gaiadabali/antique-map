@@ -31,7 +31,11 @@ function number_(
     problems(row, column, `${column} is ${value}, but ${what} is ${min} or more.`)
     return undefined
   }
-  problems(row, column, `${column} is '${raw}'. ${what} is whole digits, optionally grouped in threes with '.' or ',': write 185000 for Rp 185.000.`)
+  problems(
+    row,
+    column,
+    `${column} is '${raw}'. ${what} is whole digits, optionally grouped in threes with '.' or ',': write 185000 for Rp 185.000.`,
+  )
   return undefined
 }
 
@@ -57,23 +61,26 @@ function planSku(row: Row, column: 'sku' | 'parent_sku'): string | null {
 }
 
 /** One products row: a product (no `parent_sku`) or a variant of one. */
-export function planProductRow(
-  row: Row,
-  vocab: Vocabulary,
-  variant: boolean,
-): PlannedRow {
+export function planProductRow(row: Row, vocab: Vocabulary, variant: boolean): PlannedRow {
   try {
     const sku = planSku(row, 'sku')
-    if (sku === null) throw new RowProblem({ column: 'sku', problem: 'sku is empty. It is required.' })
+    if (sku === null)
+      throw new RowProblem({ column: 'sku', problem: 'sku is empty. It is required.' })
 
     if (variant) {
       const parentSku = planSku(row, 'parent_sku')
       if (parentSku === null) {
-        throw new RowProblem({ column: 'parent_sku', problem: 'parent_sku is empty. A variant names the product it belongs to.' })
+        throw new RowProblem({
+          column: 'parent_sku',
+          problem: 'parent_sku is empty. A variant names the product it belongs to.',
+        })
       }
       const labelEn = clean(row.cells.variant_label_en)
       if (labelEn === '') {
-        throw new RowProblem({ column: 'variant_label_en', problem: 'variant_label_en is empty. Name the variant as buyers choose it.' })
+        throw new RowProblem({
+          column: 'variant_label_en',
+          problem: 'variant_label_en is empty. Name the variant as buyers choose it.',
+        })
       }
       const label: Record<string, unknown> = { en: labelEn }
       if (clean(row.cells.variant_label_id) !== '') label.id = clean(row.cells.variant_label_id)
@@ -92,7 +99,10 @@ export function planProductRow(
     if (categoryEmpty) problems_.push(categoryEmpty)
     const price = number_(row, 'price_idr', clean(row.cells.price_idr), 1, 'The price')
     if (price === undefined) {
-      problems_.push({ column: 'price_idr', problem: 'price_idr is empty or not a whole number of rupiah above zero.' })
+      problems_.push({
+        column: 'price_idr',
+        problem: 'price_idr is empty or not a whole number of rupiah above zero.',
+      })
     }
     if (problems_.length > 0) return refused(row.row, row.key, problems_)
 
@@ -104,9 +114,9 @@ export function planProductRow(
       if (clean(row.cells.description_id) !== '') description.id = clean(row.cells.description_id)
       data.description = description
     }
-    const active = yesNo(row.cells.active, 'active')
-    if (active.error) return refused(row.row, row.key, [{ column: 'active', problem: active.error }])
-    if (active.value !== undefined) data.active = active.value
+    // The template's `active` column is a variant's on-sale flag; a product row's one is not a
+    // field of `products` (availability is stock levels, on-sale lives per variant), so a
+    // product row leaves it unread rather than writing a field the collection would drop.
     const imageFiles = (row.cells.image_files ?? '')
       .split(';')
       .map((each) => each.trim())
@@ -148,21 +158,40 @@ export function planProductRow(
 export function planStoreRow(row: Row): PlannedRow {
   try {
     const code = clean(row.cells.store_code)
-    if (code === '') throw new RowProblem({ column: 'store_code', problem: 'store_code is empty. It is required.' })
+    if (code === '')
+      throw new RowProblem({
+        column: 'store_code',
+        problem: 'store_code is empty. It is required.',
+      })
     const name = clean(row.cells.name)
-    if (name === '') throw new RowProblem({ column: 'name', problem: 'name is empty. It is required.' })
+    if (name === '')
+      throw new RowProblem({ column: 'name', problem: 'name is empty. It is required.' })
     const address = clean(row.cells.address)
-    if (address === '') throw new RowProblem({ column: 'address', problem: 'address is empty. It is required.' })
+    if (address === '')
+      throw new RowProblem({ column: 'address', problem: 'address is empty. It is required.' })
     const lat = clean(row.cells.lat)
     const lng = clean(row.cells.lng)
     if (lat === '' || lng === '') {
-      throw new RowProblem({ column: 'lat', problem: 'lat and lng are the map pin the orders are sent from; give both.' })
+      throw new RowProblem({
+        column: 'lat',
+        problem: 'lat and lng are the map pin the orders are sent from; give both.',
+      })
     }
     if (!/^-?\d+(\.\d+)?$/.test(lat) || !/^-?\d+(\.\d+)?$/.test(lng)) {
-      throw new RowProblem({ column: 'lat', problem: 'lat is ' + (lat === '' ? lng : lat) + '. Decimal degrees, e.g. -8.5069 and 115.2625.' })
+      throw new RowProblem({
+        column: 'lat',
+        problem:
+          'lat is ' + (lat === '' ? lng : lat) + '. Decimal degrees, e.g. -8.5069 and 115.2625.',
+      })
     }
 
-    const data: Record<string, unknown> = { code, name, address, lat: Number(lat), lng: Number(lng) }
+    const data: Record<string, unknown> = {
+      code,
+      name,
+      address,
+      lat: Number(lat),
+      lng: Number(lng),
+    }
     if (clean(row.cells.area) !== '') data.area = clean(row.cells.area)
     if (clean(row.cells.whatsapp) !== '') data.whatsapp = clean(row.cells.whatsapp)
     if (clean(row.cells.hours_en) !== '' || clean(row.cells.hours_id) !== '') {
@@ -190,12 +219,26 @@ export function planStoreRow(row: Row): PlannedRow {
 export function planStockRow(row: Row): PlannedRow {
   try {
     const storeCode = clean(row.cells.store_code)
-    if (storeCode === '') throw new RowProblem({ column: 'store_code', problem: 'store_code is empty. It is required.' })
+    if (storeCode === '')
+      throw new RowProblem({
+        column: 'store_code',
+        problem: 'store_code is empty. It is required.',
+      })
     const sku = planSku(row, 'sku')
-    if (sku === null) throw new RowProblem({ column: 'sku', problem: 'sku is empty. It is required.' })
-    const quantity = number_(row, 'quantity', clean(row.cells.quantity), 0, 'The count on the shelf')
+    if (sku === null)
+      throw new RowProblem({ column: 'sku', problem: 'sku is empty. It is required.' })
+    const quantity = number_(
+      row,
+      'quantity',
+      clean(row.cells.quantity),
+      0,
+      'The count on the shelf',
+    )
     if (quantity === undefined) {
-      throw new RowProblem({ column: 'quantity', problem: 'quantity is empty or not a whole number, 0 or more.' })
+      throw new RowProblem({
+        column: 'quantity',
+        problem: 'quantity is empty or not a whole number, 0 or more.',
+      })
     }
     return planned(row.row, row.key, 'stock-levels', {
       storeCode,
@@ -213,28 +256,44 @@ export function planStockRow(row: Row): PlannedRow {
 export function planDiscountRow(row: Row): PlannedRow {
   try {
     const code = clean(row.cells.code)
-    if (code === '') throw new RowProblem({ column: 'code', problem: 'code is empty. It is required.' })
+    if (code === '')
+      throw new RowProblem({ column: 'code', problem: 'code is empty. It is required.' })
     const kind = pickOption(['percent', 'fixed'], clean(row.cells.kind), 'kind')
-    if (!kind) throw new RowProblem(optionProblem('kind', clean(row.cells.kind), ['percent', 'fixed']))
+    if (!kind)
+      throw new RowProblem(optionProblem('kind', clean(row.cells.kind), ['percent', 'fixed']))
     const value = number_(row, 'value', clean(row.cells.value), 1, 'The discount value')
     if (value === undefined) {
-      throw new RowProblem({ column: 'value', problem: 'value is empty or not a whole number. A percent code is 1 to 100; a rupiah code is whole rupiah above zero.' })
+      throw new RowProblem({
+        column: 'value',
+        problem:
+          'value is empty or not a whole number. A percent code is 1 to 100; a rupiah code is whole rupiah above zero.',
+      })
     }
     const data: Record<string, unknown> = { code: code.toUpperCase(), kind, value }
     const minSpend = number_(row, 'min_spend', clean(row.cells.min_spend), 0, 'The minimum spend')
     if (minSpend !== undefined) data.minSpend = minSpend
     const oncePerBuyer = yesNo(row.cells.once_per_buyer, 'once_per_buyer')
-    if (oncePerBuyer.error) throw new RowProblem({ column: 'once_per_buyer', problem: oncePerBuyer.error })
+    if (oncePerBuyer.error)
+      throw new RowProblem({ column: 'once_per_buyer', problem: oncePerBuyer.error })
     if (oncePerBuyer.value !== undefined) data.oncePerBuyer = oncePerBuyer.value
     for (const column of ['starts_at', 'ends_at'] as const) {
       const raw = clean(row.cells[column])
       if (raw === '') continue
       if (!/^\d{4}-\d{2}-\d{2}/.test(raw)) {
-        throw new RowProblem({ column, problem: `${column} is '${raw}'. Write the date as 2026-01-31.` })
+        throw new RowProblem({
+          column,
+          problem: `${column} is '${raw}'. Write the date as 2026-01-31.`,
+        })
       }
       data[column === 'starts_at' ? 'startsAt' : 'endsAt'] = raw
     }
-    const usageLimit = number_(row, 'usage_limit', clean(row.cells.usage_limit), 1, 'The uses allowed')
+    const usageLimit = number_(
+      row,
+      'usage_limit',
+      clean(row.cells.usage_limit),
+      1,
+      'The uses allowed',
+    )
     if (usageLimit !== undefined) data.usageLimit = usageLimit
     const active = yesNo(row.cells.active, 'active')
     if (active.error) throw new RowProblem({ column: 'active', problem: active.error })
