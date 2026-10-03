@@ -11,7 +11,7 @@ import {
   RETOUCHING_STATES,
 } from '@engine/media/contract'
 
-export type Option = { readonly label: string; readonly value: string }
+export type Option = { readonly label: string | { en: string; id: string }; readonly value: string }
 
 export function optionsOf(
   values: readonly string[],

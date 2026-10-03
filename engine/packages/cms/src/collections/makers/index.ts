@@ -76,10 +76,7 @@ export const Makers: CollectionConfig = {
       type: 'text',
       required: true,
       maxLength: 200,
-      validate: required({
-        en: 'Give the name the maker is known by, such as "François Valentijn".',
-        id: 'Berikan nama yang dikenal pembuatnya, seperti "François Valentijn".',
-      }),
+      validate: required('Give the name the maker is known by, such as "François Valentijn".'),
       admin: {
         description: {
           en: 'As the maker is known: "François Valentijn", "Woodbury & Page".',
@@ -93,10 +90,7 @@ export const Makers: CollectionConfig = {
       required: true,
       index: true,
       maxLength: 200,
-      validate: required({
-        en: 'Give the name as a maker line sorts it, such as "VALENTIJN, François".',
-        id: 'Berikan nama seperti diurutkan dalam baris pembuat, seperti "VALENTIJN, François".',
-      }),
+      validate: required('Give the name as a maker line sorts it, such as "VALENTIJN, François".'),
       admin: {
         description: {
           en: 'As a collector’s maker line reads, surname first: "BLAEU, Willem Janszoon".',
