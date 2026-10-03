@@ -11,7 +11,6 @@
 import 'server-only'
 
 import { cacheTag } from 'next/cache'
-import type { Payload } from 'payload'
 
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
@@ -38,9 +37,10 @@ const UNKNOWN_DATE: Record<SiteLocale, string> = {
   id: 'Tanggal tidak diketahui',
 }
 
-/** The published gazetteer as the filters' place resolver: a place selects it and its own. */
-async function contextOf(payload: Payload): Promise<FilterContext> {
-  const places: readonly PlaceNode[] = await loadPlaces(payload, 'en')
+/** The published gazetteer as the filters' place resolver: a place selects it and its own. The
+ * tree is the cached one (`placeTree`), so a cold listing does not read it again. */
+async function contextOf(): Promise<FilterContext> {
+  const places: readonly PlaceNode[] = await placeTree('en')
   const ids = new Map(places.map((place) => [place.id, descendantIdsOf(places, place.id)]))
   return { placeIds: (placeId) => ids.get(placeId) ?? [placeId] }
 }
@@ -59,7 +59,7 @@ export async function listing(state: FacetState, locale: SiteLocale): Promise<Wo
   'use cache'
   tagWorks()
   const payload = await cms()
-  return listWorks(payload, state, await contextOf(payload), locale, UNKNOWN_DATE[locale])
+  return listWorks(payload, state, await contextOf(), locale, UNKNOWN_DATE[locale])
 }
 
 /** The six facets, with their all-but-own counts, for one facet state. */
@@ -67,7 +67,7 @@ export async function facets(state: FacetState, locale: SiteLocale): Promise<Fac
   'use cache'
   tagWorks()
   const payload = await cms()
-  return facetsOf(payload, state, await contextOf(payload), locale)
+  return facetsOf(payload, state, await contextOf(), locale)
 }
 
 /** The facets of an empty state: what a page shows before anything filters. */

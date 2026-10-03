@@ -42,14 +42,14 @@ export async function facetsOf(
   ctx: FilterContext,
   locale: SiteLocale,
 ): Promise<FacetSetVM> {
-  const [availability, types, makers, subjects, placeFacet, periods] = await Promise.all([
-    availabilityCounts(payload, state, ctx),
-    typeCounts(payload, state, ctx),
-    makerCounts(payload, state, ctx),
-    subjectCountsOf(payload, state, ctx),
-    placeFacetOf(payload, state, ctx, locale),
-    periodCountsOf(payload, state, ctx),
-  ])
+  // One after another, not all at once: a cold page runs these beside the listing, and the
+  // pool's handful of connections is shared with every other request (a connect waits 5 s).
+  const availability = await availabilityCounts(payload, state, ctx)
+  const types = await typeCounts(payload, state, ctx)
+  const makers = await makerCounts(payload, state, ctx)
+  const subjects = await subjectCountsOf(payload, state, ctx)
+  const placeFacet = await placeFacetOf(payload, state, ctx, locale)
+  const periods = await periodCountsOf(payload, state, ctx)
 
   const makerOptions = await optionsForMakers(payload, makers, state)
   const subjectOptions = await optionsForSubjects(payload, subjects, state, locale)

@@ -38,10 +38,9 @@ export function ListingView({
   const link = (next: FacetState): string => browseHref(next, places, locale)
   const panel = { state, facets, places, locale }
   return (
-    <section className={styles.page} aria-labelledby="browse-title">
-      <h1 id="browse-title" className={styles.title}>
-        {t('browse.title')}
-      </h1>
+    // A plain block, not a labelled section: the facet column stays a top-level landmark.
+    <div className={styles.page}>
+      <h1 className={styles.title}>{t('browse.title')}</h1>
 
       <div className={styles.toolbar}>
         <div className={styles.phoneFacets}>
@@ -101,6 +100,6 @@ export function ListingView({
           )}
         </div>
       </div>
-    </section>
+    </div>
   )
 }

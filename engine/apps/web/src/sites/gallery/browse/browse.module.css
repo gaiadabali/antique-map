@@ -1,14 +1,19 @@
 /* The gallery's browse and search layout (5.1.b): 390 px first, tokens only (DESIGN-SYSTEM.md).
    The cards are `card.module.css`; the facets and chips `facets.module.css`. */
 
+/* The shell's main is a reading measure; a listing needs the page's width. It centres itself
+   on the main column and spans the viewport less the shell's gutters — never wider. */
 .page {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  padding: var(--space-6) var(--brand-gutter) var(--space-8);
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-bottom: var(--space-8);
 }
 
-.title {
+.page .title {
   font: var(--text-h2);
   color: var(--color-text);
   margin: 0;

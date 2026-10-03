@@ -107,8 +107,9 @@ export function filterParts(
   if (without !== 'date') {
     const period = periodOf(state)
     if (period !== null) {
-      add(`${SQL_EARLIEST_YEAR} <= ${period.to}`, [])
-      add(`${SQL_LATEST_YEAR} >= ${period.from}`, [])
+      // The years are parameters like every other value — never text in the statement.
+      add(`${SQL_EARLIEST_YEAR} <= $${values.length + 1}::int`, period.to)
+      add(`${SQL_LATEST_YEAR} >= $${values.length + 1}::int`, period.from)
     }
   }
   if (without !== 'subject' && state.subject.length > 0) {

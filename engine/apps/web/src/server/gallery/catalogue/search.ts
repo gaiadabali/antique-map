@@ -186,6 +186,9 @@ async function suggestionOf(pool: Pool, query: string): Promise<SearchSuggestion
     const row = rows[0]
     const kind = SUGGESTION_KINDS.find((each) => each === row?.kind)
     if (row === undefined || kind === undefined) return null
+    // The visitor's own word is no suggestion (an exact name with nothing on offer under it).
+    const said = typeof row.historical === 'string' ? row.historical : String(row.label)
+    if (said.localeCompare(query, undefined, { sensitivity: 'base' }) === 0) return null
     return {
       kind,
       label: String(row.label),
