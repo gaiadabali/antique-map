@@ -88,8 +88,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 4·W2 | 4.2 Shared components | senior-fe (Kimi) | `int/4` + `w/4.2c` | 2026-10-03 | kit kebab-cased, one barrel, `/style-guide` on both hosts; gate green with build; visual check of both palettes pending, then merge (closes the 4.1 Check too) |
 | 4·W3 | 4.3 Chrome and home pages | senior-fe (Kimi) | `w/4.3` | 2026-10-03 | second run done with 6 files uncommitted — review, commit, gate |
 | 6·W1 | 6.1 Shop browse, search and product page | senior-fe (Kimi) | `w/6.1` | 2026-10-03 | run done with 2 files uncommitted — review, commit, gate |
-| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `w/9.2a` | 2026-10-03 | 9.2.a/c done (beacon, collector, no-tracker check) — gate, then into `int/3-w1` (events fields) |
-| 8·W3 | 8.4 The safety evaluation | qa (Kimi) | `w/8.4a` | 2026-10-03 | 144-case golden set done; gate red on `works.db.test.ts` (to check: flake or a main defect) |
+| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `w/9.2a` | 2026-10-03 | 9.2.a/c done (beacon, collector, no-tracker check); gate green but for the expected migrated-db tests; it changes `events` fields, so it merges after 3.5 with its own follow-up migration |
+| 8·W3 | 8.4 The safety evaluation | qa (Kimi) | `w/8.4a` | 2026-10-03 | merged on `main` (d6ae60e); the gate's `works.db.test.ts` failure was load — 9/9 alone on main |
 | 6·W1 | 6.2 The bag (shell) | — | — | — | core merged on `main`; the bag page waits for 6.1 |
 | 9·W1 | 9.3 / 9.4 | — | `main` | — | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 
