@@ -8,6 +8,7 @@
     "./payload.config": "./src/payload.config.ts",
     "./instance": "./src/instance.ts",
     "./access": "./src/access/index.ts",
+    "./import": "./src/import/index.ts",
     "./registries": "./src/registries/index.ts",
     "./db/probe": "./src/db/probe.ts",
     "./admin/widgets": "./src/admin/widgets/index.ts",
