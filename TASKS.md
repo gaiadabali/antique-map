@@ -82,6 +82,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); 9.2.b/d (dashboard, retention job) dispatch when a GLM lane frees |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
+| 5·W1 | 5.1 Browse and search | senior-fe | `w/5.1` | 2026-10-03 | |
 
 ## Decisions for the owner
 
@@ -445,7 +446,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, on a phone, a visitor searches by a place's old name, opens an item, zooms into its detail, taps "Ask about this" and lands in WhatsApp with the item in the message; "Sell to us" opens WhatsApp or sends a form that appears as a lead; a sold item is marked Sold; no price, cart or sign-in appears anywhere; axe is clean and Lighthouse mobile meets the budget.
 **Waves:** W1 — 5.1, 5.2 · W2 — 5.3, 5.4 · W3 — 5.5
 
-- [ ] **5.1 Browse and search** · needs: phase 3, phase 4
+- [ ] **5.1 Browse and search** · needs: phase 3, phase 4 — 🔄 5·W1
   - **Lane** GAL · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`, `engine/apps/web/src/server/gallery/**`
   - **Read** EXPERIENCE-GALLERY.md §Browse and §Search, ARCHITECTURE.md §Search
