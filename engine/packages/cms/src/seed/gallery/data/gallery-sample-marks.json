@@ -1,72 +1,31 @@
 {
   "M.0004": {
-    "categories": [
-      "Antique Maps",
-      "Indonesia Maps",
-      "South East Asia Maps"
-    ],
-    "review": [
-      "review:colour",
-      "review:place"
-    ]
+    "categories": ["Antique Maps", "Indonesia Maps", "South East Asia Maps"],
+    "review": ["review:colour", "review:place"]
   },
   "P.0035": {
-    "categories": [
-      "Botanical",
-      "Flora & Fauna Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Botanical", "Flora & Fauna Prints"],
+    "review": ["review:colour"]
   },
   "M.orderr": {
-    "categories": [
-      "Antique Maps",
-      "Australia Maps",
-      "South East Asia Maps"
-    ],
-    "review": [
-      "review:colour",
-      "review:stockNumber"
-    ]
+    "categories": ["Antique Maps", "Australia Maps", "South East Asia Maps"],
+    "review": ["review:colour", "review:stockNumber"]
   },
   "P.0039": {
-    "categories": [
-      "Antique Prints",
-      "Botanical",
-      "Flora & Fauna Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Antique Prints", "Botanical", "Flora & Fauna Prints"],
+    "review": ["review:colour"]
   },
   "P.0104": {
-    "categories": [
-      "Architectural Prints",
-      "The Old Batavia Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Architectural Prints", "The Old Batavia Prints"],
+    "review": ["review:colour"]
   },
   "P.0137": {
-    "categories": [
-      "Bogor - Buitenzorg",
-      "Views & Landscapes Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Bogor - Buitenzorg", "Views & Landscapes Prints"],
+    "review": ["review:colour"]
   },
   "P.0174": {
-    "categories": [
-      "Inhabitants Prints",
-      "Java Prints",
-      "Views & Landscapes Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Inhabitants Prints", "Java Prints", "Views & Landscapes Prints"],
+    "review": ["review:colour"]
   },
   "P.0190": {
     "categories": [
@@ -75,27 +34,15 @@
       "Indonesia Prints",
       "Inhabitants Prints"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "M.L377": {
-    "categories": [
-      "Antique Photographs"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Antique Photographs"],
+    "review": ["review:colour"]
   },
   "M.L422": {
-    "categories": [
-      "Architectural Prints",
-      "Naval & Maritime Prints",
-      "Views & Landscapes Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Architectural Prints", "Naval & Maritime Prints", "Views & Landscapes Prints"],
+    "review": ["review:colour"]
   },
   "M.0386": {
     "categories": [
@@ -107,125 +54,51 @@
       "Special Collection",
       "World Maps"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "M.6018": {
-    "categories": [
-      "Antique Maps",
-      "Indonesia Maps",
-      "South East Asia Maps"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Antique Maps", "Indonesia Maps", "South East Asia Maps"],
+    "review": ["review:colour"]
   },
   "M.L574": {
-    "categories": [
-      "Birds",
-      "Flora & Fauna Prints"
-    ],
-    "review": [
-      "review:colour",
-      "review:stockNumber"
-    ]
+    "categories": ["Birds", "Flora & Fauna Prints"],
+    "review": ["review:colour", "review:stockNumber"]
   },
   "P.0842": {
-    "categories": [
-      "Birds",
-      "Flora & Fauna Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Birds", "Flora & Fauna Prints"],
+    "review": ["review:colour"]
   },
   "P.0887": {
-    "categories": [
-      "Borneo Prints",
-      "Indonesia Prints",
-      "Inhabitants Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Borneo Prints", "Indonesia Prints", "Inhabitants Prints"],
+    "review": ["review:colour"]
   },
   "P.0894": {
-    "categories": [
-      "Borneo Prints",
-      "Indonesia Prints",
-      "Inhabitants Prints",
-      "Mammals Prints"
-    ],
-    "review": [
-      "review:colour",
-      "review:originalTitle"
-    ]
+    "categories": ["Borneo Prints", "Indonesia Prints", "Inhabitants Prints", "Mammals Prints"],
+    "review": ["review:colour", "review:originalTitle"]
   },
   "P.1180": {
-    "categories": [
-      "Antique Prints",
-      "Indonesia Prints",
-      "Java Prints",
-      "Wayang Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Antique Prints", "Indonesia Prints", "Java Prints", "Wayang Prints"],
+    "review": ["review:colour"]
   },
   "P.0243": {
-    "categories": [
-      "Flora & Fauna Prints",
-      "Moluccas & Spice Islands Prints",
-      "Sea Life"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Flora & Fauna Prints", "Moluccas & Spice Islands Prints", "Sea Life"],
+    "review": ["review:colour"]
   },
   "P.0284": {
-    "categories": [
-      "Flora & Fauna Prints",
-      "Moluccas & Spice Islands Prints",
-      "Sea Life"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Flora & Fauna Prints", "Moluccas & Spice Islands Prints", "Sea Life"],
+    "review": ["review:colour"]
   },
   "P.1203": {
-    "categories": [
-      "Architectural Prints",
-      "Moluccas & Spice Islands Prints"
-    ],
-    "review": [
-      "review:colour",
-      "review:dimensions"
-    ]
+    "categories": ["Architectural Prints", "Moluccas & Spice Islands Prints"],
+    "review": ["review:colour", "review:dimensions"]
   },
   "P.1241": {
-    "categories": [
-      "Ethnology Prints",
-      "Inhabitants Prints",
-      "Java Prints",
-      "Yogyakarta Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Ethnology Prints", "Inhabitants Prints", "Java Prints", "Yogyakarta Prints"],
+    "review": ["review:colour"]
   },
   "P.0856": {
-    "categories": [
-      "Captain Cooks Voyages Prints",
-      "Oceania Prints",
-      "Tribal Art Prints"
-    ],
-    "review": [
-      "review:colour",
-      "review:condition",
-      "review:dimensions",
-      "review:originalTitle"
-    ]
+    "categories": ["Captain Cooks Voyages Prints", "Oceania Prints", "Tribal Art Prints"],
+    "review": ["review:colour", "review:condition", "review:dimensions", "review:originalTitle"]
   },
   "P.0517": {
     "categories": [
@@ -234,9 +107,7 @@
       "Naval & Maritime Prints",
       "Views & Landscapes Prints"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "P.1551": {
     "categories": [
@@ -247,11 +118,7 @@
       "Temples in Indonesia Prints",
       "Vintage Posters"
     ],
-    "review": [
-      "review:colour",
-      "review:originalTitle",
-      "review:place"
-    ]
+    "review": ["review:colour", "review:originalTitle", "review:place"]
   },
   "M.0443": {
     "categories": [
@@ -262,50 +129,23 @@
       "Singapore & Malaysia Maps",
       "South East Asia Maps"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "M.0856": {
-    "categories": [
-      "Antique Maps",
-      "China Maps",
-      "Pre-1750 Maps",
-      "Special Collection"
-    ],
-    "review": [
-      "review:date",
-      "review:dimensions"
-    ]
+    "categories": ["Antique Maps", "China Maps", "Pre-1750 Maps", "Special Collection"],
+    "review": ["review:date", "review:dimensions"]
   },
   "P.1642": {
-    "categories": [
-      "Botanical",
-      "Leaves Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Botanical", "Leaves Prints"],
+    "review": ["review:colour"]
   },
   "P.0326": {
-    "categories": [
-      "Flora & Fauna Prints",
-      "Insects"
-    ],
-    "review": [
-      "review:colour",
-      "review:place"
-    ]
+    "categories": ["Flora & Fauna Prints", "Insects"],
+    "review": ["review:colour", "review:place"]
   },
   "M.L1207": {
-    "categories": [
-      "Antique Books",
-      "Naval & Maritime Prints"
-    ],
-    "review": [
-      "review:colour",
-      "review:stockNumber"
-    ]
+    "categories": ["Antique Books", "Naval & Maritime Prints"],
+    "review": ["review:colour", "review:stockNumber"]
   },
   "P.1821": {
     "categories": [
@@ -321,29 +161,15 @@
       "Plants & Trees Prints",
       "Spices Prints"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "M.0491": {
-    "categories": [
-      "Antique Maps",
-      "Philippine Maps"
-    ],
-    "review": [
-      "review:colour",
-      "review:dimensions"
-    ]
+    "categories": ["Antique Maps", "Philippine Maps"],
+    "review": ["review:colour", "review:dimensions"]
   },
   "M.0496": {
-    "categories": [
-      "Antique Maps",
-      "Asia Maps",
-      "Pre-1750 Maps"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Antique Maps", "Asia Maps", "Pre-1750 Maps"],
+    "review": ["review:colour"]
   },
   "P.1972": {
     "categories": [
@@ -352,31 +178,15 @@
       "Java Prints",
       "Views & Landscapes Prints"
     ],
-    "review": [
-      "review:colour",
-      "review:place"
-    ]
+    "review": ["review:colour", "review:place"]
   },
   "P.2035": {
-    "categories": [
-      "Botanical",
-      "Leaves Prints",
-      "Plants & Trees Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Botanical", "Leaves Prints", "Plants & Trees Prints"],
+    "review": ["review:colour"]
   },
   "P.2073": {
-    "categories": [
-      "Botanical",
-      "Flora & Fauna Prints",
-      "Leaves Prints",
-      "Plants & Trees Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Botanical", "Flora & Fauna Prints", "Leaves Prints", "Plants & Trees Prints"],
+    "review": ["review:colour"]
   },
   "P.1901": {
     "categories": [
@@ -385,9 +195,7 @@
       "Flora & Fauna Prints",
       "Mammal Prints"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "P.0229": {
     "categories": [
@@ -396,9 +204,7 @@
       "Indonesia Prints",
       "Moluccas & Spice Islands Prints"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "P.2133": {
     "categories": [
@@ -407,31 +213,15 @@
       "Indonesia Prints",
       "Inhabitants Prints"
     ],
-    "review": [
-      "review:colour",
-      "review:place"
-    ]
+    "review": ["review:colour", "review:place"]
   },
   "P.2271": {
-    "categories": [
-      "Batik Prints",
-      "Costumes & Attire Prints",
-      "Dance & Music",
-      "Java Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Batik Prints", "Costumes & Attire Prints", "Dance & Music", "Java Prints"],
+    "review": ["review:colour"]
   },
   "M.L1664": {
-    "categories": [
-      "Antique Books",
-      "Exploration Prints"
-    ],
-    "review": [
-      "review:stockNumber",
-      "review:title"
-    ]
+    "categories": ["Antique Books", "Exploration Prints"],
+    "review": ["review:stockNumber", "review:title"]
   },
   "M.0232": {
     "categories": [
@@ -441,9 +231,7 @@
       "North America Maps",
       "South America Maps"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "P.2320": {
     "categories": [
@@ -451,38 +239,19 @@
       "Singapore Photographs",
       "Views & Landscapes Photographs"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "P.2386": {
-    "categories": [
-      "Batik Prints",
-      "Dance & Music",
-      "Java Prints"
-    ],
-    "review": [
-      "review:colour",
-      "review:title"
-    ]
+    "categories": ["Batik Prints", "Dance & Music", "Java Prints"],
+    "review": ["review:colour", "review:title"]
   },
   "P.2396": {
-    "categories": [
-      "Flora & Fauna Prints",
-      "Mammal Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Flora & Fauna Prints", "Mammal Prints"],
+    "review": ["review:colour"]
   },
   "P.2440": {
-    "categories": [
-      "Flora & Fauna Prints",
-      "Mammal Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Flora & Fauna Prints", "Mammal Prints"],
+    "review": ["review:colour"]
   },
   "P.2483": {
     "categories": [
@@ -491,27 +260,15 @@
       "Indian Prints",
       "Tribal & Ethnographic Art"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "P.2774": {
-    "categories": [
-      "Flora & Fauna Prints",
-      "Sea Life"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Flora & Fauna Prints", "Sea Life"],
+    "review": ["review:colour"]
   },
   "P.2761": {
-    "categories": [
-      "Flora & Fauna Prints",
-      "Sea Life"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Flora & Fauna Prints", "Sea Life"],
+    "review": ["review:colour"]
   },
   "P.2128": {
     "categories": [
@@ -520,17 +277,10 @@
       "Java Prints",
       "The Old Batavia Prints"
     ],
-    "review": [
-      "review:colour"
-    ]
+    "review": ["review:colour"]
   },
   "P.2863": {
-    "categories": [
-      "Birds",
-      "Flora & Fauna Prints"
-    ],
-    "review": [
-      "review:colour"
-    ]
+    "categories": ["Birds", "Flora & Fauna Prints"],
+    "review": ["review:colour"]
   }
 }

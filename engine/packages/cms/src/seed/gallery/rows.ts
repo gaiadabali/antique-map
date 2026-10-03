@@ -117,8 +117,8 @@ export function antiqueRow(
   // `B.<n>`) falls back like an empty one — the importer would refuse it as the key, and a row
   // is never seeded with a key it cannot be found by again.
   const stockSaid = (() => {
-    const candidate = ((stock.value?.value ?? '') || '').trim() ||
-      (stock.status === 'review' ? stockRaw : '')
+    const candidate =
+      ((stock.value?.value ?? '') || '').trim() || (stock.status === 'review' ? stockRaw : '')
     return candidate !== '' && stockNumberError(candidate, STOCK_NUMBER_PATTERN) === null
       ? candidate
       : ''

@@ -5,13 +5,14 @@
 import { describe, expect, it } from 'vitest'
 
 import { SAMPLE_COUNT, pickSample, spreadIndices } from './pick'
-import type { NormalisedGalleryRecord } from './records'
+import type { LegacyImage, NormalisedGalleryRecord } from './records'
 
 const record = (legacyId: number): NormalisedGalleryRecord =>
   ({
     legacyId,
     fields: {},
   }) as unknown as NormalisedGalleryRecord
+const image = (file: string): LegacyImage => ({ legacyImageId: 1, file, bytes: 1 })
 
 describe('the sample pick', () => {
   it('spreads evenly and always keeps the first and last', () => {
@@ -29,10 +30,10 @@ describe('the sample pick', () => {
   })
 
   it('is deterministic: the same records twice', () => {
-    const images = new Map<number, readonly unknown[]>([
-      [1, ['a']],
-      [2, ['a']],
-      [3, ['a']],
+    const images = new Map<number, readonly LegacyImage[]>([
+      [1, [image('a')]],
+      [2, [image('a')]],
+      [3, [image('a')]],
     ])
     const records = [1, 2, 3].map(record)
     expect(pickSample(records, images)).toEqual(pickSample(records, images))
@@ -40,7 +41,7 @@ describe('the sample pick', () => {
 
   it('picks SAMPLE_COUNT records that carry an image', () => {
     const withImages = Array.from({ length: 2000 }, (_, i) => record(i + 1))
-    const images = new Map(withImages.map((r) => [r.legacyId, ['img']]))
+    const images = new Map(withImages.map((r) => [r.legacyId, [image('img')]]))
     const picked = pickSample(withImages, images)
     expect(picked.length).toBe(SAMPLE_COUNT)
     expect(new Set(picked.map((r) => r.legacyId)).size).toBe(SAMPLE_COUNT)

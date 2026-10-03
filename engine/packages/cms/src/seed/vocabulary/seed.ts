@@ -1,7 +1,8 @@
 /**
  * The vocabulary layer (DATA.md §2): the places the gallery's records name (the committed
  * gazetteer, plus the publisher-places and world places its place fields name), the condition
- * grades and the subject terms the legacy categories name, and `site-settings`' safe defaults.
+ * grades and the subject terms the legacy categories name, the shop's product categories, and
+ * `site-settings`' safe defaults.
  * It runs on every environment, production included, and is **seeded once**: a second run creates
  * nothing and overwrites nothing — a vocabulary a person has edited in the admin is theirs.
  *
@@ -16,6 +17,7 @@ import type { Payload, PayloadRequest } from 'payload'
 
 import { reqOf } from '../req'
 import { fold } from '../../import/vocabulary'
+import { TERM_KINDS } from '../../collections/terms/kinds'
 
 /** The settings a fresh environment starts on: the schema's own defaults, written once. */
 const SETTINGS_DEFAULTS = {
@@ -83,6 +85,16 @@ export function subjectSeeds(): readonly SubjectSeed[] {
   return (data('terms.json') as { subjects: SubjectSeed[] }).subjects
 }
 
+/** The shop's categories (DATA.md §1): the products sheet's `category` column matches them. */
+export function categorySeeds(): readonly SubjectSeed[] {
+  return (data('categories.json') as { categories: SubjectSeed[] }).categories
+}
+
+/** The `category` kind arrives with TASKS.md 3.2.a; until then the categories are subject terms. */
+const CATEGORY_KIND = (TERM_KINDS as readonly string[]).includes('category')
+  ? 'category'
+  : 'subject'
+
 export function makerSeeds(): readonly MakerSeed[] {
   return (data('makers.json') as { makers: MakerSeed[] }).makers
 }
@@ -94,8 +106,7 @@ export function makerSeeds(): readonly MakerSeed[] {
  * stays with the given name; a name that is already a sort line or an office's name sorts as it
  * is. Deterministic over the name, so the same seed always writes the same line.
  */
-const ORGANISATION =
-  /&|\b(Office|Society|Club|Association|Company|Press|Bureau|Survey|Admiralty)\b/
+const ORGANISATION = /&|\b(Office|Society|Club|Association|Company|Press|Bureau|Survey|Admiralty)\b/
 const PARTICLE = /\s(van|von|de|der|den|del|della|du|di|ten|ter|tot|zu)\b/i
 
 export function sortNameOf(name: string): string {
@@ -176,8 +187,12 @@ export async function seedVocabulary(payload: Payload): Promise<VocabularyReport
       report.terms.created += 1
     } else report.terms.present += 1
   }
-  for (const subject of subjectSeeds()) {
-    if (await ensureTerm(payload, req, 'subject', subject.label, undefined, subject.labelId)) {
+  const subjects = [
+    ...subjectSeeds().map((seed) => ({ kind: 'subject', seed })),
+    ...categorySeeds().map((seed) => ({ kind: CATEGORY_KIND, seed })),
+  ]
+  for (const { kind, seed } of subjects) {
+    if (await ensureTerm(payload, req, kind, seed.label, undefined, seed.labelId)) {
       report.terms.created += 1
     } else report.terms.present += 1
   }

@@ -51,7 +51,11 @@
       "parent": "europe"
     },
     { "slug": "china", "name": { "en": "China", "id": "Tiongkok" }, "type": "country" },
-    { "slug": "new-zealand", "name": { "en": "New Zealand", "id": "Selandia Baru" }, "type": "country" },
+    {
+      "slug": "new-zealand",
+      "name": { "en": "New Zealand", "id": "Selandia Baru" },
+      "type": "country"
+    },
     {
       "slug": "amsterdam",
       "name": { "en": "Amsterdam", "id": "Amsterdam" },

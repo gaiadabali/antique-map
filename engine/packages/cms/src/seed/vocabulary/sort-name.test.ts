@@ -14,7 +14,7 @@ describe('sortNameOf', () => {
   })
 
   it('lets a particle ride with the surname', () => {
-    expect(sortNameOf('Guillaume de L’ Isle')).toBe("DE L’ ISLE, Guillaume")
+    expect(sortNameOf('Guillaume de L’ Isle')).toBe('DE L’ ISLE, Guillaume')
     expect(sortNameOf('Jan Huyghen van Linschoten')).toBe('VAN LINSCHOTEN, Jan Huyghen')
   })
 
