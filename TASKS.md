@@ -78,24 +78,20 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 4·W1 | 4.1 Port the design team's tokens and fonts | senior-uiux | `w/4.1` | 2026-10-03 | |
-| 3·W1 | 3.3 Shop collections: products, stores and stock | senior-db | `task/3.3-shop-collections` | 2026-10-03 | |
-| 3·W1 | 3.2 Catalogue collections: makers, places, terms and the antiques | senior-db | `w/3.2` | 2026-10-03 | |
-| 3·W1 | 3.4 Leads, partners, chats, events, settings and pages | senior-be | `w/3.4` | 2026-10-03 | |
-| 3·W3 | 3.7 Spreadsheet import and the seed data | senior-be | `w/3.7c` | 2026-10-03 | |
-| 6·W1 | 6.2 The bag, the delivery fee and the welcome code | senior-be | `task/6.2-pricing-core` | 2026-10-03 | |
-| 4·W2 | 4.2 Shared components from the design team's kit | senior-fe | `w/4.2a` | 2026-10-03 | |
-| 9·W1 | 9.3 Metadata, structured data and sitemaps | senior-fe | `w/9.3a` | 2026-10-03 | |
-| 3·W2 | 3.6 The admin experience: both languages, plain errors, a dashboard shell | senior-fe | `w/3.6` | 2026-10-03 | |
-| 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `worktree-agent-a586c01642ef4da70` | 2026-10-03 | |
-| 9·W1 | 9.4 Redirects from the old addresses | senior-be | `w/9.4a` | 2026-10-03 | |
-| 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | |
-| 9·W1 | 9.2 First-party analytics and the dashboard | senior-be | `w/9.2a` | 2026-10-03 | |
-| 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db | `w/3.5` | 2026-10-03 | |
-| 8·W3 | 8.4 The safety evaluation and the red-team set | qa | `w/8.4a` | 2026-10-03 | |
-| 6·W2 | 6.3 Checkout, the map pin, the nearest store and the atomic stock | senior-be | `w/6.3core` | 2026-10-03 | |
-| 4·W3 | 4.3 Chrome and home pages from the design team's drawings | senior-fe | `w/4.3` | 2026-10-03 | |
-| 6·W1 | 6.1 Shop browse, search and the product page | senior-fe | `w/6.1` | 2026-10-03 | |
+| 3·W2 | 3.5 Schema lead: the migration, roles and access | senior-db (Opus → GLM) | `w/3.5` | 2026-10-03 | 3.5.a–d done and the 3.5.e test written (5 commits); Opus stopped at its rate limit — GLM finishes the last 3.3 test update, then `int/3-w1` merges to `main` |
+| 3·W1 | 3.2, 3.3, 3.4 collections | senior-db / senior-be | `int/3-w1` | 2026-10-03 | merged into the integration branch with 6.4; land on `main` together with 3.5's migration |
+| 6·W2 | 6.4 Midtrans: payment, webhook, simulator and expiry | senior-integrator | `int/3-w1` | 2026-10-03 | 6.4.a–c done; mounts wired; waits for the 3.5 merge |
+| 8·W1 | 8.1 The chat core: route, tools and guardrails | senior-integrator | `worktree-agent-adb746d34efdbccee` | 2026-10-03 | 8.1.a–d done, 102 tests, end-to-end run on a dev server; to merge into `int/3-w1` |
+| 3·W2 | 3.6 The admin experience | senior-fe (Kimi → GLM) | `w/3.6` | 2026-10-03 | Kimi ran out of turns twice with ~40 files uncommitted; GLM finishes and commits |
+| 6·W2 | 6.3 Checkout, nearest store, atomic stock | senior-be (Opus → GLM) | `w/6.3core` | 2026-10-03 | Opus stopped at its rate limit before committing; GLM redoes the core with the concurrency test |
+| 3·W3 | 3.7 Import and seed | senior-be (GLM) | `w/3.7ab` | 2026-10-03 | 3.7.c merged; the 3.7.a/b run committed nothing — rerun on GLM |
+| 4·W2 | 4.2 Shared components | senior-fe (Kimi) | `int/4` + `w/4.2c` | 2026-10-03 | kit kebab-cased, one barrel, `/style-guide` on both hosts; gate green with build; visual check of both palettes pending, then merge (closes the 4.1 Check too) |
+| 4·W3 | 4.3 Chrome and home pages | senior-fe (Kimi) | `w/4.3` | 2026-10-03 | second run done with 6 files uncommitted — review, commit, gate |
+| 6·W1 | 6.1 Shop browse, search and product page | senior-fe (Kimi) | `w/6.1` | 2026-10-03 | run done with 2 files uncommitted — review, commit, gate |
+| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `w/9.2a` | 2026-10-03 | 9.2.a/c done (beacon, collector, no-tracker check) — gate, then into `int/3-w1` (events fields) |
+| 8·W3 | 8.4 The safety evaluation | qa (Kimi) | `w/8.4a` | 2026-10-03 | 144-case golden set done; gate red on `works.db.test.ts` (to check: flake or a main defect) |
+| 6·W1 | 6.2 The bag (shell) | — | — | — | core merged on `main`; the bag page waits for 6.1 |
+| 9·W1 | 9.3 / 9.4 | — | `main` | — | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 
 ## Decisions for the owner
 
@@ -825,6 +821,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 ## Log
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
+
+- 2026-10-03 — **Lanes changed (user): GLM 5.3 Flash only.** Kimi and the Claude seat hit their limits (two Opus agents — 3.5 and the 6.3 core — stopped mid-task at the rate limit). From here every task, including the money, stock and access cores, is written by GLM workers with the tests named in their tickets as the safety net; the orchestrator gates and merges with scripts; **Claude reviews the whole build at the end** (money, stock, webhooks, access, the AI guardrails first). GLM runs up to three at once.
 
 - 2026-10-03 — 6.4 (Opus) into `int/3-w1` (aafc39c; 6.4.a–c reported): Snap adapter and a credential-free simulator that production refuses; the webhook verifies the SHA-512 signature in constant time before reading anything else, confirms with the status API, then applies in one transaction (order locked first, ledger insert `ON CONFLICT DO NOTHING`); ten parallel identical webhooks → one event, one `paid`; the sweep returns an expired order's stock exactly once (three concurrent sweeps); a late settlement on an expired order is flagged, never applied. Orchestrator wired the mounts through `@engine/http` (`/api/x/webhooks/midtrans` signature, `/api/x/cron/{sweeps,reconcile}` cron). Decisions: a payment after expiry keeps the order `expired` and flags it (COMMERCE §7 over §13); the order is locked before the ledger row (ARCHITECTURE §7 amended in the code header). Open: boot-check rules for `MIDTRANS_MODE`, crontab lines (3.1), notification jobs (7.3).
 - 2026-10-03 — 9.4a merged (089e3cf, Kimi): redirect rules and builder — every one of the 7,665 gallery URLs and 673 shop paths gets exactly one outcome (301, gone, or unresolved with a reason); unpublished destinations are never targets; chains and duplicate `from`s fail the build; one-hop resolver. Proxy wiring stays for 9.4.b.
