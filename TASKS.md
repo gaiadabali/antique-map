@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 3/7 | 23/33 | 0 | `███████░░░`  70% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 10/18 | 0 | `██████░░░░`  56% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **14/49** | **96/200** | **8** | `█████░░░░░`  48% |
+| **All** | 11 phases | | | **14/49** | **97/200** | **8** | `█████░░░░░`  49% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -522,7 +522,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** COMMERCE.md §Cart and §Pricing, SECURITY.md §Server-side pricing
   - _Requirements: 5.3, 5.5, 6.2_
   - [x] 6.2.a the bag in a cookie holding only product, variant and quantity; every price, fee and total is computed by the server from the database; integer rupiah, rounded once
-  - [ ] 6.2.b the delivery-fee quote: distance bands from `site-settings` measured from the nearest eligible store (6.3.b) against the admin-maintained fee table (Q3, filled in from the local courier price); free over the threshold after the discount; a pin beyond the last band is refused with a WhatsApp handoff
+  - [x] 6.2.b the delivery-fee quote: distance bands from `site-settings` measured from the nearest eligible store (6.3.b) against the admin-maintained fee table (Q3, filled in from the local courier price); free over the threshold after the discount; a pin beyond the last band is refused with a WhatsApp handoff
   - [x] 6.2.c the welcome code: validated and applied by the server, single-use rules from `discounts`
   - [ ] 6.2.d **Check:** unit tests prove: a tampered price or quantity in the request is ignored; totals match hand-computed cases to the rupiah; free delivery switches on exactly at the threshold; an expired or unknown code is refused with a plain message.
 
@@ -816,6 +816,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 ✅ 4.3 (a–d) — GLM finished the chrome, both homes, the partnership page and the lexicon prune (46 dead keys, en/id parity + usage test); fresh-clone verify green, merged (`6077211` with 6.1).
+- 2026-10-03 ✅ 6.1 (a–b) — GLM full rerun (the Kimi run had died on the gateway 429 before writing code): published-only catalogue loaders with live availability, browse/search/product pages; fresh-clone verify green, merged; the 6.1.c Check (seeded product page on a production build) runs once the seed lands.
 - 2026-10-03 ✅ 3.6 (a–c) — GLM finished the admin experience after Kimi's two turn-exhausted runs; bilingual labels and plain messages, role-based sidebar (store staff see only their orders and stock), dashboard widgets counted through `overrideAccess:false`; fresh-clone verify green, merged (`10fc55e`). The 3.6.d Check (browser pass as owner/editor/store) stays open for the qa wave.
 - 2026-10-03 ✅ 3.3, 3.4, 3.5, 6.4, 8.1 — the whole `int/3-w1` wave (3.2/3.3/3.4 collections, 3.5 migration+roles, 8.1 chat core, 6.4 Midtrans, 6.3core pickStore/atomic order) merged to `main` (`18bc46b`) after a full `pnpm verify` green on a fresh clone — the migrated-database tests pass on the 3.5 migration. Checks 3.3.e, 3.4.d, 3.5.e, 6.4.d, 8.1.e ticked.
 - 2026-10-03 ✅ 6.3.b/6.3.c (GLM `59564ae`) — pickStore and the one-transaction order with the 20-concurrent-orders-for-the-last-unit test green on pushed Postgres; 3.2/3.3/3.4 subtasks already ticked by their runs.
