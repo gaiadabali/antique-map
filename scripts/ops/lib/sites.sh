@@ -50,9 +50,10 @@ set_profile() {
 }
 
 validate_spec() {
-  local user port db role rest
-  IFS=: read -r user port db role rest <<<"$SITE_SPEC"
-  [ -z "$rest" ] || die "--site: USER:PORT:DATABASE:ROLE, four fields (the hostnames are --shop-hosts and --gallery-hosts)"
+  local user port db role
+  [[ "$SITE_SPEC" =~ ^[^:]+:[^:]+:[^:]+:[^:]+$ ]] ||
+    die "--site: USER:PORT:DATABASE:ROLE, four fields (the hostnames are --shop-hosts and --gallery-hosts)"
+  IFS=: read -r user port db role <<<"$SITE_SPEC"
   [[ "$user" =~ ^[a-z][a-z0-9-]{1,30}$ ]] || die "site user '$user' is not a Linux user name"
   if ! [[ "$port" =~ ^[0-9]{4,5}$ ]] || [ "$port" -lt 1024 ] || [ "$port" -gt 65535 ]; then
     die "port '$port' is not 1024-65535"
