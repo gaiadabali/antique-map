@@ -1,0 +1,52 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--text-small);
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.marker {
+  width: 0.625rem;
+  height: 0.625rem;
+  margin-top: 0.375rem;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+  flex-shrink: 0;
+}
+
+.done .marker {
+  background: var(--color-success);
+}
+
+.current .marker {
+  background: var(--color-accent);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.label {
+  color: var(--color-text-muted);
+}
+
+.current .label {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.time {
+  font: var(--text-micro);
+  color: var(--color-text-muted);
+}

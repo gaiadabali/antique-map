@@ -77,10 +77,11 @@ export async function SiteRoot(props: {
   const site = await currentSite(props.site)
   const locale = siteLocale(props.site, (await props.params).locale)
   if (locale === null) notFound()
+  const shell = shellOf(site, locale)
   return (
     <html lang={locale} data-site={site.key} className={fontVariables}>
       <body>
-        <SiteShell shell={shellOf(site, locale)} t={shellText(site.key, locale)}>
+        <SiteShell shell={{ ...shell, locale }} t={shellText(site.key, locale)}>
           {props.children}
         </SiteShell>
       </body>

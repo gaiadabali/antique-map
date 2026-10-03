@@ -1,0 +1,156 @@
+/* The shop home's layout styles (ticket 4.3.b), from the design team's drawing. Every value is a
+   token from shared/styles/tokens or the shop brand file — no raw colour, no font-family. */
+
+.section {
+  padding-block: var(--space-7);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.section:first-child {
+  border-top: 0;
+}
+
+.wrap {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.plate {
+  display: block;
+  width: 100%;
+  background: var(--color-surface-deep);
+  color: var(--color-text-muted);
+  font: var(--text-caption);
+  overflow: hidden;
+}
+
+.plateInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-4);
+  height: 100%;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.heroCopy p {
+  margin: var(--space-4) 0 0;
+}
+
+.heroThird {
+  display: none;
+}
+
+.four {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.rail {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+.num {
+  font: var(--text-number);
+  color: var(--color-text-muted);
+}
+
+.cardTitle {
+  font: var(--text-card-title);
+  margin: var(--space-2) 0 0;
+}
+
+.cardBody {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0;
+}
+
+.productCard {
+  display: block;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.productCard:hover .cardTitle {
+  color: var(--color-accent-secondary);
+}
+
+.process {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.processStep {
+  margin-block-start: var(--space-5);
+}
+
+.processStep p {
+  margin: var(--space-2) 0 0;
+}
+
+.stepTitle {
+  font: var(--text-body);
+  font-weight: 700;
+  margin: var(--space-2) 0 0;
+}
+
+.band {
+  padding-block: var(--space-8);
+}
+
+.bandDark {
+  background: var(--color-surface-dark);
+  color: var(--color-text-on-dark);
+}
+
+.bandDark .cardBody {
+  color: var(--color-text-on-dark);
+}
+
+.bandTint {
+  background: var(--color-surface-raised);
+}
+
+.trade,
+.originals {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-5);
+}
+
+@media (max-width: 47.5rem) {
+  .hero,
+  .process,
+  .trade,
+  .originals,
+  .four {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+}

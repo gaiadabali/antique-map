@@ -8,13 +8,13 @@
  * a layout, a page, metadata — comes through here.
  */
 import { createHref, siteOrigin, SITES, type Href, type SiteKey } from '@engine/config/sites'
+import type { SiteLocale } from '@engine/config/sites'
 import type { SiteShellVM } from '@engine/view-models'
 import { connection } from 'next/server'
 
 import { SITE_ASSETS } from '@engine/http/manifest'
 
 import { siteMessages, type ShellMessageKey } from './messages'
-import type { SiteLocale } from '@engine/config/sites'
 
 export type CurrentSite = (typeof SITES)[SiteKey] & {
   /** The canonical origin every absolute URL is built on; `null` while the allow-list is unusable. */
@@ -43,7 +43,7 @@ export function siteAsset(key: SiteKey, file: (typeof SITE_ASSETS)[keyof typeof 
   return `/${key}/${file}`
 }
 
-/** The placeholder shell's view model for one site and locale. */
+/** The shell's view model for one site and locale. */
 export function shellOf(site: CurrentSite, locale: SiteLocale): SiteShellVM {
   const href = siteHref(site.key)
   return {

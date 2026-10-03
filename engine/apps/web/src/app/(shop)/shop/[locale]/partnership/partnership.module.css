@@ -1,0 +1,131 @@
+/* The partnership page's layout styles, from the design team's drawing. Every value is a token
+   from shared/styles/tokens or the shop brand file — no raw colour, no font-family. */
+
+.wrap {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--space-7);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.section:first-child {
+  border-top: 0;
+}
+
+.lede {
+  max-width: 47rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-5);
+}
+
+.signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-7);
+  padding-block: var(--space-5);
+  border-block: var(--rule-hair) solid var(--color-border);
+}
+
+.offer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.offerBody p {
+  max-width: 32rem;
+}
+
+.spec {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  margin: 0;
+  padding-block-start: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.spec + .spec {
+  margin-block-start: var(--space-3);
+}
+
+.specLabel {
+  flex: none;
+  width: 6rem;
+  font: var(--text-caption);
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.specValue {
+  font: var(--text-body);
+  margin: 0;
+}
+
+.plate {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--color-surface-deep);
+  color: var(--color-text-muted);
+  font: var(--text-caption);
+  overflow: hidden;
+}
+
+.plateInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-4);
+  height: 100%;
+}
+
+.enquire {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.talk {
+  margin-block-start: var(--space-5);
+  padding-block-start: var(--space-5);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.talkActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-4);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.formNote {
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+@media (max-width: 47.5rem) {
+  .offer,
+  .enquire {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

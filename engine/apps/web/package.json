@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.131.0",
+    "@engine/cache": "workspace:*",
     "@engine/cms": "workspace:*",
     "@engine/config": "workspace:*",
     "@engine/http": "workspace:*",
