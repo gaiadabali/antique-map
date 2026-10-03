@@ -9,6 +9,7 @@
     "./instance": "./src/instance.ts",
     "./access": "./src/access/index.ts",
     "./import": "./src/import/index.ts",
+    "./seed": "./src/seed/index.ts",
     "./registries": "./src/registries/index.ts",
     "./db/probe": "./src/db/probe.ts",
     "./admin/widgets": "./src/admin/widgets/index.ts",
@@ -20,6 +21,10 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "payload": "payload",
+    "import": "payload run src/import/cli.ts",
+    "seed": "payload run src/seed/cli.ts",
+    "seed:purge": "payload run src/seed/purge-cli.ts",
+    "gallery:sample": "payload run src/seed/gallery/sample.ts",
     "generate:types": "payload generate:types && prettier --write --log-level warn payload-types.ts",
     "generate:importmap": "payload run src/registries/import-map.ts",
     "migrate": "payload migrate",

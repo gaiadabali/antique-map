@@ -25,6 +25,8 @@ function args(argv: readonly string[]): Args {
     const arg = argv[i]!
     if (arg === '--dry-run') out.dryRun = true
     else if (arg === '--publish') out.publish = true
+    // `--apply` is the seed scripts' explicit way to say "not --dry-run"; apply is the default.
+    else if (arg === '--apply') out.dryRun = false
     else if (arg === '--file') out.file = argv[++i] ?? ''
     else if (arg === '--kind') out.kind = argv[++i] ?? ''
     else throw new ImportError(`I do not know the option '${arg}'.`, USAGE)
