@@ -62,7 +62,11 @@ export type PickRefusal =
   /** No store within reach holds these lines at all. */
   | { readonly ok: false; readonly refusal: 'out_of_stock'; readonly lines: readonly LineRef[] }
   /** Every line is held somewhere, but no one store holds them all: remove these, or ask. */
-  | { readonly ok: false; readonly refusal: 'no_single_store'; readonly missing: readonly LineRef[] }
+  | {
+      readonly ok: false
+      readonly refusal: 'no_single_store'
+      readonly missing: readonly LineRef[]
+    }
 
 export type PickResult = PickedStore | PickRefusal
 

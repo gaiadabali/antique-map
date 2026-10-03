@@ -8,8 +8,13 @@
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { server, startStaffStack, type StaffStack } from '../../collections/users/staff.test-support'
+import {
+  server,
+  startStaffStack,
+  type StaffStack,
+} from '../../collections/users/staff.test-support'
 import { createOrder } from './create-order'
+import type { Pin } from './geo'
 import { trackingTokenHash } from './order-sql'
 import { quoteCheckout } from './quote-checkout'
 import {
@@ -118,9 +123,13 @@ describe.skipIf(!server)('the assignment and the order, on a real database', () 
     if (!quoted.ok) return
 
     // A buyer (or a script) sends a total that was never quoted: nothing is created.
-    const tampered = await createOrder(stack.payload, checkout(cookie, PIN.ubud, {
-      expectedTotalIdr: 1,
-    }), { bagKey: BAG_KEY })
+    const tampered = await createOrder(
+      stack.payload,
+      checkout(cookie, PIN.ubud, {
+        expectedTotalIdr: 1,
+      }),
+      { bagKey: BAG_KEY },
+    )
     expect(tampered).toEqual({
       ok: false,
       refusal: 'price_changed',
@@ -173,9 +182,13 @@ describe.skipIf(!server)('the assignment and the order, on a real database', () 
   it('a used welcome code increments used_count once', async () => {
     const item = await product(stack, { [shop.ubud]: 5 })
     const cookie = bag({ productId: item.id, variantSku: null, qty: 1 })
-    const first = await createOrder(stack.payload, checkout(cookie, PIN.ubud, {
-      welcomeCode: 'WELCOME10',
-    }), { bagKey: BAG_KEY })
+    const first = await createOrder(
+      stack.payload,
+      checkout(cookie, PIN.ubud, {
+        welcomeCode: 'WELCOME10',
+      }),
+      { bagKey: BAG_KEY },
+    )
     expect(first.ok).toBe(true)
     expect(await read.usedCount('WELCOME10')).toBe(1)
     if (first.ok) {

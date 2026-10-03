@@ -13,7 +13,11 @@
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { server, startStaffStack, type StaffStack } from '../../collections/users/staff.test-support'
+import {
+  server,
+  startStaffStack,
+  type StaffStack,
+} from '../../collections/users/staff.test-support'
 import { createOrder, type CreateOrderResult } from './create-order'
 import {
   BAG_KEY,
@@ -27,7 +31,10 @@ import {
   type Shop,
 } from './orders-db.test-support'
 
-type Client = { query(text: string): Promise<{ rows: Array<Record<string, unknown>> }>; release(): void }
+type Client = {
+  query(text: string): Promise<{ rows: Array<Record<string, unknown>> }>
+  release(): void
+}
 type SidePool = { connect(): Promise<Client>; end(): Promise<void> }
 
 describe.skipIf(!server)('the atomic stock decrement, on a real database', () => {

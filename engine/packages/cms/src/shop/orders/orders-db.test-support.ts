@@ -138,7 +138,9 @@ export function readers(pool: StaffStack['pool']) {
     history: (id: number) =>
       query(`SELECT * FROM orders_history WHERE _parent_id = ${id} ORDER BY _order`),
     usedCount: async (code: string) =>
-      Number((await query(`SELECT used_count FROM discounts WHERE code = '${code}'`))[0]!.used_count),
+      Number(
+        (await query(`SELECT used_count FROM discounts WHERE code = '${code}'`))[0]!.used_count,
+      ),
   }
 }
 
