@@ -37,7 +37,7 @@ export type WorksStack = {
   media(
     role: string,
     provenance?: string,
-    extra?: { alt?: string; altSource?: string; verdict?: string },
+    extra?: { alt?: string; altSource?: string; verdict?: string; subject?: string },
   ): Promise<number>
   stop(): Promise<void>
 }
@@ -114,6 +114,7 @@ export async function startWorksStack(prefix: string, connect: Connect): Promise
       data: {
         alt: { en: extra.alt ?? `A ${role} of the map` },
         altSource: { en: extra.altSource ?? 'cataloguer' },
+        subject: extra.subject ?? (role === 'flat' ? 'product' : 'work'),
         role,
         provenance,
         filename: `${role}-${Date.now()}-${Math.random()}.jpg`,
@@ -139,7 +140,7 @@ export async function startWorksStack(prefix: string, connect: Connect): Promise
   }
 }
 
-/** The records a complete work points at: a maker, a place, a published grade, a source. */
+/** The records a complete work points at: a maker, a place, a published grade and a subject. */
 export async function vocabulary(api: Api) {
   const maker = await api.create({
     collection: 'makers',
@@ -151,12 +152,10 @@ export async function vocabulary(api: Api) {
     data: { kind: 'grade', label: 'VG+', definition: 'Very good, nearly fine.', equivalent: 'A' },
   })
   const subject = await api.create({ collection: 'terms', data: { kind: 'subject', label: 'VOC' } })
-  const source = await api.create({ collection: 'sources', data: { shortCite: 'Tooley' } })
   return {
     maker: maker.id,
     place: place.id,
     grade: grade.id,
     subject: subject.id,
-    source: source.id,
   }
 }

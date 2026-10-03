@@ -80,9 +80,9 @@ describe('cataloguing: verifying is the owner’s or an editor’s claim', () =>
 
   it('refuses a store user’s verification, and any while an AI draft is unchecked', async () => {
     expect(await errorsOf(save({ status: 'verified' }, 'store'))).toEqual(['cataloguing.status'])
-    expect(await errorsOf(save({ status: 'verified', aiDraft: ['title'] }))).toEqual([
-      'cataloguing.status',
-    ])
+    expect(
+      await errorsOf(save({ status: 'verified', aiDraft: { title: { drafted: true } } })),
+    ).toEqual(['cataloguing.status'])
   })
 })
 

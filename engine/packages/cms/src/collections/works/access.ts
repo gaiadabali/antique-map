@@ -40,3 +40,5 @@ const block = (roles: readonly UserRole[]): FieldAccessBlock => {
 
 export const PHYSICAL_ACCESS: FieldAccessBlock = block(PHYSICAL_ROLES)
 export const ACQUISITION_ACCESS: FieldAccessBlock = block(ACQUISITION_ROLES)
+/** The asking price is the owner's alone, to read and to set (Q14; DR-10). */
+export const OWNER_ONLY_ACCESS: FieldAccessBlock = block(['owner'])

@@ -13,6 +13,7 @@ import {
   type BundledMigration,
 } from './adapter'
 import { MIGRATION_LOCK_KEY } from './advisory-lock'
+import { declareConstraints } from './constraints'
 
 const MIGRATIONS: BundledMigration[] = [
   { name: '20260101_000000_initial', up: async () => {}, down: async () => {} },
@@ -59,8 +60,8 @@ describe('the database adapter', () => {
     expect(adapterFor({}).disableCreateDatabase).toBe(true)
   })
 
-  it('declares no tables beside the collections’ own (no afterSchemaInit hook)', () => {
-    expect(adapterFor({}).afterSchemaInit ?? []).toEqual([])
+  it('declares the collections’ constraints in afterSchemaInit, and nothing else', () => {
+    expect(adapterFor({}).afterSchemaInit).toEqual([declareConstraints])
   })
 
   it('runs every migrate() under the migration lock', async () => {

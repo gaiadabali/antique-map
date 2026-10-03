@@ -14,6 +14,7 @@
  */
 import { ValidationError, type CollectionBeforeChangeHook, type PayloadRequest } from 'payload'
 
+import { unverifiedAiDraft } from '../collections/works/vocabulary'
 import { isPublishing } from '../fields/validate'
 import { hasPrimaryPlace, refId } from '../validators/work-credits'
 import { imageRowErrors } from '../validators/work-images'
@@ -104,7 +105,7 @@ export const guardWork: CollectionBeforeChangeHook = async ({
       hasPrimaryPlace: hasPrimaryPlace(places),
       images: facts,
       hasGrade: refId(condition.grade) !== null,
-      aiDraft: Array.isArray(cataloguing.aiDraft) ? (cataloguing.aiDraft as string[]) : [],
+      aiDraft: unverifiedAiDraft(cataloguing.aiDraft),
     })
     for (const problem of problems) add(errors, problem.path, problem.message, problem.summary)
   }

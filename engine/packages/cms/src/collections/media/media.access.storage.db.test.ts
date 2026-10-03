@@ -3,7 +3,8 @@
  * skips without CMS_TEST_POSTGRES_URL and STORAGE_TEST_ENDPOINT):
  * 1. the media limit is the one REST enforces, streamed to the OS temp folder and cleaned up;
  * 2. only staff read media over REST — the loaders read it on the Local API;
- * 3. what intake set (role, provenance) only the owner corrects.
+ * 3. what intake set (role, provenance, subject) only the owner corrects; store staff read no
+ *    image of a work and none of the full-resolution files (TASKS.md 3.2.e).
  */
 import { existsSync, readdirSync } from 'node:fs'
 
@@ -119,6 +120,32 @@ describe.skipIf(!stackAvailable)('media over REST (the 8.3 review, findings 1–
       expect((await post(sized(16 * 1024), valid, 'store')).status).toBe(403)
     })
 
+    it('shows store staff no image of a work — but the full list stays open to non-work media', async () => {
+      // `id` is a work's photograph (the `valid` fixture is `subject: 'work'`): hidden from a store user.
+      expect(
+        (await stack.rest('GET', `/api/media/${id}?depth=0`, { token: tokens.store })).status,
+      ).toBe(404)
+      const product = { ...valid, subject: 'product', caption: 'a product shot' }
+      const { body } = await post(sized(16 * 1024), product, 'owner')
+      expect(body.doc!.subject).toBe('product')
+      const seen = await stack.rest('GET', `/api/media/${String(body.doc!.id)}?depth=0`, {
+        token: tokens.store,
+      })
+      expect(seen.status).toBe(200)
+    }, 60_000)
+
+    it('serves the full-resolution file to owner and editor, never to a store user', async () => {
+      const { filename } = await stack.payload.findByID({
+        collection: 'media',
+        id,
+        select: { filename: true },
+      })
+      const route = `/api/media/file/${encodeURIComponent(String(filename))}`
+      expect((await stack.rest('GET', route, { token: tokens.store })).status).toBe(403)
+      expect((await stack.rest('GET', route, { token: tokens.editor })).status).toBe(200)
+      expect((await stack.rest('GET', route, { token: tokens.owner })).status).toBe(200)
+    }, 60_000)
+
     it('lets the loaders read it on the Local API, access enforced and no staff user', async () => {
       const read = await stack.payload.find({
         collection: 'media',
@@ -144,7 +171,12 @@ describe.skipIf(!stackAvailable)('media over REST (the 8.3 review, findings 1–
 
   describe('3. what intake set stays set', () => {
     it('refuses an editor who would make an AI image a photograph; the owner corrects it', async () => {
-      const synthetic = { alt: 'A street at dusk', role: 'editorial', provenance: 'ai-generated' }
+      const synthetic = {
+        alt: 'A street at dusk',
+        subject: 'other',
+        role: 'editorial',
+        provenance: 'ai-generated',
+      }
       const { status, body } = await post(sized(32 * 1024), synthetic, 'editor')
       expect(status).toBe(201)
       const route = `/api/media/${String(body.doc!.id)}`

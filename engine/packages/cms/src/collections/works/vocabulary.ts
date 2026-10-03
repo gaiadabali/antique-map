@@ -45,6 +45,23 @@ export const OBJECT_TYPE_LABELS: Record<ObjectType, string> = {
 }
 export const OBJECT_TYPE_OPTIONS = optionsOf(OBJECT_TYPES, OBJECT_TYPE_LABELS)
 
+/** `works.status` — whether the antique is on offer (CONTENT-MODEL.md §3; TASKS.md 3.2.b). */
+export const WORK_STATUSES = ['available', 'on-hold', 'sold'] as const
+export type WorkStatus = (typeof WORK_STATUSES)[number]
+export const WORK_STATUS_OPTIONS = optionsOf(WORK_STATUSES, {
+  available: 'Available',
+  'on-hold': 'On hold',
+  sold: 'Sold',
+})
+
+/** `works.location` — where the object sits, Singapore or Jakarta (CONTENT-MODEL.md §3, G2). */
+export const WORK_LOCATIONS = ['singapore', 'jakarta'] as const
+export type WorkLocation = (typeof WORK_LOCATIONS)[number]
+export const WORK_LOCATION_OPTIONS = optionsOf(WORK_LOCATIONS, {
+  singapore: 'Singapore',
+  jakarta: 'Jakarta',
+})
+
 /** The types a volume's collation (`book`) belongs to. */
 export const BOUND_OBJECT_TYPES = ['book', 'atlas'] as const satisfies readonly ObjectType[]
 
@@ -181,36 +198,39 @@ export const CATALOGUING_STATUS_OPTIONS = optionsOf(CATALOGUING_STATUSES, {
 })
 
 /**
- * The fields an AI may draft (`cataloguing.aiDraft`): each stays listed — and the work
- * unpublishable — until a person has checked it and taken it off the list (CONTENT-MODEL.md §9).
+ * The fields an AI may draft (`cataloguing.aiDraft`, TASKS.md 3.2.c; AI.md §5): one entry each,
+ * `drafted` until a person has checked it and recorded who and when (`verifiedBy`, `verifiedAt`) —
+ * a drafted entry that is not yet verified keeps the work unpublishable (CONTENT-MODEL.md §9).
  */
 export const AI_DRAFTABLE_FIELDS = [
   'title',
-  'originalTitle',
-  'publication',
+  'description',
+  'objectType',
   'date',
-  'makers',
   'places',
   'subjects',
-  'technique',
-  'colour',
-  'condition',
-  'references',
-  'seo',
+  'dimensions',
 ] as const
 export type AiDraftableField = (typeof AI_DRAFTABLE_FIELDS)[number]
 export const AI_DRAFTABLE_LABELS: Record<AiDraftableField, string> = {
   title: 'Title',
-  originalTitle: 'Original title',
-  publication: 'Publication',
+  description: 'Description',
+  objectType: 'Object type',
   date: 'Date',
-  makers: 'Makers',
   places: 'Places',
   subjects: 'Subjects',
-  technique: 'Technique',
-  colour: 'Colouring',
-  condition: 'Condition',
-  references: 'References',
-  seo: 'SEO',
+  dimensions: 'Dimensions',
 }
 export const AI_DRAFTABLE_OPTIONS = optionsOf(AI_DRAFTABLE_FIELDS, AI_DRAFTABLE_LABELS)
+
+/** The `aiDraft` entry of one draftable field, as it is stored. */
+export type AiDraftEntry = { drafted?: unknown; verifiedBy?: unknown; verifiedAt?: unknown }
+
+/** The fields drafted but not yet verified: `drafted` on and `verifiedAt` still empty (3.2.c). */
+export function unverifiedAiDraft(aiDraft: unknown): AiDraftableField[] {
+  if (aiDraft === null || typeof aiDraft !== 'object' || Array.isArray(aiDraft)) return []
+  const group = aiDraft as Record<string, AiDraftEntry>
+  return AI_DRAFTABLE_FIELDS.filter(
+    (field) => group[field]?.drafted === true && !group[field]?.verifiedAt,
+  )
+}
