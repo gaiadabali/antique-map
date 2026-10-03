@@ -80,7 +80,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 3·W3 | 3.7.b Seed layers | senior-be (GLM) | `w/3.7b` | 2026-10-03 | run `am-3.7b-1` in flight: the DATA.md §2 seed layers — vocabulary, gallery sample 50 + full 1,823 from the legacy crawl (no asking price in any public field), shop mock through 3.7.a's importer |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
-| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); 9.2.b/d (dashboard, retention job) dispatch when a GLM lane frees |
+| 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) — dispatches when a GLM lane frees |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe | `w/5.1` | 2026-10-03 | |
 
