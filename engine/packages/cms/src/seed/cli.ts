@@ -8,7 +8,7 @@
  * reports print to stdout; the process exits non-zero when the layer could not even start.
  */
 import { ImportError } from '../import/csv'
-import { cms } from '../instance'
+import { seedEnv } from './env'
 import { renderSeedRun, SEED_LAYERS, seedLayer, type SeedLayer } from './run'
 
 const USAGE =
@@ -31,7 +31,10 @@ function args(argv: readonly string[]): { layer: SeedLayer; dryRun: boolean; pub
 
 async function main(): Promise<number> {
   const parsed = args(process.argv.slice(2))
+  seedEnv()
   // cms() is the process's one instance (instance.ts); the CLI connects to the dev database.
+  // Imported after the environment is filled: the config reads it at load time.
+  const { cms } = await import('../instance')
   const payload = await cms()
   const run = await seedLayer(parsed.layer, {
     payload,
@@ -42,13 +45,14 @@ async function main(): Promise<number> {
   return 0
 }
 
-main()
-  .then((code) => process.exit(code))
-  .catch((error: unknown) => {
-    if (error instanceof ImportError) {
-      console.error(`${error.message}${error.fix ? `\n${error.fix}` : ''}`)
-    } else {
-      console.error(error)
-    }
-    process.exit(1)
-  })
+// Top-level await: `payload run` imports the script and exits — an un-awaited promise dies with it.
+try {
+  process.exit(await main())
+} catch (error: unknown) {
+  if (error instanceof ImportError) {
+    console.error(`${error.message}${error.fix ? `\n${error.fix}` : ''}`)
+  } else {
+    console.error(error)
+  }
+  process.exit(1)
+}
