@@ -19,7 +19,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 3/7 | 23/33 | 0 | `███████░░░`  70% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 9/14 | 0 | `██████░░░░`  64% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 8/18 | 0 | `████░░░░░░`  44% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **14/49** | **93/200** | **8** | `█████░░░░░`  47% |
+| **All** | 11 phases | | | **14/49** | **94/200** | **8** | `█████░░░░░`  47% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -439,7 +439,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.3.a each site's root layout: header, footer, language switch, the chat entry point (inert until phase 8), the contact from `site-settings`, and the two-way bridge links between the sites that the brief asks for
   - [x] 4.3.b the gallery home from the design team's page (hero film, featured items, makers and places entry points) and the shop home from theirs, on seeded data
   - [x] 4.3.c the shop's partnership page from the design team's drawing, its last section an enquiry call to action (WhatsApp, email, a short form that creates a `partnership` lead in 9.1) in place of the drawn sign-up and sign-in
-  - [ ] 4.3.d prune the lexicon: delete the dead keys (account, bag, payment, order, offers); a unit test that every key has `en` and `id` values and none is unused
+  - [x] 4.3.d prune the lexicon: delete the dead keys (account, bag, payment, order, offers); a unit test that every key has `en` and `id` values and none is unused
   - [ ] 4.3.e **Check:** on a production build both hosts show their own home in both languages at 390 px and 1280 px, side by side with the design team's page the structure and sections match; axe is clean; the lexicon test passes; no copy is hard-coded in a component and no raw colour is outside the tokens.
 
 ---
