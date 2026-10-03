@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 3/7 | 23/33 | 0 | `███████░░░`  70% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 9/18 | 0 | `█████░░░░░`  50% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 10/18 | 0 | `██████░░░░`  56% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **14/49** | **95/200** | **8** | `█████░░░░░`  48% |
+| **All** | 11 phases | | | **14/49** | **96/200** | **8** | `█████░░░░░`  48% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -513,7 +513,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** EXPERIENCE-SHOP.md §Browse and §Product
   - _Requirements: 5.2, 5.4_
   - [x] 6.1.a loaders (published, projected) for categories, listings and the product page with variants and availability across stores (any store has stock = available; the exact stores are not shown)
-  - [ ] 6.1.b category pages, search and the product page with options, price in rupiah, the "from the archive" link to a `relatedWork`
+  - [x] 6.1.b category pages, search and the product page with options, price in rupiah, the "from the archive" link to a `relatedWork`
   - [ ] 6.1.c **Check:** on a production build a seeded product page works at 390 px with its variant picker; a product with zero stock in every store shows "Out of stock" and cannot be added; axe is clean.
 
 - [ ] **6.2 The bag, the delivery fee and the welcome code** · needs: phase 3, phase 4 — 🔄 6·W1
