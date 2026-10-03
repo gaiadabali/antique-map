@@ -1,0 +1,189 @@
+/* The gallery home's layout styles (ticket 4.3.b), from the design team's drawing. Every value
+   is a token from shared/styles/tokens or the gallery brand file — no raw colour, no font. */
+
+.section {
+  padding-block: var(--space-8);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.section:first-child {
+  border-top: 0;
+}
+
+.wrap {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+.eyebrow {
+  color: var(--color-text-muted);
+}
+
+.plate {
+  display: block;
+  width: 100%;
+  background: var(--color-surface-deep);
+  color: var(--color-text-muted);
+  font: var(--text-caption);
+  overflow: hidden;
+}
+
+.plateInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-4);
+  height: 100%;
+}
+
+.hero {
+  display: grid;
+  gap: var(--space-6);
+  align-items: end;
+}
+
+.heroPoster {
+  aspect-ratio: 16 / 9;
+}
+
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.trustCard {
+  width: min(100%, 13rem);
+  padding: var(--space-4);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+}
+
+.trustCard p {
+  margin: var(--space-2) 0 0;
+}
+
+.aboutGrid {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 54rem;
+}
+
+.aboutGrid p {
+  margin: var(--space-4) 0 0;
+}
+
+.signals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+  max-width: 54rem;
+  margin-block-start: var(--space-6);
+}
+
+.signal {
+  border-inline-start: var(--rule-hair) solid var(--color-border);
+  padding-inline-start: var(--space-4);
+}
+
+.signalNote {
+  font: var(--text-body-large);
+  font-weight: 700;
+}
+
+.three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+.rail {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+.num {
+  font: var(--text-number);
+  color: var(--color-text-muted);
+}
+
+.cardTitle {
+  font: var(--text-card-title);
+  margin: var(--space-3) 0 0;
+}
+
+.cardBody {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  margin: var(--space-3) 0 0;
+}
+
+.curator {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.curatorPoster {
+  aspect-ratio: 5 / 4;
+}
+
+.entry {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.entryCard {
+  display: block;
+  padding: var(--space-6);
+  border: var(--rule-hair) solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.entryCard:hover {
+  color: var(--color-accent-secondary);
+}
+
+.entryCard p {
+  margin: var(--space-3) 0 0;
+}
+
+.enquire {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-5);
+}
+
+@media (max-width: 47.5rem) {
+  .signals,
+  .three,
+  .curator,
+  .enquire,
+  .entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .railNote {
+    display: none;
+  }
+}

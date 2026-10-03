@@ -11,7 +11,13 @@
  * marked as such.
  */
 import type { LocaleCode } from '@engine/config/constants'
-import { SITES, parsePublicPath, type SiteKey, type SiteLocale } from '@engine/config/sites'
+import {
+  SITES,
+  parsePublicPath,
+  siteOrigin,
+  type SiteKey,
+  type SiteLocale,
+} from '@engine/config/sites'
 import { PROXY_REQUEST_HEADERS } from '@engine/http/manifest'
 import type { ReactNode } from 'react'
 import { headers } from 'next/headers'
@@ -171,6 +177,13 @@ async function keptPathHref(site: SiteKey, locale: SiteLocale, fallback: string)
   }
 }
 
+/** The sister site's home on its own host: an absolute URL, or the path when no origin is known. */
+function sisterHref(sister: SiteKey, locale: LocaleCode): string {
+  const path = siteHref(sister)('home', {}, locale)
+  const origin = siteOrigin(sister)
+  return origin === null ? path : `${origin}${path}`
+}
+
 /** The footer: the site's links, contact and hours from `site-settings`, the sister bridge. */
 function SiteFooter({
   shell,
@@ -227,7 +240,9 @@ function SiteFooter({
             <TextLink href={page('terms')}>{t('shell.terms')}</TextLink>
           </li>
           <li>
-            <TextLink href={siteHref(sister)('home', {}, locale)}>{t('shell.sister')}</TextLink>
+            {/* The two-way bridge: the other site lives on its own host, so the link is
+                absolute — a root-relative path would land on this site's own home. */}
+            <TextLink href={sisterHref(sister, locale)}>{t('shell.sister')}</TextLink>
           </li>
         </ul>
       }
