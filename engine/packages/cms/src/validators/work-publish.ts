@@ -95,7 +95,7 @@ export function publishProblems(facts: PublishFacts): PublishProblem[] {
   }
   if (facts.aiDraft.length > 0) {
     const names = facts.aiDraft.map(
-      (field) => AI_DRAFTABLE_LABELS[field as AiDraftableField] ?? field,
+      (field) => AI_DRAFTABLE_LABELS[field as AiDraftableField]?.en ?? field,
     )
     problems.push({
       path: 'cataloguing.aiDraft',

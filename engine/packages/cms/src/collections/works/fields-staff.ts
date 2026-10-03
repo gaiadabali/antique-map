@@ -122,13 +122,15 @@ export const STAFF_FIELDS: Field[] = [
   {
     name: 'askingPrice',
     type: 'number',
-    label: 'Asking price (USD)',
+    label: { en: 'Asking price (USD)', id: 'Harga tawaran (USD)' },
     access: OWNER_ONLY_ACCESS,
     validate: validateAskingPrice,
     admin: {
       position: 'sidebar',
-      description:
-        'Whole US dollars — the start of a negotiation and the insured value. Never on a page, a feed or an AI answer.',
+      description: {
+        en: 'Whole US dollars — the start of a negotiation and the insured value. Never on a page, a feed or an AI answer.',
+        id: 'Dolar AS bulat — awal negosiasi dan nilai asuransinya. Tidak pernah tampil di halaman, umpan, atau jawaban AI.',
+      },
     },
     hooks: { beforeDuplicate: [() => null] },
   },
@@ -225,14 +227,19 @@ export const STAFF_FIELDS: Field[] = [
               name: 'verifiedBy',
               type: 'relationship',
               relationTo: 'users',
-              admin: { description: 'Who checked it.' },
+              admin: {
+                description: { en: 'Who checked it.', id: 'Siapa yang memeriksanya.' },
+              },
             },
             {
               name: 'verifiedAt',
               type: 'date',
               admin: {
                 date: { pickerAppearance: 'dayOnly' },
-                description: 'When they checked it.',
+                description: {
+                  en: 'When they checked it.',
+                  id: 'Kapan mereka memeriksanya.',
+                },
               },
             },
           ],

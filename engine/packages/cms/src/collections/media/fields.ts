@@ -96,8 +96,10 @@ export const MEDIA_FIELDS: Field[] = [
     required: true,
     options: SUBJECT_OPTIONS,
     admin: {
-      description:
-        'What it is an image of — a work, a product, a store, or something else. Set at intake, with the role.',
+      description: {
+        en: 'What it is an image of — a work, a product, a store, or something else. Set at intake, with the role.',
+        id: 'Apa yang digambarkan — karya, produk, toko, atau yang lain. Diatur saat intake, bersama perannya.',
+      },
     },
   },
   {

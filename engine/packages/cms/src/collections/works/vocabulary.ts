@@ -212,16 +212,15 @@ export const AI_DRAFTABLE_FIELDS = [
   'dimensions',
 ] as const
 export type AiDraftableField = (typeof AI_DRAFTABLE_FIELDS)[number]
-export const AI_DRAFTABLE_LABELS: Record<AiDraftableField, string> = {
-  title: 'Title',
-  description: 'Description',
-  objectType: 'Object type',
-  date: 'Date',
-  places: 'Places',
-  subjects: 'Subjects',
-  dimensions: 'Dimensions',
+export const AI_DRAFTABLE_LABELS: Record<AiDraftableField, { en: string; id: string }> = {
+  title: { en: 'Title', id: 'Judul' },
+  description: { en: 'Description', id: 'Deskripsi' },
+  objectType: { en: 'Object type', id: 'Jenis objek' },
+  date: { en: 'Date', id: 'Tanggal' },
+  places: { en: 'Places', id: 'Tempat' },
+  subjects: { en: 'Subjects', id: 'Subjek' },
+  dimensions: { en: 'Dimensions', id: 'Dimensi' },
 }
-export const AI_DRAFTABLE_OPTIONS = optionsOf(AI_DRAFTABLE_FIELDS, AI_DRAFTABLE_LABELS)
 
 /** The `aiDraft` entry of one draftable field, as it is stored. */
 export type AiDraftEntry = { drafted?: unknown; verifiedBy?: unknown; verifiedAt?: unknown }

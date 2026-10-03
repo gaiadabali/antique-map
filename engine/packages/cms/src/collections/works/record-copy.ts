@@ -6,6 +6,10 @@
 import { IN_DEFAULT_LOCALE_NOTE } from '../../fields/validate'
 
 export const RECORD_NOTES = {
+  publicId: {
+    en: 'Made when the work is first saved — the old site’s product id for a migrated work, otherwise from 100000 — and never changed: the item’s address carries it.',
+    id: 'Dibuat saat karya pertama kali disimpan — id produk situs lama untuk karya migrasi, jika tidak mulai dari 100000 — dan tidak pernah berubah: alamat itemnya membawanya.',
+  },
   workUid: {
     en: 'Made when the work is first saved, and never changed: redirects key on it.',
     id: 'Dibuat saat karya pertama kali disimpan, dan tidak pernah berubah: kunci pengalihan menggunakannya.',

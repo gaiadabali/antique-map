@@ -102,8 +102,7 @@ export const RECORD_FIELDS: Field[] = [
     admin: {
       position: 'sidebar',
       readOnly: true,
-      description:
-        'Made when the work is first saved — the old site’s product id for a migrated work, otherwise from 100000 — and never changed: the item’s address carries it.',
+      ...described(RECORD_NOTES.publicId),
     },
     hooks: { beforeDuplicate: [clear] },
   },
@@ -243,15 +242,22 @@ export const RECORD_FIELDS: Field[] = [
         defaultValue: 'available',
         index: true,
         options: WORK_STATUS_OPTIONS,
-        admin: { description: 'Whether the antique is on offer. Set it; never imply it.' },
+        admin: {
+          description: {
+            en: 'Whether the antique is on offer. Set it; never imply it.',
+            id: 'Apakah barang antik ini dijual. Atur nilainya; jangan mengandaikan.',
+          },
+        },
       },
       {
         name: 'location',
         type: 'select',
         options: WORK_LOCATION_OPTIONS,
         admin: {
-          description:
-            'Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.',
+          description: {
+            en: 'Where the object sits, Singapore or Jakarta. Blank until the owner says: it never blocks publishing.',
+            id: 'Di mana objek disimpan, Singapura atau Jakarta. Kosong sampai pemiliknya menentukan: tidak pernah menghalangi penerbitan.',
+          },
         },
       },
     ],
