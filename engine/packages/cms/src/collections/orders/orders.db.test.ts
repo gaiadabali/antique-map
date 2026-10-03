@@ -157,17 +157,24 @@ describe.skipIf(!server)('orders, on a real database', () => {
     expect(
       (await stack.rest('PATCH', `/api/orders/${theirs.id}`, { as: 'store', json: {} })).status,
     ).toBe(403)
-    const handedBack = await stack.rest('PATCH', `/api/orders/${mine.id}`, {
+    // Cancelling is not theirs (3.5.c, `./status-moves`): refused with a plain reason, and the
+    // hand-back sent with it is not saved either.
+    const cancelled = await stack.rest('PATCH', `/api/orders/${mine.id}`, {
       as: 'store',
       json: {
         needsAttention: { flag: true, reason: 'Out of the indigo print' },
         status: 'cancelled',
       },
     })
+    expect(cancelled.status).toBe(400)
+    expect(JSON.stringify(cancelled.body)).toMatch(/Store staff move an order one step forward/)
+    const handedBack = await stack.rest('PATCH', `/api/orders/${mine.id}`, {
+      as: 'store',
+      json: { needsAttention: { flag: true, reason: 'Out of the indigo print' } },
+    })
     expect(handedBack.status).toBe(200)
     const doc = handedBack.body?.doc as Record<string, unknown>
     expect(doc.needsAttention).toMatchObject({ flag: true, reason: 'Out of the indigo print' })
-    // The status is not theirs to move until 3.5.c gives them the forward step.
     expect(doc.status).toBe('processing')
   })
 
