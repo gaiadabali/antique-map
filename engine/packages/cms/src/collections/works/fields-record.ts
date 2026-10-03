@@ -9,10 +9,11 @@
  *   its own language (`originalTitleLanguage`, the `lang` the page sets on it).
  * - `makers` credit a maker with a role and a certainty, never implied certain.
  * - The `book` group, a volume's collation, shows for books and atlases only.
+ *
+ * The fields' bilingual admin copy lives beside this file (`./record-copy`, TASKS.md 3.6.a).
  */
 import type { ArrayField, Field, Validate } from 'payload'
 
-import { IN_DEFAULT_LOCALE_NOTE } from '../../fields/validate'
 import { creditRowErrors, refId, type CreditRow } from '../../validators/work-credits'
 import {
   languageTagError,
@@ -21,6 +22,7 @@ import {
 } from '../../validators/work-record'
 import { MAKER_ROLE_LABELS, MAKER_ROLES } from '../makers/roles'
 import { dimensionsField, fuzzyDateGroup } from './dates-and-sizes'
+import { RECORD_NOTES } from './record-copy'
 import {
   BOUND_OBJECT_TYPES,
   CERTAINTY_OPTIONS,
@@ -31,6 +33,8 @@ import {
 
 /** The row index of an array field's sub-field, from the path Payload validates it under. */
 export const rowOf = (path: readonly (number | string)[]) => Number(path[path.length - 2])
+
+const described = (note: { en: string; id: string }) => ({ description: note })
 
 const message = (error: string | null) => error ?? true
 const clear = () => null
@@ -93,14 +97,7 @@ export const RECORD_FIELDS: Field[] = [
     type: 'text',
     unique: true,
     index: true,
-    admin: {
-      position: 'sidebar',
-      readOnly: true,
-      description: {
-        en: 'Made when the work is first saved, and never changed: redirects key on it.',
-        id: 'Dibuat saat karya pertama kali disimpan, dan tidak pernah berubah: kunci pengalihan menggunakannya.',
-      },
-    },
+    admin: { position: 'sidebar', readOnly: true, ...described(RECORD_NOTES.workUid) },
     hooks: { beforeDuplicate: [clear] },
   },
   {
@@ -109,13 +106,7 @@ export const RECORD_FIELDS: Field[] = [
     index: true,
     maxLength: 40,
     validate: validateStockNumber,
-    admin: {
-      position: 'sidebar',
-      description: {
-        en: 'The gallery’s own number: M.1044, P.2098.',
-        id: 'Nomor milik galeri: M.1044, P.2098.',
-      },
-    },
+    admin: { position: 'sidebar', ...described(RECORD_NOTES.stockNumber) },
     hooks: { beforeDuplicate: [clear] },
   },
   {
@@ -123,12 +114,7 @@ export const RECORD_FIELDS: Field[] = [
     type: 'text',
     localized: true,
     maxLength: 240,
-    admin: {
-      description: {
-        en: `The hook title buyers read: "Bali by François Valentijn, 1726 — the first large-scale map of the island". Needed to publish. ${(IN_DEFAULT_LOCALE_NOTE as { en: string }).en}`,
-        id: `Judul yang dibaca pembeli: "Bali by François Valentijn, 1726 — the first large-scale map of the island". Diperlukan untuk menerbitkan. ${(IN_DEFAULT_LOCALE_NOTE as { id: string }).id}`,
-      },
-    },
+    admin: described(RECORD_NOTES.title),
   },
   {
     type: 'row',
@@ -137,26 +123,14 @@ export const RECORD_FIELDS: Field[] = [
         name: 'originalTitle',
         type: 'text',
         maxLength: 400,
-        admin: {
-          width: '70%',
-          description: {
-            en: 'As printed, letter for letter: Kaart van het Eyland Bali.',
-            id: 'Seperti tercetak, huruf demi huruf: Kaart van het Eyland Bali.',
-          },
-        },
+        admin: { width: '70%', ...described(RECORD_NOTES.originalTitle) },
       },
       {
         name: 'originalTitleLanguage',
         type: 'text',
         maxLength: 35,
         validate: validateLanguage,
-        admin: {
-          width: '30%',
-          description: {
-            en: 'Its language: nl, la, ms.',
-            id: 'Bahasanya: nl, la, ms.',
-          },
-        },
+        admin: { width: '30%', ...described(RECORD_NOTES.originalTitleLanguage) },
       },
     ],
   },
@@ -165,47 +139,24 @@ export const RECORD_FIELDS: Field[] = [
     type: 'select',
     index: true,
     options: OBJECT_TYPE_OPTIONS,
-    admin: {
-      description: {
-        en: 'What kind of object it is: it decides the HS code and how the page reads.',
-        id: 'Jenis objeknya: menentukan kode HS dan cara halaman membacanya.',
-      },
-    },
+    admin: described(RECORD_NOTES.objectType),
   },
   makersField,
-  fuzzyDateGroup(
-    'date',
-    { en: 'Date', id: 'Tanggal' },
-    {
-      en: 'When this sheet was printed or issued. Needed to publish.',
-      id: 'Ketika lembar ini dicetak atau diterbitkan. Diperlukan untuk menerbitkan.',
-    },
-  ),
+  fuzzyDateGroup('date', { en: 'Date', id: 'Tanggal' }, RECORD_NOTES.date),
   fuzzyDateGroup(
     'firstEdition',
     { en: 'First edition', id: 'Edisi pertama' },
-    {
-      en: 'When the work first appeared, if earlier.',
-      id: 'Ketika karya ini pertama kali muncul, jika lebih awal.',
-    },
+    RECORD_NOTES.firstEdition,
   ),
   fuzzyDateGroup(
     'dateOnPlate',
     { en: 'Date on the plate', id: 'Tanggal pada pelat' },
-    {
-      en: 'The date the plate itself bears, if any.',
-      id: 'Tanggal yang tertera pada pelat itu sendiri, jika ada.',
-    },
+    RECORD_NOTES.dateOnPlate,
   ),
   {
     name: 'publication',
     type: 'group',
-    admin: {
-      description: {
-        en: 'As the imprint and the book it came from say.',
-        id: 'Seperti yang tertulis pada impresum dan buku asalnya.',
-      },
-    },
+    admin: described(RECORD_NOTES.publication),
     fields: [
       {
         type: 'row',
@@ -214,23 +165,13 @@ export const RECORD_FIELDS: Field[] = [
             name: 'place',
             type: 'text',
             maxLength: 120,
-            admin: {
-              description: {
-                en: 'Amsterdam',
-                id: 'Amsterdam',
-              },
-            },
+            admin: described(RECORD_NOTES.publicationPlace),
           },
           {
             name: 'publisher',
             type: 'text',
             maxLength: 200,
-            admin: {
-              description: {
-                en: 'As printed',
-                id: 'Seperti tercetak',
-              },
-            },
+            admin: described(RECORD_NOTES.publicationPublisher),
           },
         ],
       },
@@ -238,12 +179,7 @@ export const RECORD_FIELDS: Field[] = [
         name: 'sourceWork',
         type: 'text',
         maxLength: 300,
-        admin: {
-          description: {
-            en: 'From: Oud en Nieuw Oost-Indiën, 1724–26.',
-            id: 'Dari: Oud en Nieuw Oost-Indiën, 1724–26.',
-          },
-        },
+        admin: described(RECORD_NOTES.sourceWork),
       },
       {
         type: 'row',
@@ -255,12 +191,7 @@ export const RECORD_FIELDS: Field[] = [
             type: 'text',
             maxLength: 35,
             validate: validateLanguage,
-            admin: {
-              description: {
-                en: 'Of the printed text: nl, la.',
-                id: 'Dari teks tercetak: nl, la.',
-              },
-            },
+            admin: described(RECORD_NOTES.textLanguage),
           },
         ],
       },
@@ -269,12 +200,7 @@ export const RECORD_FIELDS: Field[] = [
         type: 'text',
         localized: true,
         maxLength: 300,
-        admin: {
-          description: {
-            en: '"Verso: blank", or the text printed on the back.',
-            id: '"Verso: kosong", atau teks yang tercetak di bagian belakang.',
-          },
-        },
+        admin: described(RECORD_NOTES.verso),
       },
     ],
   },
@@ -295,13 +221,7 @@ export const RECORD_FIELDS: Field[] = [
     name: 'book',
     type: 'group',
     label: { en: 'Book or atlas', id: 'Buku atau atlas' },
-    admin: {
-      condition: isBound,
-      description: {
-        en: 'A volume’s collation.',
-        id: 'Kolasi sebuah volume.',
-      },
-    },
+    admin: { condition: isBound, ...described(RECORD_NOTES.book) },
     fields: [
       {
         type: 'row',
@@ -322,12 +242,7 @@ export const RECORD_FIELDS: Field[] = [
         type: 'upload',
         relationTo: 'media',
         hasMany: true,
-        admin: {
-          description: {
-            en: 'Photographs of spreads, in order.',
-            id: 'Foto penyebaran, berurutan.',
-          },
-        },
+        admin: described(RECORD_NOTES.bookOpenings),
       },
       {
         type: 'row',
