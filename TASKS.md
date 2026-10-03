@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 18/33 | 0 | `██████░░░░`  55% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 0/7 | 19/33 | 0 | `██████░░░░`  58% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 7/14 | 0 | `█████░░░░░`  50% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 1/20 | 0 | `█░░░░░░░░░`   5% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 0/5 | 7/18 | 0 | `████░░░░░░`  39% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **9/49** | **84/200** | **8** | `████░░░░░░`  42% |
+| **All** | 11 phases | | | **9/49** | **85/200** | **8** | `████░░░░░░`  43% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -390,7 +390,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(payload)/**`, `engine/packages/cms/src/{admin,i18n}/**`
   - **Read** CONTENT-OPERATIONS.md, DESIGN-SYSTEM.md §Admin
   - _Requirements: 10.1, 10.5_
-  - [ ] 3.6.a the admin in English and Indonesian for every user, a language switch on the profile; field labels, descriptions and error messages in plain language that name the field and the fix
+  - [x] 3.6.a the admin in English and Indonesian for every user, a language switch on the profile; field labels, descriptions and error messages in plain language that name the field and the fix
   - [x] 3.6.b collections grouped in the sidebar by task (Antiques, Shop, Stores and stock, Orders, Leads and partners, Content, Settings), each user seeing only what their role may
   - [ ] 3.6.c a dashboard shell with "orders to act on" and "new leads" panels (counts only; the full dashboard is 9.2)
   - [ ] 3.6.d **Check:** driven in a browser at 1280 px as owner, editor and store: each sees the right sidebar; an invalid save shows a plain message in both languages; the dashboard counts match the database.
