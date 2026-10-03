@@ -18,6 +18,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { translationStatusField } from '../../fields/translation-status'
@@ -35,6 +36,7 @@ export const Places: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'name',
     defaultColumns: ['name', 'type', 'parent', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'slug', 'historicalNames.name'],

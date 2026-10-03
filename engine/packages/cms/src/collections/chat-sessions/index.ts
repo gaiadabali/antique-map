@@ -6,6 +6,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../users/roles'
 import { chatExpiry } from './chat-expiry'
 
@@ -43,6 +44,7 @@ export const ChatSessions: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.leadsAndPartners,
+    hidden: hiddenFromAllButOwner,
     useAsTitle: 'id',
     defaultColumns: ['site', 'outcome', 'startedAt', 'lastMessageAt', 'updatedAt'],
     description: {

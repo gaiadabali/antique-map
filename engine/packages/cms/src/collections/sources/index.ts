@@ -14,6 +14,7 @@
 import type { CollectionConfig, Validate } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import {
   shortCiteError,
   SHORT_CITE_MAX_LENGTH,
@@ -38,6 +39,7 @@ export const Sources: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'shortCite',
     defaultColumns: ['shortCite', 'year', '_status', 'updatedAt'],
     listSearchableFields: ['shortCite', 'citation', 'slug'],

@@ -23,6 +23,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { freezeAfterCreate, mayCorrectIntake } from '../media/frozen'
 import { MASTERS_ACCESS } from './access'
 import { MASTER_FIELDS } from './fields'
@@ -43,6 +44,7 @@ export const Masters: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'storageKey',
     defaultColumns: ['storageKey', 'kind', 'role', 'work', 'updatedAt'],
     description: {

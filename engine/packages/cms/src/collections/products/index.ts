@@ -15,6 +15,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
 import { PRODUCTS_ACCESS } from './access'
 import { PRODUCT_CONSTRAINTS } from './constraints'
@@ -29,6 +30,7 @@ export const Products: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.shop,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'name',
     defaultColumns: ['name', 'sku', 'price', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'sku', 'variants.sku'],

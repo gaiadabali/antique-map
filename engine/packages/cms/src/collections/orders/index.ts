@@ -18,6 +18,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButAllStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
 import { ORDERS_ACCESS } from './access'
 import { ORDER_CONSTRAINTS } from './constraints'
@@ -32,6 +33,7 @@ export const Orders: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.orders,
+    hidden: hiddenFromAllButAllStaff,
     useAsTitle: 'number',
     defaultColumns: ['number', 'status', 'store', 'createdAt'],
     description: {

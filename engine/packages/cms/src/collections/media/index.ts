@@ -25,6 +25,7 @@ import { MEDIA_UPLOAD_MIME_TYPES } from '@engine/media/storage'
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { MEDIA_ACCESS } from './access'
 import { MEDIA_FIELDS } from './fields'
 import { freezeAfterCreate, mayCorrectIntake } from './frozen'
@@ -43,6 +44,7 @@ export const Media: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'alt',
     defaultColumns: ['filename', 'alt', 'role', 'provenance', 'updatedAt'],
     description: {

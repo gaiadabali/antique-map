@@ -5,6 +5,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { hasRole } from '../users/roles'
 
 const redirectManagers = ({ req }: Parameters<import('payload').Access>[0]) =>
@@ -44,6 +45,7 @@ export const Redirects: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.content,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'from',
     defaultColumns: ['site', 'from', 'to', 'code', 'source', 'hits', 'updatedAt'],
     description: {

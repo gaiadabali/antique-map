@@ -7,6 +7,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../../collections/users/roles'
 
 export const SITE_SETTINGS_ACCESS = {
@@ -161,7 +162,7 @@ function deliveryGroup(label: { en: string; id: string }): import('payload').Gro
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: { en: 'Site settings', id: 'Pengaturan situs' },
-  admin: { group: ADMIN_GROUPS.settings },
+  admin: { group: ADMIN_GROUPS.settings, hidden: hiddenFromAllButOwner },
   access: SITE_SETTINGS_ACCESS,
   fields: [
     {

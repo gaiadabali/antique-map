@@ -23,6 +23,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'
@@ -41,6 +42,7 @@ export const Works: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'title',
     defaultColumns: ['title', 'stockNumber', 'objectType', '_status', 'updatedAt'],
     listSearchableFields: ['title', 'stockNumber', 'workUid', 'originalTitle'],

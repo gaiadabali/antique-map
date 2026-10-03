@@ -18,6 +18,7 @@
 import type { CollectionConfig, Validate } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { aliasErrors, sameAsErrors } from '../../validators/maker-names'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
@@ -63,6 +64,7 @@ export const Makers: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.antiques,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'name',
     defaultColumns: ['name', 'sortName', 'roles', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'sortName', 'aliases.name'],

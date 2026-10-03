@@ -8,6 +8,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../users/roles'
 import { appendStatusHistory } from './status-history'
 import {
@@ -34,6 +35,7 @@ export const Leads: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.leadsAndPartners,
+    hidden: hiddenFromAllButOwner,
     useAsTitle: 'id',
     defaultColumns: ['kind', 'site', 'status', 'source', 'createdAt'],
     description: {

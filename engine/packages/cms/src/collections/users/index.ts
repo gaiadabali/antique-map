@@ -16,6 +16,7 @@
 import type { Access, CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { isStaffUser, type USERS_SLUG } from '../../access/roles'
 import {
   firstUserIsOwner,
@@ -48,6 +49,7 @@ export const Users: CollectionConfig = {
   },
   admin: {
     group: ADMIN_GROUPS.settings,
+    hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'email',
     defaultColumns: ['name', 'email', 'role', 'store'],
     description: {
