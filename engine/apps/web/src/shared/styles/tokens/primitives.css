@@ -14,10 +14,11 @@
   --primitive-brown: #593d21;
   --primitive-ink-soft: #5a564f;
   --primitive-warm-grey: #8c877d;
+  --primitive-warm-grey-deep: #6e6858; /* 4.92:1 on linen — muted text role needs AA */
   --primitive-bronze: #6e5a43;
   --primitive-champagne: #a39174;
   --primitive-gold: #c4a86b;
-  --primitive-positive: #2e6b3a;
+  --primitive-positive: #1f5c30; /* 5.4:1 on light surfaces — AA text on success tint */
   --primitive-caution: #8a5a00;
   --primitive-critical: #a3261f;
   --primitive-scrim: #12121299;

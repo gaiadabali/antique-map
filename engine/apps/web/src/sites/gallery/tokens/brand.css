@@ -16,7 +16,7 @@
   --brand-surface-dark-ink: var(--primitive-paper);
 
   --brand-text: var(--primitive-off-black);
-  --brand-text-muted: var(--primitive-warm-grey);
+  --brand-text-muted: var(--primitive-warm-grey-deep);
   --brand-text-on-dark: var(--primitive-paper);
 
   --brand-accent: var(--primitive-bronze);

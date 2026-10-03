@@ -19,6 +19,7 @@
 
   /* ink roles */
   --color-text: var(--brand-text, var(--primitive-off-black));
+  --color-text-strong: var(--brand-text-strong, var(--primitive-off-black));
   --color-text-muted: var(--brand-text-muted, var(--primitive-ink-soft));
   --color-text-on-dark: var(--brand-text-on-dark, var(--primitive-paper));
 
