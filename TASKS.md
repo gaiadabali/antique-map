@@ -79,7 +79,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 3·W3 | 3.7 Import and seed | senior-be (GLM) | `w/3.7ab` | 2026-10-03 | 3.7.c merged; the 3.7.a/b run left ~2,700 lines uncommitted — continuation ticket `3.7ab-r1` written, launches when a GLM lane frees |
-| 4·W2 | 4.2 Shared components | senior-fe (Kimi) | `int/4` + `w/4.2c` | 2026-10-03 | kit kebab-cased, one barrel, `/style-guide` on both hosts; gate green with build; visual check of both palettes pending, then merge (closes the 4.1 Check too) |
+| 4·W2 | 4.2 Shared components | senior-fe (Kimi) | `int/4` | 2026-10-03 | main merged in, regenerated files clean; production build + axe/keyboard pass on `/en/style-guide` of both hosts at 390/1280 in flight, then merge (closes the 4.1 Check too) |
 | 4·W3 | 4.3 Chrome and home pages | senior-fe (Kimi) | `w/4.3` | 2026-10-03 | second run done with 6 files uncommitted — review, commit, gate |
 | 6·W1 | 6.1 Shop browse, search and product page | senior-fe (GLM) | `w/6.1` | 2026-10-03 | the Kimi run died on the gateway's 429 before writing any code (only the `server-only` dep landed, committed `0d6ad3f`); GLM rerun `am-6.1-g1` in flight |
 | 9·W1 | 9.2 First-party analytics | senior-be (GLM) | `main` | 2026-10-03 | 9.2.a/c done and merged (`ab858c9`, verify green on `main`); the migration generator finds **no** schema change beyond wave_3_1, so no follow-up migration was needed; 9.2.b/d (dashboard, retention job) still to run |
