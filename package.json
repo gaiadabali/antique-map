@@ -23,6 +23,7 @@
     "db:drop": "node engine/tooling/db/cli.mjs drop",
     "db:list": "node engine/tooling/db/cli.mjs list",
     "check:filesize": "node engine/tooling/check-file-size/cli.mjs",
+    "check:trackers": "node engine/tooling/no-trackers/cli.mjs",
     "check:generated": "node engine/tooling/config-drift/cli.mjs",
     "check:tokens": "node engine/tooling/token-lint/cli.mjs",
     "tasks:lint": "node engine/tooling/tasks-lint/cli.mjs",
