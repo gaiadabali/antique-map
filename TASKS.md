@@ -22,12 +22,12 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 4/5 | 17/18 | 0 | `█████████░`  94% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 8/13 | 0 | `██████░░░░`  62% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **25/49** | **132/200** | **8** | `███████░░░`  66% |
+| **All** | 11 phases | | | **27/49** | **134/200** | **8** | `███████░░░`  67% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -79,8 +79,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
-| 7·W2 | 7.3 Tracking page and notifications | — | `main` | 2026-10-05 | merged `d00450a`; the 7.3.c Check waits on one run of `tests/e2e/shop/tracking.spec.ts` on a production build of main (with 7.2) |
-| 7·W2 | 7.2 Store staff panel | Sonnet (claude seat) | `w/7.2` | 2026-10-05 | `am-7.2-s1` — phone-first store list/detail with one next-status button, driver image, hand-back; owner/editor filters, reassign, cancel; calls the 7.1 core only |
 | 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
 | 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
@@ -89,8 +87,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 | 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
-| 7·W2 | 7.3 The tracking page and the notifications | senior-fe | `w/7.3` | 2026-10-05 | |
-| 7·W2 | 7.2 The store staff panel | senior-fe | `w/7.2` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -578,23 +574,23 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 7.1.c reassign to another store: stock returns to the first store and is decremented at the second in one transaction, refused if the second cannot fill it; a store can hand an order back with a reason
   - [x] 7.1.d **Check:** db tests prove: a store user cannot move a status backward or skip; an image that is not an image is refused; a reassign to a store without stock leaves both stocks unchanged; every transition has a history row.
 
-- [ ] **7.2 The store staff panel** · needs: 7.1 — 🔄 7·W2
+- [x] **7.2 The store staff panel** · needs: 7.1 — ✅ 2026-10-05 d33593e
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/app/(payload)/admin/orders/**`, `engine/packages/cms/src/admin/orders/**`
   - **Read** CONTENT-OPERATIONS.md §Process an order, 3.6
   - _Requirements: 8.2, 10.4_
   - [x] 7.2.a a phone-friendly order list and detail for `store` users: new orders on top, the items, the address and a map link, a single big button for the next status, the driver-image upload, "hand back"
   - [x] 7.2.b owner and editor order views: filter by status and store, reassign, cancel, flag handling for late payments
-  - [ ] 7.2.c **Check:** driven on a 390 px viewport as a store user: accept → processing → waiting → upload an image → on the way → delivered takes under two minutes with no help text; a different store's user sees an empty list.
+  - [x] 7.2.c **Check:** driven on a 390 px viewport as a store user: accept → processing → waiting → upload an image → on the way → delivered takes under two minutes with no help text; a different store's user sees an empty list.
 
-- [ ] **7.3 The tracking page and the notifications** · needs: 7.1 — 🔄 7·W2
+- [x] **7.3 The tracking page and the notifications** · needs: 7.1 — ✅ 2026-10-05 d33593e
   - **Lane** SHP · **Agent** senior-fe with senior-be · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/tracking/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{track,stores}/**`, `engine/packages/cms/src/shop/notify/**`
   - **Read** COMMERCE.md §Tracking and §Notifications, EXPERIENCE-SHOP.md §Tracking, Q5 and Q6
   - _Requirements: 8.4, 8.5_
   - [x] 7.3.a the tracking page at an unguessable link: the status timeline with times, the driver image once added, the items, the store's name and WhatsApp; rate-limited; noindex; no more personal data than the buyer typed
   - [x] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
-  - [ ] 7.3.c **Check:** a wrong token is a 404 and the tenth wrong guess in a minute is throttled; the page shows the driver image only after upload; each status change sends exactly one email; the page passes axe at both widths.
+  - [x] 7.3.c **Check:** a wrong token is a 404 and the tenth wrong guess in a minute is throttled; the page shows the driver image only after upload; each status change sends exactly one email; the page passes axe at both widths.
 
 - [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3
   - **Lane** QA · **Agent** qa · **Wave** W3
@@ -818,6 +814,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ 7.2 and 7.3 — 7.2 merged (`e39536b`, Sonnet, Opus-reviewed: every route takes the actor from `payload.auth()` and calls the 7.1 core; admin cookie `SameSite=Lax` plus Payload's CSRF origins). Gate on a fresh clone of main: format, lint, generated, filesize, tokens, web types, production build, the admin drive **22/22** (store panel 6 — paid → delivered in ~6 s, another store's user sees none — and the role drive 16) and `tracking.spec.ts` **6/6** (wrong token 404, the 11th guess 429, axe at both widths). Run note: the root Playwright config needs `E2E_PORT=<the server's port>` (default 4200) and the server started in the background first.
 
 - 2026-10-05 ✅ 7.3 (a–b) merged (`d00450a`, Sonnet, Opus-reviewed): the `tracking` surface `/track/{token}` (SHA-256 of the token, constant-time compare, an identical 404), the `/track` find-my-order page that re-sends the link, status emails on `paid` and every later status, and the proxy's sliding 10-per-minute budget per client address answering 429 with `Retry-After` (`engine/packages/http/src/proxy/tracking-rate-limit.ts`; types split into `types.ts` and re-exported). Orchestrator added in the merge: `/order/{token}` shares that budget (agreed with antique-map-dc), with a proxy test; proxy 164/164, tracking/notify/fulfilment db 38/38. Conflict: `playwright.config.ts` kept main's `shop-e2e` project. Fixed `tests/e2e/shop/product.spec.ts`'s formatting (unformatted on main since 6qa).
 
