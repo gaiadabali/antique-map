@@ -22,9 +22,9 @@ import {
 } from '../../validators/work-record'
 import { MAKER_ROLE_LABELS, MAKER_ROLES } from '../makers/roles'
 import { dimensionsField, fuzzyDateGroup } from './dates-and-sizes'
+import { bookField } from './fields-record-book'
 import { RECORD_NOTES } from './record-copy'
 import {
-  BOUND_OBJECT_TYPES,
   CERTAINTY_OPTIONS,
   COLOURING_OPTIONS,
   OBJECT_TYPE_OPTIONS,
@@ -95,11 +95,6 @@ export const makersField: ArrayField = {
     },
   ],
 }
-
-const isBound = (data: unknown) =>
-  (BOUND_OBJECT_TYPES as readonly unknown[]).includes(
-    (data as { objectType?: unknown })?.objectType,
-  )
 
 export const RECORD_FIELDS: Field[] = [
   {
@@ -281,68 +276,5 @@ export const RECORD_FIELDS: Field[] = [
     ],
   },
   dimensionsField,
-  {
-    name: 'book',
-    type: 'group',
-    label: { en: 'Book or atlas', id: 'Buku atau atlas' },
-    admin: { condition: isBound, ...described(RECORD_NOTES.book) },
-    fields: [
-      {
-        type: 'row',
-        fields: [
-          {
-            name: 'binding',
-            type: 'text',
-            label: { en: 'Binding', id: 'Penjilidan' },
-            localized: true,
-            maxLength: 300,
-          },
-          {
-            name: 'pagination',
-            type: 'text',
-            label: { en: 'Pagination', id: 'Penomoran halaman' },
-            maxLength: 300,
-          },
-        ],
-      },
-      {
-        type: 'row',
-        fields: [
-          { name: 'plates', type: 'text', label: { en: 'Plates', id: 'Pelat' }, maxLength: 300 },
-          {
-            name: 'completeness',
-            type: 'text',
-            label: { en: 'Completeness', id: 'Kelengkapan' },
-            localized: true,
-            maxLength: 300,
-          },
-        ],
-      },
-      {
-        name: 'openings',
-        type: 'upload',
-        relationTo: 'media',
-        label: { en: 'Openings', id: 'Bukaan' },
-        hasMany: true,
-        admin: described(RECORD_NOTES.bookOpenings),
-      },
-      {
-        type: 'row',
-        fields: [
-          {
-            name: 'spine',
-            type: 'upload',
-            relationTo: 'media',
-            label: { en: 'Spine', id: 'Punggung buku' },
-          },
-          {
-            name: 'cover',
-            type: 'upload',
-            relationTo: 'media',
-            label: { en: 'Cover', id: 'Sampul' },
-          },
-        ],
-      },
-    ],
-  },
+  bookField,
 ]
