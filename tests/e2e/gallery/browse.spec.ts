@@ -89,6 +89,8 @@ test.describe('Gallery browse and search (5.1.d)', () => {
     for (const path of [BROWSE_PATH, searchPath('Batavia')]) {
       const res = await page.goto(`${GALLERY_ORIGIN}${path}`)
       expect(res?.status(), path).toBe(200)
+      // Let every streamed RSC/flight response land before its body is read below.
+      await page.waitForLoadState('networkidle')
       bodies.push(await page.content())
     }
 

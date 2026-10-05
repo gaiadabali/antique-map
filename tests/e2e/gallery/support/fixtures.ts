@@ -125,6 +125,9 @@ export async function createGalleryFixtures(request: APIRequestContext): Promise
     data: {
       title: publishedTitle,
       objectType: 'map',
+      // Browse and search both filter `works.status = ANY(['available','on-hold'])` (state.ts);
+      // 'available' is the field's default, set here so the fixture never depends on it.
+      status: 'available',
       date: { precision: 'circa', from: 1880 },
       places: [{ place: placeId, role: 'depicts', primary: true }],
       images: [{ media }],
@@ -135,7 +138,9 @@ export async function createGalleryFixtures(request: APIRequestContext): Promise
   await expectOk(published, 'POST /api/works (published)')
   const publishedId = ((await published.json()) as { doc: { id: number } }).doc.id
 
-  const draft = await request.post(`${BASE_URL}/api/works`, {
+  // `?draft=true` is the ticket's own instruction for a REST draft; `_status: 'draft'` states it
+  // too, so the created record reads back as a draft whichever Payload keys off.
+  const draft = await request.post(`${BASE_URL}/api/works?draft=true`, {
     headers: auth(token),
     data: { title: draftTitle, objectType: 'map', _status: 'draft' },
   })
