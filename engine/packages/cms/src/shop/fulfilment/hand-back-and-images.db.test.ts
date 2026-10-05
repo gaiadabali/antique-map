@@ -42,7 +42,7 @@ describe.skipIf(!server)('hand-back, driver images and the purge, on a real data
       lines: [{ qty: 1, stock: { [shop.ubud]: 2, [shop.sanur]: 2 } }],
     })
 
-  it('a store hands its order back with a reason; the owner reassigns it and the flag clears', async () => {
+  it('a store hands its order back with a reason; the owner reassigns it', async () => {
     const order = await place('processing')
     const handBack = (actor = as.store, reason = 'The last scarf is torn.') =>
       handBackOrder(stack.payload, { orderId: order.id, actor, reason })
@@ -70,9 +70,10 @@ describe.skipIf(!server)('hand-back, driver images and the purge, on a real data
       actor: as.owner,
     })
     expect(moved).toMatchObject({ ok: true, fromStoreId: shop.ubud, toStoreId: shop.sanur })
+    // The flag stays for the owner to clear: the payments core raises it too.
     row = await read.order(order.id)
-    expect(row.needs_attention_flag).toBe(false)
-    expect(row.needs_attention_reason).toBeNull()
+    expect(row.needs_attention_flag).toBe(true)
+    expect(Number(row.store_id)).toBe(shop.sanur)
     // Now Sanur's order: the Ubud user can no longer hand it back.
     expect(await handBack()).toMatchObject({ ok: false, refusal: 'not_your_store' })
   })

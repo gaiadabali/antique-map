@@ -12,7 +12,8 @@
  *    all, and then the transaction **rolls back** — the increments already made with it — so both
  *    stores' stock is exactly as it was.
  * 4. **The order** points at the new store, its snapshot and distance; the delivery fee the buyer
- *    paid never changes. A hand-back flag is cleared: the reassign is its answer.
+ *    paid never changes. `needsAttention` is left as it is: the payments core raises it too (a
+ *    late or doubled payment), so the owner clears it in the admin once every reason is handled.
  * 5. **History**: one row naming both stores, by whom.
  */
 import type { Payload } from 'payload'
@@ -67,8 +68,7 @@ async function pointAt(tx: Tx, orderId: number, store: StoreRow, distanceKm: num
     UPDATE orders
        SET store_id = ${store.id}, store_snapshot_code = ${store.code},
            store_snapshot_name = ${store.name}, store_snapshot_area = ${store.area},
-           distance_km = ${distanceKm}, needs_attention_flag = false, needs_attention_reason = NULL,
-           updated_at = ${at}
+           distance_km = ${distanceKm}, updated_at = ${at}
      WHERE id = ${orderId}`)
 }
 
