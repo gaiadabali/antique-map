@@ -18,16 +18,16 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 3/7 | 24/33 | 0 | `███████░░░`  73% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 4/20 | 0 | `██░░░░░░░░`  20% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 26/33 | 0 | `████████░░`  79% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 4/13 | 0 | `███░░░░░░░`  31% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **14/49** | **101/200** | **8** | `█████░░░░░`  51% |
+| **All** | 11 phases | | | **18/49** | **113/200** | **8** | `██████░░░░`  56% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,11 +78,17 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-03 | lane change to the user's Claude seat (2026-10-03); run 1 died at the turn limit after the full dry-run passed (1,823 planned, 0 rejected) and 3 commits — continuation `am-3.7b-c2` (ticket `3.7b-r1`) in flight: the 4 seed db tests, the evidence battery, gitignore the 2.8 GB local upload bucket |
+| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-05 | r2 landed the importer's second-pass fix (`fc5e279`) then died before the held rows, dry run and report; continuation `am-3.7b-r3` in flight (also writes the local-preview seed commands) |
+| 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
+| 6·W2 | 6.3.a Checkout and map pin | Sonnet (claude seat) | `w/6.3a` | 2026-10-05 | GLM run `am-6.3a-1` stalled (~100 min, 0 commits) and was stopped; `am-6.3a-s1` on Sonnet finishes from its uncommitted files; Opus reviews |
+| 4·W3 | 4.3.e Check | Sonnet (claude seat) | `w/4.3r3` | 2026-10-05 | 4.qa merged (`b9d486e`): 4.1.e/4.2.c/4.2.d PASS, 4.1 and 4.2 closed; 4.3.e failed on F1–F4 (layout cap, heading type, English in shared header/dialog, missing drawn sections — ruled in scope); `am-4.3r3-s1` fixes and re-runs the evidence |
+| 3·W2 | 3.6.d Check | qa (claude seat) | `w/3.6qa` | 2026-10-05 | run `am-3.6qa-c1` — admin as owner/editor/store at 1280 px, plain bilingual errors, dashboard counts vs SQL, the phase-3 Done-when admin flows |
+| 3·W1 | 3.1 Staging as one site | devops (claude seat) | `w/3.1` | 2026-10-03 | run `am-3.1-c1` landed the repo side (one-site provision, storage policies folded from 8.5, the retirement written as a runbook; 5 commits) but no worker may ssh, so the Helios steps (dry-run → apply → retirement → release by scp → backups) are the orchestrator's, per the standing go-ahead; the container test needed one orchestrator fix (pack.sh's policy documents ride on their own mount) and is running now |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
-| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | 5.1.a loaders committed (`dfc92b0`) and ticked; the lane change stopped run 1 mid-5.1.b — continuation `am-5.1-c2` (ticket `5.1-r1`) in flight: the pages (5.1.b) and gazetteer search (5.1.c) |
+| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
+| 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -321,7 +327,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** staging serves both hostnames from one app; as the owner, in the admin, a non-developer adds an antique with photos, a product with stock in two stores and a store; a `store` user sees only that store's orders; a spreadsheet of products and stock imports with a report of rejected rows; the seeded data is present for both sites; the admin is in English and Indonesian.
 **Waves:** W1 — 3.1, 3.2, 3.3, 3.4 · W2 — 3.5, 3.6 · W3 — 3.7
 
-- [ ] **3.1 Staging as one site** · needs: phase 2
+- [ ] **3.1 Staging as one site** · needs: phase 2 — 🔄 3·W1
   - **Lane** OPS · **Agent** devops · **Wave** W1
   - **Owns** `scripts/ops/**`, `docs/ops/**`, `.gaiadeploy.yml`
   - **Read** CARRY-OVER.md §3 step 8 and §6.6, DEPLOYMENT.md, `docs/ops/helios-staging.md`
@@ -332,7 +338,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
   - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
-- [ ] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — 🔄 3·W1
+- [x] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — ✅ 2026-10-03 46353c9
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
   - **Owns** `engine/packages/cms/src/collections/{works,makers,places,terms,media,masters}/**`
   - **Read** CONTENT-MODEL.md §3–§5, CARRY-OVER.md §2.5
@@ -342,7 +348,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.2.c the publish guard (title, object type, date, primary image with alt text, grade) with plain refusals; an AI-drafted field cannot publish until verified (the `aiDraft` group, used by 8.3)
   - [x] 3.2.d media keep their roles and localised alt text; masters stay private with the presigned PUT and checksum
   - [x] 3.2.e from the phase 2 reviews: `validators/work-record.ts` reads its uid prefix and stock-number pattern from `SITES.gallery.works` (drop the `TODO(2.2)` constants); `media` read for `store` users is limited to non-work subjects, and the full-resolution file to owner and editor (senior-be review of 2.4, finding 6)
-  - [ ] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
+  - [x] 3.2.f **Check:** db tests prove: a work lacking any guard field is refused with a plain reason naming the field; a place cannot be its own ancestor; `askingPrice` is absent from every public read and from an editor's read; an editor can publish a complete work.
 
 - [x] **3.3 Shop collections: products, stores and stock** · needs: phase 2 — ✅ 2026-10-03 18bc46b
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
@@ -392,7 +398,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** DATA.md, CONTENT-MODEL.md §9, CARRY-OVER.md §5, `engine/packages/migrate/README.md`
   - _Requirements: 10.2, 10.3, 2.1_
   - [x] 3.7.a the import: antiques by stock number, products by SKU, stores by code and stock per store from CSV or XLSX; idempotent upserts, a dry run, and a report listing every rejected row and why; admin action and CLI
-  - [ ] 3.7.b seed the gallery from the 1,823 normalised legacy records (rows marked `review` flagged, prices **never** loaded into a public field), with the pilot set's images as media
+  - [x] 3.7.b seed the gallery from the 1,823 normalised legacy records (rows marked `review` flagged, prices **never** loaded into a public field), with the pilot set's images as media
   - [x] 3.7.c seed the shop with the mock set of DATA.md §1 (about 80 products, 120 stores across Bali with coordinates, stock per store, a welcome code), generated with a fixed random seed and committed as import files; the real data replaces them through 3.7.a without a code change
   - [ ] 3.7.d **Check:** importing the same file twice changes nothing; a file with five bad rows imports the rest and reports the five; after seeding, the admin lists 1,823 antiques and the mock catalogue; no price from the legacy data appears in any public projection.
 
@@ -406,7 +412,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Built to be restyled.** The first-run UI is the real UI, so it has to be right: every colour, size, space, radius, shadow and motion value comes from a token; pages are thin compositions of shared components; copy comes from the lexicon. A later redesign then edits `sites/*/tokens` and the shared components. The design team's material is in `docs/design/input/claude-design-2026-09/`.
 
-- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — 🔄 4·W1
+- [x] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — ✅ 2026-10-05 b9d486e
   - **Lane** DSG · **Agent** senior-uiux · **Wave** W1
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
@@ -415,17 +421,17 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
   - [x] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
   - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
-  - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
+  - [x] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
-- [ ] **4.2 Shared components from the design team's kit** · needs: 4.1 — 🔄 4·W2
+- [x] **4.2 Shared components from the design team's kit** · needs: 4.1 — ✅ 2026-10-05 b9d486e
   - **Lane** DSG · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/shared/**`
   - **Read** the design system's `components/components.css` and readme, DESIGN-SYSTEM.md §Components
   - _Requirements: 12.1, 12.3_
   - [x] 4.2.a port `components.css` into CSS Modules per component: button, link, input, select, checkbox, textarea, card, badge, eyebrow, hairline, header, footer, form messages, dialog, toast, skeleton; no prefetching link
   - [x] 4.2.b the components the drawings do not have, in the same language: status timeline, map-pin picker shell, zoom viewer shell, chat panel shell, facet chip, pagination, breadcrumbs, rupiah price display, image with `sizes`
-  - [ ] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
-  - [ ] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
+  - [x] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
+  - [x] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
 
 - [ ] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — 🔄 4·W3
   - **Lane** DSG · **Agent** senior-fe · **Wave** W3
@@ -456,15 +462,15 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [ ] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
 
-- [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4
+- [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — 🔄 5·W1
   - **Lane** GAL + MED · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/product/**`, `engine/packages/media/src/{derivatives,tiles}/**`
   - **Read** EXPERIENCE-GALLERY.md §Item, ARCHITECTURE.md §Media and deep zoom, CARRY-OVER.md §5
   - _Requirements: 2.4, 3.2, 3.4, 14.4_
   - [x] 5.2.a derivatives with `sharp` on upload (320–2400 px, AVIF and WebP, EXIF location removed) and static zoom tiles under `iiif/`; the full-resolution master stays private
-  - [ ] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
-  - [ ] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
-  - [ ] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
+  - [x] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
+  - [x] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
+  - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
   - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no Ask button; no price anywhere in the HTML or JSON.
 
 - [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2
@@ -560,15 +566,15 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging a paid order appears in its store's panel; the store user moves it processing → waiting for driver → on the way (uploading the driver's details as an image) → delivered; the buyer sees each step, the image and the store's contact on one tracking page and receives an email at each; another store's user cannot see the order; the owner or an editor can reassign it.
 **Waves:** W1 — 7.1 · W2 — 7.2, 7.3 · W3 — 7.4
 
-- [ ] **7.1 Order statuses, history, the driver image and reassigning** · needs: phase 6
+- [x] **7.1 Order statuses, history, the driver image and reassigning** · needs: phase 6 — ✅ 2026-10-05 24bfd14
   - **Lane** SHP + CMS · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/shop/fulfilment/**`, `engine/packages/cms/src/collections/orders/hooks/**`
   - **Read** COMMERCE.md §Statuses and §Replacement, SECURITY.md §Uploads
   - _Requirements: 7.5, 8.1, 8.2, 8.3_
-  - [ ] 7.1.a the transitions `paid → processing → waiting_driver → on_the_way → delivered` plus `cancelled`; a history row for every change with who, when and (for a hand-back) the reason; a store user moves forward only; the owner or an editor moves any
-  - [ ] 7.1.b the driver-details image: type-sniffed, size-limited, re-encoded, stored privately and served by a short-lived signed URL; deleted 30 days after delivery
-  - [ ] 7.1.c reassign to another store: stock returns to the first store and is decremented at the second in one transaction, refused if the second cannot fill it; a store can hand an order back with a reason
-  - [ ] 7.1.d **Check:** db tests prove: a store user cannot move a status backward or skip; an image that is not an image is refused; a reassign to a store without stock leaves both stocks unchanged; every transition has a history row.
+  - [x] 7.1.a the transitions `paid → processing → waiting_driver → on_the_way → delivered` plus `cancelled`; a history row for every change with who, when and (for a hand-back) the reason; a store user moves forward only; the owner or an editor moves any
+  - [x] 7.1.b the driver-details image: type-sniffed, size-limited, re-encoded, stored privately and served by a short-lived signed URL; deleted 30 days after delivery
+  - [x] 7.1.c reassign to another store: stock returns to the first store and is decremented at the second in one transaction, refused if the second cannot fill it; a store can hand an order back with a reason
+  - [x] 7.1.d **Check:** db tests prove: a store user cannot move a status backward or skip; an image that is not an image is refused; a reassign to a store without stock leaves both stocks unchanged; every transition has a history row.
 
 - [ ] **7.2 The store staff panel** · needs: 7.1
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
@@ -811,8 +817,13 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-05 ✅ 7.1 — merged (`8692778`, claude seat, Opus-reviewed): `@engine/cms/shop/fulfilment` — `moveOrder` (forward-only for store staff, a history row per change, a cancel from a holding status returns stock once), the driver image (byte-sniffed, re-encoded, private `orders/{id}/`, presigned GET, 30-day purge), `reassignOrder` (atomic, rolled back whole when the new store is short), `handBackOrder`. Orchestrator fixed one flaky assertion (the racing reassign's history assumed the owner won). Db tests 51/51 on a fresh clone, three runs. Open: the purge's cron line (one line in `@engine/http`).
+- 2026-10-05 ✅ 4.1, 4.2 — the 4.qa run (claude seat) evidenced 4.1.e, 4.2.c, 4.2.d on a production build (palettes, self-hosted fonts 101 KB, planted colour fails the lint, keyboard, axe, AA contrast tables) and fixed four defects (style-guide landmark, two home contrast/heading-order issues, a sideways scroll at 390 px on every page); merged `b9d486e`. 4.3.e failed on F1–F4; **ruling:** the drawn home sections missing from the build belong to 4.3 and are built now (`4.3-r3`, Sonnet).
+- 2026-10-05 — **Lanes (user):** max 4 agents; priority phase 4 → 3 → 6 → 7 → 5; workers on Sonnet/Haiku, Opus reviews. 6.3a's GLM run stalled (0 commits in ~100 min) and moved to Sonnet.
+
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
+- 2026-10-03 — **Refocus (user): finish phases 3 and 4.** 3.2 closed — its Check ran locally, 32/32 db tests green on `main` (publish refusals naming every missing guard field; the place cycle guard; `askingPrice` owner-only; an editor publishes a complete work). 3.1 ticketed (`3.1.md`) and launched on the seat (`am-3.1-c1`, devops): the one-site staging reshape, the `ig_db`/`oei_db` retirement after dumps, the first release by scp (no push), backups. 4.2.c's code — the kebab-case kit, the barrel, `/style-guide` on both hosts — turns out to have merged with the int/4 wave and was never reported; the board takes it with the 4.2.d Check run. Remaining for the two phases: 3.6.d and 4.1.e/4.2.d/4.3.e Checks (local qa), 3.7.b in flight, 3.7.d after it, 3.1 in flight; the off-box backup target is the owner's open question.
 - 2026-10-03 — **Lane change: the GLM runs stopped, the project back on the user's Claude seat** (the user's call, reversing the same-day GLM-only decision). `am-5.1-1` stopped mid-5.1.b with 5.1.a already committed and ticked (`dfc92b0`); `am-3.7b-r1` ran ~20 min and committed nothing. The surviving headless workers were killed and both worktrees verified unchanged. Continuation tickets `3.7b-r1` and `5.1-r1` written to the claude lane and merged into the worktrees (`a877bbb`, `d49f41e`); runs `am-3.7b-c2` and `am-5.1-c2` launch on the seat, after a launcher fix: run.sh's claude lane inherited the ambient `ANTHROPIC_DEFAULT_*_MODEL` GLM 5.3 defaults and 404'd in six seconds — the unset now covers them, and the seat uses the login's own model. The 9.2.b dashboard ticket relabelled with them.
 - 2026-10-03 — **main fully green again** — the whole `pnpm verify` chain passes on `main` after the CRLF repair (11 phases parse, 1,911 tests, every gate). Two GLM lanes now run: 3.7.b seed layers (`am-3.7b-1`, `w/3.7b`) and 5.1 gallery browse and search (`am-5.1-1`, `w/5.1`, ticket `74608b7`).
 - 2026-10-03 — **Board CRLF bug found and fixed.** Four files sat CRLF on disk while the index stayed LF: git saw them clean (`eol=lf` normalises), so `git checkout --` would not rewrite them, and the board scripts kept the CRLF (they preserve the file's existing EOL). Symptom: `tasks:lint` parsed **0 phases** and flooded 74 false findings. Fixed by delete + restore; the gates are green again. If `tasks:lint` ever reports 0 phases, run `git ls-files --eol TASKS.md` first.

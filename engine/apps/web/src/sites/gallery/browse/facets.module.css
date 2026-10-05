@@ -1,0 +1,112 @@
+/* The gallery's facets, year pair and applied chips (5.1.b): tokens only (DESIGN-SYSTEM.md). */
+
+.facets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.facet {
+  border-top: var(--rule-hair) solid var(--color-border);
+  padding-top: var(--space-3);
+}
+
+.facetName {
+  font: var(--text-tagline);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.facetList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.placeChildren {
+  padding-inline-start: var(--space-4);
+}
+
+/* One option: a 44 px link, its name, its count — a zero shown like any count. */
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  font: var(--text-small);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.option:hover .optionLabel {
+  text-decoration: underline;
+}
+
+.option[aria-current='true'] {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.optionCount {
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.yearPair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.yearPair > :last-child {
+  grid-column: 1 / -1;
+}
+
+.yearInput {
+  width: 100%;
+}
+
+/* The applied chips, above the grid: each clears its filter. */
+.applied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.appliedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.appliedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  font: var(--text-small);
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-control);
+  text-decoration: none;
+}
+
+.clearAll {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: var(--text-small);
+  color: var(--color-text);
+}
