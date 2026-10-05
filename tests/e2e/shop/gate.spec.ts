@@ -58,7 +58,7 @@ const API_BASE = STAGING_ORIGIN ?? `http://127.0.0.1:${PORT}`
 const HOST_HEADER = STAGING_ORIGIN ? {} : { Host: `shop.localhost:${PORT}` }
 
 const GATE_DB = (process.env.GATE_DB ?? envVar('GATE_DB')) === 'local'
-const MAILPIT_URL = process.env.MAILPIT_URL ?? 'http://localhost:8025'
+const MAILPIT_URL = process.env.MAILPIT_URL ?? envVar('MAILPIT_URL') ?? 'http://localhost:8025'
 const SITE_ORIGIN = process.env.SITE_ORIGIN ?? SHOP_ORIGIN
 const CRON_SECRET = process.env.CRON_SECRET ?? envVar('CRON_SECRET') ?? 'dev-only-not-a-secret'
 const SHOTS = process.env.GATE_SHOTS ?? 'docs/gates/shop-payment'
@@ -416,6 +416,11 @@ test.describe('the shop payment gate (6.5.c)', () => {
     expect(token.length, 'a tracking token in the redirect URL').toBeGreaterThan(10)
     await shoot(page, 'order-pending-390')
     await expect(page.getByRole('button', { name: /^Pay /i })).toBeVisible()
+    // The order number as the page's own copy renders it ("Order 100,059") — shown only here,
+    // on the pending state ("order.title"); the paid state ("Payment received") never repeats it.
+    const pendingHeading = await page.getByRole('heading', { name: /^Order /i }).innerText()
+    const orderNumberText = /Order ([\d,]+)/.exec(pendingHeading)?.[1] ?? null
+    expect(orderNumberText, 'the order number on the pending page').not.toBeNull()
     await axeBothWidths(page, 'order page, pending')
 
     // Step 4: pay, simulator Settle, the confirmation.
@@ -425,8 +430,6 @@ test.describe('the shop payment gate (6.5.c)', () => {
     await expect(page.getByRole('heading', { name: 'Payment received' })).toBeVisible()
     const trackingLink = page.getByRole('link', { name: 'Track your order' })
     await expect(trackingLink).toBeVisible()
-    const orderNumberMatch = /Order ([\d,]+)/.exec(await page.locator('body').innerText())
-    const orderNumber = orderNumberMatch ? Number(orderNumberMatch[1]!.replace(/,/g, '')) : null
     await shoot(page, 'order-paid-390')
     await axeBothWidths(page, 'order page, paid')
 
@@ -451,7 +454,9 @@ test.describe('the shop payment gate (6.5.c)', () => {
       console.log('SKIPPED: email (MAILPIT_URL=none)')
     } else {
       const email = await findOrderEmail(request, 'e2e-shop-gate@example.test')
-      if (orderNumber !== null) expect(email.subject).toContain(String(orderNumber))
+      expect(email.subject, 'the email names the same order number the order page showed').toContain(
+        orderNumberText!,
+      )
       expect(email.text).toContain(String(totalIdr).replace(/\B(?=(\d{3})+(?!\d))/g, '.'))
       expect(email.text, 'the tracking link starts with the site origin').toContain(SITE_ORIGIN)
     }
