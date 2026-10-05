@@ -65,7 +65,7 @@ step('the owner catalogues the antique with its photo and publishes it', async (
     .locator('#field-makers')
     .getByRole('button', { name: /Add Credit/ })
     .click()
-  await choose(page, '#field-makers__0__maker', /E2E Valentijn/)
+  await choose(page, '#field-makers__0__maker', /E2E Valentijn/, 'E2E Valentijn')
   await choose(page, '#field-makers__0__role', /./)
   await choose(page, '#field-makers__0__certainty', /./)
   await choose(page, '#field-date__precision', /exact|year/i)
