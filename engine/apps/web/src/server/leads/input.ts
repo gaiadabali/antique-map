@@ -1,8 +1,9 @@
 /**
  * The one validator for a lead's fields (SECURITY.md V1: one shared schema, the server the
- * authority). It takes `unknown` — a form's values, a JSON body — and answers either the typed,
- * trimmed `LeadInput` or one lexicon key per field that failed. Nothing outside the listed fields
- * survives: a stray key in the request is dropped here, never passed on to the database.
+ * authority). It takes `unknown` — a form's values, a JSON body — and context from the caller
+ * (site, kind, source, consent version), and answers either the typed, trimmed `LeadInput` or one
+ * lexicon key per field that failed. Nothing outside the visitor's fields survives: a stray key in
+ * the request is dropped here, never passed on to the database.
  *
  * Lengths and the WhatsApp format are the `leads` collection's own (`payload.*` fields), so the
  * Local API never has to refuse what this accepted.
@@ -13,6 +14,14 @@ export type LeadSource = 'chat' | 'form' | 'page'
 export type LeadSite = 'gallery' | 'shop'
 export type LeadLocale = 'en' | 'id'
 export type LeadChannel = 'whatsapp' | 'email'
+
+/** The caller's context: the site, kind, source and consent version. A bad value is a programming error. */
+export type LeadContext = {
+  readonly kind: LeadKind
+  readonly site: LeadSite
+  readonly source: LeadSource
+  readonly consentVersion: string
+}
 
 /** What the lead service stores, before the server adds the consent time. */
 export type LeadInput = {
@@ -58,28 +67,65 @@ const KINDS: readonly LeadKind[] = ['ask', 'sell', 'partnership', 'contact', 'ch
 const SOURCES: readonly LeadSource[] = ['chat', 'form', 'page']
 const SITES: readonly LeadSite[] = ['gallery', 'shop']
 const LOCALES: readonly LeadLocale[] = ['en', 'id']
-const WHATSAPP = /^\+[1-9]\d{6,14}$/
+const WHATSAPP = /^\+[1-9]\d{7,14}$/
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const VISITOR_KEYS = new Set([
+  'name',
+  'whatsapp',
+  'email',
+  'preferredChannel',
+  'message',
+  'locale',
+  'items',
+  'consent',
+])
 
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
 const oneOf = <T extends string>(options: readonly T[], value: unknown): T | null =>
   options.find((option) => option === value) ?? null
 
-/** `+62 812-3456 7890` → `+6281234567890`: spaces, dashes and brackets a person types are dropped. */
-export function normaliseWhatsapp(value: string): string {
-  return value.replace(/[\s().-]/g, '')
+/** A WhatsApp number as typed → E.164, or `null` if it cannot be one. */
+function normaliseWhatsappE164(input: string): string | null {
+  if (input.length > 40) return null
+  let digits = input.trim().replace(/[\s\-().]/g, '')
+  if (digits.startsWith('00')) digits = `+${digits.slice(2)}`
+  else if (digits.startsWith('0')) digits = `+62${digits.slice(1)}`
+  else if (digits.startsWith('62')) digits = `+${digits}`
+  else if (digits.startsWith('8')) digits = `+62${digits}`
+  return WHATSAPP.test(digits) ? digits : null
 }
 
-export function parseLeadInput(raw: unknown): LeadParse {
-  const input = raw !== null && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
-  const errors: Record<string, string> = {}
+export function parseLeadInput(raw: unknown, context: LeadContext): LeadParse {
+  // Refuse unknown input shape and reserved keys.
+  if (raw === null || typeof raw !== 'object') {
+    return { ok: false, errors: { form: LEAD_ERROR_KEYS.invalid } }
+  }
+  const input = raw as Record<string, unknown>
+  for (const key of Object.keys(input)) {
+    if (!VISITOR_KEYS.has(key)) {
+      return { ok: false, errors: { form: LEAD_ERROR_KEYS.invalid } }
+    }
+  }
 
-  const kind = oneOf(KINDS, input.kind)
-  const site = oneOf(SITES, input.site)
-  const source = oneOf(SOURCES, input.source)
+  // Validate context values.
+  const errors: Record<string, string> = {}
+  if (
+    !KINDS.includes(context.kind) ||
+    !SITES.includes(context.site) ||
+    !SOURCES.includes(context.source)
+  ) {
+    throw new Error('Invalid context: kind, site, or source is not in the lists')
+  }
+  if (
+    typeof context.consentVersion !== 'string' ||
+    context.consentVersion.length === 0 ||
+    context.consentVersion.length > LEAD_LIMITS.consentVersion
+  ) {
+    throw new Error('Invalid context: consentVersion is missing or too long')
+  }
+
   const locale = oneOf(LOCALES, input.locale)
-  // The page names these (the action's own constants); a bad value is a broken caller, not a typo.
-  if (kind === null || site === null || source === null || locale === null) {
+  if (locale === null) {
     errors.form = LEAD_ERROR_KEYS.invalid
   }
 
@@ -91,16 +137,22 @@ export function parseLeadInput(raw: unknown): LeadParse {
     errors.message = LEAD_ERROR_KEYS.message
   }
 
-  const whatsapp = normaliseWhatsapp(text(input.whatsapp))
-  const email = text(input.email)
-  if (whatsapp !== '' && !WHATSAPP.test(whatsapp)) errors.whatsapp = LEAD_ERROR_KEYS.whatsapp
+  const rawWhatsapp = text(input.whatsapp)
+  const normalisedWhatsapp = rawWhatsapp ? normaliseWhatsappE164(rawWhatsapp) : null
+  const whatsapp = normalisedWhatsapp ?? ''
+  const rawEmail = text(input.email)
+  const email = rawEmail ? rawEmail.toLowerCase() : ''
+
+  if (rawWhatsapp !== '' && normalisedWhatsapp === null) errors.whatsapp = LEAD_ERROR_KEYS.whatsapp
   if (email !== '' && (email.length > LEAD_LIMITS.email || !EMAIL.test(email))) {
     errors.email = LEAD_ERROR_KEYS.email
   }
   if (whatsapp === '' && email === '') errors.contact = LEAD_ERROR_KEYS.contact
 
-  const consentVersion = text(input.consentVersion)
-  if (consentVersion.length === 0 || consentVersion.length > LEAD_LIMITS.consentVersion) {
+  // Consent must be exactly true or 'on' or 'true' from a form.
+  const consent = input.consent
+  const hasConsent = consent === true || consent === 'on' || consent === 'true'
+  if (!hasConsent) {
     errors.consent = LEAD_ERROR_KEYS.consent
   }
 
@@ -119,22 +171,22 @@ export function parseLeadInput(raw: unknown): LeadParse {
       ? channel
       : null
 
-  if (Object.keys(errors).length > 0 || !kind || !site || !source || !locale) {
+  if (Object.keys(errors).length > 0 || !locale) {
     return { ok: false, errors }
   }
   return {
     ok: true,
     value: {
-      kind,
-      site,
-      source,
+      kind: context.kind,
+      site: context.site,
+      source: context.source,
       name,
       ...(whatsapp !== '' ? { whatsapp } : {}),
       ...(email !== '' ? { email } : {}),
       ...(preferredChannel !== null ? { preferredChannel } : {}),
       message,
       locale,
-      consentVersion,
+      consentVersion: context.consentVersion,
       ...(items !== undefined ? { items } : {}),
     },
   }

@@ -5,10 +5,10 @@
  * them — and every field goes through the service's one validator, which drops what it does not
  * know.
  *
- * The consent box and the field checks run before Turnstile is asked, so a form with a mistake
- * does not spend the visitor's one-time token; the service still validates again as the authority.
+ * The field checks run before Turnstile is asked, so a form with a mistake does not spend the
+ * visitor's one-time token; the service still validates again as the authority.
  */
-import { createLead, LEAD_ERROR_KEYS, parseLeadInput, type LeadDeps } from '../../../server/leads'
+import { createLead, parseLeadInput, type LeadContext, type LeadDeps } from '../../../server/leads'
 
 import {
   CONSENT_VERSION,
@@ -35,30 +35,30 @@ export async function handlePartnershipForm(
 ): Promise<PartnershipState> {
   const values = formValues(form)
   const locale = text(form.get('locale')) === 'id' ? 'id' : 'en'
-  const input = {
+  const context: LeadContext = {
     kind: 'partnership',
     site: 'shop',
     source: 'form',
-    ...values,
-    locale,
     consentVersion: CONSENT_VERSION,
   }
+  const input = {
+    ...values,
+    locale,
+    consent: form.get('consent'),
+  }
 
-  const early = parseLeadInput(input)
-  const consented = form.get('consent') === 'on'
-  if (!early.ok || !consented) {
+  const early = parseLeadInput(input, context)
+  if (!early.ok) {
     return {
       status: 'error',
       values,
-      errors: {
-        ...(early.ok ? {} : early.errors),
-        ...(consented ? {} : { consent: LEAD_ERROR_KEYS.consent }),
-      },
+      errors: early.errors,
     }
   }
 
   const result = await createLead(deps, {
     input,
+    context,
     turnstileToken: text(form.get(TURNSTILE_FIELD)) || null,
     ip,
   })
