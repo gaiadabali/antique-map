@@ -10,7 +10,8 @@
  * - hosts (`tests/e2e/hosts/`): host trust — an unknown host, a spoofed `X-Forwarded-Host`, the
  *   admin's one host — run once, since each case names its own hosts;
  * - shop (`tests/e2e/shop/`): the shop host alone, one project, each case setting its own widths —
- *   the same single-project-per-host shape as a11y (TASKS.md 7.3.a).
+ *   the same single-project-per-host shape as a11y (TASKS.md 7.3.a);
+ * - gallery (`tests/e2e/gallery/`): the gallery host alone, the same shape (TASKS.md 5.1.d, 5.4.c, 5.5).
  *
  * What a host's site is — its key, name, locales and whether it is the admin host — comes from the
  * committed `SITES` (`metadataOf`), never from the specs. The admin host is the shop's, as the
@@ -112,8 +113,8 @@ const shopE2e: Project = {
   use: { ...desktop, baseURL: baseURLOf(shopHost) },
 }
 
-// The gallery's maker, place and editorial pages (5.4) on the gallery host; each case sets its own
-// widths, the same single-project-per-host shape as the shop's.
+// The gallery's flows (browse, item, makers/places/pages, contact, the gate) on the gallery host;
+// each spec sets its own widths (5.1.d, 5.4.c, 5.5).
 const galleryHost = HOSTS.find((each) => each.site === 'gallery')?.host ?? ''
 const galleryE2e: Project = {
   name: 'gallery-e2e',
