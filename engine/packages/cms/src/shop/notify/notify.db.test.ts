@@ -136,7 +136,11 @@ describe.skipIf(!server)('order notifications, on a real database', () => {
     fakeTransport()
     const id = await pendingOrder()
     await stack.payload.update({ collection: 'orders', id, data: { status: 'paid' } as never })
-    await stack.payload.update({ collection: 'orders', id, data: { status: 'processing' } as never })
+    await stack.payload.update({
+      collection: 'orders',
+      id,
+      data: { status: 'processing' } as never,
+    })
     const toBuyer = sent.filter((m) => m.to === 'buyer@example.test')
     expect(toBuyer).toHaveLength(2)
     const links = toBuyer.map((m) => m.text.match(/\/track\/(\S+)/)?.[1])

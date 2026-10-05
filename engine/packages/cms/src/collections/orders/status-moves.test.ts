@@ -41,7 +41,12 @@ describe('statusMoveRefusal', () => {
       expect(moves).not.toContain('delivered>waiting_driver')
       expect(moves).not.toContain('paid>pending_payment')
       // A cancel before delivery, never after.
-      for (const from of ['awaiting_quote', 'pending_payment', 'paid', 'on_the_way'] as OrderStatus[]) {
+      for (const from of [
+        'awaiting_quote',
+        'pending_payment',
+        'paid',
+        'on_the_way',
+      ] as OrderStatus[]) {
         expect(moves).toContain(`${from}>cancelled`)
       }
       expect(moves).not.toContain('delivered>cancelled')
@@ -53,7 +58,9 @@ describe('statusMoveRefusal', () => {
       expect(moves.filter((m) => m.startsWith('cancelled>') || m.startsWith('expired>'))).toEqual(
         [],
       )
-      expect(moves.filter((m) => m.startsWith('awaiting_quote>'))).toEqual(['awaiting_quote>cancelled'])
+      expect(moves.filter((m) => m.startsWith('awaiting_quote>'))).toEqual([
+        'awaiting_quote>cancelled',
+      ])
     }
   })
 

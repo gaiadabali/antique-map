@@ -141,7 +141,11 @@ export async function runPaymentSweep(
 
   // Awaiting a delivery price, past its own window (TASKS.md 6.6): no attempt was ever opened, so
   // there is nothing to ask Midtrans about — the window itself is the only thing that matters.
-  const unquoted = await candidates(payload, 'awaiting_quote', sql`o.expires_at <= ${now}::timestamptz`)
+  const unquoted = await candidates(
+    payload,
+    'awaiting_quote',
+    sql`o.expires_at <= ${now}::timestamptz`,
+  )
   for (const order of unquoted) {
     try {
       if (

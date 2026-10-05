@@ -73,7 +73,11 @@ async function sendMail(to: string, build: () => MailMessage | null) {
  * Claims `(orderId, to)` in `notifiedStatuses`: true only for the caller that wins the race, so
  * exactly one of any number of concurrent calls for the same order and status sends mail.
  */
-async function claimNotification(payload: Payload, orderId: number, to: OrderStatus): Promise<boolean> {
+async function claimNotification(
+  payload: Payload,
+  orderId: number,
+  to: OrderStatus,
+): Promise<boolean> {
   try {
     return await inTransaction(payload, async (tx) => {
       const [claimed] = await tx.rows(sql`
@@ -229,7 +233,12 @@ export async function notifyStoreReassigned(
       overrideAccess: true,
       depth: 1,
       ...(input.req ? { req: input.req } : {}),
-      select: { number: true, store: { name: true }, lines: { name: true, qty: true }, totals: { total: true } },
+      select: {
+        number: true,
+        store: { name: true },
+        lines: { name: true, qty: true },
+        totals: { total: true },
+      },
     })) as OrderForNotify
   } catch {
     return

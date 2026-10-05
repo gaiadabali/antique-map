@@ -37,7 +37,8 @@ export type QuoteFeeInput = {
   readonly now?: Date
 }
 
-export type QuoteFeeRefusal = 'not_staff' | 'invalid_fee' | 'not_found' | 'forbidden' | 'not_awaiting_quote' | 'expired'
+export type QuoteFeeRefusal =
+  'not_staff' | 'invalid_fee' | 'not_found' | 'forbidden' | 'not_awaiting_quote' | 'expired'
 
 export type QuoteFeeResult =
   | {

@@ -57,7 +57,9 @@ describe.skipIf(!server)('the quote move and its expiries, on a real database', 
   async function placeAwaitingQuote(qty = 1) {
     const made = await product(stack, { [shop.ubud]: qty + 3 })
     const cookie = bag({ productId: made.id, variantSku: null, qty })
-    const created = await createOrder(stack.payload, checkout(cookie, PIN.ubud), { bagKey: BAG_KEY })
+    const created = await createOrder(stack.payload, checkout(cookie, PIN.ubud), {
+      bagKey: BAG_KEY,
+    })
     if (!created.ok) throw new Error(`could not place the order: ${created.refusal}`)
     return { ...created, stockRow: made.stockRows[shop.ubud]! }
   }
@@ -66,9 +68,7 @@ describe.skipIf(!server)('the quote move and its expiries, on a real database', 
     const placed = await placeAwaitingQuote(1)
     const row = await read.order(placed.orderId)
     expect(row).toMatchObject({ status: 'awaiting_quote', totals_delivery_fee: null })
-    expect(Number(row.totals_total)).toBe(
-      Number(row.totals_subtotal) - Number(row.totals_discount),
-    )
+    expect(Number(row.totals_total)).toBe(Number(row.totals_subtotal) - Number(row.totals_discount))
     // Initial stock was 4 (qty 1 + 3): the order's one unit is taken.
     expect(await read.quantity(placed.stockRow)).toBe(3)
   })
@@ -123,7 +123,9 @@ describe.skipIf(!server)('the quote move and its expiries, on a real database', 
     // Sent from Sanur; the staff stack's one store user belongs to Ubud (stores[0]).
     const made = await product(stack, { [shop.sanur]: 5 })
     const cookie = bag({ productId: made.id, variantSku: null, qty: 1 })
-    const created = await createOrder(stack.payload, checkout(cookie, PIN.sanur), { bagKey: BAG_KEY })
+    const created = await createOrder(stack.payload, checkout(cookie, PIN.sanur), {
+      bagKey: BAG_KEY,
+    })
     if (!created.ok) throw new Error(`could not place the order: ${created.refusal}`)
     const result = await quoteDeliveryFee(stack.payload, {
       orderId: created.orderId,
