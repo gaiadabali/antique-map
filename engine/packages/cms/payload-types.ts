@@ -1206,7 +1206,7 @@ export interface Order {
   totals: {
     subtotal: number
     discount: number
-    deliveryFee: number
+    deliveryFee?: number | null
     total: number
   }
   discount?: {
@@ -1215,6 +1215,7 @@ export interface Order {
     value?: number | null
   }
   status:
+    | 'awaiting_quote'
     | 'pending_payment'
     | 'paid'
     | 'processing'
@@ -1227,6 +1228,7 @@ export interface Order {
     | {
         from?:
           | (
+              | 'awaiting_quote'
               | 'pending_payment'
               | 'paid'
               | 'processing'
@@ -1238,6 +1240,7 @@ export interface Order {
             )
           | null
         to:
+          | 'awaiting_quote'
           | 'pending_payment'
           | 'paid'
           | 'processing'
@@ -1276,6 +1279,16 @@ export interface Order {
     uploadedBy?: (number | null) | User
   }
   trackingTokenHash: string
+  trackingTokenEnc?: string | null
+  notifiedStatuses?:
+    | {
+        [k: string]: unknown
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null
   expiresAt?: string | null
   /**
    * Store staff: hand the order back with a reason if your store cannot send it.
@@ -2316,6 +2329,8 @@ export interface OrdersSelect<T extends boolean = true> {
         uploadedBy?: T
       }
   trackingTokenHash?: T
+  trackingTokenEnc?: T
+  notifiedStatuses?: T
   expiresAt?: T
   needsAttention?:
     | T
@@ -2649,6 +2664,7 @@ export interface SiteSetting {
      */
     welcomeDiscount?: string | null
     orderExpiryMinutes?: number | null
+    quoteWindowMinutes?: number | null
     storeAlerts?: boolean | null
   }
   updatedAt?: string | null
@@ -2733,6 +2749,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
             }
         welcomeDiscount?: T
         orderExpiryMinutes?: T
+        quoteWindowMinutes?: T
         storeAlerts?: T
       }
   updatedAt?: T
