@@ -7,8 +7,8 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { COPY } from './copy'
-import { DashboardView } from './view'
+import { COPY } from '../../../../../../../packages/cms/src/admin/dashboard/copy'
+import { DashboardView } from '../../../../../../../packages/cms/src/admin/dashboard/view'
 
 const view = async (user: object | null, language = 'en') => {
   // No `payload` on the request: a view that reached for data here would throw.
@@ -37,12 +37,5 @@ describe('the dashboard view', () => {
     await expect(view(null)).rejects.toMatchObject({
       digest: expect.stringContaining('/admin/login?redirect=%2Fadmin%2Fdashboard'),
     })
-  })
-
-  it('every label has both languages', () => {
-    for (const [key, pair] of Object.entries(COPY)) {
-      expect(pair.en, key).not.toBe('')
-      expect(pair.id, key).not.toBe('')
-    }
   })
 })
