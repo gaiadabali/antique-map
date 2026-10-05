@@ -91,6 +91,9 @@ export async function fillCheckout(
   pin: { lat: number; lng: number },
 ): Promise<void> {
   await page.goto(`${SHOP_ORIGIN}/checkout`)
+  // Type only once the form is hydrated: text typed into the server-rendered inputs before React
+  // takes them over is reset (seen on staging, where hydration is slower than on a local build).
+  await page.waitForLoadState('networkidle')
   await page.getByLabel(/full name/i).fill(contact.name)
   await page.getByLabel(/whatsapp/i).fill(contact.whatsapp)
   await page.getByLabel(/email/i).fill(contact.email)
