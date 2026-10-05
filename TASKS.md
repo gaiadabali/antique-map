@@ -78,6 +78,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 6·W4 | 6.6 core: awaiting_quote, quote move, encrypted link, emails from the core | Sonnet (antique-map-dc) | `w/6.6core` | 2026-10-06 | `am-6.6core-s1`; dc reviews; then the orchestrator generates the migration on merged main |
+| 6·W4 | 6.6 shell: checkout without a fee, order-page states, admin Send price | Sonnet (antique-map-dc) | `w/6.6shell` | 2026-10-06 | `am-6.6shell-s1`; merges after the core |
 | 7·W3 | 7.4 Shop gate: buy, fulfil, track | Sonnet → Opus on staging | `w/7.4` | 2026-10-05 | `am-7.4-s1` writes `tests/e2e/shop-fulfilment/flow.spec.ts` (guest buys → store fulfils with the driver image → buyer tracks → another store sees nothing → owner reassigns), green locally; the orchestrator then creates the staging owner and two store users and runs it + Lighthouse against staging |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | Opus review (claude seat) | `w/5.2b` | 2026-10-05 | GLM run `am-5.2b-1` exited 1 before its report; **paused** — needs an Opus review, fixes and Verify before the merge |
 | 5·W2 | 5.4 Makers, places, editorial, plain pages | Sonnet (claude seat) | `w/5.4` | 2026-10-05 | **paused** — ticket written (`a15b82f`), worktree cut; run `am-5.4-s1` stopped at start, relaunch as `am-5.4-s2` |
@@ -826,6 +828,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — 6.6 scope (antique-map-dc): with the fee table retired, `pickStore` drops the distance-band check — the nearest active store holding every line, anywhere in Indonesia; staff cancel (with WhatsApp) if undeliverable. Staging: `ORDER_LINK_KEY` added host-only to `uindies`' .env (32 random bytes, never printed); it takes effect with the 6.6 release. dc's follow-up merged `8aa5f31`: the typed-pin (0,0) race and plain order numbers.
 
 - 2026-10-06 — **Decisions (the user, as the owner's proxy).** (1) via antique-map-dc: **staff enter the courier fee before the buyer sees the final price** — checkout takes no delivery fee and shows no estimate; stock is held from placement; staff have 2 h to quote, then the buyer has 60 min to pay; the buyer is told by email with a pay link, by the order page updating, and by a WhatsApp button in the admin. The distance fee table (6.2.b, Q3/OA13) is retired. (2) in this session: **the order's private link is stored encrypted** so every email links to the same order page. New task **6.6**: antique-map-dc writes the core and shell (Sonnet, Opus review); the orchestrator generates the migration and runs staging. **7.4 on staging:** the gate passed **5/5** on release 5afe67a (buy → the nearest store fulfils with the driver image → the buyer tracks → another store sees nothing → the owner reassigns; `2f6f81b` makes the helper wait for hydration). Its email clause **fails**: no status email reaches the buyer or the store, because the notifier is an `afterChange` hook and every real status move (the webhook's `markPaid`, the 7.1 core) writes by SQL — merged in 7.3 with only the webhook half noted; the orchestrator's review missed the core half. Fixed in 6.6.b; 7.4 closes after 6.6, re-run with the quote step.
 
