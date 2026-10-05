@@ -89,6 +89,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 | 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
+| 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -594,7 +595,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
   - [x] 7.3.c **Check:** a wrong token is a 404 and the tenth wrong guess in a minute is throttled; the page shows the driver image only after upload; each status change sends exactly one email; the page passes axe at both widths.
 
-- [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3
+- [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3 — 🔄 7·W3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/shop.md`, `tests/e2e/shop-fulfilment/**`
   - **Read** the **Done when** of phases 6 and 7
