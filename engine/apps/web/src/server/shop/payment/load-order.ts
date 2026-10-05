@@ -7,8 +7,10 @@
  * A narrow SQL `SELECT` of only the columns the page shows (never the pin, the buyer's full
  * contact, staff notes or the token hash itself) through the CMS's own pool (`@engine/cms/instance`
  * `cmsPool`) — Payload's Local API has no access rule for "the caller holds this order's token", so
- * this is the `or a narrow SQL SELECT` the ticket allows. Uncached: `connection()` first, since a
- * payment status decides what the buyer may do next.
+ * this is the `or a narrow SQL SELECT` the ticket allows. The page-facing `current*` wrappers below
+ * call `connection()` first (uncached: a payment status decides what the buyer may do next); the
+ * `payload`-taking functions above them stay free of request-scope APIs so `*.db.test.ts` can call
+ * them directly.
  */
 import 'server-only'
 
@@ -116,7 +118,6 @@ export async function loadOrderForBuyer(
   number: string | number,
   token: string | null | undefined,
 ): Promise<OrderView | null> {
-  await connection()
   const n = parsedNumber(number)
   if (n === null) return null
   if (typeof token !== 'string' || token.length === 0) return null
@@ -178,7 +179,6 @@ export async function orderIdForBuyer(
   number: string | number,
   token: string | null | undefined,
 ): Promise<number | null> {
-  await connection()
   const n = parsedNumber(number)
   if (n === null) return null
   if (typeof token !== 'string' || token.length === 0) return null
@@ -201,7 +201,6 @@ export async function loadOrderLinesForBag(
   number: string | number,
   token: string | null | undefined,
 ): Promise<ReadonlyArray<{ productId: number; variantSku: string | null; qty: number }> | null> {
-  await connection()
   const n = parsedNumber(number)
   if (n === null) return null
   if (typeof token !== 'string' || token.length === 0) return null
@@ -222,19 +221,27 @@ export async function loadOrderLinesForBag(
   }
 }
 
-/** The order page's read, on the process's one Payload (`cms()`): see `loadOrderForBuyer`. */
+/**
+ * The order page's read, on the process's one Payload (`cms()`): see `loadOrderForBuyer`.
+ * Uncached — `connection()` first — since a payment status decides what the buyer may do next.
+ */
 export async function currentOrderView(
   number: string | number,
   token: string | null | undefined,
 ): Promise<OrderView | null> {
+  await connection()
   return loadOrderForBuyer(await cms(), number, token)
 }
 
-/** The pay and simulate actions' read of an order's own id: see `orderIdForBuyer`. */
+/**
+ * The pay action's and the simulate page's read of an order's own id: see `orderIdForBuyer`.
+ * Uncached — `connection()` first — the simulate page's `notFound()` turns on this read.
+ */
 export async function currentOrderId(
   number: string | number,
   token: string | null | undefined,
 ): Promise<number | null> {
+  await connection()
   return orderIdForBuyer(await cms(), number, token)
 }
 

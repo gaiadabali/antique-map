@@ -4,7 +4,9 @@
  * expired order a late payment reached shows the staff situation, not the staff's own wording.
  */
 import { getPayload } from 'payload'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('server-only', () => ({}))
 
 import {
   server,
