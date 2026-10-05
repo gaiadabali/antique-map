@@ -22,12 +22,12 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 4/13 | 0 | `███░░░░░░░`  31% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 5/13 | 0 | `████░░░░░░`  38% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **20/49** | **121/200** | **8** | `██████░░░░`  61% |
+| **All** | 11 phases | | | **20/49** | **122/200** | **8** | `██████░░░░`  61% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -594,7 +594,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** COMMERCE.md §Tracking and §Notifications, EXPERIENCE-SHOP.md §Tracking, Q5 and Q6
   - _Requirements: 8.4, 8.5_
   - [ ] 7.3.a the tracking page at an unguessable link: the status timeline with times, the driver image once added, the items, the store's name and WhatsApp; rate-limited; noindex; no more personal data than the buyer typed
-  - [ ] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
+  - [x] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
   - [ ] 7.3.c **Check:** a wrong token is a 404 and the tenth wrong guess in a minute is throttled; the page shows the driver image only after upload; each status change sends exactly one email; the page passes axe at both widths.
 
 - [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3
