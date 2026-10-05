@@ -38,6 +38,8 @@ export const SURFACE_ROUTES = {
   checkout: { internal: 'checkout' },
   /** `/track` finds an order; `/track/{token}` is its tracking page, the token its credential. */
   tracking: { internal: 'track/[token]', index: true, sensitive: true },
+  /** `/order/{token}` is the order page after checkout; its `/simulate` child the pay simulator. */
+  order: { internal: 'order/[token]', sensitive: true },
   partnership: { internal: 'partnership' },
   stores: { internal: 'stores' },
   sellToUs: { internal: 'sell-to-us' },

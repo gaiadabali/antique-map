@@ -183,6 +183,18 @@ function segmentSurface(
       if (more.length > 0) return NOT_FOUND
       return match('tracking', locale, one === undefined ? {} : { token: one }, path(...rest))
     }
+    case 'order': {
+      if (one === undefined || more.length > 1 || (more.length === 1 && more[0] !== 'simulate')) {
+        return NOT_FOUND
+      }
+      const simulate = more.length === 1
+      return match(
+        'order',
+        locale,
+        simulate ? { token: one, simulate: true } : { token: one },
+        path(...rest),
+      )
+    }
     default: {
       if (more.length > 0 || (one !== undefined && !hasIndex(surface))) return NOT_FOUND
       const params = one === undefined ? {} : { slug: one }
