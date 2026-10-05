@@ -3,10 +3,11 @@
  * staff field, and answers `null` for an id that names nothing. The schema is pushed
  * (`works.test-support`); without `CMS_TEST_POSTGRES_URL` it skips.
  */
+import { invalidationBatch } from '@engine/cache'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { loadItem } from './load-item'
+import { loadItem, queryItem } from './load-item'
 import {
   startWorksStack,
   type WorksStack,
@@ -16,31 +17,37 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
   let stack: WorksStack
   let publicId: number
 
+  /** A create that carries the invalidation batch's context (`work-invalidate`). */
+  const create = (args: { collection: string; data: object }) =>
+    invalidationBatch().operation((context) =>
+      stack.api.create({ ...args, context }),
+    ) as ReturnType<typeof stack.api.create>
+
   beforeAll(async () => {
     stack = await startWorksStack('web_item_test', (config, key) => getPayload({ config, key }))
     const recto = await stack.media('recto')
-    const maker = await stack.api.create({
+    const maker = await create({
       collection: 'makers',
       data: { name: 'François Valentijn', sortName: 'VALENTIJN, François', _status: 'published' },
     })
-    const place = await stack.api.create({
+    const place = await create({
       collection: 'places',
       data: { name: 'Bali', slug: 'bali', _status: 'published' },
     })
-    const grade = await stack.api.create({
+    const grade = await create({
       collection: 'terms',
-      data: { kind: 'grade', label: 'VG+', definition: 'Very good, nearly fine.', _status: 'published' },
+      data: { kind: 'grade', label: 'VG+', definition: 'Very good, nearly fine.', equivalent: 'A', _status: 'published' },
     })
-    const subject = await stack.api.create({
+    const subject = await create({
       collection: 'terms',
       data: { kind: 'subject', label: 'VOC', _status: 'published' },
     })
-    const published = await stack.api.create({
+    const published = await create({
       collection: 'works',
       data: {
         title: 'Bali by François Valentijn',
         objectType: 'map',
-        technique: 'copper engraving',
+        technique: 'copperplate-engraving',
         status: 'available',
         stockNumber: 'M.0500',
         makers: [{ maker: maker.id, role: 'cartographer', certainty: 'certain' }],
@@ -56,7 +63,7 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
     })
     publicId = Number(published.publicId)
     // A draft twin: same shape, never published — the loader must not see it.
-    await stack.api.create({
+    await create({
       collection: 'works',
       data: {
         title: 'A draft the visitor never reads',
@@ -83,11 +90,11 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
       limit: 1,
     })
     const draftPublicId = String((drafts.docs[0] as { publicId: number }).publicId)
-    expect(await loadItem(draftPublicId, 'en', 'Date unknown')).toBeNull()
+    expect(await queryItem(stack.payload, Number(draftPublicId), 'en', 'Date unknown')).toBeNull()
   })
 
   it('the projection carries no askingPrice', async () => {
-    const view = await loadItem(String(publicId), 'en', 'Date unknown')
+    const view = await queryItem(stack.payload, publicId, 'en', 'Date unknown')
     expect(view).not.toBeNull()
     const json = JSON.stringify(view)
     expect(json).not.toContain('askingPrice')
@@ -102,7 +109,7 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
   })
 
   it('an unknown id is null', async () => {
-    expect(await loadItem('999999999', 'en', 'Date unknown')).toBeNull()
+    expect(await queryItem(stack.payload, 999999999, 'en', 'Date unknown')).toBeNull()
   })
 
   it('a malformed id is null', async () => {

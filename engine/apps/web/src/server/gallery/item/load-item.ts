@@ -10,11 +10,10 @@
  * component (C9): the tile source is the image's IIIF `info.json` when the pipeline built the
  * pyramid, else the largest public derivative, else the media record's own file.
  */
-import 'server-only'
-
 import { cacheTags, workTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
+import type { Payload } from 'payload'
 
 import { dateTextOf } from '../catalogue/date-reading'
 import { dimensionsLine } from '../catalogue/projection'
@@ -218,13 +217,13 @@ export async function loadItem(
   return loadItemByPublicId(Number(id), locale, unknownDateText)
 }
 
-async function loadItemByPublicId(
+/** The read itself, uncached, on the caller's Payload — the db test's door and the cache's back. */
+export async function queryItem(
+  payload: Payload,
   publicId: number,
   locale: SiteLocale,
   unknownDateText: string,
 ): Promise<ItemView | null> {
-  'use cache'
-  const payload = await cms()
   const found = await payload.find({
     collection: 'works',
     overrideAccess: false,
@@ -236,8 +235,18 @@ async function loadItemByPublicId(
   })
   const doc = found.docs[0]
   if (doc === undefined) return null
-  const view = viewOf(doc as Doc, unknownDateText)
-  if (typeof view.workUid === 'string' && view.workUid) {
+  return viewOf(doc as unknown as Doc, unknownDateText)
+}
+
+async function loadItemByPublicId(
+  publicId: number,
+  locale: SiteLocale,
+  unknownDateText: string,
+): Promise<ItemView | null> {
+  'use cache'
+  const payload = await cms()
+  const view = await queryItem(payload, publicId, locale, unknownDateText)
+  if (view !== null && typeof view.workUid === 'string' && view.workUid) {
     cacheTags([workTag(view.workUid)])
   }
   return view
