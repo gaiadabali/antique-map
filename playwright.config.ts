@@ -112,6 +112,16 @@ const shopE2e: Project = {
   use: { ...desktop, baseURL: baseURLOf(shopHost) },
 }
 
+// The gallery's maker, place and editorial pages (5.4) on the gallery host; each case sets its own
+// widths, the same single-project-per-host shape as the shop's.
+const galleryHost = HOSTS.find((each) => each.site === 'gallery')?.host ?? ''
+const galleryE2e: Project = {
+  name: 'gallery-e2e',
+  testDir: './tests/e2e/gallery',
+  metadata: metadataOf('gallery'),
+  use: { ...desktop, baseURL: baseURLOf(galleryHost) },
+}
+
 // Host trust: each case names its own hosts, on the one port.
 const hosts: Project = {
   name: 'hosts',
@@ -138,5 +148,5 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  projects: [...smoke, ...status, ...a11y, shopE2e, hosts, admin],
+  projects: [...smoke, ...status, ...a11y, shopE2e, galleryE2e, hosts, admin],
 })
