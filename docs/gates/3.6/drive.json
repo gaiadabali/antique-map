@@ -101,13 +101,13 @@
     "storeB": { "store": "AMD-002", "listed": 2, "fixtureOrders": 2 }
   },
   "ownerFlow": {
-    "run": "MUUNSQQI",
+    "run": "MUUOE8UV",
     "secondsPerStep": {
-      "the owner uploads a photograph of the antique": 1.4,
-      "the owner catalogues the antique with its photo and publishes it": 5,
-      "the owner adds a store": 0.4,
-      "the owner adds a product": 0.6
+      "the owner uploads a photograph of the antique": 1.1,
+      "the owner catalogues the antique with its photo and publishes it": 8.6,
+      "the owner adds a store": 1,
+      "the owner adds a product": 1.2
     },
-    "totalSeconds": 7.4
+    "totalSeconds": 11.9
   }
 }
