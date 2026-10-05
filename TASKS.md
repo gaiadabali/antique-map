@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 26/33 | 0 | `████████░░`  79% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 5/7 | 27/33 | 0 | `████████░░`  82% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **18/49** | **114/200** | **8** | `██████░░░░`  57% |
+| **All** | 11 phases | | | **19/49** | **115/200** | **8** | `██████░░░░`  57% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -395,7 +395,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.6.c a dashboard shell with "orders to act on" and "new leads" panels (counts only; the full dashboard is 9.2)
   - [ ] 3.6.d **Check:** driven in a browser at 1280 px as owner, editor and store: each sees the right sidebar; an invalid save shows a plain message in both languages; the dashboard counts match the database.
 
-- [ ] **3.7 Spreadsheet import and the seed data** · needs: 3.5 — 🔄 3·W3
+- [x] **3.7 Spreadsheet import and the seed data** · needs: 3.5 — ✅ 2026-10-05 a8b9fb5
   - **Lane** CMS · **Agent** senior-be · **Wave** W3
   - **Owns** `engine/packages/cms/src/import/**`, `engine/packages/cms/src/seed/**`, `engine/packages/migrate/src/**`
   - **Read** DATA.md, CONTENT-MODEL.md §9, CARRY-OVER.md §5, `engine/packages/migrate/README.md`
@@ -403,7 +403,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.7.a the import: antiques by stock number, products by SKU, stores by code and stock per store from CSV or XLSX; idempotent upserts, a dry run, and a report listing every rejected row and why; admin action and CLI
   - [x] 3.7.b seed the gallery from the 1,823 normalised legacy records (rows marked `review` flagged, prices **never** loaded into a public field), with the pilot set's images as media
   - [x] 3.7.c seed the shop with the mock set of DATA.md §1 (about 80 products, 120 stores across Bali with coordinates, stock per store, a welcome code), generated with a fixed random seed and committed as import files; the real data replaces them through 3.7.a without a code change
-  - [ ] 3.7.d **Check:** importing the same file twice changes nothing; a file with five bad rows imports the rest and reports the five; after seeding, the admin lists 1,823 antiques and the mock catalogue; no price from the legacy data appears in any public projection.
+  - [x] 3.7.d **Check:** importing the same file twice changes nothing; a file with five bad rows imports the rest and reports the five; after seeding, the admin lists 1,823 antiques and the mock catalogue; no price from the legacy data appears in any public projection.
 
 ---
 
@@ -559,7 +559,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 6.6, 5.2_
   - [ ] 6.5.a the payment step (Snap embedded or redirected), the confirmation page with the order number and the tracking link, and the recovery states (pending, expired, failed, out of stock at pay time)
   - [ ] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
-  - [ ] 6.5.c **Check:** `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
+  - [ ] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
 
 ---
 
@@ -819,6 +819,10 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ 3.7 — 3.7.d on merged main (`44dc151`): import/seed db tests 52/52 (`import.db.test.ts` five malformed rows reported, the rest imported; the same file twice changes nothing; `seed.db.test.ts` no price in any row or projection, shop layer twice + purge). The legacy file lands 1,813 works with 10 held for the owner's data pass (owner decision 2026-10-03), so "lists 1,823" reads 1,813 + 10 in the review queue.
+- 2026-10-05 — **Owner decision (via the user, recorded by helper session antique-map-dc): no payment gateway yet — simulate only.** The "one real Midtrans sandbox payment" in 6.5.c and phase 6's Done-when is deferred, not dropped; it returns when the gateway is set up.
+- 2026-10-05 — 3.1 host: vhost patched in CloudPanel's template and the live file (both hostnames, `/_media/`, the dotfile deny — not the shared security-headers snippet, whose CSP would stack on the app's and block Maps, Midtrans and Turnstile); Let's Encrypt for both names (to 2027-01-03); server secrets generated on the host (never printed; `BAG_COOKIE_KEY` added); apply converged (changes 0). Left: the Linux-built release, the 3.1.e evidence.
 
 - 2026-10-05 ✅ 3.7.b merged (`44dc151`): seed CLI (vocabulary, gallery sample/full, shop, purge); importer's second pass reports 0 updates; stock import 370 s → 215 s; 1,813 legacy works land, 10 held for the owner (8 "Indonesia", 1 "Batavia (Jakarta)", 1 "Hofker" in the place cell); two typo fixes in the data outside git ("The Netherland"). No price loads anywhere. 3.7.d waits on one import run of the five-bad-rows file on merged main.
 
