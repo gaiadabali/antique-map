@@ -31,11 +31,20 @@ const REDIRECT_SOURCES = Object.keys(REDIRECT_SOURCE_LABELS) as Array<
 export const REDIRECT_CODE_LABELS = {
   301: { en: 'Permanent (301)', id: 'Permanen (301)' },
   302: { en: 'Temporary (302)', id: 'Sementara (302)' },
+  410: { en: 'Gone (410)', id: 'Hilang (410)' },
 } as const
 
 const REDIRECT_CODES = Object.keys(REDIRECT_CODE_LABELS).map(Number) as Array<
   keyof typeof REDIRECT_CODE_LABELS
 >
+
+/** `to` is required unless the row answers 410 (gone), and empty when it does. */
+export const validateTo = (value: unknown, { siblingData }: { siblingData?: unknown }) => {
+  const gone = (siblingData as { code?: unknown } | undefined)?.code === '410'
+  const to = typeof value === 'string' ? value.trim() : ''
+  if (gone) return to === '' ? true : 'A 410 (gone) redirect has no destination: leave this empty.'
+  return to === '' ? 'A destination is required unless the code is 410 (gone).' : true
+}
 
 export const Redirects: CollectionConfig = {
   slug: 'redirects',
@@ -89,13 +98,13 @@ export const Redirects: CollectionConfig = {
     {
       name: 'to',
       type: 'text',
-      required: true,
       maxLength: 2048,
       label: { en: 'To', id: 'Ke' },
+      validate: validateTo,
       admin: {
         description: {
-          en: 'Where it redirects to: a path on the same site or an absolute URL.',
-          id: 'Tujuan pengalihan: jalur di situs yang sama atau URL absolut.',
+          en: 'Where it redirects to: a path on the same site or an absolute URL. Leave empty for 410 (gone).',
+          id: 'Tujuan pengalihan: jalur di situs yang sama atau URL absolut. Kosongkan untuk 410 (hilang).',
         },
       },
     },

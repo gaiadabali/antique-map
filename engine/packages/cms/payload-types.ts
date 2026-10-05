@@ -1357,10 +1357,10 @@ export interface Redirect {
    */
   from: string
   /**
-   * Where it redirects to: a path on the same site or an absolute URL.
+   * Where it redirects to: a path on the same site or an absolute URL. Leave empty for 410 (gone).
    */
-  to: string
-  code: '301' | '302'
+  to?: string | null
+  code: '301' | '302' | '410'
   source: 'legacy' | 'editor' | 'slug-change'
   hits?: number | null
   updatedAt: string
