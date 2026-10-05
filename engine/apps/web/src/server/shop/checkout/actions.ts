@@ -13,6 +13,7 @@ import 'server-only'
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { after } from 'next/server'
 
 import { siteOrigin } from '@engine/config/sites'
 import { cms } from '@engine/cms/instance'
@@ -151,18 +152,24 @@ export async function submitOrderAction(_prev: unknown, formData: FormData): Pro
   )
 
   if (created.ok) {
-    try {
-      await sendOrderCreatedEmail(await cms(), {
-        orderId: created.orderId,
-        trackingToken: created.trackingToken,
-        locale,
-        origin: siteOrigin('shop') ?? '',
-      })
-    } catch (error) {
-      console.error(
-        `[checkout] order-created email for order ${created.orderId} failed to send: ${error instanceof Error ? error.message : String(error)}`,
-      )
-    }
+    // The order-created email goes out after the response (`after`): the buyer is never kept on
+    // "Placing your order…" by the mail server, and a send failure is logged, never the order's.
+    // The token stays in this closure only — never stored, never logged.
+    const { orderId, trackingToken } = created
+    after(async () => {
+      try {
+        await sendOrderCreatedEmail(await cms(), {
+          orderId,
+          trackingToken,
+          locale,
+          origin: siteOrigin('shop') ?? '',
+        })
+      } catch (error) {
+        console.error(
+          `[checkout] order-created email for order ${orderId} failed to send: ${error instanceof Error ? error.message : String(error)}`,
+        )
+      }
+    })
     // The token is shown once, in this address — never stored.
     redirect(siteHref('shop')('order', { token: created.trackingToken }, locale))
   }

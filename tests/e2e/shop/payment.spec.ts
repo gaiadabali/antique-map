@@ -198,6 +198,8 @@ test.afterAll(() => {
 })
 
 test.describe('the order page', () => {
+  // Each case seeds its own order in a `payload run` child (10–20 s on a loaded workstation).
+  test.describe.configure({ timeout: 60_000 })
   test('a wrong token is a 404', async ({ page }) => {
     seedOrder()
     const response = await page.goto(orderUrl(wrongToken()))

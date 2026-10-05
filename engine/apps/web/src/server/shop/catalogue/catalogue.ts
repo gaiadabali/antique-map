@@ -2,13 +2,17 @@
  * The catalogue's cached reads (6.1.a): editorial content — names, images, prices, categories —
  * under `'use cache'`, tagged so one invalidation reaches every page that shows the record.
  *
- * Availability is deliberately absent: it decides a purchase, so `./availability` reads it live
- * in the page's body and the page merges it into these results. Prices here are display values
+ * Availability is deliberately absent from every `'use cache'` function: it decides a purchase,
+ * so the exported `listing`, `search` and `product` read the cached editorial part, then call
+ * `connection()` (request time, never the build) and merge `./availability`'s live answer. A
+ * stock change — a sale, an import, an admin count — shows on the next request with no
+ * revalidation (`catalogue.cache.test.ts` guards that no cached function reads availability). Prices here are display values
  * only — the bag and checkout re-price everything on the server (COMMERCE.md §2).
  */
 import 'server-only'
 
 import { cacheTag } from 'next/cache'
+import { connection } from 'next/server'
 
 import { cms } from '@engine/cms/instance'
 
@@ -45,18 +49,22 @@ export async function categoryId(slug: string): Promise<number | null> {
   return getCategoryId(await cms(), slug)
 }
 
+async function cachedListing(options: { sort?: ListingSort; categoryId?: number; page?: number }) {
+  'use cache'
+  tagCatalogue()
+  return listProducts(await cms(), options)
+}
+
 /** One page of the listing (or of a category page), with its live availability merged. */
 export async function listing(options: {
   sort?: ListingSort
   categoryId?: number
   page?: number
 }): Promise<ListingVM> {
-  'use cache'
-  tagCatalogue()
-  const payload = await cms()
-  const result = await listProducts(payload, options)
+  const result = await cachedListing(options)
+  await connection()
   const availability = await availabilityFor(
-    payload,
+    await cms(),
     result.items.map((item) => item.id),
   )
   return {
@@ -66,6 +74,15 @@ export async function listing(options: {
     total: result.total,
     sort: options.sort ?? 'featured',
   }
+}
+
+async function cachedSearch(options: { query: string; locale: 'en' | 'id'; sort?: ListingSort }) {
+  'use cache'
+  tagCatalogue()
+  const payload = await cms()
+  const ids = await searchProductIds(payload, options.query, options.locale)
+  if (ids.length === 0) return null
+  return productsByIds(payload, ids, options.sort)
 }
 
 /**
@@ -77,16 +94,13 @@ export async function search(options: {
   locale: 'en' | 'id'
   sort?: ListingSort
 }): Promise<ListingVM> {
-  'use cache'
-  tagCatalogue()
-  const payload = await cms()
-  const ids = await searchProductIds(payload, options.query, options.locale)
-  if (ids.length === 0) {
+  const result = await cachedSearch(options)
+  if (result === null) {
     return { items: [], page: 1, pages: 1, total: 0, sort: options.sort ?? 'featured' }
   }
-  const result = await productsByIds(payload, ids, options.sort)
+  await connection()
   const availability = await availabilityFor(
-    payload,
+    await cms(),
     result.items.map((item) => item.id),
   )
   return {
@@ -98,17 +112,22 @@ export async function search(options: {
   }
 }
 
+/** A product page's editorial data (no availability): its metadata reads this, cached. */
+export async function productEditorial(slug: string): Promise<ProductVM | null> {
+  'use cache'
+  tagCatalogue()
+  return getProduct(await cms(), slug)
+}
+
 /** A product page's data, with its live availability merged into the product and its variants. */
 export async function product(
   slug: string,
 ): Promise<(ProductVM & { variants: readonly (VariantVM & { available: boolean })[] }) | null> {
-  'use cache'
-  tagCatalogue()
-  const payload = await cms()
-  const product = await getProduct(payload, slug)
-  if (!product) return null
-  const [availability] = [...(await availabilityFor(payload, [product.id])).values()]
-  return mergeProductAvailability(product, availability)
+  const found = await productEditorial(slug)
+  if (!found) return null
+  await connection()
+  const [availability] = [...(await availabilityFor(await cms(), [found.id])).values()]
+  return mergeProductAvailability(found, availability)
 }
 
 function mergeProductAvailability(

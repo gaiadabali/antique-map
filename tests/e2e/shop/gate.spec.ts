@@ -345,12 +345,14 @@ type MailpitMessage = { readonly ID: string }
 async function findOrderEmail(
   request: APIRequestContext,
   to: string,
+  orderNumberText: string,
 ): Promise<{ text: string; subject: string }> {
+  // This order's own email (the address is reused by every run), sent after the response
+  // (`after()` in the checkout action), so it may land a few seconds after the redirect.
   let found: MailpitMessage | undefined
-  for (let attempt = 0; attempt < 10 && !found; attempt++) {
-    const res = await request.get(
-      `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:${to}`)}`,
-    )
+  const query = `to:${to} subject:"${orderNumberText}"`
+  for (let attempt = 0; attempt < 30 && !found; attempt++) {
+    const res = await request.get(`${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(query)}`)
     if (res.ok()) {
       const body = (await res.json()) as { messages?: MailpitMessage[] }
       found = body.messages?.[0]
@@ -467,7 +469,7 @@ test.describe('the shop payment gate (6.5.c)', () => {
     if (MAILPIT_URL === 'none') {
       console.log('SKIPPED: email (MAILPIT_URL=none)')
     } else {
-      const email = await findOrderEmail(request, 'e2e-shop-gate@example.test')
+      const email = await findOrderEmail(request, 'e2e-shop-gate@example.test', orderNumberText!)
       expect(
         email.subject,
         'the email names the same order number the order page showed',

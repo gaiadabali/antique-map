@@ -2,7 +2,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { product as productOf } from '../../../../../../server/shop/catalogue'
+import { product as productOf, productEditorial } from '../../../../../../server/shop/catalogue'
 import { jsonLdScript, pageMetadata, productJsonLd } from '../../../../../../server/seo'
 import { productText } from '../../../../../../sites/shop/product/copy'
 import { ProductView } from '../../../../../../sites/shop/product/product-view'
@@ -15,7 +15,8 @@ export async function generateMetadata({
   const locale = siteLocale('shop', (await params).locale)
   const site = await currentSite('shop')
   if (locale === null || site.origin === null) return {}
-  const found = await productOf((await params).slug)
+  // Metadata needs no availability: the cached editorial read, never a live stock query.
+  const found = await productEditorial((await params).slug)
   if (found === null) return {}
   const text = productText(locale)
   const href = siteHref('shop')
