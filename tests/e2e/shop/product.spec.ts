@@ -92,10 +92,11 @@ async function findCandidates(request: APIRequestContext): Promise<Candidates> {
     }
   }
 
-  expect(withVariants, 'a published product with >=2 differently priced variants, in stock').not
-    .toBeNull()
-  expect(outOfStock, 'a published product with its add button disabled (zero stock)').not
-    .toBeNull()
+  expect(
+    withVariants,
+    'a published product with >=2 differently priced variants, in stock',
+  ).not.toBeNull()
+  expect(outOfStock, 'a published product with its add button disabled (zero stock)').not.toBeNull()
   return { withVariants: withVariants!, outOfStock: outOfStock! }
 }
 
@@ -189,9 +190,8 @@ test.describe('Shop product page (6.1.c)', () => {
 
     // The real add path (actions.ts' own export, called the way the module exposes it — no
     // invented route): proves the placeholder never adds a line, disabled button or not.
-    const actions = (await import(
-      '../../../engine/apps/web/src/sites/shop/product/actions'
-    )) as typeof import('../../../engine/apps/web/src/sites/shop/product/actions')
+    const actions =
+      (await import('../../../engine/apps/web/src/sites/shop/product/actions')) as typeof import('../../../engine/apps/web/src/sites/shop/product/actions')
     const result = await actions.addToBagPlaceholder({
       sku: 'whatever-sku',
       variantSku: null,
