@@ -6,20 +6,24 @@
 import { describe, expect, it } from 'vitest'
 
 import { createLead, type LeadRequest } from './create-lead'
-import { parseLeadInput } from './input'
+import { parseLeadInput, type LeadContext } from './input'
 import { newLeadSubjectAndText, notifyNewLead, type LeadEmail, type LeadMailer } from './notify'
 import type { LeadDeps, NewLeadNotice, NewLeadRecord } from './ports'
 import { PostLimiter } from './rate'
 
 const FIELDS = {
-  kind: 'partnership',
-  site: 'shop',
-  source: 'form',
   name: 'Made Wirawan',
   whatsapp: '+62 812-3456 7890',
   email: 'made@villa.example',
   message: 'We run three villas in Ubud and want framed maps for every suite.',
   locale: 'en',
+  consent: 'on',
+} as const
+
+const CONTEXT: LeadContext = {
+  kind: 'partnership',
+  site: 'shop',
+  source: 'form',
   consentVersion: 'partnership-1',
 }
 
@@ -64,6 +68,7 @@ function doubles(): Doubles {
 
 const request = (over: Partial<LeadRequest> = {}): LeadRequest => ({
   input: FIELDS,
+  context: CONTEXT,
   turnstileToken: 'token-abc',
   ip: '203.0.113.9',
   ...over,
@@ -121,6 +126,18 @@ describe('createLead', () => {
     expect((await createLead(d.deps, request({ ip: '203.0.113.10' }))).ok).toBe(true)
   })
 
+  it('a failed challenge still counts against the limit, so the eleventh post is refused before siteverify', async () => {
+    const d = doubles()
+    d.turnstile.pass = false
+    for (let i = 0; i < 10; i += 1) {
+      expect((await createLead(d.deps, request())).ok).toBe(false)
+    }
+    // The eleventh call must not even call verifyTurnstile.
+    const turnstileCalls = d.turnstile.calls
+    expect(await createLead(d.deps, request())).toEqual({ ok: false, reason: 'rate' })
+    expect(d.turnstile.calls).toBe(turnstileCalls)
+  })
+
   it('a lead without WhatsApp or email is refused with field errors', async () => {
     const d = doubles()
     const { whatsapp: _w, email: _e, ...bare } = FIELDS
@@ -154,31 +171,43 @@ describe('createLead', () => {
 })
 
 describe('parseLeadInput', () => {
-  it('drops stray keys and trims the fields', () => {
-    const parsed = parseLeadInput({
-      ...FIELDS,
-      name: '  Made  ',
-      status: 'closed',
-      closedAt: '2020-01-01',
-      partner: 1,
-    })
+  it('refuses a stray or reserved key (kind, site)', () => {
+    expect(parseLeadInput({ ...FIELDS, status: 'closed' }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, closedAt: '2020-01-01' }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, partner: 1 }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, kind: 'sell' }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, site: 'gallery' }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, source: 'chat' }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, consentVersion: 'v2' }, CONTEXT).ok).toBe(false)
+  })
+
+  it('trims the fields and rejects a non-object input', () => {
+    const parsed = parseLeadInput(
+      {
+        ...FIELDS,
+        name: '  Made  ',
+      },
+      CONTEXT,
+    )
     expect(parsed.ok).toBe(true)
     if (parsed.ok) {
       expect(parsed.value.name).toBe('Made')
-      expect(Object.keys(parsed.value)).not.toContain('status')
-      expect(Object.keys(parsed.value)).not.toContain('closedAt')
-      expect(Object.keys(parsed.value)).not.toContain('partner')
     }
+    expect(parseLeadInput(null, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput('hello', CONTEXT).ok).toBe(false)
   })
 
   it('wants a name, a message, a WhatsApp in international form and a real email', () => {
-    const parsed = parseLeadInput({
-      ...FIELDS,
-      name: '',
-      message: 'x'.repeat(2001),
-      whatsapp: '0812 3456 7890',
-      email: 'not-an-email',
-    })
+    const parsed = parseLeadInput(
+      {
+        ...FIELDS,
+        name: '',
+        message: 'x'.repeat(2001),
+        whatsapp: '123',
+        email: 'not-an-email',
+      },
+      CONTEXT,
+    )
     expect(parsed).toEqual({
       ok: false,
       errors: {
@@ -192,20 +221,58 @@ describe('parseLeadInput', () => {
 
   it('accepts either contact alone, and ignores a preferred channel with no such contact', () => {
     const { whatsapp: _w, ...emailOnly } = FIELDS
-    const parsed = parseLeadInput({ ...emailOnly, preferredChannel: 'whatsapp' })
+    const parsed = parseLeadInput({ ...emailOnly, preferredChannel: 'whatsapp' }, CONTEXT)
     expect(parsed.ok).toBe(true)
     if (parsed.ok) expect(parsed.value.preferredChannel).toBeUndefined()
-    expect(parseLeadInput({ ...emailOnly, preferredChannel: 'email' })).toMatchObject({
+    expect(parseLeadInput({ ...emailOnly, preferredChannel: 'email' }, CONTEXT)).toMatchObject({
       ok: true,
       value: { preferredChannel: 'email' },
     })
   })
 
-  it('refuses a kind, site or locale the collection does not have, and non-object input', () => {
-    expect(parseLeadInput({ ...FIELDS, kind: 'admin' }).ok).toBe(false)
-    expect(parseLeadInput({ ...FIELDS, site: 'x' }).ok).toBe(false)
-    expect(parseLeadInput(null).ok).toBe(false)
-    expect(parseLeadInput('hello').ok).toBe(false)
+  it('a local 0812 number is normalised to +62', () => {
+    const parsed = parseLeadInput(
+      {
+        ...FIELDS,
+        whatsapp: '0812 3456 7890',
+      },
+      CONTEXT,
+    )
+    expect(parsed).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        whatsapp: '+6281234567890',
+      }),
+    })
+  })
+
+  it('an email is lower-cased', () => {
+    const parsed = parseLeadInput(
+      {
+        ...FIELDS,
+        email: 'Made@VILLA.example',
+      },
+      CONTEXT,
+    )
+    expect(parsed).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        email: 'made@villa.example',
+      }),
+    })
+  })
+
+  it('refuses a locale the collection does not have', () => {
+    expect(parseLeadInput({ ...FIELDS, locale: 'fr' }, CONTEXT).ok).toBe(false)
+  })
+
+  it('consent must be true, "on", or "true"', () => {
+    expect(parseLeadInput({ ...FIELDS, consent: true }, CONTEXT).ok).toBe(true)
+    expect(parseLeadInput({ ...FIELDS, consent: 'on' }, CONTEXT).ok).toBe(true)
+    expect(parseLeadInput({ ...FIELDS, consent: 'true' }, CONTEXT).ok).toBe(true)
+    expect(parseLeadInput({ ...FIELDS, consent: false }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, consent: '' }, CONTEXT).ok).toBe(false)
+    expect(parseLeadInput({ ...FIELDS, consent: 'yes' }, CONTEXT).ok).toBe(false)
   })
 })
 

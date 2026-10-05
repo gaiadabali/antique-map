@@ -54,7 +54,7 @@ describe.skipIf(!server)('the partnership form on a real database', () => {
     return {
       now: () => new Date('2026-10-05T03:00:00.000Z'),
       verifyTurnstile: async () => true,
-      allow: (key) => limiter.allow(key),
+      allow: (key) => limiter.allow(key, Date.parse('2026-10-05T03:00:00.000Z')),
       store: payloadLeadStore(stack.payload),
       notify: (notice) => notifyNewLead(mailer, notice),
       log: () => undefined,

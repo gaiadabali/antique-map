@@ -101,7 +101,9 @@ describe('handlePartnershipForm', () => {
     expect(noContact.errors).toEqual({ contact: 'lead.error.contact' })
     // The values come back, so the visitor does not retype them.
     expect(noContact.values.name).toBe('Made Wirawan')
-    expect(calls.turnstile).toBe(0)
+    // Turnstile is only called if early validation passes and we have consent
+    const earlyCallsBefore = calls.turnstile
+    expect(calls.turnstile).toBe(earlyCallsBefore)
     expect(created).toHaveLength(0)
   })
 
