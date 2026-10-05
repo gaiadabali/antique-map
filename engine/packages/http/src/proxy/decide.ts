@@ -82,8 +82,11 @@ type Routed = {
   readonly setResponse?: Record<string, string>
   /** The item route's own query, for its permanent redirect to carry on. */
   readonly publicSearch?: string
-  /** The tracking surface with a token: a guess against the order's one credential, budgeted. */
-  readonly rateLimited?: boolean
+  /**
+   * The token a tracking or order URL presents: a guess against the order's one credential,
+   * budgeted per address by distinct tokens (`./tracking-rate-limit`).
+   */
+  readonly guessedToken?: string
 }
 
 export function decideProxy(request: ProxyRequest, options: DecideOptions = {}): ProxyDecision {
@@ -103,8 +106,11 @@ export function decideProxy(request: ProxyRequest, options: DecideOptions = {}):
     return respond('not-admin-host', 404, null)
   }
   const routed = route(request, options, host)
-  if (routed.rateLimited) {
-    const wait = trackingGuessAllowed(clientAddress(request.headers) ?? 'unknown')
+  if (routed.guessedToken !== undefined) {
+    const wait = trackingGuessAllowed(
+      clientAddress(request.headers) ?? 'unknown',
+      routed.guessedToken,
+    )
     if (wait > 0) {
       return respond('rate-limited', 429, null, { 'Retry-After': String(wait) })
     }
@@ -161,7 +167,7 @@ function route(request: ProxyRequest, options: DecideOptions, host: HostMatch): 
         // The order page's token is the same kind of credential as tracking's: one shared budget.
         ...((parsed.surface === 'tracking' || parsed.surface === 'order') &&
         typeof parsed.params.token === 'string'
-          ? { rateLimited: true }
+          ? { guessedToken: parsed.params.token }
           : {}),
       }
     case 'notFound':

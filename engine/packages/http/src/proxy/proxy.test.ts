@@ -184,11 +184,11 @@ describe('the tenth tracking guess in a minute is throttled (TASKS.md 7.3.c)', (
   const guess = (address: string, token = 'k3Jd9xQ2') =>
     decide('shop', `/track/${token}`, { 'x-forwarded-for': address })
 
-  it('the 10th request in a minute passes and the 11th is a 429 with Retry-After', () => {
+  it('the 10th distinct token in a minute passes and the 11th is a 429 with Retry-After', () => {
     for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) {
-      expect(guess('5.5.5.5'), `request ${i + 1}`).toMatchObject({ kind: 'rewrite' })
+      expect(guess('5.5.5.5', `g${i}`), `request ${i + 1}`).toMatchObject({ kind: 'rewrite' })
     }
-    const eleventh = guess('5.5.5.5')
+    const eleventh = guess('5.5.5.5', 'g-new')
     expect(eleventh).toMatchObject({ kind: 'respond', why: 'rate-limited', status: 429 })
     const wait = Number(eleventh.setResponse['Retry-After'])
     expect(wait).toBeGreaterThan(0)
@@ -196,18 +196,18 @@ describe('the tenth tracking guess in a minute is throttled (TASKS.md 7.3.c)', (
   })
 
   it('another address is unaffected', () => {
-    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) guess('6.6.6.6')
-    expect(guess('6.6.6.6')).toMatchObject({ kind: 'respond', status: 429 })
-    expect(guess('7.7.7.7')).toMatchObject({ kind: 'rewrite' })
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) guess('6.6.6.6', `a${i}`)
+    expect(guess('6.6.6.6', 'a-new')).toMatchObject({ kind: 'respond', status: 429 })
+    expect(guess('7.7.7.7', 'a-new')).toMatchObject({ kind: 'rewrite' })
   })
 
-  it('the order page’s token shares the budget: its 11th request is a 429 too', () => {
+  it('the order page’s tokens share the budget: the 11th new token is a 429 there too', () => {
     const headers = { 'x-forwarded-for': '9.9.9.9' }
     for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE / 2; i++) {
-      expect(decide('shop', '/order/k3Jd9xQ2', headers)).toMatchObject({ kind: 'rewrite' })
-      expect(decide('shop', '/track/k3Jd9xQ2', headers)).toMatchObject({ kind: 'rewrite' })
+      expect(decide('shop', `/order/o${i}`, headers)).toMatchObject({ kind: 'rewrite' })
+      expect(decide('shop', `/track/t${i}`, headers)).toMatchObject({ kind: 'rewrite' })
     }
-    expect(decide('shop', '/order/k3Jd9xQ2', headers)).toMatchObject({
+    expect(decide('shop', '/order/o-new', headers)).toMatchObject({
       kind: 'respond',
       why: 'rate-limited',
       status: 429,
@@ -227,9 +227,18 @@ describe('the tenth tracking guess in a minute is throttled (TASKS.md 7.3.c)', (
     expect(guess('8.8.8.8')).toMatchObject({ kind: 'rewrite' })
   })
 
+  it('a buyer polling their own pending order page is never throttled', () => {
+    const headers = { 'x-forwarded-for': '11.11.11.11' }
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE * 3; i++) {
+      expect(decide('shop', '/order/my-token', headers), `refresh ${i + 1}`).toMatchObject({
+        kind: 'rewrite',
+      })
+    }
+  })
+
   it('the window slides: a minute later the budget is back', () => {
     const headers = { 'x-forwarded-for': '10.10.10.10' }
-    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) decide('shop', '/track/a', headers)
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) decide('shop', `/track/s${i}`, headers)
     expect(decide('shop', '/track/a', headers)).toMatchObject({ kind: 'respond', status: 429 })
 
     const realNow = Date.now
