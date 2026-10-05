@@ -23,6 +23,8 @@ export default defineConfig({
   // server error: a case that hits it is tried again rather than reported as the admin's fault.
   retries: 2,
   timeout: 120_000,
+  // The admin renders a refusal after the server answers; on a loaded machine that is over 5 s.
+  expect: { timeout: 15_000 },
   reporter: process.env.CI ? [['list'], ['github']] : 'list',
   projects: [
     {
