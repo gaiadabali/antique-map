@@ -224,6 +224,10 @@ export const OBJECT_FIELDS: Field[] = [
         label: { en: 'Grade', id: 'Tingkat' },
         filterOptions: grades,
         admin: {
+          // D7 (docs/gates/3.6.md): Payload's relationship drawer renders the related
+          // collection's bilingual label raw on the "Add new" button ("[object Object]"); a
+          // grade is picked from the published scale, never made here, so the button is off.
+          allowCreate: false,
           description: {
             en: 'From the gallery’s published scale (Terms → Condition grade).',
             id: 'Dari skala yang diterbitkan galeri (Terms → Condition grade).',
