@@ -83,7 +83,11 @@ export async function OrdersPanelView(props) {
   if (role === null) return <Notice tone="error">{L('refusal_not_staff', language)}</Notice>
 
   const payload = props.payload
-  const id = str(props.params?.id)
+  // Payload matches the registered path (`/orders/:id?`, `../../registries/views.ts`) but does not
+  // parse its named segment for a plain custom view — only `params.segments`, the catch-all
+  // route's raw pieces, reaches here: `['orders']` for the list, `['orders', '123']` for an order.
+  const segments = Array.isArray(props.params?.segments) ? props.params.segments : []
+  const id = segments[1] ?? ''
   const searchParams = props.searchParams ?? {}
   const error = str(searchParams.error) || null
 

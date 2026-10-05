@@ -133,13 +133,21 @@ export async function loadActiveStores(
   return result.docs as unknown as StoreOption[]
 }
 
-/** A short-lived signed URL for the order's driver image, or `null` while there is none. */
+/**
+ * A short-lived signed URL for the order's driver image, or `null` while there is none — and
+ * `null`, never a thrown error, when the signing itself fails (a storage hiccup must cost the
+ * preview, not the whole page: `store-panel.jsx` shows the "attached" line without it).
+ */
 export async function loadDriverImagePreview(
   payload: Payload,
   order: OrderRow,
 ): Promise<string | null> {
   if (!order.driverImage?.key) return null
-  return driverImageUrl(payload, order.id, 120)
+  try {
+    return await driverImageUrl(payload, order.id, 120)
+  } catch {
+    return null
+  }
 }
 
 export function googleMapsLink(lat: number, lng: number): string {

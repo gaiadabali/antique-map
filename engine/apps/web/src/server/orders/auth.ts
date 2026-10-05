@@ -18,11 +18,19 @@ export async function actorFrom(request: Request): Promise<Actor> {
   return { payload, user }
 }
 
-/** A redirect back to the order's admin screen, with `error` set when the action was refused. */
+/**
+ * A redirect back to the order's admin screen, with `error` set when the action was refused. A
+ * relative `Location` (never `Response.redirect`, which needs an absolute URL): behind the site
+ * proxy, `request.url` is the internal one-host URL the rewrite resolved to, not the browser's
+ * `shop.localhost`/`oldeastindies.com` — an absolute redirect built from it sends the browser to
+ * the wrong host.
+ */
 export function backToOrder(request: Request, orderId: number, error?: string): Response {
-  const url = new URL(`/admin/orders/${orderId}`, request.url)
-  if (error) url.searchParams.set('error', error)
-  return Response.redirect(url, 303)
+  const query = error ? `?error=${encodeURIComponent(error)}` : ''
+  return new Response(null, {
+    status: 303,
+    headers: { Location: `/admin/orders/${orderId}${query}` },
+  })
 }
 
 export function parseOrderId(id: string): number | null {

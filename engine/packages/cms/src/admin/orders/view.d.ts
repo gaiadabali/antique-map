@@ -7,7 +7,7 @@
 export type OrdersPanelViewProps = {
   readonly payload: unknown
   readonly i18n?: { readonly language?: string }
-  readonly params?: { readonly id?: string | string[] }
+  readonly params?: { readonly segments?: readonly string[] }
   readonly searchParams?: Record<string, string | string[] | undefined>
   readonly initPageResult?: { readonly req?: unknown }
 }
