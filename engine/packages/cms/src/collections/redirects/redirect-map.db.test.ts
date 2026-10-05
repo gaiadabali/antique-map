@@ -6,10 +6,7 @@
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import {
-  readRedirectMap,
-  type RedirectReader,
-} from '../../../../http/src/legacy/redirect-map'
+import { readRedirectMap, type RedirectReader } from '../../../../http/src/legacy/redirect-map'
 import { startWorksStack, server } from '../works/works.test-support'
 
 describe.skipIf(!server)('redirect map: the real loader on a real database', () => {
@@ -57,7 +54,10 @@ describe.skipIf(!server)('redirect map: the real loader on a real database', () 
 
   it('a 301 with no destination, or a 410 with one, is refused by the collection', async () => {
     const attempt = (data: Record<string, unknown>) =>
-      stack.api.create({ collection: 'redirects', data: { site: 'gallery', source: 'legacy', ...data } })
+      stack.api.create({
+        collection: 'redirects',
+        data: { site: 'gallery', source: 'legacy', ...data },
+      })
     await expect(attempt({ from: '/no-to', code: '301' })).rejects.toThrow()
     await expect(attempt({ from: '/gone-with-to', to: '/x', code: '410' })).rejects.toThrow()
   })
