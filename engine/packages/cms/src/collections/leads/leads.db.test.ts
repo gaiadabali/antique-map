@@ -61,4 +61,32 @@ describe.skipIf(!server)('leads: access on a real database', () => {
     expect((await stack.rest('GET', `/api/leads/${doc.id}`)).status).toBe(403)
     expect((await stack.rest('GET', '/api/leads?limit=100')).status).toBe(403)
   })
+
+  it('closing a lead stamps closedAt and reopening clears it', async () => {
+    const made = await stack.api.create({ collection: 'leads', data: lead() })
+    expect(made.closedAt ?? null).toBeNull()
+
+    const closed = await stack.api.update({
+      collection: 'leads',
+      id: made.id,
+      data: { status: 'closed' },
+    })
+    expect(typeof closed.closedAt).toBe('string')
+    expect(Math.abs(Date.now() - new Date(String(closed.closedAt)).getTime())).toBeLessThan(60_000)
+
+    // An edit that leaves the status alone keeps the stamp.
+    const noted = await stack.api.update({
+      collection: 'leads',
+      id: made.id,
+      data: { notes: 'called back' },
+    })
+    expect(noted.closedAt).toBe(closed.closedAt)
+
+    const reopened = await stack.api.update({
+      collection: 'leads',
+      id: made.id,
+      data: { status: 'in_progress' },
+    })
+    expect(reopened.closedAt ?? null).toBeNull()
+  })
 })

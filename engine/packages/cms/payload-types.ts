@@ -1395,7 +1395,15 @@ export interface Lead {
    */
   items?: (number | Work)[] | null
   chatSession?: (number | null) | ChatSession
+  /**
+   * The partner created from this lead.
+   */
+  partner?: (number | null) | Partner
   status: 'new' | 'contacted' | 'in_progress' | 'closed' | 'spam'
+  /**
+   * Set when the lead is closed, cleared if reopened. Retention counts from it.
+   */
+  closedAt?: string | null
   /**
    * Appended automatically when status changes.
    */
@@ -1471,10 +1479,7 @@ export interface Partner {
    * Negotiated case by case.
    */
   terms?: string | null
-  /**
-   * Product SKUs or names for now. Task 3.3 relates this to products.
-   */
-  productsCarried?: string[] | null
+  productsCarried?: (number | Product)[] | null
   status: 'prospect' | 'active' | 'paused' | 'ended'
   notes?: string | null
   updatedAt: string
@@ -2442,7 +2447,9 @@ export interface LeadsSelect<T extends boolean = true> {
       }
   items?: T
   chatSession?: T
+  partner?: T
   status?: T
+  closedAt?: T
   statusHistory?:
     | T
     | {
