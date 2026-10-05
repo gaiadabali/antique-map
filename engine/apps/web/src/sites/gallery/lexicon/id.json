@@ -687,5 +687,18 @@
   "wishlist.removed": "{title} dihapus dari daftar keinginan Anda",
   "wishlist.saved": "{title} disimpan ke daftar keinginan Anda",
   "wishlist.signIn": "Masuk untuk menyimpan karya ke daftar keinginan Anda.",
-  "wishlist.title": "Daftar keinginan"
+  "wishlist.title": "Daftar keinginan",
+  "makerPage.indexTitle": "Pembuat",
+  "makerPage.indexDescription": "Setiap kartografer, pengukir, penerbit dan fotografer di balik koleksi ini.",
+  "makerPage.workCount.one": "{count} karya",
+  "makerPage.workCount.other": "{count} karya",
+  "makerPage.availableHeading": "Tersedia",
+  "makerPage.soldHeading": "Sebelumnya terjual",
+  "empty.makerAvailable": "Saat ini belum ada karya oleh {maker} yang tersedia.",
+  "placePage.indexTitle": "Tempat",
+  "placePage.indexDescription": "Pelabuhan, pulau dan kota yang digambarkan koleksi ini — nama modern lebih dulu, nama historis di bawahnya.",
+  "placePage.availableHeading": "Tersedia",
+  "placePage.soldHeading": "Sebelumnya terjual",
+  "placePage.childrenHeading": "Tempat di dalam {name}",
+  "cmsPage.worksHeading": "Karya dalam cerita ini"
 }
