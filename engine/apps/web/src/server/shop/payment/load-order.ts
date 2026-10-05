@@ -100,9 +100,10 @@ async function verifiedOrderId(
   n: number,
   token: string,
 ): Promise<number | null> {
-  const { rows } = await client.query('SELECT id, tracking_token_hash FROM orders WHERE number = $1', [
-    n,
-  ])
+  const { rows } = await client.query(
+    'SELECT id, tracking_token_hash FROM orders WHERE number = $1',
+    [n],
+  )
   const order = rows[0]
   const stored = order?.tracking_token_hash
   if (typeof stored !== 'string') return null

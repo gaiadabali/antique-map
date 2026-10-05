@@ -25,7 +25,9 @@ function fakePayload(order: unknown = ORDER_DOC) {
   return { payload: { findByID, sendEmail } as never, sendEmail, findByID }
 }
 
-function sentOf(sendEmail: ReturnType<typeof vi.fn<(args: SentEmail) => Promise<void>>>): SentEmail {
+function sentOf(
+  sendEmail: ReturnType<typeof vi.fn<(args: SentEmail) => Promise<void>>>,
+): SentEmail {
   const [call] = sendEmail.mock.calls.at(-1) ?? []
   if (!call) throw new Error('sendEmail was never called')
   return call

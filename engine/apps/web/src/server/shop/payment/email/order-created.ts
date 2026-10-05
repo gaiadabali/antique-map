@@ -30,7 +30,12 @@ export type SendOrderCreatedEmailInput = {
 
 export type SendOrderCreatedEmailResult = { readonly ok: boolean }
 
-type OrderLineDoc = { name?: string | null; variantLabel?: string | null; qty?: number | null; lineTotal?: number | null }
+type OrderLineDoc = {
+  name?: string | null
+  variantLabel?: string | null
+  qty?: number | null
+  lineTotal?: number | null
+}
 type OrderDoc = {
   number?: number | null
   contact?: { name?: string | null; email?: string | null } | null

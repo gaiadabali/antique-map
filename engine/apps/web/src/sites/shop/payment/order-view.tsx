@@ -132,9 +132,7 @@ export function OrderView({
               : t('order.title', { number: order.number })}
         </h1>
         <p className={styles.body}>
-          {confirming
-            ? t('order.confirmingText')
-            : !failed && t('order.payBy', { time: deadline })}
+          {confirming ? t('order.confirmingText') : !failed && t('order.payBy', { time: deadline })}
         </p>
         {!confirming && payForm(failed ? t('order.tryAgain') : payingLabel)}
         {!confirming && !failed && <p className={styles.notice}>{t('order.pendingText')}</p>}

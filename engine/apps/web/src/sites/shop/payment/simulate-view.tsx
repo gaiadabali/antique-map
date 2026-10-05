@@ -3,7 +3,11 @@
  * while developing and testing off a real account — a plain "Test payment" banner so nobody
  * mistakes it for the real pay step.
  */
-import { SIMULATOR_ACTIONS, simulateAction, type SimulatorAction } from '../../../server/shop/payment'
+import {
+  SIMULATOR_ACTIONS,
+  simulateAction,
+  type SimulatorAction,
+} from '../../../server/shop/payment'
 import { paymentText } from './copy'
 import styles from './order-view.module.css'
 

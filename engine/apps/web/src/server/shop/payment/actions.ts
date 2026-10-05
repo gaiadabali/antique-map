@@ -51,7 +51,10 @@ function fields(formData: FormData) {
 
 export type PayState =
   | { readonly ok: true; readonly mode: 'snap'; readonly token: string; readonly clientKey: string }
-  | { readonly ok: false; readonly reason: 'not-found' | 'not-payable' | 'window-closed' | 'server-error' }
+  | {
+      readonly ok: false
+      readonly reason: 'not-found' | 'not-payable' | 'window-closed' | 'server-error'
+    }
   | null
 
 /**
@@ -75,7 +78,8 @@ export async function payAction(_prev: PayState, formData: FormData): Promise<Pa
     config.mode === 'simulate'
       ? simulatorProvider(
           config,
-          (id) => `/${locale}/order/${number}/simulate?attempt=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}`,
+          (id) =>
+            `/${locale}/order/${number}/simulate?attempt=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}`,
         )
       : createPaymentProvider(config)
 
