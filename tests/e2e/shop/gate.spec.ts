@@ -71,23 +71,11 @@ async function shoot(page: Page, name: string): Promise<void> {
   await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, animations: 'disabled' })
 }
 
-/**
- * Known, reported, unfixed violations this gate does not re-fail on (never silently — each is a
- * real finding in the report, file:line, outside this ticket's owned paths to fix):
- * - `landmark-complementary-is-top-level` on the bag page: `bag-view.tsx:108`'s `<aside>` nests
- *   inside `bag-view.tsx:47`'s `<section aria-labelledby="bag-title">`, itself a landmark (a
- *   named region) once axe resolves its accessible name — the `<aside>` is never top-level.
- */
-const KNOWN_A11Y_FINDINGS = new Set(['landmark-complementary-is-top-level'])
-
 async function axeClean(page: Page, label: string): Promise<void> {
   const { violations } = await new AxeBuilder({ page }).analyze()
-  const found = violations
-    .filter(({ id }) => !KNOWN_A11Y_FINDINGS.has(id))
-    .map(
-      ({ id, impact, nodes }) =>
-        `${impact ?? 'unknown'} ${id}: ${nodes.map((n) => n.target).join()}`,
-    )
+  const found = violations.map(
+    ({ id, impact, nodes }) => `${impact ?? 'unknown'} ${id}: ${nodes.map((n) => n.target).join()}`,
+  )
   expect(found, label).toEqual([])
 }
 

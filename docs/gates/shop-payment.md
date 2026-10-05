@@ -71,7 +71,7 @@ over the Rp 500.000 free-delivery threshold, so delivery showed as Rp 0 this run
 | Confirmation in Mailpit (order number, totals, tracking link from the site's own origin) | step 6: Mailpit search by recipient, message subject "Your order 100,059" (matches the pending page's own "Order 100,059" heading — `orderNumberText`), body holds `Subtotal: Rp 5.595.000`, `Total: Rp 5.595.000`, and `Track your order any time: http://shop.localhost:4290/track/…` (starts with `SITE_ORIGIN`) | **PASS** |
 | Abandoned order expires and returns its stock; a second sweep changes nothing | step 7, second test: `order.status` `pending_payment` → `expired`; stock back by exactly the line's qty; a second `POST /api/x/cron/sweeps` (200, bearer `CRON_SECRET`) leaves both unchanged; order page shows "Put these back in my bag" — `order-expired-390.png` | **PASS** |
 | Lighthouse mobile ≥ 90 performance, ≥ 90 accessibility | see **Lighthouse** below — both pages clear both bars | **PASS** |
-| Axe clean on bag, checkout, order (pending and paid) at 390 and 1280 px | every state passes except one known, reported finding on the bag page (filtered, not hidden — see **Findings** F1); checkout and both order states are fully clean at both widths | **PASS, with one reported finding (F1), not fixed here** |
+| Axe clean on bag, checkout, order (pending and paid) at 390 and 1280 px | every state passes except one known, reported finding on the bag page (filtered, not hidden — see **Findings** F1); checkout and both order states are fully clean at both widths | **PASS** — F1 fixed by the orchestrator (the bag summary is no longer a nested landmark); the axe filter is removed and the gate re-ran 2/2, then 8/8 with `payment.spec.ts`, fully clean |
 
 ## Lighthouse (mobile, local production build)
 
@@ -90,7 +90,7 @@ The Check's bar (performance ≥ 90, accessibility ≥ 90) is cleared on both pa
 
 ## Findings
 
-1. **`engine/apps/web/src/sites/shop/bag/bag-view.tsx:108`'s `<aside aria-label={text.shared('cart.title')}>`
+1. **Fixed (orchestrator):** `engine/apps/web/src/sites/shop/bag/bag-view.tsx:108`'s `<aside aria-label={text.shared('cart.title')}>`
    nests inside `bag-view.tsx:47`'s `<section className={styles.bag} aria-labelledby="bag-title">`** — once axe
    resolves the section's accessible name (from `aria-labelledby`), it counts as a landmark (a named region),
    so the `<aside>` — itself a landmark (`complementary`) — is never top-level. axe: `moderate
@@ -110,6 +110,10 @@ The Check's bar (performance ≥ 90, accessibility ≥ 90) is cleared on both pa
    (`BAG_COOKIE_KEY` — already `docs/gates/phase-6-checks.md` Finding 3 — plus `DATABASE_URL`, `PAYLOAD_SECRET`,
    `GALLERY_HOSTS`, `SHOP_HOSTS`, `MIDTRANS_MODE`, `CRON_SECRET`, SMTP settings for a from-scratch worktree).
    Not fixed here (`.env.example` is outside this ticket's owned paths).
+
+## Note on the fee
+
+This run's pair (Rp 5.595.000) is over the free-delivery threshold, so the review showed delivery free (Rp 0). The charged band and the exact threshold switch are proven by the 6.2.d unit tests (`docs/gates/phase-6-checks.md`).
 
 ## Staging run
 
