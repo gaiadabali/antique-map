@@ -73,16 +73,24 @@ export const makersField: ArrayField = {
           name: 'maker',
           type: 'relationship',
           relationTo: 'makers',
+          label: { en: 'Maker', id: 'Pembuat' },
           required: true,
           validate: validateCredit,
         },
         {
           name: 'role',
           type: 'select',
+          label: { en: 'Role', id: 'Peran' },
           required: true,
           options: MAKER_ROLES.map((value) => ({ value, label: MAKER_ROLE_LABELS[value] })),
         },
-        { name: 'certainty', type: 'select', required: true, options: CERTAINTY_OPTIONS },
+        {
+          name: 'certainty',
+          type: 'select',
+          label: { en: 'Certainty', id: 'Kepastian' },
+          required: true,
+          options: CERTAINTY_OPTIONS,
+        },
       ],
     },
   ],
@@ -97,6 +105,7 @@ export const RECORD_FIELDS: Field[] = [
   {
     name: 'publicId',
     type: 'number',
+    label: { en: 'Public id', id: 'Id publik' },
     unique: true,
     index: true,
     admin: {
@@ -109,6 +118,7 @@ export const RECORD_FIELDS: Field[] = [
   {
     name: 'workUid',
     type: 'text',
+    label: { en: 'Work uid', id: 'Uid karya' },
     unique: true,
     index: true,
     admin: { position: 'sidebar', readOnly: true, ...described(RECORD_NOTES.workUid) },
@@ -117,6 +127,7 @@ export const RECORD_FIELDS: Field[] = [
   {
     name: 'stockNumber',
     type: 'text',
+    label: { en: 'Stock number', id: 'Nomor stok' },
     index: true,
     maxLength: 40,
     validate: validateStockNumber,
@@ -126,6 +137,7 @@ export const RECORD_FIELDS: Field[] = [
   {
     name: 'title',
     type: 'text',
+    label: { en: 'Title', id: 'Judul' },
     localized: true,
     maxLength: 240,
     admin: described(RECORD_NOTES.title),
@@ -136,12 +148,14 @@ export const RECORD_FIELDS: Field[] = [
       {
         name: 'originalTitle',
         type: 'text',
+        label: { en: 'Original title', id: 'Judul asli' },
         maxLength: 400,
         admin: { width: '70%', ...described(RECORD_NOTES.originalTitle) },
       },
       {
         name: 'originalTitleLanguage',
         type: 'text',
+        label: { en: 'Language', id: 'Bahasa' },
         maxLength: 35,
         validate: validateLanguage,
         admin: { width: '30%', ...described(RECORD_NOTES.originalTitleLanguage) },
@@ -151,6 +165,7 @@ export const RECORD_FIELDS: Field[] = [
   {
     name: 'objectType',
     type: 'select',
+    label: { en: 'Object type', id: 'Jenis objek' },
     index: true,
     options: OBJECT_TYPE_OPTIONS,
     admin: described(RECORD_NOTES.objectType),
@@ -170,6 +185,7 @@ export const RECORD_FIELDS: Field[] = [
   {
     name: 'publication',
     type: 'group',
+    label: { en: 'Publication', id: 'Penerbitan' },
     admin: described(RECORD_NOTES.publication),
     fields: [
       {
@@ -178,12 +194,14 @@ export const RECORD_FIELDS: Field[] = [
           {
             name: 'place',
             type: 'text',
+            label: { en: 'Place', id: 'Tempat' },
             maxLength: 120,
             admin: described(RECORD_NOTES.publicationPlace),
           },
           {
             name: 'publisher',
             type: 'text',
+            label: { en: 'Publisher', id: 'Penerbit' },
             maxLength: 200,
             admin: described(RECORD_NOTES.publicationPublisher),
           },
@@ -192,17 +210,19 @@ export const RECORD_FIELDS: Field[] = [
       {
         name: 'sourceWork',
         type: 'text',
+        label: { en: 'Source work', id: 'Karya sumber' },
         maxLength: 300,
         admin: described(RECORD_NOTES.sourceWork),
       },
       {
         type: 'row',
         fields: [
-          { name: 'edition', type: 'text', maxLength: 120 },
-          { name: 'state', type: 'text', maxLength: 120 },
+          { name: 'edition', type: 'text', label: { en: 'Edition', id: 'Edisi' }, maxLength: 120 },
+          { name: 'state', type: 'text', label: { en: 'State', id: 'Keadaan' }, maxLength: 120 },
           {
             name: 'textLanguage',
             type: 'text',
+            label: { en: 'Text language', id: 'Bahasa teks' },
             maxLength: 35,
             validate: validateLanguage,
             admin: described(RECORD_NOTES.textLanguage),
@@ -212,6 +232,7 @@ export const RECORD_FIELDS: Field[] = [
       {
         name: 'verso',
         type: 'text',
+        label: { en: 'Verso', id: 'Verso' },
         localized: true,
         maxLength: 300,
         admin: described(RECORD_NOTES.verso),
@@ -221,7 +242,12 @@ export const RECORD_FIELDS: Field[] = [
   {
     type: 'row',
     fields: [
-      { name: 'technique', type: 'select', options: TECHNIQUE_OPTIONS },
+      {
+        name: 'technique',
+        type: 'select',
+        label: { en: 'Technique', id: 'Teknik' },
+        options: TECHNIQUE_OPTIONS,
+      },
       {
         name: 'colour',
         type: 'select',
@@ -236,6 +262,7 @@ export const RECORD_FIELDS: Field[] = [
       {
         name: 'status',
         type: 'select',
+        label: { en: 'Status', id: 'Status' },
         // Not `enum_works_status`: toSnakeCase('_status') is 'status', so that name is taken by
         // the drafts column's enum — this one needs its own.
         enumName: 'work_status_vocabulary',
@@ -247,6 +274,7 @@ export const RECORD_FIELDS: Field[] = [
       {
         name: 'location',
         type: 'select',
+        label: { en: 'Location', id: 'Lokasi' },
         options: WORK_LOCATION_OPTIONS,
         admin: described(RECORD_NOTES.location),
       },
@@ -262,29 +290,57 @@ export const RECORD_FIELDS: Field[] = [
       {
         type: 'row',
         fields: [
-          { name: 'binding', type: 'text', localized: true, maxLength: 300 },
-          { name: 'pagination', type: 'text', maxLength: 300 },
+          {
+            name: 'binding',
+            type: 'text',
+            label: { en: 'Binding', id: 'Penjilidan' },
+            localized: true,
+            maxLength: 300,
+          },
+          {
+            name: 'pagination',
+            type: 'text',
+            label: { en: 'Pagination', id: 'Penomoran halaman' },
+            maxLength: 300,
+          },
         ],
       },
       {
         type: 'row',
         fields: [
-          { name: 'plates', type: 'text', maxLength: 300 },
-          { name: 'completeness', type: 'text', localized: true, maxLength: 300 },
+          { name: 'plates', type: 'text', label: { en: 'Plates', id: 'Pelat' }, maxLength: 300 },
+          {
+            name: 'completeness',
+            type: 'text',
+            label: { en: 'Completeness', id: 'Kelengkapan' },
+            localized: true,
+            maxLength: 300,
+          },
         ],
       },
       {
         name: 'openings',
         type: 'upload',
         relationTo: 'media',
+        label: { en: 'Openings', id: 'Bukaan' },
         hasMany: true,
         admin: described(RECORD_NOTES.bookOpenings),
       },
       {
         type: 'row',
         fields: [
-          { name: 'spine', type: 'upload', relationTo: 'media' },
-          { name: 'cover', type: 'upload', relationTo: 'media' },
+          {
+            name: 'spine',
+            type: 'upload',
+            relationTo: 'media',
+            label: { en: 'Spine', id: 'Punggung buku' },
+          },
+          {
+            name: 'cover',
+            type: 'upload',
+            relationTo: 'media',
+            label: { en: 'Cover', id: 'Sampul' },
+          },
         ],
       },
     ],

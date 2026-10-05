@@ -67,6 +67,7 @@ export const physicalField: Field = {
     {
       name: 'exportStatus',
       type: 'select',
+      label: { en: 'Export status', id: 'Status ekspor' },
       options: EXPORT_STATUS_OPTIONS,
       admin: {
         description: {
@@ -89,14 +90,25 @@ export const physicalField: Field = {
         {
           type: 'row',
           fields: [
-            { name: 'source', type: 'text', maxLength: 200 },
-            { name: 'consignor', type: 'text', maxLength: 200 },
-            { name: 'date', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
+            { name: 'source', type: 'text', label: { en: 'Source', id: 'Sumber' }, maxLength: 200 },
+            {
+              name: 'consignor',
+              type: 'text',
+              label: { en: 'Consignor', id: 'Penitip' },
+              maxLength: 200,
+            },
+            {
+              name: 'date',
+              type: 'date',
+              label: { en: 'Date', id: 'Tanggal' },
+              admin: { date: { pickerAppearance: 'dayOnly' } },
+            },
           ],
         },
         {
           name: 'cost',
           type: 'group',
+          label: { en: 'Cost', id: 'Biaya' },
           admin: {
             description: {
               en: 'In the currency’s smallest unit: cents, or whole rupiah.',
@@ -104,10 +116,17 @@ export const physicalField: Field = {
             },
           },
           fields: [
-            { name: 'amount', type: 'number', admin: { step: 1 }, validate: costPart('amount') },
+            {
+              name: 'amount',
+              type: 'number',
+              label: { en: 'Amount', id: 'Jumlah' },
+              admin: { step: 1 },
+              validate: costPart('amount'),
+            },
             {
               name: 'currency',
               type: 'select',
+              label: { en: 'Currency', id: 'Mata uang' },
               options: CURRENCY_CODES.map((code) => ({ value: code, label: code })),
               validate: costPart('currency'),
             },
@@ -138,6 +157,7 @@ export const STAFF_FIELDS: Field[] = [
   {
     name: 'rights',
     type: 'group',
+    label: { en: 'Rights', id: 'Hak' },
     // Staff only, as the header says (1.2.b: it had no access, so a public read returned it).
     access: STAFF_ONLY_ACCESS,
     admin: {
@@ -150,9 +170,26 @@ export const STAFF_FIELDS: Field[] = [
       {
         type: 'row',
         fields: [
-          { name: 'status', type: 'select', options: RIGHTS_STATUS_OPTIONS },
-          { name: 'holder', type: 'text', maxLength: 200, validate: rightsPart('holder') },
-          { name: 'licenceRef', type: 'text', maxLength: 120, validate: rightsPart('licenceRef') },
+          {
+            name: 'status',
+            type: 'select',
+            label: { en: 'Status', id: 'Status' },
+            options: RIGHTS_STATUS_OPTIONS,
+          },
+          {
+            name: 'holder',
+            type: 'text',
+            label: { en: 'Rights holder', id: 'Pemegang hak' },
+            maxLength: 200,
+            validate: rightsPart('holder'),
+          },
+          {
+            name: 'licenceRef',
+            type: 'text',
+            label: { en: 'Licence reference', id: 'Referensi lisensi' },
+            maxLength: 120,
+            validate: rightsPart('licenceRef'),
+          },
         ],
       },
       {
@@ -161,6 +198,7 @@ export const STAFF_FIELDS: Field[] = [
           {
             name: 'territories',
             type: 'text',
+            label: { en: 'Territories', id: 'Wilayah' },
             hasMany: true,
             validate: rightsPart('territories'),
             admin: {
@@ -170,12 +208,18 @@ export const STAFF_FIELDS: Field[] = [
               },
             },
           },
-          { name: 'expires', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
+          {
+            name: 'expires',
+            type: 'date',
+            label: { en: 'Expires', id: 'Berakhir' },
+            admin: { date: { pickerAppearance: 'dayOnly' } },
+          },
         ],
       },
       {
         name: 'printAllowed',
         type: 'checkbox',
+        label: { en: 'Printing allowed', id: 'Cetak diizinkan' },
         defaultValue: false,
         validate: rightsPart('printAllowed'),
         admin: {
@@ -190,6 +234,7 @@ export const STAFF_FIELDS: Field[] = [
   {
     name: 'cataloguing',
     type: 'group',
+    label: { en: 'Cataloguing', id: 'Pengatalogan' },
     access: STAFF_ONLY_ACCESS,
     hooks: { beforeDuplicate: [cleared] },
     fields: [
@@ -199,11 +244,22 @@ export const STAFF_FIELDS: Field[] = [
           {
             name: 'status',
             type: 'select',
+            label: { en: 'Status', id: 'Status' },
             defaultValue: 'draft',
             options: CATALOGUING_STATUS_OPTIONS,
           },
-          { name: 'cataloguer', type: 'relationship', relationTo: 'users' },
-          { name: 'verifiedAt', type: 'date', admin: { readOnly: true } },
+          {
+            name: 'cataloguer',
+            type: 'relationship',
+            relationTo: 'users',
+            label: { en: 'Cataloguer', id: 'Pengatalog' },
+          },
+          {
+            name: 'verifiedAt',
+            type: 'date',
+            label: { en: 'Verified', id: 'Diverifikasi' },
+            admin: { readOnly: true },
+          },
         ],
       },
       {
@@ -222,11 +278,17 @@ export const STAFF_FIELDS: Field[] = [
           type: 'group',
           label: AI_DRAFTABLE_LABELS[field],
           fields: [
-            { name: 'drafted', type: 'checkbox', defaultValue: false },
+            {
+              name: 'drafted',
+              type: 'checkbox',
+              label: { en: 'Drafted', id: 'Dibuat draf' },
+              defaultValue: false,
+            },
             {
               name: 'verifiedBy',
               type: 'relationship',
               relationTo: 'users',
+              label: { en: 'Verified by', id: 'Diverifikasi oleh' },
               admin: {
                 description: { en: 'Who checked it.', id: 'Siapa yang memeriksanya.' },
               },
@@ -234,6 +296,7 @@ export const STAFF_FIELDS: Field[] = [
             {
               name: 'verifiedAt',
               type: 'date',
+              label: { en: 'Verified at', id: 'Diverifikasi pada' },
               admin: {
                 date: { pickerAppearance: 'dayOnly' },
                 description: {
@@ -262,6 +325,7 @@ export const STAFF_FIELDS: Field[] = [
             // CONTENT-MODEL.md §1's `legacy.id`: Payload 3.90 drops a field named `id` in a group.
             name: 'productId',
             type: 'number',
+            label: { en: 'Product id', id: 'Id produk' },
             unique: true,
             index: true,
             admin: {
@@ -271,11 +335,16 @@ export const STAFF_FIELDS: Field[] = [
               },
             },
           },
-          { name: 'sku', type: 'text', maxLength: 80 },
+          { name: 'sku', type: 'text', label: { en: 'SKU', id: 'SKU' }, maxLength: 80 },
         ],
       },
-      { name: 'url', type: 'text', maxLength: 2048 },
-      { name: 'categories', type: 'text', hasMany: true },
+      { name: 'url', type: 'text', label: { en: 'URL', id: 'URL' }, maxLength: 2048 },
+      {
+        name: 'categories',
+        type: 'text',
+        label: { en: 'Categories', id: 'Kategori' },
+        hasMany: true,
+      },
     ],
   },
   {
@@ -283,9 +352,20 @@ export const STAFF_FIELDS: Field[] = [
     type: 'group',
     label: { en: 'SEO', id: 'SEO' },
     fields: [
-      { name: 'title', type: 'text', localized: true, maxLength: 70 },
-      { name: 'description', type: 'textarea', localized: true, maxLength: 200 },
-      { name: 'image', type: 'upload', relationTo: 'media' },
+      { name: 'title', type: 'text', label: { en: 'Title', id: 'Judul' }, localized: true, maxLength: 70 },
+      {
+        name: 'description',
+        type: 'textarea',
+        label: { en: 'Description', id: 'Deskripsi' },
+        localized: true,
+        maxLength: 200,
+      },
+      {
+        name: 'image',
+        type: 'upload',
+        relationTo: 'media',
+        label: { en: 'Image', id: 'Gambar' },
+      },
     ],
   },
   translationStatusField,
