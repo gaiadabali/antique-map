@@ -88,6 +88,27 @@ $ docker exec indies-platform-dev-postgres-1 pg_isready
 rc=1
 ```
 
+Fresh clone of `w/ds-5.5b` (`git clone -b w/ds-5.5b <worktree> ../antique-map-w-ds-5.5b-fresh2`,
+`pnpm install --frozen-lockfile`), both Verify commands — same result, so the blockers are the branch's,
+not this worktree's:
+
+```text
+$ pnpm lint                                              # in the fresh clone
+$ eslint --max-warnings=0 .
+LINT_RC=0
+
+$ pnpm exec playwright test tests/e2e/gallery/no-commerce.spec.ts --reporter=list
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+PW_RC=0
+
+$ ls engine/apps/web/src/app/(gallery)/gallery/[locale]/   # fresh clone: no item/ dir
+[...missing]  browse  layout.tsx  not-found  not-found.tsx  page  page.tsx  search
+
+$ grep -c "tests/e2e/gallery" playwright.config.ts         # fresh clone: 0
+0
+```
+
 Gallery app routes present (no `item/`, `makers/`, `places/`, `sell-to-us/`):
 
 ```text
