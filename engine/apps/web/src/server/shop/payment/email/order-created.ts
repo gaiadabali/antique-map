@@ -81,7 +81,7 @@ export async function sendOrderCreatedEmail(
     }
 
     const t = emailText(input.locale)
-    const number = order.number ?? 0
+    const number = String(order.number ?? 0)
     const deadline = baliTime(new Date(order.expiresAt ?? Date.now()), input.locale)
     const trackingPath = siteHref('shop')('tracking', { token: input.trackingToken }, input.locale)
     const trackingLink = `${input.origin}${trackingPath}`

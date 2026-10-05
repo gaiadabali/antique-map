@@ -30,7 +30,20 @@ export type PinPickerProps = {
   readonly labels: PinPickerLabels
   readonly pin: Pin | null
   readonly address: string | null
-  readonly onPin: (pin: Pin, address: string | null) => void
+  /** `null` clears the pin — the form's own "no pin" state, not a new one. */
+  readonly onPin: (pin: Pin | null, address: string | null) => void
+}
+
+/**
+ * A typed coordinate counts only when its trimmed text is non-empty and parses to a finite
+ * number — `Number('')` is `0`, which would otherwise read as a pin near (0, 0) while a field is
+ * still empty.
+ */
+export function parseCoordinate(text: string): number | null {
+  const trimmed = text.trim()
+  if (trimmed === '') return null
+  const value = Number(trimmed)
+  return Number.isFinite(value) ? value : null
 }
 
 /** Denpasar, the picker's default centre (EXPERIENCE-SHOP.md §6). */
@@ -199,7 +212,13 @@ export function PinPicker({
             lng?: unknown
             address?: unknown
           }
-          if (typeof answer.lat !== 'number' || typeof answer.lng !== 'number') return
+          if (
+            typeof answer.lat !== 'number' ||
+            typeof answer.lng !== 'number' ||
+            !Number.isFinite(answer.lat) ||
+            !Number.isFinite(answer.lng)
+          )
+            return
           onPin(
             { lat: answer.lat, lng: answer.lng },
             typeof answer.address === 'string' ? answer.address : null,
@@ -215,10 +234,15 @@ export function PinPicker({
   const typeLatLng = useCallback(
     (lat: string, lng: string) => {
       setTyped({ lat, lng })
-      const parsed = { lat: Number(lat), lng: Number(lng) }
-      if (Number.isFinite(parsed.lat) && Number.isFinite(parsed.lng)) pick(parsed, true)
+      const parsedLat = parseCoordinate(lat)
+      const parsedLng = parseCoordinate(lng)
+      if (parsedLat !== null && parsedLng !== null) {
+        pick({ lat: parsedLat, lng: parsedLng }, true)
+      } else {
+        onPin(null, null)
+      }
     },
-    [pick],
+    [pick, onPin],
   )
 
   return (

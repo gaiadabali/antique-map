@@ -66,9 +66,13 @@ export function CheckoutForm({
   const [pendingFee, startFee] = useTransition()
 
   const onPin = useCallback(
-    (next: Pin, nextAddress: string | null) => {
+    (next: Pin | null, nextAddress: string | null) => {
       setPin(next)
       setAddress(nextAddress)
+      if (next === null) {
+        setFee(null)
+        return
+      }
       startFee(async () => {
         setFee(await quoteFeeAction(null, { lat: next.lat, lng: next.lng, locale }))
       })
