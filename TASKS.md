@@ -78,13 +78,12 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-03 | lane change to the user's Claude seat (2026-10-03); run 1 died at the turn limit after the full dry-run passed (1,823 planned, 0 rejected) and 3 commits — continuation `am-3.7b-c2` (ticket `3.7b-r1`) in flight: the 4 seed db tests, the evidence battery, gitignore the 2.8 GB local upload bucket |
-| 3·W1 | 3.1 Staging as one site | devops (claude seat) | `w/3.1` | 2026-10-03 | refocus (user): finish phases 3 and 4 — run `am-3.1-c1` (ticket `3.1.md`) in flight: the one-site provision reshape, the db retirement after dumps, the first release by scp, backups; the off-box backup target stays the owner's open decision |
+| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-03 | run `am-3.7b-c2` exited BLOCKED: the launcher refused env-prefixed db-test commands (fixed in run.sh); its seed layers are good, but the 3.7.a importer reports false updates on a second pass and 3 of 4 seed db tests fail — continuation `am-3.7b-r2` in flight with the owner's held-row decision (fix the two typos, queue the 9 "Indonesia" + 1 "Batavia (Jakarta)" rows) |
+| 3·W1 | 3.1 Staging as one site | devops (claude seat) | `w/3.1` | 2026-10-03 | run `am-3.1-c1` landed the repo side (one-site provision, storage policies folded from 8.5, the retirement written as a runbook; 5 commits) but no worker may ssh, so the Helios steps (dry-run → apply → retirement → release by scp → backups) are the orchestrator's, per the standing go-ahead; the container test needed one orchestrator fix (pack.sh's policy documents ride on their own mount) and is running now |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
-| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | 5.1.a–c all ticked (`aa7199d`); run `am-5.1-c2` finishing its report and fresh-clone verify, then review and merge |
-| 3·W1 | 3.1 Staging as one site | devops | `w/3.1` | 2026-10-03 | |
+| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 
 ## Decisions for the owner
 
