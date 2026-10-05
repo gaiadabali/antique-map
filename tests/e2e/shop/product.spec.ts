@@ -70,7 +70,15 @@ async function inspect(
   // hydration, escaped as `\"Rp …\"`, so that is what tells the variants' prices apart.
   const variantPrices = [...html.matchAll(/priceText\\":\\"(Rp[^"\\]+)\\"/g)].map((m) => m[1] ?? '')
   const addDisabled = /__addButton"\s+disabled/.test(html)
-  return { id, slug, variantValues, variantLabels, variantPrices, addDisabled, status: res.status() }
+  return {
+    id,
+    slug,
+    variantValues,
+    variantLabels,
+    variantPrices,
+    addDisabled,
+    status: res.status(),
+  }
 }
 
 /** Finds the two products the suite needs by reading real product pages — never a guess. */
@@ -270,7 +278,10 @@ test.describe('Shop product page (6.1.c)', () => {
       headers,
       data: Buffer.from(forcedBody, 'utf8'),
     })
-    expect(forced.ok(), 'the forced post reaches the action (refused by outcome, not a transport error)').toBeTruthy()
+    expect(
+      forced.ok(),
+      'the forced post reaches the action (refused by outcome, not a transport error)',
+    ).toBeTruthy()
 
     await page.goto('/bag')
     await expect(page.getByText('Your bag is empty')).toBeVisible()
