@@ -14,7 +14,7 @@ export const LOADERS_SOURCES = ['payload', 'fixtures'] as const
 export type LoadersSource = (typeof LOADERS_SOURCES)[number]
 
 /** Needed wherever the process runs: without them it cannot serve a page or derive a link. */
-const ALWAYS = ['DATABASE_URL', 'PAYLOAD_SECRET'] as const
+const ALWAYS = ['DATABASE_URL', 'PAYLOAD_SECRET', 'ORDER_LINK_KEY'] as const
 /** Needed on a deployed host; a workstation may run without (media, mail, jobs degrade). */
 const DEPLOYED = [
   'S3_ENDPOINT',
@@ -33,6 +33,7 @@ const DEPLOYED = [
 ] as const
 /** Shared secrets that must be long and not a development default once deployed. */
 const STRONG = ['PAYLOAD_SECRET', 'REVALIDATE_SECRET', 'CRON_SECRET'] as const
+const ORDER_LINK_KEY_MIN_BYTES = 32
 const DEV_DEFAULTS = /dev-only|not-a-secret|^minioadmin$|^changeme$|^secret$/i
 const MIN_SECRET_LENGTH = 32
 
@@ -51,6 +52,17 @@ export function checkPlatform(
     if (read(env, name) === undefined)
       findings.require(name, 'is not set (DEPLOYMENT.md §8)', environment)
   }
+  const linkKey = read(env, 'ORDER_LINK_KEY')
+  if (linkKey !== undefined) {
+    const bytes = Buffer.from(linkKey.replace(/-/g, '+').replace(/_/g, '/'), 'base64')
+    if (bytes.length < ORDER_LINK_KEY_MIN_BYTES) {
+      findings.refuse(
+        'ORDER_LINK_KEY',
+        `decodes to ${bytes.length} bytes; it needs ${ORDER_LINK_KEY_MIN_BYTES} random bytes or more, base64-encoded`,
+      )
+    }
+  }
+
   const database = read(env, 'DATABASE_URL')
   if (database !== undefined && !/^postgres(?:ql)?:\/\//.test(database)) {
     findings.refuse('DATABASE_URL', 'is not a postgres:// connection string')

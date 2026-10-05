@@ -284,6 +284,18 @@ export const SiteSettings: GlobalConfig = {
           admin: { step: 1 },
         },
         {
+          // How long staff have to quote a delivery fee before an `awaiting_quote` order expires
+          // and its stock is returned (TASKS.md 6.6); the buyer's own payment window starts once
+          // the quote is set, and is the `orderExpiryMinutes` field above.
+          name: 'quoteWindowMinutes',
+          type: 'number',
+          min: 15,
+          max: 1440,
+          defaultValue: 120,
+          label: { en: 'Delivery-quote window (minutes)', id: 'Jendela ongkos kirim (menit)' },
+          admin: { step: 1 },
+        },
+        {
           name: 'storeAlerts',
           type: 'checkbox',
           defaultValue: true,

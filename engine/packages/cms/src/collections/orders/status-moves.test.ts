@@ -16,8 +16,9 @@ const allowed = (role: 'owner' | 'editor' | 'store', image = true) =>
     .map(([from, to]) => `${from}>${to}`)
 
 describe('statusMoveRefusal', () => {
-  it('lets store staff move one step forward along the paid line, and nothing else', () => {
+  it('lets store staff move one step forward along the paid line, plus awaiting_quote>cancelled, and nothing else', () => {
     expect(allowed('store')).toEqual([
+      'awaiting_quote>cancelled',
       'paid>processing',
       'processing>waiting_driver',
       'waiting_driver>on_the_way',
@@ -40,16 +41,19 @@ describe('statusMoveRefusal', () => {
       expect(moves).not.toContain('delivered>waiting_driver')
       expect(moves).not.toContain('paid>pending_payment')
       // A cancel before delivery, never after.
-      for (const from of ['pending_payment', 'paid', 'on_the_way'] as OrderStatus[]) {
+      for (const from of ['awaiting_quote', 'pending_payment', 'paid', 'on_the_way'] as OrderStatus[]) {
         expect(moves).toContain(`${from}>cancelled`)
       }
       expect(moves).not.toContain('delivered>cancelled')
-      // Payment is Midtrans's and the sweep's; nothing leaves cancelled or expired.
+      // Payment is Midtrans's and the sweep's; the quote move is quoteDeliveryFee's; nothing
+      // leaves cancelled, expired or awaiting_quote through a staff status write.
       expect(moves).not.toContain('pending_payment>paid')
       expect(moves).not.toContain('pending_payment>expired')
+      expect(moves).not.toContain('awaiting_quote>pending_payment')
       expect(moves.filter((m) => m.startsWith('cancelled>') || m.startsWith('expired>'))).toEqual(
         [],
       )
+      expect(moves.filter((m) => m.startsWith('awaiting_quote>'))).toEqual(['awaiting_quote>cancelled'])
     }
   })
 
