@@ -564,7 +564,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
   - [x] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
 
-- [ ] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5, 7.1 — 🔄 6·W4
+- [ ] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5 — 🔄 6·W4
   - **Lane** SHP + PLT · **Agent** senior-be (core), senior-fe (shell), Opus review · **Wave** W4
   - **Owns** core: `engine/packages/cms/src/shop/{orders,fulfilment,payments,notify}/**`, `engine/packages/cms/src/collections/orders/**`; shell: `engine/apps/web/src/{sites,server}/shop/{checkout,payment}/**`, the order page, `engine/packages/cms/src/admin/orders/**`; migration: the orchestrator (schema lead)
   - **Read** the two decisions of 2026-10-06 in **Log**, COMMERCE.md §Checkout, §Statuses, §Notifications
