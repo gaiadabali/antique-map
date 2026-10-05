@@ -77,7 +77,9 @@ test.describe.serial('the store panel, at 390 px', () => {
   timed('a store user sees the fresh order as new, and accepts it', async (page) => {
     await signIn(page, ACCOUNTS.storeA.email)
     await page.goto('/admin/orders')
-    await expect(page.getByText(`#${sql(`SELECT number FROM orders WHERE id = ${orders.mine}`)}`)).toBeVisible()
+    await expect(
+      page.getByText(`#${sql(`SELECT number FROM orders WHERE id = ${orders.mine}`)}`),
+    ).toBeVisible()
     await page.screenshot({ path: shot('store-panel-queue-390') })
     await page.goto(`/admin/orders/${orders.mine}`)
     await page.getByRole('link', { name: /^Processing$/ }).click()

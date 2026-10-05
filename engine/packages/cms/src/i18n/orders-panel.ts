@@ -41,7 +41,10 @@ export const ORDERS_PANEL_COPY = t({
   confirmMoveTo: { en: 'Mark this order', id: 'Tandai pesanan ini' },
   confirm: { en: 'Confirm', id: 'Konfirmasi' },
   cancelSheet: { en: 'Never mind', id: 'Batal' },
-  noNextStep: { en: 'Nothing to do — this order is settled.', id: 'Tidak ada tindakan — pesanan ini sudah selesai.' },
+  noNextStep: {
+    en: 'Nothing to do — this order is settled.',
+    id: 'Tidak ada tindakan — pesanan ini sudah selesai.',
+  },
 
   // Driver image
   driverImageTitle: { en: 'Driver’s details', id: 'Data pengemudi' },
@@ -83,7 +86,10 @@ export const ORDERS_PANEL_COPY = t({
   cancelSubmit: { en: 'Confirm cancellation', id: 'Konfirmasi pembatalan' },
 
   // Refusals (`MoveRefusal`, `AttachRefusal`, `ReassignRefusal`, `HandBackRefusal`)
-  refusal_not_staff: { en: 'Only staff act on an order.', id: 'Hanya staf yang dapat memproses pesanan.' },
+  refusal_not_staff: {
+    en: 'Only staff act on an order.',
+    id: 'Hanya staf yang dapat memproses pesanan.',
+  },
   refusal_not_found: { en: 'There is no such order.', id: 'Pesanan tidak ditemukan.' },
   refusal_not_your_store: {
     en: 'This order belongs to another store.',

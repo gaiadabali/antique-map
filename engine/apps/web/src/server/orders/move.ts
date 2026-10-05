@@ -41,7 +41,9 @@ export async function ordersMovePost(request: Request, { params }: Ctx): Promise
     })
     return backToOrder(request, orderId, result.ok ? undefined : result.refusal)
   } catch (error) {
-    console.error(`[orders] move ${orderId} failed: ${error instanceof Error ? error.name : 'error'}`)
+    console.error(
+      `[orders] move ${orderId} failed: ${error instanceof Error ? error.name : 'error'}`,
+    )
     return backToOrder(request, orderId, 'unavailable')
   }
 }
