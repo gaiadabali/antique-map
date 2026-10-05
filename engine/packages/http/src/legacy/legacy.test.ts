@@ -94,6 +94,7 @@ describe('/api/x/legacy/[...path]', () => {
     const response = await legacyRoute(fake().loader)(legacy('/promo'))
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe('https://gallery.test/sale')
+    expect(response.headers.get('cache-control')).toBe('no-store')
   })
 
   it('no site header is a 404, never a guess', async () => {

@@ -9,8 +9,8 @@
  * The site is the proxy's `x-site` (it overwrites a client's); the public path is `x-public-path`
  * and the query is the rewrite's own — the proxy appends the visitor's query to the internal URL
  * (`proxy/decide.ts`), so `?s=sold` reaches the row that keeps it and `?page=2` is ignored. No site
- * header is a 404, never a guess. A 301 and a 410 may be cached by a browser for an hour; a 404
- * never is. `HEAD` answers as `GET` does, with no body.
+ * header is a 404, never a guess. A 301 and a 410 may be cached by a browser for an hour; a 302 and a
+ * 404 never are. `HEAD` answers as `GET` does, with no body.
  *
  * The map is read by `./payload-redirects`, loaded with `import()` on the first request — so the
  * route is a factory taking that loader, and a test hands it a fake and never loads Payload.
@@ -54,7 +54,11 @@ export function legacyRoute(
     if (hit.code === 410) return plain(410, 'Gone', CACHEABLE)
     return new Response(null, {
       status: hit.code,
-      headers: { Location: location(site, hit.to), ...CACHEABLE },
+      // A 302 is temporary: the browser asks again next time.
+      headers: {
+        Location: location(site, hit.to),
+        ...(hit.code === 301 ? CACHEABLE : { 'Cache-Control': 'no-store' }),
+      },
     })
   }
 
