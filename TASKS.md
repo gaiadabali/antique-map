@@ -79,7 +79,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
-| 7·W2 | 7.3 Tracking page and notifications | Sonnet (claude seat) | `w/7.3` | 2026-10-05 | run `am-7.3-s1` on the merged 7.1 core; Opus reviews |
+| 7·W2 | 7.3 Tracking page and notifications | Sonnet (claude seat) | `w/7.3` | 2026-10-05 | run 1 hit the session limit after 7.3.b (`8d5136a`); `am-7.3-s2` finishes the page on the `tracking` surface `/track/{token}`; Opus reviews (token compare, rate limit) |
+| 7·W2 | 7.2 Store staff panel | Sonnet (claude seat) | `w/7.2` | 2026-10-05 | `am-7.2-s1` — phone-first store list/detail with one next-status button, driver image, hand-back; owner/editor filters, reassign, cancel; calls the 7.1 core only |
 | 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
 | 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
