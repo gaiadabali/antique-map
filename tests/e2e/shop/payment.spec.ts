@@ -11,13 +11,6 @@
  * (`@engine/cache`'s `next/cache`) that only resolve under Next's own bundler, not Playwright's
  * loader — so the seed script is written out at run time rather than imported. The simulator's four
  * buttons stand in for Midtrans (COMMERCE.md §6): Settle, Pending, Deny, Expire.
- *
- * KNOWN BLOCKER (see docs/reports/workers/6.5.md): `order` is not a registered surface
- * (`engine/packages/config/src/sites/routes/surfaces.ts`, `table.ts`), so the proxy answers every
- * `/order/{number}` and `/order/{number}/simulate` request — even a valid order and a valid token —
- * with the site's own not-found page. Every case below that navigates to the order page fails for
- * that reason, not a defect in this file; the fix needs a change to `engine/packages/config/src/
- * sites`, outside this ticket's owned paths.
  */
 import { execFileSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
@@ -179,13 +172,12 @@ function markExpired(orderId: number): void {
   runSeed({ op: 'mark-expired', orderId })
 }
 
-/** A token certain to be wrong — `load-order.ts` compares it to the stored hash in constant time. */
+/** A token certain to be wrong — `load-order.ts` hashes it and finds no matching order. */
 function wrongToken(): string {
   return randomBytes(18).toString('base64url')
 }
 
-const orderUrl = (number: number, token: string) =>
-  `${BASE_URL}/en/order/${number}?t=${encodeURIComponent(token)}`
+const orderUrl = (token: string) => `${BASE_URL}/en/order/${encodeURIComponent(token)}`
 
 async function axeClean(page: Page): Promise<void> {
   const { violations } = await new AxeBuilder({ page }).analyze()
@@ -204,8 +196,8 @@ test.afterAll(() => {
 
 test.describe('the order page', () => {
   test('a wrong token is a 404', async ({ page }) => {
-    const order = seedOrder()
-    const response = await page.goto(orderUrl(order.number, wrongToken()))
+    seedOrder()
+    const response = await page.goto(orderUrl(wrongToken()))
     expect(response?.status()).toBe(404)
   })
 
@@ -215,7 +207,7 @@ test.describe('the order page', () => {
     }) => {
       const order = seedOrder()
       await page.setViewportSize(viewport)
-      const response = await page.goto(orderUrl(order.number, order.token))
+      const response = await page.goto(orderUrl(order.token))
       expect(response?.status(), "the order page itself — see this file's header").toBe(200)
       await expect(page.getByRole('heading', { name: `Order ${order.number}` })).toBeVisible()
       await expect(page.getByRole('button', { name: /^Pay /i })).toBeVisible()
@@ -225,7 +217,7 @@ test.describe('the order page', () => {
 
   test('pay, then simulator Settle, shows paid with the tracking link', async ({ page }) => {
     const order = seedOrder()
-    await page.goto(orderUrl(order.number, order.token))
+    await page.goto(orderUrl(order.token))
     await page.getByRole('button', { name: /^Pay /i }).click()
     await expect(page.getByText('Test payment — no money moves.')).toBeVisible()
     await page.getByRole('button', { name: 'Settle' }).click()
@@ -236,7 +228,7 @@ test.describe('the order page', () => {
 
   test('pay, then simulator Pending, keeps the pay-by text (no news yet)', async ({ page }) => {
     const order = seedOrder()
-    await page.goto(orderUrl(order.number, order.token))
+    await page.goto(orderUrl(order.token))
     await page.getByRole('button', { name: /^Pay /i }).click()
     await page.getByRole('button', { name: 'Pending' }).click()
     await expect(page.getByRole('heading', { name: `Order ${order.number}` })).toBeVisible()
@@ -245,7 +237,7 @@ test.describe('the order page', () => {
   test('an expired order: "Put these back in my bag" refills the bag', async ({ page }) => {
     const order = seedOrder()
     markExpired(order.orderId)
-    await page.goto(orderUrl(order.number, order.token))
+    await page.goto(orderUrl(order.token))
     await expect(page.getByRole('button', { name: 'Put these back in my bag' })).toBeVisible()
     await page.getByRole('button', { name: 'Put these back in my bag' }).click()
     await expect(page).toHaveURL(/\/bag$/)

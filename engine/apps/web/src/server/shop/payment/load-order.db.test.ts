@@ -101,6 +101,8 @@ describe.skipIf(!server)('the order page read, on a real database', () => {
       `INSERT INTO orders_payment_attempts (_order, _parent_id, id, midtrans_order_id, created_at, state)
        VALUES (1, ${order.orderId}, '507f1f77bcf86cd799439011', '${order.number}-1', now(), 'open')`,
     )
-    expect(await openOrPendingAttemptId(stack.payload, order.trackingToken)).toBe(`${order.number}-1`)
+    expect(await openOrPendingAttemptId(stack.payload, order.trackingToken)).toBe(
+      `${order.number}-1`,
+    )
   })
 })

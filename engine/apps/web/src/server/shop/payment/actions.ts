@@ -75,7 +75,9 @@ export async function payAction(_prev: PayState, formData: FormData): Promise<Pa
 
   const provider =
     config.mode === 'simulate'
-      ? simulatorProvider(config, () => siteHref('shop')('order', { token, simulate: true }, locale))
+      ? simulatorProvider(config, () =>
+          siteHref('shop')('order', { token, simulate: true }, locale),
+        )
       : createPaymentProvider(config)
 
   let opened

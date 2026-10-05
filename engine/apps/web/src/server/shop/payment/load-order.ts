@@ -86,7 +86,9 @@ const BAG_LINES_SELECT = `
   SELECT product_id, variant_sku, qty FROM orders_lines
    WHERE _parent_id = $1 ORDER BY _order`
 
-type Client = { query(text: string, values?: unknown[]): Promise<{ rows: Record<string, unknown>[] }> }
+type Client = {
+  query(text: string, values?: unknown[]): Promise<{ rows: Record<string, unknown>[] }>
+}
 
 /** The order a token names — its id among the columns the page reads — or `null` for any other token. */
 async function rowForToken(
@@ -212,7 +214,9 @@ export async function openOrPendingAttemptId(
  * The order page's read, on the process's one Payload (`cms()`): see `loadOrderForBuyer`.
  * Uncached — `connection()` first — since a payment status decides what the buyer may do next.
  */
-export async function currentOrderView(token: string | null | undefined): Promise<OrderView | null> {
+export async function currentOrderView(
+  token: string | null | undefined,
+): Promise<OrderView | null> {
   await connection()
   return loadOrderForBuyer(await cms(), token)
 }
@@ -234,7 +238,9 @@ export async function currentBagLines(
 }
 
 /** The simulate page's and `simulateAction`'s read: see `openOrPendingAttemptId`. */
-export async function currentOpenAttemptId(token: string | null | undefined): Promise<string | null> {
+export async function currentOpenAttemptId(
+  token: string | null | undefined,
+): Promise<string | null> {
   await connection()
   return openOrPendingAttemptId(await cms(), token)
 }
