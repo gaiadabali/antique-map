@@ -29,12 +29,13 @@ import {
   type BagLine,
 } from '@engine/cms/shop/pricing'
 
+import { addToBagChecked } from './add-to-bag'
 import { CODE_COOKIE_NAME, serialiseCodeCookie } from './code-cookie'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 
-/** What an edit did. */
+/** What an edit did. `refused`: the product or chosen variant has no stock in any store. */
 export type BagActionState = {
-  readonly outcome: BagEdit['outcome']
+  readonly outcome: BagEdit['outcome'] | 'refused'
   /** `capped` only: the quantity a line may reach (`MAX_LINE_QTY`). */
   readonly maxQty?: number
 }
@@ -76,6 +77,31 @@ function lineOf(formData: FormData): { productId: number; variantSku: string | n
     productId: Number.isSafeInteger(productId) ? productId : 0,
     variantSku: typeof variantSku === 'string' && variantSku !== '' ? variantSku : null,
     qty: Number.isSafeInteger(qty) ? qty : 0,
+  }
+}
+
+/**
+ * Adds one line (merging the same product and variant, `addToBag`). Refuses — leaving the bag
+ * unchanged — a product or variant with no stock in any store, checked live so a forced post for
+ * an out-of-stock product never adds it (`addToBagChecked`).
+ */
+export async function addToBagAction(
+  _prev: BagActionState | null,
+  formData: FormData,
+): Promise<BagActionState> {
+  const jar = await cookies()
+  const key = bagCookieKeyFromEnv()
+  const payload = await cms()
+  const result = await addToBagChecked(
+    payload,
+    linesOf(jar.get(BAG_COOKIE_NAME)?.value, key),
+    lineOf(formData),
+  )
+  if (result.outcome === 'refused') return { outcome: 'refused' }
+  await writeBag(result.lines, key)
+  return {
+    outcome: result.outcome,
+    ...(result.outcome === 'capped' ? { maxQty: MAX_LINE_QTY } : {}),
   }
 }
 

@@ -4,7 +4,7 @@
  * a sticky bar, the delivery line, the original it is made from (never with a price), then the
  * description. The words come from the lexicon; the prices are whole rupiah the server formats.
  */
-import type { SiteLocale } from '@engine/config/sites'
+import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
 import type { ProductVM } from '../../../server/shop/catalogue/view-models'
 import { Breadcrumbs, ResponsiveImage, TextLink } from '../../../shared/ui'
@@ -27,6 +27,7 @@ export function ProductView({
   readonly categoryHref: string | null
 }): React.ReactElement {
   const text = productText(locale)
+  const bagHref = createHref(SITES.shop)('cart', {}, locale)
   const [lead, ...rest] = product.images
   const variants: readonly PickerVariant[] = product.variants.map((variant) => ({
     sku: variant.sku,
@@ -99,11 +100,13 @@ export function ProductView({
         </header>
 
         <VariantPicker
+          productId={product.id}
           sku={product.sku}
           locale={locale}
           variants={variants}
           productPriceText={priceText}
           available={product.available}
+          bagHref={bagHref}
         />
 
         <p className={styles.delivery}>{text('product.delivery')}</p>
