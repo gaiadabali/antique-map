@@ -2,12 +2,15 @@
  * The one validator for a lead's fields (SECURITY.md V1: one shared schema, the server the
  * authority). It takes `unknown` — a form's values, a JSON body — and context from the caller
  * (site, kind, source, consent version), and answers either the typed, trimmed `LeadInput` or one
- * lexicon key per field that failed. Nothing outside the visitor's fields survives: a stray key in
- * the request is dropped here, never passed on to the database.
+ * lexicon key per field that failed. A key outside the visitor's fields (kind, site, source and
+ * consent version included) refuses the whole input. WhatsApp and email are normalised by checkout's
+ * own rules (`@engine/cms/shop/orders`), so a number is stored the same way wherever it was typed.
  *
  * Lengths and the WhatsApp format are the `leads` collection's own (`payload.*` fields), so the
  * Local API never has to refuse what this accepted.
  */
+import { normaliseWhatsApp } from '@engine/cms/shop/orders'
+
 /** The collection's own select values (`collections/leads/kinds.ts`). */
 export type LeadKind = 'ask' | 'sell' | 'partnership' | 'contact' | 'chat'
 export type LeadSource = 'chat' | 'form' | 'page'
@@ -67,7 +70,6 @@ const KINDS: readonly LeadKind[] = ['ask', 'sell', 'partnership', 'contact', 'ch
 const SOURCES: readonly LeadSource[] = ['chat', 'form', 'page']
 const SITES: readonly LeadSite[] = ['gallery', 'shop']
 const LOCALES: readonly LeadLocale[] = ['en', 'id']
-const WHATSAPP = /^\+[1-9]\d{7,14}$/
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VISITOR_KEYS = new Set([
   'name',
@@ -83,17 +85,6 @@ const VISITOR_KEYS = new Set([
 const text = (value: unknown): string => (typeof value === 'string' ? value.trim() : '')
 const oneOf = <T extends string>(options: readonly T[], value: unknown): T | null =>
   options.find((option) => option === value) ?? null
-
-/** A WhatsApp number as typed → E.164, or `null` if it cannot be one. */
-function normaliseWhatsappE164(input: string): string | null {
-  if (input.length > 40) return null
-  let digits = input.trim().replace(/[\s\-().]/g, '')
-  if (digits.startsWith('00')) digits = `+${digits.slice(2)}`
-  else if (digits.startsWith('0')) digits = `+62${digits.slice(1)}`
-  else if (digits.startsWith('62')) digits = `+${digits}`
-  else if (digits.startsWith('8')) digits = `+62${digits}`
-  return WHATSAPP.test(digits) ? digits : null
-}
 
 export function parseLeadInput(raw: unknown, context: LeadContext): LeadParse {
   // Refuse unknown input shape and reserved keys.
@@ -138,7 +129,7 @@ export function parseLeadInput(raw: unknown, context: LeadContext): LeadParse {
   }
 
   const rawWhatsapp = text(input.whatsapp)
-  const normalisedWhatsapp = rawWhatsapp ? normaliseWhatsappE164(rawWhatsapp) : null
+  const normalisedWhatsapp = rawWhatsapp ? normaliseWhatsApp(rawWhatsapp) : null
   const whatsapp = normalisedWhatsapp ?? ''
   const rawEmail = text(input.email)
   const email = rawEmail ? rawEmail.toLowerCase() : ''
