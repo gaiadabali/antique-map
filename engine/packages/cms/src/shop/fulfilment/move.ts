@@ -19,6 +19,7 @@
  */
 import type { Payload } from 'payload'
 
+import { notifyOrderEvent } from '../notify'
 import { inTransaction } from '../payments/transaction'
 import { staffOf } from './actor'
 import {
@@ -51,7 +52,7 @@ export async function moveOrder(payload: Payload, input: MoveInput): Promise<Mov
   const at = input.now ?? new Date()
   const note = reasonOf(input.reason)
 
-  return inTransaction(payload, async (tx): Promise<MoveResult> => {
+  const result = await inTransaction(payload, async (tx): Promise<MoveResult> => {
     const order = await lockOrder(tx, input.orderId)
     if (order === null) {
       return { ok: false, refusal: 'not_found', message: 'There is no such order.' }
@@ -88,4 +89,13 @@ export async function moveOrder(payload: Payload, input: MoveInput): Promise<Mov
       stockReturned: judged.returnsStock,
     }
   })
+  // After commit (TASKS.md 6.6, orchestrator decision B): the buyer's status email.
+  if (result.ok) {
+    await notifyOrderEvent(payload, {
+      orderId: result.orderId,
+      from: result.from,
+      to: result.to,
+    }).catch(() => {})
+  }
+  return result
 }

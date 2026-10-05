@@ -1,13 +1,14 @@
 /**
- * The checkout's delivery and review steps (COMMERCE.md §3): "the delivery step shows the fee from
- * the same assignment the order will use, without taking stock". The same preparation and the same
- * `pickStore` as `createOrder`, read outside any transaction; nothing is written. The figures
- * returned are the ones the review page shows and the pay button echoes back as
- * `expectedTotalIdr`.
+ * The checkout's delivery and review steps (COMMERCE.md §3): "the review step shows the store the
+ * order will use, without taking stock or a delivery estimate" (TASKS.md 6.6: staff price delivery
+ * after placement, so checkout itself quotes no fee — `quote.deliveryIdr` is always `null` here).
+ * The same preparation and the same `pickStore` as `createOrder`, read outside any transaction;
+ * nothing is written. The figures returned are the ones the review page shows and the pay button
+ * echoes back as `expectedTotalIdr`.
  *
- * What leaves the server: the priced quote (prices, fee, discount, total) and the sending store's
- * name and area (the review shows "the sending area"; COMMERCE.md §3) — never its code, its stock,
- * or which other stores hold what.
+ * What leaves the server: the priced quote (prices, discount, total — no fee) and the sending
+ * store's name and area (the review shows "the sending area"; COMMERCE.md §3) — never its code,
+ * its stock, or which other stores hold what.
  */
 import type { Payload } from 'payload'
 
@@ -30,13 +31,20 @@ export type QuoteCheckoutRequest = {
 
 export type CheckoutQuote = {
   readonly ok: true
-  /** 6.2's quote with the delivery fee from the assigned store: `refusal` is never set here. */
+  /** 6.2's quote at no distance (TASKS.md 6.6): `quote.deliveryIdr` is always `null`, `refusal` is
+   * never set here. */
   readonly quote: Quote
   readonly sendingStore: { readonly name: string; readonly area: string | null }
   readonly distanceKm: number
 }
 
-export type CheckoutQuoteResult = CheckoutQuote | PrepareRefusal | PickRefusal
+export type CheckoutQuoteResult =
+  | CheckoutQuote
+  | PrepareRefusal
+  | PickRefusal
+  /** Dead since TASKS.md 6.6 retired the distance-band fee (kept so a caller narrowing on this
+   * union still typechecks): `quoteBag` never refuses this way when it is given no distance. */
+  | { readonly ok: false; readonly refusal: 'outside_reach' | 'no_delivery_table' }
 
 export async function quoteCheckout(
   payload: Payload,
@@ -55,15 +63,12 @@ export async function quoteCheckout(
   })
   if (!prepared.ok) return prepared
 
-  const { bands } = prepared.settings.delivery
-  const pick = await pickStore(payload, { lines: prepared.lines, pin, bands })
+  const pick = await pickStore(payload, { lines: prepared.lines, pin })
   if (!pick.ok) return pick
   const quote = quoteBag(prepared.lines, prepared.catalogue, prepared.settings, {
-    distanceKm: pick.distanceKm,
+    distanceKm: null,
     discount: prepared.discount,
   })
-  if (quote.refusal === 'beyond_reach') return { ok: false, refusal: 'outside_reach' }
-  if (quote.refusal === 'no_delivery_table') return { ok: false, refusal: 'no_delivery_table' }
   if (quote.refusal !== undefined) {
     throw new Error(`orders: the quote of buyable lines failed (${quote.refusal})`)
   }
