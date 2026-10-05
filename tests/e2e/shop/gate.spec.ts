@@ -84,7 +84,10 @@ async function axeClean(page: Page, label: string): Promise<void> {
   const { violations } = await new AxeBuilder({ page }).analyze()
   const found = violations
     .filter(({ id }) => !KNOWN_A11Y_FINDINGS.has(id))
-    .map(({ id, impact, nodes }) => `${impact ?? 'unknown'} ${id}: ${nodes.map((n) => n.target).join()}`)
+    .map(
+      ({ id, impact, nodes }) =>
+        `${impact ?? 'unknown'} ${id}: ${nodes.map((n) => n.target).join()}`,
+    )
   expect(found, label).toEqual([])
 }
 
@@ -198,7 +201,9 @@ async function findSellablePair(
   const products = await listProducts(request)
   expect(products.length, 'seeded, published products').toBeGreaterThan(0)
   const sellable = await sellableUnvariantedProducts(request, products)
-  expect(sellable.length, 'in-stock, unvarianted products to pick two from').toBeGreaterThanOrEqual(2)
+  expect(sellable.length, 'in-stock, unvarianted products to pick two from').toBeGreaterThanOrEqual(
+    2,
+  )
 
   const browser = page.context().browser()
   if (browser === null) throw new Error('finding a sellable pair needs a real browser')
@@ -233,7 +238,8 @@ function localSettings(): { readonly databaseUrl: string } {
   const databaseUrl =
     process.env.E2E_DATABASE_URL ??
     (suffix ? `postgres://postgres:postgres@127.0.0.1:5432/indies_${suffix}` : undefined)
-  if (!databaseUrl) throw new Error('GATE_DB=local needs DB_SUFFIX (`pnpm worktree:env`) or E2E_DATABASE_URL.')
+  if (!databaseUrl)
+    throw new Error('GATE_DB=local needs DB_SUFFIX (`pnpm worktree:env`) or E2E_DATABASE_URL.')
   return { databaseUrl }
 }
 
@@ -302,8 +308,13 @@ function runOp(op: Record<string, unknown>): Record<string, unknown> {
     cwd: root,
     encoding: 'utf8',
     shell: process.platform === 'win32',
-    env: { ...process.env, DATABASE_URL: localSettings().databaseUrl, NODE_ENV: 'development',
-      GATE_OP: JSON.stringify(op), GATE_OUT: out },
+    env: {
+      ...process.env,
+      DATABASE_URL: localSettings().databaseUrl,
+      NODE_ENV: 'development',
+      GATE_OP: JSON.stringify(op),
+      GATE_OUT: out,
+    },
     stdio: ['ignore', 'pipe', 'pipe'],
   })
   if (!existsSync(out)) throw new Error(`gate ops.ts (${op.op}) wrote no result file`)
@@ -321,8 +332,13 @@ type OrderRow = {
 
 const orderByToken = (token: string): OrderRow => runOp({ op: 'order-by-token', token }) as OrderRow
 const stockOf = (storeId: number, productId: number, variantSku: string | null = null): number => {
-  const result = runOp({ op: 'stock', storeId, productId, variantSku }) as { quantity: number | null }
-  expect(result.quantity, `stock_levels row for store ${storeId}, product ${productId}`).not.toBeNull()
+  const result = runOp({ op: 'stock', storeId, productId, variantSku }) as {
+    quantity: number | null
+  }
+  expect(
+    result.quantity,
+    `stock_levels row for store ${storeId}, product ${productId}`,
+  ).not.toBeNull()
   return result.quantity!
 }
 const expireOrder = (orderId: number): void => void runOp({ op: 'expire', orderId })
@@ -367,7 +383,10 @@ async function findOrderEmail(
 test.describe('the shop payment gate (6.5.c)', () => {
   test.describe.configure({ timeout: 180_000 })
 
-  test('a guest buys two products; pays; the order is confirmed and emailed', async ({ page, request }) => {
+  test('a guest buys two products; pays; the order is confirmed and emailed', async ({
+    page,
+    request,
+  }) => {
     await page.setViewportSize(WIDTHS[0])
 
     // Step 1-2: two sellable products, a bag, a checkout pin.
@@ -391,20 +410,27 @@ test.describe('the shop payment gate (6.5.c)', () => {
 
     // Step 3: the review's totals, read as integers, hold: total = subtotal - discount + fee.
     const subtotalIdr = rupiahToNumber(
-      await page.locator('dt', { hasText: 'Subtotal' }).locator('xpath=following-sibling::dd[1]').innerText(),
+      await page
+        .locator('dt', { hasText: 'Subtotal' })
+        .locator('xpath=following-sibling::dd[1]')
+        .innerText(),
     )
     const discountRow = page.locator('dt', { hasText: 'Discount' })
     const discountIdr =
       (await discountRow.count()) > 0
-        ? rupiahToNumber(
-            await discountRow.locator('xpath=following-sibling::dd[1]').innerText(),
-          )
+        ? rupiahToNumber(await discountRow.locator('xpath=following-sibling::dd[1]').innerText())
         : 0
     const feeIdr = rupiahToNumber(
-      await page.locator('span', { hasText: 'Delivery' }).locator('xpath=following-sibling::span[1]').innerText(),
+      await page
+        .locator('span', { hasText: 'Delivery' })
+        .locator('xpath=following-sibling::span[1]')
+        .innerText(),
     )
     const totalIdr = rupiahToNumber(
-      await page.locator('span', { hasText: 'Continue to payment' }).locator('xpath=following-sibling::span[1]').innerText(),
+      await page
+        .locator('span', { hasText: 'Continue to payment' })
+        .locator('xpath=following-sibling::span[1]')
+        .innerText(),
     )
     expect(totalIdr, 'total = subtotal - discount + fee').toBe(subtotalIdr - discountIdr + feeIdr)
     await axeBothWidths(page, 'checkout with a quoted fee')
@@ -454,9 +480,10 @@ test.describe('the shop payment gate (6.5.c)', () => {
       console.log('SKIPPED: email (MAILPIT_URL=none)')
     } else {
       const email = await findOrderEmail(request, 'e2e-shop-gate@example.test')
-      expect(email.subject, 'the email names the same order number the order page showed').toContain(
-        orderNumberText!,
-      )
+      expect(
+        email.subject,
+        'the email names the same order number the order page showed',
+      ).toContain(orderNumberText!)
       expect(email.text).toContain(String(totalIdr).replace(/\B(?=(\d{3})+(?!\d))/g, '.'))
       expect(email.text, 'the tracking link starts with the site origin').toContain(SITE_ORIGIN)
     }
@@ -516,9 +543,10 @@ test.describe('the shop payment gate (6.5.c)', () => {
     expect(second.status, 'a second sweep').toBe(200)
     const stillExpired = orderByToken(token)
     expect(stillExpired.status, 'a second sweep changes nothing').toBe('expired')
-    expect(stockOf(storeId, line!.productId, line!.variantSku), 'stock unchanged by the second sweep').toBe(
-      afterSweepQty,
-    )
+    expect(
+      stockOf(storeId, line!.productId, line!.variantSku),
+      'stock unchanged by the second sweep',
+    ).toBe(afterSweepQty)
 
     await page.goto(`${SHOP_ORIGIN}/order/${encodeURIComponent(token)}`)
     await expect(page.getByRole('button', { name: 'Put these back in my bag' })).toBeVisible()
