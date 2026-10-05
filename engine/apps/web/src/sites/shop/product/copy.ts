@@ -18,6 +18,10 @@ export const PRODUCT_KEYS = defineMessages({
   'product.outOfStock': 'Out of stock',
   'product.addToBag': 'Add to bag',
   'product.addingFailed': 'We could not add it just now — try again.',
+  'product.added': 'Added to your bag.',
+  'product.viewBag': 'View your bag',
+  'product.refused': "That's just sold out — we could not add it.",
+  'product.capped': 'You already have the most you can buy of this.',
   'product.delivery':
     'Sent from the nearest store by Gojek or Grab. The fee shows at checkout once you drop a pin — free over Rp 500.000.',
   'product.original': 'Made from {title}, an original at Indies Gallery',
