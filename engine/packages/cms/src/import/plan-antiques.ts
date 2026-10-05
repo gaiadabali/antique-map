@@ -239,8 +239,12 @@ export function planAntiqueRow(row: Row, vocab: Vocabulary): PlannedRow {
   const legacy: Record<string, unknown> = {}
   if ((c.legacy_id ?? '').trim() !== '') {
     const id = c.legacy_id!.trim()
-    if (/^\d+$/.test(id)) legacy.productId = Number(id)
-    else
+    if (/^\d+$/.test(id)) {
+      legacy.productId = Number(id)
+      // publicId comes from legacy_id when the row has one (DATA.md §3): a migrated antique keeps
+      // its old address. The hook lets a script hand one over on create, and refuses a change.
+      data.publicId = legacy.productId
+    } else
       problems.push(
         problem('legacy_id', `legacy_id is '${id}'. It is the old site's numeric product id.`),
       )
