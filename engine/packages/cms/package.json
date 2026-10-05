@@ -13,6 +13,7 @@
     "./registries": "./src/registries/index.ts",
     "./db/probe": "./src/db/probe.ts",
     "./admin/widgets": "./src/admin/widgets/index.ts",
+    "./admin/orders": "./src/admin/orders/index.ts",
     "./shop/pricing": "./src/shop/pricing/index.ts",
     "./shop/orders": "./src/shop/orders/index.ts",
     "./shop/payments": "./src/shop/payments/index.ts",

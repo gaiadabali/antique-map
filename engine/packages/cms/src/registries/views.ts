@@ -15,7 +15,17 @@ import { uniqueEntries, type RegistryEntry } from './entries'
 
 // Barrels, one line each when they exist:
 //   ...admViews,  // ADM — @engine/cms/admin/views (the desk, the merch wizard, dashboards)
-export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = []
+export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = [
+  {
+    name: 'orders-panel',
+    owner: 'ADM',
+    value: {
+      path: '/orders/:id?',
+      Component: '@engine/cms/admin/orders#OrdersPanelView',
+      exact: true,
+    },
+  },
+]
 
 /** `admin.components.views`, keyed by each entry's name. */
 export function adminViews(
