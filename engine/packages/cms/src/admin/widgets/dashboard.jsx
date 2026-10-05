@@ -62,24 +62,31 @@ async function countNewLeads({ req }) {
   }
 }
 
-function label(key, locale) {
-  return COPY[key][locale] ?? COPY[key].en
+/**
+ * The admin's language — the one the person picked on their profile (`req.i18n`). Not the
+ * widget's `locale` prop: that is the content locale (an object), which says nothing about the
+ * language the admin is shown in.
+ */
+function label(key, req) {
+  return COPY[key][req?.i18n?.language] ?? COPY[key].en
 }
 
-export async function OrdersToActOnWidget({ locale = 'en', ...rest }) {
-  const count = await countOrders(rest)
+export async function OrdersToActOnWidget({ req }) {
+  const count = await countOrders({ req })
   return (
     <a href="/admin/collections/orders">
-      {label('ordersToActOn', locale)}: {count}
+      {label('ordersToActOn', req)}: {count}
     </a>
   )
 }
 
-export async function NewLeadsWidget({ locale = 'en', ...rest }) {
-  const count = await countNewLeads(rest)
+/** The owner's panel alone: for anyone else it renders nothing, rather than a count of 0. */
+export async function NewLeadsWidget({ req }) {
+  if (!hasRole(req?.user, 'owner')) return null
+  const count = await countNewLeads({ req })
   return (
     <a href="/admin/collections/leads">
-      {label('newLeads', locale)}: {count}
+      {label('newLeads', req)}: {count}
     </a>
   )
 }

@@ -38,6 +38,8 @@ export type HrefParams = {
   checkout: NoParams
   /** No token: the find-my-order page. A token is the order's whole credential. */
   tracking: { token?: string }
+  /** The order page after checkout, or its simulator child when `simulate` is set. */
+  order: { token: string; simulate?: true }
   partnership: NoParams
   stores: NoParams
   sellToUs: NoParams
@@ -134,6 +136,8 @@ function partsOf(context: Context, surface: LinkSurface): [string[], string] {
       return [[at('place'), ...(p.path ?? [])], '']
     case 'tracking':
       return [[at('tracking'), ...(p.token === undefined ? [] : [p.token])], '']
+    case 'order':
+      return [[at('order'), p.token as string, ...(p.simulate ? ['simulate'] : [])], '']
     case 'browse':
     case 'search':
       return listing(context, surface)

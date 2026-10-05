@@ -3,6 +3,11 @@
  * either `{ en: string; id: string }` or a `labels` block with `singular` and `plural` in that
  * shape. Plain strings are not allowed in the admin because the CMS serves both languages.
  *
+ * `FULLY_LABELLED` collections must also give **every** field its own label: Payload falls back
+ * to the field's name, title-cased, in English only, and a slug like `stockNumber` reads oddly as
+ * a fallback title anyway. Other collections keep that fallback until their owner gives every
+ * field a label too (TASKS.md 3.6.d's D4 covers `works`; widen this set as others catch up).
+ *
  * This test walks the static config; no database is needed.
  */
 import type { CollectionConfig, Field, GlobalConfig } from 'payload'
@@ -15,7 +20,19 @@ type Labelish = { en: string; id: string } | string | null | undefined
 
 type LabelsBlock = { singular: Labelish; plural: Labelish }
 
+/** Collections audited field by field; see the file header. */
+const FULLY_LABELLED = new Set(['orders', 'products', 'stock-levels', 'works', 'media', 'terms'])
+
+/**
+ * `translationStatus` and `slug` are each one field, declared once (`fields/translation-status.ts`,
+ * `fields/slug.ts` — not a collection folder) and reused by several collections. Neither has a
+ * label of its own yet; fixing them is outside every collection's owned paths, so they are
+ * reported, not fixed, here.
+ */
+const SHARED_FIELD_EXEMPTIONS = new Set(['translationStatus', 'slug'])
+
 function assertBilingual(
+  errors: string[],
   path: string,
   value: Labelish | LabelsBlock,
 ):
@@ -24,11 +41,12 @@ function assertBilingual(
   | undefined {
   if (value === undefined || value === null) return undefined
   if (typeof value === 'string') {
-    expect.fail(`${path} is a plain string: ${JSON.stringify(value)}`)
+    errors.push(`${path} is a plain string: ${JSON.stringify(value)}`)
+    return undefined
   }
   if ('singular' in value && 'plural' in value) {
-    const singular = assertBilingual(`${path}.singular`, value.singular)
-    const plural = assertBilingual(`${path}.plural`, value.plural)
+    const singular = assertBilingual(errors, `${path}.singular`, value.singular)
+    const plural = assertBilingual(errors, `${path}.plural`, value.plural)
     if (
       singular &&
       plural &&
@@ -50,7 +68,8 @@ function assertBilingual(
   ) {
     return value as { en: string; id: string }
   }
-  expect.fail(`${path} is not a bilingual {en, id} object: ${JSON.stringify(value)}`)
+  errors.push(`${path} is not a bilingual {en, id} object: ${JSON.stringify(value)}`)
+  return undefined
 }
 
 function fieldName(field: Field): string {
@@ -59,54 +78,71 @@ function fieldName(field: Field): string {
   return '(anon)'
 }
 
-function visitField(path: string, field: Field): void {
+function visitField(errors: string[], path: string, field: Field, requireLabel: boolean): void {
   const name = fieldName(field)
   const here = `${path}.${name}`
+  const hasLabel = 'label' in field && field.label !== undefined
+  const hasLabels = 'labels' in field && field.labels !== undefined
 
-  if ('label' in field && field.label !== undefined) {
-    assertBilingual(`${here}.label`, field.label as Labelish)
-  }
-  if ('labels' in field && field.labels !== undefined) {
-    assertBilingual(`${here}.labels`, field.labels as LabelsBlock)
+  if (hasLabel) assertBilingual(errors, `${here}.label`, field.label as Labelish)
+  if (hasLabels) assertBilingual(errors, `${here}.labels`, field.labels as LabelsBlock)
+  if (
+    requireLabel &&
+    name !== '(row)' &&
+    name !== '(anon)' &&
+    !SHARED_FIELD_EXEMPTIONS.has(name) &&
+    !hasLabel &&
+    !hasLabels
+  ) {
+    errors.push(`${here} has no label: Payload would show the field name, in English only`)
   }
   if (field.admin) {
     if ('description' in field.admin && field.admin.description !== undefined) {
-      assertBilingual(`${here}.admin.description`, field.admin.description as Labelish)
+      assertBilingual(errors, `${here}.admin.description`, field.admin.description as Labelish)
     }
   }
 
   if ('fields' in field && Array.isArray(field.fields)) {
-    for (const child of field.fields as Field[]) visitField(here, child)
+    for (const child of field.fields as Field[]) visitField(errors, here, child, requireLabel)
   }
 }
 
-function visitConfig(kind: 'collection' | 'global', config: CollectionConfig | GlobalConfig): void {
+function visitConfig(
+  errors: string[],
+  kind: 'collection' | 'global',
+  config: CollectionConfig | GlobalConfig,
+): void {
   const base = `${kind}.${config.slug}`
+  const requireLabel = kind === 'collection' && FULLY_LABELLED.has(config.slug)
 
   if ('labels' in config && config.labels) {
-    assertBilingual(`${base}.labels`, config.labels as LabelsBlock)
+    assertBilingual(errors, `${base}.labels`, config.labels as LabelsBlock)
   }
   if ('label' in config && config.label) {
-    assertBilingual(`${base}.label`, config.label as Labelish)
+    assertBilingual(errors, `${base}.label`, config.label as Labelish)
   }
   if (config.admin) {
     if (config.admin.description) {
-      assertBilingual(`${base}.admin.description`, config.admin.description as Labelish)
+      assertBilingual(errors, `${base}.admin.description`, config.admin.description as Labelish)
     }
     if (config.admin.group) {
-      assertBilingual(`${base}.admin.group`, config.admin.group as Labelish)
+      assertBilingual(errors, `${base}.admin.group`, config.admin.group as Labelish)
     }
   }
 
-  for (const field of config.fields ?? []) visitField(base, field)
+  for (const field of config.fields ?? []) visitField(errors, base, field, requireLabel)
 }
 
 describe('admin labels and descriptions are bilingual', () => {
   it('checks every registered collection', () => {
-    for (const collection of registeredCollections()) visitConfig('collection', collection)
+    const errors: string[] = []
+    for (const collection of registeredCollections()) visitConfig(errors, 'collection', collection)
+    expect(errors).toEqual([])
   })
 
   it('checks every registered global', () => {
-    for (const global of registeredGlobals()) visitConfig('global', global)
+    const errors: string[] = []
+    for (const global of registeredGlobals()) visitConfig(errors, 'global', global)
+    expect(errors).toEqual([])
   })
 })

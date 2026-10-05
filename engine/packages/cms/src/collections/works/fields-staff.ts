@@ -1,7 +1,8 @@
 /**
  * What the public never reads of a work, and what governs it (CONTENT-MODEL.md §1; COMPLIANCE.md
- * §1, §8; requirement 3.8): the object's physical record, the rights in its image, the cataloguing
- * workflow, the migration's legacy ids and the SEO overrides.
+ * §1, §8; requirement 3.8): the object's physical record and the rights in its image. The
+ * cataloguing workflow, the migration's legacy ids and the SEO overrides are
+ * `./fields-staff-cataloguing` (split out to keep each file under 300 lines).
  *
  * - **`physical` has no defaults.** The export status stays blank until the owner's item register
  *   sets it; a blank one never blocks publishing (requirement 16.8). `not-applicable` (held
@@ -15,16 +16,10 @@ import { CURRENCY_CODES } from '@engine/config/constants'
 import type { Field, Validate } from 'payload'
 
 import { STAFF_ONLY_ACCESS } from '../../access/fields'
-import { translationStatusField } from '../../fields/translation-status'
 import { costErrors, rightsErrors, type Cost, type Rights } from '../../validators/work-record'
 import { OWNER_ONLY_ACCESS, ACQUISITION_ACCESS, PHYSICAL_ACCESS } from './access'
-import {
-  AI_DRAFTABLE_FIELDS,
-  AI_DRAFTABLE_LABELS,
-  CATALOGUING_STATUS_OPTIONS,
-  EXPORT_STATUS_OPTIONS,
-  RIGHTS_STATUS_OPTIONS,
-} from './vocabulary'
+import { CATALOGUING_FIELDS } from './fields-staff-cataloguing'
+import { EXPORT_STATUS_OPTIONS, RIGHTS_STATUS_OPTIONS } from './vocabulary'
 
 /** A duplicate is another object: its record, workflow and legacy ids start empty. */
 const cleared = () => ({})
@@ -67,6 +62,7 @@ export const physicalField: Field = {
     {
       name: 'exportStatus',
       type: 'select',
+      label: { en: 'Export status', id: 'Status ekspor' },
       options: EXPORT_STATUS_OPTIONS,
       admin: {
         description: {
@@ -89,14 +85,25 @@ export const physicalField: Field = {
         {
           type: 'row',
           fields: [
-            { name: 'source', type: 'text', maxLength: 200 },
-            { name: 'consignor', type: 'text', maxLength: 200 },
-            { name: 'date', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
+            { name: 'source', type: 'text', label: { en: 'Source', id: 'Sumber' }, maxLength: 200 },
+            {
+              name: 'consignor',
+              type: 'text',
+              label: { en: 'Consignor', id: 'Penitip' },
+              maxLength: 200,
+            },
+            {
+              name: 'date',
+              type: 'date',
+              label: { en: 'Date', id: 'Tanggal' },
+              admin: { date: { pickerAppearance: 'dayOnly' } },
+            },
           ],
         },
         {
           name: 'cost',
           type: 'group',
+          label: { en: 'Cost', id: 'Biaya' },
           admin: {
             description: {
               en: 'In the currency’s smallest unit: cents, or whole rupiah.',
@@ -104,10 +111,17 @@ export const physicalField: Field = {
             },
           },
           fields: [
-            { name: 'amount', type: 'number', admin: { step: 1 }, validate: costPart('amount') },
+            {
+              name: 'amount',
+              type: 'number',
+              label: { en: 'Amount', id: 'Jumlah' },
+              admin: { step: 1 },
+              validate: costPart('amount'),
+            },
             {
               name: 'currency',
               type: 'select',
+              label: { en: 'Currency', id: 'Mata uang' },
               options: CURRENCY_CODES.map((code) => ({ value: code, label: code })),
               validate: costPart('currency'),
             },
@@ -138,6 +152,7 @@ export const STAFF_FIELDS: Field[] = [
   {
     name: 'rights',
     type: 'group',
+    label: { en: 'Rights', id: 'Hak' },
     // Staff only, as the header says (1.2.b: it had no access, so a public read returned it).
     access: STAFF_ONLY_ACCESS,
     admin: {
@@ -150,9 +165,26 @@ export const STAFF_FIELDS: Field[] = [
       {
         type: 'row',
         fields: [
-          { name: 'status', type: 'select', options: RIGHTS_STATUS_OPTIONS },
-          { name: 'holder', type: 'text', maxLength: 200, validate: rightsPart('holder') },
-          { name: 'licenceRef', type: 'text', maxLength: 120, validate: rightsPart('licenceRef') },
+          {
+            name: 'status',
+            type: 'select',
+            label: { en: 'Status', id: 'Status' },
+            options: RIGHTS_STATUS_OPTIONS,
+          },
+          {
+            name: 'holder',
+            type: 'text',
+            label: { en: 'Rights holder', id: 'Pemegang hak' },
+            maxLength: 200,
+            validate: rightsPart('holder'),
+          },
+          {
+            name: 'licenceRef',
+            type: 'text',
+            label: { en: 'Licence reference', id: 'Referensi lisensi' },
+            maxLength: 120,
+            validate: rightsPart('licenceRef'),
+          },
         ],
       },
       {
@@ -161,6 +193,7 @@ export const STAFF_FIELDS: Field[] = [
           {
             name: 'territories',
             type: 'text',
+            label: { en: 'Territories', id: 'Wilayah' },
             hasMany: true,
             validate: rightsPart('territories'),
             admin: {
@@ -170,12 +203,18 @@ export const STAFF_FIELDS: Field[] = [
               },
             },
           },
-          { name: 'expires', type: 'date', admin: { date: { pickerAppearance: 'dayOnly' } } },
+          {
+            name: 'expires',
+            type: 'date',
+            label: { en: 'Expires', id: 'Berakhir' },
+            admin: { date: { pickerAppearance: 'dayOnly' } },
+          },
         ],
       },
       {
         name: 'printAllowed',
         type: 'checkbox',
+        label: { en: 'Printing allowed', id: 'Cetak diizinkan' },
         defaultValue: false,
         validate: rightsPart('printAllowed'),
         admin: {
@@ -187,106 +226,5 @@ export const STAFF_FIELDS: Field[] = [
       },
     ],
   },
-  {
-    name: 'cataloguing',
-    type: 'group',
-    access: STAFF_ONLY_ACCESS,
-    hooks: { beforeDuplicate: [cleared] },
-    fields: [
-      {
-        type: 'row',
-        fields: [
-          {
-            name: 'status',
-            type: 'select',
-            defaultValue: 'draft',
-            options: CATALOGUING_STATUS_OPTIONS,
-          },
-          { name: 'cataloguer', type: 'relationship', relationTo: 'users' },
-          { name: 'verifiedAt', type: 'date', admin: { readOnly: true } },
-        ],
-      },
-      {
-        name: 'aiDraft',
-        type: 'group',
-        label: { en: 'Drafted by AI, not yet checked', id: 'Dibuat draf oleh AI, belum diperiksa' },
-        admin: {
-          description: {
-            en: 'One entry per field the drafting tool filled. The work cannot publish while an entry is drafted and has no verified time.',
-            id: 'Satu entri per bidang yang diisi alat draf. Karya tidak dapat diterbitkan selama ada entri yang masih draf tanpa waktu verifikasi.',
-          },
-        },
-        hooks: { beforeDuplicate: [cleared] },
-        fields: AI_DRAFTABLE_FIELDS.map((field) => ({
-          name: field,
-          type: 'group',
-          label: AI_DRAFTABLE_LABELS[field],
-          fields: [
-            { name: 'drafted', type: 'checkbox', defaultValue: false },
-            {
-              name: 'verifiedBy',
-              type: 'relationship',
-              relationTo: 'users',
-              admin: {
-                description: { en: 'Who checked it.', id: 'Siapa yang memeriksanya.' },
-              },
-            },
-            {
-              name: 'verifiedAt',
-              type: 'date',
-              admin: {
-                date: { pickerAppearance: 'dayOnly' },
-                description: {
-                  en: 'When they checked it.',
-                  id: 'Kapan mereka memeriksanya.',
-                },
-              },
-            },
-          ],
-        })),
-      },
-    ],
-  },
-  {
-    name: 'legacy',
-    type: 'group',
-    label: { en: 'From the old site', id: 'Dari situs lama' },
-    access: STAFF_ONLY_ACCESS,
-    admin: { readOnly: true },
-    hooks: { beforeDuplicate: [cleared] },
-    fields: [
-      {
-        type: 'row',
-        fields: [
-          {
-            // CONTENT-MODEL.md §1's `legacy.id`: Payload 3.90 drops a field named `id` in a group.
-            name: 'productId',
-            type: 'number',
-            unique: true,
-            index: true,
-            admin: {
-              description: {
-                en: 'The old site’s product id: the public id it keeps.',
-                id: 'Id produk situs lama: id publik yang dipertahankan.',
-              },
-            },
-          },
-          { name: 'sku', type: 'text', maxLength: 80 },
-        ],
-      },
-      { name: 'url', type: 'text', maxLength: 2048 },
-      { name: 'categories', type: 'text', hasMany: true },
-    ],
-  },
-  {
-    name: 'seo',
-    type: 'group',
-    label: { en: 'SEO', id: 'SEO' },
-    fields: [
-      { name: 'title', type: 'text', localized: true, maxLength: 70 },
-      { name: 'description', type: 'textarea', localized: true, maxLength: 200 },
-      { name: 'image', type: 'upload', relationTo: 'media' },
-    ],
-  },
-  translationStatusField,
+  ...CATALOGUING_FIELDS,
 ]

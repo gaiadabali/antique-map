@@ -1,6 +1,6 @@
 /** The shop catalogue's reads (6.1). Pages import the cached wrappers and the VM types only. */
 export { availabilityFor, withAvailability, type ProductAvailability } from './availability'
-export { categories, categoryId, listing, product, search } from './catalogue'
+export { categories, categoryId, listing, product, productEditorial, search } from './catalogue'
 export type { ListingSort } from './queries'
 export {
   getCategories,

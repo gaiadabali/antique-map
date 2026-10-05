@@ -5,7 +5,8 @@
  */
 export const ADMIN_GROUPS = {
   antiques: { en: 'Antiques', id: 'Antik' },
-  shop: { en: 'Shop', id: 'Toko' },
+  // Not "Toko": that is the Stores collection's name in Indonesian, a different group's entry.
+  shop: { en: 'Shop', id: 'Toko daring' },
   storesAndStock: { en: 'Stores and stock', id: 'Toko dan stok' },
   orders: { en: 'Orders', id: 'Pesanan' },
   leadsAndPartners: { en: 'Leads and partners', id: 'Calon pembeli dan mitra' },

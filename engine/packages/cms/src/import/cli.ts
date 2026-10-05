@@ -1,10 +1,14 @@
 /**
  * The import CLI (DATA.md §3): one file, one kind, one run.
  *
- *   pnpm --filter @engine/cms import --file <path> --kind <antiques|products|stores|stock|discounts> [--dry-run] [--publish]
+ *   pnpm --filter @engine/cms import -- <path> <antiques|products|stores|stock|discounts> [dry-run] [publish]
  *
- * `--dry-run` applies the file in a transaction it then rolls back: the report is the real one,
- * nothing is written. `--publish` is DATA.md's publish-these-records, which runs the publish
+ * Bare words, not `--flags`: run through `payload run` (D8, `docs/gates/3.6.md`), which rebuilds
+ * `process.argv` from positional arguments only and drops every `--flag` (`db/cli.ts`'s
+ * `argument()` note) — the same reason those scripts take `database`/`print` bare.
+ *
+ * `dry-run` applies the file in a transaction it then rolls back: the report is the real one,
+ * nothing is written. `publish` is DATA.md's publish-these-records, which runs the publish
  * checks. The report prints to stdout; the process exits non-zero when the file was refused
  * before any row was read (the header wrong, the file not UTF-8) so a pipeline notices.
  */
@@ -12,23 +16,25 @@ import { runImportFile } from './apply'
 import { ImportError, parseCsv } from './csv'
 import { template } from './kinds'
 import { render } from './report'
-import { cms } from '../instance'
+import { seedEnv } from '../seed/env'
 
 const USAGE =
-  'Usage: pnpm --filter @engine/cms import --file <path> --kind <antiques|products|stores|stock|discounts> [--dry-run] [--publish]'
+  'Usage: pnpm --filter @engine/cms import -- <path> <antiques|products|stores|stock|discounts> [dry-run] [publish]'
 
 type Args = { file: string; kind: string; dryRun: boolean; publish: boolean }
 
 function args(argv: readonly string[]): Args {
   const out = { file: '', kind: '', dryRun: false, publish: false }
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i]!
-    if (arg === '--dry-run') out.dryRun = true
-    else if (arg === '--publish') out.publish = true
-    else if (arg === '--file') out.file = argv[++i] ?? ''
-    else if (arg === '--kind') out.kind = argv[++i] ?? ''
-    else throw new ImportError(`I do not know the option '${arg}'.`, USAGE)
+  const positional: string[] = []
+  for (const arg of argv) {
+    if (arg === 'dry-run') out.dryRun = true
+    else if (arg === 'publish') out.publish = true
+    // `apply` is the seed scripts' explicit way to say "not dry-run"; apply is the default.
+    else if (arg === 'apply') out.dryRun = false
+    else positional.push(arg)
   }
+  out.file = positional[0] ?? ''
+  out.kind = positional[1] ?? ''
   if (out.file === '') throw new ImportError('Name the file to import.', USAGE)
   if (out.kind === '') {
     throw new ImportError('Name the kind: antiques, products, stores, stock or discounts.', USAGE)
@@ -38,6 +44,7 @@ function args(argv: readonly string[]): Args {
 
 async function main(): Promise<number> {
   const parsed = args(process.argv.slice(2))
+  seedEnv()
   const { readFileSync } = await import('node:fs')
   const name = parsed.file.split(/[\\/]/).pop() ?? parsed.file
   let bytes: Uint8Array
@@ -50,6 +57,8 @@ async function main(): Promise<number> {
   parseCsv(name, bytes, parsed.kind as never, template(parsed.kind as never))
 
   // cms() is the process's one instance (instance.ts); the CLI connects to the dev database.
+  // Imported after the environment is filled: the config reads it at load time.
+  const { cms } = await import('../instance')
   const payload = await cms()
   const report = await runImportFile(parsed.kind as never, name, bytes, {
     payload,
@@ -61,13 +70,14 @@ async function main(): Promise<number> {
   return 0
 }
 
-main()
-  .then((code) => process.exit(code))
-  .catch((error: unknown) => {
-    if (error instanceof ImportError) {
-      console.error(`${error.message}${error.fix ? `\n${error.fix}` : ''}`)
-    } else {
-      console.error(error)
-    }
-    process.exit(1)
-  })
+// Top-level await: `payload run` imports the script and exits — an un-awaited promise dies with it.
+try {
+  process.exit(await main())
+} catch (error: unknown) {
+  if (error instanceof ImportError) {
+    console.error(`${error.message}${error.fix ? `\n${error.fix}` : ''}`)
+  } else {
+    console.error(error)
+  }
+  process.exit(1)
+}

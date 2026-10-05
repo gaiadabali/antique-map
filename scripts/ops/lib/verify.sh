@@ -11,7 +11,7 @@
 #            online under a new daemon and answering on 127.0.0.1:<port>. The site is down for
 #            those seconds (staging), and afterwards its pm2 runs inside the unit.
 #   Mailpit  restart it (staging): SMTP greets 220 and the UI answers again
-#   cron     each site user's crontab still holds the managed block
+#   cron     the site user's crontab still holds the managed block
 #   boot     every indies unit is enabled; the data mount is WantedBy=multi-user.target and the
 #            RustFS unit has RequiresMountsFor= its data dir, so the image is mounted before it
 
@@ -120,12 +120,8 @@ verify_mailpit() {
 }
 
 verify_boot() {
-  local u app units=("$(rustfs_mount_unit)" "$RUSTFS_UNIT" indies-db-backup.timer)
+  local u units=("$(rustfs_mount_unit)" "$RUSTFS_UNIT" indies-db-backup.timer "pm2-$S_USER.service")
   mailpit_wanted && units+=("$MAILPIT_UNIT")
-  for app in $(selected_apps); do
-    load_site "$app"
-    units+=("pm2-$S_USER.service")
-  done
   for u in "${units[@]}"; do
     if systemctl is-enabled --quiet "$u" 2>/dev/null; then
       vpass "boot: $u is enabled"
@@ -148,17 +144,13 @@ verify_boot() {
 verify_restart() {
   say "verify restart: RustFS"
   verify_rustfs
-  local app
-  for app in $(selected_apps); do
-    load_site "$app"
-    say "verify restart: pm2 $S_USER, crontab"
-    verify_pm2
-    if cron_block_present; then
-      vpass "cron: $S_USER's crontab holds the managed block"
-    else
-      vfail "cron: $S_USER's crontab lacks the managed block (re-run the script)"
-    fi
-  done
+  say "verify restart: pm2 $S_USER, crontab"
+  verify_pm2
+  if cron_block_present; then
+    vpass "cron: $S_USER's crontab holds the managed block"
+  else
+    vfail "cron: $S_USER's crontab lacks the managed block (re-run the script)"
+  fi
   if mailpit_wanted; then
     say "verify restart: Mailpit"
     verify_mailpit

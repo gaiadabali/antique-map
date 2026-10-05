@@ -9,9 +9,12 @@ type Props = {
   onClose: () => void
   title: string
   children: ReactNode
+  /** The close button's accessible name. Defaults to English; a caller in a lexicon locale
+   * passes its own word (qa 4.qa, finding F3 — no component may hold its own English copy). */
+  closeLabel?: string
 }
 
-export function Dialog({ open, onClose, title, children }: Props) {
+export function Dialog({ open, onClose, title, children, closeLabel = 'Close' }: Props) {
   const ref = useRef<HTMLDialogElement>(null)
   const opener = useRef<HTMLElement | null>(null)
 
@@ -57,7 +60,7 @@ export function Dialog({ open, onClose, title, children }: Props) {
           <h2 id="dialog-title" className={styles.title}>
             {title}
           </h2>
-          <button type="button" className={styles.close} aria-label="Close" onClick={onClose}>
+          <button type="button" className={styles.close} aria-label={closeLabel} onClick={onClose}>
             ×
           </button>
         </header>

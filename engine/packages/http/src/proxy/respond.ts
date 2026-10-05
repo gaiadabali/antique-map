@@ -41,6 +41,7 @@ function ownAnswer(decision: ProxyDecision): Response {
   const headers = new Headers({
     'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff',
+    ...decision.setResponse,
   })
   if (decision.to !== null) {
     headers.set('Location', decision.to)

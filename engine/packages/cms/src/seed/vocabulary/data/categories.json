@@ -1,0 +1,10 @@
+{
+  "categories": [
+    { "label": "Prints", "labelId": "Cetakan" },
+    { "label": "Map reproductions", "labelId": "Reproduksi peta" },
+    { "label": "Textiles", "labelId": "Tekstil" },
+    { "label": "Homeware", "labelId": "Perlengkapan rumah" },
+    { "label": "Stationery", "labelId": "Alat tulis" },
+    { "label": "Gifts", "labelId": "Hadiah" }
+  ]
+}

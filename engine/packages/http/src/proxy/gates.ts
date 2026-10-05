@@ -106,3 +106,16 @@ export function hasUserAgent(headers: Headers): boolean {
 export function hasCookie(headers: Headers, name: string): boolean {
   return (headers.get('cookie') ?? '').split(';').some((pair) => pair.trim().startsWith(`${name}=`))
 }
+
+/**
+ * The address nginx appended to `X-Forwarded-For` (the last entry; the app binds loopback, so the
+ * header cannot be forged by a direct hit) — `null` off that reverse proxy (a workstation, CI). The
+ * one place the proxy reads it from, so anything counted per address (`./tracking-rate-limit`)
+ * agrees with the app's own `clientAddress` (`apps/web/src/server/chat/identity.ts`) on what an
+ * address is.
+ */
+export function clientAddress(headers: Headers): string | null {
+  const forwarded = headers.get('x-forwarded-for')
+  const last = forwarded?.split(',').at(-1)?.trim()
+  return last && /^[0-9a-f:.]{2,45}$/i.test(last) ? last : null
+}

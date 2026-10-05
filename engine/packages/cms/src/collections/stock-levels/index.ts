@@ -94,6 +94,7 @@ export const StockLevels: CollectionConfig = {
       label: { en: 'Count on the shelf', id: 'Jumlah di rak' },
       min: 0,
       admin: {
+        readOnly: false,
         description: {
           en: 'Enter what you count on the shelf today, including units packed for an order but not yet collected.',
           id: 'Masukkan jumlah yang Anda hitung di rak hari ini, termasuk unit yang sudah dikemas untuk pesanan tetapi belum diambil.',
