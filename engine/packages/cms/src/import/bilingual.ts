@@ -68,7 +68,10 @@ export function pairAs(data: unknown, stored: unknown): unknown {
     return stored.map((each, index) => (index < data.length ? pairAs(data[index], each) : each))
   }
   const storedObject =
-    stored !== null && typeof stored === 'object' && !Array.isArray(stored) && !(stored instanceof Date)
+    stored !== null &&
+    typeof stored === 'object' &&
+    !Array.isArray(stored) &&
+    !(stored instanceof Date)
       ? (stored as Record<string, unknown>)
       : undefined
   if (typeof data !== 'object' || data instanceof Date) {
