@@ -33,7 +33,11 @@ export async function setLanguage(page: Page, language: Language): Promise<void>
 export async function sidebar(page: Page): Promise<Record<string, string[]>> {
   await page.goto('/admin')
   const nav = page.getByRole('complementary').getByRole('navigation').first()
-  await expect(nav).toBeVisible()
+  await expect(nav).toBeAttached()
+  // Open it if it is closed (Payload keeps the choice per person), so a screenshot shows it.
+  const open = page.getByRole('button', { name: /^(Open Menu|Buka Menu)$/ })
+  if (await open.isVisible()) await open.click()
+  await expect(page.getByRole('button', { name: /^(Close Menu|Tutup Menu)$/ })).toBeVisible()
   const groups: Record<string, string[]> = {}
   const titled = nav.locator(':scope > div').filter({ has: page.getByRole('button') })
   for (const group of await titled.all()) {
