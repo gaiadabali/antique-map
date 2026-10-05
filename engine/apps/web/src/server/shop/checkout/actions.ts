@@ -14,6 +14,7 @@ import 'server-only'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
+import { siteOrigin } from '@engine/config/sites'
 import { cms } from '@engine/cms/instance'
 import {
   createOrder,
@@ -23,9 +24,11 @@ import {
 } from '@engine/cms/shop/orders'
 import { BAG_COOKIE_NAME, bagCookieKeyFromEnv, parseBag } from '@engine/cms/shop/pricing'
 
+import { sendOrderCreatedEmail } from '../payment'
 import { CODE_COOKIE_NAME, parseCodeCookie } from '../bag/code-cookie'
 import { displayFor, type BagDisplay } from '../bag/display'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
+import { siteHref } from '../../../shell/site'
 import { checkoutText, type CheckoutText } from '../../../sites/shop/checkout/copy'
 import { refusalCopy } from './refusal-text'
 
@@ -148,9 +151,20 @@ export async function submitOrderAction(_prev: unknown, formData: FormData): Pro
   )
 
   if (created.ok) {
-    // The tracking link (6.5 builds the page; a 404 there is expected for now). The token is shown
-    // once, in this address — never stored.
-    redirect(`/${locale}/order/${created.number}?t=${created.trackingToken}`)
+    try {
+      await sendOrderCreatedEmail(await cms(), {
+        orderId: created.orderId,
+        trackingToken: created.trackingToken,
+        locale,
+        origin: siteOrigin('shop') ?? '',
+      })
+    } catch (error) {
+      console.error(
+        `[checkout] order-created email for order ${created.orderId} failed to send: ${error instanceof Error ? error.message : String(error)}`,
+      )
+    }
+    // The token is shown once, in this address — never stored.
+    redirect(siteHref('shop')('order', { token: created.trackingToken }, locale))
   }
   const refused =
     created.refusal === 'out_of_stock'

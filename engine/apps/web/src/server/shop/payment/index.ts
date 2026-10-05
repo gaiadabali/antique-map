@@ -16,3 +16,8 @@ export {
 export { payAction, putBackInBagAction, simulateAction, type PayState } from './actions'
 export { simulateModeEnabled, snapConfig, type SnapConfig } from './config-view'
 export { SIMULATOR_ACTIONS, type SimulatorAction } from '@engine/cms/shop/payments'
+export {
+  sendOrderCreatedEmail,
+  type SendOrderCreatedEmailInput,
+  type SendOrderCreatedEmailResult,
+} from './email/order-created'
