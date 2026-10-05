@@ -580,6 +580,8 @@
   "shell.locale.id": "Bahasa Indonesia",
   "shell.locale.nl": "Nederlands",
   "shell.menu": "Menu utama",
+  "shell.menu.close": "Tutup menu",
+  "shell.menu.open": "Buka menu",
   "shell.phone": "Telepon",
   "shell.privacy": "Privasi",
   "shell.replyPromise": "Kami menjawab dalam dua hari kerja.",

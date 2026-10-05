@@ -10,9 +10,13 @@
   border-top: 0;
 }
 
+/* Breaks out of the shell's reading-measure column the way `browse.module.css`'s `.page` does
+   (qa 4.qa, finding F1): the home needs the drawing's full-bleed width at 1280 px, not the 66ch
+   cap `.site-main` gives long-form pages. */
 .wrap {
-  max-width: 80rem;
-  margin: 0 auto;
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
   padding-inline: var(--gutter);
 }
 

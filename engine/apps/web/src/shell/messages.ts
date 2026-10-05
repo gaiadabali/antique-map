@@ -21,6 +21,8 @@ export const SHELL_MESSAGES = defineMessages({
   'shell.locale.id': 'Bahasa Indonesia',
   'shell.chat': 'Chat with us',
   'shell.menu': 'Main menu',
+  'shell.menu.open': 'Open menu',
+  'shell.menu.close': 'Close menu',
   'shell.contact': 'Contact',
   'shell.whatsapp': 'Ask on WhatsApp',
   'shell.email': 'Email',

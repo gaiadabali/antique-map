@@ -562,6 +562,8 @@
   "shell.locale.id": "Bahasa Indonesia",
   "shell.locale.nl": "Nederlands",
   "shell.menu": "Main menu",
+  "shell.menu.close": "Close menu",
+  "shell.menu.open": "Open menu",
   "shell.phone": "Phone",
   "shell.privacy": "Privacy",
   "shell.replyPromise": "We reply within two working days.",

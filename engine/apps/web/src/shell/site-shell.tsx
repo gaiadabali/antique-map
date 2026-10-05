@@ -56,6 +56,9 @@ export async function SiteShell({ shell, t, children }: Props) {
       <Header
         logo={<BrandLink shell={shell} t={t} />}
         nav={<PrimaryNav site={shell.site.key} locale={shell.locale} t={t} />}
+        openLabel={t('shell.menu.open')}
+        closeLabel={t('shell.menu.close')}
+        menuLabel={t('shell.menu')}
         actions={
           <>
             <LocaleSwitcher shell={shell} t={t} />
