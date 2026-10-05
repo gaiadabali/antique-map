@@ -16,8 +16,8 @@ import type { Metadata } from 'next'
 
 import { loadSiteSettings } from '../../../../../../server/site-settings'
 import { clientAddress } from '../../../../../../server/chat/identity'
+import { loadTracking } from '../../../../../../server/shop/tracking/load-tracking'
 import { siteLocale } from '../../../../../../shell/messages'
-import { loadTracking } from '../../../../../../sites/shop/tracking/load-tracking'
 import { trackGuessAllowed } from '../../../../../../sites/shop/tracking/rate-limit'
 import { TrackingPage } from '../../../../../../sites/shop/tracking/tracking-view'
 

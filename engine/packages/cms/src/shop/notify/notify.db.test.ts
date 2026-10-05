@@ -9,7 +9,11 @@ import { getPayload } from 'payload'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
 import { makeProduct, tokenHash } from '../../collections/stock-levels/shop.test-support'
-import { server, startStaffStack, type StaffStack } from '../../collections/users/staff.test-support'
+import {
+  server,
+  startStaffStack,
+  type StaffStack,
+} from '../../collections/users/staff.test-support'
 import { setMailTransport, type MailMessage } from './transport'
 
 describe.skipIf(!server)('order notifications, on a real database', () => {
@@ -32,9 +36,21 @@ describe.skipIf(!server)('order notifications, on a real database', () => {
       data: {
         number: orderNumber,
         lines: [
-          { product, sku: `OEI-NOTIFY-${orderNumber}`, name: 'A tote bag', unitPrice: 95000, qty: 1, lineTotal: 95000 },
+          {
+            product,
+            sku: `OEI-NOTIFY-${orderNumber}`,
+            name: 'A tote bag',
+            unitPrice: 95000,
+            qty: 1,
+            lineTotal: 95000,
+          },
         ],
-        contact: { name: 'Buyer', whatsapp: '+6281234567890', email: 'buyer@example.test', locale: 'en' },
+        contact: {
+          name: 'Buyer',
+          whatsapp: '+6281234567890',
+          email: 'buyer@example.test',
+          locale: 'en',
+        },
         delivery: { address: 'Jl. Raya Ubud 1', lat: -8.5, lng: 115.26 },
         store: stack.stores[0].id,
         totals: { subtotal: 95000, discount: 0, deliveryFee: 15000, total: 110000 },
@@ -83,7 +99,11 @@ describe.skipIf(!server)('order notifications, on a real database', () => {
     const id = await pendingOrder()
     await stack.payload.update({ collection: 'orders', id, data: { status: 'paid' } as never })
     sent.length = 0
-    await stack.payload.update({ collection: 'orders', id, data: { status: 'processing' } as never })
+    await stack.payload.update({
+      collection: 'orders',
+      id,
+      data: { status: 'processing' } as never,
+    })
     expect(sent.filter((m) => m.to === 'buyer@example.test')).toHaveLength(1)
   })
 

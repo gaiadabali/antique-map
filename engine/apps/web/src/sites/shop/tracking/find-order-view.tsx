@@ -8,7 +8,10 @@
 import { useActionState } from 'react'
 
 import { Button, FormMessage, Input } from '../../../shared/ui'
-import { requestTrackingLinkAction, type FindOrderState } from './actions'
+import {
+  requestTrackingLinkAction,
+  type FindOrderState,
+} from '../../../server/shop/tracking/actions'
 import { trackingText } from './copy'
 import styles from './tracking.module.css'
 

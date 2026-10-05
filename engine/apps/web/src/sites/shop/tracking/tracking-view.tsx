@@ -6,7 +6,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import { Price, ResponsiveImage, StatusTimeline, TextLink } from '../../../shared/ui'
-import type { TrackingView } from './load-tracking'
+import type { TrackingView } from '../../../server/shop/tracking/load-tracking'
 import { trackingText } from './copy'
 import styles from './tracking.module.css'
 
@@ -16,7 +16,11 @@ export type TrackingPageProps = {
   readonly shopWhatsapp: string | null
 }
 
-export function TrackingPage({ view, locale, shopWhatsapp }: TrackingPageProps): React.ReactElement {
+export function TrackingPage({
+  view,
+  locale,
+  shopWhatsapp,
+}: TrackingPageProps): React.ReactElement {
   void locale
   const text = trackingText(view.locale)
   const wa = shopWhatsapp
@@ -41,13 +45,15 @@ export function TrackingPage({ view, locale, shopWhatsapp }: TrackingPageProps):
       {view.status === 'cancelled' && <p role="status">{text('tracking.cancelledNote')}</p>}
       {view.status === 'expired' && <p role="status">{text('tracking.expiredNote')}</p>}
 
-      {view.status !== 'pending_payment' && view.status !== 'cancelled' && view.status !== 'expired' && (
-        <StatusTimeline
-          steps={steps}
-          current={view.status}
-          ariaLabel={text('tracking.title', { number: view.orderNumber })}
-        />
-      )}
+      {view.status !== 'pending_payment' &&
+        view.status !== 'cancelled' &&
+        view.status !== 'expired' && (
+          <StatusTimeline
+            steps={steps}
+            current={view.status}
+            ariaLabel={text('tracking.title', { number: view.orderNumber })}
+          />
+        )}
 
       {view.driverImageUrl && (
         <div className={styles.driver}>

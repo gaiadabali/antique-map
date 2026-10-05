@@ -8,7 +8,9 @@
  * - status (`tests/e2e/status/`): one project per host — every case holds on both;
  * - a11y (`tests/e2e/a11y/`): one project per host, each case setting both widths itself;
  * - hosts (`tests/e2e/hosts/`): host trust — an unknown host, a spoofed `X-Forwarded-Host`, the
- *   admin's one host — run once, since each case names its own hosts.
+ *   admin's one host — run once, since each case names its own hosts;
+ * - shop (`tests/e2e/shop/`): the shop host alone, one project, each case setting its own widths —
+ *   the same single-project-per-host shape as a11y (TASKS.md 7.3.a).
  *
  * What a host's site is — its key, name, locales and whether it is the admin host — comes from the
  * committed `SITES` (`metadataOf`), never from the specs. The admin host is the shop's, as the
@@ -108,10 +110,18 @@ const hosts: Project = {
   use: { ...desktop },
 }
 
+// The shop's own specs (TASKS.md 7.3.a): one project, each case sets its own width like a11y does.
+const shop: Project = {
+  name: 'shop-e2e',
+  testDir: './tests/e2e/shop',
+  metadata: metadataOf('shop'),
+  use: { ...desktop, baseURL: baseURLOf(HOSTS.find((each) => each.site === 'shop')!.host) },
+}
+
 export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  projects: [...smoke, ...status, ...a11y, hosts],
+  projects: [...smoke, ...status, ...a11y, hosts, shop],
 })

@@ -21,7 +21,8 @@ export const TRACKING_KEYS = defineMessages({
   'tracking.status.expired': 'Payment window expired',
   'tracking.pendingNote':
     'We’re waiting for your payment. If you already paid, this updates in a moment — message us on WhatsApp if it does not.',
-  'tracking.cancelledNote': 'This order was cancelled. Message us on WhatsApp if that’s a surprise.',
+  'tracking.cancelledNote':
+    'This order was cancelled. Message us on WhatsApp if that’s a surprise.',
   'tracking.expiredNote': 'The time to pay ran out. Message us on WhatsApp to place it again.',
   'tracking.itemsTitle': 'Items',
   'tracking.totalsSubtotal': 'Subtotal',
@@ -39,8 +40,7 @@ export const TRACKING_KEYS = defineMessages({
   'tracking.find.contactHint': 'The one you typed when you placed the order.',
   'tracking.find.submit': 'Send me the link',
   'tracking.find.sending': 'Sending…',
-  'tracking.find.sent':
-    'If those details match an order, we’ve emailed the tracking link to it.',
+  'tracking.find.sent': 'If those details match an order, we’ve emailed the tracking link to it.',
   'tracking.find.rateLimited': 'Too many tries. Wait a minute and try again.',
 })
 

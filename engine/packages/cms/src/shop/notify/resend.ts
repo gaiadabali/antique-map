@@ -27,7 +27,11 @@ export type RequestTrackingLinkInput = {
 
 type OrderForResend = {
   readonly id: number
-  readonly contact?: { email?: string | null; whatsapp?: string | null; locale?: string | null } | null
+  readonly contact?: {
+    email?: string | null
+    whatsapp?: string | null
+    locale?: string | null
+  } | null
 }
 
 /** Resends the tracking link if `orderNumber` and the contact match one order; silent otherwise. */
