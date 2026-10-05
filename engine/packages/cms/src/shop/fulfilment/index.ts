@@ -32,12 +32,16 @@ export {
   DRIVER_IMAGE_MAX_BYTES,
   DRIVER_IMAGE_MAX_EDGE,
   DRIVER_IMAGE_RETENTION_DAYS,
+  DRIVER_IMAGE_URL_MAX_TTL,
   attachDriverImage,
   driverImageUrl,
   purgeDriverImages,
+  type DriverImageDeps,
 } from './driver-image'
+export { sniffImageType, type Reencoder } from './image'
+export { driverImageStoreFromEnv, type DriverImageStore } from './image-store'
 export { reassignOrder } from './reassign'
-export { handBackOrder } from './hand-back'
+export { HAND_BACK_REASON_MAX, handBackOrder } from './hand-back'
 export { judgeMove, type MoveJudgement } from './transitions'
 export type {
   AttachInput,
