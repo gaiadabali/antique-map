@@ -82,6 +82,14 @@ describe.skipIf(!server)('leads: access on a real database', () => {
     })
     expect(noted.closedAt).toBe(closed.closedAt)
 
+    // A request cannot back-date the retention clock.
+    const backdated = await stack.api.update({
+      collection: 'leads',
+      id: made.id,
+      data: { closedAt: '2000-01-01T00:00:00.000Z', notes: 'again' },
+    })
+    expect(backdated.closedAt).toBe(closed.closedAt)
+
     const reopened = await stack.api.update({
       collection: 'leads',
       id: made.id,
