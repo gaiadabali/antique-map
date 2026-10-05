@@ -80,7 +80,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-05 | r2 landed the importer's second-pass fix (`fc5e279`) then died before the held rows, dry run and report; continuation `am-3.7b-r3` in flight (also writes the local-preview seed commands) |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
-| 6·W2 | 6.3.a Checkout and map pin | GLM 5.3 Flash | `w/6.3a` | 2026-10-05 | run `am-6.3a-1` — checkout page calling the merged `createOrder`, pin picker with a keyless fallback, `/api/x/geocode` |
+| 6·W2 | 6.3.a Checkout and map pin | Sonnet (claude seat) | `w/6.3a` | 2026-10-05 | GLM run `am-6.3a-1` stalled (~100 min, 0 commits) and was stopped; `am-6.3a-s1` on Sonnet finishes from its uncommitted files; Opus reviews |
 | 4·W3 | 4.1.e, 4.2.c/d, 4.3.e Checks | qa (claude seat) | `w/4qa` | 2026-10-05 | run `am-4qa-c1` — phase 4's evidence on a production build (style guide, palettes, fonts, keyboard/axe/contrast, both homes vs the drawings); fixes inside phase-4 paths |
 | 3·W2 | 3.6.d Check | qa (claude seat) | `w/3.6qa` | 2026-10-05 | run `am-3.6qa-c1` — admin as owner/editor/store at 1280 px, plain bilingual errors, dashboard counts vs SQL, the phase-3 Done-when admin flows |
 | 7·W1 | 7.1 Statuses, driver image, reassign | senior-be (claude seat) | `w/7.1` | 2026-10-05 | run `am-7.1-c1` — core interface first so 7.2/7.3 shells can start on merge |
