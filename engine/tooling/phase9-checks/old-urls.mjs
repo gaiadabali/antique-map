@@ -19,6 +19,7 @@ import { createStateWriter, defaultStatePath, readState } from './state.mjs'
 const USAGE = `usage: node engine/tooling/phase9-checks/old-urls.mjs --base <origin> --site <gallery|shop> [options]
 
   --base <origin>      the origin to request (e.g. https://staging.example, http://localhost:4372)
+  --origin <origin>    the site's canonical origin (default: --base); the 301's Location is judged against it
   --site <key>         gallery or shop (which inventory to read)
   --host <header>      send this as the Host header (when --base is an IP or a tunnel)
   --out <path>         write the JSON report here (default: stdout only)
@@ -48,7 +49,7 @@ async function main(argv) {
     console.log(USAGE)
     return 0
   }
-  const { base, site, rate } = commonOptions(values)
+  const { base, origin, site, rate } = commonOptions(values)
 
   const rows = readInventory(site, '.')
   const { keys, skippedSensitive } = collectKeys(site, rows)
@@ -62,6 +63,7 @@ async function main(argv) {
   const { counts, failures } = await checkKeys(base, keys, {
     get,
     unresolved,
+    origin,
     done,
     onResult: (url, outcome) => write(url, outcome),
   })
@@ -69,6 +71,7 @@ async function main(argv) {
   const report = {
     site,
     base,
+    origin,
     inventoryRows: rows.length,
     skippedSensitive,
     keys: keys.length,
@@ -86,13 +89,15 @@ async function main(argv) {
 
 function logReport(report) {
   const c = report.counts
-  console.log(`old-urls (${report.site}) against ${report.base}`)
+  const s = c.statuses
+  console.log(`old-urls (${report.site}) against ${report.base} (canonical ${report.origin})`)
   console.log(
     `  ${report.keys} keys from ${report.inventoryRows} rows (${report.skippedSensitive} sensitive paths skipped)`,
   )
   console.log(
-    `  200: ${c.ok}   301→200: ${c.redirected}   410: ${c.gone}   unresolved: ${c.unresolved}   FAIL: ${c.fail}`,
+    `  200: ${c.ok}   301→200: ${c.redirected}   308 normalised: ${c.normalised}   410: ${c.gone}   unresolved: ${c.unresolved}   FAIL: ${c.fail}`,
   )
+  console.log(`  redirect codes seen: 301 ${s[301]}, 302 ${s[302]}, 307 ${s[307]}, 308 ${s[308]}`)
   const r = report.reconciliation
   console.log(
     `  rows + gone + unresolved = ${r.rows} + ${r.gone} + ${r.unresolved} = ${r.sum} of ${r.total} (${r.matches ? 'matches' : 'MISMATCH'})`,
