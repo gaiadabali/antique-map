@@ -1,9 +1,11 @@
 /**
- * The shop product page (6.1.c; ticket 6qa-r1 point 1): at 390 px a seeded product with variants
- * loads, the variant picker changes the variant and its price, and axe is clean at 390 and 1280 px
- * on both a variant product and the zero-stock product. No `data-testid` is added to product code
- * — every locator is a real role or the lexicon's own text (the same strings
- * `engine/apps/web/src/sites/shop/product/copy.ts` renders).
+ * The shop product page (6.1.c; ticket 6qa-r3 point 2): at 390 px a seeded product with variants
+ * loads, the variant picker changes the variant and its price, Add to bag works against the real
+ * bag (`addToBagAction`), and the zero-stock product's add button is disabled and a forced post of
+ * the same action is refused. Axe is clean at 390 and 1280 px on both a variant product and the
+ * zero-stock product. No `data-testid` is added to product code — every locator is a real role or
+ * the lexicon's own text (the same strings `engine/apps/web/src/sites/shop/product/copy.ts` and
+ * `engine/apps/web/src/sites/shop/bag/copy.ts` render).
  *
  * Products are never hard-coded: `findCandidates` reads the live `/api/products` list (published
  * only, the same access rule a visitor's browser gets) and loads each product page to find, from
@@ -20,15 +22,18 @@ const PORT = process.env.E2E_PORT ?? '4282'
 // own note); a plain IP plus a Host header reaches the same vhost Chromium resolves by name.
 const BASE_URL = `http://127.0.0.1:${PORT}`
 const HOST_HEADER = { Host: `shop.localhost:${PORT}` }
+// The real host, for page navigation (Chromium resolves `*.localhost` by itself) and for a
+// forced server-action replay, which must hit the exact origin Next's own CSRF check expects.
+const SHOP_ORIGIN = `http://shop.localhost:${PORT}`
 const SHOTS = process.env.PHASE6_SHOTS
 
-type ProductSummary = { readonly slug: string }
+type ProductSummary = { readonly id: number; readonly slug: string }
 
 type Candidates = {
   /** A published product with >=2 variants whose prices differ, and stock to add. */
-  readonly withVariants: { slug: string; variantLabels: string[] }
+  readonly withVariants: { id: number; slug: string; variantLabels: string[] }
   /** A published product whose add button is disabled everywhere (zero stock). */
-  readonly outOfStock: { slug: string }
+  readonly outOfStock: { id: number; slug: string }
 }
 
 async function listProducts(request: APIRequestContext): Promise<ProductSummary[]> {
@@ -43,8 +48,10 @@ async function listProducts(request: APIRequestContext): Promise<ProductSummary[
 /** Reads one product page's real markup for what the suite needs to classify it. */
 async function inspect(
   request: APIRequestContext,
+  id: number,
   slug: string,
 ): Promise<{
+  id: number
   slug: string
   variantValues: string[]
   variantLabels: string[]
@@ -63,7 +70,7 @@ async function inspect(
   // hydration, escaped as `\"Rp …\"`, so that is what tells the variants' prices apart.
   const variantPrices = [...html.matchAll(/priceText\\":\\"(Rp[^"\\]+)\\"/g)].map((m) => m[1] ?? '')
   const addDisabled = /__addButton"\s+disabled/.test(html)
-  return { slug, variantValues, variantLabels, variantPrices, addDisabled, status: res.status() }
+  return { id, slug, variantValues, variantLabels, variantPrices, addDisabled, status: res.status() }
 }
 
 /** Finds the two products the suite needs by reading real product pages — never a guess. */
@@ -74,9 +81,9 @@ async function findCandidates(request: APIRequestContext): Promise<Candidates> {
   let withVariants: Candidates['withVariants'] | null = null
   let outOfStock: Candidates['outOfStock'] | null = null
 
-  for (const { slug } of products) {
+  for (const { id, slug } of products) {
     if (withVariants !== null && outOfStock !== null) break
-    const found = await inspect(request, slug)
+    const found = await inspect(request, id, slug)
     if (found.status !== 200) continue
 
     if (
@@ -85,10 +92,10 @@ async function findCandidates(request: APIRequestContext): Promise<Candidates> {
       !found.addDisabled &&
       new Set(found.variantPrices).size >= 2
     ) {
-      withVariants = { slug: found.slug, variantLabels: found.variantLabels }
+      withVariants = { id: found.id, slug: found.slug, variantLabels: found.variantLabels }
     }
     if (outOfStock === null && found.addDisabled) {
-      outOfStock = { slug: found.slug }
+      outOfStock = { id: found.id, slug: found.slug }
     }
   }
 
@@ -105,6 +112,36 @@ async function shoot(page: Page, name: string) {
   const { mkdirSync } = await import('node:fs')
   mkdirSync(SHOTS, { recursive: true })
   await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, animations: 'disabled' })
+}
+
+/**
+ * Clicks the real "Add to bag" button on `slug`'s own page, in a throwaway browser context the
+ * test closes right after — so the click's real, successful add never touches the calling test's
+ * own bag — and returns the exact POST it sent: the request Next's client runtime makes for a
+ * `useActionState` form action (a `Next-Action` header naming the function, a multipart body of
+ * the form's own named fields). Replaying it with a field swapped is the only way to force the
+ * action without inventing a route.
+ */
+async function captureAddToBagRequest(
+  page: Page,
+  slug: string,
+): Promise<{ url: string; headers: Record<string, string>; body: string }> {
+  const browser = page.context().browser()
+  if (browser === null) throw new Error('capturing the add-to-bag request needs a real browser')
+  const captureContext = await browser.newContext()
+  const capturePage = await captureContext.newPage()
+  await capturePage.goto(`${SHOP_ORIGIN}/product/${slug}`)
+  const [addRequest] = await Promise.all([
+    capturePage.waitForRequest(
+      (req) => req.method() === 'POST' && req.headers()['next-action'] !== undefined,
+    ),
+    capturePage.getByRole('button', { name: 'Add to bag' }).click(),
+  ])
+  const url = addRequest.url()
+  const headers = addRequest.headers()
+  const body = (addRequest.postDataBuffer() ?? Buffer.from('')).toString('utf8')
+  await captureContext.close()
+  return { url, headers, body }
 }
 
 async function axeClean(page: Page, label: string) {
@@ -159,21 +196,45 @@ test.describe('Shop product page (6.1.c)', () => {
     await axeClean(page, 'product with variants, 1280px')
   })
 
-  test('clicking Add to bag on the real path fails: the product page is still wired to the 6.1.b placeholder, not 6.2’s bag (finding, not fixed here)', async ({
+  test('Add to bag works: choosing a variant and pressing Add to bag adds it, and pressing again raises its quantity to 2', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto(`/product/${candidates.withVariants.slug}`)
+
+    const variantLabel = candidates.withVariants.variantLabels[1]!
+    const variant = page.getByRole('radio', { name: variantLabel })
+    await variant.check()
+    await expect(variant).toBeChecked()
+
     const addButton = page.getByRole('button', { name: 'Add to bag' })
+    const addedStatus = page.getByRole('status').filter({ hasText: 'Added to your bag.' })
+
     await expect(addButton).toBeEnabled()
     await addButton.click()
-    await expect(page.getByRole('status').filter({ hasText: 'We could not add it' })).toBeVisible()
+    await expect(addedStatus).toBeVisible()
+
+    await shoot(page, 'product-added-bag-390')
 
     await page.goto('/bag')
-    await expect(page.getByText('Your bag is empty')).toBeVisible()
+    const line = page.getByRole('listitem').filter({ hasText: variantLabel })
+    await expect(line).toBeVisible()
+    await expect(line.getByRole('spinbutton')).toHaveValue('1')
+
+    // Pressing again, same product and variant, merges into the same line (`addToBag`'s
+    // `updated` outcome) rather than adding a second one.
+    await page.goto(`/product/${candidates.withVariants.slug}`)
+    await variant.check()
+    await expect(variant).toBeChecked()
+    await addButton.click()
+    await expect(addedStatus).toBeVisible()
+
+    await page.goto('/bag')
+    await expect(page.getByRole('listitem').filter({ hasText: variantLabel })).toHaveCount(1)
+    await expect(line.getByRole('spinbutton')).toHaveValue('2')
   })
 
-  test('the zero-stock product shows "Out of stock" at 390 px, its add button is disabled, and the real placeholder action it posts to never adds a line', async ({
+  test('the zero-stock product shows "Out of stock" at 390 px, has no working add button, and a forced post of the real add action is refused', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 })
@@ -188,16 +249,28 @@ test.describe('Shop product page (6.1.c)', () => {
     await shoot(page, 'product-out-of-stock-390')
     await axeClean(page, 'out-of-stock product, 390px')
 
-    // The real add path (actions.ts' own export, called the way the module exposes it — no
-    // invented route): proves the placeholder never adds a line, disabled button or not.
-    const actions =
-      (await import('../../../engine/apps/web/src/sites/shop/product/actions')) as typeof import('../../../engine/apps/web/src/sites/shop/product/actions')
-    const result = await actions.addToBagPlaceholder({
-      sku: 'whatever-sku',
-      variantSku: null,
-      qty: 1,
+    // The real add-to-bag server action (`addToBagAction`), forced: captured from the enabled
+    // variant product's own request in a throwaway browser context (so this test's own, still
+    // empty, bag cookie is never touched by that real click), then replayed on this page's
+    // session with the zero-stock product's id swapped in for the captured one and no variant —
+    // no invented route, the exact POST the enabled page's button sends.
+    const captured = await captureAddToBagRequest(page, candidates.withVariants.slug)
+    const forcedBody = captured.body
+      .replace(/(name="productId"\r\n\r\n)\d+/, `$1${candidates.outOfStock.id}`)
+      .replace(/(name="variantSku"\r\n\r\n)[^\r\n]*/, '$1')
+    const headers = { ...captured.headers, host: `shop.localhost:${PORT}` }
+    delete headers['content-length']
+    delete headers['cookie']
+    // `page.request` uses Node's resolver, which may not know `*.localhost` (this file's own
+    // note on `BASE_URL`); the captured URL's path, posted at the plain IP with the real `Host`
+    // header above, reaches the same vhost the browser posted to.
+    const forcedUrl = captured.url.replace(/^https?:\/\/[^/]+/, BASE_URL)
+
+    const forced = await page.request.post(forcedUrl, {
+      headers,
+      data: Buffer.from(forcedBody, 'utf8'),
     })
-    expect(result).toEqual({ ok: false, reason: 'not-built-yet' })
+    expect(forced.ok(), 'the forced post reaches the action (refused by outcome, not a transport error)').toBeTruthy()
 
     await page.goto('/bag')
     await expect(page.getByText('Your bag is empty')).toBeVisible()

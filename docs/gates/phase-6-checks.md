@@ -1,6 +1,10 @@
 # Phase 6 gates — evidence for 6.1.c, 6.2.d and 6.3.d
 
-Ticket 6qa-r2 (continuation of 6qa-r1, continuation of 6qa), `qa` on the sonnet seat, branch `w/6qa`, 2026-10-05.
+Ticket 6qa-r4 (continuation of 6qa-r3, 6qa-r2, 6qa-r1, 6qa), `qa` on the sonnet seat, branch `w/6qa`, 2026-10-05.
+Step 1 of 6qa-r3 was already done by the orchestrator before this ticket started: `w/6.1fix` (`deca40b`) is merged
+in (`11939dd`), rewiring the product page's "Add to bag" off the 6.1.b placeholder and onto 6.2's real
+`addToBagAction`, and deleting the placeholder `sites/shop/product/actions.ts`. This update re-ran the product
+e2e suite against that real wiring and replaces §6.1.c's prior **FAIL** with **PASS**.
 
 **Setup.** Production build (`pnpm build`, `node .next/standalone` fallback not needed — `next start` works once
 the boot-check env is complete) on worktree port 4282, database `indies_p6_w6qa`. `GALLERY_HOSTS=gallery.localhost`,
@@ -31,61 +35,81 @@ code — see **Findings** below for what's reportable as a real gap:
 variant and its price, and Add to bag works. The zero-stock product shows "Out of stock" and has no working add
 button. Axe is clean on both pages at 390 and 1280 px.
 
-**Test:** `tests/e2e/shop/product.spec.ts`, rewritten in full (ticket 6qa-r1 point 1 — the prior version's
-assertions all sat behind `if (visible)`, used invented `data-testid`s and an invented `/api/x/bag/add` route, and
-was never run against data). The rewrite:
+**Test:** `tests/e2e/shop/product.spec.ts`, updated for ticket 6qa-r3/6qa-r4 point 2 now that `w/6.1fix`
+(`deca40b`) rewires the picker onto the real `addToBagAction` and deletes the 6.1.b placeholder. The two cases
+that used to assert the placeholder's failure mode are replaced:
 
-- selects by role and the real lexicon text (`getByRole('radio', …)`, `getByRole('button', { name: … })`) —
-  no `data-testid` was added to product code;
-- discovers its two products from the live `/api/products` list and each product page's real markup (a variant
-  product with ≥2 differently-priced variants and a working add button; an out-of-stock product whose add button
-  is disabled) — never a hard-coded slug, so a different worktree's seed still runs the suite;
-- uses `@axe-core/playwright`'s `AxeBuilder`, the same as every other e2e spec — `axe-playwright` (not installed)
-  is gone;
-- has no conditional assertion: a missing product fails `findCandidates`'s `expect(…).not.toBeNull()`, not a skip.
+- **"Add to bag works"**: at 390 px, on the variant product, choosing the second variant and pressing "Add to
+  bag" shows the real success status ("Added to your bag."); `/bag` then lists that product and variant at qty 1;
+  choosing the same variant again and pressing Add to bag a second time merges into the same line (`addToBag`'s
+  `updated` outcome) and raises it to qty 2 — asserted by role (`getByRole('listitem')`, `getByRole('spinbutton')`
+  on the bag page's quantity stepper), never an invented `data-testid`.
+- **"the zero-stock product … cannot be added"**: the button is disabled and "Out of stock" shows (unchanged from
+  before). A forced add is then run against the real action, not a placeholder or an invented route: the suite
+  opens a throwaway browser context, clicks the enabled variant product's own "Add to bag" button there (so that
+  real, successful add never touches this test's own bag), captures the exact POST Next's client runtime sends
+  for the `useActionState` form action (`Next-Action` header, multipart body of the form's own named fields:
+  `productId`, `variantSku`, `qty`), swaps the zero-stock product's id into the `productId` field and blanks
+  `variantSku`, and replays it on this test's own session (`page.request.post`, same cookies, same `Next-Action`
+  header and content-type/boundary). `addToBagAction` → `addToBagChecked` → `lineIsSellable` refuses it
+  server-side (`availabilityFor` says `product: false` for every row), and the bag page is still empty — the
+  replay reaches the action (`forced.ok()`, no transport error) but changes nothing.
+- every import of the deleted placeholder (`sites/shop/product/actions.ts`) is gone.
 
-**Run** (`E2E_PORT=4282 pnpm exec playwright test --project shop-e2e --workers=1`; `--workers=1` because 5
-parallel workers each opening a Postgres connection exhausted this host's pool — see `6.3.d`'s note on the same
-flakiness):
+Still true from before: products are discovered from the live `/api/products` list and each product page's real
+markup, never a hard-coded slug; `@axe-core/playwright`'s `AxeBuilder` is used throughout; a missing product fails
+`findCandidates`'s own `expect(…).not.toBeNull()`, not a skip.
+
+**Run** (`E2E_PORT=4282 PHASE6_SHOTS=docs/gates/phase-6 pnpm exec playwright test tests/e2e/shop/product.spec.ts
+--project=shop-e2e --workers=1`; `--workers=1` for the same reason as before — see `6.3.d`'s note on this host's
+Postgres connection limit under parallel load):
 
 ```
 Running 5 tests using 1 worker
 
-  ok 1 a seeded product with variants loads at 390 px; the picker changes variant and price (2.3s)
-  ok 2 axe is clean on the variant product at 1280 px (23.6s)
-  ok 3 clicking Add to bag on the real path fails: the product page is still wired to the 6.1.b placeholder, not 6.2's bag (finding, not fixed here) (2.8s)
-  ok 4 the zero-stock product shows "Out of stock" at 390 px, its add button is disabled, and the real placeholder action it posts to never adds a line (1.9s)
-  ok 5 axe is clean on the out-of-stock product at 1280 px (1.6s)
+  ok 1 a seeded product with variants loads at 390 px; the picker changes variant and price (2.2s)
+  ok 2 axe is clean on the variant product at 1280 px (1.4s)
+  ok 3 Add to bag works: choosing a variant and pressing Add to bag adds it, and pressing again raises its quantity to 2 (1.5s)
+  ok 4 the zero-stock product shows "Out of stock" at 390 px, has no working add button, and a forced post of the real add action is refused (2.0s)
+  ok 5 axe is clean on the out-of-stock product at 1280 px (1.5s)
 
-  5 passed (37.9s)
+  5 passed (12.1s)
 ```
 
-Re-run clean a second time before screenshots (`5 passed (21.3s)`).
+Re-run clean a second time before screenshots:
 
-Products found this run: **orchid-print-kawung-3** (`SEED-SHOP-070`, variants A3/A2 — A2's price was raised by
-SQL on this worktree's database to Rp 1.260.000 so the two variants actually differ, since no seeded product has
-variants priced apart; the seed itself has none) and **city-plan-reproduction-kawung-3** (`SEED-SHOP-058`,
-discovered already at 0 stock across the 60 stores it has rows for — not the product fixed up in Setup step 3,
-which the dynamic discovery did not happen to reach first; both are genuinely out of stock, so either is valid
-evidence for this Check's UI-observable clause).
+```
+Running 5 tests using 1 worker
+
+  ok 1 a seeded product with variants loads at 390 px; the picker changes variant and price (1.5s)
+  ok 2 axe is clean on the variant product at 1280 px (1.4s)
+  ok 3 Add to bag works: choosing a variant and pressing Add to bag adds it, and pressing again raises its quantity to 2 (1.5s)
+  ok 4 the zero-stock product shows "Out of stock" at 390 px, has no working add button, and a forced post of the real add action is refused (1.8s)
+  ok 5 axe is clean on the out-of-stock product at 1280 px (1.3s)
+
+  5 passed (10.6s)
+```
+
+Products found this run (same seed state as the prior report, this worktree's database only): **orchid-print-
+kawung-3** (`SEED-SHOP-070`, variants A3/A2, A2 raised to Rp 1.260.000) and **city-plan-reproduction-kawung-3**
+(`SEED-SHOP-058`, 0 stock in every store it has rows for).
 
 Screenshots (`PHASE6_SHOTS=docs/gates/phase-6`): `product-variants-390.png`, `product-variants-1280.png`,
-`product-out-of-stock-390.png`, `product-out-of-stock-1280.png`.
+`product-added-bag-390.png`, `product-out-of-stock-390.png`, `product-out-of-stock-1280.png`.
 
 | Clause | Evidence | Verdict |
 | --- | --- | --- |
 | Seeded product with variants loads at 390 px | test 1; `product-variants-390.png` | **PASS** |
-| Variant picker changes variant and its price | test 1 (`second.check()`, then `priceAfter` asserted `.not.toBe(priceBefore)`); the screenshot shows A2 selected at Rp 1.260.000 | **PASS** |
-| **Add to bag works** | test 3: clicking the enabled "Add to bag" button shows "We could not add it just now — try again." and `/bag` stays empty. The button still posts to the 6.1.b placeholder (`engine/apps/web/src/sites/shop/product/actions.ts:17-20`, `addToBagPlaceholder`), never wired to 6.2's real bag action (`engine/apps/web/src/server/shop/bag/actions.ts`). | **FAIL — see Finding 1** |
+| Variant picker changes variant and its price | test 1 (`second.check()`, then `priceAfter` asserted `.not.toBe(priceBefore)`) | **PASS** |
+| **Add to bag works** | test 3: choosing a variant and pressing "Add to bag" shows "Added to your bag." (`product.added`); `/bag` lists the line at qty 1 (`product-added-bag-390.png`); pressing again merges into the same line at qty 2 | **PASS** |
 | Zero-stock product shows "Out of stock" | test 4; `product-out-of-stock-390.png` | **PASS** |
 | Out-of-stock add button disabled/absent | test 4 (`toBeDisabled()`) | **PASS** |
-| The real add path leaves the bag empty for the zero-stock product | test 4: calls `addToBagPlaceholder` directly (actions.ts' own export, the way the module exposes it — no invented route) and asserts `{ ok: false, reason: 'not-built-yet' }`, then `/bag` is empty | **PASS** |
+| A forced add is refused, and the bag stays empty | test 4: replays the real `addToBagAction` POST (captured from the enabled product's own click, `Next-Action` header and all) with the zero-stock product's id swapped in; the request reaches the action (`forced.ok()`) but is refused server-side (`add-to-bag.ts`'s `lineIsSellable`), and `/bag` is still empty | **PASS** |
 | Axe clean, 390 px, both pages | tests 1 and 4 | **PASS** |
 | Axe clean, 1280 px, both pages | tests 2 and 5 | **PASS** |
 
-**VERDICT: FAIL** — one clause ("Add to bag works") is false on the merged code. Every other clause passes with
-executed evidence. This is not a test bug: the product page was never rewired from the 6.1.b placeholder onto
-6.2's bag (Finding 1).
+**VERDICT: PASS** — every clause runs green with executed evidence, including the "Add to bag works" clause that
+failed in the prior report (Finding 1 below is now fixed, not open).
 
 ---
 
@@ -246,13 +270,13 @@ by both the application-level guard and the database's own CHECK constraint.
 
 | Check | Verdict |
 | --- | --- |
-| **6.1.c** Product page, variants, out-of-stock, axe | **FAIL** — "Add to bag works" is false on merged `main` (Finding 1); every other clause passes |
+| **6.1.c** Product page, variants, out-of-stock, axe | **PASS** — 5/5 `shop-e2e` cases green in four consecutive runs against `w/6.1fix`'s real add-to-bag (Finding 1 resolved) |
 | **6.2.d** Pricing: tamper, totals, threshold, code | **PASS** — 77/77 tests, every clause mapped to a real test |
 | **6.3.d** Stock: 20 concurrent, Ubud, unfillable, outside Indonesia | **PASS** — invariant holds in 3/3 runs; planted-bug removal reproduces the described failure |
 
 ## Findings
 
-1. **The product page's "Add to bag" button is still wired to the 6.1.b placeholder, never to 6.2's real bag.**
+1. **Resolved by `w/6.1fix` (`deca40b`)** — kept for the record: **The product page's "Add to bag" button is still wired to the 6.1.b placeholder, never to 6.2's real bag.**
    `engine/apps/web/src/sites/shop/product/variant-picker.tsx:51-61` calls
    `engine/apps/web/src/sites/shop/product/actions.ts:17` (`addToBagPlaceholder`), which unconditionally returns
    `{ ok: false, reason: 'not-built-yet' }`. The real line-adding logic (`setBagLineQty`,
