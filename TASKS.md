@@ -80,7 +80,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-05 | r2 landed the importer's second-pass fix (`fc5e279`) then died before the held rows, dry run and report; continuation `am-3.7b-r3` in flight (also writes the local-preview seed commands) |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
-| 6·W2 | 6.3.a Checkout and map pin | Sonnet (claude seat) | `w/6.3a` | 2026-10-05 | GLM run `am-6.3a-1` stalled (~100 min, 0 commits) and was stopped; `am-6.3a-s1` on Sonnet finishes from its uncommitted files; Opus reviews |
+| 7·W2 | 7.3 Tracking page and notifications | Sonnet (claude seat) | `w/7.3` | 2026-10-05 | run `am-7.3-s1` on the merged 7.1 core; Opus reviews |
+| 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
+| 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
 | 4·W3 | 4.3.e Check | Sonnet (claude seat) | `w/4.3r3` | 2026-10-05 | 4.qa merged (`b9d486e`): 4.1.e/4.2.c/4.2.d PASS, 4.1 and 4.2 closed; 4.3.e failed on F1–F4 (layout cap, heading type, English in shared header/dialog, missing drawn sections — ruled in scope); `am-4.3r3-s1` fixes and re-runs the evidence |
 | 3·W2 | 3.6.d Check | qa (claude seat) | `w/3.6qa` | 2026-10-05 | run `am-3.6qa-c1` — admin as owner/editor/store at 1280 px, plain bilingual errors, dashboard counts vs SQL, the phase-3 Done-when admin flows |
 | 3·W1 | 3.1 Staging as one site | orchestrator (Opus) | `w/3.1` | 2026-10-05 | container test **ALL PASS** (`a3d88d1`, packed sha256 `5c577c83…`); Helios dry run as expected (32 changes planned, the 5 predicted two-app errors, host unchanged) — ⛔ the auto-mode classifier blocks the host steps from step 3 (rotated-secrets check, retirement) as credential exploration; waiting on the user for a permission rule or to run the steps |
@@ -817,6 +819,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ 6.3.a merged (`3e75a52`): GLM's stalled draft finished on Sonnet, Opus-reviewed (prices, fees and totals only from `quoteBag`/`createOrder`; the form echoes the reviewed total for the price-changed check); fresh clone with main: types, 26 tests, format, lint, tokens, build green. Follow-up: a missing `expectedTotalIdr` skips the price-changed warning (the charge stays server-priced). **3.1 on Helios (user go-ahead + global `ssh helios` rule):** container test ALL PASS; rotated keys all closed; old staging retired (both apps stopped, `ig_db`/`oei_db` dumped — 579 entries each, kept in `/var/backups/indies/retired-3.1/` — then dropped; both old CloudPanel sites, buckets, users and policies removed; nginx -t ok); the one-site apply ran clean (32 changes, 0 errors). Left: the vhost edit and TLS (CloudPanel UI), the `.env` secrets, the release, the Check. `/home/uig`, `/home/uoei` (old users, with `backups/`) kept for now.
 
 - 2026-10-05 — **Owner decision (via the user): staging backups stay on Helios; no off-box copy for staging.** 3.1.c and the 3.1.e Check close with the off-box clause waived; the off-box target is decided before production (phase 10).
 
