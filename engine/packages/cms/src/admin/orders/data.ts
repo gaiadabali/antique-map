@@ -6,27 +6,32 @@
  */
 import type { Payload, PayloadRequest, Where } from 'payload'
 
-import type { Order, Store } from '../../../payload-types'
 import type { OrderStatus } from '../../collections/orders/statuses'
 import { driverImageUrl } from '../../shop/fulfilment'
 
-export type OrderRow = Pick<
-  Order,
-  | 'id'
-  | 'number'
-  | 'status'
-  | 'contact'
-  | 'delivery'
-  | 'lines'
-  | 'giftNote'
-  | 'store'
-  | 'storeSnapshot'
-  | 'totals'
-  | 'needsAttention'
-  | 'driverImage'
-  | 'updatedAt'
-  | 'createdAt'
->
+/*
+ * The rows are described here, structurally, and NOT imported from the generated
+ * `payload-types.ts`: that file carries `declare module 'payload'`, and importing it pulls the
+ * generated types into this package's whole typecheck (27 unrelated errors the day it did).
+ */
+
+/** An order as the panel reads it: the fields `ORDER_ROW_SELECT` names, shaped as Payload returns them. */
+export type OrderRow = {
+  readonly id: number
+  readonly number: number
+  readonly status: OrderStatus
+  readonly contact: Readonly<Record<string, unknown>>
+  readonly delivery: Readonly<Record<string, unknown>>
+  readonly lines: readonly Readonly<Record<string, unknown>>[]
+  readonly giftNote?: string | null
+  readonly store: number | Readonly<Record<string, unknown>>
+  readonly storeSnapshot?: Readonly<Record<string, unknown>> | null
+  readonly totals: Readonly<Record<string, unknown>>
+  readonly needsAttention?: boolean | null
+  readonly driverImage?: { readonly key?: string | null } | null
+  readonly updatedAt: string
+  readonly createdAt: string
+}
 
 const ORDER_ROW_SELECT = {
   number: true,
@@ -113,7 +118,15 @@ export async function loadOrder(
   }
 }
 
-export type StoreOption = Pick<Store, 'id' | 'code' | 'name' | 'area' | 'lat' | 'lng'>
+/** A store in the reassign picker. */
+export type StoreOption = {
+  readonly id: number
+  readonly code: string
+  readonly name: string
+  readonly area?: string | null
+  readonly lat?: number | null
+  readonly lng?: number | null
+}
 
 export async function loadActiveStores(
   payload: Payload,
