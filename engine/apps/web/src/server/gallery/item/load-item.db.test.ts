@@ -36,7 +36,13 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
     })
     const grade = await create({
       collection: 'terms',
-      data: { kind: 'grade', label: 'VG+', definition: 'Very good, nearly fine.', equivalent: 'A', _status: 'published' },
+      data: {
+        kind: 'grade',
+        label: 'VG+',
+        definition: 'Very good, nearly fine.',
+        equivalent: 'A',
+        _status: 'published',
+      },
     })
     const subject = await create({
       collection: 'terms',
@@ -89,7 +95,7 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
       overrideAccess: true,
       limit: 1,
     })
-    const draftPublicId = String((drafts.docs[0] as { publicId: number }).publicId)
+    const draftPublicId = String((drafts.docs[0] as unknown as { publicId: number }).publicId)
     expect(await queryItem(stack.payload, Number(draftPublicId), 'en', 'Date unknown')).toBeNull()
   })
 

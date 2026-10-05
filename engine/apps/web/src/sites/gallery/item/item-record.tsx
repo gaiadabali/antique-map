@@ -91,9 +91,7 @@ export function ItemRecord({
         {work.subjects.length > 0 && (
           <Row term={t('item.subjects')}>{work.subjects.join(', ')}</Row>
         )}
-        {work.stockNumber !== null && (
-          <Row term={t('item.stockNumber')}>{work.stockNumber}</Row>
-        )}
+        {work.stockNumber !== null && <Row term={t('item.stockNumber')}>{work.stockNumber}</Row>}
       </dl>
     </section>
   )

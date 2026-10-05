@@ -33,19 +33,15 @@ export function ItemViewComposition({
   // becomes the H1 and the maker line moves up beside it (§5).
   const hasHook = work.title !== '' && work.title !== work.originalTitle
   const h1 = hasHook ? work.title : (work.originalTitle ?? work.title)
-  const makerLine = work.maker !== null
-    ? `${work.maker.name}${work.maker.role !== '' ? ` (${work.maker.role})` : ''}`
-    : null
+  const makerLine =
+    work.maker !== null
+      ? `${work.maker.name}${work.maker.role !== '' ? ` (${work.maker.role})` : ''}`
+      : null
   const byline = [makerLine, work.date].filter(Boolean).join(', ')
 
   return (
     <article className={styles.page}>
-      <Breadcrumbs
-        items={[
-          { label: t('item.browse'), href: browseHref },
-          { label: h1 },
-        ]}
-      />
+      <Breadcrumbs items={[{ label: t('item.browse'), href: browseHref }, { label: h1 }]} />
       <header className={styles.head}>
         <h1 className={styles.title}>{h1}</h1>
         {hasHook && work.originalTitle !== null && (
@@ -73,9 +69,7 @@ export function ItemViewComposition({
               {primary.synthetic && <p className={styles.mockupNote}>{t('item.mockup')}</p>}
             </>
           )}
-          {work.images.length > 0 && (
-            <ZoomLazy images={work.images} locale={locale} />
-          )}
+          {work.images.length > 0 && <ZoomLazy images={work.images} locale={locale} />}
         </div>
 
         <div className={styles.side}>

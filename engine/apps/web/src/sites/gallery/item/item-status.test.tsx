@@ -39,7 +39,7 @@ const work = (status: ItemView['status']): ItemView => ({
 const markup = (status: ItemView['status']) =>
   renderToStaticMarkup(<AskPanel work={work(status)} locale="en" askHref="/contact" />)
 
-describe("the item page’s three states", () => {
+describe('the item page’s three states', () => {
   it('an available work says Price on request and asks about it', () => {
     const html = markup('available')
     expect(html).toContain('Price on request')

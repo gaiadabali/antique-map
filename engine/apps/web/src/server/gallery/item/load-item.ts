@@ -83,7 +83,9 @@ const strOf = (value: unknown): string | null => {
 const int = (value: unknown): number | null =>
   typeof value === 'number' && Number.isSafeInteger(value) ? value : null
 const rows = (value: unknown): readonly Doc[] =>
-  Array.isArray(value) ? (value.filter((row) => typeof row === 'object' && row !== null) as Doc[]) : []
+  Array.isArray(value)
+    ? (value.filter((row) => typeof row === 'object' && row !== null) as Doc[])
+    : []
 
 /** The media bucket's public base: the CDN in front of the public prefixes (C9). Empty when
  * the environment does not name one, and every image then answers with its own file. */
@@ -93,8 +95,7 @@ function mediaPublicUrl(): string {
 }
 
 const isLowResolution = (width: number | null, height: number | null): boolean =>
-  width !== null && height !== null && Math.max(width, height) < 1600 &&
-  Math.max(width, height) > 0
+  width !== null && height !== null && Math.max(width, height) < 1600 && Math.max(width, height) > 0
 
 /** The media record's public addresses: its deep-zoom tiles, its largest derivative, itself. */
 function imageOf(media: Doc): ItemImage | null {
@@ -110,9 +111,7 @@ function imageOf(media: Doc): ItemImage | null {
   // C9 `iiifInfoUrl()` / `derivativeKey()` shapes, restated here because `@engine/media`'s
   // exports do not reach the web app (the ticket owns no dependency change for it).
   const infoUrl =
-    iiifReady && assetId !== null && base !== ''
-      ? `${base}/iiif/${assetId}/info.json`
-      : null
+    iiifReady && assetId !== null && base !== '' ? `${base}/iiif/${assetId}/info.json` : null
   const viewerSrc =
     infoUrl !== null
       ? infoUrl
@@ -179,8 +178,13 @@ function viewOf(doc: Doc, unknownDateText: string): ItemView {
     originalTitle: strOf(doc.originalTitle),
     originalTitleLanguage: strOf(doc.originalTitleLanguage),
     objectType: strOf(doc.objectType),
-    maker: rows(doc.makers).map(creditOf).find((c): c is ItemCredit => c !== null) ?? null,
-    places: rows(doc.places).map(placeOf).filter((p): p is ItemPlace => p !== null),
+    maker:
+      rows(doc.makers)
+        .map(creditOf)
+        .find((c): c is ItemCredit => c !== null) ?? null,
+    places: rows(doc.places)
+      .map(placeOf)
+      .filter((p): p is ItemPlace => p !== null),
     date: dateTextOf(doc.date ?? {}, unknownDateText),
     dimensions: dimensionsLine(doc.dimensions as Record<string, unknown> | null),
     technique: strOf(doc.technique),
@@ -193,8 +197,12 @@ function viewOf(doc: Doc, unknownDateText: string): ItemView {
       .map((row) => strOf(row.defect))
       .filter((d): d is string => d !== null),
     conditionRestoration: strOf(condition.restoration),
-    provenance: rows(doc.provenance).map(provenanceOf).filter((p): p is ItemProvenance => p !== null),
-    references: rows(doc.references).map(referenceOf).filter((r): r is ItemReference => r !== null),
+    provenance: rows(doc.provenance)
+      .map(provenanceOf)
+      .filter((p): p is ItemProvenance => p !== null),
+    references: rows(doc.references)
+      .map(referenceOf)
+      .filter((r): r is ItemReference => r !== null),
     subjects: rows(doc.subjects)
       .map((term) => strOf(term.label))
       .filter((s): s is string => s !== null),

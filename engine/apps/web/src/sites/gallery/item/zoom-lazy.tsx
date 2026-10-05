@@ -14,11 +14,16 @@ import { itemText } from './copy'
 import styles from './item.module.css'
 import type { ZoomViewerProps } from './zoom-viewer'
 
-const ZoomViewer = dynamic<ZoomViewerProps>(() => import('./zoom-viewer').then((m) => m.ZoomViewer), {
-  ssr: false,
-})
+const ZoomViewer = dynamic<ZoomViewerProps>(
+  () => import('./zoom-viewer').then((m) => m.ZoomViewer),
+  {
+    ssr: false,
+  },
+)
 
-export function ZoomLazy(props: Omit<ZoomViewerProps, 'labels' | 'lowResolutionNotice'>): React.ReactElement {
+export function ZoomLazy(
+  props: Omit<ZoomViewerProps, 'labels' | 'lowResolutionNotice'>,
+): React.ReactElement {
   const t = itemText(props.locale)
   const [open, setOpen] = useState(false)
 

@@ -42,7 +42,8 @@ export const ITEM_KEYS = defineMessages({
   'item.technique': 'Technique',
   'item.colouring': 'Colouring',
   'item.references': 'References',
-  'item.shipping': 'Shipping and duties are quoted after we agree the price, and paid before the work is sent.',
+  'item.shipping':
+    'Shipping and duties are quoted after we agree the price, and paid before the work is sent.',
   'item.sold': 'Sold',
   'item.stockNumber': 'Stock number',
   'item.subjects': 'Subjects',
