@@ -91,6 +91,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 | 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
+| 7·W2 | 7.3 The tracking page and the notifications | senior-fe | `w/7.3` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -587,7 +588,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 7.2.b owner and editor order views: filter by status and store, reassign, cancel, flag handling for late payments
   - [ ] 7.2.c **Check:** driven on a 390 px viewport as a store user: accept → processing → waiting → upload an image → on the way → delivered takes under two minutes with no help text; a different store's user sees an empty list.
 
-- [ ] **7.3 The tracking page and the notifications** · needs: 7.1
+- [ ] **7.3 The tracking page and the notifications** · needs: 7.1 — 🔄 7·W2
   - **Lane** SHP · **Agent** senior-fe with senior-be · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/tracking/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{track,stores}/**`, `engine/packages/cms/src/shop/notify/**`
   - **Read** COMMERCE.md §Tracking and §Notifications, EXPERIENCE-SHOP.md §Tracking, Q5 and Q6
