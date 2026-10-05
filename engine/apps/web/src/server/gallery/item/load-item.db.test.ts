@@ -64,6 +64,9 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
         references: [{ citation: 'Tooley (Australia) 1268' }],
         provenance: [{ holder: 'A private collector, Singapore', period: '1990s' }],
         images: [{ media: recto }],
+        // Staff-only figures the loader must never carry: the price and the cost.
+        askingPrice: 18_000,
+        physical: { acquisition: { cost: { amount: 7_777, currency: 'USD' } } },
         _status: 'published',
       },
     })
@@ -81,11 +84,9 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
         _status: 'draft',
       },
     })
-  })
+  }, 180_000)
 
-  afterAll(async () => {
-    await stack.stop()
-  })
+  afterAll(() => stack?.stop(), 60_000)
 
   it('a draft is null', async () => {
     // The draft's own public id is assigned on save; find it through the admin read.
@@ -104,14 +105,28 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery item loader', (
     expect(view).not.toBeNull()
     const json = JSON.stringify(view)
     expect(json).not.toContain('askingPrice')
+    expect(json).not.toContain('18000')
+    expect(json).not.toContain('7777')
     expect(json).not.toContain('physical')
     expect(json).not.toContain('cataloguing')
+    expect(json).not.toContain('master')
     // The fields the page shows, it does show.
     expect(view?.title).toBe('Bali by François Valentijn')
     expect(view?.maker?.name).toBe('François Valentijn')
     expect(view?.stockNumber).toBe('M.0500')
-    expect(view?.images.length).toBeGreaterThan(0)
+    expect(view?.images.length).toBe(1)
     expect(view?.images[0]?.alt).not.toBe('')
+    expect(view?.images[0]?.url).toMatch(/\S/)
+    expect(view?.images[0]?.role).toBe('recto')
+    expect(view?.images[0]?.syntheticLabel).toBeNull()
+    // No tiles and no public base in the test: the viewer opens the media's own file.
+    expect(view?.images[0]?.infoUrl).toBeNull()
+    expect(view?.images[0]?.viewerSrc).toBe(view?.images[0]?.url)
+    expect(view?.primaryIndex).toBe(0)
+    expect(view?.technique).toBe('copperplate-engraving')
+    expect(view?.conditionGrade).toBe('VG+')
+    expect(view?.references[0]?.citation).toBe('Tooley (Australia) 1268')
+    expect(view?.provenance[0]?.holder).toBe('A private collector, Singapore')
   })
 
   it('an unknown id is null', async () => {

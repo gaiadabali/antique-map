@@ -74,6 +74,9 @@ importers:
       '@engine/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@engine/media':
+        specifier: workspace:*
+        version: link:../../packages/media
       '@engine/migrate':
         specifier: workspace:*
         version: link:../../packages/migrate

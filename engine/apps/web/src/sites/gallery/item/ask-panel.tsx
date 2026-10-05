@@ -1,9 +1,9 @@
 /**
  * The item page's status and Ask panel (5.2.d; EXPERIENCE-GALLERY.md §5): a conversation, never
- * a checkout. `available` leads with **Ask about this** and says *Price on request*; `on-hold`
- * says so and still asks; `sold` says **Sold** and nothing else — no Ask, no price, no buyer, no
- * "available" wording (G10). The Ask target is a prop: 5.3's WhatsApp builder replaces the
- * plain `/contact` link, so the panel never builds the address itself.
+ * a checkout. `available` says *Price on request* and leads with **Ask about this**; `on-hold`
+ * wears its badge and still asks; `sold` says **Sold** and nothing else — no Ask button, no
+ * price, no buyer, no "available" wording (G10, ticket 5.2b). The Ask target is a prop: 5.3's
+ * WhatsApp builder replaces the plain contact page, so the panel never builds the address.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
@@ -27,9 +27,7 @@ export function AskPanel({
   if (work.status === 'sold') {
     return (
       <aside className={styles.panel} data-status="sold">
-        <Badge tone="default">{t('item.sold')}</Badge>
-        {/* Sold is all it says: no price, no buyer, no next step (EXPERIENCE-GALLERY.md §5). */}
-        <Button href={askHref}>{t('item.askSold')}</Button>
+        <Badge tone="default">{t('status.sold')}</Badge>
       </aside>
     )
   }
@@ -37,7 +35,7 @@ export function AskPanel({
   if (work.status === 'on-hold') {
     return (
       <aside className={styles.panel} data-status="on-hold">
-        <Badge tone="caution">{t('item.onHold')}</Badge>
+        <Badge tone="caution">{t('status.onHold')}</Badge>
         <p className={styles.panelNote}>{t('item.onHoldExplain')}</p>
         <Button href={askHref}>{t('item.askOnHold')}</Button>
         <p className={styles.panelFine}>{t('item.shipping')}</p>

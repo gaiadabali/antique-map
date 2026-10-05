@@ -1,0 +1,107 @@
+/**
+ * The item page's images (5.2.b, 5.2.c): a work's `images[].media` rows, resolved to the public
+ * addresses the page and the viewer use, in page order. Media URLs are built here, in the view
+ * model, with the C9 key builders (`@engine/media/contract`), never in a component: the viewer's
+ * tile source is the image's capped IIIF `info.json` when the pipeline built the pyramid, else
+ * the largest public derivative, else the media record's own file.
+ */
+import {
+  ASSET_ID_PATTERN,
+  DERIVATIVE_WIDTHS,
+  MEDIA_PROVENANCES,
+  MEDIA_ROLES,
+  SYNTHETIC_LABEL,
+  derivativeKey,
+  iiifInfoUrl,
+  orderImages,
+  primaryImageIndex,
+  type DerivativeWidth,
+  type MediaProvenance,
+  type MediaRole,
+} from '@engine/media/contract'
+
+import type { ItemImage } from './view-model'
+
+type Doc = Record<string, unknown>
+
+/** The long edge under which a legacy photo cannot zoom (C9 `isLowResolution`, 5.2.c). */
+const LOW_RESOLUTION_EDGE = 1600
+
+/** The ladder's top rung: no public derivative is wider (C9 `DERIVATIVE_WIDTHS`). */
+const TOP_RUNG: DerivativeWidth = DERIVATIVE_WIDTHS[DERIVATIVE_WIDTHS.length - 1] ?? 2400
+
+const str = (value: unknown): string => (typeof value === 'string' ? value : '')
+const int = (value: unknown): number | null =>
+  typeof value === 'number' && Number.isSafeInteger(value) && value > 0 ? value : null
+
+const roleOf = (value: unknown): MediaRole =>
+  (MEDIA_ROLES as readonly string[]).includes(str(value)) ? (str(value) as MediaRole) : 'detail'
+const provenanceOf = (value: unknown): MediaProvenance =>
+  (MEDIA_PROVENANCES as readonly string[]).includes(str(value))
+    ? (str(value) as MediaProvenance)
+    : 'photograph'
+
+/** The media bucket's public base: the CDN in front of the public prefixes (C9). Empty when
+ * the environment names none, and every image then answers with its own file. */
+function mediaPublicUrl(): string {
+  const url = process.env.MEDIA_PUBLIC_URL
+  return typeof url === 'string' && url !== '' ? url.replace(/\/+$/, '') : ''
+}
+
+/**
+ * The widest derivative the ladder made for a source this wide: the source's own width when it
+ * is no wider than the top rung (`derivativeWidthsFor()` always renders the whole picture), else
+ * the top rung — so the fallback never points past the public cap.
+ */
+function largestDerivativeWidth(width: number): DerivativeWidth {
+  return (width <= TOP_RUNG ? width : TOP_RUNG) as DerivativeWidth
+}
+
+type Resolved = ItemImage & { readonly provenance: MediaProvenance }
+
+function imageOf(media: Doc, base: string): Resolved | null {
+  const url = str(media.url)
+  if (url === '') return null
+  const assetId = ASSET_ID_PATTERN.test(str(media.assetId)) ? str(media.assetId) : null
+  const width = int(media.width)
+  const height = int(media.height)
+  const iiifReady = (media.iiif as Doc | null | undefined)?.status === 'ready'
+  const derivativesReady = (media.derivatives as Doc | null | undefined)?.status === 'ready'
+  const published = base !== '' && assetId !== null
+  const infoUrl = published && iiifReady ? iiifInfoUrl(base, assetId) : null
+  const derivative =
+    published && derivativesReady && width !== null
+      ? `${base}/${derivativeKey(assetId, largestDerivativeWidth(width), 'webp')}`
+      : null
+  const provenance = provenanceOf(media.provenance)
+  return {
+    url,
+    alt: str(media.alt),
+    role: roleOf(media.role),
+    provenance,
+    syntheticLabel: SYNTHETIC_LABEL[provenance],
+    width,
+    height,
+    infoUrl,
+    viewerSrc: derivative ?? url,
+    lowResolution:
+      width !== null && height !== null && Math.max(width, height) < LOW_RESOLUTION_EDGE,
+  }
+}
+
+/** A work's image rows as the page shows them, in page order, with the lead image's index. */
+export function itemImagesOf(rows: readonly Doc[]): {
+  readonly images: readonly ItemImage[]
+  readonly primaryIndex: number
+} {
+  const base = mediaPublicUrl()
+  const resolved = rows
+    .map((row) => row.media)
+    .filter((media): media is Doc => typeof media === 'object' && media !== null)
+    .map((media) => imageOf(media, base))
+    .filter((image): image is Resolved => image !== null)
+  const ordered = orderImages('work', resolved)
+  const primaryIndex = primaryImageIndex('work', ordered)
+  const images = ordered.map(({ provenance: _provenance, ...image }) => image)
+  return { images, primaryIndex }
+}
