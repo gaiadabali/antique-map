@@ -54,6 +54,7 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'alt',
     type: 'text',
+    label: { en: 'Alt text', id: 'Teks alternatif' },
     localized: true,
     required: true,
     maxLength: ALT_MAX_LENGTH,
@@ -68,6 +69,7 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'altSource',
     type: 'select',
+    label: { en: 'Alt text source', id: 'Sumber teks alternatif' },
     localized: true,
     defaultValue: 'cataloguer',
     options: plain(ALT_SOURCES),
@@ -82,17 +84,24 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'translationStatus',
     type: 'select',
+    label: { en: 'Translation status', id: 'Status terjemahan' },
     localized: true,
     defaultValue: 'entered',
     options: plain(TRANSLATION_STATES),
     admin: { position: 'sidebar' },
   },
-  { name: 'caption', type: 'textarea', localized: true },
-  { name: 'credit', type: 'text' },
-  { name: 'licence', type: 'text' },
+  {
+    name: 'caption',
+    type: 'textarea',
+    label: { en: 'Caption', id: 'Keterangan' },
+    localized: true,
+  },
+  { name: 'credit', type: 'text', label: { en: 'Credit', id: 'Kredit' } },
+  { name: 'licence', type: 'text', label: { en: 'Licence', id: 'Lisensi' } },
   {
     name: 'subject',
     type: 'select',
+    label: { en: 'Subject', id: 'Subjek' },
     required: true,
     options: SUBJECT_OPTIONS,
     admin: {
@@ -105,6 +114,7 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'role',
     type: 'select',
+    label: { en: 'Role', id: 'Peran' },
     required: true,
     options: ROLE_OPTIONS,
     admin: {
@@ -117,6 +127,7 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'provenance',
     type: 'select',
+    label: { en: 'Provenance', id: 'Asal-usul' },
     required: true,
     options: PROVENANCE_OPTIONS,
     admin: {
@@ -130,6 +141,7 @@ export const MEDIA_FIELDS: Field[] = [
     name: 'master',
     type: 'relationship',
     relationTo: 'masters',
+    label: { en: 'Master', id: 'Master' },
     access: STAFF_ONLY_ACCESS,
     admin: {
       position: 'sidebar',
@@ -142,6 +154,7 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'assetId',
     type: 'text',
+    label: { en: 'Asset id', id: 'Id aset' },
     index: true,
     admin: {
       position: 'sidebar',
@@ -155,17 +168,20 @@ export const MEDIA_FIELDS: Field[] = [
   {
     name: 'derivatives',
     type: 'group',
+    label: { en: 'Derivatives', id: 'Turunan' },
     admin: { readOnly: true },
     fields: [
       {
         name: 'status',
         type: 'select',
+        label: { en: 'Status', id: 'Status' },
         defaultValue: 'pending',
         options: plain(DERIVATIVE_STATES),
       },
       {
         name: 'version',
         type: 'text',
+        label: { en: 'Version', id: 'Versi' },
         admin: {
           description: {
             en: `The ladder's version once built (now ${DERIVATIVE_VERSION}).`,
@@ -173,7 +189,11 @@ export const MEDIA_FIELDS: Field[] = [
           },
         },
       },
-      { name: 'blurDataUri', type: 'textarea' },
+      {
+        name: 'blurDataUri',
+        type: 'textarea',
+        label: { en: 'Blur placeholder', id: 'Plaseholder blur' },
+      },
     ],
   },
   {
@@ -181,7 +201,15 @@ export const MEDIA_FIELDS: Field[] = [
     type: 'group',
     label: { en: 'Deep zoom', id: 'Zoom dalam' },
     admin: { readOnly: true },
-    fields: [{ name: 'status', type: 'select', defaultValue: 'none', options: plain(TILE_STATES) }],
+    fields: [
+      {
+        name: 'status',
+        type: 'select',
+        label: { en: 'Status', id: 'Status' },
+        defaultValue: 'none',
+        options: plain(TILE_STATES),
+      },
+    ],
   },
 ]
 

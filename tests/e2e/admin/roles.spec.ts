@@ -5,10 +5,6 @@
  * dashboard's counts equal SQL counts on the server's database. Then phase 3's admin **Done
  * when**: a store user sees only their store's orders, and `/admin` is a 404 on the gallery's host.
  * The owner's timed flow is `owner-flow.spec.ts`. Accounts and records: `fixtures.ts`.
- *
- * A case marked `test.fail` is a defect this drive found outside the admin's own code
- * (`docs/gates/3.6.md` §Defects): it passes while the defect stands and fails once it is fixed —
- * then drop the mark.
  */
 import { expect, test, type Page } from '@playwright/test'
 
@@ -108,8 +104,7 @@ const REFUSALS: Record<(typeof ROLES)[number], Refusal> = {
     en: /price is a whole number of rupiah above zero/i,
     id: /harga/i,
   },
-  // Store staff: their own store's order moved back, from processing to paid. (A shelf count
-  // cannot be entered at all — D2 — so a negative one cannot be tried.)
+  // Store staff: their own store's order moved back, from processing to paid.
   storeA: {
     field: '#field-status',
     async open(page) {
@@ -132,8 +127,6 @@ for (const role of ROLES) {
     test(`${role}: an invalid save says what is wrong and how to fix it, in ${language}`, async ({
       page,
     }) => {
-      // D1 (docs/gates/3.6.md): a field validator answers in English whatever the admin language.
-      test.fail(language === 'id' && role !== 'owner', 'D1: validator messages are English only')
       await signIn(page, ACCOUNTS[role].email)
       await setLanguage(page, language)
       const refusal = REFUSALS[role]
