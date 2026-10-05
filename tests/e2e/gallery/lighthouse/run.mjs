@@ -31,6 +31,26 @@ const REPO_ROOT = resolve(HERE, '../../../..')
 const USAGE =
   'usage: node tests/e2e/gallery/lighthouse/run.mjs --base <origin> --out <dir> [--runs 3] <path> [<path>…]'
 
+/**
+ * Git Bash (MSYS2) rewrites a bare `/path` argument into a Windows path rooted at the Git install
+ * before Node ever sees it: `run.mjs … / /browse` arrives as `C:/…/Git/` and `C:/…/Git/browse`
+ * (MSYS path conversion). Recover the `/path` the author meant — the Git root comes from `EXEPATH`
+ * (`…/Git/bin`). `MSYS_NO_PATHCONV=1` avoids the rewrite entirely; this makes the plain command
+ * work too, so the runner behaves the same from Git Bash and PowerShell.
+ */
+function normalizePathArg(arg) {
+  if (process.platform !== 'win32' || !/^[A-Za-z]:[\\/]/.test(arg)) return arg
+  const msysRoot = process.env.EXEPATH ? dirname(process.env.EXEPATH) : null
+  if (!msysRoot) return arg
+  const norm = (p) => p.replace(/\\/g, '/').replace(/\/+$/, '')
+  const lower = (s) => s.replace(/^([A-Za-z]):/, (_, drive) => `${drive.toLowerCase()}:`)
+  const root = norm(msysRoot)
+  const value = norm(arg)
+  if (lower(value) === lower(root)) return '/'
+  if (lower(value).startsWith(`${lower(root)}/`)) return `/${value.slice(root.length + 1)}`
+  return arg
+}
+
 function parseArgs(argv) {
   const out = { base: null, out: null, runs: 3, paths: [] }
   for (let i = 0; i < argv.length; i += 1) {
@@ -40,7 +60,7 @@ function parseArgs(argv) {
     else if (arg === '--runs') out.runs = Number(argv[++i])
     else if (arg === '-h' || arg === '--help') out.help = true
     else if (arg.startsWith('--')) throw new Error(`unknown option ${arg}\n${USAGE}`)
-    else out.paths.push(arg)
+    else out.paths.push(normalizePathArg(arg))
   }
   if (out.help) return out
   if (!out.base || !out.out || out.paths.length === 0) throw new Error(USAGE)
