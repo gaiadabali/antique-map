@@ -40,7 +40,12 @@ type OrderDoc = {
   number?: number | null
   contact?: { name?: string | null; email?: string | null } | null
   expiresAt?: string | null
-  totals?: { total?: number | null } | null
+  totals?: {
+    subtotal?: number | null
+    discount?: number | null
+    deliveryFee?: number | null
+    total?: number | null
+  } | null
   lines?: OrderLineDoc[] | null
 }
 
@@ -90,7 +95,13 @@ export async function sendOrderCreatedEmail(
     const subject = t('email.subject', { number })
     const greeting = t('email.greeting', { name: order.contact?.name ?? '' })
     const body = t('email.body', { number })
-    const totalLine = t('email.total', { total: formatRupiah(order.totals?.total ?? 0) })
+    const discountIdr = order.totals?.discount ?? 0
+    const amountLines = [
+      t('email.subtotal', { amount: formatRupiah(order.totals?.subtotal ?? 0) }),
+      ...(discountIdr > 0 ? [t('email.discount', { amount: formatRupiah(discountIdr) })] : []),
+      t('email.delivery', { amount: formatRupiah(order.totals?.deliveryFee ?? 0) }),
+      t('email.total', { total: formatRupiah(order.totals?.total ?? 0) }),
+    ]
     const payByLine = t('email.payBy', { time: deadline })
 
     const text = [
@@ -100,7 +111,7 @@ export async function sendOrderCreatedEmail(
       '',
       ...lines.map((line) => `  ${lineLine(line)}`),
       '',
-      totalLine,
+      ...amountLines,
       payByLine,
       '',
       t('email.tracking', { link: trackingLink }),
@@ -112,7 +123,7 @@ export async function sendOrderCreatedEmail(
       '<ul>',
       ...lines.map((line) => `<li>${escapeHtml(lineLine(line))}</li>`),
       '</ul>',
-      `<p>${escapeHtml(totalLine)}</p>`,
+      ...amountLines.map((line) => `<p>${escapeHtml(line)}</p>`),
       `<p>${escapeHtml(payByLine)}</p>`,
       `<p><a href="${trackingLink}">${escapeHtml(t('email.trackingLinkText'))}</a></p>`,
     ].join('\n')

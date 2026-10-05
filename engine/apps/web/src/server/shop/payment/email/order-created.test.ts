@@ -47,8 +47,26 @@ describe('sendOrderCreatedEmail', () => {
     const result = await sendOrderCreatedEmail(payload, INPUT)
     expect(result.ok).toBe(true)
     const call = sentOf(sendEmail)
-    expect(call.text).toContain(formatRupiah(195_000))
-    expect(call.text).not.toContain(formatRupiah(200_000)) // the subtotal: never shown as due
+    expect(call.text).toContain(formatRupiah(195_000)) // the total: what is actually due
+  })
+
+  it('breaks down subtotal, discount and delivery alongside the total', async () => {
+    const { payload, sendEmail } = fakePayload()
+    await sendOrderCreatedEmail(payload, INPUT)
+    const call = sentOf(sendEmail)
+    expect(call.text).toContain(formatRupiah(200_000)) // subtotal
+    expect(call.text).toContain(formatRupiah(20_000)) // discount
+    expect(call.text).toContain(formatRupiah(15_000)) // delivery
+  })
+
+  it('omits the discount line when there is no discount', async () => {
+    const { payload, sendEmail } = fakePayload({
+      ...ORDER_DOC,
+      totals: { ...ORDER_DOC.totals, discount: 0 },
+    })
+    await sendOrderCreatedEmail(payload, INPUT)
+    const call = sentOf(sendEmail)
+    expect(call.text).not.toMatch(/Discount/)
   })
 
   it('carries the tracking link and the token appears nowhere else in logs', async () => {
