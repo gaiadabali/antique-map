@@ -41,6 +41,7 @@ import {
 
 import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
 import {
+  clientAddress,
   hasCookie,
   hasUserAgent,
   isAdminPath,
@@ -52,6 +53,7 @@ import {
   notFoundPath,
   rootRewrite,
 } from './gates'
+import { trackingGuessAllowed } from './tracking-rate-limit'
 
 export { NOT_FOUND_SEGMENT, notFoundPath } from './gates'
 
@@ -92,6 +94,7 @@ export type ProxyWhy =
   | 'legacy'
   | 'surface'
   | 'not-found'
+  | 'rate-limited'
 
 export type ProxyDecision = {
   /**
@@ -134,6 +137,8 @@ type Routed = {
   readonly setResponse?: Record<string, string>
   /** The item route's own query, for its permanent redirect to carry on. */
   readonly publicSearch?: string
+  /** The tracking surface with a token: a guess against the order's one credential, budgeted. */
+  readonly rateLimited?: boolean
 }
 
 export function decideProxy(request: ProxyRequest, options: DecideOptions = {}): ProxyDecision {
@@ -152,7 +157,14 @@ export function decideProxy(request: ProxyRequest, options: DecideOptions = {}):
   if (isApiPath(pathname) && !isEngineRoute(pathname) && !host.admin) {
     return respond('not-admin-host', 404, null)
   }
-  return finish(request, options, host, route(request, options, host))
+  const routed = route(request, options, host)
+  if (routed.rateLimited) {
+    const wait = trackingGuessAllowed(clientAddress(request.headers) ?? 'unknown')
+    if (wait > 0) {
+      return respond('rate-limited', 429, null, { 'Retry-After': String(wait) })
+    }
+  }
+  return finish(request, options, host, routed)
 }
 
 /** Where a request for a site goes, once its host is known to be the site's canonical one. */
@@ -201,6 +213,9 @@ function route(request: ProxyRequest, options: DecideOptions, host: HostMatch): 
         locale: parsed.locale,
         ...(isSensitive(parsed.surface) ? { setResponse: { ...SENSITIVE_HEADERS } } : {}),
         ...(parsed.surface === 'item' ? { publicSearch: search } : {}),
+        ...(parsed.surface === 'tracking' && typeof parsed.params.token === 'string'
+          ? { rateLimited: true }
+          : {}),
       }
     case 'notFound':
       return notFound()
@@ -261,8 +276,13 @@ function passOn(request: ProxyRequest, why: ProxyWhy): ProxyDecision {
   }
 }
 
-/** The proxy's answer of its own: a plain 404, or a redirect to `location`. */
-function respond(why: ProxyWhy, status: number, location: string | null): ProxyDecision {
+/** The proxy's answer of its own: a plain 404, a redirect to `location`, or (`setResponse`) a 429. */
+function respond(
+  why: ProxyWhy,
+  status: number,
+  location: string | null,
+  setResponse: Record<string, string> = {},
+): ProxyDecision {
   return {
     kind: 'respond',
     to: location,
@@ -272,7 +292,7 @@ function respond(why: ProxyWhy, status: number, location: string | null): ProxyD
     status,
     setRequest: {},
     removeRequest: [],
-    setResponse: {},
+    setResponse,
   }
 }
 
