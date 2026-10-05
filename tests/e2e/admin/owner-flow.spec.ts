@@ -3,9 +3,6 @@
  * an antique with photos (upload the photo, catalogue the antique, publish it), add a store, add a
  * product, and give the product stock in two stores. Each step is timed into `drive.json`; every
  * save is checked against the database. Names carry the run's time, so a re-run adds its own.
- *
- * The stock step is marked `test.fail`: no one can enter a shelf count in the admin (D2,
- * `docs/gates/3.6.md`). It passes while the defect stands; drop the mark once it is fixed.
  */
 import { expect, test } from '@playwright/test'
 
@@ -111,8 +108,6 @@ step('the owner adds a product', async (page) => {
 })
 
 test.describe('stock', () => {
-  // D2: `physicalCount` is a virtual field, which Payload makes read-only in the admin.
-  test.fail(true, 'D2: no one can enter a shelf count in the admin')
   step('the owner gives the product stock in two stores', async (page) => {
     // The pickers list stores and products by name.
     const name = (code: string) => sql(`SELECT name FROM stores WHERE code = '${code}'`)
