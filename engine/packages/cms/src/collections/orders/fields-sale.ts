@@ -8,10 +8,11 @@
  */
 import type { Field } from 'payload'
 
+import type { Bilingual } from '../products/money'
 import { wholeNumber } from '../products/money'
 import { SERVER_ONLY } from './access'
 
-const rupiah = (what: string, min = 0) => wholeNumber({ min, what })
+const rupiah = (what: Bilingual, min = 0) => wholeNumber({ min, what })
 
 export const SALE_FIELDS: Field[] = [
   {
@@ -22,7 +23,11 @@ export const SALE_FIELDS: Field[] = [
     unique: true,
     index: true,
     access: SERVER_ONLY,
-    validate: wholeNumber({ min: 1, what: 'The order number', unit: 'units' }),
+    validate: wholeNumber({
+      min: 1,
+      what: { en: 'The order number', id: 'Nomor pesanan' },
+      unit: 'units',
+    }),
     admin: { readOnly: true },
   },
   {
@@ -87,21 +92,21 @@ export const SALE_FIELDS: Field[] = [
         type: 'number',
         label: { en: 'Unit price (Rp)', id: 'Harga satuan (Rp)' },
         required: true,
-        validate: rupiah('A unit price'),
+        validate: rupiah({ en: 'A unit price', id: 'Harga satuan' }),
       },
       {
         name: 'qty',
         type: 'number',
         label: { en: 'Quantity', id: 'Jumlah' },
         required: true,
-        validate: wholeNumber({ min: 1, what: 'A quantity', unit: 'units' }),
+        validate: wholeNumber({ min: 1, what: { en: 'A quantity', id: 'Jumlah' }, unit: 'units' }),
       },
       {
         name: 'lineTotal',
         type: 'number',
         label: { en: 'Line total (Rp)', id: 'Total baris (Rp)' },
         required: true,
-        validate: rupiah('A line total'),
+        validate: rupiah({ en: 'A line total', id: 'Total baris' }),
       },
       { name: 'image', type: 'upload', relationTo: 'media', label: { en: 'Image', id: 'Gambar' } },
     ],
@@ -198,7 +203,7 @@ export const SALE_FIELDS: Field[] = [
         type: 'number',
         label: { en: 'Subtotal (Rp)', id: 'Subtotal (Rp)' },
         required: true,
-        validate: rupiah('The subtotal'),
+        validate: rupiah({ en: 'The subtotal', id: 'Subtotal' }),
       },
       {
         name: 'discount',
@@ -206,7 +211,7 @@ export const SALE_FIELDS: Field[] = [
         label: { en: 'Discount (Rp)', id: 'Diskon (Rp)' },
         required: true,
         defaultValue: 0,
-        validate: rupiah('The discount'),
+        validate: rupiah({ en: 'The discount', id: 'Diskon' }),
       },
       {
         name: 'deliveryFee',
@@ -214,14 +219,14 @@ export const SALE_FIELDS: Field[] = [
         label: { en: 'Delivery fee (Rp)', id: 'Ongkos kirim (Rp)' },
         required: true,
         defaultValue: 0,
-        validate: rupiah('The delivery fee'),
+        validate: rupiah({ en: 'The delivery fee', id: 'Ongkos kirim' }),
       },
       {
         name: 'total',
         type: 'number',
         label: { en: 'Total (Rp)', id: 'Total (Rp)' },
         required: true,
-        validate: rupiah('The total'),
+        validate: rupiah({ en: 'The total', id: 'Total' }),
       },
     ],
   },

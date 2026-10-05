@@ -36,7 +36,7 @@ const categoriesOnly = (TERM_KINDS as readonly string[]).includes('category')
   : undefined
 
 const priceToPublish = requiredToPublish('Set the price before publishing.')
-const wholePrice = wholeNumber({ min: 1, what: 'The price' })
+const wholePrice = wholeNumber({ min: 1, what: { en: 'The price', id: 'Harga' } })
 
 /** Needed to publish; when set, whole rupiah above zero (drafts included). */
 const validatePrice: Validate<number | null | undefined> = (value, args) => {
@@ -105,7 +105,7 @@ const variants: ArrayField = {
       name: 'price',
       type: 'number',
       label: { en: 'Price (Rp)', id: 'Harga (Rp)' },
-      validate: wholeNumber({ min: 1, what: 'A variant’s price' }),
+      validate: wholeNumber({ min: 1, what: { en: 'A variant’s price', id: 'Harga varian' } }),
     },
     {
       name: 'active',
