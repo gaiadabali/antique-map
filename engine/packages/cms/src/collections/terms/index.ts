@@ -73,6 +73,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'kind',
       type: 'select',
+      label: { en: 'Vocabulary', id: 'Kosakata' },
       required: true,
       index: true,
       options: TERM_KINDS.map((value) => ({ value, label: TERM_KIND_LABELS[value] })),
@@ -88,6 +89,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'label',
       type: 'text',
+      label: { en: 'Label', id: 'Label' },
       localized: true,
       maxLength: 120,
       validate: requiredInDefaultLocale('Give the term’s name, such as "Batik" or "VG+".'),
@@ -102,6 +104,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'definition',
       type: 'textarea',
+      label: { en: 'Definition', id: 'Definisi' },
       localized: true,
       maxLength: 600,
       validate: requiredToPublish('A published grade says what it means, in a sentence or two.'),
@@ -116,6 +119,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'equivalent',
       type: 'text',
+      label: { en: 'A–D equivalent', id: 'Setara A–D' },
       maxLength: 7,
       validate: validateEquivalent,
       admin: {
@@ -129,6 +133,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'position',
       type: 'number',
+      label: { en: 'Position', id: 'Posisi' },
       index: true,
       validate: validatePosition,
       admin: {

@@ -54,8 +54,20 @@ const images: ArrayField = {
       ? 'Add at least one image before publishing: the shop shows every product with its picture.'
       : true,
   fields: [
-    { name: 'image', type: 'upload', relationTo: 'media', required: true },
-    { name: 'caption', type: 'text', localized: true, maxLength: 200 },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: { en: 'Image', id: 'Gambar' },
+      required: true,
+    },
+    {
+      name: 'caption',
+      type: 'text',
+      label: { en: 'Caption', id: 'Keterangan' },
+      localized: true,
+      maxLength: 200,
+    },
   ],
 }
 
@@ -186,8 +198,14 @@ export const PRODUCT_FIELDS: Field[] = [
     type: 'group',
     label: { en: 'Search engines', id: 'Mesin pencari' },
     fields: [
-      { name: 'title', type: 'text', localized: true, maxLength: 70 },
-      { name: 'description', type: 'textarea', localized: true, maxLength: 160 },
+      { name: 'title', type: 'text', label: { en: 'Title', id: 'Judul' }, localized: true, maxLength: 70 },
+      {
+        name: 'description',
+        type: 'textarea',
+        label: { en: 'Description', id: 'Deskripsi' },
+        localized: true,
+        maxLength: 160,
+      },
     ],
   },
   translationStatusField,
