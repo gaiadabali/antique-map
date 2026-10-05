@@ -84,6 +84,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.2.b–d Item page, zoom, sold | Opus review (claude seat) | `w/5.2b` | 2026-10-05 | GLM run `am-5.2b-1` exited 1 before its report; Opus reviewing (merges main in, fixes, runs Verify) — 2026-10-06 |
 | 5·W2 | 5.4 Makers, places, editorial, plain pages | Sonnet (claude seat) | `w/5.4` | 2026-10-05 | run `am-5.4-s2` (2026-10-06); Opus reviews before the merge |
 | 5·W2 | 5.3 Ask, Sell to us, `/api/x/leads` | — | — | 2026-10-05 | waits on the 5.2b merge and on `w/9.1core`'s lead service (Opus reviewing it, 2026-10-06); then a Sonnet run |
+| 5·W3 | 5.1.d Check evidence (e2e browse/search) | DeepSeek V4.1 Flash | `w/ds-5.1d` | 2026-10-06 | run `am-ds-5.1d-1`; Opus reviews; the orchestrator ticks the Check |
+| 5·W3 | 5.5.b no-commerce scan | DeepSeek V4.1 Flash | `w/ds-5.5b` | 2026-10-06 | run `am-ds-5.5b-1`; Opus reviews |
+| 5·W3 | 5.5.c Lighthouse runner (local half) | DeepSeek V4.1 Flash | `w/ds-5.5c` | 2026-10-06 | run `am-ds-5.5c-1`; staging run later by the orchestrator |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
