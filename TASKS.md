@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 5/7 | 27/33 | 0 | `████████░░`  82% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 5/7 | 31/33 | 0 | `█████████░`  94% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **19/49** | **116/200** | **8** | `██████░░░░`  58% |
+| **All** | 11 phases | | | **19/49** | **120/200** | **8** | `██████░░░░`  60% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -335,10 +335,10 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `scripts/ops/**`, `docs/ops/**`, `.gaiadeploy.yml`
   - **Read** CARRY-OVER.md §3 step 8 and §6.6, DEPLOYMENT.md, `docs/ops/helios-staging.md`
   - _Requirements: 15.1_
-  - [ ] 3.1.a one site user, pm2 process, port and database (`indies_db`), one media bucket (public only under `derivatives/` and `iiif/`) and the `archive-masters` bucket on Helios's RustFS; apply 8.5's RustFS parity checks; confirm the four rotated storage secrets are closed
-  - [ ] 3.1.b both staging hostnames on one CloudPanel site through nginx `server_name`; remove the `uig` and `uoei` entries; the release goes through the pull pipeline
-  - [ ] 3.1.c Mailpit stays loopback-only; host-only secrets; a nightly `pg_dump` and a bucket copy to an off-box place (Open: where — DEPLOYMENT.md)
-  - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
+  - [x] 3.1.a one site user, pm2 process, port and database (`indies_db`), one media bucket (public only under `derivatives/` and `iiif/`) and the `archive-masters` bucket on Helios's RustFS; apply 8.5's RustFS parity checks; confirm the four rotated storage secrets are closed
+  - [x] 3.1.b both staging hostnames on one CloudPanel site through nginx `server_name`; remove the `uig` and `uoei` entries; the release goes through the pull pipeline
+  - [x] 3.1.c Mailpit stays loopback-only; host-only secrets; a nightly `pg_dump` and a bucket copy to an off-box place (Open: where — DEPLOYMENT.md)
+  - [x] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
   - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
 - [x] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — ✅ 2026-10-03 46353c9
