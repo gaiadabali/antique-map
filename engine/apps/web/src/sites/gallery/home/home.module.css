@@ -24,7 +24,8 @@
   display: block;
   width: 100%;
   background: var(--color-surface-deep);
-  color: var(--color-text-muted);
+  /* Full ink: muted text on the deep surface is under AA (4.36:1, qa 4.qa). */
+  color: var(--color-text);
   font: var(--text-caption);
   overflow: hidden;
 }

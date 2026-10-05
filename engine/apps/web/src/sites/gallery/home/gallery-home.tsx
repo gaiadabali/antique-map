@@ -74,7 +74,8 @@ function Hero({ locale, href, t }: Props) {
 function TrustCard({ title, body }: { title: string; body: string }) {
   return (
     <div className={styles.trustCard}>
-      <h3 className={styles.cardTitle}>{title}</h3>
+      {/* A signal under the h1, not a section: a heading here would skip h2 (axe heading-order). */}
+      <p className={styles.cardTitle}>{title}</p>
       <p className={styles.cardBody}>{body}</p>
     </div>
   )
