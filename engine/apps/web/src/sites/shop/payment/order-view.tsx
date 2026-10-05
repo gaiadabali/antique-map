@@ -28,7 +28,7 @@ const FAILED_STATES = new Set(['deny', 'failed'])
 
 function Totals({ order, t }: { readonly order: OrderViewData; readonly t: PaymentText }) {
   return (
-    <dl className={styles.totals}>
+    <div className={styles.totals}>
       <ul className={styles.lines}>
         {order.lines.map((line, i) => (
           <li key={i} className={styles.line}>
@@ -43,11 +43,11 @@ function Totals({ order, t }: { readonly order: OrderViewData; readonly t: Payme
           </li>
         ))}
       </ul>
-      <div className={[styles.totalRow, styles.grand].join(' ')}>
+      <dl className={[styles.totalRow, styles.grand].join(' ')}>
         <dt>{t('order.total')}</dt>
         <dd>{formatRupiah(order.totals.totalIdr)}</dd>
-      </div>
-    </dl>
+      </dl>
+    </div>
   )
 }
 

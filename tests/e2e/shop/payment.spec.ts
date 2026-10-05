@@ -177,7 +177,10 @@ function wrongToken(): string {
   return randomBytes(18).toString('base64url')
 }
 
-const orderUrl = (token: string) => `${BASE_URL}/en/order/${encodeURIComponent(token)}`
+// English is unprefixed (the shop's default locale) — `/en/…` is a different, not-found address.
+const orderUrl = (token: string) => `${BASE_URL}/order/${encodeURIComponent(token)}`
+/** The order number as the page's own copy renders it (Intl grouping, e.g. "100,022"). */
+const orderHeading = (number: number) => `Order ${number.toLocaleString('en-US')}`
 
 async function axeClean(page: Page): Promise<void> {
   const { violations } = await new AxeBuilder({ page }).analyze()
@@ -209,7 +212,7 @@ test.describe('the order page', () => {
       await page.setViewportSize(viewport)
       const response = await page.goto(orderUrl(order.token))
       expect(response?.status(), "the order page itself — see this file's header").toBe(200)
-      await expect(page.getByRole('heading', { name: `Order ${order.number}` })).toBeVisible()
+      await expect(page.getByRole('heading', { name: orderHeading(order.number) })).toBeVisible()
       await expect(page.getByRole('button', { name: /^Pay /i })).toBeVisible()
       await axeClean(page)
     })
@@ -231,7 +234,7 @@ test.describe('the order page', () => {
     await page.goto(orderUrl(order.token))
     await page.getByRole('button', { name: /^Pay /i }).click()
     await page.getByRole('button', { name: 'Pending' }).click()
-    await expect(page.getByRole('heading', { name: `Order ${order.number}` })).toBeVisible()
+    await expect(page.getByRole('heading', { name: orderHeading(order.number) })).toBeVisible()
   })
 
   test('an expired order: "Put these back in my bag" refills the bag', async ({ page }) => {
@@ -241,6 +244,6 @@ test.describe('the order page', () => {
     await expect(page.getByRole('button', { name: 'Put these back in my bag' })).toBeVisible()
     await page.getByRole('button', { name: 'Put these back in my bag' }).click()
     await expect(page).toHaveURL(/\/bag$/)
-    await expect(page.getByText(/1/)).toBeVisible()
+    await expect(page.getByRole('spinbutton', { name: 'Quantity' })).toHaveValue('1')
   })
 })
