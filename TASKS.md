@@ -93,6 +93,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 | 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
+| 5·W3 | 5.5 The gallery gate | deepseek | `w/ds-5.5b` | 2026-10-06 | |
 
 ## Decisions for the owner
 
@@ -497,7 +498,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
   - [ ] 5.4.c **Check:** a seeded maker and place each list their items; an edited page in the admin appears after its cache tag is invalidated; the pages pass axe at both widths.
 
-- [ ] **5.5 The gallery gate** · needs: 5.3, 5.4
+- [ ] **5.5 The gallery gate** · needs: 5.3, 5.4 — 🔄 5·W3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/gallery.md`, `tests/e2e/gallery/**`
   - **Read** the **Done when** of phase 5
