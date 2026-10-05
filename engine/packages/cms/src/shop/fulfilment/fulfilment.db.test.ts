@@ -235,7 +235,8 @@ describe.skipIf(!server)('fulfilment, on a real database', () => {
     expect(history[0]).toMatchObject({
       from: 'processing',
       to: 'processing',
-      by_id: as.owner!.id,
+      // Whichever of the two racing callers won the lock wrote the row.
+      by_id: (results[0]!.ok ? as.owner : as.editor)!.id,
       note: 'Reassigned from Ubud (UBD-01) to Sanur (SNR-01).',
     })
   })
