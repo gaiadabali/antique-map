@@ -4,7 +4,7 @@
  * borrows (`cart.*`, `bag.*`, `checkout.*`, `codeInvalid.*`) come from the app's lexicon
  * (`@/messages/keys`) — only the keys this page adds by itself live here.
  */
-import { createMessages, defineMessages, type Messages, type PluralBase } from '@engine/i18n'
+import { createMessages, defineMessages, type PluralBase } from '@engine/i18n'
 import type { SiteLocale } from '@engine/config/sites'
 
 import { lexiconMessages, type LexiconMessageKey } from '../../../messages/keys'
@@ -57,7 +57,7 @@ export type CheckoutText = {
 export function checkoutText(locale: SiteLocale): CheckoutText {
   // The bag's keys (`bag.beyondReach`, `bag.subtotal`, …) join the defaults so a refusal can reuse
   // the bag page's exact words for the same reason.
-  const mine: Messages<string> = createMessages({
+  const mine = createMessages({
     defaults: { ...CHECKOUT_KEYS, ...BAG_KEYS },
     locale,
     defaultLocale: 'en',

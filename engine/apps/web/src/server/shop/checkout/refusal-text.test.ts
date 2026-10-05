@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { LineRef } from '@engine/cms/shop/orders'
 
+import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { checkoutText } from '../../../sites/shop/checkout/copy'
 import { discountKey, itemNames, refusalCopy } from './refusal-text'
 
@@ -87,7 +88,7 @@ describe('refusalCopy', () => {
       nameOf,
     )
     expect(copy.key).toBe('codeInvalid.minimum-spend')
-    expect(copy.params?.amount).toBe('Rp 50.000')
+    expect(copy.params?.amount).toBe(formatRupiah(50000))
     expect(renders(copy)).toBe(true)
   })
 })

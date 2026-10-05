@@ -22,7 +22,6 @@ const SHARED_KEYS = [
   'checkout.mapPin',
   'cart.empty',
   'cart.title',
-  'cart.quantity',
   'cart.remove',
   'cart.checkout',
   'bag.beyondReach',
