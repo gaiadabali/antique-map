@@ -179,8 +179,8 @@ function wrongToken(): string {
 
 // English is unprefixed (the shop's default locale) — `/en/…` is a different, not-found address.
 const orderUrl = (token: string) => `${BASE_URL}/order/${encodeURIComponent(token)}`
-/** The order number as the page's own copy renders it (Intl grouping, e.g. "100,022"). */
-const orderHeading = (number: number) => `Order ${number.toLocaleString('en-US')}`
+/** The order number as the page's own copy renders it — a plain identifier, no grouping. */
+const orderHeading = (number: number) => `Order ${number}`
 
 async function axeClean(page: Page): Promise<void> {
   const { violations } = await new AxeBuilder({ page }).analyze()
