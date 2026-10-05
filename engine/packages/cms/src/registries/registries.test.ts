@@ -44,7 +44,7 @@ describe('registry entries', () => {
         { name: 'desk', owner: 'SCH', value: view },
       ]),
     ).toThrow(DuplicateRegistryEntry)
-    expect(adminViews()).toEqual({})
+    expect(Object.keys(adminViews())).toEqual(['ownerDashboard'])
   })
 
   it('list SCH’s media storage plugin, and refuse a duplicate', () => {

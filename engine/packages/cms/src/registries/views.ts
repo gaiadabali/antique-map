@@ -1,8 +1,8 @@
 /**
  * The admin views registry (PARALLEL-TRACKS.md §1). ADM owns `engine/packages/cms/src/admin/**`
- * and exports its custom views from one barrel, `@engine/cms/admin/views`; this file spreads it
- * into `admin.components.views` once. None exists yet — the SCH lead adds the barrel's line when
- * ADM ships its first view.
+ * and exports its custom views' components from one barrel, `@engine/cms/admin/views`; this file
+ * lists each view's entry (kept beside its code) for `admin.components.views`. The owner's
+ * dashboard is the first.
  *
  * A view is referenced by a component path the import map resolves (`@engine/cms/admin/…#Name`
  * — a package specifier, never a path relative to one app), so both apps' generated
@@ -11,11 +11,16 @@
  */
 import type { AdminViewConfig } from 'payload'
 
+import { dashboardViewEntries } from '../admin/dashboard/entry'
+
 import { uniqueEntries, type RegistryEntry } from './entries'
 
-// Barrels, one line each when they exist:
-//   ...admViews,  // ADM — @engine/cms/admin/views (the desk, the merch wizard, dashboards)
-export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = []
+// One line per view, its entry kept beside its code (an entry holds no React: the config never
+// loads a view). The components are exported from the barrel `@engine/cms/admin/views`, which the
+// import map resolves.
+export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = [
+  ...dashboardViewEntries, // ADM, the owner's dashboard (TASKS.md 9.2.b)
+]
 
 /** `admin.components.views`, keyed by each entry's name. */
 export function adminViews(
