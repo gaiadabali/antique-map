@@ -75,7 +75,9 @@ function imageOf(media: Doc, base: string): Resolved | null {
       : null
   const provenance = provenanceOf(media.provenance)
   return {
-    url,
+    // The record's own file is Payload's staff-only route (`collections/media/access`); the
+    // public's image is the derivative once the pipeline (15.1) has made it.
+    url: derivative ?? url,
     alt: str(media.alt),
     role: roleOf(media.role),
     provenance,

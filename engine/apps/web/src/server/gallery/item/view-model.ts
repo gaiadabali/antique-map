@@ -11,7 +11,8 @@ import type { MediaRole, SyntheticLabel } from '@engine/media/contract'
 
 /** One image on the item page: what the visitor sees and what the viewer needs. */
 export type ItemImage = {
-  /** The page's own image: the media record's file (C9 public derivatives arrive with 15.1). */
+  /** The page's own image: the largest public derivative once the pipeline made it (C9, 15.1),
+   * else the media record's file — Payload's staff-only route until then. */
   readonly url: string
   readonly alt: string
   /** The media record's role — recto, verso, detail … — as the filmstrip names it. */
