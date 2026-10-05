@@ -9,17 +9,12 @@
 import 'server-only'
 
 import { parseOrderId, backToOrder, actorFrom } from './auth'
+import { parseFeeIdr } from './quote-validate'
 
 type QuoteDeliveryFee = (
   payload: unknown,
   input: { orderId: number; feeIdr: number; actor: unknown },
 ) => Promise<{ ok: boolean; refusal?: string }>
-
-function parseFeeIdr(value: FormDataEntryValue | null): number | null {
-  if (typeof value !== 'string' || value === '') return null
-  const n = Number(value)
-  return Number.isSafeInteger(n) && n >= 0 ? n : null
-}
 
 export async function ordersQuotePost(request: Request): Promise<Response> {
   let form: FormData
