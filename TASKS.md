@@ -124,6 +124,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **OA10** | Counsel's bilingual legal pages (Q12) | 11.1 |
 | **OA11** | At launch: live Midtrans credentials; pointing `oldeastindies.com`, `antiquemapsindonesia.com` and `indiesgallery.com` at the new app in one cutover | 11.3 |
 | **OA12** | ✅ 2026-10-01 — standing go-ahead for Helios staging work (provisioning, deploys, reads) | — |
+| **OA13** | 👤 **The delivery-fee table (Q3) — a launch blocker.** The distance bands (up to N km → Rp fee) and the free-delivery threshold, from the local courier's prices, entered in the admin (Settings → Shop → Delivery). With no bands **every checkout is refused** ("Online delivery is temporarily unavailable"). Staging carries a marked placeholder (5 km Rp 10.000 · 15 km Rp 15.000 · 30 km Rp 20.000 · free over Rp 500.000) set 2026-10-06 for the gates | 10.3, 11.1 |
 
 ### Answered
 
@@ -817,6 +818,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — Staging, found by running the 7.4 gate there: (1) **defect, fixed on main `5c2740c`** — a blank `GOOGLE_MAPS_BROWSER_KEY=`/`GOOGLE_MAPS_SERVER_KEY=` in a host's .env reached the checkout as `''` (`?? null`), so it loaded Google Maps with no key and hid the typed-pin fallback: every staging checkout refused as outside Indonesia; (2) staging's delivery-fee table was empty → every checkout refused `no_delivery_table`; a marked placeholder table set as the owner (OA13 added: the real Q3 table is a launch blocker); (3) the cms typecheck was red on main since the 7.2 merge (27 errors) — `admin/orders/data.ts` imported the generated `payload-types.ts`, pulling its `declare module 'payload'` into the package; fixed `2d9ebce` (rows described structurally). The 7.2 gate had run the web typecheck, not the cms one: the phase gates now run both.
 
 - 2026-10-05 — Staging staff for the 7.4 gate: owner `owner.staging@gaiada.com`, store users `store.dps006.staging@gaiada.com` (DPS-006) and `store.dps008.staging@gaiada.com` (DPS-008), created through Payload (role, store and last-owner rules applied); passwords generated for this, kept root-only in `/etc/indies/staging-admin/e2e-users.env` on Helios and in the orchestrator's scratch, never in the repo. The temporary `indies_seed` role and `indies-seed` storage user are removed. **Defect found (antique-map-dc, fixing):** `server/shop/catalogue/catalogue.ts` called `availabilityFor()` inside the `'use cache'` listing/search/product functions, so In-stock/Out-of-stock went stale after any sale or restock until a product edit (checkout itself stayed safe: the atomic decrement and the add-to-bag live check). Staging's "0 sellable" after the stock load was this. The release from b291b70 was stopped (its route fix broke the typed routes); the next release waits for both fixes.
 
