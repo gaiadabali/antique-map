@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 25/33 | 0 | `████████░░`  76% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 26/33 | 0 | `████████░░`  79% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 5/20 | 0 | `███░░░░░░░`  25% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **18/49** | **110/200** | **8** | `██████░░░░`  55% |
+| **All** | 11 phases | | | **18/49** | **111/200** | **8** | `██████░░░░`  56% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -398,7 +398,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** DATA.md, CONTENT-MODEL.md §9, CARRY-OVER.md §5, `engine/packages/migrate/README.md`
   - _Requirements: 10.2, 10.3, 2.1_
   - [x] 3.7.a the import: antiques by stock number, products by SKU, stores by code and stock per store from CSV or XLSX; idempotent upserts, a dry run, and a report listing every rejected row and why; admin action and CLI
-  - [ ] 3.7.b seed the gallery from the 1,823 normalised legacy records (rows marked `review` flagged, prices **never** loaded into a public field), with the pilot set's images as media
+  - [x] 3.7.b seed the gallery from the 1,823 normalised legacy records (rows marked `review` flagged, prices **never** loaded into a public field), with the pilot set's images as media
   - [x] 3.7.c seed the shop with the mock set of DATA.md §1 (about 80 products, 120 stores across Bali with coordinates, stock per store, a welcome code), generated with a fixed random seed and committed as import files; the real data replaces them through 3.7.a without a code change
   - [ ] 3.7.d **Check:** importing the same file twice changes nothing; a file with five bad rows imports the rest and reports the five; after seeding, the admin lists 1,823 antiques and the mock catalogue; no price from the legacy data appears in any public projection.
 
