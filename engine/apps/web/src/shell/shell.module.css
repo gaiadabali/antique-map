@@ -46,3 +46,17 @@
   color: var(--color-text-muted);
   overflow-wrap: anywhere;
 }
+
+/* The owner's announcement (`site-settings.announcement`), shown above the header on every page
+   of a site that has one set (qa 4.qa, finding F4). */
+.announcement {
+  background: var(--color-surface-dark);
+  color: var(--color-text-on-dark);
+  text-align: center;
+  padding: var(--space-2) var(--gutter);
+}
+
+.announcementText {
+  margin: 0;
+  font: var(--text-announcement);
+}

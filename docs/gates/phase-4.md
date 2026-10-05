@@ -20,7 +20,7 @@ captures the design team's drawings and prints both outlines.
 | 4.2.c style guide | **PASS** |
 | 4.1.e palettes, fonts, token lint | **PASS** |
 | 4.2.d keyboard, axe, contrast, lint | **PASS** after fix 1 |
-| 4.3.e homes and partnership | **PASS** on axe, lexicon, raw colour, both languages and both widths (after fixes 2–4). **FAIL** on "structure matches the drawing" and "no hard-coded copy" — findings F1–F4, none inside this ticket's owned paths |
+| 4.3.e homes and partnership | **PASS** — F1–F4 closed by ticket 4.3-r3 (branch `w/4.3r3`), see the updated section below |
 
 ## Fixes made (one commit each, each with its before and after)
 
@@ -112,7 +112,11 @@ captures the design team's drawings and prints both outlines.
   body-size text.
 - **Token lint:** `pnpm check:tokens` is green (above) and runs inside `pnpm verify`.
 
-## 4.3.e — both homes and the partnership page on a production build — partial; see findings
+## 4.3.e — both homes and the partnership page on a production build — PASS
+
+Ticket 4.3-r3 (sonnet, branch `w/4.3r3`) closed the two fails below: F1–F3 (`src/styles/site.css`,
+`shell/**`, `shared/ui/{header,dialog}/**`) and F4 (the missing drawn sections, ruled into 4.3 by
+the orchestrator). Re-run on a production build, port 4200, database `indies_p4_w43r3`.
 
 **PASS.**
 - **axe:** clean in en and id at 390 and 1280 px on the gallery home, the shop home, `/partnership` and
@@ -129,29 +133,37 @@ captures the design team's drawings and prints both outlines.
   `shop-partnership-{en,id}-{390,1280}.png`.
 - **No hard-coded copy in the home and partnership components:** a grep for JSX text and literal
   `aria-label`/`alt`/`title`/`placeholder` over `sites/{gallery,shop}/home`, the partnership route and `shell/`
-  finds nothing. For the shared UI, see F3.
+  finds nothing — F3's fix gave `Header`/`Dialog` label props, filled from the shell lexicon, so this now covers
+  the shared UI too (`shell.menu.open`/`shell.menu.close`/`shell.menu` in `en` and `id`; verified no English
+  `aria-label` remains on `/id`, both hosts).
+- **No layout cap at 1280 px:** `.site-main`'s 66ch cap stays the default (product, bag, search, not-found keep
+  it); the homes' own `.wrap` now breaks out of it the same way `browse.module.css`'s `.page` already does (F1).
+  Browse, search, product and bag are unchanged — they never read the removed cap in the first place (browse
+  already broke out of it; product and bag never touch 1280 px wide content).
+- **h2/h3 typography:** `.site-main`'s bare h2/h3 now fall back to `--text-h2`/`--text-h3` (Cormorant), via
+  `:where()` so a component's own heading class (a card title, a rail number) still wins (F2).
 
 **Structure beside the drawing.** These are the h1 and h2 outlines printed by `shoot-design.mjs` at 1280 px, read
 together with the screenshots `design-*-{390,1280}.png` and the built pages:
 
 | Gallery home: drawing | Built | Match |
 | --- | --- | --- |
-| Hero on a dark band, film poster, h1 "The islands, first drawn.", three trust cards | Hero on the light surface, poster plate, same h1, same three cards | Sections ✔, treatment ✘ (light, not the dark band) |
+| Hero on a dark band, film poster, h1 "The islands, first drawn.", three trust cards | Hero on a dark band, poster plate, same h1; the three trust cards follow in their own light strip | ✔ (treatment fixed, F1/F4) |
 | About + three signals | About + three signals | ✔ |
 | "The collection" rail: three categories with Explore | Featured works rail: three latest published works, Explore | ✔ (data-driven instead of fixed categories) |
 | Curator | Curator | ✔ |
-| "Recently placed": sold archive | — | ✘ missing (needs sold works, phase 5) |
-| "Live with the collection": bridge to the shop's printed editions | — (the bridge is only in the footer) | ✘ missing |
+| "Recently placed": sold archive | "Recently placed": three placeholder cards (no price), marked for phase 5 | ✔ (placeholder until the sold archive ships) |
+| "Live with the collection": bridge to the shop's printed editions | "Live with the collection": the same bridge, a real cross-site link | ✔ |
 | — | "Makers and places" entry points | added; TASKS 4.3.b asks for it |
 | Enquiry with an inline form | Enquiry with a CTA button and Sell to us | ~ (form deferred to phase 5's Ask flow) |
 
 | Shop home: drawing | Built | Match |
 | --- | --- | --- |
-| Announcement bar | — | ✘ missing |
-| Hero, h1 "Old maps, new walls.", two print slots | Same h1, two slots | ✔ |
-| Island and room chips | — | ✘ missing |
-| Best sellers, four cards | Best sellers, four cards from seeded data | ✔ |
-| "Sets that hang together": gallery walls | — | ✘ missing |
+| Announcement bar | Shown when `site-settings.announcement` is set (none in this database, so none renders) | ✔ (real feature, not placeholder) |
+| Hero, h1 "Old maps, new walls.", two print slots | Same h1, two slots, now the drawing's full width | ✔ |
+| Island and room chips | Eight placeholder chips (four islands, four rooms), linking to the shop until browse has the facets | ✔ (placeholder until the owner's content / phase 6 facets) |
+| Best sellers, four cards | Best sellers, four cards from the catalogue | ✔ |
+| "Sets that hang together": gallery walls | Three placeholder sets, linking to the collections surface | ✔ (placeholder until phase 6) |
 | How we make them, three steps | Same | ✔ |
 | Trade & gifting, dark band | Same, dark band | ✔ |
 | The originals: bridge to the gallery | Same | ✔ |
@@ -164,33 +176,33 @@ together with the screenshots `design-*-{390,1280}.png` and the built pages:
 | "One form, whichever you are." | "Tell us what you are buying for.": WhatsApp, email, short form | ✔ (the enquiry CTA 4.3.c asks for) |
 | "Sign in to your prices." | — | ✔ removed on purpose (4.3.c) |
 
-**FAIL — what keeps 4.3.e open (findings below):** F1, the content column is capped at 66ch, so at 1280 px the
-homes do not have the drawing's layout. F2, h2 headings render in Karla bold instead of the display face. F3, the
-shared Header has hard-coded copy on every page. F4, the drawing has sections the build does not. F1–F3 sit in
-paths this ticket does not own.
+All rows now match (gallery's "Makers and places" and the deferred enquiry form stand as previously-accepted,
+deliberate deviations, not fails).
 
-## Findings (not fixed here)
+## Findings
 
-- **F1 — the page column is capped at a reading measure.** `engine/apps/web/src/styles/site.css:100`: `.site-main`
-  has `max-width: calc(var(--measure, 66ch) + 2 * var(--gutter))`, so every home and the partnership page sit in a
-  column about 560 px wide at 1280 px. The homes' own `.wrap` (80rem) never applies, product titles wrap one word
-  per line (`shop-home-en-1280.png`), and the drawings' full-bleed bands (gallery hero, shop trade band) cannot go
-  full width. Suggested fix: drop the cap from `.site-main` and let long-form pages set `--measure` themselves.
-  Owner: whoever owns `src/styles/` and `shell/` (4.3.a).
-- **F2 — no h2/h3 typography.** `engine/apps/web/src/styles/site.css` styles `.site-main h1` (line 105) but not
-  h2 or h3, so every section heading falls back to the body face in the browser's bold (see "About" and "Makers
-  and places" in `gallery-home-en-1280.png`; the drawing sets them in Cormorant). Suggested fix: add
-  `.site-main h2 { font: var(--text-h2) }` and `h3 { font: var(--text-h3) }` beside the h1 rule.
-- **F3 — hard-coded copy in shared UI on every page.** `engine/apps/web/src/shared/ui/header/header.tsx:34`
-  ("Open menu"), `:43` ("Menu") and `:51` ("Close menu"), and `engine/apps/web/src/shared/ui/dialog/dialog.tsx:60`
-  ("Close"). They read in English on the `id` pages too. The fix is label props on `Header` and `Dialog`, filled by
-  `shell/site-shell.tsx` from the shell lexicon (keys in `shell/messages`). That file is outside this ticket's
-  owned paths, so the props were not added half-way. The style guide's own demo text (`shared/style-guide/*`) is
-  hard-coded too, which is acceptable for a noindex internal page.
-- **F4 — sections in the drawing that the build does not have.** Gallery: the dark hero band, "Recently placed"
-  and "Live with the collection". Shop: the announcement bar, the island and room chips, and "Sets that hang
-  together". The orchestrator should decide whether each belongs to phase 4 or to phase 5 and 6 (sold archive,
-  collections and facets).
+F1–F4 below are closed by ticket 4.3-r3; F5 and F6 remain, outside this ticket's owned paths.
+
+- **F1 — FIXED.** `.site-main` keeps its 66ch cap as the default (product, bag, search, not-found). The homes'
+  `.wrap` now breaks out of it with the same `width: min(100vw - 2*gutter, 80rem); margin-inline-start: 50%;
+  translate: -50% 0` trick `browse.module.css`'s `.page` already used — no prop plumbing through the shared
+  layout, no risk to a page outside this ticket's owned paths.
+- **F2 — FIXED.** `.site-main` now styles `:where() h2`/`h3` from `--text-h2`/`--text-h3`. `:where()` carries no
+  specificity, so a section's own heading class (a card title, a rail number) still wins over the default.
+- **F3 — FIXED.** `Header` (`openLabel`, `closeLabel`, `menuLabel`) and `Dialog` (`closeLabel`) take optional label
+  props, defaulting to their old English strings so call sites outside this ticket's owned paths (the style
+  guide's demo, `shared-ui.test.tsx`) are unchanged; `shell/site-shell.tsx` fills them from new shell-lexicon keys
+  (`shell.menu.open`, `shell.menu.close`, reusing `shell.menu`) in `en` and `id`. Verified: no English `aria-label`
+  left on either host's `/id`.
+- **F4 — FIXED, built on seeded/real data where it exists, a typed placeholder constant otherwise (marked
+  `// placeholder until the owner's content` or the phase that ships it), never a price on the gallery.** Gallery:
+  the dark hero band (the same `.band`/`.bandDark` pattern the shop's trade band already used); "Recently placed"
+  (three placeholder cards — the sold archive is phase 5); "Live with the collection" (a real cross-site link to
+  the shop, via `siteHref`/`siteOrigin`, the same way the shop's own sister bridge is built). Shop: the
+  announcement bar (wired to the real, already-modelled `site-settings.announcement` field — not placeholder;
+  shows on any site the owner sets one on, hidden here since none is seeded); island and room chips (eight
+  placeholder labels linking to the shop, until browse has those facets); "Sets that hang together" (three
+  placeholder sets linking to the `collection` surface, until phase 6's collections ship).
 - **F5 — the importer CLI loses its arguments.** `engine/packages/cms/src/import/cli.ts` run as `payload run
   src/import/cli.ts --file … --kind …` answers "Name the file to import." because Payload's runner consumes the
   flags. With `--` it exits 0 silently and imports nothing. `@engine/cms` also has no `import` script, although the
@@ -205,14 +217,8 @@ paths this ticket does not own.
 
 ## For the orchestrator
 
-Tick after merging `w/4qa`:
+`4.1.e` and `4.2.d` were ticked on merging `w/4qa`. After merging `w/4.3r3`:
 
 ```bash
-pnpm tasks:tick 4.1.e
-pnpm tasks:tick 4.2.d
-# 4.3.e: after F1–F3 are fixed (and F4 is ruled on), re-run
-#   E2E_PORT=<port> PHASE4_SHOTS=docs/gates/phase-4 pnpm exec playwright test --project gallery-a11y --project shop-a11y
-#   node tests/e2e/phase-4/shoot-design.mjs <port>
-# then:
 pnpm tasks:tick 4.3.e
 ```

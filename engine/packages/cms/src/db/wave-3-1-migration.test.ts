@@ -30,8 +30,8 @@ const up = text.slice(
 const down = text.slice(text.indexOf('export async function down('))
 
 describe('phase 3 wave 1’s migration', () => {
-  it('follows the initial, and is the last of the set', () => {
-    expect(migrations.map((m) => m.name)).toEqual(['20261002_073156_initial', NAME])
+  it('follows the initial directly', () => {
+    expect(migrations.map((m) => m.name).slice(0, 2)).toEqual(['20261002_073156_initial', NAME])
   })
 
   it('adds every constraint the collections declare, and down() drops each', () => {

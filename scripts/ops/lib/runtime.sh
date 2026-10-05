@@ -40,12 +40,12 @@ JS
 
 ecosystem_cjs() {
   cat <<JS
-// $S_USER: $S_LABEL, $ENVIRONMENT — one pm2 process and nothing else (DEPLOYMENT.md §3).
-// Written by scripts/ops/helios-provision.sh; edit that, not this file.
+// $S_USER: the Indies Platform, $ENVIRONMENT — one pm2 process for both sites and nothing else
+// (DEPLOYMENT.md §3). Written by scripts/ops/helios-provision.sh; edit that, not this file.
 //
 // name = the site user: the deploy agent reloads the process by that name and skips the reload
-// silently on a mismatch. Fork mode, one instance: the jobs route's single flight, the rate
-// limits and the health memo are exact only with one process per brand. script and cwd go
+// silently on a mismatch. Fork mode, one instance, never cluster: the jobs route's single
+// flight, the rate limits and the health memo are exact only with one process. script and cwd go
 // through \`current\`, so \`pm2 reload $S_USER\` starts whichever release the agent just linked.
 // --dns-result-order=ipv4first makes HOSTNAME=localhost bind 127.0.0.1 alone, which nginx's
 // upstream http://127.0.0.1:$S_PORT reaches; a loopback IP literal would hang every page.
@@ -62,10 +62,9 @@ module.exports = {
       env: {
         HOSTNAME: 'localhost',
         PORT: '$S_PORT',
-        BRAND_ROOT: '$S_BRAND_ROOT',
       },
-      // A restart threshold, not a limit: two apps, RustFS (MemoryMax 2G) and Mailpit share
-      // this host with other live sites, so a leak restarts the app well before it hurts them.
+      // A restart threshold, not a limit: the app, RustFS (MemoryMax 2G) and Mailpit share this
+      // host with other live sites, so a leak restarts the app well before it hurts them.
       max_memory_restart: '1536M',
       kill_timeout: 10000,
       time: true,
@@ -80,7 +79,7 @@ JS
 # unit runs pm2 as the user alone, from a path checked in resolve_site_path.
 pm2_unit() {
   cat <<INI
-# pm2 for $S_USER ($S_LABEL, $ENVIRONMENT) — scripts/ops/helios-provision.sh. At boot it
+# pm2 for $S_USER (the Indies Platform, $ENVIRONMENT) — scripts/ops/helios-provision.sh. At boot it
 # resurrects the processes \`pm2 save\` recorded in ~/.pm2/dump.pm2, as $S_USER, never root.
 [Unit]
 Description=pm2 process manager for $S_USER
@@ -116,14 +115,13 @@ pm2_start_and_save() { site_run sh -c 'pm2 start "$1" >/dev/null && pm2 save >/d
 pm2_save() { site_run pm2 save >/dev/null; }
 
 ensure_runtime() {
-  say "$S_APP: holding release, pm2 $S_USER"
+  say "holding release, pm2 $S_USER"
   local holding="$S_HOME/releases/bootstrap-holding" made=0
   if [ -e "$S_CURRENT" ] || [ -L "$S_CURRENT" ]; then
     ok "$S_CURRENT -> $(readlink "$S_CURRENT" 2>/dev/null || printf 'not a link') (left as it is)"
   else
     user_dir "$S_HOME/releases" 755
     user_dir "$holding" 755
-    user_dir "$holding/brand" 755
     user_dir "$holding/engine" 755
     user_dir "$holding/engine/apps" 755
     user_dir "$holding/engine/apps/$S_APP" 755
