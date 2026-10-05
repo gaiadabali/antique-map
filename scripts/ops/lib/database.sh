@@ -1,12 +1,12 @@
 # shellcheck shell=bash
-# One database and one role per brand (DEPLOYMENT.md §2), in the named Postgres cluster.
+# The one database and its role (DEPLOYMENT.md §2: indies_db, indies), in the named cluster.
 #
 # The role has LOGIN and nothing else: no CREATEDB, because Payload creates a database it cannot
 # find, and a mistyped DATABASE_URL would then boot green on an empty one (4.8's independent
 # review, S4); no CREATEROLE, SUPERUSER, REPLICATION or BYPASSRLS. CONNECTION LIMIT 20: pg's pool
 # default is 10 per process (cms db/adapter.ts), and a pm2 reload briefly runs the old and the
-# new process side by side, so 20 is the most one brand can need, of the host's 100 connections.
-# PUBLIC may not connect, so one brand's role never opens the other brand's database.
+# new process side by side, so 20 is the most the app can need, of the host's 100 connections.
+# PUBLIC may not connect, so no other role on the host opens this database.
 #
 # Ours only (should-fix 3): a role this script creates is marked COMMENT 'indies-provision'. An
 # existing role without the mark, or with it but without its database, is someone else's or a
@@ -56,7 +56,7 @@ create_role_and_db() {
 }
 
 ensure_database() {
-  say "$S_APP: Postgres $S_DB / $S_ROLE"
+  say "Postgres $S_DB / $S_ROLE"
   if [ "$PG_OK" != 1 ]; then
     fail "Postgres unreachable or not the named cluster; skipped"
     return 0

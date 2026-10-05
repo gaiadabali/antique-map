@@ -54,23 +54,14 @@ inv_s3() {
 
 inventory_report() {
   say "inventory: what this script owns on $(hostname)"
-  local app u f
+  local u f
   inv_user "$RUSTFS_USER" "RustFS's system user"
   mailpit_wanted && inv_user "$MAILPIT_USER" "Mailpit's system user"
-  for app in $(selected_apps); do
-    load_site "$app"
-    inv_user "$S_USER" "$S_APP's site user (CloudPanel's site $S_DOMAIN; made by --create-sites)"
-  done
+  inv_user "$S_USER" "the site user (CloudPanel's site $S_DOMAIN; made by --create-sites)"
   for u in "$(rustfs_mount_unit)" "$RUSTFS_UNIT" indies-db-backup.service indies-db-backup.timer; do inv_unit "$u"; done
   mailpit_wanted && inv_unit "$MAILPIT_UNIT"
-  for app in $(selected_apps); do
-    load_site "$app"
-    inv_unit "pm2-$S_USER.service"
-  done
-  for app in $(selected_apps); do
-    load_site "$app"
-    inv_port "$S_PORT" "$S_APP (pm2 $S_USER)"
-  done
+  inv_unit "pm2-$S_USER.service"
+  inv_port "$S_PORT" "the app (pm2 $S_USER)"
   inv_port "$RUSTFS_PORT" "RustFS S3, admin, /health"
   inv_port "$RUSTFS_CONSOLE_PORT" "RustFS console (kept off)"
   if mailpit_wanted; then
@@ -88,10 +79,8 @@ inventory_report() {
     inv_path file "$MAILPIT_BIN_DIR/mailpit"
     inv_path file "/var/cache/indies/mailpit-$MAILPIT_VERSION-linux-amd64.tar.gz"
   fi
-  for app in $(selected_apps); do
-    load_site "$app"
-    inv_path file "/etc/logrotate.d/pm2-$S_USER"
-    id -u "$S_USER" >/dev/null 2>&1 || continue
+  inv_path file "/etc/logrotate.d/pm2-$S_USER"
+  if id -u "$S_USER" >/dev/null 2>&1; then
     for f in "$S_ENV" "$S_HOME/ecosystem.config.cjs" "$S_HOME/bin/indies-cron" "$S_HOME/bin/indies-health" \
       "$S_HOME/.indies" "$S_HOME/releases/bootstrap-holding" "$S_CURRENT"; do inv_home "$f"; done
     resolve_site_path
@@ -101,23 +90,17 @@ inventory_report() {
       inv pm2 absent "no trusted system pm2 for $S_USER"
     fi
     if cron_block_present; then inv cron present "$S_USER's crontab: the indies-provision block"; else inv cron absent "$S_USER's crontab: the indies-provision block"; fi
-  done
-  for app in $(selected_apps); do
-    load_site "$app"
-    if [ "$PG_OK" != 1 ]; then
-      inv db unknown "$S_DB / role $S_ROLE (Postgres not reached)"
-    elif [ -n "$(db_owner "$S_DB")" ]; then
-      inv db present "$S_DB (owner $(db_owner "$S_DB"), role $S_ROLE marked '$(role_mark "$S_ROLE")') on port $PG_PORT"
-    else
-      inv db absent "$S_DB / role $S_ROLE"
-    fi
-  done
+  fi
+  if [ "$PG_OK" != 1 ]; then
+    inv db unknown "$S_DB / role $S_ROLE (Postgres not reached)"
+  elif [ -n "$(db_owner "$S_DB")" ]; then
+    inv db present "$S_DB (owner $(db_owner "$S_DB"), role $S_ROLE marked '$(role_mark "$S_ROLE")') on port $PG_PORT"
+  else
+    inv db absent "$S_DB / role $S_ROLE"
+  fi
   s3_start
-  inv_s3 bucket "/$(masters_bucket)?location" "$(masters_bucket) (private)"
-  for app in $(selected_apps); do
-    load_site "$app"
-    inv_s3 bucket "/$S_MEDIA_BUCKET?location" "$S_MEDIA_BUCKET (public read of objects)"
-    inv_s3 key "/rustfs/admin/v3/user-info?accessKey=$S_MEDIA_KEY" "RustFS key $S_MEDIA_KEY (policy indies-$S_MEDIA_KEY)"
-    inv_s3 key "/rustfs/admin/v3/user-info?accessKey=$S_MASTERS_KEY" "RustFS key $S_MASTERS_KEY (policy indies-$S_MASTERS_KEY)"
-  done
+  inv_s3 bucket "/$(masters_bucket)?location" "$(masters_bucket) (private, versioned)"
+  inv_s3 bucket "/$S_MEDIA_BUCKET?location" "$S_MEDIA_BUCKET (anonymous read under derivatives/ and iiif/)"
+  inv_s3 policy "/rustfs/admin/v3/info-canned-policy?name=$(app_policy)" "RustFS policy $(app_policy)"
+  inv_s3 key "/rustfs/admin/v3/user-info?accessKey=$S_KEY" "RustFS key $S_KEY (policy $(app_policy); both buckets)"
 }
