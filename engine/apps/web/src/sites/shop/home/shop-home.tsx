@@ -28,9 +28,10 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
       <Hero locale={locale} href={href} t={t} />
       <section className={styles.section}>
         <div className={styles.rail}>
-          <div>
+          {/* The section's heading, so the product cards' h3 follow an h2 (axe heading-order). */}
+          <h2 className={styles.railHeading}>
             <Eyebrow>{t('home.shop.featuredEyebrow')}</Eyebrow>
-          </div>
+          </h2>
           <div>
             <FeaturedProducts locale={locale} t={t} />
             <div className={styles.actions}>
