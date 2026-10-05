@@ -19,15 +19,15 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 25/33 | 0 | `████████░░`  76% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 11/14 | 0 | `████████░░`  79% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 5/20 | 0 | `███░░░░░░░`  25% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 0/4 | 3/13 | 0 | `██░░░░░░░░`  23% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 4/13 | 0 | `███░░░░░░░`  31% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **15/49** | **107/200** | **8** | `█████░░░░░`  54% |
+| **All** | 11 phases | | | **18/49** | **110/200** | **8** | `██████░░░░`  55% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,15 +81,13 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-05 | r2 landed the importer's second-pass fix (`fc5e279`) then died before the held rows, dry run and report; continuation `am-3.7b-r3` in flight (also writes the local-preview seed commands) |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
 | 6·W2 | 6.3.a Checkout and map pin | Sonnet (claude seat) | `w/6.3a` | 2026-10-05 | GLM run `am-6.3a-1` stalled (~100 min, 0 commits) and was stopped; `am-6.3a-s1` on Sonnet finishes from its uncommitted files; Opus reviews |
-| 4·W3 | 4.1.e, 4.2.c/d, 4.3.e Checks | qa (claude seat) | `w/4qa` | 2026-10-05 | run `am-4qa-c1` — phase 4's evidence on a production build (style guide, palettes, fonts, keyboard/axe/contrast, both homes vs the drawings); fixes inside phase-4 paths |
+| 4·W3 | 4.3.e Check | Sonnet (claude seat) | `w/4.3r3` | 2026-10-05 | 4.qa merged (`b9d486e`): 4.1.e/4.2.c/4.2.d PASS, 4.1 and 4.2 closed; 4.3.e failed on F1–F4 (layout cap, heading type, English in shared header/dialog, missing drawn sections — ruled in scope); `am-4.3r3-s1` fixes and re-runs the evidence |
 | 3·W2 | 3.6.d Check | qa (claude seat) | `w/3.6qa` | 2026-10-05 | run `am-3.6qa-c1` — admin as owner/editor/store at 1280 px, plain bilingual errors, dashboard counts vs SQL, the phase-3 Done-when admin flows |
-| 7·W1 | 7.1 Statuses, driver image, reassign | senior-be (claude seat) | `w/7.1` | 2026-10-05 | run `am-7.1-c1` — core interface first so 7.2/7.3 shells can start on merge |
 | 3·W1 | 3.1 Staging as one site | devops (claude seat) | `w/3.1` | 2026-10-03 | run `am-3.1-c1` landed the repo side (one-site provision, storage policies folded from 8.5, the retirement written as a runbook; 5 commits) but no worker may ssh, so the Helios steps (dry-run → apply → retirement → release by scp → backups) are the orchestrator's, per the standing go-ahead; the container test needed one orchestrator fix (pack.sh's policy documents ride on their own mount) and is running now |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
-| 7·W1 | 7.1 Order statuses, history, the driver image and reassigning | senior-be | `w/7.1` | 2026-10-05 | |
 | 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
 
 ## Decisions for the owner
@@ -414,7 +412,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Built to be restyled.** The first-run UI is the real UI, so it has to be right: every colour, size, space, radius, shadow and motion value comes from a token; pages are thin compositions of shared components; copy comes from the lexicon. A later redesign then edits `sites/*/tokens` and the shared components. The design team's material is in `docs/design/input/claude-design-2026-09/`.
 
-- [ ] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — 🔄 4·W1
+- [x] **4.1 Port the design team's tokens and fonts** · needs: phase 2 — ✅ 2026-10-05 b9d486e
   - **Lane** DSG · **Agent** senior-uiux · **Wave** W1
   - **Owns** `DESIGN.md`, `engine/apps/web/src/shared/styles/**`, `engine/apps/web/src/sites/{gallery,shop}/tokens/**`, `engine/apps/web/public/fonts/**`
   - **Read** `docs/design/input/claude-design-2026-09/_ds/*/readme.md` and `tokens/*.css`, DESIGN-SYSTEM.md, PRODUCT.md
@@ -423,9 +421,9 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.1.b two palettes as tier-2 brand variables: `sites/gallery/tokens` (quiet luxury, starting from the design team's linen, off-black, bronze and champagne) and `sites/shop/tokens` (warmer and friendlier, the same structure, visibly a sibling); no dark mode
   - [x] 4.1.c `DESIGN.md` records what was adopted from the design team, what we added, and the swap points (palettes, font family, hero media) — the client's final colours (Q16) are an edit to the two token files
   - [x] 4.1.d a lint or test that fails on a raw hex, rgb or hsl colour, or a `font-family` literal, outside the token files
-  - [ ] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
+  - [x] 4.1.e **Check:** both sites render with their own palette from the same components; the fonts load self-hosted within the font budget; a planted raw colour in a component fails the lint.
 
-- [ ] **4.2 Shared components from the design team's kit** · needs: 4.1 — 🔄 4·W2
+- [x] **4.2 Shared components from the design team's kit** · needs: 4.1 — ✅ 2026-10-05 b9d486e
   - **Lane** DSG · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/shared/**`
   - **Read** the design system's `components/components.css` and readme, DESIGN-SYSTEM.md §Components
@@ -433,7 +431,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.2.a port `components.css` into CSS Modules per component: button, link, input, select, checkbox, textarea, card, badge, eyebrow, hairline, header, footer, form messages, dialog, toast, skeleton; no prefetching link
   - [x] 4.2.b the components the drawings do not have, in the same language: status timeline, map-pin picker shell, zoom viewer shell, chat panel shell, facet chip, pagination, breadcrumbs, rupiah price display, image with `sizes`
   - [x] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
-  - [ ] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
+  - [x] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
 
 - [ ] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — 🔄 4·W3
   - **Lane** DSG · **Agent** senior-fe · **Wave** W3
@@ -568,7 +566,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging a paid order appears in its store's panel; the store user moves it processing → waiting for driver → on the way (uploading the driver's details as an image) → delivered; the buyer sees each step, the image and the store's contact on one tracking page and receives an email at each; another store's user cannot see the order; the owner or an editor can reassign it.
 **Waves:** W1 — 7.1 · W2 — 7.2, 7.3 · W3 — 7.4
 
-- [ ] **7.1 Order statuses, history, the driver image and reassigning** · needs: phase 6 — 🔄 7·W1
+- [x] **7.1 Order statuses, history, the driver image and reassigning** · needs: phase 6 — ✅ 2026-10-05 24bfd14
   - **Lane** SHP + CMS · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/shop/fulfilment/**`, `engine/packages/cms/src/collections/orders/hooks/**`
   - **Read** COMMERCE.md §Statuses and §Replacement, SECURITY.md §Uploads
@@ -576,7 +574,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 7.1.a the transitions `paid → processing → waiting_driver → on_the_way → delivered` plus `cancelled`; a history row for every change with who, when and (for a hand-back) the reason; a store user moves forward only; the owner or an editor moves any
   - [x] 7.1.b the driver-details image: type-sniffed, size-limited, re-encoded, stored privately and served by a short-lived signed URL; deleted 30 days after delivery
   - [x] 7.1.c reassign to another store: stock returns to the first store and is decremented at the second in one transaction, refused if the second cannot fill it; a store can hand an order back with a reason
-  - [ ] 7.1.d **Check:** db tests prove: a store user cannot move a status backward or skip; an image that is not an image is refused; a reassign to a store without stock leaves both stocks unchanged; every transition has a history row.
+  - [x] 7.1.d **Check:** db tests prove: a store user cannot move a status backward or skip; an image that is not an image is refused; a reassign to a store without stock leaves both stocks unchanged; every transition has a history row.
 
 - [ ] **7.2 The store staff panel** · needs: 7.1
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
@@ -818,6 +816,10 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ 7.1 — merged (`8692778`, claude seat, Opus-reviewed): `@engine/cms/shop/fulfilment` — `moveOrder` (forward-only for store staff, a history row per change, a cancel from a holding status returns stock once), the driver image (byte-sniffed, re-encoded, private `orders/{id}/`, presigned GET, 30-day purge), `reassignOrder` (atomic, rolled back whole when the new store is short), `handBackOrder`. Orchestrator fixed one flaky assertion (the racing reassign's history assumed the owner won). Db tests 51/51 on a fresh clone, three runs. Open: the purge's cron line (one line in `@engine/http`).
+- 2026-10-05 ✅ 4.1, 4.2 — the 4.qa run (claude seat) evidenced 4.1.e, 4.2.c, 4.2.d on a production build (palettes, self-hosted fonts 101 KB, planted colour fails the lint, keyboard, axe, AA contrast tables) and fixed four defects (style-guide landmark, two home contrast/heading-order issues, a sideways scroll at 390 px on every page); merged `b9d486e`. 4.3.e failed on F1–F4; **ruling:** the drawn home sections missing from the build belong to 4.3 and are built now (`4.3-r3`, Sonnet).
+- 2026-10-05 — **Lanes (user):** max 4 agents; priority phase 4 → 3 → 6 → 7 → 5; workers on Sonnet/Haiku, Opus reviews. 6.3a's GLM run stalled (0 commits in ~100 min) and moved to Sonnet.
 
 Newest first. One line per finished task (`✅ id — what it proved`), per closed phase, and per event that changed the plan.
 
