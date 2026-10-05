@@ -21,9 +21,10 @@ describe('parseMapsLink', () => {
       lat: -8.65,
       lng: 115.216,
     })
-    expect(
-      parseMapsLink('https://www.google.com/maps/place/Ubud/@-8.5069,115.2625,14z'),
-    ).toEqual({ lat: -8.5069, lng: 115.2625 })
+    expect(parseMapsLink('https://www.google.com/maps/place/Ubud/@-8.5069,115.2625,14z')).toEqual({
+      lat: -8.5069,
+      lng: 115.2625,
+    })
     // `?q=lat,lng`
     expect(parseMapsLink('https://maps.google.com/?q=-8.65,115.216')).toEqual({
       lat: -8.65,
@@ -99,7 +100,10 @@ describe('geocode', () => {
 
   it('a burst from one address is dropped with a 429', async () => {
     for (let i = 0; i < 240; i += 1) rateLimiter.allowAddress('198.51.100.7')
-    const answer = await geocode({ lat: -8.65, lng: 115.216 }, { address: '198.51.100.7', serverKey: null })
+    const answer = await geocode(
+      { lat: -8.65, lng: 115.216 },
+      { address: '198.51.100.7', serverKey: null },
+    )
     expect(answer).toMatchObject({ ok: false, status: 429 })
   })
 })

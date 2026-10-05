@@ -13,10 +13,7 @@ import { createHref, SITES } from '@engine/config/sites'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { checkoutText } from './copy'
 import styles from './checkout.module.css'
-import {
-  CheckoutForm,
-  type CheckoutFormLabels,
-} from './checkout-form'
+import { CheckoutForm, type CheckoutFormLabels } from './checkout-form'
 
 export type CheckoutViewProps = {
   readonly read: CheckoutRead
@@ -25,11 +22,7 @@ export type CheckoutViewProps = {
   readonly browserKey: string | null
 }
 
-export function CheckoutView({
-  read,
-  locale,
-  browserKey,
-}: CheckoutViewProps): React.ReactElement {
+export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): React.ReactElement {
   const text = checkoutText(locale)
   const href = createHref(SITES.shop)
   const labels: CheckoutFormLabels = {
@@ -77,10 +70,7 @@ export function CheckoutView({
         <div className={styles.review} aria-label={text('checkout.reviewTitle')}>
           <ul>
             {read.lines.map((line) => (
-              <li
-                key={`${line.productId}-${line.variantSku ?? ''}`}
-                className={styles.line}
-              >
+              <li key={`${line.productId}-${line.variantSku ?? ''}`} className={styles.line}>
                 <p className={styles.lineName}>
                   {line.name}
                   {line.variantLabel !== null ? ` — ${line.variantLabel}` : ''}

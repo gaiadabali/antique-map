@@ -27,8 +27,7 @@ export const CHECKOUT_KEYS = defineMessages({
   'checkout.problem.price-changed':
     'The total changed since you last saw it: it is now {total}. Check it before you pay.',
   'checkout.problem.invalid-details': 'Please check the highlighted fields.',
-  'checkout.problem.invalid-pin':
-    'That pin does not look right — drop it again inside Indonesia.',
+  'checkout.problem.invalid-pin': 'That pin does not look right — drop it again inside Indonesia.',
   'checkout.problem.checkout-disabled':
     'Online checkout is switched off for now. Message us on WhatsApp and we will take your order.',
   'checkout.problem.no-single-store':

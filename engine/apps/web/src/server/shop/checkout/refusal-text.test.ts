@@ -24,7 +24,10 @@ function renders(copy: ReturnType<typeof refusalCopy>): boolean {
 
 describe('refusalCopy', () => {
   it('invalid_details asks to check the fields', () => {
-    const copy = refusalCopy({ ok: false, refusal: 'invalid_details', fields: ['contact.name'] }, nameOf)
+    const copy = refusalCopy(
+      { ok: false, refusal: 'invalid_details', fields: ['contact.name'] },
+      nameOf,
+    )
     expect(copy.key).toBe('checkout.problem.invalid-details')
     expect(renders(copy)).toBe(true)
   })
@@ -83,7 +86,11 @@ describe('refusalCopy', () => {
       {
         ok: false,
         refusal: 'code_refused',
-        code: { reason: 'minimum_spend', messageKey: 'codeInvalid.minimum-spend', amountIdr: 50000 },
+        code: {
+          reason: 'minimum_spend',
+          messageKey: 'codeInvalid.minimum-spend',
+          amountIdr: 50000,
+        },
       },
       nameOf,
     )

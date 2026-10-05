@@ -50,7 +50,8 @@ export type CheckoutFormProps = {
   readonly expectedTotalIdr: number
 }
 
-type FieldName = 'contact.name' | 'contact.whatsapp' | 'contact.email' | 'delivery.address' | 'delivery.pin'
+type FieldName =
+  'contact.name' | 'contact.whatsapp' | 'contact.email' | 'delivery.address' | 'delivery.pin'
 
 export function CheckoutForm({
   locale,

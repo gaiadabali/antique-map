@@ -19,7 +19,12 @@ export type GeocodeInput = {
 }
 
 export type GeocodeAnswer =
-  | { readonly ok: true; readonly lat: number; readonly lng: number; readonly address: string | null }
+  | {
+      readonly ok: true
+      readonly lat: number
+      readonly lng: number
+      readonly address: string | null
+    }
   | { readonly ok: false; readonly status: 400 | 429; readonly message: string }
 
 export type GeocodeDeps = {
@@ -110,7 +115,11 @@ export async function geocode(input: GeocodeInput, deps: GeocodeDeps): Promise<G
   }
 
   let pin: Pin | null = null
-  if (typeof input.lat === 'number' || typeof input.lng === 'number' || typeof input.lat === 'string') {
+  if (
+    typeof input.lat === 'number' ||
+    typeof input.lng === 'number' ||
+    typeof input.lat === 'string'
+  ) {
     const lat = typeof input.lat === 'number' ? input.lat : Number(String(input.lat).trim())
     const lng = typeof input.lng === 'number' ? input.lng : Number(String(input.lng).trim())
     const candidate = { lat, lng }

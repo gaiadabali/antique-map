@@ -33,9 +33,7 @@ const GENERIC_ITEM = 'an item'
 
 /** The named lines, comma-joined, for `{items}`. */
 export function itemNames(lines: readonly LineRef[], nameOf: NameOf): string {
-  const names = lines.map(
-    (line) => nameOf(line) ?? GENERIC_ITEM,
-  )
+  const names = lines.map((line) => nameOf(line) ?? GENERIC_ITEM)
   return names.join(', ')
 }
 

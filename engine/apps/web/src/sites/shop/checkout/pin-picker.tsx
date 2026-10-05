@@ -53,7 +53,9 @@ type GMapsNS = {
   Map: new (element: HTMLElement, options: Record<string, unknown>) => Record<string, unknown>
   Marker: new (options: Record<string, unknown>) => GMarker
   LatLng: new (lat: number, lng: number) => GLatLng
-  places: { Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => GAutocomplete }
+  places: {
+    Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => GAutocomplete
+  }
 }
 type GWindow = Window & {
   google?: { maps: GMapsNS }
@@ -86,8 +88,7 @@ function loadMaps(key: string, onReady: (maps: GMapsNS) => void): void {
   script.id = SCRIPT_ID
   script.async = true
   script.src =
-    `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}` +
-    `&libraries=places`
+    `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}` + `&libraries=places`
   // The API signals readiness by populating `window.google.maps`; poll briefly rather than
   // threading a global callback name through the bundler.
   let tries = 0
@@ -167,7 +168,6 @@ export function PinPicker({
       listeners = []
     }
     // The map is built once per key; later pin changes move the marker, not the map.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [browserKey])
 
   // A pin set from outside (the fallback inputs) moves the map's marker too.
@@ -179,11 +179,7 @@ export function PinPicker({
 
   const useMyLocation = useCallback(() => {
     navigator.geolocation?.getCurrentPosition(
-      (position) =>
-        pick(
-          { lat: position.coords.latitude, lng: position.coords.longitude },
-          true,
-        ),
+      (position) => pick({ lat: position.coords.latitude, lng: position.coords.longitude }, true),
       () => undefined,
     )
   }, [pick])
@@ -198,7 +194,11 @@ export function PinPicker({
             body: JSON.stringify({ link }),
           })
           if (!response.ok) return
-          const answer = (await response.json()) as { lat?: unknown; lng?: unknown; address?: unknown }
+          const answer = (await response.json()) as {
+            lat?: unknown
+            lng?: unknown
+            address?: unknown
+          }
           if (typeof answer.lat !== 'number' || typeof answer.lng !== 'number') return
           onPin(
             { lat: answer.lat, lng: answer.lng },

@@ -48,15 +48,16 @@ export type FeeState =
     }
   | { readonly ok: false; readonly message: string }
 
-const empty = (value: FormDataEntryValue | null): string =>
-  typeof value === 'string' ? value : ''
+const empty = (value: FormDataEntryValue | null): string => (typeof value === 'string' ? value : '')
 
 const localeOf = (value: unknown): 'en' | 'id' => (value === 'id' ? 'id' : 'en')
 
 /** The buyer-facing names for the lines a refusal names, from the published products. */
 async function namer(
   lines: readonly { readonly productId: number }[],
-): Promise<(line: { readonly productId: number; readonly variantSku: string | null }) => string | null> {
+): Promise<
+  (line: { readonly productId: number; readonly variantSku: string | null }) => string | null
+> {
   const display = await displayFor(lines.map((line) => line.productId))
   const byId = new Map<number, BagDisplay>(display.map((each) => [each.productId, each]))
   return (line) => byId.get(line.productId)?.name ?? null
@@ -89,7 +90,14 @@ export async function quoteFeeAction(
     },
     { bagKey: key },
   )
-  if (!quoted.ok) return { ok: false, message: rendered(text, refusalCopy(quoted, () => null)) }
+  if (!quoted.ok)
+    return {
+      ok: false,
+      message: rendered(
+        text,
+        refusalCopy(quoted, () => null),
+      ),
+    }
   return {
     ok: true,
     feeText: formatRupiah(quoted.quote.deliveryIdr ?? 0),
