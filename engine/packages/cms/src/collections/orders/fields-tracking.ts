@@ -28,7 +28,12 @@ export const TRACKING_FIELDS: Field[] = [
     access: SERVER_ONLY,
     admin: { readOnly: true },
     fields: [
-      { name: 'from', type: 'select', label: { en: 'From', id: 'Dari' }, options: ORDER_STATUS_OPTIONS },
+      {
+        name: 'from',
+        type: 'select',
+        label: { en: 'From', id: 'Dari' },
+        options: ORDER_STATUS_OPTIONS,
+      },
       {
         name: 'to',
         type: 'select',
@@ -45,7 +50,12 @@ export const TRACKING_FIELDS: Field[] = [
         required: true,
         defaultValue: 'user',
       },
-      { name: 'by', type: 'relationship', relationTo: 'users', label: { en: 'Staff member', id: 'Staf' } },
+      {
+        name: 'by',
+        type: 'relationship',
+        relationTo: 'users',
+        label: { en: 'Staff member', id: 'Staf' },
+      },
       { name: 'note', type: 'textarea', label: { en: 'Note', id: 'Catatan' }, maxLength: 500 },
     ],
   },
@@ -150,7 +160,12 @@ export const TRACKING_FIELDS: Field[] = [
       },
     },
     fields: [
-      { name: 'flag', type: 'checkbox', label: { en: 'Handed back', id: 'Dikembalikan' }, defaultValue: false },
+      {
+        name: 'flag',
+        type: 'checkbox',
+        label: { en: 'Handed back', id: 'Dikembalikan' },
+        defaultValue: false,
+      },
       { name: 'reason', type: 'textarea', label: { en: 'Reason', id: 'Alasan' }, maxLength: 500 },
     ],
   },

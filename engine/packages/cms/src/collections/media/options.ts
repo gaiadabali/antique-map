@@ -61,8 +61,14 @@ export const PROVENANCE_LABELS: Readonly<Record<string, { en: string; id: string
 
 export const TIER_LABELS: Readonly<Record<string, { en: string; id: string }>> = {
   good: { en: 'Good — a phone and a window', id: 'Cukup — ponsel dan jendela' },
-  better: { en: 'Better — a camera, lamps, a colour card', id: 'Lebih baik — kamera, lampu, kartu warna' },
-  best: { en: 'Best — a copy stand and a colour chart', id: 'Terbaik — copy stand dan bagan warna' },
+  better: {
+    en: 'Better — a camera, lamps, a colour card',
+    id: 'Lebih baik — kamera, lampu, kartu warna',
+  },
+  best: {
+    en: 'Best — a copy stand and a colour chart',
+    id: 'Terbaik — copy stand dan bagan warna',
+  },
 }
 
 export const VERDICT_LABELS: Readonly<Record<string, { en: string; id: string }>> = {
@@ -71,7 +77,10 @@ export const VERDICT_LABELS: Readonly<Record<string, { en: string; id: string }>
     en: 'Re-take needed — design work only, never published under its role',
     id: 'Perlu diambil ulang — hanya untuk kerja desain, tidak pernah diterbitkan dengan perannya',
   },
-  legacy: { en: 'Legacy — assessed, not held to the spec', id: 'Warisan — sudah dinilai, tidak mengikuti spek' },
+  legacy: {
+    en: 'Legacy — assessed, not held to the spec',
+    id: 'Warisan — sudah dinilai, tidak mengikuti spek',
+  },
 }
 
 export const RETOUCHING_LABELS: Readonly<Record<string, { en: string; id: string }>> = {

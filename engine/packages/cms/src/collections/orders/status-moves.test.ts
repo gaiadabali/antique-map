@@ -10,7 +10,9 @@ import { FORWARD_LINE, statusMoveRefusal, statusMoveRefusalBilingual } from './s
 const pairs = ORDER_STATUSES.flatMap((from) => ORDER_STATUSES.map((to) => [from, to] as const))
 const allowed = (role: 'owner' | 'editor' | 'store', image = true) =>
   pairs
-    .filter(([from, to]) => from !== to && statusMoveRefusalBilingual(role, from, to, image) === null)
+    .filter(
+      ([from, to]) => from !== to && statusMoveRefusalBilingual(role, from, to, image) === null,
+    )
     .map(([from, to]) => `${from}>${to}`)
 
 describe('statusMoveRefusal', () => {

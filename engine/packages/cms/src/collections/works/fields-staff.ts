@@ -352,7 +352,13 @@ export const STAFF_FIELDS: Field[] = [
     type: 'group',
     label: { en: 'SEO', id: 'SEO' },
     fields: [
-      { name: 'title', type: 'text', label: { en: 'Title', id: 'Judul' }, localized: true, maxLength: 70 },
+      {
+        name: 'title',
+        type: 'text',
+        label: { en: 'Title', id: 'Judul' },
+        localized: true,
+        maxLength: 70,
+      },
       {
         name: 'description',
         type: 'textarea',

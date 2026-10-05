@@ -78,9 +78,20 @@ export const SALE_FIELDS: Field[] = [
         label: { en: 'Product', id: 'Produk' },
         required: true,
       },
-      { name: 'variantSku', type: 'text', label: { en: 'Variant SKU', id: 'SKU varian' }, maxLength: 64 },
+      {
+        name: 'variantSku',
+        type: 'text',
+        label: { en: 'Variant SKU', id: 'SKU varian' },
+        maxLength: 64,
+      },
       { name: 'sku', type: 'text', label: { en: 'SKU', id: 'SKU' }, required: true, maxLength: 64 },
-      { name: 'name', type: 'text', label: { en: 'Name', id: 'Nama' }, required: true, maxLength: 160 },
+      {
+        name: 'name',
+        type: 'text',
+        label: { en: 'Name', id: 'Nama' },
+        required: true,
+        maxLength: 160,
+      },
       {
         name: 'variantLabel',
         type: 'text',
@@ -117,7 +128,13 @@ export const SALE_FIELDS: Field[] = [
     label: { en: 'Buyer', id: 'Pembeli' },
     access: SERVER_ONLY,
     fields: [
-      { name: 'name', type: 'text', label: { en: 'Name', id: 'Nama' }, required: true, maxLength: 120 },
+      {
+        name: 'name',
+        type: 'text',
+        label: { en: 'Name', id: 'Nama' },
+        required: true,
+        maxLength: 120,
+      },
       {
         name: 'whatsapp',
         type: 'text',

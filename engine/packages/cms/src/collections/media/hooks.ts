@@ -114,7 +114,10 @@ export const matchItsMaster: CollectionBeforeValidateHook = async ({ data, origi
   if (!master) {
     errors.push({
       path: 'master',
-      message: pickLanguage(req, { en: 'That master does not exist.', id: 'Master tersebut tidak ada.' }),
+      message: pickLanguage(req, {
+        en: 'That master does not exist.',
+        id: 'Master tersebut tidak ada.',
+      }),
     })
   } else {
     if (master.kind !== 'capture') {

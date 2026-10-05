@@ -138,7 +138,10 @@ export const countToQuantity: CollectionBeforeChangeHook<StockData> = async ({
   const product = idOf(key('product'))
   const variantSku = (key('variantSku') as string | null | undefined) ?? null
   if (store === null) {
-    refuse(req, 'store', { en: 'Choose the store this count is for.', id: 'Pilih toko untuk stok ini.' })
+    refuse(req, 'store', {
+      en: 'Choose the store this count is for.',
+      id: 'Pilih toko untuk stok ini.',
+    })
   }
   if (product === null) {
     refuse(req, 'product', {
