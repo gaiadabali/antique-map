@@ -21,7 +21,10 @@
  */
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
 
-import { createHref, SITES } from '../../engine/packages/config/src/sites'
+// Relative, like `playwright.config.ts`: the repo root has no `@engine/config` link (`@engine/*`
+// resolves inside the apps, not here), so a root-level spec imports the source directly.
+import { createHref } from '../../../engine/packages/config/src/sites/routes/href'
+import { SITES } from '../../../engine/packages/config/src/sites/table'
 import {
   ALLOWED_PRICE_PHRASES,
   ATTRIBUTES,
