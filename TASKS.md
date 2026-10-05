@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 26/33 | 0 | `████████░░`  79% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 5/20 | 0 | `███░░░░░░░`  25% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 6/20 | 0 | `███░░░░░░░`  30% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 4/13 | 0 | `███░░░░░░░`  31% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **18/49** | **111/200** | **8** | `██████░░░░`  56% |
+| **All** | 11 phases | | | **18/49** | **112/200** | **8** | `██████░░░░`  56% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -469,7 +469,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 2.4, 3.2, 3.4, 14.4_
   - [x] 5.2.a derivatives with `sharp` on upload (320–2400 px, AVIF and WebP, EXIF location removed) and static zoom tiles under `iiif/`; the full-resolution master stays private
   - [x] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
-  - [ ] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
+  - [x] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
   - [ ] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
   - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no Ask button; no price anywhere in the HTML or JSON.
 
