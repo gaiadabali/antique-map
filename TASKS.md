@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 4/5 | 17/18 | 0 | `█████████░`  94% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 5/5 | 18/18 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **27/49** | **134/200** | **8** | `███████░░░`  67% |
+| **All** | 11 phases | | | **28/49** | **135/200** | **8** | `███████░░░`  68% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -82,13 +82,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.2.b–d Item page, zoom, sold | Opus review (claude seat) | `w/5.2b` | 2026-10-05 | GLM run `am-5.2b-1` exited 1 before its report; **paused** — needs an Opus review, fixes and Verify before the merge |
 | 5·W2 | 5.4 Makers, places, editorial, plain pages | Sonnet (claude seat) | `w/5.4` | 2026-10-05 | **paused** — ticket written (`a15b82f`), worktree cut; run `am-5.4-s1` stopped at start, relaunch as `am-5.4-s2` |
 | 5·W2 | 5.3 Ask, Sell to us, `/api/x/leads` | — | — | 2026-10-05 | waits on the 5.2b merge and on `w/9.1core`'s lead service (review not started); then a Sonnet run — **paused** |
-| 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
-| 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
-| 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 
 ## Decisions for the owner
@@ -551,14 +548,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
   - [x] 6.4.d **Check:** tests prove: a bad signature is rejected; the same webhook ten times in parallel changes the order once; an expired order's stock returns exactly once; a settled payment moves the order to `paid` and stores the paid amount.
 
-- [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4 — 🔄 6·W3
+- [x] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4 — ✅ 2026-10-06 69716ed
   - **Lane** SHP + QA · **Agent** senior-fe, qa · **Wave** W3
   - **Owns** `engine/apps/web/src/sites/shop/payment/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/order/**`, `docs/gates/shop-payment.md`, `tests/e2e/shop/**`
   - **Read** the **Done when** of phase 6, EXPERIENCE-SHOP.md §Payment and §Recovery
   - _Requirements: 6.6, 5.2_
   - [x] 6.5.a the payment step (Snap embedded or redirected), the confirmation page with the order number and the tracking link, and the recovery states (pending, expired, failed, out of stock at pay time)
   - [x] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
-  - [ ] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
+  - [x] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
 
 ---
 
@@ -818,6 +815,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 ✅ **phase 6** — 6.5.c on staging release 70a0cae (simulator, owner decision; the real sandbox payment deferred): antique-map-dc's gate spec ran the buyer journey on staging (two products, a typed pin, the server's fee and total, simulator settle, "Payment received" and the tracking link, axe clean). Orchestrator on the host: (a) order 100001 paid, store DPS-004 (the nearest holding both lines), stock down exactly 1 per line (2→1, 9→8); (b) Mailpit: "Your order 100,001" to the buyer with Rp 5.595.000 and a tracking link on https://old-east-indies.gaiada.com/track/; (c) unpaid order 100002 at DPS-006: expires_at moved back, sweep 1 → expired and the unit returned (8→9), sweep 2 a no-op (stock still 9). Lighthouse ≥ 90 evidenced on the local production build (`docs/gates/shop-payment.md`). Follow-ups (antique-map-dc): the typed pin sends ~(0,0) if submitted between the two inputs; order numbers shown with a thousands separator ("100,001").
 
 - 2026-10-06 — Staging, found by running the 7.4 gate there: (1) **defect, fixed on main `5c2740c`** — a blank `GOOGLE_MAPS_BROWSER_KEY=`/`GOOGLE_MAPS_SERVER_KEY=` in a host's .env reached the checkout as `''` (`?? null`), so it loaded Google Maps with no key and hid the typed-pin fallback: every staging checkout refused as outside Indonesia; (2) staging's delivery-fee table was empty → every checkout refused `no_delivery_table`; a marked placeholder table set as the owner (OA13 added: the real Q3 table is a launch blocker); (3) the cms typecheck was red on main since the 7.2 merge (27 errors) — `admin/orders/data.ts` imported the generated `payload-types.ts`, pulling its `declare module 'payload'` into the package; fixed `2d9ebce` (rows described structurally). The 7.2 gate had run the web typecheck, not the cms one: the phase gates now run both.
 
