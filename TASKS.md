@@ -22,12 +22,12 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 4/20 | 0 | `██░░░░░░░░`  20% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 0/4 | 3/13 | 0 | `██░░░░░░░░`  23% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **15/49** | **102/200** | **8** | `█████░░░░░`  51% |
+| **All** | 11 phases | | | **15/49** | **105/200** | **8** | `█████░░░░░`  53% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -573,9 +573,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/shop/fulfilment/**`, `engine/packages/cms/src/collections/orders/hooks/**`
   - **Read** COMMERCE.md §Statuses and §Replacement, SECURITY.md §Uploads
   - _Requirements: 7.5, 8.1, 8.2, 8.3_
-  - [ ] 7.1.a the transitions `paid → processing → waiting_driver → on_the_way → delivered` plus `cancelled`; a history row for every change with who, when and (for a hand-back) the reason; a store user moves forward only; the owner or an editor moves any
-  - [ ] 7.1.b the driver-details image: type-sniffed, size-limited, re-encoded, stored privately and served by a short-lived signed URL; deleted 30 days after delivery
-  - [ ] 7.1.c reassign to another store: stock returns to the first store and is decremented at the second in one transaction, refused if the second cannot fill it; a store can hand an order back with a reason
+  - [x] 7.1.a the transitions `paid → processing → waiting_driver → on_the_way → delivered` plus `cancelled`; a history row for every change with who, when and (for a hand-back) the reason; a store user moves forward only; the owner or an editor moves any
+  - [x] 7.1.b the driver-details image: type-sniffed, size-limited, re-encoded, stored privately and served by a short-lived signed URL; deleted 30 days after delivery
+  - [x] 7.1.c reassign to another store: stock returns to the first store and is decremented at the second in one transaction, refused if the second cannot fill it; a store can hand an order back with a reason
   - [ ] 7.1.d **Check:** db tests prove: a store user cannot move a status backward or skip; an image that is not an image is refused; a reassign to a store without stock leaves both stocks unchanged; every transition has a history row.
 
 - [ ] **7.2 The store staff panel** · needs: 7.1
