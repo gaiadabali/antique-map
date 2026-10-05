@@ -92,6 +92,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 | 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
+| 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -552,7 +553,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
   - [x] 6.4.d **Check:** tests prove: a bad signature is rejected; the same webhook ten times in parallel changes the order once; an expired order's stock returns exactly once; a settled payment moves the order to `paid` and stores the paid amount.
 
-- [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4
+- [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4 — 🔄 6·W3
   - **Lane** SHP + QA · **Agent** senior-fe, qa · **Wave** W3
   - **Owns** `engine/apps/web/src/sites/shop/payment/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/order/**`, `docs/gates/shop-payment.md`, `tests/e2e/shop/**`
   - **Read** the **Done when** of phase 6, EXPERIENCE-SHOP.md §Payment and §Recovery
