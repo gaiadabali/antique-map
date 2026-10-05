@@ -208,9 +208,11 @@ test.describe('a maker page', () => {
     const response = await page.goto(`/makers/${fixture.makerSlug}`)
     expect(response?.status()).toBe(200)
     await expect(page.getByRole('heading', { level: 1 })).toContainText('E2E François Valentijn')
-    const titles = await page.getByRole('heading', { level: 3 }).allTextContents()
-    const available = titles.indexOf('E2E chart of Java')
-    const sold = titles.indexOf('E2E sold chart')
+    // A work card is a plain `<a>` (`browse/work-card.tsx`), never a heading — a CSS module class
+    // is no selector either, hashed on a production build. Link text in document order instead.
+    const links = await page.getByRole('link').allTextContents()
+    const available = links.findIndex((text) => text.includes('E2E chart of Java'))
+    const sold = links.findIndex((text) => text.includes('E2E sold chart'))
     expect(available, 'available work found').toBeGreaterThanOrEqual(0)
     expect(sold, 'sold work found').toBeGreaterThanOrEqual(0)
     expect(available).toBeLessThan(sold)
@@ -231,7 +233,7 @@ test.describe('a place page', () => {
     expect(response?.status()).toBe(200)
     await expect(page.getByRole('heading', { level: 1 })).toContainText('E2E Jakarta')
     await expect(page.getByText('E2E Batavia')).toBeVisible()
-    await expect(page.getByRole('heading', { level: 3 })).toContainText('E2E chart of Java')
+    await expect(page.getByRole('link', { name: /E2E chart of Java/ })).toBeVisible()
   })
 
   for (const viewport of WIDTHS) {
