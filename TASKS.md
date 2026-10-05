@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 6/7 | 32/33 | 0 | `██████████`  97% |
+| **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **21/49** | **123/200** | **8** | `██████░░░░`  62% |
+| **All** | 11 phases | | | **22/49** | **124/200** | **8** | `██████░░░░`  62% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -82,7 +82,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W2 | 7.3 Tracking page and notifications | Sonnet (claude seat) | `w/7.3` | 2026-10-05 | run `am-7.3-s1` on the merged 7.1 core; Opus reviews |
 | 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
 | 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
-| 3·W2 | 3.6.d Check | Sonnet (claude seat) | `w/3.6fix` | 2026-10-05 | runs 1–2 hit the session and weekly limits (3 commits: D1/D3, D4/D5); `am-3.6fix-s3` finishes D6 (in progress), D2, D7, D8, sidebar order and the re-drive |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
@@ -384,7 +383,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.5.d from the phase 2 reviews: `payload-locked-documents` gets owner/editor-only access (today any signed-in user, store users included, can list and delete locks across collections); role and store changes are recorded (SECURITY R7); REST tests prove a store user and an editor cannot change their own `role` or `store`
   - [x] 3.5.e **Check:** db tests prove: a store user cannot read, update or list another store's order or stock (by id and by query); an editor cannot read a lead; an anonymous request reads only published, projected fields; the last owner cannot be removed.
 
-- [ ] **3.6 The admin experience: both languages, plain errors, a dashboard shell** · needs: 3.2, 3.3, 3.4 — 🔄 3·W2
+- [x] **3.6 The admin experience: both languages, plain errors, a dashboard shell** · needs: 3.2, 3.3, 3.4 — ✅ 2026-10-05 46da1b7
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/app/(payload)/**`, `engine/packages/cms/src/{admin,i18n}/**`
   - **Read** CONTENT-OPERATIONS.md, DESIGN-SYSTEM.md §Admin
@@ -392,7 +391,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.6.a the admin in English and Indonesian for every user, a language switch on the profile; field labels, descriptions and error messages in plain language that name the field and the fix
   - [x] 3.6.b collections grouped in the sidebar by task (Antiques, Shop, Stores and stock, Orders, Leads and partners, Content, Settings), each user seeing only what their role may
   - [x] 3.6.c a dashboard shell with "orders to act on" and "new leads" panels (counts only; the full dashboard is 9.2)
-  - [ ] 3.6.d **Check:** driven in a browser at 1280 px as owner, editor and store: each sees the right sidebar; an invalid save shows a plain message in both languages; the dashboard counts match the database.
+  - [x] 3.6.d **Check:** driven in a browser at 1280 px as owner, editor and store: each sees the right sidebar; an invalid save shows a plain message in both languages; the dashboard counts match the database.
 
 - [x] **3.7 Spreadsheet import and the seed data** · needs: 3.5 — ✅ 2026-10-05 a8b9fb5
   - **Lane** CMS · **Agent** senior-be · **Wave** W3
@@ -818,6 +817,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ **phase 3** — 3.6.d closed: `w/3.6fix` merged (`971fc7e`; conflicts: `playwright.config.ts` kept both the shop and admin projects, `payload-types.ts` regenerated): D1 bilingual validator messages (money, SKUs, order moves, stock count, public id, media), D2 shelf count editable (the 3.3 hook still stores count − held under the row lock), D3 SKU uniqueness server-side only, D4/D5 Indonesian labels on every field, D6 order refusals name the field in words, D7 the broken Add-new button gone, D8 the import CLI takes its options, sidebar in 3.6.b's order. On a fresh clone of main: types, format, lint, generated, filesize, tokens, 686 unit + 479 db tests, `schema:check` no changes, production build, and the admin drive `tests/e2e/admin` **16/16** as owner, editor and two store users. Follow-up (3.2.g, schema): a `category` term kind (D9) so the shop's mock products import with categories. Note: `node tests/e2e/admin/local.mjs start` runs in the foreground — start it in its own shell before the spec.
 
 - 2026-10-05 ✅ **phase 4** — 4.3.e closed: `w/4.3r3` merged (`4e97019`): the homes break out of the reading cap, h2/h3 in the display face, Header/Dialog labels from the lexicon (no English on `/id`), the drawn sections built (placeholders marked, no price on the gallery). Fresh clone merged with main: types, format, lint, tokens, 36 tests, build, the phase-4 a11y spec on both hosts green; lexicon 6/6 on main after the auto-merge.
 
