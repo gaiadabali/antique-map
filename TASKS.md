@@ -89,6 +89,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 | 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
+| 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -659,7 +660,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging the owner works a lead from New to Closed, records a partner with the products carried, and sees each site's dashboard; the shop has a partnership page that leads to an enquiry; every page has localised metadata and the right structured data (none carrying an antique's price); the sitemaps list only published pages; a request for an old gallery address answers one 301.
 **Waves:** W1 — 9.1, 9.2, 9.3, 9.4
 
-- [ ] **9.1 Leads inbox, partners and the partnership page** · needs: phase 5, phase 6
+- [ ] **9.1 Leads inbox, partners and the partnership page** · needs: phase 5, phase 6 — 🔄 9·W1
   - **Lane** CMS + SHP · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/app/(payload)/admin/leads/**`, `engine/apps/web/src/sites/shop/partnership/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/packages/cms/src/jobs/retention/**`
   - **Read** CONTENT-OPERATIONS.md §Leads and partners, COMPLIANCE.md §Retention, EXPERIENCE-SHOP.md §Partnership, Q11
