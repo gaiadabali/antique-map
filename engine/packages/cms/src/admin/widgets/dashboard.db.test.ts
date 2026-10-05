@@ -24,8 +24,21 @@ function countShown(element: unknown): number | undefined {
   return flat.filter((child) => typeof child === 'number')[0]
 }
 
-/** The widget's own view: a Local-API request carrying the role's user, access enforced. */
-const as = (payload: Payload, user: unknown) => ({ req: { payload, user }, locale: 'en' })
+/** The words a widget rendered: its markup's string children, joined. */
+function textShown(element: unknown): string {
+  const children = (element as { props: { children: unknown } }).props.children
+  const flat = Array.isArray(children) ? children : [children]
+  return flat.filter((child) => typeof child === 'string').join('')
+}
+
+/**
+ * The widget's own view: a Local-API request carrying the role's user, access enforced, in the
+ * admin language `language`. `locale` is what Payload passes too — the content locale, an object.
+ */
+const as = (payload: Payload, user: unknown, language = 'en') => ({
+  req: { payload, user, i18n: { language } },
+  locale: { code: 'en' },
+})
 
 describe.skipIf(!server)('dashboard widgets, on a real database', () => {
   let stack: StaffStack
@@ -62,7 +75,7 @@ describe.skipIf(!server)('dashboard widgets, on a real database', () => {
     expect(countShown(element)).toBe(2)
   })
 
-  it('new leads are the owner panel: a store user sees none', async () => {
+  it('new leads are the owner panel: nobody else is shown it at all', async () => {
     const store = await NewLeadsWidget(
       as(stack.payload, { collection: 'users', role: 'store', store: own }) as never,
     )
@@ -72,8 +85,18 @@ describe.skipIf(!server)('dashboard widgets, on a real database', () => {
     const owner = await NewLeadsWidget(
       as(stack.payload, { collection: 'users', role: 'owner' }) as never,
     )
-    expect(countShown(store)).toBe(0)
-    expect(countShown(editor)).toBe(0)
+    expect(store).toBeNull()
+    expect(editor).toBeNull()
     expect(countShown(owner)).toBe(1)
+  })
+
+  it('speaks the admin language the person picked, not the content locale', async () => {
+    const owner = { collection: 'users', role: 'owner' }
+    const orders = await OrdersToActOnWidget(as(stack.payload, owner, 'id') as never)
+    const leads = await NewLeadsWidget(as(stack.payload, owner, 'id') as never)
+    expect(textShown(orders)).toContain('Pesanan perlu tindakan')
+    expect(textShown(leads)).toContain('Calon pembeli baru')
+    const english = await OrdersToActOnWidget(as(stack.payload, owner, 'en') as never)
+    expect(textShown(english)).toContain('Orders to act on')
   })
 })
