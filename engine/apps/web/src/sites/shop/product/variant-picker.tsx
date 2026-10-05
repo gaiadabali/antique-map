@@ -1,17 +1,18 @@
 'use client'
 
 /**
- * The variant picker (6.1.b; EXPERIENCE-SHOP.md §4): each variant dimension is a real radio
- * group, the price updates to the chosen variant, and an option whose every variant is sold out
- * stays visible marked "Sold out" — never a silent grey. The prices arrive preformatted from the
- * server (the server formats, the client never computes); the button posts to the add-to-bag
- * placeholder, which 6.2's bag replaces.
+ * The variant picker (6.1.b, 6.1.c; EXPERIENCE-SHOP.md §4): each variant dimension is a real
+ * radio group, the price updates to the chosen variant, and an option whose every variant is
+ * sold out stays visible marked "Sold out" — never a silent grey. The prices arrive preformatted
+ * from the server (the server formats, the client never computes); the button posts to the real
+ * bag's `addToBagAction`, which refuses an out-of-stock product or variant on the server.
  */
-import { useState, useTransition } from 'react'
+import { useActionState, useState } from 'react'
 
 import type { SiteLocale } from '@engine/config/sites'
 
-import { addToBagPlaceholder } from './actions'
+import { TextLink } from '../../../shared/ui'
+import { addToBagAction } from '../../../server/shop/bag/actions'
 import { productText } from './copy'
 import styles from './product.module.css'
 
@@ -25,43 +26,46 @@ export type PickerVariant = {
 }
 
 export type VariantPickerProps = {
+  readonly productId: number
   readonly sku: string
   readonly locale: SiteLocale
   readonly variants: readonly PickerVariant[]
   readonly productPriceText: string | null
   readonly available: boolean
+  readonly bagHref: string
 }
 
 export function VariantPicker({
+  productId,
   sku,
   locale,
   variants,
   productPriceText,
   available,
+  bagHref,
 }: VariantPickerProps): React.ReactElement {
   const text = productText(locale)
   const [chosen, setChosen] = useState<string | null>(variants[0]?.sku ?? null)
-  const [failed, setFailed] = useState(false)
-  const [pending, startTransition] = useTransition()
+  const [state, add, pending] = useActionState(addToBagAction, null)
   const chosenVariant = variants.find((variant) => variant.sku === chosen) ?? null
   const priceText = chosenVariant?.priceText ?? productPriceText
   const canAdd = available && (variants.length === 0 || (chosenVariant?.available ?? false))
   const fieldId = `variant-${sku}`
-
-  const add = (): void => {
-    setFailed(false)
-    startTransition(async () => {
-      const result = await addToBagPlaceholder({
-        sku,
-        variantSku: chosenVariant?.sku ?? null,
-        qty: 1,
-      })
-      if (!result.ok) setFailed(true)
-    })
-  }
+  const message =
+    state === null
+      ? null
+      : state.outcome === 'added' || state.outcome === 'updated'
+        ? text('product.added')
+        : state.outcome === 'capped'
+          ? text('product.capped')
+          : state.outcome === 'refused'
+            ? text('product.refused')
+            : text('product.addingFailed')
 
   return (
-    <div className={styles.picker}>
+    <form className={styles.picker} action={add}>
+      <input type="hidden" name="productId" value={productId} />
+      <input type="hidden" name="qty" value={1} />
       {variants.length > 0 && (
         <fieldset className={styles.options}>
           <legend className={styles.optionsLegend}>{text('product.options')}</legend>
@@ -80,7 +84,7 @@ export function VariantPicker({
                 <input
                   id={fieldId}
                   type="radio"
-                  name={`variant-${sku}`}
+                  name="variantSku"
                   value={variant.sku}
                   checked={variant.sku === chosen}
                   onChange={() => setChosen(variant.sku)}
@@ -101,9 +105,8 @@ export function VariantPicker({
 
       <div className={styles.buyRow}>
         <button
-          type="button"
+          type="submit"
           className={styles.addButton}
-          onClick={add}
           disabled={!canAdd || pending}
           aria-busy={pending || undefined}
         >
@@ -113,11 +116,17 @@ export function VariantPicker({
           {canAdd ? text('product.inStock') : text('product.outOfStock')}
         </span>
       </div>
-      {failed && (
-        <p className={styles.failed} role="status">
-          {text('product.addingFailed')}
+      {message !== null && (
+        <p className={styles.failed} role="status" aria-live="polite">
+          {message}
+          {(state?.outcome === 'added' || state?.outcome === 'updated') && (
+            <>
+              {' '}
+              <TextLink href={bagHref}>{text('product.viewBag')}</TextLink>
+            </>
+          )}
         </p>
       )}
-    </div>
+    </form>
   )
 }
