@@ -22,12 +22,12 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 4/5 | 17/18 | 0 | `█████████░`  94% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 6/13 | 0 | `█████░░░░░`  46% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 8/13 | 0 | `██████░░░░`  62% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **25/49** | **130/200** | **8** | `███████░░░`  65% |
+| **All** | 11 phases | | | **25/49** | **132/200** | **8** | `███████░░░`  66% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -79,7 +79,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
-| 7·W2 | 7.3 Tracking page and notifications | Sonnet (claude seat) | `w/7.3` | 2026-10-05 | run 1 hit the session limit after 7.3.b (`8d5136a`); `am-7.3-s2` finishes the page on the `tracking` surface `/track/{token}`; Opus reviews (token compare, rate limit) |
+| 7·W2 | 7.3 Tracking page and notifications | — | `main` | 2026-10-05 | merged `d00450a`; the 7.3.c Check waits on one run of `tests/e2e/shop/tracking.spec.ts` on a production build of main (with 7.2) |
 | 7·W2 | 7.2 Store staff panel | Sonnet (claude seat) | `w/7.2` | 2026-10-05 | `am-7.2-s1` — phone-first store list/detail with one next-status button, driver image, hand-back; owner/editor filters, reassign, cancel; calls the 7.1 core only |
 | 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
 | 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
@@ -583,8 +583,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(payload)/admin/orders/**`, `engine/packages/cms/src/admin/orders/**`
   - **Read** CONTENT-OPERATIONS.md §Process an order, 3.6
   - _Requirements: 8.2, 10.4_
-  - [ ] 7.2.a a phone-friendly order list and detail for `store` users: new orders on top, the items, the address and a map link, a single big button for the next status, the driver-image upload, "hand back"
-  - [ ] 7.2.b owner and editor order views: filter by status and store, reassign, cancel, flag handling for late payments
+  - [x] 7.2.a a phone-friendly order list and detail for `store` users: new orders on top, the items, the address and a map link, a single big button for the next status, the driver-image upload, "hand back"
+  - [x] 7.2.b owner and editor order views: filter by status and store, reassign, cancel, flag handling for late payments
   - [ ] 7.2.c **Check:** driven on a 390 px viewport as a store user: accept → processing → waiting → upload an image → on the way → delivered takes under two minutes with no help text; a different store's user sees an empty list.
 
 - [ ] **7.3 The tracking page and the notifications** · needs: 7.1 — 🔄 7·W2
@@ -818,6 +818,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ 7.3 (a–b) merged (`d00450a`, Sonnet, Opus-reviewed): the `tracking` surface `/track/{token}` (SHA-256 of the token, constant-time compare, an identical 404), the `/track` find-my-order page that re-sends the link, status emails on `paid` and every later status, and the proxy's sliding 10-per-minute budget per client address answering 429 with `Retry-After` (`engine/packages/http/src/proxy/tracking-rate-limit.ts`; types split into `types.ts` and re-exported). Orchestrator added in the merge: `/order/{token}` shares that budget (agreed with antique-map-dc), with a proxy test; proxy 164/164, tracking/notify/fulfilment db 38/38. Conflict: `playwright.config.ts` kept main's `shop-e2e` project. Fixed `tests/e2e/shop/product.spec.ts`'s formatting (unformatted on main since 6qa).
 
 - 2026-10-05 ✅ 6.1.c, 6.2.d, 6.3.d — helper session antique-map-dc merged `w/6.1fix` (real add-to-bag, server-side stock refusal), `w/6qa` (`docs/gates/phase-6-checks.md`) and `w/6.5` (the `order` surface `/order/{token}`, simulate pages, the order-created email) to main `d3222c5`. Orchestrator re-checked on main: orders + pricing db tests 86/86; `stock.db.test.ts` (20 concurrent orders for the last unit → exactly one) 3/3 alone — one run under shared-Postgres load hit the test's 30 s timeout with no assertion failure. Follow-ups: that test's timeout under load; `BAG_COOKIE_KEY` missing from `.env.example`; no seed product has variants at different prices; the order email is sent inline before the redirect (a job queue later).
 
