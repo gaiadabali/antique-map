@@ -18,7 +18,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 5/7 | 31/33 | 0 | `█████████░`  94% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 6/7 | 32/33 | 0 | `██████████`  97% |
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **19/49** | **120/200** | **8** | `██████░░░░`  60% |
+| **All** | 11 phases | | | **20/49** | **121/200** | **8** | `██████░░░░`  61% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -84,7 +84,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
 | 4·W3 | 4.3.e Check | Sonnet (claude seat) | `w/4.3r3` | 2026-10-05 | 4.qa merged (`b9d486e`): 4.1.e/4.2.c/4.2.d PASS, 4.1 and 4.2 closed; 4.3.e failed on F1–F4 (layout cap, heading type, English in shared header/dialog, missing drawn sections — ruled in scope); `am-4.3r3-s1` fixes and re-runs the evidence |
 | 3·W2 | 3.6.d Check | Sonnet (claude seat) | `w/3.6fix` | 2026-10-05 | 3.6qa merged (`7f36b62`): sidebar per role and dashboard counts PASS; Indonesian errors and stock entry FAIL on D1–D8 (validators English-only, `physicalCount` read-only, SKU check in the browser, labels, CLI flags); `am-3.6fix-s1` fixes them, no schema change |
-| 3·W1 | 3.1 Staging as one site | orchestrator (Opus) | `w/3.1` | 2026-10-05 | container test **ALL PASS** (`a3d88d1`, packed sha256 `5c577c83…`); Helios dry run as expected (32 changes planned, the 5 predicted two-app errors, host unchanged) — ⛔ the auto-mode classifier blocks the host steps from step 3 (rotated-secrets check, retirement) as credential exploration; waiting on the user for a permission rule or to run the steps |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
@@ -330,7 +329,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** staging serves both hostnames from one app; as the owner, in the admin, a non-developer adds an antique with photos, a product with stock in two stores and a store; a `store` user sees only that store's orders; a spreadsheet of products and stock imports with a report of rejected rows; the seeded data is present for both sites; the admin is in English and Indonesian.
 **Waves:** W1 — 3.1, 3.2, 3.3, 3.4 · W2 — 3.5, 3.6 · W3 — 3.7
 
-- [ ] **3.1 Staging as one site** · needs: phase 2 — 🔄 3·W1
+- [x] **3.1 Staging as one site** · needs: phase 2 — ✅ 2026-10-05 a1aad59
   - **Lane** OPS · **Agent** devops · **Wave** W1
   - **Owns** `scripts/ops/**`, `docs/ops/**`, `.gaiadeploy.yml`
   - **Read** CARRY-OVER.md §3 step 8 and §6.6, DEPLOYMENT.md, `docs/ops/helios-staging.md`
@@ -339,7 +338,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.1.b both staging hostnames on one CloudPanel site through nginx `server_name`; remove the `uig` and `uoei` entries; the release goes through the pull pipeline
   - [x] 3.1.c Mailpit stays loopback-only; host-only secrets; a nightly `pg_dump` and a bucket copy to an off-box place (Open: where — DEPLOYMENT.md)
   - [x] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
-  - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
+  - [x] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
 - [x] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — ✅ 2026-10-03 46353c9
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
@@ -819,6 +818,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ **3.1 — staging is live, one app for both hosts (M0).** Release `production-20261005T033436Z-0492be1` (built in a Linux container from a fresh clone of main; smoke: both sites in en/id, `/admin` shop-only, unknown host 404, linux sharp) deployed by hand to `uindies`; the first `/api/health` migrated `indies_db`. 3.1.e on https: health 200 on both (all checks ok), titles "Indies Gallery" / "Old East Indies", `/admin/login` 200 shop / 404 gallery, `/_media/uploads/` 403, `/_media/derivatives/` 200, listing and PUT 403, `indies_db` dump written (1,365 entries in `pg_restore --list`), app ports loopback-only, `--verify-restart` 11/11, nginx healthy for every other site. Off-box copy waived for staging (owner, 2026-10-05). Repo side merged `143fe6d`.
 
 - 2026-10-05 ✅ 3.7 — 3.7.d on merged main (`44dc151`): import/seed db tests 52/52 (`import.db.test.ts` five malformed rows reported, the rest imported; the same file twice changes nothing; `seed.db.test.ts` no price in any row or projection, shop layer twice + purge). The legacy file lands 1,813 works with 10 held for the owner's data pass (owner decision 2026-10-03), so "lists 1,823" reads 1,813 + 10 in the review queue.
 - 2026-10-05 — **Owner decision (via the user, recorded by helper session antique-map-dc): no payment gateway yet — simulate only.** The "one real Midtrans sandbox payment" in 6.5.c and phase 6's Done-when is deferred, not dropped; it returns when the gateway is set up.
