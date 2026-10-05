@@ -42,8 +42,15 @@ describe.skipIf(!server)('loadTracking, on a real database', () => {
       collection: 'orders',
       data: {
         number: orderNumber,
-        lines: [{ product, sku: 'SKU', name: 'A print', unitPrice: 95000, qty: 1, lineTotal: 95000 }],
-        contact: { name: 'Nyoman Ariani', whatsapp: '+6281234567890', email: 'buyer@example.test', locale: 'en' },
+        lines: [
+          { product, sku: 'SKU', name: 'A print', unitPrice: 95000, qty: 1, lineTotal: 95000 },
+        ],
+        contact: {
+          name: 'Nyoman Ariani',
+          whatsapp: '+6281234567890',
+          email: 'buyer@example.test',
+          locale: 'en',
+        },
         delivery: { address: 'Jl. Raya Ubud 1', lat: -8.5, lng: 115.26 },
         store: stack.stores[0].id,
         totals: { subtotal: 95000, discount: 0, deliveryFee: 15000, total: 110000 },

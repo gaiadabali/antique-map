@@ -99,7 +99,10 @@ function isTrackingStatus(value: string): value is TrackingView['status'] {
 }
 
 /** `loadTrackingWith(payload, token)` → a projected view, or `null` for a wrong or missing token. */
-export async function loadTrackingWith(payload: Payload, token: string): Promise<TrackingView | null> {
+export async function loadTrackingWith(
+  payload: Payload,
+  token: string,
+): Promise<TrackingView | null> {
   if (token.length === 0 || token.length > 200) return null
 
   const hash = trackingTokenHash(token)

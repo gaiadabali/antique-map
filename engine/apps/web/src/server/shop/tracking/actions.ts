@@ -4,17 +4,20 @@
  * "Find my order"'s server action (TASKS.md 7.3.a; EXPERIENCE-SHOP.md §2): posts to
  * `requestTrackingLink` (`@engine/cms/shop/notify`) and always answers the same words, whether or
  * not anything matched — SECURITY.md §2.10's "never reveals whether an order exists". Rate-limited
- * per address with the same budget the token page's guesses share (`./rate-limit`): both are tries
- * against the same credential, a resent token.
+ * per address with the same budget the token page's guesses share
+ * (`../../../sites/shop/tracking/rate-limit`): both are tries against the same credential, a
+ * resent token.
  */
+import 'server-only'
+
 import { headers } from 'next/headers'
 
 import { cms } from '@engine/cms/instance'
 import { requestTrackingLink } from '@engine/cms/shop/notify'
 
-import { clientAddress } from '../../../server/chat/identity'
-import { trackingText } from './copy'
-import { trackGuessAllowed } from './rate-limit'
+import { clientAddress } from '../../chat/identity'
+import { trackingText } from '../../../sites/shop/tracking/copy'
+import { trackGuessAllowed } from '../../../sites/shop/tracking/rate-limit'
 
 export type FindOrderState = { readonly ok: boolean; readonly message: string }
 
@@ -37,7 +40,8 @@ export async function requestTrackingLinkAction(
     typeof rawNumber === 'string' && /^\d{1,15}$/.test(rawNumber.trim())
       ? Number(rawNumber.trim())
       : null
-  const contact = typeof formData.get('contact') === 'string' ? (formData.get('contact') as string) : ''
+  const contact =
+    typeof formData.get('contact') === 'string' ? (formData.get('contact') as string) : ''
 
   if (orderNumber !== null) {
     await requestTrackingLink(await cms(), {
