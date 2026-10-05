@@ -98,6 +98,22 @@ check-file-size: ok, no file over 300 lines
 `npx prettier --check engine/tooling/phase9-checks/**/*.mjs` → clean; `npx eslint engine/tooling/phase9-checks` →
 clean (no output).
 
+### Fresh-clone verify
+
+```
+$ git clone -b w/9chk C:/Users/Hansel/Documents/Hansel/Projects/antique-map-w-9chk \
+      C:/Users/Hansel/Documents/Hansel/Projects/antique-map-w-9chk-fresh
+$ cd C:/Users/Hansel/Documents/Hansel/Projects/antique-map-w-9chk-fresh && pnpm install --frozen-lockfile
+Done in 1m 8.3s using pnpm v11.3.0
+$ pnpm vitest run engine/tooling/phase9-checks
+ Test Files  9 passed (9)
+      Tests  70 passed (70)
+$ node engine/tooling/phase9-checks/old-urls.mjs --help   # (usage printed, incl. --origin)
+$ node engine/tooling/phase9-checks/seo-crawl.mjs --help  # (usage printed, incl. --origin)
+$ pnpm check:filesize
+check-file-size: ok, no file over 300 lines
+```
+
 ### End-to-end run against a local server
 
 Run against a hand-rolled Node server on `http://127.0.0.1:4477` serving a sitemap on `https://gallery.example`
