@@ -24,6 +24,7 @@ import { headers } from 'next/headers'
 
 import { Button, Footer, Header, TextLink } from '../shared/ui'
 
+import { Announcement } from './announcement'
 import type { ShellMessageKey } from './messages'
 import { siteHref, type ShellText } from './site'
 import { loadSiteSettings, type PublicSiteSettings } from '../server/site-settings'
@@ -53,11 +54,7 @@ export async function SiteShell({ shell, t, children }: Props) {
       <a className="skip-link" href="#main">
         {t('shell.skipToContent')}
       </a>
-      {settings.announcement && (
-        <div className={styles.announcement} role="note" aria-label={t('shell.announcement')}>
-          <p className={styles.announcementText}>{settings.announcement}</p>
-        </div>
-      )}
+      <Announcement text={settings.announcement} t={t} />
       <Header
         logo={<BrandLink shell={shell} t={t} />}
         nav={<PrimaryNav site={shell.site.key} locale={shell.locale} t={t} />}
