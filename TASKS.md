@@ -24,10 +24,10 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 4/13 | 0 | `███░░░░░░░`  31% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **19/49** | **115/200** | **8** | `██████░░░░`  57% |
+| **All** | 11 phases | | | **19/49** | **116/200** | **8** | `██████░░░░`  58% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -699,7 +699,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** DATA.md §Redirects, CARRY-OVER.md §5 (7,665 and 673 URLs)
   - _Requirements: 14.3_
   - [x] 9.4.a build the `redirects` rows from the legacy URL inventories and the seeded works' old paths; every destination exists and is published
-  - [ ] 9.4.b the proxy answers one 301 from a redirect row (no chains, no loops), and a 410 for a retired address the owner marks gone
+  - [x] 9.4.b the proxy answers one 301 from a redirect row (no chains, no loops), and a 410 for a retired address the owner marks gone
   - [ ] 9.4.c **Check:** a verification run over all 7,665 gallery and 673 shop old URLs reports each as 301 to a 200 page, 410 or listed unresolved with a reason; there is no redirect chain longer than one hop.
 
 ---
