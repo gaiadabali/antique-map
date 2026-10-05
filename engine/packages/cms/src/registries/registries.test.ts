@@ -11,7 +11,7 @@ import { DuplicateRegistryEntry, uniqueEntries, type RegistryEntry } from './ent
 import { jobTasks } from './jobs'
 import { registeredPlugins } from './plugins'
 import { uploadCollectionSlugs } from './storage'
-import { adminViews } from './views'
+import { ADMIN_VIEWS, adminViews } from './views'
 
 const task = (slug: string) => ({ slug, handler: async () => ({ output: {} }) }) as TaskConfig
 
@@ -44,7 +44,10 @@ describe('registry entries', () => {
         { name: 'desk', owner: 'SCH', value: view },
       ]),
     ).toThrow(DuplicateRegistryEntry)
-    expect(adminViews()).toEqual({})
+    // The default registry (ADMIN_VIEWS, `./views.ts`): the orders panel (TASKS.md 7.2), keyed by name.
+    expect(adminViews()).toEqual(
+      Object.fromEntries(ADMIN_VIEWS.map((entry) => [entry.name, entry.value])),
+    )
   })
 
   it('list SCH’s media storage plugin, and refuse a duplicate', () => {
