@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 5/5 | 18/18 | 0 | `██████████` 100% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/6 | 18/23 | 0 | `████████░░`  78% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **28/49** | **135/200** | **8** | `███████░░░`  68% |
+| **All** | 11 phases | | | **28/50** | **135/205** | **8** | `███████░░░`  66% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -121,7 +121,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **OA10** | Counsel's bilingual legal pages (Q12) | 11.1 |
 | **OA11** | At launch: live Midtrans credentials; pointing `oldeastindies.com`, `antiquemapsindonesia.com` and `indiesgallery.com` at the new app in one cutover | 11.3 |
 | **OA12** | ✅ 2026-10-01 — standing go-ahead for Helios staging work (provisioning, deploys, reads) | — |
-| **OA13** | 👤 **The delivery-fee table (Q3) — a launch blocker.** The distance bands (up to N km → Rp fee) and the free-delivery threshold, from the local courier's prices, entered in the admin (Settings → Shop → Delivery). With no bands **every checkout is refused** ("Online delivery is temporarily unavailable"). Staging carries a marked placeholder (5 km Rp 10.000 · 15 km Rp 15.000 · 30 km Rp 20.000 · free over Rp 500.000) set 2026-10-06 for the gates | 10.3, 11.1 |
+| **OA13** | ~~The delivery-fee table (Q3)~~ — **superseded 2026-10-06**: staff enter each order's courier fee (6.6); no distance table. Was: **The delivery-fee table (Q3) — a launch blocker.** The distance bands (up to N km → Rp fee) and the free-delivery threshold, from the local courier's prices, entered in the admin (Settings → Shop → Delivery). With no bands **every checkout is refused** ("Online delivery is temporarily unavailable"). Staging carries a marked placeholder (5 km Rp 10.000 · 15 km Rp 15.000 · 30 km Rp 20.000 · free over Rp 500.000) set 2026-10-06 for the gates | 10.3, 11.1 |
 
 ### Answered
 
@@ -557,6 +557,17 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
   - [x] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
 
+- [ ] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5, 7.1 — 🔄 6·W4
+  - **Lane** SHP + PLT · **Agent** senior-be (core), senior-fe (shell), Opus review · **Wave** W4
+  - **Owns** core: `engine/packages/cms/src/shop/{orders,fulfilment,payments,notify}/**`, `engine/packages/cms/src/collections/orders/**`; shell: `engine/apps/web/src/{sites,server}/shop/{checkout,payment}/**`, the order page, `engine/packages/cms/src/admin/orders/**`; migration: the orchestrator (schema lead)
+  - **Read** the two decisions of 2026-10-06 in **Log**, COMMERCE.md §Checkout, §Statuses, §Notifications
+  - _Requirements: 5.5, 6.1, 6.3, 8.5_
+  - [ ] 6.6.a core: a new first status `awaiting_quote` (holding stock from placement); checkout takes no delivery fee; staff (the order's store, owner, editor) enter the fee in one transaction that prices the total on the server, opens the 60-minute payment window and writes history; a quote window (site-settings `quoteWindowMinutes`, default 120) after which the sweep expires the order and returns its stock once; staff may cancel from `awaiting_quote`
+  - [ ] 6.6.b the order's private link stored encrypted at rest (AES-256-GCM, a host-only key), and every order email sent from the core after its transaction commits — paid, quote ready (with the pay link), each later status, expired — once per order and status; the token rotation removed
+  - [ ] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
+  - [ ] 6.6.d the wave's migration (the `awaiting_quote` enum value, `quoteWindowMinutes`, the encrypted link column), generated once on merged main
+  - [ ] 6.6.e **Check:** db tests prove: an order is created `awaiting_quote` with stock held and no fee; a store user of another store cannot quote it; the quote prices the total on the server and a tampered client total is ignored; an unquoted order expires after the window and returns its stock once; each status sends exactly one email and every email's link opens the same order page; on staging the 7.4 gate passes with the quote step.
+
 ---
 
 ## Phase 7 — Shop: fulfilment and tracking · Shop · needs 6 · ~3d
@@ -815,6 +826,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — **Decisions (the user, as the owner's proxy).** (1) via antique-map-dc: **staff enter the courier fee before the buyer sees the final price** — checkout takes no delivery fee and shows no estimate; stock is held from placement; staff have 2 h to quote, then the buyer has 60 min to pay; the buyer is told by email with a pay link, by the order page updating, and by a WhatsApp button in the admin. The distance fee table (6.2.b, Q3/OA13) is retired. (2) in this session: **the order's private link is stored encrypted** so every email links to the same order page. New task **6.6**: antique-map-dc writes the core and shell (Sonnet, Opus review); the orchestrator generates the migration and runs staging. **7.4 on staging:** the gate passed **5/5** on release 5afe67a (buy → the nearest store fulfils with the driver image → the buyer tracks → another store sees nothing → the owner reassigns; `2f6f81b` makes the helper wait for hydration). Its email clause **fails**: no status email reaches the buyer or the store, because the notifier is an `afterChange` hook and every real status move (the webhook's `markPaid`, the 7.1 core) writes by SQL — merged in 7.3 with only the webhook half noted; the orchestrator's review missed the core half. Fixed in 6.6.b; 7.4 closes after 6.6, re-run with the quote step.
 
 - 2026-10-06 — 7.4 on staging, steps 1–2 green (guest buys; the nearest store fulfils with the driver image in 3.7 s). Found and fixed on the way: **defect `c52d533`** — nothing invalidated the `site-settings` cache on save, so the owner's edits (contact, WhatsApp, flags) stayed invisible until the cache expired; an afterChange hook now expires both sites' `settings:*` tags (test added). Staging data: the gate's store-A user moved to DPS-004 (where its orders go — the nearest store holding both products it buys); a recount of those two products at DPS-004 (50 on the shelf → 48 sellable: the hook kept 2 units held by paid orders); a marked placeholder shop WhatsApp (+6281100000000) until OA2. Note: the tracking page shows the **shop's** online WhatsApp, not the store's — a store's number is staff-only by design (`collections/stores/fields.ts`); 7.3.c's wording "the store's name and WhatsApp" reads as the store's name and the shop's WhatsApp.
 
