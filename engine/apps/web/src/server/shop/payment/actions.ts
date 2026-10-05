@@ -13,6 +13,7 @@ import { redirect } from 'next/navigation'
 
 import { siteOrigin } from '@engine/config/sites'
 import { cms } from '@engine/cms/instance'
+import { siteHref } from '../../../shell/site'
 import {
   createPaymentProvider,
   openPaymentAttempt,
@@ -110,7 +111,7 @@ export async function putBackInBagAction(formData: FormData): Promise<void> {
     const jar = await cookies()
     jar.set(BAG_COOKIE_NAME, serialiseBag(lines, key), { ...BAG_COOKIE_ATTRIBUTES, secure })
   }
-  redirect(`/${locale}/cart`)
+  redirect(siteHref('shop')('cart', {}, locale))
 }
 
 /**
