@@ -19,7 +19,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 6/7 | 32/33 | 0 | `██████████`  97% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
+| **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 5/13 | 0 | `████░░░░░░`  38% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **20/49** | **122/200** | **8** | `██████░░░░`  61% |
+| **All** | 11 phases | | | **21/49** | **123/200** | **8** | `██████░░░░`  62% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -82,8 +82,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W2 | 7.3 Tracking page and notifications | Sonnet (claude seat) | `w/7.3` | 2026-10-05 | run `am-7.3-s1` on the merged 7.1 core; Opus reviews |
 | 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
 | 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
-| 4·W3 | 4.3.e Check | Sonnet → Opus review | `w/4.3r3` | 2026-10-05 | `am-4.3r3-s1` finished F1–F4 (5 commits, gate PASS, fresh-clone verify + build green) before the session limit; orchestrator running the fresh-clone a11y spec, then merge + tick |
-| 3·W2 | 3.6.d Check | Sonnet (claude seat) | `w/3.6fix` | 2026-10-05 | run 1 hit the session limit after D1/D3, D4/D5 (3 commits); `am-3.6fix-s2` finishes D6, D2, D7, D8, sidebar order and the re-drive |
+| 3·W2 | 3.6.d Check | Sonnet (claude seat) | `w/3.6fix` | 2026-10-05 | runs 1–2 hit the session and weekly limits (3 commits: D1/D3, D4/D5); `am-3.6fix-s3` finishes D6 (in progress), D2, D7, D8, sidebar order and the re-drive |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
@@ -436,7 +435,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
   - [x] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
 
-- [ ] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — 🔄 4·W3
+- [x] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — ✅ 2026-10-05 4e97019
   - **Lane** DSG · **Agent** senior-fe · **Wave** W3
   - **Owns** `engine/apps/web/src/app/(gallery)/**`, `engine/apps/web/src/app/(shop)/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`, `engine/apps/web/src/sites/{gallery,shop}/home/**`
   - **Read** the design team's `Home - Antique Maps Indonesia`, `Home - Old East Indies` and `Old East Indies/Partnership` pages and `CLAUDE.md` in `docs/design/input/claude-design-2026-09/`, EXPERIENCE-GALLERY.md §Home, EXPERIENCE-SHOP.md §Home and §Partnership
@@ -445,7 +444,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.3.b the gallery home from the design team's page (hero film, featured items, makers and places entry points) and the shop home from theirs, on seeded data
   - [x] 4.3.c the shop's partnership page from the design team's drawing, its last section an enquiry call to action (WhatsApp, email, a short form that creates a `partnership` lead in 9.1) in place of the drawn sign-up and sign-in
   - [x] 4.3.d prune the lexicon: delete the dead keys (account, bag, payment, order, offers); a unit test that every key has `en` and `id` values and none is unused
-  - [ ] 4.3.e **Check:** on a production build both hosts show their own home in both languages at 390 px and 1280 px, side by side with the design team's page the structure and sections match; axe is clean; the lexicon test passes; no copy is hard-coded in a component and no raw colour is outside the tokens.
+  - [x] 4.3.e **Check:** on a production build both hosts show their own home in both languages at 390 px and 1280 px, side by side with the design team's page the structure and sections match; axe is clean; the lexicon test passes; no copy is hard-coded in a component and no raw colour is outside the tokens.
 
 ---
 
@@ -819,6 +818,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ **phase 4** — 4.3.e closed: `w/4.3r3` merged (`4e97019`): the homes break out of the reading cap, h2/h3 in the display face, Header/Dialog labels from the lexicon (no English on `/id`), the drawn sections built (placeholders marked, no price on the gallery). Fresh clone merged with main: types, format, lint, tokens, 36 tests, build, the phase-4 a11y spec on both hosts green; lexicon 6/6 on main after the auto-merge.
 
 - 2026-10-05 ✅ **3.1 — staging is live, one app for both hosts (M0).** Release `production-20261005T033436Z-0492be1` (built in a Linux container from a fresh clone of main; smoke: both sites in en/id, `/admin` shop-only, unknown host 404, linux sharp) deployed by hand to `uindies`; the first `/api/health` migrated `indies_db`. 3.1.e on https: health 200 on both (all checks ok), titles "Indies Gallery" / "Old East Indies", `/admin/login` 200 shop / 404 gallery, `/_media/uploads/` 403, `/_media/derivatives/` 200, listing and PUT 403, `indies_db` dump written (1,365 entries in `pg_restore --list`), app ports loopback-only, `--verify-restart` 11/11, nginx healthy for every other site. Off-box copy waived for staging (owner, 2026-10-05). Repo side merged `143fe6d`.
 
