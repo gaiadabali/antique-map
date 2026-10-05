@@ -22,7 +22,10 @@ test.describe('Shop product page (6.1.c)', () => {
     })
 
     // Check that product information is visible
-    const title = await page.locator('[data-testid="product-title"]').isVisible().catch(() => false)
+    const title = await page
+      .locator('[data-testid="product-title"]')
+      .isVisible()
+      .catch(() => false)
     if (title) {
       // Check variant picker is present
       const variantSelect = await page
@@ -85,8 +88,8 @@ test.describe('Shop product page (6.1.c)', () => {
 
       // Verify that forced POST of add action leaves bag empty
       // Try to add via API if button disabled
-      const response = await page
-        .request.post(`${BASE_URL}/api/x/bag/add`, {
+      const response = await page.request
+        .post(`${BASE_URL}/api/x/bag/add`, {
           data: {
             productId: 'SEED-GIFTS-ZSK-001',
             qty: 1,
@@ -147,9 +150,7 @@ test.describe('Shop product page (6.1.c)', () => {
         await page.locator('[data-testid="variant-picker"] select').selectOption('1')
 
         // Verify variant changed
-        const newVariant = await page
-          .locator('[data-testid="variant-picker"] select')
-          .inputValue()
+        const newVariant = await page.locator('[data-testid="variant-picker"] select').inputValue()
         expect(newVariant).not.toBe(initialVariant)
       }
     }
