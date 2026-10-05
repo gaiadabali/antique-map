@@ -13,6 +13,10 @@ name: indies-platform-dev
 services:
   postgres:
     image: postgres:18.0
+    # An init as PID 1: 'docker compose exec psql' (engine/tooling/db) is otherwise reaped by the
+    # postmaster, and a non-zero exit of such an "untracked child process" makes Postgres restart every
+    # backend (two dev-stack outages on 2026-10-05, under parallel db tests from several sessions).
+    init: true
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
