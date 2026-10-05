@@ -19,7 +19,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 25/33 | 0 | `████████░░`  76% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
+| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 11/14 | 0 | `████████░░`  79% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 5/20 | 0 | `███░░░░░░░`  25% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 0/4 | 3/13 | 0 | `██░░░░░░░░`  23% |
@@ -27,7 +27,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **15/49** | **106/200** | **8** | `█████░░░░░`  53% |
+| **All** | 11 phases | | | **15/49** | **107/200** | **8** | `█████░░░░░`  54% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -432,7 +432,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 12.1, 12.3_
   - [x] 4.2.a port `components.css` into CSS Modules per component: button, link, input, select, checkbox, textarea, card, badge, eyebrow, hairline, header, footer, form messages, dialog, toast, skeleton; no prefetching link
   - [x] 4.2.b the components the drawings do not have, in the same language: status timeline, map-pin picker shell, zoom viewer shell, chat panel shell, facet chip, pagination, breadcrumbs, rupiah price display, image with `sizes`
-  - [ ] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
+  - [x] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
   - [ ] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
 
 - [ ] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — 🔄 4·W3
