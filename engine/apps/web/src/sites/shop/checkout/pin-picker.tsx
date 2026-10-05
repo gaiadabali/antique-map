@@ -8,7 +8,7 @@
  * here and **validated again on the server** (the form's server action, and `/api/x/geocode`).
  * Default centre: Denpasar.
  */
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 import { MapPinShell } from '../../../shared/ui/map-pin-shell'
 import styles from './checkout.module.css'
@@ -124,20 +124,28 @@ export function PinPicker({
   address,
   onPin,
 }: PinPickerProps): React.ReactElement {
-  const [typed, setTyped] = useState<{ lat: string; lng: string }>({ lat: '', lng: '' })
   const mapDiv = useRef<HTMLDivElement | null>(null)
   const searchInput = useRef<HTMLInputElement | null>(null)
   const marker = useRef<GMarker | null>(null)
+  // Uncontrolled (no `value` prop): written to directly, so hydration never snaps a visitor-typed
+  // or externally set (map drag, paste-link, geolocation) value back to blank (6.6.c).
+  const latInput = useRef<HTMLInputElement | null>(null)
+  const lngInput = useRef<HTMLInputElement | null>(null)
+
+  const setTypedFields = useCallback((lat: string, lng: string) => {
+    if (latInput.current) latInput.current.value = lat
+    if (lngInput.current) lngInput.current.value = lng
+  }, [])
 
   const pick = useCallback(
     (next: Pin, withAddress: boolean) => {
-      setTyped({ lat: String(next.lat), lng: String(next.lng) })
+      setTypedFields(String(next.lat), String(next.lng))
       void (async () => {
         const display = withAddress ? await addressFor(next) : null
         onPin(next, display)
       })()
     },
-    [onPin],
+    [onPin, setTypedFields],
   )
 
   // With a key: the map, the draggable pin and Places autocomplete. Without one, no map at all —
@@ -233,7 +241,6 @@ export function PinPicker({
 
   const typeLatLng = useCallback(
     (lat: string, lng: string) => {
-      setTyped({ lat, lng })
       const parsedLat = parseCoordinate(lat)
       const parsedLng = parseCoordinate(lng)
       if (parsedLat !== null && parsedLng !== null) {
@@ -271,20 +278,22 @@ export function PinPicker({
       <div className={styles.latLng}>
         <span id="checkout-latlng-label">{labels.latLng}</span>
         <input
+          ref={latInput}
           type="text"
           inputMode="decimal"
           aria-label={labels.latitude}
           placeholder={labels.latitude}
-          value={typed.lat}
-          onChange={(event) => typeLatLng(event.target.value, typed.lng)}
+          defaultValue=""
+          onChange={(event) => typeLatLng(event.target.value, lngInput.current?.value ?? '')}
         />
         <input
+          ref={lngInput}
           type="text"
           inputMode="decimal"
           aria-label={labels.longitude}
           placeholder={labels.longitude}
-          value={typed.lng}
-          onChange={(event) => typeLatLng(typed.lat, event.target.value)}
+          defaultValue=""
+          onChange={(event) => typeLatLng(latInput.current?.value ?? '', event.target.value)}
         />
       </div>
     </div>
