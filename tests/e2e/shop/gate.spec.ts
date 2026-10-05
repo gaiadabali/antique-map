@@ -399,7 +399,8 @@ test.describe('the shop payment gate (6.5.c)', () => {
     const inputs = page.locator('input[inputmode="decimal"]')
     await inputs.nth(0).fill(String(DEFAULT_CENTRE.lat))
     await expect(page.getByText('Drop a pin or paste a Maps link')).toBeVisible()
-    await expect(page.getByText('Delivery', { exact: true })).toHaveCount(0)
+    const halfPinAlerts = (await page.getByRole('alert').allTextContents()).filter((t) => t.trim())
+    expect(halfPinAlerts, 'no fee or refusal for a half-typed pin').toEqual([])
 
     await typePin(page, DEFAULT_CENTRE)
     expect(await feeQuoteOk(page), 'the fee quote resolved for the checkout pin').toBe(true)
