@@ -35,6 +35,8 @@ import { newTrackingToken } from '../orders'
 import { buyerStatusEmail, storeNewOrderEmail } from './templates'
 import { mailTransport } from './transport'
 
+export { requestTrackingLink, type RequestTrackingLinkInput } from './resend'
+
 export type NotifyOrderEventInput = {
   readonly orderId: number
   /** The status before this write; `undefined`/`null` and anything equal to `to` sends nothing. */

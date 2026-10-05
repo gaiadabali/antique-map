@@ -99,6 +99,39 @@ export function buyerStatusEmail(input: BuyerStatusEmailInput): MailMessage | nu
   return { to: input.to, subject: SUBJECT[lang](input.orderNumber), text, html }
 }
 
+const RESEND_SUBJECT: Record<Lang, string> = {
+  en: 'Your tracking link',
+  id: 'Tautan pelacakan Anda',
+}
+
+const RESEND_LINE: Record<Lang, string> = {
+  en: 'Here is the link to follow your order:',
+  id: 'Berikut tautan untuk memantau pesanan Anda:',
+}
+
+export type ResendTrackingEmailInput = {
+  readonly to: string
+  readonly locale: Lang
+  readonly trackingUrl: string
+}
+
+/** "Find my order"'s email (TASKS.md 7.3.a): the link alone, not tied to any status. */
+export function resendTrackingEmail(input: ResendTrackingEmailInput): MailMessage {
+  const lang = input.locale
+  const lines = [GREETING[lang], '', RESEND_LINE[lang], input.trackingUrl, '', SIGN_OFF[lang]]
+  const text = lines.join('\n')
+  const html = lines
+    .map((row) =>
+      row === ''
+        ? '<br />'
+        : row.includes('http')
+          ? `<p><a href="${row}">${row}</a></p>`
+          : `<p>${row}</p>`,
+    )
+    .join('\n')
+  return { to: input.to, subject: RESEND_SUBJECT[lang], text, html }
+}
+
 export type StoreNewOrderEmailInput = {
   readonly to: string
   readonly orderNumber: number
