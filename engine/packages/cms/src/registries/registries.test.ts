@@ -59,26 +59,31 @@ describe('registry entries', () => {
   })
 })
 
-/** The collections the config holds after TASKS.md 3.4 (2.4's stubs are gone; 3.4 adds pages, redirects, leads, partners, chat-sessions, events). */
+/**
+ * The collections the config holds after TASKS.md 3.4 (2.4's stubs are gone; 3.4 adds pages,
+ * redirects, leads, partners, chat-sessions, events), in the sidebar's group order (3.6.b, D1 of
+ * `docs/gates/3.6.md`): Antiques, Shop, Stores and stock, Orders, Leads and partners, Content,
+ * Settings.
+ */
 const SLUGS = [
-  'users',
-  'stores',
-  'stock-levels',
-  'orders',
-  'payment-events',
-  'discounts',
-  'products',
   'works',
   'makers',
   'places',
   'terms',
   'media',
   'masters',
-  'pages',
-  'redirects',
+  'discounts',
+  'products',
+  'stores',
+  'stock-levels',
+  'orders',
+  'payment-events',
   'leads',
   'partners',
   'chat-sessions',
+  'pages',
+  'redirects',
+  'users',
   'events',
 ]
 
@@ -105,7 +110,7 @@ describe('the registered collections', () => {
 
   it('refuse a slug listed twice', () => {
     const all = registeredCollections()
-    expect(() => registeredCollections([...all, all[0]!])).toThrow(/"users" is listed twice/)
+    expect(() => registeredCollections([...all, all[0]!])).toThrow(/"works" is listed twice/)
     const global = { slug: 'site-settings', fields: [] }
     expect(() => registeredGlobals([global, global])).toThrow(/listed twice/)
   })

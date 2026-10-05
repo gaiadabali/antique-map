@@ -36,7 +36,7 @@ const categoriesOnly = (TERM_KINDS as readonly string[]).includes('category')
   : undefined
 
 const priceToPublish = requiredToPublish('Set the price before publishing.')
-const wholePrice = wholeNumber({ min: 1, what: 'The price' })
+const wholePrice = wholeNumber({ min: 1, what: { en: 'The price', id: 'Harga' } })
 
 /** Needed to publish; when set, whole rupiah above zero (drafts included). */
 const validatePrice: Validate<number | null | undefined> = (value, args) => {
@@ -54,8 +54,20 @@ const images: ArrayField = {
       ? 'Add at least one image before publishing: the shop shows every product with its picture.'
       : true,
   fields: [
-    { name: 'image', type: 'upload', relationTo: 'media', required: true },
-    { name: 'caption', type: 'text', localized: true, maxLength: 200 },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: { en: 'Image', id: 'Gambar' },
+      required: true,
+    },
+    {
+      name: 'caption',
+      type: 'text',
+      label: { en: 'Caption', id: 'Keterangan' },
+      localized: true,
+      maxLength: 200,
+    },
   ],
 }
 
@@ -93,7 +105,7 @@ const variants: ArrayField = {
       name: 'price',
       type: 'number',
       label: { en: 'Price (Rp)', id: 'Harga (Rp)' },
-      validate: wholeNumber({ min: 1, what: 'A variant’s price' }),
+      validate: wholeNumber({ min: 1, what: { en: 'A variant’s price', id: 'Harga varian' } }),
     },
     {
       name: 'active',
@@ -186,8 +198,20 @@ export const PRODUCT_FIELDS: Field[] = [
     type: 'group',
     label: { en: 'Search engines', id: 'Mesin pencari' },
     fields: [
-      { name: 'title', type: 'text', localized: true, maxLength: 70 },
-      { name: 'description', type: 'textarea', localized: true, maxLength: 160 },
+      {
+        name: 'title',
+        type: 'text',
+        label: { en: 'Title', id: 'Judul' },
+        localized: true,
+        maxLength: 70,
+      },
+      {
+        name: 'description',
+        type: 'textarea',
+        label: { en: 'Description', id: 'Deskripsi' },
+        localized: true,
+        maxLength: 160,
+      },
     ],
   },
   translationStatusField,

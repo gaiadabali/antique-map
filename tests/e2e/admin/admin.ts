@@ -47,9 +47,19 @@ export async function sidebar(page: Page): Promise<Record<string, string[]>> {
   return groups
 }
 
-/** Picks `option` in the select or relationship field whose input wrapper is `field`. */
-export async function choose(page: Page, field: string, option: RegExp | string): Promise<void> {
+/**
+ * Picks `option` in the select or relationship field whose input wrapper is `field`. `search`
+ * types first: a relationship field only lists its first page unfiltered, which a vocabulary of
+ * more than a handful of records (makers, places, terms) may not put `option` on.
+ */
+export async function choose(
+  page: Page,
+  field: string,
+  option: RegExp | string,
+  search?: string,
+): Promise<void> {
   await page.locator(`${field} .rs__control`).first().click()
+  if (search) await page.keyboard.type(search)
   await page.locator('.rs__option').filter({ hasText: option }).first().click()
 }
 

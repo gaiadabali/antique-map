@@ -44,6 +44,7 @@ export function fuzzyDateGroup(
           {
             name: 'precision',
             type: 'select',
+            label: { en: 'Precision', id: 'Presisi' },
             options: DATE_PRECISIONS.map((value) => ({ value, label: PRECISION_LABELS[value] })),
             validate: datePartError(name, 'precision'),
           },

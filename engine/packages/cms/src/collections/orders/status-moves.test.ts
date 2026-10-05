@@ -5,12 +5,14 @@
 import { describe, expect, it } from 'vitest'
 
 import { ORDER_STATUSES, type OrderStatus } from './statuses'
-import { FORWARD_LINE, statusMoveRefusal } from './status-moves'
+import { FORWARD_LINE, statusMoveRefusal, statusMoveRefusalBilingual } from './status-moves'
 
 const pairs = ORDER_STATUSES.flatMap((from) => ORDER_STATUSES.map((to) => [from, to] as const))
 const allowed = (role: 'owner' | 'editor' | 'store', image = true) =>
   pairs
-    .filter(([from, to]) => from !== to && statusMoveRefusal(role, from, to, image) === null)
+    .filter(
+      ([from, to]) => from !== to && statusMoveRefusalBilingual(role, from, to, image) === null,
+    )
     .map(([from, to]) => `${from}>${to}`)
 
 describe('statusMoveRefusal', () => {
@@ -53,31 +55,47 @@ describe('statusMoveRefusal', () => {
 
   it('refuses on the way until the driver’s details are uploaded, for every role', () => {
     for (const role of ['owner', 'editor', 'store'] as const) {
-      expect(statusMoveRefusal(role, 'waiting_driver', 'on_the_way', false), role).toMatch(
-        /Upload the driver’s details/,
-      )
+      const refusal = statusMoveRefusalBilingual(role, 'waiting_driver', 'on_the_way', false)
+      expect(refusal?.en, role).toMatch(/Upload the driver’s details/)
+      expect(refusal?.id, role).toMatch(/Unggah data pengemudi/)
     }
     // Stepping back to it corrects a mistake: the details were needed on the way forward.
-    expect(statusMoveRefusal('editor', 'delivered', 'on_the_way', false)).toBeNull()
+    expect(statusMoveRefusalBilingual('editor', 'delivered', 'on_the_way', false)).toBeNull()
   })
 
-  it('says what to do instead, in plain words', () => {
-    expect(statusMoveRefusal('store', 'paid', 'waiting_driver', true)).toBe(
-      'Store staff move an order one step forward only: from “Paid” the next step is “Processing”. Hand it back with a reason if something is wrong.',
-    )
-    expect(statusMoveRefusal('store', 'processing', 'paid', true)).toMatch(
+  it('says what to do instead, in plain words, in both admin languages', () => {
+    expect(statusMoveRefusalBilingual('store', 'paid', 'waiting_driver', true)).toEqual({
+      en: 'Store staff move an order one step forward only: from “Paid” the next step is “Processing”. Hand it back with a reason if something is wrong.',
+      id: 'Staf toko hanya memindahkan pesanan satu langkah maju: dari “Dibayar” langkah berikutnya adalah “Diproses”. Kembalikan dengan alasan jika ada yang salah.',
+    })
+    expect(statusMoveRefusalBilingual('store', 'processing', 'paid', true)?.en).toMatch(
       /^Store staff move an order one step forward only/,
     )
-    expect(statusMoveRefusal('store', 'delivered', 'cancelled', true)).toMatch(
+    expect(statusMoveRefusalBilingual('store', 'delivered', 'cancelled', true)?.en).toMatch(
       /^Store staff cannot move this order from “Delivered” to “Cancelled”/,
     )
-    expect(statusMoveRefusal('editor', 'cancelled', 'paid', true)).toBe(
-      'An order cannot move from “Cancelled” to “Paid”. Move it forward, or one step back to correct a mistake.',
-    )
-    expect(statusMoveRefusal('owner', 'delivered', 'cancelled', true)).toBe(
-      'An order that is “Delivered” cannot be cancelled.',
-    )
-    expect(statusMoveRefusal(null, 'paid', 'processing', true)).toBe('Only staff move an order.')
+    expect(statusMoveRefusalBilingual('editor', 'cancelled', 'paid', true)).toEqual({
+      en: 'An order cannot move from “Cancelled” to “Paid”. Move it forward, or one step back to correct a mistake.',
+      id: 'Pesanan tidak dapat dipindahkan dari “Dibatalkan” ke “Dibayar”. Pindahkan maju, atau satu langkah mundur untuk memperbaiki kesalahan.',
+    })
+    expect(statusMoveRefusalBilingual('owner', 'delivered', 'cancelled', true)).toEqual({
+      en: 'An order that is “Delivered” cannot be cancelled.',
+      id: 'Pesanan yang berstatus “Terkirim” tidak dapat dibatalkan.',
+    })
+    expect(statusMoveRefusalBilingual(null, 'paid', 'processing', true)).toEqual({
+      en: 'Only staff move an order.',
+      id: 'Hanya staf yang dapat memindahkan pesanan.',
+    })
+  })
+
+  it('names both languages, non-empty, for every refusal kind', () => {
+    for (const [from, to] of pairs) {
+      const refusal = statusMoveRefusalBilingual('store', from, to, true)
+      if (refusal === null) continue
+      expect(refusal.en.length, `${from}>${to} en`).toBeGreaterThan(0)
+      expect(refusal.id.length, `${from}>${to} id`).toBeGreaterThan(0)
+      expect(refusal.en).not.toEqual(refusal.id)
+    }
   })
 
   it('never refuses staying put', () => {

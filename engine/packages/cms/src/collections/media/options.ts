@@ -26,46 +26,70 @@ export function optionsOf(
   })
 }
 
-export const ROLE_LABELS: Readonly<Record<string, string>> = {
-  recto: 'Recto — the whole front',
-  verso: 'Verso — the whole back',
-  detail: 'Detail',
-  raking: 'Raking light',
-  transmitted: 'Transmitted light',
-  framed: 'Framed or matted',
-  'in-room': 'In a room',
-  scale: 'To scale',
-  flat: 'Flat (a product)',
-  lifestyle: 'In use (a product)',
-  packaging: 'Gift wrap and parcel',
-  showroom: 'In the showroom',
-  editorial: 'Editorial — a story, a banner, a portrait',
-  reference: 'Reference frame — grey board or colour card, never published',
+export const ROLE_LABELS: Readonly<Record<string, { en: string; id: string }>> = {
+  recto: { en: 'Recto — the whole front', id: 'Recto — seluruh bagian depan' },
+  verso: { en: 'Verso — the whole back', id: 'Verso — seluruh bagian belakang' },
+  detail: { en: 'Detail', id: 'Detail' },
+  raking: { en: 'Raking light', id: 'Cahaya menyamping' },
+  transmitted: { en: 'Transmitted light', id: 'Cahaya tembus' },
+  framed: { en: 'Framed or matted', id: 'Berbingkai atau bermat' },
+  'in-room': { en: 'In a room', id: 'Di dalam ruangan' },
+  scale: { en: 'To scale', id: 'Dengan skala' },
+  flat: { en: 'Flat (a product)', id: 'Datar (produk)' },
+  lifestyle: { en: 'In use (a product)', id: 'Sedang dipakai (produk)' },
+  packaging: { en: 'Gift wrap and parcel', id: 'Bungkus hadiah dan paket' },
+  showroom: { en: 'In the showroom', id: 'Di ruang pamer' },
+  editorial: {
+    en: 'Editorial — a story, a banner, a portrait',
+    id: 'Editorial — cerita, banner, atau potret',
+  },
+  reference: {
+    en: 'Reference frame — grey board or colour card, never published',
+    id: 'Bingkai referensi — papan abu-abu atau kartu warna, tidak pernah diterbitkan',
+  },
 }
 
-export const PROVENANCE_LABELS: Readonly<Record<string, string>> = {
-  photograph: 'Photograph of the real thing',
-  composite: 'Composite — a photograph with something placed in it',
-  rendered: 'Rendered or drawn',
-  'ai-generated': 'AI-generated',
+export const PROVENANCE_LABELS: Readonly<Record<string, { en: string; id: string }>> = {
+  photograph: { en: 'Photograph of the real thing', id: 'Foto dari benda aslinya' },
+  composite: {
+    en: 'Composite — a photograph with something placed in it',
+    id: 'Komposit — foto dengan sesuatu yang ditambahkan ke dalamnya',
+  },
+  rendered: { en: 'Rendered or drawn', id: 'Hasil render atau gambar' },
+  'ai-generated': { en: 'AI-generated', id: 'Dibuat AI' },
 }
 
-export const TIER_LABELS: Readonly<Record<string, string>> = {
-  good: 'Good — a phone and a window',
-  better: 'Better — a camera, lamps, a colour card',
-  best: 'Best — a copy stand and a colour chart',
+export const TIER_LABELS: Readonly<Record<string, { en: string; id: string }>> = {
+  good: { en: 'Good — a phone and a window', id: 'Cukup — ponsel dan jendela' },
+  better: {
+    en: 'Better — a camera, lamps, a colour card',
+    id: 'Lebih baik — kamera, lampu, kartu warna',
+  },
+  best: {
+    en: 'Best — a copy stand and a colour chart',
+    id: 'Terbaik — copy stand dan bagan warna',
+  },
 }
 
-export const VERDICT_LABELS: Readonly<Record<string, string>> = {
-  pass: 'Pass',
-  'fix-owner': 'Re-take needed — design work only, never published under its role',
-  legacy: 'Legacy — assessed, not held to the spec',
+export const VERDICT_LABELS: Readonly<Record<string, { en: string; id: string }>> = {
+  pass: { en: 'Pass', id: 'Lolos' },
+  'fix-owner': {
+    en: 'Re-take needed — design work only, never published under its role',
+    id: 'Perlu diambil ulang — hanya untuk kerja desain, tidak pernah diterbitkan dengan perannya',
+  },
+  legacy: {
+    en: 'Legacy — assessed, not held to the spec',
+    id: 'Warisan — sudah dinilai, tidak mengikuti spek',
+  },
 }
 
-export const RETOUCHING_LABELS: Readonly<Record<string, string>> = {
-  none: 'None',
-  unknown: 'Unknown (a legacy image)',
-  'retouched-legacy': 'Retouched before us — on the re-shoot list',
+export const RETOUCHING_LABELS: Readonly<Record<string, { en: string; id: string }>> = {
+  none: { en: 'None', id: 'Tidak ada' },
+  unknown: { en: 'Unknown (a legacy image)', id: 'Tidak diketahui (gambar warisan)' },
+  'retouched-legacy': {
+    en: 'Retouched before us — on the re-shoot list',
+    id: 'Diretus sebelum kami — masuk daftar pemotretan ulang',
+  },
 }
 
 export const ROLE_OPTIONS = optionsOf(MEDIA_ROLES, ROLE_LABELS)
