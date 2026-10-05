@@ -4,6 +4,10 @@
 // alternates plus x-default, and a description; on the gallery, no JSON-LD block with a price or
 // offers. `--expect <n>` compares the URL count with the published count the orchestrator supplies.
 // Read-only and paced, resumable, and it never requests a sensitive path. Exit 0 only on a pass.
+//
+// The sitemap speaks the site's canonical origin (`--origin`), while the crawl is pointed at what it
+// can reach (`--base`): every `<loc>` and index child is rewritten onto the base with `toBase`. A loc
+// on any other origin is a failure ("sitemap lists another origin") and is never requested.
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { parseArgs } from 'node:util'
@@ -11,13 +15,13 @@ import { parseArgs } from 'node:util'
 import { COMMON_OPTIONS, commonOptions } from './cli-args.mjs'
 import { createLimiter } from './limiter.mjs'
 import { createGet } from './paced.mjs'
-import { isSensitive } from './sensitive.mjs'
-import { isSitemapIndex, judgePage, localeCounts, sitemapLocations } from './seo-check.mjs'
+import { collectSitemapUrls, crawlPages, localeCounts } from './seo-check.mjs'
 import { createStateWriter, defaultStatePath, readState } from './state.mjs'
 
 const USAGE = `usage: node engine/tooling/phase9-checks/seo-crawl.mjs --base <origin> --site <gallery|shop> [options]
 
   --base <origin>      the origin to request (e.g. https://staging.example, http://localhost:4372)
+  --origin <origin>    the site's canonical origin (default: --base); sitemap locs are judged against it
   --site <key>         gallery or shop (which site's rules to apply)
   --host <header>      send this as the Host header (when --base is an IP or a tunnel)
   --expect <n>         the published URL count the crawl must match
@@ -26,49 +30,6 @@ const USAGE = `usage: node engine/tooling/phase9-checks/seo-crawl.mjs --base <or
   --rate <n>           requests a second (default 5; lower is fine, above 5 needs --i-know)
   --i-know             allow a rate above 5 (you accept the load on the shared host)
   -h, --help           this text`
-
-/** Every URL a site's sitemap lists, following an index's children. Throws a readable Error on a miss. */
-async function collectSitemapUrls(base, get) {
-  const sitemapUrl = `${base}/sitemap.xml`
-  const sitemap = await get(sitemapUrl)
-  if (sitemap.status !== 200) throw new Error(`/sitemap.xml answered ${sitemap.status}`)
-
-  const sitemaps = [sitemapUrl]
-  const urls = []
-  if (isSitemapIndex(sitemap.body)) {
-    for (const child of sitemapLocations(sitemap.body)) {
-      const res = await get(child)
-      if (res.status !== 200) throw new Error(`sitemap child ${child} answered ${res.status}`)
-      sitemaps.push(child)
-      urls.push(...sitemapLocations(res.body))
-    }
-  } else {
-    urls.push(...sitemapLocations(sitemap.body))
-  }
-  return { sitemaps, urls }
-}
-
-/** Crawls each URL under the limiter, resuming from `done`; returns the failures and the skip count. */
-async function crawl(urls, { get, site, origin, done, write }) {
-  const failures = []
-  let skippedSensitive = 0
-  let checked = 0
-  for (const url of urls) {
-    if (isSensitive(new URL(url).pathname)) {
-      skippedSensitive += 1
-      continue
-    }
-    let result = done.get(url)
-    if (result === undefined) {
-      const res = await get(url)
-      result = judgePage({ url, status: res.status, html: res.body, site, origin })
-      write(url, result)
-    }
-    checked += 1
-    if (result.problems.length > 0) failures.push(result)
-  }
-  return { checked, skippedSensitive, failures }
-}
 
 async function main(argv) {
   const { values } = parseArgs({
@@ -79,15 +40,16 @@ async function main(argv) {
     console.log(USAGE)
     return 0
   }
-  const { base, site, rate } = commonOptions(values)
+  const { base, origin, site, rate } = commonOptions(values)
   const get = createGet({ limiter: createLimiter({ rate }), host: values.host })
 
-  const { sitemaps, urls } = await collectSitemapUrls(base, get)
+  const collected = await collectSitemapUrls({ origin, base, get })
+  const urls = collected.pages.map((page) => page.url)
   const statePath = values.state ?? defaultStatePath(site, 'seo')
-  const { checked, skippedSensitive, failures } = await crawl(urls, {
+  const { checked, skippedSensitive, failures } = await crawlPages(collected.pages, {
     get,
     site,
-    origin: base,
+    origin,
     done: readState(statePath),
     write: createStateWriter(statePath),
   })
@@ -98,25 +60,26 @@ async function main(argv) {
   const report = {
     site,
     base,
-    sitemaps,
+    origin,
+    sitemaps: collected.sitemaps,
     urls: urls.length,
     checked,
     skippedSensitive,
     counts,
     expect,
     countMatches,
-    failures,
+    failures: [...collected.failures, ...failures],
   }
   if (values.out) {
     mkdirSync(dirname(values.out), { recursive: true })
     writeFileSync(values.out, `${JSON.stringify(report, null, 2)}\n`)
   }
   logReport(report)
-  return failures.length === 0 && countMatches !== false ? 0 : 1
+  return report.failures.length === 0 && countMatches !== false ? 0 : 1
 }
 
 function logReport(report) {
-  console.log(`seo-crawl (${report.site}) against ${report.base}`)
+  console.log(`seo-crawl (${report.site}) against ${report.base} (canonical ${report.origin})`)
   console.log(
     `  ${report.sitemaps.length} sitemap file(s), ${report.urls} URLs (en ${report.counts.en}, id ${report.counts.id})`,
   )

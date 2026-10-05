@@ -2,6 +2,13 @@
 // every page carries a canonical, both hreflang alternates plus x-default, and a description; on the
 // gallery no JSON-LD block may contain a price or an `offers`. Pure functions over response bodies,
 // so a test drives them with fixtures and a local server.
+//
+// The sitemap speaks the site's canonical origin (`origin`), while the crawl is pointed at what it
+// can reach (`base`): every loc is rewritten onto the base with `toBase`; a loc on any other origin
+// is a failure ("sitemap lists another origin") and is never requested. Reports keep canonical URLs.
+import { isSensitive } from './sensitive.mjs'
+import { toBase } from './to-base.mjs'
+
 const LINK = /<link\b[^>]*>/gi
 const META = /<meta\b[^>]*>/gi
 const ATTR = /([a-zA-Z_:][-a-zA-Z0-9_:]*)\s*=\s*"([^"]*)"/g
@@ -118,4 +125,83 @@ export function localeCounts(urls) {
     else en += 1
   }
   return { en, id }
+}
+
+/**
+ * Splits sitemap locs into the ones on `origin` (mapped onto `base`, ready to request) and the
+ * foreign ones. `requested` is `[{ url, req }]` (canonical URL plus the base URL to request);
+ * `foreign` is the raw locs on another origin, which the caller turns into failures.
+ */
+export function resolveLocs(locs, { origin, base }) {
+  const requested = []
+  const foreign = []
+  for (const loc of locs) {
+    const mapped = toBase(loc, { origin, base })
+    if (mapped.foreign) foreign.push(loc)
+    else requested.push({ url: loc, req: mapped.url })
+  }
+  return { requested, foreign }
+}
+
+/**
+ * Every page a site's sitemap lists, following an index's children through the base. Returns
+ * `{ sitemaps, pages, failures }`; `pages` is `[{ url, req }]`. Throws a readable Error when the
+ * sitemap itself or a child does not answer 200. A foreign loc (on another origin) is never
+ * requested; it becomes a failure `{ url, problems: ['sitemap lists another origin'] }`.
+ */
+export async function collectSitemapUrls({ origin, base, get }) {
+  const sitemapUrl = `${base}/sitemap.xml`
+  const sitemap = await get(sitemapUrl)
+  if (sitemap.status !== 200) throw new Error(`/sitemap.xml answered ${sitemap.status}`)
+
+  const sitemaps = [sitemapUrl]
+  const pages = []
+  const failures = []
+  const addForeign = (locs) => {
+    for (const loc of locs) failures.push({ url: loc, problems: ['sitemap lists another origin'] })
+  }
+
+  if (isSitemapIndex(sitemap.body)) {
+    const children = resolveLocs(sitemapLocations(sitemap.body), { origin, base })
+    addForeign(children.foreign)
+    for (const child of children.requested) {
+      const res = await get(child.req)
+      if (res.status !== 200) throw new Error(`sitemap child ${child.url} answered ${res.status}`)
+      sitemaps.push(child.url)
+      const inner = resolveLocs(sitemapLocations(res.body), { origin, base })
+      addForeign(inner.foreign)
+      pages.push(...inner.requested)
+    }
+  } else {
+    const direct = resolveLocs(sitemapLocations(sitemap.body), { origin, base })
+    addForeign(direct.foreign)
+    pages.push(...direct.requested)
+  }
+  return { sitemaps, pages, failures }
+}
+
+/**
+ * Crawls each page under the limiter, resuming from `done` (a Map from canonical URL to a judged
+ * result). Returns `{ checked, skippedSensitive, failures }`; `write(url, result)` persists a fresh
+ * answer. A sensitive path is skipped and counted, never requested.
+ */
+export async function crawlPages(pages, { get, site, origin, done = new Map(), write = () => {} }) {
+  const failures = []
+  let skippedSensitive = 0
+  let checked = 0
+  for (const page of pages) {
+    if (isSensitive(new URL(page.url).pathname)) {
+      skippedSensitive += 1
+      continue
+    }
+    let result = done.get(page.url)
+    if (result === undefined) {
+      const res = await get(page.req)
+      result = judgePage({ url: page.url, status: res.status, html: res.body, site, origin })
+      write(page.url, result)
+    }
+    checked += 1
+    if (result.problems.length > 0) failures.push(result)
+  }
+  return { checked, skippedSensitive, failures }
 }
