@@ -28,6 +28,7 @@
  */
 import { defineConfig, devices, type Project } from '@playwright/test'
 
+import { localPort } from './tests/e2e/admin/local.mjs'
 import { SITES, type SiteKey } from './engine/packages/config/src/sites/table'
 
 const desktop: Project['use'] = {
@@ -108,10 +109,23 @@ const hosts: Project = {
   use: { ...desktop },
 }
 
+// The admin role drive (TASKS.md 3.6.d, `docs/gates/3.6.md`): the shop host, the admin's
+// (Q1), on this worktree's own port and database (`pnpm worktree:env`, `local.mjs`'s
+// `localPort()`) — CI sets E2E_PORT the same way `start-server.sh` runs the server.
+const admin: Project = {
+  name: 'admin',
+  testDir: './tests/e2e/admin',
+  metadata: metadataOf(ADMIN_SITE),
+  use: {
+    ...desktop,
+    baseURL: `http://${SITES[ADMIN_SITE].hostnames.local[0]}:${localPort()}`,
+  },
+}
+
 export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  projects: [...smoke, ...status, ...a11y, hosts],
+  projects: [...smoke, ...status, ...a11y, hosts, admin],
 })
