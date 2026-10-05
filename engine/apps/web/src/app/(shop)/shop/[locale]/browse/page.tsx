@@ -28,7 +28,7 @@ function pageOf(value: string | string[] | undefined): number | undefined {
 
 export async function generateMetadata({
   params,
-}: PageProps<'/shop/[locale]/shop'>): Promise<Metadata> {
+}: PageProps<'/shop/[locale]/browse'>): Promise<Metadata> {
   const locale = siteLocale('shop', (await params).locale)
   const site = await currentSite('shop')
   if (locale === null || site.origin === null) return {}
@@ -46,7 +46,7 @@ export async function generateMetadata({
 export default async function ShopBrowse({
   params,
   searchParams,
-}: PageProps<'/shop/[locale]/shop'>) {
+}: PageProps<'/shop/[locale]/browse'>) {
   const { locale: raw } = await params
   const locale = siteLocale('shop', raw)
   if (locale === null) notFound() // the segment's not-found answers an unknown locale
