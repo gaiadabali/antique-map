@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 14/18 | 0 | `████████░░`  78% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 4/5 | 17/18 | 0 | `█████████░`  94% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 6/13 | 0 | `█████░░░░░`  46% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **22/49** | **127/200** | **8** | `██████░░░░`  64% |
+| **All** | 11 phases | | | **25/49** | **130/200** | **8** | `███████░░░`  65% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -83,7 +83,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W2 | 7.2 Store staff panel | Sonnet (claude seat) | `w/7.2` | 2026-10-05 | `am-7.2-s1` — phone-first store list/detail with one next-status button, driver image, hand-back; owner/editor filters, reassign, cancel; calls the 7.1 core only |
 | 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
 | 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
-| 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
@@ -512,16 +511,16 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, on a phone, a guest adds two products, drops a pin in Bali, sees the delivery fee and total, pays with the simulator (and once with the Midtrans sandbox), and lands on a confirmation; the order exists with the nearest store holding every line and that store's stock reduced; an unpaid order releases its stock when it expires; a duplicate webhook changes nothing.
 **Waves:** W1 — 6.1, 6.2 · W2 — 6.3, 6.4 · W3 — 6.5
 
-- [ ] **6.1 Shop browse, search and the product page** · needs: phase 3, phase 4 — 🔄 6·W1
+- [x] **6.1 Shop browse, search and the product page** · needs: phase 3, phase 4 — ✅ 2026-10-05 8e665b3
   - **Lane** SHP · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/shop/{browse,product}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{shop,collections,search,product}/**`, `engine/apps/web/src/server/shop/catalogue/**`
   - **Read** EXPERIENCE-SHOP.md §Browse and §Product
   - _Requirements: 5.2, 5.4_
   - [x] 6.1.a loaders (published, projected) for categories, listings and the product page with variants and availability across stores (any store has stock = available; the exact stores are not shown)
   - [x] 6.1.b category pages, search and the product page with options, price in rupiah, the "from the archive" link to a `relatedWork`
-  - [ ] 6.1.c **Check:** on a production build a seeded product page works at 390 px with its variant picker; a product with zero stock in every store shows "Out of stock" and cannot be added; axe is clean.
+  - [x] 6.1.c **Check:** on a production build a seeded product page works at 390 px with its variant picker; a product with zero stock in every store shows "Out of stock" and cannot be added; axe is clean.
 
-- [ ] **6.2 The bag, the delivery fee and the welcome code** · needs: phase 3, phase 4 — 🔄 6·W1
+- [x] **6.2 The bag, the delivery fee and the welcome code** · needs: phase 3, phase 4 — ✅ 2026-10-05 8e665b3
   - **Lane** SHP + PLT · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/shop/cart/**`, `engine/packages/cms/src/shop/pricing/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/bag/**`
   - **Read** COMMERCE.md §Cart and §Pricing, SECURITY.md §Server-side pricing
@@ -529,9 +528,9 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.2.a the bag in a cookie holding only product, variant and quantity; every price, fee and total is computed by the server from the database; integer rupiah, rounded once
   - [x] 6.2.b the delivery-fee quote: distance bands from `site-settings` measured from the nearest eligible store (6.3.b) against the admin-maintained fee table (Q3, filled in from the local courier price); free over the threshold after the discount; a pin beyond the last band is refused with a WhatsApp handoff
   - [x] 6.2.c the welcome code: validated and applied by the server, single-use rules from `discounts`
-  - [ ] 6.2.d **Check:** unit tests prove: a tampered price or quantity in the request is ignored; totals match hand-computed cases to the rupiah; free delivery switches on exactly at the threshold; an expired or unknown code is refused with a plain message.
+  - [x] 6.2.d **Check:** unit tests prove: a tampered price or quantity in the request is ignored; totals match hand-computed cases to the rupiah; free delivery switches on exactly at the threshold; an expired or unknown code is refused with a plain message.
 
-- [ ] **6.3 Checkout, the map pin, the nearest store and the atomic stock** · needs: 6.1, 6.2 — 🔄 6·W2
+- [x] **6.3 Checkout, the map pin, the nearest store and the atomic stock** · needs: 6.1, 6.2 — ✅ 2026-10-05 8e665b3
   - **Lane** SHP + PLT · **Agent** senior-be with senior-fe, **opus**, second reviewer senior-db · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/checkout/**`, `engine/packages/cms/src/shop/orders/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/checkout/**`
   - **Read** COMMERCE.md §Checkout, §Nearest store and §Stock, EXPERIENCE-SHOP.md §Checkout, Q4
@@ -539,7 +538,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.3.a the checkout form (contact, address, notes) and a map pin picker on Google Maps (the Maps JavaScript API with Places autocomplete, its referrer-restricted key delivered from the server; `/api/x/geocode` validates and reverse-geocodes with the server key; the pasted-link fallback), validated on the server, Indonesia only
   - [x] 6.3.b `pickStore`: the nearest active store, by straight-line distance from the pin, that holds every line; ties broken by code; none → the buyer is told before paying (Q4)
   - [x] 6.3.c order creation in one transaction: re-price, pick the store, decrement each line's `stock-levels` row with `UPDATE … WHERE quantity >= n` (zero rows updated aborts), create the order in `pending_payment` with the 60-minute payment window and a hashed tracking token
-  - [ ] 6.3.d **Check:** a db test fires 20 concurrent orders for the last unit and exactly one succeeds; a pin in Ubud picks the nearer of two stores; a basket no single store can fill is refused before payment; a pin outside Indonesia is refused.
+  - [x] 6.3.d **Check:** a db test fires 20 concurrent orders for the last unit and exactly one succeeds; a pin in Ubud picks the nearer of two stores; a basket no single store can fill is refused before payment; a pin outside Indonesia is refused.
 
 - [x] **6.4 Midtrans: payment, webhook, simulator and expiry** · needs: phase 3 — ✅ 2026-10-03 18bc46b
   - **Lane** SHP + PLT · **Agent** senior-integrator with senior-be, second reviewer senior-db · **Wave** W2
@@ -818,6 +817,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ 6.1.c, 6.2.d, 6.3.d — helper session antique-map-dc merged `w/6.1fix` (real add-to-bag, server-side stock refusal), `w/6qa` (`docs/gates/phase-6-checks.md`) and `w/6.5` (the `order` surface `/order/{token}`, simulate pages, the order-created email) to main `d3222c5`. Orchestrator re-checked on main: orders + pricing db tests 86/86; `stock.db.test.ts` (20 concurrent orders for the last unit → exactly one) 3/3 alone — one run under shared-Postgres load hit the test's 30 s timeout with no assertion failure. Follow-ups: that test's timeout under load; `BAG_COOKIE_KEY` missing from `.env.example`; no seed product has variants at different prices; the order email is sent inline before the redirect (a job queue later).
 
 - 2026-10-05 ✅ **phase 3** — 3.6.d closed: `w/3.6fix` merged (`971fc7e`; conflicts: `playwright.config.ts` kept both the shop and admin projects, `payload-types.ts` regenerated): D1 bilingual validator messages (money, SKUs, order moves, stock count, public id, media), D2 shelf count editable (the 3.3 hook still stores count − held under the row lock), D3 SKU uniqueness server-side only, D4/D5 Indonesian labels on every field, D6 order refusals name the field in words, D7 the broken Add-new button gone, D8 the import CLI takes its options, sidebar in 3.6.b's order. On a fresh clone of main: types, format, lint, generated, filesize, tokens, 686 unit + 479 db tests, `schema:check` no changes, production build, and the admin drive `tests/e2e/admin` **16/16** as owner, editor and two store users. Follow-up (3.2.g, schema): a `category` term kind (D9) so the shop's mock products import with categories. Note: `node tests/e2e/admin/local.mjs start` runs in the foreground — start it in its own shell before the spec.
 
