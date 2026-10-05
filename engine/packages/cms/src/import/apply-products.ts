@@ -7,7 +7,7 @@
 import { ValidationError } from 'payload'
 
 import { freshReq, type UpsertContext, type UpsertResult } from './apply'
-import { asEnglish, pairAs, splitLocales } from './bilingual'
+import { asEnglish, splitLocales } from './bilingual'
 import { changes, same } from './diff'
 import type { WritableRow } from './plan'
 import { nextFreeSlug, slugTaken, slugify } from '../fields/slug'
@@ -174,14 +174,15 @@ async function applyVariantRow(
     currentIndex >= 0
       ? existingRows.map((each, i) => (i === currentIndex ? row : each))
       : [...existingRows, row]
+  // Like with like: the writer stores the label's English value only (below), so the sheet's
+  // `{ en, id }` pair compares by its English half against the stored English label.
   const sameRows =
     current !== undefined &&
     row.sku === current.sku &&
-    same(pairAs(row.label as Record<string, unknown>, current.label), row.label) &&
+    same(englishOf(row.label), englishOf(current.label)) &&
     (row.price === undefined || same(row.price ?? null, current.price ?? null)) &&
     row.active === current.active
   if (sameRows) return { outcome: 'unchanged', changes: [] }
-  console.log('DBG sameRows', JSON.stringify({ row, current, existingRows }))
   try {
     // The variants go back as one array in the default locale, each label as its English value
     // (an array write is a whole-array write; a second, `locale: 'id'` pass would rebuild the
@@ -224,6 +225,12 @@ async function imagesFor(
 }
 
 const fileNameOf = (file: string) => file.split(/[\\/]/).pop() ?? file
+
+/** A label's English value: a stored `locale: 'all'` read answers `{ en, id: null }`, a row `{ en, id }`. */
+const englishOf = (value: unknown): unknown =>
+  value !== null && typeof value === 'object' && !Array.isArray(value)
+    ? (value as { en?: unknown }).en
+    : value
 
 /** The name a product shows: the default locale's, else the SKU — what the address is made from. */
 function nameOf(data: Record<string, unknown>, sku: string): string {

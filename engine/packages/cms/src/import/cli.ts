@@ -12,7 +12,7 @@ import { runImportFile } from './apply'
 import { ImportError, parseCsv } from './csv'
 import { template } from './kinds'
 import { render } from './report'
-import { cms } from '../instance'
+import { seedEnv } from '../seed/env'
 
 const USAGE =
   'Usage: pnpm --filter @engine/cms import --file <path> --kind <antiques|products|stores|stock|discounts> [--dry-run] [--publish]'
@@ -25,6 +25,8 @@ function args(argv: readonly string[]): Args {
     const arg = argv[i]!
     if (arg === '--dry-run') out.dryRun = true
     else if (arg === '--publish') out.publish = true
+    // `--apply` is the seed scripts' explicit way to say "not --dry-run"; apply is the default.
+    else if (arg === '--apply') out.dryRun = false
     else if (arg === '--file') out.file = argv[++i] ?? ''
     else if (arg === '--kind') out.kind = argv[++i] ?? ''
     else throw new ImportError(`I do not know the option '${arg}'.`, USAGE)
@@ -38,6 +40,7 @@ function args(argv: readonly string[]): Args {
 
 async function main(): Promise<number> {
   const parsed = args(process.argv.slice(2))
+  seedEnv()
   const { readFileSync } = await import('node:fs')
   const name = parsed.file.split(/[\\/]/).pop() ?? parsed.file
   let bytes: Uint8Array
@@ -50,6 +53,8 @@ async function main(): Promise<number> {
   parseCsv(name, bytes, parsed.kind as never, template(parsed.kind as never))
 
   // cms() is the process's one instance (instance.ts); the CLI connects to the dev database.
+  // Imported after the environment is filled: the config reads it at load time.
+  const { cms } = await import('../instance')
   const payload = await cms()
   const report = await runImportFile(parsed.kind as never, name, bytes, {
     payload,
@@ -61,13 +66,14 @@ async function main(): Promise<number> {
   return 0
 }
 
-main()
-  .then((code) => process.exit(code))
-  .catch((error: unknown) => {
-    if (error instanceof ImportError) {
-      console.error(`${error.message}${error.fix ? `\n${error.fix}` : ''}`)
-    } else {
-      console.error(error)
-    }
-    process.exit(1)
-  })
+// Top-level await: `payload run` imports the script and exits — an un-awaited promise dies with it.
+try {
+  process.exit(await main())
+} catch (error: unknown) {
+  if (error instanceof ImportError) {
+    console.error(`${error.message}${error.fix ? `\n${error.fix}` : ''}`)
+  } else {
+    console.error(error)
+  }
+  process.exit(1)
+}
