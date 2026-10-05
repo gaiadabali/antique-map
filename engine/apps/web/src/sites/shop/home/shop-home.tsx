@@ -10,10 +10,33 @@ import { FeaturedProducts } from './featured-products'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
 
+/** Browse has no island or room facet yet (qa 4.qa, finding F4); every chip links to the shop
+ * until one does — placeholder until the owner's content. */
+const ISLAND_CHIPS = [
+  'home.shop.chipIslandBali',
+  'home.shop.chipIslandJava',
+  'home.shop.chipIslandSumatra',
+  'home.shop.chipIslandLombok',
+] as const
+const ROOM_CHIPS = [
+  'home.shop.chipRoomLivingRoom',
+  'home.shop.chipRoomBedroom',
+  'home.shop.chipRoomOffice',
+  'home.shop.chipRoomEntryway',
+] as const
+
+/** "Sets that hang together" needs the collections surface (TASKS.md, phase 6); these three
+ * stand in until it ships, placeholder until the owner's content. */
+const SETS = [
+  { title: 'home.shop.set1Title', body: 'home.shop.set1Body' },
+  { title: 'home.shop.set2Title', body: 'home.shop.set2Body' },
+  { title: 'home.shop.set3Title', body: 'home.shop.set3Body' },
+] as const
+
 type Props = {
   readonly locale: 'en' | 'id'
   readonly href: (
-    surface: 'browse' | 'partnership',
+    surface: 'browse' | 'partnership' | 'collection',
     params: Record<string, never>,
     locale: 'en' | 'id',
   ) => string
@@ -26,6 +49,7 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
   return (
     <div className={styles.wrap}>
       <Hero locale={locale} href={href} t={t} />
+      <Chips href={href} locale={locale} t={t} />
       <section className={styles.section}>
         <div className={styles.rail}>
           {/* The section's heading, so the product cards' h3 follow an h2 (axe heading-order). */}
@@ -42,10 +66,61 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
           </div>
         </div>
       </section>
+      <Sets href={href} locale={locale} t={t} />
       <Process t={t} />
       <Trade locale={locale} href={href} t={t} />
       <Originals sisterHref={sisterHref} t={t} />
     </div>
+  )
+}
+
+function Chips({ locale, href, t }: Pick<Props, 'locale' | 'href' | 't'>) {
+  return (
+    <section className={styles.section}>
+      <h2 className={styles.railHeading}>
+        <Eyebrow>{t('home.shop.chipsEyebrow')}</Eyebrow>
+      </h2>
+      <div className={styles.chipsRow}>
+        {ISLAND_CHIPS.map((key) => (
+          <a key={key} className={styles.chip} href={href('browse', {}, locale)}>
+            {t(key)}
+          </a>
+        ))}
+      </div>
+      <div className={styles.chipsRow}>
+        {ROOM_CHIPS.map((key) => (
+          <a key={key} className={styles.chip} href={href('browse', {}, locale)}>
+            {t(key)}
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function Sets({ locale, href, t }: Pick<Props, 'locale' | 'href' | 't'>) {
+  return (
+    <section className={styles.section}>
+      <Eyebrow>{t('home.shop.setsEyebrow')}</Eyebrow>
+      <h2>{t('home.shop.setsTitle')}</h2>
+      <p className={styles.cardBody}>{t('home.shop.setsBody')}</p>
+      <div className={styles.four}>
+        {SETS.map((set) => (
+          <div key={set.title} className={styles.setCard}>
+            <div className={styles.plate} style={{ aspectRatio: '4 / 5' }}>
+              <span className={styles.plateInner}>{t(set.title)}</span>
+            </div>
+            <p className={styles.cardTitle}>{t(set.title)}</p>
+            <p className={styles.cardBody}>{t(set.body)}</p>
+          </div>
+        ))}
+      </div>
+      <div className={styles.actions}>
+        <Button variant="quiet" href={href('collection', {}, locale)}>
+          {t('home.shop.setsCta')}
+        </Button>
+      </div>
+    </section>
   )
 }
 
