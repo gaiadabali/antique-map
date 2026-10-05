@@ -22,7 +22,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **4** Early UI from the design team | Build | 2 | 🔄 in progress | 0/3 | 10/14 | 0 | `███████░░░`  71% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 4/20 | 0 | `██░░░░░░░░`  20% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 11/18 | 0 | `██████░░░░`  61% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | · not started | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
@@ -87,6 +87,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
+| 7·W1 | 7.1 Order statuses, history, the driver image and reassigning | senior-be | `w/7.1` | 2026-10-05 | |
+| 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -460,7 +462,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [ ] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
 
-- [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4
+- [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — 🔄 5·W1
   - **Lane** GAL + MED · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/product/**`, `engine/packages/media/src/{derivatives,tiles}/**`
   - **Read** EXPERIENCE-GALLERY.md §Item, ARCHITECTURE.md §Media and deep zoom, CARRY-OVER.md §5
@@ -564,7 +566,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging a paid order appears in its store's panel; the store user moves it processing → waiting for driver → on the way (uploading the driver's details as an image) → delivered; the buyer sees each step, the image and the store's contact on one tracking page and receives an email at each; another store's user cannot see the order; the owner or an editor can reassign it.
 **Waves:** W1 — 7.1 · W2 — 7.2, 7.3 · W3 — 7.4
 
-- [ ] **7.1 Order statuses, history, the driver image and reassigning** · needs: phase 6
+- [ ] **7.1 Order statuses, history, the driver image and reassigning** · needs: phase 6 — 🔄 7·W1
   - **Lane** SHP + CMS · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/cms/src/shop/fulfilment/**`, `engine/packages/cms/src/collections/orders/hooks/**`
   - **Read** COMMERCE.md §Statuses and §Replacement, SECURITY.md §Uploads
