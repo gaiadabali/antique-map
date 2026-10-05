@@ -24,8 +24,8 @@ const timings: Record<string, number> = {}
 test.beforeAll(() => {
   fx = fixtures()
 })
-test.afterAll(() => {
-  record('ownerFlow', {
+test.afterAll(async () => {
+  await record('ownerFlow', {
     run: RUN,
     secondsPerStep: timings,
     totalSeconds: Object.values(timings).reduce((sum, each) => sum + each, 0),

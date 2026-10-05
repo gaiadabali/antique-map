@@ -75,7 +75,7 @@ for (const role of ROLES) {
       const panel = language === 'en' ? 'Orders to act on' : 'Pesanan perlu tindakan'
       const widget = page.locator('a[href="/admin/collections/orders"]').filter({ hasText: /\d$/ })
       await expect(widget).toContainText(panel)
-      record(`dashboard.${role}.${language}`, { orders, ordersSql, leads, leadsSql, groups })
+      await record(`dashboard.${role}.${language}`, { orders, ordersSql, leads, leadsSql, groups })
     }
   })
 }
@@ -141,7 +141,7 @@ for (const role of ROLES) {
       const shown = await toast(page)
       const field = await fieldError(page, refusal.field)
       await page.screenshot({ path: shot(`invalid-${role}-${language}-1280`), fullPage: true })
-      record(`invalid.${role}.${language}`, { toast: shown, field })
+      await record(`invalid.${role}.${language}`, { toast: shown, field })
       expect(field).toMatch(refusal[language])
     })
   }
@@ -182,7 +182,7 @@ test('a store user sees only their own store’s orders; the other store’s use
     await page.screenshot({ path: shot(`orders-${who}-other-store-1280`) })
     seen[who] = { store: own.code, listed: docs.length, fixtureOrders: fixtureOrders(own.id) }
   }
-  record('isolation', seen)
+  await record('isolation', seen)
 })
 
 test('/admin is a 404 on the gallery’s host', async ({ page }) => {
@@ -192,5 +192,5 @@ test('/admin is a 404 on the gallery’s host', async ({ page }) => {
     expect(answer?.status(), path).toBe(404)
   }
   await page.screenshot({ path: shot('gallery-admin-404-1280') })
-  record('galleryAdmin', 404)
+  await record('galleryAdmin', 404)
 })

@@ -7,6 +7,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { format, resolveConfig } from 'prettier'
+
 const DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../../../docs/gates/3.6')
 // Merged with what is there: each spec file may run in its own worker.
 const FILE = join(DIR, 'drive.json')
@@ -20,9 +22,14 @@ export function shot(name: string): string {
   return join(DIR, `${name}.png`)
 }
 
-/** Records `value` under `key` and rewrites the drive's JSON. */
-export function record(key: string, value: unknown): void {
+/**
+ * Records `value` under `key` and rewrites the drive's JSON, keys sorted and formatted as the
+ * repo's Prettier formats it — the file is committed, and `pnpm verify` checks its format.
+ */
+export async function record(key: string, value: unknown): Promise<void> {
   read[key] = value
+  const sorted = Object.fromEntries(Object.entries(read).sort(([a], [b]) => a.localeCompare(b)))
   mkdirSync(DIR, { recursive: true })
-  writeFileSync(FILE, `${JSON.stringify(read, null, 2)}\n`)
+  const options = (await resolveConfig(FILE)) ?? {}
+  writeFileSync(FILE, await format(JSON.stringify(sorted), { ...options, filepath: FILE }))
 }

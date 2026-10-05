@@ -1,0 +1,113 @@
+{
+  "dashboard.editor.en": {
+    "orders": 4,
+    "ordersSql": 4,
+    "leads": null,
+    "leadsSql": 2,
+    "groups": {
+      "Settings": ["Staff"],
+      "Stores and stock": ["Stores", "Stock"],
+      "Orders": ["Orders"],
+      "Shop": ["Products"],
+      "Antiques": ["Antiques", "Makers", "Places", "Terms", "Images", "Masters"],
+      "Content": ["Pages", "Redirects"]
+    }
+  },
+  "dashboard.editor.id": {
+    "orders": 4,
+    "ordersSql": 4,
+    "leads": null,
+    "leadsSql": 2,
+    "groups": {
+      "Pengaturan": ["Staf"],
+      "Toko dan stok": ["Toko", "Stok"],
+      "Pesanan": ["Pesanan"],
+      "Toko daring": ["Produk"],
+      "Antik": ["Antik", "Pembuat", "Tempat", "Istilah", "Gambar", "Master"],
+      "Konten": ["Halaman", "Pengalihan"]
+    }
+  },
+  "dashboard.owner.en": {
+    "orders": 4,
+    "ordersSql": 4,
+    "leads": 2,
+    "leadsSql": 2,
+    "groups": {
+      "Settings": ["Staff", "Events", "Site settings"],
+      "Stores and stock": ["Stores", "Stock"],
+      "Orders": ["Orders", "Payment events"],
+      "Shop": ["Discount codes", "Products"],
+      "Antiques": ["Antiques", "Makers", "Places", "Terms", "Images", "Masters"],
+      "Content": ["Pages", "Redirects"],
+      "Leads and partners": ["Leads", "Partners", "Chat sessions"]
+    }
+  },
+  "dashboard.owner.id": {
+    "orders": 4,
+    "ordersSql": 4,
+    "leads": 2,
+    "leadsSql": 2,
+    "groups": {
+      "Pengaturan": ["Staf", "Peristiwa", "Pengaturan situs"],
+      "Toko dan stok": ["Toko", "Stok"],
+      "Pesanan": ["Pesanan", "Peristiwa pembayaran"],
+      "Toko daring": ["Kode diskon", "Produk"],
+      "Antik": ["Antik", "Pembuat", "Tempat", "Istilah", "Gambar", "Master"],
+      "Konten": ["Halaman", "Pengalihan"],
+      "Calon pembeli dan mitra": ["Calon pembeli", "Mitra", "Sesi chat"]
+    }
+  },
+  "dashboard.storeA.en": {
+    "orders": 2,
+    "ordersSql": 2,
+    "leads": null,
+    "leadsSql": 2,
+    "groups": { "Stores and stock": ["Stores", "Stock"], "Orders": ["Orders"] }
+  },
+  "dashboard.storeA.id": {
+    "orders": 2,
+    "ordersSql": 2,
+    "leads": null,
+    "leadsSql": 2,
+    "groups": { "Toko dan stok": ["Toko", "Stok"], "Pesanan": ["Pesanan"] }
+  },
+  "galleryAdmin": 404,
+  "invalid.editor.en": {
+    "toast": "The following field is invalid: Price (Rp)",
+    "field": "The price is a whole number of rupiah above zero, such as 95000 for Rp 95.000."
+  },
+  "invalid.editor.id": {
+    "toast": "Isian berikut tidak valid: Harga (Rp)",
+    "field": "The price is a whole number of rupiah above zero, such as 95000 for Rp 95.000."
+  },
+  "invalid.owner.en": {
+    "toast": "The following fields are invalid (5): Object type — say what kind of object it is Date — give it with how certain it is (or set it to unknown) Makers — credit a maker or add the primary place Images — add a photograph of the whole front (the recto) Condition — grade it from the gallery’s scale",
+    "field": "Say what kind of object it is: a map, a print, a photograph … Sebutkan jenis benda ini: peta, cetakan, foto …"
+  },
+  "invalid.owner.id": {
+    "toast": "Isian-isian berikut tidak valid (5): Object type — say what kind of object it is Date — give it with how certain it is (or set it to unknown) Makers — credit a maker or add the primary place Images — add a photograph of the whole front (the recto) Condition — grade it from the gallery’s scale",
+    "field": "Say what kind of object it is: a map, a print, a photograph … Sebutkan jenis benda ini: peta, cetakan, foto …"
+  },
+  "invalid.storeA.en": {
+    "toast": "The following field is invalid: status",
+    "field": "Store staff move an order one step forward only: from “Processing” the next step is “Waiting for driver”. Hand it back with a reason if something is wrong."
+  },
+  "invalid.storeA.id": {
+    "toast": "Isian berikut tidak valid: status",
+    "field": "Store staff move an order one step forward only: from “Processing” the next step is “Waiting for driver”. Hand it back with a reason if something is wrong."
+  },
+  "isolation": {
+    "storeA": { "store": "AMD-001", "listed": 3, "fixtureOrders": 3 },
+    "storeB": { "store": "AMD-002", "listed": 2, "fixtureOrders": 2 }
+  },
+  "ownerFlow": {
+    "run": "MUUNSQQI",
+    "secondsPerStep": {
+      "the owner uploads a photograph of the antique": 1.4,
+      "the owner catalogues the antique with its photo and publishes it": 5,
+      "the owner adds a store": 0.4,
+      "the owner adds a product": 0.6
+    },
+    "totalSeconds": 7.4
+  }
+}
