@@ -1,0 +1,52 @@
+{
+  "grades": [
+    {
+      "label": "VG+",
+      "equivalent": "A",
+      "definition": {
+        "en": "Very good plus: near-fine, with only the faintest wear a close look finds.",
+        "id": "Sangat baik plus: hampir sempurna, hanya jejak pemakaian paling tipis terlihat dari dekat."
+      }
+    },
+    {
+      "label": "VG",
+      "equivalent": "B+",
+      "definition": {
+        "en": "Very good: sound and clean, with light wear, minor foxing or small repairs, all as the photographs show.",
+        "id": "Sangat baik: kokoh dan bersih, dengan pemakaian ringan, foxing kecil atau perbaikan kecil, semuanya terlihat pada foto."
+      }
+    },
+    {
+      "label": "G+",
+      "equivalent": "B",
+      "definition": {
+        "en": "Good plus: honest use with noticeable but not disfiguring wear, repairs or toning.",
+        "id": "Baik plus: bekas pakai yang jujur dengan pemakaian, perbaikan atau penuaan yang terlihat namun tidak merusak."
+      }
+    },
+    {
+      "label": "G",
+      "equivalent": "C+",
+      "definition": {
+        "en": "Good: worn, with repairs, staining or losses that the photographs show plainly; priced for it.",
+        "id": "Baik: aus, dengan perbaikan, noda atau kehilangan yang terlihat jelas pada foto; harganya disesuaikan."
+      }
+    },
+    {
+      "label": "Fair",
+      "equivalent": "C-",
+      "definition": {
+        "en": "Fair: well below good, with significant wear or damage — bought for the image or the rarity, not the condition.",
+        "id": "Cukup: jauh di bawah baik, dengan pemakaian atau kerusakan berarti — dibeli karena gambarnya atau kejar langkanya, bukan kondisinya."
+      }
+    },
+    {
+      "label": "As-is",
+      "equivalent": "D",
+      "definition": {
+        "en": "As-is: sold as seen, with no condition stated; judge entirely from the photographs.",
+        "id": "Seperti adanya: dijual sebagaimana terlihat, tanpa pernyataan kondisi; nilailah sepenuhnya dari foto."
+      }
+    }
+  ]
+}

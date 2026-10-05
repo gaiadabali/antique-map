@@ -100,6 +100,15 @@ const a11y: Project[] = HOSTS.map(({ site, host }) => ({
   use: { ...desktop, baseURL: baseURLOf(host) },
 }))
 
+// The shop's flows (product, bag, checkout, pay) on the shop host; each spec sets its own widths (6.1.c, 6.5).
+const shopHost = HOSTS.find((each) => each.site === 'shop')?.host ?? ''
+const shopE2e: Project = {
+  name: 'shop-e2e',
+  testDir: './tests/e2e/shop',
+  metadata: metadataOf('shop'),
+  use: { ...desktop, baseURL: baseURLOf(shopHost) },
+}
+
 // Host trust: each case names its own hosts, on the one port.
 const hosts: Project = {
   name: 'hosts',
@@ -113,5 +122,5 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  projects: [...smoke, ...status, ...a11y, hosts],
+  projects: [...smoke, ...status, ...a11y, shopE2e, hosts],
 })

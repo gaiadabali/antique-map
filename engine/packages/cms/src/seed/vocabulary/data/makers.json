@@ -1,0 +1,385 @@
+{
+  "makers": [
+    {
+      "name": "Abraham Ortelius"
+    },
+    {
+      "name": "Abraham Salm"
+    },
+    {
+      "name": "Alexander Jamieson"
+    },
+    {
+      "name": "Alfred Russel Wallace"
+    },
+    {
+      "name": "Allain Manneson Mallet"
+    },
+    {
+      "name": "Andreas Cellarius"
+    },
+    {
+      "name": "Anselm Desing"
+    },
+    {
+      "name": "Antoine-Francois Prevost"
+    },
+    {
+      "name": "Arthus Bertrand"
+    },
+    {
+      "name": "Auguste van Pers"
+    },
+    {
+      "name": "Augustine Torniello"
+    },
+    {
+      "name": "Augustins Petermann"
+    },
+    {
+      "name": "B. G. Escher"
+    },
+    {
+      "name": "Berthe Hoola van Nooten"
+    },
+    {
+      "name": "Bertius"
+    },
+    {
+      "name": "Brisseau de Mirbel"
+    },
+    {
+      "name": "British Admiralty Hydrographic Office"
+    },
+    {
+      "name": "Bucellino"
+    },
+    {
+      "name": "C.W. Mieling"
+    },
+    {
+      "name": "Carl Bock"
+    },
+    {
+      "name": "Charles Alexander Lesueur"
+    },
+    {
+      "name": "Charles d'Orbigny"
+    },
+    {
+      "name": "Christoph Keller"
+    },
+    {
+      "name": "Claude Buffier"
+    },
+    {
+      "name": "Claudius Ptolemaeus (Ptolemy)"
+    },
+    {
+      "name": "Comte de Buffon"
+    },
+    {
+      "name": "Cornelis Danckerts"
+    },
+    {
+      "name": "Daniel Giraud Elliot"
+    },
+    {
+      "name": "De Wit"
+    },
+    {
+      "name": "Dirk Homberg"
+    },
+    {
+      "name": "Emanuel Bowen"
+    },
+    {
+      "name": "Engelbert Kaempfer"
+    },
+    {
+      "name": "Ephraim Pagitt"
+    },
+    {
+      "name": "Ernest Hardouin"
+    },
+    {
+      "name": "Expilly"
+    },
+    {
+      "name": "Francois Valentyn"
+    },
+    {
+      "name": "Francois Xavier Habermann"
+    },
+    {
+      "name": "Franz Wilhelm Junghuhn"
+    },
+    {
+      "name": "Freycinet"
+    },
+    {
+      "name": "G. M. Tuttini"
+    },
+    {
+      "name": "George Louis Le Rouge"
+    },
+    {
+      "name": "Gerard de Jode"
+    },
+    {
+      "name": "Gerhard Mercator"
+    },
+    {
+      "name": "Giovanni Magini"
+    },
+    {
+      "name": "Girolamo Ruscelli"
+    },
+    {
+      "name": "Gregorio Leti (1630-1710)"
+    },
+    {
+      "name": "Guillaume de L' Isle"
+    },
+    {
+      "name": "Heinrich Scherer"
+    },
+    {
+      "name": "Hendrik Adriaan van Rheede tot Drakenstein"
+    },
+    {
+      "name": "Hendrik Paulides"
+    },
+    {
+      "name": "Henri Abraham Chatelain"
+    },
+    {
+      "name": "Hermann Moll"
+    },
+    {
+      "name": "Huang Shang"
+    },
+    {
+      "name": "Hurat & Blackett"
+    },
+    {
+      "name": "Iohann Matthias Christoph Reinecke"
+    },
+    {
+      "name": "Isaak Tirion"
+    },
+    {
+      "name": "J. van Schley"
+    },
+    {
+      "name": "J.C. Rappard"
+    },
+    {
+      "name": "Jacques Nicolas Bellin"
+    },
+    {
+      "name": "Jacques Peeters"
+    },
+    {
+      "name": "James Cook (Captain)"
+    },
+    {
+      "name": "James Wyld"
+    },
+    {
+      "name": "Jan Huyghen van Linschoten"
+    },
+    {
+      "name": "Jan Jansson (1588 – 1664)"
+    },
+    {
+      "name": "Jan Poortenaar"
+    },
+    {
+      "name": "Jan Van Ryne"
+    },
+    {
+      "name": "Jean-Baptiste de Mannevillette"
+    },
+    {
+      "name": "Jean-Baptiste d’Apres de Mannevillette"
+    },
+    {
+      "name": "Jodocus Hondius (1563-1612)"
+    },
+    {
+      "name": "Johan Walch"
+    },
+    {
+      "name": "John Gould"
+    },
+    {
+      "name": "John Payne"
+    },
+    {
+      "name": "John Senex"
+    },
+    {
+      "name": "John Speed"
+    },
+    {
+      "name": "John Stockdale"
+    },
+    {
+      "name": "John Tallis"
+    },
+    {
+      "name": "Kassian Cephas"
+    },
+    {
+      "name": "Lambert & Co."
+    },
+    {
+      "name": "Laplace La Favorite"
+    },
+    {
+      "name": "Lattre"
+    },
+    {
+      "name": "Louis Brion"
+    },
+    {
+      "name": "Louis de Freycinet"
+    },
+    {
+      "name": "Matthaus Seutter"
+    },
+    {
+      "name": "Matthias Quad"
+    },
+    {
+      "name": "Nicolaas Witsen"
+    },
+    {
+      "name": "Nicolas Engelhard"
+    },
+    {
+      "name": "Nicolas Sanson"
+    },
+    {
+      "name": "Nicolas-Martin Petit"
+    },
+    {
+      "name": "P. de la Feuille"
+    },
+    {
+      "name": "P.A. van der Lith"
+    },
+    {
+      "name": "Pat Keely"
+    },
+    {
+      "name": "Pauli"
+    },
+    {
+      "name": "Peter Apian"
+    },
+    {
+      "name": "Peter Conradi"
+    },
+    {
+      "name": "Petrus Plancius (1552 – 1622)"
+    },
+    {
+      "name": "Philipp Clüver"
+    },
+    {
+      "name": "Pierre Du Val"
+    },
+    {
+      "name": "Pieter Goos"
+    },
+    {
+      "name": "Pieter van der Aa"
+    },
+    {
+      "name": "R. Soelardi"
+    },
+    {
+      "name": "Raden Saleh"
+    },
+    {
+      "name": "René Augustin Constantin de Renneville"
+    },
+    {
+      "name": "René Primevère Lesson"
+    },
+    {
+      "name": "Rigobert Bonne"
+    },
+    {
+      "name": "Rob Morden"
+    },
+    {
+      "name": "Robert de Vaugondy"
+    },
+    {
+      "name": "Royal Java Motor Club Association"
+    },
+    {
+      "name": "S.J. Baumgarten"
+    },
+    {
+      "name": "Sebastiaan Münster"
+    },
+    {
+      "name": "Sir Frederick Aloysius Weld"
+    },
+    {
+      "name": "Stamford Raffles"
+    },
+    {
+      "name": "T. Dixon"
+    },
+    {
+      "name": "Theodore De Bry"
+    },
+    {
+      "name": "Thevenot"
+    },
+    {
+      "name": "Thomas Jeffreys"
+    },
+    {
+      "name": "Toms"
+    },
+    {
+      "name": "Urban Dortet de Tessan"
+    },
+    {
+      "name": "Van De Velde"
+    },
+    {
+      "name": "Van Keulen"
+    },
+    {
+      "name": "Vincenzo Maria Coronelli"
+    },
+    {
+      "name": "W. Purser"
+    },
+    {
+      "name": "Wheeler and Son"
+    },
+    {
+      "name": "Willem Dooijewaard"
+    },
+    {
+      "name": "Willem G. Hofker"
+    },
+    {
+      "name": "Willem Janszoon Blaeu"
+    },
+    {
+      "name": "William Guthrie"
+    },
+    {
+      "name": "Woodbury and Page"
+    }
+  ]
+}

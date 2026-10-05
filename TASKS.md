@@ -18,16 +18,16 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **1** Triage, gates and the deleted contracts | Foundation | — | ✅ done | 4/4 | 20/20 | 0 | `██████████` 100% |
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
-| **3** The CMS and its data | Build | 2 | 🔄 in progress | 4/7 | 26/33 | 0 | `████████░░`  79% |
-| **4** Early UI from the design team | Build | 2 | 🔄 in progress | 2/3 | 13/14 | 0 | `█████████░`  93% |
+| **3** The CMS and its data | Build | 2 | 🔄 in progress | 6/7 | 32/33 | 0 | `██████████`  97% |
+| **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 1/5 | 12/18 | 0 | `███████░░░`  67% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 4/13 | 0 | `███░░░░░░░`  31% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 1/4 | 5/13 | 0 | `████░░░░░░`  38% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 6/16 | 0 | `████░░░░░░`  38% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **18/49** | **114/200** | **8** | `██████░░░░`  57% |
+| **All** | 11 phases | | | **21/49** | **123/200** | **8** | `██████░░░░`  62% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,17 +78,19 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 3·W3 | 3.7.b Seed layers | senior-be (claude seat) | `w/3.7b` | 2026-10-05 | r2 landed the importer's second-pass fix (`fc5e279`) then died before the held rows, dry run and report; continuation `am-3.7b-r3` in flight (also writes the local-preview seed commands) |
 | 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
-| 6·W2 | 6.3.a Checkout and map pin | Sonnet (claude seat) | `w/6.3a` | 2026-10-05 | GLM run `am-6.3a-1` stalled (~100 min, 0 commits) and was stopped; `am-6.3a-s1` on Sonnet finishes from its uncommitted files; Opus reviews |
-| 4·W3 | 4.3.e Check | Sonnet (claude seat) | `w/4.3r3` | 2026-10-05 | 4.qa merged (`b9d486e`): 4.1.e/4.2.c/4.2.d PASS, 4.1 and 4.2 closed; 4.3.e failed on F1–F4 (layout cap, heading type, English in shared header/dialog, missing drawn sections — ruled in scope); `am-4.3r3-s1` fixes and re-runs the evidence |
-| 3·W2 | 3.6.d Check | qa (claude seat) | `w/3.6qa` | 2026-10-05 | run `am-3.6qa-c1` — admin as owner/editor/store at 1280 px, plain bilingual errors, dashboard counts vs SQL, the phase-3 Done-when admin flows |
-| 3·W1 | 3.1 Staging as one site | orchestrator (Opus) | `w/3.1` | 2026-10-05 | container test **ALL PASS** (`a3d88d1`, packed sha256 `5c577c83…`); Helios dry run as expected (32 changes planned, the 5 predicted two-app errors, host unchanged) — ⛔ the auto-mode classifier blocks the host steps from step 3 (rotated-secrets check, retirement) as credential exploration; waiting on the user for a permission rule or to run the steps |
+| 7·W2 | 7.3 Tracking page and notifications | Sonnet (claude seat) | `w/7.3` | 2026-10-05 | run `am-7.3-s1` on the merged 7.1 core; Opus reviews |
+| 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
+| 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
+| 3·W2 | 3.6.d Check | Sonnet (claude seat) | `w/3.6fix` | 2026-10-05 | runs 1–2 hit the session and weekly limits (3 commits: D1/D3, D4/D5); `am-3.6fix-s3` finishes D6 (in progress), D2, D7, D8, sidebar order and the re-drive |
 | 6·W1 | 6.2 The bag | — | `main` | 2026-10-03 | core (`6c4fa36`) and the page (`e8deda8`) merged; the 6.2.d Check awaits qa on a production build; open: `BAG_COOKIE_KEY` in the boot check |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 | 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
+| 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
+| 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
+| 7·W2 | 7.3 The tracking page and the notifications | senior-fe | `w/7.3` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -327,16 +329,16 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** staging serves both hostnames from one app; as the owner, in the admin, a non-developer adds an antique with photos, a product with stock in two stores and a store; a `store` user sees only that store's orders; a spreadsheet of products and stock imports with a report of rejected rows; the seeded data is present for both sites; the admin is in English and Indonesian.
 **Waves:** W1 — 3.1, 3.2, 3.3, 3.4 · W2 — 3.5, 3.6 · W3 — 3.7
 
-- [ ] **3.1 Staging as one site** · needs: phase 2 — 🔄 3·W1
+- [x] **3.1 Staging as one site** · needs: phase 2 — ✅ 2026-10-05 a1aad59
   - **Lane** OPS · **Agent** devops · **Wave** W1
   - **Owns** `scripts/ops/**`, `docs/ops/**`, `.gaiadeploy.yml`
   - **Read** CARRY-OVER.md §3 step 8 and §6.6, DEPLOYMENT.md, `docs/ops/helios-staging.md`
   - _Requirements: 15.1_
-  - [ ] 3.1.a one site user, pm2 process, port and database (`indies_db`), one media bucket (public only under `derivatives/` and `iiif/`) and the `archive-masters` bucket on Helios's RustFS; apply 8.5's RustFS parity checks; confirm the four rotated storage secrets are closed
-  - [ ] 3.1.b both staging hostnames on one CloudPanel site through nginx `server_name`; remove the `uig` and `uoei` entries; the release goes through the pull pipeline
-  - [ ] 3.1.c Mailpit stays loopback-only; host-only secrets; a nightly `pg_dump` and a bucket copy to an off-box place (Open: where — DEPLOYMENT.md)
-  - [ ] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
-  - [ ] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
+  - [x] 3.1.a one site user, pm2 process, port and database (`indies_db`), one media bucket (public only under `derivatives/` and `iiif/`) and the `archive-masters` bucket on Helios's RustFS; apply 8.5's RustFS parity checks; confirm the four rotated storage secrets are closed
+  - [x] 3.1.b both staging hostnames on one CloudPanel site through nginx `server_name`; remove the `uig` and `uoei` entries; the release goes through the pull pipeline
+  - [x] 3.1.c Mailpit stays loopback-only; host-only secrets; a nightly `pg_dump` and a bucket copy to an off-box place (Open: where — DEPLOYMENT.md)
+  - [x] 3.1.d from 2.5: retire the old staging databases in one sequence — stop pm2 `uig` and `uoei`; `sudo -u postgres pg_dump -Fc ig_db` and `oei_db` (kept on the host, checked with `pg_restore --list`); drop both; create `indies_db`; deploy a release carrying `20261002_073156_initial` (Postgres 18.6 on Helios)
+  - [x] 3.1.e **Check:** `GET /api/health` answers 200 on both staging hostnames with different site names; `/admin` is on the shop host only (Q1); an anonymous GET under `uploads/` is 403 and under `derivatives/` is 200; a backup file exists off the box.
 
 - [x] **3.2 Catalogue collections: makers, places, terms and the antiques** · needs: phase 2 — ✅ 2026-10-03 46353c9
   - **Lane** CMS · **Agent** senior-db · **Wave** W1
@@ -392,7 +394,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.6.c a dashboard shell with "orders to act on" and "new leads" panels (counts only; the full dashboard is 9.2)
   - [ ] 3.6.d **Check:** driven in a browser at 1280 px as owner, editor and store: each sees the right sidebar; an invalid save shows a plain message in both languages; the dashboard counts match the database.
 
-- [ ] **3.7 Spreadsheet import and the seed data** · needs: 3.5 — 🔄 3·W3
+- [x] **3.7 Spreadsheet import and the seed data** · needs: 3.5 — ✅ 2026-10-05 a8b9fb5
   - **Lane** CMS · **Agent** senior-be · **Wave** W3
   - **Owns** `engine/packages/cms/src/import/**`, `engine/packages/cms/src/seed/**`, `engine/packages/migrate/src/**`
   - **Read** DATA.md, CONTENT-MODEL.md §9, CARRY-OVER.md §5, `engine/packages/migrate/README.md`
@@ -400,7 +402,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 3.7.a the import: antiques by stock number, products by SKU, stores by code and stock per store from CSV or XLSX; idempotent upserts, a dry run, and a report listing every rejected row and why; admin action and CLI
   - [x] 3.7.b seed the gallery from the 1,823 normalised legacy records (rows marked `review` flagged, prices **never** loaded into a public field), with the pilot set's images as media
   - [x] 3.7.c seed the shop with the mock set of DATA.md §1 (about 80 products, 120 stores across Bali with coordinates, stock per store, a welcome code), generated with a fixed random seed and committed as import files; the real data replaces them through 3.7.a without a code change
-  - [ ] 3.7.d **Check:** importing the same file twice changes nothing; a file with five bad rows imports the rest and reports the five; after seeding, the admin lists 1,823 antiques and the mock catalogue; no price from the legacy data appears in any public projection.
+  - [x] 3.7.d **Check:** importing the same file twice changes nothing; a file with five bad rows imports the rest and reports the five; after seeding, the admin lists 1,823 antiques and the mock catalogue; no price from the legacy data appears in any public projection.
 
 ---
 
@@ -433,7 +435,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.2.c a `/style-guide` page (noindex) showing every component and state, with both sites' palettes, at both widths
   - [x] 4.2.d **Check:** every component is keyboard-operable with a visible focus ring; axe is clean on `/style-guide` at 390 px and 1280 px; contrast meets WCAG 2.2 AA in both palettes; the token-only lint is green.
 
-- [ ] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — 🔄 4·W3
+- [x] **4.3 Chrome and home pages from the design team's drawings** · needs: 4.2 — ✅ 2026-10-05 4e97019
   - **Lane** DSG · **Agent** senior-fe · **Wave** W3
   - **Owns** `engine/apps/web/src/app/(gallery)/**`, `engine/apps/web/src/app/(shop)/**`, `engine/apps/web/src/sites/{gallery,shop}/lexicon/**`, `engine/apps/web/src/sites/{gallery,shop}/home/**`
   - **Read** the design team's `Home - Antique Maps Indonesia`, `Home - Old East Indies` and `Old East Indies/Partnership` pages and `CLAUDE.md` in `docs/design/input/claude-design-2026-09/`, EXPERIENCE-GALLERY.md §Home, EXPERIENCE-SHOP.md §Home and §Partnership
@@ -442,7 +444,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 4.3.b the gallery home from the design team's page (hero film, featured items, makers and places entry points) and the shop home from theirs, on seeded data
   - [x] 4.3.c the shop's partnership page from the design team's drawing, its last section an enquiry call to action (WhatsApp, email, a short form that creates a `partnership` lead in 9.1) in place of the drawn sign-up and sign-in
   - [x] 4.3.d prune the lexicon: delete the dead keys (account, bag, payment, order, offers); a unit test that every key has `en` and `id` values and none is unused
-  - [ ] 4.3.e **Check:** on a production build both hosts show their own home in both languages at 390 px and 1280 px, side by side with the design team's page the structure and sections match; axe is clean; the lexicon test passes; no copy is hard-coded in a component and no raw colour is outside the tokens.
+  - [x] 4.3.e **Check:** on a production build both hosts show their own home in both languages at 390 px and 1280 px, side by side with the design team's page the structure and sections match; axe is clean; the lexicon test passes; no copy is hard-coded in a component and no raw colour is outside the tokens.
 
 ---
 
@@ -549,14 +551,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
   - [x] 6.4.d **Check:** tests prove: a bad signature is rejected; the same webhook ten times in parallel changes the order once; an expired order's stock returns exactly once; a settled payment moves the order to `paid` and stores the paid amount.
 
-- [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4
+- [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4 — 🔄 6·W3
   - **Lane** SHP + QA · **Agent** senior-fe, qa · **Wave** W3
   - **Owns** `engine/apps/web/src/sites/shop/payment/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/order/**`, `docs/gates/shop-payment.md`, `tests/e2e/shop/**`
   - **Read** the **Done when** of phase 6, EXPERIENCE-SHOP.md §Payment and §Recovery
   - _Requirements: 6.6, 5.2_
   - [ ] 6.5.a the payment step (Snap embedded or redirected), the confirmation page with the order number and the tracking link, and the recovery states (pending, expired, failed, out of stock at pay time)
   - [ ] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
-  - [ ] 6.5.c **Check:** `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
+  - [ ] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
 
 ---
 
@@ -585,13 +587,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 7.2.b owner and editor order views: filter by status and store, reassign, cancel, flag handling for late payments
   - [ ] 7.2.c **Check:** driven on a 390 px viewport as a store user: accept → processing → waiting → upload an image → on the way → delivered takes under two minutes with no help text; a different store's user sees an empty list.
 
-- [ ] **7.3 The tracking page and the notifications** · needs: 7.1
+- [ ] **7.3 The tracking page and the notifications** · needs: 7.1 — 🔄 7·W2
   - **Lane** SHP · **Agent** senior-fe with senior-be · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/tracking/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{track,stores}/**`, `engine/packages/cms/src/shop/notify/**`
   - **Read** COMMERCE.md §Tracking and §Notifications, EXPERIENCE-SHOP.md §Tracking, Q5 and Q6
   - _Requirements: 8.4, 8.5_
   - [ ] 7.3.a the tracking page at an unguessable link: the status timeline with times, the driver image once added, the items, the store's name and WhatsApp; rate-limited; noindex; no more personal data than the buyer typed
-  - [ ] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
+  - [x] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
   - [ ] 7.3.c **Check:** a wrong token is a 404 and the tenth wrong guess in a minute is throttled; the page shows the driver image only after upload; each status change sends exactly one email; the page passes axe at both widths.
 
 - [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3
@@ -659,7 +661,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging the owner works a lead from New to Closed, records a partner with the products carried, and sees each site's dashboard; the shop has a partnership page that leads to an enquiry; every page has localised metadata and the right structured data (none carrying an antique's price); the sitemaps list only published pages; a request for an old gallery address answers one 301.
 **Waves:** W1 — 9.1, 9.2, 9.3, 9.4
 
-- [ ] **9.1 Leads inbox, partners and the partnership page** · needs: phase 5, phase 6
+- [ ] **9.1 Leads inbox, partners and the partnership page** · needs: phase 5, phase 6 — 🔄 9·W1
   - **Lane** CMS + SHP · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/app/(payload)/admin/leads/**`, `engine/apps/web/src/sites/shop/partnership/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/packages/cms/src/jobs/retention/**`
   - **Read** CONTENT-OPERATIONS.md §Leads and partners, COMPLIANCE.md §Retention, EXPERIENCE-SHOP.md §Partnership, Q11
@@ -696,7 +698,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** DATA.md §Redirects, CARRY-OVER.md §5 (7,665 and 673 URLs)
   - _Requirements: 14.3_
   - [x] 9.4.a build the `redirects` rows from the legacy URL inventories and the seeded works' old paths; every destination exists and is published
-  - [ ] 9.4.b the proxy answers one 301 from a redirect row (no chains, no loops), and a 410 for a retired address the owner marks gone
+  - [x] 9.4.b the proxy answers one 301 from a redirect row (no chains, no loops), and a 410 for a retired address the owner marks gone
   - [ ] 9.4.c **Check:** a verification run over all 7,665 gallery and 673 shop old URLs reports each as 301 to a 200 page, 410 or listed unresolved with a reason; there is no redirect chain longer than one hop.
 
 ---
@@ -816,6 +818,18 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-05 ✅ **phase 4** — 4.3.e closed: `w/4.3r3` merged (`4e97019`): the homes break out of the reading cap, h2/h3 in the display face, Header/Dialog labels from the lexicon (no English on `/id`), the drawn sections built (placeholders marked, no price on the gallery). Fresh clone merged with main: types, format, lint, tokens, 36 tests, build, the phase-4 a11y spec on both hosts green; lexicon 6/6 on main after the auto-merge.
+
+- 2026-10-05 ✅ **3.1 — staging is live, one app for both hosts (M0).** Release `production-20261005T033436Z-0492be1` (built in a Linux container from a fresh clone of main; smoke: both sites in en/id, `/admin` shop-only, unknown host 404, linux sharp) deployed by hand to `uindies`; the first `/api/health` migrated `indies_db`. 3.1.e on https: health 200 on both (all checks ok), titles "Indies Gallery" / "Old East Indies", `/admin/login` 200 shop / 404 gallery, `/_media/uploads/` 403, `/_media/derivatives/` 200, listing and PUT 403, `indies_db` dump written (1,365 entries in `pg_restore --list`), app ports loopback-only, `--verify-restart` 11/11, nginx healthy for every other site. Off-box copy waived for staging (owner, 2026-10-05). Repo side merged `143fe6d`.
+
+- 2026-10-05 ✅ 3.7 — 3.7.d on merged main (`44dc151`): import/seed db tests 52/52 (`import.db.test.ts` five malformed rows reported, the rest imported; the same file twice changes nothing; `seed.db.test.ts` no price in any row or projection, shop layer twice + purge). The legacy file lands 1,813 works with 10 held for the owner's data pass (owner decision 2026-10-03), so "lists 1,823" reads 1,813 + 10 in the review queue.
+- 2026-10-05 — **Owner decision (via the user, recorded by helper session antique-map-dc): no payment gateway yet — simulate only.** The "one real Midtrans sandbox payment" in 6.5.c and phase 6's Done-when is deferred, not dropped; it returns when the gateway is set up.
+- 2026-10-05 — 3.1 host: vhost patched in CloudPanel's template and the live file (both hostnames, `/_media/`, the dotfile deny — not the shared security-headers snippet, whose CSP would stack on the app's and block Maps, Midtrans and Turnstile); Let's Encrypt for both names (to 2027-01-03); server secrets generated on the host (never printed; `BAG_COOKIE_KEY` added); apply converged (changes 0). Left: the Linux-built release, the 3.1.e evidence.
+
+- 2026-10-05 ✅ 3.7.b merged (`44dc151`): seed CLI (vocabulary, gallery sample/full, shop, purge); importer's second pass reports 0 updates; stock import 370 s → 215 s; 1,813 legacy works land, 10 held for the owner (8 "Indonesia", 1 "Batavia (Jakarta)", 1 "Hofker" in the place cell); two typo fixes in the data outside git ("The Netherland"). No price loads anywhere. 3.7.d waits on one import run of the five-bad-rows file on merged main.
+
+- 2026-10-05 ✅ 6.3.a merged (`3e75a52`): GLM's stalled draft finished on Sonnet, Opus-reviewed (prices, fees and totals only from `quoteBag`/`createOrder`; the form echoes the reviewed total for the price-changed check); fresh clone with main: types, 26 tests, format, lint, tokens, build green. Follow-up: a missing `expectedTotalIdr` skips the price-changed warning (the charge stays server-priced). **3.1 on Helios (user go-ahead + global `ssh helios` rule):** container test ALL PASS; rotated keys all closed; old staging retired (both apps stopped, `ig_db`/`oei_db` dumped — 579 entries each, kept in `/var/backups/indies/retired-3.1/` — then dropped; both old CloudPanel sites, buckets, users and policies removed; nginx -t ok); the one-site apply ran clean (32 changes, 0 errors). Left: the vhost edit and TLS (CloudPanel UI), the `.env` secrets, the release, the Check. `/home/uig`, `/home/uoei` (old users, with `backups/`) kept for now.
 
 - 2026-10-05 — **Owner decision (via the user): staging backups stay on Helios; no off-box copy for staging.** 3.1.c and the 3.1.e Check close with the off-box clause waived; the off-box target is decided before production (phase 10).
 

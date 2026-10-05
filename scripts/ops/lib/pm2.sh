@@ -120,10 +120,6 @@ pm2_version_check() {
 
 runtime_preflight() {
   id -u "$S_USER" >/dev/null 2>&1 || return 0
-  if [ -n "$S_REPLACE" ]; then
-    note "node and pm2: checked on the new site, after --replace-site $S_REPLACE"
-    return 0
-  fi
   resolve_site_path
   if [ -z "$SITE_NODE_BIN" ]; then
     fail "no trusted system node + pm2 for $S_USER in /usr/bin or /usr/local/bin: $(why_no_system_pm2)(this script installs no pm2; the poller and KOI use /usr/bin/pm2)"
