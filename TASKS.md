@@ -90,6 +90,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 | 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
 | 7·W2 | 7.3 The tracking page and the notifications | senior-fe | `w/7.3` | 2026-10-05 | |
+| 7·W2 | 7.2 The store staff panel | senior-fe | `w/7.2` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -577,7 +578,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 7.1.c reassign to another store: stock returns to the first store and is decremented at the second in one transaction, refused if the second cannot fill it; a store can hand an order back with a reason
   - [x] 7.1.d **Check:** db tests prove: a store user cannot move a status backward or skip; an image that is not an image is refused; a reassign to a store without stock leaves both stocks unchanged; every transition has a history row.
 
-- [ ] **7.2 The store staff panel** · needs: 7.1
+- [ ] **7.2 The store staff panel** · needs: 7.1 — 🔄 7·W2
   - **Lane** CMS · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/app/(payload)/admin/orders/**`, `engine/packages/cms/src/admin/orders/**`
   - **Read** CONTENT-OPERATIONS.md §Process an order, 3.6
