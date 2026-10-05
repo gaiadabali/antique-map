@@ -1,13 +1,16 @@
 // Starts the built standalone server for this worktree the way .github/scripts/start-server.sh
 // does on a host — `node engine/apps/web/server.js` with the two local hostnames and this
 // worktree's own port/database. Reads .env.local so no secret is passed on a command line.
+// Self-locating (repo root = four levels up from this file) so it also runs from the fresh clone.
 /* global process */
 import { spawn } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const root = 'C:/Users/Hansel/Documents/Hansel/Projects/antique-map-w-ds-5.5c'
+const HERE = dirname(fileURLToPath(import.meta.url))
+const root = resolve(HERE, '../../../..')
 const server = join(root, 'engine/apps/web/.next/standalone/engine/apps/web/server.js')
 
 function envFile(file) {
