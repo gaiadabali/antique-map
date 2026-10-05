@@ -151,7 +151,9 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
       },
     })
     expect(works.docs.length).toBe(1)
-  }, 300_000)
+    // 7,227 stock rows written through the count hook, twice, then purged: ~215 s measured alone
+    // on a local Docker Postgres (2026-10-05); the budget doubles that for a parallel worker.
+  }, 600_000)
 })
 
 function utf8(text: string): Uint8Array {

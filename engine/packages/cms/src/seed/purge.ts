@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 
 import { readCsv } from '../import/csv'
 import { PRODUCT_COLUMNS, STORE_COLUMNS } from '../import/kinds'
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest, Where } from 'payload'
 
 const SHOP_DATA = (file: string) => fileURLToPath(new URL(`./shop/data/${file}`, import.meta.url))
 
@@ -56,53 +56,67 @@ export function seedShopKeys(): {
   }
 }
 
+/**
+ * One transaction for the whole purge: it lands complete or not at all, and seven thousand
+ * stock deletes inside one transaction take a fraction of the time of one transaction each.
+ */
 export async function purgeSeed(payload: Payload): Promise<PurgeReport> {
   const refusal = purgeRefusal()
   if (refusal !== null) throw new Error(refusal)
   const { skus, storeCodes } = seedShopKeys()
-  const report: PurgeReport = { products: 0, stockLevels: 0, stores: 0 }
-
-  // Stock first (its rows reference the products and stores), then the rows it points at.
-  for (const storeCode of storeCodes) {
-    const stock = await payload.find({
-      collection: 'stock-levels',
-      overrideAccess: true,
-      depth: 0,
-      limit: 1000,
-      where: { 'store.code': { equals: storeCode } },
-    })
-    for (const doc of stock.docs) {
-      await payload.delete({
-        collection: 'stock-levels',
-        id: doc.id as number,
-        overrideAccess: true,
-      })
-      report.stockLevels += 1
+  const transactionID = ((await payload.db.beginTransaction()) ?? undefined) as
+    string | number | undefined
+  const req = {
+    payload,
+    user: null,
+    locale: 'en',
+    headers: new Headers(),
+    transactionID,
+    t: (key: string) => key,
+  } as unknown as PayloadRequest
+  try {
+    // Stock first (its rows reference the products and stores), then the rows it points at.
+    const report: PurgeReport = {
+      stockLevels: await purge(req, 'stock-levels', { 'store.code': { in: storeCodes } }),
+      products: await purge(req, 'products', { sku: { in: skus } }),
+      stores: await purge(req, 'stores', { code: { in: storeCodes } }),
     }
+    if (transactionID !== undefined) await payload.db.commitTransaction(transactionID)
+    return report
+  } catch (error) {
+    if (transactionID !== undefined) {
+      await payload.db.rollbackTransaction(transactionID).catch(() => undefined)
+    }
+    throw error
   }
-  const products = await payload.find({
-    collection: 'products',
+}
+
+/** Deletes every row the `where` finds, in chunks by id, and counts them. */
+async function purge(
+  req: PayloadRequest,
+  collection: 'stock-levels' | 'products' | 'stores',
+  where: Where,
+): Promise<number> {
+  const { payload } = req
+  const { docs } = await payload.find({
+    collection,
     overrideAccess: true,
     depth: 0,
-    limit: 1000,
-    where: { sku: { in: skus } },
+    pagination: false,
+    req,
+    where,
   })
-  for (const doc of products.docs) {
-    await payload.delete({ collection: 'products', id: doc.id as number, overrideAccess: true })
-    report.products += 1
-  }
-  for (const code of storeCodes) {
-    const stores = await payload.find({
-      collection: 'stores',
+  const ids = docs.map((doc) => doc.id as number)
+  for (let start = 0; start < ids.length; start += 500) {
+    const result = await payload.delete({
+      collection,
       overrideAccess: true,
-      depth: 0,
-      limit: 10,
-      where: { code: { equals: code } },
+      req,
+      where: { id: { in: ids.slice(start, start + 500) } },
     })
-    for (const doc of stores.docs) {
-      await payload.delete({ collection: 'stores', id: doc.id as number, overrideAccess: true })
-      report.stores += 1
+    if (result.errors.length > 0) {
+      throw new Error(`The purge could not delete ${collection}: ${result.errors[0]!.message}`)
     }
   }
-  return report
+  return ids.length
 }
