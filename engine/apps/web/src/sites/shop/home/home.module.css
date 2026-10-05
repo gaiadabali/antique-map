@@ -138,6 +138,34 @@
   line-height: 1;
 }
 
+/* The island and room chips (qa 4.qa, finding F4): a plain pill link, token colours only. */
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block-start: var(--space-4);
+}
+
+.chip {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  text-decoration: none;
+  font: var(--text-small);
+}
+
+.chip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.setCard {
+  display: flex;
+  flex-direction: column;
+}
+
 .bandTint {
   background: var(--color-surface-raised);
 }

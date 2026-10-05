@@ -49,6 +49,28 @@
   align-items: end;
 }
 
+/* The drawing's dark hero band (qa 4.qa, finding F4), the same pattern as the shop's trade band:
+   `color` is inherited, so a bare heading or lede needs no override; only the muted, accent and
+   focus roles are repointed at the on-dark ink. */
+.band {
+  padding-block: var(--space-8);
+}
+
+.bandDark {
+  background: var(--color-surface-dark);
+  color: var(--color-text-on-dark);
+}
+
+.bandDark .cardBody {
+  color: var(--color-text-on-dark);
+}
+
+.bandDark {
+  --color-text-muted: var(--color-text-on-dark);
+  --color-accent: var(--color-text-on-dark);
+  --color-focus: var(--color-text-on-dark);
+}
+
 .heroPoster {
   aspect-ratio: 16 / 9;
 }
