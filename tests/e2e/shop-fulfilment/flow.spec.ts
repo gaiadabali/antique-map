@@ -197,7 +197,8 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
     await expect(storeHeading).toBeVisible()
     const storeLine = await storeHeading.locator('xpath=following-sibling::p[1]').innerText()
     expect(storeLine.trim().length, 'the store name shown on tracking').toBeGreaterThan(0)
-    await expect(page.getByRole('link', { name: 'Ask on WhatsApp' })).toBeVisible()
+    // Scoped to `main` — the footer carries its own, generic "Ask on WhatsApp" link.
+    await expect(page.locator('main').getByRole('link', { name: 'Ask on WhatsApp' })).toBeVisible()
     await shoot(page, 'tracking-delivered-390')
     await axeClean(page, 'tracking page, delivered, at 390px')
     await page.setViewportSize(WIDTHS[1])
@@ -239,7 +240,10 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
 
     await signInAs(page, accounts.owner.email, accounts.owner.password)
     await openOrderByNumber(page, order2.numberText)
-    const storeLineBefore = await page.locator('main p').first().innerText()
+    // The order view has no `main` landmark — the first paragraph after the "#<number>" heading
+    // names the store.
+    const orderHeading = page.getByRole('heading', { name: /^#/ })
+    const storeLineBefore = await orderHeading.locator('xpath=following::p[1]').innerText()
 
     await page.getByRole('link', { name: /^Reassign$/ }).click()
     const select = page.getByLabel(/Send to store/)
@@ -261,7 +265,7 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
       )
     } else {
       await expect(page.locator('[data-sonner-toast][data-type="error"]')).toHaveCount(0)
-      const storeLineAfter = await page.locator('main p').first().innerText()
+      const storeLineAfter = await orderHeading.locator('xpath=following::p[1]').innerText()
       expect(storeLineAfter, 'the store shown on the order changed').not.toBe(storeLineBefore)
     }
   })
