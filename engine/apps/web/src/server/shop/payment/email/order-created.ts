@@ -17,6 +17,7 @@ import type { Payload } from '@engine/cms/instance'
 import { baliTime } from '../../../../sites/shop/payment/bali-time'
 import { emailText } from './copy'
 import { formatRupiah } from '../../../../shared/ui/price/format-rupiah'
+import { siteHref } from '../../../../shell/site'
 
 export type SendOrderCreatedEmailInput = {
   readonly orderId: number
@@ -72,7 +73,7 @@ export async function sendOrderCreatedEmail(
     const t = emailText(input.locale)
     const number = order.number ?? 0
     const deadline = baliTime(new Date(order.expiresAt ?? Date.now()), input.locale)
-    const trackingPath = `/${input.locale}/track/${encodeURIComponent(input.trackingToken)}`
+    const trackingPath = siteHref('shop')('tracking', { token: input.trackingToken }, input.locale)
     const trackingLink = `${input.origin}${trackingPath}`
     const lines = order.lines ?? []
 
