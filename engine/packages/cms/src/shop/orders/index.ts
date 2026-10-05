@@ -77,7 +77,7 @@ export {
   roundedDistanceKm,
   type Pin,
 } from './geo'
-export { trackingTokenHash } from './order-sql'
+export { newTrackingToken, trackingTokenHash } from './order-sql'
 export { pickStore, type OrderSource, type PickStoreInput } from './pick-store'
 export { type PrepareRefusal } from './prepare'
 export {

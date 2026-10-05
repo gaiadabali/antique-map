@@ -41,6 +41,7 @@ import {
 
 import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
 import {
+  clientAddress,
   hasCookie,
   hasUserAgent,
   isAdminPath,
@@ -52,70 +53,17 @@ import {
   notFoundPath,
   rootRewrite,
 } from './gates'
+import { trackingGuessAllowed } from './tracking-rate-limit'
+import type { DecideOptions, ProxyDecision, ProxyRequest, ProxyWhy } from './types'
 
 export { NOT_FOUND_SEGMENT, notFoundPath } from './gates'
-
-type Env = Readonly<Record<string, string | undefined>>
-
-export type ProxyRequest = {
-  readonly url: URL
-  readonly headers: Headers
-  /** The request's method; `GET` when absent. */
-  readonly method?: string
-}
-
-/** The one CSP builder, per request; `null` sets none. */
-export type ContentSecurityPolicy = (context: {
-  readonly site: SiteKey
-  readonly locale: LocaleCode
-  readonly pathname: string
-}) => string | null
-
-export type DecideOptions = {
-  /** Where the allow-list is read from: the process's own environment by default. */
-  readonly env?: Env | undefined
-  readonly contentSecurityPolicy?: ContentSecurityPolicy | undefined
-  /** Payload's `cookiePrefix`; its language cookie is `<prefix>-lng`. */
-  readonly cookiePrefix?: string | undefined
-}
-
-export type ProxyWhy =
-  | 'next-internal'
-  | 'machine'
-  | 'unknown-host'
-  | 'alias'
-  | 'api'
-  | 'not-admin-host'
-  | 'admin'
-  | 'site-asset'
-  | 'root-file'
-  | 'legacy'
-  | 'surface'
-  | 'not-found'
-
-export type ProxyDecision = {
-  /**
-   * `rewrite`: serve `to` (a path and query) at the public URL; `next`: serve the URL as is;
-   * `respond`: answer at once with `status` — a plain 404, or a redirect to `to`.
-   */
-  readonly kind: 'rewrite' | 'next' | 'respond'
-  readonly to: string | null
-  readonly why: ProxyWhy
-  /** The site the `Host` picked; `null` for a machine route or an unknown host. */
-  readonly site: SiteKey | null
-  readonly locale: LocaleCode | null
-  /**
-   * The status on a rewrite — `PROXY_NOT_FOUND_STATUS` for the proxy's own not-found, which Next
-   * keeps through a normal render, `null` to keep the render's own — or a `respond`'s status.
-   */
-  readonly status: number | null
-  /** Headers set on the request passed on, overwriting a client's. */
-  readonly setRequest: Readonly<Record<string, string>>
-  /** Headers removed from the request passed on (before `setRequest` is applied). */
-  readonly removeRequest: readonly string[]
-  /** Headers set on the answer. */
-  readonly setResponse: Readonly<Record<string, string>>
-}
+export type {
+  ContentSecurityPolicy,
+  DecideOptions,
+  ProxyDecision,
+  ProxyRequest,
+  ProxyWhy,
+} from './types'
 
 const SENSITIVE_HEADERS = { 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' } as const
 /** Both headers Next reads a nonce from: a client's never reaches the page. */
@@ -134,6 +82,8 @@ type Routed = {
   readonly setResponse?: Record<string, string>
   /** The item route's own query, for its permanent redirect to carry on. */
   readonly publicSearch?: string
+  /** The tracking surface with a token: a guess against the order's one credential, budgeted. */
+  readonly rateLimited?: boolean
 }
 
 export function decideProxy(request: ProxyRequest, options: DecideOptions = {}): ProxyDecision {
@@ -152,7 +102,14 @@ export function decideProxy(request: ProxyRequest, options: DecideOptions = {}):
   if (isApiPath(pathname) && !isEngineRoute(pathname) && !host.admin) {
     return respond('not-admin-host', 404, null)
   }
-  return finish(request, options, host, route(request, options, host))
+  const routed = route(request, options, host)
+  if (routed.rateLimited) {
+    const wait = trackingGuessAllowed(clientAddress(request.headers) ?? 'unknown')
+    if (wait > 0) {
+      return respond('rate-limited', 429, null, { 'Retry-After': String(wait) })
+    }
+  }
+  return finish(request, options, host, routed)
 }
 
 /** Where a request for a site goes, once its host is known to be the site's canonical one. */
@@ -201,6 +158,11 @@ function route(request: ProxyRequest, options: DecideOptions, host: HostMatch): 
         locale: parsed.locale,
         ...(isSensitive(parsed.surface) ? { setResponse: { ...SENSITIVE_HEADERS } } : {}),
         ...(parsed.surface === 'item' ? { publicSearch: search } : {}),
+        // The order page's token is the same kind of credential as tracking's: one shared budget.
+        ...((parsed.surface === 'tracking' || parsed.surface === 'order') &&
+        typeof parsed.params.token === 'string'
+          ? { rateLimited: true }
+          : {}),
       }
     case 'notFound':
       return notFound()
@@ -261,8 +223,13 @@ function passOn(request: ProxyRequest, why: ProxyWhy): ProxyDecision {
   }
 }
 
-/** The proxy's answer of its own: a plain 404, or a redirect to `location`. */
-function respond(why: ProxyWhy, status: number, location: string | null): ProxyDecision {
+/** The proxy's answer of its own: a plain 404, a redirect to `location`, or (`setResponse`) a 429. */
+function respond(
+  why: ProxyWhy,
+  status: number,
+  location: string | null,
+  setResponse: Record<string, string> = {},
+): ProxyDecision {
   return {
     kind: 'respond',
     to: location,
@@ -272,7 +239,7 @@ function respond(why: ProxyWhy, status: number, location: string | null): ProxyD
     status,
     setRequest: {},
     removeRequest: [],
-    setResponse: {},
+    setResponse,
   }
 }
 
