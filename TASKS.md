@@ -817,6 +817,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-05 — **Owner decision (via the user): staging backups stay on Helios; no off-box copy for staging.** 3.1.c and the 3.1.e Check close with the off-box clause waived; the off-box target is decided before production (phase 10).
+
 - 2026-10-05 ✅ 7.1 — merged (`8692778`, claude seat, Opus-reviewed): `@engine/cms/shop/fulfilment` — `moveOrder` (forward-only for store staff, a history row per change, a cancel from a holding status returns stock once), the driver image (byte-sniffed, re-encoded, private `orders/{id}/`, presigned GET, 30-day purge), `reassignOrder` (atomic, rolled back whole when the new store is short), `handBackOrder`. Orchestrator fixed one flaky assertion (the racing reassign's history assumed the owner won). Db tests 51/51 on a fresh clone, three runs. Open: the purge's cron line (one line in `@engine/http`).
 - 2026-10-05 ✅ 4.1, 4.2 — the 4.qa run (claude seat) evidenced 4.1.e, 4.2.c, 4.2.d on a production build (palettes, self-hosted fonts 101 KB, planted colour fails the lint, keyboard, axe, AA contrast tables) and fixed four defects (style-guide landmark, two home contrast/heading-order issues, a sideways scroll at 390 px on every page); merged `b9d486e`. 4.3.e failed on F1–F4; **ruling:** the drawn home sections missing from the build belong to 4.3 and are built now (`4.3-r3`, Sonnet).
 - 2026-10-05 — **Lanes (user):** max 4 agents; priority phase 4 → 3 → 6 → 7 → 5; workers on Sonnet/Haiku, Opus reviews. 6.3a's GLM run stalled (0 commits in ~100 min) and moved to Sonnet.
