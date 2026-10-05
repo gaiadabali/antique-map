@@ -14,6 +14,7 @@ import {
   type PayloadRequest,
 } from 'payload'
 
+import { pickLanguage } from '../products/money'
 import { DERIVED_FIELDS } from './fields'
 
 const SLUG = 'media'
@@ -57,7 +58,10 @@ export const altInDefaultLocaleFirst: CollectionBeforeValidateHook = ({ data, op
     errors: [
       {
         path: 'alt',
-        message: `Create the image with its alt text in the default language (${defaultLocale}) first, then add other languages.`,
+        message: pickLanguage(req, {
+          en: `Create the image with its alt text in the default language (${defaultLocale}) first, then add other languages.`,
+          id: `Buat gambar ini dengan teks alternatifnya dalam bahasa default (${defaultLocale}) terlebih dahulu, lalu tambahkan bahasa lain.`,
+        }),
       },
     ],
   })
@@ -108,19 +112,28 @@ export const matchItsMaster: CollectionBeforeValidateHook = async ({ data, origi
     .catch(() => null)) as MasterFacts | null
   const errors: Array<{ path: string; message: string }> = []
   if (!master) {
-    errors.push({ path: 'master', message: 'That master does not exist.' })
+    errors.push({
+      path: 'master',
+      message: pickLanguage(req, { en: 'That master does not exist.', id: 'Master tersebut tidak ada.' }),
+    })
   } else {
     if (master.kind !== 'capture') {
       errors.push({
         path: 'master',
-        message: 'An image is processed from a capture, not a print file.',
+        message: pickLanguage(req, {
+          en: 'An image is processed from a capture, not a print file.',
+          id: 'Gambar diproses dari sebuah capture, bukan berkas cetak.',
+        }),
       })
     }
     for (const field of ['role', 'provenance'] as const) {
       if (master[field] && merged[field] !== master[field]) {
         errors.push({
           path: field,
-          message: `Its master says ${field} "${String(master[field])}": an image's ${field} is its master's.`,
+          message: pickLanguage(req, {
+            en: `Its master says ${field} "${String(master[field])}": an image's ${field} is its master's.`,
+            id: `Master-nya menyatakan ${field} "${String(master[field])}": ${field} gambar mengikuti masternya.`,
+          }),
         })
       }
     }

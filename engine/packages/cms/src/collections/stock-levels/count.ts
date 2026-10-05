@@ -25,6 +25,7 @@ import {
   type PayloadRequest,
 } from 'payload'
 
+import { pickLanguage, type Bilingual } from '../products/money'
 import { HOLDING_STATUSES } from '../orders/statuses'
 
 type Id = number | string
@@ -54,8 +55,11 @@ export const blankVariantIsNone: FieldHook = ({ value }) => {
   return trimmed === '' ? null : trimmed
 }
 
-function refuse(req: PayloadRequest, path: string, message: string): never {
-  throw new ValidationError({ collection: 'stock-levels', errors: [{ path, message }], req }, req.t)
+function refuse(req: PayloadRequest, path: string, message: Bilingual): never {
+  throw new ValidationError(
+    { collection: 'stock-levels', errors: [{ path, message: pickLanguage(req, message) }], req },
+    req.t,
+  )
 }
 
 async function sessionOf(req: PayloadRequest): Promise<Session> {
@@ -108,10 +112,16 @@ async function checkVariant(req: PayloadRequest, product: Id, variantSku: string
   })) as { variants?: Array<{ sku?: string | null }> | null }
   const skus = (doc.variants ?? []).map((variant) => variant.sku).filter(Boolean)
   if (skus.length === 0 && variantSku !== null) {
-    refuse(req, 'variantSku', 'This product has no variants: leave the variant SKU empty.')
+    refuse(req, 'variantSku', {
+      en: 'This product has no variants: leave the variant SKU empty.',
+      id: 'Produk ini tidak memiliki varian: biarkan SKU varian kosong.',
+    })
   }
   if (skus.length > 0 && (variantSku === null || !skus.includes(variantSku))) {
-    refuse(req, 'variantSku', `Choose one of this product’s variant SKUs: ${skus.join(', ')}.`)
+    refuse(req, 'variantSku', {
+      en: `Choose one of this product’s variant SKUs: ${skus.join(', ')}.`,
+      id: `Pilih salah satu SKU varian produk ini: ${skus.join(', ')}.`,
+    })
   }
 }
 
@@ -127,8 +137,15 @@ export const countToQuantity: CollectionBeforeChangeHook<StockData> = async ({
   const store = idOf(key('store'))
   const product = idOf(key('product'))
   const variantSku = (key('variantSku') as string | null | undefined) ?? null
-  if (store === null) refuse(req, 'store', 'Choose the store this count is for.')
-  if (product === null) refuse(req, 'product', 'Choose the product this count is for.')
+  if (store === null) {
+    refuse(req, 'store', { en: 'Choose the store this count is for.', id: 'Pilih toko untuk stok ini.' })
+  }
+  if (product === null) {
+    refuse(req, 'product', {
+      en: 'Choose the product this count is for.',
+      id: 'Pilih produk untuk stok ini.',
+    })
+  }
 
   const keyChanged =
     operation === 'create' ||
@@ -139,7 +156,10 @@ export const countToQuantity: CollectionBeforeChangeHook<StockData> = async ({
 
   if (count === undefined || count === null) return rest
   if (typeof count !== 'number' || !Number.isSafeInteger(count) || count < 0) {
-    refuse(req, 'physicalCount', 'Enter the count on the shelf as a whole number, 0 or more.')
+    refuse(req, 'physicalCount', {
+      en: 'Enter the count on the shelf as a whole number, 0 or more.',
+      id: 'Masukkan jumlah di rak sebagai bilangan bulat, 0 atau lebih.',
+    })
   }
   const session = await sessionOf(req)
   const [isolation] = await rows(
