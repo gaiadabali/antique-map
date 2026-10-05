@@ -105,7 +105,8 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
             ))}
           </ul>
 
-          <aside className={styles.summary} aria-label={text.shared('cart.title')}>
+          {/* The bag's summary, not a landmark: it sits inside the bag's own named region. */}
+          <div className={styles.summary}>
             {bag.freeDeliveryRemainingText !== null &&
               (bag.freeDeliveryRemainingText === 'Rp 0' || bag.isFreeDelivery ? (
                 <p className={styles.freeReached}>{text.shared('cart.freeShippingReached')}</p>
@@ -177,7 +178,7 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                 </Button>
               )}
             </div>
-          </aside>
+          </div>
         </div>
       )}
     </section>
