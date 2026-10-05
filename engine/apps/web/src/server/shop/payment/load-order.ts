@@ -1,8 +1,7 @@
 /**
  * The order page's read (TASKS.md 6.5.a; COMMERCE.md §8, §10; SECURITY.md T1–T2): a buyer's own
- * order, by its number and the tracking token the checkout redirect carried — never by number
- * alone. A wrong number and a wrong token answer the same `null`, compared in constant time so
- * neither can be found a byte at a time by timing the response.
+ * order, by its tracking token alone — the token is the whole credential (the order's public
+ * number carries no authority; `6.5-r2`'s routing decision keeps it out of the URL entirely).
  *
  * A narrow SQL `SELECT` of only the columns the page shows (never the pin, the buyer's full
  * contact, staff notes or the token hash itself) through the CMS's own pool (`@engine/cms/instance`
@@ -14,11 +13,10 @@
  */
 import 'server-only'
 
-import { createHash, timingSafeEqual } from 'node:crypto'
-
 import { connection } from 'next/server'
 
 import { cms, cmsPool, type Payload } from '@engine/cms/instance'
+import { trackingTokenHash } from '@engine/cms/shop/orders'
 
 export type OrderLineView = {
   readonly name: string
@@ -61,21 +59,16 @@ export type OrderView = {
   readonly needsAttention: { readonly reason: 'late_payment' } | null
 }
 
-/** `orders.tracking_token_hash`'s own hash, mirrored exactly (`shop/orders`' `trackingTokenHash`). */
-function tokenHash(token: string): Buffer {
-  return createHash('sha256').update(token, 'utf8').digest()
-}
-
 function wholeOf(value: unknown): number {
   const n = typeof value === 'string' ? Number(value) : value
   return typeof n === 'number' && Number.isSafeInteger(n) ? n : 0
 }
 
 const ORDER_SELECT = `
-  SELECT id, number, status::text AS status, expires_at, tracking_token_hash, contact_locale,
+  SELECT id, number, status::text AS status, expires_at, contact_locale,
          store_snapshot_area, totals_subtotal, totals_discount, totals_delivery_fee, totals_total,
          needs_attention_flag
-    FROM orders WHERE number = $1`
+    FROM orders WHERE tracking_token_hash = $1`
 
 const LINES_SELECT = `
   SELECT name, variant_label, qty, line_total FROM orders_lines
@@ -85,56 +78,36 @@ const LATEST_ATTEMPT_SELECT = `
   SELECT state FROM orders_payment_attempts
    WHERE _parent_id = $1 ORDER BY _order DESC LIMIT 1`
 
+const OPEN_ATTEMPT_SELECT = `
+  SELECT midtrans_order_id FROM orders_payment_attempts
+   WHERE _parent_id = $1 AND state IN ('open', 'pending') ORDER BY _order DESC LIMIT 1`
+
 const BAG_LINES_SELECT = `
   SELECT product_id, variant_sku, qty FROM orders_lines
    WHERE _parent_id = $1 ORDER BY _order`
 
-function parsedNumber(number: string | number): number | null {
-  const n = typeof number === 'number' ? number : Number(number)
-  return Number.isSafeInteger(n) && n >= 1 ? n : null
+type Client = { query(text: string, values?: unknown[]): Promise<{ rows: Record<string, unknown>[] }> }
+
+/** The order a token names — its id among the columns the page reads — or `null` for any other token. */
+async function rowForToken(
+  client: Client,
+  token: string | null | undefined,
+): Promise<Record<string, unknown> | null> {
+  if (typeof token !== 'string' || token.length === 0) return null
+  const { rows } = await client.query(ORDER_SELECT, [trackingTokenHash(token)])
+  return rows[0] ?? null
 }
 
-/** The order `number`'s id, when `token` is its own — checked in constant time — else `null`. */
-async function verifiedOrderId(
-  client: { query(text: string, values?: unknown[]): Promise<{ rows: Record<string, unknown>[] }> },
-  n: number,
-  token: string,
-): Promise<number | null> {
-  const { rows } = await client.query(
-    'SELECT id, tracking_token_hash FROM orders WHERE number = $1',
-    [n],
-  )
-  const order = rows[0]
-  const stored = order?.tracking_token_hash
-  if (typeof stored !== 'string') return null
-  const expected = Buffer.from(stored, 'hex')
-  const given = tokenHash(token)
-  if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null
-  return wholeOf(order!.id)
-}
-
-/** A buyer's own order view, or `null` for a wrong number, a wrong token, or neither given. */
+/** A buyer's own order view, or `null` for a wrong or missing token. */
 export async function loadOrderForBuyer(
   payload: Payload,
-  number: string | number,
   token: string | null | undefined,
 ): Promise<OrderView | null> {
-  const n = parsedNumber(number)
-  if (n === null) return null
-  if (typeof token !== 'string' || token.length === 0) return null
-
   const pool = cmsPool(payload)
   const client = await pool.connect()
   try {
-    const { rows } = await client.query(ORDER_SELECT, [n])
-    const order = rows[0] as Record<string, unknown> | undefined
+    const order = await rowForToken(client, token)
     if (!order) return null
-
-    const stored = order.tracking_token_hash
-    if (typeof stored !== 'string') return null
-    const expected = Buffer.from(stored, 'hex')
-    const given = tokenHash(token)
-    if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null
 
     const [{ rows: lineRows }, { rows: attemptRows }] = await Promise.all([
       client.query(LINES_SELECT, [order.id]),
@@ -171,22 +144,18 @@ export async function loadOrderForBuyer(
 }
 
 /**
- * The order's own database id, once `token` is checked against `number` — what the pay action
- * passes to `openPaymentAttempt` (which never takes the public order number). `null` for a wrong
- * number or token.
+ * The order's own database id, once `token` is checked — what the pay action passes to
+ * `openPaymentAttempt` (which never takes the public order number). `null` for a wrong token.
  */
 export async function orderIdForBuyer(
   payload: Payload,
-  number: string | number,
   token: string | null | undefined,
 ): Promise<number | null> {
-  const n = parsedNumber(number)
-  if (n === null) return null
-  if (typeof token !== 'string' || token.length === 0) return null
   const pool = cmsPool(payload)
   const client = await pool.connect()
   try {
-    return await verifiedOrderId(client, n, token)
+    const order = await rowForToken(client, token)
+    return order ? wholeOf(order.id) : null
   } finally {
     client.release()
   }
@@ -194,24 +163,19 @@ export async function orderIdForBuyer(
 
 /**
  * "Put these back in my bag" (EXPERIENCE-SHOP.md §8): the order's lines as bag lines — product,
- * variant and quantity only, never a price — once `token` is checked against `number` exactly as
- * `loadOrderForBuyer` does. `null` for a wrong number or token.
+ * variant and quantity only, never a price — once `token` is checked exactly as `loadOrderForBuyer`
+ * does. `null` for a wrong token.
  */
 export async function loadOrderLinesForBag(
   payload: Payload,
-  number: string | number,
   token: string | null | undefined,
 ): Promise<ReadonlyArray<{ productId: number; variantSku: string | null; qty: number }> | null> {
-  const n = parsedNumber(number)
-  if (n === null) return null
-  if (typeof token !== 'string' || token.length === 0) return null
-
   const pool = cmsPool(payload)
   const client = await pool.connect()
   try {
-    const orderId = await verifiedOrderId(client, n, token)
-    if (orderId === null) return null
-    const { rows } = await client.query(BAG_LINES_SELECT, [orderId])
+    const order = await rowForToken(client, token)
+    if (!order) return null
+    const { rows } = await client.query(BAG_LINES_SELECT, [order.id])
     return (rows as Record<string, unknown>[]).map((row) => ({
       productId: wholeOf(row.product_id),
       variantSku: typeof row.variant_sku === 'string' ? row.variant_sku : null,
@@ -223,33 +187,54 @@ export async function loadOrderLinesForBag(
 }
 
 /**
+ * The order's latest attempt still `open` or `pending`, by its Midtrans id — what the simulate
+ * page shows its four buttons for, and what `simulateAction` emits a notification against. `null`
+ * for a wrong token, or a token whose order has no such attempt.
+ */
+export async function openOrPendingAttemptId(
+  payload: Payload,
+  token: string | null | undefined,
+): Promise<string | null> {
+  const pool = cmsPool(payload)
+  const client = await pool.connect()
+  try {
+    const order = await rowForToken(client, token)
+    if (!order) return null
+    const { rows } = await client.query(OPEN_ATTEMPT_SELECT, [order.id])
+    const id = rows[0]?.midtrans_order_id
+    return typeof id === 'string' ? id : null
+  } finally {
+    client.release()
+  }
+}
+
+/**
  * The order page's read, on the process's one Payload (`cms()`): see `loadOrderForBuyer`.
  * Uncached — `connection()` first — since a payment status decides what the buyer may do next.
  */
-export async function currentOrderView(
-  number: string | number,
-  token: string | null | undefined,
-): Promise<OrderView | null> {
+export async function currentOrderView(token: string | null | undefined): Promise<OrderView | null> {
   await connection()
-  return loadOrderForBuyer(await cms(), number, token)
+  return loadOrderForBuyer(await cms(), token)
 }
 
 /**
  * The pay action's and the simulate page's read of an order's own id: see `orderIdForBuyer`.
  * Uncached — `connection()` first — the simulate page's `notFound()` turns on this read.
  */
-export async function currentOrderId(
-  number: string | number,
-  token: string | null | undefined,
-): Promise<number | null> {
+export async function currentOrderId(token: string | null | undefined): Promise<number | null> {
   await connection()
-  return orderIdForBuyer(await cms(), number, token)
+  return orderIdForBuyer(await cms(), token)
 }
 
 /** "Put these back in my bag"'s read of an order's lines: see `loadOrderLinesForBag`. */
 export async function currentBagLines(
-  number: string | number,
   token: string | null | undefined,
 ): Promise<ReadonlyArray<{ productId: number; variantSku: string | null; qty: number }> | null> {
-  return loadOrderLinesForBag(await cms(), number, token)
+  return loadOrderLinesForBag(await cms(), token)
+}
+
+/** The simulate page's and `simulateAction`'s read: see `openOrPendingAttemptId`. */
+export async function currentOpenAttemptId(token: string | null | undefined): Promise<string | null> {
+  await connection()
+  return openOrPendingAttemptId(await cms(), token)
 }

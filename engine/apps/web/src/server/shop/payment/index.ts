@@ -1,10 +1,12 @@
 /** The order page's server side (6.5): the read, the config view, the actions. */
 export {
   currentBagLines,
+  currentOpenAttemptId,
   currentOrderId,
   currentOrderView,
   loadOrderForBuyer,
   loadOrderLinesForBag,
+  openOrPendingAttemptId,
   orderIdForBuyer,
   type AttemptView,
   type OrderLineView,

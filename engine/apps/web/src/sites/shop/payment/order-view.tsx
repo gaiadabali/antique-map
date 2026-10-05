@@ -15,6 +15,7 @@ export type OrderViewProps = {
   readonly order: OrderViewData
   readonly token: string
   readonly locale: 'en' | 'id'
+  readonly orderHref: string
   readonly trackingHref: string
   /** `null` off simulate mode and off a Snap mode without a reachable client key. */
   readonly snap: { readonly scriptSrc: string } | null
@@ -54,27 +55,25 @@ export function OrderView({
   order,
   token,
   locale,
+  orderHref,
   trackingHref,
   snap,
 }: OrderViewProps): React.ReactElement {
   const t = paymentText(locale)
   const deadline = baliTime(order.expiresAt, locale)
   const payingLabel = t('order.pay', { total: formatRupiah(order.totals.totalIdr) })
-  const redirectUrlFallback = `/${locale}/order/${order.number}?t=${encodeURIComponent(token)}`
 
   const payForm = (label: string) => (
     <PayForm
-      number={order.number}
       token={token}
       locale={locale}
       label={label}
       scriptSrc={snap?.scriptSrc ?? ''}
-      redirectUrlFallback={redirectUrlFallback}
+      redirectUrlFallback={orderHref}
     />
   )
   const putBackForm = (
     <form action={putBackInBagAction}>
-      <input type="hidden" name="number" value={order.number} />
       <input type="hidden" name="token" value={token} />
       <input type="hidden" name="locale" value={locale} />
       <button type="submit">{t('order.putBackInBag')}</button>
@@ -136,7 +135,7 @@ export function OrderView({
         </p>
         {!confirming && payForm(failed ? t('order.tryAgain') : payingLabel)}
         {!confirming && !failed && <p className={styles.notice}>{t('order.pendingText')}</p>}
-        <a href={redirectUrlFallback}>{t('order.checkAgain')}</a>
+        <a href={orderHref}>{t('order.checkAgain')}</a>
         <Totals order={order} t={t} />
       </section>
     )

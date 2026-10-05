@@ -29,24 +29,23 @@ import {
   serialiseBag,
 } from '@engine/cms/shop/pricing'
 
-import { loadOrderLinesForBag, orderIdForBuyer } from './load-order'
+import { loadOrderLinesForBag, openOrPendingAttemptId, orderIdForBuyer } from './load-order'
 
 const secure = process.env.NODE_ENV === 'production'
 
-function orderPath(locale: string, number: string, token: string): string {
-  return `/${locale}/order/${number}?t=${encodeURIComponent(token)}`
-}
-
-function orderUrl(locale: string, number: string, token: string): string {
-  return `${siteOrigin('shop') ?? ''}${orderPath(locale, number, token)}`
-}
-
 function fields(formData: FormData) {
   return {
-    number: String(formData.get('number') ?? ''),
     token: String(formData.get('token') ?? ''),
     locale: formData.get('locale') === 'id' ? ('id' as const) : ('en' as const),
   }
+}
+
+function orderHref(locale: 'en' | 'id', token: string): string {
+  return siteHref('shop')('order', { token }, locale)
+}
+
+function orderUrl(locale: 'en' | 'id', token: string): string {
+  return `${siteOrigin('shop') ?? ''}${orderHref(locale, token)}`
 }
 
 export type PayState =
@@ -63,11 +62,11 @@ export type PayState =
  * the page's pop-up, which falls back to `redirectUrl` (`SnapPay`).
  */
 export async function payAction(_prev: PayState, formData: FormData): Promise<PayState> {
-  const { number, token, locale } = fields(formData)
-  if (!number || !token) return { ok: false, reason: 'not-found' }
+  const { token, locale } = fields(formData)
+  if (!token) return { ok: false, reason: 'not-found' }
 
   const payload = await cms()
-  const orderId = await orderIdForBuyer(payload, number, token)
+  const orderId = await orderIdForBuyer(payload, token)
   if (orderId === null) return { ok: false, reason: 'not-found' }
 
   const configured = paymentsConfigFromEnv()
@@ -76,18 +75,14 @@ export async function payAction(_prev: PayState, formData: FormData): Promise<Pa
 
   const provider =
     config.mode === 'simulate'
-      ? simulatorProvider(
-          config,
-          (id) =>
-            `/${locale}/order/${number}/simulate?attempt=${encodeURIComponent(id)}&t=${encodeURIComponent(token)}`,
-        )
+      ? simulatorProvider(config, () => siteHref('shop')('order', { token, simulate: true }, locale))
       : createPaymentProvider(config)
 
   let opened
   try {
     opened = await openPaymentAttempt(payload, provider, {
       orderId,
-      finishUrl: orderUrl(locale, number, token),
+      finishUrl: orderUrl(locale, token),
     })
   } catch {
     return { ok: false, reason: 'server-error' }
@@ -106,9 +101,9 @@ export async function payAction(_prev: PayState, formData: FormData): Promise<Pa
  * a wrong token simply sends the buyer to the empty bag, same as any stale cookie would.
  */
 export async function putBackInBagAction(formData: FormData): Promise<void> {
-  const { number, token, locale } = fields(formData)
+  const { token, locale } = fields(formData)
   const payload = await cms()
-  const lines = await loadOrderLinesForBag(payload, number, token)
+  const lines = await loadOrderLinesForBag(payload, token)
 
   if (lines !== null) {
     const key = bagCookieKeyFromEnv()
@@ -119,18 +114,21 @@ export async function putBackInBagAction(formData: FormData): Promise<void> {
 }
 
 /**
- * The simulator's four buttons (COMMERCE.md §6): signs the notification `action` would send and
- * posts it to the real webhook route — the same function the app mounts at
+ * The simulator's four buttons (COMMERCE.md §6): takes the order's own latest `open` or `pending`
+ * attempt from the database (never a client-supplied attempt id), signs the notification `action`
+ * would send for it and posts it to the real webhook route — the same function the app mounts at
  * `/api/x/webhooks/midtrans` — so the verify → confirm → apply path runs end to end. Never
  * reachable off simulate mode (`assertSimulatorAllowed`, inside `simulatorProvider`).
  */
 export async function simulateAction(formData: FormData): Promise<void> {
-  const { number, token, locale } = fields(formData)
-  const attempt = String(formData.get('attempt') ?? '')
+  const { token, locale } = fields(formData)
   const action = String(formData.get('action') ?? '')
-  if (!SIMULATOR_ACTIONS.includes(action as SimulatorAction) || !attempt) {
-    redirect(orderPath(locale, number, token))
-  }
+  const back = orderHref(locale, token)
+  if (!SIMULATOR_ACTIONS.includes(action as SimulatorAction)) redirect(back)
+
+  const payload = await cms()
+  const attempt = await openOrPendingAttemptId(payload, token)
+  if (attempt === null) redirect(back)
 
   const configured = paymentsConfigFromEnv()
   if (configured.ok && configured.config.mode === 'simulate') {
@@ -145,5 +143,5 @@ export async function simulateAction(formData: FormData): Promise<void> {
       }),
     )
   }
-  redirect(orderPath(locale, number, token))
+  redirect(back)
 }

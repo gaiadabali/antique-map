@@ -13,7 +13,6 @@ import { SnapPay } from './snap-pay'
 import styles from './order-view.module.css'
 
 export type PayFormProps = {
-  readonly number: number
   readonly token: string
   readonly locale: 'en' | 'id'
   readonly label: string
@@ -24,7 +23,6 @@ export type PayFormProps = {
 const INITIAL: PayState = null
 
 export function PayForm({
-  number,
   token,
   locale,
   label,
@@ -37,7 +35,6 @@ export function PayForm({
   return (
     <div className={styles.actions}>
       <form action={dispatch}>
-        <input type="hidden" name="number" value={number} />
         <input type="hidden" name="token" value={token} />
         <input type="hidden" name="locale" value={locale} />
         <button type="submit" disabled={pending}>
