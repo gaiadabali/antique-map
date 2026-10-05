@@ -1,4 +1,4 @@
-# Shop payment gate — Local production build — interim; the staging run is pending
+# Shop payment gate — Local production build, then staging (release 70a0cae) — PASS, 6.5.c ticked 2026-10-06
 
 Ticket 6.5c (TASKS.md 6.5.c), `qa` on the sonnet seat, branch `w/6.5`, 2026-10-05. `tests/e2e/shop/gate.spec.ts`
 drives one buyer journey at 390 px against a local production build (`pnpm build`, `next start -p 4290`),
@@ -138,3 +138,29 @@ $ pnpm verify
 ```
 
 (run at the end, after every step above was committed; see `docs/reports/workers/6.5c.md` for its output.)
+
+
+## Staging result — release 70a0cae, 2026-10-06 — PASS
+
+Run from the workstation against `https://old-east-indies.gaiada.com` (simulate mode, seeded catalogue, placeholder
+fee bands — see below), with the host-only steps done on Helios by the orchestrator:
+
+| Clause | Evidence | Verdict |
+| --- | --- | --- |
+| Two products → pin → fee and total → simulator payment → confirmation, axe clean | `E2E_BASE_URL=https://old-east-indies.gaiada.com MAILPIT_URL=none pnpm exec playwright test --project shop-e2e tests/e2e/shop/gate.spec.ts --workers=1` → `1 passed (12.0s)`; order 100001, "Payment received", "Denpasar is getting your order ready", Rp 5.595.000 (over the free threshold, so delivery Rp 0) | **PASS** |
+| The order is paid, the nearest store holding every line has it, its stock fell by each line's qty | host read: order 100001 `paid`, store DPS-004, SEED-SHOP-077 2→1, SEED-SHOP-078 9→8 | **PASS** |
+| The order-created email in Mailpit, tracking link on the site's own origin | host read of staging's Mailpit: "Your order 100,001" to the buyer, Rp 5.595.000, link prefix `https://old-east-indies.gaiada.com/track/` | **PASS** |
+| An abandoned order expires and returns its stock; a second sweep changes nothing | order 100002 (one unit, DPS-006 8 held → expires_at moved back on the host) → sweep 1 `{checked:1, expired:1}`, order `expired`, stock 9; sweep 2 `{checked:0}`, unchanged | **PASS** |
+| One real sandbox payment | — | **DEFERRED** (owner decision 2026-10-05) |
+| Lighthouse mobile ≥ 90 performance and accessibility | local production build (above): 96/100 product, 92/100 bag | **PASS** |
+
+**What the staging run found first (all fixed before the passing run):** the browse and collection pages 404'd (app
+folders did not match the route table); stock was cached with the editorial data (`'use cache'`), so pages showed a
+stale "Out of stock"; the token rate limit counted every request and throttled the pending page's own polling; the
+order email was sent inline before the redirect; staging had no delivery fee table (`no_delivery_table` refuses every
+checkout). The fee bands on staging are a **placeholder** (5 km Rp 10.000, 15 km Rp 15.000, 30 km Rp 20.000, free over
+Rp 500.000) until the owner's courier prices (Q3) — a launch blocker on the board.
+
+**Open, filed as one follow-up ticket:** the typed-pin fallback can submit a near-(0, 0) pin for a moment while the
+second field is empty (`Number('') === 0`), refused as "outside Indonesia" before any order exists; order numbers are
+printed with a thousands separator ("100,001").
