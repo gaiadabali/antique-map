@@ -24,7 +24,8 @@ export function Header({ logo, nav, actions }: Props) {
           {nav}
         </div>
         <div className={styles.actions}>
-          {actions}
+          {/* On a phone the actions move into the drawer: beside the logo they overflow 390 px. */}
+          <div className={styles.barActions}>{actions}</div>
           <button
             type="button"
             className={styles.menuButton}
@@ -56,6 +57,7 @@ export function Header({ logo, nav, actions }: Props) {
             <nav className={styles.mobileNav} onClick={close}>
               {nav}
             </nav>
+            <div className={styles.drawerActions}>{actions}</div>
           </div>
         </div>
       )}

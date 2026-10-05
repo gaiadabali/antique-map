@@ -121,6 +121,19 @@
   color: var(--color-text-on-dark);
 }
 
+/* On the dark band the muted, accent and focus roles re-point at the on-dark ink: bronze and the
+   muted brown on the brown surface are under AA (qa 4.qa). */
+.bandDark {
+  --color-text-muted: var(--color-text-on-dark);
+  --color-accent: var(--color-text-on-dark);
+  --color-focus: var(--color-text-on-dark);
+}
+
+.railHeading {
+  margin: 0;
+  line-height: 1;
+}
+
 .bandTint {
   background: var(--color-surface-raised);
 }

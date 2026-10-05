@@ -28,6 +28,7 @@ export function LayoutShells(): React.ReactElement {
       <Section id="sg-footer" title="Footer">
         <Footer
           logo={<span>Logo</span>}
+          navLabel="Footer sample"
           nav={
             <>
               <TextLink href="/about">About</TextLink>
