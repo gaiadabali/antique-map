@@ -43,8 +43,15 @@ const HOST_HEADER = { Host: `${HOST}:${PORT}` }
 const href = createHref(SITES.gallery)
 const LOCALES = SITES.gallery.locales.supported
 
-/** A page the scan loads: its URL, and whether it is one of the four a visitor reaches first. */
-type Target = { readonly path: string; readonly required: boolean }
+/** A path that is not a gallery page: the spec scans whatever the server answers for it (the 404). */
+const NOT_FOUND_PATH = '/no-such-page-zzzz'
+
+/**
+ * A page the scan loads: its URL, whether it is one of the four a visitor reaches first, and — for
+ * the not-found probe — whether it is scanned even though it answers 404 (the ticket asks for the
+ * 404 page itself to be scanned for banned terms, not merely listed).
+ */
+type Target = { readonly path: string; readonly required: boolean; readonly scanAt404?: true }
 
 /**
  * The fixed pages (the ticket's list), for both locales. `/about`, `/guarantee`, `/certificate`,
@@ -71,7 +78,8 @@ function fixedTargets(locale: (typeof LOCALES)[number]): Target[] {
       'visit',
       'contact',
     ].map((slug) => ({ path: page(slug), required: false })),
-    { path: '/no-such-page-zzzz', required: false },
+    // The 404 the gallery shows for a missing path: scanned, not listed as "not built yet".
+    { path: NOT_FOUND_PATH, required: false, scanAt404: true },
   ]
 }
 
@@ -187,9 +195,10 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
     const reached: string[] = []
     const violations: Violation[] = []
 
-    for (const { path, required } of targets) {
+    for (const { path, required, scanAt404 } of targets) {
       const status = await statusOf(request, path)
-      if (status !== 200) {
+      const ok = status === 200
+      if (!ok && !scanAt404) {
         if (required) {
           // The four pages a visitor reaches first: a non-200 here is a hard failure.
           throw new Error(`required page ${path} answered ${status}, not 200`)
@@ -197,7 +206,7 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
         notBuiltYet.push(`${path} (HTTP ${status})`)
         continue
       }
-      reached.push(path)
+      reached.push(ok ? path : `${path} (HTTP ${status})`)
 
       const { text, attrs } = await readable(page, path)
       for (const term of BANNED_WORDS) scan(`${path} [text]`, term, text, violations)
