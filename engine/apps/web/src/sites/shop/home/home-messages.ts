@@ -45,6 +45,30 @@ export const HOME_MESSAGES = defineMessages({
     'Those originals are examined and certified by our curator, and offered to collectors at Antique Maps Indonesia — our sister gallery.',
   'home.shop.originalsCta': 'See the originals',
   'home.shop.posterOriginal': 'An original, beside its print (placeholder)',
+  // Browse has no island or room facet yet (qa 4.qa, finding F4); every chip links to the shop
+  // until one does. The names are placeholder until the owner's content.
+  'home.shop.chipsEyebrow': 'Shop by',
+  'home.shop.chipIslandBali': 'Bali',
+  'home.shop.chipIslandJava': 'Java',
+  'home.shop.chipIslandSumatra': 'Sumatra',
+  'home.shop.chipIslandLombok': 'Lombok',
+  'home.shop.chipRoomLivingRoom': 'Living room',
+  'home.shop.chipRoomBedroom': 'Bedroom',
+  'home.shop.chipRoomOffice': 'Office',
+  'home.shop.chipRoomEntryway': 'Entryway',
+  // "Sets that hang together" needs the collections surface (TASKS.md, phase 6); these three
+  // stand in until it ships, placeholder until the owner's content.
+  'home.shop.setsEyebrow': 'Gallery walls',
+  'home.shop.setsTitle': 'Sets that hang together',
+  'home.shop.setsBody':
+    'Prints we have paired so the sizes and subjects sit well on one wall — framed and hung as shown, or chosen apart.',
+  'home.shop.set1Title': 'The spice route',
+  'home.shop.set1Body': 'Three sea charts of the Moluccas and the Banda Islands.',
+  'home.shop.set2Title': 'Batavia, three views',
+  'home.shop.set2Body': 'The old city from the roadstead, the castle and the canal.',
+  'home.shop.set3Title': 'Java, north coast',
+  'home.shop.set3Body': 'Three coastal charts, from Batavia to Surabaya.',
+  'home.shop.setsCta': 'See the gallery walls',
 })
 
 export type HomeMessageKey = keyof typeof HOME_MESSAGES

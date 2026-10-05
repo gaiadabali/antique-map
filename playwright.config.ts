@@ -8,7 +8,9 @@
  * - status (`tests/e2e/status/`): one project per host — every case holds on both;
  * - a11y (`tests/e2e/a11y/`): one project per host, each case setting both widths itself;
  * - hosts (`tests/e2e/hosts/`): host trust — an unknown host, a spoofed `X-Forwarded-Host`, the
- *   admin's one host — run once, since each case names its own hosts.
+ *   admin's one host — run once, since each case names its own hosts;
+ * - shop (`tests/e2e/shop/`): the shop host alone, one project, each case setting its own widths —
+ *   the same single-project-per-host shape as a11y (TASKS.md 7.3.a).
  *
  * What a host's site is — its key, name, locales and whether it is the admin host — comes from the
  * committed `SITES` (`metadataOf`), never from the specs. The admin host is the shop's, as the
@@ -28,6 +30,7 @@
  */
 import { defineConfig, devices, type Project } from '@playwright/test'
 
+import { localPort } from './tests/e2e/admin/local.mjs'
 import { SITES, type SiteKey } from './engine/packages/config/src/sites/table'
 
 const desktop: Project['use'] = {
@@ -100,6 +103,15 @@ const a11y: Project[] = HOSTS.map(({ site, host }) => ({
   use: { ...desktop, baseURL: baseURLOf(host) },
 }))
 
+// The shop's flows (product, bag, checkout, pay) on the shop host; each spec sets its own widths (6.1.c, 6.5).
+const shopHost = HOSTS.find((each) => each.site === 'shop')?.host ?? ''
+const shopE2e: Project = {
+  name: 'shop-e2e',
+  testDir: './tests/e2e/shop',
+  metadata: metadataOf('shop'),
+  use: { ...desktop, baseURL: baseURLOf(shopHost) },
+}
+
 // Host trust: each case names its own hosts, on the one port.
 const hosts: Project = {
   name: 'hosts',
@@ -108,10 +120,23 @@ const hosts: Project = {
   use: { ...desktop },
 }
 
+// The admin role drive (TASKS.md 3.6.d, `docs/gates/3.6.md`): the shop host, the admin's
+// (Q1), on this worktree's own port and database (`pnpm worktree:env`, `local.mjs`'s
+// `localPort()`) — CI sets E2E_PORT the same way `start-server.sh` runs the server.
+const admin: Project = {
+  name: 'admin',
+  testDir: './tests/e2e/admin',
+  metadata: metadataOf(ADMIN_SITE),
+  use: {
+    ...desktop,
+    baseURL: `http://${SITES[ADMIN_SITE].hostnames.local[0]}:${localPort()}`,
+  },
+}
+
 export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  projects: [...smoke, ...status, ...a11y, hosts],
+  projects: [...smoke, ...status, ...a11y, shopE2e, hosts, admin],
 })

@@ -44,6 +44,20 @@
   min-height: 44px;
 }
 
+.barActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.drawerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
 .menuButton {
   display: none;
   align-items: center;
@@ -158,7 +172,12 @@
 }
 
 @media (max-width: 1024px) {
-  .desktopNav {
+  .inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .desktopNav,
+  .barActions {
     display: none;
   }
 

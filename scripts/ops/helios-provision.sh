@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Provisions the Indies sites on Helios (TASKS.md 5.1.a; DEPLOYMENT.md §2, §3, §5, §6, §8, §9):
-# a site user, port, database and role, shared/.env, pm2 process and crontab per brand, plus
-# the host's RustFS (D12), staging's Mailpit (D13) and nightly database dumps.
+# Provisions the Indies Platform on Helios (TASKS.md 3.1; DEPLOYMENT.md §2, §3, §5, §6, §8, §9):
+# ONE site serving both hostnames — its site user and pm2 process, port, database and role,
+# shared/.env and crontab — plus the host's RustFS (D12) with the media and masters buckets and
+# the app's one key, staging's Mailpit (D13) and the nightly dump of the one database.
 #
 # Run as root ON the host, and only with the owner's go-ahead for that run (DEPLOYMENT.md §9):
 #
@@ -21,12 +22,13 @@
 # What it never does: rewrite an existing shared/.env; restart a running app; touch another
 # site; follow a symlink in a site's home (it refuses one, and writes there only as the site
 # user); run a site user's binaries as root; alter a Postgres role it did not create (its own are
-# COMMENT 'indies-provision'). It does not touch nginx — EXCEPT with --create-sites, where
-# CloudPanel's clpctl writes the new site's vhost and reloads the host's shared nginx.
+# COMMENT 'indies-provision'); drop a database, remove a site user or delete a bucket. It does
+# not touch nginx — EXCEPT with --create-sites, where CloudPanel's clpctl writes the new site's
+# vhost and reloads the host's shared nginx. The other hostnames in server_name and the /_media/
+# location go in through CloudPanel's vhost editor; the report prints both and checks for them.
 #
-# --replace-site OLD_DOMAIN removes a CloudPanel site this script made under an old host name,
-# only when its home still holds nothing but what this script, CloudPanel and the deploy poller
-# made (replace.sh): clpctl site:delete deletes the site user and its home; Postgres stays.
+# Retiring the two-app shape (uig, uoei, ig_db, oei_db, ig-media, oei-media) is a hand-run
+# sequence with its own evidence, never this script: docs/ops/helios-staging.md, "Retiring".
 #
 # The GDA deploy poller (gaiada-poll.timer, every minute, as root) acts on every CloudPanel site
 # user: CloudPanel site user -> poller -> ~/releases/deploy_*, `current`, `pm2 reload <user>`.
@@ -37,27 +39,26 @@
 # CloudPanel's cron UI rewrites a site's crontab: if the managed block goes, --report says so
 # (an ERROR), and re-running the script puts it back.
 #
-# Secrets: none in this repo. The .env skeletons leave every app secret blank; the next run
-# gives Postgres (as a SCRAM verifier) and RustFS whatever the operator put there from
-# Infisical. Infrastructure credentials — RustFS's root key, Mailpit's passwords — are made on
-# the host into root-only files under /etc/indies and never printed.
+# Secrets: none in this repo. The .env skeleton leaves every app secret blank; the next run
+# gives Postgres (as a SCRAM verifier) and RustFS whatever the operator put there (host-only on
+# staging, D49). Infrastructure credentials — RustFS's root key, Mailpit's passwords — are made
+# on the host into root-only files under /etc/indies and never printed.
 #
 # Options:
-#   --env staging|production   required. production also needs --gallery, --emporium and
-#                              --bucket-suffix: its users, databases and ports are new at cutover
+#   --env staging|production   required. production also needs --site, --shop-hosts,
+#                              --gallery-hosts and --bucket-suffix: all new at cutover
 #   --dry-run                  print every change, make none
 #   --report                   only the read-only report
-#   --only gallery|emporium    one site (the shared services are still checked)
-#   --gallery|--emporium USER:PORT:DATABASE:ROLE:DOMAIN   override a site's spec
+#   --site USER:PORT:DATABASE:ROLE   the site's spec (staging: uindies:4030:indies_db:indies)
+#   --shop-hosts H[,H…]  --gallery-hosts H[,H…]   each site's hostnames, the first canonical
+#                              (staging: old-east-indies.gaiada.com, indies-gallery.gaiada.com)
 #   --bucket-suffix -SUFFIX    appended to every bucket name (production)
 #   --pg-port N                the Postgres cluster (default 5432; required when several exist)
 #   --rustfs-port N  --rustfs-console-port N  --mailpit-smtp-port N  --mailpit-ui-port N
 #                              (defaults 4032, 4033, 4034, 4035)
 #   --rustfs-size-gb N         the RustFS data image, made once (default 50)
 #   --min-free-gb N  --min-free-pct N   refuse below either (defaults 20 GiB and 15%)
-#   --create-sites             add a missing CloudPanel Node.js site with clpctl (touches nginx)
-#   --replace-site OLD_DOMAIN  (repeatable; needs --create-sites) delete the site user's old
-#                              CloudPanel site first — refused unless its home is pristine
+#   --create-sites             add the missing CloudPanel Node.js site with clpctl (touches nginx)
 #   --verify-restart           restart this script's units one at a time and check each comes
 #                              back (pm2 from dump.pm2, RustFS and its mount, Mailpit), the cron
 #                              blocks and boot-time enablement; changes nothing else (verify.sh)
@@ -93,10 +94,10 @@ OPS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$OPS_DIR/lib/rustfs.sh"
 # shellcheck source=lib/s3admin.sh
 . "$OPS_DIR/lib/s3admin.sh"
+# shellcheck source=lib/storage.sh
+. "$OPS_DIR/lib/storage.sh"
 # shellcheck source=lib/mailpit.sh
 . "$OPS_DIR/lib/mailpit.sh"
-# shellcheck source=lib/replace.sh
-. "$OPS_DIR/lib/replace.sh"
 # shellcheck source=lib/verify.sh
 . "$OPS_DIR/lib/verify.sh"
 # shellcheck source=lib/report.sh
@@ -117,8 +118,12 @@ parse_args() {
       --env) ENVIRONMENT="${2:-}" && shift ;;
       --dry-run) DRY_RUN=1 ;;
       --report) REPORT_ONLY=1 ;;
-      --only) ONLY="${2:-}" && shift ;;
-      --gallery | --emporium) OVERRIDE[${1#--}]="${2:-}" && shift ;;
+      --site) SITE_SPEC="${2:-}" && shift ;;
+      --shop-hosts) SHOP_HOSTS="${2:-}" && shift ;;
+      --gallery-hosts) GALLERY_HOSTS="${2:-}" && shift ;;
+      --only | --gallery | --emporium | --replace-site)
+        die "$1 is gone: one site serves both hostnames now (--site, --shop-hosts, --gallery-hosts)"
+        ;;
       --bucket-suffix) BUCKET_SUFFIX="${2:-}" && shift ;;
       --pg-port) PG_PORT="${2:-}" PG_PORT_EXPLICIT=1 && shift ;;
       --rustfs-port) RUSTFS_PORT="${2:-}" && shift ;;
@@ -129,7 +134,6 @@ parse_args() {
       --min-free-gb) MIN_FREE_GB="${2:-}" && shift ;;
       --min-free-pct) MIN_FREE_PCT="${2:-}" && shift ;;
       --create-sites) CREATE_SITES=1 ;;
-      --replace-site) REPLACE_SITES+=("${2:-}") && shift ;;
       --verify-restart) VERIFY_RESTART=1 ;;
       --vhost-dir) VHOST_DIR="${2:-}" && shift ;;
       --probe-public) PROBE_PUBLIC=1 ;;
@@ -148,19 +152,11 @@ parse_args() {
     [[ "$n" =~ ^[0-9]+$ ]] || die "not a number: '$n'"
   done
   [ "$RUSTFS_SIZE_GB" -ge 1 ] || die "--rustfs-size-gb is at least 1"
-  for n in "${REPLACE_SITES[@]}"; do
-    [[ "$n" =~ ^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$ ]] || die "--replace-site '$n' is not a domain"
-  done
-  if [ "${#REPLACE_SITES[@]}" -gt 0 ] && [ "$CREATE_SITES" != 1 ]; then
-    die "--replace-site needs --create-sites: the new site is made under the same site user"
-  fi
   if [ "$VERIFY_RESTART" = 1 ]; then
     if [ "$DRY_RUN" = 1 ] || [ "$REPORT_ONLY" = 1 ]; then
       die "--verify-restart restarts services: never with --dry-run or --report"
     fi
-    if [ "${#REPLACE_SITES[@]}" -gt 0 ] || [ "$CREATE_SITES" = 1 ]; then
-      die "--verify-restart runs alone: not with --create-sites or --replace-site"
-    fi
+    [ "$CREATE_SITES" != 1 ] || die "--verify-restart runs alone: not with --create-sites"
   fi
 }
 
@@ -185,13 +181,9 @@ main() {
   host_preflight
   rustfs_preflight
   mailpit_preflight
-  replace_map
-  local app
-  for app in $(selected_apps); do
-    load_site "$app"
-    site_preflight
-    runtime_preflight
-  done
+  load_site
+  site_preflight
+  runtime_preflight
 
   if [ "$VERIFY_RESTART" = 1 ]; then
     if [ "$ERRORS" -gt 0 ]; then
@@ -208,33 +200,26 @@ main() {
 
     ensure_rustfs
     ensure_mailpit
-    ensure_storage_shared
-    for app in $(selected_apps); do
-      load_site "$app"
-      replace_site || continue
-      ensure_cloudpanel_site
-      resolve_site_path
-      if [ "$REPLACE_PLANNED" = 1 ]; then
-        note "$S_APP: once replaced, the home is new and empty: shared/.env, the holding release, the pm2 process and its unit, ~/bin and the crontab are made as on a first run (a dry run after the replacement shows them byte for byte)"
-        ensure_database
-        continue
-      fi
+    ensure_storage
+    ensure_cloudpanel_site
+    resolve_site_path
+    if [ "$SITE_PLANNED" = 1 ]; then
+      note "$S_USER does not exist yet: once clpctl makes the site, shared/.env, the holding release, the pm2 process and its unit, ~/bin, the key and the crontab are made as on a first run (a dry run after it shows them byte for byte)"
+      ensure_database
+    else
       ensure_env_file
       ensure_database
-      ensure_storage_site
+      ensure_app_key
       ensure_runtime
       ensure_cron
-    done
+    fi
     ensure_backups
   fi
 
   [ "$REPORT_ONLY" = 0 ] || inventory_report
   host_report
-  for app in $(selected_apps); do
-    load_site "$app"
-    resolve_site_path
-    site_report
-  done
+  resolve_site_path
+  site_report
   summary
   [ "$ERRORS" = 0 ]
 }

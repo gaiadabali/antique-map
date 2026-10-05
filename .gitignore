@@ -22,6 +22,9 @@ coverage/
 .vite/
 .vitest/
 
+# The local upload bucket's disk (registries/storage.ts falls back to it when no bucket is set): runtime data.
+engine/packages/cms/media/
+
 # Environment files: secrets never go into the repo (CONVENTIONS.md §13).
 # The template is the one exception.
 .env

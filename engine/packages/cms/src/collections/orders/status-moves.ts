@@ -22,8 +22,12 @@
 import { ValidationError, type CollectionBeforeChangeHook } from 'payload'
 
 import { isStaffUser } from '../../access/roles'
+import { asLabel } from '../../hooks/work-facts'
+import { type Bilingual, pickLanguage } from '../products/money'
 import { roleOf, type UserRole } from '../users/roles'
 import { ORDER_STATUS_LABELS, type OrderStatus } from './statuses'
+
+type Language = 'en' | 'id'
 
 /** The line an order moves along once paid, in order. */
 export const FORWARD_LINE = [
@@ -43,45 +47,80 @@ const CANCELLABLE: readonly OrderStatus[] = [
   'on_the_way',
 ]
 
-const label = (status: OrderStatus) => ORDER_STATUS_LABELS[status].en
+const label = (status: OrderStatus, language: Language) => ORDER_STATUS_LABELS[status][language]
 const place = (status: OrderStatus) => (FORWARD_LINE as readonly string[]).indexOf(status)
+const move = (from: OrderStatus, to: OrderStatus, language: Language) =>
+  language === 'id'
+    ? `“${label(from, language)}” ke “${label(to, language)}”`
+    : `“${label(from, language)}” to “${label(to, language)}”`
 
 /**
- * Why `role` may not move an order from `from` to `to`, as a sentence for the person, or `null`
- * when the move is theirs to make. `hasDriverImage` says whether the driver's details are in.
+ * Why `role` may not move an order from `from` to `to`, as a sentence for the person in both
+ * admin languages, or `null` when the move is theirs to make. `hasDriverImage` says whether the
+ * driver's details are in. The admin's `guardStatusMove` picks the admin's language from this;
+ * `statusMoveRefusal` below keeps the English sentence for callers outside the admin (the order
+ * code's `judgeMove`, `shop/fulfilment/transitions.ts`, 7.1.a — not this ticket's path).
  */
-export function statusMoveRefusal(
+export function statusMoveRefusalBilingual(
   role: UserRole | null,
   from: OrderStatus,
   to: OrderStatus,
   hasDriverImage: boolean,
-): string | null {
+): Bilingual | null {
   if (from === to) return null
-  const move = `“${label(from)}” to “${label(to)}”`
-  if (role === null) return 'Only staff move an order.'
+  if (role === null) {
+    return { en: 'Only staff move an order.', id: 'Hanya staf yang dapat memindahkan pesanan.' }
+  }
   const a = place(from)
   const b = place(to)
   if (role === 'store') {
     if (a === -1 || b !== a + 1) {
       const next = a === -1 || a === FORWARD_LINE.length - 1 ? null : FORWARD_LINE[a + 1]!
-      return next === null
-        ? `Store staff cannot move this order from ${move}. Hand it back with a reason if something is wrong.`
-        : `Store staff move an order one step forward only: from “${label(from)}” the next step is “${label(next)}”. Hand it back with a reason if something is wrong.`
+      if (next === null) {
+        return {
+          en: `Store staff cannot move this order from ${move(from, to, 'en')}. Hand it back with a reason if something is wrong.`,
+          id: `Staf toko tidak dapat memindahkan pesanan ini dari ${move(from, to, 'id')}. Kembalikan dengan alasan jika ada yang salah.`,
+        }
+      }
+      return {
+        en: `Store staff move an order one step forward only: from “${label(from, 'en')}” the next step is “${label(next, 'en')}”. Hand it back with a reason if something is wrong.`,
+        id: `Staf toko hanya memindahkan pesanan satu langkah maju: dari “${label(from, 'id')}” langkah berikutnya adalah “${label(next, 'id')}”. Kembalikan dengan alasan jika ada yang salah.`,
+      }
     }
   } else {
     const allowed =
       (to === 'cancelled' && CANCELLABLE.includes(from)) ||
       (a !== -1 && b !== -1 && (b > a || b === a - 1))
     if (!allowed) {
-      return to === 'cancelled'
-        ? `An order that is “${label(from)}” cannot be cancelled.`
-        : `An order cannot move from ${move}. Move it forward, or one step back to correct a mistake.`
+      if (to === 'cancelled') {
+        return {
+          en: `An order that is “${label(from, 'en')}” cannot be cancelled.`,
+          id: `Pesanan yang berstatus “${label(from, 'id')}” tidak dapat dibatalkan.`,
+        }
+      }
+      return {
+        en: `An order cannot move from ${move(from, to, 'en')}. Move it forward, or one step back to correct a mistake.`,
+        id: `Pesanan tidak dapat dipindahkan dari ${move(from, to, 'id')}. Pindahkan maju, atau satu langkah mundur untuk memperbaiki kesalahan.`,
+      }
     }
   }
   if (to === 'on_the_way' && b > a && !hasDriverImage) {
-    return 'Upload the driver’s details (a screenshot from Gojek or Grab) before marking the order on the way.'
+    return {
+      en: 'Upload the driver’s details (a screenshot from Gojek or Grab) before marking the order on the way.',
+      id: 'Unggah data pengemudi (tangkapan layar dari Gojek atau Grab) sebelum menandai pesanan sedang dalam perjalanan.',
+    }
   }
   return null
+}
+
+/** The English sentence only, for callers outside the admin (the order code's `judgeMove`). */
+export function statusMoveRefusal(
+  role: UserRole | null,
+  from: OrderStatus,
+  to: OrderStatus,
+  hasDriverImage: boolean,
+): string | null {
+  return statusMoveRefusalBilingual(role, from, to, hasDriverImage)?.en ?? null
 }
 
 type OrderData = {
@@ -106,18 +145,19 @@ export const guardStatusMove: CollectionBeforeChangeHook<OrderData> = ({
   const to = 'status' in data ? data.status : from
   if (!isStatus(from) || !isStatus(to) || from === to) return data
   const image = (data.driverImage ?? originalDoc?.driverImage)?.key
-  const refusal = statusMoveRefusal(
+  const refusal = statusMoveRefusalBilingual(
     roleOf(req.user),
     from,
     to,
     typeof image === 'string' && image !== '',
   )
   if (refusal !== null) {
+    const message = pickLanguage(req, refusal)
     throw new ValidationError(
       {
         collection: 'orders',
         ...(originalDoc === undefined ? {} : { id: originalDoc.id }),
-        errors: [{ path: 'status', message: refusal }],
+        errors: [{ path: 'status', message, label: asLabel('Status', message) }],
         req,
       },
       req.t,

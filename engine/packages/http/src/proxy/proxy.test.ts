@@ -2,10 +2,11 @@
 // into that site's own tree, the default locale unprefixed; anything else is the site's designed
 // 404; root files and the site's own files answer per site; the headers it sets overwrite a
 // client's.
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
 import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
 import { decideProxy, notFoundPath } from './route'
+import { resetTrackingGuessLimit, TRACKING_GUESSES_PER_MINUTE } from './tracking-rate-limit'
 
 const ENV = { GALLERY_HOSTS: 'gallery.localhost', SHOP_HOSTS: 'shop.localhost', PORT: '4230' }
 type Site = 'gallery' | 'shop'
@@ -174,5 +175,78 @@ describe('what the proxy sets on what it passes on', () => {
     )
     expect(decision.setResponse['Content-Security-Policy']).toBe("default-src 'self'; x-shop-id")
     expect(decision.setRequest['content-security-policy']).toBe("default-src 'self'; x-shop-id")
+  })
+})
+
+describe('the tenth tracking guess in a minute is throttled (TASKS.md 7.3.c)', () => {
+  afterEach(() => resetTrackingGuessLimit())
+
+  const guess = (address: string, token = 'k3Jd9xQ2') =>
+    decide('shop', `/track/${token}`, { 'x-forwarded-for': address })
+
+  it('the 10th distinct token in a minute passes and the 11th is a 429 with Retry-After', () => {
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) {
+      expect(guess('5.5.5.5', `g${i}`), `request ${i + 1}`).toMatchObject({ kind: 'rewrite' })
+    }
+    const eleventh = guess('5.5.5.5', 'g-new')
+    expect(eleventh).toMatchObject({ kind: 'respond', why: 'rate-limited', status: 429 })
+    const wait = Number(eleventh.setResponse['Retry-After'])
+    expect(wait).toBeGreaterThan(0)
+    expect(wait).toBeLessThanOrEqual(60)
+  })
+
+  it('another address is unaffected', () => {
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) guess('6.6.6.6', `a${i}`)
+    expect(guess('6.6.6.6', 'a-new')).toMatchObject({ kind: 'respond', status: 429 })
+    expect(guess('7.7.7.7', 'a-new')).toMatchObject({ kind: 'rewrite' })
+  })
+
+  it('the order page’s tokens share the budget: the 11th new token is a 429 there too', () => {
+    const headers = { 'x-forwarded-for': '9.9.9.9' }
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE / 2; i++) {
+      expect(decide('shop', `/order/o${i}`, headers)).toMatchObject({ kind: 'rewrite' })
+      expect(decide('shop', `/track/t${i}`, headers)).toMatchObject({ kind: 'rewrite' })
+    }
+    expect(decide('shop', '/order/o-new', headers)).toMatchObject({
+      kind: 'respond',
+      why: 'rate-limited',
+      status: 429,
+    })
+  })
+
+  it('a non-tracking surface is never counted against the budget', () => {
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE * 2; i++) {
+      expect(decide('shop', '/bag', { 'x-forwarded-for': '8.8.8.8' })).toMatchObject({
+        kind: 'rewrite',
+      })
+    }
+    // The find-my-order page (no token) is not the per-guess surface either.
+    expect(decide('shop', '/track', { 'x-forwarded-for': '8.8.8.8' })).toMatchObject({
+      kind: 'rewrite',
+    })
+    expect(guess('8.8.8.8')).toMatchObject({ kind: 'rewrite' })
+  })
+
+  it('a buyer polling their own pending order page is never throttled', () => {
+    const headers = { 'x-forwarded-for': '11.11.11.11' }
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE * 3; i++) {
+      expect(decide('shop', '/order/my-token', headers), `refresh ${i + 1}`).toMatchObject({
+        kind: 'rewrite',
+      })
+    }
+  })
+
+  it('the window slides: a minute later the budget is back', () => {
+    const headers = { 'x-forwarded-for': '10.10.10.10' }
+    for (let i = 0; i < TRACKING_GUESSES_PER_MINUTE; i++) decide('shop', `/track/s${i}`, headers)
+    expect(decide('shop', '/track/a', headers)).toMatchObject({ kind: 'respond', status: 429 })
+
+    const realNow = Date.now
+    try {
+      Date.now = () => realNow() + 60_001
+      expect(decide('shop', '/track/a', headers)).toMatchObject({ kind: 'rewrite' })
+    } finally {
+      Date.now = realNow
+    }
   })
 })

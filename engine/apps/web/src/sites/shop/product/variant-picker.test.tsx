@@ -4,7 +4,11 @@
  * — and an available one offers "Add to bag".
  */
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+// The real action pulls in `server-only` and Payload (6.1.c) — this test only renders the
+// picker's static markup, never submits the form, so a stub keeps the module graph client-safe.
+vi.mock('../../../server/shop/bag/actions', () => ({ addToBagAction: async () => null }))
 
 import { VariantPicker, type PickerVariant } from './variant-picker'
 
@@ -26,11 +30,13 @@ const soldOut: PickerVariant = {
 const render = (variants: readonly PickerVariant[], productAvailable: boolean) =>
   renderToStaticMarkup(
     <VariantPicker
+      productId={1}
       sku="OEI-TEST"
       locale="en"
       variants={variants}
       productPriceText="Rp 150.000"
       available={productAvailable}
+      bagHref="/en/bag"
     />,
   )
 

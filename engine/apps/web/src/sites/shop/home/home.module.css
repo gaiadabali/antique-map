@@ -10,9 +10,13 @@
   border-top: 0;
 }
 
+/* Breaks out of the shell's reading-measure column the way `browse.module.css`'s `.page` does
+   (qa 4.qa, finding F1): the home needs the drawing's full-bleed width at 1280 px, not the 66ch
+   cap `.site-main` gives long-form pages. */
 .wrap {
-  max-width: 80rem;
-  margin: 0 auto;
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
   padding-inline: var(--gutter);
 }
 
@@ -119,6 +123,47 @@
 
 .bandDark .cardBody {
   color: var(--color-text-on-dark);
+}
+
+/* On the dark band the muted, accent and focus roles re-point at the on-dark ink: bronze and the
+   muted brown on the brown surface are under AA (qa 4.qa). */
+.bandDark {
+  --color-text-muted: var(--color-text-on-dark);
+  --color-accent: var(--color-text-on-dark);
+  --color-focus: var(--color-text-on-dark);
+}
+
+.railHeading {
+  margin: 0;
+  line-height: 1;
+}
+
+/* The island and room chips (qa 4.qa, finding F4): a plain pill link, token colours only. */
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block-start: var(--space-4);
+}
+
+.chip {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  text-decoration: none;
+  font: var(--text-small);
+}
+
+.chip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.setCard {
+  display: flex;
+  flex-direction: column;
 }
 
 .bandTint {

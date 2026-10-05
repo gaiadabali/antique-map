@@ -5,6 +5,10 @@
 
 PROBE_PUBLIC=0
 
+# The vhost edits CloudPanel's editor makes (it regenerates nginx from its stored template, so
+# never a file edit): every host in server_name, and the media location. Whatever sits in front
+# fetches anonymously and holds no key, so the bucket policy is the only gate (DEPLOYMENT.md §6).
+server_name_line() { printf '          |   server_name %s;\n' "$(all_hosts | paste -sd' ' -)"; }
 media_location_block() {
   cat <<NGINX
           | # CloudPanel → $S_DOMAIN → Vhost, inside the server { } that proxies to 127.0.0.1:$S_PORT:
@@ -13,9 +17,10 @@ media_location_block() {
           |   proxy_pass http://127.0.0.1:$RUSTFS_PORT/$S_MEDIA_BUCKET/;
           |   proxy_set_header Host 127.0.0.1:$RUSTFS_PORT;
           |   proxy_set_header Authorization "";
+          |   proxy_set_header Cookie "";
           |   proxy_hide_header Set-Cookie;
           | }
-          | # then, in $S_ENV: MEDIA_PUBLIC_URL=$S_SITE_URL/_media — and reload the app
+          | # MEDIA_PUBLIC_URL=$S_MEDIA_PUBLIC_URL is already in $S_ENV
 NGINX
 }
 
@@ -35,7 +40,7 @@ let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => {
 }
 
 site_report() {
-  say "report: $S_APP ($S_USER, $S_DOMAIN)"
+  say "report: the site ($S_USER; shop $SHOP_HOSTS, gallery $GALLERY_HOSTS)"
   if ! id -u "$S_USER" >/dev/null 2>&1; then
     note "no site user $S_USER"
     return 0
@@ -58,8 +63,11 @@ site_report() {
   code="$(curl -s -o /dev/null -w '%{http_code}' -m 10 "http://127.0.0.1:$S_PORT/api/health" || true)"
   note "http://127.0.0.1:$S_PORT/api/health: ${code:-no answer} (503 is the holding release, or a boot check refusing: pm2 logs $S_USER)"
   if [ "$PROBE_PUBLIC" = 1 ]; then
-    code="$(curl -s -o /dev/null -w '%{http_code}' -m 20 "$S_SITE_URL/api/health" || true)"
-    note "$S_SITE_URL/api/health: ${code:-no answer}"
+    local h
+    while read -r h; do
+      code="$(curl -s -o /dev/null -w '%{http_code}' -m 20 "https://$h/api/health" || true)"
+      note "https://$h/api/health: ${code:-no answer}"
+    done < <(all_hosts)
   fi
   if cron_block_present; then
     ok "crontab: the managed block is there ($(crontab -u "$S_USER" -l 2>/dev/null | grep -cE '^[^#].*indies-cron') active indies-cron line(s))"
@@ -69,10 +77,16 @@ site_report() {
     note "crontab: not provisioned yet"
   fi
   report_blank_secrets
-  if [ -f "$conf" ] && grep -q 'location \^~ /_media/' "$conf"; then
-    ok "vhost serves /_media/ (MEDIA_PUBLIC_URL=$S_SITE_URL/_media)"
+  if [ -f "$conf" ] && [ -z "$(all_hosts | grep -vxF -f <(vhost_server_names "$conf"))" ]; then
+    ok "vhost server_name names every host"
   else
-    note "MEDIA_PUBLIC_URL needs /_media/ in the vhost first (CloudPanel regenerates nginx, so it goes in through CloudPanel's vhost editor, never a file edit):"
+    note "the vhost must name every host, so one site answers both (CloudPanel's vhost editor, never a file edit):"
+    server_name_line
+  fi
+  if [ -f "$conf" ] && grep -q 'location \^~ /_media/' "$conf"; then
+    ok "vhost serves /_media/ (MEDIA_PUBLIC_URL=$S_MEDIA_PUBLIC_URL)"
+  else
+    note "MEDIA_PUBLIC_URL needs /_media/ in the vhost (CloudPanel regenerates nginx, so it goes in through CloudPanel's vhost editor, never a file edit):"
     media_location_block
   fi
 }
