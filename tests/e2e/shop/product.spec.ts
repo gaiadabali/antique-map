@@ -1,179 +1,213 @@
-import { test, expect } from '@playwright/test'
-import { injectAxe, getViolations } from 'axe-playwright'
+/**
+ * The shop product page (6.1.c; ticket 6qa-r1 point 1): at 390 px a seeded product with variants
+ * loads, the variant picker changes the variant and its price, and axe is clean at 390 and 1280 px
+ * on both a variant product and the zero-stock product. No `data-testid` is added to product code
+ * — every locator is a real role or the lexicon's own text (the same strings
+ * `engine/apps/web/src/sites/shop/product/copy.ts` renders).
+ *
+ * Products are never hard-coded: `findCandidates` reads the live `/api/products` list (published
+ * only, the same access rule a visitor's browser gets) and loads each product page to find, from
+ * the real rendered markup, one with a working (non-disabled) variant picker whose variants carry
+ * different prices, and one whose add button is disabled (out of stock everywhere). A worktree
+ * without either is a setup gap (`docs/gates/phase-6-checks.md` §6.1.c, ticket 6qa.md step 1), and
+ * the suite fails loudly rather than skipping (rule 6: "a missing product is a failure").
+ */
+import AxeBuilder from '@axe-core/playwright'
+import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
 
-const BASE_URL = process.env.E2E_PORT
-  ? `http://shop.localhost:${process.env.E2E_PORT}`
-  : 'http://shop.localhost:3000'
+const PORT = process.env.E2E_PORT ?? '4282'
+// The `request` fixture uses Node's resolver, which may not know `*.localhost` (playwright.config.ts's
+// own note); a plain IP plus a Host header reaches the same vhost Chromium resolves by name.
+const BASE_URL = `http://127.0.0.1:${PORT}`
+const HOST_HEADER = { Host: `shop.localhost:${PORT}` }
+const SHOTS = process.env.PHASE6_SHOTS
+
+type ProductSummary = { readonly slug: string }
+
+type Candidates = {
+  /** A published product with >=2 variants whose prices differ, and stock to add. */
+  readonly withVariants: { slug: string; variantLabels: string[] }
+  /** A published product whose add button is disabled everywhere (zero stock). */
+  readonly outOfStock: { slug: string }
+}
+
+async function listProducts(request: APIRequestContext): Promise<ProductSummary[]> {
+  const res = await request.get(`${BASE_URL}/api/products?limit=200&depth=0`, {
+    headers: HOST_HEADER,
+  })
+  expect(res.ok(), 'GET /api/products').toBeTruthy()
+  const body = (await res.json()) as { docs: ProductSummary[] }
+  return body.docs
+}
+
+/** Reads one product page's real markup for what the suite needs to classify it. */
+async function inspect(
+  request: APIRequestContext,
+  slug: string,
+): Promise<{
+  slug: string
+  variantValues: string[]
+  variantLabels: string[]
+  variantPrices: string[]
+  addDisabled: boolean
+  status: number
+}> {
+  const res = await request.get(`${BASE_URL}/product/${slug}`, { headers: HOST_HEADER })
+  const html = await res.text()
+  const variantValues = [...html.matchAll(/type="radio"[^>]*value="([^"]+)"/g)].map(
+    (m) => m[1] ?? '',
+  )
+  const variantLabels = [...html.matchAll(/optionLabel">([^<]+)</g)].map((m) => m[1] ?? '')
+  // Only the chosen variant's price renders into a `__price` span; every variant's own
+  // `priceText` (`variant-picker.tsx`'s `PickerVariant`) is still in the RSC payload for
+  // hydration, escaped as `\"Rp …\"`, so that is what tells the variants' prices apart.
+  const variantPrices = [...html.matchAll(/priceText\\":\\"(Rp[^"\\]+)\\"/g)].map((m) => m[1] ?? '')
+  const addDisabled = /__addButton"\s+disabled/.test(html)
+  return { slug, variantValues, variantLabels, variantPrices, addDisabled, status: res.status() }
+}
+
+/** Finds the two products the suite needs by reading real product pages — never a guess. */
+async function findCandidates(request: APIRequestContext): Promise<Candidates> {
+  const products = await listProducts(request)
+  expect(products.length, 'seeded, published products').toBeGreaterThan(0)
+
+  let withVariants: Candidates['withVariants'] | null = null
+  let outOfStock: Candidates['outOfStock'] | null = null
+
+  for (const { slug } of products) {
+    if (withVariants !== null && outOfStock !== null) break
+    const found = await inspect(request, slug)
+    if (found.status !== 200) continue
+
+    if (
+      withVariants === null &&
+      found.variantValues.length >= 2 &&
+      !found.addDisabled &&
+      new Set(found.variantPrices).size >= 2
+    ) {
+      withVariants = { slug: found.slug, variantLabels: found.variantLabels }
+    }
+    if (outOfStock === null && found.addDisabled) {
+      outOfStock = { slug: found.slug }
+    }
+  }
+
+  expect(withVariants, 'a published product with >=2 differently priced variants, in stock').not
+    .toBeNull()
+  expect(outOfStock, 'a published product with its add button disabled (zero stock)').not
+    .toBeNull()
+  return { withVariants: withVariants!, outOfStock: outOfStock! }
+}
+
+async function shoot(page: Page, name: string) {
+  if (!SHOTS) return
+  const { mkdirSync } = await import('node:fs')
+  mkdirSync(SHOTS, { recursive: true })
+  await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, animations: 'disabled' })
+}
+
+async function axeClean(page: Page, label: string) {
+  const { violations } = await new AxeBuilder({ page }).analyze()
+  const found = violations.map(
+    ({ id, impact, nodes }) => `${impact ?? 'unknown'} ${id}: ${nodes.map((n) => n.target).join()}`,
+  )
+  expect(found, label).toEqual([])
+}
 
 test.describe('Shop product page (6.1.c)', () => {
-  test('product with variants loads and variant picker changes price at 390 px', async ({
+  let candidates: Candidates
+
+  test.beforeAll(async ({ playwright }) => {
+    const request = await playwright.request.newContext()
+    candidates = await findCandidates(request)
+    await request.dispose()
+  })
+
+  test('a seeded product with variants loads at 390 px; the picker changes variant and price', async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 390, height: 667 })
+    await page.setViewportSize({ width: 390, height: 844 })
+    const response = await page.goto(`/product/${candidates.withVariants.slug}`)
+    expect(response?.status()).toBe(200)
 
-    // Navigate to a seeded product with variants
-    // Using a placeholder URL; will work once seeded
-    await page.goto(`${BASE_URL}/shop/en/product/SEED-TEXTILES-PRINT-01`)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+    const radios = page.getByRole('radio')
+    await expect(radios).toHaveCount(candidates.withVariants.variantLabels.length)
 
-    // Wait for product details to load
-    await page.waitForSelector('[data-testid="product-title"]', { timeout: 5000 }).catch(() => {
-      // Product may not be seeded yet in this test run
-      console.log('Product not found - seeding needed')
-    })
+    const first = page.getByRole('radio', { name: candidates.withVariants.variantLabels[0] })
+    const second = page.getByRole('radio', { name: candidates.withVariants.variantLabels[1] })
+    await expect(first).toBeChecked()
+    await expect(second).not.toBeChecked()
 
-    // Check that product information is visible
-    const title = await page
-      .locator('[data-testid="product-title"]')
-      .isVisible()
-      .catch(() => false)
-    if (title) {
-      // Check variant picker is present
-      const variantSelect = await page
-        .locator('[data-testid="variant-picker"]')
-        .isVisible()
-        .catch(() => false)
+    const priceBefore = await page.locator('[class*="__price"]').textContent()
+    await second.check()
+    await expect(second).toBeChecked()
+    await expect(first).not.toBeChecked()
+    const priceAfter = await page.locator('[class*="__price"]').textContent()
+    expect(priceAfter, 'the price text changes with the chosen variant').not.toBe(priceBefore)
 
-      if (variantSelect) {
-        // Get initial price
-        const initialPrice = await page.locator('[data-testid="product-price"]').textContent()
-
-        // Select a different variant
-        await page.locator('[data-testid="variant-picker"] select').selectOption('variant-2')
-
-        // Wait for price update
-        await page.waitForTimeout(500)
-
-        // Verify price changed if variants have different prices
-        const newPrice = await page.locator('[data-testid="product-price"]').textContent()
-        expect(newPrice).toBeTruthy()
-        // Verify the new price is different from initial (variant has own price or different quantity)
-        if (newPrice !== initialPrice) {
-          expect(true).toBe(true) // Prices differ, as expected
-        }
-      }
-    }
-
-    // Run axe accessibility check
-    await injectAxe(page)
-    const violations = await getViolations(page)
-    expect(violations).toHaveLength(0)
+    await shoot(page, 'product-variants-390')
+    await axeClean(page, 'product with variants, 390px')
   })
 
-  test('out of stock product shows "Out of stock" and button is disabled at 390 px', async ({
+  test('axe is clean on the variant product at 1280 px', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    const response = await page.goto(`/product/${candidates.withVariants.slug}`)
+    expect(response?.status()).toBe(200)
+    await shoot(page, 'product-variants-1280')
+    await axeClean(page, 'product with variants, 1280px')
+  })
+
+  test('clicking Add to bag on the real path fails: the product page is still wired to the 6.1.b placeholder, not 6.2’s bag (finding, not fixed here)', async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 390, height: 667 })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(`/product/${candidates.withVariants.slug}`)
+    const addButton = page.getByRole('button', { name: 'Add to bag' })
+    await expect(addButton).toBeEnabled()
+    await addButton.click()
+    await expect(page.getByRole('status').filter({ hasText: 'We could not add it' })).toBeVisible()
 
-    // Navigate to a zero-stock seeded product
-    await page.goto(`${BASE_URL}/shop/en/product/SEED-GIFTS-ZSK-001`)
+    await page.goto('/bag')
+    await expect(page.getByText('Your bag is empty')).toBeVisible()
+  })
 
-    // Wait for product to load
-    await page.waitForSelector('[data-testid="product-status"]', { timeout: 5000 }).catch(() => {
-      // Product may not be seeded yet
-      console.log('Out of stock product not found - seeding needed')
+  test('the zero-stock product shows "Out of stock" at 390 px, its add button is disabled, and the real placeholder action it posts to never adds a line', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    const response = await page.goto(`/product/${candidates.outOfStock.slug}`)
+    expect(response?.status()).toBe(200)
+
+    const addButton = page.getByRole('button', { name: 'Out of stock' })
+    await expect(addButton).toBeVisible()
+    await expect(addButton).toBeDisabled()
+    await expect(page.getByText('Out of stock').first()).toBeVisible()
+
+    await shoot(page, 'product-out-of-stock-390')
+    await axeClean(page, 'out-of-stock product, 390px')
+
+    // The real add path (actions.ts' own export, called the way the module exposes it — no
+    // invented route): proves the placeholder never adds a line, disabled button or not.
+    const actions = (await import(
+      '../../../engine/apps/web/src/sites/shop/product/actions'
+    )) as typeof import('../../../engine/apps/web/src/sites/shop/product/actions')
+    const result = await actions.addToBagPlaceholder({
+      sku: 'whatever-sku',
+      variantSku: null,
+      qty: 1,
     })
+    expect(result).toEqual({ ok: false, reason: 'not-built-yet' })
 
-    // Check for "Out of stock" message
-    const outOfStockMessage = await page
-      .locator('text=Out of stock')
-      .isVisible()
-      .catch(() => false)
-
-    if (outOfStockMessage) {
-      expect(outOfStockMessage).toBe(true)
-
-      // Check that add button is disabled or not present
-      const addButton = await page
-        .locator('[data-testid="add-to-bag"]')
-        .isDisabled()
-        .catch(() => true) // If not found, consider it as "disabled"
-
-      expect(addButton).toBe(true)
-
-      // Verify that forced POST of add action leaves bag empty
-      // Try to add via API if button disabled
-      const response = await page.request
-        .post(`${BASE_URL}/api/x/bag/add`, {
-          data: {
-            productId: 'SEED-GIFTS-ZSK-001',
-            qty: 1,
-          },
-        })
-        .catch(() => null)
-
-      // If action attempted, bag should remain empty
-      if (response) {
-        const bagContent = await page
-          .locator('[data-testid="bag-count"]')
-          .textContent()
-          .catch(() => '0')
-        expect(bagContent).toContain('0')
-      }
-    }
-
-    // Run axe check
-    await injectAxe(page)
-    const violations = await getViolations(page)
-    expect(violations).toHaveLength(0)
+    await page.goto('/bag')
+    await expect(page.getByText('Your bag is empty')).toBeVisible()
   })
 
-  test('axe is clean on product page at 1280 px', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 })
-
-    await page.goto(`${BASE_URL}/shop/en/product/SEED-TEXTILES-PRINT-01`)
-
-    // Wait for page to load
-    await page.waitForLoadState('networkidle').catch(() => {})
-
-    // Run axe check
-    await injectAxe(page)
-    const violations = await getViolations(page)
-    expect(violations).toHaveLength(0)
-  })
-
-  test('variant picker changes variant and its price at 390 px', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 667 })
-
-    await page.goto(`${BASE_URL}/shop/en/product/SEED-TEXTILES-PRINT-01`)
-
-    // Wait for variant picker
-    const variantPickerExists = await page
-      .locator('[data-testid="variant-picker"]')
-      .isVisible()
-      .catch(() => false)
-
-    if (variantPickerExists) {
-      // Get initial variant and price
-      const initialVariant = await page
-        .locator('[data-testid="variant-picker"] select')
-        .inputValue()
-
-      // Select different variant
-      const options = await page.locator('[data-testid="variant-picker"] option').count()
-      if (options > 1) {
-        await page.locator('[data-testid="variant-picker"] select').selectOption('1')
-
-        // Verify variant changed
-        const newVariant = await page.locator('[data-testid="variant-picker"] select').inputValue()
-        expect(newVariant).not.toBe(initialVariant)
-      }
-    }
-
-    // Check add to bag works
-    const addButton = await page
-      .locator('[data-testid="add-to-bag"]')
-      .isEnabled()
-      .catch(() => false)
-
-    if (addButton) {
-      await page.locator('[data-testid="add-to-bag"]').click()
-
-      // Verify item was added (bag count increased)
-      const bagCount = await page
-        .locator('[data-testid="bag-count"]')
-        .textContent()
-        .catch(() => '0')
-      expect(bagCount).not.toContain('0')
-    }
+  test('axe is clean on the out-of-stock product at 1280 px', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    const response = await page.goto(`/product/${candidates.outOfStock.slug}`)
+    expect(response?.status()).toBe(200)
+    await shoot(page, 'product-out-of-stock-1280')
+    await axeClean(page, 'out-of-stock product, 1280px')
   })
 })
