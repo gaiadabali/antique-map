@@ -126,3 +126,6 @@ with its top opportunities per the ticket's own instruction (step 4) — not a r
 are only ticked on the staging run. Two findings are reported for other owners, not fixed here (out of this
 ticket's owned paths): the seed-hook bug (`engine/packages/cms/src/{seed,import}/**`) and the Turbopack/font
 fresh-build failure (`engine/apps/web`'s Next config).
+
+## Orchestrator note (merge)
+Trimmed before the merge: the run helpers (`assemble.mjs`, `poll-pg.mjs`, `start-server.mjs`) were local scaffolding outside the ticket's owned code paths and are not kept; of the three raw Lighthouse JSON files per page only run 1 is kept (`home-1.json`, `browse-1.json`) — the table above is the runner's median over all three runs. The seed's direct `UPDATE … _status='published'` workaround described above is obsolete: the seed bug is fixed on main (`pnpm data:seed --layer gallery-sample --publish`). `/browse` misses the LCP (3.3 s vs 2.5 s) and script (240 KB vs 150 KB) budgets — open for 5.5.c on staging. The item page was not measured (not on main at run time).
