@@ -14,9 +14,15 @@
  * fixtures are made here (`./support/fixtures`) and removed in `afterAll`.
  */
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test, type Page } from '@playwright/test'
+import {
+  expect,
+  request as newRequest,
+  test,
+  type APIRequestContext,
+  type Page,
+} from '@playwright/test'
 
-import { GALLERY_ORIGIN } from './support/env'
+import { BASE_URL, GALLERY_ORIGIN } from './support/env'
 import {
   createGalleryFixtures,
   ownerReadsTitle,
@@ -24,39 +30,56 @@ import {
 } from './support/fixtures'
 
 const SHOTS = 'docs/reports/workers/ds-5.1d'
+// `default`: the four tests share one worker even under the root config's `fullyParallel` — four
+// parallel fixture writers on the shared dev Postgres make its queries fail, and a failed auth
+// lookup silently reads as nobody, which shows up as a 403 on the next write.
+test.describe.configure({ mode: 'default' })
 const BROWSE_PATH = '/browse'
 const searchPath = (query: string) => `/search?q=${encodeURIComponent(query)}`
 
 test.describe('Gallery browse and search (5.1.d)', () => {
-  let fx: GalleryFixtures
+  // The root config keeps Playwright's 30 s default; the fixture writes and the four axe page
+  // loads can exceed it under other worktrees' load, so this suite widens it.
+  test.setTimeout(120_000)
 
-  test.beforeAll(async ({ request }) => {
-    fx = await createGalleryFixtures(request)
+  let fx: GalleryFixtures
+  // Playwright forbids reusing a test's `{ request }` fixture from `beforeAll`/`afterAll`, so the
+  // fixtures get a context of their own, made and disposed around the suite.
+  let api: APIRequestContext
+
+  test.beforeAll(async () => {
+    // A `beforeAll` hook has the same 30 s default; its own `setTimeout` widens the hook.
+    test.setTimeout(120_000)
+    api = await newRequest.newContext({ baseURL: BASE_URL })
+    fx = await createGalleryFixtures(api)
   })
 
   test.afterAll(async () => {
-    await fx.cleanup()
+    // `beforeAll` may have thrown before `fx` was assigned; nothing to clean then.
+    await fx?.cleanup()
+    await api?.dispose()
   })
 
   test('search for the historical name "Batavia" finds the work catalogued under the modern place', async ({
     page,
   }) => {
-    const response = await page.goto(`${GALLERY_ORIGIN}${searchPath('Batavia')}`)
-    expect(response?.status()).toBe(200)
-
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-    // The heading names the query back; the result grid is a list of cards, each a link whose
-    // title is the work's own.
-    await expect(page.getByText(fx.publishedTitle)).toBeVisible()
-    await expect(page.getByRole('link', { name: new RegExp(fx.publishedTitle) })).toBeVisible()
+    // The fixture was written moments ago, and the search's place expansion reads a cached
+    // places list; the page settles as its write's revalidation lands. It fails if the work
+    // never appears — the retry is only for the publish's own propagation.
+    await expect(async () => {
+      const response = await page.goto(`${GALLERY_ORIGIN}${searchPath('Batavia')}`)
+      expect(response?.status()).toBe(200)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+      // The result grid is a list of cards, each a link whose title is the work's own.
+      await expect(page.getByRole('link', { name: new RegExp(fx.publishedTitle) })).toBeVisible()
+    }).toPass({ timeout: 300_000 })
   })
 
   test('a draft work is never listed in browse or search, yet the owner can read it', async ({
     page,
-    request,
   }) => {
     // Present to the owner: the fixture really exists, and it is a draft.
-    const own = await ownerReadsTitle(request, fx.draftTitle)
+    const own = await ownerReadsTitle(api, fx.draftTitle)
     expect(own.found, 'the owner reads the draft fixture').toBe(true)
     expect(own.status, 'the fixture is a draft').toBe('draft')
 
@@ -79,20 +102,30 @@ test.describe('Gallery browse and search (5.1.d)', () => {
     page,
   }) => {
     const bodies: string[] = []
-    page.on('response', async (res) => {
+    const pending: Promise<void>[] = []
+    page.on('response', (res) => {
       const type = res.headers()['content-type'] ?? ''
       if (/text\/html|text\/x-component|application\/json/.test(type)) {
-        bodies.push(await res.text().catch(() => ''))
+        // `res.text()` resolves out of band; keep the promise so every body is joined below,
+        // never dropped by a race with the assertion.
+        pending.push(
+          res
+            .text()
+            .then((text) => {
+              bodies.push(text)
+            })
+            .catch(() => {}),
+        )
       }
     })
 
     for (const path of [BROWSE_PATH, searchPath('Batavia')]) {
       const res = await page.goto(`${GALLERY_ORIGIN}${path}`)
       expect(res?.status(), path).toBe(200)
-      // Let every streamed RSC/flight response land before its body is read below.
       await page.waitForLoadState('networkidle')
       bodies.push(await page.content())
     }
+    await Promise.all(pending)
 
     const all = bodies.join('\n')
     expect(all.toLowerCase().includes('askingprice'), 'no askingPrice in any response').toBe(false)

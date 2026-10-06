@@ -37,24 +37,55 @@ export type GalleryFixtures = {
 
 type Jwt = string
 
+/** The signed-in owner's token, kept for the run: one login serves the fixtures, the draft test's
+ * staff read and the cleanup, so a dropped connection can never lose it mid-suite. */
+let cachedToken: Jwt | null = null
+
+/** Runs `call` up to `tries` times on a transient failure. The shared dev Postgres drops a new
+ * connection under other worktrees' load (`admin/local.mjs` retries its fixtures for exactly
+ * this): Playwright surfaces the drop as `ECONNRESET` before the request leaves, or the server
+ * answers a 5xx after its own query died — so a 5xx is retried here too, never a 4xx. */
+async function retrying<T extends { status(): number }>(call: () => Promise<T>, tries = 4): Promise<T> {
+  for (let attempt = 1; ; attempt += 1) {
+    let res: T
+    try {
+      res = await call()
+    } catch (error) {
+      const text = `${(error as { code?: string }).code ?? ''} ${String(error)}`
+      if (attempt >= tries || !/ECONNRESET|ECONNREFUSED|socket hang up/.test(text)) throw error
+      await new Promise((resolve) => setTimeout(resolve, 250 * attempt))
+      continue
+    }
+    if (res.status() < 500 || attempt >= tries) return res
+    await new Promise((resolve) => setTimeout(resolve, 250 * attempt))
+  }
+}
+
 async function signIn(request: APIRequestContext): Promise<Jwt> {
-  const login = await request.post(`${BASE_URL}/api/users/login`, {
-    headers: HOST_HEADER,
-    data: { email: OWNER.email, password: OWNER.password },
+  if (cachedToken !== null) return cachedToken
+  const post = (path: string, data: Record<string, unknown>) =>
+    retrying(() => request.post(`${BASE_URL}${path}`, { headers: HOST_HEADER, data }))
+  const tokenOf = async (res: { ok(): boolean; status(): number; text(): Promise<string> }) =>
+    res.ok() ? ((JSON.parse(await res.text()) as { token?: string }).token ?? null) : null
+
+  const login = () => post('/api/users/login', { email: OWNER.email, password: OWNER.password })
+  let token = await tokenOf(await login())
+  if (token) return (cachedToken = token)
+  // No owner yet, or the login's query died: first-register answers 403 when a user already
+  // exists (it is once-only), so either it or the login again yields the token.
+  const first = await post('/api/users/first-register', {
+    ...OWNER,
+    confirmPassword: OWNER.password,
+    name: 'E2E Owner',
   })
-  if (login.ok()) {
-    const body = (await login.json()) as { token?: string }
-    if (body.token) return body.token
-  }
-  const first = await request.post(`${BASE_URL}/api/users/first-register`, {
-    headers: HOST_HEADER,
-    data: { ...OWNER, confirmPassword: OWNER.password, name: 'E2E Owner' },
-  })
-  const body = (await first.json()) as { token?: string }
-  if (!first.ok() || !body.token) {
-    throw new Error(`could not sign the owner in: ${first.status()} ${JSON.stringify(body)}`)
-  }
-  return body.token
+  token = await tokenOf(first)
+  if (token) return (cachedToken = token)
+  token = await tokenOf(await login())
+  if (token) return (cachedToken = token)
+  const last = first.status()
+  throw new Error(
+    `could not sign the owner in: first-register ${last}, login ${await (await login()).status()}`,
+  )
 }
 
 const auth = (token: Jwt) => ({ ...HOST_HEADER, Authorization: `JWT ${token}` })
@@ -66,31 +97,40 @@ async function expectOk(res: { ok(): boolean; status(): number; text(): Promise<
 
 /** A seeded condition grade's id, or a fresh one — the publish guard wants a grade on the record. */
 async function gradeId(request: APIRequestContext, token: Jwt): Promise<number> {
-  const found = await request.get(`${BASE_URL}/api/terms?where[kind][equals]=grade&limit=1`, {
-    headers: auth(token),
-  })
+  const found = await retrying(() =>
+    request.get(`${BASE_URL}/api/terms?where[kind][equals]=grade&limit=1`, { headers: auth(token) }),
+  )
   await expectOk(found, 'GET /api/terms?kind=grade')
   const body = (await found.json()) as { docs: { id: number }[] }
   if (body.docs[0]) return body.docs[0].id
   const created = await request.post(`${BASE_URL}/api/terms`, {
     headers: auth(token),
-    data: { kind: 'grade', label: 'E2E Grade', _status: 'published' },
+    data: {
+      kind: 'grade',
+      label: 'E2E Grade',
+      definition: 'E2E probe grade: complete sheet, light even browning, small margins.',
+      _status: 'published',
+    },
   })
   await expectOk(created, 'POST /api/terms')
   return ((await created.json()) as { doc: { id: number } }).doc.id
 }
 
-/** Uploads the recto and answers its media id. */
+/** Uploads the recto and answers its media id. Payload's REST multipart carries the fields as a
+ * `_payload` JSON part beside the file (`media/test-stack.test-support.ts` `form()`), never as
+ * loose parts. */
 async function rectoId(request: APIRequestContext, token: Jwt, title: string): Promise<number> {
   const uploaded = await request.post(`${BASE_URL}/api/media`, {
     headers: auth(token),
     multipart: {
+      _payload: JSON.stringify({
+        alt: `${title} — the whole sheet`,
+        altSource: 'cataloguer',
+        subject: 'work',
+        role: 'recto',
+        provenance: 'photograph',
+      }),
       file: { name: 'e2e-recto.png', mimeType: 'image/png', buffer: PNG_1X1 },
-      alt: `${title} — the whole sheet`,
-      altSource: 'cataloguer',
-      subject: 'work',
-      role: 'recto',
-      provenance: 'photograph',
     },
   })
   await expectOk(uploaded, 'POST /api/media')
@@ -181,9 +221,11 @@ export async function ownerReadsTitle(
   title: string,
 ): Promise<{ found: boolean; status: string | null }> {
   const token = await signIn(request)
-  const res = await request.get(
-    `${BASE_URL}/api/works?where[title][equals]=${encodeURIComponent(title)}&limit=1&draft=true`,
-    { headers: auth(token) },
+  const res = await retrying(() =>
+    request.get(
+      `${BASE_URL}/api/works?where[title][equals]=${encodeURIComponent(title)}&limit=1&draft=true`,
+      { headers: auth(token) },
+    ),
   )
   await expectOk(res, 'GET /api/works (owner, draft=true)')
   const body = (await res.json()) as { docs: { _status?: string }[] }
