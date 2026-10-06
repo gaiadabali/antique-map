@@ -14,18 +14,17 @@
  * names it first. The owner's REST reads go to the shop host (`HOST_HEADER`, Q1).
  */
 import AxeBuilder from '@axe-core/playwright'
-import {
-  expect,
-  request as newRequest,
-  test,
-  type APIRequestContext,
-  type Page,
-} from '@playwright/test'
+import { expect, request as newRequest, test, type APIRequestContext } from '@playwright/test'
 
 import { createHref } from '../../../engine/packages/config/src/sites/routes/href'
 import { SITES } from '../../../engine/packages/config/src/sites/table'
 import { BASE_URL, GALLERY_ORIGIN, HOST_HEADER, OWNER } from './support/env'
-import { createGalleryFixtures, newLedger, type GalleryFixtures, type Ledger } from './support/fixtures'
+import {
+  createGalleryFixtures,
+  newLedger,
+  type GalleryFixtures,
+  type Ledger,
+} from './support/fixtures'
 
 const href = createHref(SITES.gallery)
 const MAILPIT_URL = process.env.MAILPIT_URL ?? 'http://127.0.0.1:8025'
@@ -135,7 +134,11 @@ test.describe('Gallery contact (5.3.e)', () => {
   test('a valid sell-to-us post makes a lead the owner reads and an email in Mailpit', async () => {
     const message = 'E2E: I have an 1880s chart of Sumatra to sell.'
     const res = await api.post(`${BASE_URL}/api/x/leads`, {
-      headers: { ...HOST_HEADER, 'content-type': 'application/json', 'idempotency-key': 'e2e-5-3-sell-1' },
+      headers: {
+        ...HOST_HEADER,
+        'content-type': 'application/json',
+        'idempotency-key': 'e2e-5-3-sell-1',
+      },
       data: {
         kind: 'sell',
         input: {
@@ -153,7 +156,8 @@ test.describe('Gallery contact (5.3.e)', () => {
     expect(Object.keys(body), 'the answer carries no stored field, not even the id').toEqual(['ok'])
 
     // The owner reads the lead: kind, site and the visitor's own fields, nothing else's.
-    let lead: { kind: string; site: string; payload: { email: string; message: string } } | undefined
+    let lead:
+      { kind: string; site: string; payload: { email: string; message: string } } | undefined
     for (let attempt = 0; attempt < 20 && !lead; attempt += 1) {
       const found = await api.get(
         `${BASE_URL}/api/leads?where[payload.email][equals]=${encodeURIComponent(sellerEmail)}&limit=1&depth=0`,
@@ -198,7 +202,8 @@ test.describe('Gallery contact (5.3.e)', () => {
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
         const { violations } = await new AxeBuilder({ page }).analyze()
         const found = violations.map(
-          ({ id, impact, nodes }) => `${impact ?? 'unknown'} ${id}: ${nodes.map((n) => n.target).join()}`,
+          ({ id, impact, nodes }) =>
+            `${impact ?? 'unknown'} ${id}: ${nodes.map((n) => n.target).join()}`,
         )
         if (found.length > 0) console.log(`axe ${path} ${viewport.width}px:`, found)
         expect(found, `axe clean: ${path} at ${viewport.width}px`).toEqual([])

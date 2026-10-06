@@ -40,7 +40,16 @@ const json = (body: unknown, status: number, headers?: HeadersInit): Response =>
 const INVALID = { errors: { form: LEAD_ERROR_KEYS.invalid } }
 
 /** The visitor's fields the route picks by name; anything else in `input` refuses the post. */
-const VISITOR_FIELDS = ['name', 'whatsapp', 'email', 'preferredChannel', 'message', 'locale', 'items', 'consent'] as const
+const VISITOR_FIELDS = [
+  'name',
+  'whatsapp',
+  'email',
+  'preferredChannel',
+  'message',
+  'locale',
+  'items',
+  'consent',
+] as const
 
 function visitorInput(raw: Record<string, unknown>): Record<string, unknown> | null {
   const input = raw.input
@@ -130,7 +139,12 @@ export async function handleLeadPost(
   // 6. The lead service: token shape → limit → Turnstile → validate → store → owner email.
   const result = await createLead(deps, {
     input,
-    context: { kind: kind as LeadRouteKind, site: 'gallery', source: 'form', consentVersion: LEAD_CONSENT_VERSION },
+    context: {
+      kind: kind as LeadRouteKind,
+      site: 'gallery',
+      source: 'form',
+      consentVersion: LEAD_CONSENT_VERSION,
+    },
     turnstileToken: token,
     ip: clientAddress(request.headers),
   })

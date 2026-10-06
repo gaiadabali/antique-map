@@ -71,7 +71,10 @@ describe('the route’s own shapes', () => {
 
   it('refuses an oversize body with 413, before parsing', async () => {
     const deps = fakeDeps()
-    const res = await run(deps, post({ kind: 'sell', input: { message: 'x'.repeat(MAX_BODY_BYTES + 1) } }))
+    const res = await run(
+      deps,
+      post({ kind: 'sell', input: { message: 'x'.repeat(MAX_BODY_BYTES + 1) } }),
+    )
     expect(res.status).toBe(413)
     expect(deps.store.create).not.toHaveBeenCalled()
     const declared = await run(deps, {
@@ -119,26 +122,52 @@ describe('the service’s answers, mapped', () => {
   it('a bad Turnstile answer is 403, and a store failure is 503', async () => {
     const failing = fakeDeps({ verifyTurnstile: vi.fn(async () => false) })
     expect((await run(failing, post(SELL))).status).toBe(403)
-    const broken = fakeDeps({ store: { create: vi.fn(async () => { throw new Error('down') }) } })
+    const broken = fakeDeps({
+      store: {
+        create: vi.fn(async () => {
+          throw new Error('down')
+        }),
+      },
+    })
     expect((await run(broken, post(SELL))).status).toBe(503)
   })
 
   it('the service’s field refusals are 422 with their lexicon keys, and unknown fields refuse the whole input', async () => {
     const deps = fakeDeps()
-    const missingName = await run(deps, post({ kind: 'sell', input: { ...SELL.input, name: '' }, turnstileToken: 'tok' }))
+    const missingName = await run(
+      deps,
+      post({ kind: 'sell', input: { ...SELL.input, name: '' }, turnstileToken: 'tok' }),
+    )
     expect(missingName.status).toBe(422)
-    expect((await missingName.json() as { errors: Record<string, string> }).errors.name).toBe('lead.error.name')
-    const unknownField = await run(deps, post({ kind: 'sell', input: { ...SELL.input, askingPrice: 100 }, turnstileToken: 'tok' }))
+    expect(((await missingName.json()) as { errors: Record<string, string> }).errors.name).toBe(
+      'lead.error.name',
+    )
+    const unknownField = await run(
+      deps,
+      post({ kind: 'sell', input: { ...SELL.input, askingPrice: 100 }, turnstileToken: 'tok' }),
+    )
     expect(unknownField.status).toBe(422)
-    expect((await unknownField.json() as { errors: Record<string, string> }).errors.form).toBe('lead.error.invalid')
+    expect(((await unknownField.json()) as { errors: Record<string, string> }).errors.form).toBe(
+      'lead.error.invalid',
+    )
   })
 
   it('the kind comes from a closed allow-list, and `items` belongs to ask alone', async () => {
     const deps = fakeDeps()
     expect((await run(deps, post({ ...SELL, kind: 'partnership' }))).status).toBe(422)
     expect((await run(deps, post({ ...SELL, kind: undefined }))).status).toBe(422)
-    expect((await run(deps, post({ kind: 'contact', input: { ...SELL.input, items: [1, 2] }, turnstileToken: 'tok' }))).status).toBe(422)
-    const ask = await run(deps, post({ kind: 'ask', input: { ...SELL.input, items: [1, 2] }, turnstileToken: 'tok' }))
+    expect(
+      (
+        await run(
+          deps,
+          post({ kind: 'contact', input: { ...SELL.input, items: [1, 2] }, turnstileToken: 'tok' }),
+        )
+      ).status,
+    ).toBe(422)
+    const ask = await run(
+      deps,
+      post({ kind: 'ask', input: { ...SELL.input, items: [1, 2] }, turnstileToken: 'tok' }),
+    )
     expect(ask.status).toBe(201)
     expect(deps.created.at(-1)?.items).toEqual([1, 2])
   })

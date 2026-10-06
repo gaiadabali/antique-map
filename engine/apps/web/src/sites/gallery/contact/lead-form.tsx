@@ -79,9 +79,9 @@ export function LeadForm({
         form.reset()
         return
       }
-      const body = (await response.json().catch(() => null)) as
-        | { errors?: Record<string, string> }
-        | null
+      const body = (await response.json().catch(() => null)) as {
+        errors?: Record<string, string>
+      } | null
       const formKey = REFUSALS[response.status] ?? FORM_ERROR_KEYS.unavailable
       setState({
         status: 'error',

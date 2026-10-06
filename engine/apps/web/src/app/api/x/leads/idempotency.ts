@@ -14,7 +14,10 @@ export class LeadIdempotency {
   private readonly entries = new Map<string, Entry>()
 
   /** The first result a key holds, or `null` — an expired key is dropped, never replayed. */
-  get(key: string, now: number = Date.now()): { readonly status: number; readonly body: string } | null {
+  get(
+    key: string,
+    now: number = Date.now(),
+  ): { readonly status: number; readonly body: string } | null {
     const entry = this.entries.get(key)
     if (entry === undefined) return null
     if (now - entry.at >= TTL_MS) {

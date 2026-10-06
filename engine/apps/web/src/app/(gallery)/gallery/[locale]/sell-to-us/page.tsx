@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { connection } from 'next/server'
 
-import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
+import { createHref, SITES } from '@engine/config/sites'
 
 import { pageMetadata } from '../../../../../server/seo'
 import { loadSiteSettings } from '../../../../../server/site-settings'
@@ -48,17 +48,18 @@ export default async function SellToUsPage(props: Props) {
   const locale = siteLocale('gallery', (await props.params).locale)
   if (locale === null) notFound() // the segment's not-found answers an unknown locale
   const t = contactText(locale)
-  const [settings, site] = await Promise.all([
-    loadSiteSettings('gallery', locale),
-    currentSite('gallery'),
-  ])
+  const settings = await loadSiteSettings('gallery', locale)
   const links = talkLinks(settings.contact, sellMessage(t, t('sellToUs.whatButton')))
   return (
     <ContactPageView
       kind="sell"
       locale={locale}
       t={t}
-      head={{ eyebrow: t('sellToUs.eyebrow'), title: t('sellToUs.title'), lede: t('sellToUs.lede') }}
+      head={{
+        eyebrow: t('sellToUs.eyebrow'),
+        title: t('sellToUs.title'),
+        lede: t('sellToUs.lede'),
+      }}
       links={links}
       contactMissing={links.wa === null && links.mail === null}
       contactHref={null}

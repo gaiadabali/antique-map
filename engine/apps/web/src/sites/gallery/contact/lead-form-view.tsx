@@ -27,7 +27,16 @@ type Props = {
   readonly resetToken?: unknown
 }
 
-export function LeadFormView({ kind, text, state, pending, submit, locale, siteKey, resetToken }: Props) {
+export function LeadFormView({
+  kind,
+  text,
+  state,
+  pending,
+  submit,
+  locale,
+  siteKey,
+  resetToken,
+}: Props) {
   if (state.status === 'success') {
     return (
       <div className={styles.form}>
@@ -56,7 +65,9 @@ export function LeadFormView({ kind, text, state, pending, submit, locale, siteK
         error={say(errors.name)}
         required
       />
-      {errors.contact !== undefined && <FormMessage tone="error">{say(errors.contact)}</FormMessage>}
+      {errors.contact !== undefined && (
+        <FormMessage tone="error">{say(errors.contact)}</FormMessage>
+      )}
       <Input
         label={text['contactForm.whatsapp']}
         id="lead-whatsapp"

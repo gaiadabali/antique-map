@@ -28,7 +28,8 @@ export const CONTACT_MESSAGES = defineMessages({
   'contact.waText': 'Hello, I have a question for Indies Gallery.',
   'contact.emailSubject': 'A question for Indies Gallery',
   // the sell-to-us row of the §8 message table, and the page's words
-  'whatsapp.sellUs': 'Hello, I have an antique I would like to sell: {what}. I can send photos here.',
+  'whatsapp.sellUs':
+    'Hello, I have an antique I would like to sell: {what}. I can send photos here.',
   'sellToUs.eyebrow': 'Sell to us',
   'sellToUs.title': 'Do you have an antique of the East Indies?',
   'sellToUs.lede':

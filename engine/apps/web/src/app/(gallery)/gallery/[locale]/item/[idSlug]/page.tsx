@@ -99,7 +99,10 @@ export default async function GalleryItem(props: Props) {
   if (parsed.slug !== work.slug) permanentRedirect(itemHref(work, locale))
   // The Ask panel's handoff (5.3): a WhatsApp link whose message names the work, an email link
   // beside it, and — until the gallery's channels arrive (OA2) — the Contact page instead.
-  const [site, settings] = await Promise.all([currentSite('gallery'), loadSiteSettings('gallery', locale)])
+  const [site, settings] = await Promise.all([
+    currentSite('gallery'),
+    loadSiteSettings('gallery', locale),
+  ])
   const url = site.origin === null ? null : `${site.origin}${itemHref(work, locale)}`
   const message =
     work.status === 'sold'
