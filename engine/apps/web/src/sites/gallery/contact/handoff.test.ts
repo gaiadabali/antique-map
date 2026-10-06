@@ -25,16 +25,24 @@ import {
 /** The words as the pages get them: the gallery's own lexicon per locale. */
 const textOf = (locale: SiteLocale): HandoffText => contactText(locale)
 
-const ITEM = { stockNumber: 'M.0500', title: 'A chart of the Sunda Strait', url: 'https://indiesgallery.test/product/1706-a-chart' }
+const ITEM = {
+  stockNumber: 'M.0500',
+  title: 'A chart of the Sunda Strait',
+  url: 'https://indiesgallery.test/product/1706-a-chart',
+}
 
 describe('the §8 message rows, in the page’s language', () => {
   it('row 1 — item, available or on hold: stock number first, then the email body asks the question', () => {
     const en = itemMessage(textOf('en'), ITEM)
-    expect(en.waText).toBe(`Hello, I am interested in M.0500 — A chart of the Sunda Strait. ${ITEM.url}`)
+    expect(en.waText).toBe(
+      `Hello, I am interested in M.0500 — A chart of the Sunda Strait. ${ITEM.url}`,
+    )
     expect(en.subject).toBe('M.0500 — A chart of the Sunda Strait')
     expect(en.body).toBe(`${en.waText}\n\nMy question:`)
     const id = itemMessage(textOf('id'), ITEM)
-    expect(id.waText).toBe(`Halo, saya tertarik dengan M.0500 — A chart of the Sunda Strait. ${ITEM.url}`)
+    expect(id.waText).toBe(
+      `Halo, saya tertarik dengan M.0500 — A chart of the Sunda Strait. ${ITEM.url}`,
+    )
     expect(id.body).toBe(`${id.waText}\n\nPertanyaan saya:`)
   })
 
@@ -52,7 +60,9 @@ describe('the §8 message rows, in the page’s language', () => {
 
   it('row 3 — viewing: the subject names the city, the message names the work', () => {
     const en = viewingMessage(textOf('en'), { ...ITEM, city: 'Singapore' })
-    expect(en.waText).toBe('Hello, I would like to arrange a viewing of M.0500 — A chart of the Sunda Strait.')
+    expect(en.waText).toBe(
+      'Hello, I would like to arrange a viewing of M.0500 — A chart of the Sunda Strait.',
+    )
     expect(en.subject).toBe('Viewing in Singapore')
     const id = viewingMessage(textOf('id'), { ...ITEM, city: 'Singapura' })
     expect(id.subject).toBe('Janji temu untuk melihat di Singapura')
@@ -109,7 +119,11 @@ describe('the links’ encoding', () => {
   })
 
   it('mailto: encodes the subject and the body, so a # or & in either survives', () => {
-    const href = mailtoHref('gallery@indies.test', 'Q&A — a #2 title', 'Is it available?& yes\nline two')
+    const href = mailtoHref(
+      'gallery@indies.test',
+      'Q&A — a #2 title',
+      'Is it available?& yes\nline two',
+    )
     expect(href.startsWith('mailto:gallery@indies.test?subject=')).toBe(true)
     const subject = /subject=([^&]*)/.exec(href)?.[1] ?? ''
     const body = /body=(.*)$/.exec(href)?.[1] ?? ''

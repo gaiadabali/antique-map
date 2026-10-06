@@ -86,7 +86,5 @@ function PanelContact({
       </p>
     )
   }
-  return contactMissing ? (
-    <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>
-  ) : null
+  return contactMissing ? <p className={styles.panelFine}>{c('contactPage.placeholder')}</p> : null
 }

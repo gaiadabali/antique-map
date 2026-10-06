@@ -11,7 +11,11 @@
  *
  * Fixtures follow `support/fixtures.ts`: the browse suite's published work (made in `beforeAll`,
  * removed in `afterAll` through the ledger), PATCHed to carry a stock number — the wa.me text
- * names it first. The owner's REST reads go to the shop host (`HOST_HEADER`, Q1).
+ * names it first. PATCHing a work with drafts enabled merges its latest draft version into the
+ * published doc, so the PATCH names the title explicitly again. The gallery's site-settings gain
+ * a test WhatsApp number, contact email and lead-notify list for the run (the owner's "new lead"
+ * email only sends when one is configured, and carries no visitor data by design) and are put
+ * back afterwards. The owner's REST reads go to the shop host (`HOST_HEADER`, Q1).
  */
 import AxeBuilder from '@axe-core/playwright'
 import { expect, request as newRequest, test, type APIRequestContext } from '@playwright/test'
@@ -31,6 +35,8 @@ const MAILPIT_URL = process.env.MAILPIT_URL ?? 'http://127.0.0.1:8025'
 /** The e2e's own distinctive values: the stock number and the visitor who sells to us. */
 const STOCK_NUMBER_PREFIX = 'M.53E2E'
 const SELLER_EMAIL_PREFIX = 'e2e-5.3-seller'
+/** The gallery's test WhatsApp number for the run (an unusable test value, not a real one). */
+const TEST_WHATSAPP = '+6590000000'
 const WIDTHS = [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
@@ -47,6 +53,9 @@ test.describe('Gallery contact (5.3.e)', () => {
   let token: string | null = null
   let stockNumber: string
   let sellerEmail: string
+  let notifyEmail: string
+  /** The site-settings values the run changes, put back in `afterAll`. */
+  let settingsBefore: Record<string, unknown> | null = null
 
   const auth = () => ({ ...HOST_HEADER, Authorization: `JWT ${token}` })
 
@@ -56,23 +65,52 @@ test.describe('Gallery contact (5.3.e)', () => {
     ledger = newLedger(api)
     fx = await createGalleryFixtures(api, ledger)
     token = await signIn(api)
-    // The item handoff names the work's stock number first: give the published fixture one.
+    // The run's own distinctive values: the stock number, the visitor who sells to us, and the
+    // address the owner's lead email goes to (this worktree's Mailpit).
     const stamp = Date.now()
     stockNumber = `${STOCK_NUMBER_PREFIX}${stamp}`
     sellerEmail = `${SELLER_EMAIL_PREFIX}.${stamp}@example.test`
-    const id = await publishedWorkId()
-    const patch = await api.patch(`${BASE_URL}/api/works/${id}`, {
+    notifyEmail = `e2e-5.3-notify.${stamp}@example.test`
+    // The gallery's channels: without a WhatsApp number and email in site-settings the handoff
+    // links are `null` (OA2) and no lead email is sent — this run needs both, and restores both.
+    const before = await api.get(`${BASE_URL}/api/globals/site-settings`, { headers: auth() })
+    expect(before.ok(), `owner reads site-settings: ${before.status()}`).toBeTruthy()
+    settingsBefore = (await before.json()) as Record<string, unknown>
+    const gallery = (settingsBefore.gallery ?? {}) as Record<string, unknown>
+    const contact = (gallery.contact ?? {}) as Record<string, unknown>
+    const patch = await api.post(`${BASE_URL}/api/globals/site-settings`, {
       headers: auth(),
-      data: { stockNumber },
+      data: {
+        gallery: {
+          ...gallery,
+          contact: { ...contact, whatsapp: TEST_WHATSAPP, email: notifyEmail },
+          leadNotifyEmails: [notifyEmail],
+        },
+      },
     })
-    expect(patch.ok(), `PATCH the published work's stock number: ${patch.status()}`).toBeTruthy()
+    expect(patch.ok(), `owner sets the gallery's test channels: ${patch.status()}`).toBeTruthy()
+    // The item handoff names the work's stock number first: give the published fixture one.
+    // PATCHing a work with drafts enabled merges its latest draft version in, so the title is
+    // named explicitly again.
+    const id = await publishedWorkId()
+    const stock = await api.patch(`${BASE_URL}/api/works/${id}`, {
+      headers: auth(),
+      data: { stockNumber, title: fx.publishedTitle },
+    })
+    expect(stock.ok(), `PATCH the published work's stock number: ${stock.status()}`).toBeTruthy()
   })
 
   test.afterAll(async () => {
     test.setTimeout(120_000)
     try {
-      await ledger?.cleanup()
+      if (settingsBefore !== null && token !== null) {
+        await api.post(`${BASE_URL}/api/globals/site-settings`, {
+          headers: auth(),
+          data: { gallery: settingsBefore.gallery },
+        })
+      }
     } finally {
+      await ledger?.cleanup()
       await api?.dispose()
     }
   })
@@ -120,15 +158,23 @@ test.describe('Gallery contact (5.3.e)', () => {
     expect(work.stockNumber, 'the fixture carries its stock number').toBe(stockNumber)
     const itemPath = href('item', { publicId: work.publicId, slug: work.slug }, 'en')
     await page.setViewportSize({ width: 390, height: 844 })
-    await page.goto(`${GALLERY_ORIGIN}${itemPath}`, { waitUntil: 'networkidle' })
-
-    const ask = page.locator('a[href^="https://wa.me/"]')
-    await expect(ask).toHaveCount(1)
-    const url = new URL((await ask.getAttribute('href')) as string)
-    expect(url.host, 'the handoff is wa.me').toBe('wa.me')
-    const text = decodeURIComponent(url.searchParams.get('text') as string)
-    expect(text, 'the prepared message names the stock number').toContain(stockNumber)
-    expect(text, 'the prepared message names the title').toContain(fx.publishedTitle)
+    // The page answers 200: the shared dev Postgres drops a connection under other worktrees'
+    // load, and a failed render answers an error page whose shell still shows a bare wa.me
+    // footer link — the Ask link is the one whose `text` parameter carries the prepared message.
+    await expect(async () => {
+      const res = await page.goto(`${GALLERY_ORIGIN}${itemPath}`, { waitUntil: 'networkidle' })
+      expect(res?.status(), itemPath).toBe(200)
+      const ask = page.locator('a[href^="https://wa.me/"][href*="?text="]')
+      await expect(ask).toHaveCount(1)
+      const url = new URL((await ask.getAttribute('href')) as string)
+      expect(url.host, 'the handoff is wa.me').toBe('wa.me')
+      expect(url.searchParams.get('text'), 'the prepared message names the stock number').toContain(
+        stockNumber,
+      )
+      expect(url.searchParams.get('text'), 'the prepared message names the title').toContain(
+        fx.publishedTitle,
+      )
+    }).toPass({ timeout: 30_000 })
   })
 
   test('a valid sell-to-us post makes a lead the owner reads and an email in Mailpit', async () => {
@@ -173,24 +219,28 @@ test.describe('Gallery contact (5.3.e)', () => {
     expect(lead!.payload.email).toBe(sellerEmail)
     expect(lead!.payload.message).toBe(message)
 
-    // The owner's email about it, in Mailpit (loopback on this worktree).
-    let mail: { Subject: string; Text: string } | undefined
+    // The owner's email about it, in Mailpit (loopback on this worktree). It names the lead's
+    // kind and site only — no name, no message, no contact detail ever crosses the mail
+    // provider (the lead is owner-only in the admin).
+    let mail: { Subject: string; Text: string; To?: { Address?: string }[] } | undefined
     for (let attempt = 0; attempt < 30 && !mail; attempt += 1) {
       const found = await api.get(
-        `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:${sellerEmail}`)}`,
+        `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:${notifyEmail}`)}`,
       )
       if (found.ok()) {
         const messages = ((await found.json()) as { messages?: { ID: string }[] }).messages ?? []
         if (messages[0]) {
           const one = await api.get(`${MAILPIT_URL}/api/v1/message/${messages[0].ID}`)
-          if (one.ok()) mail = (await one.json()) as { Subject: string; Text: string }
+          if (one.ok()) mail = (await one.json()) as typeof mail
         }
       }
       if (!mail) await new Promise((r) => setTimeout(r, 500))
     }
     expect(mail, `the owner's email about the lead in Mailpit`).toBeDefined()
-    expect(mail!.Subject, 'the email names the seller').toContain('E2E Seller')
-    expect(mail!.Text, 'the email carries the message').toContain(message)
+    expect(mail!.Subject, 'the email names the kind and the site').toContain('sell lead')
+    expect(mail!.Subject, 'the email names the gallery').toContain('Indies Gallery')
+    expect(mail!.Text, 'the email carries no visitor data').not.toContain(sellerEmail)
+    expect(mail!.Text, 'the email carries no visitor data').not.toContain(message)
   })
 
   for (const path of ['/sell-to-us', '/contact']) {
