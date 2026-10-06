@@ -13,9 +13,24 @@ export interface MediaPipelineStore extends PublicImageStore {
   read(key: string): Promise<Uint8Array | null>
 }
 
+/** Socket failures worth another try: the SDK retries a request, not a body that breaks mid-read. */
+const TRANSIENT = /ECONNRESET|ETIMEDOUT|EPIPE|socket hang up/i
+const READ_ATTEMPTS = 3
+
+async function readWithRetry(objects: BucketObjects, key: string): Promise<Uint8Array | null> {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await objects.get(key)
+    } catch (error) {
+      const message = error instanceof Error ? `${error.name} ${error.message}` : String(error)
+      if (attempt >= READ_ATTEMPTS || !TRANSIENT.test(message)) throw error
+    }
+  }
+}
+
 export function bucketPipelineStore(objects: BucketObjects): MediaPipelineStore {
   return {
-    read: (key) => objects.get(key),
+    read: (key) => readWithRetry(objects, key),
     async put(key, bytes, contentType, cacheControl) {
       if ((await objects.put(key, bytes, contentType, cacheControl)) === 'denied') {
         throw new Error(`the media key may not write ${key}`)
