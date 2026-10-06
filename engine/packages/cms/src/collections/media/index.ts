@@ -15,8 +15,9 @@
  *   endpoint, for every collection (`hooks/request-temp-files`, TASKS.md 8.3.h). No TIFF, which
  *   is a capture's; no SVG, which can carry script; no pasted URL, which would have the server
  *   fetch whatever it names.
- * - **No Payload image sizes and no crop**: the derivative ladder is C9's, built by 15.1 from this
- *   file; cropping happened at intake. The focal point stays, for the derivatives' art direction.
+ * - **No Payload image sizes and no crop**: the derivative ladder is C9's, built from this file
+ *   by the media pipeline (`./pipeline`, run after the upload by `./pipeline-hook`, backfilled by
+ *   `./derivatives-cli`); cropping happened at intake. The focal point stays, for the derivatives' art direction.
  * - **Role, provenance and subject are set once**, at intake; only the owner corrects them
  *   (`./frozen`) — provenance decides the synthetic label, which no other writer may take off,
  *   and the subject keeps the gallery's own images out of a store user's read (`./access`).
@@ -36,6 +37,7 @@ import {
   matchItsMaster,
   refuseOversizedUpload,
 } from './hooks'
+import { derivativesAfterUpload } from './pipeline-hook'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -67,6 +69,8 @@ export const Media: CollectionConfig = {
       freezeAfterCreate('media', ['role', 'provenance', 'subject'], mayCorrectIntake),
       deriveFromFile,
     ],
+    // After the response: the derivatives and tiles of a new or replaced file (`./pipeline-hook`).
+    afterChange: [derivativesAfterUpload],
   },
   fields: MEDIA_FIELDS,
 }
