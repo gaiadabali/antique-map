@@ -92,6 +92,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 | 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
 | 5·W3 | 5.5 The gallery gate | deepseek | `w/ds-5.5b` | 2026-10-06 | |
+| 5·W2 | 5.3 Ask about this, Sell to us, and the lead form | glm | `w/5.3` | 2026-10-06 | |
 
 ## Decisions for the owner
 
@@ -477,7 +478,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
   - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
-- [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2
+- [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — 🔄 5·W2
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`, `engine/apps/web/src/app/api/x/leads/**`
   - **Read** EXPERIENCE-GALLERY.md §Handoffs, AI.md §Leads, SECURITY.md §Forms and uploads
