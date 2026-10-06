@@ -1,0 +1,233 @@
+/* The gallery's item page (5.2.b): 390 px first, tokens only (DESIGN-SYSTEM.md). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* The browse page's full-bleed measure: the shell's main column is the prose width. */
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-block: var(--space-5);
+}
+
+/* Title block: hook title, original title in italic, maker line, stock number (§5). */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+}
+
+.originalTitle {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.byline {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.stock {
+  margin: 0;
+  font: var(--text-small);
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-text-muted);
+}
+
+/* Phone: one column, top to bottom. Desktop: media left, record and panel right (§5). */
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.media {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.primaryImage {
+  background: var(--color-surface-raised);
+}
+
+.primaryImage img {
+  object-fit: contain;
+}
+
+.mockupNote {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Status and Ask panel: a conversation, never a checkout (§5). */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+}
+
+.panelNote {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.panelFine {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.priceOnRequest {
+  font: var(--text-h3);
+}
+
+/* The record: a definition list in the collectors' order (§5). */
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 10rem) 1fr;
+  gap: var(--space-3);
+}
+
+.term {
+  color: var(--color-text-muted);
+}
+
+.detail {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.provenanceRow {
+  margin: 0 0 var(--space-1);
+}
+
+.provenanceRow:last-child {
+  margin-bottom: 0;
+}
+
+/* The deep-zoom viewer and its filmstrip (§6). */
+.viewer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.viewport {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  touch-action: none;
+  background: var(--color-surface-dark);
+}
+
+/* OpenSeadragon's own failure text is English and names an object; the page says its own.
+   It sets the node's display inline, so it is hidden by visibility. */
+.viewport :global(.openseadragon-message) {
+  visibility: hidden;
+}
+
+.viewerFailed {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.viewerHint {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.zoomDoor {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3);
+  border: var(--rule-hair) dashed var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.zoomEmpty {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--color-surface-dark);
+}
+
+.filmstrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filmstripThumb {
+  padding: var(--space-1) var(--space-2);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: var(--text-small);
+  cursor: pointer;
+}
+
+.filmstripOn {
+  border-color: var(--color-accent);
+}
+
+.browseMore {
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .columns {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .media {
+    flex: 1 1 55%;
+    position: sticky;
+    top: var(--space-4);
+  }
+
+  .side {
+    flex: 1 1 40%;
+  }
+
+  /* The panel is the sticky one on the desktop (§5); the record scrolls beside it. */
+  .side > .panel {
+    position: sticky;
+    top: var(--space-4);
+  }
+}

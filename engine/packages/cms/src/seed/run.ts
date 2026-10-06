@@ -28,6 +28,8 @@ export type SeedOptions = {
   readonly payload: Payload
   readonly dryRun?: boolean
   readonly publish?: boolean
+  /** The CLI's cache collector context (`../import/cli-cache`); none inside a request. */
+  readonly context?: RunOptions['context']
 }
 
 export type SeedRun = {
@@ -40,7 +42,8 @@ export type SeedRun = {
 
 export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise<SeedRun> {
   const { payload, dryRun = false, publish = false } = options
-  const runOptions: Omit<RunOptions, 'payload'> = { runner: 'seed', dryRun, publish }
+  const { context } = options
+  const runOptions: Omit<RunOptions, 'payload'> = { runner: 'seed', dryRun, publish, context }
 
   if (layer === 'vocabulary') {
     return { layer, vocabulary: await seedVocabulary(payload), imports: [], marked: 0 }
@@ -62,7 +65,7 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
     payload,
     ...runOptions,
   })
-  const marked = dryRun ? 0 : await carryMarks(payload, rows)
+  const marked = dryRun ? 0 : await carryMarks(payload, rows, context)
   return { layer, vocabulary, imports: [report], marked }
 }
 
@@ -145,7 +148,11 @@ function utf8(text: string): Uint8Array {
  * (DATA.md §4) — the antiques template has no column for them, so the run carries them here, and
  * the review queue reads them. A work already carrying the same list is left alone.
  */
-export async function carryMarks(payload: Payload, rows: readonly AntiqueRow[]): Promise<number> {
+export async function carryMarks(
+  payload: Payload,
+  rows: readonly AntiqueRow[],
+  context: RunOptions['context'] = undefined,
+): Promise<number> {
   const wanted = rows
     .filter((row) => row.reviewMarks.length > 0 || row.legacyCategories.length > 0)
     .map((row) => ({
@@ -185,6 +192,7 @@ export async function carryMarks(payload: Payload, rows: readonly AntiqueRow[]):
         collection: 'works',
         id: doc.id,
         overrideAccess: true,
+        ...(context ? { context } : {}),
         data: {
           legacy: {
             ...(doc.legacy?.productId !== undefined ? { productId: doc.legacy.productId } : {}),

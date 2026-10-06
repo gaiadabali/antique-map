@@ -15,7 +15,6 @@ import { SITES, SURFACE_ROUTES, type SiteKey } from '@engine/config/sites'
 
 const NOT_BUILT_YET: Record<SiteKey, Partial<Record<string, string>>> = {
   gallery: {
-    item: 'TASKS.md 5.2',
     sellToUs: 'TASKS.md 5.3',
   },
   shop: { stores: 'TASKS.md 7.3' },
