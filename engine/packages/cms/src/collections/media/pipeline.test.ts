@@ -143,6 +143,17 @@ describe('deriveMedia', () => {
     expect(batch.pending).toEqual(['work:IG-000123', 'product:41'])
   })
 
+  it('records the displayed size when Payload measured the file on its side', async () => {
+    // The fixture shows 16 × 12; a record measured before EXIF orientation says 12 × 16.
+    const sideways = fakePayload(media({ width: 12, height: 16 }))
+    const { store } = fakeStore(await jpeg())
+    await deriveMedia(sideways.payload, 7, { store, mediaPublicUrl: BASE })
+    expect(sideways.updates[0]!.data).toMatchObject({ width: 16, height: 12 })
+    const upright = fakePayload(media({ width: 16, height: 12 }))
+    await deriveMedia(upright.payload, 7, { store, mediaPublicUrl: BASE })
+    expect(upright.updates[0]!.data).not.toHaveProperty('width')
+  })
+
   it('stays ready when the placing records cannot be expired', async () => {
     const { payload, raw, updates, logged } = fakePayload(media())
     raw.find.mockRejectedValue(new Error('Failed query: connection timeout'))

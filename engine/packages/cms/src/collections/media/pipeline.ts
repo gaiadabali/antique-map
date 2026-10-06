@@ -143,6 +143,17 @@ function reasonOf(error: unknown, filename: string): string {
   return masked.slice(0, 300)
 }
 
+/**
+ * The record's size as displayed, when Payload measured it otherwise. Payload stores the pixels on
+ * disk (sharp's `metadata()`), before EXIF orientation: a phone's portrait stored on its side
+ * reads as landscape. The derivative keys follow the displayed width, and the loaders build their
+ * URL from the record's (`largestDerivativeWidth(width)`), so it must be the displayed one.
+ */
+function displayedSize(doc: Doc, published: Published): Doc {
+  if (doc.width === published.width && doc.height === published.height) return {}
+  return { width: published.width, height: published.height }
+}
+
 /** Publishes one record's upload and records the outcome; never throws. */
 export async function deriveMedia(
   payload: Payload,
@@ -185,6 +196,7 @@ export async function deriveMedia(
           blurDataUri: published.blurDataUri,
         },
         iiif: { status: published.tiles },
+        ...displayedSize(doc, published),
       },
       deps.context,
     )

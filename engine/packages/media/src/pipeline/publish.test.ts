@@ -161,4 +161,20 @@ describe('publishImage', () => {
     ).rejects.toBeInstanceOf(UnpublishableImageError)
     expect(store.puts).toEqual([])
   })
+
+  it('reports the displayed size of a photo stored on its side, which the keys follow', async () => {
+    // A phone's portrait: 1800 × 1200 pixels on disk, EXIF orientation 6 (shown 1200 × 1800).
+    // The stored size (sharp's `metadata()`, as Payload measures it) is the pixels on disk; the
+    // derivative keys are the displayed width, so the record must take the displayed size.
+    const rotated = await sharp(await gpsJpeg(1800, 1200))
+      .withMetadata({ orientation: 6 })
+      .jpeg()
+      .toBuffer()
+    expect(await sharp(rotated).metadata()).toMatchObject({ width: 1800, height: 1200 })
+    const store = fakeStore()
+    const published = await publishImage(rotated, store, options(false))
+    expect(published).toMatchObject({ width: 1200, height: 1800 })
+    expect(store.keys()).toContain(derivativeKey(ID, 1200 as never, 'webp'))
+    expect(store.keys()).not.toContain(derivativeKey(ID, 1800 as never, 'webp'))
+  })
 })
