@@ -17,7 +17,10 @@ import type { CollectionConfig } from 'payload'
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
-import { invalidateProductOnChange, invalidateProductOnDelete } from '../../hooks/product-invalidate'
+import {
+  invalidateProductOnChange,
+  invalidateProductOnDelete,
+} from '../../hooks/product-invalidate'
 import { PRODUCTS_ACCESS } from './access'
 import { PRODUCT_CONSTRAINTS } from './constraints'
 import { PRODUCT_FIELDS } from './fields'

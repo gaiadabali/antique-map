@@ -41,7 +41,9 @@ describe('after the commit: a product’s tags, to the caller’s collector', ()
   it('expires nothing for a draft saved over a draft, and a published product’s tags otherwise', async () => {
     const batch = invalidationBatch()
     const change = (doc: object, previousDoc: object) =>
-      batch.operation((context) => invalidateProductOnChange({ doc, previousDoc, context } as never))
+      batch.operation((context) =>
+        invalidateProductOnChange({ doc, previousDoc, context } as never),
+      )
     await change({ ...published, _status: 'draft' }, {})
     await change({ ...published, _status: 'draft' }, { ...published, _status: 'draft' })
     expect(batch.pending).toEqual([])
