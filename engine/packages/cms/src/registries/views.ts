@@ -11,6 +11,7 @@
  */
 import type { AdminViewConfig } from 'payload'
 
+import { leadsViewEntries } from '../admin/leads/entry'
 import { uniqueEntries, type RegistryEntry } from './entries'
 
 // Barrels, one line each when they exist:
@@ -25,6 +26,7 @@ export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = [
       exact: true,
     },
   },
+  ...leadsViewEntries,
 ]
 
 /** `admin.components.views`, keyed by each entry's name. */
