@@ -11,7 +11,7 @@
 import { expect, test } from '@playwright/test'
 
 import { gateAccounts, type GateAccounts } from './accounts'
-import { GATE_DB, MAILPIT_URL, PIN, SHOP_ORIGIN } from './env'
+import { GATE_DB, PIN, SHOP_ORIGIN } from './env'
 import {
   addFromProductPage,
   axeClean,
@@ -20,14 +20,21 @@ import {
   listProducts,
   openOrderByNumber,
   orderByToken,
+  orderConfirmationEmail,
+  orderNumberAfterCheckout,
   payAndSettle,
   type ProductSummary,
+  quoteAsStaff,
   type SettledOrder,
   setupFixtureStock,
   shoot,
   signInAs,
+  submitCheckout,
   WIDTHS,
 } from './helpers'
+
+/** TASKS.md 6.6's staff-quoted delivery fee, as the ticket (7.4-r2) names it. */
+const DELIVERY_FEE_IDR = 15_000
 
 /** Staging fallback: any two sellable (add button enabled), unvarianted products, undiscovered by
  * a pin probe — on staging the given accounts' own store is trusted to be near `E2E_PIN` already
@@ -49,29 +56,6 @@ async function discoverTwoSellableProducts(
   }
   expect(found.length, 'two sellable, unvarianted products').toBeGreaterThanOrEqual(2)
   return found
-}
-
-async function findOrderEmail(
-  request: Parameters<typeof listProducts>[0],
-  to: string,
-): Promise<{ text: string; subject: string } | null> {
-  if (MAILPIT_URL === 'none') return null
-  for (let attempt = 0; attempt < 10; attempt++) {
-    const res = await request.get(
-      `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:${to}`)}`,
-    )
-    if (res.ok()) {
-      const body = (await res.json()) as { messages?: { ID: string }[] }
-      const found = body.messages?.[0]
-      if (found) {
-        const message = await request.get(`${MAILPIT_URL}/api/v1/message/${found.ID}`)
-        const parsed = (await message.json()) as { Text: string; Subject: string }
-        return { text: parsed.Text, subject: parsed.Subject }
-      }
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500))
-  }
-  return null
 }
 
 test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
@@ -109,25 +93,34 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
     await expect(page.locator('main').getByRole('listitem')).toHaveCount(2)
     await shoot(page, 'buyer-bag-390')
 
+    const buyerEmail = 'e2e-fulfilment-buyer@example.test'
     await fillCheckout(
       page,
       {
         name: 'E2E Fulfilment Buyer',
         whatsapp: '0812 3456 7890',
-        email: 'e2e-fulfilment-buyer@example.test',
+        email: buyerEmail,
         address: 'Jl. Teuku Umar, Denpasar',
       },
       PIN,
     )
     await shoot(page, 'buyer-checkout-390')
 
-    order1 = await payAndSettle(page)
+    const placed = await submitCheckout(page)
+    await shoot(page, 'buyer-order-awaiting-quote-390')
+
+    const orderNumber = await orderNumberAfterCheckout(request, placed.token, buyerEmail)
+    await quoteAsStaff(page, orderNumber, DELIVERY_FEE_IDR)
+    await shoot(page, 'store-quote-sent-390')
+
+    await page.goto(`${SHOP_ORIGIN}/order/${placed.token}`)
+    order1 = await payAndSettle(page, placed.itemsTotalIdr + DELIVERY_FEE_IDR)
     const trackingLink = page.getByRole('link', { name: 'Track your order' })
     await expect(trackingLink).toBeVisible()
     await shoot(page, 'buyer-order-paid-390')
     await axeClean(page, 'order page, paid, at 390px')
 
-    const email = await findOrderEmail(request, 'e2e-fulfilment-buyer@example.test')
+    const email = await orderConfirmationEmail(request, buyerEmail)
     if (email) {
       expect(email.subject, 'the order email names the same order').toContain(order1.shownNumber)
     } else {
@@ -217,6 +210,7 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
   test('the owner reassigns a second order to another store with stock', async ({
     page,
     browser,
+    request,
   }) => {
     await page.setViewportSize(WIDTHS[0])
 
@@ -224,17 +218,22 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
     const guestPage = await guestContext.newPage()
     await guestPage.setViewportSize(WIDTHS[0])
     await addFromProductPage(guestPage, products[0]!.slug)
+    const secondBuyerEmail = 'e2e-fulfilment-buyer-2@example.test'
     await fillCheckout(
       guestPage,
       {
         name: 'E2E Fulfilment Second Buyer',
         whatsapp: '0812 0000 1111',
-        email: 'e2e-fulfilment-buyer-2@example.test',
+        email: secondBuyerEmail,
         address: 'Jl. Teuku Umar, Denpasar',
       },
       PIN,
     )
-    order2 = await payAndSettle(guestPage)
+    const placed2 = await submitCheckout(guestPage)
+    const orderNumber2 = await orderNumberAfterCheckout(request, placed2.token, secondBuyerEmail)
+    await quoteAsStaff(guestPage, orderNumber2, DELIVERY_FEE_IDR)
+    await guestPage.goto(`${SHOP_ORIGIN}/order/${placed2.token}`)
+    order2 = await payAndSettle(guestPage, placed2.itemsTotalIdr + DELIVERY_FEE_IDR)
     await shoot(guestPage, 'buyer-second-order-paid-390')
     await guestContext.close()
 
@@ -247,8 +246,15 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
 
     await page.getByRole('link', { name: /^Reassign$/ }).click()
     const select = page.getByLabel(/Send to store/)
+    // The nearest-store pick's own tie-break prefers whichever fixture store still holds more
+    // stock (`shop/orders/assign.ts`) — order1 already spent some of store A's, so order2 is not
+    // guaranteed to start at A. Read its actual store and target the other fixture store, whichever
+    // that is, rather than assuming which one it landed on.
+    const before = GATE_DB ? orderByToken(order2.token) : null
+    const target =
+      before && before.storeId === accounts.storeAId ? accounts.storeBId : accounts.storeAId
     if (GATE_DB) {
-      await select.selectOption({ value: String(accounts.storeBId) })
+      await select.selectOption({ value: String(target) })
     } else {
       await select.selectOption({ index: 0 })
     }
@@ -259,9 +265,9 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
     if (GATE_DB) {
       const after = orderByToken(order2.token)
       expect(after.found, 'the reassigned order').toBe(true)
-      expect(after.storeId, 'the order now points at the other store').toBe(accounts.storeBId)
-      expect(after.storeId, 'the order no longer points at the first store').not.toBe(
-        accounts.storeAId,
+      expect(after.storeId, 'the order now points at the target store').toBe(target)
+      expect(after.storeId, 'the order no longer points at its original store').not.toBe(
+        before!.storeId,
       )
     } else {
       await expect(page.locator('[data-sonner-toast][data-type="error"]')).toHaveCount(0)
