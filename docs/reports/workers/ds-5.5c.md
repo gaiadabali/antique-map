@@ -91,7 +91,38 @@ budgets: LCP ≤ 2500 ms, CLS ≤ 0.05, TBT ≤ 200 ms, script ≤ 150 KB; perfo
 (exit code 1 — /browse misses LCP and script budgets, expected per above)
 ```
 
+Both commands above ran in this worktree (not the fresh clone — see below).
+
+### Fresh-clone verify (`…-fresh`, `git clone -b w/ds-5.5c`, `pnpm install --frozen-lockfile`, `pnpm worktree:env 5 wds5cfresh`)
+
+```
+$ pnpm lint
+$ eslint --max-warnings=0 .
+(clean, no output — the runner and README have no fresh-clone-only dependency)
+
+$ pnpm db:fresh
+[db] fresh indies_p5_wds5cfresh
+[db] migrate indies_p5_wds5cfresh: … Migrated: 20261002_073156_initial, 20261002_200042_indies_wave_3_1,
+     20261005_033710_indies_9_4b
+[db] indies_p5_wds5cfresh ready
+```
+
+`pnpm build` then failed on a **freshly installed** `node_modules`, reproducibly (3 tries): Turbopack cannot
+resolve `next/font/google`'s generated CSS module for `Cormorant Garamond` —
+`Error: Module not found: Can't resolve '@vercel/turbopack-next/internal/font/google/font' … next/font/google
+queries have exactly one entry` — even though `curl -sv https://fonts.googleapis.com/css2?…` from the same
+shell gets a real `200`, so it is not a network block. This worktree's own `engine/apps/web/.next/cache/
+turbopack/**` (gitignored, 30+ `.sst`/`.meta` files) is **not in the fresh clone**, and the font-module build
+succeeds here only because that cache is reused rather than recomputed — so a build from a genuinely empty
+cache hits this Turbopack/font bug every time. This is a pre-existing build-pipeline issue, not something
+introduced by this ticket's files (`tests/e2e/gallery/lighthouse/**`, `docs/reports/workers/ds-5.5c/**` only) —
+reported here as a finding for whoever owns `engine/apps/web`'s Next config / font setup, not fixed here.
+Because of it, the runner could not be re-run end to end against a fresh-clone build; the page-level evidence
+above is from this worktree's own build, run twice (this run and the resumed run before it) with consistent
+numbers.
+
 The runner, README and local evidence run are done and committed. `/browse`'s numeric-budget miss is reported
 with its top opportunities per the ticket's own instruction (step 4) — not a reason to block, since 5.5.c/d
-are only ticked on the staging run. The seed-hook bug is reported above as a finding for whoever owns
-`engine/packages/cms/src/{seed,import}/**`, not fixed here (out of this ticket's owned paths).
+are only ticked on the staging run. Two findings are reported for other owners, not fixed here (out of this
+ticket's owned paths): the seed-hook bug (`engine/packages/cms/src/{seed,import}/**`) and the Turbopack/font
+fresh-build failure (`engine/apps/web`'s Next config).
