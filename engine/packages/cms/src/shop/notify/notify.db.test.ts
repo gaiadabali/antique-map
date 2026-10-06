@@ -25,6 +25,9 @@ process.env.ORDER_LINK_KEY ??= createHash('sha256')
   .update('notify-db-test-order-link-key')
   .digest()
   .toString('base64url')
+// The emails' origin (siteOrigin reads the hosts): never a relative link, so a host is needed.
+process.env.GALLERY_HOSTS ??= 'gallery.localhost'
+process.env.SHOP_HOSTS ??= 'shop.localhost'
 
 describe.skipIf(!server)('order notifications, on a real database', () => {
   let stack: StaffStack
