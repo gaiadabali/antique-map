@@ -46,6 +46,7 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
     continueToPayment: text('checkout.continueToPayment'),
     placing: text('checkout.placing'),
     invalidDetails: text('checkout.problem.invalid-details'),
+    invalidPin: text('checkout.problem.invalid-pin'),
   }
 
   return (

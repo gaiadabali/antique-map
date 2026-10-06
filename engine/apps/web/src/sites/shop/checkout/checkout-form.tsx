@@ -12,13 +12,24 @@
  * The pin's lat/lng hidden fields are read with `FormData` on submit and never reset once set:
  * they carry a plain string `value` from a ref, not a React-controlled one, so a pin a visitor set
  * before hydration finished survives it (6.6.c — found on staging by 7.4).
+ *
+ * A refusal of any kind (out of stock, invalid details, price changed, …) runs through
+ * `useActionState`, and React 19 resets the `<form>`'s uncontrolled fields once the action
+ * settles — wiping every word the buyer typed (6-followup-4 #3, found on staging by 7.4). The
+ * server action echoes back what it received (`SubmitState.values`, never a price); this form
+ * keeps a `submissionId` that only changes once a *new* refusal state arrives, and uses it as each
+ * field's `key` so React mounts fresh nodes with the echoed `defaultValue` instead of the native
+ * reset's blank one — the pin is restored from the echoed lat/lng the same way. A `startTransition`
+ * submit was the other option the ticket offered; this one was simpler to keep the form
+ * uncontrolled (6.6.c) while still reusing `useActionState`'s pending flag for the button.
  */
-import { useActionState, useCallback, useRef, useState } from 'react'
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 
 import { Button, FormMessage, Input, Textarea } from '../../../shared/ui'
-import { submitOrderAction } from '../../../server/shop/checkout/actions'
+import { submitOrderAction, type SubmitState } from '../../../server/shop/checkout/actions'
 import styles from './checkout.module.css'
-import { PinPicker, type Pin } from './pin-picker'
+import { PinGroup } from './pin-group'
+import type { Pin } from './pin-picker'
 
 export type CheckoutFormLabels = {
   readonly contactTitle: string
@@ -41,6 +52,7 @@ export type CheckoutFormLabels = {
   readonly continueToPayment: string
   readonly placing: string
   readonly invalidDetails: string
+  readonly invalidPin: string
 }
 
 export type CheckoutFormProps = {
@@ -50,6 +62,8 @@ export type CheckoutFormProps = {
   readonly browserKey: string | null
   /** The total the review rendered, before a pin has been quoted. */
   readonly expectedTotalIdr: number
+  /** Rendering only: lets a test show a refusal state without actually running the action. */
+  readonly initialState?: SubmitState | null
 }
 
 type FieldName =
@@ -60,9 +74,14 @@ export function CheckoutForm({
   labels,
   browserKey,
   expectedTotalIdr,
+  initialState = null,
 }: CheckoutFormProps): React.ReactElement {
-  const [state, submit, pendingSubmit] = useActionState(submitOrderAction, null)
-  const [pin, setPin] = useState<Pin | null>(null)
+  const [state, submit, pendingSubmit] = useActionState(submitOrderAction, initialState)
+  const [pin, setPin] = useState<Pin | null>(
+    initialState !== null && initialState.values.lat !== null && initialState.values.lng !== null
+      ? { lat: initialState.values.lat, lng: initialState.values.lng }
+      : null,
+  )
   const [address, setAddress] = useState<string | null>(null)
   const latRef = useRef<HTMLInputElement | null>(null)
   const lngRef = useRef<HTMLInputElement | null>(null)
@@ -76,8 +95,25 @@ export function CheckoutForm({
     if (lngRef.current) lngRef.current.value = next === null ? '' : String(next.lng)
   }, [])
 
+  // One id per *new* refusal state — not per render — used as every field's `key` so a refusal
+  // remounts them with the echoed `defaultValue` instead of the form reset's blank one.
+  const lastState = useRef(state)
+  const submissionCount = useRef(0)
+  const [submissionId, setSubmissionId] = useState(0)
+  useEffect(() => {
+    if (state === lastState.current) return
+    lastState.current = state
+    submissionCount.current += 1
+    setSubmissionId(submissionCount.current)
+    if (state !== null && state.values.lat !== null && state.values.lng !== null) {
+      setPin({ lat: state.values.lat, lng: state.values.lng })
+    }
+  }, [state])
+
   const bad = (field: FieldName): string | undefined =>
     state !== null && state.fields.includes(field) ? labels.invalidDetails : undefined
+  const pinInvalid = state !== null && state.fields.includes('delivery.pin')
+  const values = state?.values
 
   return (
     <form action={submit} className={styles.form} aria-label={labels.deliveryTitle}>
@@ -86,15 +122,18 @@ export function CheckoutForm({
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{labels.contactTitle}</h2>
         <Input
+          key={`name-${submissionId}`}
           id="checkout-name"
           name="name"
           label={labels.fullName}
           hint={labels.fullNameHint}
           error={bad('contact.name')}
           autoComplete="name"
+          defaultValue={values?.name}
           required
         />
         <Input
+          key={`whatsapp-${submissionId}`}
           id="checkout-whatsapp"
           name="whatsapp"
           type="tel"
@@ -102,15 +141,18 @@ export function CheckoutForm({
           hint={labels.whatsappHint}
           error={bad('contact.whatsapp')}
           autoComplete="tel"
+          defaultValue={values?.whatsapp}
           required
         />
         <Input
+          key={`email-${submissionId}`}
           id="checkout-email"
           name="email"
           type="email"
           label={labels.email}
           error={bad('contact.email')}
           autoComplete="email"
+          defaultValue={values?.email}
           required
         />
       </section>
@@ -118,21 +160,35 @@ export function CheckoutForm({
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{labels.deliveryTitle}</h2>
         <Input
+          key={`address-${submissionId}`}
           id="checkout-address"
           name="address"
           label={labels.address}
           error={bad('delivery.address')}
           autoComplete="street-address"
+          defaultValue={values?.address}
           required
         />
         <input type="hidden" name="locale" defaultValue={locale} />
-        <input ref={latRef} type="hidden" name="lat" defaultValue={pin?.lat ?? ''} />
-        <input ref={lngRef} type="hidden" name="lng" defaultValue={pin?.lng ?? ''} />
+        <input
+          key={`lat-${submissionId}`}
+          ref={latRef}
+          type="hidden"
+          name="lat"
+          defaultValue={pin?.lat ?? ''}
+        />
+        <input
+          key={`lng-${submissionId}`}
+          ref={lngRef}
+          type="hidden"
+          name="lng"
+          defaultValue={pin?.lng ?? ''}
+        />
         <input type="hidden" name="expectedTotalIdr" defaultValue={expectedTotalIdr} />
-        <p className={styles.sectionTitle} aria-label={labels.mapPinRequired}>
-          {labels.mapPinRequired}
-        </p>
-        <PinPicker
+        <PinGroup
+          title={labels.mapPinRequired}
+          invalidMessage={labels.invalidPin}
+          invalid={pinInvalid}
           browserKey={browserKey}
           labels={{
             useLocation: labels.pinUseLocation,
@@ -146,8 +202,22 @@ export function CheckoutForm({
           address={address}
           onPin={onPin}
         />
-        <Textarea id="checkout-notes" name="notes" label={labels.notes} rows={2} />
-        <Textarea id="checkout-gift" name="giftNote" label={labels.giftNote} rows={2} />
+        <Textarea
+          key={`notes-${submissionId}`}
+          id="checkout-notes"
+          name="notes"
+          label={labels.notes}
+          rows={2}
+          defaultValue={values?.notes}
+        />
+        <Textarea
+          key={`gift-${submissionId}`}
+          id="checkout-gift"
+          name="giftNote"
+          label={labels.giftNote}
+          rows={2}
+          defaultValue={values?.giftNote}
+        />
       </section>
 
       <div className={styles.submit}>
