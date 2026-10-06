@@ -56,6 +56,11 @@ export async function typePin(page: Page, pin: { lat: number; lng: number }): Pr
   const inputs = page.locator('input[inputmode="decimal"]')
   await inputs.nth(0).fill(String(pin.lat))
   await inputs.nth(1).fill(String(pin.lng))
+  // The picker writes the form's hidden lat/lng only once its reverse geocode answers — instant
+  // locally (no Maps key), a real Google call on staging. Submit before then and the order is
+  // refused for a missing pin, so wait until the pin is in the form.
+  await expect(page.locator('input[type="hidden"][name="lat"]')).toHaveValue(String(pin.lat))
+  await expect(page.locator('input[type="hidden"][name="lng"]')).toHaveValue(String(pin.lng))
 }
 
 export type CheckoutContact = {
@@ -78,11 +83,20 @@ export async function fillCheckout(
   await page.goto(`${SHOP_ORIGIN}/checkout`)
   // Type only once the form is hydrated: text typed into the server-rendered inputs before React
   // takes them over is reset (seen on staging, where hydration is slower than on a local build).
+  // `networkidle` alone is not enough in a fresh context (7.4 on staging, the second buyer): the
+  // fields can still be reset after it, so fill, let hydration land, and refill until they stick.
   await page.waitForLoadState('networkidle')
-  await page.getByLabel(/full name/i).fill(contact.name)
-  await page.getByLabel(/whatsapp/i).fill(contact.whatsapp)
-  await page.getByLabel(/email/i).fill(contact.email)
-  await page.getByLabel(/address/i).fill(contact.address)
+  const fields: [RegExp, string][] = [
+    [/full name/i, contact.name],
+    [/whatsapp/i, contact.whatsapp],
+    [/email/i, contact.email],
+    [/address/i, contact.address],
+  ]
+  await expect(async () => {
+    for (const [label, value] of fields) await page.getByLabel(label).fill(value)
+    await page.waitForTimeout(750)
+    for (const [label, value] of fields) await expect(page.getByLabel(label)).toHaveValue(value)
+  }).toPass({ timeout: 20_000 })
   await typePin(page, pin)
 }
 

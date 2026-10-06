@@ -31,7 +31,7 @@ CRON_END='# <<< indies-provision'
 # the recovery — never once a minute for the same state (should-fix 7).
 # shellcheck disable=SC2153,SC2154 # PORT, ENV_FILE, STATE_DIR, USER_NAME: the installed script sets them
 indies_cron_main() {
-  local route="$1" accept="$2" max="$3" secret code state last msg
+  local route="$1" accept="$2" max="$3" secret host code state last msg
   [[ "$route" =~ ^[a-z]+$ ]] || {
     echo "indies-cron: bad route '$route'" >&2
     return 2
@@ -44,9 +44,13 @@ indies_cron_main() {
   # One call per route in flight: a hung app must not stack a curl per minute.
   exec 9>"$STATE_DIR/cron-$route.lock"
   flock -n 9 || return 0
+  # The app picks its site by Host, and a bare 127.0.0.1 is neither site, so the sweeps and
+  # reconcile routes answered 404 every minute (found 2026-10-06: no order ever expired). Name the
+  # shop's first host, which is also the admin's.
+  host="$(grep -E '^SHOP_HOSTS=' "$ENV_FILE" | tail -n 1 | cut -d= -f2- | tr -d '"' | cut -d, -f1)"
   # The header comes from stdin (-H @-), so the secret is never in the process list.
   code="$(printf 'Authorization: Bearer %s\n' "$secret" |
-    curl -sS -o /dev/null -w '%{http_code}' -m "$max" -X POST -H @- \
+    curl -sS -o /dev/null -w '%{http_code}' -m "$max" -X POST -H @- ${host:+-H "Host: $host"} \
       "http://127.0.0.1:$PORT/api/x/cron/$route" 2>/dev/null)" || true
   case ",$accept," in *",$code,"*) state=ok ;; *) state="${code:-none}" ;; esac
   last="$(cat "$STATE_DIR/cron-$route.state" 2>/dev/null || printf 'ok')"
