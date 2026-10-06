@@ -30,7 +30,7 @@ priced Pay button. The spec now drives that step explicitly:
 ## Setup
 
 - `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm db:fresh`, then `pnpm --filter @engine/cms seed --layer
-  shop --publish` (stores, vocabulary, the `WELCOME10` discount). **The products CSV cannot publish**: every row
+shop --publish` (stores, vocabulary, the `WELCOME10` discount). **The products CSV cannot publish**: every row
   in `seed/shop/data/products.csv` carries an empty `image_files` (no real photography yet, AGENTS.md D19), and
   a product needs at least one image to publish — every row is rejected, as the ticket's own Verify block
   anticipated ("if the seed needs images, use the fixture route instead"). `ops.ts`'s `setup` op now makes up
@@ -74,16 +74,16 @@ fulfilment drive (paid → delivered): 4.8s
 
 ## Per clause (TASKS.md 7.4.a-c)
 
-| Clause | Evidence | Verdict |
-| --- | --- | --- |
-| Guest buys two in-stock products, pays (after a staff quote), reaches the order page | step 1; `buyer-bag-390.png`, `buyer-checkout-390.png`, `buyer-order-awaiting-quote-390.png`, `store-quote-sent-390.png`, `buyer-order-paid-390.png` | **PASS** |
-| The nearest store fulfils: processing → waiting for driver → image → on the way → delivered | step 2; `store-order-new-390.png`, `store-driver-image-390.png`, `store-delivered-390.png`; `order.status` confirmed `delivered` at `accounts.storeAId` (`GATE_DB` read) | **PASS** |
-| The buyer tracks: timeline, driver image, store name, WhatsApp | step 3; `tracking-delivered-390.png`; axe clean at 390 and 1280 px | **PASS** |
-| Another store's user sees no such order | step 4; `store-b-empty-390.png`; `getByRole('link').filter({ hasText: '#<number>' })` count 0 | **PASS** |
-| The owner reassigns a second order to a store with stock | step 5; `buyer-second-order-paid-390.png`, `owner-reassigned-390.png`; `order.storeId` confirmed moved to the other fixture store (`GATE_DB` read) | **PASS** |
-| Screenshots at each step into `docs/gates/shop/` | all of the above, committed | **PASS** |
-| 7.4.b Lighthouse mobile (product, tracking) against staging | §Staging run: tracking 92–93 / 100; product 87–88 / 100 | **RUN** — product below 90 |
-| 7.4.c Check: this doc, screenshots, emails, access denial, Lighthouse ≥ 90/100 | §Staging run: 5/5, screenshots, emails, access denial, accessibility 100; product performance 87–88 | **OPEN** until the product page reaches 90 |
+| Clause                                                                                      | Evidence                                                                                                                                                                 | Verdict                                    |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| Guest buys two in-stock products, pays (after a staff quote), reaches the order page        | step 1; `buyer-bag-390.png`, `buyer-checkout-390.png`, `buyer-order-awaiting-quote-390.png`, `store-quote-sent-390.png`, `buyer-order-paid-390.png`                      | **PASS**                                   |
+| The nearest store fulfils: processing → waiting for driver → image → on the way → delivered | step 2; `store-order-new-390.png`, `store-driver-image-390.png`, `store-delivered-390.png`; `order.status` confirmed `delivered` at `accounts.storeAId` (`GATE_DB` read) | **PASS**                                   |
+| The buyer tracks: timeline, driver image, store name, WhatsApp                              | step 3; `tracking-delivered-390.png`; axe clean at 390 and 1280 px                                                                                                       | **PASS**                                   |
+| Another store's user sees no such order                                                     | step 4; `store-b-empty-390.png`; `getByRole('link').filter({ hasText: '#<number>' })` count 0                                                                            | **PASS**                                   |
+| The owner reassigns a second order to a store with stock                                    | step 5; `buyer-second-order-paid-390.png`, `owner-reassigned-390.png`; `order.storeId` confirmed moved to the other fixture store (`GATE_DB` read)                       | **PASS**                                   |
+| Screenshots at each step into `docs/gates/shop/`                                            | all of the above, committed                                                                                                                                              | **PASS**                                   |
+| 7.4.b Lighthouse mobile (product, tracking) against staging                                 | §Staging run: tracking 92–93 / 100; product 87–88 / 100                                                                                                                  | **RUN** — product below 90                 |
+| 7.4.c Check: this doc, screenshots, emails, access denial, Lighthouse ≥ 90/100              | §Staging run: 5/5, screenshots, emails, access denial, accessibility 100; product performance 87–88                                                                      | **OPEN** until the product page reaches 90 |
 
 ## Findings
 
@@ -142,9 +142,9 @@ order number from the placement email.
 **Lighthouse 12, mobile, default simulated throttling**, run from a container on the staging host (the
 workstation's own connection was too unsteady to measure: 44–93 on one page), 3 runs each:
 
-| Page | Performance | Accessibility | LCP | TBT |
-| --- | --- | --- | --- | --- |
-| Tracking (`/track/{token}`, a delivered order) | 93 · 93 · 92 | 100 · 100 · 100 | 2.4 s | 240–270 ms |
+| Page                                                    | Performance         | Accessibility   | LCP   | TBT        |
+| ------------------------------------------------------- | ------------------- | --------------- | ----- | ---------- |
+| Tracking (`/track/{token}`, a delivered order)          | 93 · 93 · 92        | 100 · 100 · 100 | 2.4 s | 240–270 ms |
 | Product (`/product/island-chart-reproduction-wayang-2`) | 69 (cold) · 87 · 88 | 100 · 100 · 100 | 2.7 s | 370–380 ms |
 
 The product page is short of 90: its lead image paints ~1.5 s after it has downloaded, and a product-page-only
