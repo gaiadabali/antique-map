@@ -7,6 +7,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  catalogueTag,
   EDITORIAL_EXPIRY,
   IMMEDIATE_EXPIRY,
   MAX_TAG_LENGTH,
@@ -89,6 +90,28 @@ describe('the site-scoped tags: one record, a part per site', () => {
     expect(() => settingsTag('brand' as never)).toThrow(/^settings tag: "brand" is not a site/)
   })
 
+  it('catalogue:<site> — one site’s listings, valid through the revalidate route’s check', () => {
+    expect(catalogueTag('gallery')).toBe('catalogue:gallery')
+    expect(catalogueTag('shop')).toBe('catalogue:shop')
+    expect(parseCacheTag('catalogue:gallery')).toBe('catalogue:gallery')
+    expect(parseCacheTag('catalogue:shop')).toBe('catalogue:shop')
+    for (const value of [
+      'catalogue',
+      'catalogue:',
+      'catalogue:Gallery',
+      'catalogue:gallery ',
+      'catalogue:works',
+      'catalogue:gallery:shop',
+      'Catalogue:gallery',
+      'works', // the hand-written tag the gallery loaders carried before (5.1)
+      'products', // the shop loaders' hand-written tag
+    ]) {
+      expect(parseCacheTag(value), value).toBeNull()
+    }
+    expect(() => catalogueTag('brand' as never)).toThrow(/^catalogue tag: "brand" is not a site/)
+    expect(tagKind(catalogueTag('gallery'))).toBe('catalogue')
+  })
+
   it('leave every other kind site-free, so one invalidation reaches both sites', () => {
     for (const tag of [workTag('IG-1'), productTag(1), productStockTag(1), productPriceTag(1)]) {
       expect(tag).not.toMatch(/gallery|shop/)
@@ -154,13 +177,14 @@ describe('parseCacheTag(): the grammar the revalidate route checks', () => {
 })
 
 describe('each kind has its expiry', () => {
-  it('editorial — work, product, settings, redirects — stale-while-revalidate', () => {
+  it('editorial — work, product, settings, redirects, catalogue — stale-while-revalidate', () => {
     expect(EDITORIAL_EXPIRY).toBe('max')
     for (const tag of [
       workTag('IG-1'),
       productTag(1706),
       settingsTag('shop'),
       redirectsTag('gallery'),
+      catalogueTag('gallery'),
     ]) {
       expect(tagExpiry(tag), tag).toBe('max')
     }
@@ -175,6 +199,7 @@ describe('each kind has its expiry', () => {
 
   it('the kinds known today, each named by its collection', () => {
     expect(Object.keys(TAG_KINDS).sort()).toEqual([
+      'catalogue',
       'product',
       'product-price',
       'product-stock',

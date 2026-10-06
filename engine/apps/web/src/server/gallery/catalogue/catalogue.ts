@@ -1,17 +1,26 @@
 /**
- * The gallery catalogue's cached reads (5.1): the listing, the facets and the search, under
- * `'use cache'` and tagged `works`, so one invalidation reaches every page that lists or finds a
- * work (the hook `work-invalidate` revalidates the record tags; the listing's own tag is the
- * collection's). The cache key carries the state and the locale as arguments (ARCHITECTURE.md
- * §6); nothing here reads a request.
+ * The gallery catalogue's cached reads (5.1): the listing, the facets, the place tree and the
+ * search, under `'use cache'` and tagged `catalogue:gallery` (`@engine/cache`'s `catalogueTag`),
+ * so one invalidation reaches every page that lists or finds a work. A listing shows records no
+ * record tag can name — the work published a moment ago is on no cached listing yet — so the
+ * site's catalogue tag is the one these carry, and every write that could change a listing expires
+ * it: a published work's save, publish, unpublish or delete (`@engine/cms` `work-invalidate`), and
+ * any edit of a place, maker or term (`vocabulary-invalidate`). The cache key carries the state and
+ * the locale as arguments (ARCHITECTURE.md §6); nothing here reads a request.
+ *
+ * **Lifetime.** Each scope declares `cacheLife('hours')` (revalidate 1 h, expire 1 day): the tag
+ * is the freshness, the lifetime only a backstop for a write that announced nothing — a CLI run
+ * with no site to post its tags to (`import/cli-cache`), a fix in SQL. Left implicit it was the
+ * `default` profile, which kept a listing 15 minutes stale when nothing expired it (5.1.d's e2e).
  *
  * The search stays one function behind a small interface (`./search`), importable without a
  * React tree, for the chat's `search_catalogue` tool later.
  */
 import 'server-only'
 
-import { cacheTag } from 'next/cache'
+import { cacheLife } from 'next/cache'
 
+import { cacheTags, catalogueTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
 
@@ -24,12 +33,8 @@ import { searchWorkIds } from './search'
 import { EMPTY_STATE, type FacetState } from './state'
 import type { FacetSetVM, SearchResultVM, WorkListingVM } from './view-models'
 
-/** The whole works collection's tag: an editorial change re-renders every listing that shows one. */
-const WORKS_TAG = 'works'
-
-function tagWorks(): void {
-  cacheTag(WORKS_TAG)
-}
+/** The gallery's listings' tag: a change any listing could show re-renders every one. */
+const CATALOGUE = catalogueTag('gallery')
 
 /** The date a card shows when a work's date was left unknown, said on purpose. */
 const UNKNOWN_DATE: Record<SiteLocale, string> = {
@@ -46,10 +51,11 @@ async function contextOf(): Promise<FilterContext> {
 }
 
 /** The published gazetteer as the browse pages resolve place paths and name places, in one
- * locale: cached under the works tag, so a gazetteer edit re-renders the pages that name one. */
+ * locale: cached under the catalogue tag, so a gazetteer edit re-renders the pages that name one. */
 export async function placeTree(locale: SiteLocale): Promise<readonly PlaceNode[]> {
   'use cache'
-  tagWorks()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   const payload = await cms()
   return loadPlaces(payload, locale)
 }
@@ -57,7 +63,8 @@ export async function placeTree(locale: SiteLocale): Promise<readonly PlaceNode[
 /** One page of the browse listing, for one facet state. */
 export async function listing(state: FacetState, locale: SiteLocale): Promise<WorkListingVM> {
   'use cache'
-  tagWorks()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   const payload = await cms()
   return listWorks(payload, state, await contextOf(), locale, UNKNOWN_DATE[locale])
 }
@@ -65,7 +72,8 @@ export async function listing(state: FacetState, locale: SiteLocale): Promise<Wo
 /** The six facets, with their all-but-own counts, for one facet state. */
 export async function facets(state: FacetState, locale: SiteLocale): Promise<FacetSetVM> {
   'use cache'
-  tagWorks()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   const payload = await cms()
   return facetsOf(payload, state, await contextOf(), locale)
 }
@@ -82,7 +90,8 @@ export async function search(options: {
   includeSold: boolean
 }): Promise<SearchResultVM> {
   'use cache'
-  tagWorks()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   const payload = await cms()
   const answer = await searchWorkIds(payload, options)
   const items = await projectCards(

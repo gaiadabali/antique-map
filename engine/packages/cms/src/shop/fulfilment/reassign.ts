@@ -20,6 +20,7 @@ import type { Payload } from 'payload'
 
 import { takeStock } from '../orders/order-sql'
 import { roundedDistanceKm } from '../orders/geo'
+import { notifyStoreReassigned } from '../notify'
 import { inTransaction, sql, type Tx } from '../payments/transaction'
 import { isManager, staffOf } from './actor'
 import {
@@ -91,7 +92,7 @@ export async function reassignOrder(
   }
   const at = input.now ?? new Date()
   try {
-    return await inTransaction(payload, async (tx): Promise<ReassignResult> => {
+    const result = await inTransaction(payload, async (tx): Promise<ReassignResult> => {
       const order = await lockOrder(tx, input.orderId)
       if (order === null) {
         return { ok: false, refusal: 'not_found', message: 'There is no such order.' }
@@ -132,6 +133,12 @@ export async function reassignOrder(
         distanceKm,
       }
     })
+    // After commit: the new store's alert (TASKS.md 6.6, 7.1.c) — reassigning changes no status,
+    // so it is never `notifyOrderEvent`'s to send.
+    if (result.ok) {
+      await notifyStoreReassigned(payload, { orderId: result.orderId }).catch(() => {})
+    }
+    return result
   } catch (error) {
     if (!(error instanceof ShortStock)) throw error
     return {

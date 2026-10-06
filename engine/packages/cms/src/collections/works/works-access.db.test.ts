@@ -214,13 +214,15 @@ describe.skipIf(!server)('works: access and invalidation on a real database', ()
         return saved
       })
       expect(posts).toEqual([])
-      expect(committed.pending).toEqual([`work:${published.workUid}`])
+      // The work's own tag and the gallery's listings (`hooks/work-invalidate`).
+      const tags = [`work:${published.workUid}`, 'catalogue:gallery']
+      expect(committed.pending).toEqual(tags)
       const visible = await stack.pool.query(
         `SELECT work_uid FROM works WHERE id = ${Number(doc.id)}`,
       )
       expect(visible.rows).toEqual([{ work_uid: published.workUid }])
-      expect(await committed.flush()).toBe(1)
-      expect(posts).toEqual([[`work:${published.workUid}`]])
+      expect(await committed.flush()).toBe(2)
+      expect(posts).toEqual([tags])
     })
   })
 })

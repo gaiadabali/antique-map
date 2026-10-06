@@ -231,11 +231,10 @@ export const SALE_FIELDS: Field[] = [
         validate: rupiah({ en: 'The discount', id: 'Diskon' }),
       },
       {
+        // `null` until the quote move sets it (TASKS.md 6.6): staff price delivery after placement.
         name: 'deliveryFee',
         type: 'number',
         label: { en: 'Delivery fee (Rp)', id: 'Ongkos kirim (Rp)' },
-        required: true,
-        defaultValue: 0,
         validate: rupiah({ en: 'The delivery fee', id: 'Ongkos kirim' }),
       },
       {

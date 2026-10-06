@@ -5,11 +5,22 @@
  * `site-settings`, published products with stock where a test puts it, a signed bag cookie, and
  * a buyer's checkout details.
  */
+import { createHash } from 'node:crypto'
+
+import { invalidationBatch } from '@engine/cache'
 import { makeProduct } from '../../collections/stock-levels/shop.test-support'
 import type { StaffStack } from '../../collections/users/staff.test-support'
 import { createBagCookieKey, serialiseBag, type BagLine } from '../pricing/bag'
 import type { CreateOrderRequest } from './create-order'
 import type { Pin } from './geo'
+
+// `createOrder` seals the tracking token unconditionally (`./link-key`, TASKS.md 6.6): every db
+// test that places one needs `ORDER_LINK_KEY` in the process env, which nothing here loads from
+// `.env.local` — set a fixed test key once, unless the worktree's own is already in the shell.
+process.env.ORDER_LINK_KEY ??= createHash('sha256')
+  .update('orders-db-test-order-link-key')
+  .digest()
+  .toString('base64url')
 
 export const BAG_KEY = createBagCookieKey('orders-db-test-bag-cookie-key-0123456789')
 export const PRICE = 95000
@@ -48,17 +59,21 @@ export async function openShop(stack: StaffStack): Promise<Shop> {
       data: { active: true, address: `Jl. Raya ${area} 1`, area, ...pin } as never,
     })
   }
-  await payload.updateGlobal({
-    slug: 'site-settings',
-    data: {
-      shop: {
-        checkoutEnabled: true,
-        delivery: { bands: BANDS, freeOverIdr: 500000 },
-        welcomeDiscount: 'WELCOME10',
-        orderExpiryMinutes: EXPIRY_MINUTES,
-      },
-    } as never,
-  })
+  // A write outside a request hands its cache tags to a collector (`@engine/cache`'s invalidate()).
+  await invalidationBatch().operation((context) =>
+    payload.updateGlobal({
+      context,
+      slug: 'site-settings',
+      data: {
+        shop: {
+          checkoutEnabled: true,
+          delivery: { bands: BANDS, freeOverIdr: 500000 },
+          welcomeDiscount: 'WELCOME10',
+          orderExpiryMinutes: EXPIRY_MINUTES,
+        },
+      } as never,
+    }),
+  )
   await payload.create({
     collection: 'discounts',
     data: { code: 'WELCOME10', kind: 'percent', value: 10, active: true } as never,

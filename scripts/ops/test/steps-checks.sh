@@ -121,12 +121,11 @@ pid_before="$(cat "/home/$U/.pm2/pm2.pid")"
 run --env staging --verify-restart >"$(log verify)" 2>&1 || { cat "$(log verify)"; die "--verify-restart failed"; }
 grep -E '^   (PASS|FAIL) ' "$(log verify)"
 grep -q '^   FAIL ' "$(log verify)" && die "a restart check failed"
-for m in 'PASS   RustFS: indies-rustfs.service stopped, var-lib-indies\x2drustfs-data.mount restarted' \
+for m in 'PASS   RustFS: indies-rustfs.service stopped and started: /health 200' \
   "PASS   pm2 $U: pm2-$U.service restarted; its pm2 resurrect brought $U back from dump.pm2" \
   'PASS   Mailpit: indies-mailpit.service restarted; SMTP 127.0.0.1:4034 greets 220' \
   "PASS   cron: $U" "PASS   boot: pm2-$U.service is enabled" 'PASS   boot: indies-db-backup.timer is enabled' \
-  'PASS   boot: var-lib-indies\x2drustfs-data.mount is WantedBy=multi-user.target' \
-  'PASS   boot: indies-rustfs.service has RequiresMountsFor=/var/lib/indies-rustfs/data'; do
+  'PASS   boot: /var/lib/indies-rustfs/data is a plain directory, not a mount'; do
   grep -qF "$m" "$(log verify)" || die "--verify-restart did not show: $m"
 done
 [ "$(cat "/home/$U/.pm2/pm2.pid")" != "$pid_before" ] && systemctl is-active --quiet "pm2-$U.service" || die "pm2 is not back under its unit"
@@ -136,7 +135,7 @@ rm /run/shim/indies-db-backup.timer.enabled
 run --env staging --verify-restart >"$(log verify-fail)" 2>&1 && die "a disabled unit passed --verify-restart"
 grep -q 'FAIL   boot: indies-db-backup.timer is not enabled' "$(log verify-fail)" || die "the disabled unit not named"
 run --env staging >"$(log reenable)" 2>&1 && [ "$(changes "$(log reenable)")" = 1 ] || die "the timer not re-enabled"
-pass "--verify-restart: $(grep -c '^   PASS ' "$(log verify)") checks passed (pm2 back from dump.pm2 under its unit, RustFS and its mount, Mailpit, cron, boot); refused in a dry run; a disabled unit fails it"
+pass "--verify-restart: $(grep -c '^   PASS ' "$(log verify)") checks passed (pm2 back from dump.pm2 under its unit, RustFS, Mailpit, cron, boot); refused in a dry run; a disabled unit fails it"
 
 # 14. --report's inventory names everything the script owns, and changes nothing.
 before="$(snapshot)"

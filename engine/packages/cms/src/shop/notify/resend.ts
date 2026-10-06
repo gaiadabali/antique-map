@@ -2,19 +2,19 @@
  * "Find my order" (TASKS.md 7.3.a; EXPERIENCE-SHOP.md §2 "Find my order"): an order number plus the
  * email or WhatsApp number the buyer typed at checkout, nothing else, resends the tracking link —
  * never confirms whether an order exists (SECURITY.md §2.10). `requestTrackingLink` therefore
- * always resolves with no result to read: whether it matched, minted a token and sent an email is
- * never visible to the caller, so the page always shows the same words whatever happened here.
+ * always resolves with no result to read: whether it matched and sent an email is never visible to
+ * the caller, so the page always shows the same words whatever happened here.
  *
- * A match rotates the tracking token exactly as `notifyOrderEvent` does — the plaintext token is
- * never stored, so every resend is a fresh one and the one the buyer last had stops working, the
- * same trade COMMERCE.md §10 already makes for a status email's link.
+ * A match decrypts the one token sealed at order creation (`trackingTokenEnc`, `../orders/link-key`)
+ * — the link never rotates (TASKS.md 6.6, orchestrator decision A): this is a resend of the same
+ * link, not a fresh one, exactly as every other notification now works.
  */
 import type { Payload } from 'payload'
 
 import { createHref, SITES, siteOrigin } from '@engine/config/sites'
 
 import { normaliseEmail, normaliseWhatsApp } from '../orders/checkout-input'
-import { newTrackingToken } from '../orders'
+import { openToken, orderLinkKeyFromEnv } from '../orders/link-key'
 import { resendTrackingEmail } from './templates'
 import { mailTransport } from './transport'
 
@@ -32,6 +32,7 @@ type OrderForResend = {
     whatsapp?: string | null
     locale?: string | null
   } | null
+  readonly trackingTokenEnc?: string | null
 }
 
 /** Resends the tracking link if `orderNumber` and the contact match one order; silent otherwise. */
@@ -54,7 +55,7 @@ export async function requestTrackingLink(
       overrideAccess: true,
       limit: 1,
       where: { number: { equals: orderNumber } },
-      select: { contact: { email: true, whatsapp: true, locale: true } },
+      select: { contact: { email: true, whatsapp: true, locale: true }, trackingTokenEnc: true },
     })
     order = result.docs[0] as OrderForResend | undefined
   } catch {
@@ -71,19 +72,11 @@ export async function requestTrackingLink(
   if (!buyerEmail) return
 
   const locale: 'en' | 'id' = order.contact?.locale === 'id' ? 'id' : 'en'
-  const { token, hash } = newTrackingToken()
-  try {
-    await payload.update({
-      collection: 'orders',
-      id: order.id,
-      data: { trackingTokenHash: hash },
-      overrideAccess: true,
-      // Never re-enters the notifier: this write is not a status change.
-      context: { skipNotify: true },
-    })
-  } catch {
-    return
-  }
+  const token =
+    typeof order.trackingTokenEnc === 'string' && order.trackingTokenEnc !== ''
+      ? openToken(order.trackingTokenEnc, orderLinkKeyFromEnv())
+      : null
+  if (token === null) return
 
   const trackingUrl = `${siteOrigin('shop') ?? ''}${createHref(SITES.shop)('tracking', { token }, locale)}`
   try {

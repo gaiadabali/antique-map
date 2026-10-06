@@ -70,6 +70,7 @@ const { cms, cmsPool } = await import('./engine/packages/cms/src/instance')
 const { createOrder, quoteDeliveryFee } = await import('./engine/packages/cms/src/shop/orders')
 const { createBagCookieKey, serialiseBag } = await import('./engine/packages/cms/src/shop/pricing')
 const { makeProduct } = await import('./engine/packages/cms/src/collections/stock-levels/shop.test-support')
+const { invalidationBatch } = await import('./engine/packages/cache/src/index')
 
 const payload = await cms()
 const pool = cmsPool(payload)
@@ -87,10 +88,10 @@ async function openStore() {
     collection: 'stores', id: store.id,
     data: { active: true, address: 'Jl. Raya Ubud 1', area: 'Ubud', lat: -8.5069, lng: 115.2625 },
   })
-  await payload.updateGlobal({
-    slug: 'site-settings',
+  await invalidationBatch().operation((context) => payload.updateGlobal({
+    slug: 'site-settings', context,
     data: { shop: { checkoutEnabled: true, quoteWindowMinutes: 120, orderExpiryMinutes: 45 } },
-  })
+  }))
   return store.id
 }
 

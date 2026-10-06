@@ -142,6 +142,15 @@ export const TRACKING_FIELDS: Field[] = [
     admin: { hidden: true },
   },
   {
+    // The tracking token, sealed at rest under `ORDER_LINK_KEY` (TASKS.md 6.6; `shop/orders/link-key`):
+    // every email reopens the same link — no rotation — by decrypting this, never the hash above.
+    name: 'trackingTokenEnc',
+    type: 'text',
+    label: { en: 'Tracking token (sealed)', id: 'Token pelacakan (tersegel)' },
+    access: NEVER_EXPOSED,
+    admin: { hidden: true },
+  },
+  {
     name: 'expiresAt',
     type: 'date',
     label: { en: 'Pay by', id: 'Bayar sebelum' },

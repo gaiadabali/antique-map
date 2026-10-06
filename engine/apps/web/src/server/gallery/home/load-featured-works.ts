@@ -7,8 +7,11 @@
  * the gallery never quotes a price on its pages (the gallery sells by enquiry).
  *
  * Cached: `'use cache'` with each record's own tag from `@engine/cache`'s builder (`workTag`),
- * so one editorial invalidation of a work re-renders any home that shows it. A tag is never
- * written by hand. The cache key carries the locale argument (ARCHITECTURE.md §6) even though
+ * so one editorial invalidation of a work re-renders any home that shows it, and the gallery's
+ * catalogue tag (`catalogueTag('gallery')`): the rail is a listing — the newest three — and a work
+ * published a moment ago carries no tag this entry knows, so only the listing tag brings it in
+ * (5.1 stale browse). `cacheLife('hours')` is the backstop the catalogue's loaders declare
+ * (`../catalogue/catalogue`). A tag is never written by hand. The cache key carries the locale argument (ARCHITECTURE.md §6) even though
  * the works themselves are not localised, so each locale's entry is its own.
  *
  * Build safety: only called inside the home page's render, under a root layout that awaits
@@ -17,7 +20,9 @@
  */
 import 'server-only'
 
-import { cacheTags, workTag } from '@engine/cache'
+import { cacheLife } from 'next/cache'
+
+import { cacheTags, catalogueTag, workTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
 
@@ -35,6 +40,7 @@ const LIMIT = 3
 
 export async function loadFeaturedWorks(_locale: SiteLocale): Promise<readonly FeaturedWork[]> {
   'use cache'
+  cacheLife('hours')
   const payload = await cms()
   const found = await payload.find({
     collection: 'works',
@@ -51,13 +57,14 @@ export async function loadFeaturedWorks(_locale: SiteLocale): Promise<readonly F
       images: { media: { url: true, alt: true } },
     },
   })
-  cacheTags(
-    found.docs
+  cacheTags([
+    catalogueTag('gallery'),
+    ...found.docs
       .map((work) =>
         typeof work.workUid === 'string' && work.workUid ? workTag(work.workUid) : null,
       )
       .filter((tag): tag is NonNullable<typeof tag> => tag !== null),
-  )
+  ])
   return found.docs.map((work) => {
     // The `select` projection types `images` as `{}`; shape it here once, defensively.
     const images = work.images as

@@ -10,7 +10,7 @@
  * locale that shows the record, whose cache keys carry the site and locale as loader arguments.
  * Only a record that holds a part for each site — the `site-settings` global, a group per site;
  * each site's map of `redirects` — carries the site, so editing one site's part leaves the other's
- * cache alone:
+ * cache alone; so does a site's catalogue, which names no record but one site's listings:
  *
  * - `work:<workUid>` — a gallery work (`works`), and whatever renders it;
  * - `product:<id>` — a shop product's editorial record (its page, a card's text);
@@ -18,7 +18,12 @@
  *   stock that decides a purchase, which is read live (ARCHITECTURE.md §6);
  * - `product-price:<id>` — a product's prices;
  * - `settings:<site>` — one site's group of `site-settings`;
- * - `redirects:<site>` — one site's cached map of `redirects`.
+ * - `redirects:<site>` — one site's cached map of `redirects`;
+ * - `catalogue:<site>` — one site's listings: its browse, facets, search and home rails, which
+ *   show records no single record tag can name — the work published a moment ago is on no cached
+ *   listing yet — and the vocabulary they are filtered and found by. Every write that changes
+ *   what a listing could show expires it: a published work's save, publish, unpublish or delete,
+ *   and any edit of a place, maker or term.
  *
  * Editorial tags expire `'max'` — stale-while-revalidate: the next request is served the old entry
  * once while a fresh one is computed. Stock and price expire `{ expire: 0 }`: the next request
@@ -70,6 +75,7 @@ export const TAG_KINDS = {
   'product-price': record(IMMEDIATE_EXPIRY),
   settings: site,
   redirects: site,
+  catalogue: site,
 } as const satisfies Record<string, Kind>
 
 export type TagKind = keyof typeof TAG_KINDS
@@ -103,6 +109,7 @@ export const productStockTag = (id: number): CacheTag => byRecordId('product-sto
 export const productPriceTag = (id: number): CacheTag => byRecordId('product-price', id)
 export const settingsTag = (site: TagSite): CacheTag => build('settings', site)
 export const redirectsTag = (site: TagSite): CacheTag => build('redirects', site)
+export const catalogueTag = (site: TagSite): CacheTag => build('catalogue', site)
 
 /**
  * The tag `value` spells, or `null` when no builder makes it — the check `/api/x/revalidate`
