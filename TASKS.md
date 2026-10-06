@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 11/20 | 0 | `██████░░░░`  55% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 21/26 | 0 | `████████░░`  81% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 14/20 | 0 | `███████░░░`  70% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 22/26 | 0 | `█████████░`  85% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 11/13 | 0 | `█████████░`  85% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **29/51** | **144/208** | **8** | `███████░░░`  69% |
+| **All** | 11 phases | | | **29/51** | **151/208** | **8** | `███████░░░`  73% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -92,6 +92,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 | 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
 | 5·W3 | 5.5 The gallery gate | deepseek | `w/ds-5.5b` | 2026-10-06 | |
+| 5·W2 | 5.3 Ask about this, Sell to us, and the lead form | glm | `w/5.3` | 2026-10-06 | |
 
 ## Decisions for the owner
 
@@ -477,14 +478,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
   - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
-- [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2
+- [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — 🔄 5·W2
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`, `engine/apps/web/src/app/api/x/leads/**`
   - **Read** EXPERIENCE-GALLERY.md §Handoffs, AI.md §Leads, SECURITY.md §Forms and uploads
   - _Requirements: 3.3, 4.1, 4.2, 4.5_
-  - [ ] 5.3.a a builder for the WhatsApp (`wa.me`) and email (`mailto:`) links that prefill the item's name, stock number, link and the visitor's language; the numbers and addresses come from `site-settings` (a marked placeholder until OA2 arrives)
-  - [ ] 5.3.b the Sell-to-us page: WhatsApp and email buttons with a prepared message, and a form (name, contact, what they have, a few photos) that posts to `/api/x/leads`
-  - [ ] 5.3.c `/api/x/leads`: validates with a shared schema, Turnstile, rate limit per IP, photo type-sniffing, size limits and re-encoding; creates a `leads` row and emails the owner (Mailpit on staging)
+  - [x] 5.3.a a builder for the WhatsApp (`wa.me`) and email (`mailto:`) links that prefill the item's name, stock number, link and the visitor's language; the numbers and addresses come from `site-settings` (a marked placeholder until OA2 arrives)
+  - [x] 5.3.b the Sell-to-us page: WhatsApp and email buttons with a prepared message, and a form (name, contact, what they have, a few photos) that posts to `/api/x/leads`
+  - [x] 5.3.c `/api/x/leads`: validates with a shared schema, Turnstile, rate limit per IP, photo type-sniffing, size limits and re-encoding; creates a `leads` row and emails the owner (Mailpit on staging)
   - [ ] 5.3.d **Check:** from a phone viewport "Ask about this" opens a WhatsApp link whose text names the item and stock number; a valid Sell-to-us form creates a lead and an email; a bot-looking post, an oversize file, a renamed `.exe` and the eleventh post in a minute are each refused.
 
 - [ ] **5.4 Makers, places, editorial and the plain pages** · needs: 5.1 — 🔄 5·W2
@@ -569,7 +570,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 5.5, 6.1, 6.3, 8.5_
   - [x] 6.6.a core: a new first status `awaiting_quote` (holding stock from placement); checkout takes no delivery fee; staff (the order's store, owner, editor) enter the fee in one transaction that prices the total on the server, opens the 60-minute payment window and writes history; a quote window (site-settings `quoteWindowMinutes`, default 120) after which the sweep expires the order and returns its stock once; staff may cancel from `awaiting_quote`
   - [x] 6.6.b the order's private link stored encrypted at rest (AES-256-GCM, a host-only key), and every order email sent from the core after its transaction commits — paid, quote ready (with the pay link), each later status, expired — once per order and status; the token rotation removed
-  - [ ] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
+  - [x] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
   - [x] 6.6.d the wave's migration (the `awaiting_quote` enum value, `quoteWindowMinutes`, the encrypted link column), generated once on merged main
   - [ ] 6.6.e **Check:** db tests prove: an order is created `awaiting_quote` with stock held and no fee; a store user of another store cannot quote it; the quote prices the total on the server and a tampered client total is ignored; an unquoted order expires after the window and returns its stock once; each status sends exactly one email and every email's link opens the same order page; on staging the 7.4 gate passes with the quote step.
 
@@ -624,7 +625,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `docs/gates/shop.md`, `tests/e2e/shop-fulfilment/**`
   - **Read** the **Done when** of phases 6 and 7
   - _Requirements: 7.5, 8.1, 8.4, 12.4_
-  - [ ] 7.4.a one e2e across roles: guest buys → store user fulfils with the driver image → buyer tracks → owner reassigns a second order
+  - [x] 7.4.a one e2e across roles: guest buys → store user fulfils with the driver image → buyer tracks → owner reassigns a second order
   - [ ] 7.4.b Lighthouse mobile on the product page and the tracking page against staging
   - [ ] 7.4.c **Check:** `docs/gates/shop.md` holds the run, the screenshots at 390 px, the emails, the access denial for another store, and scores of at least 90 performance and 100 accessibility.
 
@@ -689,8 +690,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(payload)/admin/leads/**`, `engine/apps/web/src/sites/shop/partnership/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/packages/cms/src/jobs/retention/**`
   - **Read** CONTENT-OPERATIONS.md §Leads and partners, COMPLIANCE.md §Retention, EXPERIENCE-SHOP.md §Partnership, Q11
   - _Requirements: 4.3, 4.4, 11.5_
-  - [ ] 9.1.a the leads inbox (owner only): filter by site, kind and status, open the source (item, conversation), change status, add notes; a "new lead" email
-  - [ ] 9.1.b the partner records view and a "carried products" picker; no partner login anywhere
+  - [x] 9.1.a the leads inbox (owner only): filter by site, kind and status, open the source (item, conversation), change status, add notes; a "new lead" email
+  - [x] 9.1.b the partner records view and a "carried products" picker; no partner login anywhere
   - [x] 9.1.c the shop's partnership page (what partners get, WhatsApp, email, a short form that creates a `partnership` lead)
   - [x] 9.1.d a retention job that deletes expired chat transcripts, closed leads past retention and delivered orders' driver images on schedule
   - [ ] 9.1.e **Check:** a partnership form creates a lead the owner can move to Closed; an editor cannot open the inbox; the retention job deletes only what is past its date (tested with a fixed clock) and logs counts without personal data.

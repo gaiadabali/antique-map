@@ -4,19 +4,14 @@
  * (signing in and driving the store/owner panel) so this folder owns its own copies, per the
  * ticket's owned paths.
  */
-import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { randomBytes } from 'node:crypto'
+import { mkdirSync } from 'node:fs'
 
 import AxeBuilder from '@axe-core/playwright'
 import { expect, type APIRequestContext, type Page } from '@playwright/test'
 
-import { API_BASE, HOST_HEADER, localDatabaseUrl, ROOT, SHOP_ORIGIN, SHOTS } from './env'
-
-const here = dirname(fileURLToPath(import.meta.url))
-const windows = process.platform === 'win32'
+import { gateAccounts } from './accounts'
+import { API_BASE, GATE_DB, HOST_HEADER, MAILPIT_URL, SHOP_ORIGIN, SHOTS } from './env'
+import { cleanupOpsOut as cleanupOpsOutImpl, runOps } from './run-ops'
 
 /** Both widths this gate checks (TASKS.md 7.4.c). */
 export const WIDTHS = [
@@ -63,20 +58,6 @@ export async function typePin(page: Page, pin: { lat: number; lng: number }): Pr
   await inputs.nth(1).fill(String(pin.lng))
 }
 
-/** Whether the checkout's fee box settles on a fee (no refusal alert) for the bag and pin as they stand. */
-export async function feeQuoteOk(page: Page): Promise<boolean> {
-  for (let attempt = 0; attempt < 10; attempt++) {
-    const [alertTexts, feeLabels] = await Promise.all([
-      page.getByRole('alert').allTextContents(),
-      page.getByText('Delivery', { exact: true }).count(),
-    ])
-    const realAlerts = alertTexts.filter((text) => text.trim() !== '')
-    if (realAlerts.length === 0 && feeLabels > 0) return true
-    await page.waitForTimeout(300)
-  }
-  return false
-}
-
 export type CheckoutContact = {
   readonly name: string
   readonly whatsapp: string
@@ -84,7 +65,11 @@ export type CheckoutContact = {
   readonly address: string
 }
 
-/** Fills the checkout's contact, delivery and pin fields; waits for the fee to quote. */
+/**
+ * Fills the checkout's contact, delivery and pin fields. No fee to wait for any more — staff
+ * quote delivery after the order is placed (TASKS.md 6.6, 7.4-r2), so the checkout page itself
+ * never prices it.
+ */
 export async function fillCheckout(
   page: Page,
   contact: CheckoutContact,
@@ -99,7 +84,25 @@ export async function fillCheckout(
   await page.getByLabel(/email/i).fill(contact.email)
   await page.getByLabel(/address/i).fill(contact.address)
   await typePin(page, pin)
-  expect(await feeQuoteOk(page), 'the fee quote resolved for the checkout pin').toBe(true)
+}
+
+export type PlacedOrder = {
+  readonly token: string
+  /** `subtotal − discount`, read off the awaiting-quote page — nothing prices delivery yet. */
+  readonly itemsTotalIdr: number
+}
+
+/** Submits the checkout; the order lands `awaiting_quote` (6.6) — nothing to pay yet. */
+export async function submitCheckout(page: Page): Promise<PlacedOrder> {
+  await page.getByRole('button', { name: 'Continue to payment' }).click()
+  await expect(page).toHaveURL(/\/order\//)
+  const token = decodeURIComponent(new URL(page.url()).pathname.split('/').pop() ?? '')
+  expect(token.length, 'a tracking token in the redirect URL').toBeGreaterThan(10)
+  await expect(
+    page.getByRole('heading', { name: "We're confirming your delivery price" }),
+  ).toBeVisible()
+  const itemsTotalIdr = rupiahToNumber(await page.locator('dl').locator('dd').last().innerText())
+  return { token, itemsTotalIdr }
 }
 
 export type SettledOrder = {
@@ -110,19 +113,32 @@ export type SettledOrder = {
   readonly numberText: string
 }
 
-/** Continues to payment, settles the simulator, and returns the tracking token and order number. */
-export async function payAndSettle(page: Page): Promise<SettledOrder> {
-  await page.getByRole('button', { name: 'Continue to payment' }).click()
-  await expect(page).toHaveURL(/\/order\//)
-  const token = decodeURIComponent(new URL(page.url()).pathname.split('/').pop() ?? '')
-  expect(token.length, 'a tracking token in the redirect URL').toBeGreaterThan(10)
+/**
+ * Waits for the buyer's order page to switch to its priced, `pending_payment` state (staff just
+ * quoted it — `quoteAsStaff`), asserts the total is `expectedTotalIdr`, settles the simulator, and
+ * returns the tracking token and order number.
+ */
+export async function payAndSettle(page: Page, expectedTotalIdr: number): Promise<SettledOrder> {
+  let payButton = page.getByRole('button', { name: /^Pay /i })
+  for (let attempt = 0; attempt < 20; attempt++) {
+    if ((await payButton.count()) > 0) break
+    await page.waitForTimeout(500)
+    await page.reload()
+    payButton = page.getByRole('button', { name: /^Pay /i })
+  }
+  await expect(payButton, 'the priced Pay button appeared').toBeVisible()
+  const shownTotal = rupiahToNumber(await payButton.innerText())
+  expect(shownTotal, 'the priced total (subtotal − discount + fee)').toBe(expectedTotalIdr)
+
   const pendingHeading = await page.getByRole('heading', { name: /^Order /i }).innerText()
   const shownNumber = /Order ([\d,]+)/.exec(pendingHeading)?.[1] ?? null
   expect(shownNumber, 'the order number on the pending page').not.toBeNull()
-  await page.getByRole('button', { name: /^Pay /i }).click()
+
+  await payButton.click()
   await expect(page.getByText('Test payment — no money moves.')).toBeVisible()
   await page.getByRole('button', { name: 'Settle' }).click()
   await expect(page.getByRole('heading', { name: 'Payment received' })).toBeVisible()
+  const token = decodeURIComponent(new URL(page.url()).pathname.split('/').pop() ?? '')
   // The admin's queue shows the raw `order.number`, no thousands separator.
   return { token, shownNumber: shownNumber!, numberText: shownNumber!.replace(/,/g, '') }
 }
@@ -163,34 +179,28 @@ export async function openOrderByNumber(page: Page, numberText: string): Promise
   await page.waitForURL(`**/admin/orders/**`)
 }
 
-// ---------------------------------------------------------------------------------------------
-// Database ops (`GATE_DB=local` only) — `./ops.ts`, run as its own `payload run` process.
-// ---------------------------------------------------------------------------------------------
-
-const opsScript = join(here, 'ops.ts')
-const opsOutDir = join(here, '.ops-out')
-
-function runOps(op: Record<string, unknown>): Record<string, unknown> {
-  if (!existsSync(opsOutDir)) mkdirSync(opsOutDir, { recursive: true })
-  const out = join(opsOutDir, `out-${randomBytes(6).toString('hex')}.json`)
-  execFileSync('pnpm', ['--filter', '@engine/cms', 'payload', 'run', opsScript], {
-    cwd: ROOT,
-    encoding: 'utf8',
-    shell: windows,
-    env: {
-      ...process.env,
-      DATABASE_URL: localDatabaseUrl(),
-      NODE_ENV: 'development',
-      SHOPFUL_OP: JSON.stringify(op),
-      SHOPFUL_OUT: out,
-    },
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
-  if (!existsSync(out)) throw new Error(`shop-fulfilment ops.ts (${op.op}) wrote no result file`)
-  const result = JSON.parse(readFileSync(out, 'utf8')) as Record<string, unknown>
-  rmSync(out, { force: true })
-  return result
+/**
+ * Staff enter the courier fee and press "Send price" (TASKS.md 6.6.c, 7.4-r2) — the admin UI, so
+ * this works unchanged against staging, where there is no Local API. Signs in as the owner: the
+ * store queue lists only `paid` and later statuses (`./data.ts`'s `ACTIVE_STATUSES`), so an
+ * `awaiting_quote` order never appears there — the owner/editor list has no such filter.
+ */
+export async function quoteAsStaff(page: Page, orderNumber: string, feeIdr: number): Promise<void> {
+  const accounts = gateAccounts()
+  await signInAs(page, accounts.owner.email, accounts.owner.password)
+  await openOrderByNumber(page, orderNumber)
+  await page.locator('input[name="feeIdr"]').fill(String(feeIdr))
+  await page.getByRole('button', { name: 'Send price' }).click()
+  await page.waitForURL('**/admin/orders/**')
+  // The panel confirms: the order left `awaiting_quote` (its "Send the delivery price" form is
+  // gone) and now shows the status the quote moved it to.
+  await expect(page.getByText('Awaiting payment')).toBeVisible()
 }
+
+// ---------------------------------------------------------------------------------------------
+// Database ops (`GATE_DB=local` only) — `./ops.ts`, run as its own `payload run` process
+// (`./run-ops.ts`'s `runOps`, shared with `./accounts.ts`).
+// ---------------------------------------------------------------------------------------------
 
 export function setupFixtureStock(
   storeAId: number,
@@ -213,6 +223,56 @@ export function orderByToken(token: string): OrderRow {
   return runOps({ op: 'order-by-token', token }) as OrderRow
 }
 
-export function cleanupOpsOut(): void {
-  rmSync(opsOutDir, { recursive: true, force: true })
+export const cleanupOpsOut = cleanupOpsOutImpl
+
+// ---------------------------------------------------------------------------------------------
+// The order number before a quote exists: the `awaiting_quote` order page never shows it (its
+// heading is only "We're confirming your delivery price"), so `quoteAsStaff` needs another way to
+// find the order it must open. `GATE_DB=local` reads it straight from the row; staging reads the
+// order-confirmation email `createOrder` sends on placement (`shop/notify`'s own subject,
+// `Order #<n> — update`) through Mailpit, same as `tests/e2e/shop/gate.spec.ts`'s own pattern.
+// ---------------------------------------------------------------------------------------------
+
+export type OrderEmail = { readonly text: string; readonly subject: string }
+
+/** The newest email Mailpit has for `to`, or `null` after ten tries (`MAILPIT_URL=none` skips). */
+export async function orderConfirmationEmail(
+  request: APIRequestContext,
+  to: string,
+): Promise<OrderEmail | null> {
+  if (MAILPIT_URL === 'none') return null
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const res = await request.get(
+      `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:${to}`)}`,
+    )
+    if (res.ok()) {
+      const body = (await res.json()) as { messages?: { ID: string }[] }
+      const found = body.messages?.[0]
+      if (found) {
+        const message = await request.get(`${MAILPIT_URL}/api/v1/message/${found.ID}`)
+        const parsed = (await message.json()) as { Text: string; Subject: string }
+        return { text: parsed.Text, subject: parsed.Subject }
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
+  return null
+}
+
+/** `order.number` as digits (the admin's queue shape) for the order just placed. */
+export async function orderNumberAfterCheckout(
+  request: APIRequestContext,
+  token: string,
+  buyerEmail: string,
+): Promise<string> {
+  if (GATE_DB) {
+    const row = orderByToken(token)
+    expect(row.found, 'the just-placed order').toBe(true)
+    return String(row.number)
+  }
+  const email = await orderConfirmationEmail(request, buyerEmail)
+  expect(email, 'the order confirmation email (MAILPIT_URL)').not.toBeNull()
+  const match = /#(\d+)/.exec(email!.subject)
+  expect(match, 'an order number in the confirmation email subject').not.toBeNull()
+  return match![1]!
 }
