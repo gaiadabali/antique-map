@@ -55,8 +55,15 @@ const ORDER_ROW_SELECT = {
   createdAt: true,
 } as const
 
-/** Not yet delivered, cancelled or expired — the statuses store staff still act on. */
+/**
+ * Not yet delivered, cancelled or expired — the statuses store staff still act on. `awaiting_quote`
+ * and `pending_payment` are here so the order's own store sees it is waiting on them (TASKS.md 6.6):
+ * the store quotes an `awaiting_quote` order from `QuotePanel`, and watches a `pending_payment` one
+ * for the buyer to pay.
+ */
 export const ACTIVE_STATUSES: readonly OrderStatus[] = [
+  'awaiting_quote',
+  'pending_payment',
   'paid',
   'processing',
   'waiting_driver',

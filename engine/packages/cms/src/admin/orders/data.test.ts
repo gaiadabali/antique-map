@@ -5,7 +5,14 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { whatsappLink } from './data'
+import { ACTIVE_STATUSES, whatsappLink } from './data'
+
+describe('ACTIVE_STATUSES (6-followup-3)', () => {
+  it('includes awaiting_quote and pending_payment, so the store queue shows an order it must quote', () => {
+    expect(ACTIVE_STATUSES).toContain('awaiting_quote')
+    expect(ACTIVE_STATUSES).toContain('pending_payment')
+  })
+})
 
 describe('whatsappLink', () => {
   it('strips spaces and a leading country-code +', () => {
