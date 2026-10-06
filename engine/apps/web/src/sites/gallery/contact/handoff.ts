@@ -9,12 +9,10 @@
  * gallery's number or address has not arrived yet (OA2), the link is `null` and the page links
  * the Contact page with a placeholder notice instead — never a fake number.
  */
-import type { MessageParams } from '@engine/i18n'
-
-import type { ContactMessageKey } from './messages'
+import type { ContactText } from './messages'
 
 /** The words a builder needs: the contact area's message function. */
-export type HandoffText = (key: ContactMessageKey, params?: MessageParams) => string
+export type HandoffText = ContactText
 
 /** The gallery's public contact, from `loadSiteSettings()`'s read. */
 export type ContactChannels = {

@@ -8,7 +8,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { SiteLocale } from '@engine/config/sites'
-import { contactText, type ContactMessageKey } from './messages'
+import { contactText } from './messages'
 import {
   cutTitle,
   itemMessage,

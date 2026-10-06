@@ -6,10 +6,10 @@
  * already names (`whatsapp.*`) are the app lexicon's, so this module adds only what no key
  * carries yet — the email subjects, the sell-to-us row and the two forms' words.
  */
-import { createMessages, defineMessages, type MessageParams, type Messages } from '@engine/i18n'
+import { createMessages, defineMessages, type MessageParams } from '@engine/i18n'
 import type { SiteLocale } from '@engine/config/sites'
 
-import { lexiconMessages } from '../../../messages/keys'
+import { lexiconMessages, type LexiconMessageKey } from '../../../messages/keys'
 import { SITE_COPY } from '../../../shell/copy'
 
 export const CONTACT_MESSAGES = defineMessages({
@@ -74,10 +74,16 @@ export const CONTACT_MESSAGES = defineMessages({
 
 export type ContactMessageKey = keyof typeof CONTACT_MESSAGES
 
+/** The contact area's words: this module's keys and the shared lexicon's (`whatsapp.*`). */
+export type ContactText = (
+  key: ContactMessageKey | LexiconMessageKey,
+  params?: MessageParams,
+) => string
+
 const isKnown = (key: string): boolean => CONTACT_MESSAGES[key as ContactMessageKey] !== undefined
 
 /** The contact area's words for one locale: this module's keys plus the shared lexicon's (`whatsapp.*`). */
-export function contactText(locale: SiteLocale): Messages<ContactMessageKey>['t'] {
+export function contactText(locale: SiteLocale): ContactText {
   const mine = createMessages({
     defaults: CONTACT_MESSAGES,
     locale,
@@ -86,8 +92,7 @@ export function contactText(locale: SiteLocale): Messages<ContactMessageKey>['t'
   })
   const shared = lexiconMessages('gallery', locale)
   return ((key: string, params?: MessageParams) =>
-    isKnown(key) ? mine.t(key as ContactMessageKey, params) : shared.t(key as never, params)) as (
-    key: ContactMessageKey,
-    params?: MessageParams,
-  ) => string
+    isKnown(key)
+      ? mine.t(key as ContactMessageKey, params)
+      : shared.t(key as LexiconMessageKey, params)) as ContactText
 }
