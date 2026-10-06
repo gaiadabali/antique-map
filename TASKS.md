@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 14/20 | 0 | `███████░░░`  70% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 2/5 | 15/20 | 0 | `████████░░`  75% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 12/13 | 0 | `█████████░`  92% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **30/51** | **153/208** | **8** | `███████░░░`  74% |
+| **All** | 11 phases | | | **31/51** | **154/208** | **8** | `███████░░░`  74% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,7 +81,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W3 | 7.4 Shop gate: buy, quote, pay, fulfil, track | Sonnet → Opus on staging | `w/7.4r2` | 2026-10-06 | 5/5 on staging before 6.6; `am-7.4r2-s1` adds the staff "Send price" step (admin UI) to the spec; then the orchestrator's staging run + Lighthouse |
 | 5·W1 | 5.2.e Check (item page) | — | `main` | 2026-10-06 | media pipeline merged `03d3650`; waits on a seeded image over 2400 px (sample images are 640 px — no tiles) or the owner's pilot set, and on staging's media-bucket CORS + backfill (antique-map-15) |
 | 5·W2 | 5.4.c Check | — | `main` | 2026-10-06 | 5.4 merged `8b8d4a3`; maker/place lists and axe evidenced (e2e 9/9); the "edited page after cache-tag invalidation" clause waits on `w/5.1cache` (pages read live today) |
-| 5·W2 | 5.3 Ask, Sell to us, Contact, `/api/x/leads` | GLM 5.3 Flash → Opus review | `w/5.3` | 2026-10-06 | run `am-5.3-g1`, on 9.1's lead service (`6d56bea`); sold → "Ask for another example" (decision 2026-10-06) |
+| 5·W2 | 5.3sold immediate expiry on status change | Sonnet → Opus → antique-map-15 review | `w/5.3sold` | 2026-10-06 | run `am-5.3sold-s1`; a sold work rendered "available" once (stale-while-revalidate); `invalidate(…, { now: true })` for status transitions only |
 | 5·W3 | 5.5.c Lighthouse on staging | — | `main` | 2026-10-06 | runner merged `529e4ba` (`tests/e2e/gallery/lighthouse/run.mjs`); local: home 98/100 pass, `/browse` 92/100 but misses LCP 3.3 s (2.5) and script 240 KB (150) — to fix before the staging run; item page not yet measured |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
@@ -475,7 +475,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
   - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
-- [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — 🔄 5·W2
+- [x] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — ✅ 2026-10-06 7046b7a
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`, `engine/apps/web/src/app/api/x/leads/**`
   - **Read** EXPERIENCE-GALLERY.md §Handoffs, AI.md §Leads, SECURITY.md §Forms and uploads
@@ -483,7 +483,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.3.a a builder for the WhatsApp (`wa.me`) and email (`mailto:`) links that prefill the item's name, stock number, link and the visitor's language; the numbers and addresses come from `site-settings` (a marked placeholder until OA2 arrives)
   - [x] 5.3.b the Sell-to-us page: WhatsApp and email buttons with a prepared message, and a form (name, contact, what they have — no photos: they travel on WhatsApp or email, CONTENT-MODEL.md §6) that posts to `/api/x/leads`
   - [x] 5.3.c `/api/x/leads`: validates with a shared schema, Turnstile, rate limit per IP, JSON only (any file or multipart refused), a body-size cap; creates a `leads` row and emails the owner (Mailpit on staging)
-  - [ ] 5.3.d **Check:** from a phone viewport "Ask about this" opens a WhatsApp link whose text names the item and stock number; a valid Sell-to-us form creates a lead and an email; a bot-looking post, an oversize file, a renamed `.exe` and the eleventh post in a minute are each refused.
+  - [x] 5.3.d **Check:** from a phone viewport "Ask about this" opens a WhatsApp link whose text names the item and stock number; a valid Sell-to-us form creates a lead and an email; a bot-looking post, an oversize file, a renamed `.exe` and the eleventh post in a minute are each refused.
 
 - [ ] **5.4 Makers, places, editorial and the plain pages** · needs: 5.1 — 🔄 5·W2
   - **Lane** GAL · **Agent** senior-fe · **Wave** W2
@@ -838,6 +838,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — ✅ **5.3 closed** (`7046b7a`; GLM built, Opus reviewed). The review found and fixed three high-severity route bugs: the 16 KB cap ran after the body was read whole; the idempotency map was keyed on the client's key alone (another visitor's answer replayed, 403/429/503 cached); a double tap made two leads. Also: the email address shown as text, the Indonesian footer's Contact link (`/id/kontak`), and a `toPass` retry in the e2e that hid a fixture unpublishing the work. Check 5.3.d: e2e 6/6 at 390/1280 px (Ask → `wa.me` naming the stock number and title; a Sell-to-us form → a `leads` row and a Mailpit email; 403 no token, 413 oversize body incl. chunked, 415 multipart `.exe`, 429 + `Retry-After` on the eleventh post); `pnpm verify` 2,347 tests green on main. Open: the lead-form rate limit (SECURITY.md 5/hour vs the service's 10/min) — asked; `/api/x/leads` accepts shop-host posts; `whatsapp.viewing` lacks `{city}`; a sold work showed "available" for one render — 5.3sold in flight.
 
 - 2026-10-06 — **Media pipeline merged** (`03d3650`; Opus built, a second Opus security-reviewed). Uploads now make public AVIF/WebP derivatives (EXIF-free, 4096 px cap) and IIIF level-0 tiles for work images over 2400 px, in `after()` once the save commits (≈ 40 s per large image), plus `pnpm --filter @engine/cms media:derivatives [--force]` to backfill; item, home and browse use one `publicImageUrl()`. Fixed on the way: Next's optimizer answered 400 for every media URL; the card loaders handed visitors the staff-only file URL; the viewer needed `crossOriginPolicy: 'Anonymous'` (black WebGL canvas); rotated phone portraits named a derivative that was never written (review fix `3ce1757`). Local proof: anonymous 200 for derivative, `info.json` and tile, 403 for `uploads/`; backfill 64/64. Staging: media-bucket CORS + backfill handed to antique-map-15; the shop's photos follow via antique-map-dc's helper switch. Open: a `payload_jobs` migration to move generation onto the queue (schema lead); the pre-ready fallback still names the staff-only URL; SECURITY.md F1 should list AVIF.
 
