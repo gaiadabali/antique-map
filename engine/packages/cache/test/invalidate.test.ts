@@ -125,6 +125,28 @@ describe('inside a request, with no collector', () => {
     ])
   })
 
+  it('with { now: true } expires at once instead, even a tag whose kind is stale-while-revalidate (5.3sold)', async () => {
+    const req = request()
+    req.run(() => {
+      invalidate([workTag('FX-000123')], undefined, { now: true })
+      invalidate([productTag(1)]) // another hook, same request, the default
+    })
+    await req.close()
+    expect(req.expired).toEqual([
+      { tags: ['work:FX-000123'], durations: { expire: 0 }, committed: false },
+      { tags: ['product:1'], durations: { expire: 31_536_000 }, committed: false },
+    ])
+  })
+
+  it('{ now: false } or omitted reproduces the kind’s own profile exactly', async () => {
+    const req = request()
+    req.run(() => invalidate([workTag('FX-000124')], undefined, { now: false }))
+    await req.close()
+    expect(req.expired).toEqual([
+      { tags: ['work:FX-000124'], durations: { expire: 31_536_000 }, committed: false },
+    ])
+  })
+
   it('refuses, before scheduling anything, a tag no builder makes', async () => {
     const req = request()
     expect(() => req.run(() => invalidate([productTag(1), 'product:01' as CacheTag]))).toThrow(

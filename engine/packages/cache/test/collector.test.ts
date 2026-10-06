@@ -216,6 +216,42 @@ describe('posting', () => {
     expect(posts).toEqual([['product:1'], ['product:1']])
   })
 
+  describe('immediate expiry (5.3sold)', () => {
+    it('posts a now-tagged entry apart, in its own body carrying "now": true', async () => {
+      const { posts, fetch } = recorder()
+      const batch = invalidationBatch({ target, fetch })
+      await batch.operation((context) => {
+        invalidate([productTag(1)], context)
+        invalidate([workTag('FX-1')], context, { now: true })
+        return Promise.resolve()
+      })
+      expect([...batch.pending].sort()).toEqual(['product:1', 'work:FX-1'])
+      expect(await batch.flush()).toBe(2)
+      expect(posts).toHaveLength(2)
+      // The now group posts first (never undercut by a later group's failure).
+      expect(JSON.parse(String(posts[0]!.init.body))).toEqual({ tags: ['work:FX-1'], now: true })
+      expect(JSON.parse(String(posts[1]!.init.body))).toEqual({ tags: ['product:1'] })
+    })
+
+    it('keeps a tag "now" once any caller asked for it, even kept again without it', async () => {
+      const { posts, fetch } = recorder()
+      const batch = invalidationBatch({ target, fetch })
+      await batch.operation((context) => invalidate([workTag('FX-2')], context, { now: true }))
+      await batch.operation((context) => invalidate([workTag('FX-2')], context))
+      expect(await batch.flush()).toBe(1)
+      expect(posts).toHaveLength(1)
+      expect(JSON.parse(String(posts[0]!.init.body))).toEqual({ tags: ['work:FX-2'], now: true })
+    })
+
+    it('a default-only flush posts the exact body of before this flag existed', async () => {
+      const { posts, fetch } = recorder()
+      const batch = invalidationBatch({ target, fetch })
+      await batch.operation((context) => invalidate([productTag(9)], context))
+      await batch.flush()
+      expect(JSON.parse(String(posts[0]!.init.body))).toEqual({ tags: ['product:9'] })
+    })
+  })
+
   it('flushes run one after another', async () => {
     const order: string[] = []
     const fetch = (async (_url: URL | string, init: RequestInit = {}) => {
