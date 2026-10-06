@@ -80,7 +80,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 6·W4 | 6.6 core: awaiting_quote, quote move, encrypted link, emails from the core | Sonnet (antique-map-dc) | `w/6.6core` | 2026-10-06 | `am-6.6core-s1`; dc reviews; then the orchestrator generates the migration on merged main |
 | 6·W4 | 6.6 shell: checkout without a fee, order-page states, admin Send price | Sonnet (antique-map-dc) | `w/6.6shell` | 2026-10-06 | `am-6.6shell-s1`; merges after the core |
-| 7·W3 | 7.4 Shop gate: buy, fulfil, track | Sonnet → Opus on staging | `w/7.4` | 2026-10-05 | `am-7.4-s1` writes `tests/e2e/shop-fulfilment/flow.spec.ts` (guest buys → store fulfils with the driver image → buyer tracks → another store sees nothing → owner reassigns), green locally; the orchestrator then creates the staging owner and two store users and runs it + Lighthouse against staging |
+| 7·W3 | 7.4 Shop gate: buy, quote, pay, fulfil, track | Sonnet → Opus on staging | `w/7.4r2` | 2026-10-06 | 5/5 on staging before 6.6; `am-7.4r2-s1` adds the staff "Send price" step (admin UI) to the spec; then the orchestrator's staging run + Lighthouse |
 | 5·W1 | 5.2.e Check (item page) | — | `main` | 2026-10-06 | 5.2.b–d merged `58f62eb` (Opus-reviewed); the Check waits on public derivatives/tiles existing for seeded works — anonymous visitors get the staff-only media URL today (report open item 1) |
 | 5·W1 | 5.2.a wiring: upload → derivatives + tiles | Opus (claude seat) — next free slot | — | 2026-10-06 | plan gap: `@engine/media` derivatives/tiles (5.2.a) are a pure library and no task wires the media upload hook, so no public derivative exists and anonymous visitors get the staff-only file URL on item, home and browse cards; blocks 5.2.e |
 | 5·W2 | 5.4.c Check | — | `main` | 2026-10-06 | 5.4 merged `8b8d4a3`; maker/place lists and axe evidenced (e2e 9/9); the "edited page after cache-tag invalidation" clause waits on `w/5.1cache` (pages read live today) |
@@ -841,6 +841,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — **Staging runs 6.6** (release `3b62e2d`): db backed up first; the 6.6 migration applied on the first `/api/health`; boot check clean with `ORDER_LINK_KEY`. Found on the way: 6.6 made `ORDER_LINK_KEY` a boot requirement but `.github/scripts/start-server.sh` (release smoke, CI e2e) set none — fixed `3b62e2d` (per-run, masked). 6.6 migration `08608dc` (orchestrator, schema lead): 76/76 migrated-database tests.
 
 - 2026-10-06 — Stock race under load (antique-map-dc): `stock.db.test` "20 concurrent orders for the last unit" fails on main too — 3–4 `createOrder` calls reject with a database error (lock_timeout) instead of the designed `out_of_stock`; a buyer would see "something went wrong". Folded into **6.7** (same pattern as the webhook). The stock invariant itself held: never more than one winner.
 
