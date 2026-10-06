@@ -9,9 +9,12 @@
  * of them reach the `afterChange` hook — this file is their only notifier.
  *
  * **The once-per-(order, status) claim** (orchestrator decision B): `notifiedStatuses` is claimed
- * atomically, `UPDATE … WHERE NOT (notified_statuses ? status) RETURNING` — a lost claim (two
- * writers for the same transition, a retried hook, the `afterChange` hook racing an explicit call
- * for the same move) sends nothing. `from === to` is refused before the claim even runs.
+ * with one conditional `UPDATE … WHERE NOT (notified_statuses @> to) RETURNING id`, no explicit
+ * lock and no JS check — under READ COMMITTED a second writer blocks on the row, then re-evaluates
+ * the `WHERE` against the row as the first writer committed it and gets zero rows back. A lost
+ * claim (two writers for the same transition, a retried hook, the `afterChange` hook racing an
+ * explicit call for the same move) sends nothing. `from === to` is refused before the claim even
+ * runs.
  *
  * **The link never rotates** (orchestrator decision A): every email decrypts the one token sealed
  * at order creation (`trackingTokenEnc`, `../orders/link-key`) — `trackingTokenHash` stays the
@@ -28,7 +31,7 @@ import { createHref, SITES, siteOrigin, adminOrigin } from '@engine/config/sites
 import type { OrderStatus } from '../../collections/orders/statuses'
 import { driverImageUrl, DRIVER_IMAGE_URL_MAX_TTL } from '../fulfilment/driver-image'
 import { openToken, orderLinkKeyFromEnv } from '../orders/link-key'
-import { inTransaction, sql, type Row } from '../payments/transaction'
+import { sql, type Row } from '../payments/transaction'
 import {
   buyerStatusEmail,
   quoteReadyEmail,
@@ -74,19 +77,16 @@ async function sendMail(to: string, build: () => MailMessage | null) {
  * exactly one of any number of concurrent calls for the same order and status sends mail.
  *
  * The `afterChange` hook calls this from inside the Local API write's own still-open transaction
- * (Payload commits after hooks run) — a fresh transaction here would block on the row lock that
+ * (Payload commits after hooks run) — a fresh connection here would block on the row lock that
  * write already holds, timing out and losing the claim (the bug this fixes: every status move
  * through the admin was sending nothing). When `req` names a live transaction, the claim runs on
- * that same session instead; the every-other-caller case (`createOrder`, `quoteDeliveryFee`, the
- * webhook, the sweep — all after their own transaction has committed) still opens its own.
+ * that same session instead; every other caller (`createOrder`, `quoteDeliveryFee`, the webhook,
+ * the sweep — all after their own transaction has committed) runs it as a single autocommit
+ * statement on the pool.
  *
- * `SELECT … FOR UPDATE` before the claiming `UPDATE`, rather than one `UPDATE … WHERE NOT (…)`,
- * so the contains-check reads the row only once a conflicting writer's lock is free. Note for a
- * future fix: two Local API writes landing the exact same (order, status) at the same instant have
- * been seen to both win this claim — this needs more investigation into how the `afterChange`
- * hook's reused transaction interacts with a second, fully concurrent one; it is not understood
- * yet, so it is not hidden by weakening the test. Both still-sequential callers (a retried move,
- * a second hook call after the first already committed) are correctly claimed once.
+ * One statement, so there is nothing to hold a lock across — the `afterChange` hook's call runs
+ * on the caller's own still-open session, everyone else's runs as a single autocommit statement
+ * (no wrapping transaction needed for one statement).
  */
 async function claimNotification(
   payload: Payload,
@@ -94,35 +94,24 @@ async function claimNotification(
   to: OrderStatus,
   req?: PayloadRequest,
 ): Promise<boolean> {
-  const lockRow = sql`SELECT notified_statuses FROM orders WHERE id = ${orderId} FOR UPDATE`
   const claimRow = sql`
     UPDATE orders SET notified_statuses = COALESCE(notified_statuses, '[]'::jsonb)
                                            || to_jsonb(ARRAY[${to}]::text[])
      WHERE id = ${orderId}
+       AND NOT (COALESCE(notified_statuses, '[]'::jsonb) @> to_jsonb(ARRAY[${to}]::text[]))
     RETURNING id`
-  const alreadyClaimed = (statuses: unknown): boolean =>
-    Array.isArray(statuses) && statuses.includes(to)
 
   try {
     const transactionID = req?.transactionID ? await req.transactionID : undefined
     const session = transactionID === undefined ? undefined : payload.db.sessions?.[transactionID]
-    if (session) {
-      const db = session.db as Parameters<Payload['db']['execute']>[0]['db']
-      const locked = (await payload.db.execute({ db, sql: lockRow })) as {
-        rows?: Row[]
-      }
-      if (alreadyClaimed(locked.rows?.[0]?.notified_statuses)) return false
-      const claimed = (await payload.db.execute({ db, sql: claimRow })) as {
-        rows?: Row[]
-      }
-      return (claimed.rows?.length ?? 0) > 0
+    const db = session
+      ? (session.db as Parameters<Payload['db']['execute']>[0]['db'])
+      : (payload.db as unknown as { drizzle: Parameters<Payload['db']['execute']>[0]['db'] })
+          .drizzle
+    const claimed = (await payload.db.execute({ db, sql: claimRow })) as {
+      rows?: Row[]
     }
-    return await inTransaction(payload, async (tx) => {
-      const [row] = await tx.rows(lockRow)
-      if (alreadyClaimed(row?.notified_statuses)) return false
-      const [claimed] = await tx.rows(claimRow)
-      return claimed !== undefined
-    })
+    return (claimed.rows?.length ?? 0) > 0
   } catch {
     return false
   }
