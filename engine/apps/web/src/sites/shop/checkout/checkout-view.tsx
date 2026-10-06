@@ -43,8 +43,6 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
     pinLatitude: text('checkout.pinLatLng'),
     pinLongitude: text('checkout.pinLatLng'),
     pinSearch: text('checkout.mapPinRequired'),
-    feePlaceholder: text('checkout.feePlaceholder'),
-    deliveryFee: text('checkout.deliveryFee'),
     continueToPayment: text('checkout.continueToPayment'),
     placing: text('checkout.placing'),
     invalidDetails: text('checkout.problem.invalid-details'),
@@ -95,10 +93,12 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
               </div>
             )}
             <div className={[styles.totalRow, styles.grand].filter(Boolean).join(' ')}>
-              <dt>{text('bag.total')}</dt>
+              <dt>{text('checkout.itemsTotal')}</dt>
               <dd>{formatRupiah(read.totalIdr)}</dd>
             </div>
           </dl>
+
+          <p className={styles.deliveryNote}>{text('checkout.deliveryConfirmedNote')}</p>
 
           <div className={styles.back}>
             <Button variant="quiet" href={href('cart', {}, locale)}>

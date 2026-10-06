@@ -6,6 +6,7 @@
 import { ORDER_STATUS_LABELS } from '../../collections/orders/statuses'
 import { BigButton, Card, L, Notice, QuietLink, SubmitButton, refusalCopy, rupiah } from './shared'
 import { googleMapsLink, whatsappLink } from './data'
+import { QuotePanel } from './quote-panel'
 
 function LineItem({ line }) {
   return (
@@ -67,7 +68,7 @@ export function StoreQueue({ orders, language }) {
   )
 }
 
-export function StoreDetail({ order, step, language, imagePreviewUrl, error }) {
+export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, error }) {
   const confirmTo = step.confirmTo
   const handback = step.handback
   return (
@@ -78,11 +79,21 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, error }) {
       </h2>
       <Notice tone="error">{error ? refusalCopy(error, language) : null}</Notice>
 
+      {order.status === 'awaiting_quote' && (
+        <QuotePanel order={order} language={language} payLink={payLink} />
+      )}
+
       <Card>
         <h3 style={{ marginTop: 0 }}>{L('items', language)}</h3>
         {order.lines.map((line, i) => (
           <LineItem key={line.id ?? i} line={line} />
         ))}
+        {order.totals.deliveryFee != null && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginTop: 4 }}>
+            <span>{L('deliveryFee', language)}</span>
+            <span>{rupiah(order.totals.deliveryFee)}</span>
+          </div>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: 8 }}>
           <span>{L('total', language)}</span>
           <span>{rupiah(order.totals.total)}</span>

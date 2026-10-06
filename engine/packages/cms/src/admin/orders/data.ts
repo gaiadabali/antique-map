@@ -6,8 +6,11 @@
  */
 import type { Payload, PayloadRequest, Where } from 'payload'
 
+import { createHref, SITES, siteOrigin } from '@engine/config/sites'
+
 import type { OrderStatus } from '../../collections/orders/statuses'
 import { driverImageUrl } from '../../shop/fulfilment'
+import { openToken, orderLinkKeyFromEnv } from '../../shop/orders/link-key'
 
 /*
  * The rows are described here, structurally, and NOT imported from the generated
@@ -29,6 +32,8 @@ export type OrderRow = {
   readonly totals: Readonly<Record<string, unknown>>
   readonly needsAttention?: boolean | null
   readonly driverImage?: { readonly key?: string | null } | null
+  /** The quote deadline while `awaiting_quote` (TASKS.md 6.6); the payment deadline after. */
+  readonly expiresAt?: string | null
   readonly updatedAt: string
   readonly createdAt: string
 }
@@ -45,6 +50,7 @@ const ORDER_ROW_SELECT = {
   totals: true,
   needsAttention: true,
   driverImage: true,
+  expiresAt: true,
   updatedAt: true,
   createdAt: true,
 } as const
@@ -167,7 +173,51 @@ export function googleMapsLink(lat: number, lng: number): string {
   return `https://www.google.com/maps?q=${lat},${lng}`
 }
 
-export function whatsappLink(whatsapp: string): string {
+export function whatsappLink(whatsapp: string, text?: string): string {
   const digits = whatsapp.replace(/[^\d+]/g, '').replace(/^\+/, '')
-  return `https://wa.me/${digits}`
+  const query = text ? `?text=${encodeURIComponent(text)}` : ''
+  return `https://wa.me/${digits}${query}`
+}
+
+/**
+ * The buyer's own order-page link, for the admin's WhatsApp button (TASKS.md 6.6.c) — decrypted
+ * from the order's `trackingTokenEnc` (`../../shop/orders/link-key`'s `openToken`), never read from
+ * the hash. `trackingTokenEnc` is never exposed through access, so: first prove this staff user may
+ * see the order (`overrideAccess: false`), then read the sealed link server-side. Never cached,
+ * never rendered as text: the caller puts it straight into a `wa.me` `href`.
+ */
+export async function loadOrderPayLink(
+  payload: Payload,
+  req: PayloadRequest,
+  order: Pick<OrderRow, 'id' | 'contact'>,
+): Promise<string | null> {
+  try {
+    const visible = await payload.findByID({
+      collection: 'orders',
+      id: order.id,
+      depth: 0,
+      overrideAccess: false,
+      user: req.user,
+      req,
+      select: { status: true },
+      disableErrors: true,
+    })
+    if (!visible) return null
+    const sealed = await payload.findByID({
+      collection: 'orders',
+      id: order.id,
+      depth: 0,
+      overrideAccess: true,
+      req,
+      select: { trackingTokenEnc: true },
+    })
+    const enc = (sealed as Record<string, unknown> | null)?.trackingTokenEnc
+    if (typeof enc !== 'string' || enc === '') return null
+    const token = openToken(enc, orderLinkKeyFromEnv())
+    if (!token) return null
+    const locale = order.contact?.locale === 'id' ? 'id' : 'en'
+    return `${siteOrigin('shop') ?? ''}${createHref(SITES.shop)('order', { token }, locale)}`
+  } catch {
+    return null
+  }
 }

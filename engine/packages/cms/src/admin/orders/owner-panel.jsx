@@ -5,6 +5,7 @@
  */
 import { ORDER_STATUS_OPTIONS, ORDER_STATUS_LABELS } from '../../collections/orders/statuses'
 import { BigButton, Card, L, Notice, QuietLink, SubmitButton, refusalCopy, rupiah } from './shared'
+import { QuotePanel } from './quote-panel'
 
 export function OwnerFilterBar({ stores, filter, language }) {
   return (
@@ -66,7 +67,7 @@ export function OwnerList({ orders, language }) {
   )
 }
 
-export function OwnerDetail({ order, stores, step, language, error }) {
+export function OwnerDetail({ order, stores, step, language, payLink, error }) {
   const reassigning = step.reassigning
   const cancelling = step.cancelling
   return (
@@ -82,9 +83,16 @@ export function OwnerDetail({ order, stores, step, language, error }) {
         </Notice>
       )}
 
+      {order.status === 'awaiting_quote' && (
+        <QuotePanel order={order} language={language} payLink={payLink} />
+      )}
+
       <Card>
         <p>
           {order.storeSnapshot?.name ?? '—'} · {order.contact.name} · {rupiah(order.totals.total)}
+          {order.totals.deliveryFee != null && (
+            <> · {L('deliveryFee', language)}: {rupiah(order.totals.deliveryFee)}</>
+          )}
         </p>
         <p style={{ whiteSpace: 'pre-wrap' }}>{order.delivery.address}</p>
       </Card>

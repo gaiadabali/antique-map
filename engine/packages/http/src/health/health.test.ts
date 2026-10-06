@@ -22,6 +22,7 @@ const COMPLETE_ENV = {
   ...LOCAL_ENV,
   DATABASE_URL: 'postgres://app@localhost:5432/indies_test',
   PAYLOAD_SECRET: 'x'.repeat(40),
+  ORDER_LINK_KEY: Buffer.alloc(32, 7).toString('base64'),
   LINK_TOKEN_KEYS: `k1:${createHash('sha256').update('health-test').digest().toString('base64url')}`,
 }
 const REFUSED_DB = 'connect ECONNREFUSED postgres://user:hunter2@db:5432/ig'

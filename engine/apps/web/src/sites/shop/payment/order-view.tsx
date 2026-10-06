@@ -43,6 +43,42 @@ function Totals({ order, t }: { readonly order: OrderViewData; readonly t: Payme
           </li>
         ))}
       </ul>
+      {order.totals.deliveryIdr !== null && (
+        <dl className={styles.totalRow}>
+          <dt>{t('order.deliveryFee')}</dt>
+          <dd>{formatRupiah(order.totals.deliveryIdr)}</dd>
+        </dl>
+      )}
+      <dl className={[styles.totalRow, styles.grand].join(' ')}>
+        <dt>{t('order.total')}</dt>
+        <dd>{formatRupiah(order.totals.totalIdr)}</dd>
+      </dl>
+    </div>
+  )
+}
+
+/**
+ * Items total only — the Confirming-delivery state, before a fee exists to add to it. Reuses
+ * `order.totals.totalIdr` directly: the core keeps it equal to items minus discount until the
+ * order is quoted (`createOrder`, TASKS.md 6.6-core), so there is nothing to recompute here.
+ */
+function ItemsTotal({ order, t }: { readonly order: OrderViewData; readonly t: PaymentText }) {
+  return (
+    <div className={styles.totals}>
+      <ul className={styles.lines}>
+        {order.lines.map((line, i) => (
+          <li key={i} className={styles.line}>
+            <span>
+              {line.name}
+              {line.variantLabel !== null && (
+                <span className={styles.variant}> · {line.variantLabel}</span>
+              )}
+              {` × ${line.qty}`}
+            </span>
+            <span>{formatRupiah(line.lineTotalIdr)}</span>
+          </li>
+        ))}
+      </ul>
       <dl className={[styles.totalRow, styles.grand].join(' ')}>
         <dt>{t('order.total')}</dt>
         <dd>{formatRupiah(order.totals.totalIdr)}</dd>
@@ -91,6 +127,20 @@ export function OrderView({
     )
   }
 
+  // An order that expired `awaiting_quote` (staff never quoted it in time) never had a delivery
+  // fee to show: `totals.deliveryIdr` stayed `null` (COMMERCE.md's 2026-10-06 decision).
+  if (order.status === 'expired' && order.totals.deliveryIdr === null) {
+    return (
+      <section className={styles.page} aria-labelledby="order-status">
+        <h1 id="order-status" className={styles.status}>
+          {t('order.quotedExpiredTitle')}
+        </h1>
+        {putBackForm}
+        <ItemsTotal order={order} t={t} />
+      </section>
+    )
+  }
+
   if (order.status === 'expired') {
     return (
       <section className={styles.page} aria-labelledby="order-status">
@@ -100,6 +150,25 @@ export function OrderView({
         <p className={styles.body}>{t('order.expiredBody')}</p>
         {putBackForm}
         <Totals order={order} t={t} />
+      </section>
+    )
+  }
+
+  if (order.status === 'awaiting_quote') {
+    return (
+      <section className={styles.page} aria-labelledby="order-status">
+        <AutoRefresh />
+        <h1 id="order-status" className={styles.status}>
+          {t('order.confirmingDeliveryTitle')}
+        </h1>
+        {order.storeArea !== null && (
+          <p className={styles.body}>
+            {t('order.confirmingDeliverySendingFrom', { store: order.storeArea })}
+          </p>
+        )}
+        <p className={styles.notice}>{t('order.confirmingDeliveryBody')}</p>
+        <a href={orderHref}>{t('order.checkAgain')}</a>
+        <ItemsTotal order={order} t={t} />
       </section>
     )
   }
