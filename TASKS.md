@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 10/20 | 0 | `█████░░░░░`  50% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/6 | 18/23 | 0 | `████████░░`  78% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/6 | 18/24 | 0 | `████████░░`  75% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **28/50** | **140/205** | **8** | `███████░░░`  68% |
+| **All** | 11 phases | | | **28/50** | **140/206** | **8** | `███████░░░`  68% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -555,6 +555,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.4.b the webhook: verifies the signature, then in one transaction records the event in `payment-events` (unique dedupe key) and moves the order; a replay is a 200 with no change; a late payment on an expired order is flagged for staff, never silently applied
   - [x] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
   - [x] 6.4.d **Check:** tests prove: a bad signature is rejected; the same webhook ten times in parallel changes the order once; an expired order's stock returns exactly once; a settled payment moves the order to `paid` and stores the paid amount.
+  - [ ] 6.4.e follow-up (found 2026-10-06 under load): a replayed webhook that waits on the first one's locks times out (`lock_timeout`) and answers **500** — Midtrans then retries; claim the dedupe key in its own short transaction first (`INSERT … ON CONFLICT DO NOTHING RETURNING`), so a replay answers 200 without waiting on the order lock, and a failed apply releases its claim; test: ten parallel identical webhooks under a held lock → ten 200s, one applied
 
 - [x] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4 — ✅ 2026-10-06 69716ed
   - **Lane** SHP + QA · **Agent** senior-fe, qa · **Wave** W3
@@ -834,6 +835,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — Webhook replays under load: `webhook.db.test.ts` "ten in parallel" answers 500s at ~5 s (`lock_timeout`) on main `21486f0` too (3 runs) — not a 6.6 regression (antique-map-dc); the first transaction holds the dedupe key and the order lock past 5 s on a saturated host. Follow-up **6.4.e** added (the orchestrator's, after the 6.6 merge). 6.6 migration (antique-map-dc's redesign): `awaiting_quote`, `quote_window_minutes`, `orders.tracking_token_enc`, and an `order_notifications` claim table with UNIQUE (order, status) — not a jsonb column on orders (a full-document save wiped a concurrent claim: 2 emails in the race test).
 
 - 2026-10-06 — **Decisions (the user, as the owner's proxy), phase 5.** (1) The gallery may say "price" in policy sentences that show no figure — the sold-record line ("never its price"), the enquiry line ("provenance and price") and the shipping line ("after we agree the price"); 5.5.b's scan allows them by lexicon key. (2) A sold item shows Sold **and** "Ask for another example" (EXPERIENCE §8), never "Ask about this"; 5.3 adds the button; 5.2.e's Check wording follows. **5.4 merged** (`8b8d4a3`, Opus-reviewed: routes moved to the proxy's internal names, a double-count, an empty portrait frame, e2e seeds isolated; verify 2,157 tests green, e2e 9/9). **Fixed on main** `03c9693`: a page could not be published from the admin (the publish guard read `title.en` from a one-locale save) — db test fails on the old guard, passes on the new. **Found:** gallery browse/search are never invalidated after a publish (stale up to 15 min) — Opus fixing on `w/5.1cache`; the media upload hook was never built — Opus building on `w/5.2media`.
 
