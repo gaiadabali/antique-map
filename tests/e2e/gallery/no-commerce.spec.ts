@@ -106,14 +106,14 @@ async function linksUnder(
 async function discover(page: Page, request: APIRequestContext): Promise<Target[]> {
   const targets: Target[] = []
   const seen = new Set<string>()
-  const add = (path: string, required: boolean) => {
-    if (seen.has(path)) return
-    seen.add(path)
-    targets.push({ path, required })
+  const add = (t: Target) => {
+    if (seen.has(t.path)) return
+    seen.add(t.path)
+    targets.push(t)
   }
 
   for (const locale of LOCALES) {
-    for (const t of fixedTargets(locale)) add(t.path, t.required)
+    for (const t of fixedTargets(locale)) add(t)
 
     const browsePath = href('browse', {}, locale)
     const browseStatus = await statusOf(request, browsePath)
@@ -121,7 +121,7 @@ async function discover(page: Page, request: APIRequestContext): Promise<Target[
       await page.goto(`${ORIGIN}${browsePath}`, { waitUntil: 'domcontentloaded' })
       const items = await linksUnder(page, itemPrefix(locale), 10)
       // The first item page is required: a visitor reaching browse must reach a work from it.
-      items.forEach((p, i) => add(p, i === 0))
+      items.forEach((p, i) => add({ path: p, required: i === 0 }))
     }
 
     for (const surface of ['maker', 'place'] as const) {
@@ -129,7 +129,7 @@ async function discover(page: Page, request: APIRequestContext): Promise<Target[
       if ((await statusOf(request, index)) !== 200) continue
       await page.goto(`${ORIGIN}${index}`, { waitUntil: 'domcontentloaded' })
       const links = await linksUnder(page, `${href(surface, {}, locale)}/`, 30)
-      links.forEach((p) => add(p, false))
+      links.forEach((p) => add({ path: p, required: false }))
     }
   }
   return targets
