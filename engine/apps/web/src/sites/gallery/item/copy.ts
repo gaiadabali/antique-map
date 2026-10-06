@@ -35,6 +35,7 @@ export const ITEM_PAGE_KEYS = defineMessages({
   'item.shipping':
     'Shipping and duties are quoted after we agree the price, and paid before the work is sent.',
   'item.subjects': 'Subjects',
+  'item.viewerFailed': 'This image cannot be opened in the viewer just now.',
   'item.viewerHint': 'Scroll or pinch to zoom. Keys: +, −, 0, arrows.',
   'item.viewerOpen': 'Zoom into the image',
   'item.viewerTitle': 'The images of this work',

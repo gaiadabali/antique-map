@@ -25,6 +25,8 @@ export type ZoomLabels = {
   readonly fullScreen: string
   /** The shell's honesty notice for a low-resolution legacy photo. */
   readonly lowResolution: string
+  /** Said when the image cannot be opened (no tiles, no derivative, the file refused). */
+  readonly failed: string
   /** One name per image, in `images` order, for the filmstrip. */
   readonly thumbs: readonly string[]
 }

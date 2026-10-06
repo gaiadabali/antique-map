@@ -20,6 +20,7 @@ const STEP = 1.4
 
 export function ZoomViewer({ images, labels }: ZoomViewerProps): React.ReactElement {
   const [at, setAt] = useState(0)
+  const [failed, setFailed] = useState(false)
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const viewerRef = useRef<OpenSeadragon.Viewer | null>(null)
   const current = images[at]
@@ -38,6 +39,7 @@ export function ZoomViewer({ images, labels }: ZoomViewerProps): React.ReactElem
       animationTime: reduced ? 0 : 0.4,
       blendTime: reduced ? 0 : 0.1,
     })
+    viewer.addHandler('open-failed', () => setFailed(true))
     viewerRef.current = viewer
     return () => {
       viewer.destroy()
@@ -81,6 +83,11 @@ export function ZoomViewer({ images, labels }: ZoomViewerProps): React.ReactElem
       >
         <div ref={viewportRef} className={styles.viewport} role="group" aria-label={current.alt} />
       </ZoomShell>
+      {failed && (
+        <p className={styles.viewerFailed} role="status">
+          {labels.failed}
+        </p>
+      )}
       <p className={styles.viewerHint}>{labels.hint}</p>
       {images.length > 1 && (
         <div className={styles.filmstrip} role="group" aria-label={labels.title}>
@@ -90,7 +97,10 @@ export function ZoomViewer({ images, labels }: ZoomViewerProps): React.ReactElem
               type="button"
               aria-pressed={index === at}
               className={`${styles.filmstripThumb} ${index === at ? styles.filmstripOn : ''}`}
-              onClick={() => setAt(index)}
+              onClick={() => {
+                setFailed(false)
+                setAt(index)
+              }}
             >
               {labels.thumbs[index] ?? image.role}
             </button>

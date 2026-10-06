@@ -26,6 +26,7 @@ function zoomLabels(t: ItemText, images: readonly ItemImage[]): ZoomLabels {
     reset: t('item.zoomReset'),
     fullScreen: t('item.fullScreen'),
     lowResolution: t('item.lowResolution'),
+    failed: t('item.viewerFailed'),
     // One name per image for the filmstrip: its role, and a synthetic image's label first.
     thumbs: images.map((image) => {
       const role = t.code('image.role', image.role)
