@@ -174,7 +174,8 @@ export async function loadMakerIndexWith(
   if (docs.length === 0) return []
   const pool = poolOf(payload)
   const { rows } = await pool.query(
-    `SELECT wm.maker_id, COUNT(*) AS n
+    // DISTINCT: a work crediting one maker twice (cartographer and engraver) is one work.
+    `SELECT wm.maker_id, COUNT(DISTINCT wm._parent_id) AS n
        FROM works_makers wm
        JOIN works w ON w.id = wm._parent_id
       WHERE w._status = 'published'

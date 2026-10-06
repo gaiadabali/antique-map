@@ -62,6 +62,17 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
 
       await publish(complete({ title: 'Kaart van Java', stockNumber: 'M.0501' }))
       await publish(complete({ title: 'Sold chart', stockNumber: 'M.0502', status: 'sold' }))
+      // One work crediting the maker twice: one card on the page, one in the index's count.
+      await publish(
+        complete({
+          title: 'Twice credited view',
+          stockNumber: 'M.0504',
+          makers: [
+            { maker: valentijn.id, role: 'cartographer', certainty: 'certain' },
+            { maker: valentijn.id, role: 'engraver', certainty: 'certain' },
+          ],
+        }),
+      )
       // A draft: never published, must never appear in the maker's lists.
       await stack.api.create({
         collection: 'works',
@@ -82,7 +93,10 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       expect(maker).not.toBeNull()
       expect(maker?.bornText).toBe('1666')
       expect(maker?.diedText).toBe('1727')
-      expect(maker?.available.map((w) => w.title)).toEqual(['Kaart van Java'])
+      expect(maker?.available.map((w) => w.title).sort()).toEqual([
+        'Kaart van Java',
+        'Twice credited view',
+      ])
       expect(maker?.sold.map((w) => w.title)).toEqual(['Sold chart'])
       expect(maker?.available.map((w) => w.title)).not.toContain('Draft map')
       expect(maker?.sold.map((w) => w.title)).not.toContain('Draft map')
@@ -95,11 +109,11 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       expect(await loadMakerWith(stack.payload, 'no-such-maker', 'en')).toBeNull()
     }, 30_000)
 
-    it('the index lists every published maker with a count of published works', async () => {
+    it('the index lists every published maker with a count of its distinct published works', async () => {
       const index = await loadMakerIndexWith(stack.payload, 'en')
       const row = index.find((each) => each.name === 'François Valentijn')
       expect(row).toBeDefined()
-      expect(row?.workCount).toBe(2)
+      expect(row?.workCount).toBe(3)
       expect(JSON.stringify(index).includes('askingPrice')).toBe(false)
     }, 30_000)
   },

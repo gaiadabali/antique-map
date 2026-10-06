@@ -94,6 +94,18 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
         collection: 'pages',
         locale: 'all',
         data: {
+          site: 'shop',
+          kind: 'page',
+          title: { en: 'Delivery' },
+          slug: 'delivery',
+          body: { en: 'Only the shop has this page.' },
+          _status: 'published',
+        },
+      })
+      await stack.api.create({
+        collection: 'pages',
+        locale: 'all',
+        data: {
           site: 'gallery',
           kind: 'story',
           title: { en: 'A cartographer in Batavia' },
@@ -117,9 +129,12 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       expect(await loadPageWith(stack.payload, 'draft-page', 'en', 'page')).toBeNull()
     }, 30_000)
 
-    it("another site's page of the same slug is null", async () => {
+    it("another site's page is null, and never wins over the gallery's own slug", async () => {
+      // A slug only the shop has resolves to nothing on the gallery.
+      expect(await loadPageWith(stack.payload, 'delivery', 'en', 'page')).toBeNull()
+      // A slug both sites have resolves to the gallery's record.
       const page = await loadPageWith(stack.payload, 'about', 'en', 'page')
-      expect(page?.title).not.toBe('Shop about')
+      expect(page?.title).toBe('About us')
     }, 30_000)
 
     it('a story does not resolve as a plain page, and a page does not resolve as a story', async () => {
