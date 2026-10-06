@@ -89,7 +89,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 | 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
 | 5·W3 | 5.5 The gallery gate | deepseek | `w/ds-5.5b` | 2026-10-06 | |
-| 5·W2 | 5.3 Ask about this, Sell to us, and the lead form | glm | `w/5.3` | 2026-10-06 | |
 
 ## Decisions for the owner
 
