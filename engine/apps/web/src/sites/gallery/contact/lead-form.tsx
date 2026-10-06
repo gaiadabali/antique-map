@@ -8,7 +8,7 @@
  * consent tick in `input.consent` — the route and the lead service, not this island, are the
  * authority on what is acceptable.
  */
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import type { LeadFormKind } from './lead-form-view'
 import { LeadFormView } from './lead-form-view'
@@ -27,6 +27,21 @@ const REFUSALS: Readonly<Record<number, string>> = {
   429: FORM_ERROR_KEYS.rate,
 }
 
+/**
+ * One key per attempt. A double tap never starts a second attempt (the in-flight guard below), and
+ * the route answers a repeat of the same key, address and body once — so one tap is one lead.
+ */
+const newKey = (): string =>
+  typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `lead-${Date.now()}-${Math.random().toString(16).slice(2)}`
+
+/** The form-level words for a refusal: a 422 names its fields, anything else the form itself. */
+function refusalErrors(status: number, errors: Record<string, string> | undefined) {
+  if (status === 422 && errors !== undefined && Object.keys(errors).length > 0) return errors
+  return { ...errors, form: errors?.form ?? REFUSALS[status] ?? FORM_ERROR_KEYS.unavailable }
+}
+
 export function LeadForm({
   kind,
   text,
@@ -40,9 +55,13 @@ export function LeadForm({
 }) {
   const [state, setState] = useState<LeadFormState>(INITIAL_LEAD_STATE)
   const [pending, setPending] = useState(false)
+  // The attempt in flight: a second submit while it runs is the same tap, never a second post.
+  const inFlight = useRef(false)
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (inFlight.current) return
+    inFlight.current = true
     const form = event.currentTarget
     const data = new FormData(form)
     const values = { ...EMPTY_VALUES }
@@ -56,10 +75,7 @@ export function LeadForm({
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          'idempotency-key':
-            typeof crypto.randomUUID === 'function'
-              ? crypto.randomUUID()
-              : `lead-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          'idempotency-key': newKey(),
         },
         body: JSON.stringify({
           kind,
@@ -82,15 +98,11 @@ export function LeadForm({
       const body = (await response.json().catch(() => null)) as {
         errors?: Record<string, string>
       } | null
-      const formKey = REFUSALS[response.status] ?? FORM_ERROR_KEYS.unavailable
-      setState({
-        status: 'error',
-        errors: { ...(body?.errors ?? {}), ...(body?.errors?.form ? {} : { form: formKey }) },
-        values,
-      })
+      setState({ status: 'error', errors: refusalErrors(response.status, body?.errors), values })
     } catch {
       setState({ status: 'error', errors: { form: FORM_ERROR_KEYS.unavailable }, values })
     } finally {
+      inFlight.current = false
       setPending(false)
     }
   }

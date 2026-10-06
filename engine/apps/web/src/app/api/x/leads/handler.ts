@@ -19,13 +19,23 @@ import {
 
 import { LEAD_CONSENT_VERSION } from '../../../../sites/gallery/contact/state'
 
-import { LeadIdempotency } from './idempotency'
+import { readCappedText } from './body'
+import { scopeKey, type LeadIdempotency, type StoredAnswer } from './idempotency'
 
 /** The consent line the two forms show; stored on the lead with the time it was given. */
 export { LEAD_CONSENT_VERSION } from '../../../../sites/gallery/contact/state'
 
 /** The body's cap, read before it is parsed: a form's text is far smaller than this. */
 export const MAX_BODY_BYTES = 16 * 1024
+
+/** The idempotency key's longest accepted form (a UUID is 36). */
+const MAX_KEY_LENGTH = 64
+
+/** The limit's window is a fixed minute (`server/leads/rate`): a minute is always long enough. */
+const RETRY_AFTER_SECONDS = '60'
+
+/** The body's own keys: the kind, the visitor's fields and the Turnstile answer. */
+const BODY_FIELDS = new Set(['kind', 'input', 'turnstileToken'])
 
 /** The kinds the gallery's own forms may ask for; the service's other kinds are other callers'. */
 const KINDS = ['sell', 'contact', 'ask'] as const
@@ -53,7 +63,8 @@ const VISITOR_FIELDS = [
 
 function visitorInput(raw: Record<string, unknown>): Record<string, unknown> | null {
   const input = raw.input
-  if (input === null || typeof input !== 'object') return {}
+  if (input === undefined) return {}
+  if (input === null || typeof input !== 'object' || Array.isArray(input)) return null
   const source = input as Record<string, unknown>
   // The route never passes the raw body on: it picks what a visitor may send. A key outside
   // that list is not dropped quietly — the form never posts one, so the post is refused.
@@ -73,13 +84,19 @@ function resultToResponse(result: CreateLeadResult): Response {
     case 'invalid':
       return json({ errors: result.errors }, 422)
     case 'rate':
-      // The limit is a fixed one-minute window (`server/leads/rate`).
-      return json({ error: 'rate' }, 429, { 'retry-after': '60' })
+      return json({ error: 'rate' }, 429, { 'retry-after': RETRY_AFTER_SECONDS })
     case 'challenge':
       return json({ error: 'challenge' }, 403)
     case 'unavailable':
       return json({ error: 'unavailable' }, 503)
   }
+}
+
+/** The answers worth replaying: the lead was made, or the same body was refused as invalid. */
+const keepAnswer = (answer: StoredAnswer): boolean => answer.status === 201 || answer.status === 422
+
+async function answerOf(response: Response): Promise<StoredAnswer> {
+  return { status: response.status, body: await response.text() }
 }
 
 /** The route's one handler, on the process's `LeadDeps` (or a test's). */
@@ -93,50 +110,58 @@ export async function handleLeadPost(
   const type = request.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase()
   if (type !== 'application/json') return json({ error: 'unsupported-media-type' }, 415)
 
-  // 2. The idempotency key, bounded and answered first: a repeat is the first result again.
+  // 2. The idempotency key's shape, before the body is read.
   const key = request.headers.get('idempotency-key')?.trim() ?? ''
-  const hasKey = key.length > 0
-  if (hasKey && key.length > 64) return json(INVALID, 422)
-  if (hasKey) {
-    const replay = idempotency.get(key)
-    if (replay !== null) return new Response(replay.body, { status: replay.status })
-  }
+  if (key.length > MAX_KEY_LENGTH) return json(INVALID, 422)
 
-  // 3. The body, capped before it is parsed.
-  const declared = request.headers.get('content-length')
-  const body = await request.text()
-  if (
-    (declared !== null && Number(declared) > MAX_BODY_BYTES) ||
-    Buffer.byteLength(body) > MAX_BODY_BYTES
-  ) {
-    return json({ error: 'payload-too-large' }, 413)
-  }
+  // 3. The body, capped while it is read — never buffered past the cap, never parsed over it.
+  const body = await readCappedText(request, MAX_BODY_BYTES)
+  if (body === 'too-large') return json({ error: 'payload-too-large' }, 413)
 
+  const ip = clientAddress(request.headers)
+  const handle = async () => answerOf(await handleBody(body, ip, deps))
+  if (key.length === 0) return replay(await handle())
+  // A repeat of this key, from this address, with this body: the first answer again.
+  return replay(await idempotency.run(scopeKey(ip, key, body), handle, keepAnswer))
+}
+
+function replay(answer: StoredAnswer): Response {
+  return new Response(answer.body, {
+    status: answer.status,
+    headers: {
+      'content-type': 'application/json',
+      ...(answer.status === 429 ? { 'retry-after': RETRY_AFTER_SECONDS } : {}),
+    },
+  })
+}
+
+async function handleBody(body: string, ip: string | null, deps: LeadDeps): Promise<Response> {
   let raw: unknown
   try {
     raw = JSON.parse(body) as unknown
   } catch {
     return json(INVALID, 422)
   }
-  if (raw === null || typeof raw !== 'object') return json(INVALID, 422)
+  if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) return json(INVALID, 422)
   const parsed = raw as Record<string, unknown>
 
-  // 4. The kind is the route's allow-list, never the visitor's free text.
+  // 4. The body's own keys are the route's three; anything else refuses the post (V4).
+  if (Object.keys(parsed).some((name) => !BODY_FIELDS.has(name))) return json(INVALID, 422)
+
+  // 5. The kind is the route's allow-list, never the visitor's free text.
   const kind = parsed.kind
   if (typeof kind !== 'string' || !KINDS.includes(kind as LeadRouteKind)) {
     return json(INVALID, 422)
   }
 
-  // 5. `items` is the ask form's work references alone.
+  // 6. The visitor's fields, picked by name; `items` is the ask form's work references alone.
   const input = visitorInput(parsed)
   if (input === null) return json(INVALID, 422)
-  if (kind !== 'ask' && Array.isArray(input.items) && input.items.length > 0) {
-    return json(INVALID, 422)
-  }
+  if (kind !== 'ask' && input.items !== undefined) return json(INVALID, 422)
 
   const token = typeof parsed.turnstileToken === 'string' ? parsed.turnstileToken : null
 
-  // 6. The lead service: token shape → limit → Turnstile → validate → store → owner email.
+  // 7. The lead service: token shape → limit → Turnstile → validate → store → owner email.
   const result = await createLead(deps, {
     input,
     context: {
@@ -146,11 +171,7 @@ export async function handleLeadPost(
       consentVersion: LEAD_CONSENT_VERSION,
     },
     turnstileToken: token,
-    ip: clientAddress(request.headers),
+    ip,
   })
-  const response = resultToResponse(result)
-  if (hasKey) {
-    idempotency.put(key, response.status, JSON.stringify(await response.clone().json()))
-  }
-  return response
+  return resultToResponse(result)
 }

@@ -85,6 +85,36 @@ describe('the route’s own shapes', () => {
     expect(declared.status).toBe(413)
   })
 
+  it('refuses a body that declares nothing and streams past the cap, without buffering it', async () => {
+    const deps = fakeDeps()
+    const chunk = new TextEncoder().encode('x'.repeat(4096))
+    let sent = 0
+    const stream = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        sent += 1
+        if (sent > 64) controller.close()
+        else controller.enqueue(chunk)
+      },
+    })
+    const res = await run(deps, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: stream,
+      duplex: 'half',
+    } as RequestInit)
+    expect(res.status).toBe(413)
+    // The reader stopped at the cap: five 4 KB chunks pass 16 KB, far short of the 64 offered.
+    expect(sent).toBeLessThan(10)
+    expect(deps.store.create).not.toHaveBeenCalled()
+  })
+
+  it('refuses a top-level field outside kind, input and turnstileToken', async () => {
+    const deps = fakeDeps()
+    const res = await run(deps, post({ ...SELL, site: 'shop' }))
+    expect(res.status).toBe(422)
+    expect(deps.store.create).not.toHaveBeenCalled()
+  })
+
   it('answers a repeated idempotency key with the first result, calling the service once', async () => {
     const deps = fakeDeps()
     const map = new LeadIdempotency()
@@ -94,6 +124,65 @@ describe('the route’s own shapes', () => {
     expect(again.status).toBe(201)
     expect(await again.json()).toEqual(await first.clone().json())
     expect(deps.store.create).toHaveBeenCalledTimes(1)
+  })
+
+  it('a double tap in flight is one lead: the second post waits for the first answer', async () => {
+    let release: () => void = () => undefined
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    const created: unknown[] = []
+    const deps = fakeDeps({
+      store: {
+        create: vi.fn(async (lead: NewLeadRecord) => {
+          await gate
+          created.push(lead)
+          return { id: 1 }
+        }),
+      },
+    })
+    const map = new LeadIdempotency()
+    const one = run(deps, post(SELL, { 'idempotency-key': 'tap' }), map)
+    const two = run(deps, post(SELL, { 'idempotency-key': 'tap' }), map)
+    release()
+    const [a, b] = await Promise.all([one, two])
+    expect([a.status, b.status]).toEqual([201, 201])
+    expect(created).toHaveLength(1)
+  })
+
+  it('scopes a key to its address and body: another visitor never gets the first answer', async () => {
+    const deps = fakeDeps()
+    const map = new LeadIdempotency()
+    const from = (ip: string) => ({ 'idempotency-key': 'shared', 'x-forwarded-for': ip })
+    expect((await run(deps, post(SELL, from('203.0.113.7')), map)).status).toBe(201)
+    // The same key from another address is that visitor's own attempt, not a replay.
+    const other = { ...SELL, input: { ...SELL.input, name: '' } }
+    const refused = await run(deps, post(other, from('198.51.100.9')), map)
+    expect(refused.status).toBe(422)
+    // The same address and key with a corrected body is a new attempt, not the old answer.
+    expect((await run(deps, post(SELL, from('198.51.100.9')), map)).status).toBe(201)
+    expect(deps.store.create).toHaveBeenCalledTimes(2)
+  })
+
+  it('a transient refusal is not remembered: the retry is a real attempt', async () => {
+    let pass = false
+    const deps = fakeDeps({ verifyTurnstile: vi.fn(async () => pass) })
+    const map = new LeadIdempotency()
+    expect((await run(deps, post(SELL, { 'idempotency-key': 'k1' }), map)).status).toBe(403)
+    pass = true
+    expect((await run(deps, post(SELL, { 'idempotency-key': 'k1' }), map)).status).toBe(201)
+  })
+
+  it('the memory is bounded: past its size the oldest key is dropped', async () => {
+    const map = new LeadIdempotency(3)
+    const answer = async () => ({ status: 201, body: '{"ok":true}' })
+    for (const scope of ['a', 'b', 'c', 'd']) await map.run(scope, answer, () => true)
+    expect(map.size).toBe(3)
+    let ran = false
+    await map.run(
+      'a',
+      async () => ((ran = true), { status: 201, body: '{}' }),
+      () => true,
+    )
+    expect(ran).toBe(true)
   })
 
   it('an over-long idempotency key is refused, and a missing one is simply not remembered', async () => {
@@ -175,12 +264,13 @@ describe('the service’s answers, mapped', () => {
   it('the eleventh post in a minute from one address is 429 with Retry-After', async () => {
     const limiter = new PostLimiter()
     const deps = fakeDeps({ allow: (ipKey) => limiter.allow(ipKey) })
+    const statuses: number[] = []
     let last: Response | null = null
     for (let n = 0; n < 11; n += 1) {
       last = await run(deps, post({ ...SELL, input: { ...SELL.input, name: `Visitor ${n}` } }))
-      if (n < 10) expect(last.status).toBe(201)
+      statuses.push(last.status)
     }
-    expect(last?.status).toBe(429)
+    expect(statuses).toEqual([...Array<number>(10).fill(201), 429])
     expect(last?.headers.get('retry-after')).toBe('60')
   })
 })
