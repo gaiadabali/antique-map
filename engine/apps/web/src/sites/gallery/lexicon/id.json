@@ -785,5 +785,6 @@
   "lead.error.unavailable": "Pertanyaan Anda belum bisa disimpan. Coba lagi, atau tulis kepada kami melalui WhatsApp atau email.",
   "contactPage.whatsappLink": "WhatsApp",
   "contact.waText": "Halo, saya ingin bertanya kepada Indies Gallery.",
-  "contact.emailSubject": "Pertanyaan untuk Indies Gallery"
+  "contact.emailSubject": "Pertanyaan untuk Indies Gallery",
+  "contactPage.emailOr": "Atau email"
 }

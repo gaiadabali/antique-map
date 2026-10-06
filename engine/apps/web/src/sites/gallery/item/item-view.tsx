@@ -42,6 +42,7 @@ export function ItemViewComposition({
   locale,
   askHref,
   emailHref,
+  emailAddress,
   contactMissing,
   browseHref,
 }: {
@@ -51,6 +52,8 @@ export function ItemViewComposition({
   readonly askHref: string
   /** The `mailto:` address beside the Ask button, or `null` while no address has arrived. */
   readonly emailHref?: string | null
+  /** The gallery's address, shown as the mail link's text. */
+  readonly emailAddress?: string | null
   /** True when neither channel has arrived yet (OA2): the panel then shows the placeholder. */
   readonly contactMissing?: boolean
   readonly browseHref: string
@@ -114,6 +117,7 @@ export function ItemViewComposition({
             locale={locale}
             askHref={askHref}
             emailHref={emailHref ?? null}
+            emailAddress={emailAddress ?? null}
             contactMissing={contactMissing ?? false}
           />
           <ItemRecord work={work} locale={locale} />

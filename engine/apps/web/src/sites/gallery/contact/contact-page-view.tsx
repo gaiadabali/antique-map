@@ -71,6 +71,11 @@ export function ContactPageView({
               )}
             </>
           )}
+          {links.mail !== null && links.address !== null && (
+            <p className={styles.note}>
+              {t('contactPage.emailOr')} <TextLink href={links.mail}>{links.address}</TextLink>
+            </p>
+          )}
           {kind === 'sell' && <p className={styles.note}>{t('sellToUs.photosNote')}</p>}
         </div>
       </section>

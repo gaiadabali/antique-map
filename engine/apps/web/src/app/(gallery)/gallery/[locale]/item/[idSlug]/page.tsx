@@ -123,6 +123,7 @@ export default async function GalleryItem(props: Props) {
       locale={locale}
       askHref={links.wa ?? href('contact', {}, locale)}
       emailHref={links.mail}
+      emailAddress={links.address}
       contactMissing={links.wa === null && links.mail === null}
       browseHref={href('browse', {}, locale)}
     />

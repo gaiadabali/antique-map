@@ -99,6 +99,12 @@ describe('the 90-character title cut', () => {
     expect(cut.endsWith('…')).toBe(true)
   })
 
+  it('counts characters, not UTF-16 units, so a cut never splits one', () => {
+    const cut = cutTitle('𝔄'.repeat(95))
+    expect(Array.from(cut)).toHaveLength(90)
+    expect(cut).toBe(`${'𝔄'.repeat(89)}…`)
+  })
+
   it('cuts to exactly 89 title characters plus the ellipsis', () => {
     expect(cutTitle('B'.repeat(91))).toBe(`${'B'.repeat(89)}…`)
   })
@@ -146,9 +152,30 @@ describe('the links’ encoding', () => {
 describe('when the gallery’s channels have not arrived yet (OA2)', () => {
   it('each missing channel answers a null link, never a fake number', () => {
     const message = itemMessage(textOf('en'), ITEM)
-    expect(talkLinks({ whatsapp: null, email: null }, message)).toEqual({ wa: null, mail: null })
+    expect(talkLinks({ whatsapp: null, email: null }, message)).toEqual({
+      wa: null,
+      mail: null,
+      address: null,
+    })
     const one = talkLinks({ whatsapp: '+62 812 3456 7890', email: null }, message)
     expect(one.wa).not.toBeNull()
     expect(one.mail).toBeNull()
+  })
+
+  it('a number with no digits (a placeholder typed into settings) is no number at all', () => {
+    const message = itemMessage(textOf('en'), ITEM)
+    expect(talkLinks({ whatsapp: 'TBC', email: '  ' }, message)).toEqual({
+      wa: null,
+      mail: null,
+      address: null,
+    })
+  })
+
+  it('the address travels as text beside the mail link (§8: visitors without a mail app)', () => {
+    const links = talkLinks(
+      { whatsapp: null, email: 'gallery@indies.test' },
+      sellMessage(textOf('en'), 'a chart'),
+    )
+    expect(links.address).toBe('gallery@indies.test')
   })
 })

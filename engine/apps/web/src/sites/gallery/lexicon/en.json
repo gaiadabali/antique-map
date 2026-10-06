@@ -790,5 +790,6 @@
   "lead.error.unavailable": "We could not save your enquiry. Please try again, or write to us on WhatsApp or by email.",
   "contactPage.whatsappLink": "WhatsApp us",
   "contact.waText": "Hello, I have a question for Indies Gallery.",
-  "contact.emailSubject": "A question for Indies Gallery"
+  "contact.emailSubject": "A question for Indies Gallery",
+  "contactPage.emailOr": "Or email"
 }

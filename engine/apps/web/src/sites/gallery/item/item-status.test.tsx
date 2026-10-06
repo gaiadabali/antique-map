@@ -97,6 +97,25 @@ describe('the item page’s three states', () => {
     expect(html).not.toMatch(/available/i)
   })
 
+  it('shows the email address as text beside the button, and the placeholder when none arrived', () => {
+    const withMail = renderToStaticMarkup(
+      <AskPanel
+        work={work('available')}
+        locale="en"
+        askHref="https://wa.me/6590000000?text=x"
+        emailHref="mailto:gallery@indies.test?subject=s&body=b"
+        emailAddress="gallery@indies.test"
+      />,
+    )
+    expect(withMail).toContain('Or email')
+    expect(withMail).toContain('>gallery@indies.test</a>')
+    const none = renderToStaticMarkup(
+      <AskPanel work={work('sold')} locale="en" askHref="/contact" contactMissing />,
+    )
+    expect(none).toContain('Ask for another example')
+    expect(none).toContain('being connected')
+  })
+
   it('says the states in Indonesian on the Indonesian page', () => {
     expect(panel('sold', 'id')).toContain('Terjual')
     expect(panel('on-hold', 'id')).toContain('Ditahan')

@@ -62,7 +62,8 @@ export default async function SellToUsPage(props: Props) {
       }}
       links={links}
       contactMissing={links.wa === null && links.mail === null}
-      contactHref={null}
+      // OA2 pending: the notice points to the Contact page, never to a made-up number.
+      contactHref={href('contact', {}, locale)}
       formText={formText(t)}
       siteKey={process.env.TURNSTILE_SITE_KEY?.trim() || null}
     />

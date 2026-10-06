@@ -20,6 +20,7 @@ export function AskPanel({
   locale,
   askHref,
   emailHref,
+  emailAddress,
   contactMissing,
 }: {
   readonly work: ItemView
@@ -28,10 +29,13 @@ export function AskPanel({
   readonly askHref: string
   /** The `mailto:` address beside the button, or `null` while no address has arrived. */
   readonly emailHref?: string | null
+  /** The address itself, the mail link's text, for visitors without a mail app (§8). */
+  readonly emailAddress?: string | null
   /** True when neither channel has arrived yet (OA2): the placeholder notice shows. */
   readonly contactMissing?: boolean
 }): React.ReactElement {
   const email = emailHref ?? null
+  const address = emailAddress ?? null
   const missing = contactMissing ?? false
   const t = itemText(locale)
   const c = contactText(locale)
@@ -41,10 +45,14 @@ export function AskPanel({
       <aside className={styles.panel} data-status="sold">
         <Badge tone="default">{t('status.sold')}</Badge>
         <Button href={askHref}>{c('item.askAnother')}</Button>
-        {contactMissing && <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>}
+        {missing && <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>}
       </aside>
     )
   }
+
+  const contact = (
+    <PanelContact c={c} emailHref={email} address={address} contactMissing={missing} />
+  )
 
   if (work.status === 'on-hold') {
     return (
@@ -52,7 +60,7 @@ export function AskPanel({
         <Badge tone="caution">{t('status.onHold')}</Badge>
         <p className={styles.panelNote}>{t('item.onHoldExplain')}</p>
         <Button href={askHref}>{t('item.askOnHold')}</Button>
-        <PanelContact c={c} emailHref={email} contactMissing={missing} />
+        {contact}
         <p className={styles.panelFine}>{t('item.shipping')}</p>
       </aside>
     )
@@ -63,7 +71,7 @@ export function AskPanel({
       <span className={styles.priceOnRequest}>{t('price.onRequest')}</span>
       <p className={styles.panelNote}>{t('item.heldIn')}</p>
       <Button href={askHref}>{t('item.ask')}</Button>
-      <PanelContact c={c} emailHref={email} contactMissing={missing} />
+      {contact}
       <p className={styles.panelFine}>{t('item.shipping')}</p>
     </aside>
   )
@@ -73,16 +81,24 @@ export function AskPanel({
 function PanelContact({
   c,
   emailHref,
+  address,
   contactMissing,
 }: {
   readonly c: ReturnType<typeof contactText>
   readonly emailHref: string | null
+  readonly address: string | null
   readonly contactMissing: boolean
 }): React.ReactElement | null {
   if (emailHref !== null) {
     return (
       <p className={styles.panelFine}>
-        <TextLink href={emailHref}>{c('contactPage.emailLink')}</TextLink>
+        {address === null ? (
+          <TextLink href={emailHref}>{c('contactPage.emailLink')}</TextLink>
+        ) : (
+          <>
+            {c('contactPage.emailOr')} <TextLink href={emailHref}>{address}</TextLink>
+          </>
+        )}
       </p>
     )
   }

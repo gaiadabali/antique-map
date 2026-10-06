@@ -24,14 +24,31 @@ export type ContactChannels = {
 export type Handoff = {
   readonly wa: string | null
   readonly mail: string | null
+  /** The address itself, shown as text beside the button for visitors without a mail app (§8). */
+  readonly address: string | null
 }
 
 /** A title over the limit is cut, ending in "…", so the message keeps its URL readable. */
 export const TITLE_MAX = 90
 
-/** The title as the message says it: whole when it fits, else cut at 90 characters with "…". */
+/**
+ * The title as the message says it: whole when it fits, else cut at 90 characters with "…".
+ * Counted in code points, so a cut never splits a character outside the basic plane in two.
+ */
 export function cutTitle(title: string, max: number = TITLE_MAX): string {
-  return title.length <= max ? title : `${title.slice(0, max - 1).trimEnd()}…`
+  const chars = Array.from(title)
+  return chars.length <= max
+    ? title
+    : `${chars
+        .slice(0, max - 1)
+        .join('')
+        .trimEnd()}…`
+}
+
+/** The number's digits, as `wa.me` takes them; `null` when the value holds none. */
+function waDigits(number: string | null): string | null {
+  const digits = number?.replace(/\D/g, '') ?? ''
+  return digits.length > 0 ? digits : null
 }
 
 /** `wa.me`'s address: the number's digits alone, the message in the query. */
@@ -85,6 +102,7 @@ export function viewingMessage(
   item: { stockNumber: string; title: string; city: string },
 ): HandoffMessage {
   const waText = t('whatsapp.viewing', {
+    city: item.city,
     stockNumber: item.stockNumber,
     title: cutTitle(item.title),
   })
@@ -111,8 +129,11 @@ export function generalMessage(t: HandoffText): HandoffMessage {
 
 /** The two links, or `null` each where the gallery's channel has not arrived yet (OA2). */
 export function talkLinks(contact: ContactChannels, message: HandoffMessage): Handoff {
+  const digits = waDigits(contact.whatsapp)
+  const address = contact.email?.trim() || null
   return {
-    wa: contact.whatsapp ? whatsappHref(contact.whatsapp, message.waText) : null,
-    mail: contact.email ? mailtoHref(contact.email, message.subject, message.body) : null,
+    wa: digits === null ? null : whatsappHref(digits, message.waText),
+    mail: address === null ? null : mailtoHref(address, message.subject, message.body),
+    address,
   }
 }

@@ -17,6 +17,7 @@ export const CONTACT_MESSAGES = defineMessages({
   'item.askAnother': 'Ask for another example',
   'contactPage.emailLink': 'Email us',
   'contactPage.whatsappLink': 'WhatsApp us',
+  'contactPage.emailOr': 'Or email',
   'contactPage.placeholder':
     'Our WhatsApp number and email address are being connected — please write to us from the Contact page soon.',
   // the email handoff's words beyond the templates the app lexicon names
