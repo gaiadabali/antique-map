@@ -22,12 +22,12 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 14/20 | 0 | `███████░░░`  70% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 22/26 | 0 | `█████████░`  85% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 11/13 | 0 | `█████████░`  85% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **29/51** | **150/208** | **8** | `███████░░░`  72% |
+| **All** | 11 phases | | | **29/51** | **151/208** | **8** | `███████░░░`  73% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -625,7 +625,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `docs/gates/shop.md`, `tests/e2e/shop-fulfilment/**`
   - **Read** the **Done when** of phases 6 and 7
   - _Requirements: 7.5, 8.1, 8.4, 12.4_
-  - [ ] 7.4.a one e2e across roles: guest buys → store user fulfils with the driver image → buyer tracks → owner reassigns a second order
+  - [x] 7.4.a one e2e across roles: guest buys → store user fulfils with the driver image → buyer tracks → owner reassigns a second order
   - [ ] 7.4.b Lighthouse mobile on the product page and the tracking page against staging
   - [ ] 7.4.c **Check:** `docs/gates/shop.md` holds the run, the screenshots at 390 px, the emails, the access denial for another store, and scores of at least 90 performance and 100 accessibility.
 
