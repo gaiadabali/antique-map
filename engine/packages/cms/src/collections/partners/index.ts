@@ -1,8 +1,7 @@
 /**
  * `partners` — resellers and partners the owner works with (CONTENT-MODEL.md §6).
  *
- * Records only, no login. Owner-only access. Products carried are a text array for now; task 3.3
- * will relate them to the products collection.
+ * Records only, no login. Owner-only access. Products carried relate to the products collection.
  */
 import type { CollectionConfig } from 'payload'
 
@@ -131,17 +130,10 @@ export const Partners: CollectionConfig = {
     },
     {
       name: 'productsCarried',
-      type: 'text',
+      type: 'relationship',
+      relationTo: 'products',
       hasMany: true,
-      maxLength: 120,
       label: { en: 'Products carried', id: 'Produk yang dibawa' },
-      admin: {
-        description: {
-          en: 'Product SKUs or names for now. Task 3.3 relates this to products.',
-          // 3.3 adds products
-          id: 'SKU atau nama produk untuk saat ini. Tugas 3.3 menghubungkannya dengan produk.',
-        },
-      },
     },
     {
       name: 'status',

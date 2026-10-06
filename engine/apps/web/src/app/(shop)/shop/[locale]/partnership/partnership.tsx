@@ -2,10 +2,12 @@
  * The shop's partnership page, from the design team's drawing: the hero, the strip of four
  * signals, the three offers (resellers, company gifting, hotels and villas) and — as the final
  * section, where the drawing had its sign-in — the enquiry call to action: WhatsApp and email
- * buttons with a prepared message, and a short form whose submit stays a placeholder until
- * phase 9.1 wires it to a `partnership` lead. No sign-up and no sign-in anywhere.
+ * buttons with a prepared message, and a short form that creates a `partnership` lead (9.1.c,
+ * `sites/shop/partnership`). No sign-up and no sign-in anywhere.
  */
-import { Button, Eyebrow, Input, Textarea } from '../../../../../shared/ui'
+import { Button, Eyebrow } from '../../../../../shared/ui'
+import { formText } from '../../../../../sites/shop/partnership/form-text'
+import { PartnershipForm } from '../../../../../sites/shop/partnership/partnership-form'
 
 import styles from './partnership.module.css'
 import type { PartnershipText } from './partnership-messages'
@@ -14,9 +16,12 @@ type Props = {
   /** The site-settings contact, or `null` when it answers none — the CTA buttons then stay out. */
   readonly contact: { readonly whatsapp: string | null; readonly email: string | null }
   readonly t: PartnershipText
+  readonly locale: 'en' | 'id'
+  /** Turnstile's public site key, or `null` while the host has none: the form is then switched off. */
+  readonly turnstileSiteKey: string | null
 }
 
-export function Partnership({ contact, t }: Props) {
+export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
   return (
     <div className={styles.wrap}>
       <Hero t={t} />
@@ -65,7 +70,7 @@ export function Partnership({ contact, t }: Props) {
           [t('partnership.labelSample'), t('partnership.hotelSample')],
         ]}
       />
-      <Enquire contact={contact} t={t} />
+      <Enquire contact={contact} t={t} locale={locale} turnstileSiteKey={turnstileSiteKey} />
     </div>
   )
 }
@@ -127,8 +132,8 @@ function Offer({
   )
 }
 
-/** The enquiry CTA. WhatsApp and email carry a prepared message; the form's submit waits for 9.1. */
-function Enquire({ contact, t }: Props) {
+/** The enquiry CTA. WhatsApp and email carry a prepared message; the form makes a `partnership` lead. */
+function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
   const wa = contact.whatsapp
     ? `https://wa.me/${contact.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(
         t('partnership.whatsappMessage'),
@@ -166,25 +171,7 @@ function Enquire({ contact, t }: Props) {
             )}
           </div>
         </div>
-        <form className={styles.form}>
-          <Eyebrow>{t('partnership.formEyebrow')}</Eyebrow>
-          <Input label={t('partnership.formName')} id="p-name" name="name" autoComplete="name" />
-          <Input
-            label={t('partnership.formEmail')}
-            id="p-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-          />
-          <Textarea label={t('partnership.formMessage')} id="p-message" name="message" />
-          {/* Placeholder submit: 9.1 wires this form to a `partnership` lead. */}
-          <div className={styles.actions}>
-            <Button variant="primary" type="submit" disabled>
-              {t('partnership.formSubmit')}
-            </Button>
-            <p className={styles.formNote}>{t('partnership.formReplyNote')}</p>
-          </div>
-        </form>
+        <PartnershipForm text={formText(t)} locale={locale} siteKey={turnstileSiteKey} />
       </div>
     </section>
   )

@@ -163,12 +163,39 @@ export const Leads: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
+      name: 'partner',
+      type: 'relationship',
+      relationTo: 'partners',
+      label: { en: 'Partner', id: 'Mitra' },
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'The partner created from this lead.',
+          id: 'Mitra yang dibuat dari calon ini.',
+        },
+      },
+    },
+    {
       name: 'status',
       type: 'select',
       required: true,
       defaultValue: 'new',
       options: LEAD_STATUSES.map((value) => ({ value, label: LEAD_STATUS_LABELS[value] })),
       admin: { position: 'sidebar' },
+    },
+    {
+      name: 'closedAt',
+      type: 'date',
+      label: { en: 'Closed at', id: 'Ditutup pada' },
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        date: { pickerAppearance: 'dayAndTime' },
+        description: {
+          en: 'Set when the lead is closed, cleared if reopened. Retention counts from it.',
+          id: 'Diisi saat calon ditutup, dihapus bila dibuka lagi. Masa simpan dihitung dari sini.',
+        },
+      },
     },
     {
       name: 'statusHistory',
