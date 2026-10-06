@@ -39,6 +39,7 @@ export const PAYMENT_KEYS = defineMessages({
   'order.outOfStockTitle': '{item} sold out a moment ago. Nothing was charged.',
   'order.statusUnavailable': 'Message us on WhatsApp and we will sort it out.',
   'order.total': 'Total',
+  'order.itemsTotal': 'Items total',
   'order.cancelledTitle': 'This order was cancelled.',
 })
 

@@ -8,8 +8,12 @@
  *
  * Cached: `'use cache'`, each record tagged by `@engine/cache`'s builders (`productTag` and
  * `productPriceTag`, editorial and price respectively) so an invalidation of either reaches the
- * home that shows it. A tag is never written by hand. The cache key carries the locale argument
- * (ARCHITECTURE.md §6): names and captions are localised.
+ * home that shows it, and the shop's catalogue tag (`catalogueTag('shop')`): the rail is a
+ * listing — the newest four — and a product published a moment ago carries no tag this entry
+ * knows, so only the listing tag brings it in (the gallery's home rail had the same bug).
+ * `cacheLife('hours')` is the backstop the catalogue's loaders declare (`../catalogue/catalogue`).
+ * A tag is never written by hand. The cache key carries the locale argument (ARCHITECTURE.md §6):
+ * names and captions are localised.
  *
  * Build safety: only called inside the home page's render, under a root layout that awaits
  * `connection()` first, so `cms()` never runs at `next build` and the build succeeds with no
@@ -17,7 +21,9 @@
  */
 import 'server-only'
 
-import { cacheTags, productPriceTag, productTag } from '@engine/cache'
+import { cacheLife } from 'next/cache'
+
+import { cacheTags, catalogueTag, productPriceTag, productTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
 
@@ -35,6 +41,7 @@ export async function loadFeaturedProducts(
   _locale: SiteLocale,
 ): Promise<readonly FeaturedProduct[]> {
   'use cache'
+  cacheLife('hours')
   const payload = await cms()
   const found = await payload.find({
     collection: 'products',
@@ -49,14 +56,15 @@ export async function loadFeaturedProducts(
       images: { image: { url: true, alt: true } },
     },
   })
-  cacheTags(
-    found.docs.flatMap((product) => {
+  cacheTags([
+    catalogueTag('shop'),
+    ...found.docs.flatMap((product) => {
       const tags: ReturnType<typeof productTag>[] = []
       if (typeof product.id === 'number')
         tags.push(productTag(product.id), productPriceTag(product.id))
       return tags
     }),
-  )
+  ])
   return found.docs.map((product) => {
     // The `select` projection types `images` as `{}`; shape it here once, defensively.
     const images = product.images as
