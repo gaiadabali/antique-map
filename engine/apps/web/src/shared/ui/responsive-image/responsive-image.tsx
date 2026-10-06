@@ -8,6 +8,11 @@ type BaseProps = {
   readonly alt: string
   readonly sizes: string
   readonly priority?: boolean
+  /**
+   * Serves `src` as is, never through Next's optimiser (and so never in its cache): for a private
+   * image that must not be fetched or kept outside its own route, like the tracking page's photo.
+   */
+  readonly unoptimized?: boolean
   readonly className?: string
 }
 
@@ -36,6 +41,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
           fill
           sizes={props.sizes}
           priority={props.priority}
+          unoptimized={props.unoptimized}
           className={styles.image}
         />
       </div>
@@ -50,6 +56,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
       height={props.height}
       sizes={props.sizes}
       priority={props.priority}
+      unoptimized={props.unoptimized}
       className={`${wrapperClass} ${styles.fixed}`}
     />
   )

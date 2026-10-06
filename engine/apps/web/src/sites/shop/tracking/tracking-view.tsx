@@ -65,6 +65,7 @@ export function TrackingPage({
             src={view.driverImageUrl}
             alt={text('tracking.driverTitle')}
             sizes="320px"
+            unoptimized
           />
         </div>
       )}

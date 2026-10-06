@@ -4,14 +4,12 @@
  * hands it the pushed test stack's instance instead (`./tracking-query`'s own header). Without
  * `CMS_TEST_POSTGRES_URL` the file skips — a setup state.
  *
- * The driver image case only proves the loader's gate is the order's **status**, never merely
- * whether a key is stored — attaching one always moves the order to `on_the_way` in the real flow
- * (`@engine/cms/shop/fulfilment`'s `attachDriverImage`), so a key present on an earlier status can
- * only mean a test fixture, never a real order. It cannot prove a signed URL is returned once
- * `on_the_way`: `driverImageUrl()` needs an object store configured, which this database-only test
- * environment does not have, so it answers `null` regardless — a known, reported gap, not a defect
- * in the loader (`../../../../../../packages/cms/src/shop/fulfilment/driver-image.ts`'s own header
- * documents the same `store === null` fallback).
+ * The driver image cases prove the loader's gate is the order's **status** and a stored key, never
+ * a presigned URL: the view carries the shop's own path, `/api/x/track/{token}/driver-image`
+ * (`@engine/http/track/driver-image`, which signs a short-lived URL and streams the bytes), so no
+ * object store is needed here. Attaching an image always moves an order to `on_the_way` in the real
+ * flow (`@engine/cms/shop/fulfilment`'s `attachDriverImage`), so a key stored on an earlier status
+ * can only be a test fixture, and the loader must still show nothing for it.
  */
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -98,6 +96,37 @@ describe.skipIf(!server)('loadTracking, on a real database', () => {
       } as never,
       overrideAccess: true,
     })
+    const view = await loadTrackingWith(stack.payload, token)
+    expect(view!.driverImageUrl).toBeNull()
+  })
+
+  const fixtureImage = (id: number) => ({
+    key: `orders/${id}/fixture.webp`,
+    contentType: 'image/webp',
+    width: 320,
+    height: 320,
+    uploadedAt: new Date().toISOString(),
+  })
+
+  it('shows the shop’s own photo path, never a presigned URL, once on the way or delivered', async () => {
+    for (const status of ['on_the_way', 'delivered'] as const) {
+      const token = `tok/driver photo+${status}`
+      const made = await order({ status, trackingTokenHash: trackingTokenHash(token) })
+      await stack.payload.update({
+        collection: 'orders',
+        id: made.id,
+        data: { driverImage: fixtureImage(made.id) } as never,
+        overrideAccess: true,
+      })
+      const view = await loadTrackingWith(stack.payload, token)
+      expect(view!.driverImageUrl).toBe(`/api/x/track/${encodeURIComponent(token)}/driver-image`)
+      expect(view!.driverImageUrl).not.toMatch(/X-Amz|^https?:/)
+    }
+  })
+
+  it('shows no photo for an order on the way that has none', async () => {
+    const token = 'tok_on_the_way_no_photo'
+    await order({ status: 'on_the_way', trackingTokenHash: trackingTokenHash(token) })
     const view = await loadTrackingWith(stack.payload, token)
     expect(view!.driverImageUrl).toBeNull()
   })
