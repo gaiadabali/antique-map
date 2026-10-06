@@ -21,6 +21,9 @@ process.env.ORDER_LINK_KEY ??= createHash('sha256')
   .update('orders-db-test-order-link-key')
   .digest()
   .toString('base64url')
+// The emails' origin (siteOrigin reads the hosts): never a relative link, so a host is needed.
+process.env.GALLERY_HOSTS ??= 'gallery.localhost'
+process.env.SHOP_HOSTS ??= 'shop.localhost'
 
 export const BAG_KEY = createBagCookieKey('orders-db-test-bag-cookie-key-0123456789')
 export const PRICE = 95000

@@ -253,8 +253,18 @@ const payload = await cms()
 const pool = cmsPool(payload)
 const client = await pool.connect()
 const op = JSON.parse(process.env.GATE_OP ?? '{}')
-// A staff actor's shape (\`FulfilmentActor\`), never a real sign-in — the owner quotes any order.
-const STAFF_ACTOR = { id: 1, collection: 'users', role: 'owner' }
+// A real owner — the quote's history row references users — the first one, or a test owner made once.
+const owners = await payload.find({
+  collection: 'users', where: { role: { equals: 'owner' } }, limit: 1, depth: 0, overrideAccess: true,
+})
+const owner = owners.docs[0] ?? (await payload.create({
+  collection: 'users', overrideAccess: true,
+  data: {
+    email: 'e2e-shop-owner@example.test', name: 'E2E owner', role: 'owner',
+    password: 'E2e-' + Date.now() + '-' + Math.random().toString(36).slice(2) + 'Aa1!',
+  },
+}))
+const STAFF_ACTOR = { id: owner.id, collection: 'users', role: 'owner' }
 
 async function run() {
   if (op.op === 'order-by-token') {
@@ -318,6 +328,11 @@ function runOp(op: Record<string, unknown>): Record<string, unknown> {
     env: {
       ...process.env,
       DATABASE_URL: localSettings().databaseUrl,
+      // createOrder and the quote seal/open the order link (6.6) with the server's own key.
+      ORDER_LINK_KEY: envVar('ORDER_LINK_KEY'),
+      // The emails' origin (siteOrigin reads the hosts) — the server's own.
+      SHOP_HOSTS: envVar('SHOP_HOSTS'),
+      GALLERY_HOSTS: envVar('GALLERY_HOSTS'),
       NODE_ENV: 'development',
       GATE_OP: JSON.stringify(op),
       GATE_OUT: out,
@@ -532,13 +547,19 @@ test.describe('the shop payment gate (6.5.c, 6.6.c)', () => {
     if (MAILPIT_URL === 'none') {
       console.log('SKIPPED: email (MAILPIT_URL=none)')
     } else {
-      const email = await findOrderEmail(request, 'e2e-shop-gate@example.test', orderNumberText!)
+      const email = await findOrderEmail(
+        request,
+        'e2e-shop-gate@example.test',
+        `${orderNumberText!} — your delivery price is ready`,
+      )
       expect(
         email.subject,
         'the email names the same order number the order page showed',
       ).toContain(orderNumberText!)
       expect(email.text).toContain(String(totalIdr).replace(/\B(?=(\d{3})+(?!\d))/g, '.'))
-      expect(email.text, 'the tracking link starts with the site origin').toContain(SITE_ORIGIN)
+      expect(email.text, 'the pay link is the order page on the site origin').toContain(
+        `${SITE_ORIGIN}/order/`,
+      )
     }
   })
 

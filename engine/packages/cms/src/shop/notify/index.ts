@@ -115,7 +115,18 @@ export async function notifyOrderEvent(
   // dead link — this never happens for a real order sealed by `createOrder`.
   if (token === null) return
 
-  const trackingUrl = `${siteOrigin('shop') ?? ''}${createHref(SITES.shop)('tracking', { token }, locale)}`
+  // Never a relative link in an email: no configured origin, no email (logged, never thrown).
+  const origin = siteOrigin('shop')
+  if (origin === null) {
+    console.error(`[notify] order ${orderId}: no shop origin configured; ${to} email not sent`)
+    return
+  }
+  const href = createHref(SITES.shop)
+  // Before payment the buyer's page is the order page — they watch the quote land and pay there;
+  // from payment on, the tracking page. Both open on the one sealed token.
+  const orderUrl = `${origin}${href('order', { token }, locale)}`
+  const trackingUrl =
+    to === 'awaiting_quote' ? orderUrl : `${origin}${href('tracking', { token }, locale)}`
   const driverUrl =
     to === 'on_the_way'
       ? await driverImageUrl(payload, orderId, DRIVER_IMAGE_URL_MAX_TTL).catch(() => null)
@@ -131,7 +142,7 @@ export async function notifyOrderEvent(
             orderNumber: order.number,
             totalIdr: order.totals?.total ?? 0,
             payBy: order.expiresAt ?? null,
-            trackingUrl,
+            payUrl: orderUrl,
           })
         : buyerStatusEmail({
             to: buyerEmail,
