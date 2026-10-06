@@ -79,7 +79,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 7·W3 | 7.4 Shop gate: buy, quote, pay, fulfil, track | Sonnet → Opus on staging | `w/7.4r2` | 2026-10-06 | 5/5 on staging before 6.6; `am-7.4r2-s1` adds the staff "Send price" step (admin UI) to the spec; then the orchestrator's staging run + Lighthouse |
-| 5·W1 | 5.2.e Check (item page) | — | `main` | 2026-10-06 | media pipeline merged `03d3650`; waits on a seeded image over 2400 px (sample images are 640 px — no tiles) or the owner's pilot set, and on staging's media-bucket CORS + backfill (antique-map-15) |
+| 5·W1 | 5.2.e Check (item page) | Sonnet → Opus review | `w/5.2e` | 2026-10-06 | run `am-5.2e-s1`: the e2e uploads its own 5200 px image (sample images are 640 px), proves tiles from `iiif/`, `uploads/` 403, sold, no price |
+| 5·W3 | 5.5.a the gallery journey | Sonnet → Opus review | `w/5.5a` | 2026-10-06 | run `am-5.5a-s1`: search → item → zoom → Ask → Sell to us, 390/1280, en/id |
 | 5·W2 | 5.3sold immediate expiry on status change | Sonnet → Opus → antique-map-15 review | `w/5.3sold` | 2026-10-06 | run `am-5.3sold-s1`; a sold work rendered "available" once (stale-while-revalidate); `invalidate(…, { now: true })` for status transitions only |
 | 5·W3 | 5.5.c Lighthouse on staging | — | `main` | 2026-10-06 | runner merged `529e4ba` (`tests/e2e/gallery/lighthouse/run.mjs`); local: home 98/100 pass, `/browse` 92/100 but misses LCP 3.3 s (2.5) and script 240 KB (150) — to fix before the staging run; item page not yet measured |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
