@@ -1387,6 +1387,9 @@ export interface Lead {
       }[]
     | null
   firstReplyAt?: string | null
+  /**
+   * One-line outcome when you close: "Sold M.0500 by phone", "Not buying".
+   */
   notes?: string | null
   updatedAt: string
   createdAt: string

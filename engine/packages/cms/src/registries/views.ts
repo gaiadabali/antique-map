@@ -12,6 +12,7 @@
 import type { AdminViewConfig } from 'payload'
 
 import { dashboardViewEntries } from '../admin/dashboard/entry'
+import { leadsViewEntries } from '../admin/leads/entry'
 
 import { uniqueEntries, type RegistryEntry } from './entries'
 
@@ -29,6 +30,7 @@ export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = [
       exact: true,
     },
   },
+  ...leadsViewEntries, // ADM, the leads inbox (TASKS.md 9.1.a)
 ]
 
 /** `admin.components.views`, keyed by each entry's name. */

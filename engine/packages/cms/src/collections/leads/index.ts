@@ -10,6 +10,7 @@ import type { CollectionConfig } from 'payload'
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../users/roles'
+import { createPartnerEndpoint } from './create-partner'
 import { appendStatusHistory } from './status-history'
 import {
   LEAD_KIND_LABELS,
@@ -44,10 +45,29 @@ export const Leads: CollectionConfig = {
     },
   },
   access: LEADS_ACCESS,
+  endpoints: [createPartnerEndpoint],
   hooks: {
     beforeChange: [appendStatusHistory],
   },
   fields: [
+    {
+      name: 'source_block',
+      type: 'ui',
+      label: { en: 'Open the source', id: 'Buka sumbernya' },
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@engine/cms/admin/views#LeadSourceBlock' },
+      },
+    },
+    {
+      name: 'create_partner_block',
+      type: 'ui',
+      label: { en: '', id: '' },
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@engine/cms/admin/views#CreatePartnerButton' },
+      },
+    },
     {
       name: 'kind',
       type: 'select',
@@ -246,7 +266,13 @@ export const Leads: CollectionConfig = {
       type: 'textarea',
       maxLength: 4000,
       label: { en: 'Notes', id: 'Catatan' },
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'One-line outcome when you close: "Sold M.0500 by phone", "Not buying".',
+          id: 'Hasil satu baris saat Anda menutup: "Terjual M.0500 lewat telepon", "Tidak membeli".',
+        },
+      },
     },
   ],
 }
