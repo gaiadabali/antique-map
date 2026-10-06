@@ -842,6 +842,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-06 — Staging host follow-ups for 9.1 (antique-map-f5's merge `6d56bea`, migration `indies_9_1` — it drops `partners_texts`: 0 rows on staging, checked first): the managed crontab runs `/api/x/cron/retention` daily 03:15 WITA (`1aaab48`, applied: changes 4, errors 0); the apply also rewrote `indies-rustfs.service` for `1cfed21` (RustFS on a plain directory — the 50 GiB loop image hung Helios three times; RustFS health 200 after). The retired `/root/indies-loop-retired-20261006/data.img` is the "50 GiB" in host reports: sparse, **493 MB** really used, kept as the migration's rollback copy. Shop `leadNotifyEmails` set to the staging owner (Mailpit catches all). **Turnstile keys stay unset (owner, OA8)** — the lead forms are unprotected on staging until then.
+
 - 2026-10-06 — **Staging runs 6.6** (release `3b62e2d`): db backed up first; the 6.6 migration applied on the first `/api/health`; boot check clean with `ORDER_LINK_KEY`. Found on the way: 6.6 made `ORDER_LINK_KEY` a boot requirement but `.github/scripts/start-server.sh` (release smoke, CI e2e) set none — fixed `3b62e2d` (per-run, masked). 6.6 migration `08608dc` (orchestrator, schema lead): 76/76 migrated-database tests.
 
 - 2026-10-06 — Stock race under load (antique-map-dc): `stock.db.test` "20 concurrent orders for the last unit" fails on main too — 3–4 `createOrder` calls reject with a database error (lock_timeout) instead of the designed `out_of_stock`; a buyer would see "something went wrong". Folded into **6.7** (same pattern as the webhook). The stock invariant itself held: never more than one winner.
