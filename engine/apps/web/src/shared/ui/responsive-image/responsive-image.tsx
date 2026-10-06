@@ -22,9 +22,18 @@ export type ResponsiveImageProps =
       readonly aspectRatio: `${number} / ${number}` | `${number}/${number}` | string
     })
 
+/**
+ * An image on the media origin (`MEDIA_PUBLIC_URL`) is already a public derivative — a resized,
+ * metadata-free AVIF/WebP from the C9 ladder — so Next's optimizer is skipped for it: re-encoding
+ * would add nothing, and the optimizer refuses a remote URL no `remotePatterns` names (one build
+ * serves every environment's media host). A local path still goes through the optimizer.
+ */
+const isRemote = (src: string) => /^https?:\/\//.test(src)
+
 /** A Next/Image wrapper requiring `alt` and `sizes` with fixed or fill + ratio variants. */
 export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement {
   const wrapperClass = [styles.wrapper, props.className].filter(Boolean).join(' ')
+  const unoptimized = isRemote(props.src)
 
   if (props.variant === 'fill') {
     const style = { '--ratio': props.aspectRatio } as CSSProperties
@@ -36,6 +45,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
           fill
           sizes={props.sizes}
           priority={props.priority}
+          unoptimized={unoptimized}
           className={styles.image}
         />
       </div>
@@ -50,6 +60,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
       height={props.height}
       sizes={props.sizes}
       priority={props.priority}
+      unoptimized={unoptimized}
       className={`${wrapperClass} ${styles.fixed}`}
     />
   )

@@ -7,6 +7,7 @@
   "exports": {
     "./contract": "./src/contract.ts",
     "./derivatives": "./src/derivatives/index.ts",
+    "./pipeline": "./src/pipeline/index.ts",
     "./storage": "./src/storage/index.ts",
     "./tiles": "./src/tiles/index.ts"
   },

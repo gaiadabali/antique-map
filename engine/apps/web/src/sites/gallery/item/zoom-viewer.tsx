@@ -32,6 +32,10 @@ export function ZoomViewer({ images, labels }: ZoomViewerProps): React.ReactElem
     const viewer = OpenSeadragon({
       element,
       tileSources: current.infoUrl ?? { type: 'image', url: current.viewerSrc },
+      // Tiles and derivatives come from the media origin, not the page's: fetched without CORS
+      // they taint the WebGL drawer ("Error creating texture") and the canvas stays black. The
+      // bucket answers CORS for anonymous GETs; no credentials are ever sent to it.
+      crossOriginPolicy: 'Anonymous',
       showNavigationControl: false,
       gestureSettingsTouch: { pinchToZoom: true, flickEnabled: false },
       visibilityRatio: 0.9,

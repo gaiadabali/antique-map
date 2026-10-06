@@ -70,6 +70,13 @@ describe('makeDerivatives', () => {
     )
   })
 
+  it('keeps every derivative inside the public long edge', async () => {
+    // A tall sheet: 700 wide, 2000 high, under a 1,000 px cap.
+    const out = await makeDerivatives(await gpsJpeg(700, 2000), { maxLongEdge: 1000 })
+    for (const d of out) expect(Math.max(d.width, d.height)).toBeLessThanOrEqual(1000)
+    expect(out.find((d) => d.format === 'webp' && d.key === '320.webp')?.height).toBe(914)
+  })
+
   it('throws on an asset id that is not a content address', async () => {
     await expect(makeDerivatives(await gpsJpeg(700, 500), { id: '../escape' })).rejects.toThrow(
       /32 hex characters/,
@@ -78,11 +85,14 @@ describe('makeDerivatives', () => {
 })
 
 describe('derivativeWidthsFor', () => {
-  it('skips rungs above the source and always emits the source width once', () => {
+  it('skips rungs above the source and emits a narrower source whole, once', () => {
     expect(derivativeWidthsFor(300, DERIVATIVE_WIDTHS)).toEqual([300])
     expect(derivativeWidthsFor(700, DERIVATIVE_WIDTHS)).toEqual([320, 640, 700])
     expect(derivativeWidthsFor(2000, DERIVATIVE_WIDTHS)).toEqual([320, 640, 1024, 1600, 2000])
-    expect(derivativeWidthsFor(2600, DERIVATIVE_WIDTHS)).toEqual([320, 640, 1024, 1600, 2400, 2600])
+    expect(derivativeWidthsFor(2400, DERIVATIVE_WIDTHS)).toEqual([320, 640, 1024, 1600, 2400])
+    // Wider than the top rung: the full width stays the private upload's (ARCHITECTURE.md §8).
+    expect(derivativeWidthsFor(2600, DERIVATIVE_WIDTHS)).toEqual([320, 640, 1024, 1600, 2400])
+    expect(derivativeWidthsFor(9000, DERIVATIVE_WIDTHS)).toEqual([...DERIVATIVE_WIDTHS])
     expect(derivativeWidthsFor(1000, [640, 640, 0, -3, 1600])).toEqual([640, 1000])
   })
 })
