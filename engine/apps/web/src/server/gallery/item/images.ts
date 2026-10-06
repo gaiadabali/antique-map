@@ -6,29 +6,23 @@
  * the largest public derivative, else the media record's own file.
  */
 import {
-  ASSET_ID_PATTERN,
-  DERIVATIVE_WIDTHS,
   MEDIA_PROVENANCES,
   MEDIA_ROLES,
   SYNTHETIC_LABEL,
-  derivativeKey,
   iiifInfoUrl,
   orderImages,
   primaryImageIndex,
-  type DerivativeWidth,
   type MediaProvenance,
   type MediaRole,
 } from '@engine/media/contract'
 
+import { assetIdOf, derivativeUrlOf, mediaPublicUrl } from '../../media/public-image'
 import type { ItemImage } from './view-model'
 
 type Doc = Record<string, unknown>
 
 /** The long edge under which a legacy photo cannot zoom (C9 `isLowResolution`, 5.2.c). */
 const LOW_RESOLUTION_EDGE = 1600
-
-/** The ladder's top rung: no public derivative is wider (C9 `DERIVATIVE_WIDTHS`). */
-const TOP_RUNG: DerivativeWidth = DERIVATIVE_WIDTHS[DERIVATIVE_WIDTHS.length - 1] ?? 2400
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 const int = (value: unknown): number | null =>
@@ -41,42 +35,21 @@ const provenanceOf = (value: unknown): MediaProvenance =>
     ? (str(value) as MediaProvenance)
     : 'photograph'
 
-/** The media bucket's public base: the CDN in front of the public prefixes (C9). Empty when
- * the environment names none, and every image then answers with its own file. */
-function mediaPublicUrl(): string {
-  const url = process.env.MEDIA_PUBLIC_URL
-  return typeof url === 'string' && url !== '' ? url.replace(/\/+$/, '') : ''
-}
-
-/**
- * The widest derivative the ladder made for a source this wide: the source's own width when it
- * is no wider than the top rung (`derivativeWidthsFor()` always renders the whole picture), else
- * the top rung — so the fallback never points past the public cap.
- */
-function largestDerivativeWidth(width: number): DerivativeWidth {
-  return (width <= TOP_RUNG ? width : TOP_RUNG) as DerivativeWidth
-}
-
 type Resolved = ItemImage & { readonly provenance: MediaProvenance }
 
 function imageOf(media: Doc, base: string): Resolved | null {
   const url = str(media.url)
   if (url === '') return null
-  const assetId = ASSET_ID_PATTERN.test(str(media.assetId)) ? str(media.assetId) : null
+  const assetId = assetIdOf(media)
   const width = int(media.width)
   const height = int(media.height)
   const iiifReady = (media.iiif as Doc | null | undefined)?.status === 'ready'
-  const derivativesReady = (media.derivatives as Doc | null | undefined)?.status === 'ready'
-  const published = base !== '' && assetId !== null
-  const infoUrl = published && iiifReady ? iiifInfoUrl(base, assetId) : null
-  const derivative =
-    published && derivativesReady && width !== null
-      ? `${base}/${derivativeKey(assetId, largestDerivativeWidth(width), 'webp')}`
-      : null
+  const infoUrl = base !== '' && assetId !== null && iiifReady ? iiifInfoUrl(base, assetId) : null
+  const derivative = derivativeUrlOf(media, base)
   const provenance = provenanceOf(media.provenance)
   return {
     // The record's own file is Payload's staff-only route (`collections/media/access`); the
-    // public's image is the derivative once the pipeline (15.1) has made it.
+    // public's image is the derivative once the media pipeline has made it (`../../media`).
     url: derivative ?? url,
     alt: str(media.alt),
     role: roleOf(media.role),
