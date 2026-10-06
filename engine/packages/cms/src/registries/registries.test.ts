@@ -80,6 +80,7 @@ const SLUGS = [
   'stores',
   'stock-levels',
   'orders',
+  'order-notifications',
   'payment-events',
   'leads',
   'partners',

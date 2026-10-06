@@ -1,18 +1,28 @@
 /**
- * The shop payment gate (TASKS.md 6.5.c; EXPERIENCE-SHOP.md §5-§8; COMMERCE.md §3-§6): one buyer
- * journey at 390 px, in a browser, on a production build with `MIDTRANS_MODE=simulate` — two
- * products, a pin, the fee and total, pay, simulator Settle, confirmation, email, then a second
- * guest's abandoned order expiring and returning its stock. Axe is clean on the bag, checkout and
- * order pages at 390 and 1280 px.
+ * The shop payment gate (TASKS.md 6.5.c, 6.6.c; EXPERIENCE-SHOP.md §5-§8; COMMERCE.md §3-§6): one
+ * buyer journey at 390 px, in a browser, on a production build with `MIDTRANS_MODE=simulate` — two
+ * products, a pin, checkout with no fee shown, the order page's "confirming your delivery price"
+ * state, a staff quote (Local API `quoteDeliveryFee`, `GATE_DB=local` only), the page switching
+ * itself to Pay with the fee and the final total, simulator Settle, confirmation, email, then a
+ * second guest's order abandoned in each of the two windows (`awaiting_quote`'s quote window and
+ * the paid-quote's payment window), each expiring and returning its stock. Axe is clean on the bag,
+ * checkout and order pages at 390 and 1280 px.
  *
  * **No real sandbox payment**: deferred by owner decision 2026-10-05 (TASKS.md 6.5.c; no gateway
  * is set up yet) — this spec only drives the simulator, as `payment.spec.ts` does.
  *
  * Runs locally (`E2E_PORT`, the worktree's own database and Mailpit) and, unchanged, against
  * staging later (`E2E_BASE_URL`, a full origin; `MAILPIT_URL=none` skips the email step; `GATE_DB`
- * unset skips the two steps that read or write the database directly). Nothing else may skip —
- * products, the store and the pin are discovered from the live site (`findSellablePair`,
- * `findWorkingPin`), never hard-coded, mirroring `product.spec.ts`'s own `findCandidates`.
+ * unset skips every step that reads or writes the database directly — including the quote, so
+ * without `GATE_DB=local` this spec can drive the buyer's side only as far as "confirming").
+ * Nothing else may skip — products and the store are discovered from the live site
+ * (`findSellablePair`), never hard-coded, mirroring `product.spec.ts`'s own `findCandidates`.
+ *
+ * 6.6.c note: the checkout no longer has a fee preview to probe with (the 2026-10-06 decision
+ * retired it), so `findSellablePair` now probes by actually placing a throwaway order per
+ * candidate pair in its own browser context — a real `awaiting_quote` order, holding real stock,
+ * left to expire on its own quote window rather than torn down here (no public, side-effect-free
+ * "would this pair find one store" check remains once the fee preview is gone).
  */
 import { execFileSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
@@ -145,8 +155,8 @@ async function addFromProductPage(page: Page, slug: string): Promise<void> {
 /**
  * Types a pin into the checkout's fallback lat/lng inputs (no Maps key needed — `pin-picker.tsx`).
  * Filling the latitude field alone leaves no pin — `typeLatLng` only picks once both fields parse
- * to a finite number (`parseCoordinate`) — so the fee box stays on its placeholder until both
- * fields have landed.
+ * to a finite number (`parseCoordinate`) — so the delivery note (not a fee: 6.6.c retired it)
+ * stays the only thing shown below the review until both fields have landed.
  */
 async function typePin(page: Page, pin: { lat: number; lng: number }): Promise<void> {
   const inputs = page.locator('input[inputmode="decimal"]')
@@ -154,32 +164,26 @@ async function typePin(page: Page, pin: { lat: number; lng: number }): Promise<v
   await inputs.nth(1).fill(String(pin.lng))
 }
 
-/**
- * Whether the checkout's fee box settles on a fee (no refusal alert) for the bag and pin as they
- * stand — polled, since the quote is an async server action.
- */
-async function feeQuoteOk(page: Page): Promise<boolean> {
-  for (let attempt = 0; attempt < 10; attempt++) {
-    // Next's own `#__next-route-announcer__` is a permanent, empty `role="alert"` live region
-    // for screen-reader route announcements — excluded, since it is never the form's refusal.
-    const [alertTexts, feeLabels] = await Promise.all([
-      page.getByRole('alert').allTextContents(),
-      page.getByText('Delivery', { exact: true }).count(),
-    ])
-    const realAlerts = alertTexts.filter((text) => text.trim() !== '')
-    if (realAlerts.length === 0 && feeLabels > 0) return true
-    await page.waitForTimeout(300)
-  }
-  return false
+/** Fills the checkout's contact and address fields — every case below needs the same ones. */
+async function fillContact(
+  page: Page,
+  contact: { name: string; whatsapp: string; email: string },
+): Promise<void> {
+  await page.getByLabel(/full name/i).fill(contact.name)
+  await page.getByLabel(/whatsapp/i).fill(contact.whatsapp)
+  await page.getByLabel(/email/i).fill(contact.email)
+  await page.getByLabel(/address/i).fill('Jl. Teuku Umar, Denpasar')
 }
 
 /**
- * Finds two distinct products one store can send to the default (Denpasar) pin: in a throwaway
- * browser context (so the main test's own bag is never touched), adds a candidate pair, drops the
- * pin at checkout, and reads the checkout's own fee quote as the oracle (the same mechanism a real
- * buyer's browser has — no database read, so this also runs on staging). A worktree with fewer
- * than two sellable products, or whose stores never cover a pair at the default pin, is a setup
- * gap: this fails loudly (`expect(...).not.toBeNull()`), never a skip.
+ * Finds two distinct products one store can send (6.6.c: the checkout no longer previews a fee,
+ * so there is no public, side-effect-free way left to ask "would this pair find one store" — this
+ * probes by actually placing a throwaway order per candidate pair, in its own browser context (so
+ * the main test's own bag is never touched). A `no_single_store` refusal moves to the next pair; a
+ * redirect to `/order/` is the pair this returns — the throwaway order itself is left to expire on
+ * its own quote window, never torn down here. A worktree with fewer than two sellable products, or
+ * whose stores never cover any pair, is a setup gap: this fails loudly (`expect(...).not.toBeNull()`),
+ * never a skip.
  */
 async function findSellablePair(
   page: Page,
@@ -204,13 +208,22 @@ async function findSellablePair(
       await addFromProductPage(probe, a.slug)
       await addFromProductPage(probe, b.slug)
       await probe.goto(`${SHOP_ORIGIN}/checkout`)
+      await fillContact(probe, {
+        name: 'E2E Probe',
+        whatsapp: '0812 0000 0000',
+        email: 'e2e-shop-gate-probe@example.test',
+      })
       await typePin(probe, DEFAULT_CENTRE)
-      const ok = await feeQuoteOk(probe)
+      await probe.getByRole('button', { name: 'Continue to payment' }).click()
+      const ok = await probe
+        .waitForURL(/\/order\//, { timeout: 5000 })
+        .then(() => true)
+        .catch(() => false)
       await probeContext.close()
       if (ok) return { a, b }
     }
   }
-  expect(null, 'two products one store can send to the Denpasar default pin').not.toBeNull()
+  expect(null, 'two products one store can send together').not.toBeNull()
   throw new Error('unreachable')
 }
 
@@ -234,12 +247,14 @@ const OPS_SCRIPT = `
 import { writeFileSync } from 'node:fs'
 process.env.PAYLOAD_SECRET ??= 'e2e-shop-gate-dev-only-never-signs-anything'
 const { cms, cmsPool } = await import('./engine/packages/cms/src/instance')
-const { trackingTokenHash } = await import('./engine/packages/cms/src/shop/orders')
+const { trackingTokenHash, quoteDeliveryFee } = await import('./engine/packages/cms/src/shop/orders')
 
 const payload = await cms()
 const pool = cmsPool(payload)
 const client = await pool.connect()
 const op = JSON.parse(process.env.GATE_OP ?? '{}')
+// A staff actor's shape (\`FulfilmentActor\`), never a real sign-in — the owner quotes any order.
+const STAFF_ACTOR = { id: 1, collection: 'users', role: 'owner' }
 
 async function run() {
   if (op.op === 'order-by-token') {
@@ -272,6 +287,11 @@ async function run() {
       "UPDATE orders SET expires_at = now() - interval '10 minutes' WHERE id = $1", [op.orderId],
     )
     return { ok: true }
+  }
+  if (op.op === 'quote') {
+    return await quoteDeliveryFee(payload, {
+      orderId: op.orderId, feeIdr: op.feeIdr, actor: STAFF_ACTOR,
+    })
   }
   throw new Error('unknown op: ' + op.op)
 }
@@ -329,6 +349,9 @@ const stockOf = (storeId: number, productId: number, variantSku: string | null =
   return result.quantity!
 }
 const expireOrder = (orderId: number): void => void runOp({ op: 'expire', orderId })
+/** The staff "Send price" step, via the Local API directly (the admin UI is 7.2's own gate). */
+const quoteOrder = (orderId: number, feeIdr: number): { ok: boolean; refusal?: string } =>
+  runOp({ op: 'quote', orderId, feeIdr }) as { ok: boolean; refusal?: string }
 
 test.afterAll(() => {
   rmSync(opsScript, { force: true })
@@ -369,10 +392,10 @@ async function findOrderEmail(
 // The buyer journey (steps 1-6, 390 px).
 // ---------------------------------------------------------------------------------------------
 
-test.describe('the shop payment gate (6.5.c)', () => {
+test.describe('the shop payment gate (6.5.c, 6.6.c)', () => {
   test.describe.configure({ timeout: 180_000 })
 
-  test('a guest buys two products; pays; the order is confirmed and emailed', async ({
+  test('a guest buys two products; staff quote it; pays; the order is confirmed and emailed', async ({
     page,
     request,
   }) => {
@@ -389,24 +412,23 @@ test.describe('the shop payment gate (6.5.c)', () => {
     await axeBothWidths(page, 'bag with two lines')
 
     await page.goto(`${SHOP_ORIGIN}/checkout`)
-    await page.getByLabel(/full name/i).fill('E2E Gate Buyer')
-    await page.getByLabel(/whatsapp/i).fill('0812 3456 7890')
-    await page.getByLabel(/email/i).fill('e2e-shop-gate@example.test')
-    await page.getByLabel(/address/i).fill('Jl. Teuku Umar, Denpasar')
+    await fillContact(page, {
+      name: 'E2E Gate Buyer',
+      whatsapp: '0812 3456 7890',
+      email: 'e2e-shop-gate@example.test',
+    })
 
-    // The typed-pin (0, 0) race (6-followup): typing only the latitude must leave no pin — the
-    // fee box stays on its placeholder, never a quoted or refused fee for an unfinished pin.
+    // The typed-pin (0, 0) race (6-followup) still applies: typing only the latitude must leave
+    // no pin, so a submit right after could never silently send (0, 0).
     const inputs = page.locator('input[inputmode="decimal"]')
     await inputs.nth(0).fill(String(DEFAULT_CENTRE.lat))
-    await expect(page.getByText('Drop a pin or paste a Maps link')).toBeVisible()
     const halfPinAlerts = (await page.getByRole('alert').allTextContents()).filter((t) => t.trim())
-    expect(halfPinAlerts, 'no fee or refusal for a half-typed pin').toEqual([])
+    expect(halfPinAlerts, 'no refusal for a half-typed pin').toEqual([])
 
     await typePin(page, DEFAULT_CENTRE)
-    expect(await feeQuoteOk(page), 'the fee quote resolved for the checkout pin').toBe(true)
-    await shoot(page, 'checkout-filled-390')
 
-    // Step 3: the review's totals, read as integers, hold: total = subtotal - discount + fee.
+    // Step 3 (6.6.c): no fee preview any more — the review holds at an items total, with the
+    // "confirmed by our team" note; total = subtotal - discount, exactly.
     const subtotalIdr = rupiahToNumber(
       await page
         .locator('dt', { hasText: 'Subtotal' })
@@ -418,28 +440,63 @@ test.describe('the shop payment gate (6.5.c)', () => {
       (await discountRow.count()) > 0
         ? rupiahToNumber(await discountRow.locator('xpath=following-sibling::dd[1]').innerText())
         : 0
-    const feeIdr = rupiahToNumber(
+    const itemsTotalIdr = rupiahToNumber(
       await page
-        .locator('span', { hasText: 'Delivery' })
-        .locator('xpath=following-sibling::span[1]')
+        .locator('dt', { hasText: 'Items total' })
+        .locator('xpath=following-sibling::dd[1]')
         .innerText(),
     )
-    const totalIdr = rupiahToNumber(
-      await page
-        .locator('span', { hasText: 'Continue to payment' })
-        .locator('xpath=following-sibling::span[1]')
-        .innerText(),
-    )
-    expect(totalIdr, 'total = subtotal - discount + fee').toBe(subtotalIdr - discountIdr + feeIdr)
-    await axeBothWidths(page, 'checkout with a quoted fee')
+    expect(itemsTotalIdr, 'items total = subtotal - discount').toBe(subtotalIdr - discountIdr)
+    await expect(page.getByText('Delivery price confirmed by our team')).toBeVisible()
+    await shoot(page, 'checkout-filled-390')
+    await axeBothWidths(page, 'checkout with no fee')
 
     await page.getByRole('button', { name: 'Continue to payment' }).click()
     await expect(page).toHaveURL(/\/order\//)
     const orderUrl = new URL(page.url())
     const token = decodeURIComponent(orderUrl.pathname.split('/').pop() ?? '')
     expect(token.length, 'a tracking token in the redirect URL').toBeGreaterThan(10)
+    await shoot(page, 'order-confirming-390')
+    // Step 4: "confirming your delivery price" — no pay button until staff quote it.
+    await expect(
+      page.getByRole('heading', { name: /confirming your delivery price/i }),
+    ).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Pay /i })).toHaveCount(0)
+    await axeBothWidths(page, 'order page, confirming')
+
+    if (!GATE_DB) {
+      console.log('SKIPPED (no db access): the quote, pay, paid state, stock and email')
+      return
+    }
+
+    // Step 5 (GATE_DB only): the staff "Send price" step, via the Local API directly — the
+    // admin UI itself ("Send price", the WhatsApp button) is this ticket's own 7.2-style gate,
+    // not re-driven in a browser here.
+    const order = orderByToken(token)
+    expect(order.found, 'the order the checkout created').toBe(true)
+    expect(order.status, 'awaiting a quote').toBe('awaiting_quote')
+    const FEE_IDR = 25000
+    const quoted = quoteOrder(order.id!, FEE_IDR)
+    expect(quoted.ok, `the quote (${quoted.refusal ?? ''})`).toBe(true)
+
+    // Step 6: the page switches itself to Pay, with the fee and the final total — no reload: the
+    // 5-second poll (`AutoRefresh`) must bring it across on its own, as `payBy` does for a webhook.
+    await expect(page.getByRole('button', { name: /^Pay /i })).toBeVisible({ timeout: 10_000 })
+    const feeIdr = rupiahToNumber(
+      await page
+        .locator('dt', { hasText: 'Delivery' })
+        .locator('xpath=following-sibling::dd[1]')
+        .innerText(),
+    )
+    expect(feeIdr, 'the quoted fee').toBe(FEE_IDR)
+    const totalIdr = rupiahToNumber(
+      await page
+        .locator('dt', { hasText: 'Total' })
+        .locator('xpath=following-sibling::dd[1]')
+        .innerText(),
+    )
+    expect(totalIdr, 'total = items total + fee').toBe(itemsTotalIdr + feeIdr)
     await shoot(page, 'order-pending-390')
-    await expect(page.getByRole('button', { name: /^Pay /i })).toBeVisible()
     // The order number as the page's own copy renders it ("Order 100059", no grouping — an
     // identifier, not a quantity) — shown only here, on the pending state ("order.title"); the
     // paid state ("Payment received") never repeats it.
@@ -448,7 +505,7 @@ test.describe('the shop payment gate (6.5.c)', () => {
     expect(orderNumberText, 'the order number on the pending page').not.toBeNull()
     await axeBothWidths(page, 'order page, pending')
 
-    // Step 4: pay, simulator Settle, the confirmation.
+    // Step 7: pay, simulator Settle, the confirmation.
     await page.getByRole('button', { name: /^Pay /i }).click()
     await expect(page.getByText('Test payment — no money moves.')).toBeVisible()
     await page.getByRole('button', { name: 'Settle' }).click()
@@ -458,23 +515,20 @@ test.describe('the shop payment gate (6.5.c)', () => {
     await shoot(page, 'order-paid-390')
     await axeBothWidths(page, 'order page, paid')
 
-    // Step 5 (GATE_DB only): paid, the right store, stock down by each line's qty.
-    if (GATE_DB) {
-      const order = orderByToken(token)
-      expect(order.found, 'the order the checkout created').toBe(true)
-      expect(order.status).toBe('paid')
-      for (const line of order.lines ?? []) {
-        const after = stockOf(order.storeId!, line.productId, line.variantSku)
-        // The order's own creation already took the stock; this only confirms the line is
-        // present and the quantity is a sane, non-negative integer — the decrement itself
-        // is `stock.db.test.ts`'s concern (6.3.d), not re-proven here.
-        expect(after, `stock for product ${line.productId} after payment`).toBeGreaterThanOrEqual(0)
-      }
-    } else {
-      console.log('SKIPPED (no db access): step 5 — order status and stock by database read')
+    // Step 8: paid, the right store, stock down by each line's qty.
+    const paid = orderByToken(token)
+    expect(paid.status).toBe('paid')
+    for (const line of paid.lines ?? []) {
+      const after = stockOf(paid.storeId!, line.productId, line.variantSku)
+      // The order's own creation already took the stock; this only confirms the line is
+      // present and the quantity is a sane, non-negative integer — the decrement itself
+      // is `stock.db.test.ts`'s concern (6.3.d), not re-proven here.
+      expect(after, `stock for product ${line.productId} after payment`).toBeGreaterThanOrEqual(0)
     }
 
-    // Step 6: the order-created email, via Mailpit.
+    // Step 9: the "your price is ready" email, via Mailpit — sent once the quote moved the order
+    // to `pending_payment` (the core's `notifyOrderEvent`, TASKS.md 6.6-core), so it is the one
+    // that can carry the final total; the earlier "confirming" email never names a total to check.
     if (MAILPIT_URL === 'none') {
       console.log('SKIPPED: email (MAILPIT_URL=none)')
     } else {
@@ -489,67 +543,128 @@ test.describe('the shop payment gate (6.5.c)', () => {
   })
 
   // -------------------------------------------------------------------------------------------
-  // Step 7: an abandoned order expires and returns its stock; a second sweep changes nothing.
+  // Step 10 (6.6.c): an abandoned order expires and returns its stock, in each of its two
+  // windows — unquoted (`awaiting_quote`'s `quoteWindowMinutes`) and quoted-but-unpaid
+  // (`pending_payment`'s `orderExpiryMinutes`) — and a second sweep changes nothing either way.
   // -------------------------------------------------------------------------------------------
-  test('an abandoned order expires, returns its stock, and a second sweep changes nothing', async ({
-    page,
-    request,
-  }) => {
-    test.skip(!GATE_DB, 'SKIPPED (no db access): step 7 — needs expires_at and stock reads/writes')
-    await page.setViewportSize(WIDTHS[0])
 
+  /** Places one product's order and returns its token — the abandoned-order cases share this. */
+  async function placeOneProductOrder(
+    page: Page,
+    contact: { name: string; whatsapp: string; email: string },
+    request: APIRequestContext,
+  ): Promise<string> {
     const [product] = await sellableUnvariantedProducts(request, await listProducts(request))
     expect(product, 'a sellable product for the abandoned-order case').toBeDefined()
-
     await page.goto(`${SHOP_ORIGIN}/bag`)
     await addFromProductPage(page, product!.slug)
     await page.goto(`${SHOP_ORIGIN}/checkout`)
-    await page.getByLabel(/full name/i).fill('E2E Gate Abandoner')
-    await page.getByLabel(/whatsapp/i).fill('0812 0000 1111')
-    await page.getByLabel(/email/i).fill('e2e-shop-gate-abandon@example.test')
-    await page.getByLabel(/address/i).fill('Jl. Teuku Umar, Denpasar')
+    await fillContact(page, contact)
     await typePin(page, DEFAULT_CENTRE)
-    expect(await feeQuoteOk(page), 'the fee quote resolved for the abandoned order').toBe(true)
     await page.getByRole('button', { name: 'Continue to payment' }).click()
     await expect(page).toHaveURL(/\/order\//)
-    const token = decodeURIComponent(new URL(page.url()).pathname.split('/').pop() ?? '')
+    return decodeURIComponent(new URL(page.url()).pathname.split('/').pop() ?? '')
+  }
 
+  async function sweep(request: APIRequestContext): Promise<{ status: number }> {
+    const res = await request.post(`${API_BASE}/api/x/cron/sweeps`, {
+      headers: { ...HOST_HEADER, authorization: `Bearer ${CRON_SECRET}` },
+    })
+    return { status: res.status() }
+  }
+
+  /** Expires `orderId`, sweeps twice, and asserts the stock returns exactly once. */
+  async function assertExpiresAndReturnsStockOnce(
+    request: APIRequestContext,
+    orderId: number,
+    storeId: number,
+    line: { productId: number; variantSku: string | null; qty: number },
+  ): Promise<void> {
+    const beforeQty = stockOf(storeId, line.productId, line.variantSku)
+    expireOrder(orderId)
+
+    const first = await sweep(request)
+    expect(first.status, 'the first sweep').toBe(200)
+    const afterSweepQty = stockOf(storeId, line.productId, line.variantSku)
+    expect(afterSweepQty, 'stock returned by exactly the line qty').toBe(beforeQty + line.qty)
+
+    const second = await sweep(request)
+    expect(second.status, 'a second sweep').toBe(200)
+    expect(
+      stockOf(storeId, line.productId, line.variantSku),
+      'stock unchanged by the second sweep',
+    ).toBe(afterSweepQty)
+  }
+
+  test('an order never quoted expires after the quote window, and returns its stock once', async ({
+    page,
+    request,
+  }) => {
+    test.skip(!GATE_DB, 'SKIPPED (no db access): needs expires_at and stock reads/writes')
+    await page.setViewportSize(WIDTHS[0])
+
+    const token = await placeOneProductOrder(
+      page,
+      {
+        name: 'E2E Gate Abandoner',
+        whatsapp: '0812 0000 1111',
+        email: 'e2e-shop-gate-abandon@example.test',
+      },
+      request,
+    )
+    const order = orderByToken(token)
+    expect(order.found).toBe(true)
+    expect(order.status, 'created awaiting a quote').toBe('awaiting_quote')
+    const line = order.lines?.[0]
+    expect(line, 'the abandoned order has one line').toBeDefined()
+
+    await assertExpiresAndReturnsStockOnce(request, order.id!, order.storeId!, line!)
+
+    const expired = orderByToken(token)
+    expect(expired.status, 'the order after the sweep').toBe('expired')
+
+    await page.goto(`${SHOP_ORIGIN}/order/${encodeURIComponent(token)}`)
+    await expect(
+      page.getByRole('heading', { name: /couldn't confirm delivery in time/i }),
+    ).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Put these back in my bag' })).toBeVisible()
+    await shoot(page, 'order-expired-unquoted-390')
+    await axeBothWidths(page, 'order page, expired (never quoted)')
+  })
+
+  test('a quoted order abandoned before paying expires after the payment window, and returns its stock once', async ({
+    page,
+    request,
+  }) => {
+    test.skip(!GATE_DB, 'SKIPPED (no db access): needs expires_at and stock reads/writes')
+    await page.setViewportSize(WIDTHS[0])
+
+    const token = await placeOneProductOrder(
+      page,
+      {
+        name: 'E2E Gate Abandoner (quoted)',
+        whatsapp: '0812 0000 2222',
+        email: 'e2e-shop-gate-abandon-quoted@example.test',
+      },
+      request,
+    )
     const order = orderByToken(token)
     expect(order.found).toBe(true)
     const line = order.lines?.[0]
     expect(line, 'the abandoned order has one line').toBeDefined()
-    const storeId = order.storeId!
-    const afterOrderQty = stockOf(storeId, line!.productId, line!.variantSku)
 
-    expireOrder(order.id!)
+    const quoted = quoteOrder(order.id!, 15000)
+    expect(quoted.ok, `the quote (${quoted.refusal ?? ''})`).toBe(true)
+    expect(orderByToken(token).status, 'quoted into the payment window').toBe('pending_payment')
 
-    const sweep = async (): Promise<{ status: number }> => {
-      const res = await request.post(`${API_BASE}/api/x/cron/sweeps`, {
-        headers: { ...HOST_HEADER, authorization: `Bearer ${CRON_SECRET}` },
-      })
-      return { status: res.status() }
-    }
-
-    const first = await sweep()
-    expect(first.status, 'the first sweep').toBe(200)
+    await assertExpiresAndReturnsStockOnce(request, order.id!, order.storeId!, line!)
 
     const expired = orderByToken(token)
     expect(expired.status, 'the order after the sweep').toBe('expired')
-    const afterSweepQty = stockOf(storeId, line!.productId, line!.variantSku)
-    expect(afterSweepQty, 'stock returned by exactly the line qty').toBe(afterOrderQty + line!.qty)
-
-    const second = await sweep()
-    expect(second.status, 'a second sweep').toBe(200)
-    const stillExpired = orderByToken(token)
-    expect(stillExpired.status, 'a second sweep changes nothing').toBe('expired')
-    expect(
-      stockOf(storeId, line!.productId, line!.variantSku),
-      'stock unchanged by the second sweep',
-    ).toBe(afterSweepQty)
 
     await page.goto(`${SHOP_ORIGIN}/order/${encodeURIComponent(token)}`)
     await expect(page.getByRole('button', { name: 'Put these back in my bag' })).toBeVisible()
-    await shoot(page, 'order-expired-390')
-    await axeBothWidths(page, 'order page, expired')
+    await shoot(page, 'order-expired-quoted-390')
+    await axeBothWidths(page, 'order page, expired (quoted, unpaid)')
   })
 })

@@ -10,6 +10,11 @@ import { SITE_COPY } from '../../../shell/copy'
 
 export const PAYMENT_KEYS = defineMessages({
   'order.title': 'Order {number}',
+  'order.confirmingDeliveryTitle': "We're confirming your delivery price",
+  'order.confirmingDeliveryBody': "We'll email you the final price.",
+  'order.confirmingDeliverySendingFrom': 'Sending from {store}',
+  'order.deliveryFee': 'Delivery',
+  'order.quotedExpiredTitle': "We couldn't confirm delivery in time — nothing was charged.",
   'order.payBy': 'Pay by {time}',
   'order.pay': 'Pay {total}',
   'order.testPayment': 'Test payment — no money moves.',
