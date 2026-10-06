@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/6 | 19/23 | 0 | `████████░░`  83% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 9/20 | 0 | `█████░░░░░`  45% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/6 | 18/23 | 0 | `████████░░`  78% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **28/50** | **138/205** | **8** | `███████░░░`  67% |
+| **All** | 11 phases | | | **28/50** | **139/205** | **8** | `███████░░░`  68% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,15 +81,19 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 6·W4 | 6.6 core: awaiting_quote, quote move, encrypted link, emails from the core | Sonnet (antique-map-dc) | `w/6.6core` | 2026-10-06 | `am-6.6core-s1`; dc reviews; then the orchestrator generates the migration on merged main |
 | 6·W4 | 6.6 shell: checkout without a fee, order-page states, admin Send price | Sonnet (antique-map-dc) | `w/6.6shell` | 2026-10-06 | `am-6.6shell-s1`; merges after the core |
 | 7·W3 | 7.4 Shop gate: buy, fulfil, track | Sonnet → Opus on staging | `w/7.4` | 2026-10-05 | `am-7.4-s1` writes `tests/e2e/shop-fulfilment/flow.spec.ts` (guest buys → store fulfils with the driver image → buyer tracks → another store sees nothing → owner reassigns), green locally; the orchestrator then creates the staging owner and two store users and runs it + Lighthouse against staging |
-| 5·W1 | 5.2.b–d Item page, zoom, sold | Opus review (claude seat) | `w/5.2b` | 2026-10-05 | GLM run `am-5.2b-1` exited 1 before its report; Opus reviewing (merges main in, fixes, runs Verify) — 2026-10-06 |
+| 5·W1 | 5.2.e Check (item page) | — | `main` | 2026-10-06 | 5.2.b–d merged `58f62eb` (Opus-reviewed); the Check waits on public derivatives/tiles existing for seeded works — anonymous visitors get the staff-only media URL today (report open item 1) |
 | 5·W2 | 5.4 Makers, places, editorial, plain pages | Sonnet (claude seat) | `w/5.4` | 2026-10-05 | run `am-5.4-s2` (2026-10-06); Opus reviews before the merge |
 | 5·W2 | 5.3 Ask, Sell to us, `/api/x/leads` | — | — | 2026-10-05 | waits on the 5.2b merge and on `w/9.1core`'s lead service (Opus reviewing it, 2026-10-06); then a Sonnet run |
+| 5·W3 | 5.1.d Check evidence (e2e browse/search) | DeepSeek V4.1 Flash | `w/ds-5.1d` | 2026-10-06 | run `am-ds-5.1d-1`; Opus reviews; the orchestrator ticks the Check |
+| 5·W3 | 5.5.b no-commerce scan | DeepSeek V4.1 Flash | `w/ds-5.5b` | 2026-10-06 | run `am-ds-5.5b-1`; Opus reviews |
+| 5·W3 | 5.5.c Lighthouse runner (local half) | DeepSeek V4.1 Flash | `w/ds-5.5c` | 2026-10-06 | run `am-ds-5.5c-1`; staging run later by the orchestrator |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 | 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
+| 5·W3 | 5.5 The gallery gate | deepseek | `w/ds-5.5b` | 2026-10-06 | |
 
 ## Decisions for the owner
 
@@ -490,11 +494,11 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/{pages,makers,places}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{makers,places,stories,about,guarantee}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/[...missing]/**`
   - **Read** EXPERIENCE-GALLERY.md §Pages
   - _Requirements: 3.1_
-  - [ ] 5.4.a maker and place pages with their items; a place page lists its historical names
-  - [ ] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
+  - [x] 5.4.a maker and place pages with their items; a place page lists its historical names
+  - [x] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
   - [ ] 5.4.c **Check:** a seeded maker and place each list their items; an edited page in the admin appears after its cache tag is invalidated; the pages pass axe at both widths.
 
-- [ ] **5.5 The gallery gate** · needs: 5.3, 5.4
+- [ ] **5.5 The gallery gate** · needs: 5.3, 5.4 — 🔄 5·W3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/gallery.md`, `tests/e2e/gallery/**`
   - **Read** the **Done when** of phase 5
@@ -560,14 +564,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
   - [x] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
 
-- [ ] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5, 7.1 — 🔄 6·W4
+- [ ] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5 — 🔄 6·W4
   - **Lane** SHP + PLT · **Agent** senior-be (core), senior-fe (shell), Opus review · **Wave** W4
   - **Owns** core: `engine/packages/cms/src/shop/{orders,fulfilment,payments,notify}/**`, `engine/packages/cms/src/collections/orders/**`; shell: `engine/apps/web/src/{sites,server}/shop/{checkout,payment}/**`, the order page, `engine/packages/cms/src/admin/orders/**`; migration: the orchestrator (schema lead)
   - **Read** the two decisions of 2026-10-06 in **Log**, COMMERCE.md §Checkout, §Statuses, §Notifications
   - _Requirements: 5.5, 6.1, 6.3, 8.5_
   - [ ] 6.6.a core: a new first status `awaiting_quote` (holding stock from placement); checkout takes no delivery fee; staff (the order's store, owner, editor) enter the fee in one transaction that prices the total on the server, opens the 60-minute payment window and writes history; a quote window (site-settings `quoteWindowMinutes`, default 120) after which the sweep expires the order and returns its stock once; staff may cancel from `awaiting_quote`
   - [ ] 6.6.b the order's private link stored encrypted at rest (AES-256-GCM, a host-only key), and every order email sent from the core after its transaction commits — paid, quote ready (with the pay link), each later status, expired — once per order and status; the token rotation removed
-  - [x] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
+  - [ ] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
   - [ ] 6.6.d the wave's migration (the `awaiting_quote` enum value, `quoteWindowMinutes`, the encrypted link column), generated once on merged main
   - [ ] 6.6.e **Check:** db tests prove: an order is created `awaiting_quote` with stock held and no fee; a store user of another store cannot quote it; the quote prices the total on the server and a tampered client total is ignored; an unquoted order expires after the window and returns its stock once; each status sends exactly one email and every email's link opens the same order page; on staging the 7.4 gate passes with the quote step.
 
@@ -829,6 +833,10 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — **5.2.b–d merged** (`58f62eb`). GLM built it; the Opus review found the page unreachable (built under `product/[id]`, which the proxy never routes to — moved to `item/[idSlug]`; public address unchanged `/product/{publicId}-{slug}`), Sold still showing an Ask button, tile URLs not from the media key builder, invalid `font-size` token use, and a lexicon shipped to the client; 14 fixes. Verify green (2,079 tests, build ◐ partial prerender), runtime 200/308/404 as specified, `askingPrice` absent. Open for 5.2.e: anonymous visitors get the staff-only media URL until derivatives exist; EXPERIENCE §5 vs ticket on Sold's "Ask for another example" (ticket followed); 9.3's `pageMetadata` builds wrong Indonesian alternates for translated segments; ZoomShell full screen uses the Fullscreen API, not §6's overlay.
+
+- 2026-10-06 — **Dev Postgres** (shared by every session's workers): two outages on 2026-10-05 traced to Postgres as PID 1 in its container (a non-zero `docker compose exec psql` exit, an "untracked child process", made it restart every backend); fixed by `init: true` (`214a1f5`), cherry-picked into every active worktree by all sessions, the container recreated from main after a clean shutdown. 170 leftover test databases (crashed runs' `*_test_<pid>_<ms>`, older than 2 h, unconnected; plain DROP) removed — 234 → 68 databases, ~2 GB, no restart. My after() regression from `c52d533` fixed in `32091a7` (four out-of-request site-settings writes now use `invalidationBatch().operation`); pick-store.db 6/7 after it (one 5 s timeout under load, no after() error).
 
 - 2026-10-06 — 6.6 scope (antique-map-dc): with the fee table retired, `pickStore` drops the distance-band check — the nearest active store holding every line, anywhere in Indonesia; staff cancel (with WhatsApp) if undeliverable. Staging: `ORDER_LINK_KEY` added host-only to `uindies`' .env (32 random bytes, never printed); it takes effect with the 6.6 release. dc's follow-up merged `8aa5f31`: the typed-pin (0,0) race and plain order numbers.
 
