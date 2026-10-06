@@ -92,11 +92,9 @@ describe.skipIf(!server)('the quote move and its expiries, on a real database', 
     expect(result.expiresAt.getTime()).toBe(now.getTime() + EXPIRY_MINUTES * 60_000)
 
     const after = await read.order(placed.orderId)
-    expect(after).toMatchObject({
-      status: 'pending_payment',
-      totals_delivery_fee: 20000,
-      totals_total: subtotal - discount + 20000,
-    })
+    expect(after.status).toBe('pending_payment')
+    expect(Number(after.totals_delivery_fee)).toBe(20000)
+    expect(Number(after.totals_total)).toBe(subtotal - discount + 20000)
 
     // Refused twice: once more, now that the order has moved on ...
     const again = await quoteDeliveryFee(stack.payload, {
@@ -193,9 +191,12 @@ describe.skipIf(!server)('the quote move and its expiries, on a real database', 
     const stillUnquoted = Number((await read.order(placed.orderId)).totals_total)
     const route = webhook()
 
-    // A settlement notification for this order's number while it still awaits a price.
-    simulator.register(`${placed.number}-1`, stillUnquoted)
-    expect((await route(simulator.emit(`${placed.number}-1`, 'settle').body)).status).toBe(200)
+    // A settlement notification for this order's number while it still awaits a price. A
+    // high attempt suffix keeps this synthetic registration from colliding with the real
+    // first attempt `openPaymentAttempt` opens below (the simulator's own attempt store is
+    // keyed by `midtransOrderId` alone, not by the order's `orders_payment_attempts` rows).
+    simulator.register(`${placed.number}-9`, stillUnquoted)
+    expect((await route(simulator.emit(`${placed.number}-9`, 'settle').body)).status).toBe(200)
     expect((await read.order(placed.orderId)).status).toBe('awaiting_quote')
 
     const quoted = await quoteDeliveryFee(stack.payload, {

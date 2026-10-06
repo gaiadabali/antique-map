@@ -28,7 +28,7 @@ import { createHref, SITES, siteOrigin, adminOrigin } from '@engine/config/sites
 import type { OrderStatus } from '../../collections/orders/statuses'
 import { driverImageUrl, DRIVER_IMAGE_URL_MAX_TTL } from '../fulfilment/driver-image'
 import { openToken, orderLinkKeyFromEnv } from '../orders/link-key'
-import { inTransaction, sql } from '../payments/transaction'
+import { inTransaction, sql, type Row } from '../payments/transaction'
 import {
   buyerStatusEmail,
   quoteReadyEmail,
@@ -72,21 +72,55 @@ async function sendMail(to: string, build: () => MailMessage | null) {
 /**
  * Claims `(orderId, to)` in `notifiedStatuses`: true only for the caller that wins the race, so
  * exactly one of any number of concurrent calls for the same order and status sends mail.
+ *
+ * The `afterChange` hook calls this from inside the Local API write's own still-open transaction
+ * (Payload commits after hooks run) — a fresh transaction here would block on the row lock that
+ * write already holds, timing out and losing the claim (the bug this fixes: every status move
+ * through the admin was sending nothing). When `req` names a live transaction, the claim runs on
+ * that same session instead; the every-other-caller case (`createOrder`, `quoteDeliveryFee`, the
+ * webhook, the sweep — all after their own transaction has committed) still opens its own.
+ *
+ * `SELECT … FOR UPDATE` before the claiming `UPDATE`, rather than one `UPDATE … WHERE NOT (…)`,
+ * so the contains-check reads the row only once a conflicting writer's lock is free. Note for a
+ * future fix: two Local API writes landing the exact same (order, status) at the same instant have
+ * been seen to both win this claim — this needs more investigation into how the `afterChange`
+ * hook's reused transaction interacts with a second, fully concurrent one; it is not understood
+ * yet, so it is not hidden by weakening the test. Both still-sequential callers (a retried move,
+ * a second hook call after the first already committed) are correctly claimed once.
  */
 async function claimNotification(
   payload: Payload,
   orderId: number,
   to: OrderStatus,
+  req?: PayloadRequest,
 ): Promise<boolean> {
+  const lockRow = sql`SELECT notified_statuses FROM orders WHERE id = ${orderId} FOR UPDATE`
+  const claimRow = sql`
+    UPDATE orders SET notified_statuses = COALESCE(notified_statuses, '[]'::jsonb)
+                                           || to_jsonb(ARRAY[${to}]::text[])
+     WHERE id = ${orderId}
+    RETURNING id`
+  const alreadyClaimed = (statuses: unknown): boolean =>
+    Array.isArray(statuses) && statuses.includes(to)
+
   try {
+    const transactionID = req?.transactionID ? await req.transactionID : undefined
+    const session = transactionID === undefined ? undefined : payload.db.sessions?.[transactionID]
+    if (session) {
+      const db = session.db as Parameters<Payload['db']['execute']>[0]['db']
+      const locked = (await payload.db.execute({ db, sql: lockRow })) as {
+        rows?: Row[]
+      }
+      if (alreadyClaimed(locked.rows?.[0]?.notified_statuses)) return false
+      const claimed = (await payload.db.execute({ db, sql: claimRow })) as {
+        rows?: Row[]
+      }
+      return (claimed.rows?.length ?? 0) > 0
+    }
     return await inTransaction(payload, async (tx) => {
-      const [claimed] = await tx.rows(sql`
-        UPDATE orders
-           SET notified_statuses = COALESCE(notified_statuses, '[]'::jsonb)
-                                    || to_jsonb(ARRAY[${to}]::text[])
-         WHERE id = ${orderId}
-           AND NOT (COALESCE(notified_statuses, '[]'::jsonb) @> to_jsonb(ARRAY[${to}]::text[]))
-        RETURNING id`)
+      const [row] = await tx.rows(lockRow)
+      if (alreadyClaimed(row?.notified_statuses)) return false
+      const [claimed] = await tx.rows(claimRow)
       return claimed !== undefined
     })
   } catch {
@@ -100,7 +134,7 @@ export async function notifyOrderEvent(
 ): Promise<void> {
   const { orderId, from, to, req } = input
   if (from === to) return
-  if (!(await claimNotification(payload, orderId, to))) return
+  if (!(await claimNotification(payload, orderId, to, req))) return
 
   let order: OrderForNotify
   try {

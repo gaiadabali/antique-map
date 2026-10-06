@@ -26,13 +26,13 @@ export const ORDER_CONSTRAINTS: readonly ConstraintSet[] = [
     checks: {
       orders_totals_priced: [
         ...REQUIRED_AMOUNTS.map((column) => `${column} IS NOT NULL AND ${column} >= 0`),
-        'totals_delivery_fee IS NULL OR totals_delivery_fee >= 0',
+        '(totals_delivery_fee IS NULL OR totals_delivery_fee >= 0)',
         'totals_discount <= totals_subtotal',
         'totals_total = totals_subtotal - totals_discount + COALESCE(totals_delivery_fee, 0)',
       ].join(' AND '),
       orders_totals_whole: [
         ...REQUIRED_AMOUNTS.map((column) => `${column} = trunc(${column})`),
-        'totals_delivery_fee IS NULL OR totals_delivery_fee = trunc(totals_delivery_fee)',
+        '(totals_delivery_fee IS NULL OR totals_delivery_fee = trunc(totals_delivery_fee))',
       ].join(' AND '),
       orders_tracking_token_hash_shape: `tracking_token_hash ~ '^[0-9a-f]{64}$'`,
       orders_distance_non_negative: 'distance_km IS NULL OR distance_km >= 0',
