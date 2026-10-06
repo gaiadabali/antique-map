@@ -9,6 +9,7 @@
  * and outside `server/leads/**`, which a parallel review owns this run (9.1ui's orchestrator
  * note).
  */
+import { commitTransaction, initTransaction, killTransaction } from 'payload'
 import type { Endpoint, PayloadHandler } from 'payload'
 
 import { hasRole } from '../users/roles'
@@ -39,34 +40,44 @@ const handler: PayloadHandler = async (req) => {
   }
 
   const contact = (lead.payload ?? {}) as Record<string, unknown>
-  const partner = await req.payload.create({
-    collection: 'partners',
-    overrideAccess: false,
-    user: req.user,
-    req,
-    data: {
-      name: typeof contact.name === 'string' && contact.name ? contact.name : `Lead ${lead.id}`,
-      kind: 'other',
-      site: 'shop',
-      status: 'prospect',
-      contact: {
-        person: typeof contact.name === 'string' ? contact.name : undefined,
-        whatsapp: typeof contact.whatsapp === 'string' ? contact.whatsapp : undefined,
-        email: typeof contact.email === 'string' ? contact.email : undefined,
-      },
-    } as never,
-  })
+  // The partner and the lead's link are one change: a failed link never leaves an orphan partner.
+  const owns = await initTransaction(req)
+  let partnerId: number | string
+  try {
+    const partner = await req.payload.create({
+      collection: 'partners',
+      overrideAccess: false,
+      user: req.user,
+      req,
+      data: {
+        name: typeof contact.name === 'string' && contact.name ? contact.name : `Lead ${lead.id}`,
+        kind: 'other',
+        site: 'shop',
+        status: 'prospect',
+        contact: {
+          person: typeof contact.name === 'string' ? contact.name : undefined,
+          whatsapp: typeof contact.whatsapp === 'string' ? contact.whatsapp : undefined,
+          email: typeof contact.email === 'string' ? contact.email : undefined,
+        },
+      } as never,
+    })
 
-  await req.payload.update({
-    collection: 'leads',
-    id: lead.id,
-    overrideAccess: false,
-    user: req.user,
-    req,
-    data: { partner: partner.id } as never,
-  })
+    await req.payload.update({
+      collection: 'leads',
+      id: lead.id,
+      overrideAccess: false,
+      user: req.user,
+      req,
+      data: { partner: partner.id } as never,
+    })
+    partnerId = partner.id
+    if (owns) await commitTransaction(req)
+  } catch (error) {
+    await killTransaction(req)
+    throw error
+  }
 
-  return Response.redirect(new URL(`/admin/collections/partners/${partner.id}`, req.url), 303)
+  return Response.redirect(new URL(`/admin/collections/partners/${partnerId}`, req.url), 303)
 }
 
 export const createPartnerEndpoint: Endpoint = {
