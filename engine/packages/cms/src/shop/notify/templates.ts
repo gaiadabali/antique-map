@@ -60,6 +60,11 @@ const TRACK_LINE: Record<Lang, string> = {
   id: 'Pantau pesanan Anda:',
 }
 
+const PAY_LINE: Record<Lang, string> = {
+  en: 'Pay here:',
+  id: 'Bayar di sini:',
+}
+
 const DRIVER_LINE: Record<Lang, string> = {
   en: 'The driver’s details:',
   id: 'Data pengemudi:',
@@ -132,7 +137,8 @@ export type QuoteReadyEmailInput = {
   readonly totalIdr: number
   /** `orders.expiresAt`, the buyer's new payment window; `null` shows no deadline sentence. */
   readonly payBy: string | null
-  readonly trackingUrl: string
+  /** The buyer's order page (`/order/{token}`) — where they pay, never the tracking page. */
+  readonly payUrl: string
 }
 
 /** "Your price is ready" (TASKS.md 6.6): the quote move's own email, never the generic status line. */
@@ -151,7 +157,7 @@ export function quoteReadyEmail(input: QuoteReadyEmailInput): MailMessage {
     QUOTE_READY_LINE[lang](rupiahOf(input.totalIdr)),
     ...(payByText === null ? [] : [PAY_BY_LINE[lang](payByText)]),
     '',
-    `${TRACK_LINE[lang]} ${input.trackingUrl}`,
+    `${PAY_LINE[lang]} ${input.payUrl}`,
     '',
     SIGN_OFF[lang],
   ]

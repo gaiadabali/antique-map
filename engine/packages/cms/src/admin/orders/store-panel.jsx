@@ -8,6 +8,23 @@ import { BigButton, Card, L, Notice, QuietLink, SubmitButton, refusalCopy, rupia
 import { googleMapsLink, whatsappLink } from './data'
 import { QuotePanel } from './quote-panel'
 
+/** "14:30" in Bali time (Asia/Makassar, UTC+8) — mirrors `./quote-panel.jsx`'s `baliClock`. */
+function baliClock(iso) {
+  if (!iso) return ''
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ''
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Makassar',
+    }).format(date)
+  } catch {
+    return ''
+  }
+}
+
 function LineItem({ line }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, padding: '4px 0' }}>
@@ -21,6 +38,10 @@ function LineItem({ line }) {
 }
 
 export function StoreQueue({ orders, language }) {
+  const needsPrice = orders
+    .filter((o) => o.status === 'awaiting_quote')
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+  const waitingForPayment = orders.filter((o) => o.status === 'pending_payment')
   const paid = orders.filter((o) => o.status === 'paid')
   const inProgress = orders.filter((o) =>
     ['processing', 'waiting_driver', 'on_the_way'].includes(o.status),
@@ -30,11 +51,19 @@ export function StoreQueue({ orders, language }) {
     (o) => o.status === 'delivered' && (o.updatedAt ?? '').slice(0, 10) === today,
   )
   const groups = [
+    ['groupNeedsPrice', needsPrice],
+    ['groupWaitingForPayment', waitingForPayment],
     ['groupNew', paid],
     ['groupInProgress', inProgress],
     ['groupDeliveredToday', deliveredToday],
   ]
-  const any = paid.length + inProgress.length + deliveredToday.length > 0
+  const any =
+    needsPrice.length +
+      waitingForPayment.length +
+      paid.length +
+      inProgress.length +
+      deliveredToday.length >
+    0
   return (
     <div>
       {!any && <p>{L('emptyList', language)}</p>}
@@ -58,6 +87,11 @@ export function StoreQueue({ orders, language }) {
                   <div style={{ fontSize: 14, color: 'var(--theme-elevation-600)' }}>
                     {order.contact.name} · {rupiah(order.totals.total)}
                   </div>
+                  {order.status === 'awaiting_quote' && order.expiresAt && (
+                    <div style={{ fontSize: 13, color: 'var(--theme-elevation-600)' }}>
+                      {L('quoteByPrefix', language)} {baliClock(order.expiresAt)}
+                    </div>
+                  )}
                 </Card>
               </a>
             ))}

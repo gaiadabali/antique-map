@@ -45,7 +45,7 @@ export const Partners: CollectionConfig = {
     group: ADMIN_GROUPS.leadsAndPartners,
     hidden: hiddenFromAllButOwner,
     useAsTitle: 'name',
-    defaultColumns: ['name', 'kind', 'status', 'site', 'updatedAt'],
+    defaultColumns: ['name', 'kind', 'status', 'productsCarried', 'updatedAt'],
     description: {
       en: 'Resellers and partners the owner works with. No login here.',
       id: 'Reseller dan mitra yang bekerja sama dengan pemilik. Tidak ada login di sini.',
@@ -134,6 +134,18 @@ export const Partners: CollectionConfig = {
       relationTo: 'products',
       hasMany: true,
       label: { en: 'Products carried', id: 'Produk yang dibawa' },
+      // Only what a partner could actually be given to sell (TASKS.md 9.1.b); searchable by
+      // name and SKU already (`collections/products/index.ts`'s `listSearchableFields`).
+      filterOptions: { _status: { equals: 'published' } },
+    },
+    {
+      name: 'partner_leads_block',
+      type: 'ui',
+      label: { en: '', id: '' },
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@engine/cms/admin/views#PartnerLeadsList' },
+      },
     },
     {
       name: 'status',

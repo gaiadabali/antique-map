@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 11/20 | 0 | `██████░░░░`  55% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 21/26 | 0 | `████████░░`  81% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 14/20 | 0 | `███████░░░`  70% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 11/13 | 0 | `█████████░`  85% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **29/51** | **144/208** | **8** | `███████░░░`  69% |
+| **All** | 11 phases | | | **30/51** | **152/208** | **8** | `███████░░░`  73% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,13 +78,11 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 6·W4 | 6.6 core: awaiting_quote, quote move, encrypted link, emails from the core | Sonnet (antique-map-dc) | `w/6.6core` | 2026-10-06 | `am-6.6core-s1`; dc reviews; then the orchestrator generates the migration on merged main |
-| 6·W4 | 6.6 shell: checkout without a fee, order-page states, admin Send price | Sonnet (antique-map-dc) | `w/6.6shell` | 2026-10-06 | `am-6.6shell-s1`; merges after the core |
 | 7·W3 | 7.4 Shop gate: buy, quote, pay, fulfil, track | Sonnet → Opus on staging | `w/7.4r2` | 2026-10-06 | 5/5 on staging before 6.6; `am-7.4r2-s1` adds the staff "Send price" step (admin UI) to the spec; then the orchestrator's staging run + Lighthouse |
 | 5·W1 | 5.2.e Check (item page) | — | `main` | 2026-10-06 | 5.2.b–d merged `58f62eb` (Opus-reviewed); the Check waits on public derivatives/tiles existing for seeded works — anonymous visitors get the staff-only media URL today (report open item 1) |
 | 5·W1 | 5.2.a wiring: upload → derivatives + tiles | Opus (claude seat) — next free slot | — | 2026-10-06 | plan gap: `@engine/media` derivatives/tiles (5.2.a) are a pure library and no task wires the media upload hook, so no public derivative exists and anonymous visitors get the staff-only file URL on item, home and browse cards; blocks 5.2.e |
 | 5·W2 | 5.4.c Check | — | `main` | 2026-10-06 | 5.4 merged `8b8d4a3`; maker/place lists and axe evidenced (e2e 9/9); the "edited page after cache-tag invalidation" clause waits on `w/5.1cache` (pages read live today) |
-| 5·W2 | 5.3 Ask, Sell to us, `/api/x/leads` | — | — | 2026-10-05 | waits on the 5.2b merge and on `w/9.1core`'s lead service (Opus reviewing it, 2026-10-06); then a Sonnet run |
+| 5·W2 | 5.3 Ask, Sell to us, Contact, `/api/x/leads` | GLM 5.3 Flash → Opus review | `w/5.3` | 2026-10-06 | run `am-5.3-g1`, on 9.1's lead service (`6d56bea`); sold → "Ask for another example" (decision 2026-10-06) |
 | 5·W3 | 5.5.c Lighthouse on staging | — | `main` | 2026-10-06 | runner merged `529e4ba` (`tests/e2e/gallery/lighthouse/run.mjs`); local: home 98/100 pass, `/browse` 92/100 but misses LCP 3.3 s (2.5) and script 240 KB (150) — to fix before the staging run; item page not yet measured |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
@@ -92,6 +90,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 | 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
 | 5·W3 | 5.5 The gallery gate | deepseek | `w/ds-5.5b` | 2026-10-06 | |
+| 5·W2 | 5.3 Ask about this, Sell to us, and the lead form | glm | `w/5.3` | 2026-10-06 | |
 
 ## Decisions for the owner
 
@@ -477,14 +476,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
   - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
-- [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2
+- [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — 🔄 5·W2
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`, `engine/apps/web/src/app/api/x/leads/**`
   - **Read** EXPERIENCE-GALLERY.md §Handoffs, AI.md §Leads, SECURITY.md §Forms and uploads
   - _Requirements: 3.3, 4.1, 4.2, 4.5_
-  - [ ] 5.3.a a builder for the WhatsApp (`wa.me`) and email (`mailto:`) links that prefill the item's name, stock number, link and the visitor's language; the numbers and addresses come from `site-settings` (a marked placeholder until OA2 arrives)
-  - [ ] 5.3.b the Sell-to-us page: WhatsApp and email buttons with a prepared message, and a form (name, contact, what they have, a few photos) that posts to `/api/x/leads`
-  - [ ] 5.3.c `/api/x/leads`: validates with a shared schema, Turnstile, rate limit per IP, photo type-sniffing, size limits and re-encoding; creates a `leads` row and emails the owner (Mailpit on staging)
+  - [x] 5.3.a a builder for the WhatsApp (`wa.me`) and email (`mailto:`) links that prefill the item's name, stock number, link and the visitor's language; the numbers and addresses come from `site-settings` (a marked placeholder until OA2 arrives)
+  - [x] 5.3.b the Sell-to-us page: WhatsApp and email buttons with a prepared message, and a form (name, contact, what they have, a few photos) that posts to `/api/x/leads`
+  - [x] 5.3.c `/api/x/leads`: validates with a shared schema, Turnstile, rate limit per IP, photo type-sniffing, size limits and re-encoding; creates a `leads` row and emails the owner (Mailpit on staging)
   - [ ] 5.3.d **Check:** from a phone viewport "Ask about this" opens a WhatsApp link whose text names the item and stock number; a valid Sell-to-us form creates a lead and an email; a bot-looking post, an oversize file, a renamed `.exe` and the eleventh post in a minute are each refused.
 
 - [ ] **5.4 Makers, places, editorial and the plain pages** · needs: 5.1 — 🔄 5·W2
@@ -512,7 +511,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Goal:** a shopper can browse, fill a bag, check out as a guest with a delivery pin, and pay.
 **Done when:** on staging, on a phone, a guest adds two products, drops a pin in Bali, sees the delivery fee and total, pays with the simulator (and once with the Midtrans sandbox), and lands on a confirmation; the order exists with the nearest store holding every line and that store's stock reduced; an unpaid order releases its stock when it expires; a duplicate webhook changes nothing.
-**Waves:** W1 — 6.1, 6.2 · W2 — 6.3, 6.4 · W3 — 6.5 · W4 — 6.6 · W5 — 6.7
+**Waves:** W1 — 6.1, 6.2 · W2 — 6.3, 6.4 · W3 — 6.5 · W4 — 6.6
 
 - [x] **6.1 Shop browse, search and the product page** · needs: phase 3, phase 4 — ✅ 2026-10-05 8e665b3
   - **Lane** SHP · **Agent** senior-fe · **Wave** W1
@@ -562,26 +561,16 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
   - [x] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
 
-- [ ] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5 — 🔄 6·W4
+- [x] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5 — ✅ 2026-10-06 e51c536
   - **Lane** SHP + PLT · **Agent** senior-be (core), senior-fe (shell), Opus review · **Wave** W4
   - **Owns** core: `engine/packages/cms/src/shop/{orders,fulfilment,payments,notify}/**`, `engine/packages/cms/src/collections/orders/**`; shell: `engine/apps/web/src/{sites,server}/shop/{checkout,payment}/**`, the order page, `engine/packages/cms/src/admin/orders/**`; migration: the orchestrator (schema lead)
   - **Read** the two decisions of 2026-10-06 in **Log**, COMMERCE.md §Checkout, §Statuses, §Notifications
   - _Requirements: 5.5, 6.1, 6.3, 8.5_
   - [x] 6.6.a core: a new first status `awaiting_quote` (holding stock from placement); checkout takes no delivery fee; staff (the order's store, owner, editor) enter the fee in one transaction that prices the total on the server, opens the 60-minute payment window and writes history; a quote window (site-settings `quoteWindowMinutes`, default 120) after which the sweep expires the order and returns its stock once; staff may cancel from `awaiting_quote`
   - [x] 6.6.b the order's private link stored encrypted at rest (AES-256-GCM, a host-only key), and every order email sent from the core after its transaction commits — paid, quote ready (with the pay link), each later status, expired — once per order and status; the token rotation removed
-  - [ ] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
+  - [x] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
   - [x] 6.6.d the wave's migration (the `awaiting_quote` enum value, `quoteWindowMinutes`, the encrypted link column), generated once on merged main
-  - [ ] 6.6.e **Check:** db tests prove: an order is created `awaiting_quote` with stock held and no fee; a store user of another store cannot quote it; the quote prices the total on the server and a tampered client total is ignored; an unquoted order expires after the window and returns its stock once; each status sends exactly one email and every email's link opens the same order page; on staging the 7.4 gate passes with the quote step.
-
-
-- [ ] **6.7 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: 6.4, 6.6
-  - **Lane** SHP + PLT · **Agent** senior-be, Opus review · **Wave** W5
-  - **Owns** `engine/packages/cms/src/shop/{payments,orders}/**`, `engine/apps/web/src/app/api/x/webhooks/**`
-  - **Read** COMMERCE.md §Payment and §Stock, SECURITY.md §Webhooks, the 2026-10-06 webhook and stock entries in **Log**
-  - _Requirements: 6.4_
-  - [ ] 6.7.a the event and the order move stay one transaction (6.4.b); the order lock is taken with a short lock timeout or NOWAIT, and a replay that loses it answers 200 when its dedupe key is already recorded, else 503 with `Retry-After` — never 500
-  - [ ] 6.7.b `createOrder`: a stock decrement that loses its lock (`lock_not_available` 55P03 / `lock_timeout`) returns the designed refusal (`out_of_stock`, or a plain "busy, try again"), never a thrown database error
-  - [ ] 6.7.c **Check:** db tests prove, each under an artificially held lock: ten parallel identical webhooks give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed and the retry applies it; twenty concurrent orders for the last unit give one order and nineteen designed refusals, no throw; the 6.3.d and 6.4.d tests still pass.
+  - [x] 6.6.e **Check:** db tests prove: an order is created `awaiting_quote` with stock held and no fee; a store user of another store cannot quote it; the quote prices the total on the server and a tampered client total is ignored; an unquoted order expires after the window and returns its stock once; each status sends exactly one email and every email's link opens the same order page; on staging the 7.4 gate passes with the quote step.
 
 ---
 
@@ -624,7 +613,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `docs/gates/shop.md`, `tests/e2e/shop-fulfilment/**`
   - **Read** the **Done when** of phases 6 and 7
   - _Requirements: 7.5, 8.1, 8.4, 12.4_
-  - [ ] 7.4.a one e2e across roles: guest buys → store user fulfils with the driver image → buyer tracks → owner reassigns a second order
+  - [x] 7.4.a one e2e across roles: guest buys → store user fulfils with the driver image → buyer tracks → owner reassigns a second order
   - [ ] 7.4.b Lighthouse mobile on the product page and the tracking page against staging
   - [ ] 7.4.c **Check:** `docs/gates/shop.md` holds the run, the screenshots at 390 px, the emails, the access denial for another store, and scores of at least 90 performance and 100 accessibility.
 
@@ -689,8 +678,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(payload)/admin/leads/**`, `engine/apps/web/src/sites/shop/partnership/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/packages/cms/src/jobs/retention/**`
   - **Read** CONTENT-OPERATIONS.md §Leads and partners, COMPLIANCE.md §Retention, EXPERIENCE-SHOP.md §Partnership, Q11
   - _Requirements: 4.3, 4.4, 11.5_
-  - [ ] 9.1.a the leads inbox (owner only): filter by site, kind and status, open the source (item, conversation), change status, add notes; a "new lead" email
-  - [ ] 9.1.b the partner records view and a "carried products" picker; no partner login anywhere
+  - [x] 9.1.a the leads inbox (owner only): filter by site, kind and status, open the source (item, conversation), change status, add notes; a "new lead" email
+  - [x] 9.1.b the partner records view and a "carried products" picker; no partner login anywhere
   - [x] 9.1.c the shop's partnership page (what partners get, WhatsApp, email, a short form that creates a `partnership` lead)
   - [x] 9.1.d a retention job that deletes expired chat transcripts, closed leads past retention and delivered orders' driver images on schedule
   - [ ] 9.1.e **Check:** a partnership form creates a lead the owner can move to Closed; an editor cannot open the inbox; the retention job deletes only what is past its date (tested with a fixed clock) and logs counts without personal data.
@@ -730,7 +719,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Goal:** the whole thing is reviewed for safety, speed and usability on staging with a realistic load of data.
 **Done when:** `docs/SECURITY.md`'s checklist is run and every finding is fixed or accepted by the owner; budgets pass on both sites; a rehearsal on staging runs both sites with the full data volume and a restore from backup; the owner's team completes the timed admin tests.
-**Waves:** W1 — 10.1, 10.2 · W2 — 10.3 · W3 — 10.4
+**Waves:** W1 — 10.1, 10.2, 10.5 · W2 — 10.3 · W3 — 10.4
 
 - [ ] **10.1 Security review and fixes** · needs: phase 7, phase 8, phase 9
   - **Lane** PLT + QA · **Agent** senior-integrator, qa · **Wave** W1
@@ -771,6 +760,15 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.4.a 👤 two or three of the owner's people, one from a store, each do their recipes unaided: add and publish a product (target under 3 minutes), import a stock spreadsheet, work a lead, move an order through its statuses, edit the delivery fees (under 2 minutes) and create a replacement order
   - [ ] 10.4.b record times, stumbles and wording that confused; fix what is cheap now, list the rest as follow-ups
   - [ ] 10.4.c **Check:** `docs/gates/admin-usability.md` shows each person's times against the targets and what was fixed; a store user completes the status steps without help.
+
+- [ ] **10.5 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: phase 6
+  - **Lane** SHP + PLT · **Agent** senior-be, Opus review · **Wave** W1
+  - **Owns** `engine/packages/cms/src/shop/{payments,orders}/**`, `engine/apps/web/src/app/api/x/webhooks/**`
+  - **Read** COMMERCE.md §Payment and §Stock, SECURITY.md §Webhooks, the 2026-10-06 webhook and stock entries in **Log**
+  - _Requirements: 6.4_
+  - [ ] 10.5.a the event and the order move stay one transaction (6.4.b); the order lock is taken with a short lock timeout or NOWAIT, and a replay that loses it answers 200 when its dedupe key is already recorded, else 503 with `Retry-After` — never 500
+  - [ ] 10.5.b `createOrder`: a stock decrement that loses its lock (`lock_not_available` 55P03 / `lock_timeout`) returns the designed refusal (`out_of_stock`, or a plain "busy, try again"), never a thrown database error
+  - [ ] 10.5.c **Check:** db tests prove, each under an artificially held lock: ten parallel identical webhooks give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed and the retry applies it; twenty concurrent orders for the last unit give one order and nineteen designed refusals, no throw; the 6.3.d and 6.4.d tests still pass.
 
 ---
 
@@ -841,6 +839,9 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — ✅ 6.6 closed (orchestrator): #100011 on staging went awaiting_quote → pending_payment → paid via the real admin "Send price", one claim and one email per status, every email linking the same encrypted-at-rest token; #100010 expired on the quote window and returned its stock once (+1 per line, same transaction, unchanged by later sweeps). Found on the way: `indies-cron` called 127.0.0.1 with no Host, so `sweeps` and `reconcile` had answered 404 since 2026-10-05 and nothing ever expired on staging — fixed (`e51c536`, the shop host named; the Helios wrapper patched, backup kept). The 7.4 gate passed 5/5 on staging with the quote step. 6.7 (lock contention) moved to phase 10 as **10.5** at the user's priority: phase 6's Done-when holds without it.
+- 2026-10-06 — Staging host follow-ups for 9.1 (antique-map-f5's merge `6d56bea`, migration `indies_9_1` — it drops `partners_texts`: 0 rows on staging, checked first): the managed crontab runs `/api/x/cron/retention` daily 03:15 WITA (`1aaab48`, applied: changes 4, errors 0); the apply also rewrote `indies-rustfs.service` for `1cfed21` (RustFS on a plain directory — the 50 GiB loop image hung Helios three times; RustFS health 200 after). The retired `/root/indies-loop-retired-20261006/data.img` is the "50 GiB" in host reports: sparse, **493 MB** really used, kept as the migration's rollback copy. Shop `leadNotifyEmails` set to the staging owner (Mailpit catches all). **Turnstile:** the lead service fails closed without a secret (every form refused), so staging carries Cloudflare's published **test** keys (always pass; no bot protection) until the owner's real keys (OA8); they must never reach production. App reloaded, boot clean.
 
 - 2026-10-06 — **Staging runs 6.6** (release `3b62e2d`): db backed up first; the 6.6 migration applied on the first `/api/health`; boot check clean with `ORDER_LINK_KEY`. Found on the way: 6.6 made `ORDER_LINK_KEY` a boot requirement but `.github/scripts/start-server.sh` (release smoke, CI e2e) set none — fixed `3b62e2d` (per-run, masked). 6.6 migration `08608dc` (orchestrator, schema lead): 76/76 migrated-database tests.
 

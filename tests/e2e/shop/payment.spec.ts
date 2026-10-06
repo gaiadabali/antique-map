@@ -75,8 +75,18 @@ const { invalidationBatch } = await import('./engine/packages/cache/src/index')
 const payload = await cms()
 const pool = cmsPool(payload)
 const op = JSON.parse(process.env.SEED_OP ?? '{}')
-// A staff actor's shape (\`FulfilmentActor\`), never a real sign-in: the owner may quote any store's order.
-const STAFF_ACTOR = { id: 1, collection: 'users', role: 'owner' }
+// A real owner — the quote's history row references users — the first one, or a test owner made once.
+const owners = await payload.find({
+  collection: 'users', where: { role: { equals: 'owner' } }, limit: 1, depth: 0, overrideAccess: true,
+})
+const owner = owners.docs[0] ?? (await payload.create({
+  collection: 'users', overrideAccess: true,
+  data: {
+    email: 'e2e-shop-owner@example.test', name: 'E2E owner', role: 'owner',
+    password: 'E2e-' + Date.now() + '-' + Math.random().toString(36).slice(2) + 'Aa1!',
+  },
+}))
+const STAFF_ACTOR = { id: owner.id, collection: 'users', role: 'owner' }
 const SEEDED_FEE_IDR = 20000
 
 async function openStore() {
@@ -155,6 +165,12 @@ function runSeed(op: Record<string, unknown>): Record<string, unknown> {
     env: {
       ...process.env,
       DATABASE_URL: databaseUrl,
+      // createOrder seals the order link (6.6) with the server's own key — the same .env.local.
+      ORDER_LINK_KEY:
+        process.env.ORDER_LINK_KEY ?? readEnvFile(join(root, '.env.local')).get('ORDER_LINK_KEY'),
+      SHOP_HOSTS: process.env.SHOP_HOSTS ?? readEnvFile(join(root, '.env.local')).get('SHOP_HOSTS'),
+      GALLERY_HOSTS:
+        process.env.GALLERY_HOSTS ?? readEnvFile(join(root, '.env.local')).get('GALLERY_HOSTS'),
       NODE_ENV: 'development',
       SEED_OP: JSON.stringify(op),
       SEED_OUT: seedOut,

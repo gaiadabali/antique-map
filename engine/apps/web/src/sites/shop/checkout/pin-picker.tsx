@@ -33,6 +33,10 @@ export type PinPickerProps = {
   readonly address: string | null
   /** `null` clears the pin — the form's own "no pin" state, not a new one. */
   readonly onPin: (pin: Pin | null, address: string | null) => void
+  /** The server refused `delivery.pin` (6-followup-4 #2): marks the fallback inputs invalid. */
+  readonly invalid?: boolean
+  /** The id of the message `invalid` refers to, for `aria-describedby`. */
+  readonly errorId?: string
 }
 
 /**
@@ -49,6 +53,30 @@ export function parseCoordinate(text: string): number | null {
 
 /** Denpasar, the picker's default centre (EXPERIENCE-SHOP.md §6). */
 const DEFAULT_CENTRE: Pin = { lat: -8.6705, lng: 115.2126 }
+
+/**
+ * Picks a pin: `onPin` fires synchronously with the coordinates first — so a submit right after a
+ * drag or paste never races the reverse geocode and posts an empty lat/lng (6-followup-4 #1) —
+ * then again with the address once it resolves, but only if `latestRef` still names this same pin
+ * (a stale answer for an earlier pin must never overwrite a newer one).
+ */
+export function pickPin(
+  next: Pin,
+  withAddress: boolean,
+  deps: {
+    readonly latestRef: { current: Pin | null }
+    readonly onPin: (pin: Pin, address: string | null) => void
+    readonly resolveAddress: (pin: Pin) => Promise<string | null>
+  },
+): void {
+  deps.latestRef.current = next
+  deps.onPin(next, null)
+  if (!withAddress) return
+  void (async () => {
+    const display = await deps.resolveAddress(next)
+    if (deps.latestRef.current === next) deps.onPin(next, display)
+  })()
+}
 
 /** Ask the route for the pin's display address; failure is quiet — the pin still stands. */
 async function addressFor(pin: Pin): Promise<string | null> {
@@ -72,6 +100,8 @@ export function PinPicker({
   pin,
   address,
   onPin,
+  invalid,
+  errorId,
 }: PinPickerProps): React.ReactElement {
   const mapDiv = useRef<HTMLDivElement | null>(null)
   const searchInput = useRef<HTMLInputElement | null>(null)
@@ -80,6 +110,7 @@ export function PinPicker({
   // or externally set (map drag, paste-link, geolocation) value back to blank (6.6.c).
   const latInput = useRef<HTMLInputElement | null>(null)
   const lngInput = useRef<HTMLInputElement | null>(null)
+  const latestPin = useRef<Pin | null>(null)
 
   const setTypedFields = useCallback((lat: string, lng: string) => {
     if (latInput.current) latInput.current.value = lat
@@ -89,10 +120,7 @@ export function PinPicker({
   const pick = useCallback(
     (next: Pin, withAddress: boolean) => {
       setTypedFields(String(next.lat), String(next.lng))
-      void (async () => {
-        const display = withAddress ? await addressFor(next) : null
-        onPin(next, display)
-      })()
+      pickPin(next, withAddress, { latestRef: latestPin, onPin, resolveAddress: addressFor })
     },
     [onPin, setTypedFields],
   )
@@ -231,6 +259,8 @@ export function PinPicker({
           type="text"
           inputMode="decimal"
           aria-label={labels.latitude}
+          aria-invalid={invalid ? 'true' : undefined}
+          aria-describedby={errorId}
           placeholder={labels.latitude}
           defaultValue=""
           onChange={(event) => typeLatLng(event.target.value, lngInput.current?.value ?? '')}
@@ -240,6 +270,8 @@ export function PinPicker({
           type="text"
           inputMode="decimal"
           aria-label={labels.longitude}
+          aria-invalid={invalid ? 'true' : undefined}
+          aria-describedby={errorId}
           placeholder={labels.longitude}
           defaultValue=""
           onChange={(event) => typeLatLng(latInput.current?.value ?? '', event.target.value)}
