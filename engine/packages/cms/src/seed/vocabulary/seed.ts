@@ -10,6 +10,7 @@
  * writes the importer's apply step makes. Nothing here is guessed: every name comes from a
  * committed file, and the files came from the legacy data.
  */
+import { invalidationBatch } from '@engine/cache'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -225,7 +226,12 @@ export async function seedVocabulary(payload: Payload): Promise<VocabularyReport
   if (settings?.updatedAt !== undefined) {
     report.siteSettings = 'present'
   } else {
-    await payload.updateGlobal({ slug: 'site-settings', data: SETTINGS_DEFAULTS as never, req })
+    // Outside a request: the settings hook's cache tags go to a collector (nothing to post — a fresh
+    // install has nothing cached; a live site re-reads on its next deploy or settings save).
+    await invalidationBatch().operation(
+      () => payload.updateGlobal({ slug: 'site-settings', data: SETTINGS_DEFAULTS as never, req }),
+      { req },
+    )
     report.siteSettings = 'seeded'
   }
   return report
