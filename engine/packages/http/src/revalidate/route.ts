@@ -10,7 +10,9 @@
  *   the proxy passes it on whatever the `Host` (`HOST_FREE_PATHS`: jobs post it on loopback), and
  *   sets nothing it reads.
  * - **What**: `./body` — JSON `{ "tags": [...] }`, one to `maxTags` tags within `maxBodyBytes`, each
- *   one `@engine/cache` makes; anything else a 400, and then nothing is expired.
+ *   one `@engine/cache` makes; anything else a 400, and then nothing is expired. A body may add
+ *   `"now": true` (5.3sold): its tags were collected with `invalidate(…, { now: true })` — a work's
+ *   status move — and expire at once here too.
  * - **How**: `invalidate(tags)` in its in-request mode — no collector — so each tag expires at its
  *   kind's profile (`tagExpiry`: editorial `'max'`, stale-while-revalidate; availability and price
  *   `{ expire: 0 }`, gone at once), never one the body asks for, through `after()`, once this
@@ -32,9 +34,11 @@ import { judgeBody, readBoundedText } from './body'
 type Env = Readonly<Record<string, string | undefined>>
 
 /** Expires checked tags: `invalidate` in the process, a recorder in a test. */
-export type Expire = (tags: readonly CacheTag[]) => void
+export type Expire = (tags: readonly CacheTag[], options: { readonly now: boolean }) => void
 
-const inRequest: Expire = (tags) => invalidate(tags)
+// A default body calls `invalidate(tags)` exactly as before `now` existed.
+const inRequest: Expire = (tags, { now }) =>
+  now ? invalidate(tags, undefined, { now: true }) : invalidate(tags)
 
 export function revalidateRoute(
   expire: Expire = inRequest,
@@ -49,7 +53,7 @@ export function revalidateRoute(
       return plain(400, verdict.reason)
     }
     try {
-      expire(verdict.tags)
+      expire(verdict.tags, { now: verdict.now })
     } catch (error) {
       console.error(`[revalidate] could not schedule the expiry: ${describeError(error)}`)
       return plain(500, 'the tags could not be expired; the cause is in the process log')
