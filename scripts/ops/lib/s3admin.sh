@@ -41,7 +41,7 @@ if sys.argv[1] == 'empty':
         sys.exit(0)
     sys.exit(0 if not (doc or {}).get('Statement') else 1)
 if sys.argv[1] == 'render':
-    # render DOCS OUT MEDIA MASTERS ADMIN_ORIGIN — plan.mjs's documents with its placeholders
+    # render DOCS OUT MEDIA MASTERS ADMIN_ORIGIN SITE_ORIGINS — plan.mjs's documents with its placeholders
     # filled: the media bucket's policy; the app key's one policy, the statements of
     # media-writer and masters-writer together (one key for both buckets, DEPLOYMENT.md §6); and
     # cors.mjs's masters rule (the presigned PUT from the admin origin, the headers it signs).
@@ -67,6 +67,12 @@ if sys.argv[1] == 'render':
     rule = {'allowedOrigins': [sys.argv[6]], 'allowedMethods': ['PUT'],
             'allowedHeaders': ['content-length', 'content-type', 'x-amz-checksum-sha256'], 'maxAgeSeconds': 3600}
     write('cors-masters.json', {'rules': [rule]})
+    # The media bucket: both sites' pages read its public derivatives and zoom tiles from script
+    # (the viewer's WebGL canvas needs CORS or it draws black). Read-only; the bucket policy still
+    # decides which prefixes an anonymous GET reaches (derivatives/ and iiif/ alone).
+    media_rule = {'allowedOrigins': sys.argv[7].split(','), 'allowedMethods': ['GET', 'HEAD'],
+                  'maxAgeSeconds': 3600}
+    write('cors-media.json', {'rules': [media_rule]})
     sys.exit(0)
 TAGS = (('AllowedOrigin', 'allowedOrigins'), ('AllowedMethod', 'allowedMethods'),
         ('AllowedHeader', 'allowedHeaders'), ('ExposeHeader', 'exposeHeaders'))
