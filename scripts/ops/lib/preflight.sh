@@ -67,22 +67,19 @@ free_space() {
   df -Pk "$dir" | awk 'NR == 2 { print $6, $2, $4 }'
 }
 
-# disk_check — every filesystem this run writes to keeps both floors, counting the RustFS image
-# a first run would preallocate on it (should-fix 4).
+# disk_check — every filesystem this run writes to keeps both floors. RustFS's data has no cap of
+# its own any more (rustfs.sh), so these floors are what keep it from filling `/`.
 disk_check() {
-  local mount total avail pct gb seen='' dir reserve
+  local mount total avail pct gb seen='' dir
   for dir in "$RUSTFS_HOME" /var/backups /home; do
     read -r mount total avail <<<"$(free_space "$dir")"
     case " $seen " in *" $mount "*) continue ;; esac
     seen="$seen $mount"
-    reserve=0
-    if [ "$dir" = "$RUSTFS_HOME" ] && [ ! -e "$RUSTFS_IMAGE" ]; then reserve=$((RUSTFS_SIZE_GB * 1048576)); fi
-    pct=$(((avail - reserve) * 100 / total))
-    gb=$(((avail - reserve) / 1048576))
+    pct=$((avail * 100 / total))
+    gb=$((avail / 1048576))
     local what="${gb} GiB free (${pct}%)"
-    [ "$reserve" = 0 ] || what="$((avail / 1048576)) GiB free now, ${gb} GiB (${pct}%) after the ${RUSTFS_SIZE_GB} GiB RustFS image"
     if [ "$gb" -lt "$MIN_FREE_GB" ] || [ "$pct" -lt "$MIN_FREE_PCT" ]; then
-      fail "disk: $mount (holds $dir) has $what: below the floor of ${MIN_FREE_GB} GiB and ${MIN_FREE_PCT}% (--min-free-gb, --min-free-pct, --rustfs-size-gb)"
+      fail "disk: $mount (holds $dir) has $what: below the floor of ${MIN_FREE_GB} GiB and ${MIN_FREE_PCT}% (--min-free-gb, --min-free-pct)"
     else
       ok "disk: $mount (holds $dir) has $what; floor ${MIN_FREE_GB} GiB and ${MIN_FREE_PCT}%"
     fi

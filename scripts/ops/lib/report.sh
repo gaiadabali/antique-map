@@ -113,12 +113,12 @@ service_listeners() {
 host_report() {
   say "report: shared services"
   local unit
-  for unit in "$(rustfs_mount_unit)" "$RUSTFS_UNIT" "$MAILPIT_UNIT" indies-db-backup.timer; do
+  for unit in "$RUSTFS_UNIT" "$MAILPIT_UNIT" indies-db-backup.timer; do
     [ "$unit" = "$MAILPIT_UNIT" ] && ! mailpit_wanted && continue
     note "$unit: $(unit_state "$unit")"
   done
-  if mountpoint -q "$RUSTFS_DATA"; then
-    note "RustFS data: $(df -h --output=used,size,pcent "$RUSTFS_DATA" | tail -n 1 | awk '{ print $1 " of " $2 " (" $3 ")" }') of its own image"
+  if [ -d "$RUSTFS_DATA" ]; then
+    note "RustFS data: $(du -sh "$RUSTFS_DATA" 2>/dev/null | cut -f1), on a disk $(df -h --output=pcent "$RUSTFS_DATA" | tail -n 1 | tr -d ' ') full (no cap of its own)"
   fi
   service_listeners "$RUSTFS_USER" "$RUSTFS_PORT" "$RUSTFS_CONSOLE_PORT"
   mailpit_wanted && service_listeners "$MAILPIT_USER" "$MAILPIT_SMTP_PORT" "$MAILPIT_UI_PORT"
