@@ -7,9 +7,8 @@
  * 204; anything else is a failure, thrown, so an outbox retries it (design.md, "Cache").
  *
  * **`now` (5.3sold).** A body may carry `"now": true` alongside `tags`, asking every tag in that
- * body to expire at once instead of its kind's profile. Today's route reads `tags` alone and
- * ignores any other key (`@engine/http/revalidate`'s `body.ts`), so a caller that posts `now` to
- * it keeps today's behaviour — stale-while-revalidate — until that route is taught to read it;
+ * body to expire at once instead of its kind's profile. The route reads `now === true` alone
+ * (`@engine/http/revalidate`'s `body.ts`) and ignores any other value, as it ignores any other key;
  * posting no `now` reproduces the exact body of every caller from before this flag existed.
  */
 import type { CacheTag } from './tags'
