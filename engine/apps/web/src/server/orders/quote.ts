@@ -1,20 +1,15 @@
 /**
  * `POST /api/x/orders/quote` — the admin "Send price" button (TASKS.md 6.6.c): the staff's rupiah
- * fee for an `awaiting_quote` order. Mounts the core's `quoteDeliveryFee` (`6.6-core`,
- * `@engine/cms/shop/orders`) through a dynamic import: the core isn't merged into this branch yet,
- * so the named export may not exist — until it does, this refuses `unavailable` rather than
- * failing the typecheck or the build, exactly as `admin/orders/data.ts`'s `loadOrderPayLink` does
- * for `openToken`.
+ * fee for an `awaiting_quote` order, through the core's `quoteDeliveryFee`
+ * (`@engine/cms/shop/orders`), which checks the staff member, the order's status and window, and
+ * prices the total from the stored row.
  */
 import 'server-only'
 
+import { quoteDeliveryFee } from '@engine/cms/shop/orders'
+
 import { parseOrderId, backToOrder, actorFrom } from './auth'
 import { parseFeeIdr } from './quote-validate'
-
-type QuoteDeliveryFee = (
-  payload: unknown,
-  input: { orderId: number; feeIdr: number; actor: unknown },
-) => Promise<{ ok: boolean; refusal?: string }>
 
 export async function ordersQuotePost(request: Request): Promise<Response> {
   let form: FormData
@@ -33,13 +28,7 @@ export async function ordersQuotePost(request: Request): Promise<Response> {
 
   try {
     const { payload, user } = await actorFrom(request)
-    const orders = (await import('@engine/cms/shop/orders')) as {
-      quoteDeliveryFee?: QuoteDeliveryFee
-    }
-    if (typeof orders.quoteDeliveryFee !== 'function') {
-      return backToOrder(request, orderId, 'unavailable')
-    }
-    const result = await orders.quoteDeliveryFee(payload, { orderId, feeIdr, actor: user })
+    const result = await quoteDeliveryFee(payload, { orderId, feeIdr, actor: user })
     return backToOrder(request, orderId, result.ok ? undefined : result.refusal)
   } catch (error) {
     console.error(

@@ -10,6 +10,7 @@ import { createHref, SITES, siteOrigin } from '@engine/config/sites'
 
 import type { OrderStatus } from '../../collections/orders/statuses'
 import { driverImageUrl } from '../../shop/fulfilment'
+import { openToken, orderLinkKeyFromEnv } from '../../shop/orders/link-key'
 
 /*
  * The rows are described here, structurally, and NOT imported from the generated
@@ -180,11 +181,10 @@ export function whatsappLink(whatsapp: string, text?: string): string {
 
 /**
  * The buyer's own order-page link, for the admin's WhatsApp button (TASKS.md 6.6.c) — decrypted
- * from the order's `trackingTokenEnc` with the core's `openToken` (`6.6-core`, `../../shop/orders`)
- * rather than read from a hash (`trackingTokenHash` only ever holds one). A dynamic import: the
- * core isn't merged into this branch yet, so `openToken` may not exist — this returns `null`
- * rather than failing the typecheck or the page, until it does. Never cached, never rendered as
- * text: the caller puts it straight into a `wa.me` `href`.
+ * from the order's `trackingTokenEnc` (`../../shop/orders/link-key`'s `openToken`), never read from
+ * the hash. `trackingTokenEnc` is never exposed through access, so: first prove this staff user may
+ * see the order (`overrideAccess: false`), then read the sealed link server-side. Never cached,
+ * never rendered as text: the caller puts it straight into a `wa.me` `href`.
  */
 export async function loadOrderPayLink(
   payload: Payload,
@@ -192,22 +192,28 @@ export async function loadOrderPayLink(
   order: Pick<OrderRow, 'id' | 'contact'>,
 ): Promise<string | null> {
   try {
-    const orders = (await import('../../shop/orders')) as {
-      openToken?: (sealed: string) => string | null
-    }
-    if (typeof orders.openToken !== 'function') return null
-    const doc = await payload.findByID({
+    const visible = await payload.findByID({
       collection: 'orders',
       id: order.id,
       depth: 0,
       overrideAccess: false,
       user: req.user,
       req,
+      select: { status: true },
+      disableErrors: true,
+    })
+    if (!visible) return null
+    const sealed = await payload.findByID({
+      collection: 'orders',
+      id: order.id,
+      depth: 0,
+      overrideAccess: true,
+      req,
       select: { trackingTokenEnc: true },
     })
-    const enc = (doc as Record<string, unknown>).trackingTokenEnc
+    const enc = (sealed as Record<string, unknown> | null)?.trackingTokenEnc
     if (typeof enc !== 'string' || enc === '') return null
-    const token = orders.openToken(enc)
+    const token = openToken(enc, orderLinkKeyFromEnv())
     if (!token) return null
     const locale = order.contact?.locale === 'id' ? 'id' : 'en'
     return `${siteOrigin('shop') ?? ''}${createHref(SITES.shop)('order', { token }, locale)}`

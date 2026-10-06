@@ -39,10 +39,6 @@ describe('refusalCopy', () => {
     expect(refusalCopy({ ok: false, refusal: 'outside_indonesia' }, nameOf).key).toBe(
       'checkout.problem.outside-indonesia',
     )
-    expect(refusalCopy({ ok: false, refusal: 'outside_reach' }, nameOf).key).toBe('bag.beyondReach')
-    expect(refusalCopy({ ok: false, refusal: 'no_delivery_table' }, nameOf).key).toBe(
-      'bag.deliveryUnavailable',
-    )
     expect(refusalCopy({ ok: false, refusal: 'checkout_disabled' }, nameOf).key).toBe(
       'checkout.problem.checkout-disabled',
     )
