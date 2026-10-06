@@ -57,7 +57,11 @@ describe.skipIf(!server)('shop catalogue loaders, on a real database', () => {
     }) as unknown as Promise<{ id: number; slug: string; name: string }>
   }
 
+  const previousMediaPublicUrl = process.env.MEDIA_PUBLIC_URL
   beforeAll(async () => {
+    // The pipeline is never run in this suite (media stays unprocessed outside a request), but
+    // the catalogue's image mapper still needs a public base to build a derivative URL against.
+    process.env.MEDIA_PUBLIC_URL = 'https://media.example.test/indies-media'
     stack = await startStaffStack('web_shop_catalogue_test', (config, key) =>
       getPayload({ config, key }),
     )
@@ -83,15 +87,25 @@ describe.skipIf(!server)('shop catalogue loaders, on a real database', () => {
         }),
       )) as unknown as { id: number }
     ).id
-    media = (
-      (await stack.payload.create({
-        collection: 'media',
-        data: { alt: 'A print', subject: 'product', role: 'flat', provenance: 'photograph' },
-        file: { data: TINY_PNG, mimetype: 'image/png', name: 'tiny.png', size: TINY_PNG.length },
-      })) as unknown as { id: number }
-    ).id
+    const uploaded = (await stack.payload.create({
+      collection: 'media',
+      data: { alt: 'A print', subject: 'product', role: 'flat', provenance: 'photograph' },
+      file: { data: TINY_PNG, mimetype: 'image/png', name: 'tiny.png', size: TINY_PNG.length },
+    })) as unknown as { id: number }
+    media = uploaded.id
+    // Outside a request the pipeline never runs (`../../media/public-image`'s db test note); mark
+    // it `ready` directly so the catalogue's image mapper has a public derivative to find.
+    await stack.payload.update({
+      collection: 'media',
+      id: media,
+      data: { derivatives: { status: 'ready', version: 'v1' } } as never,
+    })
   }, 180_000)
-  afterAll(() => stack?.stop(), 60_000)
+  afterAll(() => {
+    if (previousMediaPublicUrl === undefined) delete process.env.MEDIA_PUBLIC_URL
+    else process.env.MEDIA_PUBLIC_URL = previousMediaPublicUrl
+    return stack?.stop()
+  }, 60_000)
 
   const stock = (data: Record<string, unknown>) =>
     stack.payload.create({ collection: 'stock-levels', data: data as never })
@@ -158,6 +172,8 @@ describe.skipIf(!server)('shop catalogue loaders, on a real database', () => {
     expect(found?.name).toBe('Cetak Batavia')
     expect(found?.description).toBe('A view of Batavia.')
     expect(found?.images.length).toBeGreaterThan(0)
+    expect(found?.images[0]?.url).toContain('/derivatives/')
+    expect(found?.images[0]?.url).not.toContain('/api/media/file')
     expect(found?.category?.slug).toBe('prints')
     expect(await getProduct(stack.payload, 'no-such-product')).toBeNull()
     expect(await getRelatedWork(stack.payload, 999999)).toBeNull()
