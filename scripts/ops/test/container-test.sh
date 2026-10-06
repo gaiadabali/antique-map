@@ -33,7 +33,6 @@ fetch "$MAILPIT_URL" "$MAILPIT_TGZ_SHA256" "mailpit-$MAILPIT_VERSION-linux-amd64
 
 docker build -q -t indies-ops-test "$HERE" >/dev/null
 to_docker() { if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else printf '%s' "$1"; fi; }
-# --privileged only for the loop mount of RustFS's data image, inside this throwaway container.
-MSYS_NO_PATHCONV=1 docker run --rm --privileged \
+MSYS_NO_PATHCONV=1 docker run --rm \
   -v "$(to_docker "$OPS"):/ops:ro" -v "$(to_docker "$CACHE"):/seed:ro" \
   indies-ops-test bash /ops/test/in-container.sh

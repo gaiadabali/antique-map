@@ -4,7 +4,7 @@
 # was before the first run: CloudPanel's sites ig.gaiada.com (uig) and oei.gaiada.com (uoei),
 # each user with an nvm node and npm but no pm2, and the system pm2 7.0.1 at /usr/bin/pm2 ->
 # /usr/lib/node_modules/pm2, root:root 775 with no member in group root, as on Helios. Never pushed anywhere; built
-# and run (privileged, for the loop mount) by scripts/ops/test/container-test.sh.
+# and run by scripts/ops/test/container-test.sh.
 FROM node:22.13.0-bookworm
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl gnupg \

@@ -53,13 +53,12 @@
 #   --pg-port N                the Postgres cluster (default 5432; required when several exist)
 #   --rustfs-port N  --rustfs-console-port N  --mailpit-smtp-port N  --mailpit-ui-port N
 #                              (defaults 4032, 4033, 4034, 4035)
-#   --rustfs-size-gb N         the RustFS data image, made once (default 50)
 #   --min-free-gb N  --min-free-pct N   refuse below either (defaults 20 GiB and 15%)
 #   --create-sites             add a missing CloudPanel Node.js site with clpctl (touches nginx)
 #   --replace-site OLD_DOMAIN  (repeatable; needs --create-sites) delete the site user's old
 #                              CloudPanel site first — refused unless its home is pristine
 #   --verify-restart           restart this script's units one at a time and check each comes
-#                              back (pm2 from dump.pm2, RustFS and its mount, Mailpit), the cron
+#                              back (pm2 from dump.pm2, RustFS, Mailpit), the cron
 #                              blocks and boot-time enablement; changes nothing else (verify.sh)
 #   --vhost-dir DIR            where CloudPanel keeps vhosts (default /etc/nginx/sites-enabled)
 #   --probe-public             the report also requests https://<domain>/api/health
@@ -123,7 +122,6 @@ parse_args() {
       --pg-port) PG_PORT="${2:-}" PG_PORT_EXPLICIT=1 && shift ;;
       --rustfs-port) RUSTFS_PORT="${2:-}" && shift ;;
       --rustfs-console-port) RUSTFS_CONSOLE_PORT="${2:-}" && shift ;;
-      --rustfs-size-gb) RUSTFS_SIZE_GB="${2:-}" && shift ;;
       --mailpit-smtp-port) MAILPIT_SMTP_PORT="${2:-}" && shift ;;
       --mailpit-ui-port) MAILPIT_UI_PORT="${2:-}" && shift ;;
       --min-free-gb) MIN_FREE_GB="${2:-}" && shift ;;
@@ -143,11 +141,10 @@ parse_args() {
     shift
   done
   local n
-  for n in "$PG_PORT" "$RUSTFS_PORT" "$RUSTFS_CONSOLE_PORT" "$RUSTFS_SIZE_GB" "$MAILPIT_SMTP_PORT" \
+  for n in "$PG_PORT" "$RUSTFS_PORT" "$RUSTFS_CONSOLE_PORT" "$MAILPIT_SMTP_PORT" \
     "$MAILPIT_UI_PORT" "$MIN_FREE_GB" "$MIN_FREE_PCT"; do
     [[ "$n" =~ ^[0-9]+$ ]] || die "not a number: '$n'"
   done
-  [ "$RUSTFS_SIZE_GB" -ge 1 ] || die "--rustfs-size-gb is at least 1"
   for n in "${REPLACE_SITES[@]}"; do
     [[ "$n" =~ ^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$ ]] || die "--replace-site '$n' is not a domain"
   done

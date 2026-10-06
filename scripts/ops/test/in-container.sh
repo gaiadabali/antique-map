@@ -40,7 +40,7 @@ pass "5 planted symlinks each refused; no root-only byte printed; host unchanged
 ss -Hltn | awk '{print $4}' | grep -E ':(403[0-9]|9001)$' | sort | tee /tmp/listen
 grep -vq '^127\.0\.0\.1:' /tmp/listen && die "something listens beyond loopback"
 [ "$(wc -l </tmp/listen)" = 5 ] || die "expected 5 loopback listeners (no RustFS console)"
-mountpoint -q /var/lib/indies-rustfs/data && [ "$(stat -c %s /var/lib/indies-rustfs/data.img)" = $((2 * 1073741824)) ] || die "RustFS image"
+! mountpoint -q /var/lib/indies-rustfs/data && [ ! -e /var/lib/indies-rustfs/data.img ] || die "RustFS data must be a plain directory"
 [ "$(stat -c '%a %U' /var/lib/indies-rustfs/data)" = "700 indies-rustfs" ] || die "RustFS data root"
 [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4030/api/health)" = 503 ] || die "holding server"
 grep -q '^User=uig$' /etc/systemd/system/pm2-uig.service && grep -q '^ExecStart=/usr/bin/pm2 resurrect$' /etc/systemd/system/pm2-uig.service || die "pm2 unit"
@@ -52,7 +52,7 @@ crontab -u uig -l | grep -qx 'MAILTO=""' && crontab -u uig -l | grep -q '^\* \* 
 grep -q '^SMTP_USER=indies-staging$' /home/uig/shared/.env && grep -q "^SMTP_PASS=$(cat /etc/indies/mailpit/smtp-password)$" /home/uig/shared/.env || die "SMTP in .env"
 [ "$(stat -c '%a %U' /home/uig/shared/.env)" = "600 uig" ] || die ".env mode"
 grep -q '^MemoryMax=2G$' /etc/systemd/system/indies-rustfs.service && grep -q '^MemoryMax=256M$' /etc/systemd/system/indies-mailpit.service || die "memory caps"
-pass "roles marked, NOCREATEDB, limit 20; 5 loopback listeners, no console; 2 GiB image mounted; static pm2 unit, no root daemon; MAILTO; no .bak in config dirs"
+pass "roles marked, NOCREATEDB, limit 20; 5 loopback listeners, no console; RustFS data a plain directory; static pm2 unit, no root daemon; MAILTO; no .bak in config dirs"
 
 # 8. Secrets from "Infisical": the next run converges Postgres (a SCRAM verifier) and RustFS.
 fill() { sed -i "s|^$2=.*|$2=$3|" "/home/$1/shared/.env"; }
@@ -166,12 +166,11 @@ pid_before="$(cat /home/uig/.pm2/pm2.pid)"
 run --env staging --verify-restart >"$(log verify)" 2>&1 || { cat "$(log verify)"; die "--verify-restart failed"; }
 grep -E '^   (PASS|FAIL) ' "$(log verify)"
 grep -q '^   FAIL ' "$(log verify)" && die "a restart check failed"
-for m in 'PASS   RustFS: indies-rustfs.service stopped, var-lib-indies\x2drustfs-data.mount restarted' \
+for m in 'PASS   RustFS: indies-rustfs.service stopped and started: /health 200' \
   'PASS   pm2 uig: pm2-uig.service restarted; its pm2 resurrect brought uig back from dump.pm2' \
   'PASS   pm2 uoei: pm2-uoei.service restarted' 'PASS   Mailpit: indies-mailpit.service restarted; SMTP 127.0.0.1:4034 greets 220' \
   'PASS   cron: uig' 'PASS   cron: uoei' 'PASS   boot: pm2-uoei.service is enabled' \
-  'PASS   boot: var-lib-indies\x2drustfs-data.mount is WantedBy=multi-user.target' \
-  'PASS   boot: indies-rustfs.service has RequiresMountsFor=/var/lib/indies-rustfs/data'; do
+  'PASS   boot: /var/lib/indies-rustfs/data is a plain directory, not a mount'; do
   grep -qF "$m" "$(log verify)" || die "--verify-restart did not show: $m"
 done
 [ "$(cat /home/uig/.pm2/pm2.pid)" != "$pid_before" ] && systemctl is-active --quiet pm2-uig.service || die "pm2 is not back under its unit"
@@ -181,7 +180,7 @@ rm /run/shim/indies-db-backup.timer.enabled
 run --env staging --verify-restart >"$(log verify-fail)" 2>&1 && die "a disabled unit passed --verify-restart"
 grep -q 'FAIL   boot: indies-db-backup.timer is not enabled' "$(log verify-fail)" || die "the disabled unit not named"
 run --env staging >"$(log reenable)" 2>&1 && [ "$(changes "$(log reenable)")" = 1 ] || die "the timer not re-enabled"
-pass "--verify-restart: $(grep -c '^   PASS ' "$(log verify)") checks passed (pm2 back from dump.pm2 under its unit, RustFS and its mount, Mailpit, cron, boot); refused in a dry run; a disabled unit fails it"
+pass "--verify-restart: $(grep -c '^   PASS ' "$(log verify)") checks passed (pm2 back from dump.pm2 under its unit, RustFS, Mailpit, cron, boot); refused in a dry run; a disabled unit fails it"
 
 # 14. --report's inventory names everything the script owns, and changes nothing.
 before="$(snapshot)"

@@ -61,7 +61,7 @@ inventory_report() {
     load_site "$app"
     inv_user "$S_USER" "$S_APP's site user (CloudPanel's site $S_DOMAIN; made by --create-sites)"
   done
-  for u in "$(rustfs_mount_unit)" "$RUSTFS_UNIT" indies-db-backup.service indies-db-backup.timer; do inv_unit "$u"; done
+  for u in "$RUSTFS_UNIT" indies-db-backup.service indies-db-backup.timer; do inv_unit "$u"; done
   mailpit_wanted && inv_unit "$MAILPIT_UNIT"
   for app in $(selected_apps); do
     load_site "$app"
@@ -81,7 +81,7 @@ inventory_report() {
     "$BACKUP_ROOT" "$BACKUP_ROOT/config"; do inv_path dir "$f"; done
   mailpit_wanted && inv_path dir "$MAILPIT_HOME" && inv_path dir "$MAILPIT_CONF"
   for f in "$RUSTFS_CONF/access-key" "$RUSTFS_CONF/secret-key" "$RUSTFS_BIN_DIR/rustfs" \
-    "$RUSTFS_BIN_DIR/rustfs.sha256" "/var/cache/indies/$RUSTFS_ZIP" "$RUSTFS_IMAGE" \
+    "$RUSTFS_BIN_DIR/rustfs.sha256" "/var/cache/indies/$RUSTFS_ZIP" \
     "$BACKUP_LIST" /usr/local/sbin/indies-db-backup; do inv_path file "$f"; done
   if mailpit_wanted; then
     for f in ui-password ui-auth smtp-password smtp-auth; do inv_path file "$MAILPIT_CONF/$f"; done

@@ -15,9 +15,14 @@ CI-built releases. DEPLOYMENT.md §2–§3 is the design; this is the record and
 
 Shared, all on loopback:
 
-- **RustFS 1.0.0** (D12) on `127.0.0.1:4032`, console on 4033. Its data is a 50 GiB ext4 loop
-  image (`/var/lib/indies-rustfs/data.img`), so it cannot fill `/`. The private `archive-masters`
-  bucket is here too.
+- **RustFS 1.0.0** (D12) on `127.0.0.1:4032`, console on 4033. Its data is the plain directory
+  `/var/lib/indies-rustfs/data` on `/`, with no cap of its own; the disk floors in preflight guard
+  `/`. The private `archive-masters` bucket is here too. Until 2026-10-06 it was a 50 GiB ext4
+  loop image (`data.img`). That image hung Helios under Hostinger's snapshot backup three days
+  running (2026-10-02..04): the freeze reached `/`'s disk before the loop, whose flush into the
+  image then waited forever. On 2026-10-06 the data (109 files) was copied to a plain directory,
+  the mount unit removed, and the image and unit kept in `/root/indies-loop-retired-20261006/` on
+  Helios. The script now refuses a host that still has the image.
 - **Mailpit 1.31.3** (D13, staging mail is caught, never delivered): SMTP on 4034 and UI on 4035,
   both behind auth. To read the UI:
   1. Open a tunnel: `ssh -L 4035:127.0.0.1:4035 helios`.
@@ -86,14 +91,14 @@ The two broken releases were removed, so a rollback cannot land on them.
   - `/` and `/id` render with `lang="en"` and `lang="id"`.
   - `/admin/login` answers.
   - Each brand's admin signs in on its own site and gets 401 on the other.
-- **Survives a restart.** `helios-provision.sh --env staging --verify-restart` passes all 14
+- **Survives a restart.** `helios-provision.sh --env staging --verify-restart` passes all 12
   checks:
-  - RustFS: unit and loop mount restarted, `/health` 200.
+  - RustFS: unit restarted, `/health` 200.
   - pm2: each `pm2-<user>.service` restarted, the app resurrected from `dump.pm2`, a new daemon
     pid, and 200 on its port.
   - Mailpit and cron.
   - Every indies unit is enabled at boot.
-  - The image mount is in the boot path before RustFS.
+  - RustFS's data is a plain directory, not a mount.
 
   The host itself was not rebooted, because it serves other clients' sites.
 - **Rollback rehearsed** on both sites. `current` was pointed back to `2c3b37a`,
