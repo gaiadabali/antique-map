@@ -21,13 +21,13 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 11/20 | 0 | `██████░░░░`  55% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 18/25 | 0 | `███████░░░`  72% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 18/26 | 0 | `███████░░░`  69% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **29/51** | **141/207** | **8** | `███████░░░`  68% |
+| **All** | 11 phases | | | **29/51** | **141/208** | **8** | `███████░░░`  68% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -574,13 +574,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 6.6.e **Check:** db tests prove: an order is created `awaiting_quote` with stock held and no fee; a store user of another store cannot quote it; the quote prices the total on the server and a tampered client total is ignored; an unquoted order expires after the window and returns its stock once; each status sends exactly one email and every email's link opens the same order page; on staging the 7.4 gate passes with the quote step.
 
 
-- [ ] **6.7 A replayed payment webhook never answers 500** · needs: 6.4, 6.6
+- [ ] **6.7 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: 6.4, 6.6
   - **Lane** SHP + PLT · **Agent** senior-be, Opus review · **Wave** W5
-  - **Owns** `engine/packages/cms/src/shop/payments/**`, `engine/apps/web/src/app/api/x/webhooks/**`
-  - **Read** COMMERCE.md §Payment, SECURITY.md §Webhooks, the 2026-10-06 webhook entry in **Log**
+  - **Owns** `engine/packages/cms/src/shop/{payments,orders}/**`, `engine/apps/web/src/app/api/x/webhooks/**`
+  - **Read** COMMERCE.md §Payment and §Stock, SECURITY.md §Webhooks, the 2026-10-06 webhook and stock entries in **Log**
   - _Requirements: 6.4_
   - [ ] 6.7.a the event and the order move stay one transaction (6.4.b); the order lock is taken with a short lock timeout or NOWAIT, and a replay that loses it answers 200 when its dedupe key is already recorded, else 503 with `Retry-After` — never 500
-  - [ ] 6.7.b **Check:** db tests prove: ten parallel identical webhooks while the first holds the order lock give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed, and the retry applies it; the 6.4.d tests still pass.
+  - [ ] 6.7.b `createOrder`: a stock decrement that loses its lock (`lock_not_available` 55P03 / `lock_timeout`) returns the designed refusal (`out_of_stock`, or a plain "busy, try again"), never a thrown database error
+  - [ ] 6.7.c **Check:** db tests prove, each under an artificially held lock: ten parallel identical webhooks give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed and the retry applies it; twenty concurrent orders for the last unit give one order and nineteen designed refusals, no throw; the 6.3.d and 6.4.d tests still pass.
 
 ---
 
@@ -840,6 +841,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — Stock race under load (antique-map-dc): `stock.db.test` "20 concurrent orders for the last unit" fails on main too — 3–4 `createOrder` calls reject with a database error (lock_timeout) instead of the designed `out_of_stock`; a buyer would see "something went wrong". Folded into **6.7** (same pattern as the webhook). The stock invariant itself held: never more than one winner.
 
 - 2026-10-06 — ✅ **5.1 closed** (`70db972`). Check 5.1.d evidenced by `tests/e2e/gallery/browse.spec.ts` on a production build, twice back to back on one warm server (4/4, 4/4): "Batavia" finds a work whose only Batavia is its place's historical name; a draft twin (same place, grade, price) is never listed in browse or search; no `askingPrice`, planted price figure or currency figure in HTML, RSC or JSON; axe clean at 390 and 1280 px with result cards present. The worker's first spec proved none of this (found by the Opus review) and hid a real defect: **gallery browse/search/home/maker/place caches were never invalidated** (stale up to 15 min). Fixed by `w/5.1cache` (`b947e6f`): a `catalogue:<site>` tag cleared on publish, published edits, unpublish (incl. after a draft revision), delete, and place/maker/term edits; `cacheLife('hours')` as backstop. **Shop has the same gap** (`server/shop/catalogue/catalogue.ts:32` hand-written `'products'` tag never cleared; `products` has no invalidate hook; the shop home rail) — reported to antique-map-dc. Note for workers: use `127.0.0.1`, not `localhost`, for Postgres and S3 on this host (a WSL relay answers `[::1]`).
 
