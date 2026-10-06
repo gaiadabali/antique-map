@@ -22,7 +22,14 @@ export const appendStatusHistory: CollectionBeforeChangeHook = async ({
 }) => {
   const incoming = asStatus(data.status)
   const previous = operation === 'update' ? asStatus(originalDoc?.status) : null
-  if (!incoming || incoming === previous) return data
+  if (!incoming || incoming === previous) {
+    // No status move: the stored closedAt stands, whatever the request carried.
+    return { ...data, closedAt: originalDoc?.closedAt ?? null }
+  }
+
+  // `closedAt` is the retention clock (COMPLIANCE §1): stamped on closing, cleared on reopening.
+  // It is never taken from the request (the stored one is kept above when the status stays), so a client cannot back-date or hide a closed lead.
+  const closedAt = incoming === 'closed' ? new Date().toISOString() : null
 
   const history = Array.isArray(data.statusHistory)
     ? ([...data.statusHistory] as StatusHistoryRow[])
@@ -33,5 +40,5 @@ export const appendStatusHistory: CollectionBeforeChangeHook = async ({
     by: typeof by === 'number' || typeof by === 'string' ? by : null,
     at: new Date().toISOString(),
   })
-  return { ...data, statusHistory: history }
+  return { ...data, statusHistory: history, closedAt }
 }

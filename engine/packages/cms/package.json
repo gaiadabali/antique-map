@@ -19,7 +19,8 @@
     "./shop/payments": "./src/shop/payments/index.ts",
     "./shop/payments/http": "./src/shop/payments/http/index.ts",
     "./shop/fulfilment": "./src/shop/fulfilment/index.ts",
-    "./shop/notify": "./src/shop/notify/index.ts"
+    "./shop/notify": "./src/shop/notify/index.ts",
+    "./jobs/retention": "./src/jobs/retention/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

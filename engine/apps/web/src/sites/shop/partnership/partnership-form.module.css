@@ -1,0 +1,30 @@
+/* The partnership enquiry form's layout. Every value is a token from shared/styles/tokens or the
+   shop brand file — no raw colour, no font-family. */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-5);
+}
+
+.formNote {
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.messageBody {
+  margin: var(--space-2) 0 0;
+}
+
+/* Turnstile's box is a fixed 65 px tall; reserve it so the form does not jump when it loads. */
+.widget {
+  min-height: var(--space-8);
+}
