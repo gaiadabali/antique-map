@@ -333,6 +333,7 @@ function runOp(op: Record<string, unknown>): Record<string, unknown> {
       // The emails' origin (siteOrigin reads the hosts) — the server's own.
       SHOP_HOSTS: envVar('SHOP_HOSTS'),
       GALLERY_HOSTS: envVar('GALLERY_HOSTS'),
+      PORT,
       NODE_ENV: 'development',
       GATE_OP: JSON.stringify(op),
       GATE_OUT: out,
