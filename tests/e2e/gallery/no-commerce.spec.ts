@@ -188,6 +188,9 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
     page,
     request,
   }) => {
+    // One test scans every reachable page in both locales; Playwright's default 30 s is sized for
+    // one page, and a cold production build answers its first pages far slower than that.
+    test.setTimeout(180_000)
     await page.setViewportSize({ width: 390, height: 844 })
 
     const targets = await discover(page, request)
