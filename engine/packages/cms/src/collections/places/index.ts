@@ -14,11 +14,16 @@
  *   (TASKS.md 9.3.a), as `makers.bio` does — `../makers` says why there is no placeholder.
  * - The slug and translation status are the shared `fields/`; drafts, access and versions the
  *   vocabulary's own (`../terms/vocabulary/access`).
+ * - A published change expires the gallery's listings (`hooks/vocabulary-invalidate`).
  */
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
+import {
+  invalidateVocabularyOnChange,
+  invalidateVocabularyOnDelete,
+} from '../../hooks/vocabulary-invalidate'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { translationStatusField } from '../../fields/translation-status'
@@ -46,6 +51,9 @@ export const Places: CollectionConfig = {
   hooks: {
     beforeChange: [guardAncestry],
     beforeDelete: [keepChildrenAttached, refuseDeleteWhileUsed],
+    // After the commit: the gallery's listings name and filter by the gazetteer.
+    afterChange: [invalidateVocabularyOnChange],
+    afterDelete: [invalidateVocabularyOnDelete],
   },
   fields: [
     {

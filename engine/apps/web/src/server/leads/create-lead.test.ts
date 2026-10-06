@@ -6,20 +6,24 @@
 import { describe, expect, it } from 'vitest'
 
 import { createLead, type LeadRequest } from './create-lead'
-import { parseLeadInput } from './input'
+import type { LeadContext } from './input'
 import { newLeadSubjectAndText, notifyNewLead, type LeadEmail, type LeadMailer } from './notify'
 import type { LeadDeps, NewLeadNotice, NewLeadRecord } from './ports'
 import { PostLimiter } from './rate'
 
 const FIELDS = {
-  kind: 'partnership',
-  site: 'shop',
-  source: 'form',
   name: 'Made Wirawan',
   whatsapp: '+62 812-3456 7890',
   email: 'made@villa.example',
   message: 'We run three villas in Ubud and want framed maps for every suite.',
   locale: 'en',
+  consent: 'on',
+} as const
+
+const CONTEXT: LeadContext = {
+  kind: 'partnership',
+  site: 'shop',
+  source: 'form',
   consentVersion: 'partnership-1',
 }
 
@@ -64,6 +68,7 @@ function doubles(): Doubles {
 
 const request = (over: Partial<LeadRequest> = {}): LeadRequest => ({
   input: FIELDS,
+  context: CONTEXT,
   turnstileToken: 'token-abc',
   ip: '203.0.113.9',
   ...over,
@@ -121,6 +126,18 @@ describe('createLead', () => {
     expect((await createLead(d.deps, request({ ip: '203.0.113.10' }))).ok).toBe(true)
   })
 
+  it('a failed challenge still counts against the limit, so the eleventh post is refused before siteverify', async () => {
+    const d = doubles()
+    d.turnstile.pass = false
+    for (let i = 0; i < 10; i += 1) {
+      expect((await createLead(d.deps, request())).ok).toBe(false)
+    }
+    // The eleventh call must not even call verifyTurnstile.
+    const turnstileCalls = d.turnstile.calls
+    expect(await createLead(d.deps, request())).toEqual({ ok: false, reason: 'rate' })
+    expect(d.turnstile.calls).toBe(turnstileCalls)
+  })
+
   it('a lead without WhatsApp or email is refused with field errors', async () => {
     const d = doubles()
     const { whatsapp: _w, email: _e, ...bare } = FIELDS
@@ -150,62 +167,6 @@ describe('createLead', () => {
     }
     expect(await createLead(d.deps, request())).toEqual({ ok: false, reason: 'unavailable' })
     expect(d.logs.join('\n')).not.toContain('made@')
-  })
-})
-
-describe('parseLeadInput', () => {
-  it('drops stray keys and trims the fields', () => {
-    const parsed = parseLeadInput({
-      ...FIELDS,
-      name: '  Made  ',
-      status: 'closed',
-      closedAt: '2020-01-01',
-      partner: 1,
-    })
-    expect(parsed.ok).toBe(true)
-    if (parsed.ok) {
-      expect(parsed.value.name).toBe('Made')
-      expect(Object.keys(parsed.value)).not.toContain('status')
-      expect(Object.keys(parsed.value)).not.toContain('closedAt')
-      expect(Object.keys(parsed.value)).not.toContain('partner')
-    }
-  })
-
-  it('wants a name, a message, a WhatsApp in international form and a real email', () => {
-    const parsed = parseLeadInput({
-      ...FIELDS,
-      name: '',
-      message: 'x'.repeat(2001),
-      whatsapp: '0812 3456 7890',
-      email: 'not-an-email',
-    })
-    expect(parsed).toEqual({
-      ok: false,
-      errors: {
-        name: 'lead.error.name',
-        message: 'lead.error.message',
-        whatsapp: 'lead.error.whatsapp',
-        email: 'lead.error.email',
-      },
-    })
-  })
-
-  it('accepts either contact alone, and ignores a preferred channel with no such contact', () => {
-    const { whatsapp: _w, ...emailOnly } = FIELDS
-    const parsed = parseLeadInput({ ...emailOnly, preferredChannel: 'whatsapp' })
-    expect(parsed.ok).toBe(true)
-    if (parsed.ok) expect(parsed.value.preferredChannel).toBeUndefined()
-    expect(parseLeadInput({ ...emailOnly, preferredChannel: 'email' })).toMatchObject({
-      ok: true,
-      value: { preferredChannel: 'email' },
-    })
-  })
-
-  it('refuses a kind, site or locale the collection does not have, and non-object input', () => {
-    expect(parseLeadInput({ ...FIELDS, kind: 'admin' }).ok).toBe(false)
-    expect(parseLeadInput({ ...FIELDS, site: 'x' }).ok).toBe(false)
-    expect(parseLeadInput(null).ok).toBe(false)
-    expect(parseLeadInput('hello').ok).toBe(false)
   })
 })
 

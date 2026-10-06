@@ -4,7 +4,7 @@
 # is once the two-app shape is retired (docs/ops/helios-staging.md): no Indies site at all, so
 # the test makes the one site with --create-sites; and the system pm2 7.0.1 at /usr/bin/pm2 ->
 # /usr/lib/node_modules/pm2, root:root 775 with no member in group root, as on Helios. Never
-# pushed anywhere; built and run (privileged, for the loop mount) by container-test.sh.
+# pushed anywhere; built and run by container-test.sh.
 FROM node:22.13.0-bookworm
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl gnupg \

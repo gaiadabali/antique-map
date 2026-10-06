@@ -85,6 +85,19 @@ export const ORDERS_PANEL_COPY = t({
   cancelReasonLabel: { en: 'Reason', id: 'Alasan' },
   cancelSubmit: { en: 'Confirm cancellation', id: 'Konfirmasi pembatalan' },
 
+  // Send price (TASKS.md 6.6.c)
+  deliveryFee: { en: 'Delivery', id: 'Ongkos kirim' },
+  sendPriceTitle: { en: 'Send the delivery price', id: 'Kirim ongkos kirim' },
+  sendPriceLabel: { en: 'Delivery fee (Rp)', id: 'Ongkos kirim (Rp)' },
+  sendPriceHint: { en: 'Enter 0 for free delivery.', id: 'Masukkan 0 untuk gratis ongkos kirim.' },
+  sendPriceSubmit: { en: 'Send price', id: 'Kirim harga' },
+  quoteByPrefix: { en: 'Quote by', id: 'Beri harga sebelum' },
+  whatsappOrderMessage: {
+    en: 'Here is the delivery price for your order',
+    id: 'Berikut ongkos kirim untuk pesanan Anda',
+  },
+  whatsappOrderLink: { en: 'Send by WhatsApp', id: 'Kirim lewat WhatsApp' },
+
   // Refusals (`MoveRefusal`, `AttachRefusal`, `ReassignRefusal`, `HandBackRefusal`)
   refusal_not_staff: {
     en: 'Only staff act on an order.',
@@ -149,6 +162,22 @@ export const ORDERS_PANEL_COPY = t({
     id: 'Toko itu tidak dapat memenuhi semua barang pesanan ini.',
   },
   refusal_reason_required: { en: 'Say why.', id: 'Sebutkan alasannya.' },
+  refusal_not_awaiting_quote: {
+    en: 'This order is no longer awaiting a price.',
+    id: 'Pesanan ini sudah tidak menunggu harga.',
+  },
+  refusal_expired: {
+    en: 'The time to quote this order has run out.',
+    id: 'Waktu untuk memberi harga pesanan ini sudah habis.',
+  },
+  refusal_invalid_fee: {
+    en: 'Enter a whole number of rupiah, 0 or more.',
+    id: 'Masukkan angka rupiah bulat, 0 atau lebih.',
+  },
+  refusal_forbidden: {
+    en: 'You may not quote this order.',
+    id: 'Anda tidak dapat memberi harga pesanan ini.',
+  },
   refusal_unavailable: {
     en: 'Something went wrong. Try again.',
     id: 'Terjadi kesalahan. Coba lagi.',

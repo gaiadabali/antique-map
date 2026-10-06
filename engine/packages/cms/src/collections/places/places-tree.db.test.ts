@@ -11,7 +11,12 @@
 import { APIError, getPayload, ValidationError, type Payload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { createPushedDatabase, refusedWith, type Pool } from './pushed-database.test-support'
+import {
+  collectingWrites,
+  createPushedDatabase,
+  refusedWith,
+  type Pool,
+} from './pushed-database.test-support'
 
 const server = process.env.CMS_TEST_POSTGRES_URL
 
@@ -22,7 +27,8 @@ describe.skipIf(!server)('the place tree on a real database', () => {
   beforeAll(async () => {
     const pushed = await createPushedDatabase(server!, 'cms_places_tree_test')
     drop = pushed.drop
-    db.payload = await getPayload({ config: pushed.config, key: pushed.database })
+    // Outside a request: the cache hooks' tags go to a collector (`collectingWrites`).
+    db.payload = collectingWrites(await getPayload({ config: pushed.config, key: pushed.database }))
     db.pool = (db.payload.db as unknown as { pool: Pool }).pool
   }, 180_000)
 

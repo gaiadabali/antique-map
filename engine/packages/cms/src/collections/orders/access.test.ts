@@ -38,9 +38,15 @@ describe('orders', () => {
     }
   })
 
-  it('holds stock from payment to the driver’s collection, and never after', () => {
-    expect(HOLDING_STATUSES).toEqual(['pending_payment', 'paid', 'processing', 'waiting_driver'])
-    expect(ORDER_STATUSES.slice(0, 4)).toEqual([...HOLDING_STATUSES])
+  it('holds stock from placement to the driver’s collection, and never after', () => {
+    expect(HOLDING_STATUSES).toEqual([
+      'awaiting_quote',
+      'pending_payment',
+      'paid',
+      'processing',
+      'waiting_driver',
+    ])
+    expect(ORDER_STATUSES.slice(0, 5)).toEqual([...HOLDING_STATUSES])
   })
 })
 

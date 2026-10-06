@@ -28,7 +28,8 @@ export type OrderLineView = {
 export type OrderTotalsView = {
   readonly subtotalIdr: number
   readonly discountIdr: number
-  readonly deliveryIdr: number
+  /** `null` until staff quote it (`awaiting_quote`, TASKS.md 6.6). */
+  readonly deliveryIdr: number | null
   readonly totalIdr: number
 }
 
@@ -38,6 +39,7 @@ export type AttemptView = { readonly state: string } | null
 export type OrderView = {
   readonly number: number
   readonly status:
+    | 'awaiting_quote'
     | 'pending_payment'
     | 'paid'
     | 'processing'
@@ -62,6 +64,12 @@ export type OrderView = {
 function wholeOf(value: unknown): number {
   const n = typeof value === 'string' ? Number(value) : value
   return typeof n === 'number' && Number.isSafeInteger(n) ? n : 0
+}
+
+/** Like `wholeOf`, but `null`/`undefined` stays `null` — the delivery fee before it is quoted. */
+function wholeOrNull(value: unknown): number | null {
+  if (value === null || value === undefined) return null
+  return wholeOf(value)
 }
 
 const ORDER_SELECT = `
@@ -134,7 +142,7 @@ export async function loadOrderForBuyer(
       totals: {
         subtotalIdr: wholeOf(order.totals_subtotal),
         discountIdr: wholeOf(order.totals_discount),
-        deliveryIdr: wholeOf(order.totals_delivery_fee),
+        deliveryIdr: wholeOrNull(order.totals_delivery_fee),
         totalIdr: wholeOf(order.totals_total),
       },
       attempt: typeof attemptState === 'string' ? { state: attemptState } : null,

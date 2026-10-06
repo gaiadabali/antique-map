@@ -3,6 +3,7 @@
  * `partnership` lead, written through the Local API by the lead service, and the owner's email
  * goes to the address in `site-settings` with no contact detail or message in it.
  */
+import { invalidationBatch } from '@engine/cache'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -35,11 +36,15 @@ describe.skipIf(!server)('the partnership form on a real database', () => {
     stack = await startWorksStack('web_partnership_test', (config, key) =>
       getPayload({ config, key }),
     )
-    await stack.payload.updateGlobal({
-      slug: 'site-settings',
-      data: { shop: { leadNotifyEmails: ['owner@example.com'] } },
-      overrideAccess: true,
-    } as never)
+    // Outside a request a settings save needs a collector for its cache tags (@engine/cache).
+    await invalidationBatch().operation((context) =>
+      stack.payload.updateGlobal({
+        slug: 'site-settings',
+        data: { shop: { leadNotifyEmails: ['owner@example.com'] } },
+        overrideAccess: true,
+        context,
+      } as never),
+    )
   }, 180_000)
   afterAll(() => stack?.stop(), 60_000)
 
@@ -54,7 +59,7 @@ describe.skipIf(!server)('the partnership form on a real database', () => {
     return {
       now: () => new Date('2026-10-05T03:00:00.000Z'),
       verifyTurnstile: async () => true,
-      allow: (key) => limiter.allow(key),
+      allow: (key) => limiter.allow(key, Date.parse('2026-10-05T03:00:00.000Z')),
       store: payloadLeadStore(stack.payload),
       notify: (notice) => notifyNewLead(mailer, notice),
       log: () => undefined,

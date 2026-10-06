@@ -1,34 +1,28 @@
 'use server'
 
 /**
- * The checkout's server actions (TASKS.md 6.3.a; COMMERCE.md §3): the fee preview and the submit.
- * Every input arrives as form fields and is re-validated on the server; a price or quantity in the
- * request is never read — the lines come from the signed bag cookie and the fee and total are
- * computed here. The submit calls the merged core's `createOrder` with the raw bag cookie, the
- * bag's welcome code and the total the review showed (`expectedTotalIdr`); a refusal re-renders a
- * plain, kind sentence (`./refusal-text`), a success redirects once to the order's tracking link
- * (6.5 builds that page; a 404 there is expected for now).
+ * The checkout's server actions (TASKS.md 6.3.a, 6.6.c; COMMERCE.md §3): the submit only — there
+ * is no fee preview any more (COMMERCE.md's 2026-10-06 decision: staff quote the delivery fee
+ * after the order is placed, so checkout never shows one). Every input arrives as form fields and
+ * is re-validated on the server; a price or quantity in the request is never read — the lines come
+ * from the signed bag cookie and the total is computed here. The submit calls the merged core's
+ * `createOrder` with the raw bag cookie, the bag's welcome code and the items total the review
+ * showed (`expectedTotalIdr`, items minus discount — there is no fee to add yet); a refusal
+ * re-renders a plain, kind sentence (`./refusal-text`), a success redirects once to the order's
+ * tracking link, now in its `awaiting_quote` state (6.5). The "order confirming" email is the
+ * core's to send (`notifyOrderEvent`, 6.6-core) — this action no longer sends one itself.
  */
 import 'server-only'
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { after } from 'next/server'
 
-import { siteOrigin } from '@engine/config/sites'
 import { cms } from '@engine/cms/instance'
-import {
-  createOrder,
-  isValidPin,
-  quoteCheckout,
-  type CheckoutDetailsInput,
-} from '@engine/cms/shop/orders'
+import { createOrder, type CheckoutDetailsInput } from '@engine/cms/shop/orders'
 import { BAG_COOKIE_NAME, bagCookieKeyFromEnv, parseBag } from '@engine/cms/shop/pricing'
 
-import { sendOrderCreatedEmail } from '../payment'
 import { CODE_COOKIE_NAME, parseCodeCookie } from '../bag/code-cookie'
 import { displayFor, type BagDisplay } from '../bag/display'
-import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { siteHref } from '../../../shell/site'
 import { checkoutText, type CheckoutText } from '../../../sites/shop/checkout/copy'
 import { refusalCopy } from './refusal-text'
@@ -39,18 +33,6 @@ export type SubmitState = {
   readonly message: string
   readonly fields: readonly string[]
 }
-
-/** What the fee preview returned: the server's fee and total, or the words for why not. */
-export type FeeState =
-  | {
-      readonly ok: true
-      readonly feeText: string
-      readonly totalText: string
-      /** The server's total, for the pay button's `expectedTotalIdr` (echoed, never computed). */
-      readonly totalIdr: number
-      readonly sendingFrom: string | null
-    }
-  | { readonly ok: false; readonly message: string }
 
 const empty = (value: FormDataEntryValue | null): string => (typeof value === 'string' ? value : '')
 
@@ -69,50 +51,6 @@ async function namer(
 
 const rendered = (text: CheckoutText, copy: ReturnType<typeof refusalCopy>): string =>
   copy.params === undefined ? text(copy.key) : text(copy.key, copy.params)
-
-/**
- * The fee preview (COMMERCE.md §3): the same assignment and quote the order will use, without
- * taking stock. The client never computes a fee — it only shows what this returns.
- */
-export async function quoteFeeAction(
-  _prev: unknown,
-  input: { readonly lat: unknown; readonly lng: unknown; readonly locale: unknown },
-): Promise<FeeState> {
-  const locale = localeOf(input.locale)
-  const text = checkoutText(locale)
-  const pin = { lat: Number(input.lat), lng: Number(input.lng) }
-  if (!isValidPin(pin)) return { ok: false, message: text('checkout.problem.invalid-pin') }
-
-  const jar = await cookies()
-  const key = bagCookieKeyFromEnv()
-  const quoted = await quoteCheckout(
-    await cms(),
-    {
-      bagCookie: jar.get(BAG_COOKIE_NAME)?.value,
-      pin,
-      welcomeCode: parseCodeCookie(jar.get(CODE_COOKIE_NAME)?.value, key),
-    },
-    { bagKey: key },
-  )
-  if (!quoted.ok)
-    return {
-      ok: false,
-      message: rendered(
-        text,
-        refusalCopy(quoted, () => null),
-      ),
-    }
-  return {
-    ok: true,
-    feeText: formatRupiah(quoted.quote.deliveryIdr ?? 0),
-    totalText: formatRupiah(quoted.quote.totalIdr),
-    totalIdr: quoted.quote.totalIdr,
-    sendingFrom:
-      quoted.sendingStore.area === null
-        ? null
-        : text('checkout.sendingFrom', { area: quoted.sendingStore.area }),
-  }
-}
 
 /** The submit: the order, in one transaction, or the refusal words. */
 export async function submitOrderAction(_prev: unknown, formData: FormData): Promise<SubmitState> {
@@ -152,25 +90,9 @@ export async function submitOrderAction(_prev: unknown, formData: FormData): Pro
   )
 
   if (created.ok) {
-    // The order-created email goes out after the response (`after`): the buyer is never kept on
-    // "Placing your order…" by the mail server, and a send failure is logged, never the order's.
-    // The token stays in this closure only — never stored, never logged.
-    const { orderId, trackingToken } = created
-    after(async () => {
-      try {
-        await sendOrderCreatedEmail(await cms(), {
-          orderId,
-          trackingToken,
-          locale,
-          origin: siteOrigin('shop') ?? '',
-        })
-      } catch (error) {
-        console.error(
-          `[checkout] order-created email for order ${orderId} failed to send: ${error instanceof Error ? error.message : String(error)}`,
-        )
-      }
-    })
-    // The token is shown once, in this address — never stored.
+    // The "we're confirming your delivery price" email is the core's to send, after its own
+    // transaction commits (`notifyOrderEvent`, 6.6-core) — never this action's job. The token is
+    // shown once, in this address — never stored.
     redirect(siteHref('shop')('order', { token: created.trackingToken }, locale))
   }
   const refused =

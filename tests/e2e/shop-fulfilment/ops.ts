@@ -135,25 +135,30 @@ async function setup(payload: Api, op: SetupOp): Promise<Record<string, unknown>
   }
   const shop = settings.shop ?? {}
   const hasBands = Array.isArray(shop.delivery?.bands) && shop.delivery!.bands!.length > 0
-  await payload.updateGlobal({
-    slug: 'site-settings',
-    data: {
-      shop: {
-        ...shop,
-        contact: { ...shop.contact, whatsapp: '+6281234567890' },
-        delivery: hasBands
-          ? shop.delivery
-          : {
-              bands: [
-                { upToKm: 5, feeIdr: 10_000 },
-                { upToKm: 15, feeIdr: 15_000 },
-                { upToKm: 30, feeIdr: 20_000 },
-              ],
-              freeOverIdr: 500_000,
-            },
+  // Outside a request: the settings hook's cache tags go to a collector (`@engine/cache`).
+  const { invalidationBatch } = await import('../../../engine/packages/cache/src/index')
+  await invalidationBatch().operation((context) =>
+    payload.updateGlobal({
+      slug: 'site-settings',
+      context,
+      data: {
+        shop: {
+          ...shop,
+          contact: { ...shop.contact, whatsapp: '+6281234567890' },
+          delivery: hasBands
+            ? shop.delivery
+            : {
+                bands: [
+                  { upToKm: 5, feeIdr: 10_000 },
+                  { upToKm: 15, feeIdr: 15_000 },
+                  { upToKm: 30, feeIdr: 20_000 },
+                ],
+                freeOverIdr: 500_000,
+              },
+        },
       },
-    },
-  })
+    }),
+  )
   return { products: products.map((product) => ({ id: product.id, slug: String(product.slug) })) }
 }
 

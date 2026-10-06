@@ -64,8 +64,8 @@ export type DiscountClaim = 'claimed' | 'usage_limit' | 'already_used'
  * Counts one use of `code` (COMMERCE.md §5): `used_count + 1` only while the code is active, inside
  * its window and under its limit — a lost race refuses the code. The increment takes the
  * discount's row lock, so the once-per-buyer check after it runs one buyer's orders at a time:
- * an open (`pending_payment`) order counts as a use as well as a paid one, so two checkouts at
- * once cannot both spend a once-per-buyer code.
+ * an open (`awaiting_quote` or `pending_payment`) order counts as a use as well as a paid one, so
+ * two checkouts at once cannot both spend a once-per-buyer code.
  */
 export async function claimDiscount(
   tx: Tx,
@@ -82,7 +82,7 @@ export async function claimDiscount(
   if (!claimed) return 'usage_limit'
   if (claimed.once_per_buyer !== true) return 'claimed'
   const statuses = sql.join(
-    ['pending_payment', ...PAID_ORDER_STATUSES].map((status) => sql`${status}`),
+    ['awaiting_quote', 'pending_payment', ...PAID_ORDER_STATUSES].map((status) => sql`${status}`),
     sql`, `,
   )
   const used = await tx.rows(sql`
@@ -125,17 +125,23 @@ export type OrderRecord = {
   readonly totals: {
     subtotalIdr: number
     discountIdr: number
-    deliveryIdr: number
+    /** `null` until the quote move sets it (TASKS.md 6.6). */
+    deliveryIdr: number | null
     totalIdr: number
   }
   readonly discount: { code: string; kind: 'percent' | 'fixed'; value: number } | null
   readonly lines: readonly OrderLineRecord[]
   readonly trackingTokenHash: string
+  /** The same token, sealed at rest under `ORDER_LINK_KEY` (`./link-key`; TASKS.md 6.6). */
+  readonly trackingTokenEnc: string
   readonly expiresAt: Date
   readonly at: Date
 }
 
-/** Writes the order in `pending_payment`, its lines and its first history entry; returns its id. */
+/**
+ * Writes the order `awaiting_quote` (TASKS.md 6.6: no delivery fee yet), its lines and its first
+ * history entry; returns its id.
+ */
 export async function insertOrder(tx: Tx, order: OrderRecord): Promise<number> {
   const { contact, delivery, store, totals, discount, at } = order
   const [row] = await tx.rows(sql`
@@ -144,15 +150,15 @@ export async function insertOrder(tx: Tx, order: OrderRecord): Promise<number> {
                         gift_note, store_id, store_snapshot_code, store_snapshot_name,
                         store_snapshot_area, distance_km, totals_subtotal, totals_discount,
                         totals_delivery_fee, totals_total, discount_code, discount_kind,
-                        discount_value, status, tracking_token_hash, expires_at,
+                        discount_value, status, tracking_token_hash, tracking_token_enc, expires_at,
                         needs_attention_flag, updated_at, created_at)
     VALUES (${order.number}, 'shop', 'web', ${contact.name}, ${contact.whatsapp}, ${contact.email},
             ${contact.locale}, ${delivery.address}, ${delivery.notes}, ${delivery.lat},
             ${delivery.lng}, ${order.giftNote}, ${store.id}, ${store.code}, ${store.name},
             ${store.area}, ${order.distanceKm}, ${totals.subtotalIdr}, ${totals.discountIdr},
             ${totals.deliveryIdr}, ${totals.totalIdr}, ${discount?.code ?? null},
-            ${discount?.kind ?? null}, ${discount?.value ?? null}, 'pending_payment',
-            ${order.trackingTokenHash}, ${order.expiresAt}, false, ${at}, ${at})
+            ${discount?.kind ?? null}, ${discount?.value ?? null}, 'awaiting_quote',
+            ${order.trackingTokenHash}, ${order.trackingTokenEnc}, ${order.expiresAt}, false, ${at}, ${at})
     RETURNING id`)
   const orderId = wholeOf(row?.id, 'orders.id')
 
@@ -170,7 +176,7 @@ export async function insertOrder(tx: Tx, order: OrderRecord): Promise<number> {
     VALUES ${lines}`)
   await tx.rows(sql`
     INSERT INTO orders_history (_order, _parent_id, id, "from", "to", at, actor, note)
-    VALUES (1, ${orderId}, ${rowId()}, NULL, 'pending_payment', ${at}, 'system',
-            'Order placed on the shop; stock taken.')`)
+    VALUES (1, ${orderId}, ${rowId()}, NULL, 'awaiting_quote', ${at}, 'system',
+            'Order placed on the shop; stock taken; awaiting a delivery price.')`)
   return orderId
 }

@@ -5,6 +5,8 @@
  * transport stands in for SMTP throughout; `setMailTransport(null)` in `afterEach` returns the
  * real one so no other file in the run is affected. Without `CMS_TEST_POSTGRES_URL` it skips.
  */
+import { createHash, randomBytes } from 'node:crypto'
+
 import { getPayload } from 'payload'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
@@ -14,7 +16,15 @@ import {
   startStaffStack,
   type StaffStack,
 } from '../../collections/users/staff.test-support'
+import { orderLinkKeyFromEnv, sealToken } from '../orders/link-key'
 import { setMailTransport, type MailMessage } from './transport'
+
+// `notifyOrderEvent` opens `trackingTokenEnc` unconditionally once it is set (`../orders/link-key`):
+// a fixed test key, same as `../orders/orders-db.test-support`, unless the worktree's own is set.
+process.env.ORDER_LINK_KEY ??= createHash('sha256')
+  .update('notify-db-test-order-link-key')
+  .digest()
+  .toString('base64url')
 
 describe.skipIf(!server)('order notifications, on a real database', () => {
   let stack: StaffStack
@@ -31,6 +41,7 @@ describe.skipIf(!server)('order notifications, on a real database', () => {
   async function pendingOrder() {
     orderNumber += 1
     const product = (await makeProduct(stack.payload, `OEI-NOTIFY-${orderNumber}`)).id
+    const token = randomBytes(32).toString('base64url')
     const order = (await stack.payload.create({
       collection: 'orders',
       data: {
@@ -57,6 +68,8 @@ describe.skipIf(!server)('order notifications, on a real database', () => {
         status: 'pending_payment',
         expiresAt: new Date(Date.now() + 60 * 60_000).toISOString(),
         trackingTokenHash: tokenHash(),
+        // The link the buyer's every email reopens (orchestrator decision A: no rotation).
+        trackingTokenEnc: sealToken(token, orderLinkKeyFromEnv()),
       } as never,
     })) as unknown as { id: number }
     return order.id
@@ -105,6 +118,34 @@ describe.skipIf(!server)('order notifications, on a real database', () => {
       data: { status: 'processing' } as never,
     })
     expect(sent.filter((m) => m.to === 'buyer@example.test')).toHaveLength(1)
+  })
+
+  it('sends exactly one email per status, even when two writers race for the same move', async () => {
+    fakeTransport()
+    const id = await pendingOrder()
+    // Two concurrent writers land the same move (the admin's `afterChange` hook racing a retry, or
+    // an explicit call racing the hook) — the once-per-(order, status) claim lets exactly one win.
+    await Promise.all([
+      stack.payload.update({ collection: 'orders', id, data: { status: 'paid' } as never }),
+      stack.payload.update({ collection: 'orders', id, data: { status: 'paid' } as never }),
+    ])
+    expect(sent.filter((m) => m.to === 'buyer@example.test')).toHaveLength(1)
+  })
+
+  it('every email’s link opens the same order — no rotation', async () => {
+    fakeTransport()
+    const id = await pendingOrder()
+    await stack.payload.update({ collection: 'orders', id, data: { status: 'paid' } as never })
+    await stack.payload.update({
+      collection: 'orders',
+      id,
+      data: { status: 'processing' } as never,
+    })
+    const toBuyer = sent.filter((m) => m.to === 'buyer@example.test')
+    expect(toBuyer).toHaveLength(2)
+    const links = toBuyer.map((m) => m.text.match(/\/track\/(\S+)/)?.[1])
+    expect(links[0]).toBeTruthy()
+    expect(links[1]).toBe(links[0])
   })
 
   async function orderNumberOf(id: number): Promise<number> {

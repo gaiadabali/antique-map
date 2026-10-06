@@ -16,7 +16,7 @@ set -euo pipefail
 ss -Hltn | awk '{print $4}' | grep -E ':(403[0-9]|9001)$' | sort | tee /tmp/listen
 grep -vq '^127\.0\.0\.1:' /tmp/listen && die "something listens beyond loopback"
 [ "$(wc -l </tmp/listen)" = 4 ] || die "expected 4 loopback listeners: the app, RustFS, Mailpit's two (no console)"
-mountpoint -q /var/lib/indies-rustfs/data && [ "$(stat -c %s /var/lib/indies-rustfs/data.img)" = $((2 * 1073741824)) ] || die "RustFS image"
+! mountpoint -q /var/lib/indies-rustfs/data && [ ! -e /var/lib/indies-rustfs/data.img ] || die "RustFS data must be a plain directory"
 [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4030/api/health)" = 503 ] || die "holding server"
 [ -f "/home/$U/releases/bootstrap-holding/engine/apps/web/server.js" ] || die "the holding server is not where web's server.js goes"
 grep -q "^User=$U$" "/etc/systemd/system/pm2-$U.service" && grep -q '^ExecStart=/usr/bin/pm2 resurrect$' "/etc/systemd/system/pm2-$U.service" || die "pm2 unit"

@@ -62,9 +62,6 @@ export type BagVM = {
   readonly subtotalText: string
   readonly code: BagCodeVM | null
   readonly totalText: string
-  /** Rupiah still to add for free delivery, formatted; `null` when delivery is never free. */
-  readonly freeDeliveryRemainingText: string | null
-  readonly isFreeDelivery: boolean
   /** Why the bag cannot go to payment, by lexicon key; `null` when its lines can be bought. */
   readonly refusal: { readonly key: string } | null
   /** The checkout CTA only goes live with something to buy (the bag page has no pin yet). */
@@ -111,9 +108,6 @@ export async function readBag(): Promise<BagVM> {
     subtotalText: formatRupiah(quote.subtotalIdr),
     code: codeVM(storedCode, checked, quote),
     totalText: formatRupiah(quote.totalIdr),
-    freeDeliveryRemainingText:
-      quote.freeDeliveryRemainingIdr === null ? null : formatRupiah(quote.freeDeliveryRemainingIdr),
-    isFreeDelivery: quote.isFreeDelivery,
     refusal: quote.refusal === undefined ? null : { key: refusalKey(quote.refusal) },
     canCheckout: quote.refusal === undefined,
   }

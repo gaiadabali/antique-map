@@ -15,7 +15,7 @@ GALLERY=indies-gallery.gaiada.com
 VH=/etc/nginx/sites-enabled
 CONF="$VH/$SHOP.conf"
 
-run() { bash -s -- --rustfs-size-gb 2 "$@" </tmp/provision.sh; }
+run() { bash -s -- "$@" </tmp/provision.sh; }
 pass() { printf '\nPASS  %s\n' "$*"; }
 die() {
   printf '\nFAIL  %s\n' "$*"
@@ -29,12 +29,12 @@ pm2_as() {
   runuser -u "$u" -- env -i HOME="/home/$u" PATH=/usr/bin:/bin /usr/bin/pm2 "$@"
 }
 # The whole state a run could touch, the site user's ~/.pm2 included: a probe that starts a pm2
-# daemon shows up here. RustFS's live data (its own mounted image) is left out.
+# daemon shows up here. RustFS's live data directory is left out.
 snapshot() {
   {
     find /etc /home /opt /usr/local/sbin /var/backups /var/lib/indies-rustfs /var/lib/indies-mailpit \
       /var/spool/cron /root -xdev \( -type f -o -type l \) 2>/dev/null |
-      grep -vE '^/var/lib/indies-rustfs/data(\.img)?/|^/var/lib/indies-rustfs/data\.img$|mailpit\.db|^/etc/(ld\.so\.cache|mtab)$|/\.pm2/logs/' |
+      grep -vE '^/var/lib/indies-rustfs/data/|mailpit\.db|^/etc/(ld\.so\.cache|mtab)$|/\.pm2/logs/' |
       sort | xargs -r sha256sum 2>/dev/null
     find /etc /home /opt /var/backups /var/lib/indies-rustfs /root -xdev -printf '%p %m %u:%g %l\n' 2>/dev/null |
       grep -vE '^/var/lib/indies-rustfs/data/|/\.pm2/logs' | sort

@@ -31,6 +31,7 @@ export function fullEnv(environment: DeploymentEnvironment): Record<string, stri
     ...hostsEnv(environment),
     DATABASE_URL: 'postgres://app:pw@localhost:5432/indies_test',
     PAYLOAD_SECRET: `payload-${STRONG}`,
+    ORDER_LINK_KEY: secret(99),
     REVALIDATE_SECRET: `revalidate-${STRONG}`,
     CRON_SECRET: `cron-${STRONG}`,
     S3_ENDPOINT: 'https://storage.example.com',

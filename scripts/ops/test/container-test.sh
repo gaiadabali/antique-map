@@ -38,7 +38,7 @@ to_docker() { if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else 
 # policies ride in on their own read-only mount and INDIES_POLICIES_DIR points pack.sh at them.
 REPO="$(dirname "$OPS")"  # scripts/ops → scripts → the repo root, where engine/ lives
 REPO="$(dirname "$REPO")"
-MSYS_NO_PATHCONV=1 docker run --rm --privileged \
+MSYS_NO_PATHCONV=1 docker run --rm \
   -e INDIES_POLICIES_DIR=/policies \
   -v "$(to_docker "$OPS"):/ops:ro" -v "$(to_docker "$CACHE"):/seed:ro" \
   -v "$(to_docker "$REPO/engine/packages/media/src/storage/policies"):/policies:ro" \

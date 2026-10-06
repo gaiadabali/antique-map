@@ -11,6 +11,7 @@ import {
   loadActiveStores,
   loadDriverImagePreview,
   loadOrder,
+  loadOrderPayLink,
   loadOwnerOrders,
   loadStoreQueue,
 } from './data'
@@ -106,13 +107,17 @@ export async function OrdersPanelView(props) {
     const order = Number.isInteger(orderId) ? await loadOrder(payload, req, orderId) : null
     if (!order) return <Notice tone="error">{L('refusal_not_found', language)}</Notice>
     const step = buildStoreStep({ order, actorStore, role, searchParams })
-    const imagePreviewUrl = await loadDriverImagePreview(payload, order)
+    const [imagePreviewUrl, payLink] = await Promise.all([
+      loadDriverImagePreview(payload, order),
+      order.status === 'awaiting_quote' ? loadOrderPayLink(payload, req, order) : null,
+    ])
     return (
       <StoreDetail
         order={order}
         step={step}
         language={language}
         imagePreviewUrl={imagePreviewUrl}
+        payLink={payLink}
         error={error}
       />
     )
@@ -140,7 +145,19 @@ export async function OrdersPanelView(props) {
   const orderId = Number(id)
   const order = Number.isInteger(orderId) ? await loadOrder(payload, req, orderId) : null
   if (!order) return <Notice tone="error">{L('refusal_not_found', language)}</Notice>
-  const stores = await loadActiveStores(payload, req)
+  const [stores, payLink] = await Promise.all([
+    loadActiveStores(payload, req),
+    order.status === 'awaiting_quote' ? loadOrderPayLink(payload, req, order) : null,
+  ])
   const step = buildOwnerStep({ order, role, searchParams })
-  return <OwnerDetail order={order} stores={stores} step={step} language={language} error={error} />
+  return (
+    <OwnerDetail
+      order={order}
+      stores={stores}
+      step={step}
+      language={language}
+      payLink={payLink}
+      error={error}
+    />
+  )
 }

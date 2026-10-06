@@ -8,6 +8,7 @@ export {
   LEAD_ERROR_KEYS,
   LEAD_LIMITS,
   parseLeadInput,
+  type LeadContext,
   type LeadInput,
   type LeadParse,
 } from './input'
