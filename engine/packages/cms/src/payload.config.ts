@@ -91,7 +91,12 @@ export function engineConfig(env: Env = process.env): Config {
       user: USERS_SLUG,
       // Gravatar would send a hash of each editor's email to a third party on every page.
       avatar: 'default',
-      components: { views: adminViews() },
+      components: {
+        views: adminViews(),
+        // The inbox has no collection list of its own to be reached from (TASKS.md 9.1.a);
+        // owner-only, like the view itself (`admin/leads/nav-link.jsx`).
+        afterNavLinks: ['@engine/cms/admin/views#LeadsNavLink'],
+      },
       dashboard: {
         defaultLayout: [
           { widgetSlug: 'orders-to-act-on', width: 'medium' },
