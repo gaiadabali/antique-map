@@ -9,6 +9,7 @@ import type { GlobalConfig } from 'payload'
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../../collections/users/roles'
+import { invalidateSettingsOnChange } from '../../hooks/settings-invalidate'
 
 export const SITE_SETTINGS_ACCESS = {
   read: isOwner,
@@ -164,6 +165,7 @@ export const SiteSettings: GlobalConfig = {
   label: { en: 'Site settings', id: 'Pengaturan situs' },
   admin: { group: ADMIN_GROUPS.settings, hidden: hiddenFromAllButOwner },
   access: SITE_SETTINGS_ACCESS,
+  hooks: { afterChange: [invalidateSettingsOnChange] },
   fields: [
     {
       name: 'gallery',

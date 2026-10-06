@@ -67,6 +67,7 @@ const { cms, cmsPool } = await import('./engine/packages/cms/src/instance')
 const { createOrder } = await import('./engine/packages/cms/src/shop/orders')
 const { createBagCookieKey, serialiseBag } = await import('./engine/packages/cms/src/shop/pricing')
 const { makeProduct } = await import('./engine/packages/cms/src/collections/stock-levels/shop.test-support')
+const { invalidationBatch } = await import('./engine/packages/cache/src/index')
 
 const payload = await cms()
 const pool = cmsPool(payload)
@@ -81,12 +82,12 @@ async function openStore() {
     collection: 'stores', id: store.id,
     data: { active: true, address: 'Jl. Raya Ubud 1', area: 'Ubud', lat: -8.5069, lng: 115.2625 },
   })
-  await payload.updateGlobal({
-    slug: 'site-settings',
+  await invalidationBatch().operation((context) => payload.updateGlobal({
+    slug: 'site-settings', context,
     data: { shop: { checkoutEnabled: true,
       delivery: { bands: [{ upToKm: 30, feeIdr: 20000 }], freeOverIdr: 500000 },
       orderExpiryMinutes: 45 } },
-  })
+  }))
   return store.id
 }
 
@@ -179,8 +180,8 @@ function wrongToken(): string {
 
 // English is unprefixed (the shop's default locale) — `/en/…` is a different, not-found address.
 const orderUrl = (token: string) => `${BASE_URL}/order/${encodeURIComponent(token)}`
-/** The order number as the page's own copy renders it (Intl grouping, e.g. "100,022"). */
-const orderHeading = (number: number) => `Order ${number.toLocaleString('en-US')}`
+/** The order number as the page's own copy renders it — a plain identifier, no grouping. */
+const orderHeading = (number: number) => `Order ${number}`
 
 async function axeClean(page: Page): Promise<void> {
   const { violations } = await new AxeBuilder({ page }).analyze()
@@ -198,6 +199,8 @@ test.afterAll(() => {
 })
 
 test.describe('the order page', () => {
+  // Each case seeds its own order in a `payload run` child (10–20 s on a loaded workstation).
+  test.describe.configure({ timeout: 60_000 })
   test('a wrong token is a 404', async ({ page }) => {
     seedOrder()
     const response = await page.goto(orderUrl(wrongToken()))

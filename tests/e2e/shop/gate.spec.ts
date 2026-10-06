@@ -144,9 +144,9 @@ async function addFromProductPage(page: Page, slug: string): Promise<void> {
 
 /**
  * Types a pin into the checkout's fallback lat/lng inputs (no Maps key needed — `pin-picker.tsx`).
- * Filling the latitude field alone first briefly makes the longitude field read `''` — a finite
- * `0` once `typeLatLng` calls `Number()` on it — so the form quotes an invalid (`0, 0`-ish) pin for
- * a moment before the real one lands; `feeQuoteOk` waits out that transient, never this function.
+ * Filling the latitude field alone leaves no pin — `typeLatLng` only picks once both fields parse
+ * to a finite number (`parseCoordinate`) — so the fee box stays on its placeholder until both
+ * fields have landed.
  */
 async function typePin(page: Page, pin: { lat: number; lng: number }): Promise<void> {
   const inputs = page.locator('input[inputmode="decimal"]')
@@ -156,8 +156,7 @@ async function typePin(page: Page, pin: { lat: number; lng: number }): Promise<v
 
 /**
  * Whether the checkout's fee box settles on a fee (no refusal alert) for the bag and pin as they
- * stand — polled, since the quote is an async server action and a stale, transient refusal (see
- * `typePin`) can still be showing when this is first asked.
+ * stand — polled, since the quote is an async server action.
  */
 async function feeQuoteOk(page: Page): Promise<boolean> {
   for (let attempt = 0; attempt < 10; attempt++) {
@@ -345,12 +344,14 @@ type MailpitMessage = { readonly ID: string }
 async function findOrderEmail(
   request: APIRequestContext,
   to: string,
+  orderNumberText: string,
 ): Promise<{ text: string; subject: string }> {
+  // This order's own email (the address is reused by every run), sent after the response
+  // (`after()` in the checkout action), so it may land a few seconds after the redirect.
   let found: MailpitMessage | undefined
-  for (let attempt = 0; attempt < 10 && !found; attempt++) {
-    const res = await request.get(
-      `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:${to}`)}`,
-    )
+  const query = `to:${to} subject:"${orderNumberText}"`
+  for (let attempt = 0; attempt < 30 && !found; attempt++) {
+    const res = await request.get(`${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(query)}`)
     if (res.ok()) {
       const body = (await res.json()) as { messages?: MailpitMessage[] }
       found = body.messages?.[0]
@@ -392,6 +393,15 @@ test.describe('the shop payment gate (6.5.c)', () => {
     await page.getByLabel(/whatsapp/i).fill('0812 3456 7890')
     await page.getByLabel(/email/i).fill('e2e-shop-gate@example.test')
     await page.getByLabel(/address/i).fill('Jl. Teuku Umar, Denpasar')
+
+    // The typed-pin (0, 0) race (6-followup): typing only the latitude must leave no pin — the
+    // fee box stays on its placeholder, never a quoted or refused fee for an unfinished pin.
+    const inputs = page.locator('input[inputmode="decimal"]')
+    await inputs.nth(0).fill(String(DEFAULT_CENTRE.lat))
+    await expect(page.getByText('Drop a pin or paste a Maps link')).toBeVisible()
+    const halfPinAlerts = (await page.getByRole('alert').allTextContents()).filter((t) => t.trim())
+    expect(halfPinAlerts, 'no fee or refusal for a half-typed pin').toEqual([])
+
     await typePin(page, DEFAULT_CENTRE)
     expect(await feeQuoteOk(page), 'the fee quote resolved for the checkout pin').toBe(true)
     await shoot(page, 'checkout-filled-390')
@@ -430,10 +440,11 @@ test.describe('the shop payment gate (6.5.c)', () => {
     expect(token.length, 'a tracking token in the redirect URL').toBeGreaterThan(10)
     await shoot(page, 'order-pending-390')
     await expect(page.getByRole('button', { name: /^Pay /i })).toBeVisible()
-    // The order number as the page's own copy renders it ("Order 100,059") — shown only here,
-    // on the pending state ("order.title"); the paid state ("Payment received") never repeats it.
+    // The order number as the page's own copy renders it ("Order 100059", no grouping — an
+    // identifier, not a quantity) — shown only here, on the pending state ("order.title"); the
+    // paid state ("Payment received") never repeats it.
     const pendingHeading = await page.getByRole('heading', { name: /^Order /i }).innerText()
-    const orderNumberText = /Order ([\d,]+)/.exec(pendingHeading)?.[1] ?? null
+    const orderNumberText = /Order (\d+)/.exec(pendingHeading)?.[1] ?? null
     expect(orderNumberText, 'the order number on the pending page').not.toBeNull()
     await axeBothWidths(page, 'order page, pending')
 
@@ -467,7 +478,7 @@ test.describe('the shop payment gate (6.5.c)', () => {
     if (MAILPIT_URL === 'none') {
       console.log('SKIPPED: email (MAILPIT_URL=none)')
     } else {
-      const email = await findOrderEmail(request, 'e2e-shop-gate@example.test')
+      const email = await findOrderEmail(request, 'e2e-shop-gate@example.test', orderNumberText!)
       expect(
         email.subject,
         'the email names the same order number the order page showed',

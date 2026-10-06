@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
-| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 4/5 | 17/18 | 0 | `█████████░`  94% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 9/20 | 0 | `█████░░░░░`  45% |
+| **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/6 | 18/23 | 0 | `████████░░`  78% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 7/16 | 0 | `████░░░░░░`  44% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **27/49** | **134/200** | **8** | `███████░░░`  67% |
+| **All** | 11 phases | | | **28/50** | **139/205** | **8** | `███████░░░`  68% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,15 +78,22 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 5·W1 | 5.2.b–d Item page, zoom, sold | GLM 5.3 Flash | `w/5.2b` | 2026-10-05 | run `am-5.2b-1` — loader (no `askingPrice`), `/product/{publicId}`, OpenSeadragon viewer, Sold/On hold |
-| 6·W3 | 6.5 Pay, confirm, recovery, email | Sonnet (helper session antique-map-dc) | `w/6.5` | 2026-10-05 | run `am-6.5-s1`; dc reviews and merges; adds the order-created email call to 6.3a's checkout action |
-| 6·W3 | 6.1.c, 6.2.d, 6.3.d Checks | Haiku (helper session antique-map-dc) | `w/6qa` | 2026-10-05 | run `am-6qa-h1`; evidence in `docs/gates/phase-6-checks.md` |
+| 6·W4 | 6.6 core: awaiting_quote, quote move, encrypted link, emails from the core | Sonnet (antique-map-dc) | `w/6.6core` | 2026-10-06 | `am-6.6core-s1`; dc reviews; then the orchestrator generates the migration on merged main |
+| 6·W4 | 6.6 shell: checkout without a fee, order-page states, admin Send price | Sonnet (antique-map-dc) | `w/6.6shell` | 2026-10-06 | `am-6.6shell-s1`; merges after the core |
+| 7·W3 | 7.4 Shop gate: buy, fulfil, track | Sonnet → Opus on staging | `w/7.4` | 2026-10-05 | `am-7.4-s1` writes `tests/e2e/shop-fulfilment/flow.spec.ts` (guest buys → store fulfils with the driver image → buyer tracks → another store sees nothing → owner reassigns), green locally; the orchestrator then creates the staging owner and two store users and runs it + Lighthouse against staging |
+| 5·W1 | 5.2.b–d Item page, zoom, sold | Opus review (claude seat) | `w/5.2b` | 2026-10-05 | GLM run `am-5.2b-1` exited 1 before its report; Opus reviewing (merges main in, fixes, runs Verify) — 2026-10-06 |
+| 5·W2 | 5.4 Makers, places, editorial, plain pages | Sonnet (claude seat) | `w/5.4` | 2026-10-05 | run `am-5.4-s2` (2026-10-06); Opus reviews before the merge |
+| 5·W2 | 5.3 Ask, Sell to us, `/api/x/leads` | — | — | 2026-10-05 | waits on the 5.2b merge and on `w/9.1core`'s lead service (Opus reviewing it, 2026-10-06); then a Sonnet run |
+| 5·W3 | 5.1.d Check evidence (e2e browse/search) | DeepSeek V4.1 Flash | `w/ds-5.1d` | 2026-10-06 | run `am-ds-5.1d-1`; Opus reviews; the orchestrator ticks the Check |
+| 5·W3 | 5.5.b no-commerce scan | DeepSeek V4.1 Flash | `w/ds-5.5b` | 2026-10-06 | run `am-ds-5.5b-1`; Opus reviews |
+| 5·W3 | 5.5.c Lighthouse runner (local half) | DeepSeek V4.1 Flash | `w/ds-5.5c` | 2026-10-06 | run `am-ds-5.5c-1`; staging run later by the orchestrator |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
-| 5·W1 | 5.2 The item page and deep zoom | glm | `w/5.2b` | 2026-10-05 | |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
-| 6·W3 | 6.5 Pay, confirm and the shop gate | senior-fe | `w/6.5` | 2026-10-05 | |
+| 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
+| 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
+| 5·W3 | 5.5 The gallery gate | deepseek | `w/ds-5.5b` | 2026-10-06 | |
 
 ## Decisions for the owner
 
@@ -121,6 +128,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **OA10** | Counsel's bilingual legal pages (Q12) | 11.1 |
 | **OA11** | At launch: live Midtrans credentials; pointing `oldeastindies.com`, `antiquemapsindonesia.com` and `indiesgallery.com` at the new app in one cutover | 11.3 |
 | **OA12** | ✅ 2026-10-01 — standing go-ahead for Helios staging work (provisioning, deploys, reads) | — |
+| **OA13** | ~~The delivery-fee table (Q3)~~ — **superseded 2026-10-06**: staff enter each order's courier fee (6.6); no distance table. Was: **The delivery-fee table (Q3) — a launch blocker.** The distance bands (up to N km → Rp fee) and the free-delivery threshold, from the local courier's prices, entered in the admin (Settings → Shop → Delivery). With no bands **every checkout is refused** ("Online delivery is temporarily unavailable"). Staging carries a marked placeholder (5 km Rp 10.000 · 15 km Rp 15.000 · 30 km Rp 20.000 · free over Rp 500.000) set 2026-10-06 for the gates | 10.3, 11.1 |
 
 ### Answered
 
@@ -481,16 +489,16 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 5.3.c `/api/x/leads`: validates with a shared schema, Turnstile, rate limit per IP, photo type-sniffing, size limits and re-encoding; creates a `leads` row and emails the owner (Mailpit on staging)
   - [ ] 5.3.d **Check:** from a phone viewport "Ask about this" opens a WhatsApp link whose text names the item and stock number; a valid Sell-to-us form creates a lead and an email; a bot-looking post, an oversize file, a renamed `.exe` and the eleventh post in a minute are each refused.
 
-- [ ] **5.4 Makers, places, editorial and the plain pages** · needs: 5.1
+- [ ] **5.4 Makers, places, editorial and the plain pages** · needs: 5.1 — 🔄 5·W2
   - **Lane** GAL · **Agent** senior-fe · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/{pages,makers,places}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{makers,places,stories,about,guarantee}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/[...missing]/**`
   - **Read** EXPERIENCE-GALLERY.md §Pages
   - _Requirements: 3.1_
-  - [ ] 5.4.a maker and place pages with their items; a place page lists its historical names
-  - [ ] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
+  - [x] 5.4.a maker and place pages with their items; a place page lists its historical names
+  - [x] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
   - [ ] 5.4.c **Check:** a seeded maker and place each list their items; an edited page in the admin appears after its cache tag is invalidated; the pages pass axe at both widths.
 
-- [ ] **5.5 The gallery gate** · needs: 5.3, 5.4
+- [ ] **5.5 The gallery gate** · needs: 5.3, 5.4 — 🔄 5·W3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/gallery.md`, `tests/e2e/gallery/**`
   - **Read** the **Done when** of phase 5
@@ -547,14 +555,25 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 6.4.c the expiry job: after the window, a still-`pending_payment` order becomes `expired` and its stock returns, once; a reconciliation job asks Midtrans for the status of orders pending over 10 minutes
   - [x] 6.4.d **Check:** tests prove: a bad signature is rejected; the same webhook ten times in parallel changes the order once; an expired order's stock returns exactly once; a settled payment moves the order to `paid` and stores the paid amount.
 
-- [ ] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4 — 🔄 6·W3
+- [x] **6.5 Pay, confirm and the shop gate** · needs: 6.3, 6.4 — ✅ 2026-10-06 69716ed
   - **Lane** SHP + QA · **Agent** senior-fe, qa · **Wave** W3
   - **Owns** `engine/apps/web/src/sites/shop/payment/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/order/**`, `docs/gates/shop-payment.md`, `tests/e2e/shop/**`
   - **Read** the **Done when** of phase 6, EXPERIENCE-SHOP.md §Payment and §Recovery
   - _Requirements: 6.6, 5.2_
   - [x] 6.5.a the payment step (Snap embedded or redirected), the confirmation page with the order number and the tracking link, and the recovery states (pending, expired, failed, out of stock at pay time)
   - [x] 6.5.b the confirmation email (the amounts the order was priced with, the tracking link) through Mailpit on staging
-  - [ ] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
+  - [x] 6.5.c **Check:** _(owner 2026-10-05: simulator only for now — the real sandbox payment is deferred until the gateway is set up)_ `docs/gates/shop-payment.md` holds an e2e run at 390 px: two products → pin → fee and total → simulator payment → confirmation → email in Mailpit; plus one real sandbox payment; plus an abandoned order that expires and returns its stock; Lighthouse mobile at least 90 and axe clean.
+
+- [ ] **6.6 Staff-quoted delivery fee, and order emails that link back** · needs: 6.5 — 🔄 6·W4
+  - **Lane** SHP + PLT · **Agent** senior-be (core), senior-fe (shell), Opus review · **Wave** W4
+  - **Owns** core: `engine/packages/cms/src/shop/{orders,fulfilment,payments,notify}/**`, `engine/packages/cms/src/collections/orders/**`; shell: `engine/apps/web/src/{sites,server}/shop/{checkout,payment}/**`, the order page, `engine/packages/cms/src/admin/orders/**`; migration: the orchestrator (schema lead)
+  - **Read** the two decisions of 2026-10-06 in **Log**, COMMERCE.md §Checkout, §Statuses, §Notifications
+  - _Requirements: 5.5, 6.1, 6.3, 8.5_
+  - [ ] 6.6.a core: a new first status `awaiting_quote` (holding stock from placement); checkout takes no delivery fee; staff (the order's store, owner, editor) enter the fee in one transaction that prices the total on the server, opens the 60-minute payment window and writes history; a quote window (site-settings `quoteWindowMinutes`, default 120) after which the sweep expires the order and returns its stock once; staff may cancel from `awaiting_quote`
+  - [ ] 6.6.b the order's private link stored encrypted at rest (AES-256-GCM, a host-only key), and every order email sent from the core after its transaction commits — paid, quote ready (with the pay link), each later status, expired — once per order and status; the token rotation removed
+  - [ ] 6.6.c shell: the checkout without a fee; the order page states ("we're confirming your delivery price" → Pay); the "your price is ready" email; the admin fee input, "Send price" and a WhatsApp button prefilled with the pay link; contact fields survive a slow hydration
+  - [ ] 6.6.d the wave's migration (the `awaiting_quote` enum value, `quoteWindowMinutes`, the encrypted link column), generated once on merged main
+  - [ ] 6.6.e **Check:** db tests prove: an order is created `awaiting_quote` with stock held and no fee; a store user of another store cannot quote it; the quote prices the total on the server and a tampered client total is ignored; an unquoted order expires after the window and returns its stock once; each status sends exactly one email and every email's link opens the same order page; on staging the 7.4 gate passes with the quote step.
 
 ---
 
@@ -592,7 +611,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
   - [x] 7.3.c **Check:** a wrong token is a 404 and the tenth wrong guess in a minute is throttled; the page shows the driver image only after upload; each status change sends exactly one email; the page passes axe at both widths.
 
-- [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3
+- [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3 — 🔄 7·W3
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/shop.md`, `tests/e2e/shop-fulfilment/**`
   - **Read** the **Done when** of phases 6 and 7
@@ -664,8 +683,8 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 4.3, 4.4, 11.5_
   - [ ] 9.1.a the leads inbox (owner only): filter by site, kind and status, open the source (item, conversation), change status, add notes; a "new lead" email
   - [ ] 9.1.b the partner records view and a "carried products" picker; no partner login anywhere
-  - [ ] 9.1.c the shop's partnership page (what partners get, WhatsApp, email, a short form that creates a `partnership` lead)
-  - [ ] 9.1.d a retention job that deletes expired chat transcripts, closed leads past retention and delivered orders' driver images on schedule
+  - [x] 9.1.c the shop's partnership page (what partners get, WhatsApp, email, a short form that creates a `partnership` lead)
+  - [x] 9.1.d a retention job that deletes expired chat transcripts, closed leads past retention and delivered orders' driver images on schedule
   - [ ] 9.1.e **Check:** a partnership form creates a lead the owner can move to Closed; an editor cannot open the inbox; the retention job deletes only what is past its date (tested with a fixed clock) and logs counts without personal data.
 
 - [ ] **9.2 First-party analytics and the dashboard** · needs: phase 5, phase 6 — 🔄 9·W1
@@ -814,6 +833,22 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — **Dev Postgres** (shared by every session's workers): two outages on 2026-10-05 traced to Postgres as PID 1 in its container (a non-zero `docker compose exec psql` exit, an "untracked child process", made it restart every backend); fixed by `init: true` (`214a1f5`), cherry-picked into every active worktree by all sessions, the container recreated from main after a clean shutdown. 170 leftover test databases (crashed runs' `*_test_<pid>_<ms>`, older than 2 h, unconnected; plain DROP) removed — 234 → 68 databases, ~2 GB, no restart. My after() regression from `c52d533` fixed in `32091a7` (four out-of-request site-settings writes now use `invalidationBatch().operation`); pick-store.db 6/7 after it (one 5 s timeout under load, no after() error).
+
+- 2026-10-06 — 6.6 scope (antique-map-dc): with the fee table retired, `pickStore` drops the distance-band check — the nearest active store holding every line, anywhere in Indonesia; staff cancel (with WhatsApp) if undeliverable. Staging: `ORDER_LINK_KEY` added host-only to `uindies`' .env (32 random bytes, never printed); it takes effect with the 6.6 release. dc's follow-up merged `8aa5f31`: the typed-pin (0,0) race and plain order numbers.
+
+- 2026-10-06 — **Decisions (the user, as the owner's proxy).** (1) via antique-map-dc: **staff enter the courier fee before the buyer sees the final price** — checkout takes no delivery fee and shows no estimate; stock is held from placement; staff have 2 h to quote, then the buyer has 60 min to pay; the buyer is told by email with a pay link, by the order page updating, and by a WhatsApp button in the admin. The distance fee table (6.2.b, Q3/OA13) is retired. (2) in this session: **the order's private link is stored encrypted** so every email links to the same order page. New task **6.6**: antique-map-dc writes the core and shell (Sonnet, Opus review); the orchestrator generates the migration and runs staging. **7.4 on staging:** the gate passed **5/5** on release 5afe67a (buy → the nearest store fulfils with the driver image → the buyer tracks → another store sees nothing → the owner reassigns; `2f6f81b` makes the helper wait for hydration). Its email clause **fails**: no status email reaches the buyer or the store, because the notifier is an `afterChange` hook and every real status move (the webhook's `markPaid`, the 7.1 core) writes by SQL — merged in 7.3 with only the webhook half noted; the orchestrator's review missed the core half. Fixed in 6.6.b; 7.4 closes after 6.6, re-run with the quote step.
+
+- 2026-10-06 — 7.4 on staging, steps 1–2 green (guest buys; the nearest store fulfils with the driver image in 3.7 s). Found and fixed on the way: **defect `c52d533`** — nothing invalidated the `site-settings` cache on save, so the owner's edits (contact, WhatsApp, flags) stayed invisible until the cache expired; an afterChange hook now expires both sites' `settings:*` tags (test added). Staging data: the gate's store-A user moved to DPS-004 (where its orders go — the nearest store holding both products it buys); a recount of those two products at DPS-004 (50 on the shelf → 48 sellable: the hook kept 2 units held by paid orders); a marked placeholder shop WhatsApp (+6281100000000) until OA2. Note: the tracking page shows the **shop's** online WhatsApp, not the store's — a store's number is staff-only by design (`collections/stores/fields.ts`); 7.3.c's wording "the store's name and WhatsApp" reads as the store's name and the shop's WhatsApp.
+
+- 2026-10-06 ✅ **phase 6** — 6.5.c on staging release 70a0cae (simulator, owner decision; the real sandbox payment deferred): antique-map-dc's gate spec ran the buyer journey on staging (two products, a typed pin, the server's fee and total, simulator settle, "Payment received" and the tracking link, axe clean). Orchestrator on the host: (a) order 100001 paid, store DPS-004 (the nearest holding both lines), stock down exactly 1 per line (2→1, 9→8); (b) Mailpit: "Your order 100,001" to the buyer with Rp 5.595.000 and a tracking link on https://old-east-indies.gaiada.com/track/; (c) unpaid order 100002 at DPS-006: expires_at moved back, sweep 1 → expired and the unit returned (8→9), sweep 2 a no-op (stock still 9). Lighthouse ≥ 90 evidenced on the local production build (`docs/gates/shop-payment.md`). Follow-ups (antique-map-dc): the typed pin sends ~(0,0) if submitted between the two inputs; order numbers shown with a thousands separator ("100,001").
+
+- 2026-10-06 — Staging, found by running the 7.4 gate there: (1) **defect, fixed on main `5c2740c`** — a blank `GOOGLE_MAPS_BROWSER_KEY=`/`GOOGLE_MAPS_SERVER_KEY=` in a host's .env reached the checkout as `''` (`?? null`), so it loaded Google Maps with no key and hid the typed-pin fallback: every staging checkout refused as outside Indonesia; (2) staging's delivery-fee table was empty → every checkout refused `no_delivery_table`; a marked placeholder table set as the owner (OA13 added: the real Q3 table is a launch blocker); (3) the cms typecheck was red on main since the 7.2 merge (27 errors) — `admin/orders/data.ts` imported the generated `payload-types.ts`, pulling its `declare module 'payload'` into the package; fixed `2d9ebce` (rows described structurally). The 7.2 gate had run the web typecheck, not the cms one: the phase gates now run both.
+
+- 2026-10-05 — Staging staff for the 7.4 gate: owner `owner.staging@gaiada.com`, store users `store.dps006.staging@gaiada.com` (DPS-006) and `store.dps008.staging@gaiada.com` (DPS-008), created through Payload (role, store and last-owner rules applied); passwords generated for this, kept root-only in `/etc/indies/staging-admin/e2e-users.env` on Helios and in the orchestrator's scratch, never in the repo. The temporary `indies_seed` role and `indies-seed` storage user are removed. **Defect found (antique-map-dc, fixing):** `server/shop/catalogue/catalogue.ts` called `availabilityFor()` inside the `'use cache'` listing/search/product functions, so In-stock/Out-of-stock went stale after any sale or restock until a product edit (checkout itself stayed safe: the atomic decrement and the add-to-bag live check). Staging's "0 sellable" after the stock load was this. The release from b291b70 was stopped (its route fix broke the typed routes); the next release waits for both fixes.
+
+- 2026-10-05 — **Staging catalogue seeded** (mock data only): vocabulary (66 places, 110 terms, 127 makers, site settings), 80 shop products **published** with staging-only placeholder pictures, 120 stores — through the importer over an ssh tunnel as a temporary `indies_seed` role and `indies-seed` storage user (removed after). The 7,227 stock rows were loaded on the host from `stock.csv` in one transaction (the importer over the tunnel timed out; no orders, so held = 0 and the count is stored as is; every store and SKU matched; 4,913 rows in stock). Nearest stocked store to the test pin -8.6705,115.2126: DPS-006 (1.27 km).
 
 - 2026-10-05 ✅ 7.2 and 7.3 — 7.2 merged (`e39536b`, Sonnet, Opus-reviewed: every route takes the actor from `payload.auth()` and calls the 7.1 core; admin cookie `SameSite=Lax` plus Payload's CSRF origins). Gate on a fresh clone of main: format, lint, generated, filesize, tokens, web types, production build, the admin drive **22/22** (store panel 6 — paid → delivered in ~6 s, another store's user sees none — and the role drive 16) and `tracking.spec.ts` **6/6** (wrong token 404, the 11th guess 429, axe at both widths). Run note: the root Playwright config needs `E2E_PORT=<the server's port>` (default 4200) and the server started in the background first.
 

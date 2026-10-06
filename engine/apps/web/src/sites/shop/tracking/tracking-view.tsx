@@ -25,7 +25,7 @@ export function TrackingPage({
   const text = trackingText(view.locale)
   const wa = shopWhatsapp
     ? `https://wa.me/${shopWhatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(
-        text('tracking.whatsappMessage', { number: view.orderNumber }),
+        text('tracking.whatsappMessage', { number: String(view.orderNumber) }),
       )}`
     : null
 
@@ -38,7 +38,7 @@ export function TrackingPage({
   return (
     <section className={styles.tracking} aria-labelledby="tracking-title">
       <h1 id="tracking-title" className={styles.title}>
-        {text('tracking.title', { number: view.orderNumber })}
+        {text('tracking.title', { number: String(view.orderNumber) })}
       </h1>
 
       {view.status === 'pending_payment' && <p role="status">{text('tracking.pendingNote')}</p>}
@@ -51,7 +51,7 @@ export function TrackingPage({
           <StatusTimeline
             steps={steps}
             current={view.status}
-            ariaLabel={text('tracking.title', { number: view.orderNumber })}
+            ariaLabel={text('tracking.title', { number: String(view.orderNumber) })}
           />
         )}
 

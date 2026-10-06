@@ -128,7 +128,7 @@ export function OrderView({
             ? t('order.failedTitle')
             : confirming
               ? t('order.confirmingTitle')
-              : t('order.title', { number: order.number })}
+              : t('order.title', { number: String(order.number) })}
         </h1>
         <p className={styles.body}>
           {confirming ? t('order.confirmingText') : !failed && t('order.payBy', { time: deadline })}
