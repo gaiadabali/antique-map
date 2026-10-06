@@ -4,6 +4,7 @@
  * that counts an active store's stock alone, and search that finds "Baróe" from "baroe".
  * Without `CMS_TEST_POSTGRES_URL` the file skips — a setup state.
  */
+import { invalidationBatch } from '@engine/cache'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
@@ -74,10 +75,13 @@ describe.skipIf(!server)('shop catalogue loaders, on a real database', () => {
     active = first.id
     retired = stack.stores[1].id
     term = (
-      (await stack.payload.create({
-        collection: 'terms',
-        data: { kind: 'room', label: 'Prints', _status: 'published' } as never,
-      })) as unknown as { id: number }
+      (await invalidationBatch().operation((context) =>
+        stack.payload.create({
+          context,
+          collection: 'terms',
+          data: { kind: 'room', label: 'Prints', _status: 'published' } as never,
+        }),
+      )) as unknown as { id: number }
     ).id
     media = (
       (await stack.payload.create({

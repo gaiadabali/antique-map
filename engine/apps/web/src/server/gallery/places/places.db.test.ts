@@ -26,28 +26,44 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       stack = await startWorksStack('web_place_test', (config, key) => getPayload({ config, key }))
       const recto = await stack.media('recto')
 
-      const java = await stack.api.create({
-        collection: 'places',
-        data: { name: 'Java', slug: 'java', _status: 'published' },
-      })
-      const batavia = await stack.api.create({
-        collection: 'places',
-        data: {
-          name: 'Jakarta',
-          slug: 'batavia',
-          parent: java.id,
-          historicalNames: [{ name: 'Batavia', language: 'nl', period: '1619–1942' }],
-          _status: 'published',
-        },
-      })
-      const maker = await stack.api.create({
-        collection: 'makers',
-        data: { name: 'François Valentijn', sortName: 'VALENTIJN, François', _status: 'published' },
-      })
-      const grade = await stack.api.create({
-        collection: 'terms',
-        data: { kind: 'grade', label: 'VG+', definition: 'Very good.', equivalent: 'A' },
-      })
+      const java = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: { name: 'Java', slug: 'java', _status: 'published' },
+        }),
+      )
+      const batavia = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: {
+            name: 'Jakarta',
+            slug: 'batavia',
+            parent: java.id,
+            historicalNames: [{ name: 'Batavia', language: 'nl', period: '1619–1942' }],
+            _status: 'published',
+          },
+        }),
+      )
+      const maker = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'makers',
+          data: {
+            name: 'François Valentijn',
+            sortName: 'VALENTIJN, François',
+            _status: 'published',
+          },
+        }),
+      )
+      const grade = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: { kind: 'grade', label: 'VG+', definition: 'Very good.', equivalent: 'A' },
+        }),
+      )
 
       const complete = (over: object) => ({
         objectType: 'map',

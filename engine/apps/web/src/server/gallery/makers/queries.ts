@@ -5,13 +5,10 @@
  * this module's own small query (the catalogue's listing is a facet state, which a maker or place
  * is not one of — the ticket's thin-loader allowance).
  *
- * Kept free of `'use cache'` and of `'server-only'`: `@engine/cache`'s tag builders have no kind
- * yet for a maker, a place or a `pages` record (`engine/packages/cache/src/tags.ts`), so there is
- * no tag this module could carry that an edit would invalidate — reading live avoids ever serving
- * a stale biography or work list (the Found/Follow-up in the ticket's report asks for `maker`,
- * `place` and `page` cache tags so a later pass can cache these the way the catalogue caches
- * `works`). Pure functions over a given `Payload`, so a database test can call them with a pushed
- * test stack's own instance (`./index.ts`'s split, mirroring `server/shop/tracking`'s own).
+ * Kept free of `'use cache'` and of `'server-only'`: the cache is `./index.ts`'s, under the gallery
+ * catalogue's tag, which every published maker, place, term or work change expires. Pure functions
+ * over a given `Payload`, so a database test can call them with a pushed test stack's own instance
+ * (`./index.ts`'s split, mirroring `server/shop/tracking`'s own).
  */
 import type { SiteLocale } from '@engine/config/sites'
 import type { Payload } from 'payload'

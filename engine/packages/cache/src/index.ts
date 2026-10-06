@@ -4,6 +4,7 @@
  * so it imports `next` and no engine package, and no cycle can form through it.
  */
 export {
+  catalogueTag,
   EDITORIAL_EXPIRY,
   IMMEDIATE_EXPIRY,
   MAX_TAG_LENGTH,

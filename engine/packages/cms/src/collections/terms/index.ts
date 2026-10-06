@@ -15,6 +15,10 @@ import type { CollectionConfig, Validate } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
+import {
+  invalidateVocabularyOnChange,
+  invalidateVocabularyOnDelete,
+} from '../../hooks/vocabulary-invalidate'
 import { gradeEquivalentError } from '../../validators/term-grade'
 import { TERM_KIND_LABELS, TERM_KINDS } from './kinds'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from './vocabulary/access'
@@ -66,7 +70,12 @@ export const Terms: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeDelete: [refuseDeleteWhileUsed] },
+  hooks: {
+    beforeDelete: [refuseDeleteWhileUsed],
+    // After the commit: a published change expires the gallery's listings.
+    afterChange: [invalidateVocabularyOnChange],
+    afterDelete: [invalidateVocabularyOnDelete],
+  },
   // A slug is unique within its vocabulary: "warm" may be a mood and a room's colour both.
   indexes: [{ fields: ['kind', 'slug'], unique: true }],
   fields: [

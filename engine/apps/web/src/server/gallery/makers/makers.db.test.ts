@@ -27,27 +27,36 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       stack = await startWorksStack('web_maker_test', (config, key) => getPayload({ config, key }))
       const recto = await stack.media('recto')
 
-      const valentijn = await stack.api.create({
-        collection: 'makers',
-        data: {
-          name: 'François Valentijn',
-          sortName: 'VALENTIJN, François',
-          roles: ['cartographer'],
-          born: { precision: 'exact', from: 1666 },
-          died: { precision: 'exact', from: 1727 },
-          _status: 'published',
-        },
-      })
+      const valentijn = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'makers',
+          data: {
+            name: 'François Valentijn',
+            sortName: 'VALENTIJN, François',
+            roles: ['cartographer'],
+            born: { precision: 'exact', from: 1666 },
+            died: { precision: 'exact', from: 1727 },
+            _status: 'published',
+          },
+        }),
+      )
       valentijnId = Number(valentijn.id)
 
-      const batavia = await stack.api.create({
-        collection: 'places',
-        data: { name: 'Batavia', slug: 'batavia', _status: 'published' },
-      })
-      const grade = await stack.api.create({
-        collection: 'terms',
-        data: { kind: 'grade', label: 'VG+', definition: 'Very good.', equivalent: 'A' },
-      })
+      const batavia = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: { name: 'Batavia', slug: 'batavia', _status: 'published' },
+        }),
+      )
+      const grade = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: { kind: 'grade', label: 'VG+', definition: 'Very good.', equivalent: 'A' },
+        }),
+      )
 
       const complete = (over: object) => ({
         objectType: 'map',

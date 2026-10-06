@@ -35,47 +35,69 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       await stack.pool.query('CREATE EXTENSION IF NOT EXISTS unaccent')
 
       const recto = await stack.media('recto')
-      const valentijn = await stack.api.create({
-        collection: 'makers',
-        data: { name: 'François Valentijn', sortName: 'VALENTIJN, François', _status: 'published' },
-      })
-      const java = await stack.api.create({
-        collection: 'places',
-        data: { name: 'Java', slug: 'java', _status: 'published' },
-      })
+      const valentijn = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'makers',
+          data: {
+            name: 'François Valentijn',
+            sortName: 'VALENTIJN, François',
+            _status: 'published',
+          },
+        }),
+      )
+      const java = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: { name: 'Java', slug: 'java', _status: 'published' },
+        }),
+      )
       // The work is catalogued under the modern name; the visitor still asks for Batavia.
-      const jakarta = await stack.api.create({
-        collection: 'places',
-        data: {
-          name: 'Jakarta',
-          slug: 'jakarta',
-          parent: java.id,
-          historicalNames: [{ name: 'Batavia', language: 'nl' }],
-          _status: 'published',
-        },
-      })
-      const sulawesi = await stack.api.create({
-        collection: 'places',
-        data: {
-          name: 'Sulawesi',
-          slug: 'sulawesi',
-          historicalNames: [{ name: 'Celebes', language: 'en' }],
-          _status: 'published',
-        },
-      })
-      const voc = await stack.api.create({
-        collection: 'terms',
-        data: { kind: 'subject', label: 'VOC', _status: 'published' },
-      })
-      const grade = await stack.api.create({
-        collection: 'terms',
-        data: {
-          kind: 'grade',
-          label: 'VG+',
-          definition: 'Very good, nearly fine.',
-          equivalent: 'A',
-        },
-      })
+      const jakarta = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: {
+            name: 'Jakarta',
+            slug: 'jakarta',
+            parent: java.id,
+            historicalNames: [{ name: 'Batavia', language: 'nl' }],
+            _status: 'published',
+          },
+        }),
+      )
+      const sulawesi = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: {
+            name: 'Sulawesi',
+            slug: 'sulawesi',
+            historicalNames: [{ name: 'Celebes', language: 'en' }],
+            _status: 'published',
+          },
+        }),
+      )
+      const voc = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: { kind: 'subject', label: 'VOC', _status: 'published' },
+        }),
+      )
+      const grade = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: {
+            kind: 'grade',
+            label: 'VG+',
+            definition: 'Very good, nearly fine.',
+            equivalent: 'A',
+          },
+        }),
+      )
 
       const complete = (over: object) => ({
         objectType: 'map',

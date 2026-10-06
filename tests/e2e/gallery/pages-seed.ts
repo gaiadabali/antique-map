@@ -59,39 +59,43 @@ const page = async (site, slug, data) =>
  * so a second run finds what the first made.
  */
 const SEED = `${PREAMBLE}
+// Outside a request: every published write's cache hook (the works', and the vocabulary's —
+// catalogue:gallery) queues its tags on an operation of this batch, flushed once below.
 const batch = invalidationBatch()
 const grade =
   (await one('terms', { and: [{ kind: { equals: 'grade' } }, { slug: { equals: 'e2e-5-4-grade' } }] })) ??
-  (await payload.create({
-    collection: 'terms',
+  (await batch.operation((context) => payload.create({
+    collection: 'terms', context,
     data: {
       kind: 'grade', label: 'E2E Very good', slug: 'e2e-5-4-grade',
       definition: 'Light toning, no tears.', equivalent: 'B+', _status: 'published',
     },
-  }))
+  })))
 const maker =
   (await one('makers', { slug: { equals: 'e2e-5-4-valentijn' } })) ??
-  (await payload.create({
-    collection: 'makers',
+  (await batch.operation((context) => payload.create({
+    collection: 'makers', context,
     data: {
       name: 'E2E François Valentijn', sortName: 'VALENTIJN, E2E François', slug: 'e2e-5-4-valentijn',
       roles: ['cartographer'], born: { precision: 'exact', from: 1666 }, died: { precision: 'exact', from: 1727 },
       _status: 'published',
     },
-  }))
+  })))
 const java =
   (await one('places', { slug: { equals: 'e2e-5-4-java' } })) ??
-  (await payload.create({ collection: 'places', data: { name: 'E2E Java', slug: 'e2e-5-4-java', _status: 'published' } }))
+  (await batch.operation((context) =>
+    payload.create({ collection: 'places', context, data: { name: 'E2E Java', slug: 'e2e-5-4-java', _status: 'published' } }),
+  ))
 const place =
   (await one('places', { slug: { equals: 'e2e-5-4-batavia' } })) ??
-  (await payload.create({
-    collection: 'places',
+  (await batch.operation((context) => payload.create({
+    collection: 'places', context,
     data: {
       name: 'E2E Jakarta', slug: 'e2e-5-4-batavia', parent: java.id,
       historicalNames: [{ name: 'E2E Batavia', language: 'nl', period: '1619-1942' }],
       _status: 'published',
     },
-  }))
+  })))
 // A raw row, no real upload (mirrors \`works.test-support.ts\`'s own \`media()\`): the images
 // field only needs a media id to publish, and the spec asserts on text, never on an image.
 const recto =
@@ -113,7 +117,6 @@ const complete = (over) => ({
   dimensions: { image: { height: 280, width: 360 }, sheet: { height: 310, width: 400 } },
   ...over,
 })
-// A published work's hook queues its cache tags on the operation's collector, flushed once.
 for (const [stockNumber, over] of [
   ['M.E2E0541', { title: 'E2E chart of Java' }],
   ['M.E2E0542', { title: 'E2E sold chart', status: 'sold' }],

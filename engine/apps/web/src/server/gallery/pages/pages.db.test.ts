@@ -26,18 +26,31 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
     beforeAll(async () => {
       stack = await startWorksStack('web_pages_test', (config, key) => getPayload({ config, key }))
       const recto = await stack.media('recto')
-      const maker = await stack.api.create({
-        collection: 'makers',
-        data: { name: 'François Valentijn', sortName: 'VALENTIJN, François', _status: 'published' },
-      })
-      const place = await stack.api.create({
-        collection: 'places',
-        data: { name: 'Batavia', slug: 'batavia', _status: 'published' },
-      })
-      const grade = await stack.api.create({
-        collection: 'terms',
-        data: { kind: 'grade', label: 'VG+', definition: 'Very good.', equivalent: 'A' },
-      })
+      const maker = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'makers',
+          data: {
+            name: 'François Valentijn',
+            sortName: 'VALENTIJN, François',
+            _status: 'published',
+          },
+        }),
+      )
+      const place = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: { name: 'Batavia', slug: 'batavia', _status: 'published' },
+        }),
+      )
+      const grade = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: { kind: 'grade', label: 'VG+', definition: 'Very good.', equivalent: 'A' },
+        }),
+      )
       const work = await publish({
         title: 'Kaart van Java',
         stockNumber: 'M.0701',
