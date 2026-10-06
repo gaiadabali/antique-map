@@ -7,6 +7,7 @@
  */
 import { createHash } from 'node:crypto'
 
+import { invalidationBatch } from '@engine/cache'
 import { makeProduct } from '../../collections/stock-levels/shop.test-support'
 import type { StaffStack } from '../../collections/users/staff.test-support'
 import { createBagCookieKey, serialiseBag, type BagLine } from '../pricing/bag'
@@ -58,17 +59,21 @@ export async function openShop(stack: StaffStack): Promise<Shop> {
       data: { active: true, address: `Jl. Raya ${area} 1`, area, ...pin } as never,
     })
   }
-  await payload.updateGlobal({
-    slug: 'site-settings',
-    data: {
-      shop: {
-        checkoutEnabled: true,
-        delivery: { bands: BANDS, freeOverIdr: 500000 },
-        welcomeDiscount: 'WELCOME10',
-        orderExpiryMinutes: EXPIRY_MINUTES,
-      },
-    } as never,
-  })
+  // A write outside a request hands its cache tags to a collector (`@engine/cache`'s invalidate()).
+  await invalidationBatch().operation((context) =>
+    payload.updateGlobal({
+      context,
+      slug: 'site-settings',
+      data: {
+        shop: {
+          checkoutEnabled: true,
+          delivery: { bands: BANDS, freeOverIdr: 500000 },
+          welcomeDiscount: 'WELCOME10',
+          orderExpiryMinutes: EXPIRY_MINUTES,
+        },
+      } as never,
+    }),
+  )
   await payload.create({
     collection: 'discounts',
     data: { code: 'WELCOME10', kind: 'percent', value: 10, active: true } as never,

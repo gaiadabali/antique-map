@@ -27,6 +27,8 @@
     "db:list": "node engine/tooling/db/cli.mjs list",
     "check:filesize": "node engine/tooling/check-file-size/cli.mjs",
     "check:trackers": "node engine/tooling/no-trackers/cli.mjs",
+    "check:old-urls": "node engine/tooling/phase9-checks/old-urls.mjs",
+    "check:seo-crawl": "node engine/tooling/phase9-checks/seo-crawl.mjs",
     "check:generated": "node engine/tooling/config-drift/cli.mjs",
     "check:tokens": "node engine/tooling/token-lint/cli.mjs",
     "tasks:lint": "node engine/tooling/tasks-lint/cli.mjs",
