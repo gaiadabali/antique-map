@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 10/20 | 0 | `█████░░░░░`  50% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 11/20 | 0 | `██████░░░░`  55% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 18/25 | 0 | `███████░░░`  72% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **28/51** | **140/207** | **8** | `███████░░░`  68% |
+| **All** | 11 phases | | | **29/51** | **141/207** | **8** | `███████░░░`  68% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -85,11 +85,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W1 | 5.2.a wiring: upload → derivatives + tiles | Opus (claude seat) — next free slot | — | 2026-10-06 | plan gap: `@engine/media` derivatives/tiles (5.2.a) are a pure library and no task wires the media upload hook, so no public derivative exists and anonymous visitors get the staff-only file URL on item, home and browse cards; blocks 5.2.e |
 | 5·W2 | 5.4.c Check | — | `main` | 2026-10-06 | 5.4 merged `8b8d4a3`; maker/place lists and axe evidenced (e2e 9/9); the "edited page after cache-tag invalidation" clause waits on `w/5.1cache` (pages read live today) |
 | 5·W2 | 5.3 Ask, Sell to us, `/api/x/leads` | — | — | 2026-10-05 | waits on the 5.2b merge and on `w/9.1core`'s lead service (Opus reviewing it, 2026-10-06); then a Sonnet run |
-| 5·W3 | 5.1.d Check evidence + stale-cache fix | Opus (claude seat) | `w/ds-5.1d`, `w/5.1cache` | 2026-10-06 | the e2e was rewritten by Opus (the worker's proved nothing); it exposed browse/search never being invalidated — Opus fixing on `w/5.1cache`; both merge together |
 | 5·W3 | 5.5.c Lighthouse on staging | — | `main` | 2026-10-06 | runner merged `529e4ba` (`tests/e2e/gallery/lighthouse/run.mjs`); local: home 98/100 pass, `/browse` 92/100 but misses LCP 3.3 s (2.5) and script 240 KB (150) — to fix before the staging run; item page not yet measured |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
-| 5·W1 | 5.1 Browse and search | senior-fe (claude seat) | `w/5.1` | 2026-10-03 | reviewed and merged into `main` (`3590ae6`) after the orchestrator ran its db suites (26/26 green); 5.1.d joins the phase-4 evidence battery on a production build |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
 | 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 | 5·W2 | 5.4 Makers, places, editorial and the plain pages | sonnet | `w/5.4` | 2026-10-06 | |
@@ -458,7 +456,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, on a phone, a visitor searches by a place's old name, opens an item, zooms into its detail, taps "Ask about this" and lands in WhatsApp with the item in the message; "Sell to us" opens WhatsApp or sends a form that appears as a lead; a sold item is marked Sold; no price, cart or sign-in appears anywhere; axe is clean and Lighthouse mobile meets the budget.
 **Waves:** W1 — 5.1, 5.2 · W2 — 5.3, 5.4 · W3 — 5.5
 
-- [ ] **5.1 Browse and search** · needs: phase 3, phase 4 — 🔄 5·W1
+- [x] **5.1 Browse and search** · needs: phase 3, phase 4 — ✅ 2026-10-06 70db972
   - **Lane** GAL · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`, `engine/apps/web/src/server/gallery/**`
   - **Read** EXPERIENCE-GALLERY.md §Browse and §Search, ARCHITECTURE.md §Search
@@ -466,7 +464,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.1.a loaders (published only, projected, no price field) for the listing and the facets maker, place (including historical names), period, type and subject, with counts
   - [x] 5.1.b the browse page with facet chips, sort and pagination, usable at 390 px
   - [x] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
-  - [ ] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
+  - [x] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
 
 - [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — 🔄 5·W1
   - **Lane** GAL + MED · **Agent** senior-fe with senior-be · **Wave** W1
@@ -842,6 +840,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — ✅ **5.1 closed** (`70db972`). Check 5.1.d evidenced by `tests/e2e/gallery/browse.spec.ts` on a production build, twice back to back on one warm server (4/4, 4/4): "Batavia" finds a work whose only Batavia is its place's historical name; a draft twin (same place, grade, price) is never listed in browse or search; no `askingPrice`, planted price figure or currency figure in HTML, RSC or JSON; axe clean at 390 and 1280 px with result cards present. The worker's first spec proved none of this (found by the Opus review) and hid a real defect: **gallery browse/search/home/maker/place caches were never invalidated** (stale up to 15 min). Fixed by `w/5.1cache` (`b947e6f`): a `catalogue:<site>` tag cleared on publish, published edits, unpublish (incl. after a draft revision), delete, and place/maker/term edits; `cacheLife('hours')` as backstop. **Shop has the same gap** (`server/shop/catalogue/catalogue.ts:32` hand-written `'products'` tag never cleared; `products` has no invalidate hook; the shop home rail) — reported to antique-map-dc. Note for workers: use `127.0.0.1`, not `localhost`, for Postgres and S3 on this host (a WSL relay answers `[::1]`).
 
 - 2026-10-06 — Webhook replays under load: `webhook.db.test.ts` "ten in parallel" answers 500s at ~5 s (`lock_timeout`) on main `21486f0` too (3 runs) — not a 6.6 regression (antique-map-dc); the first transaction holds the dedupe key and the order lock past 5 s on a saturated host. Follow-up task **6.7** added (the orchestrator's, after the 6.6 merge); design per antique-map-dc's review — keep event + order move atomic (a separately committed claim could strand a payment on a crash), lose the lock fast, answer 200/503, never 500. 6.6 migration (antique-map-dc's redesign): `awaiting_quote`, `quote_window_minutes`, `orders.tracking_token_enc`, and an `order_notifications` claim table with UNIQUE (order, status) — not a jsonb column on orders (a full-document save wiped a concurrent claim: 2 emails in the race test).
 
