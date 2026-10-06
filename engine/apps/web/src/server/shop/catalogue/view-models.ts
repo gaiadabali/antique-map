@@ -4,7 +4,8 @@
  * stores), and no price but a whole rupiah integer for `formatRupiah` (COMMERCE.md §2).
  */
 
-/** An image as a page shows it: the derivative URL Payload's file route serves, its alt text. */
+/** An image as a page shows it: the public derivative URL (`../media/public-image`), only once
+ * the media pipeline has published it — never Payload's staff-only file route — and its alt text. */
 export type CatalogueImage = {
   readonly url: string
   readonly alt: string
