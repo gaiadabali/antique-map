@@ -17,10 +17,12 @@ import {
   type LeadDeps,
 } from '../../../../server/leads'
 
+import { LEAD_CONSENT_VERSION } from '../../../../sites/gallery/contact/state'
+
 import { LeadIdempotency } from './idempotency'
 
 /** The consent line the two forms show; stored on the lead with the time it was given. */
-export const LEAD_CONSENT_VERSION = 'gallery-contact-2026-10'
+export { LEAD_CONSENT_VERSION } from '../../../../sites/gallery/contact/state'
 
 /** The body's cap, read before it is parsed: a form's text is far smaller than this. */
 export const MAX_BODY_BYTES = 16 * 1024
@@ -128,7 +130,7 @@ export async function handleLeadPost(
   // 6. The lead service: token shape → limit → Turnstile → validate → store → owner email.
   const result = await createLead(deps, {
     input,
-    context: { kind, site: 'gallery', source: 'form', consentVersion: LEAD_CONSENT_VERSION },
+    context: { kind: kind as LeadRouteKind, site: 'gallery', source: 'form', consentVersion: LEAD_CONSENT_VERSION },
     turnstileToken: token,
     ip: clientAddress(request.headers),
   })

@@ -14,9 +14,7 @@ import { describe, expect, it } from 'vitest'
 import { SITES, SURFACE_ROUTES, type SiteKey } from '@engine/config/sites'
 
 const NOT_BUILT_YET: Record<SiteKey, Partial<Record<string, string>>> = {
-  gallery: {
-    sellToUs: 'TASKS.md 5.3',
-  },
+  gallery: {},
   shop: { stores: 'TASKS.md 7.3' },
 }
 

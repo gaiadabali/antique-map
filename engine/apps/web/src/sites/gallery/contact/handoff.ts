@@ -103,6 +103,12 @@ export function sellMessage(t: HandoffText, what: string): HandoffMessage {
   return { waText, subject: t('email.sellSubject'), body: waText }
 }
 
+/** The Contact page (§2): no item, no query — a plain opening line they edit into their question. */
+export function generalMessage(t: HandoffText): HandoffMessage {
+  const waText = t('contact.waText')
+  return { waText, subject: t('contact.emailSubject'), body: waText }
+}
+
 /** The two links, or `null` each where the gallery's channel has not arrived yet (OA2). */
 export function talkLinks(contact: ContactChannels, message: HandoffMessage): Handoff {
   return {

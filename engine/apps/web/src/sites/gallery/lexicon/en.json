@@ -787,5 +787,8 @@
   "lead.error.invalid": "Something in the form is not right. Please check it and try again.",
   "lead.error.challenge": "The security check did not pass. Please try again.",
   "lead.error.rate": "Too many enquiries just now. Please wait a minute and try again.",
-  "lead.error.unavailable": "We could not save your enquiry. Please try again, or write to us on WhatsApp or by email."
+  "lead.error.unavailable": "We could not save your enquiry. Please try again, or write to us on WhatsApp or by email.",
+  "contactPage.whatsappLink": "WhatsApp us",
+  "contact.waText": "Hello, I have a question for Indies Gallery.",
+  "contact.emailSubject": "A question for Indies Gallery"
 }

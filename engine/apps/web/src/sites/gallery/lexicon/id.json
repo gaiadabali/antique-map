@@ -782,5 +782,8 @@
   "lead.error.invalid": "Ada yang tidak benar di formulirnya. Periksa lagi lalu coba.",
   "lead.error.challenge": "Pemeriksaan keamanan belum berhasil. Coba lagi.",
   "lead.error.rate": "Terlalu banyak pertanyaan saat ini. Tunggu satu menit lalu coba lagi.",
-  "lead.error.unavailable": "Pertanyaan Anda belum bisa disimpan. Coba lagi, atau tulis kepada kami melalui WhatsApp atau email."
+  "lead.error.unavailable": "Pertanyaan Anda belum bisa disimpan. Coba lagi, atau tulis kepada kami melalui WhatsApp atau email.",
+  "contactPage.whatsappLink": "WhatsApp",
+  "contact.waText": "Halo, saya ingin bertanya kepada Indies Gallery.",
+  "contact.emailSubject": "Pertanyaan untuk Indies Gallery"
 }

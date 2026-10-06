@@ -16,6 +16,7 @@ export const CONTACT_MESSAGES = defineMessages({
   // the item page's Ask panel (EXPERIENCE-GALLERY.md §5, §8)
   'item.askAnother': 'Ask for another example',
   'contactPage.emailLink': 'Email us',
+  'contactPage.whatsappLink': 'WhatsApp us',
   'contactPage.placeholder':
     'Our WhatsApp number and email address are being connected — please write to us from the Contact page soon.',
   // the email handoff's words beyond the templates the app lexicon names
@@ -24,6 +25,8 @@ export const CONTACT_MESSAGES = defineMessages({
   'email.viewingSubject': 'Viewing in {city}',
   'email.searchSubject': 'Looking for {query}',
   'email.sellSubject': 'Selling an antique',
+  'contact.waText': 'Hello, I have a question for Indies Gallery.',
+  'contact.emailSubject': 'A question for Indies Gallery',
   // the sell-to-us row of the §8 message table, and the page's words
   'whatsapp.sellUs': 'Hello, I have an antique I would like to sell: {what}. I can send photos here.',
   'sellToUs.eyebrow': 'Sell to us',
