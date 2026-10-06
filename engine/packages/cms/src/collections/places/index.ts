@@ -20,7 +20,10 @@ import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
-import { invalidateVocabularyOnChange, invalidateVocabularyOnDelete } from '../../hooks/vocabulary-invalidate'
+import {
+  invalidateVocabularyOnChange,
+  invalidateVocabularyOnDelete,
+} from '../../hooks/vocabulary-invalidate'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
 import { translationStatusField } from '../../fields/translation-status'

@@ -15,7 +15,10 @@ import type { CollectionConfig, Validate } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
-import { invalidateVocabularyOnChange, invalidateVocabularyOnDelete } from '../../hooks/vocabulary-invalidate'
+import {
+  invalidateVocabularyOnChange,
+  invalidateVocabularyOnDelete,
+} from '../../hooks/vocabulary-invalidate'
 import { gradeEquivalentError } from '../../validators/term-grade'
 import { TERM_KIND_LABELS, TERM_KINDS } from './kinds'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from './vocabulary/access'

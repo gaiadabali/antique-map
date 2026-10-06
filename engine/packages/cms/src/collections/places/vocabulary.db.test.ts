@@ -12,7 +12,12 @@
 import { APIError, getPayload, type Payload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { collectingWrites, createPushedDatabase, refusedWith, type Pool } from './pushed-database.test-support'
+import {
+  collectingWrites,
+  createPushedDatabase,
+  refusedWith,
+  type Pool,
+} from './pushed-database.test-support'
 
 const server = process.env.CMS_TEST_POSTGRES_URL
 
