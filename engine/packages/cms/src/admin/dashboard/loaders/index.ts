@@ -45,13 +45,13 @@ export async function loadDashboard(
     input.now,
   )
   const gallery = ctx.site === 'gallery'
-  const [visitors, asks, chat, search, antiques, business] = await Promise.all([
-    loadVisitors(ctx),
-    loadAsks(ctx),
-    loadChat(ctx),
-    gallery ? loadSearch(ctx) : null,
-    gallery ? loadAntiques(ctx) : null,
-    loadBusiness(ctx),
-  ])
+  // One panel at a time: each panel runs its few queries together, but all six at once would ask
+  // the pool (10 clients, a 5 s wait for one) for some twenty connections in a single page load.
+  const visitors = await loadVisitors(ctx)
+  const asks = await loadAsks(ctx)
+  const chat = await loadChat(ctx)
+  const search = gallery ? await loadSearch(ctx) : null
+  const antiques = gallery ? await loadAntiques(ctx) : null
+  const business = await loadBusiness(ctx)
   return { site: ctx.site, period: ctx.period, visitors, asks, chat, search, antiques, business }
 }

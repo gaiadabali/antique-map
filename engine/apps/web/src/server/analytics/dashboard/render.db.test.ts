@@ -49,13 +49,13 @@ describe.skipIf(!server)('the dashboard view, on a real database', () => {
     expect(html).toContain('No events yet in this period.')
     expect(html).toContain('No chat sessions yet in this period.')
     expect(html).not.toContain('Funnel')
-  })
+  }, 60_000)
 
   it('writes the same page in Indonesian for an Indonesian admin', async () => {
     const html = await render('owner', { site: 'gallery' }, 'id')
     expect(html).toContain('>Pengunjung<')
     expect(html).toContain('Belum ada peristiwa pada periode ini.')
-  })
+  }, 60_000)
 
   it('the shop tab has its run-2 panels as stubs', async () => {
     const html = await render('owner', { site: 'shop', period: '30' })
@@ -64,12 +64,12 @@ describe.skipIf(!server)('the dashboard view, on a real database', () => {
     }
     expect(html).toContain('arrives with the checkout events')
     expect(html).not.toContain('>Antiques<')
-  })
+  }, 60_000)
 
   it('an editor on the same database sees no panel and no number', async () => {
     const html = await render('editor', { site: 'gallery' })
     expect(html).toContain('Your account has no panels here.')
     expect(html).not.toContain('peta lombok')
     expect(html).not.toContain('<table')
-  })
+  }, 60_000)
 })

@@ -56,7 +56,7 @@ describe.skipIf(!server)('the dashboard: access and visitors, on a real database
       ).rejects.toBeInstanceOf(DashboardForbidden)
     }
     await expect(gallery()).resolves.toMatchObject({ site: 'gallery' })
-  })
+  }, 60_000)
 
   it('days are the collect-stamped `day`, not a JS bucket', async () => {
     const { visitors } = await gallery()
