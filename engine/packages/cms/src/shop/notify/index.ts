@@ -8,13 +8,16 @@
  * SQL inside their own transaction (the payments core's seam), never through the Local API, so none
  * of them reach the `afterChange` hook — this file is their only notifier.
  *
- * **The once-per-(order, status) claim** (orchestrator decision B): `notifiedStatuses` is claimed
- * with one conditional `UPDATE … WHERE NOT (notified_statuses @> to) RETURNING id`, no explicit
- * lock and no JS check — under READ COMMITTED a second writer blocks on the row, then re-evaluates
- * the `WHERE` against the row as the first writer committed it and gets zero rows back. A lost
- * claim (two writers for the same transition, a retried hook, the `afterChange` hook racing an
- * explicit call for the same move) sends nothing. `from === to` is refused before the claim even
- * runs.
+ * **The once-per-(order, status) claim** (orchestrator decision B; moved off `orders` in 6.6-core-r5):
+ * `order-notifications` holds one row per `(order, status)` ever sent, with a unique compound index,
+ * and the claim is one `INSERT … ON CONFLICT (order_id, status) DO NOTHING RETURNING id` against it.
+ * A row back means this caller sends; none means someone already claimed it. This never touches the
+ * `orders` row, which is the point: a field of `orders` cannot hold this claim, because Payload's
+ * `update` writes back every field of the document it read, so a writer with a stale copy of
+ * `orders` would overwrite another writer's claim with its own and both would send (the bug a
+ * conditional `UPDATE … notified_statuses` could not fix). A lost claim (two writers for the same
+ * transition, a retried hook, the `afterChange` hook racing an explicit call for the same move)
+ * sends nothing. `from === to` is refused before the claim even runs.
  *
  * **The link never rotates** (orchestrator decision A): every email decrypts the one token sealed
  * at order creation (`trackingTokenEnc`, `../orders/link-key`) — `trackingTokenHash` stays the
@@ -73,20 +76,18 @@ async function sendMail(to: string, build: () => MailMessage | null) {
 }
 
 /**
- * Claims `(orderId, to)` in `notifiedStatuses`: true only for the caller that wins the race, so
+ * Claims `(orderId, to)` in `order-notifications`: true only for the caller that wins the race, so
  * exactly one of any number of concurrent calls for the same order and status sends mail.
  *
  * The `afterChange` hook calls this from inside the Local API write's own still-open transaction
- * (Payload commits after hooks run) — a fresh connection here would block on the row lock that
- * write already holds, timing out and losing the claim (the bug this fixes: every status move
- * through the admin was sending nothing). When `req` names a live transaction, the claim runs on
- * that same session instead; every other caller (`createOrder`, `quoteDeliveryFee`, the webhook,
- * the sweep — all after their own transaction has committed) runs it as a single autocommit
- * statement on the pool.
+ * (Payload commits after hooks run) — a fresh connection here would block on a lock that write
+ * already holds (`orders`), timing out and losing the claim. When `req` names a live transaction,
+ * the claim runs on that same session instead; every other caller (`createOrder`, `quoteDeliveryFee`,
+ * the webhook, the sweep — all after their own transaction has committed) runs it as a single
+ * autocommit statement on the pool.
  *
- * One statement, so there is nothing to hold a lock across — the `afterChange` hook's call runs
- * on the caller's own still-open session, everyone else's runs as a single autocommit statement
- * (no wrapping transaction needed for one statement).
+ * One statement, against `order-notifications`, never `orders`: no row of `orders` is read or
+ * locked, so this never races — or loses to — a concurrent save of the order itself.
  */
 async function claimNotification(
   payload: Payload,
@@ -94,11 +95,11 @@ async function claimNotification(
   to: OrderStatus,
   req?: PayloadRequest,
 ): Promise<boolean> {
+  const now = new Date()
   const claimRow = sql`
-    UPDATE orders SET notified_statuses = COALESCE(notified_statuses, '[]'::jsonb)
-                                           || to_jsonb(ARRAY[${to}]::text[])
-     WHERE id = ${orderId}
-       AND NOT (COALESCE(notified_statuses, '[]'::jsonb) @> to_jsonb(ARRAY[${to}]::text[]))
+    INSERT INTO order_notifications (order_id, status, sent_at, updated_at, created_at)
+    VALUES (${orderId}, ${to}, ${now}, ${now}, ${now})
+    ON CONFLICT (order_id, status) DO NOTHING
     RETURNING id`
 
   try {
