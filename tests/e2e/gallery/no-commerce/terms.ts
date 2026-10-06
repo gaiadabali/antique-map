@@ -13,8 +13,8 @@
  * value never fail the scan while any other use of the word still does.
  */
 
-import galleryEn from '../../../../engine/apps/web/src/sites/gallery/lexicon/en.json'
-import galleryId from '../../../../engine/apps/web/src/sites/gallery/lexicon/id.json'
+import galleryEn from '../../../../engine/apps/web/src/sites/gallery/lexicon/en.json' with { type: 'json' }
+import galleryId from '../../../../engine/apps/web/src/sites/gallery/lexicon/id.json' with { type: 'json' }
 
 /** One banned needle: a regular-expression source (applied with the `i` and `g` flags). */
 export type BannedTerm = {
