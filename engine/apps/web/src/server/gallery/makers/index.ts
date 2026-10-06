@@ -3,13 +3,17 @@
  * logic — kept free of `'server-only'` so a database test can call it with a pushed test stack's
  * own instance (the tracking page's own split, `server/shop/tracking`).
  *
- * Each loader is React's `cache()`: a page's `generateMetadata` and its body read the same record
- * once per request, not twice (the reads are live — `./queries.ts` says why they carry no tag).
+ * Cached under `'use cache'` with the gallery catalogue's tag (`catalogueTag('gallery')`) and its
+ * backstop `cacheLife('hours')` (`../catalogue/catalogue` says why): a maker page reads a maker and
+ * its published works' cards — makers, works, places and terms, every one of whose published
+ * changes expires that tag (`@engine/cms` `work-invalidate`, `vocabulary-invalidate`). The cache
+ * key is the slug and the locale; nothing here reads a request.
  */
 import 'server-only'
 
-import { cache } from 'react'
+import { cacheLife } from 'next/cache'
 
+import { cacheTags, catalogueTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
 
@@ -18,12 +22,18 @@ import { loadMakerIndexWith, loadMakerWith } from './queries'
 export type { MakerIndexItemVM, MakerVM } from './view-models'
 
 /** One maker page's data, or `null` — no published maker has this slug. */
-export const loadMaker = cache(async (slug: string, locale: SiteLocale) =>
-  loadMakerWith(await cms(), slug, locale),
-)
+export async function loadMaker(slug: string, locale: SiteLocale) {
+  'use cache'
+  cacheLife('hours')
+  cacheTags([catalogueTag('gallery')])
+  return loadMakerWith(await cms(), slug, locale)
+}
 
 /** The makers index: every published maker, A–Z by sort name, with a count of its published
  * works. */
 export async function loadMakerIndex(locale: SiteLocale) {
+  'use cache'
+  cacheLife('hours')
+  cacheTags([catalogueTag('gallery')])
   return loadMakerIndexWith(await cms(), locale)
 }

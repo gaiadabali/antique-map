@@ -4,9 +4,9 @@
  * listing a place's children; a place's own historical names, type and works are this module's
  * own small reads, `overrideAccess: false`, published only.
  *
- * Kept free of `'use cache'` and of `'server-only'` — see `../makers/queries.ts`'s note: no
- * cache-tag kind exists yet for a place, and pure functions over a given `Payload` let a database
- * test call them with a pushed test stack's own instance.
+ * Kept free of `'use cache'` and of `'server-only'` — see `../makers/queries.ts`'s note: the
+ * cache is `./index.ts`'s, and pure functions over a given `Payload` let a database test call them
+ * with a pushed test stack's own instance.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import type { Payload } from 'payload'
