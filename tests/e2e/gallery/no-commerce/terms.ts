@@ -13,6 +13,9 @@
  * value never fail the scan while any other use of the word still does.
  */
 
+import galleryEn from '../../../../engine/apps/web/src/sites/gallery/lexicon/en.json'
+import galleryId from '../../../../engine/apps/web/src/sites/gallery/lexicon/id.json'
+
 /** One banned needle: a regular-expression source (applied with the `i` and `g` flags). */
 export type BannedTerm = {
   /** The needle, as a RegExp source; ASCII, lowercase (the scan matches case-insensitively). */
@@ -47,14 +50,22 @@ export const BANNED_WORDS: readonly BannedTerm[] = [
   // Buying.
   { pattern: '\\bbuy\\b', label: 'buy', reason: `${ABSENT}: the gallery does not sell online` },
   { pattern: '\\bbeli\\b', label: 'beli', reason: `${ABSENT}: ID for buy` },
-  { pattern: 'add\\s+to\\b', label: 'add to', reason: `${ABSENT}: no add-to-cart/offer affordance` },
+  {
+    pattern: 'add\\s+to\\b',
+    label: 'add to',
+    reason: `${ABSENT}: no add-to-cart/offer affordance`,
+  },
   // Offers.
   { pattern: 'make\\s+an\\s+offer', label: 'make an offer', reason: `${ABSENT}: no online offers` },
   { pattern: '\\boffer\\b', label: 'offer', reason: `${ABSENT}: no online offers` },
   { pattern: '\\bpenawaran\\b', label: 'penawaran', reason: `${ABSENT}: ID for offer` },
   // Price: allowed only inside `ALLOWED_PRICE_PHRASES`, which the scan masks first.
   { pattern: '\\bprice\\b', label: 'price', reason: 'price shows only as "Price on request"' },
-  { pattern: '\\bharga\\b', label: 'harga', reason: 'ID: price shows only as "Harga atas permintaan"' },
+  {
+    pattern: '\\bharga\\b',
+    label: 'harga',
+    reason: 'ID: price shows only as "Harga atas permintaan"',
+  },
   // Any currency figure.
   {
     pattern: '\\b(Rp|IDR|SGD|S\\$|USD|US\\$|\\$)\\s?\\d',
@@ -72,8 +83,33 @@ export const BANNED_HREFS: readonly BannedTerm[] = [
   },
 ]
 
+/**
+ * Policy sentences that name the price without showing one, allowed by the owner's proxy on
+ * 2026-10-06 (TASKS.md Decisions): the sold-record line ("never its price"), the enquiry line
+ * ("provenance and price") and the shipping line ("after we agree the price"). Read from the
+ * lexicon by key, so a reworded sentence is scanned again rather than silently allowed.
+ */
+const ALLOWED_POLICY_KEYS = [
+  'home.gallery.recentlyBody',
+  'home.gallery.enquireBody',
+  'item.shipping',
+] as const
+
+function lexiconValues(lexicon: Record<string, string>): string[] {
+  return ALLOWED_POLICY_KEYS.map((key) => {
+    const value = lexicon[key]
+    if (typeof value !== 'string') throw new Error(`gallery lexicon has no ${key}`)
+    return value.toLowerCase()
+  })
+}
+
 /** The price wording the gallery is allowed to render; masked out before `price` / `harga` run. */
-export const ALLOWED_PRICE_PHRASES: readonly string[] = ['price on request', 'harga atas permintaan']
+export const ALLOWED_PRICE_PHRASES: readonly string[] = [
+  ...lexiconValues(galleryEn as Record<string, string>),
+  ...lexiconValues(galleryId as Record<string, string>),
+  'price on request',
+  'harga atas permintaan',
+]
 
 /** The element attributes the scan reads (ticket: href, aria-label, title, alt, placeholder, value). */
 export const ATTRIBUTES: readonly string[] = [
