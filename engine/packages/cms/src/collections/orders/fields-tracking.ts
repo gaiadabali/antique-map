@@ -151,16 +151,6 @@ export const TRACKING_FIELDS: Field[] = [
     admin: { hidden: true },
   },
   {
-    // Which statuses have already emailed this order (TASKS.md 6.6): the notifier's once-per-
-    // (order, status) claim, `UPDATE … WHERE NOT (notified_statuses ? to)`. A `json` array of
-    // status strings, not a `select hasMany`, so the claim is one atomic statement on one column.
-    name: 'notifiedStatuses',
-    type: 'json',
-    label: { en: 'Notified statuses', id: 'Status yang sudah diberi tahu' },
-    access: NEVER_EXPOSED,
-    admin: { hidden: true },
-  },
-  {
     name: 'expiresAt',
     type: 'date',
     label: { en: 'Pay by', id: 'Bayar sebelum' },

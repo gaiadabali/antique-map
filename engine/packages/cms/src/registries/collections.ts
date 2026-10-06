@@ -19,6 +19,7 @@ import { Leads } from '../collections/leads'
 import { Makers } from '../collections/makers'
 import { Masters } from '../collections/masters'
 import { Media } from '../collections/media'
+import { OrderNotifications } from '../collections/order-notifications'
 import { Orders } from '../collections/orders'
 import { Pages } from '../collections/pages'
 import { Partners } from '../collections/partners'
@@ -50,6 +51,7 @@ const COLLECTIONS: readonly CollectionConfig[] = [
   Stores,
   StockLevels,
   Orders,
+  OrderNotifications,
   PaymentEvents,
   Leads,
   Partners,
