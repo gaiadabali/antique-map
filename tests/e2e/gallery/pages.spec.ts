@@ -60,8 +60,10 @@ const SEED_SCRIPT = `
 import { writeFileSync } from 'node:fs'
 process.env.PAYLOAD_SECRET ??= 'e2e-gallery-pages-dev-only-never-signs-anything'
 const { cms } = await import('./engine/packages/cms/src/instance')
+const { invalidationBatch } = await import('./engine/packages/cache/src/index')
 
 const payload = await cms()
+const batch = invalidationBatch()
 const one = async (collection, where) =>
   (await payload.find({ collection, where, limit: 1, depth: 0, draft: true })).docs[0]
 
@@ -108,7 +110,7 @@ const recto =
   (await payload.db.create({
     collection: 'media',
     data: {
-      alt: { en: 'E2E 5.4 recto' }, role: 'photograph', provenance: 'photograph',
+      alt: { en: 'E2E 5.4 recto' }, role: 'recto', provenance: 'photograph',
       subject: 'work', filename: \`e2e-5-4-recto-\${Date.now()}.jpg\`, mimeType: 'image/jpeg',
     },
   }))
@@ -124,12 +126,17 @@ const complete = (over) => ({
   ...over,
 })
 
-if (!(await one('works', { stockNumber: { equals: 'E2E.0541' } }))) {
-  await payload.create({ collection: 'works', data: complete({ title: 'E2E chart of Java', stockNumber: 'E2E.0541', _status: 'published' }) })
+if (!(await one('works', { stockNumber: { equals: 'M.E2E0541' } }))) {
+  await batch.operation((context) =>
+    payload.create({ collection: 'works', data: complete({ title: 'E2E chart of Java', stockNumber: 'M.E2E0541', _status: 'published' }), context }),
+  )
 }
-if (!(await one('works', { stockNumber: { equals: 'E2E.0542' } }))) {
-  await payload.create({ collection: 'works', data: complete({ title: 'E2E sold chart', stockNumber: 'E2E.0542', status: 'sold', _status: 'published' }) })
+if (!(await one('works', { stockNumber: { equals: 'M.E2E0542' } }))) {
+  await batch.operation((context) =>
+    payload.create({ collection: 'works', data: complete({ title: 'E2E sold chart', stockNumber: 'M.E2E0542', status: 'sold', _status: 'published' }), context }),
+  )
 }
+await batch.flush()
 
 if (!(await one('pages', { and: [{ site: { equals: 'gallery' } }, { slug: { equals: 'e2e-5-4-page' } }] }))) {
   await payload.create({
