@@ -7,7 +7,11 @@
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { server, startStaffStack, type StaffStack } from '../../collections/users/staff.test-support'
+import {
+  server,
+  startStaffStack,
+  type StaffStack,
+} from '../../collections/users/staff.test-support'
 
 import { LeadsInboxView } from './inbox'
 
@@ -15,9 +19,10 @@ import { LeadsInboxView } from './inbox'
 function rowIds(element: unknown): number[] {
   const root = element as { props: { children: unknown } }
   const children = Array.isArray(root.props.children) ? root.props.children : [root.props.children]
-  const list = children.find(
-    (child) => child && typeof child === 'object' && Array.isArray((child as never)['props']?.children),
-  ) as { props: { children: unknown } } | undefined
+  const list = children.find((child) => {
+    const props = (child as { props?: { children?: unknown } } | null)?.props
+    return Boolean(child) && typeof child === 'object' && Array.isArray(props?.children)
+  }) as { props: { children: unknown } } | undefined
   if (!list) return []
   const rows = Array.isArray(list.props.children) ? list.props.children : [list.props.children]
   return rows
@@ -37,7 +42,9 @@ describe.skipIf(!server)('the leads inbox, on a real database', () => {
   let stack: StaffStack
 
   beforeAll(async () => {
-    stack = await startStaffStack('cms_leads_inbox_test', (config, key) => getPayload({ config, key }))
+    stack = await startStaffStack('cms_leads_inbox_test', (config, key) =>
+      getPayload({ config, key }),
+    )
     const make = (data: Record<string, unknown>) =>
       stack.payload.create({ collection: 'leads', data: data as never })
     await make({ kind: 'ask', site: 'gallery', source: 'form', status: 'new' })
@@ -58,7 +65,11 @@ describe.skipIf(!server)('the leads inbox, on a real database', () => {
       'Only the owner opens the leads inbox.',
     )
 
-    const storeUser = await view(stack.payload, { collection: 'users', role: 'store', store: stack.stores[0].id })
+    const storeUser = await view(stack.payload, {
+      collection: 'users',
+      role: 'store',
+      store: stack.stores[0].id,
+    })
     expect((storeUser as { props: { children: unknown } }).props.children).toBe(
       'Only the owner opens the leads inbox.',
     )
@@ -74,7 +85,11 @@ describe.skipIf(!server)('the leads inbox, on a real database', () => {
 
   it('filters by site, kind and status combine', async () => {
     const owner = { collection: 'users', role: 'owner' }
-    const element = await view(stack.payload, owner, { site: 'gallery', kind: 'ask', status: 'new' })
+    const element = await view(stack.payload, owner, {
+      site: 'gallery',
+      kind: 'ask',
+      status: 'new',
+    })
     const ids = rowIds(element)
     expect(ids.length).toBe(1)
   })

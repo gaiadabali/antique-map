@@ -24,13 +24,19 @@ describe.skipIf(!server)('create-partner endpoint, on a real database', () => {
         kind: 'partnership',
         site: 'shop',
         source: 'form',
-        payload: { name: 'Warung Bu Made', whatsapp: '+6281234567890', email: 'bumade@example.com' },
+        payload: {
+          name: 'Warung Bu Made',
+          whatsapp: '+6281234567890',
+          email: 'bumade@example.com',
+        },
       } as never,
     }) as unknown as Promise<{ id: number }>
 
   it('copies the contact and links the lead', async () => {
     const lead = await makeLead()
-    const response = await stack.rest('POST', `/api/leads/${lead.id}/create-partner`, { as: 'owner' })
+    const response = await stack.rest('POST', `/api/leads/${lead.id}/create-partner`, {
+      as: 'owner',
+    })
     expect(response.status).toBe(303)
 
     const updated = (await stack.payload.findByID({
@@ -67,7 +73,9 @@ describe.skipIf(!server)('create-partner endpoint, on a real database', () => {
 
   it('refuses anyone but the owner', async () => {
     const lead = await makeLead()
-    const editor = await stack.rest('POST', `/api/leads/${lead.id}/create-partner`, { as: 'editor' })
+    const editor = await stack.rest('POST', `/api/leads/${lead.id}/create-partner`, {
+      as: 'editor',
+    })
     expect(editor.status).toBe(403)
     const store = await stack.rest('POST', `/api/leads/${lead.id}/create-partner`, { as: 'store' })
     expect(store.status).toBe(403)

@@ -77,12 +77,14 @@ function Row({ lead, language }) {
 function Pager({ page, totalPages, searchParams, language }) {
   if (totalPages <= 1) return null
   const query = (p) => {
-    const params = new URLSearchParams()
-    if (str(searchParams.site)) params.set('site', str(searchParams.site))
-    if (str(searchParams.kind)) params.set('kind', str(searchParams.kind))
-    if (str(searchParams.status)) params.set('status', str(searchParams.status))
-    params.set('page', String(p))
-    return `/admin/leads?${params.toString()}`
+    const pairs = [
+      ['site', str(searchParams.site)],
+      ['kind', str(searchParams.kind)],
+      ['status', str(searchParams.status)],
+      ['page', String(p)],
+    ].filter(([, value]) => value)
+    const qs = pairs.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&')
+    return `/admin/leads?${qs}`
   }
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>

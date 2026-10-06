@@ -27,7 +27,10 @@ export const LEADS_COPY = t({
   pageNext: { en: 'Older →', id: 'Lebih lama →' },
   pageOf: { en: 'Page', id: 'Halaman' },
   sourceTitle: { en: 'Open the source', id: 'Buka sumbernya' },
-  sourceNone: { en: 'No item or chat attached.', id: 'Tidak ada barang atau chat yang dilampirkan.' },
+  sourceNone: {
+    en: 'No item or chat attached.',
+    id: 'Tidak ada barang atau chat yang dilampirkan.',
+  },
   sourceItemsLabel: { en: 'Items asked about', id: 'Barang yang ditanyakan' },
   sourcePublicPage: { en: 'Public page', id: 'Halaman publik' },
   sourceAdminPage: { en: 'Admin page', id: 'Halaman admin' },
@@ -42,7 +45,10 @@ export const LEADS_COPY = t({
     id: 'Tidak dapat membuat mitra. Coba lagi.',
   },
   partnerLeadsTitle: { en: 'Leads for this partner', id: 'Calon pembeli untuk mitra ini' },
-  partnerLeadsEmpty: { en: 'No leads point to this partner yet.', id: 'Belum ada calon pembeli yang menunjuk ke mitra ini.' },
+  partnerLeadsEmpty: {
+    en: 'No leads point to this partner yet.',
+    id: 'Belum ada calon pembeli yang menunjuk ke mitra ini.',
+  },
   ageJustNow: { en: 'just now', id: 'baru saja' },
 })
 

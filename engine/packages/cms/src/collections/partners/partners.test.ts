@@ -10,9 +10,9 @@ describe('partners have no auth', () => {
 
 describe('the products picker offers only published products', () => {
   it('filters productsCarried to published products', () => {
-    const field = Partners.fields.find(
-      (f) => 'name' in f && f.name === 'productsCarried',
-    ) as { filterOptions?: unknown }
+    const field = Partners.fields.find((f) => 'name' in f && f.name === 'productsCarried') as {
+      filterOptions?: unknown
+    }
     expect(field?.filterOptions).toEqual({ _status: { equals: 'published' } })
   })
 })
