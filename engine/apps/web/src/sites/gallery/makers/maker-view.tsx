@@ -28,8 +28,9 @@ export function MakerView({ maker, locale, t }: Props) {
   return (
     <div className={styles.wrap}>
       <section className={styles.section}>
-        <div className={styles.header}>
-          {maker.portrait !== null ? (
+        {/* No portrait, no empty frame: the name leads (a blank 4:5 box filled a phone's first screen). */}
+        <div className={maker.portrait !== null ? styles.header : undefined}>
+          {maker.portrait !== null && (
             <ResponsiveImage
               variant="fill"
               aspectRatio="4 / 5"
@@ -38,8 +39,6 @@ export function MakerView({ maker, locale, t }: Props) {
               sizes="10rem"
               className={styles.portrait}
             />
-          ) : (
-            <div className={styles.portrait} aria-hidden="true" />
           )}
           <div>
             <h1>{maker.name}</h1>
