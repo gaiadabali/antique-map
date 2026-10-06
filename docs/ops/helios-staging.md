@@ -14,7 +14,7 @@ with one site, `uindies`, serving both hostnames.
 | Media bucket            | `indies-media`: anonymous GET only under `derivatives/` and `iiif/`, no listing; served at `https://old-east-indies.gaiada.com/_media/`                                                                            |
 | Masters bucket          | `archive-masters`: no anonymous access, versioned; CORS admits the presigned PUT from `https://old-east-indies.gaiada.com` alone                                                                                   |
 | The app's key           | access key `uindies`, policy `indies-app`: `@engine/media`'s `media-writer` and `masters-writer` statements in one policy (reads and writes both buckets; writes masters only under `masters/`; deletes no master) |
-| Shared services         | RustFS 1.0.0 on `127.0.0.1:4032` (console off), its data in a 50 GiB loop image; Mailpit 1.31.3 on 4034/4035 behind auth                                                                                           |
+| Shared services         | RustFS 1.0.0 on `127.0.0.1:4032` (console off), its data a plain directory on `/` (no cap: the 50 GiB loop image hung Helios's snapshot backups 2026-10-02..04 and was retired 2026-10-06, kept in `/root/indies-loop-retired-20261006/`); Mailpit 1.31.3 on 4034/4035 behind auth                                                                                           |
 | Backups                 | `indies-db-backup.timer`, 19:40 UTC: `indies_db` alone, `pg_restore --list` checked, 7 days, the off-box hook `/etc/indies/backup-offbox` (no target yet: the owner's open decision, DEPLOYMENT.md §9)             |
 
 `scripts/ops/helios-provision.sh` makes all of it except three things: the retirement of the two-app shape (below,

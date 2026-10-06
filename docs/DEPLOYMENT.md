@@ -27,7 +27,7 @@ go-ahead (DR-15); production provisioning, DNS and live credentials each need th
 | Database · role | `indies_db` · `indies` (LOGIN only, `CONNECTION LIMIT 20`), Postgres 18.6 |
 | Media bucket | `indies-media`: anonymous GET only under `derivatives/` and `iiif/`, no listing; served at `/_media/` (§6) |
 | Private bucket | `archive-masters`: masters, `orders/`, `imports/`; no anonymous access; versioned |
-| Shared services | RustFS 1.0.0 on 127.0.0.1:4032 (its console off; 4033), data in a 50 GiB ext4 loop image so it cannot fill `/`; Mailpit 1.31.3 on 4034 (SMTP) and 4035 (UI), both behind auth |
+| Shared services | RustFS 1.0.0 on 127.0.0.1:4032 (its console off; 4033), data in a plain directory on `/` (no cap; the loop image it had hung Helios's snapshot backups, see scripts/ops/lib/rustfs.sh); Mailpit 1.31.3 on 4034 (SMTP) and 4035 (UI), both behind auth |
 | Firewall | ufw, default `INPUT DROP`: 22, 80 and 443 public; 4030–4035 answer on loopback alone |
 | Secrets | host-only, in the site user's `shared/.env` (mode 600) and `/etc/indies/*` (D49); never printed |
 | First owner | created at provisioning, so the open first-user form is closed; credentials in `/etc/indies/staging-admin/` (600, root) |
@@ -225,7 +225,7 @@ per-seller provider variables and the separate masters key go; `.env.example` li
 ## 11. Production outline
 
 1. **Decide** (👤 owner): the host (Q13; by default the same pull pipeline and host family as staging) and its
-   storage capacity — the full archive with tiles outgrows staging's 50 GiB image; the off-box backup target; the
+   storage capacity — the full archive with tiles needs room on `/` (staging's RustFS has no cap of its own); the off-box backup target; the
    mail provider, with SPF, DKIM and DMARC on both domains; any CDN in front; each domain's aliases and canonical
    form.
 2. **Accounts** (👤): Midtrans production, live keys only at go-ahead; an Anthropic production workspace with a
