@@ -699,5 +699,6 @@
   "placePage.availableHeading": "Tersedia",
   "placePage.soldHeading": "Sebelumnya terjual",
   "placePage.childrenHeading": "Tempat di dalam {name}",
+  "placePage.placeCount.other": "{count} tempat di dalamnya",
   "cmsPage.worksHeading": "Karya dalam cerita ini"
 }

@@ -23,6 +23,8 @@ export const PLACE_KEYS = defineMessages({
   'placePage.availableHeading': 'Available',
   'placePage.soldHeading': 'Previously sold',
   'placePage.childrenHeading': 'Places within {name}',
+  'placePage.placeCount.one': '{count} place within',
+  'placePage.placeCount.other': '{count} places within',
 })
 
 export type PlaceMessageKey = keyof typeof PLACE_KEYS

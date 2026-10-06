@@ -24,7 +24,11 @@ export function PlaceIndexView({ items, locale, t }: Props) {
             <li key={item.slug}>
               <a className={styles.indexCard} href={placeHref(item.path, locale)}>
                 <h2>{item.name}</h2>
-                <p className={styles.indexMeta}>{item.childCount}</p>
+                {item.childCount > 0 && (
+                  <p className={styles.indexMeta}>
+                    {t('placePage.placeCount', { count: item.childCount })}
+                  </p>
+                )}
               </a>
             </li>
           ))}
