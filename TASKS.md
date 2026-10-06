@@ -515,7 +515,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Goal:** a shopper can browse, fill a bag, check out as a guest with a delivery pin, and pay.
 **Done when:** on staging, on a phone, a guest adds two products, drops a pin in Bali, sees the delivery fee and total, pays with the simulator (and once with the Midtrans sandbox), and lands on a confirmation; the order exists with the nearest store holding every line and that store's stock reduced; an unpaid order releases its stock when it expires; a duplicate webhook changes nothing.
-**Waves:** W1 — 6.1, 6.2 · W2 — 6.3, 6.4 · W3 — 6.5
+**Waves:** W1 — 6.1, 6.2 · W2 — 6.3, 6.4 · W3 — 6.5 · W4 — 6.6 · W5 — 6.7
 
 - [x] **6.1 Shop browse, search and the product page** · needs: phase 3, phase 4 — ✅ 2026-10-05 8e665b3
   - **Lane** SHP · **Agent** senior-fe · **Wave** W1
@@ -578,7 +578,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 
 - [ ] **6.7 A replayed payment webhook never answers 500** · needs: 6.4, 6.6
-  - **Lane** SHP + PLT · **Agent** senior-be, Opus review · **Wave** W4
+  - **Lane** SHP + PLT · **Agent** senior-be, Opus review · **Wave** W5
   - **Owns** `engine/packages/cms/src/shop/payments/**`, `engine/apps/web/src/app/api/x/webhooks/**`
   - **Read** COMMERCE.md §Payment, SECURITY.md §Webhooks, the 2026-10-06 webhook entry in **Log**
   - _Requirements: 6.4_
