@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 11/20 | 0 | `██████░░░░`  55% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 1/5 | 12/20 | 0 | `██████░░░░`  60% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/7 | 21/26 | 0 | `████████░░`  81% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **29/51** | **144/208** | **8** | `███████░░░`  69% |
+| **All** | 11 phases | | | **29/51** | **145/208** | **8** | `███████░░░`  70% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -483,7 +483,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`, `engine/apps/web/src/app/api/x/leads/**`
   - **Read** EXPERIENCE-GALLERY.md §Handoffs, AI.md §Leads, SECURITY.md §Forms and uploads
   - _Requirements: 3.3, 4.1, 4.2, 4.5_
-  - [ ] 5.3.a a builder for the WhatsApp (`wa.me`) and email (`mailto:`) links that prefill the item's name, stock number, link and the visitor's language; the numbers and addresses come from `site-settings` (a marked placeholder until OA2 arrives)
+  - [x] 5.3.a a builder for the WhatsApp (`wa.me`) and email (`mailto:`) links that prefill the item's name, stock number, link and the visitor's language; the numbers and addresses come from `site-settings` (a marked placeholder until OA2 arrives)
   - [ ] 5.3.b the Sell-to-us page: WhatsApp and email buttons with a prepared message, and a form (name, contact, what they have, a few photos) that posts to `/api/x/leads`
   - [ ] 5.3.c `/api/x/leads`: validates with a shared schema, Turnstile, rate limit per IP, photo type-sniffing, size limits and re-encoding; creates a `leads` row and emails the owner (Mailpit on staging)
   - [ ] 5.3.d **Check:** from a phone viewport "Ask about this" opens a WhatsApp link whose text names the item and stock number; a valid Sell-to-us form creates a lead and an email; a bot-looking post, an oversize file, a renamed `.exe` and the eleventh post in a minute are each refused.
