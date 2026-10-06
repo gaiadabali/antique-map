@@ -212,7 +212,6 @@ function SiteFooter({
           { label: 'footer.stories', href: (l) => href('story', {}, l) },
           { label: 'footer.sellToUs', href: (l) => href('sellToUs', {}, l) },
           { label: 'footer.about', href: () => page('about') },
-          // The gallery's Contact is its own surface (5.3): `/contact`, `/id/kontak`.
           { label: 'footer.contact', href: (l) => href('contact', {}, l) },
         ]
       : [
