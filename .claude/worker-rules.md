@@ -30,4 +30,9 @@ Read by every headless worker the global launcher starts here (`~/.claude/worker
   files, both `en` and `id`; no file over 300 lines.
 - **Fresh-clone verify:** after `pnpm install --frozen-lockfile`, run `pnpm worktree:env` in the clone, then the
   ticket's Verify commands (at least `pnpm verify`).
+- **Never background, never "wait":** you run headless — ending your turn ends your session, and no background
+  notification ever comes back. Run long commands (`pnpm verify`, db tests, `pnpm build`, Playwright) in the
+  **foreground** with a long timeout; never `run_in_background`; never stop "to wait" for a job. **Commit after every
+  step, before any long run**, so nothing is lost if you are cut off (four runs on 2026-10-05/06 ended with their
+  work uncommitted this way).
 - **Report:** the format of `docs/WORKFLOW.md` §5, at the path the ticket names (always under `docs/reports/workers/` — you cannot write under `.claude/`). Commit it.
