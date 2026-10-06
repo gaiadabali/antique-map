@@ -137,7 +137,8 @@ export function invalidationBatch(options: BatchOptions = {}): InvalidationBatch
     now: boolean,
   ): Promise<number> {
     const forget = (count: number) => {
-      for (const [tag, info] of sending.slice(0, count)) if (kept.get(tag) === info) kept.delete(tag)
+      for (const [tag, info] of sending.slice(0, count))
+        if (kept.get(tag) === info) kept.delete(tag)
     }
     try {
       const posted = await postTags(
