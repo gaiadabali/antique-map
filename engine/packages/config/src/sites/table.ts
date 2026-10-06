@@ -55,6 +55,7 @@ const gallery = {
       place: 'places',
       story: 'stories',
       sellToUs: 'sell-to-us',
+      contact: 'contact',
     },
     id: {
       browse: 'jelajah',
@@ -64,6 +65,7 @@ const gallery = {
       place: 'tempat',
       story: 'cerita',
       sellToUs: 'jual-ke-kami',
+      contact: 'kontak',
     },
     facets: {
       path: ['objectType', 'place'],
