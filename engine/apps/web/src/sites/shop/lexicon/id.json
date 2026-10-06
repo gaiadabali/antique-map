@@ -425,6 +425,7 @@
   "order.serverErrorTitle": "Terjadi kesalahan di sistem kami. Tas Anda aman.",
   "order.statusUnavailable": "Hubungi kami lewat WhatsApp dan kami akan membantu.",
   "order.testPayment": "Pembayaran uji coba — tidak ada uang yang berpindah.",
+  "order.itemsTotal": "Total barang",
   "order.title": "Pesanan {number}",
   "order.total": "Total",
   "order.track": "Lacak paket Anda",

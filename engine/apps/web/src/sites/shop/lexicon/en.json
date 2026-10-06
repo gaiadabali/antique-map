@@ -429,6 +429,7 @@
   "order.serverErrorTitle": "Something went wrong on our side. Your bag is safe.",
   "order.statusUnavailable": "Message us on WhatsApp and we will sort it out.",
   "order.testPayment": "Test payment — no money moves.",
+  "order.itemsTotal": "Items total",
   "order.title": "Order {number}",
   "order.total": "Total",
   "order.track": "Track your parcel",

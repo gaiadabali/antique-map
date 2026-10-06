@@ -80,7 +80,7 @@ function ItemsTotal({ order, t }: { readonly order: OrderViewData; readonly t: P
         ))}
       </ul>
       <dl className={[styles.totalRow, styles.grand].join(' ')}>
-        <dt>{t('order.total')}</dt>
+        <dt>{t('order.itemsTotal')}</dt>
         <dd>{formatRupiah(order.totals.totalIdr)}</dd>
       </dl>
     </div>
@@ -158,6 +158,7 @@ export function OrderView({
     return (
       <section className={styles.page} aria-labelledby="order-status">
         <AutoRefresh />
+        <p className={styles.title}>{t('order.title', { number: String(order.number) })}</p>
         <h1 id="order-status" className={styles.status}>
           {t('order.confirmingDeliveryTitle')}
         </h1>
