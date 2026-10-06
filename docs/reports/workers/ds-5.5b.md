@@ -1,144 +1,154 @@
-# ds-5.5b — the gallery's "no commerce" scan (TASKS.md 5.5.b)
+# Report — ds-5.5b, the gallery's "no commerce" scan (5.5.b)
 
-**Task / Status: blocked**
-
-The spec and its term list are written (owned paths), lint and typecheck are clean, but the ticket's
-own acceptance condition ("home, browse, search **and at least one item page** must answer 200")
-cannot be met on `w/ds-5.5b`, and the scan cannot be executed at all, for three independent reasons
-below. No banned term was proven absent or present: the scan never ran.
-
-## Subtasks
-
-- ❌ **5.5.b** — not evidenced. See the three blockers. `pnpm tasks:report 5.5.b` was **not** run (the
-  ticket forbids reporting it unless the spec runs green with home, browse, search and item pages
-  scanned).
-
-## Check
-
-- ❌ The gallery's built HTML contains no cart/checkout/sign-in/price/"offer" — **not proven**. The
-  scan did not run (blockers 1–3).
-
-## Files
-
-- `tests/e2e/gallery/no-commerce/terms.ts` (new) — the banned-term list, each term with its reason;
-  EN+ID, the allowed "Price on request" / "Harga atas permintaan" phrases masked first.
-- `tests/e2e/gallery/no-commerce.spec.ts` (new, 235 lines) — the scan: discovers pages from the route
-  map and browse/index links, loads each at 390×844, tests visible text + the named attributes,
-  scans the raw server HTML for `askingPrice` and currency, and prints the scanned / "not built yet"
-  lists. Fails on any banned term and on any non-200 required page.
-- `docs/reports/workers/ds-5.5b.md` (this file).
-
-## Blockers (all three are outside my owned paths — I could not fix any)
-
-1. **The gallery has no item route on this branch, so the ticket is unsatisfiable as written.**
-   `engine/apps/web/src/app/(gallery)/gallery/[locale]/` holds only `page.tsx` (home), `browse/`,
-   `search/`, `page/` and `not-found/` — there is **no `item/`, `makers/`, `places/`, `sell-to-us/`**
-   (verified by directory listing; the catch-all `[...missing]/page.tsx` calls `notFound()`).
-   `routes-exist.test.ts` (`NOT_BUILT_YET.gallery`) names them: `item: 'TASKS.md 5.2'`,
-   `maker/place/story: 'TASKS.md 5.4'`, `sellToUs: 'TASKS.md 5.3'`. The ticket requires
-   "at least one item page must answer 200" — impossible until **5.2** is merged into `w/ds-5.5b`.
-   This is not branch staleness: **`main` is identical** (`git show main:engine/apps/web/src/app/routes-exist.test.ts`
-   lists the same `item: 'TASKS.md 5.2'`), so the ticket cannot pass on today's `main` either.
-
-2. **The root `playwright.config.ts` has no project for `tests/e2e/gallery/`,** so the ticket's own
-   Verify command finds no test to run. `pnpm exec playwright test tests/e2e/gallery/no-commerce.spec.ts --list`
-   → `Error: No tests found.` / `Total: 0 tests in 0 files`; `pnpm exec playwright test --list` lists
-   164 tests in 14 files, none under `tests/e2e/gallery`. The config's projects are smoke, status,
-   a11y, shop-e2e, hosts, admin (`testDir`s `./tests/e2e/{smoke,status,a11y,shop,hosts,admin}`).
-   `playwright.config.ts` is **not** an owned path, so adding a `gallery-e2e` project is a change I did
-   not make — it must be the orchestrator's (or a new ticket's). Without it the ticket's Verify line
-   is unrunnable.
-
-3. **The shared dev Postgres container is down and I may not recover it.** `docker exec
-   indies-platform-dev-postgres-1 pg_isready` → `/var/run/postgresql:5432 - rejecting connections`
-   (`rc=1`), continuously for this whole session ("terminating connection because of crash of another
-   server process"; "the database system is in recovery mode"). Worker rules forbid dropping or
-   recreating shared containers. The root cause is **already fixed on `main`** — `214a1f5 fix(dev):
-   the dev Postgres runs with an init as PID 1` (and `24f008a docs(workers): workers never start, stop
-   or recreate the shared dev containers`) — but `w/ds-5.5b` predates `1b5dffc`/`214a1f5` and I may
-   not merge. So `pnpm db:fresh`, `pnpm seed`, `pnpm build` and the server start could not run, and the
-   scan has no server to load.
-
-## Evidence
+**Status: BLOCKED — the spec is built, committed and runs, but it fails on real banned terms in the
+gallery's own lexicon, and the seed cannot create works (an app bug outside my owned paths), so no
+item page can answer 200. Per the ticket: not reported as 5.5.b done, reported as a finding.**
 
 ```text
-$ pnpm lint
-$ eslint --max-warnings=0 .
-(clean — no output, exit 0, after removing one unused helper)
+Task / Status (done | blocked | partial)
+5.5.b / blocked
+Subtasks
+  banned-term list (terms.ts)      ✅ built and committed — 25 words + 1 href rule, each with a reason
+  pages-to-scan discovery          ✅ built and committed — route-map driven, both locales, 404 probe
+  the scan (DOM + raw HTML)        ✅ runs — fails on 2 real lexicon violations (see Found)
+  seed + run on my port            ❌ scan green impossible: seed rejects every work row (after()
+                                     outside a request scope) → 0 works → no item page is 200
+  tasks:report 5.5.b               ❌ intentionally not reported (ticket: only on a green run)
+Check
+  (orchestrator ticks after merge; nothing ticked by me)
+Files
+  tests/e2e/gallery/no-commerce.spec.ts
+  tests/e2e/gallery/no-commerce/terms.ts
+  docs/reports/workers/ds-5.5b.md
+```
 
-$ pnpm --filter @engine/web typecheck
+## What is built
+
+- `tests/e2e/gallery/no-commerce/terms.ts` — the banned vocabulary (the ticket's list, EN + ID,
+  case-insensitive regex sources with a reason each), the banned href rule (`/bag`, `/checkout`,
+  `/account`, `/admin`), the allowed-price phrases (`price on request`, `harga atas permintaan`,
+  masked out before `price`/`harga` are tested), the attribute list, and `askingPrice`.
+- `tests/e2e/gallery/no-commerce.spec.ts` — discovers pages from the route map (`SITES.gallery` +
+  `createHref`), both locales; item pages from browse's own links (up to 10), maker/place pages from
+  the indexes' own links when they answer 200; scans the rendered DOM at 390×844 (visible text +
+  `href`/`aria-label`/`title`/`alt`/`placeholder`/`value`) and the raw server HTML (`askingPrice`
+  and currency figures); prints the scanned list and the "not built yet" list; hard-fails when home,
+  browse, search or an item page is not 200; asserts at least one item page was scanned. No
+  `test.skip`; the one allowed skip is the printed "not built yet" list.
+
+Commits: `f67f4bb`…`67e9597` on `w/ds-5.5b` (resume of run am-ds-5.5b-g2; this run added the
+discovery fix `67e9597` — `add()` dropped the 404 probe's `scanAt404` flag, so the 404 page was
+skipped instead of scanned).
+
+## Verify — real output
+
+`pnpm lint` (2026-10-06, this worktree):
+
+```text
+$ eslint --max-warnings=0 .
+```
+(no output, exit 0)
+
+`pnpm --filter @engine/web typecheck`:
+
+```text
 $ next typegen && tsc --noEmit
 Generating route types...
 ✓ Types generated successfully
-rc=0
-
-$ pnpm vitest run engine/apps/web/src/app/routes-exist.test.ts
-Test Files  1 passed (1)
-     Tests  17 passed (17)
-
-$ pnpm exec playwright test tests/e2e/gallery/no-commerce.spec.ts --list
-Error: No tests found.
-Total: 0 tests in 0 files
-
-$ pnpm exec playwright test --list
-Total: 164 tests in 14 files          # none in tests/e2e/gallery
-
-$ docker exec indies-platform-dev-postgres-1 pg_isready
-/var/run/postgresql:5432 - rejecting connections
-rc=1
 ```
+(no type errors)
 
-Fresh clone of `w/ds-5.5b` (`git clone -b w/ds-5.5b <worktree> ../antique-map-w-ds-5.5b-fresh2`,
-`pnpm install --frozen-lockfile`), both Verify commands — same result, so the blockers are the branch's,
-not this worktree's:
+`pnpm exec playwright test tests/e2e/gallery/no-commerce.spec.ts --project gallery-e2e --reporter=list`
+(server: `next start -p 4200`, production build, `LOCAL_PRODUCTION_BUILD=1`, host `gallery.localhost`):
 
 ```text
-$ pnpm lint                                              # in the fresh clone
-$ eslint --max-warnings=0 .
-LINT_RC=0
+Running 1 test using 1 worker
 
-$ pnpm exec playwright test tests/e2e/gallery/no-commerce.spec.ts --reporter=list
-Error: No tests found.
-Make sure that arguments are regular expressions matching test files.
-PW_RC=0
+scanned 9 pages:
+  ok   /
+  ok   /browse
+  ok   /search?q=java
+  ok   /search?q=zzzzqqq
+  ok   /no-such-page-zzzz (HTTP 404)
+  ok   /id
+  ok   /id/jelajah
+  ok   /id/cari?q=java
+  ok   /id/cari?q=zzzzqqq
+not built yet (20):
+  skip /sell-to-us (HTTP 404)        skip /id/jual-ke-kami (HTTP 404)
+  skip /makers (HTTP 404)            skip /id/pembuat (HTTP 404)
+  skip /places (HTTP 404)            skip /id/tempat (HTTP 404)
+  skip /about (HTTP 404)             skip /id/about (HTTP 404)
+  skip /guarantee (HTTP 404)         skip /id/guarantee (HTTP 404)
+  skip /certificate (HTTP 404)       skip /id/certificate (HTTP 404)
+  skip /condition (HTTP 404)         skip /id/condition (HTTP 404)
+  skip /shipping (HTTP 404)          skip /id/shipping (HTTP 404)
+  skip /visit (HTTP 404)             skip /id/visit (HTTP 404)
+  skip /contact (HTTP 404)           skip /id/contact (HTTP 404)
 
-$ ls engine/apps/web/src/app/(gallery)/gallery/[locale]/   # fresh clone: no item/ dir
-[...missing]  browse  layout.tsx  not-found  not-found.tsx  page  page.tsx  search
+1) Gallery: no commerce anywhere (5.5.b)
 
-$ grep -c "tests/e2e/gallery" playwright.config.ts         # fresh clone: 0
-0
+   Error: banned commerce terms found on the gallery:
+   / [text] -> price -> "ce went — never its price.
+
+   A chart of the Su"
+   / [text] -> price -> "ort, provenance and price — and, if you wish,"
+
+   1 failed
 ```
 
-Gallery app routes present (no `item/`, `makers/`, `places/`, `sell-to-us/`):
+## Finding 1 (blocks green): the gallery's own home copy says "price"
+
+Both violations are the **gallery lexicon** (`engine/apps/web/src/sites/gallery/lexicon/en.json`),
+rendered on `/`:
+
+- `home.gallery.recentlyBody` (en.json:263) — "We keep the record of where a piece went —
+  **never its price**."
+- `home.gallery.enquireBody` (en.json:231) — "…condition report, provenance **and price** — and, if
+  you wish, arrange a private viewing."
+
+EXPERIENCE-GALLERY.md §12 allows only "Price on request". If the owner's intent is that these two
+sentences are fine (one of them literally says no price is kept), then the lexicon keys should be
+added to the allowed list or reworded — that is an owner/UX decision and an app change outside my
+owned paths. The Indonesian lexicon carries the same sentences: `home.gallery.enquireBody`
+(id.json:232) says "…dan **harganya** —", `recentlyBody` (id.json:264) "…tidak pernah **harganya**."
+
+Note for the term list: the ID forms escape the ticket's `\bharga\b` (Indonesian attaches suffixes:
+"harganya", "hargaku"). I did **not** widen the pattern unilaterally; if the finding is confirmed,
+the list wants `harga` as a prefix (`\bharga\w*`), which would make the ID home fail identically.
+
+## Finding 2 (blocks the run's item pages): the seed rejects every work row
+
+`pnpm db:fresh` + `pnpm --filter @engine/cms seed --layer gallery-sample --publish` (also
+`gallery-full`): makers (127) and places (66) seed fine, but **every work/product row is rejected**:
 
 ```text
-engine/apps/web/src/app/(gallery)/gallery/[locale]/
-  [...missing]/  browse/  not-found/  page/  search/  layout.tsx  not-found.tsx  page.tsx
+Row 3 (P.0035) rejected — `after` was called outside a request scope. …
+Row 4 (M.orderr) rejected — `after` was called outside a request scope. …
+…
+review marks carried into legacy.categories: 0 work(s)
 ```
 
-## Found
+The database ends with `works = 0` (checked via `psql`), so browse/search render with no items and
+no item page can answer 200 — the spec's "at least one item page was scanned" assertion fails by
+design. Cause: `invalidate()` (@engine/cache) throws outside a Next request when the write's
+`req.context` carries no collector, and the gallery seed's work writes attach none
+(`engine/packages/cms/src/seed/req.ts` builds a bare request). The same class of bug was fixed for
+site-settings in `32091a7` (vocabulary seed now wraps the write in
+`invalidationBatch().operation(...)`); the gallery/shop seed's work and product writes need the same
+treatment (or a collector on the seed's request). Not my owned paths — the schema lead / seed owner
+should apply the `32091a7` pattern to `engine/packages/cms/src/seed/gallery/**` and `shop/**`.
 
-- **`.claude/specs/indies-platform/tickets/ds-5.5b.md` §2 is internally inconsistent given the
-  dependency order:** it requires "at least one item page must answer 200" while also allowing "a
-  route that answers 404 today because its phase-5 task hasn't merged" to be skipped as "not built
-  yet". Those two rules collide until 5.2 merges: the item route is both the page that must be 200
-  and the page that 404s. The ticket was cut as if 5.2 had landed; it has not.
-- **`playwright.config.ts` has no gallery e2e project** (its header comment lists only
-  smoke/status/a11y/hosts/shop), so no ticket may assume `pnpm exec playwright test tests/e2e/gallery/...`
-  runs. Contradicts the Verify line of ds-5.5b (and ds-5.1d, which the same run cut).
+## Environment notes (for the next runner)
 
-## Follow-ups (proposed subtasks — I did not create them)
-
-1. Merge **5.2** (gallery item page) into the branch the gallery scan runs on, then re-cut ds-5.5b;
-   it is otherwise unblockable.
-2. Add a `gallery-e2e` project to `playwright.config.ts` (`testDir: './tests/e2e/gallery'`, gallery
-   host, `E2E_PORT`) — small, but the whole ticket family depends on it. Not an owned path here.
-3. Recover the shared dev Postgres: it needs the `main` fix `214a1f5` (init as PID 1); a worker may
-   not recreate the container, so the orchestrator must land that on the running container's host or
-   restart it from the fixed compose file.
-
-## Not done (deliberately)
-
-- No `pnpm tasks:report 5.5.b` (ticket §5: only when green).
-- No `test.skip` and no conditional assert beyond the one "not built yet" rule — the spec's required
-  pages (home, browse, search, first item) fail loudly, as instructed.
+- The dev Postgres container is up and healthy; `localhost:5432` TCP-connects but **resets the
+  Postgres startup handshake on the IPv6 path** — `127.0.0.1` works. My `.env.local` (gitignored,
+  worktree-only) pins `POSTGRES_HOST=127.0.0.1` and `DATABASE_URL` on `127.0.0.1`. `db:fresh`'s
+  migrate child reads `POSTGRES_*` from `.env.local`, so pinning there is enough.
+- The web server's env is Next's own `engine/apps/web/.env.local` (gitignored): I copied
+  `.env.example` into it, set `PORT`, `DATABASE_URL`, `LOCAL_PRODUCTION_BUILD=1`,
+  `POSTGRES_HOST=127.0.0.1`, and carried the dev `LINK_TOKEN_KEYS` ring across from the root
+  `.env.local`. `next start` needs `next start -p <port>` (the root `.env.local`'s PORT does not
+  reach it; pnpm's `--` passes literally).
+- The stray untracked `.e2e-shop-payment-seed-*.ts` files (and their `-out` folders) from the
+  earlier payment run were deleted as the ticket's resume note asked.
