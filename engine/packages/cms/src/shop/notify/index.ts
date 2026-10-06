@@ -60,7 +60,12 @@ type OrderForNotify = {
   readonly contact?: { name?: string | null; email?: string | null; locale?: string | null } | null
   readonly store?: { id: number; name?: string | null } | number | null
   readonly lines?: readonly { name?: string | null; qty?: number | null }[] | null
-  readonly totals?: { total?: number | null } | null
+  readonly totals?: {
+    total?: number | null
+    subtotal?: number | null
+    discount?: number | null
+    deliveryFee?: number | null
+  } | null
   readonly trackingTokenEnc?: string | null
   readonly expiresAt?: string | null
 }
@@ -96,7 +101,7 @@ export async function notifyOrderEvent(
         contact: { name: true, email: true, locale: true },
         store: { name: true },
         lines: { name: true, qty: true },
-        totals: { total: true },
+        totals: { total: true, subtotal: true, discount: true, deliveryFee: true },
         trackingTokenEnc: true,
         expiresAt: true,
       },
@@ -140,6 +145,8 @@ export async function notifyOrderEvent(
             to: buyerEmail,
             locale,
             orderNumber: order.number,
+            itemsTotalIdr: (order.totals?.subtotal ?? 0) - (order.totals?.discount ?? 0),
+            deliveryFeeIdr: order.totals?.deliveryFee ?? 0,
             totalIdr: order.totals?.total ?? 0,
             payBy: order.expiresAt ?? null,
             payUrl: orderUrl,

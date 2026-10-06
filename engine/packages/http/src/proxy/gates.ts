@@ -48,6 +48,23 @@ export function isEngineRoute(pathname: string): boolean {
   return pathname.startsWith('/api/x/') || pathname === '/api/health'
 }
 
+const TRACKING_IMAGE_PATH = /^\/api\/x\/track\/([^/]+)\/driver-image$/
+
+/**
+ * The token a tracking photo's URL (`/api/x/track/{token}/driver-image`) presents, decoded as the
+ * `/track/{token}` page's own is, so both count as one token against the guess budget; `null` for
+ * any other path.
+ */
+export function trackingImageToken(pathname: string): string | null {
+  const raw = TRACKING_IMAGE_PATH.exec(pathname)?.[1]
+  if (raw === undefined) return null
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
+}
+
 /** A machine route (`HOST_FREE_PATHS`), answered whatever the `Host`. */
 export function isHostFree(pathname: string): boolean {
   return (HOST_FREE_PATHS as readonly string[]).includes(pathname)

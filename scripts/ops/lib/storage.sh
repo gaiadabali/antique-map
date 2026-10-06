@@ -38,7 +38,7 @@ storage_bundle() {
       cp "$OPS_DIR/../../engine/packages/media/src/storage/policies/$d.json" "$STORAGE_DIR/docs/"
     done
   fi
-  py_tool render "$STORAGE_DIR/docs" "$STORAGE_DIR" "$S_MEDIA_BUCKET" "$(masters_bucket)" "https://$S_DOMAIN" ||
+  py_tool render "$STORAGE_DIR/docs" "$STORAGE_DIR" "$S_MEDIA_BUCKET" "$(masters_bucket)" "https://$S_DOMAIN"     "$(site_origins)" ||
     die "the storage policy documents do not render (engine/packages/media/src/storage/policies)"
 }
 
@@ -102,16 +102,23 @@ ensure_canned_policy() {
   fi
 }
 
-# ensure_cors BUCKET SPEC_FILE — the bucket's CORS rules are exactly SPEC_FILE's.
+# site_origins — https://HOST for every shop and gallery hostname, comma-separated.
+site_origins() {
+  local host out=''
+  for host in ${SHOP_HOSTS//,/ } ${GALLERY_HOSTS//,/ }; do out="${out:+$out,}https://$host"; done
+  printf '%s' "$out"
+}
+
+# ensure_cors BUCKET SPEC_FILE WHAT — the bucket's CORS rules are exactly SPEC_FILE's.
 ensure_cors() {
-  local bucket="$1" spec="$2" xml="$STORAGE_DIR/cors-$1.xml"
+  local bucket="$1" spec="$2" what="$3" xml="$STORAGE_DIR/cors-$1.xml"
   py_tool cors-xml "$spec" "$xml"
   if [ "$S3_LIVE" = 0 ]; then
     s3_blind "set bucket $bucket's CORS: $(cat "$xml")"
     return 0
   fi
   if [ "$(s3 GET "/$bucket?cors")" = 200 ] && python3 "$S3_TMP/s3.py" same-cors "$S3_TMP/out" "$spec"; then
-    ok "bucket $bucket's CORS: https://$S_DOMAIN may PUT a presigned master, no other origin"
+    ok "bucket $bucket's CORS: $what"
   else
     act "set bucket $bucket's CORS: $(cat "$xml")" s3_put "/$bucket?cors" "$xml"
   fi
@@ -125,7 +132,8 @@ ensure_storage() {
   ensure_bucket "$S_MEDIA_BUCKET" public "$STORAGE_DIR/bucket-media.json"
   ensure_bucket "$(masters_bucket)" private
   ensure_versioning "$(masters_bucket)"
-  ensure_cors "$(masters_bucket)" "$STORAGE_DIR/cors-masters.json"
+  ensure_cors "$(masters_bucket)" "$STORAGE_DIR/cors-masters.json"     "https://$S_DOMAIN may PUT a presigned master, no other origin"
+  ensure_cors "$S_MEDIA_BUCKET" "$STORAGE_DIR/cors-media.json"     "the sites ($(site_origins)) may GET and HEAD, nothing else"
   ensure_canned_policy "$(app_policy)" "$STORAGE_DIR/policy-app.json"
 }
 

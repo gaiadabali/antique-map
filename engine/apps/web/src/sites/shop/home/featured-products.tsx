@@ -62,7 +62,8 @@ async function ProductsGrid({ locale, t }: Props) {
       {products.map((product, at) => (
         <a className={styles.productCard} key={product.slug} href={`/product/${product.slug}`}>
           {product.imageUrl ? (
-            // The upload's own URL, from the CMS: not a Next static asset path.
+            // The public derivative (`server/media/public-image`), a plain `<img>` since it never
+            // goes through `next/image`'s optimizer or its remote-pattern allowlist.
             <img
               className={styles.plate}
               style={{ aspectRatio: '4 / 5', objectFit: 'cover' }}

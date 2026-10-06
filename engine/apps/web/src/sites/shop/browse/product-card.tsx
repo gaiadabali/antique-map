@@ -36,6 +36,7 @@ export function ProductCard({
           alt={product.image.alt}
           sizes="(max-width: 767px) 50vw, 25vw"
           className={styles.image}
+          unoptimized
         />
       ) : (
         <div className={`${styles.image} ${styles.imageEmpty}`} aria-hidden="true" />

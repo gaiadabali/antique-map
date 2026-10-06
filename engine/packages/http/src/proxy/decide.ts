@@ -12,7 +12,9 @@
  * 4. `/api/…`: an engine route (`/api/x/…`, `/api/health`) passes on; Payload's REST passes on
  *    only on `ADMIN_HOST`, and is a plain 404 elsewhere. `/admin` passes on only on `ADMIN_HOST`
  *    (in English unless its user chose otherwise) and is the site's designed 404 elsewhere — so
- *    staff cookies are only ever set and sent on the one host (SECURITY.md X2).
+ *    staff cookies are only ever set and sent on the one host (SECURITY.md X2). The tracking
+ *    photo's route (`/api/x/track/{token}/driver-image`) counts its token against the tracking
+ *    guess budget, as the page does.
  * 5. The site's own files (`/<site>/logo.svg`, …) pass on; its root files (robots, sitemaps,
  *    `.well-known`, favicon, touch icon, manifest) are rewritten to their routes and files.
  * 6. The site's route map (`parsePublicPath()`): an old site's URL goes to `/api/x/legacy/…` with
@@ -52,6 +54,7 @@ import {
   namesNotFoundRoute,
   notFoundPath,
   rootRewrite,
+  trackingImageToken,
 } from './gates'
 import { trackingGuessAllowed } from './tracking-rate-limit'
 import type { DecideOptions, ProxyDecision, ProxyRequest, ProxyWhy } from './types'
@@ -133,7 +136,17 @@ function route(request: ProxyRequest, options: DecideOptions, host: HostMatch): 
       status: PROXY_NOT_FOUND_STATUS,
     }
   }
-  if (isApiPath(pathname)) return { kind: 'next', to: null, why: 'api', locale }
+  if (isApiPath(pathname)) {
+    // The tracking photo's route takes the same token as the page: one shared guess budget.
+    const imageToken = trackingImageToken(pathname)
+    return {
+      kind: 'next',
+      to: null,
+      why: 'api',
+      locale,
+      ...(imageToken === null ? {} : { guessedToken: imageToken }),
+    }
+  }
   if (isAdminPath(pathname)) {
     if (!host.admin) return notFound()
     // The admin starts in English unless its user chose otherwise (KOI): Payload reads the

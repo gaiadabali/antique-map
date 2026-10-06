@@ -1,0 +1,2 @@
+# 6-followup-2-r1 — continue (the previous run hit the seat limit)
+Spec: `tickets/6-followup-2.md`. Part A is committed (`1aaba38`). Part B is uncommitted: `server/shop/catalogue/catalogue.ts`, `server/shop/home/load-featured-products.ts`, `collections/products/index.ts`, new `hooks/product-invalidate.ts`, plus three new screenshots under `docs/gates/shop-payment/`. Read them, finish B and its two tests, **commit after each step** (foreground only — `.claude/worker-rules.md`). Then typecheck both packages, lint, `pnpm verify`. Do not run `git merge`.

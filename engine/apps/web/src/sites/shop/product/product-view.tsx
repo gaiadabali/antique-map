@@ -73,6 +73,7 @@ export function ProductView({
             sizes="(max-width: 767px) 100vw, 50vw"
             priority
             className={styles.leadImage}
+            unoptimized
           />
         )}
         {rest.length > 0 && (
@@ -86,6 +87,7 @@ export function ProductView({
                 alt={image.alt}
                 sizes="(max-width: 767px) 33vw, 120px"
                 className={styles.thumb}
+                unoptimized
               />
             ))}
           </div>

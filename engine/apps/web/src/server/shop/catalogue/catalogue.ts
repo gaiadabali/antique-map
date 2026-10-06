@@ -11,9 +11,10 @@
  */
 import 'server-only'
 
-import { cacheTag } from 'next/cache'
+import { cacheLife } from 'next/cache'
 import { connection } from 'next/server'
 
+import { cacheTags, catalogueTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 
 import { availabilityFor, withAvailability, type ProductAvailability } from './availability'
@@ -28,30 +29,29 @@ import {
 import { searchProductIds } from './search'
 import type { CategoryVM, ListingVM, ProductVM, VariantVM } from './view-models'
 
-/** The whole catalogue's editorial tag: a product edit re-renders the pages that show it. */
-const CATALOGUE_TAG = 'products'
-
-function tagCatalogue(): void {
-  cacheTag(CATALOGUE_TAG)
-}
+/** The shop's listings' tag: a change any listing could show re-renders every one. */
+const CATALOGUE = catalogueTag('shop')
 
 /** The categories a published product carries, by label. */
 export async function categories(): Promise<readonly CategoryVM[]> {
   'use cache'
-  tagCatalogue()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   return getCategories(await cms())
 }
 
 /** The id of the published term a category page's slug names, or `null`. */
 export async function categoryId(slug: string): Promise<number | null> {
   'use cache'
-  tagCatalogue()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   return getCategoryId(await cms(), slug)
 }
 
 async function cachedListing(options: { sort?: ListingSort; categoryId?: number; page?: number }) {
   'use cache'
-  tagCatalogue()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   return listProducts(await cms(), options)
 }
 
@@ -78,7 +78,8 @@ export async function listing(options: {
 
 async function cachedSearch(options: { query: string; locale: 'en' | 'id'; sort?: ListingSort }) {
   'use cache'
-  tagCatalogue()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   const payload = await cms()
   const ids = await searchProductIds(payload, options.query, options.locale)
   if (ids.length === 0) return null
@@ -115,7 +116,8 @@ export async function search(options: {
 /** A product page's editorial data (no availability): its metadata reads this, cached. */
 export async function productEditorial(slug: string): Promise<ProductVM | null> {
   'use cache'
-  tagCatalogue()
+  cacheLife('hours')
+  cacheTags([CATALOGUE])
   return getProduct(await cms(), slug)
 }
 
