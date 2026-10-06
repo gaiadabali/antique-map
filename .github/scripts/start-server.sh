@@ -48,9 +48,11 @@ cp -r "$release" "$tree"
 secret() { node -e "process.stdout.write(require('node:crypto').randomBytes(32).toString('base64url'))"; }
 payload_secret="$(secret)"
 link_key="$(secret)"
+order_link_key="$(secret)" # ORDER_LINK_KEY (6.6): a boot-check requirement, 32 random bytes
 if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
   echo "::add-mask::$payload_secret"
   echo "::add-mask::$link_key"
+  echo "::add-mask::$order_link_key"
 fi
 
 : "${PGHOST:?PGHOST names the Postgres to use}" "${POSTGRES_USER:?}" "${PGPASSWORD:?}"
@@ -64,7 +66,7 @@ database_url="postgres://${POSTGRES_USER}:${PGPASSWORD}@${PGHOST}:${PGPORT:-5432
     PORT="$port" HOSTNAME=0.0.0.0 \
     GALLERY_HOSTS=gallery.localhost SHOP_HOSTS=shop.localhost \
     DATABASE_URL="$database_url" PAYLOAD_SECRET="$payload_secret" \
-    LINK_TOKEN_KEYS="ci:$link_key" \
+    LINK_TOKEN_KEYS="ci:$link_key" ORDER_LINK_KEY="$order_link_key" \
     LOCAL_PRODUCTION_BUILD=1 \
     "$@" \
     node server.js
