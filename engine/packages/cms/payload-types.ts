@@ -78,6 +78,7 @@ export interface Config {
     stores: Store
     'stock-levels': StockLevel
     orders: Order
+    'order-notifications': OrderNotification
     'payment-events': PaymentEvent
     leads: Lead
     partners: Partner
@@ -108,6 +109,7 @@ export interface Config {
     stores: StoresSelect<false> | StoresSelect<true>
     'stock-levels': StockLevelsSelect<false> | StockLevelsSelect<true>
     orders: OrdersSelect<false> | OrdersSelect<true>
+    'order-notifications': OrderNotificationsSelect<false> | OrderNotificationsSelect<true>
     'payment-events': PaymentEventsSelect<false> | PaymentEventsSelect<true>
     leads: LeadsSelect<false> | LeadsSelect<true>
     partners: PartnersSelect<false> | PartnersSelect<true>
@@ -1206,7 +1208,7 @@ export interface Order {
   totals: {
     subtotal: number
     discount: number
-    deliveryFee: number
+    deliveryFee?: number | null
     total: number
   }
   discount?: {
@@ -1215,6 +1217,7 @@ export interface Order {
     value?: number | null
   }
   status:
+    | 'awaiting_quote'
     | 'pending_payment'
     | 'paid'
     | 'processing'
@@ -1227,6 +1230,7 @@ export interface Order {
     | {
         from?:
           | (
+              | 'awaiting_quote'
               | 'pending_payment'
               | 'paid'
               | 'processing'
@@ -1238,6 +1242,7 @@ export interface Order {
             )
           | null
         to:
+          | 'awaiting_quote'
           | 'pending_payment'
           | 'paid'
           | 'processing'
@@ -1276,6 +1281,7 @@ export interface Order {
     uploadedBy?: (number | null) | User
   }
   trackingTokenHash: string
+  trackingTokenEnc?: string | null
   expiresAt?: string | null
   /**
    * Store staff: hand the order back with a reason if your store cannot send it.
@@ -1284,6 +1290,27 @@ export interface Order {
     flag?: boolean | null
     reason?: string | null
   }
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "order-notifications".
+ */
+export interface OrderNotification {
+  id: number
+  order: number | Order
+  status:
+    | 'awaiting_quote'
+    | 'pending_payment'
+    | 'paid'
+    | 'processing'
+    | 'waiting_driver'
+    | 'on_the_way'
+    | 'delivered'
+    | 'cancelled'
+    | 'expired'
+  sentAt?: string | null
   updatedAt: string
   createdAt: string
 }
@@ -1610,6 +1637,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'orders'
         value: number | Order
+      } | null)
+    | ({
+        relationTo: 'order-notifications'
+        value: number | OrderNotification
       } | null)
     | ({
         relationTo: 'payment-events'
@@ -2316,6 +2347,7 @@ export interface OrdersSelect<T extends boolean = true> {
         uploadedBy?: T
       }
   trackingTokenHash?: T
+  trackingTokenEnc?: T
   expiresAt?: T
   needsAttention?:
     | T
@@ -2323,6 +2355,17 @@ export interface OrdersSelect<T extends boolean = true> {
         flag?: T
         reason?: T
       }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "order-notifications_select".
+ */
+export interface OrderNotificationsSelect<T extends boolean = true> {
+  order?: T
+  status?: T
+  sentAt?: T
   updatedAt?: T
   createdAt?: T
 }
@@ -2649,6 +2692,7 @@ export interface SiteSetting {
      */
     welcomeDiscount?: string | null
     orderExpiryMinutes?: number | null
+    quoteWindowMinutes?: number | null
     storeAlerts?: boolean | null
   }
   updatedAt?: string | null
@@ -2733,6 +2777,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
             }
         welcomeDiscount?: T
         orderExpiryMinutes?: T
+        quoteWindowMinutes?: T
         storeAlerts?: T
       }
   updatedAt?: T

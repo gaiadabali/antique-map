@@ -26,6 +26,7 @@ import type { Payload } from 'payload'
 import type { BagCookieKey, BagLine } from '../pricing/bag'
 import { DISCOUNT_MESSAGE_KEYS, type DiscountRefusal } from '../pricing/discount'
 import { quoteBag } from '../pricing/quote'
+import { notifyOrderEvent } from '../notify'
 import { inTransaction, type Tx } from '../payments/transaction'
 import { lineKey, type LineRef, type PickRefusal } from './assign'
 import {
@@ -36,6 +37,7 @@ import {
 } from './checkout-input'
 import { isInIndonesia } from './geo'
 import { loadProductSnapshots, type ProductSnapshot } from './inputs'
+import { orderLinkKeyFromEnv, sealToken } from './link-key'
 import {
   claimDiscount,
   inLockOrder,
@@ -72,7 +74,9 @@ export type CreateOrderOptions = {
 export type OrderTotals = {
   readonly subtotalIdr: number
   readonly discountIdr: number
-  readonly deliveryIdr: number
+  /** `null` until the quote move sets it (TASKS.md 6.6): staff price delivery after placement. */
+  readonly deliveryIdr: number | null
+  /** `subtotalIdr − discountIdr` until a fee is quoted; `+ deliveryIdr` once it is. */
   readonly totalIdr: number
 }
 
@@ -152,31 +156,22 @@ type Placement = {
 async function placeOrder(tx: Tx, placement: Placement): Promise<CreatedOrder> {
   const { prepared, details, at } = placement
   const lines: readonly BagLine[] = prepared.lines
-  const pick = await pickStore(tx, {
-    lines,
-    pin: details.delivery,
-    bands: prepared.settings.delivery.bands,
-  })
+  const pick = await pickStore(tx, { lines, pin: details.delivery })
   if (!pick.ok) throw new Refused(pick)
 
+  // No delivery quote yet (TASKS.md 6.6): staff price it after placement, so `distanceKm` is never
+  // given to the bag's pricer here — `quote.deliveryIdr` comes back `null`, and the total excludes it.
   const quote = quoteBag(lines, prepared.catalogue, prepared.settings, {
-    distanceKm: pick.distanceKm,
+    distanceKm: null,
     discount: prepared.discount,
   })
-  if (quote.refusal === 'beyond_reach') throw new Refused({ ok: false, refusal: 'outside_reach' })
-  if (quote.refusal === 'no_delivery_table')
-    throw new Refused({ ok: false, refusal: 'no_delivery_table' })
-  if (
-    quote.refusal !== undefined ||
-    quote.deliveryIdr === null ||
-    quote.lines.some((l) => l.status !== 'ok')
-  ) {
+  if (quote.refusal !== undefined || quote.lines.some((l) => l.status !== 'ok')) {
     throw new Error(`orders: the quote of buyable lines failed (${quote.refusal ?? 'a line'})`)
   }
   const totals: OrderTotals = {
     subtotalIdr: quote.subtotalIdr,
     discountIdr: quote.discountIdr,
-    deliveryIdr: quote.deliveryIdr,
+    deliveryIdr: null,
     totalIdr: quote.totalIdr,
   }
   if (placement.expectedTotalIdr !== null && placement.expectedTotalIdr !== totals.totalIdr) {
@@ -194,7 +189,8 @@ async function placeOrder(tx: Tx, placement: Placement): Promise<CreatedOrder> {
   const priced = new Map(quote.lines.map((line) => [lineKey(line), line]))
   const number = await nextOrderNumber(tx)
   const { token, hash } = newTrackingToken()
-  const expiresAt = new Date(at.getTime() + prepared.orderSettings.orderExpiryMinutes * 60_000)
+  const sealed = sealToken(token, orderLinkKeyFromEnv())
+  const expiresAt = new Date(at.getTime() + prepared.orderSettings.quoteWindowMinutes * 60_000)
   const orderId = await insertOrder(tx, {
     number,
     contact: details.contact,
@@ -209,6 +205,7 @@ async function placeOrder(tx: Tx, placement: Placement): Promise<CreatedOrder> {
       return { ...line, unitIdr: unitIdr!, lineIdr }
     }),
     trackingTokenHash: hash,
+    trackingTokenEnc: sealed,
     expiresAt,
     at,
   })
@@ -253,7 +250,16 @@ export async function createOrder(
   }
   for (const attempt of [1, 2] as const) {
     try {
-      return await inTransaction(payload, (tx) => placeOrder(tx, placement))
+      const created = await inTransaction(payload, (tx) => placeOrder(tx, placement))
+      // After commit (TASKS.md 6.6, orchestrator decision B): "we're confirming your delivery
+      // price". Best-effort: `notifyOrderEvent` never throws, but a defect here must not undo
+      // the order the buyer already has.
+      await notifyOrderEvent(payload, {
+        orderId: created.orderId,
+        from: null,
+        to: 'awaiting_quote',
+      }).catch(() => {})
+      return created
     } catch (error) {
       if (!(error instanceof Refused)) throw error
       // A unit lost to another buyer between the pick and the decrement: once more, fresh counts.

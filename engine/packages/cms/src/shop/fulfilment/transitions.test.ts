@@ -34,8 +34,9 @@ function legal(role: UserRole): string[] {
 }
 
 describe('the transition table', () => {
-  it('store staff: exactly one step forward along the line, nothing else', () => {
+  it('store staff: exactly one step forward along the line, plus awaiting_quote→cancelled, nothing else', () => {
     expect(legal('store')).toEqual([
+      'awaiting_quote→cancelled',
       'paid→processing',
       'processing→waiting_driver',
       'waiting_driver→on_the_way',
@@ -45,6 +46,7 @@ describe('the transition table', () => {
 
   it('owner and editor: any step forward, one back, and a cancel before delivery', () => {
     const expected = [
+      'awaiting_quote→cancelled',
       'pending_payment→cancelled',
       'paid→processing',
       'paid→waiting_driver',
@@ -109,7 +111,13 @@ describe('the transition table', () => {
   })
 
   it('returns stock on a cancel from a holding status only', () => {
-    for (const from of ['pending_payment', 'paid', 'processing', 'waiting_driver'] as const) {
+    for (const from of [
+      'awaiting_quote',
+      'pending_payment',
+      'paid',
+      'processing',
+      'waiting_driver',
+    ] as const) {
       expect(returnsStock(from, 'cancelled')).toBe(true)
     }
     expect(returnsStock('on_the_way', 'cancelled')).toBe(false)

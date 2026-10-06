@@ -16,7 +16,6 @@
 import type { Payload } from 'payload'
 
 import type { BagLine } from '../pricing/bag'
-import type { DeliveryBand } from '../pricing/delivery'
 import { sql, wholeOf, type Row, type Statement, type Tx } from '../payments/transaction'
 import {
   assignStore,
@@ -34,8 +33,6 @@ export type PickStoreInput = {
   /** The quote's buyable lines (`buyableLines`): distinct, valid, at least one. */
   readonly lines: readonly BagLine[]
   readonly pin: Pin
-  /** `site-settings.shop.delivery.bands`, as `loadPricingInputs` returns them. */
-  readonly bands: readonly DeliveryBand[]
 }
 
 type Session = Parameters<Payload['db']['execute']>[0]['db']
@@ -105,10 +102,10 @@ export async function readStock(
  */
 export async function pickStore(source: OrderSource, input: PickStoreInput): Promise<PickResult> {
   const lines = checkedLines(input.lines)
-  const { pin, bands } = input
+  const { pin } = input
   // A pin refused on its own (`./assign` step 1) needs no read.
   if (!isValidPin(pin) || !isInIndonesia(pin.lat, pin.lng)) {
-    return assignStore({ lines, pin, bands, stores: [], stock: [] })
+    return assignStore({ lines, pin, stores: [], stock: [] })
   }
   const rows = rowsFrom(source)
   const stores = await readActiveStores(rows)
@@ -119,5 +116,5 @@ export async function pickStore(source: OrderSource, input: PickStoreInput): Pro
           rows,
           lines.map((line) => line.productId),
         )
-  return assignStore({ lines, pin, bands, stores, stock })
+  return assignStore({ lines, pin, stores, stock })
 }

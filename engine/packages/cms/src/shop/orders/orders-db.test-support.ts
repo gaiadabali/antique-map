@@ -5,12 +5,22 @@
  * `site-settings`, published products with stock where a test puts it, a signed bag cookie, and
  * a buyer's checkout details.
  */
+import { createHash } from 'node:crypto'
+
 import { invalidationBatch } from '@engine/cache'
 import { makeProduct } from '../../collections/stock-levels/shop.test-support'
 import type { StaffStack } from '../../collections/users/staff.test-support'
 import { createBagCookieKey, serialiseBag, type BagLine } from '../pricing/bag'
 import type { CreateOrderRequest } from './create-order'
 import type { Pin } from './geo'
+
+// `createOrder` seals the tracking token unconditionally (`./link-key`, TASKS.md 6.6): every db
+// test that places one needs `ORDER_LINK_KEY` in the process env, which nothing here loads from
+// `.env.local` — set a fixed test key once, unless the worktree's own is already in the shell.
+process.env.ORDER_LINK_KEY ??= createHash('sha256')
+  .update('orders-db-test-order-link-key')
+  .digest()
+  .toString('base64url')
 
 export const BAG_KEY = createBagCookieKey('orders-db-test-bag-cookie-key-0123456789')
 export const PRICE = 95000
