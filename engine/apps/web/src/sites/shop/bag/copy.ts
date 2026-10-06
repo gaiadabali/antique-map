@@ -13,7 +13,6 @@ export const BAG_KEYS = defineMessages({
   'bag.subtotal': 'Subtotal',
   'bag.discount': 'Discount {code}',
   'bag.total': 'Total',
-  'bag.deliveryAtCheckout': 'Delivery is calculated at checkout, from your delivery pin.',
   'bag.update': 'Update',
   'bag.qtyRange': 'Choose between {min} and {max}.',
   'bag.qtyCapped': 'You can have at most {max} of one item.',

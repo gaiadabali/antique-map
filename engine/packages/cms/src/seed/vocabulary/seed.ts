@@ -9,12 +9,18 @@
  * Writes go through the Local API (overrideAccess by default, no user signed in) — the same
  * writes the importer's apply step makes. Nothing here is guessed: every name comes from a
  * committed file, and the files came from the legacy data.
+ *
+ * It runs outside any Next request, so every write's request carries a cache collector for the
+ * cache hooks (places, makers and terms expire the gallery's listings; site-settings its settings
+ * tags): the caller's (the CLI's, posted once the run returns — `../../import/cli-cache`), or with
+ * none a batch of its own that posts nothing — a fresh install has nothing cached, and a live site
+ * re-reads on its next deploy or edit.
  */
 import { invalidationBatch } from '@engine/cache'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { Payload, PayloadRequest } from 'payload'
+import type { Payload, PayloadRequest, RequestContext } from 'payload'
 
 import { reqOf } from '../req'
 import { fold } from '../../import/vocabulary'
@@ -162,14 +168,17 @@ async function upsertPlace(
       id: created.id,
       locale: 'id',
       data: { name: place.name.id, slug: place.slug } as never,
-      req: reqOf(payload, 'id'),
+      req: reqOf(payload, 'id', req.context),
     })
   }
   return true
 }
 
-export async function seedVocabulary(payload: Payload): Promise<VocabularyReport> {
-  const req = reqOf(payload)
+export async function seedVocabulary(
+  payload: Payload,
+  context?: RequestContext,
+): Promise<VocabularyReport> {
+  const req = reqOf(payload, 'en', context ?? invalidationBatch().context())
   const report: VocabularyReport = {
     places: { created: 0, present: 0 },
     terms: { created: 0, present: 0 },
@@ -226,12 +235,8 @@ export async function seedVocabulary(payload: Payload): Promise<VocabularyReport
   if (settings?.updatedAt !== undefined) {
     report.siteSettings = 'present'
   } else {
-    // Outside a request: the settings hook's cache tags go to a collector (nothing to post — a fresh
-    // install has nothing cached; a live site re-reads on its next deploy or settings save).
-    await invalidationBatch().operation(
-      () => payload.updateGlobal({ slug: 'site-settings', data: SETTINGS_DEFAULTS as never, req }),
-      { req },
-    )
+    // The settings hook's tags go to the collector `req` carries (the header says whose).
+    await payload.updateGlobal({ slug: 'site-settings', data: SETTINGS_DEFAULTS as never, req })
     report.siteSettings = 'seeded'
   }
   return report
@@ -284,7 +289,7 @@ async function ensureTerm(
       id: created.id,
       locale: 'id',
       data: { label: labelId } as never,
-      req: reqOf(payload, 'id'),
+      req: reqOf(payload, 'id', req.context),
     })
   }
   return true

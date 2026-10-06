@@ -69,6 +69,30 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
     'Answered within two working days. We will only write back about this enquiry — never anything more.',
   'partnership.contactMissing':
     'Contact details are being connected — they will appear here and in the footer.',
+  'partnership.formWhatsapp': 'WhatsApp number',
+  'partnership.formWhatsappHint': 'With the country code, for example +62 812 3456 7890.',
+  'partnership.formContactNote': 'Give a WhatsApp number or an email address — one is enough.',
+  'partnership.formConsent':
+    'I agree that Old East Indies may use these details to answer this enquiry, and keep them for up to 24 months after it is closed.',
+  'partnership.formConsentVersion': 'Consent text {version}',
+  'partnership.formSending': 'Sending…',
+  'partnership.formSuccessTitle': 'Thank you — we have your enquiry.',
+  'partnership.formSuccessBody':
+    'Our trade desk will reply within two working days, on WhatsApp or by email, whichever you gave us.',
+  'partnership.formUnavailable':
+    'The form is not available right now. Please write to us on WhatsApp or by email instead.',
+  'partnership.formChecking': 'A short security check keeps this form free of spam.',
+  'lead.error.name': 'Please tell us your name.',
+  'lead.error.message': 'Please write a message of up to 2,000 characters.',
+  'lead.error.contact': 'Please give a WhatsApp number or an email address.',
+  'lead.error.whatsapp': 'Use the international form, for example +62 812 3456 7890.',
+  'lead.error.email': 'This email address does not look right.',
+  'lead.error.consent': 'Please tick the box so we may answer you.',
+  'lead.error.invalid': 'Something in the form is not right. Please check it and try again.',
+  'lead.error.challenge': 'The security check did not pass. Please try again.',
+  'lead.error.rate': 'Too many enquiries just now. Please wait a minute and try again.',
+  'lead.error.unavailable':
+    'We could not save your enquiry. Please try again, or write to us on WhatsApp or by email.',
   'partnership.labelPricing': 'Pricing',
   'partnership.labelMinimum': 'Minimum',
   'partnership.labelReorder': 'Reorder',
@@ -88,12 +112,12 @@ export type PartnershipMessageKey = keyof typeof PARTNERSHIP_MESSAGES
 export type PartnershipText = Messages<PartnershipMessageKey>['t']
 
 /** The partnership page's words for one locale, from the shop's lexicon. */
-export function partnershipText(locale: SiteLocale): (key: PartnershipMessageKey) => string {
+export function partnershipText(locale: SiteLocale): PartnershipText {
   const messages = createMessages({
     defaults: PARTNERSHIP_MESSAGES,
     locale,
     defaultLocale: 'en',
     copy: SITE_COPY.shop,
   })
-  return (key) => messages.t(key)
+  return (key, params) => messages.t(key, params)
 }

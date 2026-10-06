@@ -37,46 +37,74 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       const recto = await stack.media('recto')
       const verso = await stack.media('verso')
 
-      const valentijn = await stack.api.create({
-        collection: 'makers',
-        data: { name: 'François Valentijn', sortName: 'VALENTIJN, François', _status: 'published' },
-      })
-      const luyken = await stack.api.create({
-        collection: 'makers',
-        data: { name: 'Jan Luyken', sortName: 'LUYKEN, Jan', _status: 'published' },
-      })
+      const valentijn = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'makers',
+          data: {
+            name: 'François Valentijn',
+            sortName: 'VALENTIJN, François',
+            _status: 'published',
+          },
+        }),
+      )
+      const luyken = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'makers',
+          data: { name: 'Jan Luyken', sortName: 'LUYKEN, Jan', _status: 'published' },
+        }),
+      )
 
-      const java = await stack.api.create({
-        collection: 'places',
-        data: { name: 'Java', slug: 'java', _status: 'published' },
-      })
+      const java = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: { name: 'Java', slug: 'java', _status: 'published' },
+        }),
+      )
       javaId = Number(java.id)
-      const batavia = await stack.api.create({
-        collection: 'places',
-        data: { name: 'Batavia', slug: 'batavia', parent: java.id, _status: 'published' },
-      })
-      const sulawesi = await stack.api.create({
-        collection: 'places',
-        data: { name: 'Sulawesi', slug: 'sulawesi', _status: 'published' },
-      })
+      const batavia = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: { name: 'Batavia', slug: 'batavia', parent: java.id, _status: 'published' },
+        }),
+      )
+      const sulawesi = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'places',
+          data: { name: 'Sulawesi', slug: 'sulawesi', _status: 'published' },
+        }),
+      )
 
-      const voc = await stack.api.create({
-        collection: 'terms',
-        data: { kind: 'subject', label: 'VOC', _status: 'published' },
-      })
-      const zeeland = await stack.api.create({
-        collection: 'terms',
-        data: { kind: 'subject', label: 'Zeeland trade', _status: 'published' },
-      })
-      const grade = await stack.api.create({
-        collection: 'terms',
-        data: {
-          kind: 'grade',
-          label: 'VG+',
-          definition: 'Very good, nearly fine.',
-          equivalent: 'A',
-        },
-      })
+      const voc = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: { kind: 'subject', label: 'VOC', _status: 'published' },
+        }),
+      )
+      const zeeland = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: { kind: 'subject', label: 'Zeeland trade', _status: 'published' },
+        }),
+      )
+      const grade = await invalidationBatch().operation((context) =>
+        stack.api.create({
+          context,
+          collection: 'terms',
+          data: {
+            kind: 'grade',
+            label: 'VG+',
+            definition: 'Very good, nearly fine.',
+            equivalent: 'A',
+          },
+        }),
+      )
 
       const complete = (over: object) => ({
         objectType: 'map',

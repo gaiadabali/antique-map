@@ -11,6 +11,10 @@ import type { MailMessage } from './transport'
 type Lang = 'en' | 'id'
 
 const STATUS_LINE: Partial<Record<OrderStatus, Record<Lang, string>>> = {
+  awaiting_quote: {
+    en: 'We’re confirming your delivery price — we’ll email you shortly with the total.',
+    id: 'Kami sedang memastikan ongkos kirim Anda — kami akan mengirim email sebentar lagi dengan totalnya.',
+  },
   paid: {
     en: 'We’ve received your payment — your order is being prepared.',
     id: 'Pembayaran Anda telah kami terima — pesanan sedang disiapkan.',
@@ -56,6 +60,11 @@ const TRACK_LINE: Record<Lang, string> = {
   id: 'Pantau pesanan Anda:',
 }
 
+const PAY_LINE: Record<Lang, string> = {
+  en: 'Pay here:',
+  id: 'Bayar di sini:',
+}
+
 const DRIVER_LINE: Record<Lang, string> = {
   en: 'The driver’s details:',
   id: 'Data pengemudi:',
@@ -97,6 +106,72 @@ export function buyerStatusEmail(input: BuyerStatusEmailInput): MailMessage | nu
     )
     .join('\n')
   return { to: input.to, subject: SUBJECT[lang](input.orderNumber), text, html }
+}
+
+const QUOTE_READY_SUBJECT: Record<Lang, (orderNumber: number) => string> = {
+  en: (n) => `Order #${n} — your delivery price is ready`,
+  id: (n) => `Pesanan #${n} — ongkos kirim Anda sudah siap`,
+}
+
+const QUOTE_READY_LINE: Record<Lang, (total: string) => string> = {
+  en: (total) => `Your price is ready: ${total}.`,
+  id: (total) => `Harga Anda sudah siap: ${total}.`,
+}
+
+const PAY_BY_LINE: Record<Lang, (time: string) => string> = {
+  en: (time) => `Please pay by ${time}.`,
+  id: (time) => `Mohon bayar sebelum ${time}.`,
+}
+
+const rupiahOf = (amountIdr: number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(amountIdr)
+
+export type QuoteReadyEmailInput = {
+  readonly to: string
+  readonly locale: Lang
+  readonly orderNumber: number
+  readonly totalIdr: number
+  /** `orders.expiresAt`, the buyer's new payment window; `null` shows no deadline sentence. */
+  readonly payBy: string | null
+  /** The buyer's order page (`/order/{token}`) — where they pay, never the tracking page. */
+  readonly payUrl: string
+}
+
+/** "Your price is ready" (TASKS.md 6.6): the quote move's own email, never the generic status line. */
+export function quoteReadyEmail(input: QuoteReadyEmailInput): MailMessage {
+  const lang = input.locale
+  const payByText =
+    input.payBy === null
+      ? null
+      : new Date(input.payBy).toLocaleString(lang === 'id' ? 'id-ID' : 'en-GB', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        })
+  const lines = [
+    GREETING[lang],
+    '',
+    QUOTE_READY_LINE[lang](rupiahOf(input.totalIdr)),
+    ...(payByText === null ? [] : [PAY_BY_LINE[lang](payByText)]),
+    '',
+    `${PAY_LINE[lang]} ${input.payUrl}`,
+    '',
+    SIGN_OFF[lang],
+  ]
+  const text = lines.join('\n')
+  const html = lines
+    .map((row) =>
+      row === ''
+        ? '<br />'
+        : row.includes('http')
+          ? `<p>${row.replace(/(https?:\/\/\S+)/, '<a href="$1">$1</a>')}</p>`
+          : `<p>${row}</p>`,
+    )
+    .join('\n')
+  return { to: input.to, subject: QUOTE_READY_SUBJECT[lang](input.orderNumber), text, html }
 }
 
 const RESEND_SUBJECT: Record<Lang, string> = {
@@ -143,11 +218,7 @@ export type StoreNewOrderEmailInput = {
 
 /** One store user's email on a newly paid order assigned to their store — bilingual, staff read both. */
 export function storeNewOrderEmail(input: StoreNewOrderEmailInput): MailMessage {
-  const rupiah = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(input.totalIdr)
+  const rupiah = rupiahOf(input.totalIdr)
   const lines = [
     `New paid order #${input.orderNumber} for ${input.storeName}`,
     `Pesanan #${input.orderNumber} yang sudah dibayar untuk ${input.storeName}`,
@@ -160,6 +231,28 @@ export function storeNewOrderEmail(input: StoreNewOrderEmailInput): MailMessage 
   return {
     to: input.to,
     subject: `New order #${input.orderNumber} — ${input.storeName}`,
+    text: lines.join('\n'),
+    html: lines.map((row) => (row === '' ? '<br />' : `<p>${row}</p>`)).join('\n'),
+  }
+}
+
+export type StoreReassignedEmailInput = StoreNewOrderEmailInput
+
+/** One store user's email when an order is reassigned to their store (TASKS.md 6.6, 7.1.c). */
+export function storeReassignedEmail(input: StoreReassignedEmailInput): MailMessage {
+  const rupiah = rupiahOf(input.totalIdr)
+  const lines = [
+    `Order #${input.orderNumber} has been reassigned to ${input.storeName}`,
+    `Pesanan #${input.orderNumber} telah dipindahkan ke ${input.storeName}`,
+    '',
+    `Items / Barang: ${input.itemSummary}`,
+    `Total: ${rupiah}`,
+    '',
+    `Open it in the admin / Buka di admin: ${input.adminUrl}`,
+  ]
+  return {
+    to: input.to,
+    subject: `Order #${input.orderNumber} reassigned — ${input.storeName}`,
     text: lines.join('\n'),
     html: lines.map((row) => (row === '' ? '<br />' : `<p>${row}</p>`)).join('\n'),
   }

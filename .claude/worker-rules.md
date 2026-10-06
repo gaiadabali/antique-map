@@ -11,7 +11,7 @@ Read by every headless worker the global launcher starts here (`~/.claude/worker
   branch that adds or changes collections until the schema lead's migration lands (3.5). Report them as expected;
   do not try to fix them and never write a migration to make them pass.
 - **Never manage the dev stack's containers.** No `docker compose up/down/restart/rm`, `docker restart` or `docker run` for Postgres, Mailpit or RustFS — they are shared by every session, and a worktree's older `docker-compose.dev.yml` recreates the container for everyone (two outages on 2026-10-05/06). If the database is unreachable, stop and report it; do not try to fix it.
-- **Database tests:** `*.db.test.ts` need `CMS_TEST_POSTGRES_URL=postgres://postgres:postgres@localhost:5432/postgres`
+- **Database tests:** `*.db.test.ts` need `CMS_TEST_POSTGRES_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres` (use `127.0.0.1`, never `localhost`: a WSL relay answers `[::1]:5432` and `[::1]:9000` on this host, so `localhost` times out or hits the wrong server; the same goes for `S3_ENDPOINT`)
   (the local dev stack's container `indies-platform-dev-postgres-1`; each test creates and drops its own pushed
   database). Never touch any other container — the other Postgres servers on this machine belong to other projects.
 - **Board (mandatory — the user tracks progress from `TASKS.md` live):** your first command is `pnpm tasks:start <task> --agent <type>`; after each subtask you can evidence,

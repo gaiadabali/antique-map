@@ -46,11 +46,11 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
   const runOptions: Omit<RunOptions, 'payload'> = { runner: 'seed', dryRun, publish, context }
 
   if (layer === 'vocabulary') {
-    return { layer, vocabulary: await seedVocabulary(payload), imports: [], marked: 0 }
+    return { layer, vocabulary: await seedVocabulary(payload, context), imports: [], marked: 0 }
   }
 
   // Every other layer imports against the vocabulary — the shop's products match its categories.
-  const vocabulary = await seedVocabulary(payload)
+  const vocabulary = await seedVocabulary(payload, context)
 
   if (layer === 'shop') {
     const imports: ImportReport[] = []

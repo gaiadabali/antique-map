@@ -50,10 +50,6 @@ export function refusalCopy(refusal: CheckoutRefusal, nameOf: NameOf): RefusalCo
       return { key: 'checkout.problem.invalid-pin' }
     case 'outside_indonesia':
       return { key: 'checkout.problem.outside-indonesia' }
-    case 'outside_reach':
-      return { key: 'bag.beyondReach' }
-    case 'no_delivery_table':
-      return { key: 'bag.deliveryUnavailable' }
     case 'out_of_stock':
       return {
         key: 'checkout.problem.out-of-stock',

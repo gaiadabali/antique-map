@@ -55,16 +55,19 @@ const BASE_URL = `http://shop.localhost:${port}`
 
 /**
  * The seed script `payload run` executes, one call per op: `seed-order` makes a published,
- * in-stock product and a pending order for it (mirrors `orders-db.test-support.ts`'s `openShop`
- * and `product`, against this worktree's real database instead of a temporary pushed one);
- * `mark-expired` is the direct SQL the order page's own `*.db.test.ts` uses to reach the `expired`
- * state without waiting on the sweep (6.4's concern, not this file's).
+ * in-stock product and a `pending_payment` order for it, already quoted (mirrors
+ * `orders-db.test-support.ts`'s `openShop` and `product`, against this worktree's real database
+ * instead of a temporary pushed one) — `createOrder` lands an order `awaiting_quote` with no fee
+ * (TASKS.md 6.6), so this seed moves it on with `quoteDeliveryFee`, as a staff "Send price" would,
+ * before this file's pay/expire cases ever see it; `mark-expired` is the direct SQL the order
+ * page's own `*.db.test.ts` uses to reach the `expired` state without waiting on the sweep (6.4's
+ * concern, not this file's).
  */
 const SEED_SCRIPT = `
 import { writeFileSync } from 'node:fs'
 process.env.PAYLOAD_SECRET ??= 'e2e-shop-payment-dev-only-never-signs-anything'
 const { cms, cmsPool } = await import('./engine/packages/cms/src/instance')
-const { createOrder } = await import('./engine/packages/cms/src/shop/orders')
+const { createOrder, quoteDeliveryFee } = await import('./engine/packages/cms/src/shop/orders')
 const { createBagCookieKey, serialiseBag } = await import('./engine/packages/cms/src/shop/pricing')
 const { makeProduct } = await import('./engine/packages/cms/src/collections/stock-levels/shop.test-support')
 const { invalidationBatch } = await import('./engine/packages/cache/src/index')
@@ -72,6 +75,19 @@ const { invalidationBatch } = await import('./engine/packages/cache/src/index')
 const payload = await cms()
 const pool = cmsPool(payload)
 const op = JSON.parse(process.env.SEED_OP ?? '{}')
+// A real owner — the quote's history row references users — the first one, or a test owner made once.
+const owners = await payload.find({
+  collection: 'users', where: { role: { equals: 'owner' } }, limit: 1, depth: 0, overrideAccess: true,
+})
+const owner = owners.docs[0] ?? (await payload.create({
+  collection: 'users', overrideAccess: true,
+  data: {
+    email: 'e2e-shop-owner@example.test', name: 'E2E owner', role: 'owner',
+    password: 'E2e-' + Date.now() + '-' + Math.random().toString(36).slice(2) + 'Aa1!',
+  },
+}))
+const STAFF_ACTOR = { id: owner.id, collection: 'users', role: 'owner' }
+const SEEDED_FEE_IDR = 20000
 
 async function openStore() {
   const stores = (await payload.find({ collection: 'stores', limit: 1 })).docs
@@ -84,9 +100,7 @@ async function openStore() {
   })
   await invalidationBatch().operation((context) => payload.updateGlobal({
     slug: 'site-settings', context,
-    data: { shop: { checkoutEnabled: true,
-      delivery: { bands: [{ upToKm: 30, feeIdr: 20000 }], freeOverIdr: 500000 },
-      orderExpiryMinutes: 45 } },
+    data: { shop: { checkoutEnabled: true, quoteWindowMinutes: 120, orderExpiryMinutes: 45 } },
   }))
   return store.id
 }
@@ -109,7 +123,14 @@ if (op.op === 'seed-order') {
     },
     expectedTotalIdr: null,
   }, { bagKey })
-  writeFileSync(process.env.SEED_OUT, JSON.stringify(created))
+  if (!created.ok) {
+    writeFileSync(process.env.SEED_OUT, JSON.stringify(created))
+  } else {
+    const quoted = await quoteDeliveryFee(payload, {
+      orderId: created.orderId, feeIdr: SEEDED_FEE_IDR, actor: STAFF_ACTOR,
+    })
+    writeFileSync(process.env.SEED_OUT, JSON.stringify({ ...created, quoted }))
+  }
 } else if (op.op === 'mark-expired') {
   await pool.query("UPDATE orders SET status = 'expired' WHERE id = " + op.orderId)
   writeFileSync(process.env.SEED_OUT, JSON.stringify({ ok: true }))
@@ -144,6 +165,12 @@ function runSeed(op: Record<string, unknown>): Record<string, unknown> {
     env: {
       ...process.env,
       DATABASE_URL: databaseUrl,
+      // createOrder seals the order link (6.6) with the server's own key — the same .env.local.
+      ORDER_LINK_KEY:
+        process.env.ORDER_LINK_KEY ?? readEnvFile(join(root, '.env.local')).get('ORDER_LINK_KEY'),
+      SHOP_HOSTS: process.env.SHOP_HOSTS ?? readEnvFile(join(root, '.env.local')).get('SHOP_HOSTS'),
+      GALLERY_HOSTS:
+        process.env.GALLERY_HOSTS ?? readEnvFile(join(root, '.env.local')).get('GALLERY_HOSTS'),
       NODE_ENV: 'development',
       SEED_OP: JSON.stringify(op),
       SEED_OUT: seedOut,

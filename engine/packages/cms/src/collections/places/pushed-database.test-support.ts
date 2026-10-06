@@ -5,7 +5,8 @@
  * names and dropped afterwards. The test itself calls `getPayload()` with the config this builds:
  * only `instance.ts`, the CLI and test files open Payload (`instance.test.ts`).
  */
-import { buildConfig, ValidationError, type SanitizedConfig } from 'payload'
+import { invalidationBatch } from '@engine/cache'
+import { buildConfig, ValidationError, type Payload, type SanitizedConfig } from 'payload'
 import { realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
@@ -63,4 +64,25 @@ export async function refusedWith(run: () => Promise<unknown>): Promise<Record<s
     return Object.fromEntries(error.data.errors.map((e) => [e.path, e.message]))
   }
   throw new Error('the save went through')
+}
+
+/**
+ * `payload`, with a cache collector on every `create`, `update` and `delete` that passes no
+ * `context` or `req` of its own: a test runs outside any Next request, where a cache hook's
+ * `invalidate()` with no collector throws (`@engine/cache`) — the vocabulary's and the works' hooks
+ * run on every published save. The collector is a throwaway batch's own, never flushed: a test
+ * database has no site to post to.
+ */
+export function collectingWrites(payload: Payload): Payload {
+  const context = invalidationBatch().context()
+  const writes = new Set<PropertyKey>(['create', 'update', 'delete'])
+  return new Proxy(payload, {
+    get(target, key, receiver) {
+      const value = Reflect.get(target, key, receiver) as unknown
+      if (typeof value !== 'function') return value
+      if (!writes.has(key)) return value.bind(target)
+      return (args: { context?: unknown; req?: unknown }) =>
+        value.call(target, args.context || args.req ? args : { ...args, context })
+    },
+  })
 }

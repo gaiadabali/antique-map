@@ -70,6 +70,8 @@ const MATRIX: Record<string, Row> = {
     update: ['all', 'all', 'where', 'none'],
     delete: NOBODY,
   },
+  // The once-per-(order, status) email ledger (TASKS.md 6.6): written by the core with SQL alone.
+  'order-notifications': { read: NOBODY, create: NOBODY, update: NOBODY, delete: NOBODY },
   'payment-events': { read: OWNER, create: NOBODY, update: NOBODY, delete: NOBODY },
   leads: OWNERS_ALONE,
   partners: OWNERS_ALONE,

@@ -5,6 +5,7 @@
  */
 
 export const ORDER_STATUSES = [
+  'awaiting_quote',
   'pending_payment',
   'paid',
   'processing',
@@ -22,6 +23,7 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number]
  * count includes them, so the stored quantity is the count less these.
  */
 export const HOLDING_STATUSES = [
+  'awaiting_quote',
   'pending_payment',
   'paid',
   'processing',
@@ -29,6 +31,7 @@ export const HOLDING_STATUSES = [
 ] as const satisfies readonly OrderStatus[]
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, { en: string; id: string }> = {
+  awaiting_quote: { en: 'Awaiting delivery price', id: 'Menunggu ongkos kirim' },
   pending_payment: { en: 'Awaiting payment', id: 'Menunggu pembayaran' },
   paid: { en: 'Paid', id: 'Dibayar' },
   processing: { en: 'Processing', id: 'Diproses' },

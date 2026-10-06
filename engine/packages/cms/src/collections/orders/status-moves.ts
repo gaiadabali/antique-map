@@ -40,6 +40,7 @@ export const FORWARD_LINE = [
 
 /** The statuses an owner or editor may cancel from: everything before delivery. */
 const CANCELLABLE: readonly OrderStatus[] = [
+  'awaiting_quote',
   'pending_payment',
   'paid',
   'processing',
@@ -70,6 +71,21 @@ export function statusMoveRefusalBilingual(
   if (from === to) return null
   if (role === null) {
     return { en: 'Only staff move an order.', id: 'Hanya staf yang dapat memindahkan pesanan.' }
+  }
+  // The quote move (awaiting_quote → pending_payment) is `quoteDeliveryFee`'s only, never a staff
+  // status write; awaiting_quote → cancelled is every staff role's to make, store staff included
+  // (the order's own store only — access scopes that, same as every other store move).
+  if (from === 'awaiting_quote' && to === 'cancelled') return null
+  if (from === 'awaiting_quote') {
+    return role === 'store'
+      ? {
+          en: 'Store staff cannot move this order while it awaits a delivery price.',
+          id: 'Staf toko tidak dapat memindahkan pesanan ini selagi menunggu harga pengiriman.',
+        }
+      : {
+          en: `An order cannot move from ${move(from, to, 'en')}. The delivery-price move sets this itself.`,
+          id: `Pesanan tidak dapat dipindahkan dari ${move(from, to, 'id')}. Perpindahan ini ditetapkan oleh langkah harga pengiriman.`,
+        }
   }
   const a = place(from)
   const b = place(to)

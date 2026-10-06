@@ -21,6 +21,7 @@ const workstation = (extra: Record<string, string | undefined> = {}) => ({
   SHOP_HOSTS: 'shop.localhost',
   DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/indies_plt',
   PAYLOAD_SECRET: 'dev-only-not-a-secret',
+  ORDER_LINK_KEY: secret(6),
   LINK_TOKEN_KEYS: `dev:${secret(5)}`,
   ...extra,
 })
