@@ -16,6 +16,9 @@
  */
 import type { Access, CollectionConfig } from 'payload'
 
+import { ADMIN_GROUPS } from '../../admin/groups'
+import { hiddenFromAllButOwner } from '../../admin/hidden'
+
 import { ORDER_STATUS_OPTIONS } from '../orders/statuses'
 
 const nobody: Access = () => false
@@ -33,7 +36,9 @@ export const OrderNotifications: CollectionConfig = {
     singular: { en: 'Order notification', id: 'Notifikasi pesanan' },
     plural: { en: 'Order notifications', id: 'Notifikasi pesanan' },
   },
-  admin: { hidden: true },
+  // In the orders group like `payment-events`, hidden from everyone but the owner (and unreadable
+  // over any API even then — the core writes it with SQL).
+  admin: { group: ADMIN_GROUPS.orders, hidden: hiddenFromAllButOwner },
   access: ORDER_NOTIFICATIONS_ACCESS,
   indexes: [{ fields: ['order', 'status'], unique: true }],
   fields: [

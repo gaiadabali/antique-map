@@ -21,6 +21,7 @@ const ENV = {
   PORT: '4206',
   DATABASE_URL: 'postgres://u:p@127.0.0.1:1/none',
   PAYLOAD_SECRET: 'x'.repeat(40),
+  ORDER_LINK_KEY: Buffer.alloc(32, 7).toString('base64'),
   LOCAL_PRODUCTION_BUILD: '1',
   LINK_TOKEN_KEYS: `dev:${randomBytes(32).toString('base64url')}`,
 }
