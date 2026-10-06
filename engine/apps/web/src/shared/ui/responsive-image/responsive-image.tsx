@@ -8,6 +8,11 @@ type BaseProps = {
   readonly alt: string
   readonly sizes: string
   readonly priority?: boolean
+  /**
+   * Serves `src` as is, never through Next's optimiser (and so never in its cache): for a private
+   * image that must not be fetched or kept outside its own route, like the tracking page's photo.
+   */
+  readonly unoptimized?: boolean
   readonly className?: string
 }
 
@@ -33,7 +38,7 @@ const isRemote = (src: string) => /^https?:\/\//.test(src)
 /** A Next/Image wrapper requiring `alt` and `sizes` with fixed or fill + ratio variants. */
 export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement {
   const wrapperClass = [styles.wrapper, props.className].filter(Boolean).join(' ')
-  const unoptimized = isRemote(props.src)
+  const unoptimized = props.unoptimized === true || isRemote(props.src)
 
   if (props.variant === 'fill') {
     const style = { '--ratio': props.aspectRatio } as CSSProperties

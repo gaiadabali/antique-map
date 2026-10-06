@@ -21,7 +21,6 @@
  */
 import type { Payload } from 'payload'
 
-import { driverImageUrl, DRIVER_IMAGE_URL_MAX_TTL } from '@engine/cms/shop/fulfilment'
 import { trackingTokenHash } from '@engine/cms/shop/orders'
 
 /** The line an order moves along once paid (COMMERCE.md §7); `cancelled`/`expired` are terminal. */
@@ -58,6 +57,7 @@ type OrderRow = {
   readonly id: number
   readonly number: number
   readonly status: string
+  readonly driverImage?: { key?: string | null } | null
   readonly history?: readonly { to?: unknown; at?: unknown }[] | null
   readonly contact?: {
     name?: string | null
@@ -73,6 +73,11 @@ type OrderRow = {
     deliveryFee?: number | null
     total?: number | null
   } | null
+}
+
+/** The same-origin path the driver's photo is served from (`@engine/http/track/driver-image`). */
+function driverImagePath(token: string): string {
+  return `/api/x/track/${encodeURIComponent(token)}/driver-image`
 }
 
 function maskName(name: string): string {
@@ -117,6 +122,7 @@ export async function loadTrackingWith(
       select: {
         number: true,
         status: true,
+        driverImage: { key: true },
         history: { to: true, at: true },
         contact: { name: true, email: true, locale: true },
         delivery: { address: true },
@@ -138,10 +144,13 @@ export async function loadTrackingWith(
     return { key, at }
   })
 
-  const driverUrl =
-    order.status === 'on_the_way' || order.status === 'delivered'
-      ? await driverImageUrl(payload, order.id, DRIVER_IMAGE_URL_MAX_TTL).catch(() => null)
-      : null
+  // The photo is served from our own origin (`/api/x/track/{token}/driver-image`), which signs a
+  // short-lived URL itself: the presigned storage URL is internal and never reaches the page.
+  const hasDriverImage =
+    (order.status === 'on_the_way' || order.status === 'delivered') &&
+    typeof order.driverImage?.key === 'string' &&
+    order.driverImage.key !== ''
+  const driverUrl = hasDriverImage ? driverImagePath(token) : null
 
   const store = typeof order.store === 'object' && order.store !== null ? order.store : null
 
