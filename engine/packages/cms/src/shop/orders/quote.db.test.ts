@@ -147,6 +147,9 @@ describe.skipIf(!server)('the quote move and its expiries, on a real database', 
   })
 
   it('expires an unquoted order after the quote window and returns its stock exactly once', async () => {
+    // Earlier cases leave their own backdated orders behind (the "expired" refusal above): sweep
+    // them first, so the count below is this order's alone.
+    await runPaymentSweep(stack.payload, simulator)
     const placed = await placeAwaitingQuote(1)
     await stack.pool.query(
       `UPDATE orders SET expires_at = now() - interval '1 minute' WHERE id = ${placed.orderId}`,
@@ -164,6 +167,7 @@ describe.skipIf(!server)('the quote move and its expiries, on a real database', 
   })
 
   it('expires a quoted, unpaid order after the payment window and returns its stock exactly once', async () => {
+    await runPaymentSweep(stack.payload, simulator)
     const placed = await placeAwaitingQuote(1)
     const quoted = await quoteDeliveryFee(stack.payload, {
       orderId: placed.orderId,
