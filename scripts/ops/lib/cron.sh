@@ -15,11 +15,12 @@
 # DEPLOYMENT.md §5's table. A route stays off until its handler lands: its placeholder answers
 # 404 every tick. Turn one on here once its task is merged, and re-run the script. jobs answers
 # 409 `busy` while a run is in flight — success here, never a failure (4.6 review #3), so never
-# `curl -f`. jobs, sweeps and reconcile have handlers under engine/apps/web/src/app/api/x/cron/.
+# `curl -f`. jobs, sweeps, reconcile and retention (daily 03:15 WITA) have handlers under engine/apps/web/src/app/api/x/cron/.
 CRON_ROUTES=(
   'jobs|* * * * *|200,409|900|on|4.6'
   'sweeps|* * * * *|200,204|120|on|phase 6'
   'reconcile|*/10 * * * *|200,204|300|on|phase 6'
+  'retention|15 19 * * *|200,204|900|on|9.1'
   'nightly|0 18 * * *|200,204|900|off|its-handler'
 )
 CRON_BEGIN='# >>> indies-provision (managed by scripts/ops/helios-provision.sh: edits here are replaced)'
