@@ -108,6 +108,9 @@ async function gradeId(request: APIRequestContext, token: Jwt): Promise<number> 
     data: {
       kind: 'grade',
       label: 'E2E Grade',
+      // Publishing a grade requires both a definition and its A–D equivalent
+      // (GRADE_EQUIVALENT in `validators/term-grade.ts`).
+      equivalent: 'B+',
       definition: 'E2E probe grade: complete sheet, light even browning, small margins.',
       _status: 'published',
     },
