@@ -43,6 +43,7 @@ export type HrefParams = {
   partnership: NoParams
   stores: NoParams
   sellToUs: NoParams
+  contact: NoParams
   page: { slug: string }
 }
 

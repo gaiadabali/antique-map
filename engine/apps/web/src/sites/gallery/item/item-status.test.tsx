@@ -86,14 +86,34 @@ describe('the item page’s three states', () => {
     expect(html).not.toContain('Price on request')
   })
 
-  it('a sold work says Sold and nothing else: no Ask, no price, no "available"', () => {
+  it('a sold work says Sold, with "Ask for another example" and no price, no "available"', () => {
+    // The owner's decision of 2026-10-06 (TASKS.md): a sold item keeps the Sold badge and gains
+    // the one button — never "Ask about this", no price, no "available" wording.
     const html = panel('sold')
     expect(html).toContain('Sold')
-    expect(html).not.toContain('href=')
-    expect(html).not.toMatch(/<a\s/)
-    expect(html).not.toContain('<button')
+    expect(html).toContain('Ask for another example')
+    expect(html).not.toContain('Ask about this')
     expect(html).not.toContain('Price on request')
     expect(html).not.toMatch(/available/i)
+  })
+
+  it('shows the email address as text beside the button, and the placeholder when none arrived', () => {
+    const withMail = renderToStaticMarkup(
+      <AskPanel
+        work={work('available')}
+        locale="en"
+        askHref="https://wa.me/6590000000?text=x"
+        emailHref="mailto:gallery@indies.test?subject=s&body=b"
+        emailAddress="gallery@indies.test"
+      />,
+    )
+    expect(withMail).toContain('Or email')
+    expect(withMail).toContain('>gallery@indies.test</a>')
+    const none = renderToStaticMarkup(
+      <AskPanel work={work('sold')} locale="en" askHref="/contact" contactMissing />,
+    )
+    expect(none).toContain('Ask for another example')
+    expect(none).toContain('being connected')
   })
 
   it('says the states in Indonesian on the Indonesian page', () => {
@@ -112,9 +132,9 @@ describe('the whole item page', () => {
     },
   )
 
-  it('a sold page has no Ask link anywhere, only the way back to browse', () => {
+  it('a sold page asks for another example on WhatsApp, and offers the way back to browse', () => {
     const html = page('sold')
-    expect(html).not.toContain('href="/contact"')
+    expect(html).toContain('href="/contact"')
     expect(html).toContain('href="/browse"')
   })
 
