@@ -42,6 +42,10 @@ const STOCK_NUMBER_PREFIX = 'M.53E2E'
 const SELLER_EMAIL_PREFIX = 'e2e-5.3-seller'
 /** The gallery's test WhatsApp number for the run (an unusable test value, not a real one). */
 const TEST_WHATSAPP = '+6590000000'
+/**
+ * Pages are awaited at `load`, never `networkidle`: the Turnstile widget on the two form pages keeps
+ * a `blob:https://challenges.cloudflare.com/…` request open, so the network never goes idle.
+ */
 const WIDTHS = [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
@@ -95,12 +99,12 @@ test.describe('Gallery contact (5.3.d)', () => {
     })
     expect(patch.ok(), `owner sets the gallery's test channels: ${patch.status()}`).toBeTruthy()
     // The item handoff names the work's stock number first: give the published fixture one.
-    // PATCHing a work with drafts enabled merges its latest draft version in, so the title is
-    // named explicitly again.
+    // PATCHing a work with drafts enabled merges its latest draft version in — its title and its
+    // `_status: 'draft'`, which would unpublish the work — so both are named explicitly again.
     const { id } = await publishedWork()
     const stock = await api.patch(`${BASE_URL}/api/works/${id}`, {
       headers: auth(),
-      data: { stockNumber, title: fx.publishedTitle },
+      data: { stockNumber, title: fx.publishedTitle, _status: 'published' },
     })
     expect(stock.ok(), `PATCH the published work's stock number: ${stock.status()}`).toBeTruthy()
   })
@@ -168,7 +172,7 @@ test.describe('Gallery contact (5.3.d)', () => {
     expect(work.stockNumber, 'the fixture carries its stock number').toBe(stockNumber)
     const itemPath = href('item', { publicId: work.publicId, slug: work.slug }, 'en')
     await page.setViewportSize({ width: 390, height: 844 })
-    const res = await page.goto(`${GALLERY_ORIGIN}${itemPath}`, { waitUntil: 'networkidle' })
+    const res = await page.goto(`${GALLERY_ORIGIN}${itemPath}`, { waitUntil: 'load' })
     expect(res?.status(), itemPath).toBe(200)
     const ask = page.getByRole('link', { name: 'Ask about this' })
     await expect(ask).toBeVisible()
@@ -178,7 +182,10 @@ test.describe('Gallery contact (5.3.d)', () => {
     const text = url.searchParams.get('text') ?? ''
     expect(text.startsWith(`Hello, I am interested in ${stockNumber} — `), text).toBe(true)
     expect(text, 'the prepared message names the title').toContain(fx.publishedTitle)
-    expect(text.endsWith(itemPath), 'it ends with the clean canonical URL, no query').toBe(true)
+    // The page answered at its canonical address (a slugless one redirects there once).
+    const canonical = new URL(page.url())
+    expect(canonical.search, 'the canonical address has no query').toBe('')
+    expect(text.endsWith(`${canonical.origin}${canonical.pathname}`), text).toBe(true)
     await expect(page.getByRole('link', { name: notifyEmail })).toHaveAttribute('href', /^mailto:/)
   })
 
@@ -188,13 +195,20 @@ test.describe('Gallery contact (5.3.d)', () => {
     const work = await publishedWork()
     const sold = await api.patch(`${BASE_URL}/api/works/${work.id}`, {
       headers: auth(),
-      data: { status: 'sold', title: fx.publishedTitle },
+      data: { status: 'sold', title: fx.publishedTitle, _status: 'published' },
     })
     expect(sold.ok(), `PATCH the work sold: ${sold.status()}`).toBeTruthy()
     const itemPath = href('item', { publicId: work.publicId, slug: work.slug }, 'en')
     await page.setViewportSize({ width: 390, height: 844 })
-    const res = await page.goto(`${GALLERY_ORIGIN}${itemPath}`, { waitUntil: 'networkidle' })
-    expect(res?.status(), itemPath).toBe(200)
+    // The first test cached the page as available. A save expires the work's tag at `'max'`
+    // (`@engine/cache` EDITORIAL_EXPIRY: stale-while-revalidate), so the first visit after it may
+    // be the stale render while the fresh one is made; the poll bounds that one regeneration.
+    const status = async () => {
+      const res = await page.goto(`${GALLERY_ORIGIN}${itemPath}`, { waitUntil: 'load' })
+      expect(res?.status(), itemPath).toBe(200)
+      return page.locator('aside[data-status]').getAttribute('data-status')
+    }
+    await expect.poll(status, { timeout: 15_000, intervals: [500, 1_000] }).toBe('sold')
     const panel = page.locator('aside[data-status="sold"]')
     await expect(panel.getByText('Sold', { exact: true })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Ask about this' })).toHaveCount(0)
@@ -210,7 +224,7 @@ test.describe('Gallery contact (5.3.d)', () => {
   }) => {
     const message = 'E2E: I have an 1880s chart of Sumatra to sell.'
     await page.setViewportSize({ width: 390, height: 844 })
-    const res = await page.goto(`${GALLERY_ORIGIN}/sell-to-us`, { waitUntil: 'networkidle' })
+    const res = await page.goto(`${GALLERY_ORIGIN}/sell-to-us`, { waitUntil: 'load' })
     expect(res?.status()).toBe(200)
     await page.getByLabel('Your name').fill('E2E Seller')
     await page.getByLabel('Email address').fill(sellerEmail)
@@ -261,7 +275,7 @@ test.describe('Gallery contact (5.3.d)', () => {
     test(`axe is clean on ${path} at 390 and 1280 px`, async ({ page }) => {
       for (const viewport of WIDTHS) {
         await page.setViewportSize(viewport)
-        const res = await page.goto(`${GALLERY_ORIGIN}${path}`, { waitUntil: 'networkidle' })
+        const res = await page.goto(`${GALLERY_ORIGIN}${path}`, { waitUntil: 'load' })
         expect(res?.status(), `${path} answers`).toBe(200)
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
         const { violations } = await new AxeBuilder({ page }).analyze()
