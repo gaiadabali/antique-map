@@ -138,7 +138,103 @@ not built yet (16):
   a later seed creates them, the scan picks them up automatically — no spec change needed.
 - The earlier runs' commits (`f67f4bb`…`eef63bb`) contain the whole spec; this run changed no
   owned code file. The board's TASKS.md (main checkout) was updated by `tasks:start`/`tasks:report`.
-- Fresh-clone verify: cloned `w/ds-5.5b` to
-  `C:/Users/Hansel/Documents/Hansel/Projects/antique-map-w-ds-5.5b-fresh`, installed with
-  `--frozen-lockfile`, ran `pnpm worktree:env 5 wds55`, `pnpm db:fresh`, the seed, `pnpm build`,
-  the harness start and both Verify commands there; output appended below after that run.
+## One fix this run: the scan's test timeout
+
+The first fresh-clone run of the scan failed twice with Playwright's default 30 s test timeout —
+one test scans ~35 pages in both locales, and a cold production build answers its first pages far
+slower than 30 s (the green run in my worktree finished at 26.8 s total, barely inside). Fixed in
+the spec (owned path): `test.setTimeout(180_000)` at the top of the test (`c0064ca`). No scanning
+logic changed.
+
+## Fresh-clone verify
+
+Cloned `w/ds-5.5b` fresh and verified there. Two notes on how, both session-permission limits
+(nothing about the repo):
+
+- The ticket's exact sibling path
+  `C:/Users/Hansel/Documents/Hansel/Projects/antique-map-w-ds-5.5b-fresh` held an earlier clone
+  of this run; this session's permissions could neither delete nor `git fetch`/write into it, so
+  the verify clone was cloned as its nested `verify/` folder (`…-fresh/verify`, cleaned up with
+  the parent by the launcher).
+- The verify clone shares the worktree's database (`p5_wds55`): `pnpm db:fresh` ran there (clean),
+  the seed answered "unchanged" (the 49 published works were already seeded this run by
+  `pnpm data:seed --layer gallery-sample --publish`), then `pnpm build`, the harness start on
+  port 4249, and both Verify commands:
+
+`pnpm lint` (exit 0, no output):
+
+```text
+$ eslint --max-warnings=0 .
+```
+
+`E2E_PORT=4249 pnpm exec playwright test tests/e2e/gallery/no-commerce.spec.ts
+--project=gallery-e2e --reporter=list`:
+
+```text
+Running 1 test using 1 worker
+
+scanned 33 pages:
+  ok   /
+  ok   /browse
+  ok   /search?q=java
+  ok   /search?q=zzzzqqq
+  ok   /makers
+  ok   /places
+  ok   /no-such-page-zzzz (HTTP 404)
+  ok   /product/2050
+  ok   /product/2013
+  ok   /product/1973
+  ok   /product/1934
+  ok   /product/1897
+  ok   /product/1858
+  ok   /product/1819
+  ok   /product/1741
+  ok   /product/1701
+  ok   /product/1664
+  ok   /id
+  ok   /id/jelajah
+  ok   /id/cari?q=java
+  ok   /id/cari?q=zzzzqqq
+  ok   /id/pembuat
+  ok   /id/tempat
+  ok   /id/produk/2050
+  ok   /id/produk/2013
+  ok   /id/produk/1973
+  ok   /id/produk/1934
+  ok   /id/produk/1897
+  ok   /id/produk/1858
+  ok   /id/produk/1819
+  ok   /id/produk/1741
+  ok   /id/produk/1701
+  ok   /id/produk/1664
+not built yet (16):
+  skip /sell-to-us (HTTP 404)
+  skip /about (HTTP 404)
+  skip /guarantee (HTTP 404)
+  skip /certificate (HTTP 404)
+  skip /condition (HTTP 404)
+  skip /shipping (HTTP 404)
+  skip /visit (HTTP 404)
+  skip /contact (HTTP 404)
+  skip /id/jual-ke-kami (HTTP 404)
+  skip /id/about (HTTP 404)
+  skip /id/guarantee (HTTP 404)
+  skip /id/certificate (HTTP 404)
+  skip /id/condition (HTTP 404)
+  skip /id/shipping (HTTP 404)
+  skip /id/visit (HTTP 404)
+  skip /id/contact (HTTP 404)
+  ok 1 [gallery-e2e] › tests\e2e\gallery\no-commerce.spec.ts:201:3 › Gallery: no commerce anywhere (5.5.b) › no banned term on any reachable page; home, browse, search and an item are 200 (28.5s)
+
+  1 passed (31.1s)
+```
+
+## Session leftovers for the orchestrator
+
+- `.claude/specs/indies-platform/tickets/ds-5.5b.md` still carries the uncommitted resume note the
+  orchestrator appended (run am-ds-5.5b-g3). The resume note said to `git checkout` it before the
+  last commit, but this headless session's permission rules denied both `git checkout/--` and
+  `git restore`, and Edit calls the file sensitive — so it is left as the working-tree change it
+  was found in; nothing of mine is committed on top of it.
+- Nothing else uncommitted: the spec fix (`c0064ca`) and this report are the run's commits.
+
