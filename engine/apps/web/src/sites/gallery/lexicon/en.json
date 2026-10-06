@@ -729,5 +729,20 @@
   "wishlist.removed": "{title} removed from your wishlist",
   "wishlist.saved": "{title} saved to your wishlist",
   "wishlist.signIn": "Sign in to save works to your wishlist.",
-  "wishlist.title": "Wishlist"
+  "wishlist.title": "Wishlist",
+  "makerPage.indexTitle": "Makers",
+  "makerPage.indexDescription": "Every cartographer, engraver, publisher and photographer behind the collection.",
+  "makerPage.workCount.one": "{count} work",
+  "makerPage.workCount.other": "{count} works",
+  "makerPage.availableHeading": "Available",
+  "makerPage.soldHeading": "Previously sold",
+  "empty.makerAvailable": "No works by {maker} are available right now.",
+  "placePage.indexTitle": "Places",
+  "placePage.indexDescription": "The ports, islands and cities the collection depicts — modern names first, historical names beneath.",
+  "placePage.availableHeading": "Available",
+  "placePage.soldHeading": "Previously sold",
+  "placePage.childrenHeading": "Places within {name}",
+  "placePage.placeCount.one": "{count} place within",
+  "placePage.placeCount.other": "{count} places within",
+  "cmsPage.worksHeading": "Works in this story"
 }
