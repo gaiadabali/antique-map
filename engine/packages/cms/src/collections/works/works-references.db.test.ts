@@ -4,6 +4,7 @@
  * a new object, its stock number held to the gallery's pattern. The schema is pushed
  * (`./works.test-support`); without `CMS_TEST_POSTGRES_URL` it skips.
  */
+import { invalidationBatch } from '@engine/cache'
 import { APIError, getPayload, ValidationError } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
@@ -33,19 +34,19 @@ describe.skipIf(!server)('works: references and duplicates on a real database', 
 
   it('refuses to delete a maker, place or term a work references — stored or drafted', async () => {
     const { api } = stack
-    const maker = await api.create({
-      collection: 'makers',
-      data: { name: 'Blaeu', sortName: 'BLAEU' },
-    })
-    const loose = await api.create({
-      collection: 'makers',
-      data: { name: 'Unused', sortName: 'UNUSED' },
-    })
+    const maker = await invalidationBatch().operation((context) =>
+      api.create({ context, collection: 'makers', data: { name: 'Blaeu', sortName: 'BLAEU' } }),
+    )
+    const loose = await invalidationBatch().operation((context) =>
+      api.create({ context, collection: 'makers', data: { name: 'Unused', sortName: 'UNUSED' } }),
+    )
     const work = await api.create({
       collection: 'works',
       data: { makers: [{ maker: maker.id, role: 'publisher', certainty: 'certain' }] },
     })
-    const refusal = api.delete({ collection: 'makers', id: maker.id })
+    const refusal = invalidationBatch().operation((context) =>
+      api.delete({ context, collection: 'makers', id: maker.id }),
+    )
     await expect(refusal).rejects.toBeInstanceOf(APIError)
     await expect(refusal).rejects.toThrow(/still used by 1 work /)
     for (const [collection, id] of [
@@ -55,24 +56,29 @@ describe.skipIf(!server)('works: references and duplicates on a real database', 
     ] as const) {
       await expect(api.delete({ collection, id })).rejects.toThrow(/still used by \d+ works? /)
     }
-    await api.delete({ collection: 'makers', id: loose.id })
+    await invalidationBatch().operation((context) =>
+      api.delete({ context, collection: 'makers', id: loose.id }),
+    )
     // Referenced only in the work's latest draft: still refused.
     await api.update({ collection: 'works', id: work.id, data: { makers: [] } })
-    const drafted = await api.create({
-      collection: 'makers',
-      data: { name: 'Hondius', sortName: 'HONDIUS' },
-    })
+    const drafted = await invalidationBatch().operation((context) =>
+      api.create({ context, collection: 'makers', data: { name: 'Hondius', sortName: 'HONDIUS' } }),
+    )
     await api.update({
       collection: 'works',
       id: work.id,
       draft: true,
       data: { makers: [{ maker: drafted.id, role: 'engraver', certainty: 'certain' }] },
     })
-    await expect(api.delete({ collection: 'makers', id: drafted.id })).rejects.toThrow(
-      /still used by 1 work /,
-    )
+    await expect(
+      invalidationBatch().operation((context) =>
+        api.delete({ context, collection: 'makers', id: drafted.id }),
+      ),
+    ).rejects.toThrow(/still used by 1 work /)
     await api.update({ collection: 'works', id: work.id, draft: true, data: { makers: [] } })
-    await api.delete({ collection: 'makers', id: maker.id })
+    await invalidationBatch().operation((context) =>
+      api.delete({ context, collection: 'makers', id: maker.id }),
+    )
     expect(
       (await api.find({ collection: 'makers', where: { id: { equals: maker.id } } })).docs,
     ).toEqual([])
