@@ -35,6 +35,14 @@ export type ResponsiveImageProps =
  */
 const isRemote = (src: string) => /^https?:\/\//.test(src)
 
+/**
+ * A lead (above the fold, LCP) image: Next 16's `priority` is a deprecated alias of `preload`, whose
+ * `<link rel=preload as=image>` and `<img>` carry no `fetchpriority`, so the browser fetches the
+ * image at Low priority. `fetchPriority="high"` on both makes it a High fetch (7.4 Lighthouse).
+ */
+const leadProps = (lead: boolean | undefined) =>
+  lead === true ? ({ preload: true, fetchPriority: 'high' } as const) : {}
+
 /** A Next/Image wrapper requiring `alt` and `sizes` with fixed or fill + ratio variants. */
 export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement {
   const wrapperClass = [styles.wrapper, props.className].filter(Boolean).join(' ')
@@ -49,7 +57,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
           alt={props.alt}
           fill
           sizes={props.sizes}
-          priority={props.priority}
+          {...leadProps(props.priority)}
           unoptimized={unoptimized}
           className={styles.image}
         />
@@ -64,7 +72,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
       width={props.width}
       height={props.height}
       sizes={props.sizes}
-      priority={props.priority}
+      {...leadProps(props.priority)}
       unoptimized={unoptimized}
       className={`${wrapperClass} ${styles.fixed}`}
     />

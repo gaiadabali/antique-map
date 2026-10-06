@@ -53,3 +53,36 @@ export function productText(locale: SiteLocale): ProductText {
   const t = mine.t.bind(mine)
   return Object.assign(t, { shared: shared.t.bind(shared) }) as ProductText
 }
+
+/**
+ * The words the variant picker (a Client Component) shows, resolved here on the server and passed
+ * down as props: the picker never imports this module, so the lexicon files (both sites, both
+ * locales) stay out of the browser's JavaScript.
+ */
+export type VariantPickerText = {
+  readonly options: string
+  readonly optionSoldOut: string
+  readonly addToBag: string
+  readonly outOfStock: string
+  readonly inStock: string
+  readonly added: string
+  readonly capped: string
+  readonly refused: string
+  readonly addingFailed: string
+  readonly viewBag: string
+}
+
+export function variantPickerText(text: ProductText): VariantPickerText {
+  return {
+    options: text('product.options'),
+    optionSoldOut: text('product.optionSoldOut'),
+    addToBag: text('product.addToBag'),
+    outOfStock: text('product.outOfStock'),
+    inStock: text('product.inStock'),
+    added: text('product.added'),
+    capped: text('product.capped'),
+    refused: text('product.refused'),
+    addingFailed: text('product.addingFailed'),
+    viewBag: text('product.viewBag'),
+  }
+}
