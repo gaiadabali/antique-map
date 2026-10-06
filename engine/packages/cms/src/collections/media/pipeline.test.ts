@@ -143,6 +143,20 @@ describe('deriveMedia', () => {
     expect(batch.pending).toEqual(['work:IG-000123', 'product:41'])
   })
 
+  it('stays ready when the placing records cannot be expired', async () => {
+    const { payload, raw, updates, logged } = fakePayload(media())
+    raw.find.mockRejectedValue(new Error('Failed query: connection timeout'))
+    const warned: unknown[] = []
+    ;(raw.logger as Record<string, unknown>).warn = (entry: unknown) => warned.push(entry)
+    const { store } = fakeStore(await jpeg())
+    const outcome = await deriveMedia(payload, 7, { store, mediaPublicUrl: BASE })
+    expect(outcome).toMatchObject({ status: 'ready' })
+    expect(updates).toHaveLength(1)
+    expect(updates[0]!.data).toMatchObject({ derivatives: { status: 'ready' } })
+    expect(logged).toEqual([])
+    expect(warned).toHaveLength(1)
+  })
+
   it('leaves an up-to-date record alone unless forced', async () => {
     const ready = media({
       derivatives: { status: 'ready', version: DERIVATIVE_VERSION },

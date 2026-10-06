@@ -25,6 +25,7 @@ import {
   s3PipelineStore,
   UnpublishableImageError,
   type MediaPipelineStore,
+  type Published,
 } from '@engine/media/pipeline'
 import { mediaStorageTarget, UPLOADS_PREFIX } from '@engine/media/storage'
 import type { Payload, Where } from 'payload'
@@ -163,10 +164,11 @@ export async function deriveMedia(
   const mediaPublicUrl = deps.mediaPublicUrl ?? publicUrlFromEnv()
   if (store === null || mediaPublicUrl === '') return { status: 'skipped', reason: 'no-storage' }
 
+  let published: Published
   try {
     const upload = await store.read(`${str(doc.prefix) || UPLOADS_PREFIX}/${filename}`)
     if (upload === null) throw new Error('the upload is missing from the media bucket')
-    const published = await publishImage(upload, store, {
+    published = await publishImage(upload, store, {
       assetId,
       mediaPublicUrl,
       tilesWanted: doc.subject === 'work',
@@ -187,13 +189,6 @@ export async function deriveMedia(
       deps.context,
     )
     if (!recorded) return { status: 'skipped', reason: 'superseded' }
-    const tags = await placingTags(payload, id)
-    if (tags.length > 0) invalidate(tags, deps.context)
-    return {
-      status: 'ready',
-      tiles: published.tiles,
-      written: published.derivatives + published.tileFiles,
-    }
   } catch (error) {
     const reason = reasonOf(error, filename)
     payload.logger.error({
@@ -214,5 +209,23 @@ export async function deriveMedia(
       deps.context,
     ).catch(() => false)
     return { status: 'failed', reason }
+  }
+  // Published and recorded: a cache that cannot be expired now keeps the record ready — the
+  // page shows the derivative on its next render, at the latest the next edit or deploy.
+  try {
+    const tags = await placingTags(payload, id)
+    if (tags.length > 0) invalidate(tags, deps.context)
+  } catch (error) {
+    payload.logger.warn({
+      msg: 'media pipeline: the placing records could not be expired',
+      mediaId: id,
+      assetId,
+      reason: reasonOf(error, filename),
+    })
+  }
+  return {
+    status: 'ready',
+    tiles: published.tiles,
+    written: published.derivatives + published.tileFiles,
   }
 }

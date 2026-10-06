@@ -77,6 +77,6 @@ async function main(): Promise<number> {
 try {
   process.exit(await main())
 } catch (error: unknown) {
-  console.error(error instanceof Error ? error.message : error)
+  console.error(error)
   process.exit(1)
 }
