@@ -8,10 +8,11 @@
  * here and **validated again on the server** (the form's server action, and `/api/x/geocode`).
  * Default centre: Denpasar.
  */
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 import { MapPinShell } from '../../../shared/ui/map-pin-shell'
 import styles from './checkout.module.css'
+import { loadMaps, type GListener, type GMarker, type GWindow } from './pin-picker-maps'
 
 export type Pin = { readonly lat: number; readonly lng: number }
 
@@ -30,36 +31,24 @@ export type PinPickerProps = {
   readonly labels: PinPickerLabels
   readonly pin: Pin | null
   readonly address: string | null
-  readonly onPin: (pin: Pin, address: string | null) => void
+  /** `null` clears the pin — the form's own "no pin" state, not a new one. */
+  readonly onPin: (pin: Pin | null, address: string | null) => void
+}
+
+/**
+ * A typed coordinate counts only when its trimmed text is non-empty and parses to a finite
+ * number — `Number('')` is `0`, which would otherwise read as a pin near (0, 0) while a field is
+ * still empty.
+ */
+export function parseCoordinate(text: string): number | null {
+  const trimmed = text.trim()
+  if (trimmed === '') return null
+  const value = Number(trimmed)
+  return Number.isFinite(value) ? value : null
 }
 
 /** Denpasar, the picker's default centre (EXPERIENCE-SHOP.md §6). */
 const DEFAULT_CENTRE: Pin = { lat: -8.6705, lng: 115.2126 }
-const SCRIPT_ID = 'google-maps-js'
-
-/* Minimal structural typings for the Maps JavaScript API — no new npm dependency. */
-type GLatLng = { lat(): number; lng(): number }
-type GListener = { remove(): void }
-type GMarker = {
-  getPosition(): GLatLng | null
-  setPosition(p: GLatLng): void
-  addListener(event: string, handler: () => void): GListener
-}
-type GAutocomplete = {
-  getPlace(): { geometry?: { location?: GLatLng } }
-  addListener(event: string, handler: () => void): GListener
-}
-type GMapsNS = {
-  Map: new (element: HTMLElement, options: Record<string, unknown>) => Record<string, unknown>
-  Marker: new (options: Record<string, unknown>) => GMarker
-  LatLng: new (lat: number, lng: number) => GLatLng
-  places: {
-    Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => GAutocomplete
-  }
-}
-type GWindow = Window & {
-  google?: { maps: GMapsNS }
-}
 
 /** Ask the route for the pin's display address; failure is quiet — the pin still stands. */
 async function addressFor(pin: Pin): Promise<string | null> {
@@ -77,33 +66,6 @@ async function addressFor(pin: Pin): Promise<string | null> {
   }
 }
 
-function loadMaps(key: string, onReady: (maps: GMapsNS) => void): void {
-  const w = window as unknown as GWindow
-  const existing = document.getElementById(SCRIPT_ID)
-  if (existing !== null) {
-    if (w.google?.maps !== undefined) onReady(w.google.maps)
-    return
-  }
-  const script = document.createElement('script')
-  script.id = SCRIPT_ID
-  script.async = true
-  script.src =
-    `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}` + `&libraries=places`
-  // The API signals readiness by populating `window.google.maps`; poll briefly rather than
-  // threading a global callback name through the bundler.
-  let tries = 0
-  const timer = window.setInterval(() => {
-    if (w.google?.maps !== undefined) {
-      window.clearInterval(timer)
-      onReady(w.google.maps)
-    } else if ((tries += 1) > 100) {
-      window.clearInterval(timer)
-    }
-  }, 100)
-  script.addEventListener('error', () => window.clearInterval(timer))
-  document.head.appendChild(script)
-}
-
 export function PinPicker({
   browserKey,
   labels,
@@ -111,20 +73,28 @@ export function PinPicker({
   address,
   onPin,
 }: PinPickerProps): React.ReactElement {
-  const [typed, setTyped] = useState<{ lat: string; lng: string }>({ lat: '', lng: '' })
   const mapDiv = useRef<HTMLDivElement | null>(null)
   const searchInput = useRef<HTMLInputElement | null>(null)
   const marker = useRef<GMarker | null>(null)
+  // Uncontrolled (no `value` prop): written to directly, so hydration never snaps a visitor-typed
+  // or externally set (map drag, paste-link, geolocation) value back to blank (6.6.c).
+  const latInput = useRef<HTMLInputElement | null>(null)
+  const lngInput = useRef<HTMLInputElement | null>(null)
+
+  const setTypedFields = useCallback((lat: string, lng: string) => {
+    if (latInput.current) latInput.current.value = lat
+    if (lngInput.current) lngInput.current.value = lng
+  }, [])
 
   const pick = useCallback(
     (next: Pin, withAddress: boolean) => {
-      setTyped({ lat: String(next.lat), lng: String(next.lng) })
+      setTypedFields(String(next.lat), String(next.lng))
       void (async () => {
         const display = withAddress ? await addressFor(next) : null
         onPin(next, display)
       })()
     },
-    [onPin],
+    [onPin, setTypedFields],
   )
 
   // With a key: the map, the draggable pin and Places autocomplete. Without one, no map at all —
@@ -199,7 +169,13 @@ export function PinPicker({
             lng?: unknown
             address?: unknown
           }
-          if (typeof answer.lat !== 'number' || typeof answer.lng !== 'number') return
+          if (
+            typeof answer.lat !== 'number' ||
+            typeof answer.lng !== 'number' ||
+            !Number.isFinite(answer.lat) ||
+            !Number.isFinite(answer.lng)
+          )
+            return
           onPin(
             { lat: answer.lat, lng: answer.lng },
             typeof answer.address === 'string' ? answer.address : null,
@@ -214,11 +190,15 @@ export function PinPicker({
 
   const typeLatLng = useCallback(
     (lat: string, lng: string) => {
-      setTyped({ lat, lng })
-      const parsed = { lat: Number(lat), lng: Number(lng) }
-      if (Number.isFinite(parsed.lat) && Number.isFinite(parsed.lng)) pick(parsed, true)
+      const parsedLat = parseCoordinate(lat)
+      const parsedLng = parseCoordinate(lng)
+      if (parsedLat !== null && parsedLng !== null) {
+        pick({ lat: parsedLat, lng: parsedLng }, true)
+      } else {
+        onPin(null, null)
+      }
     },
-    [pick],
+    [pick, onPin],
   )
 
   return (
@@ -247,20 +227,22 @@ export function PinPicker({
       <div className={styles.latLng}>
         <span id="checkout-latlng-label">{labels.latLng}</span>
         <input
+          ref={latInput}
           type="text"
           inputMode="decimal"
           aria-label={labels.latitude}
           placeholder={labels.latitude}
-          value={typed.lat}
-          onChange={(event) => typeLatLng(event.target.value, typed.lng)}
+          defaultValue=""
+          onChange={(event) => typeLatLng(event.target.value, lngInput.current?.value ?? '')}
         />
         <input
+          ref={lngInput}
           type="text"
           inputMode="decimal"
           aria-label={labels.longitude}
           placeholder={labels.longitude}
-          value={typed.lng}
-          onChange={(event) => typeLatLng(typed.lat, event.target.value)}
+          defaultValue=""
+          onChange={(event) => typeLatLng(latInput.current?.value ?? '', event.target.value)}
         />
       </div>
     </div>

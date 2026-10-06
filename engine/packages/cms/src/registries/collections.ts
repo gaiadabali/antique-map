@@ -19,6 +19,7 @@ import { Leads } from '../collections/leads'
 import { Makers } from '../collections/makers'
 import { Masters } from '../collections/masters'
 import { Media } from '../collections/media'
+import { OrderNotifications } from '../collections/order-notifications'
 import { Orders } from '../collections/orders'
 import { Pages } from '../collections/pages'
 import { Partners } from '../collections/partners'
@@ -33,26 +34,31 @@ import { Users } from '../collections/users'
 import { Works } from '../collections/works'
 import { SiteSettings } from '../globals/site-settings'
 
-/** The admin sidebar's order. */
+/**
+ * The admin sidebar's order: a group appears where its first collection here does, so this list
+ * is ordered Antiques, Shop, Stores and stock, Orders, Leads and partners, Content, Settings
+ * (TASKS.md 3.6.b), each group's own collections kept together.
+ */
 const COLLECTIONS: readonly CollectionConfig[] = [
-  Users,
-  Stores,
-  StockLevels,
-  Orders,
-  PaymentEvents,
-  Discounts,
-  Products,
   Works,
   Makers,
   Places,
   Terms,
   Media,
   Masters,
-  Pages,
-  Redirects,
+  Discounts,
+  Products,
+  Stores,
+  StockLevels,
+  Orders,
+  OrderNotifications,
+  PaymentEvents,
   Leads,
   Partners,
   ChatSessions,
+  Pages,
+  Redirects,
+  Users,
   Events,
 ]
 

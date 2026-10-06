@@ -8,16 +8,26 @@
  */
 import type { PayloadRequest, Validate } from 'payload'
 
+import { pickLanguage } from './money'
+
 /** A SKU as stored: trimmed, case kept. Letters, digits, `.`, `-`, `_` and `/` only. */
 export const SKU_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._/-]*$/
 export const SKU_MAX_LENGTH = 64
 
 type Id = number | string
 
-const shapeError = (value: string): string | null => {
-  if (value.length > SKU_MAX_LENGTH) return `Keep a SKU to ${SKU_MAX_LENGTH} characters.`
+const shapeError = (req: PayloadRequest | undefined, value: string): string | null => {
+  if (value.length > SKU_MAX_LENGTH) {
+    return pickLanguage(req, {
+      en: `Keep a SKU to ${SKU_MAX_LENGTH} characters.`,
+      id: `Batasi SKU hingga ${SKU_MAX_LENGTH} karakter.`,
+    })
+  }
   if (!SKU_PATTERN.test(value)) {
-    return 'Use letters, digits, dots, hyphens, underscores or slashes in a SKU, with no spaces.'
+    return pickLanguage(req, {
+      en: 'Use letters, digits, dots, hyphens, underscores or slashes in a SKU, with no spaces.',
+      id: 'Gunakan huruf, angka, titik, tanda hubung, garis bawah, atau garis miring pada SKU, tanpa spasi.',
+    })
   }
   return null
 }
@@ -29,6 +39,10 @@ async function usedElsewhere(
   sku: string,
   id: Id | undefined,
 ): Promise<boolean> {
+  // The browser runs this validator too, before the save reaches the server; `req.payload` is
+  // only there server-side (D3: the client had no way to answer this and surfaced a stray
+  // "Error validating field" under an otherwise valid SKU). The server validates again regardless.
+  if (req.payload === undefined) return false
   const { totalDocs } = await req.payload.count({
     collection: 'products',
     overrideAccess: true,
@@ -52,16 +66,25 @@ export const validateProductSku: Validate<string | null | undefined> = async (
 ) => {
   // A custom `validate` replaces Payload's own, its `required` check included.
   if (typeof value !== 'string' || value === '') {
-    return 'Give the product its SKU: the spreadsheets and the stock match on it.'
+    return pickLanguage(req, {
+      en: 'Give the product its SKU: the spreadsheets and the stock match on it.',
+      id: 'Berikan SKU produk ini: lembar data dan stok dicocokkan dengannya.',
+    })
   }
-  const shape = shapeError(value)
+  const shape = shapeError(req, value)
   if (shape) return shape
   const own = (data as ProductData | undefined)?.variants ?? []
   if (own.some((variant) => variant?.sku === value)) {
-    return 'A variant of this product already uses this SKU. Give the product and each variant their own.'
+    return pickLanguage(req, {
+      en: 'A variant of this product already uses this SKU. Give the product and each variant their own.',
+      id: 'Sebuah varian produk ini sudah memakai SKU ini. Berikan produk dan tiap varian SKU-nya sendiri.',
+    })
   }
   if (await usedElsewhere(req, 'variants.sku', value, id ?? undefined)) {
-    return `The SKU "${value}" is already a variant of another product.`
+    return pickLanguage(req, {
+      en: `The SKU "${value}" is already a variant of another product.`,
+      id: `SKU "${value}" sudah menjadi varian produk lain.`,
+    })
   }
   return true
 }
@@ -71,20 +94,39 @@ export const validateVariantSku: Validate<string | null | undefined> = async (
   value,
   { data, id, req },
 ) => {
-  if (typeof value !== 'string' || value === '') return 'Give the variant its own SKU.'
-  const shape = shapeError(value)
+  if (typeof value !== 'string' || value === '') {
+    return pickLanguage(req, {
+      en: 'Give the variant its own SKU.',
+      id: 'Berikan SKU varian ini sendiri.',
+    })
+  }
+  const shape = shapeError(req, value)
   if (shape) return shape
   const product = data as ProductData | undefined
   if (product?.sku === value) {
-    return 'This is the product’s own SKU. Give each variant a SKU of its own.'
+    return pickLanguage(req, {
+      en: 'This is the product’s own SKU. Give each variant a SKU of its own.',
+      id: 'Ini adalah SKU produk itu sendiri. Berikan tiap varian SKU-nya sendiri.',
+    })
   }
   const twins = (product?.variants ?? []).filter((variant) => variant?.sku === value)
-  if (twins.length > 1) return `Two variants share the SKU "${value}". Give each its own.`
+  if (twins.length > 1) {
+    return pickLanguage(req, {
+      en: `Two variants share the SKU "${value}". Give each its own.`,
+      id: `Dua varian memakai SKU "${value}" yang sama. Berikan masing-masing SKU sendiri.`,
+    })
+  }
   if (await usedElsewhere(req, 'sku', value, id ?? undefined)) {
-    return `The SKU "${value}" is already another product’s.`
+    return pickLanguage(req, {
+      en: `The SKU "${value}" is already another product’s.`,
+      id: `SKU "${value}" sudah menjadi milik produk lain.`,
+    })
   }
   if (await usedElsewhere(req, 'variants.sku', value, id ?? undefined)) {
-    return `The SKU "${value}" is already a variant of another product.`
+    return pickLanguage(req, {
+      en: `The SKU "${value}" is already a variant of another product.`,
+      id: `SKU "${value}" sudah menjadi varian produk lain.`,
+    })
   }
   return true
 }

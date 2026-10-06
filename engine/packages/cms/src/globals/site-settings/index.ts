@@ -9,161 +9,20 @@ import type { GlobalConfig } from 'payload'
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../../collections/users/roles'
+import { invalidateSettingsOnChange } from '../../hooks/settings-invalidate'
+import { aiGroup, contactGroup, deliveryGroup, socialField } from './fields'
 
 export const SITE_SETTINGS_ACCESS = {
   read: isOwner,
   update: isOwner,
 } as const
 
-function contactGroup(label: { en: string; id: string }): import('payload').GroupField {
-  return {
-    name: 'contact',
-    type: 'group',
-    label,
-    fields: [
-      {
-        name: 'whatsapp',
-        type: 'text',
-        maxLength: 16,
-        label: { en: 'WhatsApp', id: 'WhatsApp' },
-        validate: (value: unknown) => {
-          if (!value) return true
-          return /^\+[1-9]\d{6,14}$/.test(String(value))
-            ? true
-            : 'Give a WhatsApp number in international format, such as +62 812 3456 7890.'
-        },
-      },
-      {
-        name: 'email',
-        type: 'email',
-        label: { en: 'Email', id: 'Email' },
-      },
-      {
-        name: 'phone',
-        type: 'text',
-        maxLength: 24,
-        label: { en: 'Phone', id: 'Telepon' },
-      },
-    ],
-  }
-}
-
-function aiGroup(label: { en: string; id: string }): import('payload').GroupField {
-  return {
-    name: 'ai',
-    type: 'group',
-    label,
-    fields: [
-      {
-        name: 'chatEnabled',
-        type: 'checkbox',
-        defaultValue: false,
-        label: { en: 'Chat enabled', id: 'Chat aktif' },
-      },
-      {
-        name: 'draftingEnabled',
-        type: 'checkbox',
-        defaultValue: false,
-        label: { en: 'Drafting enabled', id: 'Pembuatan draf aktif' },
-      },
-      {
-        name: 'dailyBudgetUsd',
-        type: 'number',
-        min: 0,
-        defaultValue: 5,
-        label: { en: 'Daily budget (USD)', id: 'Anggaran harian (USD)' },
-      },
-      {
-        name: 'sessionTokenCap',
-        type: 'number',
-        min: 0,
-        defaultValue: 150_000,
-        label: { en: 'Session token cap', id: 'Batas token per sesi' },
-      },
-    ],
-  }
-}
-
-function socialField(): import('payload').ArrayField {
-  return {
-    name: 'social',
-    type: 'array',
-    label: { en: 'Social links', id: 'Tautan sosial' },
-    fields: [
-      {
-        type: 'row',
-        fields: [
-          {
-            name: 'platform',
-            type: 'text',
-            required: true,
-            maxLength: 60,
-            label: { en: 'Platform', id: 'Platform' },
-          },
-          {
-            name: 'url',
-            type: 'text',
-            required: true,
-            maxLength: 2048,
-            label: { en: 'URL', id: 'URL' },
-          },
-        ],
-      },
-    ],
-  }
-}
-
-function deliveryGroup(label: { en: string; id: string }): import('payload').GroupField {
-  return {
-    name: 'delivery',
-    type: 'group',
-    label,
-    fields: [
-      {
-        name: 'bands',
-        type: 'array',
-        label: { en: 'Distance bands', id: 'Gelombang jarak' },
-        fields: [
-          {
-            type: 'row',
-            fields: [
-              {
-                name: 'upToKm',
-                type: 'number',
-                required: true,
-                min: 0,
-                label: { en: 'Up to km', id: 'Hingga km' },
-                admin: { step: 0.1 },
-              },
-              {
-                name: 'feeIdr',
-                type: 'number',
-                required: true,
-                min: 0,
-                label: { en: 'Fee (IDR)', id: 'Ongkir (IDR)' },
-                admin: { step: 1 },
-              },
-            ],
-          },
-        ],
-      },
-      {
-        name: 'freeOverIdr',
-        type: 'number',
-        min: 0,
-        defaultValue: 500000,
-        label: { en: 'Free delivery over (IDR)', id: 'Gratis ongkir di atas (IDR)' },
-        admin: { step: 1 },
-      },
-    ],
-  }
-}
-
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: { en: 'Site settings', id: 'Pengaturan situs' },
   admin: { group: ADMIN_GROUPS.settings, hidden: hiddenFromAllButOwner },
   access: SITE_SETTINGS_ACCESS,
+  hooks: { afterChange: [invalidateSettingsOnChange] },
   fields: [
     {
       name: 'gallery',
@@ -279,6 +138,18 @@ export const SiteSettings: GlobalConfig = {
           min: 1,
           defaultValue: 60,
           label: { en: 'Order expiry minutes', id: 'Menit kedaluwarsa pesanan' },
+          admin: { step: 1 },
+        },
+        {
+          // How long staff have to quote a delivery fee before an `awaiting_quote` order expires
+          // and its stock is returned (TASKS.md 6.6); the buyer's own payment window starts once
+          // the quote is set, and is the `orderExpiryMinutes` field above.
+          name: 'quoteWindowMinutes',
+          type: 'number',
+          min: 15,
+          max: 1440,
+          defaultValue: 120,
+          label: { en: 'Delivery-quote window (minutes)', id: 'Jendela ongkos kirim (menit)' },
           admin: { step: 1 },
         },
         {

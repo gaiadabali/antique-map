@@ -25,6 +25,7 @@ import { ORDERS_ACCESS } from './access'
 import { ORDER_CONSTRAINTS } from './constraints'
 import { SALE_FIELDS } from './fields-sale'
 import { TRACKING_FIELDS } from './fields-tracking'
+import { notifyOnStatusChange } from './hooks/notify-on-status-change'
 import { guardStatusMove } from './status-moves'
 
 export const Orders: CollectionConfig = {
@@ -45,6 +46,6 @@ export const Orders: CollectionConfig = {
   },
   access: ORDERS_ACCESS,
   custom: dbConstraints(...ORDER_CONSTRAINTS),
-  hooks: { beforeChange: [guardStatusMove] },
+  hooks: { beforeChange: [guardStatusMove], afterChange: [notifyOnStatusChange] },
   fields: [...SALE_FIELDS, ...TRACKING_FIELDS],
 }

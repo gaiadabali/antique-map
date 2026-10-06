@@ -1,9 +1,10 @@
 /**
- * The bag page (6.2; EXPERIENCE-SHOP.md §5): server-rendered lines and totals, a quantity stepper
- * and remove per line, the welcome-code field, and a checkout CTA that stays inert until the bag
- * holds something to buy. Every figure arrived computed by the server (`../server/shop/bag`);
- * delivery says it is calculated at checkout — the bag page has no pin. Links never prefetch and
- * the styles are tokens only (DESIGN-SYSTEM.md).
+ * The bag page (6.2, 6.6.c; EXPERIENCE-SHOP.md §5): server-rendered lines and totals, a quantity
+ * stepper and remove per line, the welcome-code field, and a checkout CTA that stays inert until
+ * the bag holds something to buy. Every figure arrived computed by the server
+ * (`../server/shop/bag`); delivery is staff-quoted after the order is placed (COMMERCE.md's
+ * 2026-10-06 decision), so the bag page names no fee and no free-delivery threshold. Links never
+ * prefetch and the styles are tokens only (DESIGN-SYSTEM.md).
  */
 import type { SiteLocale } from '@engine/config/sites'
 
@@ -105,18 +106,8 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
             ))}
           </ul>
 
-          <aside className={styles.summary} aria-label={text.shared('cart.title')}>
-            {bag.freeDeliveryRemainingText !== null &&
-              (bag.freeDeliveryRemainingText === 'Rp 0' || bag.isFreeDelivery ? (
-                <p className={styles.freeReached}>{text.shared('cart.freeShippingReached')}</p>
-              ) : (
-                <p className={styles.freeRemaining}>
-                  {text.shared('cart.freeShippingRemaining', {
-                    amount: bag.freeDeliveryRemainingText,
-                  })}
-                </p>
-              ))}
-
+          {/* The bag's summary, not a landmark: it sits inside the bag's own named region. */}
+          <div className={styles.summary}>
             <CodeForm
               label={text.shared('cart.codeLabel')}
               applyLabel={text.shared('cart.codeApply')}
@@ -133,8 +124,6 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
               unknownMessage={text.shared('codeInvalid.unknown')}
               clearMessage={text('bag.codeCleared')}
             />
-
-            <p className={styles.deliveryNote}>{text('bag.deliveryAtCheckout')}</p>
 
             <dl className={styles.totals}>
               <div className={styles.totalRow}>
@@ -177,7 +166,7 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                 </Button>
               )}
             </div>
-          </aside>
+          </div>
         </div>
       )}
     </section>

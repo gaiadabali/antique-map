@@ -7,6 +7,7 @@
  */
 import { ValidationError, type CollectionBeforeChangeHook, type PayloadRequest } from 'payload'
 
+import { pickLanguage } from '../products/money'
 import { hasRole } from '../users/roles'
 
 /** Who may correct what intake set: the owner, or a script with no user. */
@@ -41,9 +42,18 @@ export function freezeAfterCreate(
       collection,
       errors: changed.map((path) => ({
         path,
-        message: allowed
-          ? `The ${path} was set at intake: only the owner may correct it.`
-          : `The ${path} never changes once a record is made: make a new record.`,
+        message: pickLanguage(
+          req,
+          allowed
+            ? {
+                en: `The ${path} was set at intake: only the owner may correct it.`,
+                id: `${path} ditetapkan saat masuk: hanya pemilik yang dapat memperbaikinya.`,
+              }
+            : {
+                en: `The ${path} never changes once a record is made: make a new record.`,
+                id: `${path} tidak pernah berubah setelah rekaman dibuat: buat rekaman baru.`,
+              },
+        ),
       })),
     })
   }

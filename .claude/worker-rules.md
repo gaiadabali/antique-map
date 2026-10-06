@@ -10,7 +10,8 @@ Read by every headless worker the global launcher starts here (`~/.claude/worker
 - **Migrated-database tests** (`admins.db.test.ts`, `instance.db.test.ts`, `owner-backstop.db.test.ts`) fail on any
   branch that adds or changes collections until the schema lead's migration lands (3.5). Report them as expected;
   do not try to fix them and never write a migration to make them pass.
-- **Database tests:** `*.db.test.ts` need `CMS_TEST_POSTGRES_URL=postgres://postgres:postgres@localhost:5432/postgres`
+- **Never manage the dev stack's containers.** No `docker compose up/down/restart/rm`, `docker restart` or `docker run` for Postgres, Mailpit or RustFS — they are shared by every session, and a worktree's older `docker-compose.dev.yml` recreates the container for everyone (two outages on 2026-10-05/06). If the database is unreachable, stop and report it; do not try to fix it.
+- **Database tests:** `*.db.test.ts` need `CMS_TEST_POSTGRES_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres` (use `127.0.0.1`, never `localhost`: a WSL relay answers `[::1]:5432` and `[::1]:9000` on this host, so `localhost` times out or hits the wrong server; the same goes for `S3_ENDPOINT`)
   (the local dev stack's container `indies-platform-dev-postgres-1`; each test creates and drops its own pushed
   database). Never touch any other container — the other Postgres servers on this machine belong to other projects.
 - **Board (mandatory — the user tracks progress from `TASKS.md` live):** your first command is `pnpm tasks:start <task> --agent <type>`; after each subtask you can evidence,
@@ -29,4 +30,9 @@ Read by every headless worker the global launcher starts here (`~/.claude/worker
   files, both `en` and `id`; no file over 300 lines.
 - **Fresh-clone verify:** after `pnpm install --frozen-lockfile`, run `pnpm worktree:env` in the clone, then the
   ticket's Verify commands (at least `pnpm verify`).
+- **Never background, never "wait":** you run headless — ending your turn ends your session, and no background
+  notification ever comes back. Run long commands (`pnpm verify`, db tests, `pnpm build`, Playwright) in the
+  **foreground** with a long timeout; never `run_in_background`; never stop "to wait" for a job. **Commit after every
+  step, before any long run**, so nothing is lost if you are cut off (four runs on 2026-10-05/06 ended with their
+  work uncommitted this way).
 - **Report:** the format of `docs/WORKFLOW.md` §5, at the path the ticket names (always under `docs/reports/workers/` — you cannot write under `.claude/`). Commit it.

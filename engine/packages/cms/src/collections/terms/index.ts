@@ -15,6 +15,10 @@ import type { CollectionConfig, Validate } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
+import {
+  invalidateVocabularyOnChange,
+  invalidateVocabularyOnDelete,
+} from '../../hooks/vocabulary-invalidate'
 import { gradeEquivalentError } from '../../validators/term-grade'
 import { TERM_KIND_LABELS, TERM_KINDS } from './kinds'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from './vocabulary/access'
@@ -66,13 +70,19 @@ export const Terms: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeDelete: [refuseDeleteWhileUsed] },
+  hooks: {
+    beforeDelete: [refuseDeleteWhileUsed],
+    // After the commit: a published change expires the gallery's listings.
+    afterChange: [invalidateVocabularyOnChange],
+    afterDelete: [invalidateVocabularyOnDelete],
+  },
   // A slug is unique within its vocabulary: "warm" may be a mood and a room's colour both.
   indexes: [{ fields: ['kind', 'slug'], unique: true }],
   fields: [
     {
       name: 'kind',
       type: 'select',
+      label: { en: 'Vocabulary', id: 'Kosakata' },
       required: true,
       index: true,
       options: TERM_KINDS.map((value) => ({ value, label: TERM_KIND_LABELS[value] })),
@@ -88,6 +98,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'label',
       type: 'text',
+      label: { en: 'Label', id: 'Label' },
       localized: true,
       maxLength: 120,
       validate: requiredInDefaultLocale('Give the term’s name, such as "Batik" or "VG+".'),
@@ -102,6 +113,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'definition',
       type: 'textarea',
+      label: { en: 'Definition', id: 'Definisi' },
       localized: true,
       maxLength: 600,
       validate: requiredToPublish('A published grade says what it means, in a sentence or two.'),
@@ -116,6 +128,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'equivalent',
       type: 'text',
+      label: { en: 'A–D equivalent', id: 'Setara A–D' },
       maxLength: 7,
       validate: validateEquivalent,
       admin: {
@@ -129,6 +142,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'position',
       type: 'number',
+      label: { en: 'Position', id: 'Posisi' },
       index: true,
       validate: validatePosition,
       admin: {

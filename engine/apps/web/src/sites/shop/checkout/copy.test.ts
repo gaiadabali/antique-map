@@ -54,7 +54,5 @@ describe('checkout lexicon', () => {
     expect(id['checkout.problem.out-of-stock']).toContain('{items}')
     expect(en['checkout.problem.no-single-store']).toContain('{items}')
     expect(id['checkout.problem.no-single-store']).toContain('{items}')
-    expect(en['checkout.sendingFrom']).toContain('{area}')
-    expect(id['checkout.sendingFrom']).toContain('{area}')
   })
 })

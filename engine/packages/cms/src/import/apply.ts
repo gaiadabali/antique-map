@@ -13,6 +13,7 @@
  * applies and then **rolls the whole transaction back**, so its report is the real one and
  * nothing is written.
  */
+import type { RequestContext } from '@engine/cache'
 import type { Payload, PayloadRequest } from 'payload'
 
 import { readFileSync } from 'node:fs'
@@ -65,6 +66,8 @@ export type RunOptions = {
   publish?: boolean
   /** The user the run is for — the owner in the admin; the seed runs with none. */
   user?: PayloadRequest['user'] | undefined
+  /** Outside a request (the CLIs): a collector's context for the cache hooks (`./cli-cache`). */
+  context?: RequestContext
 }
 
 /** Payload keeps its live transactions here; a run checks it to know a refusal killed one. */
@@ -76,9 +79,11 @@ function requestOf(
   transactionID: string | number | undefined,
   user: PayloadRequest['user'] | undefined,
   locale: 'en' | 'all' | 'id' = 'en',
+  context: RequestContext = {},
 ): PayloadRequest {
   return {
     payload,
+    context,
     user: user ?? null,
     locale,
     headers: new Headers(),
@@ -95,7 +100,7 @@ function requestOf(
  */
 export async function freshReq(ctx: UpsertContext, locale?: 'all' | 'id'): Promise<PayloadRequest> {
   const transactionID = ctx.req.transactionID ? await ctx.req.transactionID : undefined
-  return requestOf(ctx.payload, transactionID, ctx.req.user ?? undefined, locale)
+  return requestOf(ctx.payload, transactionID, ctx.req.user ?? undefined, locale, ctx.req.context)
 }
 
 const MAX_ATTEMPTS = 8
@@ -137,7 +142,7 @@ export async function runImportFile(
   for (;;) {
     attempt += 1
     const transactionID = ((await payload.db.beginTransaction()) ?? undefined) as string | undefined
-    const req = requestOf(payload, transactionID, options.user)
+    const req = requestOf(payload, transactionID, options.user, 'en', options.context)
     const ctx: UpsertContext = { payload, req, vocab, publish: options.publish === true }
     let killed = false
 

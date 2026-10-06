@@ -55,6 +55,23 @@ export const HOME_MESSAGES = defineMessages({
     'Tell us which map interests you. We reply within two working days with its condition report, provenance and price — and, if you wish, arrange a private viewing.',
   'home.gallery.enquireCta': 'Enquire',
   'home.gallery.sellToUsCta': 'Sell to us',
+  // The sold archive is phase 5 (TASKS.md); these three are placeholder until it ships (qa 4.qa,
+  // finding F4). Never a price — the gallery never shows one, sold or not.
+  'home.gallery.recentlyEyebrow': 'Archive',
+  'home.gallery.recentlyTitle': 'Recently placed',
+  'home.gallery.recentlyBody':
+    'Pieces that have found a home with collectors and institutions. We keep the record of where a piece went — never its price.',
+  'home.gallery.recentlyItem1Title': 'A chart of the Sunda Strait',
+  'home.gallery.recentlyItem1Note': 'Placed with a private collector, Singapore',
+  'home.gallery.recentlyItem2Title': 'View of Batavia from the roadstead',
+  'home.gallery.recentlyItem2Note': 'Placed with an institutional collection',
+  'home.gallery.recentlyItem3Title': 'Map of the Moluccas, first state',
+  'home.gallery.recentlyItem3Note': 'Placed with a private collector, the Netherlands',
+  'home.gallery.liveEyebrow': 'Old East Indies',
+  'home.gallery.liveTitle': 'Live with the collection',
+  'home.gallery.liveBody':
+    'Prints, for everyday walls: our sister shop makes museum-grade reproductions from works like these — framed and ready for a wall that an original cannot hang on.',
+  'home.gallery.liveCta': 'Shop the prints',
 })
 
 export type HomeMessageKey = keyof typeof HOME_MESSAGES

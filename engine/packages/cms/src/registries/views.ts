@@ -20,6 +20,15 @@ import { uniqueEntries, type RegistryEntry } from './entries'
 // import map resolves.
 export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = [
   ...dashboardViewEntries, // ADM, the owner's dashboard (TASKS.md 9.2.b)
+  {
+    name: 'orders-panel',
+    owner: 'ADM',
+    value: {
+      path: '/orders/:id?',
+      Component: '@engine/cms/admin/orders#OrdersPanelView',
+      exact: true,
+    },
+  },
 ]
 
 /** `admin.components.views`, keyed by each entry's name. */

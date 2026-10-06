@@ -22,7 +22,8 @@ export async function POST(request: Request): Promise<Response> {
     { lat: input.lat, lng: input.lng, link: input.link },
     {
       address: request.headers.get('x-forwarded-for'),
-      serverKey: process.env.GOOGLE_MAPS_SERVER_KEY ?? null,
+      // `||`, not `??`: a blank key in a host's .env means no key (no outbound call).
+      serverKey: process.env.GOOGLE_MAPS_SERVER_KEY || null,
     },
   )
   return Response.json(answer, { status: answer.ok ? 200 : answer.status })

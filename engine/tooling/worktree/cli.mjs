@@ -27,7 +27,12 @@ import {
   worktreeDirName,
 } from './allocate.mjs'
 import { readEnvFile, writeEnvFile } from './env-file.mjs'
-import { ensureLinkTokenKeys, LINK_KEY_VARIABLE } from './link-keys.mjs'
+import {
+  ensureLinkTokenKeys,
+  ensureOrderLinkKey,
+  LINK_KEY_VARIABLE,
+  ORDER_LINK_KEY_VARIABLE,
+} from './link-keys.mjs'
 import { ensureLocalProductionBuild, LOCAL_BUILD_VARIABLE } from './local-build.mjs'
 import { addWorktree, listWorktrees, otherClaims, pathKey, topLevel } from './git.mjs'
 
@@ -105,6 +110,15 @@ function writeWorktreeEnv({ target, phase, lane, force = false, log = console.lo
       ? 'a fresh dev ring (one current key, 32 random bytes)'
       : 'an existing ring is never overwritten'
   log(`  ${LINK_KEY_VARIABLE}=…  ${outcome[LINK_KEY_VARIABLE]}: ${ringNote}`)
+  // The order-link key is a secret too: its outcome is logged, its value never is.
+  outcome[ORDER_LINK_KEY_VARIABLE] = ensureOrderLinkKey(file)
+  log(
+    `  ${ORDER_LINK_KEY_VARIABLE}=…  ${outcome[ORDER_LINK_KEY_VARIABLE]}: ${
+      outcome[ORDER_LINK_KEY_VARIABLE] === 'added'
+        ? 'a fresh dev key (32 random bytes)'
+        : 'an existing key is never overwritten'
+    }`,
+  )
   outcome[LOCAL_BUILD_VARIABLE] = ensureLocalProductionBuild(file)
   const buildNote =
     outcome[LOCAL_BUILD_VARIABLE] === 'added'

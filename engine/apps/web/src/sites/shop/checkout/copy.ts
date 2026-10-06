@@ -15,9 +15,9 @@ export const CHECKOUT_KEYS = defineMessages({
   'checkout.reviewTitle': 'Your order',
   'checkout.contactTitle': 'Contact',
   'checkout.deliveryTitle': 'Delivery',
-  'checkout.feePlaceholder': 'Drop a pin or paste a Maps link to see the delivery fee.',
-  'checkout.deliveryFee': 'Delivery',
-  'checkout.sendingFrom': 'Sending from {area}',
+  'checkout.itemsTotal': 'Items total',
+  'checkout.deliveryConfirmedNote':
+    "Delivery price confirmed by our team — usually within 2 hours. You pay nothing until you've seen the final total.",
   'checkout.mapPinRequired': 'Pin your delivery spot on the map',
   'checkout.pinLatLng': 'Or type latitude and longitude',
   'checkout.notes': 'Notes for the driver (landmark, villa name) — optional',

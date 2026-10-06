@@ -67,22 +67,19 @@ free_space() {
   df -Pk "$dir" | awk 'NR == 2 { print $6, $2, $4 }'
 }
 
-# disk_check — every filesystem this run writes to keeps both floors, counting the RustFS image
-# a first run would preallocate on it (should-fix 4).
+# disk_check — every filesystem this run writes to keeps both floors. RustFS's data has no cap of
+# its own any more (rustfs.sh), so these floors are what keep it from filling `/`.
 disk_check() {
-  local mount total avail pct gb seen='' dir reserve
+  local mount total avail pct gb seen='' dir
   for dir in "$RUSTFS_HOME" /var/backups /home; do
     read -r mount total avail <<<"$(free_space "$dir")"
     case " $seen " in *" $mount "*) continue ;; esac
     seen="$seen $mount"
-    reserve=0
-    if [ "$dir" = "$RUSTFS_HOME" ] && [ ! -e "$RUSTFS_IMAGE" ]; then reserve=$((RUSTFS_SIZE_GB * 1048576)); fi
-    pct=$(((avail - reserve) * 100 / total))
-    gb=$(((avail - reserve) / 1048576))
+    pct=$((avail * 100 / total))
+    gb=$((avail / 1048576))
     local what="${gb} GiB free (${pct}%)"
-    [ "$reserve" = 0 ] || what="$((avail / 1048576)) GiB free now, ${gb} GiB (${pct}%) after the ${RUSTFS_SIZE_GB} GiB RustFS image"
     if [ "$gb" -lt "$MIN_FREE_GB" ] || [ "$pct" -lt "$MIN_FREE_PCT" ]; then
-      fail "disk: $mount (holds $dir) has $what: below the floor of ${MIN_FREE_GB} GiB and ${MIN_FREE_PCT}% (--min-free-gb, --min-free-pct, --rustfs-size-gb)"
+      fail "disk: $mount (holds $dir) has $what: below the floor of ${MIN_FREE_GB} GiB and ${MIN_FREE_PCT}% (--min-free-gb, --min-free-pct)"
     else
       ok "disk: $mount (holds $dir) has $what; floor ${MIN_FREE_GB} GiB and ${MIN_FREE_PCT}%"
     fi
@@ -138,55 +135,83 @@ check_port() {
       fail "port $port: $label listens on $addrs — loopback (127.0.0.1) only (DEPLOYMENT.md §3)"
     fi
   else
-    fail "port $port ($label) is taken by $users on $addrs: pick another (--rustfs-port, --gallery …)"
+    fail "port $port ($label) is taken by $users on $addrs: pick another (--rustfs-port, --site …)"
   fi
 }
 
 site_preflight() {
-  say "$S_APP ($S_LABEL, $ENVIRONMENT): $S_USER, port $S_PORT, $S_DB/$S_ROLE, $S_DOMAIN"
+  say "site ($ENVIRONMENT): $S_USER, port $S_PORT, $S_DB/$S_ROLE; shop $SHOP_HOSTS, gallery $GALLERY_HOSTS"
   if id -u "$S_USER" >/dev/null 2>&1; then
     ok "site user $S_USER exists (uid $(id -u "$S_USER"))"
     home_link_check
-    [ -z "$S_REPLACE" ] || replace_preflight
   elif [ "$CREATE_SITES" = 1 ]; then
     command -v clpctl >/dev/null 2>&1 || fail "--create-sites needs CloudPanel's clpctl on PATH"
-    note "no site user $S_USER yet: --create-sites adds the CloudPanel Node.js site"
-    [ -z "$S_REPLACE" ] || fail "--replace-site $S_REPLACE refused: its vhost names $S_USER, and there is no such user"
+    note "no site user $S_USER yet: --create-sites adds the CloudPanel Node.js site $S_DOMAIN"
   else
     fail "no site user $S_USER: add the CloudPanel Node.js site ($S_DOMAIN, app port $S_PORT, site user $S_USER) or re-run with --create-sites"
   fi
-  check_port "$S_PORT" "$S_USER" "$S_APP"
+  check_port "$S_PORT" "$S_USER" "the app"
   vhost_check
   db_preflight
-  # A home --replace-site deletes is checked by replace_preflight; the new one gets the skeleton.
-  [ -n "$S_REPLACE" ] || env_preflight
+  env_preflight
+}
+
+# vhost_server_names CONF — every name the vhost's server_name lines list, one per line.
+vhost_server_names() {
+  sed -nE 's/^[[:space:]]*server_name[[:space:]]+([^;]*);.*/\1/p' "$1" | tr -s ' \t' '\n' | sed '/^$/d' | sort -u
 }
 
 vhost_check() {
-  local conf="$VHOST_DIR/$S_DOMAIN.conf" others
+  local conf="$VHOST_DIR/$S_DOMAIN.conf" others h missing='' names
   if [ ! -f "$conf" ]; then
-    if [ "$CREATE_SITES" = 1 ] && { [ -n "$S_REPLACE" ] || ! id -u "$S_USER" >/dev/null 2>&1; }; then
+    if [ "$CREATE_SITES" = 1 ] && ! id -u "$S_USER" >/dev/null 2>&1; then
       note "vhost $conf: CloudPanel writes it when --create-sites adds the site"
     else
       fail "no CloudPanel vhost at $conf (--vhost-dir if CloudPanel keeps them elsewhere)"
     fi
-  elif grep -Eq "proxy_pass[[:space:]]+http://127\.0\.0\.1:$S_PORT([;/[:space:]]|$)" "$conf"; then
-    ok "vhost $conf proxies to http://127.0.0.1:$S_PORT"
   else
-    fail "vhost $conf does not proxy to http://127.0.0.1:$S_PORT (DEPLOYMENT.md §3): $(grep -Eo 'proxy_pass[^;]*' "$conf" | sort -u | paste -sd' ' -)"
+    if grep -Eq "proxy_pass[[:space:]]+http://127\.0\.0\.1:$S_PORT([;/[:space:]]|$)" "$conf"; then
+      ok "vhost $conf proxies to http://127.0.0.1:$S_PORT"
+    else
+      fail "vhost $conf does not proxy to http://127.0.0.1:$S_PORT (DEPLOYMENT.md §3): $(grep -Eo 'proxy_pass[^;]*' "$conf" | sort -u | paste -sd' ' -)"
+    fi
+    # One vhost serves every host, and passes Host through, which picks the site (§2). The
+    # names go in through CloudPanel's vhost editor, so a missing one warns: the report says how.
+    names="$(vhost_server_names "$conf")"
+    while read -r h; do
+      grep -qxF "$h" <<<"$names" || missing="$missing $h"
+    done < <(all_hosts)
+    if [ -z "$missing" ]; then
+      ok "vhost $conf: server_name names every host ($(all_hosts | paste -sd' ' -))"
+    else
+      warn "vhost $conf: server_name lacks$missing — add them in CloudPanel's vhost editor (the report shows the line)"
+    fi
   fi
   others="$(grep -lE "(127\.0\.0\.1|localhost|0\.0\.0\.0|\[::1\]):$S_PORT([^0-9]|$)" "$VHOST_DIR"/* 2>/dev/null |
-    grep -vxF -e "$conf" -e "$VHOST_DIR/$S_REPLACE.conf" || true)"
+    grep -vxF -e "$conf" || true)"
   [ -z "$others" ] || fail "port $S_PORT is already an upstream of another vhost: $others"
+  # Another site's vhost answering one of our hosts would win nginx's choice for it.
+  local f
+  for f in "$VHOST_DIR"/*; do
+    [ -f "$f" ] && [ "$f" != "$conf" ] || continue
+    names="$(vhost_server_names "$f")"
+    while read -r h; do
+      if grep -qxF "$h" <<<"$names"; then
+        fail "$h is a server_name of another vhost: $f (retire the old site first: docs/ops/helios-staging.md)"
+      fi
+    done < <(all_hosts)
+  done
 }
 
 # ensure_cloudpanel_site — only with --create-sites, only when the site user is missing. This
 # DOES touch nginx: clpctl writes the site's vhost and reloads the host's shared nginx.
+SITE_PLANNED=0
 ensure_cloudpanel_site() {
-  if id -u "$S_USER" >/dev/null 2>&1 && [ "$REPLACE_PLANNED" != 1 ]; then return 0; fi
+  id -u "$S_USER" >/dev/null 2>&1 && return 0
   [ "$CREATE_SITES" = 1 ] || return 0
   act "add the CloudPanel Node.js site $S_DOMAIN (site user $S_USER, app port $S_PORT, Node $NODE_MAJOR_FOR_SITES) — clpctl writes its vhost and reloads the shared nginx — then lock its password" \
     create_cloudpanel_site
+  if dry; then SITE_PLANNED=1; fi
 }
 
 create_cloudpanel_site() {

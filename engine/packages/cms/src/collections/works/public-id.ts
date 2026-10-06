@@ -19,10 +19,12 @@ import {
   WORK_UID_LOCK_KEY,
 } from '../../hooks/work-transaction'
 import { nextPublicId } from '../../validators/work-record'
+import { pickLanguage, type Bilingual } from '../products/money'
 
 const WORKS = 'works'
 
-function refuse(req: PayloadRequest, message: string): never {
+function refuse(req: PayloadRequest, text: Bilingual): never {
+  const message = pickLanguage(req, text)
   throw new ValidationError(
     {
       collection: WORKS,
@@ -58,13 +60,19 @@ export const assignPublicId: CollectionBeforeChangeHook = async ({
   if (operation === 'update') {
     const stored = (originalDoc as { publicId?: unknown } | undefined)?.publicId
     if ('publicId' in data && sent !== stored && !(stored == null && sent == null)) {
-      refuse(req, 'A work keeps its public id for ever: its address points at it.')
+      refuse(req, {
+        en: 'A work keeps its public id for ever: its address points at it.',
+        id: 'Id publik karya ini tidak pernah berubah: alamatnya mengarah ke situ.',
+      })
     }
     return data
   }
   if (isScript(req) && sent !== null && sent !== undefined) {
     if (!Number.isSafeInteger(sent) || (sent as number) < 1) {
-      refuse(req, 'A public id is a whole number, 1 or more.')
+      refuse(req, {
+        en: 'A public id is a whole number, 1 or more.',
+        id: 'Id publik adalah bilangan bulat, 1 atau lebih.',
+      })
     }
     return data
   }

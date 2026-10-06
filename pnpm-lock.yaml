@@ -74,6 +74,9 @@ importers:
       '@engine/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@engine/media':
+        specifier: workspace:*
+        version: link:../../packages/media
       '@engine/migrate':
         specifier: workspace:*
         version: link:../../packages/migrate
@@ -95,6 +98,9 @@ importers:
       next:
         specifier: 16.3.6
         version: 16.3.6(@playwright/test@1.56.1)(@types/node@26.6.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4)
+      openseadragon:
+        specifier: 6.1.1
+        version: 6.1.1
       payload:
         specifier: 3.90.2
         version: 3.90.2(graphql@16.11.0)(typescript@5.9.3)
@@ -165,6 +171,9 @@ importers:
       graphql:
         specifier: 16.11.0
         version: 16.11.0
+      nodemailer:
+        specifier: 9.1.1
+        version: 9.1.1
       payload:
         specifier: 3.90.2
         version: 3.90.2(graphql@16.11.0)(typescript@5.9.3)
@@ -172,6 +181,9 @@ importers:
       '@types/node':
         specifier: 26.6.3
         version: 26.6.3
+      '@types/nodemailer':
+        specifier: 8.0.2
+        version: 8.0.2
       next:
         specifier: 16.3.6
         version: 16.3.6(@playwright/test@1.56.1)(@types/node@26.6.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4)
@@ -1602,6 +1614,9 @@ packages:
 
   '@types/node@26.6.3':
     resolution: {integrity: sha512-dsqMQQoeTLqu9wynDD00q573mNzso3IdQOAfHRJqLCcmCFPoGo9A1bDpUcv/9tnKpErQWv9uKeGfl37EIS02Yg==}
+
+  '@types/nodemailer@8.0.2':
+    resolution: {integrity: sha512-c7M5ox8p0nEOfbJ2E9Qcmt8/QCu/VzsiAhzBiZbvky2PhKZDHpKB3sQHBM5MEZNkCfBOaS6S9//AGPRTNB7IaA==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -3205,6 +3220,9 @@ packages:
   open@8.4.2:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
+
+  openseadragon@6.1.1:
+    resolution: {integrity: sha512-g4iKe2q8B642SaBT3+x4ZF3/8b1TxPPydyjmtrOLgDrlYWMKd9ZXM+1Cb/xa9DVySkvs/7l6HR1nHKfD5F3Tsw==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -5547,6 +5565,10 @@ snapshots:
     dependencies:
       undici-types: 8.9.0
 
+  '@types/nodemailer@8.0.2':
+    dependencies:
+      '@types/node': 26.6.3
+
   '@types/parse-json@4.0.2': {}
 
   '@types/pg@8.20.0':
@@ -7138,6 +7160,8 @@ snapshots:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+
+  openseadragon@6.1.1: {}
 
   optionator@0.9.4:
     dependencies:

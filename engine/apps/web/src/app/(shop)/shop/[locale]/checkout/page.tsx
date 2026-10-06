@@ -32,7 +32,9 @@ export default async function CheckoutPage({ params }: PageProps<'/shop/[locale]
     <CheckoutView
       read={read}
       locale={locale}
-      browserKey={process.env.GOOGLE_MAPS_BROWSER_KEY ?? null}
+      // `||`, not `??`: a host's .env carries the key blank until the owner supplies one (staging),
+      // and a blank key must mean "no key" — the typed-pin fallback — not Google Maps without one.
+      browserKey={process.env.GOOGLE_MAPS_BROWSER_KEY || null}
     />
   )
 }

@@ -12,15 +12,16 @@
 # block that disappears is an ERROR in the report: re-run the script to put it back.
 
 # route | schedule | answers that count as success | curl's max seconds | on/off | lands in
-# A route stays off until its handler lands: its placeholder answers 404 every tick. Turn one
-# on here once its task is merged, and re-run the script. jobs is on: 4.6 landed it
-# (/api/x/cron/jobs), and it answers 409 `busy` while a run is in flight — success here, never a
-# failure (4.6 review #3), so never `curl -f`.
+# DEPLOYMENT.md §5's table. A route stays off until its handler lands: its placeholder answers
+# 404 every tick. Turn one on here once its task is merged, and re-run the script. jobs answers
+# 409 `busy` while a run is in flight — success here, never a failure (4.6 review #3), so never
+# `curl -f`. jobs, sweeps, reconcile and retention (daily 03:15 WITA) have handlers under engine/apps/web/src/app/api/x/cron/.
 CRON_ROUTES=(
   'jobs|* * * * *|200,409|900|on|4.6'
-  'sweeps|* * * * *|200,204|120|off|18.1.d'
-  'outbox|* * * * *|200,204|120|off|18.2'
-  'reconcile|*/10 * * * *|200,204|300|off|19.2.d'
+  'sweeps|* * * * *|200,204|120|on|phase 6'
+  'reconcile|*/10 * * * *|200,204|300|on|phase 6'
+  'retention|15 19 * * *|200,204|900|on|9.1'
+  'nightly|0 18 * * *|200,204|900|off|its-handler'
 )
 CRON_BEGIN='# >>> indies-provision (managed by scripts/ops/helios-provision.sh: edits here are replaced)'
 CRON_END='# <<< indies-provision'
@@ -129,7 +130,7 @@ cron_unmanaged() {
 }
 
 ensure_cron() {
-  say "$S_APP: ~/bin helpers and $S_USER's crontab"
+  say "~/bin helpers and $S_USER's crontab"
   user_dir "$S_HOME/bin" 750
   user_dir "$S_HOME/.indies" 750
   helper_script indies-cron indies_cron_main | user_put "$S_HOME/bin/indies-cron" 750

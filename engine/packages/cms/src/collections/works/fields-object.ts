@@ -61,11 +61,23 @@ export const placesField: ArrayField = {
           name: 'place',
           type: 'relationship',
           relationTo: 'places',
+          label: { en: 'Place', id: 'Tempat' },
           required: true,
           validate: validatePlace,
         },
-        { name: 'role', type: 'select', required: true, options: PLACE_ROLE_OPTIONS },
-        { name: 'primary', type: 'checkbox', validate: validatePrimary },
+        {
+          name: 'role',
+          type: 'select',
+          label: { en: 'Role', id: 'Peran' },
+          required: true,
+          options: PLACE_ROLE_OPTIONS,
+        },
+        {
+          name: 'primary',
+          type: 'checkbox',
+          label: { en: 'Primary', id: 'Utama' },
+          validate: validatePrimary,
+        },
       ],
     },
   ],
@@ -85,8 +97,20 @@ export const imagesField: ArrayField = {
     },
   },
   fields: [
-    { name: 'media', type: 'upload', relationTo: 'media', required: true },
-    { name: 'caption', type: 'text', localized: true, maxLength: 300 },
+    {
+      name: 'media',
+      type: 'upload',
+      relationTo: 'media',
+      label: { en: 'Image', id: 'Gambar' },
+      required: true,
+    },
+    {
+      name: 'caption',
+      type: 'text',
+      label: { en: 'Caption', id: 'Keterangan' },
+      localized: true,
+      maxLength: 300,
+    },
   ],
 }
 
@@ -96,6 +120,7 @@ export const OBJECT_FIELDS: Field[] = [
     name: 'subjects',
     type: 'relationship',
     relationTo: 'terms',
+    label: { en: 'Subjects', id: 'Subjek' },
     hasMany: true,
     filterOptions: subjects,
     admin: {
@@ -122,11 +147,18 @@ export const OBJECT_FIELDS: Field[] = [
       {
         name: 'citation',
         type: 'text',
+        label: { en: 'Citation', id: 'Kutipan' },
         required: true,
         maxLength: 300,
         validate: validateCitation,
       },
-      { name: 'note', type: 'textarea', localized: true, maxLength: 600 },
+      {
+        name: 'note',
+        type: 'textarea',
+        label: { en: 'Note', id: 'Catatan' },
+        localized: true,
+        maxLength: 600,
+      },
     ],
   },
   {
@@ -146,11 +178,23 @@ export const OBJECT_FIELDS: Field[] = [
       {
         type: 'row',
         fields: [
-          { name: 'holder', type: 'text', required: true, maxLength: 200 },
-          { name: 'period', type: 'text', maxLength: 80 },
+          {
+            name: 'holder',
+            type: 'text',
+            label: { en: 'Holder', id: 'Pemilik' },
+            required: true,
+            maxLength: 200,
+          },
+          { name: 'period', type: 'text', label: { en: 'Period', id: 'Periode' }, maxLength: 80 },
         ],
       },
-      { name: 'note', type: 'text', localized: true, maxLength: 400 },
+      {
+        name: 'note',
+        type: 'text',
+        label: { en: 'Note', id: 'Catatan' },
+        localized: true,
+        maxLength: 400,
+      },
     ],
   },
   {
@@ -171,20 +215,32 @@ export const OBJECT_FIELDS: Field[] = [
   {
     name: 'condition',
     type: 'group',
+    label: { en: 'Condition', id: 'Kondisi' },
     fields: [
       {
         name: 'grade',
         type: 'relationship',
         relationTo: 'terms',
+        label: { en: 'Grade', id: 'Tingkat' },
         filterOptions: grades,
         admin: {
+          // D7 (docs/gates/3.6.md): Payload's relationship drawer renders the related
+          // collection's bilingual label raw on the "Add new" button ("[object Object]"); a
+          // grade is picked from the published scale, never made here, so the button is off.
+          allowCreate: false,
           description: {
             en: 'From the gallery’s published scale (Terms → Condition grade).',
             id: 'Dari skala yang diterbitkan galeri (Terms → Condition grade).',
           },
         },
       },
-      { name: 'notes', type: 'textarea', localized: true, maxLength: 2000 },
+      {
+        name: 'notes',
+        type: 'textarea',
+        label: { en: 'Notes', id: 'Catatan' },
+        localized: true,
+        maxLength: 2000,
+      },
       {
         name: 'defects',
         type: 'array',
@@ -192,9 +248,24 @@ export const OBJECT_FIELDS: Field[] = [
           singular: { en: 'Defect', id: 'Cacat' },
           plural: { en: 'Defects', id: 'Cacat' },
         },
-        fields: [{ name: 'defect', type: 'text', localized: true, required: true, maxLength: 200 }],
+        fields: [
+          {
+            name: 'defect',
+            type: 'text',
+            label: { en: 'Defect', id: 'Cacat' },
+            localized: true,
+            required: true,
+            maxLength: 200,
+          },
+        ],
       },
-      { name: 'restoration', type: 'textarea', localized: true, maxLength: 1000 },
+      {
+        name: 'restoration',
+        type: 'textarea',
+        label: { en: 'Restoration', id: 'Restorasi' },
+        localized: true,
+        maxLength: 1000,
+      },
     ],
   },
   imagesField,
@@ -202,6 +273,7 @@ export const OBJECT_FIELDS: Field[] = [
     name: 'master',
     type: 'relationship',
     relationTo: 'masters',
+    label: { en: 'Master', id: 'Master' },
     access: STAFF_ONLY_ACCESS,
     admin: {
       position: 'sidebar',

@@ -1,0 +1,79 @@
+/* The places index and place page's layout styles (5.4.a). Every value is a token from
+   shared/styles/tokens or the gallery brand file — no raw colour, no font. */
+
+.wrap {
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--space-8);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.section:first-child {
+  border-top: 0;
+}
+
+.indexList {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+}
+
+.indexCard {
+  display: block;
+  padding: var(--space-5);
+  border: var(--rule-hair) solid var(--color-border);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.indexCard:hover {
+  color: var(--color-accent-secondary);
+}
+
+.indexMeta {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0;
+}
+
+.historical {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0;
+}
+
+.children {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+
+.childLink {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  border: var(--rule-hair) solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.childLink:hover {
+  color: var(--color-accent-secondary);
+}
+
+@media (max-width: 47.5rem) {
+  .indexList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,18 +1,22 @@
 'use client'
 
 /**
- * The checkout form (TASKS.md 6.3.a; COMMERCE.md §3): contact, address, the pin and the notes,
- * posting to the submit server action — a plain form, so it works without JavaScript too (the pin
- * needs it: without a key the fallback parses the pasted link or typed coordinates through
- * `/api/x/geocode`). The delivery fee and total shown here come only from the server's fee action
- * (`quoteFeeAction`); the client never computes one. The pay button echoes back, as
- * `expectedTotalIdr`, the total the page last showed.
+ * The checkout form (TASKS.md 6.3.a, 6.6.c; COMMERCE.md §3): contact, address, the pin and the
+ * notes, posting to the submit server action — a plain form, so it works without JavaScript too
+ * (the pin needs it: without a key the fallback parses the pasted link or typed coordinates
+ * through `/api/x/geocode`). There is no delivery fee here any more (staff quote it after the
+ * order is placed, COMMERCE.md's 2026-10-06 decision) — the pin still matters, because it is what
+ * picks the sending store, but nothing here prices it. The pay button echoes back, as
+ * `expectedTotalIdr`, the items total the review showed (items minus discount).
+ *
+ * The pin's lat/lng hidden fields are read with `FormData` on submit and never reset once set:
+ * they carry a plain string `value` from a ref, not a React-controlled one, so a pin a visitor set
+ * before hydration finished survives it (6.6.c — found on staging by 7.4).
  */
-import { useActionState, useCallback, useState, useTransition } from 'react'
+import { useActionState, useCallback, useRef, useState } from 'react'
 
 import { Button, FormMessage, Input, Textarea } from '../../../shared/ui'
-import type { FeeState } from '../../../server/shop/checkout/actions'
-import { quoteFeeAction, submitOrderAction } from '../../../server/shop/checkout/actions'
+import { submitOrderAction } from '../../../server/shop/checkout/actions'
 import styles from './checkout.module.css'
 import { PinPicker, type Pin } from './pin-picker'
 
@@ -34,8 +38,6 @@ export type CheckoutFormLabels = {
   readonly pinLatitude: string
   readonly pinLongitude: string
   readonly pinSearch: string
-  readonly feePlaceholder: string
-  readonly deliveryFee: string
   readonly continueToPayment: string
   readonly placing: string
   readonly invalidDetails: string
@@ -62,24 +64,20 @@ export function CheckoutForm({
   const [state, submit, pendingSubmit] = useActionState(submitOrderAction, null)
   const [pin, setPin] = useState<Pin | null>(null)
   const [address, setAddress] = useState<string | null>(null)
-  const [fee, setFee] = useState<FeeState | null>(null)
-  const [pendingFee, startFee] = useTransition()
+  const latRef = useRef<HTMLInputElement | null>(null)
+  const lngRef = useRef<HTMLInputElement | null>(null)
 
-  const onPin = useCallback(
-    (next: Pin, nextAddress: string | null) => {
-      setPin(next)
-      setAddress(nextAddress)
-      startFee(async () => {
-        setFee(await quoteFeeAction(null, { lat: next.lat, lng: next.lng, locale }))
-      })
-    },
-    [locale],
-  )
+  // The pin's hidden fields are never React-`value`-controlled: hydration would otherwise snap a
+  // visitor-set pin back to blank. `onPin` writes the DOM directly instead (6.6.c).
+  const onPin = useCallback((next: Pin | null, nextAddress: string | null) => {
+    setPin(next)
+    setAddress(nextAddress)
+    if (latRef.current) latRef.current.value = next === null ? '' : String(next.lat)
+    if (lngRef.current) lngRef.current.value = next === null ? '' : String(next.lng)
+  }, [])
 
   const bad = (field: FieldName): string | undefined =>
     state !== null && state.fields.includes(field) ? labels.invalidDetails : undefined
-
-  const shownTotal = fee !== null && fee.ok ? fee.totalIdr : expectedTotalIdr
 
   return (
     <form action={submit} className={styles.form} aria-label={labels.deliveryTitle}>
@@ -127,10 +125,10 @@ export function CheckoutForm({
           autoComplete="street-address"
           required
         />
-        <input type="hidden" name="locale" value={locale} />
-        <input type="hidden" name="lat" value={pin?.lat ?? ''} />
-        <input type="hidden" name="lng" value={pin?.lng ?? ''} />
-        <input type="hidden" name="expectedTotalIdr" value={shownTotal} />
+        <input type="hidden" name="locale" defaultValue={locale} />
+        <input ref={latRef} type="hidden" name="lat" defaultValue={pin?.lat ?? ''} />
+        <input ref={lngRef} type="hidden" name="lng" defaultValue={pin?.lng ?? ''} />
+        <input type="hidden" name="expectedTotalIdr" defaultValue={expectedTotalIdr} />
         <p className={styles.sectionTitle} aria-label={labels.mapPinRequired}>
           {labels.mapPinRequired}
         </p>
@@ -151,27 +149,6 @@ export function CheckoutForm({
         <Textarea id="checkout-notes" name="notes" label={labels.notes} rows={2} />
         <Textarea id="checkout-gift" name="giftNote" label={labels.giftNote} rows={2} />
       </section>
-
-      <div className={styles.fee} aria-live="polite">
-        {fee === null ? (
-          <p className={styles.feeRow}>{labels.feePlaceholder}</p>
-        ) : fee.ok ? (
-          <>
-            <p className={styles.feeRow}>
-              <span>{labels.deliveryFee}</span>
-              <span>{fee.feeText}</span>
-            </p>
-            {fee.sendingFrom !== null && <p className={styles.feeRow}>{fee.sendingFrom}</p>}
-            <p className={[styles.feeRow, styles.grand].filter(Boolean).join(' ')}>
-              <span>{labels.continueToPayment}</span>
-              <span>{fee.totalText}</span>
-            </p>
-          </>
-        ) : (
-          <FormMessage tone="error">{fee.message}</FormMessage>
-        )}
-        {pendingFee && <p className={styles.feeRow}>{labels.placing}</p>}
-      </div>
 
       <div className={styles.submit}>
         <Button type="submit" loading={pendingSubmit}>

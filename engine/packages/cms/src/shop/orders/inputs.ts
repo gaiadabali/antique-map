@@ -17,11 +17,16 @@ import type { DiscountRecord } from '../pricing/discount'
 import { normaliseDiscountCode } from '../pricing/discount'
 import { DEFAULT_WINDOW_MINUTES } from '../payments/order-sql'
 
+/** `site-settings.shop.quoteWindowMinutes` when unset or invalid (TASKS.md 6.6; the field's own default). */
+export const DEFAULT_QUOTE_WINDOW_MINUTES = 120
+
 export type OrderSettings = {
   /** `site-settings.shop.checkoutEnabled`; off → checkout offers WhatsApp. */
   readonly checkoutEnabled: boolean
   /** The payment window (COMMERCE.md §4, Open: default 60). */
   readonly orderExpiryMinutes: number
+  /** How long staff have to quote a delivery fee before the order expires (TASKS.md 6.6). */
+  readonly quoteWindowMinutes: number
   /** The code `site-settings.shop.welcomeDiscount` names, normalised, or `null`. */
   readonly welcomeCode: string | null
 }
@@ -29,12 +34,20 @@ export type OrderSettings = {
 export async function loadOrderSettings(payload: Payload): Promise<OrderSettings> {
   const settings = await payload.findGlobal({
     slug: 'site-settings',
-    select: { shop: { checkoutEnabled: true, orderExpiryMinutes: true, welcomeDiscount: true } },
+    select: {
+      shop: {
+        checkoutEnabled: true,
+        orderExpiryMinutes: true,
+        quoteWindowMinutes: true,
+        welcomeDiscount: true,
+      },
+    },
     depth: 0,
     overrideAccess: true,
   })
   const shop = (settings as { shop?: Record<string, unknown> | null }).shop ?? {}
   const minutes = shop.orderExpiryMinutes
+  const quoteMinutes = shop.quoteWindowMinutes
   const named = shop.welcomeDiscount
   return {
     checkoutEnabled: shop.checkoutEnabled !== false,
@@ -42,6 +55,10 @@ export async function loadOrderSettings(payload: Payload): Promise<OrderSettings
       typeof minutes === 'number' && Number.isSafeInteger(minutes) && minutes >= 1
         ? minutes
         : DEFAULT_WINDOW_MINUTES,
+    quoteWindowMinutes:
+      typeof quoteMinutes === 'number' && Number.isSafeInteger(quoteMinutes) && quoteMinutes >= 15
+        ? quoteMinutes
+        : DEFAULT_QUOTE_WINDOW_MINUTES,
     // A code today (a text field); a relationship to `discounts` later reads its `code`.
     welcomeCode: normaliseDiscountCode(
       typeof named === 'object' && named !== null ? (named as { code?: unknown }).code : named,

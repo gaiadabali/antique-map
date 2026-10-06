@@ -1,13 +1,14 @@
 /**
  * Expiring an unpaid order and giving its stock back — **exactly once** (COMMERCE.md §4 "Release";
- * SECURITY.md P6; TASKS.md 6.4.c).
+ * SECURITY.md P6; TASKS.md 6.4.c, 6.6).
  *
  * Inside the caller's transaction:
  * 1. **The compare-and-set** — `UPDATE orders SET status = 'expired' … WHERE id = $1 AND status =
- *    'pending_payment' RETURNING store_id`. Exactly one caller can see a row come back: a second
- *    sweep, a concurrent sweep (it waits for the first's row lock, then re-reads the row and finds
- *    it `expired`), or a late Midtrans `expire` all get none and stop here. No row → nothing
- *    else runs.
+ *    $from RETURNING store_id`, `from` the status the sweep found it in: `pending_payment` (the
+ *    payment window) or `awaiting_quote` (TASKS.md 6.6: the quote window, no Midtrans attempt to
+ *    ask about). Exactly one caller can see a row come back: a second sweep, a concurrent sweep
+ *    (it waits for the first's row lock, then re-reads the row and finds it `expired`), or a late
+ *    Midtrans `expire` all get none and stop here. No row → nothing else runs.
  * 2. **The stock** — one `UPDATE stock_levels SET quantity = quantity + $qty` per product and
  *    variant the order holds, at the store it took them from, in (product, variant SKU) order:
  *    the order creation's decrement takes the same rows in the same order, so the two never
@@ -18,11 +19,12 @@
  *
  * All of it commits with the status change or not at all.
  */
+import type { OrderStatus } from '../../collections/orders/statuses'
 import { addHistory, type HistoryActor } from './order-sql'
 import { sql, wholeOf, type Tx } from './transaction'
 
 export type Release = {
-  /** False when the order was not `pending_payment`: someone else moved it, nothing was done. */
+  /** False when the order was not in `from`: someone else moved it, nothing was done. */
   readonly released: boolean
   /** The units returned per stock key, for the caller's log and tests. */
   readonly units: ReadonlyArray<{ product: number; variantSku: string | null; qty: number }>
@@ -34,10 +36,11 @@ export async function expireAndRelease(
   at: Date,
   actor: HistoryActor,
   note: string,
+  from: OrderStatus = 'pending_payment',
 ): Promise<Release> {
   const [expired] = await tx.rows(sql`
     UPDATE orders SET status = 'expired', updated_at = ${at}
-     WHERE id = ${orderId} AND status = 'pending_payment'
+     WHERE id = ${orderId} AND status = ${from}
     RETURNING store_id, discount_code`)
   if (!expired) return { released: false, units: [] }
   const store = wholeOf(expired.store_id, 'orders.store_id')
@@ -72,6 +75,6 @@ export async function expireAndRelease(
        WHERE code = upper(btrim(${expired.discount_code}::text)) AND used_count > 0`)
   }
 
-  await addHistory(tx, orderId, { from: 'pending_payment', to: 'expired', actor, at, note })
+  await addHistory(tx, orderId, { from, to: 'expired', actor, at, note })
   return { released: true, units }
 }

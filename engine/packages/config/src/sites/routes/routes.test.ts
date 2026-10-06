@@ -8,6 +8,7 @@ import { SITES } from '../table'
 import {
   createHref,
   decodeSegments,
+  isSensitive,
   legacyTarget,
   parsePublicPath,
   type HrefParams,
@@ -49,6 +50,8 @@ describe('href() and parsePublicPath() round-trip on each site', () => {
       ['checkout', {}],
       ['tracking', {}],
       ['tracking', { token: 'k3Jd9xQ2' }],
+      ['order', { token: 'k3Jd9xQ2' }],
+      ['order', { token: 'k3Jd9xQ2', simulate: true }],
       ['partnership', {}],
       ['stores', {}],
       ['page', { slug: 'delivery' }],
@@ -82,6 +85,24 @@ describe('href() and parsePublicPath() round-trip on each site', () => {
     expect(s('cart', {}, 'id')).toBe('/id/keranjang')
     expect(s('tracking', { token: 'abc' }, 'en')).toBe('/track/abc')
     expect(s('stores', {}, 'id')).toBe('/id/toko')
+    expect(s('order', { token: 'abc' }, 'en')).toBe('/order/abc')
+    expect(s('order', { token: 'abc' }, 'id')).toBe('/id/pesanan/abc')
+    expect(s('order', { token: 'abc', simulate: true }, 'en')).toBe('/order/abc/simulate')
+  })
+})
+
+describe('the order surface is sensitive, and its shape is exact', () => {
+  it('is sensitive, carries no index, and refuses anything but a token and "simulate"', () => {
+    expect(isSensitive('order')).toBe(true)
+    const parse = parseOn(shop)
+    for (const path of ['/order', '/order/a/b', '/order/a/simulate/x']) {
+      expect(parse(path).kind, path).toBe('notFound')
+    }
+    expect(parse('/order/a/simulate')).toMatchObject({
+      kind: 'surface',
+      surface: 'order',
+      params: { token: 'a', simulate: true },
+    })
   })
 })
 

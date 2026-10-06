@@ -5,11 +5,22 @@
  * compositions of the shared UI components and the tokens in `home.module.css`; every word comes
  * from the gallery's lexicon. No price appears anywhere on this page.
  */
+import { siteOrigin } from '@engine/config/sites'
+
 import { Button, Eyebrow, TextLink } from '../../../shared/ui'
+import { siteHref } from '../../../shell/site'
 
 import { FeaturedWorks } from './featured-works'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
+
+/** The sold archive is phase 5 (TASKS.md); these stand in until it ships (qa 4.qa, finding F4).
+ * Never a price — the gallery never shows one, sold or not. */
+const RECENTLY_PLACED = [
+  { title: 'home.gallery.recentlyItem1Title', note: 'home.gallery.recentlyItem1Note' },
+  { title: 'home.gallery.recentlyItem2Title', note: 'home.gallery.recentlyItem2Note' },
+  { title: 'home.gallery.recentlyItem3Title', note: 'home.gallery.recentlyItem3Note' },
+] as const
 
 type Props = {
   readonly locale: 'en' | 'id'
@@ -28,46 +39,57 @@ export function GalleryHome({ locale, href, t }: Props) {
       <About t={t} />
       <FeaturedWorks locale={locale} t={t} />
       <Curator t={t} />
+      <RecentlyPlaced t={t} />
+      <LiveWithCollection locale={locale} t={t} />
       <EntryPoints locale={locale} href={href} t={t} />
       <Enquire locale={locale} href={href} t={t} />
     </div>
   )
 }
 
+/* The drawing's hero sits on a dark band (qa 4.qa, finding F4); the trust cards follow it in
+   their own strip, each still a light card — a light card on a dark band would need its own
+   re-themed ink, and the band's on-dark override below would otherwise bleed into it. */
 function Hero({ locale, href, t }: Props) {
   return (
-    <section className={`${styles.section} ${styles.hero}`}>
-      <div className={styles.plate} style={{ aspectRatio: '16 / 9' }}>
-        <span className={styles.plateInner}>{t('home.gallery.poster')}</span>
-      </div>
-      <div>
-        <Eyebrow>{t('home.gallery.eyebrow')}</Eyebrow>
-        <h1>{t('home.gallery.title')}</h1>
-        <p className="site-lede">{t('home.gallery.lede')}</p>
-        <div className={styles.trust}>
-          <TrustCard
-            title={t('home.gallery.trustCuratorTitle')}
-            body={t('home.gallery.trustCuratorBody')}
-          />
-          <TrustCard
-            title={t('home.gallery.trustOriginalsTitle')}
-            body={t('home.gallery.trustOriginalsBody')}
-          />
-          <TrustCard
-            title={t('home.gallery.trustMuseumsTitle')}
-            body={t('home.gallery.trustMuseumsBody')}
-          />
+    <>
+      <section className={`${styles.band} ${styles.bandDark}`}>
+        <div className={styles.wrap}>
+          <div className={styles.hero}>
+            <div className={styles.plate} style={{ aspectRatio: '16 / 9' }}>
+              <span className={styles.plateInner}>{t('home.gallery.poster')}</span>
+            </div>
+            <div>
+              <Eyebrow>{t('home.gallery.eyebrow')}</Eyebrow>
+              <h1>{t('home.gallery.title')}</h1>
+              <p className="site-lede">{t('home.gallery.lede')}</p>
+              <div className={styles.actions}>
+                <Button variant="secondary" href={href('browse', {}, locale)}>
+                  {t('home.gallery.itemCta')}
+                </Button>
+                <Button variant="quiet" href={href('sellToUs', {}, locale)}>
+                  {t('home.gallery.sellToUsCta')}
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className={styles.actions}>
-          <Button variant="secondary" href={href('browse', {}, locale)}>
-            {t('home.gallery.itemCta')}
-          </Button>
-          <Button variant="quiet" href={href('sellToUs', {}, locale)}>
-            {t('home.gallery.sellToUsCta')}
-          </Button>
-        </div>
+      </section>
+      <div className={`${styles.section} ${styles.trust}`}>
+        <TrustCard
+          title={t('home.gallery.trustCuratorTitle')}
+          body={t('home.gallery.trustCuratorBody')}
+        />
+        <TrustCard
+          title={t('home.gallery.trustOriginalsTitle')}
+          body={t('home.gallery.trustOriginalsBody')}
+        />
+        <TrustCard
+          title={t('home.gallery.trustMuseumsTitle')}
+          body={t('home.gallery.trustMuseumsBody')}
+        />
       </div>
-    </section>
+    </>
   )
 }
 
@@ -123,6 +145,43 @@ function Curator({ t }: Pick<Props, 't'>) {
           <p className={styles.cardBody}>{t('home.gallery.curatorBody')}</p>
           <p className={styles.cardBody}>{t('home.gallery.curatorBody2')}</p>
         </div>
+      </div>
+    </section>
+  )
+}
+
+function RecentlyPlaced({ t }: Pick<Props, 't'>) {
+  return (
+    <section className={styles.section}>
+      <Eyebrow>{t('home.gallery.recentlyEyebrow')}</Eyebrow>
+      <h2>{t('home.gallery.recentlyTitle')}</h2>
+      <p className={styles.cardBody}>{t('home.gallery.recentlyBody')}</p>
+      <div className={styles.three}>
+        {RECENTLY_PLACED.map((item) => (
+          <div key={item.title} className={styles.trustCard}>
+            <p className={styles.cardTitle}>{t(item.title)}</p>
+            <p className={styles.cardBody}>{t(item.note)}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function LiveWithCollection({ locale, t }: Pick<Props, 'locale' | 't'>) {
+  const sister = siteHref('shop')('home', {}, locale)
+  const origin = siteOrigin('shop')
+  const sisterUrl = origin === null ? sister : `${origin}${sister}`
+  return (
+    <section className={styles.section}>
+      <Eyebrow>{t('home.gallery.liveEyebrow')}</Eyebrow>
+      <h2>{t('home.gallery.liveTitle')}</h2>
+      <p className={styles.cardBody}>{t('home.gallery.liveBody')}</p>
+      <div className={styles.actions}>
+        {/* The bridge to the shop, which lives on its own host — so absolute (site-shell's rule). */}
+        <Button variant="quiet" href={sisterUrl}>
+          {t('home.gallery.liveCta')}
+        </Button>
       </div>
     </section>
   )

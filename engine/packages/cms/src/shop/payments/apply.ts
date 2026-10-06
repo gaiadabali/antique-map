@@ -26,6 +26,7 @@
  */
 import type { Payload } from 'payload'
 
+import { notifyOrderEvent } from '../notify'
 import { decide, type Outcome } from './decide'
 import { dedupeKeyOf, parseAttemptOrderId, type MidtransStatus } from './notification'
 import {
@@ -63,7 +64,7 @@ export async function applyPaymentStatus(
   const now = input.now ?? new Date()
   const attempt = parseAttemptOrderId(status.midtransOrderId)
 
-  return inTransaction(payload, async (tx) => {
+  const result = await inTransaction(payload, async (tx): Promise<ApplyResult> => {
     const order = attempt ? await lockOrderByNumber(tx, attempt.orderNumber) : null
     const decision = decide(order, status, now)
     const written = await insertEvent(tx, {
@@ -101,4 +102,21 @@ export async function applyPaymentStatus(
     }
     return { outcome: decision.outcome, orderId: order.id }
   })
+  // After commit (TASKS.md 6.6, orchestrator decision B): the buyer's "paid" or "expired" email.
+  if (result.orderId !== null) {
+    if (result.outcome === 'paid') {
+      await notifyOrderEvent(payload, {
+        orderId: result.orderId,
+        from: 'pending_payment',
+        to: 'paid',
+      }).catch(() => {})
+    } else if (result.outcome === 'expired') {
+      await notifyOrderEvent(payload, {
+        orderId: result.orderId,
+        from: 'pending_payment',
+        to: 'expired',
+      }).catch(() => {})
+    }
+  }
+  return result
 }

@@ -94,6 +94,9 @@ a {
   text-decoration: none;
 }
 
+/* The 66ch cap is the default reading measure for long-form pages (product, bag, search,
+   not-found). The homes break out of it in their own `.wrap` (qa 4.qa, finding F1), the way
+   `browse.module.css`'s `.page` already breaks out for a listing's own width. */
 .site-main {
   flex: 1;
   width: 100%;
@@ -107,6 +110,18 @@ a {
   letter-spacing: var(--tracking-h1);
   line-height: var(--primitive-line-h1);
   margin: 0 0 var(--space-4);
+}
+
+/* `:where()` carries no specificity, so a section's own heading class (a card title, a rail
+   number) still wins over this default — only a bare h2/h3 falls back to it (qa 4.qa, F2). */
+:where(.site-main) h2 {
+  font: var(--text-h2);
+  margin: 0 0 var(--space-4);
+}
+
+:where(.site-main) h3 {
+  font: var(--text-h3);
+  margin: 0 0 var(--space-3);
 }
 
 .site-lede {

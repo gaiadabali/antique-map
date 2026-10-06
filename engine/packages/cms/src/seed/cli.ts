@@ -36,12 +36,16 @@ async function main(): Promise<number> {
   // Imported after the environment is filled: the config reads it at load time.
   const { cms } = await import('../instance')
   const payload = await cms()
+  const { cliInvalidation, postCliTags } = await import('../import/cli-cache')
+  const batch = cliInvalidation()
   const run = await seedLayer(parsed.layer, {
     payload,
     dryRun: parsed.dryRun,
     publish: parsed.publish,
+    context: batch.context(),
   })
   console.log(renderSeedRun(run))
+  console.log(await postCliTags(batch))
   return 0
 }
 
