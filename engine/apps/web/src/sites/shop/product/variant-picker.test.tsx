@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest'
 // picker's static markup, never submits the form, so a stub keeps the module graph client-safe.
 vi.mock('../../../server/shop/bag/actions', () => ({ addToBagAction: async () => null }))
 
+import { productText, variantPickerText } from './copy'
 import { VariantPicker, type PickerVariant } from './variant-picker'
 
 const available: PickerVariant = {
@@ -32,7 +33,7 @@ const render = (variants: readonly PickerVariant[], productAvailable: boolean) =
     <VariantPicker
       productId={1}
       sku="OEI-TEST"
-      locale="en"
+      text={variantPickerText(productText('en'))}
       variants={variants}
       productPriceText="Rp 150.000"
       available={productAvailable}

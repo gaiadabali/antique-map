@@ -9,11 +9,9 @@
  */
 import { useActionState, useState } from 'react'
 
-import type { SiteLocale } from '@engine/config/sites'
-
 import { TextLink } from '../../../shared/ui'
 import { addToBagAction } from '../../../server/shop/bag/actions'
-import { productText } from './copy'
+import type { VariantPickerText } from './copy'
 import styles from './product.module.css'
 
 export type PickerVariant = {
@@ -28,7 +26,8 @@ export type PickerVariant = {
 export type VariantPickerProps = {
   readonly productId: number
   readonly sku: string
-  readonly locale: SiteLocale
+  /** The picker's words, resolved by the server: a client never imports the lexicon files. */
+  readonly text: VariantPickerText
   readonly variants: readonly PickerVariant[]
   readonly productPriceText: string | null
   readonly available: boolean
@@ -38,13 +37,12 @@ export type VariantPickerProps = {
 export function VariantPicker({
   productId,
   sku,
-  locale,
+  text,
   variants,
   productPriceText,
   available,
   bagHref,
 }: VariantPickerProps): React.ReactElement {
-  const text = productText(locale)
   const [chosen, setChosen] = useState<string | null>(variants[0]?.sku ?? null)
   const [state, add, pending] = useActionState(addToBagAction, null)
   const chosenVariant = variants.find((variant) => variant.sku === chosen) ?? null
@@ -55,12 +53,12 @@ export function VariantPicker({
     state === null
       ? null
       : state.outcome === 'added' || state.outcome === 'updated'
-        ? text('product.added')
+        ? text.added
         : state.outcome === 'capped'
-          ? text('product.capped')
+          ? text.capped
           : state.outcome === 'refused'
-            ? text('product.refused')
-            : text('product.addingFailed')
+            ? text.refused
+            : text.addingFailed
 
   return (
     <form className={styles.picker} action={add}>
@@ -68,7 +66,7 @@ export function VariantPicker({
       <input type="hidden" name="qty" value={1} />
       {variants.length > 0 && (
         <fieldset className={styles.options}>
-          <legend className={styles.optionsLegend}>{text('product.options')}</legend>
+          <legend className={styles.optionsLegend}>{text.options}</legend>
           <div className={styles.optionList} role="radiogroup" aria-labelledby={fieldId}>
             {variants.map((variant) => (
               <label
@@ -93,7 +91,7 @@ export function VariantPicker({
                 />
                 <span className={styles.optionLabel}>{variant.label}</span>
                 {!variant.available && (
-                  <span className={styles.optionState}>{text('product.optionSoldOut')}</span>
+                  <span className={styles.optionState}>{text.optionSoldOut}</span>
                 )}
               </label>
             ))}
@@ -110,10 +108,10 @@ export function VariantPicker({
           disabled={!canAdd || pending}
           aria-busy={pending || undefined}
         >
-          {canAdd ? text('product.addToBag') : text('product.outOfStock')}
+          {canAdd ? text.addToBag : text.outOfStock}
         </button>
         <span className={styles.stock} aria-live="polite">
-          {canAdd ? text('product.inStock') : text('product.outOfStock')}
+          {canAdd ? text.inStock : text.outOfStock}
         </span>
       </div>
       {message !== null && (
@@ -122,7 +120,7 @@ export function VariantPicker({
           {(state?.outcome === 'added' || state?.outcome === 'updated') && (
             <>
               {' '}
-              <TextLink href={bagHref}>{text('product.viewBag')}</TextLink>
+              <TextLink href={bagHref}>{text.viewBag}</TextLink>
             </>
           )}
         </p>
