@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 7/20 | 0 | `████░░░░░░`  35% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 0/5 | 9/20 | 0 | `█████░░░░░`  45% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | 🔄 in progress | 5/6 | 18/23 | 0 | `████████░░`  78% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 9/16 | 0 | `██████░░░░`  56% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/4 | 0/16 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **28/50** | **137/205** | **8** | `███████░░░`  67% |
+| **All** | 11 phases | | | **28/50** | **139/205** | **8** | `███████░░░`  68% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -494,8 +494,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/{pages,makers,places}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{makers,places,stories,about,guarantee}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/[...missing]/**`
   - **Read** EXPERIENCE-GALLERY.md §Pages
   - _Requirements: 3.1_
-  - [ ] 5.4.a maker and place pages with their items; a place page lists its historical names
-  - [ ] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
+  - [x] 5.4.a maker and place pages with their items; a place page lists its historical names
+  - [x] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
   - [ ] 5.4.c **Check:** a seeded maker and place each list their items; an edited page in the admin appears after its cache tag is invalidated; the pages pass axe at both widths.
 
 - [ ] **5.5 The gallery gate** · needs: 5.3, 5.4 — 🔄 5·W3
