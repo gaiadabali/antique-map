@@ -99,3 +99,131 @@ run before the fresh-clone verify also passed 4/4.
 - Evidence is ready for the Opus review pass.
 
 TICKET DONE
+
+## Review (Opus) — 2026-10-06
+
+**Verdict: MERGE**, with two follow-ups for the orchestrator that are outside this ticket's owned
+paths (F1, F2 below). Reviewed `git diff main...w/5.4` against the ticket and AGENTS.md, merged
+current `main` (`abe72b2`, no conflicts, lockfile unchanged), fixed what is listed, and re-ran
+every gate on this worktree.
+
+### Checked and holding
+
+- **Loaders** (`server/gallery/{makers,places,pages}`): every Payload read is `overrideAccess: false`,
+  `_status: 'published'`, and has an explicit `select`. Pages filter `site: 'gallery'` and `kind`.
+  Work cards go through the catalogue's `projectCards` / `WORK_CARD_SELECT` (`catalogue/` is
+  untouched), available and on-hold first, then sold. The one raw SQL (the makers index count)
+  counts published works only. No `askingPrice`, `notes` or staff field is selected. The view
+  models carry only the fields they map.
+- **Routes** live at the internal surface names (`maker`, `place`, `page/[slug]`, `story/[slug]`),
+  which is correct: the proxy rewrites the public segments there (`SURFACE_ROUTES`). The ticket's
+  folder names (`makers/`, `about/`, …) would never be reached.
+- **The catch-all and slugs.** `[...missing]` is unchanged. A CMS page is reached only through
+  `parsePublicPath()`: one canonical segment matching `SLUG`, with reserved and claimed segments
+  refused. The loader then matches published + gallery + kind + slug, and the place path is
+  resolved against the published tree by exact slug. Probed on the production build: a draft page,
+  the shop's page, `..%2F`, `%2e%2e`, an extra segment, the internal `/gallery/en/page/…` prefix, a
+  child place without its parent, and a page slug under `/stories/` all give 404, with
+  `askingPrice` 0 in every body.
+- **No unsafe HTML.** There is no `dangerouslySetInnerHTML`. The body is a plain textarea split
+  into `<p>` text nodes.
+- **Links** are plain `<a>`, the repo idiom (`work-card.tsx`, `pagination.tsx`), so they never
+  prefetch. CSS uses tokens only (`check:tokens` passes). Lexicon keys are in en and id. No file is
+  over 300 lines.
+- **`playwright.config.ts`:** `git diff main -- playwright.config.ts` is empty. The three-dot diff
+  was non-empty only because the merge base predates `main`'s `gallery-e2e` project, which
+  `7e4959b` restored byte-for-byte. `docker-compose.dev.yml` and `.claude/worker-rules.md` are also
+  identical to `main`.
+- **The e2e spec** has no conditional asserts and no skips.
+
+### Fixes (commits on `w/5.4`)
+
+| sha | fix |
+| --- | --- |
+| `e6e8c68` | The makers index counted a work twice when it credits one maker twice (`COUNT(DISTINCT wm._parent_id)`). The db test now seeds such a work. The pages db test's other-site case passed whenever the gallery's own page loaded; it now asserts that a shop-only slug is `null`. |
+| `9d38207` | The places index showed a bare number. It now reads "3 places within" (`placePage.placeCount`, en and id), and nothing for a leaf. Added `copy.test.ts` for makers, places and pages: the ticket's unit-test path had no tests at all. |
+| `aa537cd` | `generateMetadata` and the page each ran the same live loader (5–6 queries each). The loaders are now wrapped in React `cache()`. The place loader is keyed on the joined path. |
+| `4d31999` | `routes-exist.test.ts` (from `main`) failed 3 tests after the merge. Its `NOT_BUILT_YET` lines for maker, place and story are removed, as the test asks once a page lands. |
+| `b011b11` | A maker with no portrait rendered an empty 4:5 frame that pushed the name below the first screen at 390 px. Seen on a screenshot, fixed and re-checked. |
+| `9ac31da` | E2E: the seed moves to `pages-seed.ts`. New cases: both indexes; an edited page shows its new words on the next request; a draft page and a shop page give 404 on the gallery host; axe now covers the indexes too. The file now runs in one worker, because under `fullyParallel` two workers' seeds raced on the same unique slugs (the earlier run passed only with `--workers=1`). |
+
+### Findings left for the orchestrator (not this ticket's paths)
+
+- **F1 — pages cannot be published from the admin (blocker for real content).**
+  `pagePublishGuard` (`packages/cms/src/collections/pages/publish-guard.ts`) reads
+  `data.title.en`. On a save in one locale, which is how the admin saves, `title` is a flat string,
+  so every publish throws "The following field is invalid: title". Probed with the Local API on
+  `indies_p5_w54`:
+  - `update(locale:'en', {title, body, _status:'published'})` throws.
+  - `update(locale:'en', {body, _status:'published'})` throws.
+  - `update(locale:'all', {title:{en}, body:{en}, _status:'published'})` succeeds but leaves the
+    body unchanged (an update under `'all'` does not write the localized value).
+
+  Only "save a draft in `en`, then publish under `'all'`" works, and the e2e edit case uses that
+  two-step. Before the owner enters the about/guarantee/visit pages, the guard needs a fix from the
+  collection's owner: read the string form, and check the stored English title for a non-`en`
+  save.
+- **F2 — no cache tags; the reads are live.** `@engine/cache` has no `maker`/`place`/`page` tag
+  kind, and nothing in the CMS invalidates on a maker, place or page change. The only invalidation
+  hook is `work-invalidate`. Tagging these reads would therefore cache them stale forever. Reading
+  live, as the branch does, is the safe choice, at the cost of a few queries per view. Making them
+  cacheable needs three things: new tag kinds in `packages/cache/src/tags.ts`, `afterChange`
+  hooks on the three collections, and `'use cache'` wrappers here. That is a contract change for
+  the architect/schema lead, not a review fix.
+- **F3 (minor, follow-ups):**
+  - EXPERIENCE §7 asks for an "Include sold" toggle on the maker page; the branch shows sold works
+    in their own section instead.
+  - The maker and place work lists have no cap or pagination: every published work is projected.
+  - There is no `/stories` index, though the shell's header and footer link "Stories", so that
+    link gives 404. The sitemap says the Journal waits for one.
+  - Figure, FAQ and CTA blocks wait for 9.3's blocks.
+  - A route-level `notFound()` renders the designed 404 only in the RSC payload: the HTML has no
+    `<h1>`, the same as the shop's `/product/<unknown>`. This is platform-wide and predates the
+    branch.
+  - The first db-test run hit `timeout exceeded when trying to connect` / `ECONNRESET` on the
+    shared Postgres. The next two runs were 11/11 green. This looks like load on the shared
+    container; no container was touched.
+
+### Runs (this worktree, after the merge and fixes)
+
+| run | result |
+| --- | --- |
+| `pnpm --filter @engine/web typecheck` | 0 errors |
+| `pnpm vitest run engine/apps/web/src/sites/gallery/{pages,makers,places}` | 3 files, 8 tests passed |
+| db tests `server/gallery/{makers,places,pages}`, `--maxWorkers=2` | 3 files, **11 passed**. Run 1 had 2 failures from connection timeouts (above); runs 2 and 3 were green. |
+| `pnpm verify` | **exit 0**: format, lint, typecheck (all packages; the worker's 27 cms errors are gone on current `main`), test **235 files / 2145 passed, 276 skipped**, filesize, generated, tasks:lint, tasks:check, tokens |
+| `pnpm build` | exit 0; maker, place, page and story routes listed |
+| `pnpm worktree:env 5 w54`, `pnpm db:fresh` (own suffix: migrated), `node tests/e2e/admin/local.mjs start` (port 4259) | boot check passed |
+| `E2E_PORT=4259 pnpm exec playwright test --project=gallery-e2e tests/e2e/gallery/pages.spec.ts` | **9 passed** (25.6 s, 1 worker), on the build that includes every fix |
+
+Curls on that server (`Host: gallery.localhost:4259`):
+
+```
+200  /makers                                 h1=[Makers]                 askingPrice=0
+200  /makers/e2e-5-4-valentijn               h1=[E2E François Valentijn] askingPrice=0
+200  /id/pembuat/e2e-5-4-valentijn           h1=[E2E François Valentijn] askingPrice=0
+200  /places                                 h1=[Places]                 askingPrice=0
+200  /places/e2e-5-4-java/e2e-5-4-batavia    h1=[E2E Jakarta]            askingPrice=0
+200  /e2e-5-4-page                           h1=[E2E fixture page]       askingPrice=0
+404  /e2e-5-4-draft, /e2e-5-4-shop-page, /places/e2e-5-4-batavia, /places/e2e-5-4-java/..%2Fe2e-5-4-batavia,
+     /places/%2e%2e/e2e-5-4-java, /..%2Fe2e-5-4-page, /e2e-5-4-page/extra, /gallery/en/page/e2e-5-4-draft,
+     /stories/e2e-5-4-page, /makers/no-such-maker
+```
+
+I opened the makers index, a maker, the places index, a place and a page at 390 px and 1280 px
+(Playwright screenshots). They look right after `b011b11`.
+
+### 5.4.c Check claims
+
+| claim | holds? | evidence |
+| --- | --- | --- |
+| A seeded maker lists its items | **yes** | e2e cases 1–2 (available link before sold link; index links to the page); db test; curl |
+| A seeded place lists its items | **yes** | e2e cases 3–4 (historical name shown, work linked, reached by drill-down from its parent); db test; curl |
+| An edited page appears after cache-tag invalidation | **partly** | An edited page does appear on the very next request (e2e case 6, no restart), because these reads are live, not tagged. No cache tag is involved (F2). An edit made from the admin cannot be published at all today (F1). |
+| axe clean at 390 and 1280 px | **yes** | e2e cases 8–9: both indexes, a maker, a place and a CMS page, 0 violations at each width |
+
+Run C, the same server, started at 11:11:31, more than 15 minutes after run A cached the pages (10:55): `4 passed (21.7s)`. The pages heal only when the default `cacheLife` revalidates, which confirms the cause. After every run, the fixture rows counted works 0, media 0, E2E places 0.
+
+`pnpm lint`: `eslint --max-warnings=0 .` is clean after the merge and the fixes. The spec files are prettier-formatted, and a strict `tsc` of the spec reports only the missing ad-hoc `@types/node`, with no type errors.
+
+Side notes, not for this branch: the seed CLI failed once with a transient DB error and succeeded on retry. A `db:fresh` on an existing suffix keeps its rows, so use `db:drop` first. Card images render broken locally (the media URL on this env). At 390 px the header shows the logo and a second, wrapping "Indies Gallery" wordmark (see `search-batavia-390.png`). A UI pass item.
