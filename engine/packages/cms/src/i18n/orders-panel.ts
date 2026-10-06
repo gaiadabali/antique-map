@@ -18,6 +18,8 @@ export const ORDERS_PANEL_COPY = t({
   ordersTitle: { en: 'Orders', id: 'Pesanan' },
 
   // Store view: groups
+  groupNeedsPrice: { en: 'Needs a delivery price', id: 'Perlu ongkos kirim' },
+  groupWaitingForPayment: { en: 'Waiting for payment', id: 'Menunggu pembayaran' },
   groupNew: { en: 'New', id: 'Baru' },
   groupInProgress: { en: 'In progress', id: 'Sedang diproses' },
   groupDeliveredToday: { en: 'Delivered today', id: 'Terkirim hari ini' },
