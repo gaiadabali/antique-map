@@ -19,6 +19,7 @@ import type { CollectionConfig, Validate } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
+import { invalidateVocabularyOnChange, invalidateVocabularyOnDelete } from '../../hooks/vocabulary-invalidate'
 import { aliasErrors, sameAsErrors } from '../../validators/maker-names'
 import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
 import { slugField } from '../../fields/slug'
@@ -71,7 +72,12 @@ export const Makers: CollectionConfig = {
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
-  hooks: { beforeDelete: [refuseDeleteWhileUsed] },
+  hooks: {
+    beforeDelete: [refuseDeleteWhileUsed],
+    // After the commit: a published change expires the gallery's listings.
+    afterChange: [invalidateVocabularyOnChange],
+    afterDelete: [invalidateVocabularyOnDelete],
+  },
   fields: [
     {
       name: 'name',

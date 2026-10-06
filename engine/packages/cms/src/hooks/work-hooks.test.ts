@@ -89,12 +89,27 @@ describe('cataloguing: verifying is the owner’s or an editor’s claim', () =>
 describe('after the commit: the work’s tags, to the caller’s collector (8.2.e)', () => {
   const published = { workUid: 'TG-000123', _status: 'published' }
 
-  it('hands work:<uid> to the collector — never revalidating on the spot', async () => {
+  it('hands work:<uid> and catalogue:gallery to the collector — never revalidating on the spot', async () => {
     const batch = invalidationBatch()
     await batch.operation((context) =>
       invalidateWorkOnChange({ doc: published, previousDoc: {}, context } as never),
     )
-    expect(batch.pending).toEqual(['work:TG-000123'])
+    expect(batch.pending).toEqual(['work:TG-000123', 'catalogue:gallery'])
+  })
+
+  it('a publish, an edit of a published work and an unpublish each expire the listings', async () => {
+    const draft = { ...published, _status: 'draft' }
+    for (const [doc, previousDoc, what] of [
+      [published, draft, 'publish'],
+      [{ ...published, title: 'Renamed' }, published, 'edit'],
+      [draft, published, 'unpublish'],
+    ] as const) {
+      const batch = invalidationBatch()
+      await batch.operation((context) =>
+        invalidateWorkOnChange({ doc, previousDoc, context } as never),
+      )
+      expect(batch.pending, what).toEqual(['work:TG-000123', 'catalogue:gallery'])
+    }
   })
 
   it('expires nothing for a draft saved over a draft, and a published work’s tags otherwise', async () => {
@@ -105,7 +120,7 @@ describe('after the commit: the work’s tags, to the caller’s collector (8.2.
     await change({ ...published, _status: 'draft' }, { ...published, _status: 'draft' })
     expect(batch.pending).toEqual([])
     await change({ ...published, _status: 'draft' }, published) // a draft over the published one
-    expect(batch.pending).toEqual(['work:TG-000123'])
+    expect(batch.pending).toEqual(['work:TG-000123', 'catalogue:gallery'])
   })
 
   it('expires a deleted published work, not a deleted draft', async () => {
@@ -115,7 +130,7 @@ describe('after the commit: the work’s tags, to the caller’s collector (8.2.
     )
     expect(batch.pending).toEqual([])
     await batch.operation((context) => invalidateWorkOnDelete({ doc: published, context } as never))
-    expect(batch.pending).toEqual(['work:TG-000123'])
+    expect(batch.pending).toEqual(['work:TG-000123', 'catalogue:gallery'])
   })
 
   it('outside a request with no collector, fails the save rather than leave a stale page', () => {
@@ -124,10 +139,11 @@ describe('after the commit: the work’s tags, to the caller’s collector (8.2.
     ).toThrow(/outside a request scope/)
   })
 
-  it('names only uids @engine/cache can tag', () => {
-    expect(worksListingTags({ workUid: 'not a uid' })).toEqual([])
+  it('names only uids @engine/cache can tag, and always the gallery’s listings', () => {
+    expect(worksListingTags({ workUid: 'not a uid' })).toEqual(['catalogue:gallery'])
     expect(worksListingTags({ workUid: 'TG-000001' }, { workUid: 'TG-000001' })).toEqual([
       'work:TG-000001',
+      'catalogue:gallery',
     ])
   })
 })
