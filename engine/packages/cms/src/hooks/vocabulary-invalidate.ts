@@ -9,9 +9,10 @@
  *
  * The vocabulary keeps drafts as works do (`../collections/terms/vocabulary/access`), and the
  * listings read published records only: a save that touches no published state — a draft created,
- * a draft saved over a draft — expires nothing, and neither does deleting a draft. Anything else
- * expires the catalogue, a draft saved over a published record included (one recompute, never a
- * stale page).
+ * a draft saved over a never-published draft — expires nothing, and neither does deleting a draft.
+ * Anything else expires the catalogue, a draft saved over a published record included (one
+ * recompute, never a stale page); `./published-state` says why a draft over a draft may still be an
+ * unpublish.
  *
  * A writer outside a Next request passes its collector on `req.context` (a seed, the importer —
  * `@engine/cache` batch); with none, `after()` throws and the save fails rather than leave a stale
@@ -20,22 +21,16 @@
 import { catalogueTag, invalidate } from '@engine/cache'
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
-import { touchesPublished } from './work-invalidate'
+import { changedPublishedState } from './published-state'
 
 /** What a vocabulary record's change expires: the gallery's listings. */
 export const VOCABULARY_TAGS = [catalogueTag('gallery')] as const
 
 type VocabularyDoc = { _status?: unknown } | null | undefined
 
-export const invalidateVocabularyOnChange: CollectionAfterChangeHook = ({
-  doc,
-  previousDoc,
-  context,
-}) => {
-  if (touchesPublished(doc as VocabularyDoc, previousDoc as VocabularyDoc)) {
-    invalidate(VOCABULARY_TAGS, context)
-  }
-  return doc
+export const invalidateVocabularyOnChange: CollectionAfterChangeHook = async (args) => {
+  if (await changedPublishedState(args)) invalidate(VOCABULARY_TAGS, args.context)
+  return args.doc
 }
 
 export const invalidateVocabularyOnDelete: CollectionAfterDeleteHook = ({ doc, context }) => {

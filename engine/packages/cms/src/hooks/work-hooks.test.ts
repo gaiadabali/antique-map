@@ -133,10 +133,10 @@ describe('after the commit: the work’s tags, to the caller’s collector (8.2.
     expect(batch.pending).toEqual(['work:TG-000123', 'catalogue:gallery'])
   })
 
-  it('outside a request with no collector, fails the save rather than leave a stale page', () => {
-    expect(() =>
+  it('outside a request with no collector, fails the save rather than leave a stale page', async () => {
+    await expect(
       invalidateWorkOnChange({ doc: published, previousDoc: {}, context: {} } as never),
-    ).toThrow(/outside a request scope/)
+    ).rejects.toThrow(/outside a request scope/)
   })
 
   it('names only uids @engine/cache can tag, and always the gallery’s listings', () => {

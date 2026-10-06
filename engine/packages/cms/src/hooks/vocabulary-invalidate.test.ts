@@ -67,19 +67,55 @@ describe('a place, maker or term change expires the gallery’s listings, after 
     expect(await changed({ ...draft, name: 'Jawa' }, draft)).toEqual([])
   })
 
+  it('a draft over a draft: the catalogue when the record was ever published — it may be the unpublish', async () => {
+    const asked: unknown[] = []
+    const update = async (published: number) => {
+      const req = {
+        payload: {
+          countVersions: async (args: unknown) => {
+            asked.push(args)
+            return { totalDocs: published }
+          },
+        },
+      }
+      const batch = invalidationBatch()
+      await batch.operation((context) =>
+        invalidateVocabularyOnChange({
+          collection: { slug: 'places' },
+          doc: draft,
+          previousDoc: draft,
+          operation: 'update',
+          req,
+          context,
+        } as never),
+      )
+      return batch.pending
+    }
+    expect(await update(1)).toEqual(['catalogue:gallery'])
+    expect(await update(0)).toEqual([])
+    expect(asked[0]).toMatchObject({
+      collection: 'places',
+      where: { and: [{ parent: { equals: 7 } }, { 'version._status': { equals: 'published' } }] },
+    })
+  })
+
   it('returns the saved document unchanged', async () => {
     const batch = invalidationBatch()
     let returned: unknown
-    await batch.operation((context) => {
-      returned = invalidateVocabularyOnChange({ doc: java, previousDoc: {}, context } as never)
+    await batch.operation(async (context) => {
+      returned = await invalidateVocabularyOnChange({
+        doc: java,
+        previousDoc: {},
+        context,
+      } as never)
     })
     expect(returned).toBe(java)
   })
 
-  it('outside a request with no collector, fails the save rather than leave a stale listing', () => {
-    expect(() =>
+  it('outside a request with no collector, fails the save rather than leave a stale listing', async () => {
+    await expect(
       invalidateVocabularyOnChange({ doc: java, previousDoc: {}, context: {} } as never),
-    ).toThrow(/outside a request scope/)
+    ).rejects.toThrow(/outside a request scope/)
     expect(() => invalidateVocabularyOnDelete({ doc: java, context: {} } as never)).toThrow(
       /outside a request scope/,
     )

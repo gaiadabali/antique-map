@@ -15,8 +15,10 @@
  * Every save that touches published state expires both: a publish, an edit of a published work,
  * an unpublish, a delete. A draft saved over a published work cannot be told from an unpublish
  * here, so it expires them too — one recompute, never a stale page. A save that touches no
- * published state — a draft saved over a draft — expires nothing. The vocabulary the listings
- * filter and find by expires the catalogue from its own hooks (`./vocabulary-invalidate`).
+ * published state — a draft saved over a never-published draft — expires nothing
+ * (`./published-state`, which also says why a draft over a draft may still be an unpublish). The
+ * vocabulary the listings filter and find by expires the catalogue from its own hooks
+ * (`./vocabulary-invalidate`).
  *
  * The invalidation hooks run last, so nothing after them in this collection can throw on a save
  * that has already queued its tags (a throw keeps them all the same — over-invalidating costs one
@@ -26,6 +28,7 @@ import { catalogueTag, invalidate, workTag, type CacheTag } from '@engine/cache'
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
 import { WORK_UID_PATTERN } from '../validators/work-record'
+import { changedPublishedState } from './published-state'
 
 type WorkDoc = { workUid?: unknown; _status?: unknown } | null | undefined
 
@@ -35,31 +38,15 @@ const GALLERY_CATALOGUE = catalogueTag('gallery')
 const uidOf = (doc: WorkDoc) =>
   typeof doc?.workUid === 'string' && WORK_UID_PATTERN.test(doc.workUid) ? doc.workUid : null
 
-/**
- * Whether the public could see a version of the record: published now, or before this save. Shared
- * with the vocabulary's hooks, whose collections keep drafts the same way.
- */
-export function touchesPublished(
-  doc: { _status?: unknown } | null | undefined,
-  previous: { _status?: unknown } | null | undefined,
-): boolean {
-  return (
-    doc?._status !== 'draft' || (previous?._status !== undefined && previous._status !== 'draft')
-  )
-}
-
 /** The tags a change to `doc` (from `previous`) expires: its uids' and the gallery's listings. */
 export function worksListingTags(doc: WorkDoc, previous?: WorkDoc): CacheTag[] {
   const uids = new Set([uidOf(doc), uidOf(previous)].filter((uid): uid is string => uid !== null))
   return [...[...uids].map(workTag), GALLERY_CATALOGUE]
 }
 
-export const invalidateWorkOnChange: CollectionAfterChangeHook = ({
-  doc,
-  previousDoc,
-  context,
-}) => {
-  if (!touchesPublished(doc as WorkDoc, previousDoc as WorkDoc)) return doc
+export const invalidateWorkOnChange: CollectionAfterChangeHook = async (args) => {
+  const { doc, previousDoc, context } = args
+  if (!(await changedPublishedState(args))) return doc
   invalidate(worksListingTags(doc as WorkDoc, previousDoc as WorkDoc), context)
   return doc
 }
