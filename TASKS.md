@@ -83,9 +83,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 7·W3 | 7.4 Shop gate: buy, fulfil, track | Sonnet → Opus on staging | `w/7.4` | 2026-10-05 | `am-7.4-s1` writes `tests/e2e/shop-fulfilment/flow.spec.ts` (guest buys → store fulfils with the driver image → buyer tracks → another store sees nothing → owner reassigns), green locally; the orchestrator then creates the staging owner and two store users and runs it + Lighthouse against staging |
 | 5·W1 | 5.2.e Check (item page) | — | `main` | 2026-10-06 | 5.2.b–d merged `58f62eb` (Opus-reviewed); the Check waits on public derivatives/tiles existing for seeded works — anonymous visitors get the staff-only media URL today (report open item 1) |
 | 5·W1 | 5.2.a wiring: upload → derivatives + tiles | Opus (claude seat) — next free slot | — | 2026-10-06 | plan gap: `@engine/media` derivatives/tiles (5.2.a) are a pure library and no task wires the media upload hook, so no public derivative exists and anonymous visitors get the staff-only file URL on item, home and browse cards; blocks 5.2.e |
-| 5·W2 | 5.4 Makers, places, editorial, plain pages | Sonnet (claude seat) | `w/5.4` | 2026-10-05 | run `am-5.4-s2` (2026-10-06); Opus reviews before the merge |
+| 5·W2 | 5.4.c Check | — | `main` | 2026-10-06 | 5.4 merged `8b8d4a3`; maker/place lists and axe evidenced (e2e 9/9); the "edited page after cache-tag invalidation" clause waits on `w/5.1cache` (pages read live today) |
 | 5·W2 | 5.3 Ask, Sell to us, `/api/x/leads` | — | — | 2026-10-05 | waits on the 5.2b merge and on `w/9.1core`'s lead service (Opus reviewing it, 2026-10-06); then a Sonnet run |
-| 5·W3 | 5.1.d Check evidence (e2e browse/search) | DeepSeek V4.1 Flash | `w/ds-5.1d` | 2026-10-06 | run `am-ds-5.1d-1`; Opus reviews; the orchestrator ticks the Check |
+| 5·W3 | 5.1.d Check evidence + stale-cache fix | Opus (claude seat) | `w/ds-5.1d`, `w/5.1cache` | 2026-10-06 | the e2e was rewritten by Opus (the worker's proved nothing); it exposed browse/search never being invalidated — Opus fixing on `w/5.1cache`; both merge together |
 | 5·W3 | 5.5.b no-commerce scan | DeepSeek V4.1 Flash | `w/ds-5.5b` | 2026-10-06 | run `am-ds-5.5b-1`; Opus reviews |
 | 5·W3 | 5.5.c Lighthouse runner (local half) | DeepSeek V4.1 Flash | `w/ds-5.5c` | 2026-10-06 | run `am-ds-5.5c-1`; staging run later by the orchestrator |
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
@@ -478,7 +478,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
   - [x] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
-  - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no Ask button; no price anywhere in the HTML or JSON.
+  - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
 - [ ] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
@@ -834,6 +834,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-06 — **Decisions (the user, as the owner's proxy), phase 5.** (1) The gallery may say "price" in policy sentences that show no figure — the sold-record line ("never its price"), the enquiry line ("provenance and price") and the shipping line ("after we agree the price"); 5.5.b's scan allows them by lexicon key. (2) A sold item shows Sold **and** "Ask for another example" (EXPERIENCE §8), never "Ask about this"; 5.3 adds the button; 5.2.e's Check wording follows. **5.4 merged** (`8b8d4a3`, Opus-reviewed: routes moved to the proxy's internal names, a double-count, an empty portrait frame, e2e seeds isolated; verify 2,157 tests green, e2e 9/9). **Fixed on main** `03c9693`: a page could not be published from the admin (the publish guard read `title.en` from a one-locale save) — db test fails on the old guard, passes on the new. **Found:** gallery browse/search are never invalidated after a publish (stale up to 15 min) — Opus fixing on `w/5.1cache`; the media upload hook was never built — Opus building on `w/5.2media`.
 
 - 2026-10-06 — **Helios storage (asked by the user):** the "50 GiB" in the provisioning report is RustFS's planned image size, not use. Real Indies use on Helios ≈ 1 GB: RustFS ~3 MB, `indies_db` 21 MB, `/opt/indies` 279 MB, backups 9 MB, `/home/uindies` 1.1 GB → **762 MB** after pruning releases to the live one + two for rollback + `bootstrap-holding` (two oldest, ~330 MB, removed; health 200). The retired `uig`/`uoei` users and homes were already gone. The orchestrator's deploy now prunes to the newest 3 after each healthy release. Nothing outside Indies' paths touched.
 
