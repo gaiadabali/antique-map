@@ -69,15 +69,9 @@ function fixedTargets(locale: (typeof LOCALES)[number]): Target[] {
     { path: href('sellToUs', {}, locale), required: false },
     { path: href('maker', {}, locale), required: false },
     { path: href('place', {}, locale), required: false },
-    ...[
-      'about',
-      'guarantee',
-      'certificate',
-      'condition',
-      'shipping',
-      'visit',
-      'contact',
-    ].map((slug) => ({ path: page(slug), required: false })),
+    ...['about', 'guarantee', 'certificate', 'condition', 'shipping', 'visit', 'contact'].map(
+      (slug) => ({ path: page(slug), required: false }),
+    ),
     // The 404 the gallery shows for a missing path: scanned, not listed as "not built yet".
     { path: NOT_FOUND_PATH, required: false, scanAt404: true },
   ]
@@ -88,11 +82,7 @@ const itemPrefix = (locale: (typeof LOCALES)[number]): string =>
   href('item', { publicId: 0, slug: '' }, locale).replace(/\/0$/, '')
 
 /** Collects the `href` values of every link on a page whose path starts with `prefix`. */
-async function linksUnder(
-  page: Page,
-  prefix: string,
-  limit: number,
-): Promise<string[]> {
+async function linksUnder(page: Page, prefix: string, limit: number): Promise<string[]> {
   const hrefs = await page
     .locator(`a[href^="${prefix}"]`)
     .evaluateAll((nodes) => nodes.map((n) => (n as HTMLAnchorElement).getAttribute('href') ?? ''))
@@ -154,12 +144,7 @@ function maskAllowed(text: string): string {
 }
 
 /** Tests one banned term against a page's haystack, recording every hit with a 40-char snippet. */
-function scan(
-  label: string,
-  term: BannedTerm,
-  haystack: string,
-  violations: Violation[],
-): void {
+function scan(label: string, term: BannedTerm, haystack: string, violations: Violation[]): void {
   const re = new RegExp(term.pattern, 'gi')
   for (const match of haystack.matchAll(re)) {
     const at = match.index ?? 0
@@ -173,10 +158,11 @@ async function readable(page: Page, path: string): Promise<{ text: string; attrs
   await page.goto(`${ORIGIN}${path}`, { waitUntil: 'networkidle' })
   const text = await page.locator('body').innerText()
   const attrs = await page
-    .locator('body [href], body [aria-label], body [title], body [alt], body [placeholder], body [value]')
+    .locator(
+      'body [href], body [aria-label], body [title], body [alt], body [placeholder], body [value]',
+    )
     .evaluateAll(
-      (nodes, names) =>
-        nodes.flatMap((node) => names.map((name) => node.getAttribute(name))),
+      (nodes, names) => nodes.flatMap((node) => names.map((name) => node.getAttribute(name))),
       ATTRIBUTES as unknown as string[],
     )
     .then((values) => values.filter((v): v is string => v !== null && v !== ''))
@@ -223,7 +209,10 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
         violations.push({
           page: `${path} [raw]`,
           term: BANNED_INTERNAL,
-          snippet: html.slice(html.indexOf(BANNED_INTERNAL) - 20, html.indexOf(BANNED_INTERNAL) + 20),
+          snippet: html.slice(
+            html.indexOf(BANNED_INTERNAL) - 20,
+            html.indexOf(BANNED_INTERNAL) + 20,
+          ),
         })
       }
       for (const term of BANNED_WORDS.filter((t) => t.label === 'currency figure')) {
@@ -238,13 +227,14 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
     for (const p of notBuiltYet) console.log(`  skip ${p}`)
 
     const lines = violations.map((v) => `${v.page} -> ${v.term} -> "${v.snippet}"`)
-    expect(
-      violations,
-      `banned commerce terms found on the gallery:\n${lines.join('\n')}`,
-    ).toEqual([])
+    expect(violations, `banned commerce terms found on the gallery:\n${lines.join('\n')}`).toEqual(
+      [],
+    )
 
     // A visitor reaching browse must reach a work: at least one item page was scanned.
-    const items = reached.filter((p) => p.startsWith(itemPrefix('en')) || p.startsWith(itemPrefix('id')))
+    const items = reached.filter(
+      (p) => p.startsWith(itemPrefix('en')) || p.startsWith(itemPrefix('id')),
+    )
     expect(items.length, 'at least one gallery item page was scanned (200)').toBeGreaterThan(0)
   })
 })
