@@ -223,7 +223,8 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
       const panel = page.locator('aside[data-status="sold"]')
       await expect(panel.getByText(say(locale, 'status.sold'), { exact: true })).toBeVisible()
       await expect(page.getByRole('link', { name: say(locale, 'item.ask') })).toHaveCount(0)
-      await expect(page.getByText(say(locale, 'price.onRequest'))).toHaveCount(0)
+      // The whole document, head included: share cards and search snippets show the meta text.
+      expect(await page.content(), 'in head').not.toContain(say(locale, 'price.onRequest'))
       await shoot(page, `5.2e-sold-${locale}`)
 
       const link = panel.getByRole('link', { name: say(locale, 'item.askAnother') })
