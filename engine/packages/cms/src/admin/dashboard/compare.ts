@@ -26,3 +26,38 @@ export type Counted = {
   readonly current: number
   readonly previous: number
 }
+
+/** The middle value, averaging the two middle ones for an even count; `null` with none. */
+export function median(values: readonly number[]): number | null {
+  if (values.length === 0) return null
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2
+}
+
+/** One row of a ranked list of money (orders and their summed amount), the current period only. */
+export type MoneyRanked = {
+  readonly key: string
+  readonly orders: number
+  /** Integer rupiah. */
+  readonly revenue: number
+}
+
+/** `entries` (one per order or order line) tallied by `key` and ranked by revenue, highest first. */
+export function rankMoney(
+  entries: readonly { readonly key: string | null; readonly amount: number }[],
+  limit = 10,
+): MoneyRanked[] {
+  const totals = new Map<string, { orders: number; revenue: number }>()
+  for (const entry of entries) {
+    if (entry.key === null) continue
+    const row = totals.get(entry.key) ?? { orders: 0, revenue: 0 }
+    row.orders += 1
+    row.revenue += entry.amount
+    totals.set(entry.key, row)
+  }
+  return [...totals.entries()]
+    .map(([key, row]) => ({ key, orders: row.orders, revenue: row.revenue }))
+    .sort((a, b) => b.revenue - a.revenue || a.key.localeCompare(b.key))
+    .slice(0, limit)
+}

@@ -139,10 +139,60 @@ export const COPY = {
   fulfilment: { en: 'Fulfilment', id: 'Pemenuhan' },
   payments: { en: 'Payments', id: 'Pembayaran' },
   vitals: { en: 'Web vitals', id: 'Vital web' },
-  stub: {
-    en: 'This panel arrives with the checkout events (dashboard, run 2).',
-    id: 'Panel ini hadir bersama peristiwa checkout (dasbor, tahap 2).',
+
+  averageOrder: { en: 'Average order', id: 'Rata-rata pesanan' },
+  discountShare: { en: 'Orders with a discount code (%)', id: 'Pesanan dengan kode diskon (%)' },
+  freeDeliveryShare: { en: 'Free delivery (%)', id: 'Pengiriman gratis (%)' },
+  byStore: { en: 'By store', id: 'Menurut toko' },
+  byDistanceBand: { en: 'By distance', id: 'Menurut jarak' },
+  byProduct: { en: 'By product', id: 'Menurut produk' },
+  byCategory: { en: 'By category', id: 'Menurut kategori' },
+  uncategorised: { en: 'Uncategorised', id: 'Tanpa kategori' },
+
+  paidToProcessing: { en: 'Paid → processing', id: 'Dibayar → diproses' },
+  processingToOnTheWay: { en: 'Processing → on the way', id: 'Diproses → dalam perjalanan' },
+  onTheWayToDelivered: { en: 'On the way → delivered', id: 'Dalam perjalanan → terkirim' },
+  medianHoursShort: { en: 'Median hours', id: 'Median jam' },
+  ordersWaitingNow: { en: 'Orders waiting now', id: 'Pesanan yang sedang menunggu' },
+  expiredCancelledShare: {
+    en: 'Expired or cancelled (%, of orders placed)',
+    id: 'Kedaluwarsa atau dibatalkan (%, dari pesanan dibuat)',
   },
+
+  methodMix: { en: 'Payment methods', id: 'Metode pembayaran' },
+  expiredUnpaidRate: {
+    en: 'Expired, never paid (%, of orders placed)',
+    id: 'Kedaluwarsa, tidak pernah dibayar (%, dari pesanan dibuat)',
+  },
+  flaggedPayments: { en: 'Flagged for staff', id: 'Ditandai untuk staf' },
+  flaggedNote: {
+    en: 'Counts only — no order id, amount or buyer detail.',
+    id: 'Hanya jumlah — tanpa id pesanan, nominal, atau data pembeli.',
+  },
+  'amount-mismatch': { en: 'Amount mismatch', id: 'Jumlah tidak cocok' },
+  'late-payment': { en: 'Paid after expiry or cancellation', id: 'Dibayar setelah kedaluwarsa/dibatalkan' },
+  'double-payment': { en: 'Paid twice', id: 'Dibayar dua kali' },
+  'fraud-challenge': { en: 'Fraud challenge', id: 'Tantangan kecurangan' },
+
+  funnelViewed: { en: 'Product viewed', id: 'Produk dilihat' },
+  funnelAdded: { en: 'Added to cart', id: 'Ditambahkan ke keranjang' },
+  funnelCheckout: { en: 'Checkout started', id: 'Checkout dimulai' },
+  funnelDelivery: { en: 'Delivery step completed', id: 'Langkah pengiriman selesai' },
+  funnelPaid: { en: 'Paid', id: 'Dibayar' },
+  funnelByDevice: { en: 'By device', id: 'Menurut perangkat' },
+  device: { en: 'Device', id: 'Perangkat' },
+  blockedByReason: { en: 'Checkout blocked, by reason', id: 'Checkout terhenti, menurut alasan' },
+  'no-single-store': { en: 'No single store has every item', id: 'Tidak ada satu toko dengan semua barang' },
+  'out-of-area': { en: 'Outside delivery reach', id: 'Di luar jangkauan pengiriman' },
+  'out-of-stock': { en: 'Out of stock', id: 'Stok habis' },
+  'price-changed': { en: 'Price changed', id: 'Harga berubah' },
+  'code-refused': { en: 'Discount code refused', id: 'Kode diskon ditolak' },
+
+  vitalsLcp: { en: 'LCP, p75 (s)', id: 'LCP, p75 (dtk)' },
+  vitalsInp: { en: 'INP, p75 (ms)', id: 'INP, p75 (md)' },
+  vitalsCls: { en: 'CLS, p75', id: 'CLS, p75' },
+  samples: { en: 'Samples', id: 'Sampel' },
+  pageType: { en: 'Page type', id: 'Jenis halaman' },
 } as const satisfies Record<string, Pair>
 
 export type CopyKey = keyof typeof COPY

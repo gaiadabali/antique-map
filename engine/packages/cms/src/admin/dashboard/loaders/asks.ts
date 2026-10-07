@@ -9,7 +9,7 @@
  * end of Monday. The calendar of working days is the dashboard's assumption until the owner's
  * hours (a localised text in the site settings) become something a machine can read.
  */
-import { compared, type Compared, type Counted } from '../compare'
+import { compared, median, type Compared, type Counted } from '../compare'
 import type { DashboardContext } from '../context'
 import { instantBounds, shiftDay, witaDay } from '../period'
 import { eventsFilter, inPeriod, inPrevious, num, rowsOf, sql, topCounts } from '../sql'
@@ -48,13 +48,6 @@ export function replyDeadline(createdAt: Date): Date {
   const weekday = new Date(`${day}T00:00:00.000Z`).getUTCDay()
   const toMonday = weekday === 6 ? 2 : weekday === 0 ? 1 : 0
   return instantBounds({ from: shiftDay(day, toMonday), to: shiftDay(day, toMonday) }).end
-}
-
-function median(values: number[]): number | null {
-  if (values.length === 0) return null
-  const sorted = [...values].sort((a, b) => a - b)
-  const mid = Math.floor(sorted.length / 2)
-  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2
 }
 
 function replyStats(ctx: DashboardContext, leads: Row[]): Omit<ReplyStats, 'inTimePct'> {
