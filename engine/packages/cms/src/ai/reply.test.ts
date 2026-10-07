@@ -60,6 +60,16 @@ describe('the drafting reply (8.3.a)', () => {
     expect(parseDraftReply(`{"title":"${'x'.repeat(30_000)}"}`)).toEqual({ ok: false, reason: 'reply: too long' })
   })
 
+  it('drops a blank name and refuses a name that is not text, so no null reaches the vocabulary', () => {
+    const blank = parse(goodReply({ places: { names: ['  ', 'Bali', ''], confidence: 'low', basis: '' } }))
+    expect(blank.ok).toBe(true)
+    if (blank.ok) expect(blank.reply.places.names).toEqual(['Bali'])
+    for (const bad of [null, 7, { name: 'Bali' }, ['Bali']]) {
+      const parsed = parse(goodReply({ subjects: { names: [bad], confidence: 'low', basis: '' } }))
+      expect(parsed).toMatchObject({ ok: false, reason: 'subjects.names.0: not text' })
+    }
+  })
+
   it('sends a schema with no grade, provenance, price, status, stock or location in it', () => {
     const schema = JSON.stringify(DRAFT_REPLY_SCHEMA)
     for (const name of ['grade', 'provenance', 'price', 'askingPrice', 'stock', 'location', 'status']) {

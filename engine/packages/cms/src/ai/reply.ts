@@ -150,10 +150,13 @@ function sizeOf(value: unknown, at: string): DraftSize | null {
   return { height: mm(o.height, `${at}.height`), width: mm(o.width, `${at}.width`) }
 }
 
+/** Each entry must be text; a blank one says nothing and is dropped (never kept as a null). */
 function names(value: unknown, at: string): string[] {
   if (!Array.isArray(value)) return fail(`${at}: not a list`)
   if (value.length > REPLY_LIMITS.names) fail(`${at}: more than ${REPLY_LIMITS.names}`)
-  return value.map((name, index) => text(name, REPLY_LIMITS.name, `${at}.${index}`, false)!)
+  return value
+    .map((name, index) => text(name, REPLY_LIMITS.name, `${at}.${index}`, false))
+    .filter((name): name is string => name !== null)
 }
 
 function evidence(o: Obj, at: string): Evidence {
