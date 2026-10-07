@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('server-only', () => ({}))
 
-import { SITEVERIFY_URL, turnstileVerifier } from './turnstile'
+import { SITEVERIFY_URL, TEST_PASS_SECRET, turnstileVerifier } from './turnstile'
 
 afterEach(() => vi.restoreAllMocks())
 
@@ -40,6 +40,22 @@ describe('the Turnstile verifier', () => {
     expect(await turnstileVerifier('secret-0123456789abcdef').verify('tok', null, signal)).toEqual({
       success: false,
       hostname: null,
+    })
+  })
+
+  it('marks a result verified with the published test secret, and never a real one', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async () =>
+      Response.json({ success: true, hostname: 'example.com' }),
+    )
+    const signal = new AbortController().signal
+    expect(await turnstileVerifier(TEST_PASS_SECRET).verify('tok', null, signal)).toEqual({
+      success: true,
+      hostname: 'example.com',
+      testKey: true,
+    })
+    expect(await turnstileVerifier('secret-0123456789abcdef').verify('tok', null, signal)).toEqual({
+      success: true,
+      hostname: 'example.com',
     })
   })
 })

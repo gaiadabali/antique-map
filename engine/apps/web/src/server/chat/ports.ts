@@ -36,7 +36,12 @@ export interface ChatModelClient {
   ): Promise<Anthropic.Message>
 }
 
-export type TurnstileResult = { readonly success: boolean; readonly hostname: string | null }
+export type TurnstileResult = {
+  readonly success: boolean
+  readonly hostname: string | null
+  /** Verified with Cloudflare's published always-pass test secret: no protection, and no hostname. */
+  readonly testKey?: boolean
+}
 
 /** Cloudflare Turnstile's `siteverify` (SECURITY.md §2.10). */
 export interface TurnstileVerifier {

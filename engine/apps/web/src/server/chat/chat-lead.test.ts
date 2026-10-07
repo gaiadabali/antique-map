@@ -237,6 +237,27 @@ describe('Turnstile', () => {
     )
     expect(response.status).toBe(403)
   })
+
+  it('the published test secret starts a session although it answers for example.com', async () => {
+    const h = harness(() => ({ text: 'ok' }))
+    h.turnstile.hostname = 'example.com'
+    h.turnstile.testKey = true
+    const response = await startSession(
+      chatRequest('shop', '/api/x/chat/session', { body: { turnstileToken: 'tok', locale: 'en' } }),
+      h.deps,
+    )
+    expect(response.status).toBe(200)
+  })
+
+  it('a real secret answering for example.com is refused', async () => {
+    const h = harness(() => ({ text: 'ok' }))
+    h.turnstile.hostname = 'example.com'
+    const response = await startSession(
+      chatRequest('shop', '/api/x/chat/session', { body: { turnstileToken: 'tok', locale: 'en' } }),
+      h.deps,
+    )
+    expect(response.status).toBe(403)
+  })
 })
 
 describe('the shop', () => {

@@ -40,9 +40,15 @@ export class TurnstileDouble implements TurnstileVerifier {
   calls = 0
   /** The hostname Cloudflare reports the token was solved on. */
   hostname: string = HOSTS.gallery
+  /** Verified with Cloudflare's published always-pass test secret (staging until OA8). */
+  testKey = false
   async verify() {
     this.calls += 1
-    return { success: this.pass, hostname: this.pass ? this.hostname : null }
+    return {
+      success: this.pass,
+      hostname: this.pass ? this.hostname : null,
+      ...(this.testKey ? { testKey: true } : {}),
+    }
   }
 }
 

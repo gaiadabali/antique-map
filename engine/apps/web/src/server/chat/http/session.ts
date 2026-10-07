@@ -44,6 +44,8 @@ async function turnstilePasses(
   if (deps.turnstile === null) return false
   const result = await deps.turnstile.verify(token, clientAddress(request.headers), request.signal)
   if (!result.success) return false
+  // The published test secret (staging until OA8) answers for example.com and protects nothing.
+  if (result.testKey === true) return true
   const expected = requestHostname(new URL(siteOrigin(site, deps.env) ?? 'https://invalid').host)
   // Cloudflare's test keys answer for example.com; a workstation's host is not checked.
   if (expected === null || isLocalHostname(expected)) return true

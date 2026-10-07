@@ -10,6 +10,13 @@ import type { TurnstileResult, TurnstileVerifier } from '../ports'
 
 export const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 
+/**
+ * Cloudflare's published always-pass test secret. Staging carries it until the owner's keys (OA8);
+ * its answers name `example.com`, so the session's hostname match cannot hold, and it protects
+ * nothing anyway. A result verified with it says so (`testKey`); a real secret never does.
+ */
+export const TEST_PASS_SECRET = '1x0000000000000000000000000000000AA'
+
 export function turnstileVerifier(secret: string): TurnstileVerifier {
   return {
     async verify(token, remoteIp, signal): Promise<TurnstileResult> {
@@ -27,6 +34,7 @@ export function turnstileVerifier(secret: string): TurnstileVerifier {
         return {
           success: body.success === true,
           hostname: typeof body.hostname === 'string' ? body.hostname.toLowerCase() : null,
+          ...(secret === TEST_PASS_SECRET ? { testKey: true } : {}),
         }
       } catch {
         return { success: false, hostname: null }
