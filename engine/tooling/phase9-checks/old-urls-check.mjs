@@ -3,6 +3,10 @@
 // address, or a 404 the builder lists unresolved (with its reason). The Check asks for a **301**
 // specifically, so 302 and 307 are failures with their status; a 308 is acceptable only when its
 // Location differs from the request just by a trailing slash, and is counted as `normalised`.
+// One exception, by design: a surface the site table keeps live at its old address (the gallery's
+// `/product/<id>-<slug>`, DATA.md §6) is answered by the new route itself, whose canonical-slug
+// redirect is Next's permanent 308. A 308 that stays on that surface and lands on a 200 in one hop
+// is counted as `keptLive` (Google treats 308 as 301); any other 308 still fails.
 //
 // The redirect is judged against the site's canonical `origin` (the Location a page would carry),
 // while the walk is pointed at what it can reach (`base`): a Location on `origin` is rewritten onto
@@ -13,6 +17,9 @@ import { toBase } from './to-base.mjs'
 
 const REDIRECT = new Set([301, 302, 307, 308])
 const FAILED_REDIRECT = new Set([300, 303, 305, 306])
+
+/** The surfaces each site keeps live at its old address (`table.ts`: "its product URLs stay live"). */
+export const KEPT_LIVE = { gallery: ['/product/'], shop: [] }
 
 /** One key's judgement, as it is written to the state file and counted. */
 function outcome(kind, extra = {}) {
@@ -42,7 +49,11 @@ function mapLocation(location, { origin, base }) {
  * `unresolved` is the builder's map from key to reason (the 9.4a `unresolved.<site>.json`).
  * `origin` is the site's canonical origin (defaults to `base` when the caller has none).
  */
-export async function judgeKey(base, key, { get, unresolved, origin = originOf(base) }) {
+export async function judgeKey(
+  base,
+  key,
+  { get, unresolved, origin = originOf(base), keptLive = [] },
+) {
   const url = `${base}${key}`
   const first = await get(url)
   const status = first.status
@@ -56,6 +67,17 @@ export async function judgeKey(base, key, { get, unresolved, origin = originOf(b
       const loc = new URL(location)
       if (differsBySlash(new URL(url).pathname, loc.pathname))
         return outcome('normalised', { url, status, to: location })
+      const surface = keptLive.find((prefix) => new URL(url).pathname.startsWith(prefix))
+      if (surface !== undefined && loc.pathname.startsWith(surface)) {
+        const hop = await get(mapLocation(location, { origin, base }).url)
+        if (hop.status === 200) return outcome('keptLive', { url, status, to: location })
+        return outcome('fail', {
+          url,
+          status,
+          to: location,
+          reason: `the target answers ${hop.status}`,
+        })
+      }
     }
     return outcome('fail', { url, status, reason: `unexpected status ${status}` })
   }
@@ -107,12 +129,20 @@ export async function judgeKey(base, key, { get, unresolved, origin = originOf(b
 export async function checkKeys(
   base,
   keys,
-  { get, unresolved = {}, done = new Map(), onResult = () => {}, origin = originOf(base) },
+  {
+    get,
+    unresolved = {},
+    done = new Map(),
+    onResult = () => {},
+    origin = originOf(base),
+    keptLive = [],
+  },
 ) {
   const counts = {
     ok: 0,
     redirected: 0,
     normalised: 0,
+    keptLive: 0,
     gone: 0,
     unresolved: 0,
     fail: 0,
@@ -124,7 +154,7 @@ export async function checkKeys(
     const url = `${base}${key}`
     let result = done.get(url)
     if (result === undefined) {
-      result = await judgeKey(base, key, { get, unresolved, origin })
+      result = await judgeKey(base, key, { get, unresolved, origin, keptLive })
       onResult(url, result)
     }
     counts[result.kind] += 1
@@ -139,7 +169,7 @@ export async function checkKeys(
 
 /** `rows + gone + unresolved = N` — the line the 9.4.c Check asks for. `N` is the key count. */
 export function reconciliation(keys, counts) {
-  const rows = counts.ok + counts.redirected + counts.normalised
+  const rows = counts.ok + counts.redirected + counts.normalised + (counts.keptLive ?? 0)
   const sum = rows + counts.gone + counts.unresolved
   return {
     rows,

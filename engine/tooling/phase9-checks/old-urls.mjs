@@ -12,7 +12,7 @@ import { COMMON_OPTIONS, commonOptions } from './cli-args.mjs'
 import { readInventory } from './inventory.mjs'
 import { createLimiter } from './limiter.mjs'
 import { collectKeys } from './normalise.mjs'
-import { checkKeys, reconciliation } from './old-urls-check.mjs'
+import { KEPT_LIVE, checkKeys, reconciliation } from './old-urls-check.mjs'
 import { createGet } from './paced.mjs'
 import { createStateWriter, defaultStatePath, readState } from './state.mjs'
 
@@ -64,6 +64,7 @@ async function main(argv) {
     get,
     unresolved,
     origin,
+    keptLive: KEPT_LIVE[site] ?? [],
     done,
     onResult: (url, outcome) => write(url, outcome),
   })
@@ -95,7 +96,7 @@ function logReport(report) {
     `  ${report.keys} keys from ${report.inventoryRows} rows (${report.skippedSensitive} sensitive paths skipped)`,
   )
   console.log(
-    `  200: ${c.ok}   301→200: ${c.redirected}   308 normalised: ${c.normalised}   410: ${c.gone}   unresolved: ${c.unresolved}   FAIL: ${c.fail}`,
+    `  200: ${c.ok}   301→200: ${c.redirected}   308 normalised: ${c.normalised}   308 kept live→200: ${c.keptLive}   410: ${c.gone}   unresolved: ${c.unresolved}   FAIL: ${c.fail}`,
   )
   console.log(`  redirect codes seen: 301 ${s[301]}, 302 ${s[302]}, 307 ${s[307]}, 308 ${s[308]}`)
   const r = report.reconciliation

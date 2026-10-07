@@ -124,6 +124,35 @@ describe('judgeKey', () => {
     ).toBe('fail')
   })
 
+  it('a 308 on a kept-live surface that lands on a 200 is kept live', async () => {
+    server = await startServer({
+      '/product/2-old-slug': () => ({ status: 308, headers: { location: '/product/2-new-slug' } }),
+      '/product/2-new-slug': () => ({ status: 200, body: 'ok' }),
+    })
+    const opts = { get, unresolved: {}, origin: ORIGIN, keptLive: ['/product/'] }
+    expect((await judgeKey(server.base, '/product/2-old-slug', opts)).kind).toBe('keptLive')
+  })
+
+  it('a kept-live 308 to another surface, or to a page that is not 200, fails', async () => {
+    server = await startServer({
+      '/product/3-a': () => ({ status: 308, headers: { location: '/elsewhere/3' } }),
+      '/product/4-a': () => ({ status: 308, headers: { location: '/product/4-b' } }),
+      '/product/4-b': () => ({ status: 404 }),
+    })
+    const opts = { get, unresolved: {}, origin: ORIGIN, keptLive: ['/product/'] }
+    expect((await judgeKey(server.base, '/product/3-a', opts)).kind).toBe('fail')
+    expect((await judgeKey(server.base, '/product/4-a', opts)).kind).toBe('fail')
+  })
+
+  it('without a kept-live surface the same 308 fails', async () => {
+    server = await startServer({
+      '/product/2-old-slug': () => ({ status: 308, headers: { location: '/product/2-new-slug' } }),
+      '/product/2-new-slug': () => ({ status: 200, body: 'ok' }),
+    })
+    const opts = { get, unresolved: {}, origin: ORIGIN }
+    expect((await judgeKey(server.base, '/product/2-old-slug', opts)).kind).toBe('fail')
+  })
+
   it('counts 301 separately from 302, 307 and 308', async () => {
     server = await startServer({
       '/a': () => ({ status: 301, headers: { location: '/ok' } }),

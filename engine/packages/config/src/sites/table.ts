@@ -141,8 +141,9 @@ const shop = {
     },
     facets: { path: [], vocabularies: {} },
     defaultSort: { browse: 'featured', search: 'relevance' },
-    legacyPrefixes: ['/our-collection/'],
-    legacyPaths: [],
+    // The old shop's account pages: the new shop has no accounts, so the builder marks them gone (410).
+    legacyPrefixes: ['/our-collection/', '/account/'],
+    legacyPaths: ['/account'],
   },
 } as const satisfies SiteDefinition
 
