@@ -113,16 +113,13 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 | `production-20261007T022819Z-ce91e51` | ce91e51 (5.3sold)                        | none new (5 applied = 5 in repo) | healthy, try 1              |
 | `production-20261007T030310Z-61b3b26` | 61b3b26 (5.3sold + `/browse` perf)       | none new                         | healthy, try 1; smoke below |
 | `production-20261007T042810Z-ec9cea9` | ec9cea9 (39ac792: sold meta description) | none new (5 = 5)                 | healthy, try 1; smoke below |
+| `production-20261007T051812Z-d77cb78` | d77cb78 (7ede76c1: lead image CORS mode) | none new (5 = 5)                 | healthy, try 1; smoke below |
 
-Smoke on `61b3b26`: every check in step 6 passed (pages 200, derivative and `info.json` 200 with ACAO, `uploads/x` 403).
-
-Smoke on `ec9cea9`, 2026-10-07:
-
-- **Pages:** gallery `/` 200; shop `/` 200; `/sell-to-us` 200; `/contact` 200; `/product/200` 200.
-- **Media:** its derivative returns 200 with the gallery origin's ACAO; `iiif/3793869e…/info.json` returns 200 with
-  ACAO; `/_media/uploads/x` returns 403.
-- **Sold works:** M.0004 (`/product/2`) and P.1551 (`/product/1018`) returned 200. Their meta descriptions end
-  "· Sold", where the previous release said "· Price on request". Neither document contains "Price on request".
+Smoke, every release: step 6 passed (pages 200; derivative and `info.json` 200 with ACAO; `uploads/x` 403). On
+`ec9cea9` the sold works `/product/2` and `/product/1018` end their meta description "· Sold" ("· Price on request"
+before), with no "Price on request" in the document. `7ede76c1` failed `next build`'s typecheck (phase 8's chat test;
+nothing deployed) until `39c4a1e4`. On `d77cb78` the item's lead `<img>` has `crossorigin="anonymous"` and its image
+preload `crossorigin=""`, the same anonymous mode (`/product/200`, `/product/2013`).
 
 ## Seeding the gallery sample
 
@@ -187,9 +184,10 @@ Run on 2026-10-07 (main 61b3b26):
 
 ## Media origin headers
 
-**Status: not yet applied on staging.** The change below was written on 2026-10-07. The agent's attempt to apply it
-was refused twice by the session's permission system, including after the user's go-ahead was relayed. It needs
-to be applied by hand, or with a permission rule that covers it. Production's media origin needs the same change.
+**Status: fixed in the app** (7ede76c1, live from the release logged above). The item's lead `<img>` and its
+`<link rel=preload>` load with `crossorigin="anonymous"`, so the copy the browser caches is already CORS-clean
+and the viewer reuses it. The nginx `Vary: Origin` change below is **production hardening**, not applied on
+staging (the user's choice): apply it on production's media origin when that is provisioned.
 
 **The defect.** `/_media/` is an nginx location in the shop's CloudPanel vhost that proxies to RustFS. The CORS
 headers come from the bucket's CORS rule, and RustFS sends `Access-Control-Allow-Origin` and `Vary: Origin` only
@@ -204,7 +202,7 @@ Origin gallery: HTTP 200 · cache-control: … immutable · access-control-allow
 uploads/x:      403
 ```
 
-**The change.** In `location ^~ /_media/`, after `proxy_hide_header Set-Cookie;`:
+**The hardening (production).** In `location ^~ /_media/`, after `proxy_hide_header Set-Cookie;`:
 
 ```nginx
     proxy_hide_header Vary;               # one Vary, never two
