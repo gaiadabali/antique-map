@@ -23,11 +23,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 16/20 | 0 | `████████░░`  80% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 8/16 | 0 | `█████░░░░░`  50% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **33/51** | **156/208** | **8** | `████████░░`  75% |
+| **All** | 11 phases | | | **33/51** | **158/208** | **8** | `████████░░`  76% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -635,8 +635,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/shared/chat/**`, `engine/apps/web/src/shared/chat/lexicon/**`
   - **Read** AI.md §UI, DESIGN-SYSTEM.md §Chat
   - _Requirements: 9.1, 9.3, 12.2_
-  - [ ] 8.2.a the panel on both sites (opened from the header entry point from 4.3): streaming, an "AI assistant" disclosure, suggested starts per site, item context when opened from an item or product page
-  - [ ] 8.2.b the handoff card (WhatsApp, email) and the consent step before a lead is created; clear states for rate-limited, off (kill switch) and error
+  - [x] 8.2.a the panel on both sites (opened from the header entry point from 4.3): streaming, an "AI assistant" disclosure, suggested starts per site, item context when opened from an item or product page
+  - [x] 8.2.b the handoff card (WhatsApp, email) and the consent step before a lead is created; clear states for rate-limited, off (kill switch) and error
   - [ ] 8.2.c **Check:** on a production build at 390 px, from an item page the chat knows the item, answers a bilingual question, offers the WhatsApp handoff with the item in the text, and the lead form appears only on request; keyboard and screen-reader operable; axe clean.
 
 - [ ] **8.3 The CMS listing-drafting tool** · needs: phase 3 — 🔄 8·W1
