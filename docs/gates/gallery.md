@@ -1,14 +1,13 @@
-# Gallery gate — phase 5 (5.5.d) — NOT PASSED (one product defect: axe on the item page)
+# Gallery gate — phase 5 (5.5.d) — PASSED
 
-QA (Sonnet seat), branch `w/5.5a`, 2026-10-07. Staging: gallery `https://indies-gallery.gaiada.com`, shop/admin
-`https://old-east-indies.gaiada.com`, release `production-20261007T075619Z-643bffa` (main 643bffae), with the
-gallery sample seeded (48 published works) and the vocabulary published (66 places, 127 makers, 110 terms).
+QA (Sonnet seat), branch `w/5.5gate`, 2026-10-07. Staging: gallery `https://indies-gallery.gaiada.com`, shop/admin
+`https://old-east-indies.gaiada.com`, final release `production-20261007T091257Z-0fc3942a` (main 0fc3942a, which carries
+e1d866af, the Ask panel as a `<div data-status>`), with the gallery sample seeded (48 published works) and the
+vocabulary published (66 places, 127 makers, 110 terms).
 
-> **Status: NOT PASSED.** Every clause passes except **"axe is clean"**: axe reports
-> `landmark-complementary-is-top-level` on every item page (available and sold), because the Ask panel is an
-> `<aside>` nested inside `<main><article>` (D1 below). The earlier defects (the sold `<meta>`, the viewer CORS
-> failure) are fixed and proven on this release. Once D1 is fixed, `done-when.spec.ts` is rerun twice and the status
-> becomes PASSED. Nothing else is open except the follow-ups.
+> **Status: PASSED.** Every clause below passes on the final release. The LCP budget miss stays as follow-up F1 (phase
+> 10). History: an earlier run on 643bffa failed only on axe `landmark-complementary-is-top-level` (D1, the nested
+> `<aside>`), fixed by e1d866af and re-proven below.
 
 **Phase 5 Done when** (TASKS.md): on staging, on a phone, a visitor searches by a place's old name, opens an item,
 zooms into its detail, taps "Ask about this" and lands in WhatsApp with the item in the message. "Sell to us" opens
@@ -30,7 +29,7 @@ anywhere. axe is clean and Lighthouse mobile meets the budget.
 | 5.5.a Journey: search → item → zoom → Ask → Sell to us, 390 and 1280 px, en and id | `journey.spec.ts` on 643bffa, `--workers=1`: run 1 4/4, run 2 3/4, run 3 4/4. The one failure is a lost Zoom click (D2), 1 in 12 test runs, not the CORS defect: the viewer never opened, no CORS error. Zoom draws with no CORS error in every other run | staging, runs below | **PASS** (D2 intermittent, noted) |
 | 5.5.d DPR 3 path: search → item → Zoom at 390 px, DPR 3 | `dpr3-navigation.spec.ts`: "Batavia" search, click card 746, lead `naturalWidth > 0`, Zoom, viewer canvas draws (> 8 distinct colours), no "cannot be opened", no console error naming CORS, WebGL or texture. 2/2 | staging 643bffa, `docs/gates/gallery/dpr3-search-to-item-zoom.png` | **PASS** |
 | 5.5.d Old name → modern place with real data | `/search?q=Batavia` lists 746 (P.1180, catalogued under Jakarta), also 200 and 2013 | `done-when.spec.ts` step 1, both runs | **PASS** |
-| 5.5.d axe clean on every page walked | home, browse, search results, sell-to-us: clean. **Item page (available) and a sold item: `landmark-complementary-is-top-level: 1`** | `done-when.spec.ts` ×2, identical both runs | **FAIL** (D1) |
+| 5.5.d axe clean on every page walked | home, browse, search results, sell-to-us: clean. item page and a sold item: clean after e1d866af (`landmark-complementary-is-top-level` before it) | `done-when.spec.ts` ×2 on 0fc3942a, 5/5 both, including the item page and a sold item | **PASS** (D1 fixed) |
 | 5.5.b No cart, checkout, sign-in, price or "offer" in the built HTML | `no-commerce.spec.ts`: both locales, 0 violations | main, `docs/reports/workers/ds-5.5b.md` | **PASS** (staging run, 643bffa: 0 violations) |
 | 5.5.c Lighthouse mobile ≥ 90 performance, 100 accessibility | browse 91, item 96, home 95 (medians); accessibility 100 on all 9 runs | below, `docs/reports/workers/5.5c.md` | **PASS** (TASKS 5.5.d as written). The LCP budget miss is a known follow-up for phase 10 (F1), not a gate failure |
 | Empty search | `/search?q=zzzzqqq` and `/id/cari?q=zzzzqqq`: 200, "Nothing matches “zzzzqqq”." and "Ask us about “zzzzqqq”" | below | **PASS** (finding F3) |
@@ -85,22 +84,20 @@ kepada kami").
 - Staging after the runs: owner reads find 0 `E2E` works, leads, media and places, and gallery site-settings contact
   back to null / `leadNotifyEmails` [].
 
-## Defects
+## Final runs on 0fc3942a (staging, `--workers=1`, same env as above)
 
-- **D1 (blocks the gate) axe `landmark-complementary-is-top-level` on every item page.**
-  `engine/apps/web/src/sites/gallery/item/ask-panel.tsx:45`, `:59`, `:70` render the panel as `<aside>`, which is
-  inside `<main><article>`, so it is a nested complementary landmark. Fix: a `<section aria-label=…>` or a `<div>`
-  (keep the `data-status` hooks the tests use). Owner: FE. Lighthouse a11y 100 did not catch it (different rule set).
-- **D2 (intermittent, 1 in 12 runs) a Zoom click can be lost.** In one run the button was clicked and the viewer never
-  opened within 5 s. Likely a click before hydration; unproven. Owner: FE (`item/zoom-viewer.tsx`: keep the button
-  disabled until it can open, or queue the click). Not blocking.
-- **D3 (low) search cards link to `/product/<id>` with no slug,** which answers a 308 to the slugged address (one extra
-  hop). The e2e selectors now accept both. Owner: FE.
+- `done-when.spec.ts` run 1: `5 passed (20.7s)`; run 2: `5 passed (18.7s)`. All five: search "Batavia" opens 746; item zoom
+  and Ask (axe clean); Sell to us (201, one lead, one email); sold item (axe clean); axe on home and browse.
+- `item.spec.ts`: `5 passed (23.8s)` (the sold page's whole document, head included, has no "Price on request").
+- `dpr3-navigation.spec.ts`: `1 passed (6.4s)`.
+- `journey.spec.ts`: `4 passed (31.6s)`.
+- Fixtures are deleted in `afterAll`, each delete checked; site-settings restored and read back.
 
-## To pass this gate
+## Remaining defects (none blocks the gate)
 
-1. Fix D1, release, rerun `done-when.spec.ts` x2 (expect 5/5), then set the status to PASSED.
-2. **Board:** `pnpm tasks:report 5.5.a 5.5.c`; 5.2.e and 5.5.d are Checks ticked by the orchestrator after D1.
+- **D2 (intermittent, 1 in 12 runs on 643bffa; 0 in the final runs) a Zoom click can be lost** before the viewer
+  hydrates. Owner: FE (`item/zoom-viewer.tsx`). Not blocking.
+- **D3 (low) search cards link to `/product/<id>` with no slug** (a 308 hop to the slugged address). Owner: FE.
 
 ## Findings (not blocking 5.5.d as written)
 
