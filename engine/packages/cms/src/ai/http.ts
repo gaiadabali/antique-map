@@ -8,6 +8,8 @@
 import { draftWork, type DraftDeps, type DraftRefusal } from './draft'
 
 const MAX_BODY_CHARS = 1024
+/** `{ "workId": … }` is a few dozen bytes; anything past this is cut off unread. */
+const MAX_BODY_BYTES = 1024
 
 const STATUS: Record<DraftRefusal | 'bad_request', number> = {
   bad_request: 400,
@@ -48,10 +50,35 @@ export function workIdOf(raw: string): number | null {
   return typeof id === 'number' && Number.isSafeInteger(id) && id > 0 ? id : null
 }
 
+/**
+ * The body as text, or `null` once it passes `MAX_BODY_BYTES` — read in chunks before anyone is
+ * signed in, so an oversized or endless body is cut off rather than buffered whole.
+ */
+export async function boundedBody(request: Request): Promise<string | null> {
+  const declared = Number(request.headers.get('content-length') ?? '0')
+  if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) return null
+  if (!request.body) return ''
+  const reader = request.body.getReader()
+  const chunks: Uint8Array[] = []
+  let size = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    size += value.byteLength
+    if (size > MAX_BODY_BYTES) {
+      await reader.cancel().catch(() => undefined)
+      return null
+    }
+    chunks.push(value)
+  }
+  return Buffer.concat(chunks).toString('utf8')
+}
+
 export async function handleDraftPost(request: Request, deps: DraftDeps): Promise<Response> {
   const type = request.headers.get('content-type') ?? ''
   if (!/^application\/json\b/i.test(type)) return json(415, { ok: false, code: 'bad_request' })
-  const workId = workIdOf(await request.text())
+  const raw = await boundedBody(request).catch(() => null)
+  const workId = raw === null ? null : workIdOf(raw)
   if (workId === null) return json(STATUS.bad_request, { ok: false, code: 'bad_request' })
   const { user } = await deps.payload.auth({ headers: request.headers })
   const result = await draftWork(deps, { user, workId })

@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { workIdOf } from './http'
+import { boundedBody, workIdOf } from './http'
 import { DraftLimiter } from './limits'
 
 describe('the drafting limits (8.3)', () => {
@@ -36,5 +36,21 @@ describe('the drafting route’s body (8.3.a)', () => {
     expect(workIdOf('{"workId":1.5}')).toBeNull()
     expect(workIdOf('not json')).toBeNull()
     expect(workIdOf(`{"workId":"${'1'.repeat(2000)}"}`)).toBeNull()
+  })
+
+  it('cuts off an oversized body unread, whatever its declared length says', async () => {
+    const post = (body: BodyInit, headers: Record<string, string> = {}) =>
+      new Request('http://cms.test/api/x/draft', { method: 'POST', body, headers, duplex: 'half' } as RequestInit)
+    expect(await boundedBody(post('{"workId":12}'))).toBe('{"workId":12}')
+    expect(await boundedBody(post('x', { 'content-length': '5000000' }))).toBeNull()
+    let pulled = 0
+    const endless = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulled += 1
+        controller.enqueue(new Uint8Array(512).fill(32))
+      },
+    })
+    expect(await boundedBody(post(endless))).toBeNull()
+    expect(pulled).toBeLessThan(10)
   })
 })
