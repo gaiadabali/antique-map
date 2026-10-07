@@ -2,22 +2,25 @@
  * The gallery item page and deep zoom (TASKS.md 5.2.e Check), on a production build at 390 px:
  *
  * 1. Opening an available work's page, the viewer zooms: before the Zoom button is clicked no
- *    request reaches `iiif/`; the click brings an `info.json` and at least one tile, both 200;
- *    zooming further with the keyboard brings at least one more tile; no console error mentions
- *    WebGL, a texture or CORS.
- * 2. `uploads/` — the private original — is 403 anonymously, from Payload's file route and (when
- *    `MEDIA_PUBLIC_URL` is known) the bucket itself.
+ *    request reaches `iiif/`; the click brings an `info.json` and at least one tile, both 200, from
+ *    the same `iiif/<asset>/` folder; zooming further with the keyboard (`+` on the focused canvas)
+ *    brings at least one more tile; no console error mentions WebGL, a texture or CORS, and the
+ *    browser never asks for the private original.
+ * 2. `uploads/` — the private original — is 403 anonymously, from Payload's file route and from
+ *    the media bucket itself (its address read off the page's own `info.json` URL).
  * 3. A sold work shows "Sold", never "Ask about this", never "Price on request" — only "Ask for
- *    another example" (the owner's decision of 2026-10-06), a `wa.me` link whose decoded text
- *    says the work has sold. Checked in English and Indonesian.
+ *    another example" (the owner's decision of 2026-10-06), a `wa.me` link whose decoded text is
+ *    the lexicon's sold message for this work. Checked in English and Indonesian.
  * 4. Neither work's asking price appears anywhere: not the HTML, not an `RSC: 1` flight fetch, not
- *    any JSON response captured while the page loads.
+ *    any JSON response captured while the page loads — in both locales.
  *
- * Fixtures (`support/item-fixtures.ts`) make their own place, grade, one large recto (a hand-built
- * PNG — no `sharp` outside the workspace packages that depend on it, see that file's header) and
- * two published works sharing it, removed in `afterAll` through `support/fixtures.ts`'s `Ledger`.
- * The gallery's test WhatsApp number is set for the run and restored after, the `contact.spec.ts`
- * pattern, so the handoff links are real `wa.me` addresses to decode.
+ * Every word comes from the gallery lexicon. Fixtures (`support/item-fixtures.ts`) make their own
+ * place, grade, one large recto and two published works sharing it, removed in `afterAll` through
+ * `support/fixtures.ts`'s `Ledger`, every delete checked. The gallery's WhatsApp number is set for
+ * the run and the original site-settings are put back — and read back — afterwards.
+ *
+ * Runs locally (`E2E_PORT`) or against a deployed pair of hosts (`E2E_BASE_GALLERY`,
+ * `E2E_BASE_SHOP`; `support/env.ts`), with the owner from `E2E_OWNER_EMAIL`/`E2E_OWNER_PASSWORD`.
  */
 import {
   expect,
@@ -27,62 +30,51 @@ import {
   type Page,
 } from '@playwright/test'
 
+import en from '../../../engine/apps/web/src/sites/gallery/lexicon/en.json' with { type: 'json' }
+import id from '../../../engine/apps/web/src/sites/gallery/lexicon/id.json' with { type: 'json' }
 import { createHref } from '../../../engine/packages/config/src/sites/routes/href'
 import { SITES } from '../../../engine/packages/config/src/sites/table'
-import { BASE_URL, GALLERY_ORIGIN, HOST_HEADER, OWNER } from './support/env'
+import {
+  BASE_URL,
+  GALLERY_BASE_URL,
+  GALLERY_HOST_HEADER,
+  GALLERY_ORIGIN,
+  HOST_HEADER,
+  OWNER,
+} from './support/env'
 import { newLedger, type Ledger } from './support/fixtures'
-import { createItemFixtures, mediaPublicUrl, type ItemFixtures } from './support/item-fixtures'
+import { createItemFixtures, type ItemFixtures, type WorkRef } from './support/item-fixtures'
 
 const href = createHref(SITES.gallery)
+const LEXICON = { en, id } as const
+type Locale = keyof typeof LEXICON
+const say = (locale: Locale, key: keyof typeof en): string => LEXICON[locale][key]
 const SHOTS = 'docs/reports/workers/5.2e'
 const TEST_WHATSAPP = '+6590000001'
 /** A price figure as the page could print it: plain, or grouped by `,` `.` or a space. */
 const figure = (n: number) =>
   new RegExp(`(?<!\\d)${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '[,. \\u00a0]?')}(?!\\d)`)
 
-/** The seed makes no user (`support/env.ts`): log in, or bootstrap the owner with
- * `first-register` when the database has none yet (the `hosts/admin-origin.spec.ts` pattern). */
-async function signIn(request: APIRequestContext): Promise<string> {
-  const post = (path: string, data: Record<string, unknown>) =>
-    request.post(`${BASE_URL}${path}`, { headers: HOST_HEADER, data })
-  const tokenOf = async (res: { ok(): boolean; json(): Promise<unknown> }) =>
-    res.ok() ? (((await res.json()) as { token?: string }).token ?? null) : null
-
-  let token = await tokenOf(
-    await post('/api/users/login', { email: OWNER.email, password: OWNER.password }),
-  )
-  if (token) return token
-  token = await tokenOf(
-    await post('/api/users/first-register', {
-      ...OWNER,
-      confirmPassword: OWNER.password,
-      name: 'E2E Owner',
-    }),
-  )
-  if (token) return token
-  const again = await post('/api/users/login', { email: OWNER.email, password: OWNER.password })
-  token = await tokenOf(again)
-  if (token) return token
-  throw new Error(`could not sign the owner in: login ${again.status()}`)
+/** The work's page, opened until it renders this run's fixture: a reused `publicId` may answer
+ * once with its earlier, deleted occupant's cached render (stale-while-revalidate). The stock
+ * number is unique to the run, so nothing else can satisfy the poll; every claim is asserted
+ * after it, once. */
+async function openFresh(page: Page, path: string, stockNumber: string) {
+  await expect
+    .poll(
+      async () => {
+        const res = await page.goto(`${GALLERY_ORIGIN}${path}`, { waitUntil: 'load' })
+        return res?.status() === 200 && (await page.content()).includes(stockNumber)
+      },
+      { message: `${path} renders this run's fixture`, timeout: 30_000, intervals: [1_000] },
+    )
+    .toBe(true)
 }
 
-/** How long a just-created work may take to stop showing a reused `publicId`'s earlier, deleted
- * occupant: Cache Components serves the stale render once (stale-while-revalidate) before the
- * next request regenerates it — the `browse.spec.ts`/`contact.spec.ts` sold-status pattern. */
-const FRESH = 30_000
+const itemPath = (ref: WorkRef, locale: Locale) =>
+  href('item', { publicId: ref.publicId, slug: ref.slug }, locale)
 
-/** Opens `path`, retrying until the render names `mustContain` (never a stale, deleted work's). */
-async function openFresh(page: Page, path: string, mustContain: string) {
-  await expect(async () => {
-    const res = await page.goto(`${GALLERY_ORIGIN}${path}`, { waitUntil: 'load' })
-    expect(res?.status(), path).toBe(200)
-    expect(await page.content()).toContain(mustContain)
-  }, `${path} reflects the fixture just made (a stale cached render fails here)`).toPass({
-    timeout: FRESH,
-  })
-}
-
-test.describe.configure({ mode: 'default' })
+test.describe.configure({ mode: 'serial' })
 
 test.describe('Gallery item page and deep zoom (5.2.e)', () => {
   test.setTimeout(240_000)
@@ -94,23 +86,32 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
   let settingsBefore: Record<string, unknown> | null = null
 
   const auth = () => ({ ...HOST_HEADER, Authorization: `JWT ${token}` })
+  const galleryOf = (settings: Record<string, unknown>) =>
+    (settings.gallery ?? {}) as Record<string, unknown>
 
   test.beforeAll(async () => {
-    test.setTimeout(240_000)
+    test.setTimeout(300_000)
     api = await newRequest.newContext({ baseURL: BASE_URL })
-    token = await signIn(api)
+    const login = await api.post(`${BASE_URL}/api/users/login`, {
+      headers: HOST_HEADER,
+      data: { email: OWNER.email, password: OWNER.password },
+    })
+    expect(login.status(), 'the owner signs in').toBe(200)
+    token = ((await login.json()) as { token: string }).token
     ledger = newLedger(api)
 
-    const before = await api.get(`${BASE_URL}/api/globals/site-settings`, { headers: auth() })
-    expect(before.ok()).toBeTruthy()
+    const before = await api.get(`${BASE_URL}/api/globals/site-settings?depth=0`, {
+      headers: auth(),
+    })
+    expect(before.status(), 'the owner reads site-settings').toBe(200)
     settingsBefore = (await before.json()) as Record<string, unknown>
-    const gallery = (settingsBefore.gallery ?? {}) as Record<string, unknown>
+    const gallery = galleryOf(settingsBefore)
     const contact = (gallery.contact ?? {}) as Record<string, unknown>
     const patched = await api.post(`${BASE_URL}/api/globals/site-settings`, {
       headers: auth(),
       data: { gallery: { ...gallery, contact: { ...contact, whatsapp: TEST_WHATSAPP } } },
     })
-    expect(patched.ok(), `set the test WhatsApp number: ${patched.status()}`).toBeTruthy()
+    expect(patched.status(), 'set the test WhatsApp number').toBe(200)
 
     fx = await createItemFixtures(api, ledger, token)
   })
@@ -119,10 +120,16 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
     test.setTimeout(180_000)
     try {
       if (settingsBefore !== null) {
-        await api.post(`${BASE_URL}/api/globals/site-settings`, {
+        const put = await api.post(`${BASE_URL}/api/globals/site-settings`, {
           headers: auth(),
-          data: { gallery: settingsBefore.gallery },
+          data: { gallery: galleryOf(settingsBefore) },
         })
+        expect(put.status(), 'restore site-settings').toBe(200)
+        const after = await api.get(`${BASE_URL}/api/globals/site-settings?depth=0`, {
+          headers: auth(),
+        })
+        const restored = galleryOf((await after.json()) as Record<string, unknown>)
+        expect(restored, 'site-settings read back as before').toEqual(galleryOf(settingsBefore))
       }
     } finally {
       await ledger?.cleanup()
@@ -133,17 +140,10 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
   test('the viewer zooms and tiles load from iiif/, with no WebGL/texture/CORS error', async ({
     page,
   }) => {
-    const itemPath = href(
-      'item',
-      { publicId: fx.available.publicId, slug: fx.available.slug },
-      'en',
-    )
     const requests: string[] = []
     const responses: { url: string; status: number }[] = []
     const consoleErrors: string[] = []
-    page.on('request', (r) => {
-      if (/\/iiif\//.test(r.url())) requests.push(r.url())
-    })
+    page.on('request', (r) => requests.push(r.url()))
     page.on('response', (r) => {
       if (/\/iiif\//.test(r.url())) responses.push({ url: r.url(), status: r.status() })
     })
@@ -152,77 +152,91 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
     })
 
     await page.setViewportSize({ width: 390, height: 844 })
-    await openFresh(page, itemPath, fx.stockAvailable)
-    expect(requests, 'no iiif/ request before the viewer opens').toEqual([])
+    await openFresh(page, itemPath(fx.available, 'en'), fx.stockAvailable)
+    expect(
+      requests.filter((u) => /\/iiif\//.test(u)),
+      'no iiif/ before the viewer',
+    ).toEqual([])
     await shoot(page, '5.2e-item-before-zoom')
 
-    await page.getByRole('button', { name: 'Zoom into the image' }).click()
-    await expect
-      .poll(() => responses.some((r) => /\/info\.json$/.test(r.url) && r.status === 200), {
-        timeout: 30_000,
-      })
-      .toBe(true)
-    const tiles = () => responses.filter((r) => r.url.endsWith('.jpg') && r.status === 200).length
-    await expect.poll(tiles, { timeout: 30_000 }).toBeGreaterThanOrEqual(1)
+    await page.getByRole('button', { name: say('en', 'item.viewerOpen') }).click()
+    const info = () => responses.find((r) => /\/iiif\/[^/]+\/info\.json$/.test(r.url))
+    await expect.poll(() => info()?.status, { timeout: 30_000 }).toBe(200)
+    const folder = info()!.url.replace(/info\.json$/, '')
+    const tiles = () =>
+      responses.filter((r) => r.url.startsWith(folder) && r.url.endsWith('/default.jpg'))
+    await expect.poll(() => tiles().length, { timeout: 30_000 }).toBeGreaterThanOrEqual(1)
+    await page.waitForLoadState('networkidle')
     await shoot(page, '5.2e-item-after-zoom')
 
-    const beforeKeyZoom = tiles()
-    const viewport = page.getByRole('group', { name: fx.recto.alt })
-    await viewport.click()
+    const beforeKey = tiles().length
+    // Focus, not click: a click on OpenSeadragon's canvas zooms by itself.
+    await page.getByRole('group', { name: fx.recto.alt }).locator('.openseadragon-canvas').focus()
     await page.keyboard.press('+')
-    await expect.poll(tiles, { timeout: 30_000 }).toBeGreaterThan(beforeKeyZoom)
+    await expect.poll(() => tiles().length, { timeout: 30_000 }).toBeGreaterThan(beforeKey)
+    await page.waitForLoadState('networkidle')
+    await shoot(page, '5.2e-item-after-key-zoom')
 
+    expect(
+      tiles().filter((r) => r.status !== 200),
+      'every tile answered 200',
+    ).toEqual([])
+    expect(
+      requests.filter((u) => /\/uploads\/|\/api\/media\/file\//.test(u)),
+      'the browser never asks for the private original',
+    ).toEqual([])
     expect(
       consoleErrors.filter((text) => /webgl|texture|cors/i.test(text)),
       consoleErrors.join('\n'),
     ).toEqual([])
   })
 
-  test('uploads/ is 403 anonymously', async () => {
-    const anon = await newRequest.newContext({ baseURL: BASE_URL })
+  test('uploads/ is 403 anonymously, from the file route and from the bucket', async () => {
+    const anon = await newRequest.newContext()
     try {
       const fileRoute = await anon.get(`${BASE_URL}/api/media/file/${fx.upload.filename}`, {
         headers: HOST_HEADER,
       })
       expect(fileRoute.status(), 'Payload file route, anonymous').toBe(403)
 
-      const base = mediaPublicUrl()
-      if (base !== null) {
-        const bucket = await anon.get(`${base}/${fx.upload.prefix}/${fx.upload.filename}`)
-        expect(bucket.status(), 'the bucket key itself, anonymous').toBe(403)
-      }
+      const page = await anon.get(`${GALLERY_BASE_URL}${itemPath(fx.available, 'en')}`, {
+        headers: GALLERY_HOST_HEADER,
+      })
+      expect(page.status()).toBe(200)
+      const infoUrl = /https?:\/\/[^"'\s\\]+\/iiif\/[^"'\s\\/]+\/info\.json/.exec(await page.text())
+      expect(infoUrl, 'the page names its info.json').not.toBeNull()
+      const bucket = infoUrl![0].replace(/\/iiif\/.*$/, '')
+      const key = `${bucket}/${fx.upload.prefix}/${fx.upload.filename}`
+      const original = await anon.get(key)
+      expect(original.status(), `the bucket key itself, anonymous: ${key}`).toBe(403)
     } finally {
       await anon.dispose()
     }
   })
 
   for (const locale of ['en', 'id'] as const) {
-    test(`a sold work says ${locale === 'en' ? 'Sold' : 'Terjual'}, never "Ask about this"`, async ({
+    test(`a sold work says ${say(locale, 'status.sold')}, never "${say(locale, 'item.ask')}" (${locale})`, async ({
       page,
     }) => {
-      const sold = locale === 'en' ? 'Sold' : 'Terjual'
-      const askAnother = locale === 'en' ? 'Ask for another example' : 'Tanya contoh lain'
-      const priceOnRequest = locale === 'en' ? 'Price on request' : 'Harga atas permintaan'
-      const itemPath = href('item', { publicId: fx.sold.publicId, slug: fx.sold.slug }, locale)
-
       await page.setViewportSize({ width: 390, height: 844 })
-      await openFresh(page, itemPath, fx.stockSold)
+      await openFresh(page, itemPath(fx.sold, locale), fx.stockSold)
 
       const panel = page.locator('aside[data-status="sold"]')
-      await expect(panel.getByText(sold, { exact: true })).toBeVisible()
-      await expect(page.getByRole('link', { name: 'Ask about this' })).toHaveCount(0)
-      await expect(panel).not.toContainText(priceOnRequest)
+      await expect(panel.getByText(say(locale, 'status.sold'), { exact: true })).toBeVisible()
+      await expect(page.getByRole('link', { name: say(locale, 'item.ask') })).toHaveCount(0)
+      await expect(page.getByText(say(locale, 'price.onRequest'))).toHaveCount(0)
+      await shoot(page, `5.2e-sold-${locale}`)
 
-      const link = panel.getByRole('link', { name: askAnother })
+      const link = panel.getByRole('link', { name: say(locale, 'item.askAnother') })
       await expect(link).toBeVisible()
       const url = new URL((await link.getAttribute('href')) as string)
       expect(url.origin, 'the handoff is wa.me').toBe('https://wa.me')
-      const text = url.searchParams.get('text') ?? ''
-      expect(text, text).toContain(fx.stockSold)
-      expect(
-        locale === 'en' ? text.includes('has sold') : text.includes('sudah terjual'),
-        text,
-      ).toBe(true)
+      expect(url.pathname, 'the test number, digits only').toBe(`/${TEST_WHATSAPP.slice(1)}`)
+      const expected = say(locale, 'whatsapp.soldItem')
+        .replace('{stockNumber}', fx.stockSold)
+        .replace('{title}', fx.soldTitle)
+        .replace(/\s*\{url\}$/, '')
+      expect(url.searchParams.get('text'), 'the lexicon sold message').toContain(expected)
     })
   }
 
@@ -231,9 +245,11 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
   }) => {
     const bodies: string[] = []
     const pending: Promise<void>[] = []
+    let jsonResponses = 0
     page.on('response', (res) => {
       const type = res.headers()['content-type'] ?? ''
       if (/text\/html|text\/x-component|application\/json/.test(type)) {
+        if (type.includes('json')) jsonResponses += 1
         pending.push(
           res.text().then(
             (text) => void bodies.push(text),
@@ -247,27 +263,32 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
       { ref: fx.available, stock: fx.stockAvailable },
       { ref: fx.sold, stock: fx.stockSold },
     ]
-    for (const { ref, stock } of works) {
-      const itemPath = href('item', { publicId: ref.publicId, slug: ref.slug }, 'en')
-      await openFresh(page, itemPath, stock)
-      await page.waitForLoadState('networkidle')
-      bodies.push(await page.content())
-
-      const flight = await api.get(`${BASE_URL}${itemPath}`, {
-        headers: { Host: new URL(GALLERY_ORIGIN).host, RSC: '1' },
-      })
-      expect(flight.status(), `RSC ${itemPath}`).toBe(200)
-      bodies.push(await flight.text())
+    for (const locale of ['en', 'id'] as const) {
+      for (const { ref, stock } of works) {
+        await openFresh(page, itemPath(ref, locale), stock)
+        bodies.push(await page.content())
+        const flight = await api.get(`${GALLERY_BASE_URL}${itemPath(ref, locale)}`, {
+          headers: { ...GALLERY_HOST_HEADER, RSC: '1' },
+        })
+        expect(flight.status(), `RSC ${itemPath(ref, locale)}`).toBe(200)
+        expect(flight.headers()['content-type'], 'a flight answer').toContain('text/x-component')
+        bodies.push(await flight.text())
+      }
     }
+    // The available work's viewer, so its info.json (the one JSON a page load asks for) is read too.
+    await openFresh(page, itemPath(fx.available, 'en'), fx.stockAvailable)
+    await page.getByRole('button', { name: say('en', 'item.viewerOpen') }).click()
+    await expect.poll(() => jsonResponses, { timeout: 30_000 }).toBeGreaterThanOrEqual(1)
     await Promise.all(pending)
 
     const all = bodies.join('\n')
     expect(all, 'the captured bodies hold both works').toContain(fx.stockAvailable)
     expect(all).toContain(fx.stockSold)
     expect(all.toLowerCase().includes('askingprice'), 'no askingPrice').toBe(false)
-    expect(figure(fx.availablePrice).test(all), 'no available price figure').toBe(false)
-    expect(figure(fx.soldPrice).test(all), 'no sold price figure').toBe(false)
-    expect(/\b(Rp|S\$|US\$)\s?\d|(^|[\s>(])\$\s?\d/.test(all), 'no currency figure').toBe(false)
+    expect(figure(fx.availablePrice).exec(all)?.[0], 'no available price figure').toBeUndefined()
+    expect(figure(fx.soldPrice).exec(all)?.[0], 'no sold price figure').toBeUndefined()
+    const currency = /(\b(Rp|SGD|USD|IDR|S\$|US\$)|(^|[\s>(])\$)\s?\d[\d.,]*/.exec(all)?.[0]
+    expect(currency, 'no currency figure').toBeUndefined()
   })
 })
 

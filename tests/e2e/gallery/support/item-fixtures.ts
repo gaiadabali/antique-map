@@ -12,28 +12,12 @@
  * dropped as blank (`@engine/media/tiles`' `skipBlanks`). No EXIF — nothing in this Check reads
  * one; that claim is `media.pipeline.storage.db.test.ts`'s (F3), on a real JPEG there.
  */
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { deflateSync } from 'node:zlib'
 
 import type { APIRequestContext } from '@playwright/test'
 
 import { BASE_URL, HOST_HEADER } from './env'
 import type { Ledger } from './fixtures'
-
-/** `MEDIA_PUBLIC_URL`, the same way `./env.ts` reads `.env.local` for `PORT` — this worktree's
- * own file is never committed, so the environment and the file are both tried. `127.0.0.1`, never
- * `localhost` (worker-rules): a WSL relay answers `localhost:9000` wrongly on this host. */
-export function mediaPublicUrl(): string | null {
-  const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..')
-  const path = join(root, '.env.local')
-  const fromFile = existsSync(path)
-    ? /^\s*(?:export\s+)?MEDIA_PUBLIC_URL\s*=\s*(.*?)\s*$/m.exec(readFileSync(path, 'utf8'))?.[1]
-    : undefined
-  const raw = (process.env.MEDIA_PUBLIC_URL ?? fromFile ?? '').replace(/^(['"])(.*)\1$/, '$2')
-  return raw === '' ? null : raw.replace('localhost', '127.0.0.1')
-}
 
 // A hand-built PNG: signature, IHDR, one IDAT, IEND. No external encoder.
 const CRC_TABLE = ((): Uint32Array => {
@@ -103,6 +87,8 @@ export type ItemFixtures = {
   readonly sold: WorkRef
   readonly stockAvailable: string
   readonly stockSold: string
+  readonly availableTitle: string
+  readonly soldTitle: string
   readonly availablePrice: number
   readonly soldPrice: number
   /** The big recto's storage address, for the anonymous `uploads/` read. */
@@ -276,16 +262,20 @@ export async function createItemFixtures(
     return { id: res.doc.id, publicId: res.doc.publicId, slug: res.doc.slug }
   }
 
+  const availableTitle = `E2E 5.2e Available ${stamp}`
+  const soldTitle = `E2E 5.2e Sold ${stamp}`
   const available = await createWork(
-    work('available', `E2E 5.2e Available ${stamp}`, stockAvailable, availablePrice),
+    work('available', availableTitle, stockAvailable, availablePrice),
   )
-  const sold = await createWork(work('sold', `E2E 5.2e Sold ${stamp}`, stockSold, soldPrice))
+  const sold = await createWork(work('sold', soldTitle, stockSold, soldPrice))
 
   return {
     available,
     sold,
     stockAvailable,
     stockSold,
+    availableTitle,
+    soldTitle,
     availablePrice,
     soldPrice,
     upload,
