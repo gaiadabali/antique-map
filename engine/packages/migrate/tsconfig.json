@@ -1,9 +1,11 @@
 {
   "extends": "../../tooling/tsconfig/package.tsconfig.json",
   "//": "The CLIs run as TypeScript under Node's type stripping (no build step), so relative imports carry their .ts extension and only erasable syntax is allowed.",
+  "//db": "The database tests reach the cms package's test support, which reaches @engine/cache's sources, and those use syntax this package's erasableSyntaxOnly forbids. They are type-checked on their own, without that flag (9.4load).",
   "compilerOptions": {
     "types": ["node"],
     "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "src/**/*.db.test.ts"]
 }
