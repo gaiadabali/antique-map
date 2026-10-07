@@ -488,86 +488,88 @@ export interface Work {
     cataloguer?: (number | null) | User
     verifiedAt?: string | null
     /**
-     * One entry per field the drafting tool filled. The work cannot publish while an entry is drafted and has no verified time.
+     * One entry per field the drafting tool filled. The work cannot publish until each drafted field is ticked Verified; the server records who ticked it and when.
      */
     aiDraft?: {
       title?: {
         drafted?: boolean | null
         /**
-         * Who checked it.
+         * Tick once you have checked the value against the object.
          */
+        verified?: boolean | null
         verifiedBy?: (number | null) | User
-        /**
-         * When they checked it.
-         */
         verifiedAt?: string | null
       }
       description?: {
         drafted?: boolean | null
         /**
-         * Who checked it.
+         * Tick once you have checked the value against the object.
          */
+        verified?: boolean | null
         verifiedBy?: (number | null) | User
-        /**
-         * When they checked it.
-         */
         verifiedAt?: string | null
       }
       objectType?: {
         drafted?: boolean | null
         /**
-         * Who checked it.
+         * Tick once you have checked the value against the object.
          */
+        verified?: boolean | null
         verifiedBy?: (number | null) | User
-        /**
-         * When they checked it.
-         */
         verifiedAt?: string | null
       }
       date?: {
         drafted?: boolean | null
         /**
-         * Who checked it.
+         * Tick once you have checked the value against the object.
          */
+        verified?: boolean | null
         verifiedBy?: (number | null) | User
-        /**
-         * When they checked it.
-         */
         verifiedAt?: string | null
       }
       places?: {
         drafted?: boolean | null
         /**
-         * Who checked it.
+         * Tick once you have checked the value against the object.
          */
+        verified?: boolean | null
         verifiedBy?: (number | null) | User
-        /**
-         * When they checked it.
-         */
         verifiedAt?: string | null
       }
       subjects?: {
         drafted?: boolean | null
         /**
-         * Who checked it.
+         * Tick once you have checked the value against the object.
          */
+        verified?: boolean | null
         verifiedBy?: (number | null) | User
-        /**
-         * When they checked it.
-         */
         verifiedAt?: string | null
       }
       dimensions?: {
         drafted?: boolean | null
         /**
-         * Who checked it.
+         * Tick once you have checked the value against the object.
          */
+        verified?: boolean | null
         verifiedBy?: (number | null) | User
-        /**
-         * When they checked it.
-         */
         verifiedAt?: string | null
       }
+    }
+    /**
+     * Who asked the drafting tool, when, and what it answered. Earlier runs are in the version history.
+     */
+    aiDraftRun?: {
+      requestedBy?: (number | null) | User
+      requestedAt?: string | null
+      record?:
+        | {
+            [k: string]: unknown
+          }
+        | unknown[]
+        | string
+        | number
+        | boolean
+        | null
     }
   }
   legacy?: {
@@ -1906,6 +1908,7 @@ export interface WorksSelect<T extends boolean = true> {
                 | T
                 | {
                     drafted?: T
+                    verified?: T
                     verifiedBy?: T
                     verifiedAt?: T
                   }
@@ -1913,6 +1916,7 @@ export interface WorksSelect<T extends boolean = true> {
                 | T
                 | {
                     drafted?: T
+                    verified?: T
                     verifiedBy?: T
                     verifiedAt?: T
                   }
@@ -1920,6 +1924,7 @@ export interface WorksSelect<T extends boolean = true> {
                 | T
                 | {
                     drafted?: T
+                    verified?: T
                     verifiedBy?: T
                     verifiedAt?: T
                   }
@@ -1927,6 +1932,7 @@ export interface WorksSelect<T extends boolean = true> {
                 | T
                 | {
                     drafted?: T
+                    verified?: T
                     verifiedBy?: T
                     verifiedAt?: T
                   }
@@ -1934,6 +1940,7 @@ export interface WorksSelect<T extends boolean = true> {
                 | T
                 | {
                     drafted?: T
+                    verified?: T
                     verifiedBy?: T
                     verifiedAt?: T
                   }
@@ -1941,6 +1948,7 @@ export interface WorksSelect<T extends boolean = true> {
                 | T
                 | {
                     drafted?: T
+                    verified?: T
                     verifiedBy?: T
                     verifiedAt?: T
                   }
@@ -1948,9 +1956,17 @@ export interface WorksSelect<T extends boolean = true> {
                 | T
                 | {
                     drafted?: T
+                    verified?: T
                     verifiedBy?: T
                     verifiedAt?: T
                   }
+            }
+        aiDraftRun?:
+          | T
+          | {
+              requestedBy?: T
+              requestedAt?: T
+              record?: T
             }
       }
   legacy?:
