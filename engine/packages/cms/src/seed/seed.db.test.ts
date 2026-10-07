@@ -57,7 +57,7 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
           locale: 'all',
         })
       ).docs as unknown as Record<string, unknown>[]
-    const rest = ({ _status, updatedAt, ...fields }: Record<string, unknown>) => fields
+    const rest = ({ _status: _s, updatedAt: _u, ...fields }: Record<string, unknown>) => fields
     const collections = ['places', 'terms', 'makers'] as const
     const before = Object.fromEntries(
       await Promise.all(collections.map(async (c) => [c, await all(c)])),
