@@ -18,6 +18,8 @@
  *   primary image with its alt, a grade for an original, no unchecked AI draft — every missing one
  *   at once. A blank location or export status never blocks it: the item is enquiry-only.
  * - **Access** (`./access`): `publishedOrStaff`; owner and editors write; `physical` by role.
+ * - **AI drafting** (`ai/`, TASKS.md 8.3): the sidebar's "Draft from photographs" button; who
+ *   verified each drafted field is stamped by the server (`ai/audit`), never sent.
  * - **After the commit** (`hooks/work-invalidate`): the work's cache tags expire.
  * - **Deletes** of the makers, places and terms a work references are refused while it does
  *   (`hooks/work-references`), and every work save holds the lock those deletes take. A work's
@@ -26,6 +28,8 @@
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
+import { stampAiDraft } from '../../ai/audit'
+import { draftFromPhotosField } from '../../ai/fields'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
@@ -66,9 +70,16 @@ export const Works: CollectionConfig = {
   access: WORKS_ACCESS,
   versions: WORKS_VERSIONS,
   hooks: {
-    beforeChange: [holdWorkReferences, assignWorkUid, assignPublicId, stampCataloguing, guardWork],
+    beforeChange: [
+      holdWorkReferences,
+      assignWorkUid,
+      assignPublicId,
+      stampAiDraft,
+      stampCataloguing,
+      guardWork,
+    ],
     afterChange: [invalidateWorkOnChange],
     afterDelete: [invalidateWorkOnDelete],
   },
-  fields: [...RECORD_FIELDS, ...OBJECT_FIELDS, ...STAFF_FIELDS],
+  fields: [draftFromPhotosField, ...RECORD_FIELDS, ...OBJECT_FIELDS, ...STAFF_FIELDS],
 }

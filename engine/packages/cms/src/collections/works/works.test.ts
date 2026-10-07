@@ -152,12 +152,13 @@ describe('the works collection (8.2.a): every field CONTENT-MODEL.md §1 names',
     expect((images.fields as Named[]).map((field) => field.name)).toEqual(['media', 'caption'])
   })
 
-  it('gives every field an AI may draft its own entry: drafted, verifiedBy, verifiedAt (3.2.c)', () => {
+  it('gives every field an AI may draft its own entry: drafted, verified, verifiedBy, verifiedAt (3.2.c, 8.3)', () => {
     const group = fieldAt(Works.fields, 'cataloguing.aiDraft')!
     expect((group.fields as Named[]).map((field) => field.name)).toEqual([...AI_DRAFTABLE_FIELDS])
     for (const entry of group.fields as Named[]) {
       expect((entry.fields as Named[]).map((field) => field.name)).toEqual([
         'drafted',
+        'verified',
         'verifiedBy',
         'verifiedAt',
       ])

@@ -4,9 +4,10 @@
  */
 import type { Field } from 'payload'
 
+import { AI_DRAFT_FIELDS } from '../../ai/fields'
 import { translationStatusField } from '../../fields/translation-status'
 import { STAFF_ONLY_ACCESS } from '../../access/fields'
-import { AI_DRAFTABLE_FIELDS, AI_DRAFTABLE_LABELS, CATALOGUING_STATUS_OPTIONS } from './vocabulary'
+import { CATALOGUING_STATUS_OPTIONS } from './vocabulary'
 
 /** A duplicate is another object: its workflow and legacy ids start empty. */
 const cleared = () => ({})
@@ -43,52 +44,8 @@ export const CATALOGUING_FIELDS: Field[] = [
           },
         ],
       },
-      {
-        name: 'aiDraft',
-        type: 'group',
-        label: { en: 'Drafted by AI, not yet checked', id: 'Dibuat draf oleh AI, belum diperiksa' },
-        admin: {
-          description: {
-            en: 'One entry per field the drafting tool filled. The work cannot publish while an entry is drafted and has no verified time.',
-            id: 'Satu entri per bidang yang diisi alat draf. Karya tidak dapat diterbitkan selama ada entri yang masih draf tanpa waktu verifikasi.',
-          },
-        },
-        hooks: { beforeDuplicate: [cleared] },
-        fields: AI_DRAFTABLE_FIELDS.map((field) => ({
-          name: field,
-          type: 'group',
-          label: AI_DRAFTABLE_LABELS[field],
-          fields: [
-            {
-              name: 'drafted',
-              type: 'checkbox',
-              label: { en: 'Drafted', id: 'Dibuat draf' },
-              defaultValue: false,
-            },
-            {
-              name: 'verifiedBy',
-              type: 'relationship',
-              relationTo: 'users',
-              label: { en: 'Verified by', id: 'Diverifikasi oleh' },
-              admin: {
-                description: { en: 'Who checked it.', id: 'Siapa yang memeriksanya.' },
-              },
-            },
-            {
-              name: 'verifiedAt',
-              type: 'date',
-              label: { en: 'Verified at', id: 'Diverifikasi pada' },
-              admin: {
-                date: { pickerAppearance: 'dayOnly' },
-                description: {
-                  en: 'When they checked it.',
-                  id: 'Kapan mereka memeriksanya.',
-                },
-              },
-            },
-          ],
-        })),
-      },
+      // What the drafting tool filled, who verified each field, and its last run (8.3; `ai/fields`).
+      ...AI_DRAFT_FIELDS,
     ],
   },
   {
