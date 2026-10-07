@@ -3,6 +3,7 @@ import * as migration_20261002_200042_indies_wave_3_1 from './20261002_200042_in
 import * as migration_20261005_033710_indies_9_4b from './20261005_033710_indies_9_4b'
 import * as migration_20261006_053750_indies_6_6 from './20261006_053750_indies_6_6'
 import * as migration_20261006_054525_indies_9_1 from './20261006_054525_indies_9_1'
+import * as migration_20261007_080534_indies_8_3 from './20261007_080534_indies_8_3'
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20261006_054525_indies_9_1.up,
     down: migration_20261006_054525_indies_9_1.down,
     name: '20261006_054525_indies_9_1',
+  },
+  {
+    up: migration_20261007_080534_indies_8_3.up,
+    down: migration_20261007_080534_indies_8_3.down,
+    name: '20261007_080534_indies_8_3',
   },
 ]
