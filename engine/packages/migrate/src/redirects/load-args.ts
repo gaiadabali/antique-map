@@ -33,6 +33,8 @@ export function parseLoadArgs(argv: readonly string[]): LoadArgs {
   let prune = false
   let unresolvedOut: string | null = null
   for (const word of argv) {
+    // pnpm hands the script's own trailing `--` and the caller's on: a lone one is no argument.
+    if (word === '--') continue
     if (word.startsWith('--')) {
       throw new Error(
         `"${word}": flags are not read (payload run drops them) — use bare words. ${LOAD_USAGE}`,

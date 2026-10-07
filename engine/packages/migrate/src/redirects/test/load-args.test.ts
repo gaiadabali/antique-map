@@ -20,6 +20,10 @@ describe('parseLoadArgs', () => {
     expect(parseLoadArgs(['site=shop', 'apply']).sites).toEqual(['shop'])
   })
 
+  it('ignores the lone `--` pnpm passes on', () => {
+    expect(parseLoadArgs(['--', '--', 'gallery', 'dry-run']).sites).toEqual(['gallery'])
+  })
+
   it('never defaults to a write: a run without its mode word is refused', () => {
     expect(() => parseLoadArgs(['gallery'])).toThrow(/dry-run or apply/)
     expect(() => parseLoadArgs([])).toThrow(/name the site/)
