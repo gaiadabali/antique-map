@@ -66,7 +66,15 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     locale,
     path: itemHref(work, locale),
     title: byline !== '' ? `${work.title} – ${byline}` : work.title,
-    description: [work.originalTitle ?? work.title, t('price.onRequest')].join(' · '),
+    // The status words, as the card says them: a sold or held work never reads "Price on request".
+    description: [
+      work.originalTitle ?? work.title,
+      work.status === 'sold'
+        ? t('status.sold')
+        : work.status === 'on-hold'
+          ? t('status.onHold')
+          : t('price.onRequest'),
+    ].join(' · '),
     image:
       lead !== undefined
         ? {

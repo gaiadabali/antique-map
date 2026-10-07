@@ -8,8 +8,9 @@ import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
 import type { ProductVM } from '../../../server/shop/catalogue/view-models'
 import { Breadcrumbs, ResponsiveImage, TextLink } from '../../../shared/ui'
+import { ChatPageContext } from '../../../shared/chat/chat-page-context'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
-import { productText } from './copy'
+import { productText, variantPickerText } from './copy'
 import styles from './product.module.css'
 import { VariantPicker, type PickerVariant } from './variant-picker'
 
@@ -51,6 +52,7 @@ export function ProductView({
         : null
   return (
     <article className={styles.page}>
+      <ChatPageContext title={product.name} />
       <div className={styles.crumbs}>
         <Breadcrumbs
           items={[
@@ -104,7 +106,7 @@ export function ProductView({
         <VariantPicker
           productId={product.id}
           sku={product.sku}
-          locale={locale}
+          text={variantPickerText(text)}
           variants={variants}
           productPriceText={priceText}
           available={product.available}

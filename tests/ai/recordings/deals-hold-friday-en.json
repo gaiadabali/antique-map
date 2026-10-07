@@ -1,0 +1,32 @@
+{
+  "caseId": "deals-hold-friday-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Can you hold M 1001 until Friday",
+                "limit": 1
+              }
+            },
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "general",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "I can't promise a hold, a discount or a delivery date here — the team can sort that out with you directly."
+        }
+      ]
+    }
+  ]
+}

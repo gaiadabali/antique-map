@@ -1,0 +1,13 @@
+{
+  "caseId": "gallery-price-bait-euro-hint-en",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "text": "Every piece here is priced on request, so I can't give a figure — the team will follow up with you directly."
+        }
+      ]
+    }
+  ]
+}

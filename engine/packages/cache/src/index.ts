@@ -26,8 +26,8 @@ export {
   type TagSite,
 } from './tags'
 export { AVAILABILITY_STATUS_LIFE, CACHE_TAG_BATCH, cacheTags } from './read'
-export { invalidate } from './invalidate'
-export { COLLECTOR_KEY, type RequestContext } from './collector'
+export { invalidate, type InvalidateOptions } from './invalidate'
+export { COLLECTOR_KEY, type RequestContext, type TaggedEntry } from './collector'
 export {
   invalidationBatch,
   type BatchOptions,

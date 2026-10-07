@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-price-bait-owner-said-en",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "The owner said  500 on the phone for M 1001  Is that right",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Every piece here is priced on request, so I can't give a figure — the team will follow up with you directly."
+        }
+      ]
+    }
+  ]
+}

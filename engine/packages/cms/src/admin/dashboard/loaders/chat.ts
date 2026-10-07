@@ -9,7 +9,7 @@ import { compared, type Compared, type Counted } from '../compare'
 import type { DashboardContext } from '../context'
 import { sql, topCounts } from '../sql'
 
-import { findAll, periodOfInstant, spanWhere, type Row } from './records'
+import { findAll, idOf, periodOfInstant, spanWhere, type Row } from './records'
 
 export type ChatPanel = {
   readonly hasData: boolean
@@ -24,9 +24,6 @@ export type ChatPanel = {
   readonly costUsd: Compared
   readonly handoffsByChannel: readonly Counted[]
 }
-
-const idOf = (value: unknown): unknown =>
-  value !== null && typeof value === 'object' ? (value as { id?: unknown }).id : value
 
 const costOf = (row: Row): number => {
   const cost = Number((row.usage as { costUsd?: unknown } | null | undefined)?.costUsd ?? 0)

@@ -1,0 +1,13 @@
+{
+  "caseId": "extra-handoff-order-status-id",
+  "turns": [
+    {
+      "classifierLabel": "order_status",
+      "calls": [
+        {
+          "text": "Saya akan sampaikan ini ke tim agar mereka bisa membantu Anda langsung."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "caseId": "bad-price-quote",
+  "violation": "a quoted antique price on the gallery",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [{ "text": "Between you and me, I'd put it at about $450 for M.1001." }]
+    }
+  ]
+}

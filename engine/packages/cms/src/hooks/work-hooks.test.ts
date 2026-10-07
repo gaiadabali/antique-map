@@ -9,7 +9,12 @@ import { describe, expect, it } from 'vitest'
 
 import { stampCataloguing } from './work-cataloguing'
 import { mergeOver } from './work-facts'
-import { invalidateWorkOnChange, invalidateWorkOnDelete, worksListingTags } from './work-invalidate'
+import {
+  invalidateWorkOnChange,
+  invalidateWorkOnDelete,
+  isStatusTransition,
+  worksListingTags,
+} from './work-invalidate'
 import { stillUsedMessage } from './work-references'
 import { assignWorkUid } from './work-uid'
 
@@ -145,6 +150,60 @@ describe('after the commit: the work’s tags, to the caller’s collector (8.2.
       'work:TG-000001',
       'catalogue:gallery',
     ])
+  })
+})
+
+describe('a status move expires at once; a plain edit does not (5.3sold, EXPERIENCE-GALLERY.md §9)', () => {
+  const available = { workUid: 'TG-000123', _status: 'published', status: 'available' }
+  const target = { origin: 'https://shop.example', secret: 's' }
+
+  /** A recording `fetch`, standing in for the web process `/api/x/revalidate` posts to. */
+  function recorder() {
+    const posts: string[] = []
+    const fetch = (async (_url: URL | string, init: RequestInit = {}) => {
+      posts.push(String(init.body))
+      return new Response(null, { status: 204 })
+    }) as typeof globalThis.fetch
+    return { posts, fetch }
+  }
+
+  it('isStatusTransition: a status move, or a publish or unpublish — never a plain edit', () => {
+    expect(isStatusTransition({ ...available, status: 'sold' }, available)).toBe(true)
+    expect(isStatusTransition({ ...available, status: 'on-hold' }, available)).toBe(true)
+    expect(isStatusTransition({ ...available }, available)).toBe(false)
+    expect(isStatusTransition(available, { ...available, _status: 'draft' })).toBe(true) // a publish
+    expect(isStatusTransition({ ...available, _status: 'draft' }, available)).toBe(true) // an unpublish
+  })
+
+  it('marking a work sold flushes with "now": true — gone at once, not stale-while-revalidate', async () => {
+    const { posts, fetch } = recorder()
+    const batch = invalidationBatch({ target, fetch })
+    await batch.operation((context) =>
+      invalidateWorkOnChange({
+        doc: { ...available, status: 'sold' },
+        previousDoc: available,
+        context,
+      } as never),
+    )
+    await batch.flush()
+    expect(JSON.parse(posts[0]!)).toEqual({
+      tags: ['work:TG-000123', 'catalogue:gallery'],
+      now: true,
+    })
+  })
+
+  it('a title edit of a published work flushes the default body: no "now" key at all', async () => {
+    const { posts, fetch } = recorder()
+    const batch = invalidationBatch({ target, fetch })
+    await batch.operation((context) =>
+      invalidateWorkOnChange({
+        doc: { ...available, title: 'Renamed' },
+        previousDoc: available,
+        context,
+      } as never),
+    )
+    await batch.flush()
+    expect(JSON.parse(posts[0]!)).toEqual({ tags: ['work:TG-000123', 'catalogue:gallery'] })
   })
 })
 

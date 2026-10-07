@@ -4,7 +4,8 @@
  *   pnpm data:seed --layer <vocabulary|gallery-sample|gallery-full|shop> [--dry-run] [--publish]
  *
  * `--dry-run` applies the layer's files in transactions it then rolls back: the report is the
- * real one, nothing is written. `--publish` is the importer's publish-these-records flag. The
+ * real one, nothing is written. `--publish` is the importer's publish-these-records flag, and it
+ * publishes the vocabulary rows the seed names that are still drafts (`./vocabulary/publish`). The
  * reports print to stdout; the process exits non-zero when the layer could not even start.
  */
 import { ImportError } from '../import/csv'
