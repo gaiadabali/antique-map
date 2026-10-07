@@ -170,7 +170,10 @@ export const COPY = {
     id: 'Hanya jumlah — tanpa id pesanan, nominal, atau data pembeli.',
   },
   'amount-mismatch': { en: 'Amount mismatch', id: 'Jumlah tidak cocok' },
-  'late-payment': { en: 'Paid after expiry or cancellation', id: 'Dibayar setelah kedaluwarsa/dibatalkan' },
+  'late-payment': {
+    en: 'Paid after expiry or cancellation',
+    id: 'Dibayar setelah kedaluwarsa/dibatalkan',
+  },
   'double-payment': { en: 'Paid twice', id: 'Dibayar dua kali' },
   'fraud-challenge': { en: 'Fraud challenge', id: 'Tantangan kecurangan' },
 
@@ -182,7 +185,10 @@ export const COPY = {
   funnelByDevice: { en: 'By device', id: 'Menurut perangkat' },
   device: { en: 'Device', id: 'Perangkat' },
   blockedByReason: { en: 'Checkout blocked, by reason', id: 'Checkout terhenti, menurut alasan' },
-  'no-single-store': { en: 'No single store has every item', id: 'Tidak ada satu toko dengan semua barang' },
+  'no-single-store': {
+    en: 'No single store has every item',
+    id: 'Tidak ada satu toko dengan semua barang',
+  },
   'out-of-area': { en: 'Outside delivery reach', id: 'Di luar jangkauan pengiriman' },
   'out-of-stock': { en: 'Out of stock', id: 'Stok habis' },
   'price-changed': { en: 'Price changed', id: 'Harga berubah' },

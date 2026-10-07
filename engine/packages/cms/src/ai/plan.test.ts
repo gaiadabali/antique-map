@@ -44,7 +44,12 @@ describe('the drafting plan (8.3.a–b)', () => {
   it('a field the editor filled is not overwritten', () => {
     const plan = planDraft(
       reply(),
-      { ...empty, title: 'Bali, as the editor wrote it', subjects: [3], date: { precision: 'unknown' } },
+      {
+        ...empty,
+        title: 'Bali, as the editor wrote it',
+        subjects: [3],
+        date: { precision: 'unknown' },
+      },
       matches,
     )
     expect(plan.patch).not.toHaveProperty('title')
@@ -61,9 +66,20 @@ describe('the drafting plan (8.3.a–b)', () => {
 
   it('leaves dimensions empty unless a scale is visible, and invents no vocabulary', () => {
     const noScale = reply({
-      dimensions: { scaleVisible: false, image: { height: 280, width: 360 }, sheet: null, confidence: 'low', basis: 'guess' },
+      dimensions: {
+        scaleVisible: false,
+        image: { height: 280, width: 360 },
+        sheet: null,
+        confidence: 'low',
+        basis: 'guess',
+      },
     })
-    const plan = planDraft(noScale, empty, { places: [], subjects: [], unmatchedPlaces: ['Bali'], unmatchedSubjects: ['VOC'] })
+    const plan = planDraft(noScale, empty, {
+      places: [],
+      subjects: [],
+      unmatchedPlaces: ['Bali'],
+      unmatchedSubjects: ['VOC'],
+    })
     expect(plan.patch).not.toHaveProperty('dimensions')
     expect(plan.patch).not.toHaveProperty('places')
     expect(plan.patch).not.toHaveProperty('subjects')
@@ -80,7 +96,13 @@ describe('the drafting plan (8.3.a–b)', () => {
     const plan = planDraft(
       reply({
         date: { precision: 'range', from: 1730, to: 1720, confidence: 'low', basis: '' },
-        dimensions: { scaleVisible: true, image: { height: 400, width: 500 }, sheet: { height: 300, width: 400 }, confidence: 'low', basis: '' },
+        dimensions: {
+          scaleVisible: true,
+          image: { height: 400, width: 500 },
+          sheet: { height: 300, width: 400 },
+          confidence: 'low',
+          basis: '',
+        },
       }),
       empty,
       matches,
@@ -111,7 +133,14 @@ describe('the drafting plan (8.3.a–b)', () => {
       ['date', 'dimensions', 'objectType', 'places', 'subjects', 'title'].sort(),
     )
     expect(
-      allowListed({ title: 'T', askingPrice: 1, provenance: [], condition: {}, physical: {}, _status: 'published' }),
+      allowListed({
+        title: 'T',
+        askingPrice: 1,
+        provenance: [],
+        condition: {},
+        physical: {},
+        _status: 'published',
+      }),
     ).toEqual({ title: 'T' })
   })
 })

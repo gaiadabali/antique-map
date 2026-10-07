@@ -34,34 +34,58 @@ describe('the drafting reply (8.3.a)', () => {
       { askingPrice: 1 },
       { price: 'USD 10' },
     ]) {
-      expect(parse(goodReply(extra))).toMatchObject({ ok: false, reason: expect.stringMatching(/unexpected/) })
+      expect(parse(goodReply(extra))).toMatchObject({
+        ok: false,
+        reason: expect.stringMatching(/unexpected/),
+      })
     }
     // Hidden one level down, too.
-    const nested = goodReply({ title: { value: 'X', confidence: 'low', basis: 'x', askingPrice: 5 } })
+    const nested = goodReply({
+      title: { value: 'X', confidence: 'low', basis: 'x', askingPrice: 5 },
+    })
     expect(parse(nested)).toMatchObject({ ok: false, reason: 'title: unexpected askingPrice' })
   })
 
   it('refuses a missing field, an unknown object type, a future year and an absurd size', () => {
     const { subjects: _gone, ...missing } = goodReply()
     expect(parse(missing)).toMatchObject({ ok: false })
-    expect(parse(goodReply({ objectType: { value: 'spaceship', confidence: 'low', basis: '' } }))).toMatchObject({ ok: false })
     expect(
-      parse(goodReply({ date: { precision: 'exact', from: 3020, to: null, confidence: 'low', basis: '' } })),
+      parse(goodReply({ objectType: { value: 'spaceship', confidence: 'low', basis: '' } })),
+    ).toMatchObject({ ok: false })
+    expect(
+      parse(
+        goodReply({
+          date: { precision: 'exact', from: 3020, to: null, confidence: 'low', basis: '' },
+        }),
+      ),
     ).toMatchObject({ ok: false })
     const huge = goodReply({
-      dimensions: { scaleVisible: true, image: { height: 1e9, width: 1 }, sheet: null, confidence: 'low', basis: '' },
+      dimensions: {
+        scaleVisible: true,
+        image: { height: 1e9, width: 1 },
+        sheet: null,
+        confidence: 'low',
+        basis: '',
+      },
     })
     expect(parse(huge)).toMatchObject({ ok: false })
   })
 
   it('refuses more than six names and a reply too long to be a draft', () => {
-    const many = goodReply({ places: { names: ['a', 'b', 'c', 'd', 'e', 'f', 'g'], confidence: 'low', basis: '' } })
+    const many = goodReply({
+      places: { names: ['a', 'b', 'c', 'd', 'e', 'f', 'g'], confidence: 'low', basis: '' },
+    })
     expect(parse(many)).toMatchObject({ ok: false })
-    expect(parseDraftReply(`{"title":"${'x'.repeat(30_000)}"}`)).toEqual({ ok: false, reason: 'reply: too long' })
+    expect(parseDraftReply(`{"title":"${'x'.repeat(30_000)}"}`)).toEqual({
+      ok: false,
+      reason: 'reply: too long',
+    })
   })
 
   it('drops a blank name and refuses a name that is not text, so no null reaches the vocabulary', () => {
-    const blank = parse(goodReply({ places: { names: ['  ', 'Bali', ''], confidence: 'low', basis: '' } }))
+    const blank = parse(
+      goodReply({ places: { names: ['  ', 'Bali', ''], confidence: 'low', basis: '' } }),
+    )
     expect(blank.ok).toBe(true)
     if (blank.ok) expect(blank.reply.places.names).toEqual(['Bali'])
     for (const bad of [null, 7, { name: 'Bali' }, ['Bali']]) {
@@ -72,7 +96,15 @@ describe('the drafting reply (8.3.a)', () => {
 
   it('sends a schema with no grade, provenance, price, status, stock or location in it', () => {
     const schema = JSON.stringify(DRAFT_REPLY_SCHEMA)
-    for (const name of ['grade', 'provenance', 'price', 'askingPrice', 'stock', 'location', 'status']) {
+    for (const name of [
+      'grade',
+      'provenance',
+      'price',
+      'askingPrice',
+      'stock',
+      'location',
+      'status',
+    ]) {
       expect(schema).not.toContain(`"${name}"`)
     }
     expect(DRAFT_REPLY_SCHEMA).toMatchObject({ additionalProperties: false })

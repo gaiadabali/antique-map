@@ -39,8 +39,16 @@ describe('the drafting route’s body (8.3.a)', () => {
   })
 
   it('cuts off an oversized body unread, whatever its declared length says', async () => {
-    const post = (body: string | ReadableStream<Uint8Array>, headers: Record<string, string> = {}) =>
-      new Request('http://cms.test/api/x/draft', { method: 'POST', body, headers, duplex: 'half' } as RequestInit)
+    const post = (
+      body: string | ReadableStream<Uint8Array>,
+      headers: Record<string, string> = {},
+    ) =>
+      new Request('http://cms.test/api/x/draft', {
+        method: 'POST',
+        body,
+        headers,
+        duplex: 'half',
+      } as RequestInit)
     expect(await boundedBody(post('{"workId":12}'))).toBe('{"workId":12}')
     expect(await boundedBody(post('x', { 'content-length': '5000000' }))).toBeNull()
     let pulled = 0

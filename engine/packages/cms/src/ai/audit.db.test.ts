@@ -32,7 +32,11 @@ describe.skipIf(!server)('the drafting audit trail and the publish gate (8.3.bâ€
     (await s.stored(id)).cataloguing as unknown as Cataloguing
   const drafted = async () => {
     const work = await s.work()
-    const response = await s.post(s.deps(() => text(goodReply())), work.id, 'editor')
+    const response = await s.post(
+      s.deps(() => text(goodReply())),
+      work.id,
+      'editor',
+    )
     expect(response.status).toBe(200)
     return work
   }
@@ -102,7 +106,11 @@ describe.skipIf(!server)('the drafting audit trail and the publish gate (8.3.bâ€
     const forged = await patch(work.id, 'editor', {
       cataloguing: {
         aiDraft: {
-          title: { verified: true, verifiedBy: s.userIds.owner, verifiedAt: '2000-01-01T00:00:00.000Z' },
+          title: {
+            verified: true,
+            verifiedBy: s.userIds.owner,
+            verifiedAt: '2000-01-01T00:00:00.000Z',
+          },
           date: { drafted: false },
         },
         aiDraftRun: { requestedBy: s.userIds.owner, requestedAt: '2000-01-01T00:00:00.000Z' },
@@ -110,25 +118,48 @@ describe.skipIf(!server)('the drafting audit trail and the publish gate (8.3.bâ€
     })
     expect(forged.status).toBe(200)
     let cataloguing = await cataloguingOf(work.id)
-    expect(cataloguing.aiDraft.title).toMatchObject({ verified: true, verifiedBy: s.userIds.editor })
-    expect(Date.parse(String(cataloguing.aiDraft.title!.verifiedAt))).toBeGreaterThanOrEqual(before - 1000)
-    expect(cataloguing.aiDraft.date).toMatchObject({ drafted: true, verified: false, verifiedBy: null })
-    expect(cataloguing.aiDraftRun).toMatchObject({ requestedBy: s.userIds.editor, requestedAt: run.requestedAt })
+    expect(cataloguing.aiDraft.title).toMatchObject({
+      verified: true,
+      verifiedBy: s.userIds.editor,
+    })
+    expect(Date.parse(String(cataloguing.aiDraft.title!.verifiedAt))).toBeGreaterThanOrEqual(
+      before - 1000,
+    )
+    expect(cataloguing.aiDraft.date).toMatchObject({
+      drafted: true,
+      verified: false,
+      verifiedBy: null,
+    })
+    expect(cataloguing.aiDraftRun).toMatchObject({
+      requestedBy: s.userIds.editor,
+      requestedAt: run.requestedAt,
+    })
 
     // The owner ticks the date; the title keeps its own verifier.
     expect((await verify(work.id, 'owner', ['date'])).status).toBe(200)
     cataloguing = await cataloguingOf(work.id)
     expect(cataloguing.aiDraft.date).toMatchObject({ verified: true, verifiedBy: s.userIds.owner })
-    expect(cataloguing.aiDraft.title).toMatchObject({ verified: true, verifiedBy: s.userIds.editor })
+    expect(cataloguing.aiDraft.title).toMatchObject({
+      verified: true,
+      verifiedBy: s.userIds.editor,
+    })
 
     // Unticked, the record of who checked it goes with the tick; the work is unverified again.
     expect((await verify(work.id, 'owner', ['title'], false)).status).toBe(200)
     cataloguing = await cataloguingOf(work.id)
-    expect(cataloguing.aiDraft.title).toMatchObject({ drafted: true, verified: false, verifiedBy: null, verifiedAt: null })
+    expect(cataloguing.aiDraft.title).toMatchObject({
+      drafted: true,
+      verified: false,
+      verifiedBy: null,
+      verifiedAt: null,
+    })
 
     // A REST save cannot make a field drafted either: only the drafting tool does.
     const plain = await s.work({ title: 'Typed by hand' })
-    expect((await patch(plain.id, 'editor', { cataloguing: { aiDraft: { title: { drafted: true } } } })).status).toBe(200)
+    expect(
+      (await patch(plain.id, 'editor', { cataloguing: { aiDraft: { title: { drafted: true } } } }))
+        .status,
+    ).toBe(200)
     expect((await cataloguingOf(plain.id)).aiDraft.title).toMatchObject({ drafted: false })
   }, 90_000)
 })

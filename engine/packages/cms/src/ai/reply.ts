@@ -103,7 +103,8 @@ const fail = (reason: string): never => {
 type Obj = Record<string, unknown>
 
 function exactly(value: unknown, keys: readonly string[], at: string): Obj {
-  if (value === null || typeof value !== 'object' || Array.isArray(value)) fail(`${at}: not an object`)
+  if (value === null || typeof value !== 'object' || Array.isArray(value))
+    fail(`${at}: not an object`)
   const own = Object.keys(value as Obj)
   const extra = own.filter((key) => !keys.includes(key))
   if (extra.length > 0) fail(`${at}: unexpected ${extra.join(', ')}`)

@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { isAllowedCardHref, isAllowedHandoffHref, postConsent, sendChatMessage } from './chat-client'
+import {
+  isAllowedCardHref,
+  isAllowedHandoffHref,
+  postConsent,
+  sendChatMessage,
+} from './chat-client'
 
 function jsonResponse(body: unknown, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), { status: 200, headers })
@@ -63,7 +68,7 @@ describe('sendChatMessage', () => {
 })
 
 describe('postConsent', () => {
-  it("contact details go to the consent route, never in a message", async () => {
+  it('contact details go to the consent route, never in a message', async () => {
     const calls: { url: string; body: Record<string, unknown> }[] = []
     vi.stubGlobal(
       'fetch',

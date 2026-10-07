@@ -76,9 +76,7 @@ export async function postConsent(
   try {
     const response = await postJson('/api/x/chat/consent', input)
     const body = (await response.json().catch(() => null)) as
-      | { ok: true; reference: string }
-      | { error: { code: string; message: string } }
-      | null
+      { ok: true; reference: string } | { error: { code: string; message: string } } | null
     if (body !== null && 'ok' in body && body.ok) return { ok: true, reference: body.reference }
     const error = body !== null && 'error' in body ? body.error : null
     return { ok: false, code: error?.code ?? 'unavailable', message: error?.message ?? '' }

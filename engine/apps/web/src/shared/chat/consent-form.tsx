@@ -60,14 +60,26 @@ export function ConsentForm({
 
   return (
     <form onSubmit={(event) => void submit(event)} aria-label={text.leadTitle}>
-      <Input id="chat-lead-name" label={text.leadName} value={name} onChange={(e) => setName(e.target.value)} required />
+      <Input
+        id="chat-lead-name"
+        label={text.leadName}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
       <Input
         id="chat-lead-whatsapp"
         label={text.leadWhatsapp}
         value={whatsapp}
         onChange={(e) => setWhatsapp(e.target.value)}
       />
-      <Input id="chat-lead-email" label={text.leadEmail} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <Input
+        id="chat-lead-email"
+        label={text.leadEmail}
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
       <fieldset>
         <legend>{text.leadPreferred}</legend>
         <label>
@@ -102,9 +114,7 @@ export function ConsentForm({
         onChange={(e) => setConsented(e.target.checked)}
         required
       />
-      {error !== null && (
-        <p role="alert">{error}</p>
-      )}
+      {error !== null && <p role="alert">{error}</p>}
       <Button type="submit" variant="primary" disabled={pending || !consented}>
         {text.leadSubmit}
       </Button>

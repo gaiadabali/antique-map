@@ -13,10 +13,7 @@
  */
 import type { Field, GroupField, UIField } from 'payload'
 
-import {
-  AI_DRAFTABLE_FIELDS,
-  AI_DRAFTABLE_LABELS,
-} from '../collections/works/vocabulary'
+import { AI_DRAFTABLE_FIELDS, AI_DRAFTABLE_LABELS } from '../collections/works/vocabulary'
 
 /** A duplicate is another object: what was drafted on the original was not drafted on it. */
 const cleared = () => ({})

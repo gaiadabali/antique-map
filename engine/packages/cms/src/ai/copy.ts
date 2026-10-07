@@ -38,9 +38,18 @@ export const DRAFT_COPY = {
 export const SKIP_COPY: Record<SkipReason, Bilingual> = {
   filled: { en: 'already filled in', id: 'sudah diisi' },
   empty: { en: 'nothing to suggest', id: 'tidak ada saran' },
-  no_field: { en: 'not on the record yet — see the suggestion', id: 'belum ada di catatan — lihat sarannya' },
-  no_match: { en: 'no matching entry in the vocabulary', id: 'tidak ada entri yang cocok di kosakata' },
-  no_scale: { en: 'no ruler or scale in the photographs', id: 'tidak ada penggaris atau skala di foto' },
+  no_field: {
+    en: 'not on the record yet — see the suggestion',
+    id: 'belum ada di catatan — lihat sarannya',
+  },
+  no_match: {
+    en: 'no matching entry in the vocabulary',
+    id: 'tidak ada entri yang cocok di kosakata',
+  },
+  no_scale: {
+    en: 'no ruler or scale in the photographs',
+    id: 'tidak ada penggaris atau skala di foto',
+  },
   invalid: { en: 'the suggestion was not usable', id: 'sarannya tidak dapat dipakai' },
 }
 

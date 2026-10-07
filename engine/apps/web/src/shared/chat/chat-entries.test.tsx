@@ -10,8 +10,18 @@ const origin = 'https://gallery.example.com'
 describe('ChatEntries', () => {
   it("renders the server's WhatsApp link and refuses a link to another domain", () => {
     const entries: ChatEntry[] = [
-      { kind: 'handoff', channel: 'whatsapp', href: 'https://wa.me/6281234567890', label: 'Continue on WhatsApp' },
-      { kind: 'handoff', channel: 'email', href: 'https://evil.example.net/phish', label: 'Send an email' },
+      {
+        kind: 'handoff',
+        channel: 'whatsapp',
+        href: 'https://wa.me/6281234567890',
+        label: 'Continue on WhatsApp',
+      },
+      {
+        kind: 'handoff',
+        channel: 'email',
+        href: 'https://evil.example.net/phish',
+        label: 'Send an email',
+      },
     ]
     const markup = renderToStaticMarkup(
       <ChatEntries entries={entries} origin={origin} handoffLabels={labels} />,

@@ -26,7 +26,8 @@ export function ChatLauncher({ label, ...panelProps }: ChatLauncherProps): React
   const restoreFocus = useRef<HTMLElement | null>(null)
 
   function openPanel(): void {
-    restoreFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    restoreFocus.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null
     setOpen(true)
   }
 

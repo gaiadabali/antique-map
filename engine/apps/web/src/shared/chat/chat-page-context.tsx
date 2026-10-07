@@ -21,7 +21,9 @@ const ChatPageReactContext = createContext<{
 export function ChatPageProvider({ children }: { readonly children: React.ReactNode }) {
   const [info, setInfo] = useState<ChatPageInfo>(null)
   return (
-    <ChatPageReactContext.Provider value={{ info, setInfo }}>{children}</ChatPageReactContext.Provider>
+    <ChatPageReactContext.Provider value={{ info, setInfo }}>
+      {children}
+    </ChatPageReactContext.Provider>
   )
 }
 

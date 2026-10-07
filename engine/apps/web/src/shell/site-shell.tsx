@@ -29,6 +29,7 @@ import { ChatPageProvider } from '../shared/chat/chat-page-context'
 import { chatPanelText, suggestedStarts } from '../shared/chat/lexicon'
 
 import { Announcement } from './announcement'
+import { ContactBlock } from './contact-block'
 import type { ShellMessageKey } from './messages'
 import { siteHref, type ShellText } from './site'
 import { loadSiteSettings, type PublicSiteSettings } from '../server/site-settings'
@@ -275,38 +276,5 @@ function SiteFooter({
         </div>
       }
     />
-  )
-}
-
-/** WhatsApp, email and phone from `site-settings`; the lexicon's placeholder when it answers none. */
-function ContactBlock({ settings, t }: { settings: Settings; t: ShellText }) {
-  const items = [
-    settings.contact.whatsapp && {
-      key: 'whatsapp',
-      href: `https://wa.me/${settings.contact.whatsapp.replace(/\D/g, '')}`,
-      label: t('shell.whatsapp'),
-    },
-    settings.contact.email && {
-      key: 'email',
-      href: `mailto:${settings.contact.email}`,
-      label: t('shell.email'),
-    },
-    settings.contact.phone && {
-      key: 'phone',
-      href: `tel:${settings.contact.phone}`,
-      label: settings.contact.phone,
-    },
-  ].filter((item): item is { key: string; href: string; label: string } => Boolean(item))
-  if (items.length === 0) {
-    return <p className={styles.footerLine}>{t('shell.contactPlaceholder')}</p>
-  }
-  return (
-    <ul className={styles.footerList}>
-      {items.map((item) => (
-        <li key={item.key}>
-          <TextLink href={item.href}>{item.label}</TextLink>
-        </li>
-      ))}
-    </ul>
   )
 }

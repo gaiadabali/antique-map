@@ -20,7 +20,12 @@ const stored = {
     status: 'draft',
     aiDraft: {
       title: { drafted: true, verified: false, verifiedBy: null, verifiedAt: null },
-      date: { drafted: true, verified: true, verifiedBy: 1, verifiedAt: '2026-10-01T09:00:00.000Z' },
+      date: {
+        drafted: true,
+        verified: true,
+        verifiedBy: 1,
+        verifiedAt: '2026-10-01T09:00:00.000Z',
+      },
     },
     aiDraftRun: { requestedBy: 7, requestedAt: '2026-10-01T08:00:00.000Z', record: { model: 'm' } },
   },
@@ -35,8 +40,7 @@ function save(data: Doc, api: 'REST' | 'local', user: unknown = editor): Doc {
     req,
   })
 }
-const draftOf = (doc: Doc) =>
-  (doc.cataloguing as { aiDraft: Record<string, Doc> }).aiDraft
+const draftOf = (doc: Doc) => (doc.cataloguing as { aiDraft: Record<string, Doc> }).aiDraft
 
 describe('the drafting audit trail (8.3.b)', () => {
   it('stamps the verifier from the session when the box is ticked, whatever the client says', () => {
@@ -55,7 +59,10 @@ describe('the drafting audit trail (8.3.b)', () => {
     expect(title).toMatchObject({ drafted: true, verified: true, verifiedBy: 7 })
     expect(Date.parse(String(title.verifiedAt))).toBeGreaterThanOrEqual(before)
     // Already verified by the owner: kept as it was.
-    expect(draftOf(out).date).toMatchObject({ verifiedBy: 1, verifiedAt: '2026-10-01T09:00:00.000Z' })
+    expect(draftOf(out).date).toMatchObject({
+      verifiedBy: 1,
+      verifiedAt: '2026-10-01T09:00:00.000Z',
+    })
   })
 
   it('never lets a client clear a draft flag, set one, or rewrite who asked for the run', () => {
@@ -76,18 +83,32 @@ describe('the drafting audit trail (8.3.b)', () => {
 
   it('clears who and when once the box is unticked', () => {
     const out = save({ cataloguing: { aiDraft: { date: { verified: false } } } }, 'REST', owner)
-    expect(draftOf(out).date).toEqual({ drafted: true, verified: false, verifiedBy: null, verifiedAt: null })
+    expect(draftOf(out).date).toEqual({
+      drafted: true,
+      verified: false,
+      verifiedBy: null,
+      verifiedAt: null,
+    })
     expect(unverifiedAiDraft(draftOf(out))).toEqual(['title', 'date'])
   })
 
   it('lets nobody but the owner or an editor tick or untick a box from a client', () => {
-    for (const user of [{ id: 9, collection: 'users', role: 'store' }, { id: 3, collection: 'customers' }, null]) {
+    for (const user of [
+      { id: 9, collection: 'users', role: 'store' },
+      { id: 3, collection: 'customers' },
+      null,
+    ]) {
       const out = save(
         { cataloguing: { aiDraft: { title: { verified: true }, date: { verified: false } } } },
         'REST',
         user,
       )
-      expect(draftOf(out).title).toEqual({ drafted: true, verified: false, verifiedBy: null, verifiedAt: null })
+      expect(draftOf(out).title).toEqual({
+        drafted: true,
+        verified: false,
+        verifiedBy: null,
+        verifiedAt: null,
+      })
       expect(draftOf(out).date).toMatchObject({ verified: true, verifiedBy: 1 })
       expect(unverifiedAiDraft(draftOf(out))).toEqual(['title'])
     }
@@ -95,7 +116,11 @@ describe('the drafting audit trail (8.3.b)', () => {
 
   it('trusts a server write, and stamps a tick it sends without who or when', () => {
     const out = save(
-      { cataloguing: { aiDraft: { places: { drafted: true, verified: false }, title: { verified: true } } } },
+      {
+        cataloguing: {
+          aiDraft: { places: { drafted: true, verified: false }, title: { verified: true } },
+        },
+      },
       'local',
     )
     expect(draftOf(out).places).toMatchObject({ drafted: true, verified: false })

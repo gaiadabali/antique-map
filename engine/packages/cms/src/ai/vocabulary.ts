@@ -54,7 +54,10 @@ function pick(names: readonly string[], candidates: readonly Candidate[]) {
  * match every row: they become spaces, and the spaces collapse.
  */
 export function likeTerm(name: string): string {
-  return name.replace(/[%_\\]/g, ' ').replace(/\s+/g, ' ').trim()
+  return name
+    .replace(/[%_\\]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 /** `like` finds the candidates (case-insensitive); the exact match is `pick()`'s. */

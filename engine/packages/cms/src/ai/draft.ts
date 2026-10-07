@@ -115,15 +115,13 @@ async function photographsOf(payload: Payload, user: unknown, work: Doc) {
   return ids
     .map((id) => byId.get(String(id)))
     .filter((doc): doc is Doc => doc !== undefined && doc.provenance === 'photograph')
-    .map(
-      (doc): DraftMediaFacts => ({
-        id: doc.id as Id,
-        assetId: typeof doc.assetId === 'string' ? doc.assetId : null,
-        width: typeof doc.width === 'number' ? doc.width : null,
-        height: typeof doc.height === 'number' ? doc.height : null,
-        derivativesReady: obj(doc.derivatives).status === 'ready',
-      }),
-    )
+    .map((doc): DraftMediaFacts => ({
+      id: doc.id as Id,
+      assetId: typeof doc.assetId === 'string' ? doc.assetId : null,
+      width: typeof doc.width === 'number' ? doc.width : null,
+      height: typeof doc.height === 'number' ? doc.height : null,
+      derivativesReady: obj(doc.derivatives).status === 'ready',
+    }))
 }
 
 async function loadImages(source: DraftImageSource, facts: readonly DraftMediaFacts[]) {

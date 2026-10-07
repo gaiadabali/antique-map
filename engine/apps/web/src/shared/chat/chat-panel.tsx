@@ -106,7 +106,9 @@ export function ChatPanel({
   return (
     <div ref={rootRef}>
       <ChatShell
-        title={pageInfo !== null ? text.askingAbout.replace('{title}', pageInfo.title) : text.panelTitle}
+        title={
+          pageInfo !== null ? text.askingAbout.replace('{title}', pageInfo.title) : text.panelTitle
+        }
         closeLabel={text.close}
         onClose={onClose}
         disclosure={<ChatDisclosure text={text} privacyHref="/privacy" />}
@@ -126,7 +128,11 @@ export function ChatPanel({
                 {text.stop}
               </Button>
             ) : (
-              <Button type="submit" variant="primary" disabled={session !== 'ready' || composer.trim() === ''}>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={session !== 'ready' || composer.trim() === ''}
+              >
                 {text.send}
               </Button>
             )}
@@ -150,7 +156,11 @@ export function ChatPanel({
           handoffLabels={{ whatsapp: text.handoffWhatsapp, email: text.handoffEmail }}
         />
         {state.leadForm !== null && !state.leadFormOpen && (
-          <Button type="button" variant="secondary" onClick={() => dispatch({ type: 'openLeadForm' })}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => dispatch({ type: 'openLeadForm' })}
+          >
             {text.leadCta}
           </Button>
         )}

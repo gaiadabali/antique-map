@@ -63,9 +63,7 @@ export async function loadFunnel(ctx: DashboardContext): Promise<FunnelPanel | n
   }))
 
   const deviceSelect = sql.join(
-    STEPS.map(
-      ({ key, match }) => sql`count(*) FILTER (WHERE ${match}) AS ${sql.raw(key)}`,
-    ),
+    STEPS.map(({ key, match }) => sql`count(*) FILTER (WHERE ${match}) AS ${sql.raw(key)}`),
     sql`, `,
   )
   const deviceRows = await rowsOf<{ device: string } & Record<string, unknown>>(

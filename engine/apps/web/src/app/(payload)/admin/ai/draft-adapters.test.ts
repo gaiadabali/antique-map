@@ -102,7 +102,9 @@ describe('the drafting photographs (8.3.a; AI.md §5)', () => {
       `https://media.example/derivatives/v1/${assetId}/1600.webp`,
     )
     expect(draftImageUrl({ ...media, derivativesReady: false }, 'https://media.example')).toBeNull()
-    expect(draftImageUrl({ ...media, assetId: '../../etc/passwd' }, 'https://media.example')).toBeNull()
+    expect(
+      draftImageUrl({ ...media, assetId: '../../etc/passwd' }, 'https://media.example'),
+    ).toBeNull()
     expect(draftImageUrl(media, '')).toBeNull()
   })
 
@@ -116,7 +118,9 @@ describe('the drafting photographs (8.3.a; AI.md §5)', () => {
     expect(image).toEqual({ mediaId: 5, mediaType: 'image/webp', data: 'AQID' })
     expect(seen).toEqual([`https://media.example/derivatives/v1/${assetId}/1600.webp`])
     const html = (async () =>
-      new Response('<html>', { headers: { 'content-type': 'text/html' } })) as unknown as typeof fetch
+      new Response('<html>', {
+        headers: { 'content-type': 'text/html' },
+      })) as unknown as typeof fetch
     expect(await derivativeImageSource('https://media.example', html).load(media)).toBeNull()
     const missing = (async () => new Response('', { status: 404 })) as unknown as typeof fetch
     expect(await derivativeImageSource('https://media.example', missing).load(media)).toBeNull()

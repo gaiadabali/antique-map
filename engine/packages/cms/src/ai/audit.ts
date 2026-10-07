@@ -61,12 +61,7 @@ function stampEntry(
   }
 }
 
-export const stampAiDraft: CollectionBeforeChangeHook = ({
-  data,
-  operation,
-  originalDoc,
-  req,
-}) => {
+export const stampAiDraft: CollectionBeforeChangeHook = ({ data, operation, originalDoc, req }) => {
   const sent = obj(data).cataloguing
   if (sent === undefined || sent === null || typeof sent !== 'object') return data
   const before = obj(operation === 'update' ? obj(originalDoc).cataloguing : undefined)

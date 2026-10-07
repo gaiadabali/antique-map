@@ -33,7 +33,7 @@ describe('the chat reducer', () => {
     expect(afterTap.leadFormOpen).toBe(true)
   })
 
-  it("rate-limited shows the retry time", () => {
+  it('rate-limited shows the retry time', () => {
     let state = apply([{ type: 'error', code: 'rate_limited', message: 'Please wait.' }])
     state = chatReducer(state, { type: 'retryAfter', seconds: 30 })
     expect(state.errorCode).toBe('rate_limited')
@@ -42,11 +42,21 @@ describe('the chat reducer', () => {
 
   it('the kill switch shows the handoff', () => {
     const state = apply([
-      { type: 'handoff', channel: 'whatsapp', href: 'https://wa.me/6281234', label: 'Continue on WhatsApp' },
+      {
+        type: 'handoff',
+        channel: 'whatsapp',
+        href: 'https://wa.me/6281234',
+        label: 'Continue on WhatsApp',
+      },
       { type: 'error', code: 'disabled', message: 'The assistant is switched off.' },
     ])
     expect(state.entries).toEqual([
-      { kind: 'handoff', channel: 'whatsapp', href: 'https://wa.me/6281234', label: 'Continue on WhatsApp' },
+      {
+        kind: 'handoff',
+        channel: 'whatsapp',
+        href: 'https://wa.me/6281234',
+        label: 'Continue on WhatsApp',
+      },
     ])
     expect(state.errorCode).toBe('disabled')
     expect(state.errorMessage).toBe('The assistant is switched off.')
@@ -58,7 +68,15 @@ describe('the chat reducer', () => {
     ])
     expect(state.entries[0]).toEqual({
       kind: 'card',
-      card: { kind: 'work', id: '42', title: 'A map', url: '/item/42', image: null, statusLabel: undefined, priceLabel: undefined },
+      card: {
+        kind: 'work',
+        id: '42',
+        title: 'A map',
+        url: '/item/42',
+        image: null,
+        statusLabel: undefined,
+        priceLabel: undefined,
+      },
     })
   })
 

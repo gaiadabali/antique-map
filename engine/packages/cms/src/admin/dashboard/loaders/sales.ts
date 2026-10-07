@@ -142,10 +142,7 @@ export async function loadSales(ctx: DashboardContext): Promise<SalesPanel | nul
     paidOrders,
     revenue,
     averageOrder: compared(averageOf(current), averageOf(previous)),
-    discountShare: compared(
-      shareOf(current, hasDiscount),
-      shareOf(previous, hasDiscount),
-    ),
+    discountShare: compared(shareOf(current, hasDiscount), shareOf(previous, hasDiscount)),
     freeDeliveryShare: compared(
       shareOf(current, isFreeDelivery),
       shareOf(previous, isFreeDelivery),

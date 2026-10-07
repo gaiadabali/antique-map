@@ -55,7 +55,10 @@ describe.skipIf(!server)('the drafting tool on a real database (8.3.a–b)', () 
       expect(aiDraft[field], field).toMatchObject(UNVERIFIED)
     }
     expect(aiDraft.description).toMatchObject(NOT_DRAFTED)
-    const { docs } = await s.stack.api.find({ collection: 'places', where: { name: { equals: 'Atlantis' } } })
+    const { docs } = await s.stack.api.find({
+      collection: 'places',
+      where: { name: { equals: 'Atlantis' } },
+    })
     expect(docs).toHaveLength(0)
     // What went to the model: the fixed prompt, the photographs, the configured model.
     const [request] = deps.model.requests
@@ -170,7 +173,11 @@ describe.skipIf(!server)('the drafting tool on a real database (8.3.a–b)', () 
       objectType: 'print',
       subjects: [s.ids.subject],
     })
-    const response = await s.post(s.deps(() => text(goodReply())), work.id, 'editor')
+    const response = await s.post(
+      s.deps(() => text(goodReply())),
+      work.id,
+      'editor',
+    )
     const body = await json(response)
     expect(body.skipped).toEqual(
       expect.arrayContaining([
@@ -218,7 +225,11 @@ describe.skipIf(!server)('the drafting tool on a real database (8.3.a–b)', () 
     expect(limited.status).toBe(429)
     expect(limited.headers.get('retry-after')).toMatch(/^\d+$/)
     const bare = await s.stack.api.create({ collection: 'works', data: {} })
-    const none = await s.post(s.deps(() => text(goodReply())), bare.id, 'editor')
+    const none = await s.post(
+      s.deps(() => text(goodReply())),
+      bare.id,
+      'editor',
+    )
     expect(await json(none)).toEqual({ ok: false, code: 'no_photographs' })
     expect(deps.model.requests).toHaveLength(0)
   }, 60_000)

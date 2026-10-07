@@ -6,14 +6,12 @@
  * written on the object — so a test can stand in for a model that obeys an instruction in a
  * photograph and prove the server writes nothing it should not.
  */
-import type {
-  DraftImageSource,
-  DraftModel,
-  DraftModelReply,
-  DraftModelRequest,
-} from './ports'
+import type { DraftImageSource, DraftModel, DraftModelReply, DraftModelRequest } from './ports'
 
-export type DraftScript = (request: DraftModelRequest, writing: readonly string[]) => DraftModelReply
+export type DraftScript = (
+  request: DraftModelRequest,
+  writing: readonly string[],
+) => DraftModelReply
 
 export const FAKE_USAGE = { inputTokens: 2400, outputTokens: 310 } as const
 
@@ -41,7 +39,11 @@ export function fakeImages(writing: (mediaId: number | string) => string | null)
     async load(media) {
       const words = writing(media.id)
       if (words === null) return null
-      return { mediaId: media.id, mediaType: 'image/webp', data: Buffer.from(words).toString('base64') }
+      return {
+        mediaId: media.id,
+        mediaType: 'image/webp',
+        data: Buffer.from(words).toString('base64'),
+      }
     },
   }
 }

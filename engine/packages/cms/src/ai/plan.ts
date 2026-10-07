@@ -62,7 +62,9 @@ export type DraftPlan = {
 }
 
 /** Keeps the allow-listed keys of `patch` and nothing else. */
-export function allowListed(patch: Record<string, unknown>): Partial<Record<DraftWritable, unknown>> {
+export function allowListed(
+  patch: Record<string, unknown>,
+): Partial<Record<DraftWritable, unknown>> {
   const out: Partial<Record<DraftWritable, unknown>> = {}
   for (const key of DRAFT_WRITABLE) {
     if (Object.prototype.hasOwnProperty.call(patch, key)) out[key] = patch[key]
@@ -163,7 +165,8 @@ export function planDraft(
     filled: filled.filter((field) => (DRAFT_WRITABLE as readonly string[]).includes(field)),
     skipped,
     suggestions: {
-      description: description.en || description.id ? { en: description.en, id: description.id } : null,
+      description:
+        description.en || description.id ? { en: description.en, id: description.id } : null,
       unmatchedPlaces: matches.unmatchedPlaces,
       unmatchedSubjects: matches.unmatchedSubjects,
     },

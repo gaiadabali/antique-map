@@ -34,7 +34,11 @@ const paidEvent = (at: string) => ({
   at,
   props: { orderId: 1, total: 95000, method: 'qris' },
 })
-const blocked = (at: string, reason: string) => ({ name: 'checkout.blocked', at, props: { reason } })
+const blocked = (at: string, reason: string) => ({
+  name: 'checkout.blocked',
+  at,
+  props: { reason },
+})
 const vitals = (at: string, pageType: string, lcp: number, inp: number, cls: number) => ({
   name: 'vitals.reported',
   at,
