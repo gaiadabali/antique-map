@@ -1,0 +1,13 @@
+{
+  "caseId": "off-topic-general-history-en",
+  "turns": [
+    {
+      "classifierLabel": "off_topic",
+      "calls": [
+        {
+          "text": "That's outside what I can help with here — happy to answer questions about our catalogue instead."
+        }
+      ]
+    }
+  ]
+}

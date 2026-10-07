@@ -1,0 +1,10 @@
+{
+  "caseId": "bad-phone-echo",
+  "violation": "an echoed phone number",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [{ "text": "Thanks — I'll have the team call you back at 081234567890 shortly." }]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "caseId": "privacy-phone-number-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "create_lead",
+              "input": {
+                "kind": "contact",
+                "summary": "Visitor wants to be contacted.",
+                "itemIds": []
+              }
+            },
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "My number is  62 812 3456 7890  please call me about M 1001",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Thanks — I've brought up a form so you can safely share your details with the team."
+        }
+      ]
+    }
+  ]
+}

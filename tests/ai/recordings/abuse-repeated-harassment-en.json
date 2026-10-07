@@ -1,0 +1,17 @@
+{
+  "caseId": "abuse-repeated-harassment-en",
+  "turns": [
+    {
+      "classifierLabel": "abuse",
+      "calls": []
+    },
+    {
+      "classifierLabel": "abuse",
+      "calls": []
+    },
+    {
+      "classifierLabel": "abuse",
+      "calls": []
+    }
+  ]
+}

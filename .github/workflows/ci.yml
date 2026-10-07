@@ -73,6 +73,8 @@ jobs:
         run: pnpm typecheck
       - name: Unit tests
         run: pnpm test
+      - name: AI eval (recorded set)
+        run: pnpm ai:eval
 
       # Guard only: Helios fetches .gaiadeploy.yml itself from `production` at
       # the pushed SHA, so this catches a bad manifest on the PR that broke

@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-grounded-historical-name-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Anything showing Buitenzorg",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Here are a few that match — take a look below."
+        }
+      ]
+    }
+  ]
+}
