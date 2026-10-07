@@ -63,10 +63,7 @@ function requestOf(payload: Payload, transactionID: string | number | undefined)
   } as unknown as PayloadRequest
 }
 
-async function existingRows(
-  payload: Payload,
-  site: SiteKey,
-): Promise<Map<string, ExistingRow>> {
+async function existingRows(payload: Payload, site: SiteKey): Promise<Map<string, ExistingRow>> {
   const existing = new Map<string, ExistingRow>()
   for (let page = 1; ; page += 1) {
     const result = await payload.find({
@@ -112,9 +109,11 @@ export function isUnchanged(
 
 /** `items` split into consecutive chunks of at most `size` (a transaction each). */
 export function chunk<T>(items: readonly T[], size: number): T[][] {
-  if (!Number.isInteger(size) || size < 1) throw new RangeError('batch size must be a positive integer')
+  if (!Number.isInteger(size) || size < 1)
+    throw new RangeError('batch size must be a positive integer')
   const chunks: T[][] = []
-  for (let start = 0; start < items.length; start += size) chunks.push(items.slice(start, start + size))
+  for (let start = 0; start < items.length; start += size)
+    chunks.push(items.slice(start, start + size))
   return chunks
 }
 
@@ -135,6 +134,56 @@ export function planLoad(
   existing: ReadonlyMap<string, ExistingRow>,
   prune: boolean,
 ): LoadPlan {
+  const toCreate: RedirectRow[] = []
+  const toUpdate: Array<{ id: number; row: RedirectRow }> = []
+  let unchangedCount = 0
+  for (const row of rows) {
+    const found = existing.get(row.from)
+    if (!found) toCreate.push(row)
+    else if (isUnchanged(row, found)) unchangedCount += 1
+    else toUpdate.push({ id: found.id, row })
+  }
+  const produced = new Set(rows.map((row) => row.from))
+  const toPrune = prune
+    ? [...existing.entries()]
+        .filter(([from]) => !produced.has(from))
+        .map(([from, found]) => ({ from, id: found.id }))
+    : []
+  return { toCreate, toUpdate, toPrune, unchanged: unchangedCount }
+}
+
+/** `items` in chunks of `size`, each run inside its own transaction: whole or not at all. */
+async function inBatches<T>(
+  payload: Payload,
+  items: readonly T[],
+  size: number,
+  run: (req: PayloadRequest, batch: readonly T[]) => Promise<void>,
+): Promise<void> {
+  for (const batch of chunk(items, size)) {
+    const transactionID = ((await payload.db.beginTransaction()) ?? undefined) as
+      string | number | undefined
+    const req = requestOf(payload, transactionID)
+    try {
+      await run(req, batch)
+      if (transactionID !== undefined) await payload.db.commitTransaction(transactionID)
+    } catch (error) {
+      if (transactionID !== undefined) {
+        await payload.db.rollbackTransaction(transactionID).catch(() => undefined)
+      }
+      throw error
+    }
+  }
+}
+
+export async function loadRedirects(payload: Payload, options: LoadOptions): Promise<LoadResult> {
+  const { site, works, prune = false, dryRun = false } = options
+  const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE
+  const categories = options.categories ?? {}
+
+  // The builder throws on a duplicate `from`, a self-loop or a chain: nothing is read or written then.
+  const uniqueUrls = dedupeLegacyUrls(site, options.urls)
+  const { rows, gone, unresolved } = buildRedirects({ site, urls: uniqueUrls, works, categories })
+  const existing = await existingRows(payload, site)
   const { toCreate, toUpdate, toPrune, unchanged } = planLoad(rows, existing, prune)
 
   if (!dryRun) {

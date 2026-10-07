@@ -34,14 +34,17 @@ export function parseLoadArgs(argv: readonly string[]): LoadArgs {
   let unresolvedOut: string | null = null
   for (const word of argv) {
     if (word.startsWith('--')) {
-      throw new Error(`"${word}": flags are not read (payload run drops them) — use bare words. ${LOAD_USAGE}`)
+      throw new Error(
+        `"${word}": flags are not read (payload run drops them) — use bare words. ${LOAD_USAGE}`,
+      )
     }
     const site = SITE_WORDS[word.startsWith('site=') ? word.slice('site='.length) : word]
     if (site !== undefined) {
       if (sites !== null) throw new Error(`name the site once. ${LOAD_USAGE}`)
       sites = site
     } else if (word === 'dry-run' || word === 'apply') {
-      if (mode !== null && mode !== word) throw new Error(`choose dry-run or apply, not both. ${LOAD_USAGE}`)
+      if (mode !== null && mode !== word)
+        throw new Error(`choose dry-run or apply, not both. ${LOAD_USAGE}`)
       mode = word
     } else if (word === 'prune') {
       prune = true

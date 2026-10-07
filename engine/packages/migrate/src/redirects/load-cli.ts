@@ -49,9 +49,16 @@ function urlsFor(site: SiteKey): string[] {
   return site === 'gallery' ? readGalleryUrls(GALLERY_TSV) : readShopUrls(SHOP_CSV)
 }
 
-function writeUnresolved(outDir: string, site: SiteKey, unresolved: LoadResult['unresolved']): void {
+function writeUnresolved(
+  outDir: string,
+  site: SiteKey,
+  unresolved: LoadResult['unresolved'],
+): void {
   mkdirSync(outDir, { recursive: true })
-  writeFileSync(resolve(outDir, `unresolved.${site}.json`), `${JSON.stringify(unresolved, null, 2)}\n`)
+  writeFileSync(
+    resolve(outDir, `unresolved.${site}.json`),
+    `${JSON.stringify(unresolved, null, 2)}\n`,
+  )
 }
 
 function printSummary(site: SiteKey, dryRun: boolean, result: LoadResult): void {
@@ -77,7 +84,9 @@ async function main(): Promise<void> {
   const payload = await cms()
   try {
     const works = await worksFromDb(payload)
-    console.log(`works read: ${works.length} (${works.filter((work) => work.published).length} published)`)
+    console.log(
+      `works read: ${works.length} (${works.filter((work) => work.published).length} published)`,
+    )
     for (const site of args.sites) {
       const result = await loadRedirects(payload, {
         site,
