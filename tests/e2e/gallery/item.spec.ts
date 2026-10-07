@@ -1,26 +1,17 @@
 /**
  * The gallery item page and deep zoom (TASKS.md 5.2.e Check), on a production build at 390 px:
  *
- * 1. Opening an available work's page, the viewer zooms: before the Zoom button is clicked no
- *    request reaches `iiif/`; the click brings an `info.json` and at least one tile, both 200, from
- *    the same `iiif/<asset>/` folder; zooming further with the keyboard (`+` on the focused canvas)
- *    brings at least one more tile; no console error mentions WebGL, a texture or CORS, and the
- *    browser never asks for the private original.
- * 2. `uploads/` — the private original — is 403 anonymously, from Payload's file route and from
- *    the media bucket itself (its address read off the page's own `info.json` URL).
- * 3. A sold work shows "Sold", never "Ask about this", never "Price on request" — only "Ask for
- *    another example" (the owner's decision of 2026-10-06), a `wa.me` link whose decoded text is
- *    the lexicon's sold message for this work. Checked in English and Indonesian.
- * 4. Neither work's asking price appears anywhere: not the HTML, not an `RSC: 1` flight fetch, not
- *    any JSON response captured while the page loads — in both locales.
+ * 1. The viewer zooms: no `iiif/` request before Zoom; then `info.json` and a tile, 200, from one
+ *    `iiif/<asset>/` folder; holding `+` brings more tiles; no WebGL/texture/CORS console error.
+ * 2. `uploads/` is 403 anonymously: Payload's file route and the bucket key itself.
+ * 3. A sold work: "Sold", only "Ask for another example" (a `wa.me` link carrying the lexicon's
+ *    sold message), never "Ask about this" or "Price on request" — in English and Indonesian.
+ * 4. No asking price in the HTML, an `RSC: 1` fetch or any captured JSON, in both locales.
  *
- * Every word comes from the gallery lexicon. Fixtures (`support/item-fixtures.ts`) make their own
- * place, grade, one large recto and two published works sharing it, removed in `afterAll` through
- * `support/fixtures.ts`'s `Ledger`, every delete checked. The gallery's WhatsApp number is set for
- * the run and the original site-settings are put back — and read back — afterwards.
- *
- * Runs locally (`E2E_PORT`) or against a deployed pair of hosts (`E2E_BASE_GALLERY`,
- * `E2E_BASE_SHOP`; `support/env.ts`), with the owner from `E2E_OWNER_EMAIL`/`E2E_OWNER_PASSWORD`.
+ * Every word comes from the gallery lexicon. Fixtures (`support/item-fixtures.ts`): a place, a
+ * grade, one large recto, two published works — removed in `afterAll` (`support/fixtures.ts`'s
+ * `Ledger`, every delete checked); the WhatsApp number is set, then restored and read back.
+ * Local (`E2E_PORT`) or remote (`E2E_BASE_GALLERY` + `E2E_BASE_SHOP`, `support/env.ts`).
  */
 import {
   expect,
@@ -55,10 +46,8 @@ const TEST_WHATSAPP = '+6590000001'
 const figure = (n: number) =>
   new RegExp(`(?<!\\d)${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '[,. \\u00a0]?')}(?!\\d)`)
 
-/** The work's page, opened until it renders this run's fixture: a reused `publicId` may answer
- * once with its earlier, deleted occupant's cached render (stale-while-revalidate). The stock
- * number is unique to the run, so nothing else can satisfy the poll; every claim is asserted
- * after it, once. */
+/** Opens a page until it renders this run's (unique) stock number: a reused `publicId` may answer
+ * once with a deleted occupant's cached render. Claims are asserted after it, once. */
 async function openFresh(page: Page, path: string, stockNumber: string) {
   await expect
     .poll(
@@ -172,7 +161,11 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
     const beforeKey = tiles().length
     // Focus, not click: a click on OpenSeadragon's canvas zooms by itself.
     await page.getByRole('group', { name: fx.recto.alt }).locator('.openseadragon-canvas').focus()
-    await page.keyboard.press('+')
+    // OpenSeadragon 6 zooms 1% a frame while `+` is held (a tap is ≈10%, inside the home view's
+    // one 512 px tile at 390 px), so the key is held as a visitor would, ≈1.5 s → ≈2.4×.
+    await page.keyboard.down('+')
+    await page.waitForTimeout(1_500)
+    await page.keyboard.up('+')
     await expect.poll(() => tiles().length, { timeout: 30_000 }).toBeGreaterThan(beforeKey)
     await page.waitForLoadState('networkidle')
     await shoot(page, '5.2e-item-after-key-zoom')
@@ -198,6 +191,11 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
         headers: HOST_HEADER,
       })
       expect(fileRoute.status(), 'Payload file route, anonymous').toBe(403)
+      // Controls: the file is there for staff, and the bucket address answers its public half.
+      const staff = await api.get(`${BASE_URL}/api/media/file/${fx.upload.filename}`, {
+        headers: auth(),
+      })
+      expect(staff.status(), 'Payload file route, as the owner').toBe(200)
 
       const page = await anon.get(`${GALLERY_BASE_URL}${itemPath(fx.available, 'en')}`, {
         headers: GALLERY_HOST_HEADER,
@@ -205,6 +203,7 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
       expect(page.status()).toBe(200)
       const infoUrl = /https?:\/\/[^"'\s\\]+\/iiif\/[^"'\s\\/]+\/info\.json/.exec(await page.text())
       expect(infoUrl, 'the page names its info.json').not.toBeNull()
+      expect((await anon.get(infoUrl![0])).status(), 'info.json, anonymous').toBe(200)
       const bucket = infoUrl![0].replace(/\/iiif\/.*$/, '')
       const key = `${bucket}/${fx.upload.prefix}/${fx.upload.filename}`
       const original = await anon.get(key)

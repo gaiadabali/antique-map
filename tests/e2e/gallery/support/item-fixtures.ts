@@ -226,10 +226,14 @@ export async function createItemFixtures(
   )
   const mediaId = track('media', Number(uploaded.doc.id))
   await waitForTilesReady(request, token, mediaId)
-  const upload = {
-    prefix: String(uploaded.doc.prefix ?? 'uploads'),
-    filename: String(uploaded.doc.filename ?? ''),
+  // The record's own storage address — never a default, so a renamed prefix fails here.
+  const { prefix, filename } = uploaded.doc
+  if (typeof prefix !== 'string' || typeof filename !== 'string' || filename === '') {
+    throw new Error(
+      `media ${mediaId} has no storage address: ${JSON.stringify({ prefix, filename })}`,
+    )
   }
+  const upload = { prefix, filename }
 
   const stockAvailable = `M.52E2E${stamp}A`
   const stockSold = `M.52E2E${stamp}S`
@@ -255,10 +259,15 @@ export async function createItemFixtures(
   })
 
   const createWork = async (data: ReturnType<typeof work>): Promise<WorkRef> => {
-    const res = await okJson<{ doc: { id: number; publicId: number; slug: string } }>(
+    type Doc = { id: number; publicId: number; slug: string; askingPrice?: number }
+    const res = await okJson<{ doc: Doc }>(
       await request.post(`${BASE_URL}/api/works`, { headers: auth(token), data }),
     )
     track('works', res.doc.id)
+    // The control for the no-price claim: the price is really stored, so its absence means hiding.
+    if (res.doc.askingPrice !== data.askingPrice) {
+      throw new Error(`work ${res.doc.id} stored askingPrice ${res.doc.askingPrice}`)
+    }
     return { id: res.doc.id, publicId: res.doc.publicId, slug: res.doc.slug }
   }
 
