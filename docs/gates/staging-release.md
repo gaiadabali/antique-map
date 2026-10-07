@@ -114,11 +114,7 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 | `production-20261007T030310Z-61b3b26` | 61b3b26 (5.3sold + `/browse` perf)       | none new                         | healthy, try 1; smoke below |
 | `production-20261007T042810Z-ec9cea9` | ec9cea9 (39ac792: sold meta description) | none new (5 = 5)                 | healthy, try 1; smoke below |
 
-Smoke on `61b3b26`, 2026-10-07: gallery `/` 200; shop `/` 200; gallery `/product/100000` 308 →
-`/product/100000-<slug>` 200; `/sell-to-us` 200; `/contact` 200; derivative
-`…/f18497448af3aea71bde65b6262af14d/640.webp` 200 with `access-control-allow-origin: https://indies-gallery.gaiada.com`;
-`…/iiif/3793869e6a1b432f1959c48bc1c3cb15/info.json` 200 with the gallery origin echoed (and the shop origin for the
-shop); `/_media/uploads/x` 403; `/_media/` 403. pm2 `uindies` online, fork mode.
+Smoke on `61b3b26`: every check in step 6 passed (pages 200, derivative and `info.json` 200 with ACAO, `uploads/x` 403).
 
 Smoke on `ec9cea9`, 2026-10-07:
 
@@ -158,8 +154,7 @@ instead, as the 5.2 backfill did.
    3. It runs `pnpm data:seed --layer gallery-sample --publish`, then
       `pnpm --filter @engine/cms media:derivatives` (no `--force`) until it exits 0, up to 3 attempts.
 
-   Both CLIs post their cache tags to the running site (`REVALIDATE_ORIGIN`), so the pages refresh with no reload.
-   Install, seed and backfill take about 15 min.
+   Both CLIs post cache tags to the running site (`REVALIDATE_ORIGIN`): no reload. Takes about 15 min.
 
 4. **Verify anonymously.** Check that `/browse` counts the works, that `/search?q=Batavia` returns hits, and that
    two item pages and their `/_media/derivatives/…` images return 200.
@@ -302,5 +297,4 @@ for d in $(ls -1dt /home/uindies/releases/deploy_production-* 2>/dev/null); do
 done
 ```
 
-(The comment headers of the host copies are left out here, so `bd.sh`'s hash differs from this text; the two hashes
-above are of the files as they are on the host.)
+(Comment headers left out here; the hashes above are of the host files.)
