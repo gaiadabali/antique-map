@@ -21,6 +21,12 @@ type BaseProps = {
    * optimizer has no part in it (`unoptimized`), so `<Image>` would drop the ladder.
    */
   readonly srcSet?: string | null
+  /**
+   * Fetch a remote image in CORS mode. The item page sets it on its lead image: the zoom viewer
+   * opens the same derivative with CORS, and a copy the browser cached from a plain `<img>` load
+   * (the media origin answers it without `Vary: Origin`) fails the viewer's CORS check.
+   */
+  readonly crossOrigin?: 'anonymous'
   readonly className?: string
 }
 
@@ -85,10 +91,11 @@ function LadderImage({
       imageSrcSet: srcSet,
       imageSizes: props.sizes,
       fetchPriority: 'high',
+      ...(props.crossOrigin !== undefined ? { crossOrigin: props.crossOrigin } : {}),
     })
   }
   // `alt` is in `img`, from `getImageProps()`.
-  return <img {...img} srcSet={srcSet} sizes={props.sizes} />
+  return <img {...img} srcSet={srcSet} sizes={props.sizes} crossOrigin={props.crossOrigin} />
 }
 
 /** A Next/Image wrapper requiring `alt` and `sizes` with fixed or fill + ratio variants. */
@@ -114,6 +121,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
             sizes={props.sizes}
             {...leadProps(props.priority)}
             unoptimized={unoptimized}
+            crossOrigin={props.crossOrigin}
             className={styles.image}
           />
         )}

@@ -49,6 +49,24 @@ describe('ResponsiveImage with a derivative ladder', () => {
     expect(markup).not.toContain('loading="lazy"')
   })
 
+  it('fetches in CORS mode only when asked, so the zoom viewer can reuse the lead image', () => {
+    const lead = (crossOrigin?: 'anonymous') =>
+      renderToStaticMarkup(
+        <ResponsiveImage
+          variant="fill"
+          aspectRatio="4 / 3"
+          src={`${BASE}/1024.webp`}
+          srcSet={SRC_SET}
+          alt="A map of Java"
+          sizes="100vw"
+          priority
+          {...(crossOrigin !== undefined ? { crossOrigin } : {})}
+        />,
+      )
+    expect(lead('anonymous')).toContain('crossorigin="anonymous"')
+    expect(lead()).not.toContain('crossorigin')
+  })
+
   it('renders as before without a ladder', () => {
     const markup = renderToStaticMarkup(
       <ResponsiveImage

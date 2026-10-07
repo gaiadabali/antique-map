@@ -100,6 +100,7 @@ export function ItemViewComposition({
                 alt={lead.alt}
                 sizes="(max-width: 1023px) 100vw, 55vw"
                 priority
+                crossOrigin="anonymous"
                 className={styles.primaryImage}
               />
               {lead.syntheticLabel !== null && (
