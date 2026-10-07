@@ -43,7 +43,7 @@ export type LoadResult = {
 const PAGE_SIZE = 1000
 const DEFAULT_BATCH_SIZE = 500
 
-type ExistingRow = {
+export type ExistingRow = {
   readonly id: number
   readonly to: string
   readonly code: '301' | '302' | '410'
@@ -100,57 +100,42 @@ async function existingRows(
   }
 }
 
-function unchanged(row: RedirectRow, existing: ExistingRow): boolean {
-  return existing.to === row.to && existing.code === String(row.code) && existing.source === row.source
+/** Whether a stored row already says what the builder produced (`to`, `code`, `source`). */
+export function isUnchanged(
+  row: Pick<RedirectRow, 'to' | 'code' | 'source'>,
+  existing: Pick<ExistingRow, 'to' | 'code' | 'source'>,
+): boolean {
+  return (
+    existing.to === row.to && existing.code === String(row.code) && existing.source === row.source
+  )
 }
 
-/** `items` split into chunks of `size`, each run inside its own transaction. */
-async function inBatches<T>(
-  payload: Payload,
-  items: readonly T[],
-  size: number,
-  run: (req: PayloadRequest, batch: readonly T[]) => Promise<void>,
-): Promise<void> {
-  for (let start = 0; start < items.length; start += size) {
-    const batch = items.slice(start, start + size)
-    const transactionID = ((await payload.db.beginTransaction()) ?? undefined) as
-      | string
-      | number
-      | undefined
-    const req = requestOf(payload, transactionID)
-    try {
-      await run(req, batch)
-      if (transactionID !== undefined) await payload.db.commitTransaction(transactionID)
-    } catch (error) {
-      if (transactionID !== undefined) {
-        await payload.db.rollbackTransaction(transactionID).catch(() => undefined)
-      }
-      throw error
-    }
-  }
+/** `items` split into consecutive chunks of at most `size` (a transaction each). */
+export function chunk<T>(items: readonly T[], size: number): T[][] {
+  if (!Number.isInteger(size) || size < 1) throw new RangeError('batch size must be a positive integer')
+  const chunks: T[][] = []
+  for (let start = 0; start < items.length; start += size) chunks.push(items.slice(start, start + size))
+  return chunks
 }
 
-export async function loadRedirects(payload: Payload, options: LoadOptions): Promise<LoadResult> {
-  const { site, works, prune = false, dryRun = false } = options
-  const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE
-  const categories = options.categories ?? {}
+export type LoadPlan = {
+  readonly toCreate: readonly RedirectRow[]
+  readonly toUpdate: readonly { readonly id: number; readonly row: RedirectRow }[]
+  readonly toPrune: readonly { readonly from: string; readonly id: number }[]
+  readonly unchanged: number
+}
 
-  const uniqueUrls = dedupeLegacyUrls(site, options.urls)
-  const { rows, gone, unresolved } = buildRedirects({ site, urls: uniqueUrls, works, categories })
-  const existing = await existingRows(payload, site)
-
-  const toCreate: RedirectRow[] = []
-  const toUpdate: Array<{ id: number; row: RedirectRow }> = []
-  let unchangedCount = 0
-  for (const row of rows) {
-    const found = existing.get(row.from)
-    if (!found) toCreate.push(row)
-    else if (unchanged(row, found)) unchangedCount += 1
-    else toUpdate.push({ id: found.id, row })
-  }
-
-  const produced = new Set(rows.map((row) => row.from))
-  const toPrune = prune ? [...existing.entries()].filter(([from]) => !produced.has(from)) : []
+/**
+ * The diff between the produced rows and what the database holds, keyed on `from` (one site's
+ * rows on both sides). Creates the missing, updates the changed, counts the identical, and lists
+ * the stored rows the builder no longer produces for deletion only when `prune` is set.
+ */
+export function planLoad(
+  rows: readonly RedirectRow[],
+  existing: ReadonlyMap<string, ExistingRow>,
+  prune: boolean,
+): LoadPlan {
+  const { toCreate, toUpdate, toPrune, unchanged } = planLoad(rows, existing, prune)
 
   if (!dryRun) {
     await inBatches(payload, toCreate, batchSize, async (req, batch) => {
@@ -182,8 +167,8 @@ export async function loadRedirects(payload: Payload, options: LoadOptions): Pro
     })
     if (prune) {
       await inBatches(payload, toPrune, batchSize, async (req, batch) => {
-        for (const [, found] of batch) {
-          await payload.delete({ collection: 'redirects', id: found.id, overrideAccess: true, req })
+        for (const { id } of batch) {
+          await payload.delete({ collection: 'redirects', id, overrideAccess: true, req })
         }
       })
     }
@@ -195,7 +180,7 @@ export async function loadRedirects(payload: Payload, options: LoadOptions): Pro
     unresolved,
     created: toCreate.length,
     updated: toUpdate.length,
-    unchanged: unchangedCount,
+    unchanged,
     pruned: toPrune.length,
   }
 }

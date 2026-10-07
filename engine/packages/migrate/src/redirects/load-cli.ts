@@ -2,24 +2,24 @@
  * Loads a site's `redirects` rows into the live database (9.4load), from the same committed
  * inventories 9.4a's `cli.ts` reads, against the real `works` instead of a fixture.
  *
- * Run from the repo root (needs DATABASE_URL and PAYLOAD_SECRET; never printed):
+ * Run through `payload run`, which drops `--flags`, so the arguments are bare words
+ * (`./load-args`). Needs `DATABASE_URL` and `PAYLOAD_SECRET` in the environment; neither is ever
+ * printed, and an error's text is scrubbed of any connection string before it is shown:
  *
- *   pnpm --filter @engine/migrate redirects:load -- --site gallery|shop|all [--dry-run] [--prune]
- *     [--unresolved-out <dir>]
+ *   pnpm --filter @engine/migrate redirects:load -- <gallery|shop|all> <dry-run|apply> [prune]
+ *     [unresolved-out=<dir>]
  *
- * `--dry-run` counts only, writing nothing. `--prune` also deletes a site's rows the current
- * inventory no longer produces (refused by default — a row an editor added by hand must not
- * vanish because this run forgot its `from`). `--unresolved-out <dir>` writes
- * `unresolved.<site>.json`, the shape the 9.4.c verification tool reads with `--unresolved`.
+ * `dry-run` counts only, writing nothing to the database. `prune` also deletes a site's rows the
+ * current inventory no longer produces (never implicit: it is a delete). `unresolved-out=<dir>`
+ * writes `unresolved.<site>.json`, the shape the 9.4.c verification tool reads with `--unresolved`
+ * (a dry run writes it too: it is the one file the run exists to hand over).
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { parseArgs } from 'node:util'
-
-import { cms } from '@engine/cms/instance'
 
 import { readCsvRecords } from '../sources/csv-products/legacy-urls/csv.mjs'
+import { parseLoadArgs } from './load-args.ts'
 import { loadRedirects, type LoadResult } from './load.ts'
 import type { SiteKey } from './normalise.ts'
 import { worksFromDb } from './works-from-db.ts'
@@ -41,8 +41,7 @@ function readGalleryUrls(tsvPath: string): string[] {
 }
 
 function readShopUrls(csvPath: string): string[] {
-  const text = readFileSync(csvPath, 'utf8')
-  const records = readCsvRecords(text)
+  const records = readCsvRecords(readFileSync(csvPath, 'utf8'))
   return records.map((record) => record.path ?? '')
 }
 
@@ -55,48 +54,51 @@ function writeUnresolved(outDir: string, site: SiteKey, unresolved: LoadResult['
   writeFileSync(resolve(outDir, `unresolved.${site}.json`), `${JSON.stringify(unresolved, null, 2)}\n`)
 }
 
-function printSummary(site: SiteKey, result: LoadResult): void {
+function printSummary(site: SiteKey, dryRun: boolean, result: LoadResult): void {
   console.log(
-    `${site}: ${result.rows} rows (${result.gone} gone, ${result.unresolved.length} unresolved) — ` +
-      `${result.created} created, ${result.updated} updated, ${result.unchanged} unchanged, ${result.pruned} pruned`,
+    `${site}${dryRun ? ' (dry run, nothing written)' : ''}: rows=${result.rows} gone=${result.gone} ` +
+      `unresolved=${result.unresolved.length} | created=${result.created} updated=${result.updated} ` +
+      `unchanged=${result.unchanged} pruned=${result.pruned}`,
   )
 }
 
-function parseSite(value: string | undefined): SiteKey[] {
-  if (value === 'gallery' || value === 'shop') return [value]
-  if (value === 'all') return ['gallery', 'shop']
-  throw new Error('usage: --site gallery|shop|all [--dry-run] [--prune] [--unresolved-out <dir>]')
+/** An error's text with any connection string taken out — a pg failure can echo one. */
+function scrub(message: string): string {
+  return message.replace(/\b[a-z][a-z0-9+.-]*:\/\/\S+/gi, '<url>')
 }
 
-let code = 0
-const payload = await cms()
-try {
-  const { values } = parseArgs({
-    args: process.argv.slice(2),
-    options: {
-      site: { type: 'string' },
-      'dry-run': { type: 'boolean', default: false },
-      prune: { type: 'boolean', default: false },
-      'unresolved-out': { type: 'string' },
-    },
-  })
-  const sites = parseSite(values.site)
-  const works = await worksFromDb(payload)
-  for (const site of sites) {
-    const result = await loadRedirects(payload, {
-      site,
-      urls: urlsFor(site),
-      works,
-      dryRun: values['dry-run'] === true,
-      prune: values.prune === true,
-    })
-    printSummary(site, result)
-    if (values['unresolved-out']) writeUnresolved(values['unresolved-out'], site, result.unresolved)
+async function main(): Promise<void> {
+  const args = parseLoadArgs(process.argv.slice(2))
+  for (const name of ['DATABASE_URL', 'PAYLOAD_SECRET']) {
+    if (!process.env[name]) throw new Error(`${name} is not set in the environment.`)
   }
-} catch (error) {
-  code = 1
-  console.error(`redirects:load: ${error instanceof Error ? error.message : String(error)}`)
-} finally {
-  await payload.destroy()
+  // Imported only now: the config reads the environment at load time.
+  const { cms } = await import('@engine/cms/instance')
+  const payload = await cms()
+  try {
+    const works = await worksFromDb(payload)
+    console.log(`works read: ${works.length} (${works.filter((work) => work.published).length} published)`)
+    for (const site of args.sites) {
+      const result = await loadRedirects(payload, {
+        site,
+        urls: urlsFor(site),
+        works,
+        dryRun: args.dryRun,
+        prune: args.prune,
+      })
+      printSummary(site, args.dryRun, result)
+      if (args.unresolvedOut !== null) writeUnresolved(args.unresolvedOut, site, result.unresolved)
+    }
+  } finally {
+    await payload.destroy()
+  }
 }
-process.exit(code)
+
+// Top-level await: `payload run` imports the script and exits — an un-awaited promise dies with it.
+try {
+  await main()
+  process.exit(0)
+} catch (error) {
+  console.error(`redirects:load: ${scrub(error instanceof Error ? error.message : String(error))}`)
+  process.exit(1)
+}
