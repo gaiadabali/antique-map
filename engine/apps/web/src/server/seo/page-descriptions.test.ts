@@ -26,27 +26,47 @@ type Case = {
 
 const CASES: readonly Case[] = [
   { site: 'gallery', page: 'home', description: (l) => galleryHomeText(l)('home.gallery.lede') },
-  { site: 'gallery', page: 'browse', description: (l) => galleryBrowseText(l)('browse.description') },
-  { site: 'gallery', page: 'search', description: (l) => galleryBrowseText(l)('browse.description') },
+  {
+    site: 'gallery',
+    page: 'browse',
+    description: (l) => galleryBrowseText(l)('browse.description'),
+  },
+  {
+    site: 'gallery',
+    page: 'search',
+    description: (l) => galleryBrowseText(l)('browse.description'),
+  },
   {
     site: 'gallery',
     page: 'maker',
     description: (l) => makerText(l)('makerPage.description', { name: 'Blaeu' }),
   },
-  { site: 'gallery', page: 'maker index', description: (l) => makerText(l)('makerPage.indexDescription') },
+  {
+    site: 'gallery',
+    page: 'maker index',
+    description: (l) => makerText(l)('makerPage.indexDescription'),
+  },
   {
     site: 'gallery',
     page: 'place',
     description: (l) => placeText(l)('placePage.description', { name: 'Batavia' }),
   },
-  { site: 'gallery', page: 'place index', description: (l) => placeText(l)('placePage.indexDescription') },
+  {
+    site: 'gallery',
+    page: 'place index',
+    description: (l) => placeText(l)('placePage.indexDescription'),
+  },
   { site: 'gallery', page: 'contact', description: (l) => contactText(l)('contact.lede') },
   { site: 'gallery', page: 'sell to us', description: (l) => contactText(l)('sellToUs.lede') },
   { site: 'shop', page: 'home', description: (l) => shopHomeText(l)('home.shop.lede') },
   { site: 'shop', page: 'browse', description: (l) => shopBrowseText(l)('browse.description') },
   { site: 'shop', page: 'search', description: (l) => shopBrowseText(l)('browse.description') },
   { site: 'shop', page: 'collection', description: (l) => shopBrowseText(l)('browse.description') },
-  { site: 'shop', page: 'product (no record text)', description: (l) => productText(l)('product.meta') },
+  {
+    site: 'shop',
+    page: 'product (no record text)',
+    description: (l) => productText(l)('product.meta'),
+  },
   { site: 'shop', page: 'partnership', description: (l) => partnershipText(l)('partnership.lede') },
 ]
 
