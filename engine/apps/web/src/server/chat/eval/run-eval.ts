@@ -9,12 +9,13 @@ import 'server-only'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import type { ChatModels } from '../env'
 import type { ChatModelClient } from '../ports'
 import { runCase } from './run-case'
 import { gradeCase } from './grade'
 import { loadRecording, saveRecording } from './recording'
 import { RecordedModel } from './recorded-model'
-import { CapturingModel, liveModel } from './live-model'
+import { CapturingModel, evalModels, liveModel } from './live-model'
 import { validateCase, type EvalCase } from './schema'
 import type { CaseResult, EvalReport } from './report'
 
@@ -59,7 +60,7 @@ async function runOneRecorded(evalCase: EvalCase): Promise<CaseResult> {
     }
   }
   const model = new RecordedModel(recording)
-  const outcome = await runCase(evalCase, model, () => model.nextTurn())
+  const outcome = await runCase(evalCase, model, () => model.nextTurn(), models)
   return toResult(evalCase, outcome)
 }
 
@@ -106,9 +107,10 @@ async function runOneLive(
   evalCase: EvalCase,
   client: ChatModelClient,
   record: boolean,
+  models: ChatModels,
 ): Promise<CaseResult> {
   const model = new CapturingModel(client, evalCase.id)
-  const outcome = await runCase(evalCase, model, () => model.nextTurn())
+  const outcome = await runCase(evalCase, model, () => model.nextTurn(), models)
   if (record) saveRecording(RECORDINGS_DIR, model.recording())
   return toResult(evalCase, outcome)
 }
@@ -125,13 +127,14 @@ export async function runEval(options: RunEvalOptions = {}): Promise<RunEvalResu
     if (client === null) {
       return { ok: false, reason: 'ANTHROPIC_API_KEY is unset: live mode needs a key' }
     }
+    const models = evalModels(env)
     let totalCost = 0
     for (const evalCase of cases) {
       if (totalCost >= maxUsd) {
         stoppedEarly = true
         break
       }
-      const result = await runOneLive(evalCase, client, options.record === true)
+      const result = await runOneLive(evalCase, client, options.record === true, models)
       results.push(result)
       totalCost += result.costUsd
     }

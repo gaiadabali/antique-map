@@ -9,7 +9,7 @@ import 'server-only'
 import { ConsentStore } from '../consent'
 import type { ChatDeps } from '../context'
 import { SpendLedger } from '../cost'
-import { chatModels } from '../env'
+import { chatModels, type ChatModels } from '../env'
 import { ChatLimiter } from '../limits'
 import { MemoryStore } from '../test-support/memory'
 import type { ChatModelClient } from '../ports'
@@ -34,13 +34,14 @@ export async function runCase(
   evalCase: EvalCase,
   model: ChatModelClient,
   beforeTurn?: () => void,
+  models: ChatModels = chatModels({}),
 ): Promise<CaseRunOutcome> {
   const reader = new EvalReader(evalCase.fixtures)
   const store = new MemoryStore()
   const deps: ChatDeps = {
     env: {},
     now: () => new Date(CLOCK),
-    models: chatModels({}),
+    models,
     model,
     turnstile: null,
     keys: null,
