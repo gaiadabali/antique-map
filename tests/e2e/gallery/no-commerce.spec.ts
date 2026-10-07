@@ -36,9 +36,11 @@ import {
 
 const PORT = process.env.E2E_PORT ?? '4200'
 const HOST = process.env.E2E_GALLERY_HOST ?? SITES.gallery.hostnames.local[0]
-const BASE_URL = `http://127.0.0.1:${PORT}`
-const ORIGIN = `http://${HOST}:${PORT}`
-const HOST_HEADER = { Host: `${HOST}:${PORT}` }
+/** A deployed gallery (`E2E_BASE_GALLERY`, as `support/env.ts`) is read at its own origin. */
+const REMOTE = process.env.E2E_BASE_GALLERY ? new URL(process.env.E2E_BASE_GALLERY).origin : null
+const BASE_URL = REMOTE ?? `http://127.0.0.1:${PORT}`
+const ORIGIN = REMOTE ?? `http://${HOST}:${PORT}`
+const HOST_HEADER = { Host: REMOTE ? new URL(REMOTE).host : `${HOST}:${PORT}` }
 
 const href = createHref(SITES.gallery)
 const LOCALES = SITES.gallery.locales.supported
