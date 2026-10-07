@@ -121,4 +121,30 @@ describe('the drafting photographs (8.3.a; AI.md §5)', () => {
     const missing = (async () => new Response('', { status: 404 })) as unknown as typeof fetch
     expect(await derivativeImageSource('https://media.example', missing).load(media)).toBeNull()
   })
+
+  it('reads no body declared over 8 MiB, and answers no image when the body fails mid-read', async () => {
+    let pulled = 0
+    const huge = (async () =>
+      new Response(
+        new ReadableStream({
+          pull(controller) {
+            pulled += 1
+            controller.enqueue(new Uint8Array(1024))
+          },
+        }),
+        { headers: { 'content-type': 'image/webp', 'content-length': String(64 * 1024 * 1024) } },
+      )) as unknown as typeof fetch
+    expect(await derivativeImageSource('https://media.example', huge).load(media)).toBeNull()
+    expect(pulled).toBeLessThan(4)
+    const broken = (async () =>
+      new Response(
+        new ReadableStream({
+          pull(controller) {
+            controller.error(new Error('reset'))
+          },
+        }),
+        { headers: { 'content-type': 'image/webp' } },
+      )) as unknown as typeof fetch
+    expect(await derivativeImageSource('https://media.example', broken).load(media)).toBeNull()
+  })
 })

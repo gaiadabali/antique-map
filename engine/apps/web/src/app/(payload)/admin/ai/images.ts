@@ -48,7 +48,15 @@ export function derivativeImageSource(
       }).catch(() => null)
       if (!response?.ok) return null
       if (!(response.headers.get('content-type') ?? '').startsWith('image/webp')) return null
-      const bytes = Buffer.from(await response.arrayBuffer())
+      // A declared size over the cap is not read at all; a body that fails mid-read is no image.
+      const declared = Number(response.headers.get('content-length') ?? '0')
+      if (Number.isFinite(declared) && declared > MAX_BYTES) {
+        await response.body?.cancel().catch(() => undefined)
+        return null
+      }
+      const body = await response.arrayBuffer().catch(() => null)
+      if (body === null) return null
+      const bytes = Buffer.from(body)
       if (bytes.length === 0 || bytes.length > MAX_BYTES) return null
       return { mediaId: media.id, mediaType: 'image/webp', data: bytes.toString('base64') }
     },
