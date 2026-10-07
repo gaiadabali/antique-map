@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.2.b the owner's dashboard, run 2 (shop panels) | Sonnet → Opus review (antique-map-f5) | `w/9.2b2` | 2026-10-06 | run 1 merged `d719732` (shell, periods, gallery panels; panels load one at a time for the pool); run 2 = sales, fulfilment, payments from orders; the shop funnel shows "no events yet" until the shop's server events exist (a separate ticket after 10.5) |
 | 9·W1 | 9.3.d / 9.4.c Checks | — | `main` | 2026-10-07 | 9.3.a–c and 9.4.a–b merged; both Checks run against staging (now live on `188996d` with the media pipeline): the metadata crawl and the 8,338-URL redirect verification |
 | 9·W1 | 9.1.e Check | orchestrator | `main` | 2026-10-07 | 9.1.a–d merged (`9ed28e1` inbox + partners, retention cron live on staging); the Check: a partnership lead moved to Closed, an editor refused the inbox, the retention job deletes only expired rows |
+| 8·W1 | 8.3 The CMS listing-drafting tool | senior-integrator | `w/8.3` | 2026-10-07 | |
 
 ## Decisions for the owner
 
@@ -637,7 +638,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 8.2.b the handoff card (WhatsApp, email) and the consent step before a lead is created; clear states for rate-limited, off (kill switch) and error
   - [ ] 8.2.c **Check:** on a production build at 390 px, from an item page the chat knows the item, answers a bilingual question, offers the WhatsApp handoff with the item in the text, and the lead form appears only on request; keyboard and screen-reader operable; axe clean.
 
-- [ ] **8.3 The CMS listing-drafting tool** · needs: phase 3
+- [ ] **8.3 The CMS listing-drafting tool** · needs: phase 3 — 🔄 8·W1
   - **Lane** AIX + CMS · **Agent** senior-integrator with senior-fe · **Wave** W1
   - **Owns** `engine/packages/cms/src/ai/**`, `engine/apps/web/src/app/api/x/draft/**`, `engine/apps/web/src/app/(payload)/admin/ai/**`
   - **Read** AI.md §Drafting, CONTENT-MODEL.md §3 `aiDraft`
