@@ -119,6 +119,9 @@ function start() {
     DATABASE_URL: url,
     PAYLOAD_SECRET: randomBytes(32).toString('base64url'),
     LINK_TOKEN_KEYS: get('LINK_TOKEN_KEYS') ?? `dev:${randomBytes(32).toString('base64url')}`,
+    // 6.6: the boot check requires it. A fresh key per start means an earlier run's email links
+    // stop opening, so set ORDER_LINK_KEY in .env.local to keep them across restarts.
+    ORDER_LINK_KEY: get('ORDER_LINK_KEY') ?? randomBytes(32).toString('base64url'),
     LOCAL_PRODUCTION_BUILD: '1',
   }
   const child = spawn('pnpm', ['--filter', '@engine/web', 'start', '--port', port], {

@@ -17,6 +17,10 @@ import type { CollectionConfig } from 'payload'
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
+import {
+  invalidateProductOnChange,
+  invalidateProductOnDelete,
+} from '../../hooks/product-invalidate'
 import { PRODUCTS_ACCESS } from './access'
 import { PRODUCT_CONSTRAINTS } from './constraints'
 import { PRODUCT_FIELDS } from './fields'
@@ -42,6 +46,10 @@ export const Products: CollectionConfig = {
   access: PRODUCTS_ACCESS,
   versions: { drafts: { validate: true } },
   custom: dbConstraints(...PRODUCT_CONSTRAINTS),
-  hooks: { beforeDelete: [refuseDeleteWhileSold] },
+  hooks: {
+    beforeDelete: [refuseDeleteWhileSold],
+    afterChange: [invalidateProductOnChange],
+    afterDelete: [invalidateProductOnDelete],
+  },
   fields: PRODUCT_FIELDS,
 }

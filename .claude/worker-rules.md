@@ -10,6 +10,7 @@ Read by every headless worker the global launcher starts here (`~/.claude/worker
 - **Migrated-database tests** (`admins.db.test.ts`, `instance.db.test.ts`, `owner-backstop.db.test.ts`) fail on any
   branch that adds or changes collections until the schema lead's migration lands (3.5). Report them as expected;
   do not try to fix them and never write a migration to make them pass.
+- **Run long commands in the foreground** (`pnpm verify`, `pnpm build`, db tests, e2e) with a long timeout. A headless run never receives a background-task notification: "waiting for the completion notification" ends the run with the work unfinished (am-5.3-s3, 2026-10-06).
 - **Never manage the dev stack's containers.** No `docker compose up/down/restart/rm`, `docker restart` or `docker run` for Postgres, Mailpit or RustFS — they are shared by every session, and a worktree's older `docker-compose.dev.yml` recreates the container for everyone (two outages on 2026-10-05/06). If the database is unreachable, stop and report it; do not try to fix it.
 - **Database tests:** `*.db.test.ts` need `CMS_TEST_POSTGRES_URL=postgres://postgres:postgres@127.0.0.1:5432/postgres` (use `127.0.0.1`, never `localhost`: a WSL relay answers `[::1]:5432` and `[::1]:9000` on this host, so `localhost` times out or hits the wrong server; the same goes for `S3_ENDPOINT`)
   (the local dev stack's container `indies-platform-dev-postgres-1`; each test creates and drops its own pushed

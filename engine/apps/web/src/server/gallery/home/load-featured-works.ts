@@ -26,6 +26,8 @@ import { cacheTags, catalogueTag, workTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
 
+import { PUBLIC_IMAGE_SELECT, publicImageUrl } from '../../media/public-image'
+
 export type FeaturedWork = {
   readonly title: string
   readonly publicId: number
@@ -54,7 +56,7 @@ export async function loadFeaturedWorks(_locale: SiteLocale): Promise<readonly F
       workUid: true,
       objectType: true,
       updatedAt: true,
-      images: { media: { url: true, alt: true } },
+      images: { media: PUBLIC_IMAGE_SELECT },
     },
   })
   cacheTags([
@@ -67,8 +69,7 @@ export async function loadFeaturedWorks(_locale: SiteLocale): Promise<readonly F
   ])
   return found.docs.map((work) => {
     // The `select` projection types `images` as `{}`; shape it here once, defensively.
-    const images = work.images as
-      readonly { media?: { url?: unknown; alt?: unknown } }[] | undefined
+    const images = work.images as readonly { media?: Record<string, unknown> }[] | undefined
     const media = images?.[0]?.media
     return {
       title: typeof work.title === 'string' ? work.title : '',
@@ -76,7 +77,8 @@ export async function loadFeaturedWorks(_locale: SiteLocale): Promise<readonly F
       workUid: typeof work.workUid === 'string' && work.workUid ? work.workUid : null,
       objectType: typeof work.objectType === 'string' ? work.objectType : null,
       publishedAt: work.updatedAt instanceof Date ? work.updatedAt.toISOString() : null,
-      imageUrl: typeof media?.url === 'string' ? media.url : null,
+      // The public derivative once the media pipeline has made it (`../../media/public-image`).
+      imageUrl: media ? publicImageUrl(media) : null,
       imageAlt: typeof media?.alt === 'string' && media.alt ? media.alt : '',
     }
   })

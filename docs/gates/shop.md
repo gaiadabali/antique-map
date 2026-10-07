@@ -1,4 +1,4 @@
-# Shop fulfilment gate — local interim; the staging run is pending
+# Shop fulfilment gate — passed on staging (7.4)
 
 Ticket 7.4-r2 (TASKS.md 7.4, 6.6), `qa` on the sonnet seat, branch `w/7.4r2`, 2026-10-06.
 `tests/e2e/shop-fulfilment/flow.spec.ts` drives one buyer-to-delivery journey across four roles (guest, the
@@ -30,7 +30,7 @@ priced Pay button. The spec now drives that step explicitly:
 ## Setup
 
 - `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm db:fresh`, then `pnpm --filter @engine/cms seed --layer
-  shop --publish` (stores, vocabulary, the `WELCOME10` discount). **The products CSV cannot publish**: every row
+shop --publish` (stores, vocabulary, the `WELCOME10` discount). **The products CSV cannot publish**: every row
   in `seed/shop/data/products.csv` carries an empty `image_files` (no real photography yet, AGENTS.md D19), and
   a product needs at least one image to publish — every row is rejected, as the ticket's own Verify block
   anticipated ("if the seed needs images, use the fixture route instead"). `ops.ts`'s `setup` op now makes up
@@ -74,16 +74,16 @@ fulfilment drive (paid → delivered): 4.8s
 
 ## Per clause (TASKS.md 7.4.a-c)
 
-| Clause | Evidence | Verdict |
-| --- | --- | --- |
-| Guest buys two in-stock products, pays (after a staff quote), reaches the order page | step 1; `buyer-bag-390.png`, `buyer-checkout-390.png`, `buyer-order-awaiting-quote-390.png`, `store-quote-sent-390.png`, `buyer-order-paid-390.png` | **PASS** |
+| Clause                                                                                      | Evidence                                                                                                                                                                 | Verdict  |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| Guest buys two in-stock products, pays (after a staff quote), reaches the order page        | step 1; `buyer-bag-390.png`, `buyer-checkout-390.png`, `buyer-order-awaiting-quote-390.png`, `store-quote-sent-390.png`, `buyer-order-paid-390.png`                      | **PASS** |
 | The nearest store fulfils: processing → waiting for driver → image → on the way → delivered | step 2; `store-order-new-390.png`, `store-driver-image-390.png`, `store-delivered-390.png`; `order.status` confirmed `delivered` at `accounts.storeAId` (`GATE_DB` read) | **PASS** |
-| The buyer tracks: timeline, driver image, store name, WhatsApp | step 3; `tracking-delivered-390.png`; axe clean at 390 and 1280 px | **PASS** |
-| Another store's user sees no such order | step 4; `store-b-empty-390.png`; `getByRole('link').filter({ hasText: '#<number>' })` count 0 | **PASS** |
-| The owner reassigns a second order to a store with stock | step 5; `buyer-second-order-paid-390.png`, `owner-reassigned-390.png`; `order.storeId` confirmed moved to the other fixture store (`GATE_DB` read) | **PASS** |
-| Screenshots at each step into `docs/gates/shop/` | all of the above, committed | **PASS** |
-| 7.4.b Lighthouse mobile (product, tracking) against staging | not attempted — needs a staging build | **PENDING** (orchestrator, against staging) |
-| 7.4.c Check: this doc, screenshots, emails, access denial, Lighthouse ≥ 90/100 | this doc + screenshots + access denial done; emails and Lighthouse pending staging | **PARTIAL** — never ticked by a worker regardless |
+| The buyer tracks: timeline, driver image, store name, WhatsApp                              | step 3; `tracking-delivered-390.png`; axe clean at 390 and 1280 px                                                                                                       | **PASS** |
+| Another store's user sees no such order                                                     | step 4; `store-b-empty-390.png`; `getByRole('link').filter({ hasText: '#<number>' })` count 0                                                                            | **PASS** |
+| The owner reassigns a second order to a store with stock                                    | step 5; `buyer-second-order-paid-390.png`, `owner-reassigned-390.png`; `order.storeId` confirmed moved to the other fixture store (`GATE_DB` read)                       | **PASS** |
+| Screenshots at each step into `docs/gates/shop/`                                            | all of the above, committed                                                                                                                                              | **PASS** |
+| 7.4.b Lighthouse mobile (product, tracking) against staging                                 | §Staging run: on release `188996d`, product 93 · 91 · 96, tracking 93 · 95 · 95, accessibility 100 on every run                                                          | **PASS** |
+| 7.4.c Check: this doc, screenshots, emails, access denial, Lighthouse ≥ 90/100              | §Staging run: 5/5, screenshots at 390 px, emails, access denial, Lighthouse ≥ 90 performance and 100 accessibility on both pages                                         | **PASS** |
 
 ## Findings
 
@@ -110,9 +110,60 @@ fulfilment drive (paid → delivered): 4.8s
 
 ## Staging run
 
-Unchanged from the spec's design (`E2E_BASE_URL`, `E2E_OWNER_EMAIL`/`_PASSWORD`,
-`E2E_STORE_A_EMAIL`/`_PASSWORD`, `E2E_STORE_B_EMAIL`/`_PASSWORD`, `E2E_PIN`, `MAILPIT_URL`) — the orchestrator
-fills this section once staging accounts exist.
+Orchestrator, 2026-10-06, against `https://old-east-indies.gaiada.com` on release
+`production-20261006T113705Z-52d8a6b` (main `52d8a6b`: 6.6, its follow-ups fu2–fu5, 5.2's media pipeline and the
+same-origin driver photo), after the 80 product images' derivatives were backfilled (`media:derivatives`: 80 ready,
+first attempt). Real staging accounts by environment (`E2E_OWNER_*`, `E2E_STORE_A_*` = a DPS-004 store user,
+`E2E_STORE_B_*` = a DPS-008 store user), `E2E_REASSIGN_STORE_ID=4` (staging has no fixture stores: the owner moves
+the second order to DPS-004, which stocks it), `MAILPIT_URL` = staging's Mailpit through an SSH tunnel.
+
+```
+  ok 1 › a guest buys two in-stock products, pays, and reaches the order page (39.5s)
+  ok 2 › the nearest store fulfils: processing → waiting for driver → image → on the way → delivered (14.5s)
+  ok 3 › the buyer tracks the order: timeline, driver image, store name and WhatsApp (5.8s)
+  ok 4 › another store's user sees no such order (18.3s)
+  ok 5 › the owner reassigns a second order to another store with stock (1.4m)
+  5 passed (3.3m)
+```
+
+Screenshots of this run at 390 px: `docs/gates/shop/staging/` (the local run's stay in `docs/gates/shop/`).
+
+**Emails** (staging Mailpit, order #100011 driven through the real admin, and every gate order since): one email
+per status — "Order #n — update" on placement, "your delivery price is ready" after Send price, "update" on payment
+— each sent once (`order_notifications` holds one claim per status); every link in them opens the same order (the
+same token, stored encrypted); the store's users get one "New order #n" on payment. The gate itself reads the
+order number from the placement email.
+
+**Access denial:** step 4 — the DPS-008 user's queue has no link to the DPS-004 order.
+
+**The driver photo** is served from the shop's own origin (`/api/x/track/{token}/driver-image`: 200 `image/webp`,
+`private, no-store`, `nosniff`) — no internal storage URL reaches the page.
+
+**Lighthouse 12, mobile, default simulated throttling**, run from a container on the staging host (the
+workstation's own connection was too unsteady to measure: 44–93 on one page), 3 runs each:
+
+| Page                                                    | Performance         | Accessibility   | LCP   | TBT        |
+| ------------------------------------------------------- | ------------------- | --------------- | ----- | ---------- |
+| Tracking (`/track/{token}`, a delivered order)          | 93 · 93 · 92        | 100 · 100 · 100 | 2.4 s | 240–270 ms |
+| Product (`/product/island-chart-reproduction-wayang-2`) | 69 (cold) · 87 · 88 | 100 · 100 · 100 | 2.7 s | 370–380 ms |
+
+On the first measurement (release `52d8a6b`) the product page scored 87–88: a product-page-only chunk shipped all of
+`zod` (87 KB gzip) and both sites' lexicon JSON (52 KB gzip) to the browser, and the lead image was fetched at Low
+priority (Next 16's `priority` sets no `fetchpriority`). Fixed in `188996d` (the product route's client JS halved,
+1.2 MB → 0.6 MB raw; the lead image `fetchpriority="high"`) and re-measured on release
+`production-20261006T152204Z-188996d`, same host, same settings:
+
+| Page     | Performance  | Accessibility   | LCP       | TBT        |
+| -------- | ------------ | --------------- | --------- | ---------- |
+| Product  | 93 · 91 · 96 | 100 · 100 · 100 | 2.0–2.7 s | 210–270 ms |
+| Tracking | 93 · 95 · 95 | 100 · 100 · 100 | 2.3–2.4 s | 190–260 ms |
+
+Found on the way (all fixed): the staging cron called the app without a Host header, so the order-expiry sweep
+and payment reconcile answered 404 for a day (`e51c536`); the checkout lost a typed pin submitted before its
+reverse geocode answered and wiped the form on any refusal (6-followup-4); store users never saw an
+`awaiting_quote` order (6-followup-3); product photos pointed at a staff-only URL and the driver photo at the
+internal storage endpoint (6-followup-5, `ade4379`); the tracking timeline printed raw ISO timestamps
+(`2a3cb76`).
 
 ## Verify
 

@@ -113,9 +113,24 @@ const QUOTE_READY_SUBJECT: Record<Lang, (orderNumber: number) => string> = {
   id: (n) => `Pesanan #${n} — ongkos kirim Anda sudah siap`,
 }
 
-const QUOTE_READY_LINE: Record<Lang, (total: string) => string> = {
-  en: (total) => `Your price is ready: ${total}.`,
-  id: (total) => `Harga Anda sudah siap: ${total}.`,
+const QUOTE_READY_INTRO: Record<Lang, string> = {
+  en: 'Your price is ready:',
+  id: 'Harga Anda sudah siap:',
+}
+
+const ITEMS_LINE: Record<Lang, (amount: string) => string> = {
+  en: (amount) => `Items: ${amount}`,
+  id: (amount) => `Barang: ${amount}`,
+}
+
+const DELIVERY_FEE_LINE: Record<Lang, (amount: string) => string> = {
+  en: (amount) => `Delivery: ${amount}`,
+  id: (amount) => `Pengiriman: ${amount}`,
+}
+
+const TOTAL_LINE: Record<Lang, (amount: string) => string> = {
+  en: (amount) => `Total: ${amount}`,
+  id: (amount) => `Total: ${amount}`,
 }
 
 const PAY_BY_LINE: Record<Lang, (time: string) => string> = {
@@ -134,6 +149,9 @@ export type QuoteReadyEmailInput = {
   readonly to: string
   readonly locale: Lang
   readonly orderNumber: number
+  /** `totals.subtotal − totals.discount`: the items' own total, before delivery. */
+  readonly itemsTotalIdr: number
+  readonly deliveryFeeIdr: number
   readonly totalIdr: number
   /** `orders.expiresAt`, the buyer's new payment window; `null` shows no deadline sentence. */
   readonly payBy: string | null
@@ -154,7 +172,10 @@ export function quoteReadyEmail(input: QuoteReadyEmailInput): MailMessage {
   const lines = [
     GREETING[lang],
     '',
-    QUOTE_READY_LINE[lang](rupiahOf(input.totalIdr)),
+    QUOTE_READY_INTRO[lang],
+    ITEMS_LINE[lang](rupiahOf(input.itemsTotalIdr)),
+    DELIVERY_FEE_LINE[lang](rupiahOf(input.deliveryFeeIdr)),
+    TOTAL_LINE[lang](rupiahOf(input.totalIdr)),
     ...(payByText === null ? [] : [PAY_BY_LINE[lang](payByText)]),
     '',
     `${PAY_LINE[lang]} ${input.payUrl}`,

@@ -6,7 +6,7 @@
  * (`../hosts`), never from a request.
  */
 import type { LocaleCode } from '../../constants'
-import { FACET_KEYS, type FacetKey, type SortKey } from '../../schema/facets'
+import { FACET_KEYS, type FacetKey, type SortKey } from '../../constants/facets'
 import type { LinkSurface, SegmentSurface } from './surfaces'
 import type { LocaleSegments, RouteConfig, RouteMap } from './types'
 
@@ -43,6 +43,7 @@ export type HrefParams = {
   partnership: NoParams
   stores: NoParams
   sellToUs: NoParams
+  contact: NoParams
   page: { slug: string }
 }
 

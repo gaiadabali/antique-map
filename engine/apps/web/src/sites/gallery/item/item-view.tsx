@@ -41,12 +41,21 @@ export function ItemViewComposition({
   work,
   locale,
   askHref,
+  emailHref,
+  emailAddress,
+  contactMissing,
   browseHref,
 }: {
   readonly work: ItemView
   readonly locale: SiteLocale
-  /** TODO(5.3): the WhatsApp builder's address replaces the plain contact page. */
+  /** The WhatsApp builder's `wa.me` address, or the Contact page when no number has arrived. */
   readonly askHref: string
+  /** The `mailto:` address beside the Ask button, or `null` while no address has arrived. */
+  readonly emailHref?: string | null
+  /** The gallery's address, shown as the mail link's text. */
+  readonly emailAddress?: string | null
+  /** True when neither channel has arrived yet (OA2): the panel then shows the placeholder. */
+  readonly contactMissing?: boolean
   readonly browseHref: string
 }): React.ReactElement {
   const t = itemText(locale)
@@ -85,6 +94,7 @@ export function ItemViewComposition({
                 variant="fill"
                 aspectRatio={`${lead.width ?? 4} / ${lead.height ?? 3}`}
                 src={lead.url}
+                srcSet={lead.srcSet}
                 alt={lead.alt}
                 sizes="(max-width: 1023px) 100vw, 55vw"
                 priority
@@ -103,7 +113,14 @@ export function ItemViewComposition({
         </div>
 
         <div className={styles.side}>
-          <AskPanel work={work} locale={locale} askHref={askHref} />
+          <AskPanel
+            work={work}
+            locale={locale}
+            askHref={askHref}
+            emailHref={emailHref ?? null}
+            emailAddress={emailAddress ?? null}
+            contactMissing={contactMissing ?? false}
+          />
           <ItemRecord work={work} locale={locale} />
           <p className={styles.browseMore}>
             <TextLink href={browseHref}>{t('item.browse')}</TextLink>

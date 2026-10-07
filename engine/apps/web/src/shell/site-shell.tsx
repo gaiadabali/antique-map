@@ -212,7 +212,7 @@ function SiteFooter({
           { label: 'footer.stories', href: (l) => href('story', {}, l) },
           { label: 'footer.sellToUs', href: (l) => href('sellToUs', {}, l) },
           { label: 'footer.about', href: () => page('about') },
-          { label: 'footer.contact', href: () => page('contact') },
+          { label: 'footer.contact', href: (l) => href('contact', {}, l) },
         ]
       : [
           { label: 'footer.shop', href: (l) => href('browse', {}, l) },

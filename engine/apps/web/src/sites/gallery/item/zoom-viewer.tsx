@@ -12,7 +12,9 @@
 import OpenSeadragon from 'openseadragon'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { ZoomShell } from '../../../shared/ui'
+// From its own folder, never the `shared/ui` barrel: a Client Component importing the barrel
+// ships every shared component to the browser (5.5 Lighthouse follow-up).
+import { ZoomShell } from '../../../shared/ui/zoom-shell'
 import styles from './item.module.css'
 import type { ZoomViewerProps } from './zoom-lazy'
 
@@ -32,6 +34,10 @@ export function ZoomViewer({ images, labels }: ZoomViewerProps): React.ReactElem
     const viewer = OpenSeadragon({
       element,
       tileSources: current.infoUrl ?? { type: 'image', url: current.viewerSrc },
+      // Tiles and derivatives come from the media origin, not the page's: fetched without CORS
+      // they taint the WebGL drawer ("Error creating texture") and the canvas stays black. The
+      // bucket answers CORS for anonymous GETs; no credentials are ever sent to it.
+      crossOriginPolicy: 'Anonymous',
       showNavigationControl: false,
       gestureSettingsTouch: { pinchToZoom: true, flickEnabled: false },
       visibilityRatio: 0.9,

@@ -10,6 +10,7 @@ import type { Payload } from 'payload'
 
 import type { SiteLocale } from '@engine/config/sites'
 
+import { derivativeSrcSetOf, PUBLIC_IMAGE_SELECT, publicImageUrl } from '../../media/public-image'
 import { dateTextOf } from './date-reading'
 import type { CardImage, CardMaker, CardPlace, WorkCardVM } from './view-models'
 
@@ -23,7 +24,7 @@ export const WORK_CARD_SELECT = {
   date: { precision: true, from: true, to: true, display: true },
   dimensions: { image: { height: true, width: true }, sheet: { height: true, width: true } },
   status: true,
-  images: { media: { url: true, alt: true, width: true, height: true } },
+  images: { media: PUBLIC_IMAGE_SELECT },
   publicId: true,
   workUid: true,
   stockNumber: true,
@@ -74,13 +75,17 @@ export function dimensionsLine(
 
 const mediaOf = (value: unknown): CardImage | null => {
   if (typeof value !== 'object' || value === null) return null
-  const media = value as { url?: unknown; alt?: unknown; width?: unknown; height?: unknown }
-  if (typeof media.url !== 'string' || typeof media.alt !== 'string') return null
+  const media = value as Record<string, unknown>
+  // The public derivative once the media pipeline has made it, else the record's own file.
+  const url = publicImageUrl(media)
+  if (url === null || typeof media.alt !== 'string') return null
+  const srcSet = derivativeSrcSetOf(media)
   return {
-    url: media.url,
+    url,
     alt: media.alt,
     width: int(media.width),
     height: int(media.height),
+    ...(srcSet !== null ? { srcSet } : {}),
   }
 }
 

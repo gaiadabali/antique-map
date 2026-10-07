@@ -23,6 +23,13 @@
  * The invalidation hooks run last, so nothing after them in this collection can throw on a save
  * that has already queued its tags (a throw keeps them all the same — over-invalidating costs one
  * recompute, `@engine/cache` batch).
+ *
+ * **Immediate expiry (5.3sold).** A sold, on-hold or available-again work must not show its old
+ * "Ask about this" even once (EXPERIENCE-GALLERY.md §9), so a save that moves `status` between
+ * `available` / `on-hold` / `sold`, or that publishes or unpublishes the work, invalidates with
+ * `{ now: true }` — gone at once, rather than `work:<uid>`'s usual stale-while-revalidate. A save
+ * that only edits the work's text or images keeps the default: the next request may still be
+ * served the old page once while a fresh one is computed.
  */
 import { catalogueTag, invalidate, workTag, type CacheTag } from '@engine/cache'
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
@@ -30,7 +37,7 @@ import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'paylo
 import { WORK_UID_PATTERN } from '../validators/work-record'
 import { changedPublishedState } from './published-state'
 
-type WorkDoc = { workUid?: unknown; _status?: unknown } | null | undefined
+type WorkDoc = { workUid?: unknown; _status?: unknown; status?: unknown } | null | undefined
 
 /** The gallery's listings: every published work's change can add to, drop from or reorder one. */
 const GALLERY_CATALOGUE = catalogueTag('gallery')
@@ -44,10 +51,32 @@ export function worksListingTags(doc: WorkDoc, previous?: WorkDoc): CacheTag[] {
   return [...[...uids].map(workTag), GALLERY_CATALOGUE]
 }
 
+const statusOf = (doc: WorkDoc) => (typeof doc?.status === 'string' ? doc.status : undefined)
+const publishedStateOf = (doc: WorkDoc) =>
+  typeof doc?._status === 'string' ? doc._status : undefined
+
+/**
+ * Whether `doc` moved between `available` / `on-hold` / `sold`, or was published or unpublished —
+ * the transitions EXPERIENCE-GALLERY.md §9 must never show stale, as opposed to an edit that
+ * leaves both where they were.
+ */
+export function isStatusTransition(doc: WorkDoc, previous?: WorkDoc): boolean {
+  const status = statusOf(doc)
+  const previousStatus = statusOf(previous)
+  if (status !== undefined && previousStatus !== undefined && status !== previousStatus) {
+    return true
+  }
+  return publishedStateOf(doc) !== publishedStateOf(previous)
+}
+
 export const invalidateWorkOnChange: CollectionAfterChangeHook = async (args) => {
   const { doc, previousDoc, context } = args
   if (!(await changedPublishedState(args))) return doc
-  invalidate(worksListingTags(doc as WorkDoc, previousDoc as WorkDoc), context)
+  const workDoc = doc as WorkDoc
+  const previousWorkDoc = previousDoc as WorkDoc
+  invalidate(worksListingTags(workDoc, previousWorkDoc), context, {
+    now: isStatusTransition(workDoc, previousWorkDoc),
+  })
   return doc
 }
 

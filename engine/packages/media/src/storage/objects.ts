@@ -5,6 +5,7 @@
  */
 import {
   DeleteObjectCommand,
+  GetObjectCommand,
   HeadObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
@@ -17,7 +18,15 @@ export type PutOutcome = 'written' | 'denied'
 
 export interface BucketObjects {
   readonly bucket: string
-  put(key: string, body: Uint8Array | string, contentType?: string): Promise<PutOutcome>
+  /** `cacheControl` rides on the object: the public prefixes' are immutable (C9 content addresses). */
+  put(
+    key: string,
+    body: Uint8Array | string,
+    contentType?: string,
+    cacheControl?: string,
+  ): Promise<PutOutcome>
+  /** The object's bytes, or null when the bucket holds nothing at `key`. */
+  get(key: string): Promise<Uint8Array | null>
   /** The object's size in bytes, or null when the bucket holds nothing at `key`. */
   size(key: string): Promise<number | null>
   remove(key: string): Promise<void>
@@ -47,14 +56,29 @@ export function s3BucketObjects(
   const Bucket = target.bucket
   return {
     bucket: Bucket,
-    async put(key, body, contentType) {
+    async put(key, body, contentType, cacheControl) {
       try {
         await client.send(
-          new PutObjectCommand({ Bucket, Key: key, Body: body, ContentType: contentType }),
+          new PutObjectCommand({
+            Bucket,
+            Key: key,
+            Body: body,
+            ContentType: contentType,
+            ...(cacheControl ? { CacheControl: cacheControl } : {}),
+          }),
         )
         return 'written'
       } catch (error) {
         if (isDenied(error)) return 'denied'
+        throw error
+      }
+    },
+    async get(key) {
+      try {
+        const object = await client.send(new GetObjectCommand({ Bucket, Key: key }))
+        return object.Body ? await object.Body.transformToByteArray() : new Uint8Array()
+      } catch (error) {
+        if (isMissing(error)) return null
         throw error
       }
     },

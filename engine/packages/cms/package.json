@@ -31,6 +31,7 @@
     "seed": "payload run src/seed/cli.ts --",
     "seed:purge": "payload run src/seed/purge-cli.ts",
     "gallery:sample": "payload run src/seed/gallery/sample.ts",
+    "media:derivatives": "payload run src/collections/media/derivatives-cli.ts --",
     "generate:types": "payload generate:types && prettier --write --log-level warn payload-types.ts",
     "generate:importmap": "payload run src/registries/import-map.ts",
     "migrate": "payload migrate",

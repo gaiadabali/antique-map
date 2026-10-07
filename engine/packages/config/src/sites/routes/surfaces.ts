@@ -43,6 +43,8 @@ export const SURFACE_ROUTES = {
   partnership: { internal: 'partnership' },
   stores: { internal: 'stores' },
   sellToUs: { internal: 'sell-to-us' },
+  /** The gallery's contact page (5.3): the form's app page, not a CMS `pages` record. */
+  contact: { internal: 'contact' },
   /** A CMS page at its own slug, `/{slug}`. */
   page: { internal: 'page/[slug]' },
   notFound: { internal: null },

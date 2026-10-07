@@ -9,7 +9,7 @@ import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 import type { ProductVM } from '../../../server/shop/catalogue/view-models'
 import { Breadcrumbs, ResponsiveImage, TextLink } from '../../../shared/ui'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
-import { productText } from './copy'
+import { productText, variantPickerText } from './copy'
 import styles from './product.module.css'
 import { VariantPicker, type PickerVariant } from './variant-picker'
 
@@ -73,6 +73,7 @@ export function ProductView({
             sizes="(max-width: 767px) 100vw, 50vw"
             priority
             className={styles.leadImage}
+            unoptimized
           />
         )}
         {rest.length > 0 && (
@@ -86,6 +87,7 @@ export function ProductView({
                 alt={image.alt}
                 sizes="(max-width: 767px) 33vw, 120px"
                 className={styles.thumb}
+                unoptimized
               />
             ))}
           </div>
@@ -102,7 +104,7 @@ export function ProductView({
         <VariantPicker
           productId={product.id}
           sku={product.sku}
-          locale={locale}
+          text={variantPickerText(text)}
           variants={variants}
           productPriceText={priceText}
           available={product.available}

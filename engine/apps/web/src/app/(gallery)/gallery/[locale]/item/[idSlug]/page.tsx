@@ -18,8 +18,15 @@ import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 import { loadItem } from '../../../../../../server/gallery/item/load-item'
 import type { ItemView } from '../../../../../../server/gallery/item/view-model'
 import { pageMetadata } from '../../../../../../server/seo'
+import { loadSiteSettings } from '../../../../../../server/site-settings'
 import { siteLocale } from '../../../../../../shell/messages'
 import { currentSite } from '../../../../../../shell/site'
+import {
+  itemMessage,
+  soldMessage,
+  talkLinks,
+} from '../../../../../../sites/gallery/contact/handoff'
+import { contactText } from '../../../../../../sites/gallery/contact/messages'
 import { itemText } from '../../../../../../sites/gallery/item/copy'
 import { ItemViewComposition } from '../../../../../../sites/gallery/item/item-view'
 
@@ -90,12 +97,34 @@ export default async function GalleryItem(props: Props) {
   const { locale, parsed, work } = page
   // One address: the slug the work carries now, whatever the visitor asked with.
   if (parsed.slug !== work.slug) permanentRedirect(itemHref(work, locale))
+  // The Ask panel's handoff (5.3): a WhatsApp link whose message names the work, an email link
+  // beside it, and — until the gallery's channels arrive (OA2) — the Contact page instead.
+  const [site, settings] = await Promise.all([
+    currentSite('gallery'),
+    loadSiteSettings('gallery', locale),
+  ])
+  const url = site.origin === null ? null : `${site.origin}${itemHref(work, locale)}`
+  const message =
+    work.status === 'sold'
+      ? soldMessage(contactText(locale), {
+          stockNumber: work.stockNumber ?? '',
+          title: work.title,
+          url: url ?? itemHref(work, locale),
+        })
+      : itemMessage(contactText(locale), {
+          stockNumber: work.stockNumber ?? '',
+          title: work.title,
+          url: url ?? itemHref(work, locale),
+        })
+  const links = talkLinks(settings.contact, message)
   return (
     <ItemViewComposition
       work={work}
       locale={locale}
-      // TODO(5.3): the WhatsApp builder's address replaces the plain contact page.
-      askHref={href('page', { slug: 'contact' }, locale)}
+      askHref={links.wa ?? href('contact', {}, locale)}
+      emailHref={links.mail}
+      emailAddress={links.address}
+      contactMissing={links.wa === null && links.mail === null}
       browseHref={href('browse', {}, locale)}
     />
   )

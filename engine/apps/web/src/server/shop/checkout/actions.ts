@@ -25,6 +25,7 @@ import { CODE_COOKIE_NAME, parseCodeCookie } from '../bag/code-cookie'
 import { displayFor, type BagDisplay } from '../bag/display'
 import { siteHref } from '../../../shell/site'
 import { checkoutText, type CheckoutText } from '../../../sites/shop/checkout/copy'
+import { valuesFromForm, type CheckoutFormValues } from './form-values'
 import { refusalCopy } from './refusal-text'
 
 /** What the submit returned while it did not redirect: the words to show and the fields to mark. */
@@ -32,6 +33,8 @@ export type SubmitState = {
   readonly ok: false
   readonly message: string
   readonly fields: readonly string[]
+  /** What the buyer typed, echoed back so a refusal never wipes the form (6-followup-4 #3). */
+  readonly values: CheckoutFormValues
 }
 
 const empty = (value: FormDataEntryValue | null): string => (typeof value === 'string' ? value : '')
@@ -106,5 +109,6 @@ export async function submitOrderAction(_prev: unknown, formData: FormData): Pro
     ok: false,
     message: rendered(text, refusalCopy(created, nameOf)),
     fields: created.refusal === 'invalid_details' ? created.fields : [],
+    values: valuesFromForm(formData),
   }
 }

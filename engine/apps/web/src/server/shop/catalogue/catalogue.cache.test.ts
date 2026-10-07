@@ -43,3 +43,23 @@ describe('no cached catalogue read takes availability', () => {
     })
   }
 })
+
+describe('every shop catalogue cache scope carries the shop listing tag', () => {
+  const source = readFileSync(join(__dirname, 'catalogue.ts'), 'utf8')
+  const fns = functionsOf(source)
+  const cached = fns.filter((fn) => fn.body.includes("'use cache'"))
+
+  it('has cached functions to check', () => {
+    expect(cached.length).toBeGreaterThan(0)
+  })
+
+  for (const fn of cached) {
+    it(`${fn.name} tags cacheTags([CATALOGUE]) (catalogueTag('shop'))`, () => {
+      expect(fn.body).toMatch(/cacheTags\(\[CATALOGUE\]\)/)
+    })
+  }
+
+  it("CATALOGUE is catalogueTag('shop')", () => {
+    expect(source).toMatch(/const CATALOGUE = catalogueTag\('shop'\)/)
+  })
+})

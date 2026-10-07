@@ -256,7 +256,10 @@ test.describe.serial('the shop fulfilment gate (7.4.a)', () => {
     if (GATE_DB) {
       await select.selectOption({ value: String(target) })
     } else {
-      await select.selectOption({ index: 0 })
+      // Staging has no fixture stores: the orchestrator names one that stocks the product
+      // (E2E_REASSIGN_STORE_ID) — the first option may hold none, and the admin rightly refuses.
+      const to = process.env.E2E_REASSIGN_STORE_ID
+      await select.selectOption(to ? { value: to } : { index: 0 })
     }
     await page.getByRole('button', { name: /^Confirm reassignment$/ }).click()
     await page.waitForURL('**/admin/orders/**')

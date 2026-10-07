@@ -1,8 +1,9 @@
 /**
  * Derivative generation (TASKS.md 5.2.a): AVIF and WebP at the contract's width ladder,
- * EXIF GPS and every other metadata stripped, never upscaled. Pure library — the upload
- * hook (a later task) feeds it the processed upload and puts the results under the keys
- * returned here in the public `derivatives/` prefix (ARCHITECTURE.md §8).
+ * EXIF GPS and every other metadata stripped, never upscaled. Pure library — the media
+ * pipeline (`../pipeline`, wired to the upload by `@engine/cms`'s media hooks) feeds it the
+ * processed upload and puts the results under the keys returned here in the public
+ * `derivatives/` prefix (ARCHITECTURE.md §8).
  */
 import sharp from 'sharp'
 
@@ -33,6 +34,12 @@ export interface MakeDerivativesOptions {
    * (`<width>.<format>`), which the caller composes into a full key once it knows the id.
    */
   id?: string
+  /**
+   * The public long edge (the gallery's `publicZoomMaxPx`): no derivative is taller or wider
+   * than this, so a tall sheet's top rung never exceeds the cap the deep zoom keeps. Unset, the
+   * width ladder alone bounds the output.
+   */
+  maxLongEdge?: number
 }
 
 /**
@@ -46,13 +53,17 @@ export function isLowResolution(width: number, height: number): boolean {
 
 /**
  * The widths worth rendering for a source this wide, ascending and unique: the ladder
- * rungs at or under the source, plus the source width itself once — so the largest
- * derivative is always the whole picture (ARCHITECTURE.md §8: an image no longer than
- * the largest derivative opens in the viewer from that derivative).
+ * rungs at or under the source, plus the source width itself once when it is narrower than
+ * the ladder's top — so a small image's largest derivative is the whole picture
+ * (ARCHITECTURE.md §8: an image no longer than the largest derivative opens in the viewer
+ * from that derivative). A source wider than the top rung stops at the top rung: its full
+ * width is the private upload's, never a public derivative's.
  */
 export function derivativeWidthsFor(sourceWidth: number, widths: readonly number[]): number[] {
-  const rungs = [...new Set(widths.filter((w) => w > 0 && w <= sourceWidth))].sort((a, b) => a - b)
-  if (!rungs.includes(sourceWidth)) rungs.push(sourceWidth)
+  const usable = widths.filter((w) => w > 0)
+  const rungs = [...new Set(usable.filter((w) => w <= sourceWidth))].sort((a, b) => a - b)
+  const top = Math.max(0, ...usable)
+  if (sourceWidth < top && !rungs.includes(sourceWidth)) rungs.push(sourceWidth)
   return rungs
 }
 
@@ -88,7 +99,12 @@ export async function makeDerivatives(
   for (const width of derivativeWidthsFor(sourceWidth, widths)) {
     for (const format of DERIVATIVE_FORMATS) {
       const pipeline = sharp(input).rotate().toFormat(format)
-      if (width < sourceWidth) pipeline.resize({ width, withoutEnlargement: true })
+      const cap = opts?.maxLongEdge
+      if (cap !== undefined && Math.max(width, (width * sourceHeight) / sourceWidth) > cap) {
+        pipeline.resize({ width, height: cap, fit: 'inside', withoutEnlargement: true })
+      } else if (width < sourceWidth) {
+        pipeline.resize({ width, withoutEnlargement: true })
+      }
       const rendered = await pipeline.toBuffer({ resolveWithObject: true })
       // AVIF is a HEIF container: sharp reports the container, not the coding.
       const reported =

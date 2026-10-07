@@ -7,6 +7,7 @@ import type { SiteLocale } from '@engine/config/sites'
 
 import { Price, ResponsiveImage, StatusTimeline, TextLink } from '../../../shared/ui'
 import type { TrackingView } from '../../../server/shop/tracking/load-tracking'
+import { baliDateTime } from './bali-datetime'
 import { trackingText } from './copy'
 import styles from './tracking.module.css'
 
@@ -32,7 +33,7 @@ export function TrackingPage({
   const steps = view.steps.map((step) => ({
     key: step.key,
     label: text(`tracking.status.${step.key}`),
-    at: step.at ?? undefined,
+    at: baliDateTime(step.at, view.locale),
   }))
 
   return (
@@ -65,6 +66,7 @@ export function TrackingPage({
             src={view.driverImageUrl}
             alt={text('tracking.driverTitle')}
             sizes="320px"
+            unoptimized
           />
         </div>
       )}
