@@ -1,23 +1,15 @@
 /**
- * The gallery's one end-to-end collector journey (TASKS.md 5.5.a; EXPERIENCE-GALLERY.md §4-§8):
- * search → item → zoom → Ask (link text) → Sell to us (a lead and the owner's email), at 390 px and
- * 1280 px, in English and Indonesian — four `test()`s sharing one fixture, run `serial`.
- *
- * - **Search** starts at the home page, then the search page: the header has no search box yet
- *   (a product gap, reported), so the visitor types the historical place name into `/search`'s
- *   own field. Nothing in the work's title, alt or place name says "Batavia" — only the place's
- *   historical name does (`support/fixtures.ts`).
- * - **Zoom** asserts the viewer opens and draws the image (a 200 derivative from the media
- *   origin, no "cannot be opened" notice). The recto is 1×1 px, so there are no tiles — those are
- *   5.2.e's claim. The viewer has no close (Esc) yet: reported, not pretended.
- * - **Ask** is the exact lexicon `whatsapp.item` message for this work and its canonical address.
- * - **Sell to us** is reached from the footer; the send answers 201, one `sell` lead exists (owner
- *   REST read), and exactly one more Mailpit message reaches the run's notify address.
- *
- * Fixtures: `support/fixtures.ts` (place, grade, published work + draft twin) and the run's test
- * channels in site-settings, restored and read back in `afterAll`; each lead is deleted with the
- * ledger, and the run's Mailpit messages are deleted too. Local or remote (`support/env.ts`).
+ * The gallery's collector journey (TASKS.md 5.5.a; EXPERIENCE-GALLERY.md §4-§8): search → item →
+ * zoom → Ask → Sell to us, at 390 and 1280 px, in en and id. Home first, then `/search`'s own field
+ * (the header has no search yet — reported); only the place's historical name says "Batavia".
+ * Zoom: the viewer opens and draws its 1320 px recto (no tiles under 2400 px — 5.2.e's claim); it
+ * has no close (Esc) yet — reported. Ask is the exact lexicon `whatsapp.item` text. Sell to us, from
+ * the footer: 201, one `sell` lead (owner read) and exactly one more Mailpit message to the run's
+ * notify address. Fixtures: `support/fixtures.ts`, the journey's own recto, the test channels in
+ * site-settings (restored and read back); leads and the run's mails are deleted. `support/env.ts`.
  */
+import { readFileSync } from 'node:fs'
+
 import {
   expect,
   request as newRequest,
@@ -51,8 +43,9 @@ type Locale = keyof typeof LEXICON
 const say = (locale: Locale, key: keyof typeof en): string => LEXICON[locale][key]
 const MAILPIT_URL = process.env.MAILPIT_URL ?? 'http://127.0.0.1:8025'
 const TEST_WHATSAPP = '+6590000001'
-/** `support/fixtures.ts`'s published recto alt — the viewer's `role="group"` name once it opens. */
-const RECTO_ALT = 'A harbour chart, whole sheet'
+/** The journey's own recto (a real 1320×970 map) and its alt: the viewer's `role="group"` name. */
+const RECTO_FILE = 'docs/design/input/claude-design-2026-09/assets/about-map.jpeg'
+const RECTO_ALT = 'E2E 5.5a recto, a map of the archipelago'
 const SHOTS = 'docs/reports/workers/5.5a'
 const WIDTHS = [
   { width: 390, height: 844 },
@@ -65,7 +58,9 @@ async function shoot(page: Page, name: string) {
   await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: true, animations: 'disabled' })
 }
 
-test.describe.configure({ mode: 'serial' })
+// One worker (`--workers=1`): the run's site-settings channels are shared. Not `serial`, so a
+// failed width or locale still lets the other three run and report.
+test.describe.configure({ mode: 'default' })
 
 test.describe('The gallery journey (5.5.a)', () => {
   test.setTimeout(180_000)
@@ -124,32 +119,43 @@ test.describe('The gallery journey (5.5.a)', () => {
     })
     expect(patch.status(), "owner sets the gallery's test channels").toBe(200)
 
-    const title = encodeURIComponent(fx.publishedTitle)
-    type Work = { id: number; images: { media: number }[] }
-    const { docs } = (await owner(`/api/works?where[title][equals]=${title}&depth=0`)) as {
-      docs: Work[]
-    }
-    expect(docs, 'the published fixture').toHaveLength(1)
-    // A plain PATCH merges the fixture's own draft revision in unless both are named again.
-    const stock = await api.patch(`${BASE_URL}/api/works/${docs[0]!.id}`, {
+    // A real recto: the shared fixture's 1×1 PNG fails the derivative pipeline (reported), and
+    // the public page shows only a derivative. On the ledger's far end, so it goes after the work.
+    const recto = await api.post(`${BASE_URL}/api/media`, {
       headers: auth(),
-      data: { stockNumber, title: fx.publishedTitle, _status: 'published' },
-    })
-    expect(stock.status(), "PATCH the work's stock number").toBe(200)
-    // The public image is the recto's derivative: wait (failing hard) for the pipeline.
-    const media = docs[0]!.images[0]!.media
-    await expect
-      .poll(
-        async () =>
-          ((await owner(`/api/media/${media}?depth=0`)) as { derivatives?: { status?: string } })
-            .derivatives?.status,
-        {
-          message: `media ${media} derivatives ready`,
-          timeout: 180_000,
-          intervals: [2_000],
+      multipart: {
+        _payload: JSON.stringify({
+          alt: RECTO_ALT,
+          altSource: 'cataloguer',
+          subject: 'work',
+          role: 'recto',
+          provenance: 'photograph',
+        }),
+        file: {
+          name: `e2e-55a-recto-${stamp}.jpeg`,
+          mimeType: 'image/jpeg',
+          buffer: readFileSync(RECTO_FILE),
         },
-      )
-      .toBe('ready')
+      },
+    })
+    expect(recto.status(), 'upload the journey recto').toBe(201)
+    const media = ((await recto.json()) as { doc: { id: number } }).doc.id
+    ledger.created.unshift({ collection: 'media', id: media })
+
+    const title = encodeURIComponent(fx.publishedTitle)
+    const found = (await owner(`/api/works?where[title][equals]=${title}&depth=0`)) as {
+      docs: { id: number }[]
+    }
+    expect(found.docs, 'the published fixture').toHaveLength(1)
+    // A plain PATCH merges the fixture's own draft revision in unless both are named again.
+    const work = await api.patch(`${BASE_URL}/api/works/${found.docs[0]!.id}`, {
+      headers: auth(),
+      data: { stockNumber, images: [{ media }], title: fx.publishedTitle, _status: 'published' },
+    })
+    expect(work.status(), "PATCH the work's stock number and recto").toBe(200)
+    type Media = { derivatives?: { status?: string } }
+    const status = async () => ((await owner(`/api/media/${media}`)) as Media).derivatives?.status
+    await expect.poll(status, { message: 'derivatives', timeout: 180_000 }).toBe('ready')
   })
 
   test.afterAll(async () => {
@@ -223,17 +229,15 @@ test.describe('The gallery journey (5.5.a)', () => {
         await expect(page.getByText(say(locale, 'price.onRequest'), { exact: true })).toBeVisible()
         if (shots) await shoot(page, `${locale}-3-item`)
 
-        // zoom
-        const images: { url: string; status: number }[] = []
-        page.on('response', (r) => {
-          if (/\/derivatives\//.test(r.url())) images.push({ url: r.url(), status: r.status() })
-        })
+        // zoom: the viewer opens and draws (soft, so a failure still runs Ask and Sell to us)
+        const cors: string[] = []
+        page.on('console', (m) => void (/cors/i.test(m.text()) && cors.push(m.text())))
         await page.getByRole('button', { name: say(locale, 'item.viewerOpen') }).click()
         await expect(page.getByRole('group', { name: RECTO_ALT })).toBeVisible()
-        await expect
-          .poll(() => images.some((r) => r.status === 200), { timeout: 20_000 })
-          .toBe(true)
-        await expect(page.getByText(say(locale, 'item.viewerFailed'))).toHaveCount(0)
+        await page.waitForLoadState('networkidle') // the item page has no Turnstile
+        const failed = page.getByText(say(locale, 'item.viewerFailed'))
+        await expect.soft(failed, 'the viewer opens the image').toHaveCount(0)
+        expect.soft(cors, 'no CORS error').toEqual([])
         if (shots) await shoot(page, `${locale}-4-zoom`)
 
         // Ask: the exact lexicon message, naming this work and its canonical address
@@ -276,25 +280,17 @@ test.describe('The gallery journey (5.5.a)', () => {
         // one `sell` lead (owner REST read), on the ledger for deletion
         type Lead = { id: number; kind: string; site: string; payload: { email: string } }
         const email = encodeURIComponent(sellerEmail)
-        const { docs } = (await owner(
-          `/api/leads?where[payload.email][equals]=${email}&depth=0`,
-        )) as {
-          docs: Lead[]
-        }
+        const leads = `/api/leads?where[payload.email][equals]=${email}&depth=0`
+        const { docs } = (await owner(leads)) as { docs: Lead[] }
         for (const lead of docs) ledger.created.push({ collection: 'leads', id: lead.id })
         expect(docs, 'exactly one lead for the one send').toHaveLength(1)
-        expect(docs[0]).toMatchObject({
-          kind: 'sell',
-          site: 'gallery',
-          payload: { email: sellerEmail },
-        })
+        const lead = { kind: 'sell', site: 'gallery', payload: { email: sellerEmail } }
+        expect(docs[0]).toMatchObject(lead)
 
         // and exactly one more email to the owner's notify address
+        const sent = async () => (await mails()).length
         await expect
-          .poll(async () => (await mails()).length, {
-            message: `the owner's email (${label})`,
-            timeout: 30_000,
-          })
+          .poll(sent, { message: "the owner's email", timeout: 30_000 })
           .toBe(mailsBefore + 1)
       })
     }
