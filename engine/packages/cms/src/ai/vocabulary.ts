@@ -48,10 +48,21 @@ function pick(names: readonly string[], candidates: readonly Candidate[]) {
   return { ids, unmatched }
 }
 
+/**
+ * A model-written name as a `like` term. The adapter wraps each space-separated word in `%…%`
+ * without escaping, so `%`, `_` and `\` would be wildcards and an empty word (two spaces) would
+ * match every row: they become spaces, and the spaces collapse.
+ */
+export function likeTerm(name: string): string {
+  return name.replace(/[%_\\]/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 /** `like` finds the candidates (case-insensitive); the exact match is `pick()`'s. */
-const anyOf = (paths: readonly string[], names: readonly string[]): Where => ({
-  or: names.flatMap((name) => paths.map((path) => ({ [path]: { like: name } }))),
+const anyOf = (paths: readonly string[], terms: readonly string[]): Where => ({
+  or: terms.flatMap((term) => paths.map((path) => ({ [path]: { like: term } }))),
 })
+
+const termsOf = (names: readonly string[]) => names.map(likeTerm).filter((term) => term !== '')
 
 export async function matchVocabulary(
   payload: Payload,
@@ -61,25 +72,27 @@ export async function matchVocabulary(
 ): Promise<VocabularyMatches> {
   const places = unique(placeNames)
   const subjects = unique(subjectNames)
+  const placeTerms = termsOf(places)
+  const subjectTerms = termsOf(subjects)
   const common = { overrideAccess: false, user, depth: 0, limit: 50, pagination: false } as const
-  const placeDocs = places.length
+  const placeDocs = placeTerms.length
     ? (
         await payload.find({
           collection: 'places',
           ...common,
           locale: 'en',
-          where: anyOf(['name', 'historicalNames.name'], places),
+          where: anyOf(['name', 'historicalNames.name'], placeTerms),
           select: { name: true, historicalNames: true },
         } as Parameters<Payload['find']>[0])
       ).docs
     : []
-  const termDocs = subjects.length
+  const termDocs = subjectTerms.length
     ? (
         await payload.find({
           collection: 'terms',
           ...common,
           locale: 'en',
-          where: { and: [{ kind: { equals: 'subject' } }, anyOf(['label'], subjects)] },
+          where: { and: [{ kind: { equals: 'subject' } }, anyOf(['label'], subjectTerms)] },
           select: { label: true },
         } as Parameters<Payload['find']>[0])
       ).docs
