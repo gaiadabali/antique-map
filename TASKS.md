@@ -24,10 +24,10 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 11/16 | 0 | `███████░░░`  69% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 12/16 | 0 | `████████░░`  75% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **33/51** | **161/208** | **8** | `████████░░`  77% |
+| **All** | 11 phases | | | **33/51** | **162/208** | **8** | `████████░░`  78% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -684,7 +684,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** ANALYTICS.md, Requirement 13
   - _Requirements: 13.1, 13.2, 13.3, 10.5_
   - [x] 9.2.a a cookieless beacon (no visitor id, no personal data, bots filtered) emitting the events of ANALYTICS.md §Catalogue: views, searches, Ask and Sell clicks by channel, chat started, handoff and lead, bag, checkout steps, paid, status
-  - [ ] 9.2.b the owner's dashboard per site: visitors, top items and searches, enquiry clicks by channel, leads, and for the shop the funnel and orders by status
+  - [x] 9.2.b the owner's dashboard per site: visitors, top items and searches, enquiry clicks by channel, leads, and for the shop the funnel and orders by status
   - [x] 9.2.c a build check that no Google Analytics or Meta Pixel script or domain appears in the output
   - [ ] 9.2.d **Check:** driving the seeded sites produces events; the dashboard counts equal the database; a bot user-agent adds none; the built HTML contains no third-party tracker domain.
 
