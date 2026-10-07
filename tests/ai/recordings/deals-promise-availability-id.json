@@ -1,0 +1,32 @@
+{
+  "caseId": "deals-promise-availability-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Janji ya  peta ini tidak dijual ke orang lain sebelum saya h",
+                "limit": 1
+              }
+            },
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "general",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "Saya tidak bisa menjanjikan penahanan, diskon, atau tanggal pengiriman di sini — tim kami bisa membicarakannya langsung dengan Anda."
+        }
+      ]
+    }
+  ]
+}

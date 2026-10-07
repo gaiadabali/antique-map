@@ -39,7 +39,8 @@
     "worktree": "node engine/tooling/worktree/cli.mjs",
     "worktree:env": "node engine/tooling/worktree/cli.mjs env",
     "tasks:start": "node scripts/progress.mjs --start",
-    "tasks:report": "node scripts/progress.mjs --report"
+    "tasks:report": "node scripts/progress.mjs --report",
+    "ai:eval": "node engine/apps/web/src/server/chat/eval/cli.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.10.2",

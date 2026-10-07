@@ -1,0 +1,10 @@
+{
+  "caseId": "bad-off-domain-link",
+  "violation": "an off-domain link",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [{ "text": "You can buy it directly here: https://evil.example/pay" }]
+    }
+  ]
+}

@@ -4,7 +4,7 @@
  * the beacon's taps, never added to them.
  */
 import { text, word } from './copy'
-import { formatNumber, formatRupiah } from './format'
+import { formatNumber } from './format'
 import { Empty, Panel, Ranked, S, Stat } from './ui'
 
 export function AsksPanel({ data, language, title }) {
@@ -102,29 +102,6 @@ export function ChatPanel({ data, language }) {
         language={language}
         label={(key) => word(language, key)}
       />
-    </Panel>
-  )
-}
-
-/** A shop panel that arrives with the checkout events: a stub, not a broken grid. */
-export function StubPanel({ titleKey, language, business }) {
-  const t = (key) => text(language, key)
-  return (
-    <Panel title={t(titleKey)} note={t('stub')}>
-      {business ? (
-        <>
-          <p style={S.muted}>{t('businessNote')}</p>
-          <div style={S.stats}>
-            <Stat label={t('paidOrders')} value={business.paidOrders} language={language} />
-            <Stat
-              label={t('revenue')}
-              value={business.revenue}
-              language={language}
-              format={(n) => formatRupiah(n, language)}
-            />
-          </div>
-        </>
-      ) : null}
     </Panel>
   )
 }

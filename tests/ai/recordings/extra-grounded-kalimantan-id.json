@@ -1,0 +1,24 @@
+{
+  "caseId": "extra-grounded-kalimantan-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Tunjukkan peta Kalimantan tua",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Berikut beberapa yang sesuai — silakan lihat di bawah."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "caseId": "handoff-order-status-en",
+  "turns": [
+    {
+      "classifierLabel": "order_status",
+      "calls": [
+        {
+          "text": "I'll pass this to the team so they can help you directly."
+        }
+      ]
+    }
+  ]
+}

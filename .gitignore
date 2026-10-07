@@ -66,3 +66,6 @@ desktop.ini
 !.vscode/settings.json
 *.swp
 *.log
+
+# AI eval run outputs (8.4b) — the gate doc quotes the run, the files stay local
+tests/ai/out/

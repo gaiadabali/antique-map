@@ -9,6 +9,7 @@ import { getPayload, type Payload } from 'payload'
 import {
   makeOrder,
   makeProduct,
+  tokenHash,
 } from '../../../../../../packages/cms/src/collections/stock-levels/shop.test-support'
 import {
   server,
@@ -120,3 +121,83 @@ export async function makeWork(
 }
 
 export { makeOrder, makeProduct }
+
+/**
+ * A shop order with the fields the run-2 panels read (`storeSnapshot`, `distanceKm`, `history`,
+ * `payment`) that `makeOrder` does not set — written through the Local API with access overridden,
+ * as the order code itself writes one (COMMERCE.md §8). A fresh `number` and `trackingTokenHash`
+ * each call, so two orders from the same test never collide.
+ */
+export async function makeShopOrder(
+  t: Dashboardish,
+  productId: number,
+  input: {
+    store: number
+    storeCode: string
+    status: string
+    subtotal: number
+    deliveryFee?: number
+    discount?: number
+    distanceKm?: number
+    paidAt?: string
+    method?: string
+    createdAt: string
+    history?: ReadonlyArray<{ from?: string; to: string; at: string }>
+  },
+): Promise<{ id: number }> {
+  const deliveryFee = input.deliveryFee ?? 15000
+  const discount = input.discount ?? 0
+  const total = input.subtotal - discount + deliveryFee
+  return (await t.payload.create({
+    collection: 'orders',
+    data: {
+      number: Math.floor(Date.now() * 1000 + Math.random() * 1000),
+      site: 'shop',
+      lines: [
+        {
+          product: productId,
+          sku: 'OEI-MUG',
+          name: 'A product',
+          unitPrice: input.subtotal,
+          qty: 1,
+          lineTotal: input.subtotal,
+        },
+      ],
+      contact: { name: 'Buyer', whatsapp: '+6281234567890', email: 'b@example.test', locale: 'en' },
+      delivery: { address: 'Jl. Raya Ubud 1', lat: -8.5, lng: 115.26 },
+      store: input.store,
+      storeSnapshot: { code: input.storeCode, name: input.storeCode },
+      distanceKm: input.distanceKm ?? 1,
+      totals: { subtotal: input.subtotal, discount, deliveryFee, total },
+      discount: discount > 0 ? { code: 'WELCOME', kind: 'fixed', value: discount } : undefined,
+      status: input.status,
+      history: input.history ?? [],
+      payment: { paidAt: input.paidAt, method: input.method },
+      trackingTokenHash: tokenHash(),
+      createdAt: input.createdAt,
+    } as never,
+    overrideAccess: true,
+  })) as unknown as { id: number }
+}
+
+/** One `payment-events` row, as the webhook would insert it — a fresh `dedupeKey` each call. */
+export async function makePaymentEvent(
+  t: Dashboardish,
+  outcome: string,
+  receivedAt: string,
+): Promise<void> {
+  const key = `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  await t.payload.create({
+    collection: 'payment-events',
+    data: {
+      provider: 'midtrans',
+      dedupeKey: `dedupe-${key}`,
+      midtransOrderId: `${key}-1`,
+      transactionStatus: 'settlement',
+      source: 'webhook',
+      outcome,
+      receivedAt,
+    } as never,
+    overrideAccess: true,
+  })
+}
