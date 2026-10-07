@@ -109,6 +109,8 @@ export const ALLOWED_PRICE_PHRASES: readonly string[] = [
   ...lexiconValues(galleryId as Record<string, string>),
   'price on request',
   'harga atas permintaan',
+  // The Sell-to-us page: the gallery buys FROM the visitor; it sells nothing online.
+  (galleryEn as Record<string, string>)['sellToUs.lede']!,
 ]
 
 /** The element attributes the scan reads (ticket: href, aria-label, title, alt, placeholder, value). */
