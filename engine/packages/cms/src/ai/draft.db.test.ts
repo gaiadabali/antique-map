@@ -98,12 +98,9 @@ describe.skipIf(!server)('the drafting tool on a real database (8.3.a–b)', () 
     expect(response.status).toBe(422)
     expect(await json(response)).toEqual({ ok: false, code: 'unusable_reply' })
     const after = await s.stored(work.id)
-    expect(after).toMatchObject({
-      title: before.title ?? null,
-      condition: { grade: s.ids.grade },
-      askingPrice: before.askingPrice ?? null,
-      provenance: [],
-    })
+    expect(after).toMatchObject({ condition: { grade: s.ids.grade }, provenance: [] })
+    expect(after.title).toBe(before.title)
+    expect(after.askingPrice).toBe(before.askingPrice)
     expect(after.updatedAt).toBe(before.updatedAt)
   }, 60_000)
 
