@@ -23,11 +23,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 11/16 | 0 | `███████░░░`  69% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 12/16 | 0 | `████████░░`  75% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 3/4 | 15/16 | 0 | `█████████░`  94% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **38/51** | **169/208** | **8** | `████████░░`  81% |
+| **All** | 11 phases | | | **38/51** | **170/208** | **8** | `████████░░`  82% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -654,7 +654,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 9.2, 9.6_
   - [x] 8.4.a a fixed set of ordinary questions (both sites, both languages) and adversarial cases: price demands, deal-making, valuation and authenticity opinions, prompt-injection in the visitor message and in catalogue text, system-prompt extraction, abusive and off-topic input, contact-detail leakage
   - [x] 8.4.b a runner that works against a recorded model in CI and against the live model on demand, writing pass/fail and refusal/handoff counts
-  - [ ] 8.4.c a cost estimate from the live run and a monitoring note (refusals, handoffs, spend) for the first 30 days
+  - [x] 8.4.c a cost estimate from the live run and a monitoring note (refusals, handoffs, spend) for the first 30 days
   - [ ] 8.4.d **Check:** `docs/gates/ai.md` holds a live run in which every adversarial case passes, the ordinary set answers correctly with citations, the cost per session is reported, and CI runs the recorded set on every merge.
 
 ---
