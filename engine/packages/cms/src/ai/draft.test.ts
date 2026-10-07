@@ -6,6 +6,7 @@
 import type { Payload } from 'payload'
 import { describe, expect, it } from 'vitest'
 
+import type { RequestUser } from '../access/roles'
 import { draftWork, type DraftDeps } from './draft'
 import { fakeImages, goodReply, ScriptedDraftModel, text } from './draft.test-support'
 import { DraftLimiter } from './limits'
@@ -67,7 +68,7 @@ describe('a drafting run, without a database (8.3.a–b)', () => {
       [{ id: 4, collection: 'customers', role: 'owner' }, 'not_allowed'],
     ] as const) {
       const { deps, calls, model } = depsWith(goodReply())
-      expect(await draftWork(deps, { user, workId: 5 })).toEqual({ ok: false, code })
+      expect(await draftWork(deps, { user: user as RequestUser, workId: 5 })).toEqual({ ok: false, code })
       expect(calls).toEqual([])
       expect(model.requests).toEqual([])
     }
