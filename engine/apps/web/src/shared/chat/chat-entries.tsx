@@ -5,7 +5,7 @@
  * card, and a handoff button. A handoff's `href` is re-checked against the allowlist (§3.3) before
  * it is ever rendered as a link — a href that fails is dropped rather than shown broken or unsafe.
  */
-import { isAllowedHandoffHref } from './chat-client'
+import { isAllowedCardHref, isAllowedHandoffHref } from './chat-client'
 import type { ChatEntry } from './chat-reducer'
 
 export function ChatEntries({
@@ -47,14 +47,14 @@ function ChatEntryView({
         </p>
       )
     case 'card':
-      return (
+      return isAllowedCardHref(entry.card.url, origin) ? (
         <a data-chat-role="card" href={entry.card.url}>
           {entry.card.image !== null && <img src={entry.card.image} alt="" />}
           <span>{entry.card.title}</span>
           {entry.card.statusLabel !== undefined && <span>{entry.card.statusLabel}</span>}
           {entry.card.priceLabel !== undefined && <span>{entry.card.priceLabel}</span>}
         </a>
-      )
+      ) : null
     case 'handoff':
       return isAllowedHandoffHref(entry.href, origin) ? (
         <a data-chat-role="handoff" data-channel={entry.channel} href={entry.href}>

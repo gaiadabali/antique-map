@@ -49,10 +49,10 @@ export async function startChatSession(input: {
     return {
       ok: false,
       code: error?.code ?? 'unavailable',
-      message: error?.message ?? 'The assistant is unavailable at the moment.',
+      message: error?.message ?? '',
     }
   } catch {
-    return { ok: false, code: 'unavailable', message: 'The assistant is unavailable at the moment.' }
+    return { ok: false, code: 'unavailable', message: '' }
   }
 }
 
@@ -138,7 +138,30 @@ export function sendChatMessage(
 
 /** Links only to our own origin, `wa.me` or `mailto:` (AI.md §3.3) — the client re-checks too. */
 export function isAllowedHandoffHref(href: string, ownOrigin: string): boolean {
-  if (href.startsWith('https://wa.me/')) return true
   if (href.startsWith('mailto:')) return true
-  return ownOrigin !== '' && href.startsWith(ownOrigin)
+  const url = parseUrl(href)
+  if (url === null) return false
+  if (url.protocol === 'https:' && url.host === 'wa.me') return true
+  return isOwnOrigin(url, ownOrigin)
+}
+
+/** A card links only into our own site: a same-origin path or an absolute URL on our origin. */
+export function isAllowedCardHref(href: string, ownOrigin: string): boolean {
+  if (href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/\\')) return true
+  const url = parseUrl(href)
+  return url !== null && isOwnOrigin(url, ownOrigin)
+}
+
+function parseUrl(href: string): URL | null {
+  try {
+    return new URL(href)
+  } catch {
+    return null
+  }
+}
+
+function isOwnOrigin(url: URL, ownOrigin: string): boolean {
+  if (ownOrigin === '') return false
+  const own = parseUrl(ownOrigin)
+  return own !== null && url.origin === own.origin
 }

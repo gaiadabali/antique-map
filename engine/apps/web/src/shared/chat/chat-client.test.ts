@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { isAllowedHandoffHref, postConsent, sendChatMessage } from './chat-client'
+import { isAllowedCardHref, isAllowedHandoffHref, postConsent, sendChatMessage } from './chat-client'
 
 function jsonResponse(body: unknown, headers: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), { status: 200, headers })
@@ -100,5 +100,17 @@ describe('isAllowedHandoffHref', () => {
     expect(isAllowedHandoffHref(`${origin}/contact`, origin)).toBe(true)
     expect(isAllowedHandoffHref('https://evil.example.net/phish', origin)).toBe(false)
     expect(isAllowedHandoffHref('javascript:alert(1)', origin)).toBe(false)
+    expect(isAllowedHandoffHref(`${origin}.evil.example/phish`, origin)).toBe(false)
+    expect(isAllowedHandoffHref('https://wa.me.evil.example/x', origin)).toBe(false)
+    expect(isAllowedHandoffHref('http://wa.me/6281234567890', origin)).toBe(false)
+  })
+
+  it('a card links only into our own site', () => {
+    const origin = 'https://gallery.example.com'
+    expect(isAllowedCardHref('/product/1-x', origin)).toBe(true)
+    expect(isAllowedCardHref(`${origin}/item/1-x`, origin)).toBe(true)
+    expect(isAllowedCardHref('//evil.example/x', origin)).toBe(false)
+    expect(isAllowedCardHref(`${origin}.evil.example/x`, origin)).toBe(false)
+    expect(isAllowedCardHref('javascript:alert(1)', origin)).toBe(false)
   })
 })
