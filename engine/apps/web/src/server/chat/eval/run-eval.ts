@@ -60,7 +60,7 @@ async function runOneRecorded(evalCase: EvalCase): Promise<CaseResult> {
     }
   }
   const model = new RecordedModel(recording)
-  const outcome = await runCase(evalCase, model, () => model.nextTurn(), models)
+  const outcome = await runCase(evalCase, model, () => model.nextTurn())
   return toResult(evalCase, outcome)
 }
 
