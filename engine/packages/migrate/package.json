@@ -16,14 +16,17 @@
     "legacy:mysql": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/sources/laravel-catalogue/cli.ts",
     "legacy:public-read": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/sources/public-read/cli.ts",
     "legacy:normalise": "node --experimental-strip-types --disable-warning=ExperimentalWarning src/normalise/cli.ts",
-    "legacy-urls": "cd ../../.. && node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs"
+    "legacy-urls": "cd ../../.. && node engine/packages/migrate/src/sources/csv-products/legacy-urls/cli.mjs",
+    "redirects:load": "payload run src/redirects/load-cli.ts --"
   },
   "devDependencies": {
     "@types/node": "26.6.3"
   },
   "dependencies": {
+    "@engine/cms": "workspace:*",
     "@engine/config": "workspace:*",
     "@engine/view-models": "workspace:*",
-    "node-html-parser": "9.0.4"
+    "node-html-parser": "9.0.4",
+    "payload": "3.90.2"
   }
 }
