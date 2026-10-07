@@ -7,6 +7,7 @@ import type { Field } from 'payload'
 import { describe, expect, it } from 'vitest'
 
 import { DRAFTED_ACCESS, publishedOrStaff } from '../../access/published'
+import { stampAiDraft } from '../../ai/audit'
 import { VOCABULARY_ACCESS } from '../terms/vocabulary/access'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
@@ -255,6 +256,8 @@ describe('every save passes the same hooks, on every write path', () => {
       holdWorkReferences,
       assignWorkUid,
       assignPublicId,
+      // 8.3: who verified each AI-drafted field, stamped before the guards read it.
+      stampAiDraft,
       stampCataloguing,
       guardWork,
     ])
