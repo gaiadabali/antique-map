@@ -27,6 +27,20 @@ export type CaseRunOk = {
 export type CaseRunFail = { readonly ok: false; readonly reason: string }
 export type CaseRunOutcome = CaseRunOk | CaseRunFail
 
+/**
+ * A case whose fixtures hold exactly one item is an item-page question ("describe this work"): the
+ * real widget passes that page's item id as `viewingItemId`, so the runner does the same. Cases
+ * with several (or no) items open the chat from no particular page.
+ */
+export function viewingItemOf(
+  evalCase: EvalCase,
+  idOfFixture: ReadonlyMap<string, string>,
+): string | null {
+  const items = [...(evalCase.fixtures?.works ?? []), ...(evalCase.fixtures?.products ?? [])]
+  const only = items.length === 1 ? items[0] : undefined
+  return only ? (idOfFixture.get(only.id) ?? null) : null
+}
+
 const CLOCK = Date.parse('2026-10-07T03:00:00.000Z')
 export const EVAL_CANARY = 'cnry-EVALCANARY'
 
@@ -75,7 +89,7 @@ export async function runCase(
         site: evalCase.site,
         locale: evalCase.locale,
         text: turn.text,
-        viewingItemId: null,
+        viewingItemId: viewingItemOf(evalCase, reader.idOfFixture),
         signal: new AbortController().signal,
         emit: (event) => events.push(event),
       })

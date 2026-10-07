@@ -10,6 +10,13 @@ import console from 'node:console'
 import process from 'node:process'
 import { createServer } from 'vite'
 
+function listFlag(argv, name) {
+  const i = argv.indexOf(name)
+  const v = i >= 0 ? argv[i + 1] : argv.find((a) => a.startsWith(`${name}=`))?.slice(name.length + 1)
+  const list = v?.split(',').map((x) => x.trim()).filter(Boolean)
+  return list?.length ? list : undefined
+}
+
 function parseArgs(argv) {
   const live = argv.includes('--live')
   const record = argv.includes('--record')
@@ -19,7 +26,13 @@ function parseArgs(argv) {
     const eq = flag.indexOf('=')
     maxUsd = Number(eq >= 0 ? flag.slice(eq + 1) : argv[argv.indexOf(flag) + 1])
   }
-  return { live, record, maxUsd: Number.isFinite(maxUsd) ? maxUsd : undefined }
+  return {
+    live,
+    record,
+    maxUsd: Number.isFinite(maxUsd) ? maxUsd : undefined,
+    only: listFlag(argv, '--only'),
+    group: listFlag(argv, '--group'),
+  }
 }
 
 async function main() {

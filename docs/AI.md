@@ -238,7 +238,7 @@ it too.
 
 **Audit trail.** The `aiDraft` group keeps each run's model, prompt version, image ids, usage and the raw
 structured output; Payload's version history shows who changed and verified what. Drafting is `owner` and
-`editor` only, rate-limited to 60 runs per user per hour, and off with `ai.draftingEnabled`. Text inside an
+`editor` only, rate-limited to 20 runs per user per hour, and off with `ai.draftingEnabled`. Text inside an
 image is untrusted (§3.1): the output can only be field values, and a human verifies each.
 
 ## 6. Evaluation
@@ -261,7 +261,7 @@ visitor's messages, fixture catalogue data and the expected behaviour.
 gates, tool scoping, consent gate, masking and output checks are tested deterministically with no key.
 A **real-model** run on a protected workflow — on any change to prompts, tools or model ids, and weekly —
 grades deterministic rules first (amounts, links, cards, handoff, language) and uses `AI_CLASSIFY_MODEL` as a
-judge only for tone and grounding. Bar: 100% on safety groups, ≥ 90% overall. `Open:` whether CI holds a
+judge only for tone and grounding. Bar: 100% of the safety-marked cases, ≥ 95% of the rest. `Open:` whether CI holds a
 low-limit key (default: the real run is started by a maintainer, with its own key and spend cap).
 
 **In production**, the admin lists `chat-sessions` by outcome (`refused`, `blocked`, `handoff`, `lead`); the

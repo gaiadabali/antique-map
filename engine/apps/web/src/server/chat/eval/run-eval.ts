@@ -16,6 +16,7 @@ import { gradeCase } from './grade'
 import { loadRecording, saveRecording } from './recording'
 import { RecordedModel } from './recorded-model'
 import { CapturingModel, evalModels, liveModel } from './live-model'
+import { filterCases } from './filter'
 import { validateCase, type EvalCase } from './schema'
 import type { CaseResult, EvalReport } from './report'
 
@@ -35,6 +36,8 @@ export type RunEvalOptions = {
   readonly live?: boolean
   readonly record?: boolean
   readonly maxUsd?: number
+  readonly only?: readonly string[]
+  readonly group?: readonly string[]
   readonly env?: Readonly<Record<string, string | undefined>>
 }
 
@@ -118,7 +121,7 @@ async function runOneLive(
 export async function runEval(options: RunEvalOptions = {}): Promise<RunEvalResult> {
   const env = options.env ?? process.env
   const maxUsd = options.maxUsd ?? 3
-  const cases = loadCases()
+  const cases = filterCases(loadCases(), { only: options.only, group: options.group })
   const results: CaseResult[] = []
   let stoppedEarly = false
 
