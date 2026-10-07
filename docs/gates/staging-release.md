@@ -107,17 +107,26 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 
 ## Releases cut this way
 
-| Release                               | Commit                             | Migrations                       | Result                      |
-| ------------------------------------- | ---------------------------------- | -------------------------------- | --------------------------- |
-| `production-20261006T152204Z-188996d` | 188996d                            | none new                         | healthy; 7.4 gate           |
-| `production-20261007T022819Z-ce91e51` | ce91e51 (5.3sold)                  | none new (5 applied = 5 in repo) | healthy, try 1              |
-| `production-20261007T030310Z-61b3b26` | 61b3b26 (5.3sold + `/browse` perf) | none new                         | healthy, try 1; smoke below |
+| Release                               | Commit                                   | Migrations                       | Result                      |
+| ------------------------------------- | ---------------------------------------- | -------------------------------- | --------------------------- |
+| `production-20261006T152204Z-188996d` | 188996d                                  | none new                         | healthy; 7.4 gate           |
+| `production-20261007T022819Z-ce91e51` | ce91e51 (5.3sold)                        | none new (5 applied = 5 in repo) | healthy, try 1              |
+| `production-20261007T030310Z-61b3b26` | 61b3b26 (5.3sold + `/browse` perf)       | none new                         | healthy, try 1; smoke below |
+| `production-20261007T042810Z-ec9cea9` | ec9cea9 (39ac792: sold meta description) | none new (5 = 5)                 | healthy, try 1; smoke below |
 
 Smoke on `61b3b26`, 2026-10-07: gallery `/` 200; shop `/` 200; gallery `/product/100000` 308 →
 `/product/100000-<slug>` 200; `/sell-to-us` 200; `/contact` 200; derivative
 `…/f18497448af3aea71bde65b6262af14d/640.webp` 200 with `access-control-allow-origin: https://indies-gallery.gaiada.com`;
 `…/iiif/3793869e6a1b432f1959c48bc1c3cb15/info.json` 200 with the gallery origin echoed (and the shop origin for the
 shop); `/_media/uploads/x` 403; `/_media/` 403. pm2 `uindies` online, fork mode.
+
+Smoke on `ec9cea9`, 2026-10-07:
+
+- **Pages:** gallery `/` 200; shop `/` 200; `/sell-to-us` 200; `/contact` 200; `/product/200` 200.
+- **Media:** its derivative returns 200 with the gallery origin's ACAO; `iiif/3793869e…/info.json` returns 200 with
+  ACAO; `/_media/uploads/x` returns 403.
+- **Sold works:** M.0004 (`/product/2`) and P.1551 (`/product/1018`) returned 200. Their meta descriptions end
+  "· Sold", where the previous release said "· Price on request". Neither document contains "Price on request".
 
 ## Seeding the gallery sample
 
@@ -171,11 +180,21 @@ Run on 2026-10-07 (main 61b3b26):
     (Batavia city view) and the E2E fixture 100000.
   - `/product/200` and `/product/2013` both 200; their 320 and 640 derivatives all 200.
   - No seeded work is catalogued under Jakarta until P.1180 is imported.
+- **Re-run, the same day, after the fixture place was gone.** 0 created and 0 updated, apart from P.1180, which was
+  created (public_id 746, published, place Jakarta); P.0326 was still rejected. Review marks were carried on 1
+  work. Backfill: 142 up to date, 2 ready. `/browse` shows "44 works" (44 available, 5 sold).
+  `/product/746` and its derivative both return 200.
+- **Open:** `/search?q=Batavia` still lists only `/product/200` and `/product/2013`, which match on their titles.
+  The search matches a historical place name only on a **published** place (`PLACE_SQL`: `p._status =
+'published'`), and all 66 places on staging are drafts. The vocabulary seed creates them as drafts. Until the
+  places are published (a vocabulary decision, not part of this seed), a work catalogued under Jakarta is not
+  found by "Batavia".
 
 ## Media origin headers
 
-**Status: not yet applied on staging.** The change below was written on 2026-10-07, and the host change is waiting
-for an explicit go-ahead. Production's media origin needs the same change.
+**Status: not yet applied on staging.** The change below was written on 2026-10-07. The agent's attempt to apply it
+was refused twice by the session's permission system, including after the user's go-ahead was relayed. It needs
+to be applied by hand, or with a permission rule that covers it. Production's media origin needs the same change.
 
 **The defect.** `/_media/` is an nginx location in the shop's CloudPanel vhost that proxies to RustFS. The CORS
 headers come from the bucket's CORS rule, and RustFS sends `Access-Control-Allow-Origin` and `Vary: Origin` only
