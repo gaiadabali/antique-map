@@ -16,7 +16,7 @@
  */
 import type { CollectionBeforeChangeHook, PayloadRequest } from 'payload'
 
-import { isStaffUser } from '../access/roles'
+import { isCatalogueStaff } from '../access/roles'
 import { AI_DRAFTABLE_FIELDS } from '../collections/works/vocabulary'
 
 type Doc = Record<string, unknown>
@@ -31,8 +31,9 @@ const idOf = (value: unknown): number | string | null => {
   return typeof id === 'number' || typeof id === 'string' ? id : null
 }
 
+/** Who may tick Verified: the owner or an editor, from the session; anyone else is nobody. */
 function userIdOf(req: PayloadRequest): number | string | null {
-  return isStaffUser(req.user) ? idOf(req.user) : null
+  return isCatalogueStaff(req.user) ? idOf(req.user) : null
 }
 
 /** One draftable field's entry, as this save will store it. */
@@ -44,12 +45,14 @@ function stampEntry(
   now: string,
 ): Doc {
   const got = { ...was, ...sent }
-  const verified = got.verified === true
-  const turnedOn = verified && was.verified !== true
   if (trusted) {
-    if (!turnedOn || got.verifiedAt) return got
+    if (got.verified !== true || was.verified === true || got.verifiedAt) return got
     return { ...got, verifiedBy: idOf(got.verifiedBy) ?? who, verifiedAt: now }
   }
+  // A client write by someone who is not the owner or an editor changes no box: a verification
+  // always has a verifier, so `verifiedAt` (what the publish guard reads) is never set without one.
+  const verified = who === null ? was.verified === true : got.verified === true
+  const turnedOn = verified && was.verified !== true
   return {
     drafted: was.drafted === true,
     verified,

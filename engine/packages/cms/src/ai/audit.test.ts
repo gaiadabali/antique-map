@@ -80,6 +80,19 @@ describe('the drafting audit trail (8.3.b)', () => {
     expect(unverifiedAiDraft(draftOf(out))).toEqual(['title', 'date'])
   })
 
+  it('lets nobody but the owner or an editor tick or untick a box from a client', () => {
+    for (const user of [{ id: 9, collection: 'users', role: 'store' }, { id: 3, collection: 'customers' }, null]) {
+      const out = save(
+        { cataloguing: { aiDraft: { title: { verified: true }, date: { verified: false } } } },
+        'REST',
+        user,
+      )
+      expect(draftOf(out).title).toEqual({ drafted: true, verified: false, verifiedBy: null, verifiedAt: null })
+      expect(draftOf(out).date).toMatchObject({ verified: true, verifiedBy: 1 })
+      expect(unverifiedAiDraft(draftOf(out))).toEqual(['title'])
+    }
+  })
+
   it('trusts a server write, and stamps a tick it sends without who or when', () => {
     const out = save(
       { cataloguing: { aiDraft: { places: { drafted: true, verified: false }, title: { verified: true } } } },
