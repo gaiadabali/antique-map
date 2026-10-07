@@ -119,6 +119,96 @@ Smoke on `61b3b26`, 2026-10-07: gallery `/` 200; shop `/` 200; gallery `/product
 `…/iiif/3793869e6a1b432f1959c48bc1c3cb15/info.json` 200 with the gallery origin echoed (and the shop origin for the
 shop); `/_media/uploads/x` 403; `/_media/` 403. pm2 `uindies` online, fork mode.
 
+## Seeding the gallery sample
+
+The committed sample (`engine/packages/cms/src/seed/gallery/data/`: 50 rows, 65 images at 640 px) published on
+staging, so the gallery's gate has a catalogue. On 2026-10-05 the vocabulary and the shop were seeded over an ssh
+tunnel as a temporary role. That ran from the workstation, and the tunnel dropped mid-import. Seed on the host
+instead, as the 5.2 backfill did.
+
+1. **Check for collisions first (read-only).** The import upserts by `stock_number`, and images become `media`
+   rows keyed by filename. If any sample stock number or image filename is already on staging, stop: a run would
+   update those rows. Check with `select count(*) from works where stock_number in (<the CSV's stock numbers>)`
+   and the same for `media.filename` against the `images/` folder. **Do not use `--dry-run` on staging**: it rolls
+   back the rows but still uploads the images, leaving orphan objects in the bucket.
+2. The layer seeds the vocabulary first. That step is create-only (a present place, term or maker is never edited,
+   and site settings are left alone when present). It never touches products, stock, stores or users.
+3. Main must be on the host as `/root/indies-build/in/main.bundle` (release step 3). Then run the script below,
+   detached:
+
+   ```
+   ssh helios 'nohup nice -n 15 docker run --rm --name indies-seed-gallery --network host --cpus=3 --memory=6g \
+     -v /root/indies-build/in:/in:ro -v /home/uindies/shared/.env:/site.env:ro node:22-bookworm \
+     bash /in/seed-gallery.sh >/root/indies-build/seed-gallery.log 2>&1 </dev/null &'
+   ```
+
+   `/root/indies-build/in/seed-gallery.sh` works in this order:
+   1. It clones the bundle and runs `pnpm install --frozen-lockfile`.
+   2. It sources the site's env read-only and unsets `RUN_MIGRATIONS` and `PAYLOAD_DEV_PUSH`, so the run writes
+      rows only.
+   3. It runs `pnpm data:seed --layer gallery-sample --publish`, then
+      `pnpm --filter @engine/cms media:derivatives` (no `--force`) until it exits 0, up to 3 attempts.
+
+   Both CLIs post their cache tags to the running site (`REVALIDATE_ORIGIN`), so the pages refresh with no reload.
+   Install, seed and backfill take about 15 min.
+
+4. **Verify anonymously.** Check that `/browse` counts the works, that `/search?q=Batavia` returns hits, and that
+   two item pages and their `/_media/derivatives/…` images return 200.
+
+Run on 2026-10-07 (main 61b3b26):
+
+- **Collision check:** 0 of 50 stock numbers and 0 of 65 filenames were present. Staging held 2 works, both E2E
+  fixtures.
+- **Vocabulary:** 0 created (66 places, 110 terms, 127 makers present); site settings present.
+- **Antiques:** 48 created, 0 updated, 1 rejected, 1 held. P.0326 was rejected because the sample row has no date
+  precision. P.1180 (Batavia) was held because the place "Batavia" matched two places: Jakarta, which carries
+  Batavia as a historical name, and a QA fixture place that has since been deleted.
+- **Review marks:** carried on 48 works.
+- **Backfill:** attempt 1 exited 0, with 62 media made ready and 80 already up to date.
+- **Anonymous checks:**
+  - `/browse` 200, "44 works" (24 cards on page 1).
+  - `/search?q=Batavia` 200, "3 works": `/product/200` (the Governor-General's palace, Batavia), `/product/2013`
+    (Batavia city view) and the E2E fixture 100000.
+  - `/product/200` and `/product/2013` both 200; their 320 and 640 derivatives all 200.
+  - No seeded work is catalogued under Jakarta until P.1180 is imported.
+
+## Media origin headers
+
+**Status: not yet applied on staging.** The change below was written on 2026-10-07, and the host change is waiting
+for an explicit go-ahead. Production's media origin needs the same change.
+
+**The defect.** `/_media/` is an nginx location in the shop's CloudPanel vhost that proxies to RustFS. The CORS
+headers come from the bucket's CORS rule, and RustFS sends `Access-Control-Allow-Origin` and `Vary: Origin` only
+when the request carries an `Origin`. The item page's lead `<img>` makes a request with no Origin and gets a
+cacheable response with no `Vary`. Chromium then reuses that response for OpenSeadragon's
+`crossOrigin="anonymous"` request, the CORS check fails, and the viewer shows "This image cannot be opened in the
+viewer just now". Observed on 2026-10-07:
+
+```
+no Origin:      HTTP 200 · cache-control: public, max-age=31536000, immutable   (no Vary, no ACAO)
+Origin gallery: HTTP 200 · cache-control: … immutable · access-control-allow-origin: https://indies-gallery.gaiada.com · vary: Origin
+uploads/x:      403
+```
+
+**The change.** In `location ^~ /_media/`, after `proxy_hide_header Set-Cookie;`:
+
+```nginx
+    proxy_hide_header Vary;               # one Vary, never two
+    add_header Vary Origin always;        # on every answer, with or without Origin
+    include /etc/nginx/global_settings;   # a location's add_header drops the server's; keep them
+```
+
+- ACAO stays with the bucket's CORS rule, which echoes the two staging origins.
+- `Cache-Control` comes from the object, unchanged.
+- `uploads/` and everything outside `derivatives/` and `iiif/` stay 403, from the bucket policy.
+- Make the edit in **both** CloudPanel's stored template (`site.vhost_template` in
+  `/home/clp/htdocs/app/data/db.sq3`) and the live `/etc/nginx/sites-enabled/old-east-indies.gaiada.com.conf`, so a
+  regeneration keeps it. Copy both to `/var/backups/indies/config/media-vary-<stamp>/` first. Run `nginx -t`; reload
+  nginx only if it passes, and restore both if it fails. The 3.1 `/_media/` patch was made the same way.
+
+**Verify:** `curl -sI <derivative>` with no Origin shows `vary: Origin`. With
+`-H 'Origin: https://indies-gallery.gaiada.com'` it also shows that origin in ACAO. `…/_media/uploads/x` is still 403.
+
 ## Host scripts
 
 `/root/indies-build/bd.sh`:
