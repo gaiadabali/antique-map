@@ -98,3 +98,19 @@ export function secondsToWibMidnight(now: Date): number {
   const next = wibDayStart(now).getTime() + 24 * 60 * 60 * 1000
   return Math.max(1, Math.ceil((next - now.getTime()) / 1000))
 }
+
+/**
+ * An Anthropic-compatible endpoint other than Anthropic's (`ANTHROPIC_BASE_URL`, host-only): staging
+ * runs the chat on OpenRouter while the owner's key is pending (OA8). Unset in production. Only an
+ * https URL with no credentials is taken; anything else is ignored and the default endpoint used.
+ */
+export function modelBaseUrl(env: Env): string | undefined {
+  const raw = env.ANTHROPIC_BASE_URL?.trim()
+  if (!raw) return undefined
+  try {
+    const url = new URL(raw)
+    return url.protocol === 'https:' && url.username === '' && url.password === '' ? raw : undefined
+  } catch {
+    return undefined
+  }
+}

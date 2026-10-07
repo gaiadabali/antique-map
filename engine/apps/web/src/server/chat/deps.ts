@@ -12,7 +12,7 @@ import { randomBytes } from 'node:crypto'
 import { ConsentStore } from './consent'
 import type { ChatDeps } from './context'
 import { SpendLedger } from './cost'
-import { chatModels, secretFrom, wibDayStart } from './env'
+import { chatModels, modelBaseUrl, secretFrom, wibDayStart } from './env'
 import { chatKeys } from './identity'
 import { ChatLimiter } from './limits'
 
@@ -41,7 +41,7 @@ async function build(): Promise<ChatDeps> {
     env,
     now: () => new Date(),
     models: chatModels(env),
-    model: apiKey === null ? null : anthropicClient(apiKey),
+    model: apiKey === null ? null : anthropicClient(apiKey, modelBaseUrl(env)),
     turnstile: turnstileSecret === null ? null : turnstileVerifier(turnstileSecret),
     keys: chatKeys(env),
     store,

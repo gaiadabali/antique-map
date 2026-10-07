@@ -181,6 +181,7 @@ the page at request time, in server-rendered props or from a runtime-config endp
 | `MIDTRANS_MODE` | `simulate` selects the payment simulator, which needs no key: local (CI included) and staging only, refused in production (§7); unset, Midtrans runs on the keys below |
 | `MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY` | `SB-Mid-…` sandbox keys off production, live keys in production only (COMMERCE.md §6) |
 | `ANTHROPIC_API_KEY`, `AI_CHAT_MODEL`, `AI_CLASSIFY_MODEL`, `AI_DRAFT_MODEL`, `AI_CHAT_EFFORT` | one key per environment, each in its own workspace with a spend limit (AI.md §1) |
+| `ANTHROPIC_BASE_URL` | staging only: an Anthropic-compatible endpoint (https, no credentials in the URL) — staging runs the chat on OpenRouter GLM while the owner's key is pending (OA8); unset in production |
 | `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET` | bot protection on lead forms and the chat |
 | `GOOGLE_MAPS_BROWSER_KEY`, `GOOGLE_MAPS_SERVER_KEY` | the checkout's map and place search (the browser key, restricted by referrer to the shop's hosts, handed to the checkout page as a server-rendered prop) · `GET /api/x/geocode` (the server key, Geocoding only, never sent to a browser); a pair per environment, host-only (SECURITY.md S4) |
 | `CRON_SECRET`, `REVALIDATE_SECRET`, `REVALIDATE_ORIGIN` | §5; the invalidation secret; `http://127.0.0.1:4030` on a host, where jobs and imports post invalidations |
