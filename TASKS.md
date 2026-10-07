@@ -24,10 +24,10 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 11/16 | 0 | `███████░░░`  69% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 1/4 | 13/16 | 0 | `████████░░`  81% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 3/4 | 15/16 | 0 | `█████████░`  94% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **36/51** | **167/208** | **8** | `████████░░`  80% |
+| **All** | 11 phases | | | **38/51** | **169/208** | **8** | `████████░░`  81% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -665,7 +665,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging the owner works a lead from New to Closed, records a partner with the products carried, and sees each site's dashboard; the shop has a partnership page that leads to an enquiry; every page has localised metadata and the right structured data (none carrying an antique's price); the sitemaps list only published pages; a request for an old gallery address answers one 301.
 **Waves:** W1 — 9.1, 9.2, 9.3, 9.4
 
-- [ ] **9.1 Leads inbox, partners and the partnership page** · needs: phase 5, phase 6 — 🔄 9·W1
+- [x] **9.1 Leads inbox, partners and the partnership page** · needs: phase 5, phase 6 — ✅ 2026-10-07 a406be5a
   - **Lane** CMS + SHP · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/app/(payload)/admin/leads/**`, `engine/apps/web/src/sites/shop/partnership/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/packages/cms/src/jobs/retention/**`
   - **Read** CONTENT-OPERATIONS.md §Leads and partners, COMPLIANCE.md §Retention, EXPERIENCE-SHOP.md §Partnership, Q11
@@ -674,9 +674,9 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 9.1.b the partner records view and a "carried products" picker; no partner login anywhere
   - [x] 9.1.c the shop's partnership page (what partners get, WhatsApp, email, a short form that creates a `partnership` lead)
   - [x] 9.1.d a retention job that deletes expired chat transcripts, closed leads past retention and delivered orders' driver images on schedule
-  - [ ] 9.1.e **Check:** a partnership form creates a lead the owner can move to Closed; an editor cannot open the inbox; the retention job deletes only what is past its date (tested with a fixed clock) and logs counts without personal data.
+  - [x] 9.1.e **Check:** a partnership form creates a lead the owner can move to Closed; an editor cannot open the inbox; the retention job deletes only what is past its date (tested with a fixed clock) and logs counts without personal data.
 
-- [ ] **9.2 First-party analytics and the dashboard** · needs: phase 5, phase 6 — 🔄 9·W1
+- [x] **9.2 First-party analytics and the dashboard** · needs: phase 5, phase 6 — ✅ 2026-10-07 a406be5a
   - **Lane** CMS + PLT · **Agent** senior-be with senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/server/analytics/**`, `engine/apps/web/src/shared/beacon/**`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/apps/web/src/app/(payload)/admin/dashboard/**`
   - **Read** ANALYTICS.md, Requirement 13
@@ -684,7 +684,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 9.2.a a cookieless beacon (no visitor id, no personal data, bots filtered) emitting the events of ANALYTICS.md §Catalogue: views, searches, Ask and Sell clicks by channel, chat started, handoff and lead, bag, checkout steps, paid, status
   - [x] 9.2.b the owner's dashboard per site: visitors, top items and searches, enquiry clicks by channel, leads, and for the shop the funnel and orders by status
   - [x] 9.2.c a build check that no Google Analytics or Meta Pixel script or domain appears in the output
-  - [ ] 9.2.d **Check:** driving the seeded sites produces events; the dashboard counts equal the database; a bot user-agent adds none; the built HTML contains no third-party tracker domain.
+  - [x] 9.2.d **Check:** driving the seeded sites produces events; the dashboard counts equal the database; a bot user-agent adds none; the built HTML contains no third-party tracker domain.
 
 - [x] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6 — ✅ 2026-10-07 9417caa5
   - **Lane** PLT · **Agent** senior-fe · **Wave** W1
