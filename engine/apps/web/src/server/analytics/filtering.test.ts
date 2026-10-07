@@ -40,6 +40,13 @@ describe('the user agent filter (ANALYTICS.md §6)', () => {
     expect(isBotUserAgent('')).toBe(true)
     expect(isBotUserAgent(null)).toBe(true)
     expect(isBotUserAgent(undefined)).toBe(true)
+    expect(isBotUserAgent('   ')).toBe(true)
+  })
+
+  it('a bare runtime name adds no event (a header-less request reaches the route as "node")', () => {
+    expect(isBotUserAgent('node')).toBe(true)
+    expect(isBotUserAgent('Node')).toBe(true)
+    expect(isBotUserAgent('x')).toBe(true)
   })
 })
 
