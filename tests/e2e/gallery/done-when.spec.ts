@@ -60,7 +60,8 @@ async function axeClean(page: Page, what: string) {
 }
 
 test.describe.configure({ mode: 'default' })
-test.use({ viewport: { width: 390, height: 844 } })
+// A phone: 390 CSS px at 3 device pixels each, so cards pick the derivatives a real phone does.
+test.use({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3 })
 
 test.describe('Phase 5 Done when, at 390 px on staging', () => {
   test.setTimeout(180_000)
@@ -160,7 +161,11 @@ test.describe('Phase 5 Done when, at 390 px on staging', () => {
     await page.goto(`${GALLERY_ORIGIN}${href('search', { q: '' }, 'en')}`, { waitUntil: 'load' })
     await page.getByLabel(say('search.label'), { exact: true }).fill(OLD_NAME)
     await page.getByRole('button', { name: say('search.submit'), exact: true }).click()
-    const hit = page.locator(`main a[href^="/product/${OLD_NAME_ITEM}-"]`).first()
+    const hit = page
+      .locator(
+        `main a[href="/product/${OLD_NAME_ITEM}"], main a[href^="/product/${OLD_NAME_ITEM}-"]`,
+      )
+      .first()
     await expect(hit, `the search lists public id ${OLD_NAME_ITEM}`).toBeVisible()
     await axeClean(page, 'search results')
     await shoot(page, '1-search-old-name')
@@ -175,10 +180,25 @@ test.describe('Phase 5 Done when, at 390 px on staging', () => {
   }) => {
     const cors: string[] = []
     page.on('console', (m) => void (/cors/i.test(m.text()) && cors.push(m.text())))
-    const res = await page.goto(`${GALLERY_ORIGIN}${href('item', SEEDED_ITEM, 'en')}`, {
-      waitUntil: 'load',
-    })
-    expect(res?.status()).toBe(200)
+    // Arrive as a visitor does, from a listing whose card already loaded this image.
+    const search = href('search', { q: 'Koningsplein' }, 'en')
+    expect((await page.goto(`${GALLERY_ORIGIN}${search}`, { waitUntil: 'load' }))?.status()).toBe(
+      200,
+    )
+    await page
+      .locator(
+        `main a[href="/product/${SEEDED_ITEM.publicId}"], main a[href^="/product/${SEEDED_ITEM.publicId}-"]`,
+      )
+      .first()
+      .click()
+    await expect(page).toHaveURL(`${GALLERY_ORIGIN}${href('item', SEEDED_ITEM, 'en')}`)
+    const lead = page.locator('main img').first()
+    await expect(lead).toBeVisible()
+    await page.waitForLoadState('networkidle')
+    expect(
+      await lead.evaluate((i: HTMLImageElement) => i.naturalWidth),
+      'the lead image',
+    ).toBeGreaterThan(0)
     await expect(page.getByText(say('price.onRequest'), { exact: true })).toBeVisible()
     await axeClean(page, 'the item page')
     await page.getByRole('button', { name: say('item.viewerOpen') }).click()
