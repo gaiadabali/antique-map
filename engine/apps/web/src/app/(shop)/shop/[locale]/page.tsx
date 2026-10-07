@@ -8,13 +8,17 @@ import { connection } from 'next/server'
 
 import { siteOrigin, type SiteLocale } from '@engine/config/sites'
 
+import { siteLocale as resolveLocale } from '../../../../shell/messages'
 import { siteHref } from '../../../../shell/site'
 import { homeMetadata } from '../../../../shell/site-root'
 import { ShopHome } from '../../../../sites/shop/home/shop-home'
 import { homeText } from '../../../../sites/shop/home/home-messages'
 
-export function generateMetadata({ params }: PageProps<'/shop/[locale]'>): Promise<Metadata> {
-  return homeMetadata('shop', params)
+export async function generateMetadata({ params }: PageProps<'/shop/[locale]'>): Promise<Metadata> {
+  const [metadata, raw] = await Promise.all([homeMetadata('shop', params), params])
+  const locale = resolveLocale('shop', raw.locale)
+  if (locale === null) return metadata
+  return { ...metadata, description: homeText(locale)('home.shop.lede') }
 }
 
 export default async function ShopHomePage({ params }: PageProps<'/shop/[locale]'>) {

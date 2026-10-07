@@ -3,7 +3,12 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
 import { product as productOf, productEditorial } from '../../../../../../server/shop/catalogue'
-import { jsonLdScript, pageMetadata, productJsonLd } from '../../../../../../server/seo'
+import {
+  jsonLdScript,
+  pageMetadata,
+  productJsonLd,
+  trimDescription,
+} from '../../../../../../server/seo'
 import { productText } from '../../../../../../sites/shop/product/copy'
 import { ProductView } from '../../../../../../sites/shop/product/product-view'
 import { currentSite, siteHref } from '../../../../../../shell/site'
@@ -23,9 +28,13 @@ export async function generateMetadata({
   return pageMetadata({
     site: 'shop',
     locale,
-    path: href('product', { slug: found.slug }, locale),
+    paths: {
+      en: href('product', { slug: found.slug }, 'en'),
+      id: href('product', { slug: found.slug }, 'id'),
+    },
     title: found.name,
-    description: text('product.meta'),
+    description:
+      found.description.trim() !== '' ? trimDescription(found.description) : text('product.meta'),
     ...(found.images[0] ? { image: { url: found.images[0].url, alt: found.images[0].alt } } : {}),
     origin: site.origin,
   })

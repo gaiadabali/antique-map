@@ -8,13 +8,19 @@ import { connection } from 'next/server'
 
 import type { SiteLocale } from '@engine/config/sites'
 
+import { siteLocale as resolveLocale } from '../../../../shell/messages'
 import { siteHref } from '../../../../shell/site'
 import { homeMetadata } from '../../../../shell/site-root'
 import { GalleryHome } from '../../../../sites/gallery/home/gallery-home'
 import { homeText } from '../../../../sites/gallery/home/home-messages'
 
-export function generateMetadata({ params }: PageProps<'/gallery/[locale]'>): Promise<Metadata> {
-  return homeMetadata('gallery', params)
+export async function generateMetadata({
+  params,
+}: PageProps<'/gallery/[locale]'>): Promise<Metadata> {
+  const [metadata, raw] = await Promise.all([homeMetadata('gallery', params), params])
+  const locale = resolveLocale('gallery', raw.locale)
+  if (locale === null) return metadata
+  return { ...metadata, description: homeText(locale)('home.gallery.lede') }
 }
 
 export default async function GalleryHomePage({ params }: PageProps<'/gallery/[locale]'>) {

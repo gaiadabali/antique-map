@@ -28,9 +28,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return pageMetadata({
     site: 'gallery',
     locale: page.locale,
-    path: placeHref(page.place.path, page.locale),
+    paths: { en: placeHref(page.place.path, 'en'), id: placeHref(page.place.path, 'id') },
     title: page.place.name,
-    description: page.place.name,
+    description: placeText(page.locale)('placePage.description', { name: page.place.name }),
     origin: site.origin,
   })
 }

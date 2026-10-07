@@ -27,9 +27,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return pageMetadata({
     site: 'gallery',
     locale: page.locale,
-    path: makerHref(page.maker.slug, page.locale),
+    paths: { en: makerHref(page.maker.slug, 'en'), id: makerHref(page.maker.slug, 'id') },
     title: page.maker.name,
-    description: page.maker.name,
+    description: makerText(page.locale)('makerPage.description', { name: page.maker.name }),
     ...(page.maker.portrait !== null
       ? { image: { url: page.maker.portrait.url, alt: page.maker.portrait.alt } }
       : {}),

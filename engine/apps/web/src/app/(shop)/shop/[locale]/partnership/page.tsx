@@ -9,20 +9,29 @@ import { connection } from 'next/server'
 
 import type { SiteLocale } from '@engine/config/sites'
 
-import { siteMetadata } from '../../../../../shell/site-root'
+import { pageMetadata } from '../../../../../server/seo'
 import { loadSiteSettings } from '../../../../../server/site-settings'
+import { siteLocale } from '../../../../../shell/messages'
+import { currentSite, siteHref } from '../../../../../shell/site'
 import { Partnership } from './partnership'
 import { partnershipText } from './partnership-messages'
 
 export async function generateMetadata({
   params,
 }: PageProps<'/shop/[locale]/partnership'>): Promise<Metadata> {
-  const { locale } = await params
-  const site = await siteMetadata('shop', params)
-  return {
-    ...site,
-    title: partnershipText(locale as SiteLocale)('partnership.eyebrow'),
-  }
+  const locale = siteLocale('shop', (await params).locale)
+  const site = await currentSite('shop')
+  if (locale === null || site.origin === null) return {}
+  const t = partnershipText(locale)
+  const href = siteHref('shop')
+  return pageMetadata({
+    site: 'shop',
+    locale,
+    paths: { en: href('partnership', {}, 'en'), id: href('partnership', {}, 'id') },
+    title: t('partnership.eyebrow'),
+    description: t('partnership.lede'),
+    origin: site.origin,
+  })
 }
 
 export default async function PartnershipPage({ params }: PageProps<'/shop/[locale]/partnership'>) {

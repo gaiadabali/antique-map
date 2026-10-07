@@ -36,13 +36,13 @@ export async function generateMetadata({
   if (locale === null || site.origin === null) return {}
   // A search page is a query's answer: no query, no page (the body 404s); a query, never indexed.
   const query = firstOf((await searchParams).q)?.trim() ?? ''
-  if (query === '') return {}
   const text = browseText(locale)
+  const href = siteHref('shop')
   return pageMetadata({
     site: 'shop',
     locale,
-    path: siteHref('shop')('search', { q: query }, locale),
-    title: `${text('search.title')} “${query}”`,
+    paths: { en: href('search', { q: query }, 'en'), id: href('search', { q: query }, 'id') },
+    title: query === '' ? text('search.title') : `${text('search.title')} “${query}”`,
     description: text('browse.description'),
     origin: site.origin,
     noindex: true,

@@ -13,7 +13,7 @@ import { connection } from 'next/server'
 import { createHref, SITES } from '@engine/config/sites'
 
 import { loadPage } from '../../../../../../server/gallery/pages'
-import { pageMetadata } from '../../../../../../server/seo'
+import { pageMetadata, trimDescription } from '../../../../../../server/seo'
 import { siteLocale } from '../../../../../../shell/messages'
 import { currentSite } from '../../../../../../shell/site'
 import { cmsPageText } from '../../../../../../sites/gallery/pages/copy'
@@ -38,9 +38,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return pageMetadata({
     site: 'gallery',
     locale,
-    path: href('page', { slug }, locale),
+    paths: { en: href('page', { slug }, 'en'), id: href('page', { slug }, 'id') },
     title: page.seoTitle ?? page.title,
-    description: page.seoDescription ?? page.intro ?? page.title,
+    description: trimDescription(page.seoDescription ?? page.intro ?? page.title),
     ...(page.hero !== null ? { image: { url: page.hero.url, alt: page.hero.alt } } : {}),
     origin: site.origin,
   })
