@@ -5,16 +5,26 @@
  * slider alone. A plain GET form first — without JavaScript it sends the two years as two `date`
  * values beside the other filters' hidden inputs, which `url-state` reads as the pair — and with
  * JavaScript it goes straight to the canonical address, the pair as one `from-to` value.
+ *
+ * The route table that builds that address (`@engine/config/sites`) loads on submit, not with the
+ * page: the listing's first load stays inside its script budget (5.5 Lighthouse follow-up). Should
+ * it fail to load, the form submits as it would without JavaScript.
  */
 import type { FormEvent } from 'react'
 
 import type { ListingQuery, SiteLocale } from '@engine/config/sites'
-import { createHref, SITES } from '@engine/config/sites'
 
-import { Button, Input } from '../../../shared/ui'
+// From their own folders, never the `shared/ui` barrel: a Client Component importing the barrel
+// ships every shared component to the browser.
+import { Button } from '../../../shared/ui/button'
+import { Input } from '../../../shared/ui/input'
 import styles from './facets.module.css'
 
-const href = createHref(SITES.gallery)
+/** The canonical browse address of `query`, with the gallery's route table loaded on demand. */
+async function browseHrefOf(query: ListingQuery, locale: SiteLocale): Promise<string> {
+  const { createHref, SITES } = await import('@engine/config/sites')
+  return createHref(SITES.gallery)('browse', query, locale)
+}
 
 export function YearPair({
   idPrefix,
@@ -39,13 +49,18 @@ export function YearPair({
   readonly labels: { readonly from: string; readonly to: string; readonly apply: string }
 }): React.ReactElement {
   const submit = (event: FormEvent<HTMLFormElement>): void => {
-    const data = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const data = new FormData(form)
     const [first = '', second = ''] = data.getAll('date').map(String)
     if (first === '' && second === '') return
     event.preventDefault()
     const { page: _page, ...rest } = listing
     const date = [...[rest.facets?.date ?? []].flat(), `${first}-${second}`]
-    window.location.assign(href('browse', { ...rest, facets: { ...rest.facets, date } }, locale))
+    browseHrefOf({ ...rest, facets: { ...rest.facets, date } }, locale).then(
+      (address) => window.location.assign(address),
+      // `submit()` skips this handler: the plain GET the form sends without JavaScript.
+      () => form.submit(),
+    )
   }
   return (
     <form method="get" action={action} className={styles.yearPair} onSubmit={submit}>

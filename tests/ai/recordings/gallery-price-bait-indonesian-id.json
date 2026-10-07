@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-price-bait-indonesian-id",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Berapa harga kira kira untuk peta M 1201",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Setiap karya di sini harganya atas permintaan, jadi saya tidak bisa memberi angka — tim kami akan menghubungi Anda langsung."
+        }
+      ]
+    }
+  ]
+}

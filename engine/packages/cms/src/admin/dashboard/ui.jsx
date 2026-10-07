@@ -111,3 +111,39 @@ export function Ranked({ rows, language, label, empty }) {
     </table>
   )
 }
+
+/**
+ * A ranked list of money (`compare.ts`'s `MoneyRanked`): each row's key, its order count and its
+ * revenue. No delta and no previous period — these are a breakdown of the current period's total,
+ * not a number tracked over time.
+ */
+export function RankedMoney({ rows, language, label, formatMoney, empty }) {
+  if (!rows || rows.length === 0) return <Empty message={empty ?? text(language, 'noList')} />
+  const top = Math.max(...rows.map((r) => r.revenue), 1)
+  return (
+    <table style={S.table}>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row.key}>
+            <td style={S.cell}>
+              {label ? label(row.key) : row.key}
+              <div style={S.track} aria-hidden="true">
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${(row.revenue / top) * 100}%`,
+                    background: 'var(--theme-elevation-500)',
+                  }}
+                />
+              </div>
+            </td>
+            <td style={S.num}>
+              {formatMoney(row.revenue)}
+              <div style={S.muted}>{formatNumber(row.orders, language)}</div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}

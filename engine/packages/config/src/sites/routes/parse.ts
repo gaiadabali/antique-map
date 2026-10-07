@@ -14,7 +14,7 @@
  * Pure: no database, no request object.
  */
 import { LOCALE_CODES, type LocaleCode } from '../../constants'
-import { FACET_KEYS, SORT_KEYS, type FacetKey, type SortKey } from '../../schema/facets'
+import { FACET_KEYS, SORT_KEYS, type FacetKey, type SortKey } from '../../constants/facets'
 import {
   canonicalListing,
   listingSearch,

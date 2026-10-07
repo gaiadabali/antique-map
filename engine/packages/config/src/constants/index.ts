@@ -11,3 +11,4 @@
  */
 export { CURRENCY_CODES, CURRENCY_EXPONENT, type CurrencyCode } from './currencies'
 export { LOCALE_CODES, type LocaleCode } from './locales'
+export { FACET_KEYS, SORT_KEYS, type FacetKey, type SortKey } from './facets'

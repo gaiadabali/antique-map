@@ -17,7 +17,14 @@ import { hasRole } from '../../collections/users/roles'
 import { fill, text } from './copy'
 import { DashboardForbidden, isSite } from './context'
 import { loadDashboard } from './loaders'
-import { AsksPanel, ChatPanel, StubPanel } from './panels-business'
+import { AsksPanel, ChatPanel } from './panels-business'
+import {
+  FulfilmentPanel,
+  FunnelPanel,
+  PaymentsPanel,
+  SalesPanel,
+  VitalsPanel,
+} from './panels-shop'
 import { AntiquesPanel, SearchPanel, VisitorsPanel } from './panels-traffic'
 import { resolvePeriod } from './period'
 import { Empty, S } from './ui'
@@ -108,7 +115,6 @@ function Controls({ language, site, period, query }) {
 
 function Panels({ data, language }) {
   const gallery = data.site === 'gallery'
-  const business = data.business?.hasData ? data.business : null
   return (
     <div style={S.grid}>
       <VisitorsPanel data={data.visitors} language={language} />
@@ -120,16 +126,11 @@ function Panels({ data, language }) {
         title={text(language, gallery ? 'asksAndSells' : 'taps')}
       />
       <ChatPanel data={data.chat} language={language} />
-      {gallery
-        ? null
-        : ['funnel', 'sales', 'fulfilment', 'payments', 'vitals'].map((key) => (
-            <StubPanel
-              key={key}
-              titleKey={key}
-              language={language}
-              business={key === 'sales' ? business : null}
-            />
-          ))}
+      {gallery ? null : <FunnelPanel data={data.funnel} language={language} />}
+      {gallery ? null : <SalesPanel data={data.sales} language={language} />}
+      {gallery ? null : <FulfilmentPanel data={data.fulfilment} language={language} />}
+      {gallery ? null : <PaymentsPanel data={data.payments} language={language} />}
+      {gallery ? null : <VitalsPanel data={data.vitals} language={language} />}
     </div>
   )
 }

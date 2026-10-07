@@ -14,6 +14,9 @@ export type ItemImage = {
   /** The page's own image: the largest public derivative once the pipeline made it (C9, 15.1),
    * else the media record's file — Payload's staff-only route until then. */
   readonly url: string
+  /** The public derivative ladder as a `srcset` (`derivativeSrcSetOf()`), so the page fetches
+   * the rung its slot needs, not the top one `url` names; absent until the pipeline made it. */
+  readonly srcSet?: string
   readonly alt: string
   /** The media record's role — recto, verso, detail … — as the filmstrip names it. */
   readonly role: MediaRole

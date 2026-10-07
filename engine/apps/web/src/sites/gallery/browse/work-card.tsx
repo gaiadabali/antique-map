@@ -8,7 +8,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { WorkCardVM } from '../../../server/gallery/catalogue/view-models'
-import { ResponsiveImage } from '../../../shared/ui'
+import { ResponsiveImage } from '../../../shared/ui/responsive-image'
 import { browseText } from './copy'
 import styles from './card.module.css'
 
@@ -20,14 +20,23 @@ export function statusLineOf(status: WorkCardVM['status'], locale: SiteLocale): 
   return t('price.onRequest')
 }
 
+/**
+ * The image's slot, for the browser's pick from the ladder: on the phone half the page less the
+ * gutters, the column gap and the mat's padding; on the desktop a quarter of the results column.
+ */
+const CARD_IMAGE_SIZES = '(min-width: 768px) 15vw, calc(50vw - 3rem)'
+
 export function WorkCard({
   work,
   locale,
   href,
+  lead = false,
 }: {
   readonly work: WorkCardVM
   readonly locale: SiteLocale
   readonly href: string
+  /** A card of the first row, above the fold: its image is fetched eagerly, at high priority. */
+  readonly lead?: boolean
 }): React.ReactElement {
   const byline = [work.maker?.name, work.date].filter(Boolean).join(', ')
   return (
@@ -38,8 +47,10 @@ export function WorkCard({
             variant="fill"
             aspectRatio="1 / 1"
             src={work.image.url}
+            srcSet={work.image.srcSet}
             alt={work.image.alt}
-            sizes="(max-width: 767px) 50vw, 20vw"
+            sizes={CARD_IMAGE_SIZES}
+            priority={lead}
             className={styles.image}
           />
         ) : (

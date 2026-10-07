@@ -28,6 +28,9 @@ export type CardImage = {
   readonly alt: string
   readonly width: number | null
   readonly height: number | null
+  /** The public derivative ladder as a `srcset` (`derivativeSrcSetOf()`), so a card fetches the
+   * rung its slot needs; absent until the pipeline has published it. */
+  readonly srcSet?: string
 }
 
 /** One browse card (EXPERIENCE-GALLERY.md §4): title, maker and date with their precision,

@@ -7,7 +7,7 @@
  * never ships.
  */
 import type { LocaleCode } from '../../constants'
-import type { FacetKey, SortKey } from '../../schema/facets'
+import type { FacetKey, SortKey } from '../../constants/facets'
 import type { SegmentSurface } from './surfaces'
 
 /** One locale's segments: the surfaces the site has, each at one lower-case ASCII segment. */

@@ -30,6 +30,11 @@
  * job's. `{ req }` puts the collector on the `req`'s context for the operation and takes it off
  * again, and refuses a `req` whose transaction is open: that commit is its caller's, after the
  * operation has returned, so the tags could be posted before it.
+ *
+ * **`now` (5.3sold).** A tag a hook added with `invalidate(tags, context, { now: true })` keeps
+ * that, through the collector, to the flush: a flush posts `now`-tagged and default tags apart —
+ * each in its own bodies, so `postTags`'s `{ now }` applies to a whole body (`./post`) — keeping
+ * every `now`-tagged tag asking for immediate expiry even once it has been posted.
  */
 import {
   BatchCollector,
@@ -37,6 +42,7 @@ import {
   collectorOf,
   OperationCollector,
   type RequestContext,
+  type TaggedEntry,
 } from './collector'
 import { postTags, RevalidatePostError, type PostOptions, type RevalidateTarget } from './post'
 import type { CacheTag } from './tags'
@@ -108,32 +114,37 @@ async function onRequest<T>(
 }
 
 export function invalidationBatch(options: BatchOptions = {}): InvalidationBatch {
-  // Each kept tag with when it was last kept: a tag kept again while a flush that holds it is in
-  // flight — a write committed after that post may have been served — stays for the next one.
-  const kept = new Map<CacheTag, number>()
+  // Each kept tag with when it was last kept, and whether any caller asked it expire at once: a
+  // tag kept again while a flush that holds it is in flight — a write committed after that post
+  // may have been served — stays for the next one; `now` only ever turns on, never off.
+  const kept = new Map<CacheTag, { at: number; now: boolean }>()
   let generation = 0
   let queue: Promise<unknown> = Promise.resolve()
 
-  const keep = (tags: readonly CacheTag[]) => {
-    for (const tag of tags) {
+  const keep = (entries: readonly TaggedEntry[]) => {
+    for (const { tag, now } of entries) {
+      const previous = kept.get(tag)
       kept.delete(tag)
-      kept.set(tag, ++generation)
+      kept.set(tag, { at: ++generation, now: now || (previous?.now ?? false) })
     }
   }
   const own = new BatchCollector(keep)
 
-  async function post(): Promise<number> {
-    const sending = [...kept]
-    if (sending.length === 0) return 0
-    const target = options.target ?? revalidateTargetFrom()
+  /** Posts one mode's tags (`now` applies to a whole body, `./post`), forgetting what is accepted. */
+  async function postGroup(
+    target: RevalidateTarget,
+    sending: ReadonlyArray<[CacheTag, { at: number; now: boolean }]>,
+    now: boolean,
+  ): Promise<number> {
     const forget = (count: number) => {
-      for (const [tag, at] of sending.slice(0, count)) if (kept.get(tag) === at) kept.delete(tag)
+      for (const [tag, info] of sending.slice(0, count))
+        if (kept.get(tag) === info) kept.delete(tag)
     }
     try {
       const posted = await postTags(
         target,
         sending.map(([tag]) => tag),
-        options,
+        { ...options, now },
       )
       forget(posted)
       return posted
@@ -141,6 +152,20 @@ export function invalidationBatch(options: BatchOptions = {}): InvalidationBatch
       if (error instanceof RevalidatePostError) forget(error.accepted)
       throw error
     }
+  }
+
+  async function post(): Promise<number> {
+    if (kept.size === 0) return 0
+    const target = options.target ?? revalidateTargetFrom()
+    const entries = [...kept]
+    const immediate = entries.filter(([, info]) => info.now)
+    const deferred = entries.filter(([, info]) => !info.now)
+    let total = 0
+    // The immediate group first: a failure posting the default group must never leave a `now`
+    // tag unposted behind it.
+    if (immediate.length > 0) total += await postGroup(target, immediate, true)
+    if (deferred.length > 0) total += await postGroup(target, deferred, false)
+    return total
   }
 
   return {

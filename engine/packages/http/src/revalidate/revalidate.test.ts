@@ -5,18 +5,32 @@
  * in-request mode at its kind's profile; 204 `no-store`. The production-build proof of `after()` is
  * 4.6.c's.
  */
-import { productStockTag, productTag, postTags, type CacheTag } from '@engine/cache'
+import {
+  catalogueTag,
+  invalidationBatch,
+  productStockTag,
+  productTag,
+  postTags,
+  workTag,
+  type CacheTag,
+} from '@engine/cache'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { REVALIDATE_REQUEST } from '../manifest'
 import { readBoundedText } from './body'
 import { revalidateRoute } from './route'
 
-const { invalidate } = vi.hoisted(() => ({ invalidate: vi.fn() }))
-vi.mock('@engine/cache', async (original) => ({
-  ...(await original<typeof import('@engine/cache')>()),
-  invalidate,
+const { invalidate, real } = vi.hoisted(() => ({
+  invalidate: vi.fn(),
+  real: { invalidate: undefined as unknown as typeof import('@engine/cache').invalidate },
 }))
+vi.mock('@engine/cache', async (original) => {
+  const actual = await original<typeof import('@engine/cache')>()
+  real.invalidate = actual.invalidate
+  return { ...actual, invalidate }
+})
+/** The real `invalidate`, for a hook's side of a batch (the mock stands in for the route's). */
+const invalidateFor: typeof real.invalidate = (...args) => real.invalidate(...args)
 
 const ENV = { REVALIDATE_SECRET: 'r3validate-secret' }
 
@@ -96,6 +110,23 @@ describe('what it expires', () => {
     expect((await POST(post(json({ tags: [productTag(3)] })))).status).toBe(204)
     expect(invalidate).toHaveBeenCalledTimes(1)
     expect(invalidate.mock.calls[0]).toEqual([['product:3']])
+  })
+
+  it('expires a `"now": true` body at once: invalidate(tags, undefined, { now: true }) (5.3sold)', async () => {
+    const POST = revalidateRoute(undefined, ENV)
+    const body = json({ tags: [workTag('FX-000123'), catalogueTag('gallery')], now: true })
+    expect((await POST(post(body))).status).toBe(204)
+    expect(invalidate.mock.calls).toEqual([
+      [['work:FX-000123', 'catalogue:gallery'], undefined, { now: true }],
+    ])
+  })
+
+  it('reads only `now: true`: any other value keeps each kind’s profile, as before', async () => {
+    const POST = revalidateRoute(undefined, ENV)
+    for (const now of [false, 'true', 1, null]) {
+      expect((await POST(post(json({ tags: [workTag('FX-000124')], now })))).status).toBe(204)
+    }
+    expect(invalidate.mock.calls).toEqual(Array.from({ length: 4 }, () => [['work:FX-000124']]))
   })
 
   it('answers a plain 500 when the expiry cannot be scheduled', async () => {
@@ -191,5 +222,23 @@ describe('what @engine/cache posts is what the route accepts', () => {
     expect(accepted).toBe(tags.length)
     expect(expired.flat()).toEqual(tags)
     expect(expired).toHaveLength(2)
+  })
+
+  it('a flushed `now` reaches the route as `now`, and a default flush as the default (5.3sold)', async () => {
+    const seen: { tags: readonly CacheTag[]; now: boolean }[] = []
+    const POST = revalidateRoute((tags, { now }) => seen.push({ tags, now }), ENV)
+    const batch = invalidationBatch({
+      target: { origin: 'http://localhost', secret: ENV.REVALIDATE_SECRET },
+      fetch: async (url, init) => POST(new Request(url, init)),
+    })
+    await batch.operation((context) => {
+      invalidateFor([productTag(5)], context)
+      invalidateFor([workTag('FX-000125')], context, { now: true })
+    })
+    expect(await batch.flush()).toBe(2)
+    expect(seen).toEqual([
+      { tags: ['work:FX-000125'], now: true },
+      { tags: ['product:5'], now: false },
+    ])
   })
 })
