@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 16/20 | 0 | `████████░░`  80% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 4/5 | 17/20 | 0 | `█████████░`  85% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **33/51** | **156/208** | **8** | `████████░░`  75% |
+| **All** | 11 phases | | | **34/51** | **157/208** | **8** | `████████░░`  75% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,9 +78,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 5·W1 | 5.2.e Check (item page) | Sonnet → Opus review | `w/5.2e` | 2026-10-06 | run `am-5.2e-s1`: the e2e uploads its own 5200 px image (sample images are 640 px), proves tiles from `iiif/`, `uploads/` 403, sold, no price |
-| 5·W3 | 5.5.a the gallery journey | Sonnet → Opus review | `w/5.5a` | 2026-10-06 | run `am-5.5a-s1`: search → item → zoom → Ask → Sell to us, 390/1280, en/id |
-| 5·W2 | 5.3sold immediate expiry on status change | Sonnet → Opus → antique-map-15 review | `w/5.3sold` | 2026-10-06 | run `am-5.3sold-s1`; a sold work rendered "available" once (stale-while-revalidate); `invalidate(…, { now: true })` for status transitions only |
+| 5·W3 | 5.5 the gallery gate (a, c, d) on staging | Opus QA + Opus devops | `w/5.5a`, Helios | 2026-10-07 | 5.5.a passes except zoom on non-tiled images (media origin lacks `Vary: Origin` — devops fixing); gallery sample being seeded on staging; then Lighthouse (5.5.c) and the gate doc (5.5.d) |
 | 5·W3 | 5.5.c Lighthouse on staging | — | `main` | 2026-10-06 | runner merged `529e4ba` (`tests/e2e/gallery/lighthouse/run.mjs`); local: home 98/100 pass, `/browse` 92/100 but misses LCP 3.3 s (2.5) and script 240 KB (150) — to fix before the staging run; item page not yet measured |
 | 9·W1 | 9.2.b the owner's dashboard, run 2 (shop panels) | Sonnet → Opus review (antique-map-f5) | `w/9.2b2` | 2026-10-06 | run 1 merged `d719732` (shell, periods, gallery panels; panels load one at a time for the pool); run 2 = sales, fulfilment, payments from orders; the shop funnel shows "no events yet" until the shop's server events exist (a separate ticket after 10.5) |
 | 9·W1 | 9.3.d / 9.4.c Checks | — | `main` | 2026-10-07 | 9.3.a–c and 9.4.a–b merged; both Checks run against staging (now live on `188996d` with the media pipeline): the metadata crawl and the 8,338-URL redirect verification |
@@ -459,7 +457,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [x] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
 
-- [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — 🔄 5·W1
+- [x] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — ✅ 2026-10-07 30164dd
   - **Lane** GAL + MED · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/product/**`, `engine/packages/media/src/{derivatives,tiles}/**`
   - **Read** EXPERIENCE-GALLERY.md §Item, ARCHITECTURE.md §Media and deep zoom, CARRY-OVER.md §5
@@ -468,7 +466,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
   - [x] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
-  - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
+  - [x] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
 - [x] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — ✅ 2026-10-06 7046b7a
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
@@ -833,6 +831,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-07 — ✅ **5.2 closed** (`30164dd`). Check 5.2.e evidenced on **staging** (release `61b3b26`) by `tests/e2e/gallery/item.spec.ts`, 5/5 twice: at 390 px the viewer loads `info.json` and tiles from `iiif/` (200) only after the Zoom click, on a 5200 px E2E upload; `uploads/` 403 anonymously; a sold work shows Sold and only "Ask for another example" (en + id); no price figure, `askingPrice` or currency in HTML, RSC or JSON. Also on staging this morning: **5.3sold merged** (`ce91e51`, a status change expires the page at once) and the **/browse perf fix** (`61b3b26`); the staging release procedure is now in `docs/gates/staging-release.md` (`0260f25`). **Found by 5.5a:** on non-tiled images the zoom viewer fails ("cannot be opened") because the media origin sends no `Vary: Origin`, so Chromium reuses the lead image's non-CORS cache entry — a proxy fix on staging is in flight. Also: a 1×1 PNG records derivatives `failed`; deleted media leave their derivatives/tiles; the low-resolution notice says "from the old site" for any image under 1600 px.
 
 - 2026-10-07 — **Phase 5 replanned for speed (the user: "done ASAP").** No local build on the critical path (the host has 1–2 GB free; Docker was restarted). Everything is proven on **staging** after one batched release: (A) the QA agent runs 5.2e and 5.5a against `indies-gallery.gaiada.com` now (E2E- fixtures, cleaned up); (B) the `/browse` perf fix is diagnosed and coded without local measuring; (C) 5.3sold merges on its unit tests and verify plus the cache-lane owner's review; (D) one staging release with 5.3sold + the perf fix; (E) the same QA agent runs the 5.3sold proof, Lighthouse on `/browse` and an item page (5.5.c), the gate doc and the Done-when walk (5.5.d). Two agents, as the user set. Target ≈ 3–4 h barring seat limits.
 
