@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 4/5 | 17/20 | 0 | `█████████░`  85% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 16/20 | 0 | `████████░░`  80% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **34/51** | **157/208** | **8** | `████████░░`  75% |
+| **All** | 11 phases | | | **33/51** | **156/208** | **8** | `████████░░`  75% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -458,7 +458,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [x] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
 
-- [x] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — ✅ 2026-10-07 30164dd
+- [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — 🔄 5·W1
   - **Lane** GAL + MED · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/product/**`, `engine/packages/media/src/{derivatives,tiles}/**`
   - **Read** EXPERIENCE-GALLERY.md §Item, ARCHITECTURE.md §Media and deep zoom, CARRY-OVER.md §5
@@ -467,7 +467,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
   - [x] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
-  - [x] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
+  - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
 - [x] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — ✅ 2026-10-06 7046b7a
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
@@ -832,6 +832,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-07 — **5.2 reopened** (closed too early at `30164dd`): the QA's whole-document sold check found a sold work's `<meta>` / `og:` / `twitter:` description reading "Price on request". Fixed on main (`generateMetadata` uses the status words); the Check is re-run on staging after the next release. Same release carries nothing else new; the zoom-viewer CORS fix is the nginx `Vary: Origin` change (approved by the user, applied by the devops agent).
 
 - 2026-10-07 — ✅ **5.2 closed** (`30164dd`). Check 5.2.e evidenced on **staging** (release `61b3b26`) by `tests/e2e/gallery/item.spec.ts`, 5/5 twice: at 390 px the viewer loads `info.json` and tiles from `iiif/` (200) only after the Zoom click, on a 5200 px E2E upload; `uploads/` 403 anonymously; a sold work shows Sold and only "Ask for another example" (en + id); no price figure, `askingPrice` or currency in HTML, RSC or JSON. Also on staging this morning: **5.3sold merged** (`ce91e51`, a status change expires the page at once) and the **/browse perf fix** (`61b3b26`); the staging release procedure is now in `docs/gates/staging-release.md` (`0260f25`). **Found by 5.5a:** on non-tiled images the zoom viewer fails ("cannot be opened") because the media origin sends no `Vary: Origin`, so Chromium reuses the lead image's non-CORS cache entry — a proxy fix on staging is in flight. Also: a 1×1 PNG records derivatives `failed`; deleted media leave their derivatives/tiles; the low-resolution notice says "from the old site" for any image under 1600 px.
 
