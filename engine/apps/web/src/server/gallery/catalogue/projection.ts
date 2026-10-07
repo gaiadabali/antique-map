@@ -10,7 +10,7 @@ import type { Payload } from 'payload'
 
 import type { SiteLocale } from '@engine/config/sites'
 
-import { PUBLIC_IMAGE_SELECT, publicImageUrl } from '../../media/public-image'
+import { derivativeSrcSetOf, PUBLIC_IMAGE_SELECT, publicImageUrl } from '../../media/public-image'
 import { dateTextOf } from './date-reading'
 import type { CardImage, CardMaker, CardPlace, WorkCardVM } from './view-models'
 
@@ -79,11 +79,13 @@ const mediaOf = (value: unknown): CardImage | null => {
   // The public derivative once the media pipeline has made it, else the record's own file.
   const url = publicImageUrl(media)
   if (url === null || typeof media.alt !== 'string') return null
+  const srcSet = derivativeSrcSetOf(media)
   return {
     url,
     alt: media.alt,
     width: int(media.width),
     height: int(media.height),
+    ...(srcSet !== null ? { srcSet } : {}),
   }
 }
 

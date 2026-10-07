@@ -16,7 +16,12 @@ import {
   type MediaRole,
 } from '@engine/media/contract'
 
-import { assetIdOf, derivativeUrlOf, mediaPublicUrl } from '../../media/public-image'
+import {
+  assetIdOf,
+  derivativeSrcSetOf,
+  derivativeUrlOf,
+  mediaPublicUrl,
+} from '../../media/public-image'
 import type { ItemImage } from './view-model'
 
 type Doc = Record<string, unknown>
@@ -46,11 +51,13 @@ function imageOf(media: Doc, base: string): Resolved | null {
   const iiifReady = (media.iiif as Doc | null | undefined)?.status === 'ready'
   const infoUrl = base !== '' && assetId !== null && iiifReady ? iiifInfoUrl(base, assetId) : null
   const derivative = derivativeUrlOf(media, base)
+  const srcSet = derivativeSrcSetOf(media, base)
   const provenance = provenanceOf(media.provenance)
   return {
     // The record's own file is Payload's staff-only route (`collections/media/access`); the
     // public's image is the derivative once the media pipeline has made it (`../../media`).
     url: derivative ?? url,
+    ...(srcSet !== null ? { srcSet } : {}),
     alt: str(media.alt),
     role: roleOf(media.role),
     provenance,

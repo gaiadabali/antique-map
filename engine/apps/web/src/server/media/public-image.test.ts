@@ -4,7 +4,13 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { derivativeUrlOf, largestDerivativeWidth, publicImageUrl } from './public-image'
+import {
+  derivativeSrcSetOf,
+  derivativeUrlOf,
+  derivativeWidthsOf,
+  largestDerivativeWidth,
+  publicImageUrl,
+} from './public-image'
 
 const BASE = 'https://media.example.test/indies-media'
 const ID = '0123456789abcdef0123456789abcdef'
@@ -39,5 +45,30 @@ describe('the public image URL', () => {
 
   it('is null for a record with no file at all', () => {
     expect(publicImageUrl({ url: '', derivatives: { status: 'pending' } }, BASE)).toBeNull()
+  })
+})
+
+describe('the derivative ladder as a srcset', () => {
+  it('names the widths the pipeline made, as derivativeWidthsFor() does', () => {
+    expect(derivativeWidthsOf(300)).toEqual([300])
+    expect(derivativeWidthsOf(700)).toEqual([320, 640, 700])
+    expect(derivativeWidthsOf(2000)).toEqual([320, 640, 1024, 1600, 2000])
+    expect(derivativeWidthsOf(2400)).toEqual([320, 640, 1024, 1600, 2400])
+    expect(derivativeWidthsOf(9000)).toEqual([320, 640, 1024, 1600, 2400])
+  })
+
+  it('lists every rung with its width, the top one the URL the public is shown', () => {
+    const srcSet = derivativeSrcSetOf(media({ width: 1200 }), BASE)
+    expect(srcSet).toBe(
+      [320, 640, 1024, 1200].map((w) => `${BASE}/derivatives/v1/${ID}/${w}.webp ${w}w`).join(', '),
+    )
+    expect(srcSet).toContain(`${publicImageUrl(media({ width: 1200 }), BASE)} 1200w`)
+  })
+
+  it('is null until the pipeline has published the derivatives', () => {
+    expect(derivativeSrcSetOf(media({ derivatives: { status: 'pending' } }), BASE)).toBeNull()
+    expect(derivativeSrcSetOf(media({ assetId: '../../uploads/x' }), BASE)).toBeNull()
+    expect(derivativeSrcSetOf(media({ width: null }), BASE)).toBeNull()
+    expect(derivativeSrcSetOf(media(), '')).toBeNull()
   })
 })
