@@ -18,6 +18,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import type { Payload } from 'payload'
+
 import { readCsvRecords } from '../sources/csv-products/legacy-urls/csv.mjs'
 import { parseLoadArgs } from './load-args.ts'
 import { loadRedirects, type LoadResult } from './load.ts'
@@ -79,8 +81,10 @@ async function main(): Promise<void> {
   for (const name of ['DATABASE_URL', 'PAYLOAD_SECRET']) {
     if (!process.env[name]) throw new Error(`${name} is not set in the environment.`)
   }
-  // Imported only now: the config reads the environment at load time.
-  const { cms } = await import('@engine/cms/instance')
+  // Imported only now (the config reads the environment at load time), and by a variable so this
+  // package's type-check does not pull in the whole CMS config: `payload run` resolves it at runtime.
+  const instance = '@engine/cms/instance'
+  const { cms } = (await import(instance)) as { cms: () => Promise<Payload> }
   const payload = await cms()
   try {
     const works = await worksFromDb(payload)
