@@ -82,9 +82,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 5·W3 | 5.5.a the gallery journey | Sonnet → Opus review | `w/5.5a` | 2026-10-06 | run `am-5.5a-s1`: search → item → zoom → Ask → Sell to us, 390/1280, en/id |
 | 5·W2 | 5.3sold immediate expiry on status change | Sonnet → Opus → antique-map-15 review | `w/5.3sold` | 2026-10-06 | run `am-5.3sold-s1`; a sold work rendered "available" once (stale-while-revalidate); `invalidate(…, { now: true })` for status transitions only |
 | 5·W3 | 5.5.c Lighthouse on staging | — | `main` | 2026-10-06 | runner merged `529e4ba` (`tests/e2e/gallery/lighthouse/run.mjs`); local: home 98/100 pass, `/browse` 92/100 but misses LCP 3.3 s (2.5) and script 240 KB (150) — to fix before the staging run; item page not yet measured |
-| 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
-| 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
-| 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
+| 9·W1 | 9.2.b the owner's dashboard, run 2 (shop panels) | Sonnet → Opus review (antique-map-f5) | `w/9.2b2` | 2026-10-06 | run 1 merged `d719732` (shell, periods, gallery panels; panels load one at a time for the pool); run 2 = sales, fulfilment, payments from orders; the shop funnel shows "no events yet" until the shop's server events exist (a separate ticket after 10.5) |
+| 9·W1 | 9.3.d / 9.4.c Checks | — | `main` | 2026-10-07 | 9.3.a–c and 9.4.a–b merged; both Checks run against staging (now live on `188996d` with the media pipeline): the metadata crawl and the 8,338-URL redirect verification |
+| 9·W1 | 9.1.e Check | orchestrator | `main` | 2026-10-07 | 9.1.a–d merged (`9ed28e1` inbox + partners, retention cron live on staging); the Check: a partnership lead moved to Closed, an editor refused the inbox, the retention job deletes only expired rows |
 
 ## Decisions for the owner
 
