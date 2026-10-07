@@ -1,9 +1,10 @@
 /**
  * The designed shell for both sites (the design team's drawings, phase 4.3.a): a header with the
  * logo, the site's primary navigation, the language switcher keeping the current path and the
- * chat entry point — inert until phase 8 wires the assistant; and a footer with contact, hours,
- * the sister-site bridge and the legal links. Built from the shared UI components and the
- * tokens (`shell.module.css`); every word comes from the site's lexicon.
+ * chat entry point (`ChatLauncher`, 8.2 — the panel's own JavaScript loads only once it is
+ * opened); and a footer with contact, hours, the sister-site bridge and the legal links. Built
+ * from the shared UI components and the tokens (`shell.module.css`); every word comes from the
+ * site's lexicon, except the chat panel's own words, resolved by `chatPanelText()` (8.2).
  *
  * Contact values are read by `loadSiteSettings()` (`./site-settings`): the `site-settings` global
  * is owner-only, so that loader uses `overrideAccess: true` with an explicit `select` of only the
@@ -22,7 +23,10 @@ import { PROXY_REQUEST_HEADERS } from '@engine/http/manifest'
 import type { ReactNode } from 'react'
 import { headers } from 'next/headers'
 
-import { Button, Footer, Header, TextLink } from '../shared/ui'
+import { Footer, Header, TextLink } from '../shared/ui'
+import { ChatLauncher } from '../shared/chat/chat-launcher'
+import { ChatPageProvider } from '../shared/chat/chat-page-context'
+import { chatPanelText, suggestedStarts } from '../shared/chat/lexicon'
 
 import { Announcement } from './announcement'
 import type { ShellMessageKey } from './messages'
@@ -48,9 +52,11 @@ type Props = {
 }
 
 export async function SiteShell({ shell, t, children }: Props) {
-  const settings = await loadSiteSettings(shell.site.key, shell.locale as SiteLocale)
+  const locale = shell.locale as SiteLocale
+  const settings = await loadSiteSettings(shell.site.key, locale)
+  const chatText = chatPanelText(locale, shell.site.key)
   return (
-    <>
+    <ChatPageProvider>
       <a className="skip-link" href="#main">
         {t('shell.skipToContent')}
       </a>
@@ -64,9 +70,15 @@ export async function SiteShell({ shell, t, children }: Props) {
         actions={
           <>
             <LocaleSwitcher shell={shell} t={t} />
-            <Button variant="quiet" size="small" type="button" aria-disabled="true" tabIndex={-1}>
-              {t('shell.chat')}
-            </Button>
+            <ChatLauncher
+              label={t('shell.chat')}
+              site={shell.site.key}
+              locale={locale}
+              origin={siteOrigin(shell.site.key) ?? ''}
+              turnstileSiteKey={process.env.TURNSTILE_SITE_KEY?.trim() || null}
+              text={chatText}
+              suggestions={suggestedStarts(chatText, shell.site.key)}
+            />
           </>
         }
       />
@@ -74,7 +86,7 @@ export async function SiteShell({ shell, t, children }: Props) {
         {children}
       </main>
       <SiteFooter shell={shell} settings={settings} t={t} />
-    </>
+    </ChatPageProvider>
   )
 }
 

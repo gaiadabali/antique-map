@@ -9,6 +9,7 @@ import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemImage, ItemView } from '../../../server/gallery/item/view-model'
 import { Breadcrumbs, ResponsiveImage, TextLink } from '../../../shared/ui'
+import { ChatPageContext } from '../../../shared/chat/chat-page-context'
 import { AskPanel } from './ask-panel'
 import { creditLine, itemText, type ItemText } from './copy'
 import { ItemRecord } from './item-record'
@@ -70,6 +71,7 @@ export function ItemViewComposition({
 
   return (
     <article className={styles.page}>
+      <ChatPageContext title={h1} />
       <Breadcrumbs items={[{ label: t('item.browse'), href: browseHref }, { label: h1 }]} />
       <header className={styles.head}>
         <h1 className={styles.title}>{h1}</h1>
