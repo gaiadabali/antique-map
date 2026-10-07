@@ -157,7 +157,9 @@ function scan(label: string, term: BannedTerm, haystack: string, violations: Vio
 
 /** Loads a page in the browser and returns { text, attrs } — the rendered DOM the scan reads. */
 async function readable(page: Page, path: string): Promise<{ text: string; attrs: string[] }> {
-  await page.goto(`${ORIGIN}${path}`, { waitUntil: 'networkidle' })
+  // `load`, not `networkidle`: the Turnstile widget on /sell-to-us polls Cloudflare forever on a remote run.
+  await page.goto(`${ORIGIN}${path}`, { waitUntil: 'load' })
+  await page.locator('main').waitFor()
   const text = await page.locator('body').innerText()
   const attrs = await page
     .locator(
