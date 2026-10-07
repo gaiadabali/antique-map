@@ -70,6 +70,18 @@ export function pageMetadata(input: PageMetadataInput): Metadata {
   }
 }
 
+const MAX_DESCRIPTION_LENGTH = 155
+
+/** A meta description never runs past ~155 chars (never mid-word): the record's own text, cut at
+ * the last space before the limit, an ellipsis marking the cut. Already-short text is untouched. */
+export function trimDescription(text: string, max = MAX_DESCRIPTION_LENGTH): string {
+  const trimmed = text.trim()
+  if (trimmed.length <= max) return trimmed
+  const cut = trimmed.slice(0, max)
+  const lastSpace = cut.lastIndexOf(' ')
+  return `${(lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`
+}
+
 export function workTitle(title: string, maker?: string, year?: string | number): string {
   const parts = [title]
   if (maker || year !== undefined) {

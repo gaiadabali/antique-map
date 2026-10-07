@@ -1,38 +1,59 @@
 /**
- * Sitemap helpers for ticket 9.3a.
+ * Sitemap helpers for ticket 9.3fix.
  */
 import { describe, expect, it } from 'vitest'
 
-import { buildSitemap, isIndexable } from './sitemap'
+import { buildSitemap, buildSitemapIndex, chunkEntries, isIndexable } from './sitemap'
 
 describe('buildSitemap', () => {
-  it('lists both locales per path and escapes &', () => {
+  it('emits one <url> per locale, each with en, id and x-default alternates', () => {
     const xml = buildSitemap(
-      [{ path: '/browse' }, { path: '/product/foo&bar' }],
+      [{ paths: { en: '/browse', id: '/id/jelajah' } }],
       'https://antiquemapsindonesia.com',
     )
 
     expect(xml).toContain('<loc>https://antiquemapsindonesia.com/browse</loc>')
+    expect(xml).toContain('<loc>https://antiquemapsindonesia.com/id/jelajah</loc>')
     expect(xml).toContain(
-      '<xhtml:link rel="alternate" hreflang="id" href="https://antiquemapsindonesia.com/id/browse" />',
+      '<xhtml:link rel="alternate" hreflang="en" href="https://antiquemapsindonesia.com/browse" />',
     )
-    expect(xml).toContain('https://antiquemapsindonesia.com/product/foo&amp;bar')
-    expect(xml).not.toContain('foo&bar')
+    expect(xml).toContain(
+      '<xhtml:link rel="alternate" hreflang="id" href="https://antiquemapsindonesia.com/id/jelajah" />',
+    )
+    expect(xml).toContain(
+      '<xhtml:link rel="alternate" hreflang="x-default" href="https://antiquemapsindonesia.com/browse" />',
+    )
   })
 
-  it('skips non-indexable paths', () => {
+  it('escapes & in a path', () => {
     const xml = buildSitemap(
-      [{ path: '/' }, { path: '/admin' }, { path: '/bag/thank-you' }],
+      [{ paths: { en: '/product/foo&bar', id: '/id/produk/foo&bar' } }],
+      'https://oldeastindies.com',
+    )
+    expect(xml).toContain('https://oldeastindies.com/product/foo&amp;bar')
+    expect(xml).not.toContain('foo&bar"')
+  })
+
+  it('skips an entry whose English path is not indexable', () => {
+    const xml = buildSitemap(
+      [
+        { paths: { en: '/', id: '/id/' } },
+        { paths: { en: '/admin/x', id: '/id/admin/x' } },
+        { paths: { en: '/bag', id: '/id/bag' } },
+      ],
       'https://oldeastindies.com',
     )
     expect(xml).toContain('<loc>https://oldeastindies.com/</loc>')
     expect(xml).not.toContain('/admin')
-    expect(xml).not.toContain('/bag/thank-you')
+    expect(xml).not.toContain('/bag')
   })
 
   it('emits lastmod when given', () => {
     const date = new Date('2026-10-03T12:00:00Z')
-    const xml = buildSitemap([{ path: '/', lastModified: date }], 'https://oldeastindies.com')
+    const xml = buildSitemap(
+      [{ paths: { en: '/', id: '/id/' }, lastModified: date }],
+      'https://oldeastindies.com',
+    )
     expect(xml).toContain('<lastmod>2026-10-03</lastmod>')
   })
 })
@@ -51,5 +72,29 @@ describe('isIndexable', () => {
     expect(isIndexable('/')).toBe(true)
     expect(isIndexable('/browse')).toBe(true)
     expect(isIndexable('/product/batavia')).toBe(true)
+  })
+})
+
+describe('buildSitemapIndex', () => {
+  it('lists each chunk file as its own <sitemap>', () => {
+    const xml = buildSitemapIndex(['sitemap-1.xml', 'sitemap-2.xml'], 'https://oldeastindies.com')
+    expect(xml).toContain('<loc>https://oldeastindies.com/sitemap-1.xml</loc>')
+    expect(xml).toContain('<loc>https://oldeastindies.com/sitemap-2.xml</loc>')
+  })
+})
+
+describe('chunkEntries', () => {
+  it('never puts more than `max` locale URLs (two per entry) in one chunk', () => {
+    const entries = Array.from({ length: 5 }, (_, i) => ({
+      paths: { en: `/product/${i}`, id: `/id/produk/${i}` },
+    }))
+    const chunks = chunkEntries(entries, 4)
+    expect(chunks).toHaveLength(3)
+    expect(chunks[0]).toHaveLength(2)
+    expect(chunks[2]).toHaveLength(1)
+  })
+
+  it('answers one empty chunk for no entries', () => {
+    expect(chunkEntries([])).toEqual([[]])
   })
 })
