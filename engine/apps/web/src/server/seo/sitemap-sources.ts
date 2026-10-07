@@ -50,7 +50,12 @@ async function findPublished(
  * same tree `server/gallery/catalogue/places` builds, re-read here so the sitemap also gets each
  * place's own `updatedAt` (the catalogue's facet tree has no reason to carry it). */
 async function galleryPlaceEntries(payload: Payload): Promise<readonly SitemapEntry[]> {
-  const docs = await findPublished(payload, 'places', {}, { slug: true, parent: true, updatedAt: true })
+  const docs = await findPublished(
+    payload,
+    'places',
+    {},
+    { slug: true, parent: true, updatedAt: true },
+  )
   type Node = { id: number; slug: string; parentId: number | null; updatedAt: unknown }
   const nodes: Node[] = docs.map((doc) => {
     const parent = doc.parent
@@ -92,7 +97,12 @@ export async function queryGallerySitemap(payload: Payload): Promise<readonly Si
   const [works, makers, pages, places] = await Promise.all([
     findPublished(payload, 'works', {}, { title: true, publicId: true, updatedAt: true }),
     findPublished(payload, 'makers', {}, { slug: true, updatedAt: true }),
-    findPublished(payload, 'pages', { site: { equals: 'gallery' } }, { slug: true, kind: true, updatedAt: true }),
+    findPublished(
+      payload,
+      'pages',
+      { site: { equals: 'gallery' } },
+      { slug: true, kind: true, updatedAt: true },
+    ),
     galleryPlaceEntries(payload),
   ])
 

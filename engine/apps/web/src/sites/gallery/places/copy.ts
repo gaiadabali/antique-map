@@ -20,6 +20,8 @@ export const PLACE_KEYS = defineMessages({
   'placePage.indexTitle': 'Places',
   'placePage.indexDescription':
     'The ports, islands and cities the collection depicts — modern names first, historical names beneath.',
+  'placePage.description':
+    'Antique maps, prints and photographs of {name}, catalogued at Indies Gallery.',
   'placePage.availableHeading': 'Available',
   'placePage.soldHeading': 'Previously sold',
   'placePage.childrenHeading': 'Places within {name}',

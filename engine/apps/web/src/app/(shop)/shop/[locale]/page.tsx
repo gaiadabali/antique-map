@@ -14,9 +14,7 @@ import { homeMetadata } from '../../../../shell/site-root'
 import { ShopHome } from '../../../../sites/shop/home/shop-home'
 import { homeText } from '../../../../sites/shop/home/home-messages'
 
-export async function generateMetadata({
-  params,
-}: PageProps<'/shop/[locale]'>): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<'/shop/[locale]'>): Promise<Metadata> {
   const [metadata, raw] = await Promise.all([homeMetadata('shop', params), params])
   const locale = resolveLocale('shop', raw.locale)
   if (locale === null) return metadata

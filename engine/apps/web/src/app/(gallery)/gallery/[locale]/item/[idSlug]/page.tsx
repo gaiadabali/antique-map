@@ -17,7 +17,7 @@ import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
 import { loadItem } from '../../../../../../server/gallery/item/load-item'
 import type { ItemView } from '../../../../../../server/gallery/item/view-model'
-import { pageMetadata } from '../../../../../../server/seo'
+import { pageMetadata, trimDescription } from '../../../../../../server/seo'
 import { loadSiteSettings } from '../../../../../../server/site-settings'
 import { siteLocale } from '../../../../../../shell/messages'
 import { currentSite } from '../../../../../../shell/site'
@@ -67,14 +67,21 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     paths: { en: itemHref(work, 'en'), id: itemHref(work, 'id') },
     title: byline !== '' ? `${work.title} – ${byline}` : work.title,
     // The status words, as the card says them: a sold or held work never reads "Price on request".
-    description: [
-      work.originalTitle ?? work.title,
-      work.status === 'sold'
-        ? t('status.sold')
-        : work.status === 'on-hold'
-          ? t('status.onHold')
-          : t('price.onRequest'),
-    ].join(' · '),
+    description: trimDescription(
+      [
+        work.objectType !== null ? t.code('objectType', work.objectType) : null,
+        work.originalTitle ?? work.title,
+        work.date,
+        work.dimensions,
+        work.status === 'sold'
+          ? t('status.sold')
+          : work.status === 'on-hold'
+            ? t('status.onHold')
+            : t('price.onRequest'),
+      ]
+        .filter((part): part is string => part !== null && part !== '')
+        .join(' · '),
+    ),
     image:
       lead !== undefined
         ? {

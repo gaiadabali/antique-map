@@ -6,7 +6,10 @@
 import type { SiteKey } from '@engine/config/sites'
 
 import { NOT_FOUND, seoSiteFor } from '../../../../../server/seo/request-site'
-import { gallerySitemapEntries, shopSitemapEntries } from '../../../../../server/seo/sitemap-sources'
+import {
+  gallerySitemapEntries,
+  shopSitemapEntries,
+} from '../../../../../server/seo/sitemap-sources'
 import {
   buildSitemap,
   buildSitemapIndex,

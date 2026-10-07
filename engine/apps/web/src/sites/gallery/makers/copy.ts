@@ -20,6 +20,8 @@ export const MAKER_KEYS = defineMessages({
   'makerPage.indexTitle': 'Makers',
   'makerPage.indexDescription':
     'Every cartographer, engraver, publisher and photographer behind the collection.',
+  'makerPage.description':
+    'Antique maps, prints and photographs by {name}, catalogued at Indies Gallery.',
   'makerPage.workCount.one': '{count} work',
   'makerPage.workCount.other': '{count} works',
   'makerPage.availableHeading': 'Available',

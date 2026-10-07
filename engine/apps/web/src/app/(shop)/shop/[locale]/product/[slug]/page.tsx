@@ -33,7 +33,8 @@ export async function generateMetadata({
       id: href('product', { slug: found.slug }, 'id'),
     },
     title: found.name,
-    description: found.description.trim() !== '' ? trimDescription(found.description) : text('product.meta'),
+    description:
+      found.description.trim() !== '' ? trimDescription(found.description) : text('product.meta'),
     ...(found.images[0] ? { image: { url: found.images[0].url, alt: found.images[0].alt } } : {}),
     origin: site.origin,
   })
