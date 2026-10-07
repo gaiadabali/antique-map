@@ -27,7 +27,7 @@ anywhere. axe is clean and Lighthouse mobile meets the budget.
 | 5.4.c Maker and place list their items; an edited page appears after tag invalidation; axe at both widths | e2e 9/9, re-passed | main `6ef7de0`, `docs/reports/workers/5.4.md` | **PASS** |
 | 5.5.a Journey: search → item → zoom → Ask → Sell to us, 390 and 1280 px, en and id | `tests/e2e/gallery/journey.spec.ts`: every step passes 8/8 except **zoom**, 1/8 | staging, `docs/reports/workers/5.5a.md` | **TODO 2** |
 | 5.5.b No cart, checkout, sign-in, price or "offer" in the built HTML | `no-commerce.spec.ts`: 33 pages, both locales, 0 violations | main, `docs/reports/workers/ds-5.5b.md` | **PASS** (local build; rerun on staging in TODO 3) |
-| 5.5.c Lighthouse mobile ≥ 90 performance, 100 accessibility | browse 91, item 96, home 95 (medians); accessibility 100 on all 9 runs | below, `docs/reports/workers/5.5c.md` | **PASS** for the 5.5.d bar; **LCP budget missed** (finding F1) |
+| 5.5.c Lighthouse mobile ≥ 90 performance, 100 accessibility | browse 91, item 96, home 95 (medians); accessibility 100 on all 9 runs | below, `docs/reports/workers/5.5c.md` | **PASS** (TASKS 5.5.d as written). The LCP budget miss is a known follow-up for phase 10 (F1), not a gate failure |
 | Empty search | `/search?q=zzzzqqq` and `/id/cari?q=zzzzqqq`: 200, "Nothing matches “zzzzqqq”." and "Ask us about “zzzzqqq”" | below | **PASS** (finding F3) |
 
 ## Lighthouse (5.5.c)
@@ -41,8 +41,12 @@ docs/reports/workers/5.5c --runs 3 /browse /product/200-… /`. Mobile, simulate
 | /product/200-the-new-governor-general-palace-in-the-koningsplein-batavia | 96 (95 · 96 · 96) | 100 | 2852 | 0.000 | 54 | 145 | FAIL (LCP) |
 | / | 95 (95 · 98 · 95) | 100 | 2943 | 0.000 | 32 | 142 | FAIL (LCP) |
 
-The 5.5.d bar (≥ 90 / 100) is met on every run. The `lighthouserc.web.json` LCP budget of 2500 ms is not met on any
-page. JSONs: `docs/reports/workers/5.5c/{browse,product-200,home}.json`. Per-run phases are in the 5.5c report.
+**Verdict: PASS.** The gate holds to TASKS 5.5.d as written: performance ≥ 90 and accessibility 100 on the listing
+and an item page. Both are met on all 9 runs. The runner's "FAIL" is the `lighthouserc.web.json` LCP budget
+(≤ 2500 ms) alone. LCP was 2.85–3.45 s, measured from the workstation. Following the shop gate's precedent
+(`docs/gates/shop.md`, LCP 2.0–2.7 s), the miss is recorded as a **known follow-up for phase 10 hardening** (F1),
+not a gate failure. JSONs: `docs/reports/workers/5.5c/{browse,product-200,home}.json`. Per-run phases are in the
+5.5c report.
 
 ## The empty search (390 px)
 
@@ -81,12 +85,15 @@ kepada kami").
 
 ## Findings (not blocking 5.5.d as written)
 
-- **F1 LCP over budget** on all three pages (2.85–3.45 s against ≤ 2.5 s).
-  - /browse: the first card image starts about 1.1 s late, although it is preloaded at high priority from a
-    cross-origin media host, with no `preconnect`.
-  - Home: the LCP is a text paragraph with about 2 s of render delay.
-  - Owner: FE/perf. A run from a container on the staging host, as the shop gate did, would remove the
-    workstation's share of TTFB.
+- **F1 LCP over budget (known follow-up, phase 10 hardening; not a gate failure).** All three pages measure
+  2.85–3.45 s against ≤ 2.5 s, from the workstation. Leads, none proven:
+  - **The media host has no `preconnect`.** /browse's first card image is preloaded at high priority and
+    discoverable in the HTML. It still starts about 1.1 s late, because it comes from the cross-origin
+    `old-east-indies.gaiada.com/_media/`.
+  - **Home's text LCP has render delay** (about 2 s) behind 3 render-blocking CSS chunks. `font-display` passes.
+  - **TTFB (650–740 ms simulated) includes the workstation's route.** A run from a container on the staging host,
+    as the shop gate did, would remove that share.
+  - Owner: FE/perf.
 - **F2 Deleted media leave their public derivatives and tiles** in the bucket. Owner: media.
 - **F3 "Ask us about …"** on the empty search is plain text, not a link, while the gallery has no contact channel
   (OA2 placeholder). Recheck once channels exist.
