@@ -75,6 +75,8 @@ async function WorksRail({ locale, t }: Props) {
               style={{ aspectRatio: '4 / 5', objectFit: 'cover', marginTop: 'var(--space-4)' }}
               src={work.imageUrl}
               alt={work.imageAlt}
+              // CORS like every media image (ResponsiveImage): the zoom viewer reuses the cache.
+              crossOrigin="anonymous"
             />
           ) : (
             <span

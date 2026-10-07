@@ -49,7 +49,7 @@ describe('ResponsiveImage with a derivative ladder', () => {
     expect(markup).not.toContain('loading="lazy"')
   })
 
-  it('fetches in CORS mode only when asked, so the zoom viewer can reuse the lead image', () => {
+  it('fetches every media image in CORS mode, so no non-CORS copy is ever cached', () => {
     const lead = (crossOrigin?: 'anonymous') =>
       renderToStaticMarkup(
         <ResponsiveImage
@@ -64,7 +64,17 @@ describe('ResponsiveImage with a derivative ladder', () => {
         />,
       )
     expect(lead('anonymous')).toContain('crossorigin="anonymous"')
-    expect(lead()).not.toContain('crossorigin')
+    expect(lead()).toContain('crossorigin="anonymous"')
+    const local = renderToStaticMarkup(
+      <ResponsiveImage
+        variant="fill"
+        aspectRatio="1 / 1"
+        src="/brand/plate.jpg"
+        alt=""
+        sizes="50vw"
+      />,
+    )
+    expect(local).not.toContain('crossorigin')
   })
 
   it('renders as before without a ladder', () => {

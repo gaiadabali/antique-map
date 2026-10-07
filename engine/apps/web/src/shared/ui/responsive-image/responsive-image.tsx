@@ -22,9 +22,10 @@ type BaseProps = {
    */
   readonly srcSet?: string | null
   /**
-   * Fetch a remote image in CORS mode. The item page sets it on its lead image: the zoom viewer
-   * opens the same derivative with CORS, and a copy the browser cached from a plain `<img>` load
-   * (the media origin answers it without `Vary: Origin`) fails the viewer's CORS check.
+   * Fetch in CORS mode. A remote (media) image always is, whatever this says: the zoom viewer
+   * opens derivatives with CORS, and the media origin answers a plain request without
+   * `Vary: Origin`, so one non-CORS load of a derivative anywhere (a card, a search result) would
+   * leave a cached copy that fails every later CORS load of it (the viewer, the item's lead).
    */
   readonly crossOrigin?: 'anonymous'
   readonly className?: string
@@ -48,6 +49,10 @@ export type ResponsiveImageProps =
  * serves every environment's media host). A local path still goes through the optimizer.
  */
 const isRemote = (src: string) => /^https?:\/\//.test(src)
+
+/** Every media (remote) image loads in CORS mode; a local asset only when asked. */
+const corsOf = (props: { src: string; crossOrigin?: 'anonymous' }) =>
+  isRemote(props.src) ? ('anonymous' as const) : props.crossOrigin
 
 /**
  * A lead (above the fold, LCP) image: Next 16's `priority` is a deprecated alias of `preload`, whose
@@ -91,11 +96,11 @@ function LadderImage({
       imageSrcSet: srcSet,
       imageSizes: props.sizes,
       fetchPriority: 'high',
-      ...(props.crossOrigin !== undefined ? { crossOrigin: props.crossOrigin } : {}),
+      ...(corsOf(props) !== undefined ? { crossOrigin: corsOf(props) } : {}),
     })
   }
   // `alt` is in `img`, from `getImageProps()`.
-  return <img {...img} srcSet={srcSet} sizes={props.sizes} crossOrigin={props.crossOrigin} />
+  return <img {...img} srcSet={srcSet} sizes={props.sizes} crossOrigin={corsOf(props)} />
 }
 
 /** A Next/Image wrapper requiring `alt` and `sizes` with fixed or fill + ratio variants. */
@@ -121,7 +126,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
             sizes={props.sizes}
             {...leadProps(props.priority)}
             unoptimized={unoptimized}
-            crossOrigin={props.crossOrigin}
+            crossOrigin={corsOf(props)}
             className={styles.image}
           />
         )}
@@ -144,6 +149,7 @@ export function ResponsiveImage(props: ResponsiveImageProps): React.ReactElement
       sizes={props.sizes}
       {...leadProps(props.priority)}
       unoptimized={unoptimized}
+      crossOrigin={corsOf(props)}
       className={`${wrapperClass} ${styles.fixed}`}
     />
   )
