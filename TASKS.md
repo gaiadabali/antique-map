@@ -24,10 +24,10 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 11/16 | 0 | `███████░░░`  69% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 12/16 | 0 | `████████░░`  75% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 1/4 | 13/16 | 0 | `████████░░`  81% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **35/51** | **166/208** | **8** | `████████░░`  80% |
+| **All** | 11 phases | | | **36/51** | **167/208** | **8** | `████████░░`  80% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -686,7 +686,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 9.2.c a build check that no Google Analytics or Meta Pixel script or domain appears in the output
   - [ ] 9.2.d **Check:** driving the seeded sites produces events; the dashboard counts equal the database; a bot user-agent adds none; the built HTML contains no third-party tracker domain.
 
-- [ ] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6 — 🔄 9·W1
+- [x] **9.3 Metadata, structured data and sitemaps** · needs: phase 5, phase 6 — ✅ 2026-10-07 9417caa5
   - **Lane** PLT · **Agent** senior-fe · **Wave** W1
   - **Owns** `engine/apps/web/src/server/seo/**`, `engine/apps/web/src/app/api/x/{sitemap,robots}/**`
   - **Read** EXPERIENCE-GALLERY.md §SEO, EXPERIENCE-SHOP.md §SEO
@@ -694,7 +694,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 9.3.a localised title, description, canonical, `hreflang` alternates and Open Graph for every page type; absolute URLs from `SITES`
   - [x] 9.3.b JSON-LD: gallery items as `CreativeWork`/`Product` **without** `offers` or price; shop products with price and availability; breadcrumbs and organisation
   - [x] 9.3.c a sitemap and `robots` per site listing only published pages in both languages; sold antiques stay listed; tracking and admin paths excluded
-  - [ ] 9.3.d **Check:** a crawl of the built staging sites finds a canonical, alternates and a description on every page; no gallery JSON-LD contains `price` or `offers`; each sitemap's URLs return 200 and match the published counts.
+  - [x] 9.3.d **Check:** a crawl of the built staging sites finds a canonical, alternates and a description on every page; no gallery JSON-LD contains `price` or `offers`; each sitemap's URLs return 200 and match the published counts.
 
 - [ ] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5 — 🔄 9·W1
   - **Lane** CMS + PLT · **Agent** senior-be · **Wave** W1
