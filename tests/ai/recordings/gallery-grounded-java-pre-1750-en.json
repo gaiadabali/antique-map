@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-grounded-java-pre-1750-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "What maps of Java do you have from before 1750",
+                "limit": 2
+              }
+            }
+          ]
+        },
+        {
+          "text": "Here are a few that match — take a look below."
+        }
+      ]
+    }
+  ]
+}

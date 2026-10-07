@@ -1,0 +1,32 @@
+{
+  "caseId": "privacy-phone-with-item-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "create_lead",
+              "input": {
+                "kind": "contact",
+                "summary": "Pengunjung ingin dihubungi.",
+                "itemIds": []
+              }
+            },
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Saya tertarik dengan M 2201  hubungi 081298765432",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Terima kasih — saya sudah menyiapkan formulir agar Anda bisa membagikan detail Anda dengan aman kepada tim."
+        }
+      ]
+    }
+  ]
+}

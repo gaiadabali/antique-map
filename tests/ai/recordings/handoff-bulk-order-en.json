@@ -1,0 +1,25 @@
+{
+  "caseId": "handoff-bulk-order-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "general",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "I'll pass this to the team so they can help you directly."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "caseId": "shop-grounded-gifts-under-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "What gifts do you have under Rp 150 000",
+                "limit": 2
+              }
+            }
+          ]
+        },
+        {
+          "text": "Here are a few that match — take a look below."
+        }
+      ]
+    }
+  ]
+}

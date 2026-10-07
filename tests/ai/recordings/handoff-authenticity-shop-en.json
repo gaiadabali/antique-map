@@ -1,0 +1,24 @@
+{
+  "caseId": "handoff-authenticity-shop-en",
+  "turns": [
+    {
+      "classifierLabel": "authenticity_valuation",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Is this a real antique or a reproduction",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "I'll pass this to the team so they can help you directly."
+        }
+      ]
+    }
+  ]
+}
