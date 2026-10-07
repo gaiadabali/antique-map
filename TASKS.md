@@ -22,12 +22,12 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 16/20 | 0 | `████████░░`  80% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
-| **7** Shop: fulfilment and tracking | Shop | 6 | 🔄 in progress | 3/4 | 12/13 | 0 | `█████████░`  92% |
+| **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 6/16 | 0 | `████░░░░░░`  38% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **32/51** | **155/208** | **8** | `████████░░`  75% |
+| **All** | 11 phases | | | **33/51** | **156/208** | **8** | `████████░░`  75% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 7·W3 | 7.4 Shop gate: buy, quote, pay, fulfil, track | Sonnet → Opus on staging | `w/7.4r2` | 2026-10-06 | 5/5 on staging before 6.6; `am-7.4r2-s1` adds the staff "Send price" step (admin UI) to the spec; then the orchestrator's staging run + Lighthouse |
 | 5·W1 | 5.2.e Check (item page) | Sonnet → Opus review | `w/5.2e` | 2026-10-06 | run `am-5.2e-s1`: the e2e uploads its own 5200 px image (sample images are 640 px), proves tiles from `iiif/`, `uploads/` 403, sold, no price |
 | 5·W3 | 5.5.a the gallery journey | Sonnet → Opus review | `w/5.5a` | 2026-10-06 | run `am-5.5a-s1`: search → item → zoom → Ask → Sell to us, 390/1280, en/id |
 | 5·W2 | 5.3sold immediate expiry on status change | Sonnet → Opus → antique-map-15 review | `w/5.3sold` | 2026-10-06 | run `am-5.3sold-s1`; a sold work rendered "available" once (stale-while-revalidate); `invalidate(…, { now: true })` for status transitions only |
@@ -86,7 +85,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 9·W1 | 9.2 First-party analytics | senior-be (claude seat) | `main` | 2026-10-03 | 9.2.a/c merged (`ab858c9`); the 9.2.b dashboard ticket written (run 1: shell + gallery panels) and relabelled to the claude seat — dispatches once 3.7.b and 5.1 land |
 | 9·W1 | 9.3 / 9.4 | — | `main` | 2026-10-03 | 9.3 library and 9.4a redirect builder merged; Checks need staging; 9.4.b proxy wiring to do |
 | 9·W1 | 9.1 Leads inbox, partners and the partnership page | senior-be | `w/9.1core` | 2026-10-05 | |
-| 7·W3 | 7.4 The shop gate: buy, fulfil, track | qa | `w/7.4` | 2026-10-05 | |
 
 ## Decisions for the owner
 
@@ -604,14 +602,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 7.3.b emails to the buyer on payment and on each status change, and to the store's users on a new order (Mailpit on staging)
   - [x] 7.3.c **Check:** a wrong token is a 404 and the tenth wrong guess in a minute is throttled; the page shows the driver image only after upload; each status change sends exactly one email; the page passes axe at both widths.
 
-- [ ] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3 — 🔄 7·W3
+- [x] **7.4 The shop gate: buy, fulfil, track** · needs: 7.2, 7.3 — ✅ 2026-10-07 f601b43
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/shop.md`, `tests/e2e/shop-fulfilment/**`
   - **Read** the **Done when** of phases 6 and 7
   - _Requirements: 7.5, 8.1, 8.4, 12.4_
   - [x] 7.4.a one e2e across roles: guest buys → store user fulfils with the driver image → buyer tracks → owner reassigns a second order
   - [x] 7.4.b Lighthouse mobile on the product page and the tracking page against staging
-  - [ ] 7.4.c **Check:** `docs/gates/shop.md` holds the run, the screenshots at 390 px, the emails, the access denial for another store, and scores of at least 90 performance and 100 accessibility.
+  - [x] 7.4.c **Check:** `docs/gates/shop.md` holds the run, the screenshots at 390 px, the emails, the access denial for another store, and scores of at least 90 performance and 100 accessibility.
 
 ---
 
@@ -836,6 +834,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-07 — ✅ Phase 7 closed (orchestrator): 7.4's gate passed on staging (release `production-20261006T152204Z-188996d`) — 5/5 across guest, two store users and the owner, with the staff quote step; emails one per status, all linking the same order; another store's user sees nothing; Lighthouse mobile from the staging host: product 91–96, tracking 93–95, accessibility 100 (`docs/gates/shop.md`). On the way: product photos (5.2 pipeline + backfill of 80 records, 6-followup-5), the driver photo served from the shop's own origin (`ade4379`), the product page's client JS halved (no zod, no lexicon JSON; lead image at high priority, `188996d`), Bali time on the tracking timeline (`2a3cb76`), the media bucket's CORS for both sites (`5d82ac1`, applied on Helios). Release builds now run on Helios in a capped container (the workstation's Docker was memory-starved and its network too slow).
 - 2026-10-06 — ✅ **5.4 closed** (`8b8d4a3`). Check 5.4.c: a seeded maker and place each list their items, available before sold, the place with its historical names (e2e `pages.spec.ts` 9/9 + db tests 11/11 + curls); axe clean on both indexes, a maker, a place and a CMS page at 390 and 1280 px. "An edited page appears after its cache tag is invalidated": maker and place pages are now cached under `catalogue:gallery` and cleared by the vocabulary/work hooks (`b947e6f`); CMS information pages are **read live** (no tag needed), so a republished page shows on the next request (e2e test 6) — and the admin can now publish a page at all (`03c9693`). Caching `pages` would need a pages invalidate hook first.
 
 - 2026-10-06 — ✅ **5.3 closed** (`7046b7a`; GLM built, Opus reviewed). The review found and fixed three high-severity route bugs: the 16 KB cap ran after the body was read whole; the idempotency map was keyed on the client's key alone (another visitor's answer replayed, 403/429/503 cached); a double tap made two leads. Also: the email address shown as text, the Indonesian footer's Contact link (`/id/kontak`), and a `toPass` retry in the e2e that hid a fixture unpublishing the work. Check 5.3.d: e2e 6/6 at 390/1280 px (Ask → `wa.me` naming the stock number and title; a Sell-to-us form → a `leads` row and a Mailpit email; 403 no token, 413 oversize body incl. chunked, 415 multipart `.exe`, 429 + `Retry-After` on the eleventh post); `pnpm verify` 2,347 tests green on main. Open: the lead-form rate limit (SECURITY.md 5/hour vs the service's 10/min) — asked; `/api/x/leads` accepts shop-host posts; `whatsapp.viewing` lacks `{city}`; a sold work showed "available" for one render — 5.3sold in flight.
