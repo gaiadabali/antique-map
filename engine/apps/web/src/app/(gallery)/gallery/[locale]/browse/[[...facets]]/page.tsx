@@ -9,7 +9,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-import { parseListingQuery, SITES } from '@engine/config/sites'
+import { parseListingQuery, SITES, type SiteLocale } from '@engine/config/sites'
 
 import { facets, listing, placeTree } from '../../../../../../server/gallery/catalogue'
 import { stateOfListing } from '../../../../../../server/gallery/catalogue/url-state'
@@ -39,11 +39,12 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const [page, site] = await Promise.all([stateOf(props), currentSite('gallery')])
   if (page === null || site.origin === null) return {}
   const text = browseText(page.locale)
+  const at = (l: SiteLocale) => browseHref({ ...page.state, page: 1 }, page.places, l)
   return pageMetadata({
     site: 'gallery',
     locale: page.locale,
     // The canonical is the state's own address: the first page of the same filters.
-    path: browseHref({ ...page.state, page: 1 }, page.places, page.locale),
+    paths: { en: at('en'), id: at('id') },
     title: text('browse.title'),
     description: text('browse.description'),
     origin: site.origin,

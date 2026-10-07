@@ -38,10 +38,11 @@ export async function generateMetadata({
   const query = firstOf((await searchParams).q)?.trim() ?? ''
   if (query === '') return {}
   const text = browseText(locale)
+  const href = siteHref('shop')
   return pageMetadata({
     site: 'shop',
     locale,
-    path: siteHref('shop')('search', { q: query }, locale),
+    paths: { en: href('search', { q: query }, 'en'), id: href('search', { q: query }, 'id') },
     title: `${text('search.title')} “${query}”`,
     description: text('browse.description'),
     origin: site.origin,

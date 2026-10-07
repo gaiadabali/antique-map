@@ -33,10 +33,11 @@ export async function generateMetadata({
   const site = await currentSite('shop')
   if (locale === null || site.origin === null) return {}
   const text = browseText(locale)
+  const href = siteHref('shop')
   return pageMetadata({
     site: 'shop',
     locale,
-    path: siteHref('shop')('browse', {}, locale),
+    paths: { en: href('browse', {}, 'en'), id: href('browse', {}, 'id') },
     title: text('browse.title'),
     description: text('browse.description'),
     origin: site.origin,

@@ -35,7 +35,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return pageMetadata({
     site: 'gallery',
     locale,
-    path: href('sellToUs', {}, locale),
+    paths: { en: href('sellToUs', {}, 'en'), id: href('sellToUs', {}, 'id') },
     title: text('sellToUs.title'),
     description: text('sellToUs.lede'),
     origin: site.origin,

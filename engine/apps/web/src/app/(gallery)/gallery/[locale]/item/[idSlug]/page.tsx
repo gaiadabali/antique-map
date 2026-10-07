@@ -61,10 +61,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const t = itemText(locale)
   const byline = [work.maker?.name, work.date].filter(Boolean).join(', ')
   const lead = work.images[work.primaryIndex]
-  const metadata = pageMetadata({
+  return pageMetadata({
     site: 'gallery',
     locale,
-    path: itemHref(work, locale),
+    paths: { en: itemHref(work, 'en'), id: itemHref(work, 'id') },
     title: byline !== '' ? `${work.title} – ${byline}` : work.title,
     // The status words, as the card says them: a sold or held work never reads "Price on request".
     description: [
@@ -86,17 +86,6 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
         : undefined,
     origin: site.origin,
   })
-  // The library prefixes `/id` to one path for both languages; the item's segment is translated
-  // (`/product` · `/id/produk`), so each language's address comes from `href()` itself.
-  const at = (l: SiteLocale) => `${site.origin}${itemHref(work, l)}`
-  return {
-    ...metadata,
-    alternates: {
-      canonical: at(locale),
-      languages: { en: at('en'), id: at('id'), 'x-default': at('en') },
-    },
-    openGraph: { ...metadata.openGraph, url: at(locale) },
-  }
 }
 
 export default async function GalleryItem(props: Props) {

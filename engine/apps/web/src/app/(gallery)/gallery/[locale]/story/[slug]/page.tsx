@@ -32,7 +32,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return pageMetadata({
     site: 'gallery',
     locale,
-    path: href('story', { slug }, locale),
+    paths: { en: href('story', { slug }, 'en'), id: href('story', { slug }, 'id') },
     title: page.seoTitle ?? page.title,
     description: page.seoDescription ?? page.intro ?? page.title,
     ...(page.hero !== null ? { image: { url: page.hero.url, alt: page.hero.alt } } : {}),

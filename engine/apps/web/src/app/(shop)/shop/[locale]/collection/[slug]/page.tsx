@@ -37,10 +37,11 @@ export async function generateMetadata({
   if (category === null) return {}
   const categoriesList = await categories()
   const label = categoriesList.find((each) => each.slug === slug)?.label ?? slug
+  const href = siteHref('shop')
   return pageMetadata({
     site: 'shop',
     locale,
-    path: siteHref('shop')('collection', { slug }, locale),
+    paths: { en: href('collection', { slug }, 'en'), id: href('collection', { slug }, 'id') },
     title: label,
     description: text('browse.description'),
     origin: site.origin,

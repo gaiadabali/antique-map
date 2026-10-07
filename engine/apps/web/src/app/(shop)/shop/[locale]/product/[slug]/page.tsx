@@ -23,7 +23,10 @@ export async function generateMetadata({
   return pageMetadata({
     site: 'shop',
     locale,
-    path: href('product', { slug: found.slug }, locale),
+    paths: {
+      en: href('product', { slug: found.slug }, 'en'),
+      id: href('product', { slug: found.slug }, 'id'),
+    },
     title: found.name,
     description: text('product.meta'),
     ...(found.images[0] ? { image: { url: found.images[0].url, alt: found.images[0].alt } } : {}),

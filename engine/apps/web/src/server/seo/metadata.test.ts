@@ -10,7 +10,7 @@ describe('pageMetadata', () => {
     const meta = pageMetadata({
       site: 'gallery',
       locale: 'en',
-      path: '/browse',
+      paths: { en: '/browse', id: '/id/browse' },
       title: 'Browse',
       description: 'A description',
       origin: 'https://antiquemapsindonesia.com',
@@ -30,7 +30,7 @@ describe('pageMetadata', () => {
     const meta = pageMetadata({
       site: 'shop',
       locale: 'id',
-      path: '/',
+      paths: { en: '/', id: '/id/' },
       title: 'Home',
       description: 'Shop home',
       origin: 'https://oldeastindies.com',
@@ -44,7 +44,7 @@ describe('pageMetadata', () => {
     const meta = pageMetadata({
       site: 'gallery',
       locale: 'en',
-      path: '/internal',
+      paths: { en: '/internal', id: '/id/internal' },
       title: 'Internal',
       description: '',
       noindex: true,
@@ -57,7 +57,7 @@ describe('pageMetadata', () => {
     const meta = pageMetadata({
       site: 'shop',
       locale: 'en',
-      path: '/product/foo',
+      paths: { en: '/product/foo', id: '/id/produk/foo' },
       title: 'Foo',
       description: 'A product',
       image: { url: '/shop/og.png', alt: 'Foo' },
@@ -66,6 +66,19 @@ describe('pageMetadata', () => {
     expect((meta.twitter as { card?: string }).card).toBe('summary_large_image')
     expect(meta.twitter?.images).toEqual(['/shop/og.png'])
     expect(meta.openGraph?.images).toEqual([{ url: '/shop/og.png', alt: 'Foo' }])
+  })
+
+  it('Indonesian alternates use the translated segment, not the English one', () => {
+    const meta = pageMetadata({
+      site: 'gallery',
+      locale: 'en',
+      paths: { en: '/browse', id: '/id/jelajah' },
+      title: 'Browse',
+      description: 'A description',
+      origin: 'https://antiquemapsindonesia.com',
+    })
+    expect(meta.alternates?.languages?.id).toBe('https://antiquemapsindonesia.com/id/jelajah')
+    expect(meta.alternates?.languages?.id).not.toBe('https://antiquemapsindonesia.com/id/browse')
   })
 })
 

@@ -47,7 +47,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return pageMetadata({
     site: 'gallery',
     locale: page.locale,
-    path: searchHref(page.query, page.includeSold, page.locale),
+    paths: {
+      en: searchHref(page.query, page.includeSold, 'en'),
+      id: searchHref(page.query, page.includeSold, 'id'),
+    },
     title:
       page.query === '' ? text('search.title') : text('search.resultsFor', { query: page.query }),
     description: text('browse.description'),

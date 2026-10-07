@@ -10,7 +10,13 @@ import type { Metadata } from 'next'
 export type PageMetadataInput = {
   readonly site: SiteKey
   readonly locale: 'en' | 'id'
-  readonly path: string
+  /**
+   * This page's own root-relative path in every locale the site serves — each one already in its
+   * own translated segment and already carrying its own `/id` prefix (an `href()` call per
+   * locale), never one path reused across locales: a site's Indonesian segment is its own word
+   * (`/browse` · `/jelajah`), not the English one behind `/id` (the bug the 5.2 review found).
+   */
+  readonly paths: Readonly<Record<'en' | 'id', string>>
   readonly title: string
   readonly description: string
   readonly image?: {
@@ -33,21 +39,12 @@ const LOCALE_OG: Record<'en' | 'id', string> = {
   id: 'id_ID',
 }
 
-function absoluteUrl(origin: string, locale: 'en' | 'id', path: string): string {
-  const prefix = locale === 'en' ? '' : '/id'
-  const normalized = path === '/' ? '/' : path
-  return `${origin}${prefix}${normalized}`
-}
-
 export function pageMetadata(input: PageMetadataInput): Metadata {
-  const { site, locale, path, title, description, image, noindex, origin } = input
-  const canonical = absoluteUrl(origin, locale, path)
-  const xDefault = absoluteUrl(origin, 'en', path)
-  const languages: Record<string, string> = {
-    en: absoluteUrl(origin, 'en', path),
-    id: absoluteUrl(origin, 'id', path),
-    'x-default': xDefault,
-  }
+  const { site, locale, paths, title, description, image, noindex, origin } = input
+  const at = (l: 'en' | 'id') => `${origin}${paths[l]}`
+  const canonical = at(locale)
+  const xDefault = at('en')
+  const languages: Record<string, string> = { en: at('en'), id: at('id'), 'x-default': xDefault }
 
   return {
     title,
