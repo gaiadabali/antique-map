@@ -8,7 +8,9 @@
  */
 import { useEffect, useRef } from 'react'
 
-import { Button } from '../../../shared/ui'
+// From its own folder, never the `shared/ui` barrel: a Client Component importing the barrel
+// ships every shared component to the browser (5.5 Lighthouse follow-up).
+import { Button } from '../../../shared/ui/button'
 import styles from './browse.module.css'
 
 export function FacetSheet({
