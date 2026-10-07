@@ -78,8 +78,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 5·W3 | 5.5 the gallery gate (a, c, d) on staging | Opus QA + Opus devops | `w/5.5a`, Helios | 2026-10-07 | 5.5.a passes except zoom on non-tiled images (media origin lacks `Vary: Origin` — devops fixing); gallery sample being seeded on staging; then Lighthouse (5.5.c) and the gate doc (5.5.d) |
-| 5·W3 | 5.5.c Lighthouse on staging | — | `main` | 2026-10-06 | runner merged `529e4ba` (`tests/e2e/gallery/lighthouse/run.mjs`); local: home 98/100 pass, `/browse` 92/100 but misses LCP 3.3 s (2.5) and script 240 KB (150) — to fix before the staging run; item page not yet measured |
+| 5·W3 | 5.2.e + 5.5.d Checks | Opus devops → Sonnet QA | `main`, Helios | 2026-10-07 | merged `a5b2f58e`; last defect fixed `e1d866af` (Ask panel was a nested `<aside>` — axe failed every item page); release then `done-when.spec.ts` ×2 on staging closes the phase |
 | 9·W1 | 9.2.b the owner's dashboard, run 2 (shop panels) | Sonnet → Opus review (antique-map-f5) | `w/9.2b2` | 2026-10-06 | run 1 merged `d719732` (shell, periods, gallery panels; panels load one at a time for the pool); run 2 = sales, fulfilment, payments from orders; the shop funnel shows "no events yet" until the shop's server events exist (a separate ticket after 10.5) |
 | 9·W1 | 9.3.d / 9.4.c Checks | — | `main` | 2026-10-07 | 9.3.a–c and 9.4.a–b merged; both Checks run against staging (now live on `188996d` with the media pipeline): the metadata crawl and the 8,338-URL redirect verification |
 | 9·W1 | 9.1.e Check | orchestrator | `main` | 2026-10-07 | 9.1.a–d merged (`9ed28e1` inbox + partners, retention cron live on staging); the Check: a partnership lead moved to Closed, an editor refused the inbox, the retention job deletes only expired rows |
