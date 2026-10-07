@@ -1,11 +1,8 @@
 # Staging release — cut `main` and deploy it to Helios
 
-The procedure staging releases have used since 2026-10-06. The first runs were by the orchestrator session that
-ran the 7.4 gate; this note was written on 2026-10-07 after a release that followed it exactly. The design is
-[DEPLOYMENT.md](../DEPLOYMENT.md) §3–§4 and the host record is [ops/helios-staging.md](../ops/helios-staging.md)
-(runbook step 7). This note replaces step 7's laptop build: **the build runs on Helios**, in a capped
-`node:22-bookworm` container, because the workstation is short of memory and its network is too slow for
-`pnpm install`.
+The procedure staging releases have used since 2026-10-06. The design is [DEPLOYMENT.md](../DEPLOYMENT.md) §3–§4;
+the host record is [ops/helios-staging.md](../ops/helios-staging.md). This replaces its step 7's laptop build:
+**the build runs on Helios**, in a capped `node:22-bookworm` container (the workstation is short of memory).
 
 Scope: **staging only** (`indies-gallery.gaiada.com`, `old-east-indies.gaiada.com`), under the owner's standing
 Helios go-ahead. Not for production, DNS or the live sites. Never print a secret: no `cat` of `shared/.env` or
@@ -27,7 +24,10 @@ with the last known-good values below. If they differ, stop and find out why.
 ```
 21e13eb6bf6b8236f8be94cd22559400f9be59749bba79121054a0dd8784578d  in/b.sh
 08e5aa25372c0d80cd8cbc50b34835123889f5a947e89a334da0ab4cd61cfed7  deploy.sh
+3233e5410f1575d7efd7e8b150717841e2bd4c4555324ffe67a1a02130f4252a  bd.sh
 ```
+
+Never run two releases at once: `ssh helios 'pgrep -af bd.sh; tail -3 /root/indies-build/bd.log'` first.
 
 ## The procedure
 
@@ -114,12 +114,13 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 | `production-20261007T030310Z-61b3b26` | 61b3b26 (5.3sold + `/browse` perf)       | none new                         | healthy, try 1; smoke below |
 | `production-20261007T042810Z-ec9cea9` | ec9cea9 (39ac792: sold meta description) | none new (5 = 5)                 | healthy, try 1; smoke below |
 | `production-20261007T051812Z-d77cb78` | d77cb78 (7ede76c1: lead image CORS mode) | none new (5 = 5)                 | healthy, try 1; smoke below |
+| `production-20261007T075619Z-643bffa` | 643bffa (dfce7238, ccedbea8, 8.4b)       | none new (5 = 5)                 | healthy, try 1; smoke below |
 
 Smoke, every release: step 6 passed (pages 200; derivative and `info.json` 200 with ACAO; `uploads/x` 403). On
-`ec9cea9` the sold works `/product/2` and `/product/1018` end their meta description "· Sold" ("· Price on request"
-before), with no "Price on request" in the document. `7ede76c1` failed `next build`'s typecheck (phase 8's chat test;
-nothing deployed) until `39c4a1e4`. On `d77cb78` the item's lead `<img>` has `crossorigin="anonymous"` and its image
-preload `crossorigin=""`, the same anonymous mode (`/product/200`, `/product/2013`).
+`ec9cea9` the sold works end their meta description "· Sold". `7ede76c1` failed `next build`'s typecheck (nothing
+deployed) until `39c4a1e4`. On `d77cb78` the item's lead `<img>` has `crossorigin="anonymous"` and its preload
+`crossorigin=""`. On `643bffa` the same holds on `/product/200`, and every `/browse` card `<img>` has
+`crossorigin="anonymous"` too (24 of 24 on page 1); derivative `124be0c7…/640.webp` 200 with ACAO and `vary: Origin`.
 
 ## Seeding the gallery sample
 
@@ -158,29 +159,39 @@ instead, as the 5.2 backfill did.
 
 Run on 2026-10-07 (main 61b3b26):
 
-- **Collision check:** 0 of 50 stock numbers and 0 of 65 filenames were present. Staging held 2 works, both E2E
-  fixtures.
-- **Vocabulary:** 0 created (66 places, 110 terms, 127 makers present); site settings present.
-- **Antiques:** 48 created, 0 updated, 1 rejected, 1 held. P.0326 was rejected because the sample row has no date
-  precision. P.1180 (Batavia) was held because the place "Batavia" matched two places: Jakarta, which carries
-  Batavia as a historical name, and a QA fixture place that has since been deleted.
-- **Review marks:** carried on 48 works.
-- **Backfill:** attempt 1 exited 0, with 62 media made ready and 80 already up to date.
-- **Anonymous checks:**
-  - `/browse` 200, "44 works" (24 cards on page 1).
-  - `/search?q=Batavia` 200, "3 works": `/product/200` (the Governor-General's palace, Batavia), `/product/2013`
-    (Batavia city view) and the E2E fixture 100000.
-  - `/product/200` and `/product/2013` both 200; their 320 and 640 derivatives all 200.
-  - No seeded work is catalogued under Jakarta until P.1180 is imported.
-- **Re-run, the same day, after the fixture place was gone.** 0 created and 0 updated, apart from P.1180, which was
-  created (public_id 746, published, place Jakarta); P.0326 was still rejected. Review marks were carried on 1
-  work. Backfill: 142 up to date, 2 ready. `/browse` shows "44 works" (44 available, 5 sold).
-  `/product/746` and its derivative both return 200.
-- **Open:** `/search?q=Batavia` still lists only `/product/200` and `/product/2013`, which match on their titles.
-  The search matches a historical place name only on a **published** place (`PLACE_SQL`: `p._status =
-'published'`), and all 66 places on staging are drafts. The vocabulary seed creates them as drafts. Until the
-  places are published (a vocabulary decision, not part of this seed), a work catalogued under Jakarta is not
-  found by "Batavia".
+- **Collision check:** 0 of 50 stock numbers, 0 of 65 filenames present (staging held 2 E2E fixture works).
+- **Seed:** vocabulary 0 created (66/110/127 present). Antiques 48 created, 1 rejected (P.0326: no date
+  precision), 1 held (P.1180: "Batavia" matched Jakarta and a QA fixture place, since deleted). Review marks on 48.
+  Backfill attempt 1 exited 0 (62 ready, 80 up to date).
+- **Checks:** `/browse` 200, "44 works"; `/search?q=Batavia` 3 works (`/product/200`, `/product/2013`, a fixture);
+  both items and their 320/640 derivatives 200.
+- **Re-run, same day:** only P.1180 created (public_id 746, published, place Jakarta); P.0326 still rejected.
+  Backfill 142 up to date, 2 ready. `/product/746` and its derivative 200. `/search?q=Batavia` still listed only
+  the title matches: a historical name expands only on a **published** place, and all 66 places were drafts.
+  Closed by the vocabulary publish below.
+
+### Publishing the vocabulary
+
+`--publish` on the vocabulary layer (since ccedbea8) publishes the seeded places, terms and makers still in draft;
+it creates nothing that is present and sends `_status` alone. `/root/indies-build/in/seed-vocabulary.sh` is
+`seed-gallery.sh` with `pnpm data:seed --layer vocabulary --publish` and no backfill (sha256 `71ee046e…f5ef48`):
+
+```
+ssh helios 'nohup nice -n 15 docker run --rm --name indies-seed-vocabulary --network host --cpus=3 --memory=6g \
+  -v /root/indies-build/in:/in:ro -v /home/uindies/shared/.env:/site.env:ro node:22-bookworm \
+  bash /in/seed-vocabulary.sh >/root/indies-build/seed-vocabulary.log 2>&1 </dev/null &'
+```
+
+Run on 2026-10-07 (main 643bffa, after its release), about 5 min:
+
+- Before: places 66, makers 127, terms 110, all `draft`.
+- Report: `places 0 created / 66 present, terms 0 / 110, makers 0 / 127, site-settings present`;
+  `vocabulary published: places 66, terms 110, makers 127, held 0`; `cache: 1 tag(s) expired on the running site`
+  (`catalogue:gallery`). After: all 303 `published`.
+- The first request after the post served the stale page (stale-while-revalidate); the next was fresh.
+- `/search?q=Batavia` 200, "3 works": `/product/200`, `/product/2013` and `/product/746` (P.1180, under Jakarta).
+- `/places` 200 lists 12 regions (0 before). `/places/java/batavia` (Jakarta, slug `batavia`) 200, showing
+  "Batavia · Jayakarta · Sunda Kelapa" and linking `/product/746`. `/makers` 200.
 
 ## Media origin headers
 
@@ -189,18 +200,9 @@ Run on 2026-10-07 (main 61b3b26):
 and the viewer reuses it. The nginx `Vary: Origin` change below is **production hardening**, not applied on
 staging (the user's choice): apply it on production's media origin when that is provisioned.
 
-**The defect.** `/_media/` is an nginx location in the shop's CloudPanel vhost that proxies to RustFS. The CORS
-headers come from the bucket's CORS rule, and RustFS sends `Access-Control-Allow-Origin` and `Vary: Origin` only
-when the request carries an `Origin`. The item page's lead `<img>` makes a request with no Origin and gets a
-cacheable response with no `Vary`. Chromium then reuses that response for OpenSeadragon's
-`crossOrigin="anonymous"` request, the CORS check fails, and the viewer shows "This image cannot be opened in the
-viewer just now". Observed on 2026-10-07:
-
-```
-no Origin:      HTTP 200 · cache-control: public, max-age=31536000, immutable   (no Vary, no ACAO)
-Origin gallery: HTTP 200 · cache-control: … immutable · access-control-allow-origin: https://indies-gallery.gaiada.com · vary: Origin
-uploads/x:      403
-```
+**The defect.** `/_media/` proxies to RustFS, which sends ACAO and `Vary: Origin` only when the request carries an
+`Origin`. A no-Origin `<img>` got a cacheable answer with no `Vary`; Chromium reused it for OpenSeadragon's
+anonymous-mode request, the CORS check failed, and the viewer refused the image (observed 2026-10-07).
 
 **The hardening (production).** In `location ^~ /_media/`, after `proxy_hide_header Set-Cookie;`:
 
