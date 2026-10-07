@@ -265,7 +265,7 @@ test.describe('Phase 5 Done when, at 390 px on staging', () => {
       return res?.status() === 200 && (await page.content()).includes(soldStock)
     }
     await expect.poll(fresh, { message: 'the sold work renders', timeout: 30_000 }).toBe(true)
-    const panel = page.locator('aside[data-status="sold"]')
+    const panel = page.locator('div[data-status="sold"]')
     await expect(panel.getByText(say('status.sold'), { exact: true })).toBeVisible()
     await expect(page.getByRole('link', { name: say('item.ask') })).toHaveCount(0)
     await expect(panel.getByRole('link', { name: say('item.askAnother') })).toBeVisible()

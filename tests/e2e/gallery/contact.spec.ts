@@ -206,10 +206,10 @@ test.describe('Gallery contact (5.3.d)', () => {
     const status = async () => {
       const res = await page.goto(`${GALLERY_ORIGIN}${itemPath}`, { waitUntil: 'load' })
       expect(res?.status(), itemPath).toBe(200)
-      return page.locator('aside[data-status]').getAttribute('data-status')
+      return page.locator('div[data-status]').getAttribute('data-status')
     }
     await expect.poll(status, { timeout: 15_000, intervals: [500, 1_000] }).toBe('sold')
-    const panel = page.locator('aside[data-status="sold"]')
+    const panel = page.locator('div[data-status="sold"]')
     await expect(panel.getByText('Sold', { exact: true })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Ask about this' })).toHaveCount(0)
     await expect(panel).not.toContainText(/price|available/i)

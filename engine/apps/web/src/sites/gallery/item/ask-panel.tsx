@@ -42,11 +42,11 @@ export function AskPanel({
 
   if (work.status === 'sold') {
     return (
-      <aside className={styles.panel} data-status="sold">
+      <div className={styles.panel} data-status="sold">
         <Badge tone="default">{t('status.sold')}</Badge>
         <Button href={askHref}>{c('item.askAnother')}</Button>
         {missing && <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>}
-      </aside>
+      </div>
     )
   }
 
@@ -56,24 +56,24 @@ export function AskPanel({
 
   if (work.status === 'on-hold') {
     return (
-      <aside className={styles.panel} data-status="on-hold">
+      <div className={styles.panel} data-status="on-hold">
         <Badge tone="caution">{t('status.onHold')}</Badge>
         <p className={styles.panelNote}>{t('item.onHoldExplain')}</p>
         <Button href={askHref}>{t('item.askOnHold')}</Button>
         {contact}
         <p className={styles.panelFine}>{t('item.shipping')}</p>
-      </aside>
+      </div>
     )
   }
 
   return (
-    <aside className={styles.panel} data-status="available">
+    <div className={styles.panel} data-status="available">
       <span className={styles.priceOnRequest}>{t('price.onRequest')}</span>
       <p className={styles.panelNote}>{t('item.heldIn')}</p>
       <Button href={askHref}>{t('item.ask')}</Button>
       {contact}
       <p className={styles.panelFine}>{t('item.shipping')}</p>
-    </aside>
+    </div>
   )
 }
 

@@ -220,7 +220,7 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
       await page.setViewportSize({ width: 390, height: 844 })
       await openFresh(page, itemPath(fx.sold, locale), fx.stockSold)
 
-      const panel = page.locator('aside[data-status="sold"]')
+      const panel = page.locator('div[data-status="sold"]')
       await expect(panel.getByText(say(locale, 'status.sold'), { exact: true })).toBeVisible()
       await expect(page.getByRole('link', { name: say(locale, 'item.ask') })).toHaveCount(0)
       // The whole document, head included: share cards and search snippets show the meta text.
