@@ -33,13 +33,27 @@ const envVar = (key: string): string | undefined => process.env[key] ?? LOCAL.ge
 /** One server's port: CI's 4200 unless `E2E_PORT` names this worktree's own. */
 export const PORT = process.env.E2E_PORT ?? envVar('PORT') ?? '4200'
 
-/** The `request` fixture uses Node's resolver, which may not know `*.localhost`; a plain IP with
- * the real `Host` header reaches the same vhost Chromium resolves by name. */
-export const BASE_URL = `http://127.0.0.1:${PORT}`
-export const HOST_HEADER = { Host: `shop.localhost:${PORT}` }
+/** A remote run (staging): `E2E_BASE_GALLERY` and `E2E_BASE_SHOP` name both sites' origins, e.g.
+ * `https://indies-gallery.gaiada.com`. Both or neither; unset, the local server below. */
+const REMOTE = { gallery: process.env.E2E_BASE_GALLERY, shop: process.env.E2E_BASE_SHOP }
+if ((REMOTE.gallery === undefined) !== (REMOTE.shop === undefined)) {
+  throw new Error('set both E2E_BASE_GALLERY and E2E_BASE_SHOP, or neither')
+}
+const origin = (url: string) => new URL(url).origin
+
 /** The real hosts, for page navigation (Chromium resolves `*.localhost` itself). */
-export const GALLERY_ORIGIN = `http://gallery.localhost:${PORT}`
-export const SHOP_ORIGIN = `http://shop.localhost:${PORT}`
+export const GALLERY_ORIGIN = REMOTE.gallery
+  ? origin(REMOTE.gallery)
+  : `http://gallery.localhost:${PORT}`
+export const SHOP_ORIGIN = REMOTE.shop ? origin(REMOTE.shop) : `http://shop.localhost:${PORT}`
+/** The `request` fixture uses Node's resolver, which may not know `*.localhost`; a plain IP with
+ * the real `Host` header reaches the same vhost Chromium resolves by name. Payload's REST answers
+ * on the shop host (the admin's, Q1). A remote run talks to the shop origin itself. */
+export const BASE_URL = REMOTE.shop ? SHOP_ORIGIN : `http://127.0.0.1:${PORT}`
+export const HOST_HEADER = { Host: new URL(SHOP_ORIGIN).host }
+/** The same pair for a non-browser read of a gallery page (an `RSC: 1` fetch, a raw HTML GET). */
+export const GALLERY_BASE_URL = REMOTE.gallery ? GALLERY_ORIGIN : `http://127.0.0.1:${PORT}`
+export const GALLERY_HOST_HEADER = { Host: new URL(GALLERY_ORIGIN).host }
 
 export const OWNER = {
   email: process.env.E2E_OWNER_EMAIL ?? ACCOUNTS.owner.email,
