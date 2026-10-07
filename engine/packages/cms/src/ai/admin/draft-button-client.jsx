@@ -73,7 +73,7 @@ function Result({ result, language }) {
         </p>
       ) : null}
       {result.filled.length > 0 ? (
-        <button type="button" style={button} onClick={() => window.location.reload()}>
+        <button type="button" style={button} onClick={() => globalThis.location.reload()}>
           {DRAFT_COPY.reload[language]}
         </button>
       ) : null}
@@ -87,7 +87,7 @@ export function DraftButtonClient({ workId, language }) {
   async function draft() {
     setState({ phase: 'working' })
     try {
-      const response = await fetch('/api/x/draft', {
+      const response = await globalThis.fetch('/api/x/draft', {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'content-type': 'application/json' },

@@ -2,7 +2,7 @@
  * What the drafting tool needs from outside the CMS (TASKS.md 8.3.a), as ports the app wires:
  *
  * - `DraftModel` — one vision call. The app's adapter is Anthropic's
- *   (`apps/web/src/app/api/x/draft/anthropic.ts`; the key is host-only, read there); tests use a
+ *   (`apps/web/src/app/(payload)/admin/ai/anthropic.ts`; the key is host-only, read there); tests use a
  *   scripted fake (`./test-support`).
  * - `DraftImageSource` — a work image's bytes, fetched on the server: the public derivative at
  *   most 1,600 px on its long edge, re-encoded with no metadata (AI.md §5).
