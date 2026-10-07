@@ -10,6 +10,10 @@
  * writes the importer's apply step makes. Nothing here is guessed: every name comes from a
  * committed file, and the files came from the legacy data.
  *
+ * With `publish` (the CLI's `--publish`), the rows it names that are still drafts are published
+ * once seeded, and nothing else about them changes (`./publish`): the gallery reads published
+ * vocabulary only, so the search's historical names (Batavia → Jakarta) need it.
+ *
  * It runs outside any Next request, so every write's request carries a cache collector for the
  * cache hooks (places, makers and terms expire the gallery's listings; site-settings its settings
  * tags): the caller's (the CLI's, posted once the run returns — `../../import/cli-cache`), or with
@@ -25,27 +29,19 @@ import type { Payload, PayloadRequest, RequestContext } from 'payload'
 import { reqOf } from '../req'
 import { fold } from '../../import/vocabulary'
 import { TERM_KINDS } from '../../collections/terms/kinds'
+import { fillKey, publishVocabulary, type PublishReport } from './publish'
+import { SETTINGS_DEFAULTS } from './settings'
+import { sortNameOf } from './sort-name'
 
-/** The settings a fresh environment starts on: the schema's own defaults, written once. */
-const SETTINGS_DEFAULTS = {
-  gallery: {
-    ai: { chatEnabled: false, draftingEnabled: false, dailyBudgetUsd: 5, sessionTokenCap: 150000 },
-  },
-  shop: {
-    ai: { chatEnabled: false, draftingEnabled: false, dailyBudgetUsd: 5, sessionTokenCap: 150000 },
-    checkoutEnabled: true,
-    delivery: { bands: [], freeOverIdr: 500000 },
-    welcomeDiscount: '',
-    orderExpiryMinutes: 60,
-    storeAlerts: true,
-  },
-} as const
+export { sortNameOf } from './sort-name'
 
 export type VocabularyReport = {
   places: { created: number; present: number }
   terms: { created: number; present: number }
   makers: { created: number; present: number }
   siteSettings: 'seeded' | 'present'
+  /** With `publish`: the seeded rows this run moved from draft to published (`./publish`). */
+  published?: PublishReport
 }
 
 type GazetteerPlace = {
@@ -106,30 +102,6 @@ export function makerSeeds(): readonly MakerSeed[] {
   return (data('makers.json') as { makers: MakerSeed[] }).makers
 }
 
-/**
- * The maker line as a collector's sort reads it (the field is required, and the old site never
- * stated one): surname first, letters upper — "BLAEU, Willem Janszoon"; a particle rides with
- * the surname ("DE L' ISLE, Guillaume"); a trailing parenthetical ("(Ptolemy)", "(1588 – 1664)")
- * stays with the given name; a name that is already a sort line or an office's name sorts as it
- * is. Deterministic over the name, so the same seed always writes the same line.
- */
-const ORGANISATION = /&|\b(Office|Society|Club|Association|Company|Press|Bureau|Survey|Admiralty)\b/
-const PARTICLE = /\s(van|von|de|der|den|del|della|du|di|ten|ter|tot|zu)\b/i
-
-export function sortNameOf(name: string): string {
-  if (name.includes(',') || ORGANISATION.test(name)) return name
-  const note = name.match(/\s*\([^)]*\)\s*$/)
-  const base = (note?.index !== undefined ? name.slice(0, note.index) : name).trim()
-  const suffix = note ? ` ${name.slice(note.index ?? 0).trim()}` : ''
-  const particle = base.match(PARTICLE)
-  const surnameStart =
-    particle?.index !== undefined ? particle.index + 1 : base.lastIndexOf(' ') + 1
-  const surname = base.slice(surnameStart).trim()
-  const given = base.slice(0, surnameStart).trim()
-  if (surname === '') return `${base.toUpperCase()}${suffix}`
-  return `${surname.toUpperCase()}, ${given}${suffix}`
-}
-
 /** One match-or-create helper: finds by slug, creates what is missing. */
 async function upsertPlace(
   payload: Payload,
@@ -171,12 +143,13 @@ async function upsertPlace(
       req: reqOf(payload, 'id', req.context),
     })
   }
-  return true
+  return { id: created.id, created: true }
 }
 
 export async function seedVocabulary(
   payload: Payload,
   context?: RequestContext,
+  options: { publish?: boolean } = {},
 ): Promise<VocabularyReport> {
   const req = reqOf(payload, 'en', context ?? invalidationBatch().context())
   const report: VocabularyReport = {
@@ -185,26 +158,35 @@ export async function seedVocabulary(
     makers: { created: 0, present: 0 },
     siteSettings: 'present',
   }
+  const count = (tally: { created: number; present: number }, created: boolean) => {
+    if (created) tally.created += 1
+    else tally.present += 1
+  }
 
   const slugToId = new Map<string, number>()
   for (const place of vocabularyPlaces()) {
-    if (await upsertPlace(payload, req, place, slugToId)) report.places.created += 1
-    else report.places.present += 1
+    count(report.places, await upsertPlace(payload, req, place, slugToId))
   }
 
+  // The seeded terms and makers, found or created, for the publish step; a grade's equivalent
+  // is a publish-only requirement, filled there where the row has none (`./publish`).
+  const termIds: number[] = []
+  const makerIds: number[] = []
+  const fill = new Map<string, Record<string, string>>()
   for (const grade of gradeSeeds()) {
-    if (await ensureTerm(payload, req, 'grade', grade.label, gradeDefinition(grade))) {
-      report.terms.created += 1
-    } else report.terms.present += 1
+    const term = await ensureTerm(payload, req, 'grade', grade.label, gradeFields(grade))
+    count(report.terms, term.created)
+    termIds.push(term.id)
+    fill.set(fillKey('terms', term.id), { equivalent: grade.equivalent })
   }
   const subjects = [
     ...subjectSeeds().map((seed) => ({ kind: 'subject', seed })),
     ...categorySeeds().map((seed) => ({ kind: CATEGORY_KIND, seed })),
   ]
   for (const { kind, seed } of subjects) {
-    if (await ensureTerm(payload, req, kind, seed.label, undefined, seed.labelId)) {
-      report.terms.created += 1
-    } else report.terms.present += 1
+    const term = await ensureTerm(payload, req, kind, seed.label, undefined, seed.labelId)
+    count(report.terms, term.created)
+    termIds.push(term.id)
   }
 
   for (const maker of makerSeeds()) {
@@ -216,16 +198,18 @@ export async function seedVocabulary(
       limit: 1,
       where: { name: { equals: maker.name } },
     })
-    if (existing.docs.length > 0) {
-      report.makers.present += 1
-      continue
-    }
-    await payload.create({
-      collection: 'makers',
-      data: { name: maker.name, sortName: sortNameOf(maker.name) } as never,
-      req,
-    })
-    report.makers.created += 1
+    const found = existing.docs[0] as { id: number } | undefined
+    const id = found
+      ? found.id
+      : (
+          (await payload.create({
+            collection: 'makers',
+            data: { name: maker.name, sortName: sortNameOf(maker.name) } as never,
+            req,
+          })) as unknown as { id: number }
+        ).id
+    count(report.makers, found === undefined)
+    makerIds.push(id)
   }
 
   const settings = (await payload.findGlobal({ slug: 'site-settings', req })) as unknown as {
@@ -239,14 +223,24 @@ export async function seedVocabulary(
     await payload.updateGlobal({ slug: 'site-settings', data: SETTINGS_DEFAULTS as never, req })
     report.siteSettings = 'seeded'
   }
+
+  if (options.publish) {
+    report.published = await publishVocabulary(payload, req, {
+      places: [...slugToId.values()],
+      terms: termIds,
+      makers: makerIds,
+      fill,
+    })
+  }
   return report
 }
 
-function gradeDefinition(grade: GradeSeed): Record<string, unknown> {
-  return { definition: grade.definition }
+function gradeFields(grade: GradeSeed): Record<string, unknown> {
+  return { definition: grade.definition, equivalent: grade.equivalent }
 }
 
-/** Creates the term when no term of that kind folds to the label; answers whether it created. */
+/** Creates the term when no term of that kind folds to the label; answers its id, and whether
+ * it created it. */
 async function ensureTerm(
   payload: Payload,
   req: PayloadRequest,
@@ -254,7 +248,7 @@ async function ensureTerm(
   label: string,
   extra?: Record<string, unknown>,
   labelId?: string,
-): Promise<boolean> {
+): Promise<{ id: number; created: boolean }> {
   const { docs } = await payload.find({
     collection: 'terms',
     req,
@@ -269,7 +263,7 @@ async function ensureTerm(
       typeof value === 'string' ? value : ((value as { en?: string } | undefined)?.en ?? '')
     return fold(text) === fold(label)
   })
-  if (hit) return false
+  if (hit) return { id: (hit as { id: number }).id, created: false }
   const created = (await payload.create({
     collection: 'terms',
     data: { kind, label } as never,
@@ -292,5 +286,5 @@ async function ensureTerm(
       req: reqOf(payload, 'id', req.context),
     })
   }
-  return true
+  return { id: created.id, created: true }
 }

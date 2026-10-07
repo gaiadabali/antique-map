@@ -45,6 +45,76 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
     expect(second.vocabulary!.makers.present).toBe(total(first.vocabulary!.makers))
   }, 180_000)
 
+  it('--publish publishes the seeded drafts, changes nothing else, and publishes once', async () => {
+    const payload = stack.payload
+    const all = async (collection: 'places' | 'terms' | 'makers') =>
+      (
+        await payload.find({
+          collection,
+          overrideAccess: true,
+          depth: 0,
+          limit: 2000,
+          locale: 'all',
+        })
+      ).docs as unknown as Record<string, unknown>[]
+    const rest = ({ _status, updatedAt, ...fields }: Record<string, unknown>) => fields
+    const collections = ['places', 'terms', 'makers'] as const
+    const before = Object.fromEntries(
+      await Promise.all(collections.map(async (c) => [c, await all(c)])),
+    )
+    // The seed without --publish leaves drafts: Batavia's search would find nothing published.
+    expect(before.places.every((doc: Record<string, unknown>) => doc._status === 'draft')).toBe(
+      true,
+    )
+
+    const run = await seedLayer('vocabulary', { payload, publish: true })
+    expect(run.vocabulary!.places.created).toBe(0)
+    expect(run.vocabulary!.published).toEqual({
+      places: before.places.length,
+      terms: before.terms.length,
+      makers: before.makers.length,
+      held: [],
+    })
+    for (const collection of collections) {
+      const after = new Map((await all(collection)).map((doc) => [doc.id, doc]))
+      for (const doc of before[collection] as Record<string, unknown>[]) {
+        const now = after.get(doc.id)!
+        expect(now._status, `${collection} #${String(doc.id)}`).toBe('published')
+        // Nothing but _status changes — but a grade gains the equivalent publishing demands.
+        const { equivalent, ...was } = rest(doc)
+        const { equivalent: nowEquivalent, ...is } = rest(now)
+        expect(is).toEqual(was)
+        if (equivalent) expect(nowEquivalent).toBe(equivalent)
+      }
+    }
+    // The public reads it: Jakarta, with Batavia among its historical names.
+    const jakarta = await payload.find({
+      collection: 'places',
+      overrideAccess: false,
+      depth: 0,
+      where: { and: [{ slug: { equals: 'batavia' } }, { _status: { equals: 'published' } }] },
+    })
+    const names = (jakarta.docs[0] as { historicalNames?: { name: string }[] } | undefined)
+      ?.historicalNames
+    expect(names?.map((entry) => entry.name)).toContain('Batavia')
+
+    // A re-run publishes nothing; a row the seed creates on a --publish run is published at once.
+    const maker = before.makers[0] as { id: number; name: string }
+    await payload.delete({ collection: 'makers', id: maker.id, overrideAccess: true })
+    const again = await seedLayer('vocabulary', { payload, publish: true })
+    expect(again.vocabulary!.makers.created).toBe(1)
+    expect(again.vocabulary!.published).toEqual({ places: 0, terms: 0, makers: 1, held: [] })
+    const recreated = await payload.find({
+      collection: 'makers',
+      overrideAccess: false,
+      depth: 0,
+      where: { name: { equals: maker.name } },
+    })
+    expect((recreated.docs[0] as { _status?: string } | undefined)?._status).toBe('published')
+    const third = await seedLayer('vocabulary', { payload, publish: true })
+    expect(third.vocabulary!.published).toEqual({ places: 0, terms: 0, makers: 0, held: [] })
+  }, 300_000)
+
   it('the gallery sample imports its 50 rows: drafted, addressed, no price', async () => {
     const rows = sampleRows({ withImages: false })
     // The file carries no price: every asking_price cell is empty (DR-3, Q14).

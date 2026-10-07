@@ -45,12 +45,11 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
   const { context } = options
   const runOptions: Omit<RunOptions, 'payload'> = { runner: 'seed', dryRun, publish, context }
 
-  if (layer === 'vocabulary') {
-    return { layer, vocabulary: await seedVocabulary(payload, context), imports: [], marked: 0 }
-  }
-
-  // Every other layer imports against the vocabulary — the shop's products match its categories.
-  const vocabulary = await seedVocabulary(payload, context)
+  // Every layer seeds the vocabulary first — the imports match against it. `--publish` publishes
+  // its drafts too: the gallery reads published places, makers and terms only, so a published
+  // work under a draft place loses its historical names. A dry run publishes nothing.
+  const vocabulary = await seedVocabulary(payload, context, { publish: publish && !dryRun })
+  if (layer === 'vocabulary') return { layer, vocabulary, imports: [], marked: 0 }
 
   if (layer === 'shop') {
     const imports: ImportReport[] = []
@@ -218,6 +217,14 @@ export function renderSeedRun(run: SeedRun): string {
         `terms ${v.terms.created} / ${v.terms.present}, makers ${v.makers.created} / ` +
         `${v.makers.present}, site-settings ${v.siteSettings}`,
     )
+    if (v.published) {
+      const p = v.published
+      lines.push(
+        `vocabulary published: places ${p.places}, terms ${p.terms}, makers ${p.makers}, ` +
+          `held ${p.held.length}`,
+        ...p.held.map((line) => `  held: ${line}`),
+      )
+    }
   }
   for (const report of run.imports) lines.push(render(report).trimEnd())
   if (run.layer.startsWith('gallery-') && !run.imports[0]?.dryRun) {
