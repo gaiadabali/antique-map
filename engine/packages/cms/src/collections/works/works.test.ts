@@ -7,6 +7,7 @@ import type { Field } from 'payload'
 import { describe, expect, it } from 'vitest'
 
 import { DRAFTED_ACCESS, publishedOrStaff } from '../../access/published'
+import { stampAiDraft } from '../../ai/audit'
 import { VOCABULARY_ACCESS } from '../terms/vocabulary/access'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
@@ -152,12 +153,13 @@ describe('the works collection (8.2.a): every field CONTENT-MODEL.md §1 names',
     expect((images.fields as Named[]).map((field) => field.name)).toEqual(['media', 'caption'])
   })
 
-  it('gives every field an AI may draft its own entry: drafted, verifiedBy, verifiedAt (3.2.c)', () => {
+  it('gives every field an AI may draft its own entry: drafted, verified, verifiedBy, verifiedAt (3.2.c, 8.3)', () => {
     const group = fieldAt(Works.fields, 'cataloguing.aiDraft')!
     expect((group.fields as Named[]).map((field) => field.name)).toEqual([...AI_DRAFTABLE_FIELDS])
     for (const entry of group.fields as Named[]) {
       expect((entry.fields as Named[]).map((field) => field.name)).toEqual([
         'drafted',
+        'verified',
         'verifiedBy',
         'verifiedAt',
       ])
@@ -254,6 +256,8 @@ describe('every save passes the same hooks, on every write path', () => {
       holdWorkReferences,
       assignWorkUid,
       assignPublicId,
+      // 8.3: who verified each AI-drafted field, stamped before the guards read it.
+      stampAiDraft,
       stampCataloguing,
       guardWork,
     ])

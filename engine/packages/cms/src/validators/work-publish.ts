@@ -94,12 +94,15 @@ export function publishProblems(facts: PublishFacts): PublishProblem[] {
     })
   }
   if (facts.aiDraft.length > 0) {
-    const names = facts.aiDraft.map(
-      (field) => AI_DRAFTABLE_LABELS[field as AiDraftableField]?.en ?? field,
-    )
+    const label = (field: string, language: 'en' | 'id') =>
+      AI_DRAFTABLE_LABELS[field as AiDraftableField]?.[language] ?? field
+    const names = facts.aiDraft.map((field) => label(field, 'en'))
+    const nama = facts.aiDraft.map((field) => label(field, 'id'))
+    const dan = (words: readonly string[]) =>
+      words.length < 2 ? words.join('') : `${words.slice(0, -1).join(', ')} dan ${words.at(-1)}`
     problems.push({
       path: 'cataloguing.aiDraft',
-      message: `An AI drafted ${listed(names)}, and nobody has checked ${names.length === 1 ? 'it' : 'them'} yet: check each, then record who checked it and when. AI membuat draf ${listed(names)} dan belum ada yang memeriksanya: periksa semuanya, lalu catat siapa dan kapan.`,
+      message: `An AI drafted ${listed(names)}, and nobody has checked ${names.length === 1 ? 'it' : 'them'} yet: check each against the object, then tick its Verified box. AI membuat draf ${dan(nama)} dan belum ada yang memeriksanya: cocokkan masing-masing dengan objeknya, lalu centang kotak Diverifikasi.`,
       summary: `Cataloguing — an AI drafted ${names.join(' · ')} and nobody has checked ${names.length === 1 ? 'it' : 'them'} yet`,
     })
   }
