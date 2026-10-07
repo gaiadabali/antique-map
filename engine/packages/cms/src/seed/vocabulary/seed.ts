@@ -143,7 +143,7 @@ async function upsertPlace(
       req: reqOf(payload, 'id', req.context),
     })
   }
-  return { id: created.id, created: true }
+  return true
 }
 
 export async function seedVocabulary(
