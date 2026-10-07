@@ -63,6 +63,32 @@ export function derivativeUrlOf(media: Doc, base: string = mediaPublicUrl()): st
   return `${base}/${derivativeKey(assetId, largestDerivativeWidth(width), 'webp')}`
 }
 
+/**
+ * Every width the ladder made for a source this wide, ascending: the rungs at or under it, plus
+ * the source's own width when it is narrower than the top rung — the pipeline's
+ * `derivativeWidthsFor()` (`@engine/media/derivatives`, which loads sharp and so stays out of here).
+ */
+export function derivativeWidthsOf(width: number): readonly number[] {
+  const rungs: number[] = DERIVATIVE_WIDTHS.filter((rung) => rung <= width)
+  if (width < TOP_RUNG && !rungs.includes(width)) rungs.push(width)
+  return rungs
+}
+
+/**
+ * The public WebP derivatives as an `<img srcset>` (`…/320.webp 320w, …/640.webp 640w, …`), once
+ * the pipeline has published them; else `null`, and the image shows its one `publicImageUrl()`.
+ * A card or a lead image then downloads the rung its slot needs, never the top one.
+ */
+export function derivativeSrcSetOf(media: Doc, base: string = mediaPublicUrl()): string | null {
+  const assetId = assetIdOf(media)
+  const width = positive(media.width)
+  const ready = (media.derivatives as Doc | null | undefined)?.status === 'ready'
+  if (base === '' || assetId === null || width === null || !ready) return null
+  return derivativeWidthsOf(width)
+    .map((rung) => `${base}/${derivativeKey(assetId, rung as DerivativeWidth, 'webp')} ${rung}w`)
+    .join(', ')
+}
+
 /** The URL the public is shown: the derivative, else the record's own file; `null` for none. */
 export function publicImageUrl(media: Doc, base: string = mediaPublicUrl()): string | null {
   const own = str(media.url)

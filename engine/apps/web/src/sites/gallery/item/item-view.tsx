@@ -94,6 +94,7 @@ export function ItemViewComposition({
                 variant="fill"
                 aspectRatio={`${lead.width ?? 4} / ${lead.height ?? 3}`}
                 src={lead.url}
+                srcSet={lead.srcSet}
                 alt={lead.alt}
                 sizes="(max-width: 1023px) 100vw, 55vw"
                 priority
