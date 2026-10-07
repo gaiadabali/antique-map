@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
+| **5** Gallery site | Gallery | 3, 4 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 11/16 | 0 | `███████░░░`  69% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 12/16 | 0 | `████████░░`  75% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **33/51** | **164/208** | **8** | `████████░░`  79% |
+| **All** | 11 phases | | | **35/51** | **166/208** | **8** | `████████░░`  80% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 5·W3 | 5.2.e + 5.5.d Checks | Opus devops → Sonnet QA | `main`, Helios | 2026-10-07 | merged `a5b2f58e`; last defect fixed `e1d866af` (Ask panel was a nested `<aside>` — axe failed every item page); release then `done-when.spec.ts` ×2 on staging closes the phase |
 | 9·W1 | 9.2.b the owner's dashboard, run 2 (shop panels) | Sonnet → Opus review (antique-map-f5) | `w/9.2b2` | 2026-10-06 | run 1 merged `d719732` (shell, periods, gallery panels; panels load one at a time for the pool); run 2 = sales, fulfilment, payments from orders; the shop funnel shows "no events yet" until the shop's server events exist (a separate ticket after 10.5) |
 | 9·W1 | 9.3.d / 9.4.c Checks | — | `main` | 2026-10-07 | 9.3.a–c and 9.4.a–b merged; both Checks run against staging (now live on `188996d` with the media pipeline): the metadata crawl and the 8,338-URL redirect verification |
 | 9·W1 | 9.1.e Check | orchestrator | `main` | 2026-10-07 | 9.1.a–d merged (`9ed28e1` inbox + partners, retention cron live on staging); the Check: a partnership lead moved to Closed, an editor refused the inbox, the retention job deletes only expired rows |
@@ -458,7 +457,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.1.c search: Postgres full-text with `unaccent`/`pg_trgm`, place names matched through the gazetteer, a plain no-results state with a "Ask us" handoff
   - [x] 5.1.d **Check:** on a production build a search for a historical place name ("Batavia") finds the item catalogued under the modern one; a draft is never listed; the response body carries no `askingPrice`; axe is clean at both widths.
 
-- [ ] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — 🔄 5·W1
+- [x] **5.2 The item page and deep zoom** · needs: phase 3, phase 4 — ✅ 2026-10-07 0cde4294
   - **Lane** GAL + MED · **Agent** senior-fe with senior-be · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/product/**`, `engine/packages/media/src/{derivatives,tiles}/**`
   - **Read** EXPERIENCE-GALLERY.md §Item, ARCHITECTURE.md §Media and deep zoom, CARRY-OVER.md §5
@@ -467,7 +466,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.2.b the item page: images, details, condition grade, provenance text, "Price on request"; the one-address rule (a second address 308s to the canonical); `generateMetadata` is 9.3's
   - [x] 5.2.c the zoom viewer (OpenSeadragon): pinch, wheel, keyboard, full screen, fallback to the largest derivative when no tiles exist, honest about low-resolution legacy photos
   - [x] 5.2.d a sold item stays at its address with "Sold" and no enquiry as if available; on-hold shows "On hold"
-  - [ ] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
+  - [x] 5.2.e **Check:** opening a seeded item on a production build at 390 px, the viewer zooms smoothly and tiles load from `iiif/`; `uploads/` is 403 anonymously; a sold item shows Sold and no "Ask about this" (only "Ask for another example", 2026-10-06); no price anywhere in the HTML or JSON.
 
 - [x] **5.3 Ask about this, Sell to us, and the lead form** · needs: 5.1, 5.2 — ✅ 2026-10-06 7046b7a
   - **Lane** GAL · **Agent** senior-fe with senior-be · **Wave** W2
@@ -488,7 +487,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.4.b editorial and information pages from the `pages` collection (blocks): about, the guarantee and certificate, viewings (contact only), contact
   - [x] 5.4.c **Check:** a seeded maker and place each list their items; an edited page in the admin appears after its cache tag is invalidated; the pages pass axe at both widths.
 
-- [ ] **5.5 The gallery gate** · needs: 5.3, 5.4 — 🔄 5·W3
+- [x] **5.5 The gallery gate** · needs: 5.3, 5.4 — ✅ 2026-10-07 0cde4294
   - **Lane** QA · **Agent** qa · **Wave** W3
   - **Owns** `docs/gates/gallery.md`, `tests/e2e/gallery/**`
   - **Read** the **Done when** of phase 5
@@ -496,7 +495,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 5.5.a an e2e path: search → item → zoom → Ask (link text) → Sell to us (lead created), at 390 px and 1280 px, English and Indonesian
   - [x] 5.5.b a search of the built HTML for a cart, checkout, sign-in, price or "offer" finds none
   - [x] 5.5.c Lighthouse mobile on an item page and the listing against the staging host
-  - [ ] 5.5.d **Check:** `docs/gates/gallery.md` holds the e2e output, screenshots, the empty search, and Lighthouse scores of at least 90 performance and 100 accessibility.
+  - [x] 5.5.d **Check:** `docs/gates/gallery.md` holds the e2e output, screenshots, the empty search, and Lighthouse scores of at least 90 performance and 100 accessibility.
 
 ---
 
@@ -832,6 +831,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-07 — ✅ **phase 5 — Gallery site closed** (`0cde4294`; gate `docs/gates/gallery.md` **PASSED** on staging release `production-20261007T091257Z-0fc3942a`). Done when, walked at 390 px on staging (`tests/e2e/gallery/done-when.spec.ts`, 5/5 twice): a search by a place's old name ("Batavia") finds the work catalogued under Jakarta (P.1180, real seeded data); the item opens, the viewer zooms and draws; "Ask about this" opens `wa.me` with the item and stock number; Sell to us sends a form that becomes a lead and an email; a sold item says Sold and only "Ask for another example"; no price, cart or sign-in anywhere (no-commerce scan, 33 pages en+id); axe clean on home, browse and item pages; Lighthouse mobile ≥ 90 performance and 100 accessibility on the listing and an item page. Also green on the same release: `item.spec.ts` 5/5 (tiles from `iiif/`, `uploads/` 403, the sold page's whole document has no "Price on request"), `dpr3-navigation.spec.ts` (search → item → zoom on a phone), `journey.spec.ts` 4/4 (en/id × 390/1280). Fixed on the way to the gate: browse/search never invalidated; the media upload pipeline never wired; a page could not be published from the admin; the sold meta description; zoom on untiled images and the lead image after navigation (media CORS); the gazetteer places left as drafts; the Ask panel a nested landmark. **Follow-ups (not blocking):** F1 LCP budget 2.5 s missed (2.9–3.4 s from the workstation) → phase 10; D2 a Zoom click occasionally lost before hydration (1 in 12, none in the final runs); D3 search cards link slugless (one 308); 13 CMS information pages have no content on staging; nginx `Vary: Origin` for production; deleted media leave public derivatives; a 1×1 PNG records `failed`; the low-resolution notice ignores provenance; the lead-form rate limit (SECURITY.md 5/hour vs 10/min) still needs the owner's word.
 
 - 2026-10-07 — **Staging ready for the phase 5 gate.** Release `production-20261007T075619Z-643bffa` (no new migrations) carries `dfce7238` (every media image loads in CORS mode — the item's lead image broke after search → item at DPR 3, and the zoom viewer failed on untiled images, because a card cached the derivative without CORS) and `ccedbea8` (the vocabulary seed's `--publish` publishes places, makers and terms). The staging vocabulary is published (66 places, 127 makers, 110 terms; nothing created), so `/search?q=Batavia` finds P.1180 (`/product/746`, catalogued under Jakarta) and `/places/java/batavia` shows "Jakarta · Batavia · Jayakarta · Sunda Kelapa". The release procedure (`docs/gates/staging-release.md`) now has the vocabulary publish and a "no two bd.sh at once" check. The QA reruns (5.2e, 5.5a, the DPR 3 path, the no-commerce scan, the Done-when walk) are running on staging.
 
