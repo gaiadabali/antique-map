@@ -63,7 +63,7 @@ async function openFresh(page: Page, path: string, stockNumber: string) {
 const itemPath = (ref: WorkRef, locale: Locale) =>
   href('item', { publicId: ref.publicId, slug: ref.slug }, locale)
 
-test.describe.configure({ mode: 'serial' })
+test.describe.configure({ mode: 'default' }) // run with --workers=1: shared site-settings
 
 test.describe('Gallery item page and deep zoom (5.2.e)', () => {
   test.setTimeout(240_000)
