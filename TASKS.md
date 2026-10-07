@@ -23,11 +23,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 16/20 | 0 | `████████░░`  80% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 8/16 | 0 | `█████░░░░░`  50% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 10/16 | 0 | `██████░░░░`  63% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 11/16 | 0 | `███████░░░`  69% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **33/51** | **158/208** | **8** | `████████░░`  76% |
+| **All** | 11 phases | | | **33/51** | **160/208** | **8** | `████████░░`  77% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -645,8 +645,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** AI.md §Drafting, CONTENT-MODEL.md §3 `aiDraft`
   - _Requirements: 9.5_
   - [ ] 8.3.a an admin action on an antique with photographs: the vision model drafts title, description, object type, probable date, places, subjects and dimensions from visible scale only; every drafted field is stored with `aiDraft` unverified
-  - [ ] 8.3.b grade, provenance and the asking price are never drafted; the audit trail records who requested it and who verified each field
-  - [ ] 8.3.c the publish guard from 3.2.c refuses while any drafted field is unverified, naming the fields
+  - [x] 8.3.b grade, provenance and the asking price are never drafted; the audit trail records who requested it and who verified each field
+  - [x] 8.3.c the publish guard from 3.2.c refuses while any drafted field is unverified, naming the fields
   - [ ] 8.3.d **Check:** with a test model, drafting fills fields marked unverified; publishing is refused until each is verified; a draft never writes grade, provenance or price; the tool is owner/editor only.
 
 - [ ] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2 — 🔄 8·W3
