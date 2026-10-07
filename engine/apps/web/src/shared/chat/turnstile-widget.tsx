@@ -18,17 +18,17 @@ type TurnstileApi = {
   remove(widgetId: string): void
 }
 
-declare global {
-  interface Window {
-    turnstile?: TurnstileApi
-  }
+// Read through a local view of `window`, not a global declaration: the contact and partnership
+// widgets each declare `Window.turnstile` with their own option type, and a third would conflict.
+function turnstileApi(): TurnstileApi | undefined {
+  return (window as unknown as { turnstile?: TurnstileApi }).turnstile
 }
 
 const SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
 let loading: Promise<void> | null = null
 
 function loadTurnstile(): Promise<void> {
-  if (window.turnstile) return Promise.resolve()
+  if (turnstileApi()) return Promise.resolve()
   loading ??= new Promise<void>((resolve, reject) => {
     const script = document.createElement('script')
     script.src = SCRIPT_SRC
@@ -58,8 +58,9 @@ export function ChatTurnstile({
     let cancelled = false
     loadTurnstile()
       .then(() => {
-        if (cancelled || box.current === null || window.turnstile === undefined) return
-        widget.current = window.turnstile.render(box.current, {
+        const api = turnstileApi()
+        if (cancelled || box.current === null || api === undefined) return
+        widget.current = api.render(box.current, {
           sitekey: siteKey,
           size: 'invisible',
           callback: onToken,
@@ -69,7 +70,7 @@ export function ChatTurnstile({
       .catch(() => undefined)
     return () => {
       cancelled = true
-      if (widget.current !== null) window.turnstile?.remove(widget.current)
+      if (widget.current !== null) turnstileApi()?.remove(widget.current)
       widget.current = null
     }
     // `onToken` is a stable callback from the caller; only `siteKey` should re-run this effect.

@@ -30,8 +30,8 @@ describe('sendChatMessage', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe('/api/x/chat/message')
-    expect(calls[0].body).toEqual({
+    expect(calls[0]?.url).toBe('/api/x/chat/message')
+    expect(calls[0]?.body).toEqual({
       text: 'Do you have maps of Java?',
       locale: 'en',
       pagePath: '/en/item/42-a-map',
@@ -86,9 +86,9 @@ describe('postConsent', () => {
 
     expect(result).toEqual({ ok: true, reference: 'L-1' })
     expect(calls).toHaveLength(1)
-    expect(calls[0].url).toBe('/api/x/chat/consent')
-    expect(calls[0].body.name).toBe('Ida Bagus')
-    expect(calls[0].body.whatsapp).toBe('+6281234567890')
+    expect(calls[0]?.url).toBe('/api/x/chat/consent')
+    expect(calls[0]?.body.name).toBe('Ida Bagus')
+    expect(calls[0]?.body.whatsapp).toBe('+6281234567890')
   })
 })
 
