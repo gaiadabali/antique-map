@@ -20,14 +20,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **2** One app, one database, two hosts | Foundation | 1 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **3** The CMS and its data | Build | 2 | ✅ done | 7/7 | 33/33 | 0 | `██████████` 100% |
 | **4** Early UI from the design team | Build | 2 | ✅ done | 3/3 | 14/14 | 0 | `██████████` 100% |
-| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 16/20 | 0 | `████████░░`  80% |
+| **5** Gallery site | Gallery | 3, 4 | 🔄 in progress | 3/5 | 18/20 | 0 | `█████████░`  90% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 11/16 | 0 | `███████░░░`  69% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 0/4 | 12/16 | 0 | `████████░░`  75% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **33/51** | **162/208** | **8** | `████████░░`  78% |
+| **All** | 11 phases | | | **33/51** | **164/208** | **8** | `████████░░`  79% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -494,9 +494,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `docs/gates/gallery.md`, `tests/e2e/gallery/**`
   - **Read** the **Done when** of phase 5
   - _Requirements: 3.5, 12.3, 12.4_
-  - [ ] 5.5.a an e2e path: search → item → zoom → Ask (link text) → Sell to us (lead created), at 390 px and 1280 px, English and Indonesian
+  - [x] 5.5.a an e2e path: search → item → zoom → Ask (link text) → Sell to us (lead created), at 390 px and 1280 px, English and Indonesian
   - [x] 5.5.b a search of the built HTML for a cart, checkout, sign-in, price or "offer" finds none
-  - [ ] 5.5.c Lighthouse mobile on an item page and the listing against the staging host
+  - [x] 5.5.c Lighthouse mobile on an item page and the listing against the staging host
   - [ ] 5.5.d **Check:** `docs/gates/gallery.md` holds the e2e output, screenshots, the empty search, and Lighthouse scores of at least 90 performance and 100 accessibility.
 
 ---
