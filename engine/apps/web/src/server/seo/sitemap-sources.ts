@@ -3,12 +3,11 @@
  * `overrideAccess: false`, `_status: 'published'`, an explicit `select` of only the fields a URL
  * and its `<lastmod>` need — never a price, a note or a staff field.
  *
- * Cached under the site's own `catalogue:<site>` tag (`@engine/cache`), the catalogue's own
+ * Each site has an uncached `query…` (on the caller's Payload — the db test's door) and a cached
+ * `…SitemapEntries()` that wraps it. Cached under the site's own `catalogue:<site>` tag (`@engine/cache`), the catalogue's own
  * profile (`cacheLife('hours')`): a publish or unpublish already expires that tag, so the sitemap
  * picks it up with no cache of its own to invalidate.
  */
-import 'server-only'
-
 import { cacheLife } from 'next/cache'
 import type { Payload, SelectType, Where } from 'payload'
 
@@ -89,12 +88,7 @@ async function galleryPlaceEntries(payload: Payload): Promise<readonly SitemapEn
 
 /** The gallery's sitemap entries: static surfaces plus every published work (sold too), maker,
  * place, page and story. */
-export async function gallerySitemapEntries(): Promise<readonly SitemapEntry[]> {
-  'use cache'
-  cacheLife('hours')
-  cacheTags([catalogueTag('gallery')])
-  const payload = await cms()
-
+export async function queryGallerySitemap(payload: Payload): Promise<readonly SitemapEntry[]> {
   const [works, makers, pages, places] = await Promise.all([
     findPublished(payload, 'works', {}, { title: true, publicId: true, updatedAt: true }),
     findPublished(payload, 'makers', {}, { slug: true, updatedAt: true }),
@@ -140,16 +134,18 @@ export async function gallerySitemapEntries(): Promise<readonly SitemapEntry[]> 
   return [...staticEntries, ...workEntries, ...makerEntries, ...pageEntries, ...places]
 }
 
+export async function gallerySitemapEntries(): Promise<readonly SitemapEntry[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTags([catalogueTag('gallery')])
+  return queryGallerySitemap(await cms())
+}
+
 /** The shop's sitemap entries: static surfaces plus every published product and category —
  * `/contact` is not among them, the shop has no such route (the crawl's 404). Published CMS pages
  * are not listed either: the shop has no generic page route yet to carry one (never list a path
  * that does not route). */
-export async function shopSitemapEntries(): Promise<readonly SitemapEntry[]> {
-  'use cache'
-  cacheLife('hours')
-  cacheTags([catalogueTag('shop')])
-  const payload = await cms()
-
+export async function queryShopSitemap(payload: Payload): Promise<readonly SitemapEntry[]> {
   const [products, categoryDocs] = await Promise.all([
     findPublished(
       payload,
@@ -191,4 +187,11 @@ export async function shopSitemapEntries(): Promise<readonly SitemapEntry[]> {
   )
 
   return [...staticEntries, ...productEntries, ...categoryEntries]
+}
+
+export async function shopSitemapEntries(): Promise<readonly SitemapEntry[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTags([catalogueTag('shop')])
+  return queryShopSitemap(await cms())
 }

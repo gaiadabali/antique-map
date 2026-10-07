@@ -17,7 +17,7 @@ import {
   startStaffStack,
   type StaffStack,
 } from '../../../../../packages/cms/src/collections/users/staff.test-support'
-import { gallerySitemapEntries, shopSitemapEntries } from './sitemap-sources'
+import { queryGallerySitemap, queryShopSitemap } from './sitemap-sources'
 
 describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery sitemap sources on a real database', () => {
   let stack: WorksStack
@@ -57,7 +57,7 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery sitemap sources
   afterAll(() => stack?.stop(), 60_000)
 
   it('lists every published work in both locales with translated segments', async () => {
-    const entries = await gallerySitemapEntries()
+    const entries = await queryGallerySitemap(stack.payload)
     const batavia = entries.find((e) => e.paths.en.includes('kaart-van-batavia'))
     expect(batavia).toBeDefined()
     expect(batavia?.paths.id.startsWith('/id/produk/')).toBe(true)
@@ -65,12 +65,12 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)('the gallery sitemap sources
   }, 30_000)
 
   it('a draft work is not listed', async () => {
-    const entries = await gallerySitemapEntries()
+    const entries = await queryGallerySitemap(stack.payload)
     expect(entries.some((e) => e.paths.en.includes('draft-map'))).toBe(false)
   }, 30_000)
 
   it('a sold work is listed', async () => {
-    const entries = await gallerySitemapEntries()
+    const entries = await queryGallerySitemap(stack.payload)
     expect(entries.some((e) => e.paths.en.includes('sold-chart'))).toBe(true)
   }, 30_000)
 })
@@ -126,7 +126,7 @@ describe.skipIf(!server)('the shop sitemap sources on a real database', () => {
   afterAll(() => stack?.stop?.(), 60_000)
 
   it('lists published products and carries no /contact (the shop has no such route)', async () => {
-    const entries = await shopSitemapEntries()
+    const entries = await queryShopSitemap(stack.payload)
     expect(entries.some((e) => e.paths.en.includes('batik-sarong'))).toBe(true)
     expect(entries.some((e) => e.paths.en === '/contact')).toBe(false)
   }, 30_000)
