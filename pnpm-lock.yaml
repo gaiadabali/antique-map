@@ -251,6 +251,9 @@ importers:
 
   engine/packages/migrate:
     dependencies:
+      '@engine/cms':
+        specifier: workspace:*
+        version: link:../cms
       '@engine/config':
         specifier: workspace:*
         version: link:../config
@@ -260,6 +263,9 @@ importers:
       node-html-parser:
         specifier: 9.0.4
         version: 9.0.4
+      payload:
+        specifier: 3.90.2
+        version: 3.90.2(graphql@16.11.0)(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: 26.6.3
