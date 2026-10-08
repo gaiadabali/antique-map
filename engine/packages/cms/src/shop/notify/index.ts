@@ -123,7 +123,7 @@ export async function notifyOrderEvent(
   // Never a relative link in an email: no configured origin, no email (logged, never thrown).
   const origin = siteOrigin('shop')
   if (origin === null) {
-    console.error(`[notify] order ${orderId}: no shop origin configured; ${to} email not sent`)
+    console.error(`[notify] order ${orderId}: no shop origin configured; ${to} notification not sent`)
     return
   }
   const href = createHref(SITES.shop)

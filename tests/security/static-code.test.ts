@@ -56,9 +56,7 @@ describe('every Local API call that serves a request says whether access applies
     expect(silent).toEqual([])
   })
 
-  it('leaves the call silent only in the importers, the seeds, and the AI kill-switch read', () => {
-    // FINDING F-10 (low): `ai/draft.ts` reads the site-settings kill switch with the Local API's
-    // default (access skipped) and a one-field select; it should say `overrideAccess: true`.
+  it('leaves the call silent only in the importers and the seeds (F-10: the AI kill-switch read now says so)', () => {
     const files = [
       ...new Set(
         calls
@@ -70,7 +68,6 @@ describe('every Local API call that serves a request says whether access applies
       ),
     ].sort()
     expect(files).toEqual([
-      'engine/packages/cms/src/ai/draft.ts',
       'engine/packages/cms/src/import/',
       'engine/packages/cms/src/seed/',
     ])
@@ -202,10 +199,10 @@ describe('logs carry no request body or personal data (L1, L2)', () => {
     expect(hits).toEqual([])
   })
 
-  it('logs a buyer’s address in one place: the notifier’s "no shop origin" line (finding F-08)', () => {
-    // FINDING F-08 (low): `[notify] order N: no shop origin configured; ${to} email not sent` writes
-    // the buyer's email address to the log (L2). Fix: drop `${to}`; the order id is enough.
+  it('the notifier’s "no shop origin" line logs the order id and the notification kind only (F-08)', () => {
+    // `to` is the order status the notice is for, never the buyer's address.
     const notify = source.find((file) => file.path.endsWith('shop/notify/index.ts'))!
-    expect(code(notify.text)).toContain('${to} email not sent')
+    expect(code(notify.text)).toContain('${to} notification not sent')
+    expect(code(notify.text)).not.toContain('email not sent')
   })
 })
