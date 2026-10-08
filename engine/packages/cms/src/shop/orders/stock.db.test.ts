@@ -1,6 +1,7 @@
 /**
  * The atomic stock on a real, pushed Postgres (TASKS.md 6.3.c, 6.3.d; SECURITY.md P5): twenty
- * buyers at once for the last unit — exactly one order, nineteen plain refusals, nothing thrown,
+ * buyers at once for the last unit — exactly one order, nineteen designed refusals (`out_of_stock`,
+ * or `busy` for one whose wait outlasted `STOCK_LOCK_TIMEOUT`, TASKS.md 10.5.b), nothing thrown,
  * the stock at zero; and a line that loses its unit after the pick rolls back every decrement the
  * order had already made.
  *
@@ -91,7 +92,7 @@ describe.skipIf(!server)('the atomic stock decrement, on a real database', () =>
         ),
       )
       // Wait until Payload's ten connections are all queued on the row, or the queue stops growing
-      // (bounded well inside the transactions' 5 s lock_timeout and the pool's 5 s connect wait).
+      // (bounded inside the pool's 5 s connect wait; a wait past STOCK_LOCK_TIMEOUT is `busy`).
       const started = Date.now()
       let steadySince = Date.now()
       while (Date.now() - started < 3000 && peak < 10) {
@@ -117,14 +118,17 @@ describe.skipIf(!server)('the atomic stock decrement, on a real database', () =>
     const results = settled.map((r) => (r as PromiseFulfilledResult<CreateOrderResult>).value)
     expect(results.filter((result) => result.ok)).toHaveLength(1)
     // Told before paying, "X just sold out" — by the decrement, or, once the winner committed, by
-    // the re-price or the pick.
-    expect(results.filter((result) => !result.ok)).toEqual(
-      Array.from({ length: 19 }, () => ({
-        ok: false,
-        refusal: 'out_of_stock',
-        lines: [{ productId: last.id, variantSku: null }],
-      })),
-    )
+    // the re-price or the pick — or, had a wait outlasted the lock timeout, "busy, try again".
+    const soldOut = {
+      ok: false,
+      refusal: 'out_of_stock',
+      lines: [{ productId: last.id, variantSku: null }],
+    }
+    const refusals = results.filter((result) => !result.ok)
+    expect(refusals).toHaveLength(19)
+    for (const refusal of refusals) {
+      expect([soldOut, { ok: false, refusal: 'busy' }]).toContainEqual(refusal)
+    }
     expect(await read.quantity(row)).toBe(0)
     expect(await read.ordersFor(last.id)).toBe(1)
   }, 120_000)

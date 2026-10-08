@@ -69,6 +69,8 @@ export function refusalCopy(refusal: CheckoutRefusal, nameOf: NameOf): RefusalCo
     }
     case 'price_changed':
       return { key: 'checkout.problem.price-changed' }
+    case 'busy':
+      return { key: 'checkout.problem.busy' }
   }
 }
 

@@ -7,11 +7,20 @@
  *
  * Every transaction here runs READ COMMITTED (a row lock taken after a wait reads the row as the
  * winner committed it, which the compare-and-sets rely on), with `lock_timeout` and
- * `statement_timeout` set by `SET LOCAL`, so a stuck lock fails the webhook with a 500 — Midtrans
- * retries — instead of holding a pool connection for the adapter's 60-second query ceiling.
+ * `statement_timeout` set by `SET LOCAL`, so a stuck lock never holds a pool connection for the
+ * adapter's 60-second query ceiling.
+ *
+ * **Contention is an answer, not a defect** (TASKS.md 10.5). The contended lock of each flow — the
+ * order a payment applies to, the stock rows an order takes — is taken by `underShortLock`: under
+ * a savepoint with a short `lock_timeout`, so a loser learns it lost within seconds, the
+ * transaction stays usable to find out why (was the event already recorded? is the unit gone?),
+ * and the caller answers plainly — 200 or 503 to Midtrans, `out_of_stock` or `busy` to a buyer —
+ * instead of throwing a database error. `isLockContention` recognises the error.
  */
 import { sql } from '@payloadcms/db-postgres/drizzle'
 import type { Payload } from 'payload'
+
+import { isLockContention } from './contention'
 
 type Database = Payload['db']
 type Session = Parameters<Database['execute']>[0]['db']
@@ -29,7 +38,7 @@ export type Tx = {
 
 /**
  * Runs `work` in one READ COMMITTED transaction and commits; any throw rolls everything back —
- * the dedupe row with it — and rethrows, so the caller answers 500 and the event is retried.
+ * the dedupe row with it — and rethrows.
  */
 export async function inTransaction<T>(payload: Payload, work: (tx: Tx) => Promise<T>): Promise<T> {
   const { db } = payload
@@ -55,6 +64,34 @@ export async function inTransaction<T>(payload: Payload, work: (tx: Tx) => Promi
   }
 }
 
+export type ShortLock<T> = { readonly locked: true; readonly value: T } | { readonly locked: false }
+
+/**
+ * Runs `work` — the statements that take a contended lock — under a savepoint with `lock_timeout`
+ * at `timeout`. Lock contention rolls back to the savepoint (releasing whatever `work` locked or
+ * wrote) and answers `{ locked: false }`, the transaction still open and usable; anything else is
+ * rethrown. On success the transaction's own `LOCK_TIMEOUT` is restored for what follows.
+ */
+export async function underShortLock<T>(
+  tx: Tx,
+  timeout: string,
+  work: () => Promise<T>,
+): Promise<ShortLock<T>> {
+  await tx.rows(sql.raw('SAVEPOINT short_lock'))
+  await tx.rows(sql.raw(`SET LOCAL lock_timeout = '${timeout}'`))
+  try {
+    const value = await work()
+    await tx.rows(sql.raw(`SET LOCAL lock_timeout = '${LOCK_TIMEOUT}'`))
+    await tx.rows(sql.raw('RELEASE SAVEPOINT short_lock'))
+    return { locked: true, value }
+  } catch (error) {
+    if (!isLockContention(error)) throw error
+    // Undoes `work` and the SET LOCAL with it: the transaction's LOCK_TIMEOUT is back.
+    await tx.rows(sql.raw('ROLLBACK TO SAVEPOINT short_lock'))
+    return { locked: false }
+  }
+}
+
 /** Reads a whole-rupiah or count column (`numeric`, which pg returns as a string) as a safe integer. */
 export function wholeOf(value: unknown, what: string): number {
   const number = typeof value === 'string' ? Number(value) : value
@@ -71,4 +108,4 @@ export function dateOf(value: unknown, what: string): Date {
   return date
 }
 
-export { sql }
+export { isLockContention, sql }

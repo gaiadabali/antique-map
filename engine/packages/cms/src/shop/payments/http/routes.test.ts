@@ -11,7 +11,12 @@ import { LOCAL_ENV, PRODUCTION_ENV, SIMULATE, statusOf } from '../payments.test-
 import type { StatusAnswer } from '../provider'
 import { simulatorProvider } from '../simulator'
 import { paymentReconcileRoute, paymentSweepsRoute } from './cron'
-import { MAX_BODY_BYTES, midtransWebhookRoute, type WebhookPort } from './webhook'
+import {
+  BUSY_RETRY_AFTER_SECONDS,
+  MAX_BODY_BYTES,
+  midtransWebhookRoute,
+  type WebhookPort,
+} from './webhook'
 
 const ENV = { ...LOCAL_ENV, MIDTRANS_MODE: 'simulate' }
 const post = (body: string, headers: Record<string, string> = {}) =>
@@ -94,8 +99,34 @@ describe('the Midtrans webhook route', () => {
     const { body } = simulator.emit('8001-1', 'settle')
     const confirmed = await simulator.getStatus('8001-1')
     const { route, port } = harness(confirmed)
-    vi.mocked(port.apply).mockRejectedValueOnce(new Error('lock timeout'))
+    vi.mocked(port.apply).mockRejectedValueOnce(new Error('the database went away'))
     expect((await route(post(body))).status).toBe(500)
+  })
+
+  it('answers 503 with Retry-After when the order is busy, and 200 when the winner applied it', async () => {
+    const { body } = simulator.emit('8001-1', 'settle')
+    const confirmed = await simulator.getStatus('8001-1')
+    const { route, port } = harness(confirmed)
+    vi.mocked(port.apply).mockResolvedValueOnce({ outcome: 'busy', orderId: null })
+    const busy = await route(post(body))
+    expect(busy.status).toBe(503)
+    expect(busy.headers.get('Retry-After')).toBe(String(BUSY_RETRY_AFTER_SECONDS))
+    vi.mocked(port.apply).mockResolvedValueOnce({ outcome: 'duplicate', orderId: 1 })
+    expect((await route(post(body))).status).toBe(200)
+  })
+
+  it('answers 503, never 500, when applying throws lock contention', async () => {
+    const { body } = simulator.emit('8001-1', 'settle')
+    const confirmed = await simulator.getStatus('8001-1')
+    const { route, port } = harness(confirmed)
+    // As drizzle throws it: pg's error (SQLSTATE 55P03, lock_timeout) as the cause.
+    const lockTimeout = Object.assign(new Error('canceling statement due to lock timeout'), {
+      code: '55P03',
+    })
+    vi.mocked(port.apply).mockRejectedValueOnce(new Error('Failed query', { cause: lockTimeout }))
+    const response = await route(post(body))
+    expect(response.status).toBe(503)
+    expect(response.headers.get('Retry-After')).toBe(String(BUSY_RETRY_AFTER_SECONDS))
   })
 
   it('answers 503 and touches nothing on a host whose config is refused — simulate in production', async () => {
