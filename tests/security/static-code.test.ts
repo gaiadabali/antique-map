@@ -67,10 +67,7 @@ describe('every Local API call that serves a request says whether access applies
           ),
       ),
     ].sort()
-    expect(files).toEqual([
-      'engine/packages/cms/src/import/',
-      'engine/packages/cms/src/seed/',
-    ])
+    expect(files).toEqual(['engine/packages/cms/src/import/', 'engine/packages/cms/src/seed/'])
   })
 
   it('lists the files that skip access on purpose, so a new one is a decision', () => {
