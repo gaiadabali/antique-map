@@ -170,10 +170,9 @@ decide: it **records the payment, leaves the order `expired`, and flags it for s
    the attempt, the amount and the time.
 2. **Check the shelf.** Open the order's store and its line items: **Stock levels** for that store and product.
 3. **Choose, within the buyer's business day:**
-   - **The units are still there:** open the expired order, **Replace damaged item**, tick every line, note "Late
-     payment, paid after expiry" and **Confirm** (CONTENT-OPERATIONS.md �5.5). It makes a Rp 0 replacement order at
-     the same store and takes the stock. This is the only fulfilment path for an expired order; ask the lead if the
-     owner would rather refund. Tell the buyer on WhatsApp.
+   - **The units are still there:** **not possible in this build** (checked on staging 2026-10-09): the expired
+     order's page has no action, and **Replace damaged item** (CONTENT-OPERATIONS.md §5.5) was never built
+     (`docs/gates/rehearsal.md` R-1, R-2). Until it is, refund as below and tell the buyer on WhatsApp.
    - **They are gone:** return the money in the **Midtrans dashboard** (find the transaction by order number,
      then Refund) and tell the buyer on WhatsApp. An expired order cannot be cancelled or moved forward.
 4. **Record it** in the order's note (who decided, and what).

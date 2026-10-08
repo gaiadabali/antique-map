@@ -29,3 +29,4 @@
 {"run":"run6","kind":"shop-order-placed","width":1280,"token":"<redacted>","email":"rehearsal-10-3.shop.1280.run6@example.test","number":"100033"}
 {"run":"run6","kind":"shop-order-quoted","width":1280,"number":"100033"}
 {"run":"run6","kind":"shop-order-delivered","width":1280,"number":"100033","token":"<redacted>"}
+{"run":"late3","kind":"late-payment","width":390,"number":"100036"}
