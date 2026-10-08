@@ -29,6 +29,7 @@ import {
 } from './guards'
 import { roleField, storeField } from './roles-field'
 import { hasRole, isOwner } from './roles'
+import { enforcePasswordPolicy } from './password-policy'
 import { ownerChangesEmail } from './self-edit'
 import { oneStoreForStoreStaff } from './store-rule'
 
@@ -64,6 +65,8 @@ export const Users: CollectionConfig = {
     maxLoginAttempts: MAX_LOGIN_ATTEMPTS,
     lockTime: LOCK_TIME_MS,
     useSessions: true,
+    // The documented 8 hours (SECURITY.md A6); Payload's default is 2.
+    tokenExpiration: 8 * 60 * 60,
     cookies: {
       sameSite: 'Lax',
       // A production build serves https (localhost counts as secure to a browser).
@@ -97,6 +100,7 @@ export const Users: CollectionConfig = {
   ],
   hooks: {
     beforeOperation: [keepAnOwnerInBulk],
+    beforeValidate: [enforcePasswordPolicy],
     beforeChange: [
       firstUserIsOwner,
       ownerChangesEmail,

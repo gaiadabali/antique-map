@@ -50,7 +50,7 @@ on staging. Numbers are defaults; `Open:` marks those an owner or counsel answer
 | A3 | Lockout after 5 failed sign-ins for 15 minutes (`maxLoginAttempts`, `lockTime`); only `owner` unlocks early | I |
 | A4 | Sign-in, forgot-password and reset routes rate-limited per IP (2.10); forgot-password answers the same whether or not the email exists | I |
 | A5 | Session cookie `HttpOnly`, `Secure` in production, `SameSite=Lax`; `useSessions` on so sign-out and the owner's removal of a user end the session server-side | I, E |
-| A6 | Session lifetime 8 hours (`Open:` owner); reset tokens expire after 1 hour and work once | I |
+| A6 | Session lifetime 8 hours (`tokenExpiration: 28800`; `Open:` owner); reset tokens expire after 1 hour and work once | I |
 | A7 | The last `owner` can neither lose the role nor be deleted | I |
 | A8 | No two-factor sign-in at launch, for any role (answered 2026-10-02, Q8; TASKS.md backlog v2.8): A2–A6 carry the sign-in | — |
 
@@ -59,13 +59,14 @@ on staging. Numbers are defaults; `Open:` marks those an owner or counsel answer
 | Collection | `owner` | `editor` | `store` |
 | --- | --- | --- | --- |
 | `users` | all | self | self |
-| `works`, `products`, `media`, `masters`, `makers`, `places`, `terms`, `pages`, `redirects` | all | all except `works.askingPrice` | read `products` and `media` only (to see what they stock and ship) |
+| `works`, `products`, `media`, `masters` (an editor cannot delete one: refused on purpose), `makers`, `places`, `terms`, `pages`, `redirects` | all | all except `works.askingPrice` | read `products` and `media` only (to see what they stock and ship) |
 | `works.askingPrice` | read, update | none | none |
 | `stores` | all | read | read own |
 | `stock-levels` | all | read and update: enter the physical count at any store | read own store's rows; update only their counts |
-| `orders` | all | read all; move any status, reassign, cancel, upload the driver image | read own store's; move them forward only, upload the driver image, hand one back with a reason |
+| `orders` | read, update and move status (create and delete refused on purpose: an order is made only by checkout and kept for the record) | read all; move any status, reassign, cancel, upload the driver image | read own store's; move them forward only, upload the driver image, hand one back with a reason |
 | `payment-events` | read | none | none (written only by the webhook) |
-| `partners`, `leads`, `chat-sessions`, `discounts`, `events` | all | none | none |
+| `partners`, `leads`, `chat-sessions`, `discounts` | all | none | none |
+| `events` | read and create (update and delete refused on purpose: the log is append-only) | none | none |
 | `site-settings` | all | none | none |
 
 | ID | Requirement | Test |
@@ -86,7 +87,7 @@ on staging. Numbers are defaults; `Open:` marks those an owner or counsel answer
 | P2 | A price, total, fee or discount sent by the client is ignored; a tampered request produces the server's amount | I |
 | P3 | The amount sent to Midtrans equals the stored order total; nothing is rounded twice | U |
 | P4 | Discount codes are validated on the server (active, site, limits); the free-shipping threshold is read from `site-settings` | U, I |
-| P5 | Stock decrements in one SQL statement that fails when the quantity is short; 50 parallel orders for the last unit create exactly one order | I |
+| P5 | Stock decrements in one SQL statement that fails when the quantity is short; parallel orders for the last unit (the race test runs 20: the Payload pool is 10 connections, so more only queue) create exactly one order | I |
 | P6 | Stock is released exactly once, on expiry or cancellation; a failed payment attempt releases nothing (COMMERCE.md §4) | I |
 | P7 | A count, from staff or an import, is the physical count: the server stores it less the units held by that store's orders in `pending_payment`, `paid`, `processing` or `waiting_driver`, with the store's rows locked, so a recount never re-sells a held unit (DATA.md §3) | I |
 
@@ -106,21 +107,21 @@ on staging. Numbers are defaults; `Open:` marks those an owner or counsel answer
 
 | ID | Requirement | Test |
 | --- | --- | --- |
-| T1 | The tracking token is 128 random bits (base64url); only its SHA-256 hash is stored | U |
-| T2 | The tracking route is rate-limited per IP; a wrong token gets the same 404 as a missing one | I |
+| T1 | The tracking token is 256 random bits (base64url); its SHA-256 hash is how an order is found, and the token is also stored sealed (AES-256-GCM under `ORDER_LINK_KEY`) so every email links the same page — accepted 2026-10-06 (TASKS.md 6.6): recoverable only with the database and that key | U |
+| T2 | The tracking route is rate-limited per IP (10 distinct wrong tokens a minute, then 429 with `Retry-After`); a wrong token gets the same 404 as a missing one | I |
 | T3 | The page shows the order number, items, status history, store name, driver image and the delivery area; the buyer's phone and email are masked; nothing the buyer did not type | E |
 | T4 | `noindex`, `Referrer-Policy: no-referrer`; the token is scrubbed from access logs and error reports | E, O |
 | T5 | The link stops working 30 days after delivery or cancellation (`Open:` owner) | I |
-| T6 | The driver image is served only through a short-lived presigned URL from that page or the admin; deleted 30 days after delivery or cancellation (COMPLIANCE.md §1; `Open:` counsel) | I |
+| T6 | The driver image is served only through a short-lived presigned URL (15 minutes at most) from that page or the admin; deleted 30 days after delivery or cancellation (COMPLIANCE.md §1; `Open:` counsel) | I |
 
 ### 2.6 File uploads
 
 | ID | Requirement | Test |
 | --- | --- | --- |
 | F1 | The type is sniffed from the bytes, never the extension or `Content-Type`; allowed: JPEG, PNG, WebP (and TIFF for `masters`); SVG and anything else refused | U, I |
-| F2 | Size limits: `media` 25 MB, driver image 10 MB, `masters` through presigned direct upload with a signed length cap | I |
+| F2 | Size limits: `media` 90 MiB (a map or photograph master is large; the cap still bounds the upload), driver image 10 MB, `masters` through presigned direct upload with a signed length cap | I |
 | F3 | Public derivatives are re-encoded by `sharp` and carry no EXIF, GPS or maker notes | U |
-| F4 | `masters` and uploads live in a private bucket; staff get presigned GET URLs that expire in 5 minutes; only derivatives and deep-zoom tiles are public | I, O |
+| F4 | `masters` and uploads live in a private bucket; staff get presigned GET URLs that expire in 15 minutes at most; only derivatives and deep-zoom tiles are public | I, O |
 | F5 | Driver images are private, readable only by `owner`, `editor` and the order's store in the admin, and through the tracking page (T6) | I |
 | F6 | Payload's paste-from-URL upload is off | I |
 
@@ -137,7 +138,7 @@ on staging. Numbers are defaults; `Open:` marks those an owner or counsel answer
 
 | ID | Requirement | Test |
 | --- | --- | --- |
-| B1 | No `dangerouslySetInnerHTML` outside the rich-text and chat renderers, which allowlist elements and link targets | C, U |
+| B1 | No `dangerouslySetInnerHTML` outside the chat renderer, which allowlists elements and link targets (there is no rich-text renderer, so only the chat one exists) | C, U |
 | B2 | CSP per request with a fresh nonce: `script-src 'self' 'nonce-…' 'strict-dynamic'`, `object-src 'none'`, `base-uri 'none'`, `frame-ancestors 'none'`; `frame-src` and `connect-src` allow only Midtrans Snap and Turnstile origins besides our own (and Google Maps on the checkout page, B6); the admin has its own policy | E |
 | B3 | Headers: HSTS (after cutover), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (geolocation self only, camera and microphone off), `Cross-Origin-Opener-Policy: same-origin` — set by the app, not the vhost | E |
 | B4 | CSRF: cookie auth is `SameSite=Lax`; Payload's `csrf` list holds only our origins; our own POST routes and server actions refuse a mismatched `Origin` | I |
@@ -175,7 +176,7 @@ Each limit has an integration test that the next request gets 429 with `Retry-Af
 
 | ID | Requirement | Test |
 | --- | --- | --- |
-| K1 | Secrets live only in the host's `.env` (D49, mode 600): `DATABASE_URL`, `PAYLOAD_SECRET`, `MIDTRANS_SERVER_KEY`, `ANTHROPIC_API_KEY`, `TURNSTILE_SECRET`, `GOOGLE_MAPS_SERVER_KEY`, storage keys, SMTP, `CRON_SECRET` | O |
+| K1 | Secrets live only in the host's `.env` (D49, mode 600): `DATABASE_URL`, `PAYLOAD_SECRET`, `MIDTRANS_SERVER_KEY`, `ANTHROPIC_API_KEY`, `TURNSTILE_SECRET`, `GOOGLE_MAPS_SERVER_KEY`, storage keys, SMTP, `CRON_SECRET`, `ORDER_LINK_KEY` | O |
 | K2 | Never in the repo, a build argument, a log or a chat. There is no `NEXT_PUBLIC_*` variable: one artifact serves staging and production, so public config (the Turnstile site key, the Midtrans client key, the Google Maps browser key) reaches the browser in server-rendered props or from a runtime-config endpoint | C |
 | K3 | Secret scanning on every push; a hit fails CI | C |
 | K4 | Separate keys per environment; staging never holds a production key | O |
