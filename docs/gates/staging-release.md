@@ -115,12 +115,22 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 | `production-20261007T042810Z-ec9cea9` | ec9cea9 (39ac792: sold meta description) | none new (5 = 5)                 | healthy, try 1; smoke below |
 | `production-20261007T051812Z-d77cb78` | d77cb78 (7ede76c1: lead image CORS mode) | none new (5 = 5)                 | healthy, try 1; smoke below |
 | `production-20261007T075619Z-643bffa` | 643bffa (dfce7238, ccedbea8, 8.4b)       | none new (5 = 5)                 | healthy, try 1; smoke below |
+| `production-20261008T095054Z-7733d424` | 7733d424 (10.1: CSP, headers, limits; next 16.3.8; 10.5) | none new (6 = 6)        | healthy; smoke and headers below |
 
 Smoke, every release: step 6 passed (pages 200; derivative and `info.json` 200 with ACAO; `uploads/x` 403). On
 `ec9cea9` the sold works end their meta description "· Sold". `7ede76c1` failed `next build`'s typecheck (nothing
 deployed) until `39c4a1e4`. On `d77cb78` the item's lead `<img>` has `crossorigin="anonymous"` and its preload
 `crossorigin=""`. On `643bffa` the same holds on `/product/200`, and every `/browse` card `<img>` has
 `crossorigin="anonymous"` too (24 of 24 on page 1); derivative `124be0c7…/640.webp` 200 with ACAO and `vary: Origin`.
+
+On `7733d424` (10.1) the app sets its own security headers: a per-request CSP with a nonce, `nosniff`,
+`Referrer-Policy` (`no-referrer` on `/track/`), `Permissions-Policy`, COOP. The vhost's `location /` now has its own
+`add_header` lines (`X-Permitted-Cross-Domain-Policies`, `alt-svc`) so the shared `/etc/nginx/global_settings`
+headers (`X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy same-origin`) are not added on top, and hides
+`x-middleware-rewrite`; backup in `/root/old-east-indies.gaiada.com.conf.bak-*`. `/_media/` keeps the shared
+headers. `tests/security/csp-browser-check.mjs` on staging: 0 violations on 13 pages (gallery home, /id, /browse,
+an item with the zoom viewer drawing, /contact, /sell-to-us; shop home, /shop, /bag, /checkout, /track, /admin/login).
+Run it with `MSYS_NO_PATHCONV=1` from Git Bash, or `/` becomes a Windows path.
 
 ## Seeding the gallery sample
 
