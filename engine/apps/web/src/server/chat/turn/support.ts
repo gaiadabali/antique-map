@@ -11,7 +11,7 @@ import type { ChatDeps } from '../context'
 import { CONSENT_VERSION, type ChatCopy } from '../lexicon'
 import { defuseVisitorText } from '../text/untrusted'
 import { buildHandoffs } from '../tools/handoff'
-import { itemsFor } from '../tools/run'
+import { itemsFor, runTool, type ToolContext } from '../tools/run'
 import type { HandoffTopic } from '../tools/schemas'
 import type {
   ChatEvent,
@@ -110,4 +110,14 @@ export function leadFormEvent(ctx: ServerCardContext): ChatEvent {
     consentVersion: CONSENT_VERSION,
     consentToken: token,
   }
+}
+
+/**
+ * The card of the item the chat was opened from, through the same `get_item` tool and published
+ * projection the model would call (AI.md §2.5 Grounding: an answer about an item is followed by
+ * its card). Its status line is dropped: the reply has already finished.
+ */
+export async function pageItemCard(tools: ToolContext, id: string): Promise<ChatEvent[]> {
+  const outcome = await runTool({ name: 'get_item', id }, tools)
+  return outcome.isError ? [] : outcome.events.filter((event) => event.type === 'card')
 }

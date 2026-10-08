@@ -144,6 +144,21 @@ describe('the server adds the buttons and the form', () => {
     expect(events.at(-1)).toEqual({ type: 'done', outcome: 'handoff' })
   })
 
+  it('the first answer from an item page shows that item’s card, even without a lookup', async () => {
+    const h = harness(
+      () => ({ text: 'You order on this site and pay at checkout.' }),
+      () => 'browse',
+    )
+    const cookie = await open(h, 'gallery')
+    const page = '/product/1726-bali-by-francois-valentijn-1726'
+    const first = await send(h, cookie, 'Where do I order?', 'gallery', page)
+    const cards = first.filter((e) => e.type === 'card')
+    expect(cards).toEqual([expect.objectContaining({ kind: 'work', id: '1726' })])
+    // Only the first answer: a later turn on the same page does not repeat it.
+    const second = await send(h, cookie, 'And delivery?', 'gallery', page)
+    expect(second.filter((e) => e.type === 'card')).toHaveLength(0)
+  })
+
   it('an ordinary answer gets no buttons', async () => {
     const h = harness(
       () => ({ text: 'We have several maps of Java.' }),
