@@ -16,6 +16,9 @@ import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
 
+/** The phone's first row (two columns): its cards hold the listing's LCP candidates. */
+const LEAD_CARDS = 2
+
 const SORTS = ['featured', 'newest', 'priceAsc', 'priceDesc'] as const
 
 export type BrowseViewProps = {
@@ -95,9 +98,14 @@ export function BrowseView({
       ) : (
         <>
           <ul className={styles.grid}>
-            {listing.items.map((product) => (
+            {listing.items.map((product, index) => (
               <li key={product.id}>
-                <ProductCard product={product} locale={locale} href={cardHref(product)} />
+                <ProductCard
+                  product={product}
+                  locale={locale}
+                  href={cardHref(product)}
+                  lead={index < LEAD_CARDS}
+                />
               </li>
             ))}
           </ul>

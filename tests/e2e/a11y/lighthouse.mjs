@@ -12,14 +12,25 @@
  * Budgets: the `assertMatrix` entry whose `matchingUrlPattern` matches the URL, plus its
  * `categories:*` min scores. Exit 1 when any page misses one; the table says which.
  */
-/* global process, console */
+/* global process, console, setTimeout */
 import { spawn } from 'node:child_process'
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, isAbsolute, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
+/** Lighthouse's own CPU benchmark: this workstation idle reads about 3,800-4,100. */
+const MIN_BENCH = 2500
+const MAX_ATTEMPTS = 3
 const USAGE =
   'usage: node tests/e2e/a11y/lighthouse.mjs --out <dir> [--runs 3] [--cookie "n=v"] <name>=<url> …'
 
@@ -120,22 +131,44 @@ async function main() {
     writeFileSync(headersFile, JSON.stringify({ Cookie: args.cookie }))
   }
   console.log(
-    '| Page | Perf (median) | A11y (worst) | LCP ms | CLS | TBT ms | Script KB | Weight KiB | Result |',
+    '| Page | Perf (median) | A11y (worst) | LCP ms | CLS | TBT ms | Script KB | Weight KiB | CPU bench | Result |',
   )
-  console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- |')
+  console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |')
   let failed = false
   for (const { name, url } of args.pages) {
     const reports = []
     for (let n = 1; n <= args.runs; n += 1) {
       const file = join(outDir, `${name}-${n}.json`)
-      const profile = join(tmpdir(), `lh-a11y-${name}-${n}-${Date.now()}`)
-      await runOnce(cli, url, file, profile, headersFile)
-      rmSync(profile, { recursive: true, force: true, maxRetries: 3 })
-      const report = read(file)
-      if (report === null) {
-        console.log(`| ${name} | no report for run ${n} | | | | | | | FAIL |`)
+      // The host is shared: a run made while it is saturated reads TBT and LCP several times too
+      // high (Lighthouse records the CPU benchmark it ran at). Retry a slow host up to three
+      // times and keep the run made at the best benchmark, so the table is never a load reading.
+      let best = null
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+        const tryFile = join(outDir, `.attempt-${name}-${n}-${attempt}.json`)
+        const profile = join(tmpdir(), `lh-a11y-${name}-${n}-${Date.now()}`)
+        await runOnce(cli, url, tryFile, profile, headersFile)
+        rmSync(profile, { recursive: true, force: true, maxRetries: 3 })
+        const report = read(tryFile)
+        if (report?.audits?.metrics?.details === undefined) {
+          rmSync(tryFile, { force: true })
+          // A tracking page answers 429 past ten requests a minute: wait before another.
+          if (/\/track\//.test(url)) await new Promise((r) => setTimeout(r, 65000))
+          continue
+        }
+        const bench = report.environment?.benchmarkIndex ?? 0
+        if (best === null || bench > best.bench) {
+          if (best !== null) rmSync(best.file, { force: true })
+          best = { bench, file: tryFile, report }
+        } else rmSync(tryFile, { force: true })
+        if (bench >= MIN_BENCH) break
+      }
+      if (best === null) {
+        console.log(`| ${name} | no report for run ${n} | | | | | | | | FAIL |`)
         failed = true
-      } else reports.push(report)
+        continue
+      }
+      renameSync(best.file, file)
+      reports.push(best.report)
     }
     if (reports.length === 0) continue
     const budgets = budgetsFor(url)
@@ -165,6 +198,7 @@ async function main() {
     console.log(
       `| ${name} | ${median(perf)} (${perf.join(' · ')}) | ${Math.min(...a11y)} | ${Math.round(lcp)} | ` +
         `${cls.toFixed(3)} | ${Math.round(tbt)} | ${Math.round(script / 1024)} | ${Math.round(weight / 1024)} | ` +
+        `${Math.round(median(reports.map((r) => r.environment?.benchmarkIndex ?? 0)))} | ` +
         `${misses.length === 0 ? 'pass' : `FAIL (${misses.join(', ')})`} |`,
     )
   }

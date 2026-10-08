@@ -30,7 +30,11 @@ const files = process.argv.slice(2).flatMap((arg) =>
 const pages = new Map()
 for (const file of files) {
   const report = JSON.parse(readFileSync(file, 'utf8'))
-  const metrics = report.audits.metrics.details.items[0]
+  const metrics = report.audits.metrics?.details?.items?.[0]
+  if (!metrics) {
+    console.log(`(no metrics in ${file}: ${report.runtimeError?.code ?? 'unknown error'})`)
+    continue
+  }
   const row = {
     perf: Math.round(report.categories.performance.score * 100),
     a11y: Math.round(report.categories.accessibility.score * 100),
@@ -38,6 +42,7 @@ for (const file of files) {
     fcp: Math.round(metrics.firstContentfulPaint),
     tbt: Math.round(metrics.totalBlockingTime),
     cls: metrics.cumulativeLayoutShift,
+    bench: Math.round(report.environment?.benchmarkIndex ?? 0),
     obsLcp: Math.round(metrics.observedLargestContentfulPaint ?? 0),
     kb: Math.round((report.audits['total-byte-weight']?.numericValue ?? 0) / 1024),
   }
@@ -45,13 +50,15 @@ for (const file of files) {
   pages.set(key, [...(pages.get(key) ?? []), row])
 }
 
-console.log('| Page | Perf (runs) | A11y | LCP ms (median) | FCP | TBT | CLS | Weight KiB |')
-console.log('| --- | --- | --- | --- | --- | --- | --- | --- |')
+console.log(
+  '| Page | Perf (runs) | A11y | LCP ms (median) | FCP | TBT | CLS | Weight KiB | CPU bench |',
+)
+console.log('| --- | --- | --- | --- | --- | --- | --- | --- | --- |')
 for (const [key, rows] of pages) {
   console.log(
     `| ${key} | ${medianOf(rows.map((r) => r.perf))} (${rows.map((r) => r.perf).join(' · ')}) | ` +
       `${Math.min(...rows.map((r) => r.a11y))} | ${medianOf(rows.map((r) => r.lcp))} | ` +
       `${medianOf(rows.map((r) => r.fcp))} | ${medianOf(rows.map((r) => r.tbt))} | ` +
-      `${Math.max(...rows.map((r) => r.cls))} | ${medianOf(rows.map((r) => r.kb))} |`,
+      `${Math.max(...rows.map((r) => r.cls))} | ${medianOf(rows.map((r) => r.kb))} | ${medianOf(rows.map((r) => r.bench))} |`,
   )
 }

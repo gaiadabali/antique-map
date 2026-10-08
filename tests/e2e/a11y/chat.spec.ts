@@ -3,8 +3,10 @@
  * the launcher closed and the panel open, a Tab walk through the open panel, Escape closing it with
  * focus returning to the launcher, and the panel's accessibility tree.
  *
- * The chat panel is being redesigned on branch w/8.2cs; this pass must be REPEATED after that
- * branch merges. Findings are recorded in `docs/gates/performance.md`, never fixed here.
+ * First run on the panel before the 8.2cs redesign, repeated on the merged redesign (main
+ * 3e9221d2). Against a local build with no AI key the panel opens in its error state (controls
+ * disabled), so `A11Y_ORIGIN` points the same pass at staging, where the chat answers. It sends
+ * nothing. Findings are recorded in `docs/gates/performance.md`, never fixed here.
  */
 import { expect, test } from '@playwright/test'
 
@@ -28,7 +30,7 @@ test('chat: axe, keyboard walk, Escape and accessibility tree', async ({
   const site = (testInfo.project.metadata as SmokeMetadata).site
   const origin = (process.env.A11Y_ORIGIN ?? baseURL ?? '').replace(/\/$/, '')
   const axe: AxeRecord[] = []
-  let keyboard = `## ${site}: chat (as it stands before the 8.2cs redesign), keyboard walk\n\n`
+  let keyboard = `## ${site}: chat (the redesigned panel, 8.2.c, merged), keyboard walk\n\n`
 
   for (const viewport of WIDTHS) {
     await page.setViewportSize(viewport)

@@ -18,10 +18,13 @@ export function ProductCard({
   product,
   locale,
   href,
+  lead = false,
 }: {
   readonly product: ProductCardVM
   readonly locale: SiteLocale
   readonly href: string
+  /** A card of the first row, above the fold: its image is fetched eagerly, at high priority. */
+  readonly lead?: boolean
 }): React.ReactElement {
   const text = browseText(locale)
   const words = productText(locale)
@@ -40,6 +43,7 @@ export function ProductCard({
           alt={imageAlt(words, product.image)}
           sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           className={styles.image}
+          priority={lead}
           unoptimized
         />
       ) : (
