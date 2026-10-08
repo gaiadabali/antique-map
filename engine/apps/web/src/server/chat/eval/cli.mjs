@@ -12,8 +12,12 @@ import { createServer } from 'vite'
 
 function listFlag(argv, name) {
   const i = argv.indexOf(name)
-  const v = i >= 0 ? argv[i + 1] : argv.find((a) => a.startsWith(`${name}=`))?.slice(name.length + 1)
-  const list = v?.split(',').map((x) => x.trim()).filter(Boolean)
+  const v =
+    i >= 0 ? argv[i + 1] : argv.find((a) => a.startsWith(`${name}=`))?.slice(name.length + 1)
+  const list = v
+    ?.split(',')
+    .map((x) => x.trim())
+    .filter(Boolean)
   return list?.length ? list : undefined
 }
 
