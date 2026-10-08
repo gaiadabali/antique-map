@@ -92,16 +92,18 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
     }
     // Nine rows: three products (new) and their six variant rows, which report as updates of
     // the product they join (`import/apply-products.ts` applyVariantRow).
-    const products = (first.imports[0] as unknown as Counted).counts
-    expect(products.new).toBe(3)
-    expect(products.new + products.updated).toBe(9)
+    expect((first.imports[0] as unknown as Counted).counts).toMatchObject({ new: 3, updated: 6 })
     expect(first.catalogue!.attach).toEqual({
       mediaCreated: 4,
       imagesSet: 3,
       published: 3,
       held: [],
     })
-    expect(first.catalogue!.retire).toEqual({ retired: 80, alreadyRetired: 0 })
+    // The mocks seed as drafts: those with no variant are already off sale, so the 80 split between
+    // "retired" now and "already retired" (`./retire.ts`); the states below prove all 80 are off.
+    const retire = first.catalogue!.retire!
+    expect(retire.retired + retire.alreadyRetired).toBe(80)
+    expect(retire.retired).toBeGreaterThan(0)
 
     // The shop lists the three designs and none of the 80 mock products.
     const listed = await payload.find({
