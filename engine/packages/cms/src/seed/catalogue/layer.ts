@@ -70,8 +70,12 @@ export async function seedCatalogue(
     publish: options.publish,
     context: options.context,
   })
-  const retire = await retireMockProducts(payload, plan.retireSkus, options.context)
-  return { imports: await withStock(imports, plan, base), attach, retire }
+  // The mocks leave only on a publishing run, in the run that publishes their replacements:
+  // a drafts-only run (pictures first, derivatives next) must not empty the shop meanwhile.
+  const retire = options.publish
+    ? await retireMockProducts(payload, plan.retireSkus, options.context)
+    : undefined
+  return { imports: await withStock(imports, plan, base), attach, ...(retire ? { retire } : {}) }
 }
 
 async function withStock(
