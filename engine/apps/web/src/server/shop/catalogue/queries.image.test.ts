@@ -34,6 +34,7 @@ describe('the shop product image', () => {
 
   it('maps a ready media record to its public derivative', () => {
     expect(imageOf(media())).toEqual({
+      srcSet: expect.stringContaining('320.webp 320w'),
       url: `${BASE}/derivatives/v1/${ID}/640.webp`,
       alt: 'A batik tote',
       width: 640,
@@ -54,6 +55,19 @@ describe('the shop product image', () => {
   it('treats a missing or unknown provenance as a photograph', () => {
     expect(imageOf(media())?.syntheticLabel).toBeNull()
     expect(imageOf(media({ provenance: 'mystery' }))?.syntheticLabel).toBeNull()
+  })
+
+  it('carries a srcSet of only the rungs that exist for the media', () => {
+    const set = imageOf(media({ width: 900, height: 600 }))?.srcSet ?? ''
+    const widths = [...set.matchAll(/ (\d+)w/g)].map((m) => Number(m[1]))
+    expect(widths.length).toBeGreaterThan(1)
+    expect(widths.every((w) => w <= 900)).toBe(true)
+    expect(set).toContain(`${BASE}/derivatives/v1/${ID}/320.webp 320w`)
+    expect(set).not.toContain('1440')
+  })
+
+  it('has no srcSet until the pipeline has run', () => {
+    expect(imageOf(media({ derivatives: { status: 'pending' } }))).toBeNull()
   })
 
   it('is no image — never the staff-only file route — until the pipeline has run', () => {

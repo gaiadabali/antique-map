@@ -13,6 +13,8 @@ export type CatalogueImage = {
   readonly alt: string
   readonly width: number | null
   readonly height: number | null
+  /** The derivative ladder that exists for this media (`320.webp 320w, �`); absent until built. */
+  readonly srcSet?: string
   /** Anything but a photograph is labelled wherever it is shown (CONTENT-MODEL.md �5); null for one. */
   readonly syntheticLabel: SyntheticLabel | null
 }

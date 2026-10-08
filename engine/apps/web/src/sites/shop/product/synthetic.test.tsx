@@ -100,6 +100,17 @@ describe('the listing card labels a synthetic lead image', () => {
     expect(markup).toContain('>Digital mockup</span>')
   })
 
+  it('renders the ladder and an accurate sizes', () => {
+    const markup = card(
+      image({
+        srcSet: 'https://m/320.webp 320w, https://m/640.webp 640w',
+        url: 'https://m/640.webp',
+      }),
+    )
+    expect(markup).toContain('srcSet="https://m/320.webp 320w, https://m/640.webp 640w"')
+    expect(markup).toContain('sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"')
+  })
+
   it('adds nothing for a photograph', () => {
     const markup = card(image())
     expect(markup).toContain('alt="A framed map"')

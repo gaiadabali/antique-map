@@ -9,7 +9,7 @@ import {
   type SyntheticLabel,
 } from '@engine/media/contract'
 
-import { derivativeUrlOf } from '../../media/public-image'
+import { derivativeSrcSetOf, derivativeUrlOf } from '../../media/public-image'
 import type { CatalogueImage } from './view-models'
 
 /** An image's label from its stored provenance; an unknown or missing one is a photograph. */
@@ -29,11 +29,13 @@ export function imageOf(media: unknown): CatalogueImage | null {
   if (typeof record.alt !== 'string') return null
   const url = derivativeUrlOf(record)
   if (url === null) return null
+  const srcSet = derivativeSrcSetOf(record)
   return {
     url,
     alt: record.alt,
     width: typeof record.width === 'number' ? record.width : null,
     height: typeof record.height === 'number' ? record.height : null,
+    ...(srcSet !== null ? { srcSet } : {}),
     syntheticLabel: syntheticLabelOf(record.provenance),
   }
 }

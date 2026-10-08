@@ -36,8 +36,9 @@ export function ProductCard({
           variant="fill"
           aspectRatio="4 / 3"
           src={product.image.url}
+          srcSet={product.image.srcSet}
           alt={imageAlt(words, product.image)}
-          sizes="(max-width: 767px) 50vw, 25vw"
+          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           className={styles.image}
           unoptimized
         />

@@ -73,6 +73,7 @@ export function ProductView({
               variant="fill"
               aspectRatio="1 / 1"
               src={lead.url}
+              srcSet={lead.srcSet}
               alt={imageAlt(text, lead)}
               sizes="(max-width: 767px) 100vw, 50vw"
               priority
@@ -90,6 +91,7 @@ export function ProductView({
                   variant="fill"
                   aspectRatio="1 / 1"
                   src={image.url}
+                  srcSet={image.srcSet}
                   alt={imageAlt(text, image)}
                   sizes="(max-width: 767px) 33vw, 120px"
                   className={styles.thumb}
