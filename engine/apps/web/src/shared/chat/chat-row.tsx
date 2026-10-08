@@ -32,8 +32,8 @@ export function AgentBubble({
   readonly role?: 'assistant' | 'greeting'
 }): React.ReactElement {
   return (
-    <p className={styles.agentBubble} data-chat-role={role}>
+    <div className={styles.agentBubble} data-chat-role={role}>
       {children}
-    </p>
+    </div>
   )
 }

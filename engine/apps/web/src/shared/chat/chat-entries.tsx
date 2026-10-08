@@ -9,6 +9,7 @@
  * the media origin sends no `Vary: Origin`, so one plain load would poison the cache for the item
  * page's CORS loads.
  */
+import { ChatText } from './chat-text'
 import { ChatHandoffLink } from './chat-handoff'
 import { isAllowedCardHref, isAllowedHandoffHref } from './chat-client'
 import { ChevronIcon } from './chat-icons'
@@ -69,7 +70,9 @@ function ChatEntryView({
     case 'assistant':
       return (
         <AgentRow agentName={agentName} avatar={startsRun}>
-          <AgentBubble>{entry.text}</AgentBubble>
+          <AgentBubble>
+            <ChatText text={entry.text} />
+          </AgentBubble>
         </AgentRow>
       )
     case 'status':
