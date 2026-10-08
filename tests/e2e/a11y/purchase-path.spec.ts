@@ -9,7 +9,7 @@
  * so it never runs against staging; `A11Y_STATE` names the file the Lighthouse run reads the bag
  * cookie and the order's tracking address from.
  */
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 
 import { expect, test, type Page } from '@playwright/test'
@@ -122,18 +122,14 @@ test('purchase path: axe, keyboard-only run and accessibility tree', async ({
   await page.keyboard.press('Enter')
   await page.waitForURL(/\/order\//, { timeout: 30000 })
 
-  // 5. The order page, then the tracking page from its own link.
+  // 5. The order page. The tracking page is its own test below: an order that is not yet paid has
+  // no tracking page (it answers 404, by design), so the order must first be paid.
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   await audit(page, 'order', axe, keyboard)
   const orderUrl = page.url()
-  const tracking = page.getByRole('link', { name: /track your order/i })
-  let trackingUrl: string | null = null
-  if ((await tracking.count()) > 0) {
-    trackingUrl = new URL((await tracking.first().getAttribute('href')) ?? '', orderUrl).href
-    await page.goto(trackingUrl)
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
-    await audit(page, 'tracking', axe, keyboard)
-  }
+  // The order's address token is its tracking credential (`/order/<token>` and `/track/<token>`).
+  const token = /\/order\/([^/?#]+)/.exec(orderUrl)?.[1] ?? null
+  const trackingUrl = token === null ? null : `${origin}/track/${token}`
 
   const state = process.env.A11Y_STATE
   if (state) {
@@ -150,5 +146,28 @@ test('purchase path: axe, keyboard-only run and accessibility tree', async ({
   }
   writeEvidence('a11y/axe-shop-purchase-path.json', `${JSON.stringify(axe, null, 2)}\n`)
   writeEvidence('a11y/keyboard-shop-purchase-path.md', keyboard.join(''))
-  expect(trackingUrl, 'the order page links to tracking').not.toBeNull()
+  expect(trackingUrl, 'the order address names a tracking token').not.toBeNull()
+})
+
+/**
+ * The tracking page of the order the test above placed, once the run has moved that order to paid
+ * (a staff quote and the simulator's Settle are the payment gate's, `tests/e2e/shop/gate.spec.ts`;
+ * here the order's status is set by SQL on the throwaway local database and said so in the gate
+ * doc). Reads `A11Y_STATE`, written by the test above.
+ */
+test('tracking page of a paid order: axe, keyboard walk and accessibility tree', async ({
+  page,
+}, testInfo) => {
+  test.skip((testInfo.project.metadata as SmokeMetadata).site !== 'shop', 'the shop host only')
+  const state = process.env.A11Y_STATE
+  expect(state, 'A11Y_STATE names the file the purchase-path test wrote').toBeTruthy()
+  const { trackingUrl } = JSON.parse(readFileSync(state!, 'utf8')) as { trackingUrl: string }
+  const axe: AxeRecord[] = []
+  const keyboard: string[] = ['## shop: tracking page, keyboard walk\n\n']
+  const response = await page.goto(trackingUrl)
+  expect(response?.status(), 'the tracking page of a paid order').toBe(200)
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+  await audit(page, 'tracking', axe, keyboard)
+  writeEvidence('a11y/axe-shop-tracking.json', `${JSON.stringify(axe, null, 2)}\n`)
+  writeEvidence('a11y/keyboard-shop-tracking.md', keyboard.join(''))
 })

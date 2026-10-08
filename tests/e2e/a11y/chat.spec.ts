@@ -70,6 +70,8 @@ test('chat: axe, keyboard walk, Escape and accessibility tree', async ({
     keyboard += `Escape closes the panel at ${viewport.width} px: ${closed ? 'yes' : 'NO'}\n\n`
     expect.soft(closed, `Escape closes the chat at ${viewport.width} px`).toBe(true)
     if (closed) {
+      // The panel hands focus back on the next animation frame.
+      await page.waitForTimeout(300)
       const stop = await currentStop(page)
       const back = stop?.name === 'Chat with us'
       keyboard += `Focus returns to the launcher: ${back ? 'yes' : `NO (${stop?.role} "${stop?.name}")`}\n\n`

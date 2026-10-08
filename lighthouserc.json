@@ -1,0 +1,65 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://gallery.localhost:4200/",
+        "http://gallery.localhost:4200/browse",
+        "http://gallery.localhost:4200/product/2050-bird-of-paradise-by-conrad-gesner-antique-print",
+        "http://shop.localhost:4200/",
+        "http://shop.localhost:4200/shop",
+        "http://shop.localhost:4200/product/balinese-dancer-photograph-c-1927"
+      ],
+      "numberOfRuns": 3,
+      "settings": { "formFactor": "mobile" }
+    },
+    "assert": {
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": "^https?://[^/]+/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }],
+            "categories:accessibility": ["error", { "minScore": 1 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
+            "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 153600 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^https?://[^/]+/(browse|shop)$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }],
+            "categories:accessibility": ["error", { "minScore": 1 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
+            "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 153600 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^https?://[^/]+/product/",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }],
+            "categories:accessibility": ["error", { "minScore": 1 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
+            "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 184320 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^https?://[^/]+/(bag|checkout|order/|track/)",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }],
+            "categories:accessibility": ["error", { "minScore": 1 }],
+            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
+            "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+            "resource-summary:script:size": ["error", { "maxNumericValue": 204800 }]
+          }
+        }
+      ]
+    },
+    "upload": { "target": "filesystem", "outputDir": "./.lighthouseci/web" }
+  }
+}

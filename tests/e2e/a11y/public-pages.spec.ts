@@ -70,6 +70,8 @@ test('public pages: axe, keyboard walk and accessibility tree', async ({
     const response = await page.goto(`${origin}${target.path}`)
     expect.soft(response?.status(), target.path).toBe(200)
     await page.waitForLoadState('load')
+    // The page's heading is part of what axe judges (page-has-heading-one): wait for it, then audit.
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible()
     axe.push(...(await axeBothWidths(page, `${site} ${target.name}`)))
     if (indonesian.includes(target)) continue
     for (const viewport of WIDTHS) {
