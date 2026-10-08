@@ -5,6 +5,12 @@
     { "label": "Textiles", "labelId": "Tekstil" },
     { "label": "Homeware", "labelId": "Perlengkapan rumah" },
     { "label": "Stationery", "labelId": "Alat tulis" },
-    { "label": "Gifts", "labelId": "Hadiah" }
+    { "label": "Gifts", "labelId": "Hadiah" },
+    { "label": "Maps", "labelId": "Peta" },
+    { "label": "Travel posters", "labelId": "Poster perjalanan" },
+    { "label": "Bali", "labelId": "Bali" },
+    { "label": "Animals", "labelId": "Satwa" },
+    { "label": "Botanicals", "labelId": "Botani" },
+    { "label": "Landscapes", "labelId": "Lanskap" }
   ]
 }
