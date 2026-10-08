@@ -7,6 +7,9 @@
  * 2026-10-08); the review marks and old categories ride into
  * `works.legacy.categories` and a second carry changes nothing; the shop layer loads twice and
  * the purge then deletes exactly the rows it seeded, and a second purge deletes nothing.
+ * The shop-catalogue layer loads a fixture's designs as published products with their pictures
+ * (role and provenance per picture), retires the 80 mock products, stocks the mock stores, and a
+ * second run changes nothing.
  * Without `CMS_TEST_POSTGRES_URL` these skip — a setup state.
  */
 import { getPayload } from 'payload'
@@ -14,6 +17,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { server, startStaffStack, type StaffStack } from '../collections/users/staff.test-support'
 import { runImportFile } from '../import/apply'
+import { checkCatalogueLayer } from './catalogue/db-checks.test-support'
 import { antiqueCsv } from './gallery/rows'
 import { purgeSeed } from './purge'
 import { carryMarks, sampleRows, seedLayer } from './run'
@@ -275,6 +279,11 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
     // 7,227 stock rows written through the count hook, twice, then purged: ~215 s measured alone
     // on a local Docker Postgres (2026-10-05); the budget doubles that for a parallel worker.
   }, 600_000)
+
+  it('the shop-catalogue layer loads the designs, retires the mock products, and is idempotent', async () => {
+    await checkCatalogueLayer(stack.payload)
+    // The mock shop's stock rows (7,227, written twice) dominate: the budget matches the test above.
+  }, 900_000)
 })
 
 function utf8(text: string): Uint8Array {

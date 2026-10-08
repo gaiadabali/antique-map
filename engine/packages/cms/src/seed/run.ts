@@ -2,7 +2,8 @@
  * The seed runner (DATA.md §2): one layer, one call — `seedLayer`. Every gallery layer seeds the
  * vocabulary first (the import matches makers, places, grades and subjects against it and holds
  * what nothing matches), then runs the 3.7.a importer over the layer's antiques file; the shop
- * layer runs the four shop sheets. Every write is the importer's own — key-matched upserts, one
+ * layer runs the four shop sheets; the shop-catalogue layer loads the owner's real designs
+ * (`./catalogue/layer`). Every write is the importer's own — key-matched upserts, one
  * transaction per file — so seeding twice is a no-op. The gallery's review marks and old
  * categories ride into `works.legacy.categories` after the import (§4): carried, never cleaned.
  */
@@ -19,9 +20,16 @@ import type { Payload } from 'payload'
 
 import { antiqueCsv, antiqueRows, type AntiqueRow } from './gallery/rows'
 import { legacyDataDir, loadImages, loadRecords, type LegacyImage } from './gallery/records'
+import { renderCatalogue, seedCatalogue, type CatalogueRun } from './catalogue/layer'
 import { seedVocabulary, type VocabularyReport } from './vocabulary/seed'
 
-export const SEED_LAYERS = ['vocabulary', 'gallery-sample', 'gallery-full', 'shop'] as const
+export const SEED_LAYERS = [
+  'vocabulary',
+  'gallery-sample',
+  'gallery-full',
+  'shop',
+  'shop-catalogue',
+] as const
 export type SeedLayer = (typeof SEED_LAYERS)[number]
 
 export type SeedOptions = {
@@ -36,6 +44,8 @@ export type SeedRun = {
   readonly layer: SeedLayer
   readonly vocabulary?: VocabularyReport
   readonly imports: readonly ImportReport[]
+  /** The shop-catalogue layer's own steps: pictures, publishing, the mock products' retirement. */
+  readonly catalogue?: CatalogueRun
   /** The works whose `legacy.categories` now carry the review marks and old categories. */
   readonly marked: number
 }
@@ -57,6 +67,16 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
       imports.push(await runImportPath(kind, shopFile(kind), { payload, ...runOptions }))
     }
     return { layer, vocabulary, imports, marked: 0 }
+  }
+
+  if (layer === 'shop-catalogue') {
+    const catalogue = await seedCatalogue(payload, legacyDataDir(), {
+      dryRun,
+      publish,
+      runOptions,
+      context,
+    })
+    return { layer, vocabulary, imports: catalogue.imports, catalogue, marked: 0 }
   }
 
   const { bytes, name, rows } = layer === 'gallery-sample' ? sampleLayer() : fullLayer()
@@ -230,6 +250,7 @@ export function renderSeedRun(run: SeedRun): string {
     }
   }
   for (const report of run.imports) lines.push(render(report).trimEnd())
+  if (run.catalogue) lines.push(...renderCatalogue(run.catalogue))
   if (run.layer.startsWith('gallery-') && !run.imports[0]?.dryRun) {
     lines.push(`review marks carried into legacy.categories: ${run.marked} work(s)`)
   }
