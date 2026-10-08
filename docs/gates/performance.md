@@ -23,7 +23,7 @@ later (10.5 and the chat redesign 8.2.c are in).
   measures pages without their pictures. `tests/e2e/a11y/media-proxy.mjs` serves `/derivatives/v1/<any>/<width>.<format>`
   from one real staging derivative of the same width and format (real bytes, both formats, CORS open); the local media
   rows were marked `derivatives_status = 'ready'` with `width`/`height` x 5 (`UPDATE media SET width = width*5, height =
-  height*5, derivatives_status = 'ready' WHERE width < 2400`) and the app started with `MEDIA_PUBLIC_URL=http://127.0.0.1:9100`.
+height*5, derivatives_status = 'ready' WHERE width < 2400`) and the app started with `MEDIA_PUBLIC_URL=http://127.0.0.1:9100`.
   Every image is the same picture: it measures weight and loading, not content. The "before" rows without this rig
   have no pictures at all.
 - **The host is shared and was saturated by other sessions** for much of the run (Lighthouse's CPU benchmark read
@@ -37,18 +37,18 @@ later (10.5 and the chat redesign 8.2.c are in).
 
 ## Lighthouse mobile, final local run (stand-in media origin)
 
-| Page | Perf (median of runs) | A11y (worst) | LCP ms | CLS | TBT ms | Script KB | Weight KiB | CPU bench |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| gallery home | 97 (97 · 97 · 96) | 100 | 2549 | 0.000 | 39 | 143 | 249 | 3821 |
-| gallery listing `/browse` | 92 (92 · 92 · 91) | 100 | 3347 | 0.000 | 72 | 146 | 335 | 3075 |
-| **gallery item** | **94** (25 · 94 · 94) | **100** | 3012 | 0.010 | 91 | 145 | 281 | 3415 |
-| shop home | 95 (92 · 97 · 95) | 100 | 2728 | 0.000 | 52 | 143 | 598 | 2938 |
-| shop listing `/shop` | 90 (96 · 87 · 90) | 100 | 3556 | 0.000 | 59 | 143 | 644 | 3250 |
-| **shop product** | **94** (96 · 94 · 93) | **100** | 2997 | 0.000 | 75 | 150 | 313 | 3061 |
-| shop bag (cookie, one line) | 98 (99 · 98 · 95) | 100 | 2249 | 0.001 | 41 | 145 | 242 | 2877 |
-| shop checkout (cookie) | 96 (96 · 96 · 95) | 100 | 2700 | 0.000 | 87 | 152 | 240 | 3736 |
-| shop order page (awaiting quote) | 96 (95 · 96 · 97) | 100 | 2697 | 0.010 | 71 | 145 | 233 | 3078 |
-| shop tracking (a paid order) | 97 (97 · 97 · 97) | 100 | 2519 | 0.000 | 48 | 143 | 231 | 3363 |
+| Page                             | Perf (median of runs) | A11y (worst) | LCP ms | CLS   | TBT ms | Script KB | Weight KiB | CPU bench |
+| -------------------------------- | --------------------- | ------------ | ------ | ----- | ------ | --------- | ---------- | --------- |
+| gallery home                     | 97 (97 · 97 · 96)     | 100          | 2549   | 0.000 | 39     | 143       | 249        | 3821      |
+| gallery listing `/browse`        | 92 (92 · 92 · 91)     | 100          | 3347   | 0.000 | 72     | 146       | 335        | 3075      |
+| **gallery item**                 | **94** (25 · 94 · 94) | **100**      | 3012   | 0.010 | 91     | 145       | 281        | 3415      |
+| shop home                        | 95 (92 · 97 · 95)     | 100          | 2728   | 0.000 | 52     | 143       | 598        | 2938      |
+| shop listing `/shop`             | 90 (96 · 87 · 90)     | 100          | 3556   | 0.000 | 59     | 143       | 644        | 3250      |
+| **shop product**                 | **94** (96 · 94 · 93) | **100**      | 2997   | 0.000 | 75     | 150       | 313        | 3061      |
+| shop bag (cookie, one line)      | 98 (99 · 98 · 95)     | 100          | 2249   | 0.001 | 41     | 145       | 242        | 2877      |
+| shop checkout (cookie)           | 96 (96 · 96 · 95)     | 100          | 2700   | 0.000 | 87     | 152       | 240        | 3736      |
+| shop order page (awaiting quote) | 96 (95 · 96 · 97)     | 100          | 2697   | 0.010 | 71     | 145       | 233        | 3078      |
+| shop tracking (a paid order)     | 97 (97 · 97 · 97)     | 100          | 2519   | 0.000 | 48     | 143       | 231        | 3363      |
 
 - The gallery item's first run (25) is the first request after the server restarted: the page cache was cold (a
   slow first byte). The other two runs and the median are warm.
@@ -64,13 +64,13 @@ later (10.5 and the chat redesign 8.2.c are in).
 
 ### Before and after
 
-| Page | Before (run) | After |
-| --- | --- | --- |
-| gallery home | local, no pictures: 95, LCP 2886 (`baseline-gallery`); staging 93, LCP 2956 (`baseline-staging-gallery`); staging after 410136e8, orchestrator: 98, LCP 2.4 s, **2,042 KiB** | 97, LCP 2549, **249 KiB** |
-| gallery listing | local: 93, LCP 3213; staging 96, LCP 2686 | 92, LCP 3347 (now with pictures: 335 KiB) |
-| gallery item | local: 96, LCP 2817; staging 93, LCP 3184 | 94, LCP 3012 (with the lead picture) |
-| shop `/shop` | orchestrator, staging before 410136e8: 81, LCP 5.1 s, 2,993 KiB; after: 96, LCP 2.3 s, **1,845 KiB** | 90, LCP 3556, **644 KiB** |
-| shop product | shop-payment gate, local: 96 | 94, LCP 2997 |
+| Page            | Before (run)                                                                                                                                                                 | After                                     |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| gallery home    | local, no pictures: 95, LCP 2886 (`baseline-gallery`); staging 93, LCP 2956 (`baseline-staging-gallery`); staging after 410136e8, orchestrator: 98, LCP 2.4 s, **2,042 KiB** | 97, LCP 2549, **249 KiB**                 |
+| gallery listing | local: 93, LCP 3213; staging 96, LCP 2686                                                                                                                                    | 92, LCP 3347 (now with pictures: 335 KiB) |
+| gallery item    | local: 96, LCP 2817; staging 93, LCP 3184                                                                                                                                    | 94, LCP 3012 (with the lead picture)      |
+| shop `/shop`    | orchestrator, staging before 410136e8: 81, LCP 5.1 s, 2,993 KiB; after: 96, LCP 2.3 s, **1,845 KiB**                                                                         | 90, LCP 3556, **644 KiB**                 |
+| shop product    | shop-payment gate, local: 96                                                                                                                                                 | 94, LCP 2997                              |
 
 Read these with care. The "before" rows are three different rigs: local without pictures (a page with no image reads
 fast), staging over the workstation's real route, and the orchestrator's staging runs. The "after" rows add the
@@ -81,19 +81,19 @@ changes.
 
 ## What was found and fixed
 
-| # | Finding | Fix | Where |
-| --- | --- | --- | --- |
-| P1 | An italic Cormorant face (39 KB) was **preloaded on every page**, and only the item's original title uses italic | Two `next/font` declarations of one family: roman preloaded, italic `preload: false` (fetched only where used). Home 95 to 97 and item 96 to 97 at the same CPU benchmark (`after1-gallery`) | `shared/styles/fonts.ts` |
-| P2 | **Gallery home featured works** loaded one full-size derivative each (the 10.6 originals are up to 6,000 px) | `imageSrcSet` from `derivativeSrcSetOf`, drawn through `ResponsiveImage` with `sizes="(min-width: 80rem) 25rem, 30vw"` | `server/gallery/home/load-featured-works.ts`, `sites/gallery/home/featured-works.tsx`, `home.module.css` |
-| P3 | Every srcSet listed WebP only, though the pipeline publishes **AVIF at every width** (about half the bytes: the 1024 px rung is 48 KB against 93 KB) | `ResponsiveImage` serves the same ladder as AVIF through `<picture><source type="image/avif">`, WebP kept on the `<img>` as the fallback; a lead image preloads the AVIF rung. `avifLadderOf()` only rewrites a ladder whose every candidate is `.webp`; tests added | `shared/ui/responsive-image/*` |
-| P4 | The **bag's thumbnails** used Payload's staff-only file URL (`media.url`, 403 to the public) with no ladder and no "Digital mockup" alt | `displayFor` reads the catalogue's `imageOf` (public derivative, ladder, provenance); the bag draws a 5 rem thumbnail with `srcSet` and `sizes="5rem"` and the label-prefixed alt (`imageAlt`). Checkout shows no thumbnails | `server/shop/bag/display.ts`, `read-bag.ts`, `read-checkout.ts`, `sites/shop/bag/bag-view.tsx` |
-| P5 | The shop listing's first-row card images were `loading="lazy"` (Lighthouse: LCP image lazy-loaded, 240 ms late) | `ProductCard` takes `lead`; the first two cards of the listing and of search load eagerly at high priority, as the gallery's do | `sites/shop/browse/*` |
-| A1 | **The skip link was invisible when focused**: `position: absolute`, no `z-index`, so the sticky header's logo covered it (WCAG 2.4.7, 2.4.11) | `z-index: 10000` (above the header 100 and the menu sheet 9999) | `styles/site.css` |
-| A2 | **The checkout's pin fields all carried one name.** The use-my-location button, the paste-link field, latitude and longitude, and the search box were wired to `checkout.mapPinRequired` / `checkout.pinLatLng`, so a screen reader heard "Or type latitude and longitude" three times | Five distinct keys (`checkout.pinUseLocation`, `pinPasteLink`, `pinLatitude`, `pinLongitude`, `pinSearch`), both languages | `sites/shop/checkout/{checkout-view.tsx,copy.ts}`, `sites/shop/lexicon/{en,id}.json` |
-| A3 | **Typing a coordinate key by key lost the decimal point**: each keystroke re-wrote both fields from the parsed numbers ("115." became "115"), so "115.2126" was sent as 1152126 and the server refused the pin. The keyboard-only walk found it | `typeLatLng` no longer writes back into the fields it reads from | `sites/shop/checkout/pin-picker.tsx` |
-| A4 | The paste-link input sat in a `<form>` **inside the checkout's `<form>`** (invalid HTML; the server's parser drops the inner one, so hydration disagrees) | A `div`; Enter reads the link and never submits the order | `shared/ui/map-pin-shell/map-pin-shell.tsx` |
-| A5 | On a 390 px bag, each line's total paragraph **was stretched over the quantity form** and lay over the Update button: half its taps hit the paragraph and its focus was "hidden behind another element" | `align-self: flex-start` | `sites/shop/bag/bag.module.css` |
-| A6 | The variant picker's `radiogroup` was named by its first radio ("Mounted print") and every radio carried the same `id` | Named by the fieldset's legend ("Choose an option"); the duplicate ids removed | `sites/shop/product/variant-picker.tsx` |
+| #   | Finding                                                                                                                                                                                                                                                                                | Fix                                                                                                                                                                                                                                                                  | Where                                                                                                    |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| P1  | An italic Cormorant face (39 KB) was **preloaded on every page**, and only the item's original title uses italic                                                                                                                                                                       | Two `next/font` declarations of one family: roman preloaded, italic `preload: false` (fetched only where used). Home 95 to 97 and item 96 to 97 at the same CPU benchmark (`after1-gallery`)                                                                         | `shared/styles/fonts.ts`                                                                                 |
+| P2  | **Gallery home featured works** loaded one full-size derivative each (the 10.6 originals are up to 6,000 px)                                                                                                                                                                           | `imageSrcSet` from `derivativeSrcSetOf`, drawn through `ResponsiveImage` with `sizes="(min-width: 80rem) 25rem, 30vw"`                                                                                                                                               | `server/gallery/home/load-featured-works.ts`, `sites/gallery/home/featured-works.tsx`, `home.module.css` |
+| P3  | Every srcSet listed WebP only, though the pipeline publishes **AVIF at every width** (about half the bytes: the 1024 px rung is 48 KB against 93 KB)                                                                                                                                   | `ResponsiveImage` serves the same ladder as AVIF through `<picture><source type="image/avif">`, WebP kept on the `<img>` as the fallback; a lead image preloads the AVIF rung. `avifLadderOf()` only rewrites a ladder whose every candidate is `.webp`; tests added | `shared/ui/responsive-image/*`                                                                           |
+| P4  | The **bag's thumbnails** used Payload's staff-only file URL (`media.url`, 403 to the public) with no ladder and no "Digital mockup" alt                                                                                                                                                | `displayFor` reads the catalogue's `imageOf` (public derivative, ladder, provenance); the bag draws a 5 rem thumbnail with `srcSet` and `sizes="5rem"` and the label-prefixed alt (`imageAlt`). Checkout shows no thumbnails                                         | `server/shop/bag/display.ts`, `read-bag.ts`, `read-checkout.ts`, `sites/shop/bag/bag-view.tsx`           |
+| P5  | The shop listing's first-row card images were `loading="lazy"` (Lighthouse: LCP image lazy-loaded, 240 ms late)                                                                                                                                                                        | `ProductCard` takes `lead`; the first two cards of the listing and of search load eagerly at high priority, as the gallery's do                                                                                                                                      | `sites/shop/browse/*`                                                                                    |
+| A1  | **The skip link was invisible when focused**: `position: absolute`, no `z-index`, so the sticky header's logo covered it (WCAG 2.4.7, 2.4.11)                                                                                                                                          | `z-index: 10000` (above the header 100 and the menu sheet 9999)                                                                                                                                                                                                      | `styles/site.css`                                                                                        |
+| A2  | **The checkout's pin fields all carried one name.** The use-my-location button, the paste-link field, latitude and longitude, and the search box were wired to `checkout.mapPinRequired` / `checkout.pinLatLng`, so a screen reader heard "Or type latitude and longitude" three times | Five distinct keys (`checkout.pinUseLocation`, `pinPasteLink`, `pinLatitude`, `pinLongitude`, `pinSearch`), both languages                                                                                                                                           | `sites/shop/checkout/{checkout-view.tsx,copy.ts}`, `sites/shop/lexicon/{en,id}.json`                     |
+| A3  | **Typing a coordinate key by key lost the decimal point**: each keystroke re-wrote both fields from the parsed numbers ("115." became "115"), so "115.2126" was sent as 1152126 and the server refused the pin. The keyboard-only walk found it                                        | `typeLatLng` no longer writes back into the fields it reads from                                                                                                                                                                                                     | `sites/shop/checkout/pin-picker.tsx`                                                                     |
+| A4  | The paste-link input sat in a `<form>` **inside the checkout's `<form>`** (invalid HTML; the server's parser drops the inner one, so hydration disagrees)                                                                                                                              | A `div`; Enter reads the link and never submits the order                                                                                                                                                                                                            | `shared/ui/map-pin-shell/map-pin-shell.tsx`                                                              |
+| A5  | On a 390 px bag, each line's total paragraph **was stretched over the quantity form** and lay over the Update button: half its taps hit the paragraph and its focus was "hidden behind another element"                                                                                | `align-self: flex-start`                                                                                                                                                                                                                                             | `sites/shop/bag/bag.module.css`                                                                          |
+| A6  | The variant picker's `radiogroup` was named by its first radio ("Mounted print") and every radio carried the same `id`                                                                                                                                                                 | Named by the fieldset's legend ("Choose an option"); the duplicate ids removed                                                                                                                                                                                       | `sites/shop/product/variant-picker.tsx`                                                                  |
 
 The unit tests for the web app pass (683 passed, 80 skipped, the skips being database tests that need Postgres on 5432),
 as do `format:check`, `lint`, `typecheck`, `check:filesize` and `tasks:lint`.
@@ -115,18 +115,68 @@ LCP is 2.5 to 3.5 s on every page in simulated mobile throttling (1.6 Mbps, 150 
   measured 3.0 s; or (c) cut the framework (no client router prefetch, fewer client components). This gate does none of
   them. The 90 / 100 Check does not depend on it.
 
+## The CI Lighthouse budget on the shop home after 10.1 (reported by the orchestrator)
+
+CI run 37760908165 (main 7733d424) failed `lighthouserc.web.json` on `http://shop.localhost:4200/`: LCP 2,925, 2,865
+and 2,899 ms against 2,500. Run 37743514696 (0d861b0a) passed. Both runs' `.lighthouseci` artifacts were downloaded
+(`gh run download <id> -n lighthouse`) and compared with `node tests/e2e/a11y/lh-compare.mjs <dir>`.
+
+**The CSP nonce is not what moved it, and the budget is passing or failing by luck.**
+
+| Run              | Shop home, three runs (LCP ms) | Gallery home          | Page bytes (18 requests) | Observed paint (ms) |
+| ---------------- | ------------------------------ | --------------------- | ------------------------ | ------------------- |
+| 0d861b0a, passed | 2,666 · 2,899 · **2,144**      | 2,133 · 2,887 · 2,888 | 277,700                  | 118 to 156          |
+| 7733d424, failed | 2,925 · 2,865 · 2,899          | 2,291 · 2,898 · 2,897 | 284,400                  | 148 to 203          |
+
+- `lhci`'s default aggregation is **optimistic**: a page passes if its best run does (the failing report's `actual` is the
+  minimum, 2,865). The metric is bimodal on this page: about 2,900 ms in most runs and 2,150 in some. The passing run
+  owed its pass to one 2,144 ms run; the gallery home passes only through its cold first run (2,133 / 2,291, a slow
+  first byte, so a late paint). The typical value, 2,880 to 2,900 ms, is the same before and after 10.1 (the gallery's
+  typical runs read 2,887/2,888 before and 2,898/2,897 after).
+- Why bimodal: the request waterfall of a 2,144 ms run and of a 2,899 ms run is the same (same requests, same sizes, the
+  paint at 118 and 128 ms). The simulated figure differs by about 750 ms, one simulated round trip, so a request is
+  in or out of Lighthouse's graph for reasons of tens of milliseconds. I did not isolate which request (the favicon,
+  which starts after the paint in every run, is not it). Three samples a side cannot show whether 10.1 changed the
+  odds of the low mode; they show the typical value did not change.
+- What 10.1 changed, measured: the document's first byte took about 25 ms longer (52 ms against 25 in CI), its HTML grew
+  1.9 KB (the nonce on 15 inline scripts and the `Link` header's nonce), every response carries about 380 bytes of the
+  new static headers (+7 KB over 18 requests), and the paint is 30 to 80 ms later. Reproduced locally on a database
+  that is migrated and empty, as CI's: shop home 2,690 ms with the CSP, 2,662 without it (the CSP removed from `proxy.ts`
+  for the experiment, then restored; the static headers stayed on), first byte 42 ms against 27. The nonce costs about
+  15 ms of first byte (Next renders with the nonce in the stream rather than resuming a shell) and about 30 ms of
+  simulated LCP. Both builds answer `Cache-Control: private, no-store`: the page was already rendered in full on every
+  request (`htmlLimitedBots`), so the nonce did not make it dynamic.
+- **Nothing was changed in the CSP, `proxy.ts` or `src/security/`.** `script-src` keeps its nonce and `strict-dynamic`.
+
+What this branch already does about the same budget: the italic font was preloaded on every page (39 KB; the CI waterfalls
+show three fonts, 38 + 40 + 25 KB); `fonts.ts` now preloads two. That removes about 0.2 s of simulated LCP on the home
+pages (gallery home 2,886 to 2,642 ms at the same CPU benchmark, `after1-gallery`), so more runs land in the low mode.
+It does not make the typical run pass 2,500 ms: the framework floor (F1) is higher.
+
+Options for the orchestrator, none taken here (a budget or policy change is not this seat's call):
+
+1. **Set the home pages' LCP budget to 3,000 ms** in `lighthouserc.web.json`. It is what the page measures, before and after
+   10.1. Honest, and stops a coin flip from deciding a merge.
+2. Keep 2,500 ms and set `aggregationMethod` to `median`: it then fails every run until F1 is solved; not useful now.
+3. Keep the budget and re-run on failure: it passes about as often as the low mode occurs; this is what has been happening.
+4. **A hash-based CSP in place of the nonce** (Next's experimental `sri`, `docs/01-app/02-guides/content-security-policy.md`
+   "Subresource Integrity"): it keeps the static shell and saves the nonce's 15 ms first byte, but it is a change of policy
+   (`script-src` would list hashes, not a nonce) and it is experimental. Not done; recorded for the architect.
+5. Cut bytes on the home pages until the typical run is under 2,500 ms: about 80 KB, which is more than the app's own
+   code (25 KB); only the framework is that large.
+
 ## axe
 
 `tests/e2e/a11y/public-pages.spec.ts`, `chat.spec.ts`, `purchase-path.spec.ts`: every axe rule (best practices
 included), both widths, zero violations of any impact is the bar.
 
-| Where | Pages | Result |
-| --- | --- | --- |
-| Local, gallery | home, listing, item, search, sell-to-us (390 and 1280, English) and home, item (Indonesian) | **0 violations** (`a11y/axe-gallery.json`) |
-| Local, shop | home, listing, product, search (English) and home, product (Indonesian) | **0 violations** (`a11y/axe-shop.json`) |
-| Local, shop purchase path | product, bag, checkout, order, tracking | **0 violations** (`axe-shop-purchase-path.json`, `axe-shop-tracking.json`) |
-| Local, chat | launcher closed, panel open, both sites | **0 violations** (`axe-*-chat.json`) |
-| Staging, both sites | the same public pages, the open chat | **0 violations** (`staging/a11y/axe-*.json`) |
+| Where                     | Pages                                                                                       | Result                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Local, gallery            | home, listing, item, search, sell-to-us (390 and 1280, English) and home, item (Indonesian) | **0 violations** (`a11y/axe-gallery.json`)                                 |
+| Local, shop               | home, listing, product, search (English) and home, product (Indonesian)                     | **0 violations** (`a11y/axe-shop.json`)                                    |
+| Local, shop purchase path | product, bag, checkout, order, tracking                                                     | **0 violations** (`axe-shop-purchase-path.json`, `axe-shop-tracking.json`) |
+| Local, chat               | launcher closed, panel open, both sites                                                     | **0 violations** (`axe-*-chat.json`)                                       |
+| Staging, both sites       | the same public pages, the open chat                                                        | **0 violations** (`staging/a11y/axe-*.json`)                               |
 
 Two things the first runs taught about the method: axe's contrast check reads half-transparent pixels while the chat
 panel slides in (the spec waits 1.5 s), and `page-has-heading-one` fired once on `/search` when axe ran before the
@@ -180,7 +230,7 @@ Reading order and names, the buy path:
   `aria-current="step"` on the current one (the snapshot omits `aria-current`; `shared/ui/status-timeline` sets it),
   Items, totals, "Delivering to" (the address and a masked contact), "Sending from".
 - **Chat:** `dialog "Chat with us"`: heading with the shop's name, "AI assistant · replies instantly", "Close chat", `log
-  "Conversation"` with the greeting, `group "Suggested questions"`, `textbox "Your message"`, "Send", the disclosure
+"Conversation"` with the greeting, `group "Suggested questions"`, `textbox "Your message"`, "Send", the disclosure
   with a "Privacy notice" link. Errors arrive as `alert`.
 
 Findings left from the tree audit (none blocks the Check):
@@ -252,4 +302,4 @@ host with `--project=shop-a11y`). `tests/e2e/a11y/lh-summary.mjs <dir>` tabulate
   (staging before).
 - axe, keyboard walks and trees: `a11y/` (local) and `staging/a11y/`.
 - Runners and specs: `tests/e2e/a11y/{audit.ts, public-pages.spec.ts, purchase-path.spec.ts, chat.spec.ts,
-  lighthouse.mjs, lh-summary.mjs, lh-lcp.mjs, media-proxy.mjs, serve-local.mjs}`; budgets `lighthouserc.json`.
+lighthouse.mjs, lh-summary.mjs, lh-lcp.mjs, media-proxy.mjs, serve-local.mjs}`; budgets `lighthouserc.json`.

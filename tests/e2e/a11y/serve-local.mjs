@@ -17,7 +17,10 @@ import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 const web = join(root, 'engine/apps/web')
-const standalone = join(web, '.next/standalone/engine/apps/web')
+// An optional first argument names another copy of the standalone folder (an A/B of two builds).
+const standalone = process.argv[2]
+  ? resolve(process.argv[2])
+  : join(web, '.next/standalone/engine/apps/web')
 if (!existsSync(join(standalone, 'server.js'))) {
   console.error('no standalone build: run `pnpm build` first')
   process.exit(1)
