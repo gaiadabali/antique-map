@@ -168,7 +168,12 @@ describe('outbound requests go to listed hosts, with a timeout (S1, S3)', () => 
     ]) {
       const text = code(source.find((file) => file.path === path)!.text)
       expect(text, path).toContain("redirect: 'error'")
-      expect(text, path).toContain('AbortSignal.timeout(5_000)')
+      // The geocoder names its budget once, as a constant the unit tests also read.
+      const geocoder = path.endsWith('geocode.ts')
+      expect(text, path).toContain(
+        geocoder ? 'AbortSignal.timeout(GEOCODE_TIMEOUT_MS)' : 'AbortSignal.timeout(5_000)',
+      )
+      if (geocoder) expect(text).toContain('GEOCODE_TIMEOUT_MS = 5_000')
     }
   })
 })

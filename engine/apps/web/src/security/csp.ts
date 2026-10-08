@@ -78,13 +78,15 @@ export function buildCsp(surface: Surface, nonce: string, options: CspOptions = 
   const media = options.mediaOrigin ? [options.mediaOrigin] : []
   const scripts = [`'self'`, `'nonce-${nonce}'`, `'strict-dynamic'`]
   const img = [`'self'`, 'data:', 'blob:', ...media]
-  const connect = [`'self'`, ...MIDTRANS, TURNSTILE]
+  // The deep-zoom viewer fetches the IIIF `info.json` from the media origin with XHR, which only
+  // `connect-src` allows (found by driving the viewer under this policy, F-01).
+  const connect = [`'self'`, ...media, ...MIDTRANS, TURNSTILE]
   const frames = [...MIDTRANS, TURNSTILE]
   const workers = [`'self'`]
   if (options.development) scripts.push(`'unsafe-eval'`)
   if (surface === 'admin') {
     // The admin loads nothing from a third party: no Snap, no Turnstile, no frames of its own.
-    connect.splice(1)
+    connect.splice(0, connect.length, `'self'`)
     frames.splice(0)
     workers.push('blob:')
   }
