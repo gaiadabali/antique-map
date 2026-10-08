@@ -63,7 +63,7 @@ module.exports = {
         HOSTNAME: 'localhost',
         PORT: '$S_PORT',
       },
-      // A restart threshold, not a limit: the app, RustFS (MemoryMax 2G) and Mailpit share this
+      // A restart threshold, not a limit: the app, RustFS (MemoryMax 6G) and Mailpit share this
       // host with other live sites, so a leak restarts the app well before it hurts them.
       max_memory_restart: '1536M',
       kill_timeout: 10000,
