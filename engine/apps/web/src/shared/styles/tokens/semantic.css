@@ -87,11 +87,23 @@
   --radius-none: var(--primitive-radius-none);
   --radius-card: var(--brand-radius-card, var(--primitive-radius-none));
   --radius-control: var(--brand-radius-control, var(--primitive-radius-control));
+  --radius-pill: var(--brand-radius-pill, var(--primitive-radius-pill));
+  --radius-panel: var(--brand-radius-panel, var(--primitive-radius-panel));
+  --radius-bubble: var(--brand-radius-bubble, var(--primitive-radius-bubble));
   --rule-hair: var(--brand-rule-hair, var(--primitive-rule-hair));
   --rule-strong: var(--brand-rule-strong, var(--primitive-rule-strong));
   --focus-width: var(--brand-focus-width, var(--primitive-focus-width));
   --shadow-header: var(--brand-shadow-header, var(--primitive-shadow-header));
+  --shadow-panel: var(--brand-shadow-panel, var(--primitive-shadow-panel));
   --dur-in: var(--brand-dur-in, var(--primitive-dur-in));
   --dur-out: var(--brand-dur-out, var(--primitive-dur-out));
   --ease: var(--brand-ease, var(--primitive-ease));
+  --dur-loop: var(--brand-dur-loop, var(--primitive-dur-loop));
+
+  /* chat roles � the messenger's surfaces, aliases of the roles above so a site restyles them once */
+  --color-chat-ground: var(--color-surface);
+  --color-chat-agent: var(--color-surface-raised);
+  --color-chat-agent-ink: var(--color-text);
+  --color-chat-visitor: var(--color-accent);
+  --color-chat-visitor-ink: var(--color-accent-contrast);
 }

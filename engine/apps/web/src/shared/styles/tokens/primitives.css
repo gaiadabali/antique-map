@@ -64,11 +64,16 @@
   --primitive-rule-strong: 2px;
   --primitive-focus-width: 2px;
   --primitive-shadow-header: 0 2px 10px #0000000d;
+  --primitive-radius-pill: 999px;
+  --primitive-radius-panel: 1rem;
+  --primitive-radius-bubble: 1.125rem;
+  --primitive-shadow-panel: 0 18px 48px #0000002e, 0 2px 8px #0000001a;
 
   /* motion */
   --primitive-dur-in: 320ms;
   --primitive-dur-out: 200ms;
   --primitive-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --primitive-dur-loop: 1200ms;
 
   /* numeric style */
   --primitive-numeric-tabular: tabular-nums;

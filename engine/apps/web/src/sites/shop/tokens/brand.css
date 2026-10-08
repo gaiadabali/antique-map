@@ -47,8 +47,13 @@
   --brand-rule-hair: var(--primitive-rule-hair);
   --brand-rule-strong: var(--primitive-rule-strong);
   --brand-focus-width: var(--primitive-focus-width);
+  --brand-radius-pill: var(--primitive-radius-pill);
+  --brand-radius-panel: var(--primitive-radius-panel);
+  --brand-radius-bubble: var(--primitive-radius-bubble);
   --brand-shadow-header: var(--primitive-shadow-header);
+  --brand-shadow-panel: var(--primitive-shadow-panel);
   --brand-dur-in: var(--primitive-dur-in);
   --brand-dur-out: var(--primitive-dur-out);
   --brand-ease: var(--primitive-ease);
+  --brand-dur-loop: var(--primitive-dur-loop);
 }
