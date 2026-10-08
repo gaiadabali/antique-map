@@ -12,14 +12,18 @@
  *    unsigned or wrong → 401, logged as an alert with the body's SHA-256, **nothing written**.
  * 4. **Confirm** with the status API (SECURITY.md W2): the answer, not the notification, is what is
  *    applied. Unknown to Midtrans, or a different `order_id` → 500 (Midtrans retries; nothing written).
- * 5. **Apply** in one transaction (`../apply`) — a replay is a 200 with no change.
+ * 5. **Apply** in one transaction (`../apply`) — a replay is a 200 with no change. A delivery that
+ *    loses the order's lock (TASKS.md 10.5.a) is a 200 when its event is already recorded, else a
+ *    503 with `Retry-After`: lock contention is never a 500.
  *
- * Any failure after verification answers a plain 500 with the cause in the log, so Midtrans
+ * Any other failure after verification answers a plain 500 with the cause in the log, so Midtrans
  * retries. Logs carry the body's hash and the attempt id, never the body (W5). The Payload-backed
  * part (`./payload-port`) is loaded with `import()` only once a request has passed verification,
  * so `next build` and the handler's unit tests never evaluate the Payload config.
  */
 import { describeError } from '@engine/config/boot-check'
+
+import { isLockContention } from '../contention'
 
 import type { ApplyResult } from '../apply'
 import { paymentsConfigFromEnv, type PaymentsConfig } from '../config'
@@ -30,6 +34,14 @@ import { plain, readBounded, type Env } from './respond'
 
 /** Midtrans notifications are a few hundred bytes; anything near this is not one. */
 export const MAX_BODY_BYTES = 16 * 1024
+
+/** Seconds a delivery that lost the order's lock is asked to wait before it retries. */
+export const BUSY_RETRY_AFTER_SECONDS = 5
+
+const busy = () =>
+  plain(503, 'the order is busy; retry later', {
+    'Retry-After': String(BUSY_RETRY_AFTER_SECONDS),
+  })
 
 export type WebhookPort = {
   confirm(midtransOrderId: string): Promise<StatusAnswer>
@@ -93,12 +105,20 @@ export function midtransWebhookRoute(options: WebhookOptions = {}) {
       }
       const source = config.mode === 'simulate' ? 'simulate' : 'webhook'
       // The outcome is in the ledger (`payment-events.outcome`); the answer says only "received".
-      await port.apply(answer.status, source, hash)
+      const applied = await port.apply(answer.status, source, hash)
+      if (applied.outcome === 'busy') {
+        log(`[payments] webhook ${status.midtransOrderId}: the order is busy; asked to retry`)
+        return busy()
+      }
       return Response.json(
         { received: true },
         { headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } },
       )
     } catch (error) {
+      if (isLockContention(error)) {
+        log(`[payments] webhook ${status.midtransOrderId}: lock contention; asked to retry`)
+        return busy()
+      }
       log(`[payments] webhook ${status.midtransOrderId} failed: ${describeError(error)}`)
       return plain(500, 'the notification could not be applied; retry later')
     }
