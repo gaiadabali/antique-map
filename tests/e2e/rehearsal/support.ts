@@ -20,8 +20,14 @@ export const RUN =
 export const rehearsalEmail = (part: string, width: number): string =>
   `rehearsal-10-3.${part}.${width}.${RUN}@example.test`
 
-/** Denpasar, Bali: the pin the 7.x gates used. */
-export const PIN = { lat: -8.6705, lng: 115.2126 }
+/**
+ * The buyer's pin: exactly on DPS-004 (Denpasar), the store of the E2E_STORE_A_* user, so the nearest store with
+ * stock is that store whenever it stocks the product. With the real catalogue's stock (10.6) the 7.x gates' pin
+ * routed to DPS-005, whose staff have no rehearsal account.
+ */
+export const PIN = { lat: -8.690738, lng: 115.185504 }
+/** A design DPS-004 stocks (its first variant, mounted: 4 on 2026-10-09, one per width per run). */
+export const PRODUCT = process.env.REHEARSAL_PRODUCT ?? 'sugar-apple-1863'
 
 export const widthOf = (info: TestInfo): number => (info.project.name === 'mobile' ? 390 : 1280)
 

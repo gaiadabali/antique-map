@@ -1,5 +1,7 @@
 # 10.3.b launch rehearsal, the journeys (staging)
 
+> **Update 2026-10-09 (orchestrator): the staff steps ran and pass.** With the staging accounts from Helios (`/etc/indies/staging-admin/e2e-users.env`), run 5 passed every step but the store's (the order routed to DPS-005, correctly; the store account is DPS-004's). The spec now pins the buyer on DPS-004 and buys a design it stocks; run 6: **8/8 at 390 and 1280**, orders 100032 and 100033 delivered and tracked. The BLOCKED rows below are superseded; details in [../rehearsal.md](../rehearsal.md) §10.3.b.
+
 QA, 2026-10-08/09, against staging `https://indies-gallery.gaiada.com` and `https://old-east-indies.gaiada.com`, release
 `production-20261008T143718Z-e8597fd7` (`readlink -f /home/uindies/current` named `...-e8597fd7` before and after every run;
 no 502 was met). Suite: `tests/e2e/rehearsal/` (`playwright.config.ts`; projects `mobile` 390x844 and `desktop` 1280x800;

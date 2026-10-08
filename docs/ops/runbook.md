@@ -145,9 +145,11 @@ The kill switch is `ai.chatEnabled` per site (AI.md §1). It takes effect at the
 launcher becomes plain WhatsApp and email buttons.
 
 1. Sign in at `https://old-east-indies.gaiada.com/admin` (the admin host; the gallery host answers 404 there).
-2. **Settings → Gallery**: open the **AI** group, untick **Chat enabled**, **Save**. Repeat under **Settings → Shop**.
-3. **Worked:** open `$G/` and `$S/` in a private window: no chat launcher, only the contact buttons. A request to
-   the chat answers `disabled`.
+2. **Site settings** (the Settings group in the side menu, owner only): under **Indies Gallery** → **AI** untick
+   **Chat enabled**, and under **Old East Indies** → **AI** the same, then **Save** once (one page holds both sites).
+3. **Worked:** reload the page and the box stays unticked; a chat request answers `503` with code `disabled` ("The
+   assistant is switched off…") and the panel shows the contact buttons. Checked on staging 2026-10-09: the
+   gallery's switch took effect on the next request, no restart.
 4. **Turn it back on:** tick **Chat enabled** and Save. Do this only after the cause is understood.
 
 If the admin is unreachable, remove the key: `ssh -t helios "sudo -u uindies nano /home/uindies/shared/.env"`, blank

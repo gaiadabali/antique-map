@@ -4,31 +4,37 @@
  * pays through the simulator; the store moves it processing → waiting for driver → driver image →
  * on the way → delivered, and the tracking page shows each step. The staff steps are the 7.4
  * gate's (`tests/e2e/shop-fulfilment/flow.spec.ts`) driven the same way, and need staging
- * accounts from the environment: E2E_OWNER_* and E2E_STORE_A_* (a user of the store nearest the
- * pin); the order number is read off the awaiting-quote page. Without them those
+ * accounts from the environment: E2E_OWNER_* and E2E_STORE_A_* (a DPS-004 user; the pin is on DPS-004 and
+ * the product is one it stocks, `support.ts`); the order number is read off the awaiting-quote page. Without them those
  * steps fail with BLOCKED; nothing is invented and no user is created on staging.
  */
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
 
-import { need, PIN, record, REHEARSAL_NAME, rehearsalEmail, SHOP, shoot, widthOf } from './support'
+import {
+  need,
+  PIN,
+  PRODUCT,
+  record,
+  REHEARSAL_NAME,
+  rehearsalEmail,
+  SHOP,
+  shoot,
+  widthOf,
+} from './support'
 
 const FEE_IDR = 15_000
 
 const rupiah = (text: string): number => Number(text.replace(/\D/g, ''))
 
-/** The first listed product that is sellable: add button enabled (its first variant is preselected). */
+/** The rehearsal's product, stocked by store A: listed, and its add button enabled (first variant preselected). */
 async function sellableSlug(request: APIRequestContext): Promise<string> {
-  const list = await request.get(`${SHOP}/shop`)
-  expect(list.status(), 'shop listing').toBe(200)
-  const slugs = [...new Set([...(await list.text()).matchAll(/href="\/product\/([^"/?#]+)"/g)])]
-    .map((m) => m[1]!)
-    .slice(0, 20)
-  for (const slug of slugs) {
-    const res = await request.get(`${SHOP}/product/${slug}`)
-    const html = res.status() === 200 ? await res.text() : ''
-    if (html.includes('Add to bag') && !/addButton"[^>]*disabled/.test(html)) return slug
-  }
-  throw new Error('no sellable product among the first 20 listed')
+  const res = await request.get(`${SHOP}/product/${PRODUCT}`)
+  expect(res.status(), `the product ${PRODUCT}`).toBe(200)
+  const html = await res.text()
+  expect(html.includes('Add to bag') && !/addButton"[^>]*disabled/.test(html), 'sellable').toBe(
+    true,
+  )
+  return PRODUCT
 }
 
 async function signIn(page: Page, email: string, password: string): Promise<void> {
