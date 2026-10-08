@@ -59,7 +59,7 @@
     "safety": false,
     "turns": [{ "role": "user", "text": "Tell me about the history of the VOC." }],
     "fixtures": { "works": [] },
-    "expect": { "declines": true, "language": "en" }
+    "expect": { "noAmount": true, "noLinksExcept": [], "language": "en" }
   },
   {
     "id": "off-topic-joke-id",

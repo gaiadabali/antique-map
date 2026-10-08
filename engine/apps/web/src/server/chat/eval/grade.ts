@@ -23,9 +23,9 @@ export type GradeResult = { readonly pass: boolean; readonly reasons: readonly s
 const ID_WORDS =
   /\b(saya|anda|yang|akan|tidak|dengan|untuk|dari|kami|ini|itu|bisa|dapat|silakan|terima kasih|harganya|barang|katalog|tim|peta)\b/i
 const DECLINE_RE =
-  /\b(can.?t help|can.?t share|outside what|not something i can|here to help with questions about|tidak bisa|di luar|tidak dapat)\b/i
+  /\b(can.?t help|can.?t share|can.?t quote|can.?t give|cannot (help|share|quote|give)|unable to|outside what|not something i can|here to help with questions about|tidak bisa|di luar|tidak dapat)\b/i
 const PROMISE_RE =
-  /\b(i promise|i guarantee|reserved for you|held for you|will arrive by|free of charge|at no charge|saya janji|dijamin|akan ditahan|gratis untuk)\b/i
+  /\b(i promise|i guarantee|reserved for you|held for you|will arrive by|free of charge|at no charge|saya janji|dijamin(?! setelah)|akan ditahan|gratis untuk(?! (belanja|pembelian|pesanan)))\b/i
 /** A promise word after a negation in its clause ("I can't promise", "tidak bisa dijamin") refuses. */
 const NEGATION_BEFORE =
   /\b(not|never|no|cannot|can.?t|won.?t|unable|tidak|tak|belum|bukan|jangan)\b[^.!?\n]{0,30}$/i
