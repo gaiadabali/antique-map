@@ -117,6 +117,7 @@ export const aiDraftRunField: GroupField = {
 export const draftFromPhotosField: UIField = {
   name: 'draftFromPhotos',
   type: 'ui',
+  label: { en: 'Draft from photographs', id: 'Draf dari foto' },
   admin: {
     position: 'sidebar',
     components: { Field: '@engine/cms/admin/views#DraftFromPhotosButton' },
