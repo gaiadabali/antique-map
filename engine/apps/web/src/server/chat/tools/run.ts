@@ -75,7 +75,11 @@ function card(kind: ChatCard['kind'], item: Omit<ChatCard, 'kind'>): ChatEvent {
   return { type: 'card', kind, ...item }
 }
 
-async function itemsFor(ids: readonly string[], ctx: ToolContext): Promise<HandoffItem[]> {
+/** The handoff lines for public item ids, looked up through the same published projections. */
+export async function itemsFor(
+  ids: readonly string[],
+  ctx: Pick<ToolContext, 'site' | 'reader' | 'locale' | 't'>,
+): Promise<HandoffItem[]> {
   const items: HandoffItem[] = []
   for (const id of ids) {
     if (ctx.site === 'gallery') {

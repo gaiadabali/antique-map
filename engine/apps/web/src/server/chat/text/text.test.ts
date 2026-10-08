@@ -46,7 +46,12 @@ describe('masking contact details', () => {
     'stock M.1044',
     '300 × 400 mm',
   ])('leaves %s alone', (input) => {
-    expect(maskContactDetails(input)).toEqual({ text: input, email: false, phone: false })
+    expect(maskContactDetails(input)).toEqual({
+      text: input,
+      email: false,
+      phone: false,
+      address: false,
+    })
   })
 })
 

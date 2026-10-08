@@ -269,11 +269,13 @@ describe('the shop', () => {
     const h = harness(script)
     const cookie = await open(h, 'shop')
     const events = await send(h, cookie, 'How much is the batik tote?', 'shop')
-    expect(textOf(events)).toContain('IDR 95,000')
     const card = events.find((e) => e.type === 'card')
     expect(card).toMatchObject({ kind: 'product', id: 'batik-tote', statusLabel: 'In stock' })
     // Formatted by `formatMoney` on the server (with a no-break space), never by the model.
-    expect(card?.type === 'card' && card.priceLabel?.replace(/\s/g, ' ')).toBe('IDR 95,000')
+    const label = card?.type === 'card' ? card.priceLabel : null
+    expect(label?.replace(/\s/g, ' ')).toBe('IDR 95,000')
+    // The model's "IDR 95,000" is shown exactly as the tool's label writes it.
+    expect(textOf(events)).toContain(`The Batik tote is ${label} and in stock.`)
     expect(events.at(-1)).toEqual({ type: 'done', outcome: 'answered' })
   })
 

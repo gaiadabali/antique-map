@@ -71,7 +71,9 @@ describe('an injection in the visitor’s message', () => {
     const { response, events } = await send(h, cookie, ATTACK)
 
     expect(response.status).toBe(200)
-    expect(events.at(-1)).toEqual({ type: 'done', outcome: 'answered' })
+    // The normal behaviour for a price ask on the gallery: price on request and the buttons.
+    expect(events.at(-1)).toEqual({ type: 'done', outcome: 'handoff' })
+    expect(events.some((e) => e.type === 'handoff' && e.channel === 'whatsapp')).toBe(true)
     const first = h.model.answerCalls[0]!
     // The rules and the data frame are in the frozen system prompt…
     const system = JSON.stringify(first.system)
