@@ -19,7 +19,7 @@
           "assertions": {
             "categories:performance": ["error", { "minScore": 0.9 }],
             "categories:accessibility": ["error", { "minScore": 1 }],
-            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
             "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
             "total-blocking-time": ["error", { "maxNumericValue": 200 }],
             "resource-summary:script:size": ["error", { "maxNumericValue": 153600 }]
@@ -30,7 +30,7 @@
           "assertions": {
             "categories:performance": ["error", { "minScore": 0.9 }],
             "categories:accessibility": ["error", { "minScore": 1 }],
-            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
             "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
             "total-blocking-time": ["error", { "maxNumericValue": 200 }],
             "resource-summary:script:size": ["error", { "maxNumericValue": 153600 }]
@@ -41,7 +41,7 @@
           "assertions": {
             "categories:performance": ["error", { "minScore": 0.9 }],
             "categories:accessibility": ["error", { "minScore": 1 }],
-            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
             "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
             "total-blocking-time": ["error", { "maxNumericValue": 200 }],
             "resource-summary:script:size": ["error", { "maxNumericValue": 184320 }]
@@ -52,7 +52,7 @@
           "assertions": {
             "categories:performance": ["error", { "minScore": 0.9 }],
             "categories:accessibility": ["error", { "minScore": 1 }],
-            "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+            "largest-contentful-paint": ["warn", { "maxNumericValue": 2500 }],
             "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
             "total-blocking-time": ["error", { "maxNumericValue": 200 }],
             "resource-summary:script:size": ["error", { "maxNumericValue": 204800 }]

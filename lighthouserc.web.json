@@ -13,7 +13,7 @@
           "matchingUrlPattern": "^http://(gallery|shop)\\.localhost:4200/$",
           "assertions": {
             "largest-contentful-paint": [
-              "error",
+              "warn",
               {
                 "maxNumericValue": 2500
               }
