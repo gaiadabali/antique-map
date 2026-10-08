@@ -4,21 +4,34 @@ import { readFileSync } from 'node:fs'
 export const GALLERY = process.env.E2E_BASE_GALLERY ?? 'https://indies-gallery.gaiada.com'
 export const SHOP = process.env.E2E_BASE_SHOP ?? 'https://old-east-indies.gaiada.com'
 
-export const SAMPLE_CSV =
-  process.env.E2E_PRICE_SAMPLE ??
-  'C:/Users/Hansel/AppData/Local/Temp/claude/c--Users-Hansel-Documents-Hansel-Projects-antique-map/c1ca1b7d-7b4e-4af4-87c8-593512879b44/scratchpad/qa-price-sample.csv'
+/**
+ * The price sample is owner-only data, so it never enters git (DATA.md §2): a file outside the
+ * checkout, made on Helios by the query in docs/gates/review-content.md §How to re-run, named by
+ * `E2E_PRICE_SAMPLE`.
+ */
+export const SAMPLE_CSV = process.env.E2E_PRICE_SAMPLE ?? ''
 
 export type SampleWork = { publicId: number; price: number; status: string; tiled: number }
 
 /** The 70 published works that carry an owner-only asking price (whole USD): `publicId,askingPrice,status,tiledImages`. */
 export function readSample(): SampleWork[] {
+  if (SAMPLE_CSV === '') {
+    throw new Error(
+      'Set E2E_PRICE_SAMPLE to the price sample CSV (outside git; see docs/gates/review-content.md).',
+    )
+  }
   return readFileSync(SAMPLE_CSV, 'utf8')
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter((l) => /^\d+,/.test(l))
     .map((l) => {
       const [publicId, price, status, tiled] = l.split(',')
-      return { publicId: Number(publicId), price: Number(price), status: status!, tiled: Number(tiled) }
+      return {
+        publicId: Number(publicId),
+        price: Number(price),
+        status: status!,
+        tiled: Number(tiled),
+      }
     })
 }
 
@@ -42,7 +55,8 @@ export function figureRegex(n: number): RegExp {
 export function currencyFigureRegex(n: number): RegExp {
   const grouped = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '[,. \u00a0]?')
   return new RegExp(
-    `(?:USD|US\$|\$|IDR|Rp\.?|SGD|S\$|EUR|€|£)\s*${grouped}(?![\d])|(?<![\d])${grouped}\s*(?:USD|dollars?|US\$|IDR|EUR)\b`,
+    // String.raw: a plain template literal would drop the backslashes of \s, \d, \$ and \b.
+    String.raw`(?:USD|US\$|\$|IDR|Rp\.?|SGD|S\$|EUR|€|£)\s*${grouped}(?!\d)|(?<!\d)${grouped}\s*(?:USD|dollars?|US\$|IDR|EUR)\b`,
     'i',
   )
 }
@@ -50,7 +64,9 @@ export function currencyFigureRegex(n: number): RegExp {
 /** The JSON-LD blocks of an HTML document, parsed. */
 export function jsonLdBlocks(html: string): unknown[] {
   const out: unknown[] = []
-  for (const m of html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+  for (const m of html.matchAll(
+    /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
+  )) {
     out.push(JSON.parse(m[1]!))
   }
   return out

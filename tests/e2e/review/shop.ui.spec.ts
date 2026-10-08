@@ -13,10 +13,12 @@ const INSTAGRAM = ['exotic-bali-1930s', 'balinese-legong-dancer-1925']
 /** The other two Instagram designs: Knott's dancer (label on its lead) and the Lombok turtle (its lead is the plain artwork; its mock-up pictures carry the label on the product page). */
 const INSTAGRAM_OTHER = ['balinese-dancer-photograph-c-1927', 'lombok-turtle-snorkelling']
 const CATALOGUE = ['bali-island-road-map-1937']
-const norm = (s: string) => s.replace(/ /g, ' ')
+const norm = (s: string) => s.replace(/\u00a0/g, ' ')
 
 for (const pageNo of [1, 2]) {
-  test(`/shop page ${pageNo}: 24 real designs, images with srcset load as webp`, async ({ page }, testInfo) => {
+  test(`/shop page ${pageNo}: 24 real designs, images with srcset load as webp`, async ({
+    page,
+  }, testInfo) => {
     const res = await page.goto(`${SHOP}/shop${pageNo === 1 ? '' : `?page=${pageNo}`}`, {
       waitUntil: 'load',
     })
@@ -29,9 +31,15 @@ for (const pageNo of [1, 2]) {
     const images = cards.locator('img')
     expect(await images.count()).toBe(24)
     const info = await images.evaluateAll((els) =>
-      els.map((e) => ({ src: (e as HTMLImageElement).src, srcset: (e as HTMLImageElement).srcset })),
+      els.map((e) => ({
+        src: (e as HTMLImageElement).src,
+        srcset: (e as HTMLImageElement).srcset,
+      })),
     )
-    expect(info.filter((i) => !i.srcset.includes(' 320w')), 'every card has a srcset').toEqual([])
+    expect(
+      info.filter((i) => !i.srcset.includes(' 320w')),
+      'every card has a srcset',
+    ).toEqual([])
     // Each lazy image, scrolled into view, decodes.
     for (let i = 0; i < 24; i++) {
       const img = images.nth(i)
@@ -47,10 +55,13 @@ for (const pageNo of [1, 2]) {
     for (const { src } of info) {
       const r = await page.request.get(src)
       const type = r.headers()['content-type'] ?? ''
-      if (r.status() !== 200 || !type.startsWith('image/webp')) statuses.push(`${src} ${r.status()} ${type}`)
+      if (r.status() !== 200 || !type.startsWith('image/webp'))
+        statuses.push(`${src} ${r.status()} ${type}`)
     }
     expect(statuses, 'derivatives 200 image/webp').toEqual([])
-    console.log(`[${testInfo.project.name}] /shop page ${pageNo}: 24 cards, 24 images decoded, 24 derivatives 200 image/webp, all with srcset`)
+    console.log(
+      `[${testInfo.project.name}] /shop page ${pageNo}: 24 cards, 24 images decoded, 24 derivatives 200 image/webp, all with srcset`,
+    )
   })
 }
 
@@ -67,11 +78,16 @@ async function openProduct(page: Page, slug: string) {
   const first = main.locator('img[srcset]').first()
   await first.scrollIntoViewIfNeeded()
   await expect
-    .poll(() => first.evaluate((e: HTMLImageElement) => e.complete && e.naturalWidth), { timeout: 20_000 })
+    .poll(() => first.evaluate((e: HTMLImageElement) => e.complete && e.naturalWidth), {
+      timeout: 20_000,
+    })
     .toBeGreaterThan(0)
   await page.waitForLoadState('networkidle')
   expect(imgs.length, 'derivative requests').toBeGreaterThan(0)
-  expect(imgs.filter((i) => i.status !== 200 || !i.type.startsWith('image/webp')), 'derivatives 200 webp').toEqual([])
+  expect(
+    imgs.filter((i) => i.status !== 200 || !i.type.startsWith('image/webp')),
+    'derivatives 200 webp',
+  ).toEqual([])
   return main
 }
 
@@ -85,7 +101,9 @@ async function expectVariants(page: Page, main: ReturnType<Page['locator']>) {
 }
 
 for (const slug of CATALOGUE) {
-  test(`catalogue design ${slug}: pictures load, variants and prices, no mock-up label`, async ({ page }) => {
+  test(`catalogue design ${slug}: pictures load, variants and prices, no mock-up label`, async ({
+    page,
+  }) => {
     const main = await openProduct(page, slug)
     await expectVariants(page, main)
     expect(await page.content(), 'no mock-up label').not.toContain('Digital mockup')
@@ -93,12 +111,17 @@ for (const slug of CATALOGUE) {
   })
 }
 
-test('two more catalogue designs from /shop page 2: pictures, variants, no mock-up label', async ({ page }) => {
+test('two more catalogue designs from /shop page 2: pictures, variants, no mock-up label', async ({
+  page,
+}) => {
   await page.goto(`${SHOP}/shop?page=2`, { waitUntil: 'load' })
-  const hrefs = await page.locator('a[href^="/product/"][class*="card"]').evaluateAll((els) =>
-    els.map((e) => (e as HTMLAnchorElement).getAttribute('href')!),
-  )
-  const slugs = hrefs.map((h) => h.replace('/product/', '')).filter((s) => ![...INSTAGRAM, ...INSTAGRAM_OTHER].includes(s)).slice(0, 2)
+  const hrefs = await page
+    .locator('a[href^="/product/"][class*="card"]')
+    .evaluateAll((els) => els.map((e) => (e as HTMLAnchorElement).getAttribute('href')!))
+  const slugs = hrefs
+    .map((h) => h.replace('/product/', ''))
+    .filter((s) => ![...INSTAGRAM, ...INSTAGRAM_OTHER].includes(s))
+    .slice(0, 2)
   console.log(`catalogue designs opened from /shop page 2: ${slugs.join(', ')}`)
   expect(slugs).toHaveLength(2)
   for (const slug of slugs) {
@@ -109,7 +132,9 @@ test('two more catalogue designs from /shop page 2: pictures, variants, no mock-
 })
 
 for (const slug of [...INSTAGRAM, ...INSTAGRAM_OTHER]) {
-  test(`Instagram product ${slug}: pictures load, variants and prices, "Digital mockup" label`, async ({ page }) => {
+  test(`Instagram product ${slug}: pictures load, variants and prices, "Digital mockup" label`, async ({
+    page,
+  }) => {
     const main = await openProduct(page, slug)
     await expectVariants(page, main)
     await expect(main.getByText('Digital mockup').first()).toBeVisible()

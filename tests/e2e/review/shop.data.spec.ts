@@ -18,10 +18,14 @@ test('/shop lists 156 distinct published designs over every page, none a mock', 
       const html = await res.text()
       if (page === 1) {
         stated = Number(/([\d,]+) products/.exec(html)![1]!.replace(/,/g, ''))
-        last = Math.max(...[...html.matchAll(/href="\/shop\?page=(\d+)"/g)].map((m) => Number(m[1])))
+        last = Math.max(
+          ...[...html.matchAll(/href="\/shop\?page=(\d+)"/g)].map((m) => Number(m[1])),
+        )
       }
       expect(html, `/shop page ${page} has no mock marker`).not.toMatch(MOCK)
-      for (const m of html.matchAll(/<a href="\/product\/([^"]+)" class="browse-module__[^"]*card"/g))
+      for (const m of html.matchAll(
+        /<a href="\/product\/([^"]+)" class="browse-module__[^"]*card"/g,
+      ))
         slugs.add(m[1]!)
       await pause(150)
     }

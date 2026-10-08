@@ -20,7 +20,12 @@ const itemUrl = (id: number, locale: 'en' | 'id') =>
   `${GALLERY}${locale === 'en' ? '/product/' : '/id/produk/'}${id}`
 
 test('the sample is the 70 priced works', () => {
-  console.log(`year-like prices (standalone check not applicable): ${sample.filter((w) => YEAR_LIKE(w.price)).map((w) => `${w.publicId}=${w.price}`).join(' ')}`)
+  console.log(
+    `year-like prices (standalone check not applicable): ${sample
+      .filter((w) => YEAR_LIKE(w.price))
+      .map((w) => `${w.publicId}=${w.price}`)
+      .join(' ')}`,
+  )
   expect(sample).toHaveLength(70)
   expect(Math.max(...sample.map((s) => s.price))).toBe(280000)
 })

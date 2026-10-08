@@ -7,9 +7,12 @@ import { GALLERY, SHOP } from './support'
 
 const OUT = 'tests/e2e/review/__screens__'
 
-test('screenshots: gallery browse, a zoomed item, shop listing, an Instagram product', async ({ page }, testInfo) => {
+test('screenshots: gallery browse, a zoomed item, shop listing, an Instagram product', async ({
+  page,
+}, testInfo) => {
   const w = testInfo.project.name === 'mobile' ? 390 : 1280
-  const shot = (name: string) => page.screenshot({ path: `${OUT}/${name}-${w}.png`, fullPage: false })
+  const shot = (name: string) =>
+    page.screenshot({ path: `${OUT}/${name}-${w}.png`, fullPage: false })
 
   await page.goto(`${GALLERY}/browse`, { waitUntil: 'load' })
   await expect(page.getByText('1,513 works').first()).toBeAttached()
@@ -48,6 +51,10 @@ for (const [name, url] of [
     console.log(
       `[${testInfo.project.name}] axe ${name}: ${violations.length} violations, ${bad.length} serious/critical ${JSON.stringify(violations.map((v) => `${v.id}:${v.impact}`))}`,
     )
-    expect(bad.map((v) => `${v.id} (${v.impact}): ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([])
+    expect(
+      bad.map(
+        (v) => `${v.id} (${v.impact}): ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`,
+      ),
+    ).toEqual([])
   })
 }
