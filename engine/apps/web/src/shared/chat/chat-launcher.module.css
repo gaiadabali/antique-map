@@ -1,0 +1,71 @@
+/*
+ * The floating chat (DESIGN-SYSTEM.md §5 "Chat launcher and panel": a sheet on a phone, a side panel
+ * at 1280). The launcher floats at the bottom right of every page; open, the panel is fixed to the
+ * viewport, never laid out inside the header. Layering: above the sticky header (100), below the
+ * mobile menu sheet (9999) and toasts (1000).
+ */
+.launcher {
+  position: fixed;
+  right: calc(var(--space-5) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font: var(--text-small);
+  color: var(--color-accent-contrast);
+  background: var(--color-accent);
+  border: none;
+  border-radius: 999px;
+  box-shadow: var(--shadow-header);
+  cursor: pointer;
+}
+
+.launcher:hover {
+  filter: brightness(1.08);
+}
+
+.launcher:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* A phone sheet: the whole viewport, so nothing is clipped and the composer stays reachable. */
+.panel {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel > div {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* From tablet up: a side panel at the bottom right, its own height, scrolling inside its log. */
+@media (min-width: 768px) {
+  .panel {
+    inset: auto calc(var(--space-5) + env(safe-area-inset-right, 0px))
+      calc(var(--space-5) + env(safe-area-inset-bottom, 0px)) auto;
+    width: min(420px, calc(100vw - 2 * var(--space-5)));
+    height: min(640px, calc(100dvh - 2 * var(--space-5)));
+    box-shadow: var(--shadow-header);
+  }
+}
+
+/* On a phone, never cover the shop's sticky add-to-cart row (AI.md §2.2). */
+@media (max-width: 1024px) {
+  :global(body:has([data-chat-clear])) .launcher {
+    bottom: calc(var(--space-5) + 4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}

@@ -48,6 +48,8 @@ export function ChatPanel({
   const [session, setSession] = useState<'starting' | 'ready' | 'failed'>(
     turnstileSiteKey === null ? 'failed' : 'starting',
   )
+  // The server's own words when a session cannot start (e.g. "rate_limited"); else the generic line.
+  const [sessionError, setSessionError] = useState<string | null>(null)
   const [maxChars, setMaxChars] = useState(DEFAULT_MAX_CHARS)
   const [state, dispatch] = useReducer(chatReducer, INITIAL_CHAT_STATE)
   const [composer, setComposer] = useState('')
@@ -76,6 +78,7 @@ export function ChatPanel({
         setSession('ready')
         if (!result.resumed) setMaxChars(result.limits.maxMessageChars)
       } else {
+        setSessionError(result.message.trim() || null)
         setSession('failed')
       }
       askedToken.current = false
@@ -177,7 +180,7 @@ export function ChatPanel({
           <p>{text.leadSuccess.replace('{reference}', state.leadReference)}</p>
         )}
         {errorText !== null && <p role="alert">{errorText}</p>}
-        {session === 'failed' && <p role="alert">{text.networkError}</p>}
+        {session === 'failed' && <p role="alert">{sessionError ?? text.networkError}</p>}
       </ChatShell>
       {turnstileSiteKey !== null && session === 'starting' && (
         <ChatTurnstile siteKey={turnstileSiteKey} onToken={onToken} />

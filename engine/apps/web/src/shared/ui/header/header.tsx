@@ -68,9 +68,11 @@ export function Header({
                 <span className={styles.cross} aria-hidden="true" />
               </button>
             </div>
-            <nav className={styles.mobileNav} onClick={close}>
+            {/* A plain box: `nav` is already the named landmark; a second <nav> around it fails
+                axe's landmark-unique. A link click inside it closes the drawer. */}
+            <div className={styles.mobileNav} onClick={close}>
               {nav}
-            </nav>
+            </div>
             <div className={styles.drawerActions}>{actions}</div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 /**
  * The designed shell for both sites (the design team's drawings, phase 4.3.a): a header with the
- * logo, the site's primary navigation, the language switcher keeping the current path and the
- * chat entry point (`ChatLauncher`, 8.2 — the panel's own JavaScript loads only once it is
+ * logo, the site's primary navigation and the language switcher keeping the current path; the
+ * floating chat button (`ChatLauncher`, 8.2 — the panel's own JavaScript loads only once it is
  * opened); and a footer with contact, hours, the sister-site bridge and the legal links. Built
  * from the shared UI components and the tokens (`shell.module.css`); every word comes from the
  * site's lexicon, except the chat panel's own words, resolved by `chatPanelText()` (8.2).
@@ -68,25 +68,21 @@ export async function SiteShell({ shell, t, children }: Props) {
         openLabel={t('shell.menu.open')}
         closeLabel={t('shell.menu.close')}
         menuLabel={t('shell.menu')}
-        actions={
-          <>
-            <LocaleSwitcher shell={shell} t={t} />
-            <ChatLauncher
-              label={t('shell.chat')}
-              site={shell.site.key}
-              locale={locale}
-              origin={siteOrigin(shell.site.key) ?? ''}
-              turnstileSiteKey={process.env.TURNSTILE_SITE_KEY?.trim() || null}
-              text={chatText}
-              suggestions={suggestedStarts(chatText, shell.site.key)}
-            />
-          </>
-        }
+        actions={<LocaleSwitcher shell={shell} t={t} />}
       />
       <main id="main" className="site-main">
         {children}
       </main>
       <SiteFooter shell={shell} settings={settings} t={t} />
+      <ChatLauncher
+        label={t('shell.chat')}
+        site={shell.site.key}
+        locale={locale}
+        origin={siteOrigin(shell.site.key) ?? ''}
+        turnstileSiteKey={process.env.TURNSTILE_SITE_KEY?.trim() || null}
+        text={chatText}
+        suggestions={suggestedStarts(chatText, shell.site.key)}
+      />
     </ChatPageProvider>
   )
 }
