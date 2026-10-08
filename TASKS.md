@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 3/6 | 17/25 | 1 | `███████░░░`  68% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 4/6 | 18/25 | 1 | `███████░░░`  72% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **45/52** | **192/214** | **8** | `█████████░`  90% |
+| **All** | 11 phases | | | **46/52** | **193/214** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 10·W1 | 10.2 Performance and accessibility pass | senior-fe | `worktree-agent-aa631d14b8accce70` | 2026-10-08 | |
 | 10·W2 | 10.3 The staging rehearsal and the restore drill | devops | `worktree-agent-a76815f4e568eb296` | 2026-10-08 | |
 
 ## Decisions for the owner
@@ -722,14 +721,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.1.d fix the findings in the owning lane (small ones here, larger ones as new subtasks) and re-run
   - [x] 10.1.e **Check:** `docs/gates/security.md` lists every checklist item with evidence; the access sweep passes; a planted vulnerability from each of four classes (IDOR on an order, a webhook replay, an XSS in a lead note, an upload with a script) is caught.
 
-- [ ] **10.2 Performance and accessibility pass** · needs: phase 7, phase 8, phase 9 — 🔄 10·W1
+- [x] **10.2 Performance and accessibility pass** · needs: phase 7, phase 8, phase 9 — ✅ 2026-10-09 03501ba9
   - **Lane** DSG + QA · **Agent** senior-fe, qa · **Wave** W1
   - **Owns** `docs/gates/performance.md`, `lighthouserc.json`, `tests/e2e/a11y/**`
   - **Read** DESIGN-SYSTEM.md §Budgets, Requirement 12
   - _Requirements: 12.3, 12.4_
   - [x] 10.2.a Lighthouse mobile on the listing, item, home, product, bag, checkout and tracking pages of both sites; fix what falls short
   - [x] 10.2.b axe plus a keyboard pass and a screen-reader pass on the purchase path and the chat
-  - [ ] 10.2.c **Check:** `docs/gates/performance.md` shows at least 90 performance and 100 accessibility for the item and product pages, no serious axe finding anywhere, and the pass notes for keyboard and screen reader.
+  - [x] 10.2.c **Check:** `docs/gates/performance.md` shows at least 90 performance and 100 accessibility for the item and product pages, no serious axe finding anywhere, and the pass notes for keyboard and screen reader.
 
 - [ ] **10.3 The staging rehearsal and the restore drill** · needs: 10.1, 10.2 — 🔄 10·W2
   - **Lane** OPS + QA · **Agent** devops, qa · **Wave** W2
@@ -841,6 +840,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **10.2 closed** (`03501ba9`; Sonnet built and measured, orchestrator reviewed). Staging release `production-20261008T143718Z-e8597fd7` (healthy, smoke passed): Lighthouse mobile item **96** / product **98** perf, **100** a11y on every page; axe 0 findings in 8 scans (item, product, bag, checkout × 390/1280); keyboard and screen-reader notes in `docs/gates/performance.md`. Fixed on the way: AVIF through `<picture>` with WebP fallback, derivative ladders on the gallery's featured works and the bag, the italic face no longer preloaded (gallery home 2,042 → 249 KiB, shop listing 1,845 → 644 KiB), the first-row cards eager; the invisible skip link, five checkout pin fields sharing one name, **typed coordinates losing their decimal point** (the server refused the pin), a form nested in the checkout form, the bag total covering Update at 390 px, the variant group's name. **Decided (a):** LCP 2.5 s is judged by the Bali phone check; simulated LCP (2.4–2.8 s on staging) is advisory and CI warns on it (`docs/DESIGN-SYSTEM.md` §9).
 
 - 2026-10-08 — ✅ **10.1 closed** (`9a6909b9`; Sonnet built, orchestrator reviewed). `docs/gates/security.md` walks every SECURITY.md item with evidence; `tests/security/` (523 tests on Postgres 16): the access sweep, 423 cells (every collection × owner/editor/store A/store B/anonymous × CRUD against §2.2); four planted vulnerabilities each caught and reverted (IDOR on an order, webhook replay, XSS in a lead note, a script upload; `tests/security/plants/run-plants.mjs`). Fixed: **F-01** the per-request CSP (nonce, strict-dynamic; a checkout policy for Maps; the admin's own) and the static headers in `next.config.ts` (0 violations in Chromium on ~20 pages incl. the admin, checkout and the zoom viewer; the media origin added to `connect-src` for IIIF); **F-02** per-address limits: sign-in 10/15 min, forgot+reset 3/h, checkout 10/h (`checkout.problem.rate-limited`, en+id); **F-05** limiters key on the last X-Forwarded-For; **F-06** geocode 30/min, leads 5/h; **F-07** geocoder 5 s timeout, 64 KB cap, no redirects, Turnstile 5 s; **F-03** passwords ≥ 12 and not common (en+id); **F-04** sessions 8 h; **F-08** a misleading log line (no address was logged); **F-10** explicit kill-switch read; **F-11** next 16.3.8, source-map-js 1.2.2, `pnpm audit --prod` high green — braces GHSA-vfj7-8cjw-p6xm **accepted until 2026-11-02** (no fixed release; build/dev only; owner to confirm); **F-09/F-12** SECURITY.md amended to the code (8 h, 90 MiB masters, 15-min staff URLs, sealed tracking token accepted). **Open:** F-13 (CI workflows never ran on origin; remote CI red since 10-02 — needs a push), F-14 (no central log redactor), F-15 (staging: `x-middleware-rewrite` and the public `/api/health` detail), a reset link bypasses the password policy (Payload writes the hash without hooks), Snap under COOP same-origin and the Maps picker unverified (no sandbox, no browser key), a request without X-Forwarded-For is not counted (fail-open off nginx, by design). Also red on main and fixed on the way: prettier on two 10.1 files; the partnership rate test (10 → 5/h). Six db test files red on main with a database set (hidden by `pnpm verify`'s skip): Sonnet on `w/10.dbtests`.
 
