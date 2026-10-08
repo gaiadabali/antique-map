@@ -24,15 +24,20 @@ nothing a visitor needs (buying, enquiring) depends on the chat.
 ### 2.1 One turn, server side
 
 1. **Gate** — kill switch, daily budget, session cap, rate limits, Turnstile-bound session, input length (§3).
-2. **Mask** — email addresses and phone numbers in the visitor's text are replaced with `[email shared]` /
-   `[phone shared]` before the text reaches the model or the transcript; the chat answers by offering the
-   lead form (§4).
+2. **Mask** — email addresses, phone numbers and street addresses in the visitor's text are replaced with
+   `[email shared]` / `[phone shared]` / `[address shared]` before the text reaches the model or the
+   transcript; the **server** then shows the lead form (§4) if the model did not ask for it.
 3. **Classify** — `AI_CLASSIFY_MODEL`, no thinking, structured output, ~256 output tokens max, one label:
    `browse · item_question · price_request · authenticity_valuation · sell_to_us · partnership ·
    order_status · delivery · off_topic · injection_attempt · abuse`. The label is logged and routes:
    `abuse` gets a canned reply without a main-model call; `authenticity_valuation`, `sell_to_us`,
    `partnership` and `order_status` make the server **append a handoff card itself**, whatever the model says.
-   The classifier is a router and a log, never the security boundary.
+   The classifier is a router and a log, never the security boundary. The server also reads the message's own
+   words (English and Indonesian patterns, `turn/asks.ts`): a deal, discount, hold, promise, delivery-date,
+   bulk or visit ask — and on the gallery any price or value ask — gets the card whatever the label, and so
+   does a reply that itself offers WhatsApp or email. A server-built card carries the item the chat was
+   opened from. (Added after the 8.4 live run, where the label and the model's tool choice left visitors
+   with an offer and no button.)
 4. **Answer** — `AI_CHAT_MODEL`, streaming, tools with `strict: true` and `tool_choice: auto`. Request order is
    stable for prompt caching: tools → system prompt (frozen per site and locale, no timestamps, cached) →
    the conversation. Per-turn operator notes (the classifier's label, "a handoff is required", "budget
@@ -165,7 +170,7 @@ Every block is recorded on the session (`outcome: blocked`, the rule that fired)
 
 ### 3.4 Personal data
 
-Contact details are masked before the model (§2.1); the lead form sends them straight to the server. The
+Contact details (email, phone, street address) are masked before the model (§2.1); the lead form sends them straight to the server. The
 transcript stores the masked text, a daily-salted hash of the IP (never the address), the Turnstile result, the
 classifier labels, usage and outcome. `chat-sessions` are deleted **30 days** after their last message
 (`Open:` owner and counsel) by a daily job; a session linked to a lead keeps only the lead's summary after that.
