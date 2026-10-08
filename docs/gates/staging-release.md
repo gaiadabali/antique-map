@@ -116,6 +116,9 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 | `production-20261007T051812Z-d77cb78` | d77cb78 (7ede76c1: lead image CORS mode) | none new (5 = 5)                 | healthy, try 1; smoke below |
 | `production-20261007T075619Z-643bffa` | 643bffa (dfce7238, ccedbea8, 8.4b)       | none new (5 = 5)                 | healthy, try 1; smoke below |
 | `production-20261008T095054Z-7733d424` | 7733d424 (10.1: CSP, headers, limits; next 16.3.8; 10.5) | none new (6 = 6)        | healthy; smoke and headers below |
+| `production-20261008T143718Z-e8597fd7` | e8597fd7 (10.2: AVIF `<picture>`, ladders, italic not preloaded, checkout pin fixes; LCP warns in CI) | none new (6 = 6) | healthy; smoke below |
+
+On `e8597fd7` the shop listing and the gallery home and browse serve `<source type="image/avif">`; 24 sampled AVIF rungs 200 (`image/avif`).
 
 Smoke, every release: step 6 passed (pages 200; derivative and `info.json` 200 with ACAO; `uploads/x` 403). On
 `ec9cea9` the sold works end their meta description "· Sold". `7ede76c1` failed `next build`'s typecheck (nothing
