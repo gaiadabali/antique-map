@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 13/16 | 0 | `████████░░`  81% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/6 | 0/25 | 1 | `░░░░░░░░░░`   0% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 0/6 | 1/25 | 1 | `░░░░░░░░░░`   4% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **39/52** | **172/214** | **8** | `████████░░`  80% |
+| **All** | 11 phases | | | **39/52** | **173/214** | **8** | `████████░░`  81% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -766,7 +766,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/seed/{gallery,catalogue}/**`, `engine/packages/cms/src/seed/{run,cli,seed.db.test}.ts`, `docs/DATA.md`
   - **Read** DATA.md §2–§5 and §8, CONTENT-MODEL.md §9, the 2026-10-08 entries in **Log**
   - _Requirements: 10.3_
-  - [ ] 10.6.a the gallery seed carries each record's old USD price into the owner-only `askingPrice` (whole dollars); empty or review prices stay blank; no price in any public projection, and an editor never reads it
+  - [x] 10.6.a the gallery seed carries each record's old USD price into the owner-only `askingPrice` (whole dollars); empty or review prices stay blank; no price in any public projection, and an editor never reads it
   - [ ] 10.6.b the full gallery on staging: the 1,823 crawled records and their 2,289 photographs, the derivatives and tiles made on the workstation first, then loaded and published through the publish checks
   - [ ] 10.6.c the shop's designs from the owner's six catalogue PDFs (Linktree → Drive, May 2024): each design's picture, title, year, history text and design code, in English and Indonesian, deduplicated across catalogues
   - [ ] 10.6.d @oldeastindiesart's Instagram posts read for their pictures, captions and prices (product types, sizes, prices) to complete 10.6.c's products
