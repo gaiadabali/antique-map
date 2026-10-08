@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 1/6 | 7/25 | 1 | `███░░░░░░░`  28% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 1/6 | 8/25 | 1 | `███░░░░░░░`  32% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **43/52** | **182/214** | **8** | `█████████░`  85% |
+| **All** | 11 phases | | | **43/52** | **183/214** | **8** | `█████████░`  86% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -719,7 +719,7 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 11.2, 11.3, 11.4_
   - [ ] 10.1.a run every item of SECURITY.md's checklists against staging and record pass or finding: sign-in lockout, session lifetime, headers and CSP, CORS and CSRF, uploads, signed URLs, tracking tokens, webhooks, rate limits, secrets, logs without personal data
   - [ ] 10.1.b `pnpm audit --prod`, the secret scan and CodeQL are green; dependency pins reviewed
-  - [ ] 10.1.c an access-control test sweep: every collection × role × operation against the table in SECURITY.md §2.2
+  - [x] 10.1.c an access-control test sweep: every collection × role × operation against the table in SECURITY.md §2.2
   - [ ] 10.1.d fix the findings in the owning lane (small ones here, larger ones as new subtasks) and re-run
   - [ ] 10.1.e **Check:** `docs/gates/security.md` lists every checklist item with evidence; the access sweep passes; a planted vulnerability from each of four classes (IDOR on an order, a webhook replay, an XSS in a lead note, an upload with a script) is caught.
 
