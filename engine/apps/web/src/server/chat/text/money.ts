@@ -109,3 +109,27 @@ export function rupiahOfLabel(label: string): number | null {
   const [first] = amountsIn(label)
   return first ?? null
 }
+
+/**
+ * The shop's amounts in the one format its labels use: a model that writes "IDR 350,000" for the
+ * tool's "Rp 350.000" states the same allowed amount, so the sentence is rewritten to the label's
+ * form rather than shown in two formats. Amounts not in `allowed` are left for the check to block.
+ */
+export function canonicalAmounts(
+  text: string,
+  allowed: ReadonlySet<number>,
+  format: (rupiah: number) => string,
+): string {
+  return text.replace(
+    AMOUNT,
+    (span, currency, number, magnitude, bareNumber, bareMagnitude, bareCurrency) => {
+      let rupiah: number | null = null
+      if (currency !== undefined) {
+        if (/^(?:rp\.?|idr)$/i.test(String(currency).trim())) rupiah = rupiahOf(number, magnitude)
+      } else if (bareNumber !== undefined && (bareMagnitude !== undefined || bareCurrency)) {
+        rupiah = rupiahOf(bareNumber, bareMagnitude)
+      }
+      return rupiah !== null && allowed.has(rupiah) ? format(rupiah) : span
+    },
+  )
+}

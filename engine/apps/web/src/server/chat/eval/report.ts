@@ -18,6 +18,10 @@ export type CaseResult = {
   readonly tokensIn: number
   readonly tokensOut: number
   readonly costUsd: number
+  /** The reply's text, kept on a failed case so a reader can audit the grader's verdict. */
+  readonly reply?: string
+  /** Set when the live judge accepted a decline the phrase list did not recognise. */
+  readonly judged?: 'declined'
 }
 
 export type EvalReport = {

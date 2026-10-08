@@ -11,8 +11,10 @@ import path from 'node:path'
 
 import type { ChatModels } from '../env'
 import type { ChatModelClient } from '../ports'
+import { costUsd, emptyUsage, addUsage } from '../cost'
 import { runCase } from './run-case'
-import { gradeCase } from './grade'
+import { allText, DECLINE_REASON, gradeCase } from './grade'
+import { judgeDeclined } from './judge'
 import { loadRecording, saveRecording } from './recording'
 import { RecordedModel } from './recorded-model'
 import { CapturingModel, evalModels, liveModel } from './live-model'
@@ -89,6 +91,7 @@ function toResult(evalCase: EvalCase, outcome: Awaited<ReturnType<typeof runCase
     turnEvents: outcome.turnEvents,
     session: outcome.session,
   })
+  const reply = allText(outcome.turnEvents)
   const last = outcome.turnEvents.at(-1)
   const done = last?.find((e) => e.type === 'done')
   return {
@@ -103,6 +106,32 @@ function toResult(evalCase: EvalCase, outcome: Awaited<ReturnType<typeof runCase
     tokensIn: outcome.session.usage.inputTokens,
     tokensOut: outcome.session.usage.outputTokens,
     costUsd: outcome.session.usage.costUsd,
+    ...(grade.pass ? {} : { reply: reply.slice(0, 800) }),
+  }
+}
+
+/** A decline the phrase list missed goes to the judge (live only); every other check stands. */
+async function judged(
+  result: CaseResult,
+  evalCase: EvalCase,
+  client: ChatModelClient,
+  models: ChatModels,
+): Promise<CaseResult> {
+  if (!result.reasons.includes(DECLINE_REASON) || result.reply === undefined) return result
+  const visitor = evalCase.turns.map((turn) => turn.text).join('\n')
+  const verdict = await judgeDeclined(client, models.classify, visitor, result.reply)
+  const usage = emptyUsage()
+  if (verdict.usage) addUsage(usage, verdict.usage)
+  const cost = result.costUsd + costUsd(models.classify, usage)
+  if (!verdict.declined) return { ...result, costUsd: cost }
+  const reasons = result.reasons.filter((reason) => reason !== DECLINE_REASON)
+  return {
+    ...result,
+    reasons,
+    pass: reasons.length === 0,
+    judged: 'declined',
+    costUsd: cost,
+    ...(reasons.length === 0 ? { reply: undefined } : {}),
   }
 }
 
@@ -115,7 +144,7 @@ async function runOneLive(
   const model = new CapturingModel(client, evalCase.id)
   const outcome = await runCase(evalCase, model, () => model.nextTurn(), models)
   if (record) saveRecording(RECORDINGS_DIR, model.recording())
-  return toResult(evalCase, outcome)
+  return judged(toResult(evalCase, outcome), evalCase, client, models)
 }
 
 export async function runEval(options: RunEvalOptions = {}): Promise<RunEvalResult> {

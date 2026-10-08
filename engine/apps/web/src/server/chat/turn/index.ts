@@ -7,32 +7,40 @@
 import 'server-only'
 
 import { siteOrigin } from '@engine/config/sites'
+import { formatMoney } from '@engine/i18n'
 import type Anthropic from '@anthropic-ai/sdk'
 
 import { classify, requiresHandoff } from '../classify'
 import type { ChatDeps } from '../context'
 import { addUsage, costUsd, emptyUsage, inputTotal } from '../cost'
 import { CHAT_LIMITS, wibDay } from '../env'
-import { chatCopy, type ChatCopy } from '../lexicon'
+import { chatCopy } from '../lexicon'
 import { operatorNote, systemPromptFor } from '../prompt'
 import { maskContactDetails } from '../text/mask'
 import { rupiahOfLabel } from '../text/money'
 import { checkWholeMessage, type CheckContext } from '../text/output-check'
 import { defuseVisitorText } from '../text/untrusted'
-import { buildHandoffs } from '../tools/handoff'
-import type { HandoffTopic } from '../tools/schemas'
 import type {
   ChatEvent,
   ChatSessionRecord,
   ChatSettings,
-  ClassifierLabel,
   SessionOutcome,
   SiteKey,
   SiteLocale,
   TurnOutcome,
 } from '../types'
 import { answer } from './answer'
+import { askedHandoff, replyOffersHandoff } from './asks'
 import { overBudget, RECHALLENGE_LABEL, sessionOverCap } from './gates'
+import {
+  cardItemIds,
+  handoffEvents,
+  historyOf,
+  LABEL_TOPICS,
+  leadFormEvent,
+  shopAmounts,
+  type ServerCardContext,
+} from './support'
 
 export type TurnInput = {
   readonly deps: ChatDeps
@@ -48,48 +56,14 @@ export type TurnInput = {
   readonly emit: (event: ChatEvent) => void
 }
 
-const LABEL_TOPICS: Partial<Record<ClassifierLabel, HandoffTopic>> = {
-  authenticity_valuation: 'authenticity',
-  sell_to_us: 'sell_to_us',
-  partnership: 'partnership',
-  order_status: 'order',
-  price_request: 'price',
-  delivery: 'delivery',
-}
-
-/** The history the model sees: the stored (masked) transcript as plain turns, append-only. */
-export function historyOf(session: ChatSessionRecord): Anthropic.MessageParam[] {
-  return session.transcript.map((entry) => ({
-    role: entry.role,
-    content: entry.role === 'user' ? defuseVisitorText(entry.text) : entry.text,
-  }))
-}
-
-/** Amounts the shop may state: its settings and every price label tools returned this session. */
-function shopAmounts(session: ChatSessionRecord, settings: ChatSettings): Set<number> {
-  const amounts = new Set<number>()
-  for (const band of settings.delivery?.bands ?? []) amounts.add(band.feeIdr)
-  if (settings.delivery?.freeOverIdr) amounts.add(settings.delivery.freeOverIdr)
-  for (const label of session.labels) {
-    if (label.startsWith('price:')) amounts.add(Number(label.slice(6)))
-  }
-  return amounts
-}
-
-function handoffEvents(input: TurnInput, t: ChatCopy, topic: HandoffTopic): ChatEvent[] {
-  return buildHandoffs({
-    site: input.site,
-    settings: input.settings,
-    t,
-    topic,
-    items: [],
-    summary: null,
-  }).map((handoff) => ({ type: 'handoff', ...handoff }))
-}
-
 export async function runTurn(input: TurnInput): Promise<void> {
-  const { deps, session, settings, site, locale, emit } = input
+  const { deps, session, settings, site, locale } = input
   const t = chatCopy(locale, site)
+  let leadFormShown = false
+  const emit = (event: ChatEvent) => {
+    if (event.type === 'lead_form') leadFormShown = true
+    input.emit(event)
+  }
   const now = deps.now()
   const day = wibDay(now)
   const masked = maskContactDetails(input.text)
@@ -98,9 +72,20 @@ export async function runTurn(input: TurnInput): Promise<void> {
   const labels: string[] = []
   const itemIds = new Set<string>()
   const amounts = shopAmounts(session, settings)
+  const labelOf = new Map<number, string>()
   let text = ''
   let outcome: SessionOutcome | null = null
   let done: TurnOutcome = 'answered'
+
+  const cards = (): ServerCardContext => ({
+    deps,
+    site,
+    locale,
+    settings,
+    t,
+    sessionId: session.id,
+    itemIds: cardItemIds(input.viewingItemId, itemIds),
+  })
 
   const say = (line: string) => {
     text += text === '' ? line : `\n\n${line}`
@@ -128,19 +113,23 @@ export async function runTurn(input: TurnInput): Promise<void> {
 
     if (label === 'abuse') {
       say(t('canned.abuse'))
-      handoffEvents(input, t, 'general').forEach(emit)
+      for (const event of await handoffEvents(cards(), 'general')) emit(event)
       outcome = 'refused'
       done = 'refused'
       return
     }
 
-    const handoffRequired = requiresHandoff(label, site)
+    // The classifier's label or the message's own words: either one guarantees the buttons.
+    const asked = askedHandoff(masked.text, site)
+    if (asked !== null) labels.push(`asked:${asked}`)
+    const handoffRequired = requiresHandoff(label, site) || asked !== null
+    const maskedContact = masked.email || masked.phone || masked.address
     const note = operatorNote({
       label,
       handoffRequired,
       viewingItemId: input.viewingItemId,
       leadReference: session.lead,
-      maskedContact: masked.email || masked.phone,
+      maskedContact,
     })
     const messages: Anthropic.MessageParam[] = [
       ...historyOf(session),
@@ -153,6 +142,9 @@ export async function runTurn(input: TurnInput): Promise<void> {
       origins: origin === null ? [] : [origin],
       amounts,
       canary: deps.canary,
+      // The exact label a tool returned this turn, else the server's own format for that amount.
+      formatRupiah: (rupiah) =>
+        labelOf.get(rupiah) ?? formatMoney({ amount: rupiah, currency: 'IDR' }, locale),
     }
     const result = await answer({
       client: deps.model,
@@ -173,6 +165,7 @@ export async function runTurn(input: TurnInput): Promise<void> {
         itemIds,
         notePrice: (priceLabel) => {
           const rupiah = rupiahOfLabel(priceLabel)
+          if (rupiah !== null) labelOf.set(rupiah, priceLabel)
           if (rupiah !== null && !amounts.has(rupiah)) {
             amounts.add(rupiah)
             labels.push(`price:${rupiah}`)
@@ -198,7 +191,7 @@ export async function runTurn(input: TurnInput): Promise<void> {
     labels.push(...result.labels)
     text = result.text
     let handoffShown = result.handoffShown
-    const topic = (label && LABEL_TOPICS[label]) || 'general'
+    const topic = (label && LABEL_TOPICS[label]) || asked || 'general'
 
     if (result.ended !== 'answered') {
       const line =
@@ -220,14 +213,19 @@ export async function runTurn(input: TurnInput): Promise<void> {
       outcome =
         result.ended === 'blocked' ? 'blocked' : result.ended === 'refused' ? 'refused' : null
       done = result.ended === 'blocked' ? 'blocked' : 'refused'
-      if (!handoffShown)
-        handoffEvents(input, t, result.blockedBy === 'gallery_price' ? 'price' : topic).forEach(
-          emit,
-        )
+      if (!handoffShown) {
+        const blockedTopic = result.blockedBy === 'gallery_price' ? 'price' : topic
+        for (const event of await handoffEvents(cards(), blockedTopic)) emit(event)
+      }
       handoffShown = true
-    } else if (handoffRequired && !handoffShown) {
-      handoffEvents(input, t, topic).forEach(emit)
+    } else if (!handoffShown && (handoffRequired || replyOffersHandoff(text))) {
+      // Required, or the reply itself offers WhatsApp or email: the buttons must be there.
+      for (const event of await handoffEvents(cards(), topic)) emit(event)
       handoffShown = true
+    }
+    // Typed contact details were masked: the consent form is the only way they reach the team.
+    if (maskedContact && !leadFormShown && session.lead === null && result.ended === 'answered') {
+      emit(leadFormEvent(cards()))
     }
     if (outcome === null && handoffShown) {
       outcome = 'handoff'
@@ -248,7 +246,7 @@ export async function runTurn(input: TurnInput): Promise<void> {
       console.error(`[chat] turn failed: ${error instanceof Error ? error.name : 'error'}`)
       labels.push('turn_failed')
       say(t('canned.unavailable'))
-      handoffEvents(input, t, 'general').forEach(emit)
+      for (const event of await handoffEvents(cards(), 'general').catch(() => [])) emit(event)
       done = 'refused'
     }
   } finally {

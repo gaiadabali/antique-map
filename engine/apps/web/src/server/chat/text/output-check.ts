@@ -10,7 +10,8 @@
  * - **Gallery price** — any currency sign, code or word, or a number tied to a money word,
  *   blocks the sentence and ends the turn.
  * - **Shop amount** — every rupiah amount must be a `priceLabel` a tool returned this session or
- *   a `site-settings` amount; another currency, or any other amount, blocks.
+ *   a `site-settings` amount; another currency, or any other amount, blocks. An allowed amount is
+ *   rewritten in the labels' own format ("IDR 350,000" → "Rp 350.000").
  * - **Leak canary** — the system prompt's canary, a tool's name or an internal field name blocks
  *   the message.
  */
@@ -18,7 +19,7 @@ import 'server-only'
 
 import { TOOL_NAMES } from '../tools/schemas'
 import type { SiteKey } from '../types'
-import { amountsIn, mentionsForeignCurrency, mentionsMoney } from './money'
+import { amountsIn, canonicalAmounts, mentionsForeignCurrency, mentionsMoney } from './money'
 
 export type BlockRule = 'gallery_price' | 'shop_amount' | 'leak'
 
@@ -29,6 +30,8 @@ export type CheckContext = {
   /** Whole-rupiah amounts the shop may state. */
   readonly amounts: ReadonlySet<number>
   readonly canary: string
+  /** The shop's label format for an allowed amount (`formatMoney`); absent, amounts stay as written. */
+  readonly formatRupiah?: (rupiah: number) => string
 }
 
 const INTERNAL_NAMES = [
@@ -146,9 +149,13 @@ export class OutputFilter {
       this.blockedBy = rule
       return ''
     }
-    this.previous = clean
-    this.releasedText += clean
-    return clean
+    const shown =
+      this.ctx.site === 'shop' && this.ctx.formatRupiah
+        ? canonicalAmounts(clean, this.ctx.amounts, this.ctx.formatRupiah)
+        : clean
+    this.previous = shown
+    this.releasedText += shown
+    return shown
   }
 }
 
