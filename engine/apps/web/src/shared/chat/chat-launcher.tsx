@@ -1,19 +1,18 @@
 'use client'
 
 /**
- * The header's chat entry point (8.2.a): a plain button until the visitor opens it — the panel's
- * JavaScript, Turnstile's script and every chat-only string load only then (`next/dynamic`,
- * `ssr: false`), the same lazy-door pattern as `sites/gallery/item/zoom-lazy.tsx`. Every word
- * arrives as a prop, resolved server-side (`lexicon.chatPanelText`), so no lexicon ships before
- * the visitor asks for it.
+ * The floating chat entry point (8.2.a): a button at the bottom right of every page until the
+ * visitor opens it — the panel's JavaScript, Turnstile's script and every chat-only string load
+ * only then (`next/dynamic`, `ssr: false`), the same lazy-door pattern as
+ * `sites/gallery/item/zoom-lazy.tsx`. Open, the panel is fixed to the viewport: a full-height sheet
+ * on a phone, a side panel from tablet up (DESIGN-SYSTEM.md §5). Every word arrives as a prop,
+ * resolved server-side (`lexicon.chatPanelText`), so no lexicon ships before the visitor asks.
  */
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
 
-// From its own folder, never the `shared/ui` barrel — a Client Component importing the barrel
-// ships every shared component to the browser (5.5 Lighthouse follow-up).
-import { Button } from '../ui/button'
 import type { ChatPanelProps } from './chat-panel'
+import styles from './chat-launcher.module.css'
 
 const ChatPanel = dynamic<ChatPanelProps>(() => import('./chat-panel').then((m) => m.ChatPanel), {
   ssr: false,
@@ -23,26 +22,32 @@ export type ChatLauncherProps = Omit<ChatPanelProps, 'onClose'> & { readonly lab
 
 export function ChatLauncher({ label, ...panelProps }: ChatLauncherProps): React.ReactElement {
   const [open, setOpen] = useState(false)
-  const restoreFocus = useRef<HTMLElement | null>(null)
-
-  function openPanel(): void {
-    restoreFocus.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null
-    setOpen(true)
-  }
+  const launcherRef = useRef<HTMLButtonElement>(null)
 
   function closePanel(): void {
     setOpen(false)
-    restoreFocus.current?.focus()
+    // The launcher is back in the page once the panel closes; focus returns to it.
+    requestAnimationFrame(() => launcherRef.current?.focus())
   }
 
   if (!open) {
     return (
-      <Button variant="quiet" size="small" type="button" onClick={openPanel}>
+      <button
+        ref={launcherRef}
+        type="button"
+        className={styles.launcher}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+      >
+        <span className={styles.dot} aria-hidden="true" />
         {label}
-      </Button>
+      </button>
     )
   }
 
-  return <ChatPanel {...panelProps} onClose={closePanel} />
+  return (
+    <div className={styles.panel} role="dialog" aria-label={label}>
+      <ChatPanel {...panelProps} onClose={closePanel} />
+    </div>
+  )
 }

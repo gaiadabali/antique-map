@@ -101,7 +101,8 @@ export function VariantPicker({
 
       {priceText !== null && <p className={styles.price}>{priceText}</p>}
 
-      <div className={styles.buyRow}>
+      {/* `data-chat-clear`: the floating chat button rises above this sticky row on a phone. */}
+      <div className={styles.buyRow} data-chat-clear>
         <button
           type="submit"
           className={styles.addButton}
