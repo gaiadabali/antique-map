@@ -79,6 +79,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W1 | 10.2 Performance and accessibility pass | senior-fe | `worktree-agent-aa631d14b8accce70` | 2026-10-08 | |
+| 10·W2 | 10.3 The staging rehearsal and the restore drill | devops | `worktree-agent-a76815f4e568eb296` | 2026-10-08 | |
 
 ## Decisions for the owner
 
@@ -730,7 +731,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.2.b axe plus a keyboard pass and a screen-reader pass on the purchase path and the chat
   - [ ] 10.2.c **Check:** `docs/gates/performance.md` shows at least 90 performance and 100 accessibility for the item and product pages, no serious axe finding anywhere, and the pass notes for keyboard and screen reader.
 
-- [ ] **10.3 The staging rehearsal and the restore drill** · needs: 10.1, 10.2
+- [ ] **10.3 The staging rehearsal and the restore drill** · needs: 10.1, 10.2 — 🔄 10·W2
   - **Lane** OPS + QA · **Agent** devops, qa · **Wave** W2
   - **Owns** `docs/gates/rehearsal.md`, `docs/ops/runbook.md`, `scripts/ops/**`
   - **Read** DEPLOYMENT.md §Backups and §Rehearsal, DATA.md
