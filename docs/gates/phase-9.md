@@ -28,10 +28,10 @@ description; no gallery JSON-LD block contains `price` or `offers` (the tool wal
 
 Sitemap counts against the database (`_status = 'published'`):
 
-| | published | sitemap item/product URLs | per locale |
-| --- | --- | --- | --- |
-| gallery works (sold ones included) | 49 | 98 | 49 + 49 |
-| shop products | 80 | 160 | 80 + 80 |
+|                                    | published | sitemap item/product URLs | per locale |
+| ---------------------------------- | --------- | ------------------------- | ---------- |
+| gallery works (sold ones included) | 49        | 98                        | 49 + 49    |
+| shop products                      | 80        | 160                       | 80 + 80    |
 
 The gallery sitemap contains no `price`. **9.3.d passes.**
 
@@ -136,17 +136,17 @@ gallery 3 `page.viewed` (home, search, listing), 1 `listing.viewed`, 2 `search.s
 1 `ask.clicked` (whatsapp); shop 2 `page.viewed`, 1 `search.submitted`, 1 `ask.clicked` (email, footer),
 1 `partnership.clicked`.
 
-| site | name | before | driven | after |
-| --- | --- | --- | --- | --- |
-| gallery | page.viewed | 97 | +3 | 100 |
-| gallery | search.submitted | 81 | +2 | 83 |
-| gallery | listing.viewed | 16 | +1 | 17 |
-| gallery | ask.clicked | 0 | +1 | 1 |
-| shop | page.viewed | 0 | +2 | 2 |
-| shop | search.submitted | 0 | +1 | 1 |
-| shop | ask.clicked | 0 | +1 | 1 |
-| shop | partnership.clicked | 0 | +1 | 1 |
-| total | | 194 | +12 | 206 |
+| site    | name                | before | driven | after |
+| ------- | ------------------- | ------ | ------ | ----- |
+| gallery | page.viewed         | 97     | +3     | 100   |
+| gallery | search.submitted    | 81     | +2     | 83    |
+| gallery | listing.viewed      | 16     | +1     | 17    |
+| gallery | ask.clicked         | 0      | +1     | 1     |
+| shop    | page.viewed         | 0      | +2     | 2     |
+| shop    | search.submitted    | 0      | +1     | 1     |
+| shop    | ask.clicked         | 0      | +1     | 1     |
+| shop    | partnership.clicked | 0      | +1     | 1     |
+| total   |                     | 194    | +12    | 206   |
 
 Every post answered `204`. The first `listing.viewed` post was dropped because its props omitted the required
 `facets` array (the catalogue drops a prop set outside its schema, as ANALYTICS.md §3 says); resent with
@@ -176,18 +176,18 @@ used the panel's own definitions: events by their stamped `day` in the period; l
 not in (`awaiting_quote`, `pending_payment`, `cancelled`, `expired`). At that moment the table held the 12 driven
 events plus the 5 no-UA/`node` rows from the finding (gallery `page.viewed` 106).
 
-| Panel figure | Dashboard gallery | SQL gallery | Dashboard shop | SQL shop |
-| --- | --- | --- | --- | --- |
-| Page views | 106 | 106 | 2 | 2 |
-| Sessions | 12 | 12 (distinct sessions with a `page.viewed`) | 1 | 1 |
-| Searches | 83 | 83 | 1 | 1 |
-| Found nothing (zero-result searches) | 6 | 6 | none | 0 |
-| Taps (ask, sell, partnership clicks) | 1 | 1 | 2 | 2 |
-| Leads (not spam) | 0 | 0 | 1, kind Partnership | 1 (`partnership`, `closed`) |
-| Paid orders | n/a | n/a | 16 | 16 |
-| Revenue / average order | n/a | n/a | Rp 78,500,000 / Rp 4,906,250 | 78500000 / 4906250 |
-| Orders waiting now: Paid | n/a | n/a | 8 | 8 (`paid`; the rest are `delivered` 8, `expired` 2) |
-| Expired or cancelled / expired-unpaid (%) | n/a | n/a | 11.1 / 11.1 | 2 of 18 placed = 11.1 / 11.1 |
+| Panel figure                              | Dashboard gallery | SQL gallery                                 | Dashboard shop               | SQL shop                                            |
+| ----------------------------------------- | ----------------- | ------------------------------------------- | ---------------------------- | --------------------------------------------------- |
+| Page views                                | 106               | 106                                         | 2                            | 2                                                   |
+| Sessions                                  | 12                | 12 (distinct sessions with a `page.viewed`) | 1                            | 1                                                   |
+| Searches                                  | 83                | 83                                          | 1                            | 1                                                   |
+| Found nothing (zero-result searches)      | 6                 | 6                                           | none                         | 0                                                   |
+| Taps (ask, sell, partnership clicks)      | 1                 | 1                                           | 2                            | 2                                                   |
+| Leads (not spam)                          | 0                 | 0                                           | 1, kind Partnership          | 1 (`partnership`, `closed`)                         |
+| Paid orders                               | n/a               | n/a                                         | 16                           | 16                                                  |
+| Revenue / average order                   | n/a               | n/a                                         | Rp 78,500,000 / Rp 4,906,250 | 78500000 / 4906250                                  |
+| Orders waiting now: Paid                  | n/a               | n/a                                         | 8                            | 8 (`paid`; the rest are `delivered` 8, `expired` 2) |
+| Expired or cancelled / expired-unpaid (%) | n/a               | n/a                                         | 11.1 / 11.1                  | 2 of 18 placed = 11.1 / 11.1                        |
 
 Differences, all explained by the panel's definitions:
 
@@ -292,14 +292,14 @@ DELETE /api/partners/1            200   (E2E-9QA partners left: 0)
 
 ## Phase 9 — Done when
 
-| Clause | Evidence | |
-| --- | --- | --- |
-| The owner works a lead from New to Closed | 9.1.e §1–2 (lead 48, new → contacted → in_progress → closed, `closed_at` set) | ✅ |
-| Records a partner with the products carried | above | ✅ |
-| Sees each site's dashboard | 9.2.d §3 (both sites, counts equal the database) | ✅ |
-| The shop's partnership page leads to an enquiry | 9.1.e §1 (the form made a `partnership` lead) | ✅ |
-| Localised metadata, right structured data, no antique price | 9.3.d (674 pages, 0 problems) | ✅ |
-| Sitemaps list only published pages | 9.3.d (49 works, 80 products, both locales) | ✅ |
-| An old gallery address answers one permanent redirect | 9.4.c (one 308 to a 200; DATA.md §6) | ✅ |
+| Clause                                                      | Evidence                                                                      |     |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------- | --- |
+| The owner works a lead from New to Closed                   | 9.1.e §1–2 (lead 48, new → contacted → in_progress → closed, `closed_at` set) | ✅  |
+| Records a partner with the products carried                 | above                                                                         | ✅  |
+| Sees each site's dashboard                                  | 9.2.d §3 (both sites, counts equal the database)                              | ✅  |
+| The shop's partnership page leads to an enquiry             | 9.1.e §1 (the form made a `partnership` lead)                                 | ✅  |
+| Localised metadata, right structured data, no antique price | 9.3.d (674 pages, 0 problems)                                                 | ✅  |
+| Sitemaps list only published pages                          | 9.3.d (49 works, 80 products, both locales)                                   | ✅  |
+| An old gallery address answers one permanent redirect       | 9.4.c (one 308 to a 200; DATA.md §6)                                          | ✅  |
 
 **Phase 9 passes on the staging mock data.**
