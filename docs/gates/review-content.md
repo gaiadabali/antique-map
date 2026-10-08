@@ -83,7 +83,7 @@ Shop `/` and `/id`: Instagram `https://www.instagram.com/oldeastindiesart/`, Fac
 
 ### 7. Screenshots (`screens.ui.spec.ts`), not committed (about 4.4 MB)
 
-`tests/e2e/review/__screens__/`: `gallery-browse-{390,1280}.png`, `gallery-item-zoomed-{390,1280}.png` (item 1237, viewer open), `shop-listing-{390,1280}.png`, `shop-instagram-product-{390,1280}.png`.
+Taken in `tests/e2e/review/__screens__/`, kept outside git at `Backup antique map/evidence/10.6f-screens/` (the workstation backup, beside the crawl backup): `gallery-browse-{390,1280}.png`, `gallery-item-zoomed-{390,1280}.png` (item 1237, viewer open), `shop-listing-{390,1280}.png`, `shop-instagram-product-{390,1280}.png`.
 
 ### 8. axe (`screens.ui.spec.ts`)
 
