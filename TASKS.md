@@ -82,6 +82,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 8·W3 | 8.4.d Check | orchestrator | `w/8.4g` → main | 2026-10-08 | live run 4 on GLM: 138/144, safety 78/79; gate doc next |
 | 10·W1 | 10.6 Real content for the client review | orchestrator + Sonnet | `w/10.6a`, `w/10.6c` | 2026-10-08 | pulled forward from 10.3.a at the user's request: the full gallery (crawl of 2026-09-30, still current), the shop's catalogue designs, Instagram; staging loads by the orchestrator |
 | 10·W1 | 10.5 Under lock contention, refuse plainly — never a 500 or a thrown error | senior-be | `worktree-agent-a36b3a1ed07a5f0db` | 2026-10-08 | |
+| 10·W1 | 10.1 Security review and fixes | senior-integrator | `worktree-agent-a2683e59411a2c50a` | 2026-10-08 | |
 
 ## Decisions for the owner
 
@@ -713,7 +714,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** `docs/SECURITY.md`'s checklist is run and every finding is fixed or accepted by the owner; budgets pass on both sites; a rehearsal on staging runs both sites with the full data volume and a restore from backup; the owner's team completes the timed admin tests.
 **Waves:** W1 — 10.1, 10.2, 10.5, 10.6 · W2 — 10.3 · W3 — 10.4
 
-- [ ] **10.1 Security review and fixes** · needs: phase 7, phase 8, phase 9
+- [ ] **10.1 Security review and fixes** · needs: phase 7, phase 8, phase 9 — 🔄 10·W1
   - **Lane** PLT + QA · **Agent** senior-integrator, qa · **Wave** W1
   - **Owns** `docs/gates/security.md`, `tests/security/**`, `engine/apps/web/src/security/**`
   - **Read** SECURITY.md (all), AI.md §Guardrails
