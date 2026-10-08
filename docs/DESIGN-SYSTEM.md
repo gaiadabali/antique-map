@@ -232,6 +232,10 @@ real phone in Bali before each site phase closes.
 | CLS | < 0.05 | < 0.05 | < 0.05 |
 | First-party JS (gzip) | < 150 KB | < 180 KB — viewer, chat and map load on intent | < 200 KB — the payment script only on the payment step, the map only once the delivery section opens |
 
+- **LCP is judged on the real phone (decided 2026-10-08, 10.2 F1).** The 2.5 s budget stands and the Bali phone
+  check decides it. Lighthouse's simulated LCP (2.5–3.5 s on every page, set by the framework's own JavaScript;
+  `docs/gates/performance.md` §F1) is advisory: CI warns on it and fails on every other budget.
+
 - **Fonts:** at most **3 files on first paint** (Cormorant roman, Cormorant italic where used above the fold,
   Karla), together under 150 KB, `font-display: swap`, the display face preloaded.
 - **No third-party scripts** beyond the payment provider on the payment step and Google Maps once the checkout's
