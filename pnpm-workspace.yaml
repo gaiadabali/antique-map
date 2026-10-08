@@ -33,7 +33,11 @@ overrides:
 # - nodemailer 9.1.1 comes through @payloadcms/email-nodemailer; the fix is in
 #   nodemailer 10.x, a major version the adapter does not support yet. Staging
 #   mail goes to Mailpit (D13); production mail is decided under Q6.
+# - braces 3.0.3 (GHSA-vfj7-8cjw-p6xm): the advisory names 3.0.4, which is not
+#   published on npm. Reached only through sass>chokidar and vite/vitest at build
+#   and dev time; nothing globs user input at runtime (security review 10.1, F-11).
 auditConfig:
   ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
     - GHSA-v53p-9fqp-m79j
     - GHSA-prgh-xp8r-p3m5
