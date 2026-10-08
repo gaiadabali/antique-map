@@ -23,11 +23,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 2/4 | 14/16 | 0 | `█████████░`  88% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 3/4 | 15/16 | 0 | `█████████░`  94% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 0/6 | 6/25 | 1 | `██░░░░░░░░`  24% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 1/6 | 7/25 | 1 | `███░░░░░░░`  28% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **40/52** | **179/214** | **8** | `████████░░`  84% |
+| **All** | 11 phases | | | **42/52** | **181/214** | **8** | `█████████░`  85% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,7 +81,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 8·W2 | 8.2.c Check + the panel redesign (customer-service chat, the user 2026-10-08) | senior-uiux (Sonnet) | `w/8.2cs` | 2026-10-08 | floating button and fixed panel live on staging `a0132bab`; the redesign then the 390 px walk |
 | 8·W3 | 8.4.d Check | orchestrator | `w/8.4g` → main | 2026-10-08 | live run 4 on GLM: 138/144, safety 78/79; gate doc next |
 | 10·W1 | 10.6 Real content for the client review | orchestrator + Sonnet | `w/10.6a`, `w/10.6c` | 2026-10-08 | pulled forward from 10.3.a at the user's request: the full gallery (crawl of 2026-09-30, still current), the shop's catalogue designs, Instagram; staging loads by the orchestrator |
-| 10·W1 | 10.5 Under lock contention, refuse plainly — never a 500 or a thrown error | senior-be | `worktree-agent-a36b3a1ed07a5f0db` | 2026-10-08 | |
 | 10·W1 | 10.1 Security review and fixes | senior-integrator | `worktree-agent-a2683e59411a2c50a` | 2026-10-08 | |
 | 10·W1 | 10.2 Performance and accessibility pass | senior-fe | `worktree-agent-aa631d14b8accce70` | 2026-10-08 | |
 
@@ -649,7 +648,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 8.3.c the publish guard from 3.2.c refuses while any drafted field is unverified, naming the fields
   - [x] 8.3.d **Check:** with a test model, drafting fills fields marked unverified; publishing is refused until each is verified; a draft never writes grade, provenance or price; the tool is owner/editor only.
 
-- [ ] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2 — 🔄 8·W3
+- [x] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2 — ✅ 2026-10-08 4a83afec
   - **Lane** AIX + QA · **Agent** senior-integrator, qa · **Wave** W3
   - **Owns** `engine/apps/web/src/server/chat/eval/**`, `tests/ai/**`, `docs/gates/ai.md`
   - **Read** AI.md §Evaluation
@@ -657,7 +656,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 8.4.a a fixed set of ordinary questions (both sites, both languages) and adversarial cases: price demands, deal-making, valuation and authenticity opinions, prompt-injection in the visitor message and in catalogue text, system-prompt extraction, abusive and off-topic input, contact-detail leakage
   - [x] 8.4.b a runner that works against a recorded model in CI and against the live model on demand, writing pass/fail and refusal/handoff counts
   - [x] 8.4.c a cost estimate from the live run and a monitoring note (refusals, handoffs, spend) for the first 30 days
-  - [ ] 8.4.d **Check:** `docs/gates/ai.md` holds a live run in which every adversarial case passes, the ordinary set answers correctly with citations, the cost per session is reported, and CI runs the recorded set on every merge.
+  - [x] 8.4.d **Check:** `docs/gates/ai.md` holds a live run in which every adversarial case passes, the ordinary set answers correctly with citations, the cost per session is reported, and CI runs the recorded set on every merge.
 
 ---
 
@@ -755,14 +754,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.4.b record times, stumbles and wording that confused; fix what is cheap now, list the rest as follow-ups
   - [ ] 10.4.c **Check:** `docs/gates/admin-usability.md` shows each person's times against the targets and what was fixed; a store user completes the status steps without help.
 
-- [ ] **10.5 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: phase 6 — 🔄 10·W1
+- [x] **10.5 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: phase 6 — ✅ 2026-10-08 4a83afec
   - **Lane** SHP + PLT · **Agent** senior-be, Opus review · **Wave** W1
   - **Owns** `engine/packages/cms/src/shop/{payments,orders}/**`, `engine/apps/web/src/app/api/x/webhooks/**`
   - **Read** COMMERCE.md §Payment and §Stock, SECURITY.md §Webhooks, the 2026-10-06 webhook and stock entries in **Log**
   - _Requirements: 6.4_
   - [x] 10.5.a the event and the order move stay one transaction (6.4.b); the order lock is taken with a short lock timeout or NOWAIT, and a replay that loses it answers 200 when its dedupe key is already recorded, else 503 with `Retry-After` — never 500
   - [x] 10.5.b `createOrder`: a stock decrement that loses its lock (`lock_not_available` 55P03 / `lock_timeout`) returns the designed refusal (`out_of_stock`, or a plain "busy, try again"), never a thrown database error
-  - [ ] 10.5.c **Check:** db tests prove, each under an artificially held lock: ten parallel identical webhooks give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed and the retry applies it; twenty concurrent orders for the last unit give one order and nineteen designed refusals, no throw; the 6.3.d and 6.4.d tests still pass.
+  - [x] 10.5.c **Check:** db tests prove, each under an artificially held lock: ten parallel identical webhooks give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed and the retry applies it; twenty concurrent orders for the last unit give one order and nineteen designed refusals, no throw; the 6.3.d and 6.4.d tests still pass.
 
 - [ ] **10.6 The owner's real content on staging, for the client review** · needs: phase 5, phase 6
   - **Lane** CMS + OPS · **Agent** medior (Sonnet), orchestrator for staging · **Wave** W1
@@ -845,6 +844,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-08 — ✅ **10.5 closed** (`4a83afec`; Opus built, orchestrator reviewed). Under lock contention the Midtrans webhook answers **200** (its event already recorded by the winner) or **503 + `Retry-After: 5`** (not yet), never 500; the order lock and the event insert wait at most 2 s under a savepoint, so the event and the order move stay one transaction. `createOrder`: a stock row locked past 2 s is `out_of_stock` when the units are gone, else the new `busy` refusal ("Many people are checking out right now…", en + id; wording for the owner to approve), never a thrown error. Check on a native Postgres 16 (localhost:5433, Docker down), each under a lock the test holds: ten identical webhooks → no 500, one payment; a backend killed mid-apply → nothing claimed, the retry applies it; twenty orders for the last unit → one order, 19 designed refusals; 6.3.d/6.4.d still pass (26/26, three runs). `pnpm verify` 2,618 green after two 8.3 leftovers red on main were fixed (`draftFromPhotos` had no bilingual label; the getPayload guard flagged a `.test-support.ts`). COMMERCE.md §6 updated. **Follow-ups:** `db/adapter.ts` adds no error listener to a checked-out client, so a backend killed mid-query (restart, idle timeout) raises an uncaught `'error'` in the app; pool exhaustion (the 5 s connect wait) still throws from `createOrder`. **10.1 and 10.2 dispatched early** (Sonnet) at the user's request to finish phase 10 fast; their Checks wait for phase 8.
 
 - 2026-10-08 — **10.6.e done on staging.** The shop's publishing run: 156 designs published (468 product rows and 22,632 stock rows `unchanged` on the second run — idempotent), the 80 mocks unpublished, the 6 categories published; `/shop` lists 24 real designs a page from Rp 450.000, a product shows Mounted Rp 450.000 / Framed Rp 950.000 (server-priced). Found by opening it, fixed and released as **`production-20261008T050109Z-410136e8`** (`w/10.6label`, Sonnet, reviewed; the home strip fix by the orchestrator): synthetic product images now carry the "Digital mockup" label and alt prefix on the product page, cards and home strip (id: "Mockup digital"; a photograph shows none), and cards and product images carry the derivative ladder as srcSet — `/shop` Lighthouse mobile **perf 81 → 96, LCP 5.1 → 2.3 s, 2,993 → 1,845 KiB**; shop home 98; gallery home 98 (2,042 KiB: its featured works take the largest derivative — handed to 10.2 with the AVIF idea). Owner-only price on staging via REST: the owner reads `askingPrice` 280000 on M.0856, a store user is refused, anonymous gets no `askingPrice`, the gallery host's `/api` is 404 (no editor on staging; `works-price.db.test.ts` covers it). Follow-ups routed to 10.2 (antique-map-2a): an unpublished product's URL answers 200 with the not-found page (a never-existed slug 404s); bag and checkout thumbnails still take the largest derivative with no alt prefix. Gallery: 651 published at 05:06 UTC, the wave runner on Helios finishes about 07:00 UTC.
 
