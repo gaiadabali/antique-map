@@ -1,6 +1,6 @@
 /**
  * The sitemap sources on a real, pushed database (9.3fix): published-only, both locales, a draft
- * never listed, a sold work listed, the shop sitemap carrying no `/contact` (the shop has none).
+ * never listed, a sold work listed. The shop's half is `sitemap-sources.shop.db.test.ts`: two Payload stacks in one process break the second's schema push.
  * Without `CMS_TEST_POSTGRES_URL` the file skips — a setup state, same as the other `*.db.test.ts`
  * files beside this one.
  */
@@ -12,12 +12,7 @@ import {
   startWorksStack,
   type WorksStack,
 } from '../../../../../packages/cms/src/collections/works/works.test-support'
-import {
-  server,
-  startStaffStack,
-  type StaffStack,
-} from '../../../../../packages/cms/src/collections/users/staff.test-support'
-import { queryGallerySitemap, queryShopSitemap } from './sitemap-sources'
+import { queryGallerySitemap } from './sitemap-sources'
 
 describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
   'the gallery sitemap sources on a real database',
@@ -42,8 +37,15 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
         }),
       )
 
+      // A work publishes with a credited maker (or a primary place).
+      const maker = await stack.api.create({
+        collection: 'makers',
+        data: { name: 'François Valentijn', sortName: 'VALENTIJN, François' },
+      })
+
       const complete = (over: object) => ({
         objectType: 'map',
+        makers: [{ maker: maker.id, role: 'cartographer', certainty: 'attributed' }],
         date: { precision: 'circa', from: 1700 },
         condition: { grade: grade.id },
         images: [{ media: recto }],
@@ -79,67 +81,3 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
     }, 30_000)
   },
 )
-
-// A 1×1 transparent PNG, as `payload.create`'s `file` wants it.
-const TINY_PNG = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-  'base64',
-)
-
-describe.skipIf(!server)('the shop sitemap sources on a real database', () => {
-  let stack: StaffStack
-  let term: number
-  let media: number
-
-  const publishProduct = async (data: Record<string, unknown>) => {
-    const draft = await stack.payload.create({
-      collection: 'products',
-      data: {
-        site: 'shop',
-        category: term,
-        images: [{ image: media }],
-        price: 95000,
-        _status: 'draft',
-        ...data,
-      } as never,
-    })
-    return stack.payload.update({
-      collection: 'products',
-      id: (draft as unknown as { id: number }).id,
-      data: { _status: 'published' } as never,
-    })
-  }
-
-  beforeAll(async () => {
-    stack = await startStaffStack('web_sitemap_shop_test', (config, key) =>
-      getPayload({ config, key }),
-    )
-    const categoryTerm = (await invalidationBatch().operation((context) =>
-      stack.payload.create({
-        context,
-        collection: 'terms',
-        data: { kind: 'room', label: 'Sitemap category', _status: 'published' } as never,
-      }),
-    )) as unknown as { id: number }
-    term = categoryTerm.id
-    const uploaded = (await stack.payload.create({
-      collection: 'media',
-      data: {
-        alt: 'Sitemap product image',
-        subject: 'product',
-        role: 'flat',
-        provenance: 'photograph',
-      },
-      file: { data: TINY_PNG, mimetype: 'image/png', name: 'tiny.png', size: TINY_PNG.length },
-    })) as unknown as { id: number }
-    media = uploaded.id
-    await publishProduct({ name: 'Batik Sarong', slug: 'batik-sarong', sku: 'OEI-SITEMAP-1' })
-  }, 180_000)
-  afterAll(() => stack?.stop?.(), 60_000)
-
-  it('lists published products and carries no /contact (the shop has no such route)', async () => {
-    const entries = await queryShopSitemap(stack.payload)
-    expect(entries.some((e) => e.paths.en.includes('batik-sarong'))).toBe(true)
-    expect(entries.some((e) => e.paths.en === '/contact')).toBe(false)
-  }, 30_000)
-})
