@@ -7,5 +7,6 @@
   },
   "files.watcherExclude": {
     "**/.claude/worktrees/**": true
-  }
+  },
+  "python.languageServer": "None"
 }
