@@ -9,6 +9,8 @@ import type { SiteLocale } from '@engine/config/sites'
 import type { ProductCardVM } from '../../../server/shop/catalogue/view-models'
 import { Price, ResponsiveImage } from '../../../shared/ui'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
+import { productText } from '../product/copy'
+import { imageAlt, syntheticLabelText } from '../product/synthetic'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 
@@ -22,6 +24,7 @@ export function ProductCard({
   readonly href: string
 }): React.ReactElement {
   const text = browseText(locale)
+  const words = productText(locale)
   const from = product.fromPrice !== null && product.fromPrice !== product.price
   const priceText = from
     ? text.shared('price.from', { price: formatRupiah(product.fromPrice) })
@@ -33,8 +36,9 @@ export function ProductCard({
           variant="fill"
           aspectRatio="4 / 3"
           src={product.image.url}
-          alt={product.image.alt}
-          sizes="(max-width: 767px) 50vw, 25vw"
+          srcSet={product.image.srcSet}
+          alt={imageAlt(words, product.image)}
+          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           className={styles.image}
           unoptimized
         />
@@ -45,6 +49,9 @@ export function ProductCard({
         <span className={styles.cardTitle}>{product.name}</span>
         <span className={styles.cardMeta}>
           <span className={styles.reproduction}>{text.shared('label.reproduction')}</span>
+          {product.image && syntheticLabelText(words, product.image) !== null && (
+            <span className={styles.reproduction}>{syntheticLabelText(words, product.image)}</span>
+          )}
           {!product.available && <span className={styles.soldOut}>{text('listing.soldOut')}</span>}
         </span>
         {priceText !== null ? (
