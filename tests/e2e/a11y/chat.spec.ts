@@ -14,7 +14,7 @@ import {
   axeAudit,
   currentStop,
   shoot,
-  tabWalk,
+  type Stop,
   walkMarkdown,
   writeEvidence,
   WIDTHS,
@@ -42,8 +42,29 @@ test('chat: axe, keyboard walk, Escape and accessibility tree', async ({
     await launcher.click()
     const dialog = page.getByRole('dialog', { name: 'Chat with us' })
     await expect(dialog).toBeVisible()
+    // The panel's script loads on opening: Escape counts once its own controls are there.
+    await expect(page.getByRole('button', { name: 'Close chat' })).toBeVisible()
+    await page.waitForTimeout(500)
+    // Escape with focus where opening put it: the panel closes and focus goes back to the launcher.
+    await page.keyboard.press('Escape')
+    const closed = await dialog.isHidden()
+    keyboard += `Escape closes the panel at ${viewport.width} px: ${closed ? 'yes' : 'NO'}
+
+`
+    expect.soft(closed, `Escape closes the chat at ${viewport.width} px`).toBe(true)
+    // The panel hands focus back on the next animation frame.
+    await page.waitForTimeout(300)
+    const back = (await currentStop(page))?.name === 'Chat with us'
+    keyboard += `Focus returns to the launcher: ${back ? 'yes' : 'NO'}
+
+`
+    expect.soft(back, `focus returns to the launcher at ${viewport.width} px`).toBe(true)
+    await launcher.click()
+    await expect(dialog).toBeVisible()
     // The panel loads its own script on opening; wait for its content to settle.
     await page.waitForLoadState('networkidle').catch(() => undefined)
+    // The panel slides in: axe's contrast check reads half-transparent pixels mid-animation.
+    await page.waitForTimeout(1500)
     const record = await axeAudit(page, `${site} chat panel open`)
     axe.push(record)
     expect.soft(record.violations, `${site} chat panel at ${viewport.width} px`).toEqual([])
@@ -57,28 +78,30 @@ test('chat: axe, keyboard walk, Escape and accessibility tree', async ({
     keyboard += `Focus after opening at ${viewport.width} px: ${opened === null ? 'nowhere (body)' : `${opened.role} "${opened.name}"`}
 
 `
-    const walk = await tabWalk(page, 40, true)
-    const outside = await dialog.evaluate((el) => !el.contains(document.activeElement))
-    keyboard += `After tabbing, focus is ${outside ? 'OUTSIDE' : 'inside'} the dialog (no trap needed for a non-modal panel, but the order must make sense).
-
-`
-    keyboard += walkMarkdown('chat panel', viewport.width, walk)
-    expect.soft(walk.problems, `${site} chat keyboard at ${viewport.width} px`).toEqual([])
-    const inside = walk.stops.length > 0
-    expect.soft(inside, 'Tab reaches something in the open chat').toBe(true)
-
-    await page.keyboard.press('Escape')
-    const closed = await dialog.isHidden()
-    keyboard += `Escape closes the panel at ${viewport.width} px: ${closed ? 'yes' : 'NO'}\n\n`
-    expect.soft(closed, `Escape closes the chat at ${viewport.width} px`).toBe(true)
-    if (closed) {
-      // The panel hands focus back on the next animation frame.
-      await page.waitForTimeout(300)
+    // Tab from there while focus is inside the panel; the walk ends where focus leaves it.
+    const stops: Stop[] = [...(opened === null ? [] : [opened])]
+    const problems: string[] = []
+    for (let i = 0; i < 25; i += 1) {
+      await page.keyboard.press('Tab')
       const stop = await currentStop(page)
-      const back = stop?.name === 'Chat with us'
-      keyboard += `Focus returns to the launcher: ${back ? 'yes' : `NO (${stop?.role} "${stop?.name}")`}\n\n`
-      expect.soft(back, `focus returns to the launcher at ${viewport.width} px`).toBe(true)
+      const inside = await dialog.evaluate((el) => el.contains(document.activeElement))
+      if (stop === null || !inside) break
+      stops.push(stop)
     }
+    for (const [at, stop] of stops.entries()) {
+      const where = `#${at + 1} ${stop.role} "${stop.name}" (${stop.tag})`
+      if (stop.name.trim() === '') problems.push(`${where}: no accessible name`)
+      if (!stop.focusVisible) problems.push(`${where}: no visible focus indicator`)
+      if (stop.obscured) problems.push(`${where}: hidden behind another element`)
+    }
+    keyboard += walkMarkdown('chat panel (inside the dialog)', viewport.width, {
+      stops,
+      problems,
+      closed: true,
+      repeated: [],
+    })
+    expect.soft(problems, `${site} chat keyboard at ${viewport.width} px`).toEqual([])
+    expect.soft(stops.length, 'Tab reaches something in the open chat').toBeGreaterThan(0)
   }
 
   writeEvidence(`a11y/axe-${site}-chat.json`, `${JSON.stringify(axe, null, 2)}\n`)
