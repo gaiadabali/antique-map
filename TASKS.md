@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 10·W1 | 10.6 Real content for the client review | orchestrator + Sonnet | `w/10.6a`, `w/10.6c` | 2026-10-08 | pulled forward from 10.3.a at the user's request: the full gallery (crawl of 2026-09-30, still current), the shop's catalogue designs, Instagram; staging loads by the orchestrator |
 | 10·W1 | 10.5 Under lock contention, refuse plainly — never a 500 or a thrown error | senior-be | `worktree-agent-a36b3a1ed07a5f0db` | 2026-10-08 | |
 | 10·W1 | 10.1 Security review and fixes | senior-integrator | `worktree-agent-a2683e59411a2c50a` | 2026-10-08 | |
+| 10·W1 | 10.2 Performance and accessibility pass | senior-fe | `worktree-agent-aa631d14b8accce70` | 2026-10-08 | |
 
 ## Decisions for the owner
 
@@ -725,7 +726,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.1.d fix the findings in the owning lane (small ones here, larger ones as new subtasks) and re-run
   - [ ] 10.1.e **Check:** `docs/gates/security.md` lists every checklist item with evidence; the access sweep passes; a planted vulnerability from each of four classes (IDOR on an order, a webhook replay, an XSS in a lead note, an upload with a script) is caught.
 
-- [ ] **10.2 Performance and accessibility pass** · needs: phase 7, phase 8, phase 9
+- [ ] **10.2 Performance and accessibility pass** · needs: phase 7, phase 8, phase 9 — 🔄 10·W1
   - **Lane** DSG + QA · **Agent** senior-fe, qa · **Wave** W1
   - **Owns** `docs/gates/performance.md`, `lighthouserc.json`, `tests/e2e/a11y/**`
   - **Read** DESIGN-SYSTEM.md §Budgets, Requirement 12
