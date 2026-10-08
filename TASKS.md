@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 3/6 | 14/25 | 1 | `██████░░░░`  56% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 3/6 | 16/25 | 1 | `██████░░░░`  64% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **45/52** | **189/214** | **8** | `█████████░`  88% |
+| **All** | 11 phases | | | **45/52** | **191/214** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -726,8 +726,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `docs/gates/performance.md`, `lighthouserc.json`, `tests/e2e/a11y/**`
   - **Read** DESIGN-SYSTEM.md §Budgets, Requirement 12
   - _Requirements: 12.3, 12.4_
-  - [ ] 10.2.a Lighthouse mobile on the listing, item, home, product, bag, checkout and tracking pages of both sites; fix what falls short
-  - [ ] 10.2.b axe plus a keyboard pass and a screen-reader pass on the purchase path and the chat
+  - [x] 10.2.a Lighthouse mobile on the listing, item, home, product, bag, checkout and tracking pages of both sites; fix what falls short
+  - [x] 10.2.b axe plus a keyboard pass and a screen-reader pass on the purchase path and the chat
   - [ ] 10.2.c **Check:** `docs/gates/performance.md` shows at least 90 performance and 100 accessibility for the item and product pages, no serious axe finding anywhere, and the pass notes for keyboard and screen reader.
 
 - [ ] **10.3 The staging rehearsal and the restore drill** · needs: 10.1, 10.2
