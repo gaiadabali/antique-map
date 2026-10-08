@@ -71,13 +71,17 @@ describe('makeDerivatives', () => {
     for (const d of out) expect((await sharp(d.bytes).metadata()).exif).toBeUndefined()
   })
 
-  it('names keys with the contract scheme when given an asset id', { timeout: 30_000 }, async () => {
-    const out = await makeDerivatives(await gpsJpeg(700, 500), { id: ID, widths: [320, 640] })
-    expect(out).toHaveLength(4)
-    expect(out.map((d) => d.key)).toEqual(
-      out.map((d) => `derivatives/v1/${ID}/${d.width}.${d.format}`),
-    )
-  })
+  it(
+    'names keys with the contract scheme when given an asset id',
+    { timeout: 30_000 },
+    async () => {
+      const out = await makeDerivatives(await gpsJpeg(700, 500), { id: ID, widths: [320, 640] })
+      expect(out).toHaveLength(4)
+      expect(out.map((d) => d.key)).toEqual(
+        out.map((d) => `derivatives/v1/${ID}/${d.width}.${d.format}`),
+      )
+    },
+  )
 
   it('keeps every derivative inside the public long edge', { timeout: 30_000 }, async () => {
     // A tall sheet: 700 wide, 2000 high, under a 1,000 px cap.
