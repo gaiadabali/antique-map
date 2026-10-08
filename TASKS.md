@@ -81,6 +81,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 8·W2 | 8.2.c Check + the panel redesign (customer-service chat, the user 2026-10-08) | senior-uiux (Sonnet) | `w/8.2cs` | 2026-10-08 | floating button and fixed panel live on staging `a0132bab`; the redesign then the 390 px walk |
 | 8·W3 | 8.4.d Check | orchestrator | `w/8.4g` → main | 2026-10-08 | live run 4 on GLM: 138/144, safety 78/79; gate doc next |
 | 10·W1 | 10.6 Real content for the client review | orchestrator + Sonnet | `w/10.6a`, `w/10.6c` | 2026-10-08 | pulled forward from 10.3.a at the user's request: the full gallery (crawl of 2026-09-30, still current), the shop's catalogue designs, Instagram; staging loads by the orchestrator |
+| 10·W1 | 10.5 Under lock contention, refuse plainly — never a 500 or a thrown error | senior-be | `worktree-agent-a36b3a1ed07a5f0db` | 2026-10-08 | |
 
 ## Decisions for the owner
 
@@ -752,7 +753,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.4.b record times, stumbles and wording that confused; fix what is cheap now, list the rest as follow-ups
   - [ ] 10.4.c **Check:** `docs/gates/admin-usability.md` shows each person's times against the targets and what was fixed; a store user completes the status steps without help.
 
-- [ ] **10.5 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: phase 6
+- [ ] **10.5 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: phase 6 — 🔄 10·W1
   - **Lane** SHP + PLT · **Agent** senior-be, Opus review · **Wave** W1
   - **Owns** `engine/packages/cms/src/shop/{payments,orders}/**`, `engine/apps/web/src/app/api/x/webhooks/**`
   - **Read** COMMERCE.md §Payment and §Stock, SECURITY.md §Webhooks, the 2026-10-06 webhook and stock entries in **Log**
