@@ -26,7 +26,7 @@ import { cacheTags, catalogueTag, workTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
 
-import { PUBLIC_IMAGE_SELECT, publicImageUrl } from '../../media/public-image'
+import { derivativeSrcSetOf, PUBLIC_IMAGE_SELECT, publicImageUrl } from '../../media/public-image'
 
 export type FeaturedWork = {
   readonly title: string
@@ -35,6 +35,8 @@ export type FeaturedWork = {
   readonly objectType: string | null
   readonly publishedAt: string | null
   readonly imageUrl: string | null
+  /** The derivative ladder that exists for the image, so a card loads the rung its slot needs. */
+  readonly imageSrcSet: string | null
   readonly imageAlt: string
 }
 
@@ -79,6 +81,7 @@ export async function loadFeaturedWorks(_locale: SiteLocale): Promise<readonly F
       publishedAt: work.updatedAt instanceof Date ? work.updatedAt.toISOString() : null,
       // The public derivative once the media pipeline has made it (`../../media/public-image`).
       imageUrl: media ? publicImageUrl(media) : null,
+      imageSrcSet: media ? derivativeSrcSetOf(media) : null,
       imageAlt: typeof media?.alt === 'string' && media.alt ? media.alt : '',
     }
   })

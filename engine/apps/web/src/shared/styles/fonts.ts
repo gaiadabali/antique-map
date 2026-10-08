@@ -14,9 +14,24 @@ import { Cormorant_Garamond, Karla } from 'next/font/google'
 export const display = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
+  style: ['normal'],
   variable: '--font-display-face',
   display: 'swap',
+})
+
+/**
+ * The italic face is a second declaration of the same family (`@font-face` names
+ * 'Cormorant Garamond', style italic), so `font-style: italic` finds it. It is not preloaded:
+ * only the item page's original title uses it, and a preloaded face no page uses is 39 KB
+ * every other page downloads before it can paint (the 10.2 LCP finding).
+ */
+export const displayItalic = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['italic'],
+  variable: '--font-display-italic-face',
+  display: 'swap',
+  preload: false,
 })
 
 export const body = Karla({
@@ -26,4 +41,4 @@ export const body = Karla({
   display: 'swap',
 })
 
-export const fontVariables = `${display.variable} ${body.variable}`
+export const fontVariables = `${display.variable} ${displayItalic.variable} ${body.variable}`

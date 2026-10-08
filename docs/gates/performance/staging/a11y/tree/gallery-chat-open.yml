@@ -1,0 +1,28 @@
+- dialog "Chat with us":
+    - heading "Indies Gallery" [level=2]
+    - paragraph: AI assistant · replies instantly
+    - link "Talk to a person":
+        - /url: https://wa.me/6281100000000
+    - button "Close chat"
+    - log "Conversation":
+        - text: Hi! I'm the Indies Gallery assistant. Ask me about the collection, or I can put you in touch with the gallery on WhatsApp.
+        - group "Suggested questions":
+            - button "What maps do you have of Java?" [disabled]
+            - button "Do you have anything from before 1750?" [disabled]
+            - button "How do I know a print is original?" [disabled]
+            - button "I'd like to sell an antique map" [disabled]
+        - alert:
+            - paragraph: You’re sending messages quickly. Please wait a moment and try again.
+            - paragraph: You can also reach the team directly.
+            - link "Continue on WhatsApp":
+                - /url: https://wa.me/6281100000000
+            - link "Send an email":
+                - /url: mailto:gallery@example.com
+    - text: Your message
+    - textbox "Your message" [disabled]:
+        - /placeholder: Ask a question…
+    - button "Send" [disabled]
+    - paragraph:
+        - text: I'm an AI assistant and can make mistakes. Indies Gallery confirms everything by WhatsApp or email.
+        - link "Privacy notice":
+            - /url: /privacy

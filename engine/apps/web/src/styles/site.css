@@ -40,6 +40,9 @@ a {
   padding: var(--space-2) var(--space-4);
   background: var(--color-surface-raised);
   font: var(--text-small);
+  /* Above the sticky header (100) and the menu sheet (9999): a skip link focused behind the logo
+     is a focus nobody can see (WCAG 2.4.7; 10.2 keyboard pass). */
+  z-index: 10000;
 }
 
 .skip-link:focus {

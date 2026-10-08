@@ -1,0 +1,50 @@
+[
+  {
+    "label": "shop product",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop product",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop bag",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop bag",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop checkout",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop checkout",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop order",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop order",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  }
+]

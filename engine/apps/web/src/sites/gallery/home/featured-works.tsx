@@ -6,7 +6,7 @@
  */
 import { Suspense } from 'react'
 
-import { Skeleton, TextLink } from '../../../shared/ui'
+import { ResponsiveImage, Skeleton, TextLink } from '../../../shared/ui'
 
 import {
   loadFeaturedWorks,
@@ -69,14 +69,17 @@ async function WorksRail({ locale, t }: Props) {
           <span className={styles.num}>{`0${at + 1}/`}</span>
           <h3 className={styles.cardTitle}>{work.title}</h3>
           {work.imageUrl ? (
-            // The upload's own URL, from the CMS: not a Next static asset path.
-            <img
-              className={styles.plate}
-              style={{ aspectRatio: '4 / 5', objectFit: 'cover', marginTop: 'var(--space-4)' }}
+            // A public derivative, with its ladder: three cards in a row, each a third of the
+            // content width (80 rem at most), so a phone loads the 320 px rung, not the top one.
+            <ResponsiveImage
+              variant="fill"
+              aspectRatio="4 / 5"
+              className={`${styles.plate} ${styles.platePicture}`}
               src={work.imageUrl}
+              srcSet={work.imageSrcSet}
               alt={work.imageAlt}
-              // CORS like every media image (ResponsiveImage): the zoom viewer reuses the cache.
-              crossOrigin="anonymous"
+              sizes="(min-width: 80rem) 25rem, 30vw"
+              unoptimized
             />
           ) : (
             <span

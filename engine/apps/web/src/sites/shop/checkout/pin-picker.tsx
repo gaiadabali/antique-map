@@ -221,12 +221,18 @@ export function PinPicker({
       const parsedLat = parseCoordinate(lat)
       const parsedLng = parseCoordinate(lng)
       if (parsedLat !== null && parsedLng !== null) {
-        pick({ lat: parsedLat, lng: parsedLng }, true)
+        // Not `pick()`: that writes the parsed numbers back into these two fields, and a buyer
+        // typing "115.2126" key by key would have "115." rewritten to "115" under the cursor.
+        pickPin({ lat: parsedLat, lng: parsedLng }, true, {
+          latestRef: latestPin,
+          onPin,
+          resolveAddress: addressFor,
+        })
       } else {
         onPin(null, null)
       }
     },
-    [pick, onPin],
+    [onPin],
   )
 
   return (

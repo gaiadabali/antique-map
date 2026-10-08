@@ -102,6 +102,9 @@
 }
 
 .lineTotal {
+  /* Its own height only: stretched to the whole row at 390 px it lay over the quantity form's
+     Update button, took half its taps and hid its focus (WCAG 2.4.11; 10.2 keyboard pass). */
+  align-self: flex-start;
   margin: 0;
   font: var(--text-body);
   color: var(--color-text);

@@ -30,6 +30,7 @@ import {
 import { CODE_COOKIE_NAME, parseCodeCookie } from './code-cookie'
 import { displayFor, type BagDisplay } from './display'
 import { refusalKey } from './refusals'
+import type { CatalogueImage } from '../catalogue/view-models'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 
 export type BagLineVM = {
@@ -41,8 +42,8 @@ export type BagLineVM = {
   readonly slug: string | null
   readonly name: string
   readonly variantLabel: string | null
-  readonly imageUrl: string | null
-  readonly imageAlt: string | null
+  /** The first image as the catalogue shows it (derivative ladder, synthetic label); `null` without one. */
+  readonly image: CatalogueImage | null
   /** The server's figures, formatted; `null` on an unavailable line. */
   readonly unitText: string | null
   readonly lineText: string | null
@@ -125,8 +126,7 @@ function lineVM(line: QuoteLine, byId: ReadonlyMap<number, BagDisplay>): BagLine
     slug: product?.slug ?? null,
     name: product?.name ?? '',
     variantLabel,
-    imageUrl: product?.image?.url ?? null,
-    imageAlt: product?.image?.alt ?? product?.name ?? '',
+    image: product?.image ?? null,
     unitText: line.unitIdr === null ? null : formatRupiah(line.unitIdr),
     lineText: line.status === 'ok' ? formatRupiah(line.lineIdr) : null,
   }

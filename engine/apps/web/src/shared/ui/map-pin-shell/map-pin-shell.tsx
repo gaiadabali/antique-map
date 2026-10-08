@@ -35,15 +35,10 @@ export function MapPinShell({
         </button>
       </div>
 
-      <form
-        className={styles.fallback}
-        onSubmit={(event) => {
-          event.preventDefault()
-          const data = new FormData(event.currentTarget)
-          const link = String(data.get('mapLink') ?? '')
-          onPasteLink?.(link)
-        }}
-      >
+      {/* A div, not a form: the shell sits inside the checkout's own form, and a form in a form is
+          invalid HTML (the server's parser drops the inner one, so hydration disagrees). Enter in
+          the field is the submit. */}
+      <div className={styles.fallback}>
         <label htmlFor="map-link" className={styles.label}>
           {pasteLinkLabel}
         </label>
@@ -53,8 +48,14 @@ export function MapPinShell({
           type="url"
           placeholder={placeholder}
           className={styles.input}
+          onKeyDown={(event) => {
+            if (event.key !== 'Enter') return
+            // Enter here asks for the link to be read; it must never place the order.
+            event.preventDefault()
+            onPasteLink?.(event.currentTarget.value)
+          }}
         />
-      </form>
+      </div>
     </div>
   )
 }

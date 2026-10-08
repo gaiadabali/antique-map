@@ -12,12 +12,19 @@ import { cacheTag } from 'next/cache'
 
 import { cms } from '@engine/cms/instance'
 
+import { PUBLIC_IMAGE_SELECT } from '../../media/public-image'
+import { imageOf } from '../catalogue/images'
+import type { CatalogueImage } from '../catalogue/view-models'
+
 export type BagDisplay = {
   readonly productId: number
   readonly slug: string
   readonly name: string
-  /** The first image, or `null` when the product has none yet. */
-  readonly image: { readonly url: string; readonly alt: string } | null
+  /**
+   * The first image as the catalogue shows it — the public derivative and its ladder, the
+   * synthetic label — or `null` when the product has none published yet.
+   */
+  readonly image: CatalogueImage | null
   /** A variant's label by SKU; the page falls back to the SKU for one it does not name. */
   readonly variantLabels: Readonly<Record<string, string>>
 }
@@ -25,15 +32,6 @@ export type BagDisplay = {
 type Doc = Record<string, unknown>
 
 const asArray = (value: unknown): unknown[] => (Array.isArray(value) ? value : [])
-
-function imageOf(raw: unknown): BagDisplay['image'] {
-  if (typeof raw !== 'object' || raw === null) return null
-  const media = (raw as { image?: unknown }).image
-  if (typeof media !== 'object' || media === null) return null
-  const record = media as { url?: unknown; alt?: unknown }
-  if (typeof record.url !== 'string' || typeof record.alt !== 'string') return null
-  return { url: record.url, alt: record.alt }
-}
 
 /**
  * The bag's products as the bag page shows them. A product missing here was unpublished (or
@@ -58,7 +56,7 @@ export async function displayFor(productIds: readonly number[]): Promise<readonl
     select: {
       name: true,
       slug: true,
-      images: { image: true },
+      images: { image: { ...PUBLIC_IMAGE_SELECT, provenance: true } },
       variants: { sku: true, label: true },
     },
     depth: 1,
@@ -85,7 +83,7 @@ export async function displayFor(productIds: readonly number[]): Promise<readonl
       productId: id,
       slug: doc.slug,
       name: doc.name,
-      image: imageOf(asArray(doc.images)[0]),
+      image: imageOf((asArray(doc.images)[0] as { image?: unknown } | undefined)?.image),
       variantLabels: labels,
     })
   }

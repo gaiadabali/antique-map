@@ -5,7 +5,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { ResponsiveImage } from './responsive-image'
+import { avifLadderOf, ResponsiveImage } from './responsive-image'
 
 const BASE = 'https://media.example.test/derivatives/v1/abc'
 const SRC_SET = `${BASE}/320.webp 320w, ${BASE}/640.webp 640w, ${BASE}/1024.webp 1024w`
@@ -89,5 +89,48 @@ describe('ResponsiveImage with a derivative ladder', () => {
     )
     expect(markup).toContain(`src="${BASE}/1024.webp"`)
     expect(markup).not.toContain('srcSet')
+  })
+})
+
+describe('the AVIF source (10.2)', () => {
+  it('names the same ladder in AVIF, and only for a ladder of WebP derivatives', () => {
+    expect(avifLadderOf(SRC_SET)).toBe(
+      `${BASE}/320.avif 320w, ${BASE}/640.avif 640w, ${BASE}/1024.avif 1024w`,
+    )
+    expect(avifLadderOf(`${BASE}/320.jpg 320w`)).toBeNull()
+    expect(avifLadderOf(`${BASE}/320.webp 320w, ${BASE}/640.jpg 640w`)).toBeNull()
+    expect(avifLadderOf('')).toBeNull()
+  })
+
+  it('serves AVIF through <picture> and keeps the WebP ladder on the <img> as the fallback', () => {
+    const markup = renderToStaticMarkup(
+      <ResponsiveImage
+        variant="fill"
+        aspectRatio="4 / 3"
+        src={`${BASE}/1024.webp`}
+        srcSet={SRC_SET}
+        alt="A map of Java"
+        sizes="50vw"
+      />,
+    )
+    expect(markup).toContain('<picture>')
+    expect(markup).toContain(
+      `<source type="image/avif" srcSet="${BASE}/320.avif 320w, ${BASE}/640.avif 640w, ${BASE}/1024.avif 1024w" sizes="50vw"/>`,
+    )
+    expect(markup).toContain(`srcSet="${SRC_SET}"`)
+    expect(markup.indexOf('<source')).toBeLessThan(markup.indexOf('<img'))
+  })
+
+  it('adds no <picture> without a ladder', () => {
+    const markup = renderToStaticMarkup(
+      <ResponsiveImage
+        variant="fill"
+        aspectRatio="1 / 1"
+        src={`${BASE}/1024.webp`}
+        alt="A map of Java"
+        sizes="50vw"
+      />,
+    )
+    expect(markup).not.toContain('<picture>')
   })
 })

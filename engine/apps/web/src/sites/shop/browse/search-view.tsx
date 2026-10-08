@@ -10,6 +10,9 @@ import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
 
+/** The phone's first row (two columns): its cards hold the listing's LCP candidates. */
+const LEAD_CARDS = 2
+
 export function SearchView({
   query,
   listing,
@@ -33,9 +36,14 @@ export function SearchView({
       ) : (
         <>
           <ul className={styles.grid}>
-            {listing.items.map((product) => (
+            {listing.items.map((product, index) => (
               <li key={product.id}>
-                <ProductCard product={product} locale={locale} href={productHref(product)} />
+                <ProductCard
+                  product={product}
+                  locale={locale}
+                  href={productHref(product)}
+                  lead={index < LEAD_CARDS}
+                />
               </li>
             ))}
           </ul>
