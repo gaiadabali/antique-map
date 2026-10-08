@@ -1,12 +1,22 @@
 /**
  * The footer's contact lines (4.3.a), out of `site-shell.tsx` for the file-size limit: WhatsApp, email
- * and phone from `site-settings`, or the lexicon's placeholder when it answers none.
+ * and phone from `site-settings`, or the lexicon's placeholder when it answers none; then the site's
+ * social accounts (`site-settings.social`, 10.6.e), each named by its platform as the owner typed it.
  */
 import { TextLink } from '../shared/ui'
 import type { PublicSiteSettings } from '../server/site-settings'
 
 import type { ShellText } from './site'
 import styles from './shell.module.css'
+
+/** Only an `https:` address becomes a link: the field is free text, so no `javascript:` or `//host`. */
+export function socialLinks(
+  social: PublicSiteSettings['social'],
+): readonly { platform: string; url: string }[] {
+  return (social ?? []).filter(
+    (link) => link.platform.trim() !== '' && /^https:\/\/[^/\s]+\.[^/\s]+/i.test(link.url),
+  )
+}
 
 /** WhatsApp, email and phone from `site-settings`; the lexicon's placeholder when it answers none. */
 export function ContactBlock({ settings, t }: { settings: PublicSiteSettings; t: ShellText }) {
@@ -27,16 +37,31 @@ export function ContactBlock({ settings, t }: { settings: PublicSiteSettings; t:
       label: settings.contact.phone,
     },
   ].filter((item): item is { key: string; href: string; label: string } => Boolean(item))
-  if (items.length === 0) {
-    return <p className={styles.footerLine}>{t('shell.contactPlaceholder')}</p>
-  }
+  const social = socialLinks(settings.social)
   return (
-    <ul className={styles.footerList}>
-      {items.map((item) => (
-        <li key={item.key}>
-          <TextLink href={item.href}>{item.label}</TextLink>
-        </li>
-      ))}
-    </ul>
+    <>
+      {items.length === 0 ? (
+        <p className={styles.footerLine}>{t('shell.contactPlaceholder')}</p>
+      ) : (
+        <ul className={styles.footerList}>
+          {items.map((item) => (
+            <li key={item.key}>
+              <TextLink href={item.href}>{item.label}</TextLink>
+            </li>
+          ))}
+        </ul>
+      )}
+      {social.length > 0 && (
+        <ul className={styles.footerList}>
+          {social.map((link) => (
+            <li key={link.url}>
+              <TextLink href={link.url} rel="me noopener noreferrer">
+                {link.platform}
+              </TextLink>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   )
 }
