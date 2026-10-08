@@ -132,10 +132,10 @@ export function mediaOriginOf(env: Env): string | null {
  * request's surface, on every call.
  */
 export function contentSecurityPolicy(env: Env = process.env) {
-  const options: CspOptions = {
-    development: env.NODE_ENV !== 'production',
-    mediaOrigin: mediaOriginOf(env),
-  }
+  // Read on each request, like the proxy's host allow-list: nothing runs at import.
   return (context: CspContext & { readonly locale?: unknown }): string =>
-    buildCsp(surfaceOf(context), newNonce(), options)
+    buildCsp(surfaceOf(context), newNonce(), {
+      development: env.NODE_ENV !== 'production',
+      mediaOrigin: mediaOriginOf(env),
+    })
 }

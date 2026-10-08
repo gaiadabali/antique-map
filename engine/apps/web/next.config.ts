@@ -2,7 +2,7 @@
  * The one app's config (ARCHITECTURE.md §4): one build serves both sites, so nothing here may
  * name a site or bake a site's value in — which site a request is for is its `Host`, picked by the
  * proxy at runtime against the env allow-list (TASKS.md 2.2). No `NEXT_PUBLIC_*`, no `headers()`
- * CSP (the proxy builds it per request, SECURITY.md), no route segment config but each site root
+ * CSP (the proxy builds it per request, SECURITY.md; `headers()` carries only the static ones), no route segment config but each site root
  * layout's `instant = false` (Cache Components rejects the rest, ARCHITECTURE.md §6).
  *
  * The build touches no database (CONVENTIONS.md §12): `output: 'standalone'` is assembled into
@@ -13,6 +13,8 @@ import { fileURLToPath } from 'node:url'
 
 import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
+
+import { securityHeaders } from './src/security/headers'
 
 /** The workspace root: standalone output traces the engine packages from here. */
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -61,8 +63,12 @@ const payloadHeaders = withAdmin.headers
  */
 export default {
   ...withAdmin,
-  headers: async () =>
-    ((await payloadHeaders?.()) ?? []).map((rule) =>
+  // The static security headers on every path (SECURITY.md B3, gate finding F-01). HSTS stays off
+  // until the sites are on their real domains for good. The per-request CSP is the proxy's.
+  headers: async () => [
+    { source: '/:path*', headers: [...securityHeaders({ hsts: false })] },
+    ...((await payloadHeaders?.()) ?? []).map((rule) =>
       rule.source === '/:path*' ? { ...rule, source: '/admin/:path*' } : rule,
     ),
+  ],
 } satisfies NextConfig
