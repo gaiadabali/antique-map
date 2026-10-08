@@ -11,17 +11,22 @@ import { derivativeWidthsFor, isLowResolution, makeDerivatives } from './index'
 
 const ID = '0123456789abcdef0123456789abcdef'
 
-/** A small noisy JPEG with an EXIF GPS block, as a capture would arrive. */
+/**
+ * A JPEG with an EXIF GPS block, as a capture would arrive. The pixels are a smooth gradient,
+ * not noise: AVIF encoding time scales with entropy, and a noisy 2000 px frame took 30 s+ on a
+ * 2-core CI runner. Nothing here asserts on pixel content, only on geometry and metadata.
+ */
 async function gpsJpeg(width = 800, height = 600): Promise<Buffer> {
-  const flat = await sharp({
-    create: {
-      width,
-      height,
-      channels: 3,
-      background: '#808080',
-      noise: { type: 'gaussian', mean: 128, sigma: 30 },
-    },
-  })
+  const raw = Buffer.alloc(width * height * 3)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 3
+      raw[i] = (x * 255) / width
+      raw[i + 1] = (y * 255) / height
+      raw[i + 2] = 128
+    }
+  }
+  const flat = await sharp(raw, { raw: { width, height, channels: 3 } })
     .jpeg()
     .toBuffer()
   const tagged = await sharp(flat)
@@ -33,7 +38,7 @@ async function gpsJpeg(width = 800, height = 600): Promise<Buffer> {
 }
 
 describe('makeDerivatives', () => {
-  it('never upscales a small image', async () => {
+  it('never upscales a small image', { timeout: 30_000 }, async () => {
     const out = await makeDerivatives(await gpsJpeg(300, 200))
     expect(out.map((d) => d.width)).toEqual([300, 300])
     expect(out.every((d) => d.width <= 300 && d.height <= 200)).toBe(true)
@@ -41,8 +46,10 @@ describe('makeDerivatives', () => {
   })
 
   it('emits AVIF and WebP for each width', { timeout: 30_000 }, async () => {
-    const out = await makeDerivatives(await gpsJpeg(2000, 1500))
-    const widths = [...DERIVATIVE_WIDTHS.filter((w) => w <= 2000), 2000]
+    // Three rungs of the ladder, on a source wider than the top one: AVIF is the slow encoder,
+    // and the full five-rung ladder on a 2000 px frame overran a 2-core runner.
+    const widths = DERIVATIVE_WIDTHS.slice(0, 3)
+    const out = await makeDerivatives(await gpsJpeg(1200, 900), { widths })
     expect(out.map((d) => d.width)).toEqual(widths.flatMap((w) => [w, w]))
     expect(out.map((d) => d.format)).toEqual(widths.flatMap(() => [...DERIVATIVE_FORMATS]))
     const widthsOut = new Set(out.map((d) => d.width))
@@ -53,26 +60,31 @@ describe('makeDerivatives', () => {
       if (meta.format === 'heif') expect(d.format).toBe('avif')
       expect(meta.width).toBe(d.width)
       expect(meta.height).toBeGreaterThan(0)
-      if (d.width < 2000) expect(Math.abs(d.height / d.width - 0.75)).toBeLessThan(0.01)
+      expect(Math.abs(d.height / d.width - 0.75)).toBeLessThan(0.01)
     }
     expect(widthsOut.size).toBe(widths.length)
   })
 
-  it('strips EXIF GPS data', async () => {
-    const out = await makeDerivatives(await gpsJpeg())
+  it('strips EXIF GPS data', { timeout: 30_000 }, async () => {
+    const out = await makeDerivatives(await gpsJpeg(400, 300), { widths: [320] })
+    expect(out).toHaveLength(2)
     for (const d of out) expect((await sharp(d.bytes).metadata()).exif).toBeUndefined()
   })
 
-  it('names keys with the contract scheme when given an asset id', async () => {
-    const out = await makeDerivatives(await gpsJpeg(700, 500), { id: ID })
+  it('names keys with the contract scheme when given an asset id', { timeout: 30_000 }, async () => {
+    const out = await makeDerivatives(await gpsJpeg(700, 500), { id: ID, widths: [320, 640] })
+    expect(out).toHaveLength(4)
     expect(out.map((d) => d.key)).toEqual(
       out.map((d) => `derivatives/v1/${ID}/${d.width}.${d.format}`),
     )
   })
 
-  it('keeps every derivative inside the public long edge', async () => {
+  it('keeps every derivative inside the public long edge', { timeout: 30_000 }, async () => {
     // A tall sheet: 700 wide, 2000 high, under a 1,000 px cap.
-    const out = await makeDerivatives(await gpsJpeg(700, 2000), { maxLongEdge: 1000 })
+    const out = await makeDerivatives(await gpsJpeg(700, 2000), {
+      maxLongEdge: 1000,
+      widths: [320, 640],
+    })
     for (const d of out) expect(Math.max(d.width, d.height)).toBeLessThanOrEqual(1000)
     expect(out.find((d) => d.format === 'webp' && d.key === '320.webp')?.height).toBe(914)
   })
