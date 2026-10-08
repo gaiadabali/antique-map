@@ -17,8 +17,8 @@
 # derivatives and tiles get their Cache-Control back, which a copy to disk does not keep) -> the "after" evidence
 # and diffs, taken with the app still stopped so nothing writes -> start -> health on both hosts.
 #
-# Lessons of the first run (2026-10-08): a recursive `mc rm` or `mc ls` over ~79,000 objects OOM-killed RustFS at
-# its 2 GB cap, so the wipe is by key; `pg_restore` as postgres cannot read a root-only dump, so it reads stdin.
+# First run (2026-10-08): a recursive rm/ls over ~79k objects OOM-killed RustFS at 2 GB (now 6 GB; the wipe is by key);
+# pg_restore as postgres cannot read a root-only dump (it reads stdin); the tiles were never put back (now verified).
 set -euo pipefail
 cd /
 
@@ -40,6 +40,7 @@ NEED_GIB=${DRILL_NEED_GIB:-14} # free space wanted under BACKUP_ROOT: the bucket
 IMMUTABLE='Cache-Control=public, max-age=31536000, immutable'
 HOSTS=(indies-gallery.gaiada.com old-east-indies.gaiada.com)
 PSQL=(sudo -u postgres psql -v ON_ERROR_STOP=1 -At)
+LOCK=/run/lock/indies-restore-drill.lock
 
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 DIR=$BACKUP_ROOT/drill-$STAMP
@@ -67,7 +68,7 @@ preflight() {
   [ "$("${PSQL[@]}" -d postgres -c "select count(*) from pg_database where datname='$ASIDE'")" = 0 ] || bad "$ASIDE exists"
   [ "$(app_status)" = online ] || bad "pm2 uindies is not online (is a drill or a release already running?)"
   rustfs_up || bad "RustFS does not answer on 127.0.0.1:4032"
-  [ -n "${DRILL_DETACHED:-}" ] || [ -z "$(pgrep -f '^bash [^ ]*restore-drill' | grep -vx "$$" || true)" ] || bad "another restore-drill.sh is running"
+  [ -n "${DRILL_DETACHED:-}" ] || (flock -n 9) 9>"$LOCK" || bad "another restore-drill.sh is running" # not pgrep: $(...) finds itself
   local free
   free=$(df -BG --output=avail "$BACKUP_ROOT" | tail -1 | tr -dc 0-9)
   [ "$free" -ge "$NEED_GIB" ] || bad "only ${free} GiB free under $BACKUP_ROOT, need $NEED_GIB"
@@ -129,6 +130,7 @@ ASIDE=indies_db_predrill_${STAMP,,}
 install -d -m 700 "$DIR"
 trap '' HUP
 exec >>"$DIR/drill.log" 2>&1
+exec 9>"$LOCK"; flock -n 9 || { say "another drill holds $LOCK: stopping"; exit 1; }
 
 MC_HOST_rustfs="http://$(cat /etc/indies/rustfs/access-key):$(cat /etc/indies/rustfs/secret-key)@127.0.0.1:4032"
 export MC_HOST_rustfs
@@ -195,8 +197,7 @@ wipe_keys() {
 put_back() {
   local d p attr
   for d in "$DIR"/indies-media/*/; do
-    p=$(basename "$d")
-    attr=()
+    p=$(basename "$d"); attr=()
     case "$p" in derivatives | iiif) attr=(--attr "$IMMUTABLE") ;; esac
     mc mirror --quiet "${attr[@]}" "$d" "$BUCKET/$p" >/dev/null
     say "restored $p"
@@ -215,8 +216,7 @@ on_exit() {
 trap on_exit EXIT
 trap 'say "error at line $LINENO"' ERR
 
-say "drill $STAMP on $(hostname); disk: $(df -h / | tail -1)"
-mark start
+say "drill $STAMP on $(hostname); disk: $(df -h / | tail -1)"; mark start
 
 STEP=1; say "1. copy the bucket while the app runs"
 mc mirror --quiet "$BUCKET" "$DIR/indies-media" >/dev/null
