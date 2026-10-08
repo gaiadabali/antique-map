@@ -1,0 +1,104 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - heading "Search the collection" [level=1]
+    - search:
+        - text: Search for
+        - searchbox "Search for": map
+        - button "Search"
+    - region "Results for “map”":
+        - heading "Results for “map”" [level=2]
+        - paragraph:
+            - text: 8 works
+            - link "Include sold":
+                - /url: /search?q=map&availability=sold
+        - list:
+            - listitem:
+                - link "Ancient Map of the World (woodblock) — the whole sheet Ancient Map of the World (woodblock) Peter Apian, 1544 21.4 × 29.1 cm (8.4 × 11.5 in) Price on request":
+                    - /url: /product/477
+                    - img "Ancient Map of the World (woodblock) — the whole sheet"
+                    - text: Ancient Map of the World (woodblock) Peter Apian, 1544 21.4 × 29.1 cm (8.4 × 11.5 in) Price on request
+            - listitem:
+                - link "The Malay Archipelago - English Map — the whole sheet The Malay Archipelago - English Map John Tallis, 1851 27 × 36 cm (10.6 × 14.2 in) Price on request":
+                    - /url: /product/527
+                    - img "The Malay Archipelago - English Map — the whole sheet"
+                    - text: The Malay Archipelago - English Map John Tallis, 1851 27 × 36 cm (10.6 × 14.2 in) Price on request
+            - listitem:
+                - link "Sinen, The Hermaphrodite Tiger - Hunter . Borneo Dayak — the whole sheet Sinen, The Hermaphrodite Tiger - Hunter . Borneo Dayak Carl Bock, 1881 Price on request":
+                    - /url: /product/709
+                    - img "Sinen, The Hermaphrodite Tiger - Hunter . Borneo Dayak — the whole sheet"
+                    - text: Sinen, The Hermaphrodite Tiger - Hunter . Borneo Dayak Carl Bock, 1881 Price on request
+            - listitem:
+                - link "Map of Indonesia and Ternate Cloves Islands — the whole sheet Map of Indonesia and Ternate Cloves Islands Rigobert Bonne, 1773 23 × 32 cm (9.1 × 12.6 in) Price on request":
+                    - /url: /product/1055
+                    - img "Map of Indonesia and Ternate Cloves Islands — the whole sheet"
+                    - text: Map of Indonesia and Ternate Cloves Islands Rigobert Bonne, 1773 23 × 32 cm (9.1 × 12.6 in) Price on request
+            - listitem:
+                - link "Chinese Celestial Map — the whole sheet Chinese Celestial Map Huang Shang, 1493–1602 Price on request":
+                    - /url: /product/1093
+                    - img "Chinese Celestial Map — the whole sheet"
+                    - text: Chinese Celestial Map Huang Shang, 1493–1602 Price on request
+            - listitem:
+                - link "Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) — the whole sheet Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) Jacques Nicolas Bellin, c. 1757 Price on request":
+                    - /url: /product/1302
+                    - img "Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) — the whole sheet"
+                    - text: Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) Jacques Nicolas Bellin, c. 1757 Price on request
+            - listitem:
+                - link "Cluverius - Asia Antiqua et Nova, Asia Map — the whole sheet Cluverius - Asia Antiqua et Nova, Asia Map Pauli, 1697 23 × 28 cm (9.1 × 11 in) Price on request":
+                    - /url: /product/1356
+                    - img "Cluverius - Asia Antiqua et Nova, Asia Map — the whole sheet"
+                    - text: Cluverius - Asia Antiqua et Nova, Asia Map Pauli, 1697 23 × 28 cm (9.1 × 11 in) Price on request
+            - listitem:
+                - link "Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides — the whole sheet Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides Pieter van der Aa, c. 1700 15 × 25 cm (5.9 × 9.8 in) Price on request":
+                    - /url: /product/1701
+                    - img "Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides — the whole sheet"
+                    - text: Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides Pieter van der Aa, c. 1700 15 × 25 cm (5.9 × 9.8 in) Price on request
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: http://shop.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

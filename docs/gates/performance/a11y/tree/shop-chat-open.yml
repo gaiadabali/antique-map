@@ -1,0 +1,21 @@
+- dialog "Chat with us":
+    - heading "Old East Indies" [level=2]
+    - paragraph: AI assistant · replies instantly
+    - button "Close chat"
+    - log "Conversation":
+        - text: Hi! I'm the Old East Indies assistant. Ask me about our products, stores and delivery, or I can put you in touch with the team on WhatsApp.
+        - group "Suggested questions":
+            - button "Which batik prints do you have?" [disabled]
+            - button "Do you deliver to Ubud?" [disabled]
+            - button "Which store is nearest me?" [disabled]
+            - button "What sizes does this come in?" [disabled]
+        - alert:
+            - paragraph: Something went wrong. Please try again, or contact us directly.
+    - text: Your message
+    - textbox "Your message" [disabled]:
+        - /placeholder: Ask a question…
+    - button "Send" [disabled]
+    - paragraph:
+        - text: I'm an AI assistant and can make mistakes. Old East Indies confirms everything by WhatsApp or email.
+        - link "Privacy notice":
+            - /url: /privacy

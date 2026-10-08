@@ -1,0 +1,86 @@
+[
+  {
+    "label": "gallery home",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery home",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery listing",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery listing",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery item",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery item",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery search",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery search",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery sell-to-us",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery sell-to-us",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery home-id",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery home-id",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery item-id",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery item-id",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  }
+]

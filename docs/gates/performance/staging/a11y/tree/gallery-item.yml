@@ -1,0 +1,100 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - article:
+        - navigation "Breadcrumb":
+            - list:
+                - listitem:
+                    - link "Browse the collection":
+                        - /url: /browse
+                - listitem: Nova tabula Infularum Iava, Sumatra, Borneonis et .. by Theodore De Bry
+        - heading "Nova tabula Infularum Iava, Sumatra, Borneonis et .. by Theodore De Bry" [level=1]
+        - paragraph:
+            - emphasis: Nova tabula Infularum Iava, Sumatra, Borneonis et aliarum Mallaccam usqua, delineate in insula Iava, ubi ad vivum designantur vada et Brevia Scopulique interjacentes defcripta a C.M.A.L
+        - paragraph: Attributed to Theodore De Bry (Cartographer), 1598
+        - paragraph: Stock no. M.1044
+        - img "Nova tabula Infularum Iava, Sumatra, Borneonis et .. by Theodore De Bry — the whole sheet"
+        - button "Zoom into the image"
+        - text: Price on request
+        - paragraph: Held in Singapore
+        - link "Ask about this":
+            - /url: https://wa.me/6281100000000?text=Hello%2C%20I%20am%20interested%20in%20M.1044%20%E2%80%94%20Nova%20tabula%20Infularum%20Iava%2C%20Sumatra%2C%20Borneonis%20et%20..%20by%20Theodore%20De%20Bry.%20https%3A%2F%2Findies-gallery.gaiada.com%2Fproduct%2F2049-nova-tabula-infularum-iava-sumatra-borneonis-et-by-theodore-de-bry
+        - paragraph:
+            - text: Or email
+            - link "gallery@example.com":
+                - /url: mailto:gallery@example.com?subject=M.1044%20%E2%80%94%20Nova%20tabula%20Infularum%20Iava%2C%20Sumatra%2C%20Borneonis%20et%20..%20by%20Theodore%20De%20Bry&body=Hello%2C%20I%20am%20interested%20in%20M.1044%20%E2%80%94%20Nova%20tabula%20Infularum%20Iava%2C%20Sumatra%2C%20Borneonis%20et%20..%20by%20Theodore%20De%20Bry.%20https%3A%2F%2Findies-gallery.gaiada.com%2Fproduct%2F2049-nova-tabula-infularum-iava-sumatra-borneonis-et-by-theodore-de-bry%0A%0AMy%20question%3A
+        - paragraph: Shipping and duties are quoted after we agree the price, and paid before the work is sent.
+        - region "About this work":
+            - text: About this work
+            - term: Type
+            - definition: Map
+            - term: Maker
+            - definition: Attributed to Theodore De Bry (Cartographer)
+            - term: Place
+            - definition: Frankfurt
+            - term: Date of this issue
+            - definition: '1598'
+            - term: Dimensions
+            - definition: 38 × 45 cm (15 × 17.7 in)
+            - term: Condition
+            - definition:
+                - paragraph: G+
+                - paragraph: Study images carefully
+        - paragraph:
+            - link "Browse the collection":
+                - /url: /browse
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: https://old-east-indies.gaiada.com/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - list:
+        - listitem:
+            - link "Ask on WhatsApp":
+                - /url: https://wa.me/6281100000000
+        - listitem:
+            - link "Email":
+                - /url: mailto:gallery@example.com
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

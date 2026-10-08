@@ -1,0 +1,146 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Old East Indies, home":
+        - /url: /
+        - text: Old East Indies
+    - button "Open menu"
+- main:
+    - text: Art souvenirs of the East Indies
+    - heading "Old maps, new walls." [level=1]
+    - paragraph: Museum-grade prints of antique maps and engravings, made from originals in our own collection. 300gsm cotton, archival inks.
+    - link "Shop prints":
+        - /url: /shop
+    - link "How we make them":
+        - /url: '#process'
+    - text: The lead print — shown here as a placeholder until its photograph loads
+    - heading "Shop by" [level=2]
+    - link "Bali":
+        - /url: /shop
+    - link "Java":
+        - /url: /shop
+    - link "Sumatra":
+        - /url: /shop
+    - link "Lombok":
+        - /url: /shop
+    - link "Living room":
+        - /url: /shop
+    - link "Bedroom":
+        - /url: /shop
+    - link "Office":
+        - /url: /shop
+    - link "Entryway":
+        - /url: /shop
+    - heading "Best sellers" [level=2]
+    - 'link "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork 01/ Balinese Dancer Photograph, c. 1927 Digital mockup From Rp 450.000"':
+        - /url: /product/balinese-dancer-photograph-c-1927
+        - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork"'
+        - text: 01/
+        - heading "Balinese Dancer Photograph, c. 1927" [level=3]
+        - paragraph: Digital mockup
+        - paragraph: From Rp 450.000
+    - 'link "Digital mockup: Exotic Bali, 1930s, close view of the artwork 02/ Exotic Bali, 1930s Digital mockup From Rp 450.000"':
+        - /url: /product/exotic-bali-1930s
+        - 'img "Digital mockup: Exotic Bali, 1930s, close view of the artwork"'
+        - text: 02/
+        - heading "Exotic Bali, 1930s" [level=3]
+        - paragraph: Digital mockup
+        - paragraph: From Rp 450.000
+    - 'link "Digital mockup: Balinese Legong Dancer, 1925, close view of the artwork 03/ Balinese Legong Dancer, 1925 Digital mockup From Rp 450.000"':
+        - /url: /product/balinese-legong-dancer-1925
+        - 'img "Digital mockup: Balinese Legong Dancer, 1925, close view of the artwork"'
+        - text: 03/
+        - heading "Balinese Legong Dancer, 1925" [level=3]
+        - paragraph: Digital mockup
+        - paragraph: From Rp 450.000
+    - link "Lombok Turtle Snorkelling 04/ Lombok Turtle Snorkelling From Rp 450.000":
+        - /url: /product/lombok-turtle-snorkelling
+        - img "Lombok Turtle Snorkelling"
+        - text: 04/
+        - heading "Lombok Turtle Snorkelling" [level=3]
+        - paragraph: From Rp 450.000
+    - link "Shop all prints":
+        - /url: /shop
+    - text: Gallery walls
+    - heading "Sets that hang together" [level=2]
+    - paragraph: Prints we have paired so the sizes and subjects sit well on one wall — framed and hung as shown, or chosen apart.
+    - text: The spice route
+    - paragraph: The spice route
+    - paragraph: Three sea charts of the Moluccas and the Banda Islands.
+    - text: Batavia, three views
+    - paragraph: Batavia, three views
+    - paragraph: The old city from the roadstead, the castle and the canal.
+    - text: Java, north coast
+    - paragraph: Java, north coast
+    - paragraph: Three coastal charts, from Batavia to Surabaya.
+    - link "See the gallery walls":
+        - /url: /collections
+    - text: The workshop — press, paper, inks (placeholder) How we make them
+    - heading "From an original in our hands to a print on your wall" [level=2]
+    - text: 01/
+    - paragraph: It starts with an original
+    - paragraph: Not a file from the internet — an antique map or engraving we physically hold, the same ones our curator certifies.
+    - text: 02/
+    - paragraph: Restored by hand, scars kept
+    - paragraph: We correct foxing, tears and fading. The marks that give a map its character stay — they are part of its story.
+    - text: 03/
+    - paragraph: Printed in our own workshop
+    - paragraph: 300gsm cotton and archival pigment inks, printed in Bali. Not outsourced, not print-on-demand.
+    - text: Trade & gifting
+    - heading "For shops, hotels and companies" [level=2]
+    - paragraph: More than 100 shops across Indonesia already stock Old East Indies. We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.
+    - link "See partnership options":
+        - /url: /partnership
+    - text: The originals
+    - heading "Every print begins with a map we hold" [level=2]
+    - paragraph: Those originals are examined and certified by our curator, and offered to collectors at Antique Maps Indonesia — our sister gallery.
+    - link "See the originals":
+        - /url: http://gallery.localhost:4417/
+    - text: An original, beside its print (placeholder)
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Antique Maps Indonesia — the originals we print from":
+                - /url: http://gallery.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "Shop prints":
+                    - /url: /shop
+            - listitem:
+                - link "Gallery walls":
+                    - /url: /collections
+            - listitem:
+                - link "Where to buy":
+                    - /url: /stores
+            - listitem:
+                - link "Partnership":
+                    - /url: /partnership
+            - listitem:
+                - link "Delivery":
+                    - /url: /delivery
+            - listitem:
+                - link "Frequently asked":
+                    - /url: /faq
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/oldeastindiesart/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/OldEastIndies
+- button "Chat with us"
+- alert

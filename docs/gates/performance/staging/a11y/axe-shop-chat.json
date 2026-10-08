@@ -1,0 +1,26 @@
+[
+  {
+    "label": "shop chat launcher",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop chat panel open",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop chat launcher",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop chat panel open",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  }
+]

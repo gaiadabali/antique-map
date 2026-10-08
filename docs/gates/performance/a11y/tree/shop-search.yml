@@ -1,0 +1,132 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Old East Indies, home":
+        - /url: /
+        - text: Old East Indies
+    - button "Open menu"
+- main:
+    - region "Search “map”":
+        - heading "Search “map”" [level=1]
+        - list:
+            - listitem:
+                - link "Bali Island Pictorial Map, 1951 Bali Island Pictorial Map, 1951 Reproduction Rp 450.000":
+                    - /url: /product/bali-island-pictorial-map-1951
+                    - img "Bali Island Pictorial Map, 1951"
+                    - text: Bali Island Pictorial Map, 1951 Reproduction Rp 450.000
+            - listitem:
+                - link "Bali Island Dutch Map, 1849 Bali Island Dutch Map, 1849 Reproduction Rp 450.000":
+                    - /url: /product/bali-island-dutch-map-1849
+                    - img "Bali Island Dutch Map, 1849"
+                    - text: Bali Island Dutch Map, 1849 Reproduction Rp 450.000
+            - listitem:
+                - link "Map of the East Indies, 1729 Map of the East Indies, 1729 Reproduction Rp 450.000":
+                    - /url: /product/map-of-the-east-indies-1729
+                    - img "Map of the East Indies, 1729"
+                    - text: Map of the East Indies, 1729 Reproduction Rp 450.000
+            - listitem:
+                - link "World Map in French, 1752 Reproduction Rp 450.000":
+                    - /url: /product/world-map-in-french-1752
+            - listitem:
+                - link "Indonesia Map, c. 1920 Indonesia Map, c. 1920 Reproduction Rp 450.000":
+                    - /url: /product/indonesia-map-c-1920
+                    - img "Indonesia Map, c. 1920"
+                    - text: Indonesia Map, c. 1920 Reproduction Rp 450.000
+            - listitem:
+                - link "Southeast Asia and Australia Map, 1700 Southeast Asia and Australia Map, 1700 Reproduction Rp 450.000":
+                    - /url: /product/southeast-asia-and-australia-map-1700
+                    - img "Southeast Asia and Australia Map, 1700"
+                    - text: Southeast Asia and Australia Map, 1700 Reproduction Rp 450.000
+            - listitem:
+                - link "Indonesia and Clove Spice Islands, 1773 Indonesia and Clove Spice Islands, 1773 Reproduction Rp 450.000":
+                    - /url: /product/indonesia-and-clove-spice-islands-1773
+                    - img "Indonesia and Clove Spice Islands, 1773"
+                    - text: Indonesia and Clove Spice Islands, 1773 Reproduction Rp 450.000
+            - listitem:
+                - link "Southeast Asia French Map, 1770 Southeast Asia French Map, 1770 Reproduction Rp 450.000":
+                    - /url: /product/southeast-asia-french-map-1770
+                    - img "Southeast Asia French Map, 1770"
+                    - text: Southeast Asia French Map, 1770 Reproduction Rp 450.000
+            - listitem:
+                - link "Bali Island Map, c. 1592 Bali Island Map, c. 1592 Reproduction Rp 450.000":
+                    - /url: /product/bali-island-map-c-1592
+                    - img "Bali Island Map, c. 1592"
+                    - text: Bali Island Map, c. 1592 Reproduction Rp 450.000
+            - listitem:
+                - link "Map of Bali Island, 1724 Map of Bali Island, 1724 Reproduction Rp 450.000":
+                    - /url: /product/map-of-bali-island-1724
+                    - img "Map of Bali Island, 1724"
+                    - text: Map of Bali Island, 1724 Reproduction Rp 450.000
+            - listitem:
+                - link "Map of Bali Island, c. 1600 Map of Bali Island, c. 1600 Reproduction Rp 450.000":
+                    - /url: /product/map-of-bali-island-c-1600
+                    - img "Map of Bali Island, c. 1600"
+                    - text: Map of Bali Island, c. 1600 Reproduction Rp 450.000
+            - listitem:
+                - link "KLM Travel Poster Batavia, 1934 KLM Travel Poster Batavia, 1934 Reproduction Rp 450.000":
+                    - /url: /product/klm-travel-poster-batavia-1934
+                    - img "KLM Travel Poster Batavia, 1934"
+                    - text: KLM Travel Poster Batavia, 1934 Reproduction Rp 450.000
+            - listitem:
+                - link "Southeast Asia Map, 1630 Southeast Asia Map, 1630 Reproduction Rp 450.000":
+                    - /url: /product/southeast-asia-map-1630
+                    - img "Southeast Asia Map, 1630"
+                    - text: Southeast Asia Map, 1630 Reproduction Rp 450.000
+            - listitem:
+                - link "Bali Island Tourist Map, 1930 Bali Island Tourist Map, 1930 Reproduction Rp 450.000":
+                    - /url: /product/bali-island-tourist-map-1930
+                    - img "Bali Island Tourist Map, 1930"
+                    - text: Bali Island Tourist Map, 1930 Reproduction Rp 450.000
+            - listitem:
+                - link "Bali Island Road Map, 1937 Bali Island Road Map, 1937 Reproduction Rp 450.000":
+                    - /url: /product/bali-island-road-map-1937
+                    - img "Bali Island Road Map, 1937"
+                    - text: Bali Island Road Map, 1937 Reproduction Rp 450.000
+        - paragraph: Show 15 products
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Antique Maps Indonesia — the originals we print from":
+                - /url: http://gallery.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "Shop prints":
+                    - /url: /shop
+            - listitem:
+                - link "Gallery walls":
+                    - /url: /collections
+            - listitem:
+                - link "Where to buy":
+                    - /url: /stores
+            - listitem:
+                - link "Partnership":
+                    - /url: /partnership
+            - listitem:
+                - link "Delivery":
+                    - /url: /delivery
+            - listitem:
+                - link "Frequently asked":
+                    - /url: /faq
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/oldeastindiesart/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/OldEastIndies
+- button "Chat with us"
+- alert

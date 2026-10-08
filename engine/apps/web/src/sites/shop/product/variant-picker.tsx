@@ -48,7 +48,7 @@ export function VariantPicker({
   const chosenVariant = variants.find((variant) => variant.sku === chosen) ?? null
   const priceText = chosenVariant?.priceText ?? productPriceText
   const canAdd = available && (variants.length === 0 || (chosenVariant?.available ?? false))
-  const fieldId = `variant-${sku}`
+  const legendId = `variant-${sku}-legend`
   const message =
     state === null
       ? null
@@ -66,8 +66,10 @@ export function VariantPicker({
       <input type="hidden" name="qty" value={1} />
       {variants.length > 0 && (
         <fieldset className={styles.options}>
-          <legend className={styles.optionsLegend}>{text.options}</legend>
-          <div className={styles.optionList} role="radiogroup" aria-labelledby={fieldId}>
+          <legend id={legendId} className={styles.optionsLegend}>
+            {text.options}
+          </legend>
+          <div className={styles.optionList} role="radiogroup" aria-labelledby={legendId}>
             {variants.map((variant) => (
               <label
                 key={variant.sku}
@@ -80,7 +82,6 @@ export function VariantPicker({
                   .join(' ')}
               >
                 <input
-                  id={fieldId}
                   type="radio"
                   name="variantSku"
                   value={variant.sku}
