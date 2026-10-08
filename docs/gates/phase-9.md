@@ -223,3 +223,83 @@ live pages (7 x 200, plus the 20 JS bundles of the two home pages, fetched with 
   answers `403` for every row (events are append-only) and the brief forbids SQL writes. Only 3 carry `E2E-9QA`
   (the search queries); the rest are plain `page.viewed`/`ask.clicked` rows. They age out in the 14-month retention.
   Staging now holds gallery 207 and shop 5 events.
+
+## 9.4.c — every old address: one permanent redirect to a 200, 410, or unresolved with a reason
+
+Run 2026-10-08 on staging release **`production-20261008T022650Z-9b85deff`** (main `9b85deff`; it carries
+`ef630d27`: the shop's old `/account` pages reach the legacy handler). The first walk, on `0fc3942a` (2026-10-07),
+failed on exactly those two things: 20 gallery `/product/<id>-<old slug>` answered a 308 the tool did not yet accept,
+and the shop's 3 `/account` paths answered 404 instead of their 410 rows.
+
+**Data: the staging mock, by the user's decision (2026-10-08) — phase 9 closes on it.** Staging holds 49 seeded
+works and 80 products; the category, maker and static-page mapping (the curator's review, DATA.md §6) is not made,
+so those old addresses are unresolved with a reason. The redirects rows loaded on staging: gallery 20 × 301
+(`/product/<id>-<old slug>`) and 3 × 410 (`/account/…`); shop 3 × 410 (`/account…`). The unresolved lists are the
+9.4a builder's output over those works (`unresolved.<site>.json`).
+
+Read-only tool `engine/tooling/phase9-checks/old-urls.mjs`, ≤ 5 requests/s, no redirect followed, fresh state:
+
+```
+old-urls (gallery) against https://indies-gallery.gaiada.com
+  6866 keys from 7665 rows (0 sensitive paths skipped)
+  200: 31   301→200: 0   308 normalised: 0   308 kept live→200: 20   410: 3   unresolved: 6812   FAIL: 0
+  redirect codes seen: 301 0, 302 0, 307 0, 308 20
+  rows + gone + unresolved = 51 + 3 + 6812 = 6866 of 6866 (matches)              exit 0
+old-urls (shop) against https://old-east-indies.gaiada.com
+  671 keys from 673 rows (2 sensitive paths skipped)
+  200: 4   301→200: 0   308 normalised: 0   308 kept live→200: 0   410: 3   unresolved: 664   FAIL: 0
+  redirect codes seen: 301 0, 302 0, 307 0, 308 0
+  rows + gone + unresolved = 4 + 3 + 664 = 671 of 671 (matches)                  exit 0
+```
+
+Reports: [`phase-9/old-urls-gallery.json`](phase-9/old-urls-gallery.json), [`phase-9/old-urls-shop.json`](phase-9/old-urls-shop.json).
+Every redirect is one hop to a 200 (the tool requests each `Location` once and requires 200); no chain, no loop.
+
+**The 301 rows are shadowed.** An old item address `/product/<id>-<slug>` is kept live (DATA.md §6): the item route
+answers it with one permanent **308** to the current slug, before the legacy handler and its 301 row are reached —
+same destination, one hop:
+
+```
+GET /product/107-abel-tasman-journey-1724-26   308 -> /product/107-abel-tasman-journey-australia
+GET /product/107-abel-tasman-journey-australia 200
+GET /account/register                          410
+```
+
+DATA.md §6's gate accepts "exactly one permanent redirect (301 or 308) to a 200"; the phase's **Done when** ("an
+old gallery address answers one 301") is read the same way. The 20 gallery 301 rows are harmless but unused.
+
+Unresolved by reason (gallery 6,843 listed; shop 670): image paths answered by the legacy handler's rule, not a row
+(4,111 — 404 on staging, the old images are not loaded); no work for the legacy id (1,774 — not seeded); no maker
+mapping (508); no category mapping (392); no hand map for a static page (`/about-us`, `/contact-us`, `/faq`, …);
+shop: no product for the old slug, or no category mapping.
+
+**9.4.c passes on the staging mock.** **Before launch (phase 10/11):** rerun on the real catalogue (OA5), with the
+curator's category and maker mapping and the static-page hand map loaded; the launch gate waits for unresolved to
+be only what the owner accepts as 404.
+
+## Done when — the partner with the products carried
+
+Run 2026-10-08 on the same release, as the staging owner (credentials sourced on Helios, never printed):
+
+```
+owner login                       200
+POST /api/partners                201   {name: "E2E-9QA Ubud Hotel Boutique", kind: hotel, site: shop, status: active, productsCarried: [1, 2]}
+GET  /api/partners/1?depth=1      {"productsCarried":[{"id":1,"name":"Greeting card set — frangipani"},{"id":2,"name":"Map reproduction — parang"}]}
+db   partners ⨝ partners_rels     1|E2E-9QA Ubud Hotel Boutique|active|1,2
+anonymous GET /api/partners/1     403
+DELETE /api/partners/1            200   (E2E-9QA partners left: 0)
+```
+
+## Phase 9 — Done when
+
+| Clause | Evidence | |
+| --- | --- | --- |
+| The owner works a lead from New to Closed | 9.1.e §1–2 (lead 48, new → contacted → in_progress → closed, `closed_at` set) | ✅ |
+| Records a partner with the products carried | above | ✅ |
+| Sees each site's dashboard | 9.2.d §3 (both sites, counts equal the database) | ✅ |
+| The shop's partnership page leads to an enquiry | 9.1.e §1 (the form made a `partnership` lead) | ✅ |
+| Localised metadata, right structured data, no antique price | 9.3.d (674 pages, 0 problems) | ✅ |
+| Sitemaps list only published pages | 9.3.d (49 works, 80 products, both locales) | ✅ |
+| An old gallery address answers one permanent redirect | 9.4.c (one 308 to a 200; DATA.md §6) | ✅ |
+
+**Phase 9 passes on the staging mock data.**

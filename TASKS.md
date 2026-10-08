@@ -24,10 +24,10 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 13/16 | 0 | `████████░░`  81% |
-| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | 🔄 in progress | 3/4 | 15/16 | 0 | `█████████░`  94% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/5 | 0/19 | 1 | `░░░░░░░░░░`   0% |
+| **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | · not started | 0/6 | 0/25 | 1 | `░░░░░░░░░░`   0% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **38/51** | **171/208** | **8** | `████████░░`  82% |
+| **All** | 11 phases | | | **39/52** | **172/214** | **8** | `████████░░`  80% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,11 +78,9 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 9·W1 | 9.2.b the owner's dashboard, run 2 (shop panels) | Sonnet → Opus review (antique-map-f5) | `w/9.2b2` | 2026-10-06 | run 1 merged `d719732` (shell, periods, gallery panels; panels load one at a time for the pool); run 2 = sales, fulfilment, payments from orders; the shop funnel shows "no events yet" until the shop's server events exist (a separate ticket after 10.5) |
-| 9·W1 | 9.3.d / 9.4.c Checks | — | `main` | 2026-10-07 | 9.3.a–c and 9.4.a–b merged; both Checks run against staging (now live on `188996d` with the media pipeline): the metadata crawl and the 8,338-URL redirect verification |
-| 9·W1 | 9.1.e Check | orchestrator | `main` | 2026-10-07 | 9.1.a–d merged (`9ed28e1` inbox + partners, retention cron live on staging); the Check: a partnership lead moved to Closed, an editor refused the inbox, the retention job deletes only expired rows |
 | 8·W1 | 8.3 The CMS listing-drafting tool | senior-integrator | `w/8.3` | 2026-10-07 | |
 | 8·W2 | 8.2 The chat panel and the handoff UI | senior-fe | `w/8.2` | 2026-10-07 | |
+| 10·W1 | 10.6 Real content for the client review | orchestrator + Sonnet | `w/10.6a`, `w/10.6c` | 2026-10-08 | pulled forward from 10.3.a at the user's request: the full gallery (crawl of 2026-09-30, still current), the shop's catalogue designs, Instagram; staging loads by the orchestrator |
 
 ## Decisions for the owner
 
@@ -133,6 +131,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **Launch** | Both sites launch together on one cutover day | 2026-10-02 |
 | **Fonts** | **Cormorant Garamond + Karla**, the pair from the client's deck slide 7, loaded from Google Fonts at build (self-hosted at runtime). Cormorant: H1 Regular 40–80 px fluid, −0.015em; H2 Regular 38 px; product card title Medium 25 px; decorative numbers Regular 40 px; logo name SemiBold, 0.04em. Karla: body 14–15 px; price Bold 15 px; logo tagline Medium capitals, 0.14em; announcement bar 13 px. The design system's Inter is not used (`docs/DESIGN-SYSTEM.md` §2) | 2026-10-02 |
 | **Colours** | A different palette per site now; the client's final colours later (Q16) | 2026-10-02 |
+| **Review content** | (the user, as the owner's proxy) For the live client review: all crawled antiques published on staging, photos optimised first; the old site's USD prices load into the owner-only `askingPrice` (reverses DATA.md §2 "not loaded"); the shop shows the designs from the owner's six catalogue PDFs with marked placeholder prices, replacing the mock products; we read @oldeastindiesart ourselves for pictures, captions and prices; both sites link their Instagram | 2026-10-08 |
 | **Replan** | One app, one CMS, one database, two hostnames; the gallery is enquiry-only and shows no price; deals with antique sellers and partners happen on WhatsApp or email; the shop is a real store with per-store stock, a nearest-store rule and simple status tracking; the AI chat guides, hands off and captures leads (DR-1 … DR-15) | 2026-10-01 |
 | **Roles** | `owner` and `editor` both manage and reassign orders (the owner's team acts as editors); leads, partners, discounts and site settings are owner-only; `store` users see only their own store's orders; a store can hand an order back to the owner or an editor with a reason. `docs/SECURITY.md` and `docs/COMMERCE.md` follow this | 2026-10-01 |
 | **Delivery** | Only a pin inside the last delivery band can check out; there is no split order; no online pickup at launch; no wishlists on either site | 2026-10-01 |
@@ -696,14 +695,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 9.3.c a sitemap and `robots` per site listing only published pages in both languages; sold antiques stay listed; tracking and admin paths excluded
   - [x] 9.3.d **Check:** a crawl of the built staging sites finds a canonical, alternates and a description on every page; no gallery JSON-LD contains `price` or `offers`; each sitemap's URLs return 200 and match the published counts.
 
-- [ ] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5 — 🔄 9·W1
+- [x] **9.4 Redirects from the old addresses** · needs: phase 3, phase 5 — ✅ 2026-10-08 9d9f27dc
   - **Lane** CMS + PLT · **Agent** senior-be · **Wave** W1
   - **Owns** `engine/packages/migrate/src/redirects/**`, `engine/apps/web/src/server/redirects/**`
   - **Read** DATA.md §Redirects, CARRY-OVER.md §5 (7,665 and 673 URLs)
   - _Requirements: 14.3_
   - [x] 9.4.a build the `redirects` rows from the legacy URL inventories and the seeded works' old paths; every destination exists and is published
   - [x] 9.4.b the proxy answers one 301 from a redirect row (no chains, no loops), and a 410 for a retired address the owner marks gone
-  - [ ] 9.4.c **Check:** a verification run over all 7,665 gallery and 673 shop old URLs reports each as 301 to a 200 page, 410 or listed unresolved with a reason; there is no redirect chain longer than one hop.
+  - [x] 9.4.c **Check:** a verification run over all 7,665 gallery and 673 shop old URLs reports each as 301 to a 200 page, 410 or listed unresolved with a reason; there is no redirect chain longer than one hop.
 
 ---
 
@@ -711,7 +710,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Goal:** the whole thing is reviewed for safety, speed and usability on staging with a realistic load of data.
 **Done when:** `docs/SECURITY.md`'s checklist is run and every finding is fixed or accepted by the owner; budgets pass on both sites; a rehearsal on staging runs both sites with the full data volume and a restore from backup; the owner's team completes the timed admin tests.
-**Waves:** W1 — 10.1, 10.2, 10.5 · W2 — 10.3 · W3 — 10.4
+**Waves:** W1 — 10.1, 10.2, 10.5, 10.6 · W2 — 10.3 · W3 — 10.4
 
 - [ ] **10.1 Security review and fixes** · needs: phase 7, phase 8, phase 9
   - **Lane** PLT + QA · **Agent** senior-integrator, qa · **Wave** W1
@@ -761,6 +760,18 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.5.a the event and the order move stay one transaction (6.4.b); the order lock is taken with a short lock timeout or NOWAIT, and a replay that loses it answers 200 when its dedupe key is already recorded, else 503 with `Retry-After` — never 500
   - [ ] 10.5.b `createOrder`: a stock decrement that loses its lock (`lock_not_available` 55P03 / `lock_timeout`) returns the designed refusal (`out_of_stock`, or a plain "busy, try again"), never a thrown database error
   - [ ] 10.5.c **Check:** db tests prove, each under an artificially held lock: ten parallel identical webhooks give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed and the retry applies it; twenty concurrent orders for the last unit give one order and nineteen designed refusals, no throw; the 6.3.d and 6.4.d tests still pass.
+
+- [ ] **10.6 The owner's real content on staging, for the client review** · needs: phase 5, phase 6
+  - **Lane** CMS + OPS · **Agent** medior (Sonnet), orchestrator for staging · **Wave** W1
+  - **Owns** `engine/packages/cms/src/seed/{gallery,catalogue}/**`, `engine/packages/cms/src/seed/{run,cli,seed.db.test}.ts`, `docs/DATA.md`
+  - **Read** DATA.md §2–§5 and §8, CONTENT-MODEL.md §9, the 2026-10-08 entries in **Log**
+  - _Requirements: 10.3_
+  - [ ] 10.6.a the gallery seed carries each record's old USD price into the owner-only `askingPrice` (whole dollars); empty or review prices stay blank; no price in any public projection, and an editor never reads it
+  - [ ] 10.6.b the full gallery on staging: the 1,823 crawled records and their 2,289 photographs, the derivatives and tiles made on the workstation first, then loaded and published through the publish checks
+  - [ ] 10.6.c the shop's designs from the owner's six catalogue PDFs (Linktree → Drive, May 2024): each design's picture, title, year, history text and design code, in English and Indonesian, deduplicated across catalogues
+  - [ ] 10.6.d @oldeastindiesart's Instagram posts read for their pictures, captions and prices (product types, sizes, prices) to complete 10.6.c's products
+  - [ ] 10.6.e the shop on staging carries the designs as products with marked placeholder prices, replacing the 80 mock products (mock stores and stock stay); both sites' footers link their Instagram and Facebook
+  - [ ] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
 
 ---
 
@@ -831,6 +842,10 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-08 — ✅ **phase 9 — Partners, leads, analytics and SEO closed** on the staging mock data (the user, 2026-10-08), release `production-20261008T022650Z-9b85deff` (`docs/gates/phase-9.md`). **9.4.c**: the old-address walk over all 7,665 gallery rows (6,866 keys) and 673 shop rows (671 keys) — **0 failures**, each 200, one permanent redirect to a 200, 410, or unresolved with the builder's reason; reconciles exactly (gallery 51 + 3 + 6,812, shop 4 + 3 + 664); no chain. The release carried `ef630d27` (the shop's `/account` → 410; the walk accepts the kept-live item 308). **Done when** walked: lead New → Closed and the partnership enquiry (9.1.e), a partner recorded with two carried products by the owner then deleted (anonymous 403), both dashboards equal the database (9.2.d), metadata/JSON-LD/sitemaps (9.3.d), an old gallery address answers one permanent redirect — a **308**, not a 301: the item route keeps `/product/<id>-<slug>` live and answers before the 20 loaded 301 rows (DATA.md §6 accepts 301 or 308). **Before launch:** rerun 9.4.c on the real catalogue (10.6/OA5) with the curator's category and maker mapping and the static-page hand map (6,812 gallery addresses unresolved on the mock: 4,111 images, 1,774 unseeded works, 508 makers, 392 categories); the 9.2.d finding (no-UA and `node` user agents are counted) stays open for senior-be.
+
+- 2026-10-08 — **10.6 opened (the user: prepare the live client review).** A read-only check of `antiquemapsindonesia.com` (robots.txt and `/new-additions`, the reader's User-Agent, 3 s apart) found every newest listing already in the 2026-09-30 crawl (highest id 2050), so no second crawl. Staging's gallery shows only the 49-record sample. The shop's Linktree links six public catalogue PDFs (Drive, May 2024; ≈150 distinct designs, each a picture, title, year, history paragraph and design code like `MP.244`; no prices, types or sizes), copied to `../indies-legacy-data/old-east-indies/catalogues/`. Instagram's public JSON answers 429 without a login; it is read through a browser session instead, never by evading the limit. Social accounts from the old pages: gallery Instagram `indiesgalleryantiques`, Facebook `IndiesGallery`; shop Instagram `oldeastindiesart`, Facebook `OldEastIndies`. Local Docker is down: dry runs go to staging in rolled-back transactions.
 
 - 2026-10-07 — ✅ **phase 5 — Gallery site closed** (`0cde4294`; gate `docs/gates/gallery.md` **PASSED** on staging release `production-20261007T091257Z-0fc3942a`). Done when, walked at 390 px on staging (`tests/e2e/gallery/done-when.spec.ts`, 5/5 twice): a search by a place's old name ("Batavia") finds the work catalogued under Jakarta (P.1180, real seeded data); the item opens, the viewer zooms and draws; "Ask about this" opens `wa.me` with the item and stock number; Sell to us sends a form that becomes a lead and an email; a sold item says Sold and only "Ask for another example"; no price, cart or sign-in anywhere (no-commerce scan, 33 pages en+id); axe clean on home, browse and item pages; Lighthouse mobile ≥ 90 performance and 100 accessibility on the listing and an item page. Also green on the same release: `item.spec.ts` 5/5 (tiles from `iiif/`, `uploads/` 403, the sold page's whole document has no "Price on request"), `dpr3-navigation.spec.ts` (search → item → zoom on a phone), `journey.spec.ts` 4/4 (en/id × 390/1280). Fixed on the way to the gate: browse/search never invalidated; the media upload pipeline never wired; a page could not be published from the admin; the sold meta description; zoom on untiled images and the lead image after navigation (media CORS); the gazetteer places left as drafts; the Ask panel a nested landmark. **Follow-ups (not blocking):** F1 LCP budget 2.5 s missed (2.9–3.4 s from the workstation) → phase 10; D2 a Zoom click occasionally lost before hydration (1 in 12, none in the final runs); D3 search cards link slugless (one 308); 13 CMS information pages have no content on staging; nginx `Vary: Origin` for production; deleted media leave public derivatives; a 1×1 PNG records `failed`; the low-resolution notice ignores provenance; the lead-form rate limit (SECURITY.md 5/hour vs 10/min) still needs the owner's word.
 

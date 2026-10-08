@@ -1,0 +1,32 @@
+{
+  "site": "shop",
+  "base": "https://old-east-indies.gaiada.com",
+  "origin": "https://old-east-indies.gaiada.com",
+  "inventoryRows": 673,
+  "skippedSensitive": 2,
+  "keys": 671,
+  "counts": {
+    "ok": 4,
+    "redirected": 0,
+    "normalised": 0,
+    "keptLive": 0,
+    "gone": 3,
+    "unresolved": 664,
+    "fail": 0,
+    "statuses": {
+      "301": 0,
+      "302": 0,
+      "307": 0,
+      "308": 0
+    }
+  },
+  "failures": [],
+  "reconciliation": {
+    "rows": 4,
+    "gone": 3,
+    "unresolved": 664,
+    "total": 671,
+    "sum": 671,
+    "matches": true
+  }
+}
