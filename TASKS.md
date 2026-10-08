@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 3/6 | 16/25 | 1 | `██████░░░░`  64% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 3/6 | 17/25 | 1 | `███████░░░`  68% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **45/52** | **191/214** | **8** | `█████████░`  89% |
+| **All** | 11 phases | | | **45/52** | **192/214** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -739,7 +739,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.3.a load the full seed (1,823 antiques with images, a realistic catalogue, 100+ stores with stock) and run both sites against it
   - [ ] 10.3.b rehearse the launch: a release through the pull pipeline, health checks, a full journey on each site (gallery: search → ask → lead; shop: buy → fulfil → track), and the AI chat
   - [ ] 10.3.c back up, wipe and restore the database and buckets onto staging; verify counts and an image
-  - [ ] 10.3.d write the runbook: deploy, roll back, restore, rotate a secret, kill the chat, handle a late payment
+  - [x] 10.3.d write the runbook: deploy, roll back, restore, rotate a secret, kill the chat, handle a late payment
   - [ ] 10.3.e **Check:** `docs/gates/rehearsal.md` records the run, the restore timing and verification, and the runbook has been followed by someone other than its author.
 
 - [ ] **10.4 👤 Timed admin tests with the owner's team** · needs: 10.3
