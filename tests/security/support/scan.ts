@@ -32,7 +32,8 @@ export function walk(dir: string, keep: (file: string) => boolean): SourceFile[]
   return found
 }
 
-const TEST_FILE = /(\.test\.|\.test-support\.|\.spec\.|\/test\/|\/tests\/|\.d\.ts$|payload-types\.ts$)/
+const TEST_FILE =
+  /(\.test\.|\.test-support\.|\.spec\.|\/test\/|\/tests\/|\.d\.ts$|payload-types\.ts$)/
 const CODE = /\.(ts|tsx|js|jsx|mjs)$/
 
 /** The engine's own code: no tests, no generated types, no migrations' SQL snapshots. */
@@ -60,7 +61,8 @@ function objectAt(text: string, open: number): string {
   return text.slice(open)
 }
 
-const LOCAL_API = /\b(?:payload|req\.payload|api)\.(find|findByID|create|update|delete|count|findGlobal|updateGlobal)\(\s*\{/g
+const LOCAL_API =
+  /\b(?:payload|req\.payload|api)\.(find|findByID|create|update|delete|count|findGlobal|updateGlobal)\(\s*\{/g
 
 export type LocalApiCall = {
   path: string

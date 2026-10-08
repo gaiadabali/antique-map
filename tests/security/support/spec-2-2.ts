@@ -29,7 +29,12 @@ const CATALOGUE: Row = {
   delete: STAFF_ALL,
 }
 /** Records only the owner and editors reach, none of it public. */
-const STAFF_RECORD: Row = { read: STAFF_ALL, create: STAFF_ALL, update: STAFF_ALL, delete: STAFF_ALL }
+const STAFF_RECORD: Row = {
+  read: STAFF_ALL,
+  create: STAFF_ALL,
+  update: STAFF_ALL,
+  delete: STAFF_ALL,
+}
 /** The owner's own records: leads, partners, chat sessions, discounts, events. */
 const OWNER_RECORD: Row = {
   read: ALL_OWNER,

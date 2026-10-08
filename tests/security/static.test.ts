@@ -19,12 +19,18 @@ const read = (file: string) => readFileSync(path.join(ROOT, file), 'utf8')
 const source = engineSource()
 /** Source with `//` and block comments blanked, so a rule quoted in a header is not a use. */
 const code = (text: string) =>
-  text.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' ')).replace(/(^|[^:])\/\/.*$/gm, '$1')
+  text
+    .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '))
+    .replace(/(^|[^:])\/\/.*$/gm, '$1')
 
 describe('no raw HTML sink outside the one reviewed (B1)', () => {
   it('uses dangerouslySetInnerHTML only for the product page’s escaped JSON-LD', () => {
     const users = source
-      .filter((file) => /dangerouslySetInnerHTML|\.innerHTML\s*=|insertAdjacentHTML|document\.write\(/.test(code(file.text)))
+      .filter((file) =>
+        /dangerouslySetInnerHTML|\.innerHTML\s*=|insertAdjacentHTML|document\.write\(/.test(
+          code(file.text),
+        ),
+      )
       .map((file) => file.path)
     expect(users).toEqual(['engine/apps/web/src/app/(shop)/shop/[locale]/product/[slug]/page.tsx'])
   })
@@ -43,7 +49,10 @@ describe('every Local API call that serves a request says whether access applies
   it('has none without an explicit overrideAccess in the app or the HTTP package', () => {
     const silent = calls
       .filter((call) => call.overrideAccess === undefined)
-      .filter((call) => call.path.startsWith('engine/apps/') || call.path.startsWith('engine/packages/http/'))
+      .filter(
+        (call) =>
+          call.path.startsWith('engine/apps/') || call.path.startsWith('engine/packages/http/'),
+      )
     expect(silent).toEqual([])
   })
 
@@ -55,7 +64,9 @@ describe('every Local API call that serves a request says whether access applies
         calls
           .filter((call) => call.overrideAccess === undefined)
           .map((call) => call.path)
-          .map((file) => file.replace(/^(engine\/packages\/cms\/src\/(?:import|seed))\/.*$/, '$1/')),
+          .map((file) =>
+            file.replace(/^(engine\/packages\/cms\/src\/(?:import|seed))\/.*$/, '$1/'),
+          ),
       ),
     ].sort()
     expect(files).toEqual([
@@ -73,7 +84,9 @@ describe('every Local API call that serves a request says whether access applies
       .sort()
     // The request-serving ones (apps/web, packages/http) are each a server-written record or a
     // token-gated read; their headers say why (SECURITY.md §2.2, R4).
-    const serving = files.filter((file) => file.startsWith('engine/apps/') || file.startsWith('engine/packages/http/'))
+    const serving = files.filter(
+      (file) => file.startsWith('engine/apps/') || file.startsWith('engine/packages/http/'),
+    )
     expect(serving).toEqual([
       'engine/apps/web/src/server/analytics/collect.ts',
       'engine/apps/web/src/server/chat/adapters/payload-catalogue.ts',
@@ -132,7 +145,10 @@ describe('outbound requests go to listed hosts, with a timeout (S1, S3)', () => 
       'api.sandbox.midtrans.com',
     ])
     const hosts = new Set<string>()
-    for (const file of [...callers, ...source.filter((f) => f.path.endsWith('shop/payments/config.ts'))]) {
+    for (const file of [
+      ...callers,
+      ...source.filter((f) => f.path.endsWith('shop/payments/config.ts')),
+    ]) {
       for (const match of code(file.text).matchAll(/https:\/\/([a-z0-9.-]+)/g)) hosts.add(match[1]!)
     }
     expect([...hosts].filter((host) => !allowed.has(host))).toEqual([])
@@ -150,11 +166,15 @@ describe('outbound requests go to listed hosts, with a timeout (S1, S3)', () => 
 
 describe('logs carry no request body or personal data (L1, L2)', () => {
   const logCalls = source
-    .filter((file) => /\/(api\/x|server\/(chat|leads|orders|shop)|shop\/(orders|payments|fulfilment|notify)|http\/src)/.test(file.path))
-    .flatMap((file) =>
-      [...code(file.text).matchAll(/console\.(?:log|info|warn|error|debug)\(([^;]*?)\)\s*$/gms)].map(
-        (match) => ({ path: file.path, text: match[1]! }),
+    .filter((file) =>
+      /\/(api\/x|server\/(chat|leads|orders|shop)|shop\/(orders|payments|fulfilment|notify)|http\/src)/.test(
+        file.path,
       ),
+    )
+    .flatMap((file) =>
+      [
+        ...code(file.text).matchAll(/console\.(?:log|info|warn|error|debug)\(([^;]*?)\)\s*$/gms),
+      ].map((match) => ({ path: file.path, text: match[1]! })),
     )
 
   it('finds the logging calls it is meant to read', () => {
@@ -162,7 +182,8 @@ describe('logs carry no request body or personal data (L1, L2)', () => {
   })
 
   it('never interpolates a body, contact or address field into a log line', () => {
-    const personal = /\$\{[^}]*\b(body|payload|raw|email|whatsapp|phone|address|contact|message|lat|lng|token)\b[^}]*\}/i
+    const personal =
+      /\$\{[^}]*\b(body|payload|raw|email|whatsapp|phone|address|contact|message|lat|lng|token)\b[^}]*\}/i
     const hits = logCalls.filter((call) => personal.test(call.text)).map((call) => call.path)
     expect(hits).toEqual([])
   })
@@ -176,9 +197,15 @@ describe('logs carry no request body or personal data (L1, L2)', () => {
 })
 
 describe('dependencies and supply chain are pinned and gated (D1–D3, K3)', () => {
-  const manifests = walk('.', (file) => file.endsWith('package.json') && !file.includes('node_modules'))
+  const manifests = walk(
+    '.',
+    (file) => file.endsWith('package.json') && !file.includes('node_modules'),
+  )
     .filter((file) => !file.path.startsWith('.claude/') && !file.path.startsWith('docs/'))
-    .map((file) => ({ path: file.path, json: JSON.parse(file.text) as Record<string, Record<string, string>> }))
+    .map((file) => ({
+      path: file.path,
+      json: JSON.parse(file.text) as Record<string, Record<string, string>>,
+    }))
 
   it('has a committed lockfile, and CI installs with --frozen-lockfile', () => {
     expect(existsSync(path.join(ROOT, 'pnpm-lock.yaml'))).toBe(true)
@@ -191,7 +218,8 @@ describe('dependencies and supply chain are pinned and gated (D1–D3, K3)', () 
       for (const field of ['dependencies', 'devDependencies', 'optionalDependencies']) {
         for (const [name, range] of Object.entries(json[field] ?? {})) {
           if (range.startsWith('workspace:')) continue
-          if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(range)) loose.push(`${file}: ${name}@${range}`)
+          if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(range))
+            loose.push(`${file}: ${name}@${range}`)
         }
       }
     }
@@ -201,8 +229,16 @@ describe('dependencies and supply chain are pinned and gated (D1–D3, K3)', () 
   it('has one version of next and one of payload and its plugins', () => {
     const versions = new Map<string, Set<string>>()
     for (const { json } of manifests) {
-      for (const [name, range] of Object.entries({ ...json.dependencies, ...json.devDependencies })) {
-        const family = name === 'next' ? 'next' : name === 'payload' || name.startsWith('@payloadcms/') ? 'payload' : null
+      for (const [name, range] of Object.entries({
+        ...json.dependencies,
+        ...json.devDependencies,
+      })) {
+        const family =
+          name === 'next'
+            ? 'next'
+            : name === 'payload' || name.startsWith('@payloadcms/')
+              ? 'payload'
+              : null
         if (family === null) continue
         versions.set(family, (versions.get(family) ?? new Set()).add(range))
       }
@@ -257,14 +293,19 @@ describe('no secret is tracked (K1, K2)', () => {
       ...walk('engine', (f) => /\.(ts|tsx|js|jsx|mjs|json|yml|yaml|md|sh)$/.test(f)),
       ...walk('scripts', () => true),
       ...walk('.github', () => true),
-      ...walk('tests', (f) => /\.(ts|mjs|json)$/.test(f) && !f.includes('support') && !f.endsWith('static.test.ts')),
+      ...walk(
+        'tests',
+        (f) =>
+          /\.(ts|mjs|json)$/.test(f) && !f.includes('support') && !f.endsWith('static.test.ts'),
+      ),
       { path: '.env.example', text: read('.env.example') },
     ]
     const hits: string[] = []
     for (const file of files) {
       for (const [name, pattern] of patterns) {
         const match = pattern.exec(file.text)
-        if (match !== null && !known.some((k) => k.test(match[0]))) hits.push(`${file.path}: ${name}`)
+        if (match !== null && !known.some((k) => k.test(match[0])))
+          hits.push(`${file.path}: ${name}`)
       }
     }
     expect(hits).toEqual([])

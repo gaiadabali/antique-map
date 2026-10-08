@@ -11,7 +11,13 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { ADMIN_ORIGIN, PASSWORD, server, startSecurityStack, type SecurityStack } from './support/stack'
+import {
+  ADMIN_ORIGIN,
+  PASSWORD,
+  server,
+  startSecurityStack,
+  type SecurityStack,
+} from './support/stack'
 
 const idOf = (doc: Record<string, unknown> | null) => (doc as { doc?: { id: number } }).doc?.id
 
@@ -24,8 +30,13 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
   afterAll(() => stack?.stop(), 60_000)
 
   const work = () => stack.work.published.id
-  const read = (as: Parameters<SecurityStack['rest']>[2] extends infer T ? (T extends { as?: infer W } ? W : never) : never) =>
-    stack.rest('GET', `/api/works/${work()}?depth=0`, { as })
+  const read = (
+    as: Parameters<SecurityStack['rest']>[2] extends infer T
+      ? T extends { as?: infer W }
+        ? W
+        : never
+      : never,
+  ) => stack.rest('GET', `/api/works/${work()}?depth=0`, { as })
   /** The work as the Local API reads it with access overridden: the truth under the REST filter. */
   const truth = () =>
     stack.api.findByID({ collection: 'works', id: work(), depth: 0, overrideAccess: true })
@@ -49,7 +60,10 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
       // so the answer may be a 500 after the write: the stored row is what is judged).
       await stack.rest('PATCH', `/api/works/${work()}`, {
         as: 'editor',
-        json: { askingPrice: 1, physical: { acquisition: { cost: { amount: 1, currency: 'USD' } } } },
+        json: {
+          askingPrice: 1,
+          physical: { acquisition: { cost: { amount: 1, currency: 'USD' } } },
+        },
       })
       // Through the Local API as the editor, access enforced: a control write that must land
       // (so the proof below is not vacuous) beside the forbidden ones that must not.
@@ -61,7 +75,10 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
         data: {
           title: 'Edited by the editor',
           askingPrice: 1,
-          physical: { exportStatus: 'permit-pending', acquisition: { cost: { amount: 1, currency: 'USD' } } },
+          physical: {
+            exportStatus: 'permit-pending',
+            acquisition: { cost: { amount: 1, currency: 'USD' } },
+          },
         },
       })
       const now = (await truth()) as Now
@@ -111,7 +128,10 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
     })
 
     it('an editor cannot make themselves an owner', async () => {
-      await stack.rest('PATCH', `/api/users/${own('editor')}`, { as: 'editor', json: { role: 'owner' } })
+      await stack.rest('PATCH', `/api/users/${own('editor')}`, {
+        as: 'editor',
+        json: { role: 'owner' },
+      })
       expect((await userNow(own('editor'))).role).toBe('editor')
     })
 
@@ -125,7 +145,12 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
 
     it('records a role or store change the owner makes: who, when, from, to — and shows it to the owner alone (R7)', async () => {
       const target = stack.seeded.users!.id
-      const before = (await stack.api.findByID({ collection: 'users', id: target, depth: 0, overrideAccess: true })) as {
+      const before = (await stack.api.findByID({
+        collection: 'users',
+        id: target,
+        depth: 0,
+        overrideAccess: true,
+      })) as {
         accessChanges?: unknown[]
       }
       const was = before.accessChanges?.length ?? 0
@@ -135,7 +160,8 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
       })
       expect(changed.status).toBe(200)
       const asOwner = await stack.rest('GET', `/api/users/${target}?depth=0`, { as: 'owner' })
-      const history = (asOwner.body as { accessChanges?: Array<Record<string, unknown>> }).accessChanges ?? []
+      const history =
+        (asOwner.body as { accessChanges?: Array<Record<string, unknown>> }).accessChanges ?? []
       expect(history.length).toBe(was + 1)
       expect(history.at(-1)).toMatchObject({ by: stack.users.owner.id })
       expect(history.at(-1)).toHaveProperty('at')
@@ -143,18 +169,30 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
       // editor reading it gets no history: Payload answers a hidden array as an empty one.
       const editorId = stack.users.editor.id
       const seenByOwner = await stack.rest('GET', `/api/users/${editorId}?depth=0`, { as: 'owner' })
-      expect(((seenByOwner.body as { accessChanges?: unknown[] }).accessChanges ?? []).length).toBeGreaterThan(0)
-      const seenByEditor = await stack.rest('GET', `/api/users/${editorId}?depth=0`, { as: 'editor' })
+      expect(
+        ((seenByOwner.body as { accessChanges?: unknown[] }).accessChanges ?? []).length,
+      ).toBeGreaterThan(0)
+      const seenByEditor = await stack.rest('GET', `/api/users/${editorId}?depth=0`, {
+        as: 'editor',
+      })
       expect((seenByEditor.body as { accessChanges?: unknown[] }).accessChanges ?? []).toEqual([])
     })
 
     it('only `users` sign in, with the three roles of the table (A1)', () => {
-      const withAuth = stack.config.collections.filter((collection) => collection.auth).map((c) => c.slug)
+      const withAuth = stack.config.collections
+        .filter((collection) => collection.auth)
+        .map((c) => c.slug)
       expect(withAuth).toEqual(['users'])
       const role = stack.config.collections
         .find((collection) => collection.slug === 'users')!
-        .fields.find((field) => 'name' in field && field.name === 'role') as { options?: Array<{ value: string }> }
-      expect(role.options?.map((option) => option.value).sort()).toEqual(['editor', 'owner', 'store'])
+        .fields.find((field) => 'name' in field && field.name === 'role') as {
+        options?: Array<{ value: string }>
+      }
+      expect(role.options?.map((option) => option.value).sort()).toEqual([
+        'editor',
+        'owner',
+        'store',
+      ])
     })
   })
 
@@ -181,11 +219,17 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
       // Another account is not affected by it.
       expect((await login(stack.users.editor.email as string, PASSWORD)).status).toBe(200)
 
-      const byEditor = await stack.rest('POST', '/api/users/unlock', { as: 'editor', json: { email } })
+      const byEditor = await stack.rest('POST', '/api/users/unlock', {
+        as: 'editor',
+        json: { email },
+      })
       expect([401, 403]).toContain(byEditor.status)
       expect((await login(email, PASSWORD)).status).toBe(401)
 
-      const byOwner = await stack.rest('POST', '/api/users/unlock', { as: 'owner', json: { email } })
+      const byOwner = await stack.rest('POST', '/api/users/unlock', {
+        as: 'owner',
+        json: { email },
+      })
       expect(byOwner.status).toBe(200)
       expect((await login(email, PASSWORD)).status).toBe(200)
     })
@@ -229,7 +273,9 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
 
     it('a password-reset token expires within the hour and works once (A6)', async () => {
       const email = await make('resetter')
-      expect((await stack.rest('POST', '/api/users/forgot-password', { json: { email } })).status).toBe(200)
+      expect(
+        (await stack.rest('POST', '/api/users/forgot-password', { json: { email } })).status,
+      ).toBe(200)
       const row = (
         await stack.pool.query(
           `SELECT reset_password_token AS token, reset_password_expiration AS expires FROM users WHERE email = '${email}'`,
@@ -241,7 +287,9 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
       expect(lifetime).toBeLessThanOrEqual(60 * 60 * 1000)
 
       const fresh = 'a-new-password-for-the-test-1'
-      const used = await stack.rest('POST', '/api/users/reset-password', { json: { token: row.token, password: fresh } })
+      const used = await stack.rest('POST', '/api/users/reset-password', {
+        json: { token: row.token, password: fresh },
+      })
       expect(used.status).toBe(200)
       expect((await login(email, fresh)).status).toBe(200)
       const again = await stack.rest('POST', '/api/users/reset-password', {
@@ -254,8 +302,16 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
     it('an expired reset token is refused (A6)', async () => {
       const email = await make('expired')
       await stack.rest('POST', '/api/users/forgot-password', { json: { email } })
-      await stack.pool.query(`UPDATE users SET reset_password_expiration = now() - interval '1 minute' WHERE email = '${email}'`)
-      const token = ((await stack.pool.query(`SELECT reset_password_token AS t FROM users WHERE email = '${email}'`)).rows[0] as { t: string }).t
+      await stack.pool.query(
+        `UPDATE users SET reset_password_expiration = now() - interval '1 minute' WHERE email = '${email}'`,
+      )
+      const token = (
+        (
+          await stack.pool.query(
+            `SELECT reset_password_token AS t FROM users WHERE email = '${email}'`,
+          )
+        ).rows[0] as { t: string }
+      ).t
       const reply = await stack.rest('POST', '/api/users/reset-password', {
         json: { token, password: 'a-new-password-for-the-test-3' },
       })
@@ -287,7 +343,12 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
     it.fails('refuses a common password on create (A2)', async () => {
       const reply = await stack.rest('POST', '/api/users', {
         as: 'owner',
-        json: { email: 'common@security.test', password: 'password1234', name: 'Common', role: 'editor' },
+        json: {
+          email: 'common@security.test',
+          password: 'password1234',
+          name: 'Common',
+          role: 'editor',
+        },
       })
       expect(reply.status).toBe(400)
     })
@@ -335,13 +396,22 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
 
     it('GraphQL is off (R6)', async () => {
       for (const route of ['/api/graphql', '/api/graphql-playground']) {
-        expect((await stack.rest('POST', route, { as: 'owner', json: { query: '{ Works { docs { id } } }' } })).status).toBe(404)
+        expect(
+          (
+            await stack.rest('POST', route, {
+              as: 'owner',
+              json: { query: '{ Works { docs { id } } }' },
+            })
+          ).status,
+        ).toBe(404)
         expect((await stack.rest('GET', route, { as: 'owner' })).status).toBe(404)
       }
     })
 
     it('upload by pasted URL is off (F6)', async () => {
-      const upload = stack.config.collections.find((c) => c.slug === 'media')!.upload as { pasteURL?: unknown }
+      const upload = stack.config.collections.find((c) => c.slug === 'media')!.upload as {
+        pasteURL?: unknown
+      }
       expect(upload.pasteURL).toBe(false)
       void idOf
     })

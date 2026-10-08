@@ -102,7 +102,8 @@ describe.skipIf(!server)('access sweep: every collection × role × operation', 
     if (who === 'anonymous') {
       for (const doc of (reply.body as Docs).docs ?? []) {
         // The public reads what is published, and never the owner's figures (R5).
-        if ('_status' in doc) expect(doc._status, `${slug}: a public read returned a draft`).toBe('published')
+        if ('_status' in doc)
+          expect(doc._status, `${slug}: a public read returned a draft`).toBe('published')
         expect(doc).not.toHaveProperty('askingPrice')
         expect(doc).not.toHaveProperty('physical')
       }
@@ -112,7 +113,8 @@ describe.skipIf(!server)('access sweep: every collection × role × operation', 
   const checkCreate = async (slug: string, who: Who, cell: Cell) => {
     const reply = await stack.rest('POST', `/api/${slug}`, { as: who, json: {} })
     if (cell === 'N') expect(REFUSED, `${slug} create as ${who}`).toContain(reply.status)
-    else expect(REFUSED, `${slug} create as ${who} was refused by access`).not.toContain(reply.status)
+    else
+      expect(REFUSED, `${slug} create as ${who} was refused by access`).not.toContain(reply.status)
   }
 
   const checkChange = async (slug: string, who: Who, cell: Cell, op: 'update' | 'delete') => {
@@ -166,7 +168,10 @@ describe.skipIf(!server)('access sweep: every collection × role × operation', 
   it('the sweep covers every collection the engine registers', () => {
     const slugs = stack.config.collections
       .map((collection) => collection.slug)
-      .filter((slug) => !['payload-preferences', 'payload-migrations', 'payload-locked-documents'].includes(slug))
+      .filter(
+        (slug) =>
+          !['payload-preferences', 'payload-migrations', 'payload-locked-documents'].includes(slug),
+      )
     expect(slugs.sort()).toEqual(Object.keys(everything).sort())
   })
 

@@ -1,3 +1,4 @@
+/* global process, console */
 /**
  * Plants a vulnerability from each of the four classes of TASKS.md 10.1.e, runs the test that
  * guards it, and puts the code back (SECURITY.md §3; WORKFLOW.md §6: "a test that fails on the
@@ -55,19 +56,30 @@ const PLANTS = {
 const vitest = (testFile) =>
   spawnSync(
     'pnpm',
-    ['vitest', 'run', '--config', 'tests/security/vitest.config.ts', testFile, '--reporter=verbose'],
+    [
+      'vitest',
+      'run',
+      '--config',
+      'tests/security/vitest.config.ts',
+      testFile,
+      '--reporter=verbose',
+    ],
     { cwd: root, encoding: 'utf8', shell: true, env: process.env, maxBuffer: 64 * 1024 * 1024 },
   )
 
 const summary = (output) => {
   const lines = output.split(/\r?\n/)
-  const failed = lines.filter((line) => /^\s*×\s/.test(line)).map((line) => line.trim().replace(/^×\s*\|security\|\s*/, ''))
+  const failed = lines
+    .filter((line) => /^\s*×\s/.test(line))
+    .map((line) => line.trim().replace(/^×\s*\|security\|\s*/, ''))
   const tests = lines.find((line) => /^\s*Tests\s/.test(line))?.trim() ?? 'no test summary'
   return { tests, failed }
 }
 
 const wanted = process.argv.slice(2)
-const chosen = Object.entries(PLANTS).filter(([name]) => wanted.length === 0 || wanted.includes(name))
+const chosen = Object.entries(PLANTS).filter(
+  ([name]) => wanted.length === 0 || wanted.includes(name),
+)
 let ok = true
 
 for (const [name, plant] of chosen) {

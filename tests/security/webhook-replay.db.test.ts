@@ -155,12 +155,21 @@ describe.skipIf(!server)('a replayed payment webhook, on a real database', () =>
   it('logs the body’s hash on a refusal and never the body itself (W5)', async () => {
     const order = await orderWithAttempt()
     const { payload } = simulator.emit(order.attempt, 'settle')
-    const body = JSON.stringify({ ...payload, signature_key: 'e'.repeat(128), gross_amount: '1.00' })
+    const body = JSON.stringify({
+      ...payload,
+      signature_key: 'e'.repeat(128),
+      gross_amount: '1.00',
+    })
     log.length = 0
     expect((await deliver(body)).status).toBe(401)
     const hash = createHash('sha256').update(body).digest('hex')
     expect(log.join('\n')).toContain(`sha256:${hash}`)
-    for (const secretish of [payload.order_id!, payload.transaction_id!, payload.signature_key!, 'e'.repeat(40)]) {
+    for (const secretish of [
+      payload.order_id!,
+      payload.transaction_id!,
+      payload.signature_key!,
+      'e'.repeat(40),
+    ]) {
       expect(log.join('\n')).not.toContain(secretish)
     }
   })

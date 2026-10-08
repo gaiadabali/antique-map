@@ -1,3 +1,4 @@
+/* global process, console, window, document, URL */
 /**
  * Opens pages in Chromium and reports every Content-Security-Policy violation the browser raises
  * (SECURITY.md B2, B6; TASKS.md 10.1.d). A manual drive against a local production build — never
@@ -27,24 +28,32 @@ for (const path of paths.split(',')) {
   await page.addInitScript(() => {
     window.__csp = []
     document.addEventListener('securitypolicyviolation', (event) => {
-      window.__csp.push(`${event.violatedDirective} blocked ${event.blockedURI || event.sample || 'inline'}`)
+      window.__csp.push(
+        `${event.violatedDirective} blocked ${event.blockedURI || event.sample || 'inline'}`,
+      )
     })
   })
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(message.text())
   })
-  const response = await page.goto(new URL(path, base).href, { waitUntil: 'networkidle' }).catch((error) => {
-    errors.push(`navigation: ${error.message}`)
-    return null
-  })
+  const response = await page
+    .goto(new URL(path, base).href, { waitUntil: 'networkidle' })
+    .catch((error) => {
+      errors.push(`navigation: ${error.message}`)
+      return null
+    })
   violations.push(...(await page.evaluate(() => window.__csp ?? []).catch(() => [])))
   const header = response?.headers()['content-security-policy'] ?? null
   const hydrated = await page
-    .evaluate(() => Boolean(document.querySelector('script[nonce]')) || document.readyState === 'complete')
+    .evaluate(
+      () => Boolean(document.querySelector('script[nonce]')) || document.readyState === 'complete',
+    )
     .catch(() => false)
   const expected = violations.filter((v) => /fonts\.(googleapis|gstatic)\.com/.test(v))
   const unexpected = violations.filter((v) => !expected.includes(v))
-  const policyErrors = errors.filter((e) => /content security policy/i.test(e) && !/fonts\.(googleapis|gstatic)/.test(e))
+  const policyErrors = errors.filter(
+    (e) => /content security policy/i.test(e) && !/fonts\.(googleapis|gstatic)/.test(e),
+  )
   const bad = header === null || unexpected.length > 0 || policyErrors.length > 0
   failed ||= bad
   console.log(

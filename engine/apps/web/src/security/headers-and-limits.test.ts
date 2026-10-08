@@ -20,7 +20,9 @@ describe('the static security headers (B3)', () => {
   it('sends HSTS only when asked, for a year, never with preload or includeSubDomains by default', () => {
     expect(value('Strict-Transport-Security')).toBeUndefined()
     expect(value('Strict-Transport-Security', { hsts: false })).toBeUndefined()
-    expect(value('Strict-Transport-Security', { hsts: true })).toBe(`max-age=${HSTS_MAX_AGE_SECONDS}`)
+    expect(value('Strict-Transport-Security', { hsts: true })).toBe(
+      `max-age=${HSTS_MAX_AGE_SECONDS}`,
+    )
   })
 })
 
@@ -70,7 +72,9 @@ describe('the rate limits of §2.10 that nothing enforced', () => {
   })
 
   it('keys on the last X-Forwarded-For entry, which nginx appends, and refuses a malformed one', () => {
-    expect(clientAddress(new Headers({ 'x-forwarded-for': '1.1.1.1, 198.51.100.4' }))).toBe('198.51.100.4')
+    expect(clientAddress(new Headers({ 'x-forwarded-for': '1.1.1.1, 198.51.100.4' }))).toBe(
+      '198.51.100.4',
+    )
     expect(clientAddress(new Headers({ 'x-forwarded-for': 'evil<script>' }))).toBe('unknown')
     expect(clientAddress(new Headers())).toBe('unknown')
   })

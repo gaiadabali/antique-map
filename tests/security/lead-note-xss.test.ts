@@ -66,7 +66,12 @@ describe('a lead’s text is shown escaped in the owner’s admin', () => {
     expect(html).not.toMatch(/<[a-z][^>]*\son[a-z]+=/i)
     // It is there, as characters: the angle brackets and quotes are entities.
     expect(html).toContain(
-      hostile.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;'),
+      hostile
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;'),
     )
   })
 
@@ -101,7 +106,12 @@ describe('a lead’s text is shown escaped in the owner’s admin', () => {
 })
 
 describe('a lead is stored as text, bounded and without extra keys (V1, V2, V4)', () => {
-  const context = { kind: 'ask', site: 'gallery', source: 'form', consentVersion: '2026-10' } as const
+  const context = {
+    kind: 'ask',
+    site: 'gallery',
+    source: 'form',
+    consentVersion: '2026-10',
+  } as const
   const base = {
     name: 'A. Visitor',
     email: 'a@example.test',
@@ -120,7 +130,9 @@ describe('a lead is stored as text, bounded and without extra keys (V1, V2, V4)'
   })
 
   it('refuses an over-long message and an unknown key', () => {
-    expect(parseLeadInput({ ...base, message: 'x'.repeat(LEAD_LIMITS.message + 1) }, context).ok).toBe(false)
+    expect(
+      parseLeadInput({ ...base, message: 'x'.repeat(LEAD_LIMITS.message + 1) }, context).ok,
+    ).toBe(false)
     expect(parseLeadInput({ ...base, role: 'owner' }, context).ok).toBe(false)
     expect(parseLeadInput({ ...base, site: 'shop' }, context).ok).toBe(false)
   })

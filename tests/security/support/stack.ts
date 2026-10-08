@@ -18,16 +18,28 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { buildConfig, getPayload, handleEndpoints, type Payload, type SanitizedConfig } from 'payload'
+import {
+  buildConfig,
+  getPayload,
+  handleEndpoints,
+  type Payload,
+  type SanitizedConfig,
+} from 'payload'
 
 import { engineConfig } from '../../../engine/packages/cms/src/payload.config'
 
-import { makeOrder, makeProduct } from '../../../engine/packages/cms/src/collections/stock-levels/shop.test-support'
+import {
+  makeOrder,
+  makeProduct,
+} from '../../../engine/packages/cms/src/collections/stock-levels/shop.test-support'
 import {
   collectingWrites,
   type Pool,
 } from '../../../engine/packages/cms/src/collections/places/pushed-database.test-support'
-import { vocabulary, type Api } from '../../../engine/packages/cms/src/collections/works/works.test-support'
+import {
+  vocabulary,
+  type Api,
+} from '../../../engine/packages/cms/src/collections/works/works.test-support'
 
 export const server = process.env.CMS_TEST_POSTGRES_URL
 export const PASSWORD = 'security-suite-password-1'

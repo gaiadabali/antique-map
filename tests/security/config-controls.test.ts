@@ -13,6 +13,12 @@ import {
   PRODUCTION_ENV,
   STAGING_ENV,
 } from '../../engine/packages/cms/src/shop/payments/payments.test-support'
+import { createHash } from 'node:crypto'
+
+import {
+  newTrackingToken,
+  trackingTokenHash,
+} from '../../engine/packages/cms/src/shop/orders/order-sql'
 import { refuseCron } from '../../engine/packages/http/src/cron/auth'
 import { decideProxy } from '../../engine/packages/http/src/proxy/decide'
 import {
@@ -52,14 +58,25 @@ describe('the session cookie’s Secure flag follows the build (A5)', () => {
     vi.resetModules()
     vi.stubEnv('NODE_ENV', nodeEnv)
     const { Users } = await import('../../engine/packages/cms/src/collections/users')
-    const auth = Users.auth as { cookies?: { secure?: boolean; sameSite?: string }; useSessions?: boolean }
-    return { secure: auth.cookies?.secure, sameSite: auth.cookies?.sameSite, sessions: auth.useSessions }
+    const auth = Users.auth as {
+      cookies?: { secure?: boolean; sameSite?: string }
+      useSessions?: boolean
+    }
+    return {
+      secure: auth.cookies?.secure,
+      sameSite: auth.cookies?.sameSite,
+      sessions: auth.useSessions,
+    }
   }
   it('is Secure, SameSite=Lax and server-side sessions on a production build', async () => {
     expect(await secureIn('production')).toEqual({ secure: true, sameSite: 'Lax', sessions: true })
   })
   it('is not Secure on a workstation (http), and still SameSite=Lax with sessions', async () => {
-    expect(await secureIn('development')).toEqual({ secure: false, sameSite: 'Lax', sessions: true })
+    expect(await secureIn('development')).toEqual({
+      secure: false,
+      sameSite: 'Lax',
+      sessions: true,
+    })
   })
 })
 
@@ -134,6 +151,20 @@ describe('a tracking link is not indexed, not leaked in a Referer, and guess-lim
   })
 })
 
+describe('the tracking token is long, random and stored as a hash (T1)', () => {
+  it('is 256 random bits in base64url (twice the 128 the table asks), new every time, with a SHA-256 hash', () => {
+    const made = Array.from({ length: 200 }, () => newTrackingToken())
+    expect(new Set(made.map((m) => m.token)).size).toBe(200)
+    for (const { token, hash } of made) {
+      expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/)
+      expect(Buffer.from(token, 'base64url')).toHaveLength(32)
+      expect(hash).toBe(createHash('sha256').update(token).digest('hex'))
+      expect(trackingTokenHash(token)).toBe(hash)
+      expect(hash).not.toContain(token)
+    }
+  })
+})
+
 describe('cron routes need the bearer and are off without a secret (K6)', () => {
   const request = (token?: string) =>
     new Request('http://localhost/api/x/cron/reconcile', {
@@ -165,7 +196,9 @@ describe('the payment simulator and keys are judged by environment (W7, K4)', ()
     ).toMatchObject({ ok: false })
   })
   it('allows simulate on staging, and refuses a live key on staging (staging holds no production key)', () => {
-    expect(paymentsConfigFromEnv({ ...STAGING_ENV, MIDTRANS_MODE: 'simulate' })).toMatchObject({ ok: true })
+    expect(paymentsConfigFromEnv({ ...STAGING_ENV, MIDTRANS_MODE: 'simulate' })).toMatchObject({
+      ok: true,
+    })
     expect(
       paymentsConfigFromEnv({
         ...STAGING_ENV,

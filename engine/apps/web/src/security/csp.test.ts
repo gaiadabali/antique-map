@@ -47,7 +47,11 @@ describe('the storefront policy (B2)', () => {
   })
 
   it('allows Midtrans Snap and Turnstile in frames and connections, and nobody else', () => {
-    const allowed = ['https://app.midtrans.com', 'https://app.sandbox.midtrans.com', 'https://challenges.cloudflare.com']
+    const allowed = [
+      'https://app.midtrans.com',
+      'https://app.sandbox.midtrans.com',
+      'https://challenges.cloudflare.com',
+    ]
     expect(directive(policy, 'frame-src')).toEqual(allowed)
     expect(directive(policy, 'connect-src')).toEqual([`'self'`, ...allowed])
   })
@@ -58,13 +62,21 @@ describe('the storefront policy (B2)', () => {
 
   it('upgrades insecure requests in production only', () => {
     expect(policy).toContain('upgrade-insecure-requests')
-    expect(buildCsp('storefront', 'N', { development: true })).not.toContain('upgrade-insecure-requests')
-    expect(directive(buildCsp('storefront', 'N', { development: true }), 'script-src')).toContain(`'unsafe-eval'`)
+    expect(buildCsp('storefront', 'N', { development: true })).not.toContain(
+      'upgrade-insecure-requests',
+    )
+    expect(directive(buildCsp('storefront', 'N', { development: true }), 'script-src')).toContain(
+      `'unsafe-eval'`,
+    )
   })
 
   it('serves images from the public media origin when one is set', () => {
-    expect(directive(buildCsp('storefront', 'N', { mediaOrigin: 'https://media.example' }), 'img-src')).toContain('https://media.example')
-    expect(mediaOriginOf({ MEDIA_PUBLIC_URL: 'https://media.example/bucket/x' })).toBe('https://media.example')
+    expect(
+      directive(buildCsp('storefront', 'N', { mediaOrigin: 'https://media.example' }), 'img-src'),
+    ).toContain('https://media.example')
+    expect(mediaOriginOf({ MEDIA_PUBLIC_URL: 'https://media.example/bucket/x' })).toBe(
+      'https://media.example',
+    )
     expect(mediaOriginOf({ MEDIA_PUBLIC_URL: 'not a url' })).toBeNull()
     expect(mediaOriginOf({})).toBeNull()
   })
@@ -75,9 +87,20 @@ describe('the checkout page’s Google Maps allowance (B6)', () => {
   const storefront = buildCsp('storefront', 'N0NCE')
 
   it('adds exactly what Google documents for the Maps JavaScript API', () => {
-    expect(directive(policy, 'script-src')).toEqual([`'self'`, `'nonce-N0NCE'`, `'strict-dynamic'`, `'unsafe-eval'`, 'blob:'])
+    expect(directive(policy, 'script-src')).toEqual([
+      `'self'`,
+      `'nonce-N0NCE'`,
+      `'strict-dynamic'`,
+      `'unsafe-eval'`,
+      'blob:',
+    ])
     expect(directive(policy, 'worker-src')).toContain('blob:')
-    for (const host of ['https://*.googleapis.com', 'https://*.gstatic.com', 'https://*.google.com', 'https://*.googleusercontent.com']) {
+    for (const host of [
+      'https://*.googleapis.com',
+      'https://*.gstatic.com',
+      'https://*.google.com',
+      'https://*.googleusercontent.com',
+    ]) {
       expect(directive(policy, 'img-src'), host).toContain(host)
       expect(directive(policy, 'connect-src'), host).toContain(host)
     }
@@ -88,16 +111,30 @@ describe('the checkout page’s Google Maps allowance (B6)', () => {
     expect(policy).not.toContain('fonts.googleapis.com')
     expect(policy).not.toContain('fonts.gstatic.com')
     expect(directive(policy, 'font-src')).toEqual([`'self'`, 'data:'])
-    for (const name of ['object-src', 'base-uri', 'frame-ancestors', 'form-action', 'default-src']) {
+    for (const name of [
+      'object-src',
+      'base-uri',
+      'frame-ancestors',
+      'form-action',
+      'default-src',
+    ]) {
       expect(directive(policy, name)).toEqual(directive(storefront, name))
     }
   })
 
   it('applies to the checkout in both languages and to no other page', () => {
-    const at = (pathname: string, site: 'shop' | 'gallery' = 'shop') => surfaceOf({ site, pathname })
+    const at = (pathname: string, site: 'shop' | 'gallery' = 'shop') =>
+      surfaceOf({ site, pathname })
     expect(at('/checkout')).toBe('checkout')
     expect(at('/id/checkout')).toBe('checkout')
-    for (const other of ['/', '/bag', '/order/AAAAAAAAAAAAAAAAAAAAAA', '/track/AAAAAAAAAAAAAAAAAAAAAA', '/checkout/extra', '/product/x']) {
+    for (const other of [
+      '/',
+      '/bag',
+      '/order/AAAAAAAAAAAAAAAAAAAAAA',
+      '/track/AAAAAAAAAAAAAAAAAAAAAA',
+      '/checkout/extra',
+      '/product/x',
+    ]) {
       expect(at(other), other).toBe('storefront')
     }
     expect(at('/checkout', 'gallery')).toBe('storefront')
@@ -124,10 +161,17 @@ describe('the admin policy (X2)', () => {
 })
 
 describe('wired into the proxy', () => {
-  const builder = contentSecurityPolicy({ NODE_ENV: 'production', MEDIA_PUBLIC_URL: 'https://media.example/b' })
+  const builder = contentSecurityPolicy({
+    NODE_ENV: 'production',
+    MEDIA_PUBLIC_URL: 'https://media.example/b',
+  })
   const decide = (path: string, host = 'old-east-indies.gaiada.com') =>
     decideProxy(
-      { url: new URL(`https://${host}${path}`), headers: new Headers({ host, 'user-agent': 'x' }), method: 'GET' },
+      {
+        url: new URL(`https://${host}${path}`),
+        headers: new Headers({ host, 'user-agent': 'x' }),
+        method: 'GET',
+      },
       { env: ENV, contentSecurityPolicy: builder },
     )
 
@@ -135,12 +179,18 @@ describe('wired into the proxy', () => {
     const decision = decide('/')
     const header = decision.setResponse['Content-Security-Policy']!
     expect(header).toContain('script-src')
-    expect(decision.setRequest['content-security-policy'] ?? decision.setRequest['Content-Security-Policy']).toBe(header)
+    expect(
+      decision.setRequest['content-security-policy'] ??
+        decision.setRequest['Content-Security-Policy'],
+    ).toBe(header)
   })
 
   it('draws a new nonce for every request', () => {
     const nonces = new Set(
-      Array.from({ length: 50 }, () => /'nonce-([^']+)'/.exec(decide('/').setResponse['Content-Security-Policy']!)![1]),
+      Array.from(
+        { length: 50 },
+        () => /'nonce-([^']+)'/.exec(decide('/').setResponse['Content-Security-Policy']!)![1],
+      ),
     )
     expect(nonces.size).toBe(50)
   })
@@ -164,8 +214,12 @@ describe('wired into the proxy', () => {
 
   it('gives the admin its policy, the checkout its Maps allowance, and the gallery the plain one', () => {
     expect(decide('/admin/login').setResponse['Content-Security-Policy']).not.toContain('midtrans')
-    expect(decide('/checkout').setResponse['Content-Security-Policy']).toContain('https://*.googleapis.com')
-    expect(decide('/', 'indies-gallery.gaiada.com').setResponse['Content-Security-Policy']).not.toContain('google')
+    expect(decide('/checkout').setResponse['Content-Security-Policy']).toContain(
+      'https://*.googleapis.com',
+    )
+    expect(
+      decide('/', 'indies-gallery.gaiada.com').setResponse['Content-Security-Policy'],
+    ).not.toContain('google')
   })
 
   it('leaves the tracking page’s own headers beside it', () => {

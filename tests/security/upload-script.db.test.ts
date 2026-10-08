@@ -43,7 +43,10 @@ import {
   TEXT,
   png,
 } from '../../engine/packages/cms/src/shop/fulfilment/image.test-support'
-import { openShop, type Shop } from '../../engine/packages/cms/src/shop/orders/orders-db.test-support'
+import {
+  openShop,
+  type Shop,
+} from '../../engine/packages/cms/src/shop/orders/orders-db.test-support'
 
 const bytes = (...parts: string[]) => Buffer.from(parts.join(''), 'utf8')
 /** Server-side script and a browser script, spelled in pieces. */
@@ -54,7 +57,10 @@ const SCRIPT_TAIL = bytes('\n', ...BROWSER_SCRIPT, ...SERVER_SCRIPT)
 /** What a stranger would send: each is refused as `not_an_image` by its bytes. */
 const NOT_IMAGES: Array<[string, Buffer]> = [
   ['an SVG with a script', SVG],
-  ['an HTML page named .jpg', bytes('<!doctype html><html><body>', ...BROWSER_SCRIPT, '</body></html>')],
+  [
+    'an HTML page named .jpg',
+    bytes('<!doctype html><html><body>', ...BROWSER_SCRIPT, '</body></html>'),
+  ],
   ['server-side script source', bytes(...SERVER_SCRIPT)],
   ['a shell script', bytes('#!/bin/sh\n', 'echo ', 'pwned\n')],
   ['a Windows executable', EXE],
@@ -90,17 +96,24 @@ describe.skipIf(!server)('an upload with a script, on a real database', () => {
     attachDriverImage(
       stack.payload,
       // The route passes the type the phone claimed; the core must not look at it.
-      { orderId, actor: as.store, file: { buffer, mimetype: 'image/jpeg', size: buffer.byteLength } },
+      {
+        orderId,
+        actor: as.store,
+        file: { buffer, mimetype: 'image/jpeg', size: buffer.byteLength },
+      },
       { store: images.deps.store, reencode: reencodeImage },
     ).then((result) => ({ result, images }))
 
-  it.each(NOT_IMAGES)('refuses %s by its bytes, writes nothing, and leaves the order alone (F1)', async (_name, buffer) => {
-    const order = await place()
-    const { result, images } = await attach(order.id, buffer)
-    expect(result).toMatchObject({ ok: false, refusal: 'not_an_image' })
-    expect(images.calls.put, 'nothing reached the bucket').toBe(0)
-    expect((await read.order(order.id)).driver_image_key).toBeNull()
-  })
+  it.each(NOT_IMAGES)(
+    'refuses %s by its bytes, writes nothing, and leaves the order alone (F1)',
+    async (_name, buffer) => {
+      const order = await place()
+      const { result, images } = await attach(order.id, buffer)
+      expect(result).toMatchObject({ ok: false, refusal: 'not_an_image' })
+      expect(images.calls.put, 'nothing reached the bucket').toBe(0)
+      expect((await read.order(order.id)).driver_image_key).toBeNull()
+    },
+  )
 
   it('refuses an empty file and one over 10 MB (F2)', async () => {
     const order = await place()
@@ -144,7 +157,9 @@ describe.skipIf(!server)('an upload with a script, on a real database', () => {
     const images = memoryStore()
     const deps = { store: images.deps.store, reencode: reencodeImage }
     const file = { buffer: png(8, 8) }
-    expect(await attachDriverImage(stack.payload, { orderId: order.id, actor: null, file }, deps)).toMatchObject({
+    expect(
+      await attachDriverImage(stack.payload, { orderId: order.id, actor: null, file }, deps),
+    ).toMatchObject({
       ok: false,
       refusal: 'not_staff',
     })

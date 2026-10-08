@@ -42,7 +42,12 @@ describe.skipIf(!server)('IDOR on an order: store A against store B’s order', 
   const docs = (body: Record<string, unknown> | null) =>
     ((body as { docs?: Array<{ id: number }> }).docs ?? []).map((doc) => doc.id)
   const statusOf = async (id: number) =>
-    String(((await stack.pool.query(`SELECT status::text AS s FROM orders WHERE id = ${id}`)).rows[0] as { s: string }).s)
+    String(
+      (
+        (await stack.pool.query(`SELECT status::text AS s FROM orders WHERE id = ${id}`))
+          .rows[0] as { s: string }
+      ).s,
+    )
 
   describe('over REST', () => {
     it('lists, counts and reads only the user’s own store’s order', async () => {
@@ -84,9 +89,9 @@ describe.skipIf(!server)('IDOR on an order: store A against store B’s order', 
         store: stack.stores.B.id,
         totals: { total: 1, subtotal: 1, deliveryFee: 0, discount: 0 },
       })
-      const row = (await stack.pool.query(
-        `SELECT store_id, totals_total FROM orders WHERE id = ${mine}`,
-      )).rows[0] as { store_id: number; totals_total: string | number }
+      const row = (
+        await stack.pool.query(`SELECT store_id, totals_total FROM orders WHERE id = ${mine}`)
+      ).rows[0] as { store_id: number; totals_total: string | number }
       expect(row.store_id).toBe(stack.stores.A.id)
       expect(Number(row.totals_total)).toBe(110000)
     })
@@ -113,7 +118,12 @@ describe.skipIf(!server)('IDOR on an order: store A against store B’s order', 
 
     it('cannot update the other store’s order', async () => {
       await expect(
-        stack.api.update({ collection: 'orders', id: theirs, data: { status: 'processing' }, ...as }),
+        stack.api.update({
+          collection: 'orders',
+          id: theirs,
+          data: { status: 'processing' },
+          ...as,
+        }),
       ).rejects.toThrow()
       expect(await statusOf(theirs)).toBe('paid')
     })
@@ -121,7 +131,11 @@ describe.skipIf(!server)('IDOR on an order: store A against store B’s order', 
 
   describe('through the fulfilment core the order routes call', () => {
     it('refuses a move, a hand-back and a reassign on the other store’s order, and a driver image', async () => {
-      const move = await moveOrder(stack.payload, { orderId: theirs, to: 'processing', actor: actorA })
+      const move = await moveOrder(stack.payload, {
+        orderId: theirs,
+        to: 'processing',
+        actor: actorA,
+      })
       expect(move).toMatchObject({ ok: false, refusal: 'not_your_store' })
       const back = await handBackOrder(stack.payload, {
         orderId: theirs,
@@ -152,7 +166,11 @@ describe.skipIf(!server)('IDOR on an order: store A against store B’s order', 
       if ((await statusOf(mine)) === 'paid') {
         await moveOrder(stack.payload, { orderId: mine, to: 'processing', actor: actorA })
       }
-      const own = await moveOrder(stack.payload, { orderId: mine, to: 'waiting_driver', actor: actorA })
+      const own = await moveOrder(stack.payload, {
+        orderId: mine,
+        to: 'waiting_driver',
+        actor: actorA,
+      })
       expect(own).toMatchObject({ ok: true, to: 'waiting_driver' })
       const images = memoryStore()
       const attach = await attachDriverImage(
@@ -165,7 +183,9 @@ describe.skipIf(!server)('IDOR on an order: store A against store B’s order', 
     })
 
     it('refuses an actor who is not signed in, and one with no known role', async () => {
-      expect(await moveOrder(stack.payload, { orderId: mine, to: 'on_the_way', actor: null })).toMatchObject({
+      expect(
+        await moveOrder(stack.payload, { orderId: mine, to: 'on_the_way', actor: null }),
+      ).toMatchObject({
         ok: false,
         refusal: 'not_staff',
       })
