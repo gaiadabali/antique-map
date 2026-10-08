@@ -1,0 +1,38 @@
+/* The agent's round avatar: initials on the accent, with an optional online dot (header only). */
+.avatar {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent-contrast);
+  background: var(--color-accent);
+  border-radius: 50%;
+  font: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+.sm {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.md {
+  width: 2.5rem;
+  height: 2.5rem;
+  font: var(--text-small);
+  font-weight: 700;
+}
+
+.online {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--color-success);
+  border: 2px solid var(--color-chat-agent);
+  border-radius: 50%;
+}

@@ -1,0 +1,24 @@
+button.cta {
+  border-radius: var(--radius-pill);
+}
+
+.success {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font: var(--text-small);
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-success) 8%, var(--color-chat-agent));
+  border: var(--rule-hair) solid color-mix(in srgb, var(--color-success) 35%, transparent);
+  border-radius: calc(var(--radius-bubble) * 0.66);
+}
+
+.check {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.125rem;
+  color: var(--color-success);
+}

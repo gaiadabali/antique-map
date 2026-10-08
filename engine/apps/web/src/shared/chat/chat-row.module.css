@@ -1,0 +1,40 @@
+.agentRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  max-width: 100%;
+}
+
+.runStart {
+  margin-top: var(--space-2);
+}
+
+/* Holds the avatar, or its empty place, so a run's messages share one left edge. */
+.slot {
+  display: inline-flex;
+  flex: none;
+  width: 1.75rem;
+  min-height: 1.75rem;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+  max-width: calc(100% - 2.25rem);
+}
+
+.agentBubble {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font: var(--text-body);
+  color: var(--color-chat-agent-ink);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  background: var(--color-chat-agent);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-bubble);
+  border-end-start-radius: var(--radius-control);
+}

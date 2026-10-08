@@ -1,0 +1,42 @@
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-inline-start: 2.25rem; /* under the greeting bubble, past the avatar's column */
+}
+
+.chip {
+  max-width: 100%;
+  padding: var(--space-2) var(--space-4);
+  font: var(--text-small);
+  color: var(--color-accent);
+  text-align: start;
+  background: var(--color-chat-agent);
+  border: var(--rule-hair) solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-out) var(--ease),
+    color var(--dur-out) var(--ease);
+}
+
+.chip:hover:not(:disabled) {
+  color: var(--color-accent-contrast);
+  background: var(--color-accent);
+}
+
+.chip:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    transition: none;
+  }
+}

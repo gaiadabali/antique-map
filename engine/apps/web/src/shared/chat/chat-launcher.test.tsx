@@ -18,6 +18,7 @@ describe('the floating chat launcher', () => {
         turnstileSiteKey="key"
         text={text}
         suggestions={[]}
+        contact={{ whatsappHref: null, emailHref: null }}
       />,
     )
     expect(markup).toMatch(

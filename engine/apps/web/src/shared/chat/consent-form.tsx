@@ -6,7 +6,7 @@
  * server's own copy, already in the visitor's locale; ticking it and submitting posts straight to
  * `/api/x/chat/consent`. The model never sees any of these fields — only the reference, next turn.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
@@ -15,6 +15,7 @@ import { postConsent, newIdempotencyKey } from './chat-client'
 import type { LeadFormData } from './chat-reducer'
 import type { ChatPanelText } from './lexicon/types'
 import type { HandoffChannel, SiteLocale } from './types'
+import styles from './consent-form.module.css'
 
 export function ConsentForm({
   form,
@@ -38,6 +39,11 @@ export function ConsentForm({
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // The prompt that opened this form is gone; keep the visitor's place by landing on its first field.
+  useEffect(() => {
+    document.getElementById('chat-lead-name')?.focus()
+  }, [])
+
   async function submit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
     if (pending || !consented) return
@@ -59,7 +65,14 @@ export function ConsentForm({
   }
 
   return (
-    <form onSubmit={(event) => void submit(event)} aria-label={text.leadTitle}>
+    <form
+      className={styles.form}
+      onSubmit={(event) => void submit(event)}
+      aria-label={text.leadTitle}
+    >
+      <p className={styles.title} aria-hidden="true">
+        {text.leadTitle}
+      </p>
       <Input
         id="chat-lead-name"
         label={text.leadName}
@@ -80,9 +93,9 @@ export function ConsentForm({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <fieldset>
-        <legend>{text.leadPreferred}</legend>
-        <label>
+      <fieldset className={styles.preferred}>
+        <legend className={styles.legend}>{text.leadPreferred}</legend>
+        <label className={styles.choice}>
           <input
             type="radio"
             name="chat-lead-preferred"
@@ -91,7 +104,7 @@ export function ConsentForm({
           />
           {text.leadPreferredWhatsapp}
         </label>
-        <label>
+        <label className={styles.choice}>
           <input
             type="radio"
             name="chat-lead-preferred"
@@ -114,13 +127,19 @@ export function ConsentForm({
         onChange={(e) => setConsented(e.target.checked)}
         required
       />
-      {error !== null && <p role="alert">{error}</p>}
-      <Button type="submit" variant="primary" disabled={pending || !consented}>
-        {text.leadSubmit}
-      </Button>
-      <Button type="button" variant="quiet" onClick={onCancel}>
-        {text.leadCancel}
-      </Button>
+      {error !== null && (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
+      <div className={styles.actions}>
+        <Button type="button" variant="quiet" onClick={onCancel}>
+          {text.leadCancel}
+        </Button>
+        <Button type="submit" variant="primary" disabled={pending || !consented}>
+          {text.leadSubmit}
+        </Button>
+      </div>
     </form>
   )
 }

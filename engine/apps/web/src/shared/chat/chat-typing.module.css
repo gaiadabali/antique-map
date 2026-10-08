@@ -1,0 +1,64 @@
+.typing {
+  position: relative;
+  display: inline-flex;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-chat-agent);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-bubble);
+  border-end-start-radius: var(--radius-control);
+}
+
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.dots {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 1.5rem;
+}
+
+.dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  background: var(--color-text-muted);
+  border-radius: 50%;
+  animation: bounce var(--dur-loop) var(--ease) infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: calc(var(--dur-loop) / 6);
+}
+
+.dot:nth-child(3) {
+  animation-delay: calc(var(--dur-loop) / 3);
+}
+
+@keyframes bounce {
+  0%,
+  60%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-0.25rem);
+  }
+}
+
+/* No motion: the three dots stay still, at the middle of their pulse. */
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    opacity: 0.7;
+    animation: none;
+  }
+}

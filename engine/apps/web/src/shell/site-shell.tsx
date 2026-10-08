@@ -29,6 +29,7 @@ import { ChatPageProvider } from '../shared/chat/chat-page-context'
 import { chatPanelText, suggestedStarts } from '../shared/chat/lexicon'
 
 import { Announcement } from './announcement'
+import { chatContact } from './chat-contact'
 import { ContactBlock } from './contact-block'
 import type { ShellMessageKey } from './messages'
 import { siteHref, type ShellText } from './site'
@@ -82,6 +83,7 @@ export async function SiteShell({ shell, t, children }: Props) {
         turnstileSiteKey={process.env.TURNSTILE_SITE_KEY?.trim() || null}
         text={chatText}
         suggestions={suggestedStarts(chatText, shell.site.key)}
+        contact={chatContact(settings.contact)}
       />
     </ChatPageProvider>
   )

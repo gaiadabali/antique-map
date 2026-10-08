@@ -1,0 +1,65 @@
+/* The lead form as a clean inline card in the thread. The shared inputs keep their own styling. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--color-chat-agent);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: calc(var(--radius-bubble) * 0.66);
+}
+
+.title {
+  margin: 0;
+  font: var(--text-h3);
+  color: var(--color-text-strong);
+}
+
+.preferred {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.legend {
+  width: 100%;
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font: var(--text-small);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  font: var(--text-small);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.choice input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--color-accent);
+}
+
+.error {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-danger);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}

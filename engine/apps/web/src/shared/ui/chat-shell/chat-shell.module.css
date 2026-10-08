@@ -1,10 +1,17 @@
+/*
+ * The chat frame: a column of header, log, composer and a one-line disclosure. Header, composer and
+ * disclosure sit on the raised surface; the log sits on the ground, so the bubbles read as raised.
+ */
 .shell {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: 100vh;
-  background: var(--color-surface-raised);
+  max-height: 100dvh;
+  color: var(--color-text);
+  background: var(--color-chat-agent);
   border: var(--rule-hair) solid var(--color-border);
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 .header {
@@ -40,21 +47,52 @@
   background: var(--color-surface-deep);
 }
 
+.close:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 .log {
+  display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-2);
   min-height: 0;
-  overflow-y: auto;
   padding: var(--space-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-chat-ground);
 }
 
 .composer {
-  padding: var(--space-3) var(--space-4);
-  border-top: var(--rule-hair) solid var(--color-border);
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  background: var(--color-chat-agent);
 }
 
 .disclosure {
-  padding: var(--space-2) var(--space-4);
-  border-top: var(--rule-hair) solid var(--color-border);
-  font: var(--text-micro);
+  padding: 0 var(--space-4) var(--space-3);
+  font: var(--text-caption);
+  text-align: center;
   color: var(--color-text-muted);
+  background: var(--color-chat-agent);
+}
+
+.disclosure p {
+  margin: 0;
+}
+
+.disclosure a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.disclosure a:hover {
+  color: var(--color-text);
+}
+
+.disclosure a:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
 }
