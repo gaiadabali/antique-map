@@ -32,12 +32,14 @@ import type {
 import { answer } from './answer'
 import { askedHandoff, replyOffersHandoff } from './asks'
 import { overBudget, RECHALLENGE_LABEL, sessionOverCap } from './gates'
+import type { ToolContext } from '../tools/run'
 import {
   cardItemIds,
   handoffEvents,
   historyOf,
   LABEL_TOPICS,
   leadFormEvent,
+  pageItemCard,
   shopAmounts,
   type ServerCardContext,
 } from './support'
@@ -146,6 +148,24 @@ export async function runTurn(input: TurnInput): Promise<void> {
       formatRupiah: (rupiah) =>
         labelOf.get(rupiah) ?? formatMoney({ amount: rupiah, currency: 'IDR' }, locale),
     }
+    const tools: ToolContext = {
+      site,
+      locale,
+      t,
+      reader: deps.reader,
+      settings,
+      sessionId: session.id,
+      consents: deps.consents,
+      itemIds,
+      notePrice: (priceLabel) => {
+        const rupiah = rupiahOfLabel(priceLabel)
+        if (rupiah !== null) labelOf.set(rupiah, priceLabel)
+        if (rupiah !== null && !amounts.has(rupiah)) {
+          amounts.add(rupiah)
+          labels.push(`price:${rupiah}`)
+        }
+      },
+    }
     const result = await answer({
       client: deps.model,
       models: deps.models,
@@ -154,24 +174,7 @@ export async function runTurn(input: TurnInput): Promise<void> {
       check,
       signal: input.signal,
       emit,
-      tools: {
-        site,
-        locale,
-        t,
-        reader: deps.reader,
-        settings,
-        sessionId: session.id,
-        consents: deps.consents,
-        itemIds,
-        notePrice: (priceLabel) => {
-          const rupiah = rupiahOfLabel(priceLabel)
-          if (rupiah !== null) labelOf.set(rupiah, priceLabel)
-          if (rupiah !== null && !amounts.has(rupiah)) {
-            amounts.add(rupiah)
-            labels.push(`price:${rupiah}`)
-          }
-        },
-      },
+      tools,
       mayCall: async (turnUsage, turnCost) => {
         const spent = await deps.spend.spent(site, day)
         const projected = {
@@ -222,6 +225,12 @@ export async function runTurn(input: TurnInput): Promise<void> {
       // Required, or the reply itself offers WhatsApp or email: the buttons must be there.
       for (const event of await handoffEvents(cards(), topic)) emit(event)
       handoffShown = true
+    }
+    // The first answer from an item page shows that item's card, even when the model never looked it up.
+    const pageItem = input.viewingItemId
+    if (pageItem && result.ended === 'answered' && session.transcript.length === 0) {
+      if (!itemIds.has(pageItem))
+        for (const event of await pageItemCard(tools, pageItem)) emit(event)
     }
     // Typed contact details were masked: the consent form is the only way they reach the team.
     if (maskedContact && !leadFormShown && session.lead === null && result.ended === 'answered') {

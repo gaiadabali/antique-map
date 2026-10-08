@@ -39,6 +39,8 @@ export const CHECKOUT_KEYS = defineMessages({
     'No single store can send this whole bag. Remove {items} and try again, or ask us on WhatsApp and we will find a way.',
   'checkout.problem.out-of-stock':
     'Just sold out: {items}. Remove them to continue, or ask us on WhatsApp.',
+  'checkout.problem.busy':
+    'Many people are checking out right now. Nothing was charged or held — please try again in a moment.',
   'checkout.problem.outside-indonesia':
     'We deliver within Indonesia only, for now. Message us on WhatsApp and we will find a way.',
 })

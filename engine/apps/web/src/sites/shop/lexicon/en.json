@@ -107,6 +107,7 @@
   "checkout.problem.invalid-pin": "That pin doesn’t look right — drop it again inside Indonesia.",
   "checkout.problem.no-single-store": "No single store can send this whole bag. Remove {items} and try again, or ask us on WhatsApp and we will find a way.",
   "checkout.problem.out-of-stock": "Just sold out: {items}. Remove them to continue, or ask us on WhatsApp.",
+  "checkout.problem.busy": "Many people are checking out right now. Nothing was charged or held — please try again in a moment.",
   "checkout.problem.outside-indonesia": "We deliver within Indonesia only, for now. Message us on WhatsApp and we will find a way.",
   "checkout.province": "Province",
   "checkout.shipTo": "Ship to {country}",

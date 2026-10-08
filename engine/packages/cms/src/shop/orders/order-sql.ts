@@ -12,7 +12,7 @@ import { createHash, randomBytes } from 'node:crypto'
 
 import { PAID_ORDER_STATUSES } from '../pricing/payload-adapter'
 import { rowId } from '../payments/order-sql'
-import { sql, wholeOf, type Tx } from '../payments/transaction'
+import { sql, underShortLock, wholeOf, type Tx } from '../payments/transaction'
 import type { BagLine } from '../pricing/bag'
 
 /** The tracking token (COMMERCE.md §10; SECURITY.md T1): 32 random bytes, base64url. */
@@ -56,6 +56,58 @@ export async function takeStock(tx: Tx, store: number, line: BagLine, at: Date):
        AND quantity >= ${line.qty}
     RETURNING id`)
   return updated.length === 1
+}
+
+/**
+ * How long an order waits for a stock row's lock (TASKS.md 10.5.b). A buyer's decrement holds it
+ * for milliseconds; longer means a stuck or saturated holder, and a plain "busy, try again" beats
+ * a pool connection held past its own 5 s wait (`db/adapter`'s `POOL_CONNECT_TIMEOUT_MS`).
+ */
+export const STOCK_LOCK_TIMEOUT = '2s'
+
+export type TakeResult =
+  | { readonly taken: true }
+  /**
+   * `line` could not be taken. `busy: false` — its row holds fewer units than asked (another buyer
+   * took them; try once more on fresh counts, then `out_of_stock`). `busy: true` — its row was
+   * locked past `STOCK_LOCK_TIMEOUT` and still holds the units: a plain "busy, try again".
+   */
+  | { readonly taken: false; readonly line: BagLine; readonly busy: boolean }
+
+/**
+ * Takes every line's units from `store`, in the order given (the lock order, `inLockOrder`), each
+ * by `takeStock`, under one short lock (`underShortLock`). A lost lock is never thrown: the line
+ * that lost it is read again, unlocked, to tell "sold out" from "busy". Whatever was taken is left
+ * for the caller's transaction to commit or roll back.
+ */
+export async function takeLines(
+  tx: Tx,
+  store: number,
+  lines: readonly BagLine[],
+  at: Date,
+): Promise<TakeResult> {
+  const reached: { line?: BagLine } = {}
+  const run = await underShortLock(tx, STOCK_LOCK_TIMEOUT, async () => {
+    for (const line of lines) {
+      reached.line = line
+      if (!(await takeStock(tx, store, line, at))) return line
+    }
+    return null
+  })
+  if (run.locked) {
+    return run.value === null ? { taken: true } : { taken: false, line: run.value, busy: false }
+  }
+  const line = reached.line!
+  return { taken: false, line, busy: (await stockLeft(tx, store, line)) >= line.qty }
+}
+
+/** What `store`'s row for `line` holds as last committed (no lock taken), 0 when there is none. */
+export async function stockLeft(tx: Tx, store: number, line: BagLine): Promise<number> {
+  const [row] = await tx.rows(sql`
+    SELECT quantity FROM stock_levels
+     WHERE store_id = ${store} AND product_id = ${line.productId}
+       AND variant_sku IS NOT DISTINCT FROM ${line.variantSku}`)
+  return row ? wholeOf(row.quantity, 'stock_levels.quantity') : 0
 }
 
 export type DiscountClaim = 'claimed' | 'usage_limit' | 'already_used'
