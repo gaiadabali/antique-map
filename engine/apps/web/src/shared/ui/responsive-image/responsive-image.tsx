@@ -68,6 +68,20 @@ const leadProps = (lead: boolean | undefined) =>
  * back. A lead image is preloaded with the same ladder, at high priority, so the browser fetches
  * the one rung the `<img>` will choose, before the stylesheets and fonts are parsed.
  */
+/**
+ * The same ladder in AVIF. The media pipeline publishes every rung in both formats
+ * (`@engine/media` `DERIVATIVE_FORMATS`, one key per width), and an AVIF rung is about half the
+ * WebP's bytes (10.2: the 1024 px rung is 48 KB against 93 KB). `null` unless every candidate is
+ * a `.webp` derivative, so a ladder of anything else is left exactly as given.
+ */
+export function avifLadderOf(srcSet: string): string | null {
+  const candidates = srcSet.split(',').map((candidate) => candidate.trim())
+  if (candidates.length === 0 || !candidates.every((each) => /\.webp\s+\d+w$/.test(each))) {
+    return null
+  }
+  return candidates.map((each) => each.replace(/\.webp(\s+\d+w)$/, '.avif$1')).join(', ')
+}
+
 function LadderImage({
   props,
   srcSet,
@@ -90,17 +104,27 @@ function LadderImage({
     ...(lead ? { loading: 'eager', fetchPriority: 'high' } : {}),
     className,
   })
+  const avif = avifLadderOf(srcSet)
   if (lead) {
+    // The lead is preloaded in the format the browser will pick: AVIF where it decodes it.
     preload(props.src, {
       as: 'image',
-      imageSrcSet: srcSet,
+      imageSrcSet: avif ?? srcSet,
       imageSizes: props.sizes,
       fetchPriority: 'high',
+      ...(avif !== null ? { type: 'image/avif' } : {}),
       ...(corsOf(props) !== undefined ? { crossOrigin: corsOf(props) } : {}),
     })
   }
   // `alt` is in `img`, from `getImageProps()`.
-  return <img {...img} srcSet={srcSet} sizes={props.sizes} crossOrigin={corsOf(props)} />
+  const image = <img {...img} srcSet={srcSet} sizes={props.sizes} crossOrigin={corsOf(props)} />
+  if (avif === null) return image
+  return (
+    <picture>
+      <source type="image/avif" srcSet={avif} sizes={props.sizes} />
+      {image}
+    </picture>
+  )
 }
 
 /** A Next/Image wrapper requiring `alt` and `sizes` with fixed or fill + ratio variants. */

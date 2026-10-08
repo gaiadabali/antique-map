@@ -88,8 +88,7 @@ function lineVM(line: QuoteLine, byId: ReadonlyMap<number, BagDisplay>): BagLine
     slug: product?.slug ?? null,
     name: product?.name ?? '',
     variantLabel,
-    imageUrl: product?.image?.url ?? null,
-    imageAlt: product?.image?.alt ?? product?.name ?? '',
+    image: product?.image ?? null,
     unitText: line.unitIdr === null ? null : String(line.unitIdr),
     lineText: line.status === 'ok' ? String(line.lineIdr) : null,
   }

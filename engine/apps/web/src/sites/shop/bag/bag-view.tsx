@@ -11,6 +11,8 @@ import type { SiteLocale } from '@engine/config/sites'
 import type { BagVM } from '../../../server/shop/bag'
 import { createHref, SITES } from '@engine/config/sites'
 import { Button } from '../../../shared/ui'
+import { productText } from '../product/copy'
+import { imageAlt } from '../product/synthetic'
 import { bagText } from './copy'
 import styles from './bag.module.css'
 import { CodeForm } from './code-form'
@@ -34,6 +36,7 @@ export type BagViewProps = {
 
 export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
   const text = bagText(locale)
+  const words = productText(locale)
   const href = createHref(SITES.shop)
   const codeVM = bag.code ?? undefined
   const problemTexts = Object.fromEntries(
@@ -60,8 +63,17 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
           <ul className={styles.lines}>
             {bag.lines.map((line) => (
               <li key={`${line.productId}-${line.variantSku ?? ''}`} className={styles.line}>
-                {line.imageUrl !== null && (
-                  <img className={styles.thumb} src={line.imageUrl} alt={line.imageAlt ?? ''} />
+                {line.image !== null && (
+                  <img
+                    className={styles.thumb}
+                    src={line.image.url}
+                    srcSet={line.image.srcSet}
+                    sizes="5rem"
+                    width={80}
+                    height={80}
+                    decoding="async"
+                    alt={imageAlt(words, { ...line.image, alt: line.image.alt || line.name })}
+                  />
                 )}
                 <div className={styles.lineBody}>
                   <p className={styles.name}>
