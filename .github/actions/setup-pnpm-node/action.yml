@@ -20,7 +20,9 @@ runs:
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
         node-version: '22.13.0' # engines.node in root package.json
-        cache: pnpm
+        # No install means no store on disk: setup-node's post step would then fail with
+        # "Path Validation Error" (the audit job, CI run 37760908165). Cache only when we install.
+        cache: ${{ inputs.install == 'true' && 'pnpm' || '' }}
 
     - name: Install dependencies
       if: inputs.install == 'true'
