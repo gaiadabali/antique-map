@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 4/6 | 18/25 | 1 | `███████░░░`  72% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/6 | 22/25 | 1 | `█████████░`  88% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **46/52** | **193/214** | **8** | `█████████░`  90% |
+| **All** | 11 phases | | | **47/52** | **197/214** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 10·W2 | 10.3 The staging rehearsal and the restore drill | devops | `worktree-agent-a76815f4e568eb296` | 2026-10-08 | |
 
 ## Decisions for the owner
 
@@ -730,16 +729,16 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.2.b axe plus a keyboard pass and a screen-reader pass on the purchase path and the chat
   - [x] 10.2.c **Check:** `docs/gates/performance.md` shows at least 90 performance and 100 accessibility for the item and product pages, no serious axe finding anywhere, and the pass notes for keyboard and screen reader.
 
-- [ ] **10.3 The staging rehearsal and the restore drill** · needs: 10.1, 10.2 — 🔄 10·W2
+- [x] **10.3 The staging rehearsal and the restore drill** · needs: 10.1, 10.2 — ✅ 2026-10-09 bd45e34b
   - **Lane** OPS + QA · **Agent** devops, qa · **Wave** W2
   - **Owns** `docs/gates/rehearsal.md`, `docs/ops/runbook.md`, `scripts/ops/**`
   - **Read** DEPLOYMENT.md §Backups and §Rehearsal, DATA.md
   - _Requirements: 15.2, 11.6, 10.3_
-  - [ ] 10.3.a load the full seed (1,823 antiques with images, a realistic catalogue, 100+ stores with stock) and run both sites against it
-  - [ ] 10.3.b rehearse the launch: a release through the pull pipeline, health checks, a full journey on each site (gallery: search → ask → lead; shop: buy → fulfil → track), and the AI chat
-  - [ ] 10.3.c back up, wipe and restore the database and buckets onto staging; verify counts and an image
+  - [x] 10.3.a load the full seed (1,823 antiques with images, a realistic catalogue, 100+ stores with stock) and run both sites against it
+  - [x] 10.3.b rehearse the launch: a release through the pull pipeline, health checks, a full journey on each site (gallery: search → ask → lead; shop: buy → fulfil → track), and the AI chat
+  - [x] 10.3.c back up, wipe and restore the database and buckets onto staging; verify counts and an image
   - [x] 10.3.d write the runbook: deploy, roll back, restore, rotate a secret, kill the chat, handle a late payment
-  - [ ] 10.3.e **Check:** `docs/gates/rehearsal.md` records the run, the restore timing and verification, and the runbook has been followed by someone other than its author.
+  - [x] 10.3.e **Check:** `docs/gates/rehearsal.md` records the run, the restore timing and verification, and the runbook has been followed by someone other than its author.
 
 - [ ] **10.4 👤 Timed admin tests with the owner's team** · needs: 10.3
   - **Lane** QA + DOC · **Agent** qa, senior-uiux · **Wave** W3
@@ -840,6 +839,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **10.3 closed** (`bd45e34b`; Sonnet devops wrote the drill script, runbook and gate; Sonnet qa the journeys; the orchestrator ran the server side; `docs/gates/rehearsal.md`). **Restore drill PASS** on Helios (`drill-20261008T161047Z`): database and bucket backed up, wiped (79,476 objects by key) and restored; every table's rows, every object's key and size, and sample hashes, types and Cache-Control identical; app down 816 s, recovery 254 s. **An earlier, failed drill (12:17 UTC, finished by hand) had left 25,146 zoom tiles missing on staging**, found by comparing object lists and restored from its copy before the clean run. RustFS `MemoryMax` 2 → 6 GB (a 79k-object listing peaks ~2.2 GB; persisted on Helios and in `scripts/ops/lib/rustfs.sh`); the drill's guard is a lock (its `pgrep` matched itself). **Journeys** on `e8597fd7` at 390/1280: gallery search → ask → lead (the owner reads it), the chat on both sites, and the shop **8/8** buy → staff price → simulator pay → DPS-004 delivers → tracking (the buyer is now pinned on DPS-004: with the real stock the old pin routes to DPS-005, correctly). **Runbook** followed by the orchestrator: deploy, rollback (6 s back, 6 s forward), restore, the chat switch (click path corrected); rotate-a-secret and late payment read only. **R-1 for 11.1:** a payment after expiry only flags the order (`decide.ts`); COMMERCE.md §13 says re-take the units and mark it paid — a money/stock fix with an Opus review before live payments. Staging contacts are still placeholders (OA2). Two aside databases and drill folders (8.4 GiB each) stay on Helios until dropped.
 
 - 2026-10-09 — ✅ **10.2 closed** (`03501ba9`; Sonnet built and measured, orchestrator reviewed). Staging release `production-20261008T143718Z-e8597fd7` (healthy, smoke passed): Lighthouse mobile item **96** / product **98** perf, **100** a11y on every page; axe 0 findings in 8 scans (item, product, bag, checkout × 390/1280); keyboard and screen-reader notes in `docs/gates/performance.md`. Fixed on the way: AVIF through `<picture>` with WebP fallback, derivative ladders on the gallery's featured works and the bag, the italic face no longer preloaded (gallery home 2,042 → 249 KiB, shop listing 1,845 → 644 KiB), the first-row cards eager; the invisible skip link, five checkout pin fields sharing one name, **typed coordinates losing their decimal point** (the server refused the pin), a form nested in the checkout form, the bag total covering Update at 390 px, the variant group's name. **Decided (a):** LCP 2.5 s is judged by the Bali phone check; simulated LCP (2.4–2.8 s on staging) is advisory and CI warns on it (`docs/DESIGN-SYSTEM.md` §9).
 
