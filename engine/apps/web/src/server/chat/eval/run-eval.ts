@@ -131,7 +131,6 @@ async function judged(
     pass: reasons.length === 0,
     judged: 'declined',
     costUsd: cost,
-    ...(reasons.length === 0 ? { reply: undefined } : {}),
   }
 }
 
