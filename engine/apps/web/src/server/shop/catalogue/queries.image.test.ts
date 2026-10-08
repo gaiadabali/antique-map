@@ -6,7 +6,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { imageOf } from './queries'
+import { imageOf } from './images'
 
 const BASE = 'https://media.example.test/indies-media'
 const ID = '0123456789abcdef0123456789abcdef'
@@ -38,7 +38,22 @@ describe('the shop product image', () => {
       alt: 'A batik tote',
       width: 640,
       height: 480,
+      syntheticLabel: null,
     })
+  })
+
+  it.each([
+    ['rendered', 'digital-mockup'],
+    ['composite', 'digital-mockup'],
+    ['ai-generated', 'ai-generated'],
+    ['photograph', null],
+  ])('labels a %s image %s', (provenance, label) => {
+    expect(imageOf(media({ provenance }))?.syntheticLabel).toBe(label)
+  })
+
+  it('treats a missing or unknown provenance as a photograph', () => {
+    expect(imageOf(media())?.syntheticLabel).toBeNull()
+    expect(imageOf(media({ provenance: 'mystery' }))?.syntheticLabel).toBeNull()
   })
 
   it('is no image — never the staff-only file route — until the pipeline has run', () => {

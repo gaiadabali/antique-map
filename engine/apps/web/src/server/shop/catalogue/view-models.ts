@@ -4,6 +4,8 @@
  * stores), and no price but a whole rupiah integer for `formatRupiah` (COMMERCE.md §2).
  */
 
+import type { SyntheticLabel } from '@engine/media/contract'
+
 /** An image as a page shows it: the public derivative URL (`../media/public-image`), only once
  * the media pipeline has published it — never Payload's staff-only file route — and its alt text. */
 export type CatalogueImage = {
@@ -11,6 +13,8 @@ export type CatalogueImage = {
   readonly alt: string
   readonly width: number | null
   readonly height: number | null
+  /** Anything but a photograph is labelled wherever it is shown (CONTENT-MODEL.md �5); null for one. */
+  readonly syntheticLabel: SyntheticLabel | null
 }
 
 /** A category term a published product points at: the slug its address carries and its label. */
