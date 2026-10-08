@@ -22,8 +22,11 @@ allowBuilds:
 # Security overrides for `pnpm audit --prod --audit-level=high` (ci.yml `audit`).
 # undici 7.29.0 arrives through payload; 7.29.1 fixes GHSA-rfgv-xxqx-mfg5 and
 # GHSA-w293-vg96-wgc3 and is a patch release. Drop this once payload ships it.
+# source-map-js 1.2.1 (GHSA-68fv-2mgg-jv7q)
+# is a build-time transitive (postcss); the fix is a patch bump.
 overrides:
   undici: 7.29.1
+  source-map-js: 1.2.2
 
 # Allowed advisories, each with its reason. Recheck by 2026-11-02 or on the next
 # Payload upgrade, whichever comes first.
