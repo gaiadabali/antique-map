@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 2/6 | 13/25 | 1 | `█████░░░░░`  52% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 3/6 | 14/25 | 1 | `██████░░░░`  56% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **44/52** | **188/214** | **8** | `█████████░`  88% |
+| **All** | 11 phases | | | **45/52** | **189/214** | **8** | `█████████░`  88% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 10·W1 | 10.1 Security review and fixes | senior-integrator | `worktree-agent-a2683e59411a2c50a` | 2026-10-08 | |
 | 10·W1 | 10.2 Performance and accessibility pass | senior-fe | `worktree-agent-aa631d14b8accce70` | 2026-10-08 | |
 
 ## Decisions for the owner
@@ -711,7 +710,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** `docs/SECURITY.md`'s checklist is run and every finding is fixed or accepted by the owner; budgets pass on both sites; a rehearsal on staging runs both sites with the full data volume and a restore from backup; the owner's team completes the timed admin tests.
 **Waves:** W1 — 10.1, 10.2, 10.5, 10.6 · W2 — 10.3 · W3 — 10.4
 
-- [ ] **10.1 Security review and fixes** · needs: phase 7, phase 8, phase 9 — 🔄 10·W1
+- [x] **10.1 Security review and fixes** · needs: phase 7, phase 8, phase 9 — ✅ 2026-10-08 9a6909b9
   - **Lane** PLT + QA · **Agent** senior-integrator, qa · **Wave** W1
   - **Owns** `docs/gates/security.md`, `tests/security/**`, `engine/apps/web/src/security/**`
   - **Read** SECURITY.md (all), AI.md §Guardrails
@@ -720,7 +719,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.1.b `pnpm audit --prod`, the secret scan and CodeQL are green; dependency pins reviewed
   - [x] 10.1.c an access-control test sweep: every collection × role × operation against the table in SECURITY.md §2.2
   - [x] 10.1.d fix the findings in the owning lane (small ones here, larger ones as new subtasks) and re-run
-  - [ ] 10.1.e **Check:** `docs/gates/security.md` lists every checklist item with evidence; the access sweep passes; a planted vulnerability from each of four classes (IDOR on an order, a webhook replay, an XSS in a lead note, an upload with a script) is caught.
+  - [x] 10.1.e **Check:** `docs/gates/security.md` lists every checklist item with evidence; the access sweep passes; a planted vulnerability from each of four classes (IDOR on an order, a webhook replay, an XSS in a lead note, an upload with a script) is caught.
 
 - [ ] **10.2 Performance and accessibility pass** · needs: phase 7, phase 8, phase 9 — 🔄 10·W1
   - **Lane** DSG + QA · **Agent** senior-fe, qa · **Wave** W1
@@ -841,6 +840,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-08 — ✅ **10.1 closed** (`9a6909b9`; Sonnet built, orchestrator reviewed). `docs/gates/security.md` walks every SECURITY.md item with evidence; `tests/security/` (523 tests on Postgres 16): the access sweep, 423 cells (every collection × owner/editor/store A/store B/anonymous × CRUD against §2.2); four planted vulnerabilities each caught and reverted (IDOR on an order, webhook replay, XSS in a lead note, a script upload; `tests/security/plants/run-plants.mjs`). Fixed: **F-01** the per-request CSP (nonce, strict-dynamic; a checkout policy for Maps; the admin's own) and the static headers in `next.config.ts` (0 violations in Chromium on ~20 pages incl. the admin, checkout and the zoom viewer; the media origin added to `connect-src` for IIIF); **F-02** per-address limits: sign-in 10/15 min, forgot+reset 3/h, checkout 10/h (`checkout.problem.rate-limited`, en+id); **F-05** limiters key on the last X-Forwarded-For; **F-06** geocode 30/min, leads 5/h; **F-07** geocoder 5 s timeout, 64 KB cap, no redirects, Turnstile 5 s; **F-03** passwords ≥ 12 and not common (en+id); **F-04** sessions 8 h; **F-08** a misleading log line (no address was logged); **F-10** explicit kill-switch read; **F-11** next 16.3.8, source-map-js 1.2.2, `pnpm audit --prod` high green — braces GHSA-vfj7-8cjw-p6xm **accepted until 2026-11-02** (no fixed release; build/dev only; owner to confirm); **F-09/F-12** SECURITY.md amended to the code (8 h, 90 MiB masters, 15-min staff URLs, sealed tracking token accepted). **Open:** F-13 (CI workflows never ran on origin; remote CI red since 10-02 — needs a push), F-14 (no central log redactor), F-15 (staging: `x-middleware-rewrite` and the public `/api/health` detail), a reset link bypasses the password policy (Payload writes the hash without hooks), Snap under COOP same-origin and the Maps picker unverified (no sandbox, no browser key), a request without X-Forwarded-For is not counted (fail-open off nginx, by design). Also red on main and fixed on the way: prettier on two 10.1 files; the partnership rate test (10 → 5/h). Six db test files red on main with a database set (hidden by `pnpm verify`'s skip): Sonnet on `w/10.dbtests`.
 
 - 2026-10-08 — ✅ **10.6 closed** (`88ceeee7`). Check 10.6.f on staging (`tests/e2e/review/`, Sonnet qa, reviewed; `docs/gates/review-content.md`), whole suite **51/51 twice** at 390 and 1280 px: `/browse` states and lists 1,513 available (64 pages) and 1,709 with sold (72 pages), every link distinct; zoom on items 507, 1237, 468 — `info.json` and every tile 200 only after Zoom, the canvas draws; **no price** in 280 documents (70 priced works × en/id × HTML/RSC — no `askingPrice`, no `USD`, no figure standalone or beside a currency) nor in `/browse`, `/search`, `/id/jelajah` or the 3,816-URL sitemap; the shop states and lists 156 designs on 7 pages with loading srcset derivatives, no mock product, variants Rp 450.000 / 950.000, "Digital mockup" exactly on the four Instagram products (id "Mockup digital"); the retired mock now answers 404; both footers' Instagram and Facebook hrefs exact in en and id; axe 0 violations on both listings at both widths. The owner/editor clause: the orchestrator's REST evidence on staging plus `works-price.db.test.ts` (not re-run: no staging editor, local Docker down). Found in review and fixed before the re-runs: the currency-figure regex had lost its backslashes in a plain template literal (`String.raw` now), the price sample is read only from `E2E_PRICE_SAMPLE` (owner-only data stays out of git). **For the owner at the client review:** the placeholder prices (OA4), the Indonesian machine translations, MP.136 printed on two designs, four catalogue headings whose year differs from their text, and the 114 unpublished antiques (101 lacking maker/place or date certainty, 3 without a photograph, 10 held).
 
