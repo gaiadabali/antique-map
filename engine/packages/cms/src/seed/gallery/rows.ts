@@ -9,9 +9,13 @@
  *   from the review file (§4).
  * - **`publicId` is the old product id** (§6), sent as `legacy_id`, which the import plans into
  *   the work's public id.
- * - **No asking price anywhere** (DR-3, Q14): the `asking_price` and `asking_currency` cells stay
- *   empty — the price is the owner's to type. (The column headers stay: the import refuses a file
- *   whose header is not the template.)
+ * - **The old price is the owner-only asking price, in the full layer only** (owner decision
+ *   2026-10-08; the gallery still shows no price, DR-3): a parsed, fixed, USD price whose cents
+ *   are whole dollars lands as `asking_price` (whole dollars) + `asking_currency` `USD`; anything
+ *   else (empty, review, on request, another currency, part-dollar cents, zero) leaves both cells
+ *   empty — never rounded, never guessed. The committed sample never carries a price: its rows
+ *   are built without it (`withPrice` false), so nothing priced reaches git. (The column headers
+ *   stay: the import refuses a file whose header is not the template.)
  * - **Status** is `sold` or `available` as the old page showed; `location` is `singapore`.
  * - `object_type`, a required cell the old site never stated, comes from the record's own
  *   categories (a photograph is a photograph); a maker's role follows the object, and a credit is
@@ -91,10 +95,28 @@ function conditionOf(record: NormalisedGalleryRecord): { grade: string; notes: s
   return { grade: 'Fair', notes: raw }
 }
 
-/** One record → one row. Pure over the record; batch dedupe of stock numbers happens outside. */
+/**
+ * The asking price a record's old price reads as, in whole US dollars, or null. Integer
+ * arithmetic only: cents that are not a whole number of dollars are never rounded (null).
+ */
+export function askingDollarsOf(record: NormalisedGalleryRecord): string | null {
+  const price = record.fields.price
+  if (!price || price.status !== 'parsed' || price.value?.mode !== 'fixed') return null
+  const base = price.value.base
+  if (!base || base.currency !== 'USD') return null
+  const cents = base.amount
+  if (!Number.isSafeInteger(cents) || cents <= 0 || cents % 100 !== 0) return null
+  return String(cents / 100)
+}
+
+/**
+ * One record → one row. Pure over the record; batch dedupe of stock numbers happens outside.
+ * `withPrice` carries the old price into the owner-only asking price (the full layer only).
+ */
 export function antiqueRow(
   record: NormalisedGalleryRecord,
   imageCells: readonly string[],
+  withPrice = false,
 ): AntiqueRow {
   const marks: string[] = []
   const categories = (
@@ -162,6 +184,12 @@ export function antiqueRow(
   cells.makers = makerName ? `${makerName} | ${makerRoleOf(objectType)} | attributed` : ''
   if (maker.status === 'review') marks.push('review:maker')
 
+  const dollars = withPrice ? askingDollarsOf(record) : null
+  if (dollars !== null) {
+    cells.asking_price = dollars
+    cells.asking_currency = 'USD'
+  }
+
   cells.status = record.status.sold ? 'sold' : 'available'
   cells.location = 'singapore'
 
@@ -203,11 +231,12 @@ export function antiqueRows(
   records: readonly NormalisedGalleryRecord[],
   images: ReadonlyMap<number, readonly LegacyImage[]>,
   imagePathOf: (image: LegacyImage) => string,
+  withPrice = false,
 ): readonly AntiqueRow[] {
   const used = new Set<string>()
   return records.map((record) => {
     const imageCells = (images.get(record.legacyId) ?? []).map(imagePathOf)
-    const row = antiqueRow(record, imageCells)
+    const row = antiqueRow(record, imageCells, withPrice)
     const said = row.cells.stock_number ?? ''
     if (said === '' || used.has(said)) {
       row.cells.stock_number = fallbackStockNumber(record.legacyId, used)

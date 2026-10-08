@@ -44,6 +44,11 @@ export type NormalisedGalleryRecord = {
     readonly stockNumber: ParsedField<{ readonly value: string; readonly prefix: string }>
     readonly colour: ParsedField<string>
     readonly maker: ParsedField<{ readonly legacyId: number | null; readonly name: string }>
+    /** The old price, in minor units (cents): `{ mode: 'fixed', base: { amount, currency } }`. */
+    readonly price?: ParsedField<{
+      readonly mode: string
+      readonly base?: { readonly amount: number; readonly currency: string } | null
+    }>
     readonly categories: ParsedField<
       ReadonlyArray<{ readonly legacyId: number; readonly name: string }>
     >

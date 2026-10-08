@@ -2,7 +2,9 @@
  * The seed layers on a real, pushed Postgres (DATA.md §2–4): the vocabulary seeds once (the
  * second run creates nothing); the gallery sample imports its committed 50 rows — every work
  * drafted, keyed on the old record's address, and carrying no asking price (DR-3, Q14) — and
- * imports the same file again as a no-op; the review marks and old categories ride into
+ * imports the same file again as a no-op; a full-layer row carrying an old price loads it into
+ * the owner-only asking price, which an editor and the public never read (owner decision
+ * 2026-10-08); the review marks and old categories ride into
  * `works.legacy.categories` and a second carry changes nothing; the shop layer loads twice and
  * the purge then deletes exactly the rows it seeded, and a second purge deletes nothing.
  * Without `CMS_TEST_POSTGRES_URL` these skip — a setup state.
@@ -157,6 +159,55 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
     expect(again.counts.rejected).toBe(0)
     expect(again.counts.unchanged).toBe(50)
   }, 300_000)
+
+  it('a full-layer row carries the old price into the owner-only asking price', async () => {
+    const stockNumber = 'M.PRICE1'
+    const [template] = sampleRows({ withImages: false })
+    const row = {
+      ...template!,
+      cells: {
+        ...template!.cells,
+        stock_number: stockNumber,
+        legacy_id: '990001',
+        legacy_url: '',
+        asking_price: '1850',
+        asking_currency: 'USD',
+      },
+    }
+    const report = await runImportFile('antiques', 'gallery-full.csv', utf8(antiqueCsv([row])), {
+      payload: stack.payload,
+      runner: 'seed',
+    })
+    expect(report.counts.new).toBe(1)
+    expect(report.counts.rejected).toBe(0)
+    const found = await stack.payload.find({
+      collection: 'works',
+      overrideAccess: true,
+      depth: 0,
+      limit: 1,
+      where: { stockNumber: { equals: stockNumber } },
+    })
+    const id = (found.docs[0] as unknown as Work).id
+    const read = (as?: 'owner' | 'editor') =>
+      stack.rest('GET', `/api/works/${id}?depth=0&draft=true`, as ? { as } : {})
+    const owner = await read('owner')
+    expect(owner.status).toBe(200)
+    expect(owner.body).toMatchObject({ askingPrice: 1850 })
+    const editor = await read('editor')
+    expect(editor.status).toBe(200)
+    expect(editor.body).not.toHaveProperty('askingPrice')
+    // An anonymous read never gets a draft; whatever it answers carries no price.
+    const anonymous = await read()
+    expect(JSON.stringify(anonymous.body ?? {})).not.toContain('askingPrice')
+    const published = await stack.payload.find({
+      collection: 'works',
+      overrideAccess: false,
+      depth: 0,
+      limit: 100,
+      where: { _status: { equals: 'published' } },
+    })
+    expect(JSON.stringify(published.docs)).not.toContain('askingPrice')
+  }, 180_000)
 
   it('the review marks and old categories ride into legacy.categories, once', async () => {
     const rows = sampleRows({ withImages: false })
