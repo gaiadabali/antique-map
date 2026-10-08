@@ -24,6 +24,8 @@ export const LIMITS = {
   signIn: { name: 'sign-in', max: 10, windowMs: 15 * 60_000 },
   passwordReset: { name: 'forgot-reset-password', max: 3, windowMs: 60 * 60_000 },
   checkout: { name: 'checkout', max: 10, windowMs: 60 * 60_000 },
+  /** `/api/x/geocode`: a Google bill is at stake (SECURITY.md §2.10, S5; finding F-06). */
+  geocode: { name: 'geocode', max: 30, windowMs: 60_000 },
 } as const satisfies Record<string, Limit>
 
 const SWEEP_AT = 5_000
@@ -69,6 +71,7 @@ export const limiters = {
   signIn: new RateLimiter(LIMITS.signIn),
   passwordReset: new RateLimiter(LIMITS.passwordReset),
   checkout: new RateLimiter(LIMITS.checkout),
+  geocode: new RateLimiter(LIMITS.geocode),
 }
 
 /** The limiter a request counts against, by method and path; null for any other request. */
