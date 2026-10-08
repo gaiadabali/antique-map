@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 2/4 | 14/16 | 0 | `█████████░`  88% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 0/6 | 5/25 | 1 | `██░░░░░░░░`  20% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 0/6 | 6/25 | 1 | `██░░░░░░░░`  24% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **40/52** | **178/214** | **8** | `████████░░`  83% |
+| **All** | 11 phases | | | **40/52** | **179/214** | **8** | `████████░░`  84% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -773,7 +773,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.6.b the full gallery on staging: the 1,823 crawled records and their 2,289 photographs, the derivatives and tiles made on the workstation first, then loaded and published through the publish checks
   - [x] 10.6.c the shop's designs from the owner's six catalogue PDFs (Linktree → Drive, May 2024): each design's picture, title, year, history text and design code, in English and Indonesian, deduplicated across catalogues
   - [x] 10.6.d @oldeastindiesart's Instagram posts read for their pictures, captions and prices (product types, sizes, prices) to complete 10.6.c's products
-  - [ ] 10.6.e the shop on staging carries the designs as products with marked placeholder prices, replacing the 80 mock products (mock stores and stock stay); both sites' footers link their Instagram and Facebook
+  - [x] 10.6.e the shop on staging carries the designs as products with marked placeholder prices, replacing the 80 mock products (mock stores and stock stay); both sites' footers link their Instagram and Facebook
   - [ ] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
 
 ---
@@ -845,6 +845,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-08 — **10.6.e done on staging.** The shop's publishing run: 156 designs published (468 product rows and 22,632 stock rows `unchanged` on the second run — idempotent), the 80 mocks unpublished, the 6 categories published; `/shop` lists 24 real designs a page from Rp 450.000, a product shows Mounted Rp 450.000 / Framed Rp 950.000 (server-priced). Found by opening it, fixed and released as **`production-20261008T050109Z-410136e8`** (`w/10.6label`, Sonnet, reviewed; the home strip fix by the orchestrator): synthetic product images now carry the "Digital mockup" label and alt prefix on the product page, cards and home strip (id: "Mockup digital"; a photograph shows none), and cards and product images carry the derivative ladder as srcSet — `/shop` Lighthouse mobile **perf 81 → 96, LCP 5.1 → 2.3 s, 2,993 → 1,845 KiB**; shop home 98; gallery home 98 (2,042 KiB: its featured works take the largest derivative — handed to 10.2 with the AVIF idea). Owner-only price on staging via REST: the owner reads `askingPrice` 280000 on M.0856, a store user is refused, anonymous gets no `askingPrice`, the gallery host's `/api` is 404 (no editor on staging; `works-price.db.test.ts` covers it). Follow-ups routed to 10.2 (antique-map-2a): an unpublished product's URL answers 200 with the not-found page (a never-existed slug 404s); bag and checkout thumbnails still take the largest derivative with no alt prefix. Gallery: 651 published at 05:06 UTC, the wave runner on Helios finishes about 07:00 UTC.
 
 - 2026-10-08 — **10.6 on staging, in progress.** Gallery: `gallery-full` loaded as drafts on Helios (capped container, `nice 15`): **1,764 created, 39 updated, 10 unchanged, 0 rejected, 10 held** (9 name the place "Indonesia", 1 "Batavia (Jakarta)" — the owner's data pass); the 49 published sample works took their asking prices in place (M.0856, the c. 1493 Chinese Celestial Map, reads USD 280,000 as on the old site). Derivatives: one backfill process uses one core, so 7 shards by `--id` lists (1.5 CPU, 3 GB each) run ~13 photos/min; works publish in **waves**, each draft whose every image is `ready`, through the publish checks — wave 1: 93 published, 8 refused (no maker and no primary place: the publish guard, left as drafts). Checked on `/product/1093` (en `/product`, id `/produk`, HTML and RSC): no `askingPrice`, no USD, no 280000. The `indies` role allows 20 connections: 8 backfills plus the app sit at ~13–16; a wave or seed run beside them hit the cap once (8 images in shard 6 failed, redone in the final pass). Shop: `shop-catalogue` drafts — **156 products created (312 variants), 0 rejected, 0 held; 6 category terms; 168 media; 22,632 stock rows**; the 80 mocks stay live until the publishing run. Review fixes before merge (`9489e693`): the mocks retire only on a publishing run; `purge-seed` removes every `SEED-` product. Release **`production-20261008T041323Z-801ff1f3`** live (no new migrations; health ok on both hosts): the footer links each site's social accounts, set on staging by a Local API script that compares the whole global before and after (unchanged otherwise) — gallery Instagram `indiesgalleryantiques` + Facebook `IndiesGallery`, shop `oldeastindiesart` + `OldEastIndies`, verified anonymously on both home pages.
 
