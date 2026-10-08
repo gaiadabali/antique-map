@@ -1,27 +1,30 @@
 'use client'
 
 /**
- * The chat panel (8.2.a/b): opens Turnstile invisibly, starts the session, streams the turn's
- * events through the reducer, and renders the handoff and lead-form states the stream can end in
- * (AI.md §2.2–§4). Focus moves into the panel on open and Escape closes it — the launcher restores
- * focus to whatever opened it. The panel's JavaScript is loaded only when the launcher mounts it
- * (`next/dynamic`, `ssr: false`), so a page that never opens the chat ships none of it.
+ * The chat panel (8.2.a/b/c): a customer-service messenger. Opens Turnstile invisibly, starts the
+ * session, streams the turn's events through the reducer, and renders the handoff and lead-form
+ * states the stream can end in (AI.md �2.2��4). Focus moves into the panel on open and Escape closes
+ * it � the launcher restores focus to whatever opened it. The panel's JavaScript is loaded only when
+ * the launcher mounts it (`next/dynamic`, `ssr: false`), so a page that never opens the chat ships
+ * none of it. The look lives in the parts: `chat-header`, `chat-thread`, `chat-composer`.
  */
 import { usePathname } from 'next/navigation'
 import { useEffect, useReducer, useRef, useState } from 'react'
 
 import { ChatShell } from '../ui/chat-shell'
-import { Button } from '../ui/button'
 import { chatReducer, INITIAL_CHAT_STATE } from './chat-reducer'
+import { ChatComposer } from './chat-composer'
+import { talkToPersonLink } from './chat-contact'
 import { ChatDisclosure } from './chat-disclosure'
-import { ChatEntries } from './chat-entries'
-import { ConsentForm } from './consent-form'
+import { ChatHeader } from './chat-header'
+import { ChatThread } from './chat-thread'
 import { sendChatMessage, startChatSession, type StreamHandle } from './chat-client'
 import { useChatPageInfo } from './chat-page-context'
 import { isEscapeKey } from './keys'
 import type { ChatPanelText } from './lexicon/types'
-import type { SiteKey, SiteLocale } from './types'
+import type { ChatContact, SiteKey, SiteLocale } from './types'
 import { ChatTurnstile } from './turnstile-widget'
+import { useStickToBottom } from './use-stick-to-bottom'
 
 export type ChatPanelProps = {
   readonly site: SiteKey
@@ -30,17 +33,21 @@ export type ChatPanelProps = {
   readonly turnstileSiteKey: string | null
   readonly text: ChatPanelText
   readonly suggestions: readonly string[]
+  /** The site's public WhatsApp and email links � the fixed "Talk to a person" action. */
+  readonly contact: ChatContact
   readonly onClose: () => void
 }
 
 const DEFAULT_MAX_CHARS = 1000
 
 export function ChatPanel({
+  site,
   locale,
   origin,
   turnstileSiteKey,
   text,
   suggestions,
+  contact,
   onClose,
 }: ChatPanelProps): React.ReactElement {
   const pathname = usePathname()
@@ -54,12 +61,23 @@ export function ChatPanel({
   const [state, dispatch] = useReducer(chatReducer, INITIAL_CHAT_STATE)
   const [composer, setComposer] = useState('')
   const rootRef = useRef<HTMLDivElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
+  const composerRef = useRef<HTMLTextAreaElement>(null)
   const streamRef = useRef<StreamHandle | null>(null)
   const askedToken = useRef(false)
+  const { force: pinToBottom } = useStickToBottom(logRef, state)
 
   useEffect(() => {
-    const first = rootRef.current?.querySelector<HTMLElement>('input, button, textarea')
-    first?.focus()
+    // A phone's keyboard would cover the greeting, so only a fine pointer lands in the composer;
+    // otherwise focus goes to the first control (the panel's close button).
+    const fine =
+      typeof window.matchMedia === 'function' && window.matchMedia('(pointer: fine)').matches
+    const field = composerRef.current
+    const target =
+      fine && field !== null && !field.disabled
+        ? field
+        : rootRef.current?.querySelector<HTMLElement>('button, input, textarea')
+    target?.focus()
   }, [])
 
   useEffect(() => {
@@ -85,102 +103,75 @@ export function ChatPanel({
     })
   }
 
-  function submit(event: React.FormEvent<HTMLFormElement>): void {
-    event.preventDefault()
-    const value = composer.trim()
-    if (value === '' || state.streaming || session !== 'ready') return
-    dispatch({ type: 'send', text: value })
-    setComposer('')
+  function send(value: string, clearComposer = true): void {
+    const trimmed = value.trim()
+    if (trimmed === '' || state.streaming || session !== 'ready') return
+    pinToBottom()
+    dispatch({ type: 'send', text: trimmed })
+    if (clearComposer) setComposer('')
     streamRef.current = sendChatMessage(
-      { text: value, locale, pagePath: pathname ?? '/' },
+      { text: trimmed, locale, pagePath: pathname ?? '/' },
       (chatEvent) => dispatch({ type: 'event', event: chatEvent }),
       (seconds) => dispatch({ type: 'retryAfter', seconds }),
       () => dispatch({ type: 'networkError', message: text.networkError }),
     )
+    // A tapped suggestion unmounts with the greeting; keep the visitor's place in the composer.
+    composerRef.current?.focus({ preventScroll: true })
   }
 
-  const errorText =
-    state.errorMessage === null
-      ? null
-      : state.retryAfterSeconds !== null
+  const notices: string[] = []
+  if (state.errorMessage !== null) {
+    notices.push(
+      state.retryAfterSeconds !== null
         ? `${state.errorMessage} ${text.errorRetryIn.replace('{seconds}', String(state.retryAfterSeconds))}`
-        : state.errorMessage
+        : state.errorMessage,
+    )
+  }
+  if (session === 'failed') notices.push(sessionError ?? text.networkError)
 
   return (
     <div ref={rootRef}>
       <ChatShell
-        title={
-          pageInfo !== null ? text.askingAbout.replace('{title}', pageInfo.title) : text.panelTitle
+        logRef={logRef}
+        logLabel={text.threadLabel}
+        header={
+          <ChatHeader text={text} talk={talkToPersonLink(contact, origin)} onClose={onClose} />
         }
-        closeLabel={text.close}
-        onClose={onClose}
         disclosure={<ChatDisclosure text={text} privacyHref="/privacy" />}
         composer={
-          <form onSubmit={submit}>
-            <label htmlFor="chat-composer">{text.composerLabel}</label>
-            <textarea
-              id="chat-composer"
-              value={composer}
-              maxLength={maxChars}
-              placeholder={text.composerPlaceholder}
-              disabled={session !== 'ready'}
-              onChange={(event) => setComposer(event.target.value)}
-            />
-            {state.streaming ? (
-              <Button type="button" variant="secondary" onClick={() => streamRef.current?.stop()}>
-                {text.stop}
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={session !== 'ready' || composer.trim() === ''}
-              >
-                {text.send}
-              </Button>
-            )}
-          </form>
+          <ChatComposer
+            text={text}
+            value={composer}
+            maxChars={maxChars}
+            streaming={state.streaming}
+            canSend={session === 'ready' && composer.trim() !== ''}
+            disabled={session === 'failed'}
+            textareaRef={composerRef}
+            onChange={setComposer}
+            onSend={() => send(composer)}
+            onStop={() => streamRef.current?.stop()}
+          />
         }
       >
-        {state.entries.length === 0 && (
-          <ul>
-            {suggestions.map((suggestion) => (
-              <li key={suggestion}>
-                <button type="button" onClick={() => setComposer(suggestion)}>
-                  {suggestion}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        <ChatEntries
-          entries={state.entries}
+        <ChatThread
+          text={text}
+          site={site}
+          locale={locale}
           origin={origin}
-          handoffLabels={{ whatsapp: text.handoffWhatsapp, email: text.handoffEmail }}
+          state={state}
+          contact={contact}
+          pageTitle={pageInfo?.title ?? null}
+          suggestions={suggestions}
+          canPick={session === 'ready'}
+          notices={notices}
+          onPick={(suggestion) => send(suggestion, false)}
+          onOpenLead={() => dispatch({ type: 'openLeadForm' })}
+          onCancelLead={() => {
+            dispatch({ type: 'closeLeadForm' })
+            composerRef.current?.focus({ preventScroll: true })
+          }}
+          onLeadSubmitted={(reference) => dispatch({ type: 'leadSubmitted', reference })}
         />
-        {state.leadForm !== null && !state.leadFormOpen && (
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => dispatch({ type: 'openLeadForm' })}
-          >
-            {text.leadCta}
-          </Button>
-        )}
-        {state.leadForm !== null && state.leadFormOpen && (
-          <ConsentForm
-            form={state.leadForm}
-            text={text}
-            locale={locale}
-            onSubmitted={(reference) => dispatch({ type: 'leadSubmitted', reference })}
-            onCancel={() => dispatch({ type: 'closeLeadForm' })}
-          />
-        )}
-        {state.leadReference !== null && (
-          <p>{text.leadSuccess.replace('{reference}', state.leadReference)}</p>
-        )}
-        {errorText !== null && <p role="alert">{errorText}</p>}
-        {session === 'failed' && <p role="alert">{sessionError ?? text.networkError}</p>}
       </ChatShell>
       {turnstileSiteKey !== null && session === 'starting' && (
         <ChatTurnstile siteKey={turnstileSiteKey} onToken={onToken} />

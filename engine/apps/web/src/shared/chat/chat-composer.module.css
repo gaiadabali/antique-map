@@ -1,0 +1,97 @@
+.form {
+  position: relative;
+  margin: 0;
+}
+
+/* Visually hidden, still the textarea's accessible label. */
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.field {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  background: var(--color-chat-ground);
+  border: var(--rule-hair) solid var(--color-border-strong);
+  border-radius: var(--radius-bubble);
+}
+
+.field:focus-within {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* One line to start; the script sets the height to the content, up to four lines. */
+  max-height: 7.5rem;
+  max-height: calc(4lh + 2 * var(--space-2));
+  padding: var(--space-2) 0;
+  font: var(--text-body);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.action {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  color: var(--color-accent-contrast);
+  background: var(--color-accent);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    opacity var(--dur-out) var(--ease),
+    transform var(--dur-out) var(--ease);
+}
+
+.action:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.action:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action {
+    transition: none;
+  }
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

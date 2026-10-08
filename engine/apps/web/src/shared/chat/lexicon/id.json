@@ -1,13 +1,21 @@
 {
-  "panelTitle": "Asisten AI",
   "disclosure": "Saya asisten AI dan bisa saja keliru. {site} akan mengonfirmasi semuanya lewat WhatsApp atau email.",
   "disclosurePrivacy": "Kebijakan privasi",
+  "agentName": "{site}",
+  "agentStatus": "Asisten AI · membalas seketika",
+  "talkToPerson": "Bicara dengan staf",
+  "greeting.gallery": "Halo! Saya asisten {site}. Tanyakan apa saja tentang koleksi kami, atau saya bisa menghubungkan Anda dengan galeri lewat WhatsApp.",
+  "greeting.shop": "Halo! Saya asisten {site}. Tanyakan tentang produk, toko, dan pengiriman kami, atau saya bisa menghubungkan Anda dengan tim kami lewat WhatsApp.",
+  "greetingItem.gallery": "Halo! Saya asisten {site}. Tanyakan apa saja tentang “{title}”, atau saya bisa menghubungkan Anda dengan galeri lewat WhatsApp.",
+  "greetingItem.shop": "Halo! Saya asisten {site}. Tanyakan apa saja tentang “{title}”, atau saya bisa menghubungkan Anda dengan tim kami lewat WhatsApp.",
+  "suggestionsLabel": "Pertanyaan yang disarankan",
+  "threadLabel": "Percakapan",
+  "typing": "Asisten sedang mengetik",
   "composerPlaceholder": "Tanyakan sesuatu…",
   "composerLabel": "Pesan Anda",
   "send": "Kirim",
   "stop": "Berhenti",
   "close": "Tutup obrolan",
-  "askingAbout": "Menanyakan tentang: {title}",
   "suggest.gallery.0": "Peta Jawa apa saja yang Anda miliki?",
   "suggest.gallery.1": "Apakah ada yang berasal dari sebelum 1750?",
   "suggest.gallery.2": "Bagaimana saya tahu sebuah cetakan itu asli?",
@@ -32,5 +40,6 @@
   "leadSuccess": "Terima kasih — referensi {reference}. Tim kami akan segera menghubungi Anda.",
   "leadError": "Gagal mengirim. Silakan coba lagi.",
   "errorRetryIn": "Coba lagi dalam {seconds} detik.",
-  "networkError": "Terjadi kesalahan. Silakan coba lagi, atau hubungi kami langsung."
+  "networkError": "Terjadi kesalahan. Silakan coba lagi, atau hubungi kami langsung.",
+  "noticeHelp": "Anda juga bisa menghubungi tim kami langsung."
 }
