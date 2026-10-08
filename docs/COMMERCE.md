@@ -143,8 +143,14 @@ apply    ONE transaction (READ COMMITTED):
                       expire, cancel              → expired + release, if no time is left (§4)
                       refund, partial_refund      → recorded; history note; no status change
   5. queue the notification jobs (§11) in the same transaction
-  any error → ROLLBACK (the dedupe row with it) → 500 → Midtrans retries
+  lock lost (steps 1–2 wait at most 2 s, under a savepoint) → write nothing, look the dedupe key up:
+           recorded → 200 (the winner applied it); not yet → 503 + Retry-After: 5 → Midtrans retries
+  any other error → ROLLBACK (the dedupe row with it) → 500 → Midtrans retries
 ```
+
+Lock contention is never a 500 (10.5): a lock lost later in the transaction (the expiry's stock rows) rolls
+everything back and is answered the same way. Checkout is the same: a stock row whose lock is not free within
+2 s is `out_of_stock` when the units are gone, else `busy` ("busy, try again"), never a thrown database error.
 
 `pending` and the later `settlement` of one attempt have different dedupe keys, so both apply. The status machine
 only moves forward: a late `pending` after `paid` changes nothing.
