@@ -20,6 +20,11 @@
  * A line lost to another buyer between the pick and the decrement is retried ONCE on fresh counts
  * (COMMERCE.md §4); if that fails too, the buyer is told which item ran out. The bag is never
  * changed here.
+ *
+ * **Contention** (TASKS.md 10.5.b) is a refusal, never a thrown database error: a decrement that
+ * cannot take its row's lock within `STOCK_LOCK_TIMEOUT` is `out_of_stock` (by the same retry)
+ * when the row no longer holds the units, else `busy` — "busy, try again"; a lock lost anywhere
+ * else in the transaction (the code's row, the number's) is `busy` too.
  */
 import type { Payload } from 'payload'
 
@@ -27,7 +32,7 @@ import type { BagCookieKey, BagLine } from '../pricing/bag'
 import { DISCOUNT_MESSAGE_KEYS, type DiscountRefusal } from '../pricing/discount'
 import { quoteBag } from '../pricing/quote'
 import { notifyOrderEvent } from '../notify'
-import { inTransaction, type Tx } from '../payments/transaction'
+import { inTransaction, isLockContention, type Tx } from '../payments/transaction'
 import { lineKey, type LineRef, type PickRefusal } from './assign'
 import {
   validateCheckoutDetails,
@@ -44,7 +49,7 @@ import {
   insertOrder,
   newTrackingToken,
   nextOrderNumber,
-  takeStock,
+  takeLines,
   type OrderLineRecord,
 } from './order-sql'
 import { pickStore } from './pick-store'
@@ -100,6 +105,8 @@ export type OrderRefusal =
   | PrepareRefusal
   | PickRefusal
   | { readonly ok: false; readonly refusal: 'price_changed'; readonly totals: OrderTotals }
+  /** Another checkout held what this one needed for too long: nothing was taken; try again. */
+  | { readonly ok: false; readonly refusal: 'busy' }
 
 export type CreateOrderResult = CreatedOrder | OrderRefusal
 
@@ -119,6 +126,8 @@ const outOfStock = (lines: readonly LineRef[]): OrderRefusal => ({
   refusal: 'out_of_stock',
   lines: lines.map(({ productId, variantSku }) => ({ productId, variantSku })),
 })
+
+const BUSY: OrderRefusal = { ok: false, refusal: 'busy' }
 
 const codeRefused = (reason: 'usage_limit' | 'already_used'): OrderRefusal => {
   const code: DiscountRefusal = { reason, messageKey: DISCOUNT_MESSAGE_KEYS[reason] }
@@ -178,9 +187,9 @@ async function placeOrder(tx: Tx, placement: Placement): Promise<CreatedOrder> {
     throw new Refused({ ok: false, refusal: 'price_changed', totals })
   }
 
-  for (const line of await inLockOrder(tx, lines)) {
-    if (!(await takeStock(tx, pick.store.id, line, at))) throw new Refused(outOfStock([line]), true)
-  }
+  const taken = await takeLines(tx, pick.store.id, await inLockOrder(tx, lines), at)
+  if (!taken.taken)
+    throw taken.busy ? new Refused(BUSY) : new Refused(outOfStock([taken.line]), true)
   if (quote.discount !== null) {
     const claim = await claimDiscount(tx, quote.discount.code, details.contact, at)
     if (claim !== 'claimed') throw new Refused(codeRefused(claim))
@@ -261,6 +270,7 @@ export async function createOrder(
       }).catch(() => {})
       return created
     } catch (error) {
+      if (isLockContention(error)) return BUSY
       if (!(error instanceof Refused)) throw error
       // A unit lost to another buyer between the pick and the decrement: once more, fresh counts.
       if (error.retry && attempt === 1) continue
