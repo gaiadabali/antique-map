@@ -52,7 +52,7 @@ export const EN = {
   'topic.order': 'an order',
   'topic.delivery': 'delivery',
   'topic.authenticity': 'an item’s authenticity or value',
-  'topic.general': 'a general question',
+  'topic.general': 'your items',
 
   'consent.text': 'Share these details with {site} so they can contact you about this.',
 

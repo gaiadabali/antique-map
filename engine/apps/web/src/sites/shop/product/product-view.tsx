@@ -12,6 +12,7 @@ import { ChatPageContext } from '../../../shared/chat/chat-page-context'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { productText, variantPickerText } from './copy'
 import styles from './product.module.css'
+import { imageAlt, syntheticLabelText } from './synthetic'
 import { VariantPicker, type PickerVariant } from './variant-picker'
 
 export function ProductView({
@@ -67,30 +68,37 @@ export function ProductView({
 
       <div className={styles.gallery}>
         {lead && (
-          <ResponsiveImage
-            variant="fill"
-            aspectRatio="1 / 1"
-            src={lead.url}
-            alt={lead.alt}
-            sizes="(max-width: 767px) 100vw, 50vw"
-            priority
-            className={styles.leadImage}
-            unoptimized
-          />
+          <figure className={styles.figure}>
+            <ResponsiveImage
+              variant="fill"
+              aspectRatio="1 / 1"
+              src={lead.url}
+              srcSet={lead.srcSet}
+              alt={imageAlt(text, lead)}
+              sizes="(max-width: 767px) 100vw, 50vw"
+              priority
+              className={styles.leadImage}
+              unoptimized
+            />
+            <Label text={syntheticLabelText(text, lead)} />
+          </figure>
         )}
         {rest.length > 0 && (
           <div className={styles.thumbs}>
             {rest.map((image) => (
-              <ResponsiveImage
-                key={image.url}
-                variant="fill"
-                aspectRatio="1 / 1"
-                src={image.url}
-                alt={image.alt}
-                sizes="(max-width: 767px) 33vw, 120px"
-                className={styles.thumb}
-                unoptimized
-              />
+              <figure key={image.url} className={styles.figure}>
+                <ResponsiveImage
+                  variant="fill"
+                  aspectRatio="1 / 1"
+                  src={image.url}
+                  srcSet={image.srcSet}
+                  alt={imageAlt(text, image)}
+                  sizes="(max-width: 767px) 33vw, 120px"
+                  className={styles.thumb}
+                  unoptimized
+                />
+                <Label text={syntheticLabelText(text, image)} />
+              </figure>
             ))}
           </div>
         )}
@@ -133,6 +141,11 @@ export function ProductView({
       </div>
     </article>
   )
+}
+
+/** A synthetic image's visible label, under the image; nothing for a photograph. */
+function Label({ text }: { readonly text: string | null }): React.ReactElement | null {
+  return text === null ? null : <figcaption className={styles.mockupNote}>{text}</figcaption>
 }
 
 /** The lowest price on offer: a variant's, when any is priced away from the product's own. */

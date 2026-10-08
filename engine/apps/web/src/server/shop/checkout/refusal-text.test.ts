@@ -53,6 +53,7 @@ describe('refusalCopy', () => {
         nameOf,
       ).key,
     ).toBe('checkout.problem.price-changed')
+    expect(refusalCopy({ ok: false, refusal: 'busy' }, nameOf).key).toBe('checkout.problem.busy')
   })
 
   it('out_of_stock names the items the buyer can act on', () => {

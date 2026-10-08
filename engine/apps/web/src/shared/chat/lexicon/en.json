@@ -1,13 +1,21 @@
 {
-  "panelTitle": "AI assistant",
   "disclosure": "I'm an AI assistant and can make mistakes. {site} confirms everything by WhatsApp or email.",
   "disclosurePrivacy": "Privacy notice",
+  "agentName": "{site}",
+  "agentStatus": "AI assistant · replies instantly",
+  "talkToPerson": "Talk to a person",
+  "greeting.gallery": "Hi! I'm the {site} assistant. Ask me about the collection, or I can put you in touch with the gallery on WhatsApp.",
+  "greeting.shop": "Hi! I'm the {site} assistant. Ask me about our products, stores and delivery, or I can put you in touch with the team on WhatsApp.",
+  "greetingItem.gallery": "Hi! I'm the {site} assistant. Ask me anything about “{title}”, or I can put you in touch with the gallery on WhatsApp.",
+  "greetingItem.shop": "Hi! I'm the {site} assistant. Ask me anything about “{title}”, or I can put you in touch with the team on WhatsApp.",
+  "suggestionsLabel": "Suggested questions",
+  "threadLabel": "Conversation",
+  "typing": "The assistant is typing",
   "composerPlaceholder": "Ask a question…",
   "composerLabel": "Your message",
   "send": "Send",
   "stop": "Stop",
   "close": "Close chat",
-  "askingAbout": "Asking about: {title}",
   "suggest.gallery.0": "What maps do you have of Java?",
   "suggest.gallery.1": "Do you have anything from before 1750?",
   "suggest.gallery.2": "How do I know a print is original?",
@@ -32,5 +40,6 @@
   "leadSuccess": "Thanks — reference {reference}. The team will be in touch.",
   "leadError": "That didn't go through. Please try again.",
   "errorRetryIn": "Try again in {seconds}s.",
-  "networkError": "Something went wrong. Please try again, or contact us directly."
+  "networkError": "Something went wrong. Please try again, or contact us directly.",
+  "noticeHelp": "You can also reach the team directly."
 }

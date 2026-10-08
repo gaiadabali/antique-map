@@ -50,7 +50,7 @@ export const ID = {
   'topic.order': 'sebuah pesanan',
   'topic.delivery': 'pengiriman',
   'topic.authenticity': 'keaslian atau nilai sebuah barang',
-  'topic.general': 'pertanyaan umum',
+  'topic.general': 'barang Anda',
 
   'consent.text':
     'Bagikan detail ini kepada {site} agar mereka dapat menghubungi Anda tentang hal ini.',

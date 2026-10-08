@@ -11,9 +11,9 @@ import type { Payload, Where } from 'payload'
 
 import { createHref, SITES } from '@engine/config/sites'
 
-import { derivativeUrlOf, PUBLIC_IMAGE_SELECT } from '../../media/public-image'
+import { PUBLIC_IMAGE_SELECT } from '../../media/public-image'
+import { imagesOf } from './images'
 import type {
-  CatalogueImage,
   CategoryVM,
   ListingVM,
   ProductCardVM,
@@ -63,7 +63,7 @@ export const CARD_SELECT = {
   price: true,
   category: true,
   variants: { sku: true, label: true, price: true, active: true },
-  images: { image: PUBLIC_IMAGE_SELECT },
+  images: { image: { ...PUBLIC_IMAGE_SELECT, provenance: true } },
   createdAt: true,
 } as const
 
@@ -90,31 +90,6 @@ function fromPriceOf(doc: {
   const lowest = Math.min(...prices, ...(doc.price === null ? [] : [doc.price]))
   const highest = Math.max(...prices, ...(doc.price === null ? [] : [doc.price]))
   return lowest === highest ? null : lowest
-}
-
-/**
- * An image as the shop shows it: the public derivative, once the media pipeline has published it
- * (`../../media/public-image`), never the record's own file — that route is staff-only and
- * answers 403 to the public, so a not-yet-processed image is no image here, not that fallback.
- */
-export function imageOf(media: unknown): CatalogueImage | null {
-  if (typeof media !== 'object' || media === null) return null
-  const record = media as Record<string, unknown>
-  if (typeof record.alt !== 'string') return null
-  const url = derivativeUrlOf(record)
-  if (url === null) return null
-  return {
-    url,
-    alt: record.alt,
-    width: typeof record.width === 'number' ? record.width : null,
-    height: typeof record.height === 'number' ? record.height : null,
-  }
-}
-
-function imagesOf(doc: { images?: readonly { image?: unknown }[] | null }): CatalogueImage[] {
-  return (doc.images ?? [])
-    .map((row) => imageOf(row.image))
-    .filter((image): image is CatalogueImage => image !== null)
 }
 
 /** A product's category as a page shows it, from the term Payload populated. */

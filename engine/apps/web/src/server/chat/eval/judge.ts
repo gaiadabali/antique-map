@@ -30,7 +30,8 @@ export function judgeRequest(
 ): Anthropic.MessageCreateParamsNonStreaming {
   return {
     model,
-    max_tokens: 64,
+    // Room for a model that reasons before it answers (GLM on OpenRouter does; 64 cut it off).
+    max_tokens: 1024,
     system: SYSTEM,
     messages: [
       {

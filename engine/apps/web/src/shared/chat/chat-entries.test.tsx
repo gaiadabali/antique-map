@@ -24,7 +24,12 @@ describe('ChatEntries', () => {
       },
     ]
     const markup = renderToStaticMarkup(
-      <ChatEntries entries={entries} origin={origin} handoffLabels={labels} />,
+      <ChatEntries
+        entries={entries}
+        origin={origin}
+        handoffLabels={labels}
+        agentName="Indies Gallery"
+      />,
     )
     expect(markup).toContain('https://wa.me/6281234567890')
     expect(markup).not.toContain('evil.example.net')
@@ -45,7 +50,12 @@ describe('ChatEntries', () => {
       },
     ]
     const markup = renderToStaticMarkup(
-      <ChatEntries entries={entries} origin={origin} handoffLabels={labels} />,
+      <ChatEntries
+        entries={entries}
+        origin={origin}
+        handoffLabels={labels}
+        agentName="Indies Gallery"
+      />,
     )
     expect(markup).toContain('Batik tote')
     expect(markup).toContain('Rp 150.000')

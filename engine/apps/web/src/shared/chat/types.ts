@@ -20,6 +20,16 @@ export type ChatCard = {
 
 export type HandoffChannel = 'whatsapp' | 'email'
 
+/**
+ * The site's own public contact links, built server-side from `site-settings` (public contact
+ * fields only) and passed to the panel as props — the "Talk to a person" action and an error
+ * notice's fallback use them; null when the owner has not set that channel.
+ */
+export type ChatContact = {
+  readonly whatsappHref: string | null
+  readonly emailHref: string | null
+}
+
 export const LEAD_KINDS = ['ask', 'sell', 'partnership', 'contact', 'chat'] as const
 export type LeadKind = (typeof LEAD_KINDS)[number]
 
