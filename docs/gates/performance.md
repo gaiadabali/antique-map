@@ -303,3 +303,29 @@ host with `--project=shop-a11y`). `tests/e2e/a11y/lh-summary.mjs <dir>` tabulate
 - axe, keyboard walks and trees: `a11y/` (local) and `staging/a11y/`.
 - Runners and specs: `tests/e2e/a11y/{audit.ts, public-pages.spec.ts, purchase-path.spec.ts, chat.spec.ts,
 lighthouse.mjs, lh-summary.mjs, lh-lcp.mjs, media-proxy.mjs, serve-local.mjs}`; budgets `lighthouserc.json`.
+
+## Staging on e8597fd7 (10.2.c)
+
+QA re-measure, 2026-10-08, against staging release `production-20261008T143718Z-e8597fd7`
+(`readlink -f /home/uindies/current` -> `.../deploy_production-20261008T143718Z-e8597fd7/web`; both `/api/health` ok).
+Lighthouse mobile through `tests/e2e/a11y/lighthouse.mjs`, 3 runs a page, from the QA workstation (CPU benchmark 3,167
+to 3,687 against the tool's 2,500 floor, so no run is a load reading). Reports: `docs/gates/performance/staging/e8597fd7/`.
+Per the decision of 2026-10-08 (a), `docs/DESIGN-SYSTEM.md` §9: the 2.5 s LCP is judged on the real Bali phone; the
+simulated LCP column is advisory (CI warns). Every other budget in the tool's Result column still fails the page.
+
+| Page                                        | Perf (median; 3 runs) | A11y (worst) | LCP ms (sim., advisory) | CLS   | TBT ms | Script KB | Weight KiB | Result (tool)       |
+| ------------------------------------------- | --------------------- | ------------ | ----------------------- | ----- | ------ | --------- | ---------- | ------------------- |
+| gallery item `/product/746`                 | **96** (96 · 96 · 96) | **100**      | 2726                    | 0.000 | 42     | 146       | 277        | LCP only (advisory) |
+| shop product `/product/balinese-legong-...` | **98** (98 · 98 · 97) | **100**      | 2443                    | 0.000 | 58     | 151       | 325        | pass                |
+| gallery home `/`                            | 99 (99 · 99 · 100)    | 100          | 2097                    | 0.000 | 22     | 144       | 261        | pass                |
+| gallery browse `/browse`                    | 96 (96 · 96 · 98)     | 100          | 2771                    | 0.000 | 34     | 147       | 429        | LCP only (advisory) |
+| shop home `/`                               | 99 (99 · 99 · 99)     | 100          | 2103                    | 0.000 | 45     | 144       | 718        | pass                |
+| shop listing `/shop`                        | 98 (96 · 98 · 98)     | 100          | 2460                    | 0.010 | 29     | 144       | 1047       | pass                |
+
+**Check (perf >= 90, a11y 100 on item and product): met.** Item 96 / 100, product 98 / 100, every other page 96 or more
+and 100. The two simulated LCP readings above 2.5 s (item 2.73 s, browse 2.77 s) are the advisory number; the real-phone
+check decides them and is not part of this run.
+
+**axe** (`tests/e2e/rehearsal/axe-staging.mjs`, tags wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa and best-practice;
+`staging/e8597fd7/axe.json`): gallery item 746, shop product, bag (one product added, no order placed) and checkout,
+each at 390 and 1280 px: **0 findings in all 8 scans** (no serious or any other impact).
