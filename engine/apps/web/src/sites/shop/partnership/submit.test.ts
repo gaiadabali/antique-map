@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { LeadDeps, NewLeadRecord } from '../../../server/leads'
-import { PostLimiter } from '../../../server/leads/rate'
+import { LEAD_POSTS_PER_HOUR, PostLimiter } from '../../../server/leads/rate'
 
 import { CONSENT_VERSION, TURNSTILE_FIELD } from './state'
 import { handlePartnershipForm } from './submit'
@@ -123,12 +123,12 @@ describe('handlePartnershipForm', () => {
     expect(created).toHaveLength(0)
   })
 
-  it('answers the rate limit after ten posts from one address', async () => {
+  it('answers the rate limit after LEAD_POSTS_PER_HOUR posts from one address', async () => {
     const { deps } = setup()
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < LEAD_POSTS_PER_HOUR; i += 1) {
       expect((await handlePartnershipForm(deps, form(GOOD), '198.51.100.7')).status).toBe('success')
     }
-    const eleventh = await handlePartnershipForm(deps, form(GOOD), '198.51.100.7')
-    expect(eleventh.errors).toEqual({ form: 'lead.error.rate' })
+    const over = await handlePartnershipForm(deps, form(GOOD), '198.51.100.7')
+    expect(over.errors).toEqual({ form: 'lead.error.rate' })
   })
 })
