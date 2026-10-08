@@ -99,7 +99,8 @@ async function askAndApply(
       payloadHash: sha256Hex(answer.raw),
       now,
     })
-    if (result.outcome !== 'duplicate') applied += 1
+    // `busy`: the order's lock was lost and nothing was written; the next run asks again.
+    if (result.outcome !== 'duplicate' && result.outcome !== 'busy') applied += 1
   }
   return applied
 }

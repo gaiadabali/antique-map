@@ -70,6 +70,22 @@ export async function insertEvent(tx: Tx, event: EventRecord): Promise<boolean> 
   return inserted.length === 1
 }
 
+/**
+ * The ledger row a dedupe key already has, read without a lock (READ COMMITTED: what has
+ * committed), or null — how a delivery that lost the order's lock tells "applied" from "not yet".
+ */
+export async function recordedEvent(
+  tx: Tx,
+  dedupeKey: string,
+): Promise<{ orderId: number | null } | null> {
+  const [row] = await tx.rows(sql`
+    SELECT order_id FROM payment_events WHERE dedupe_key = ${dedupeKey} LIMIT 1`)
+  if (!row) return null
+  return {
+    orderId: row.order_id === null ? null : wholeOf(row.order_id, 'payment_events.order_id'),
+  }
+}
+
 /** Records the attempt's latest Midtrans state on the order (`payment.attempts[].state`). */
 export async function setAttemptState(tx: Tx, orderId: number, status: MidtransStatus) {
   await tx.rows(sql`
