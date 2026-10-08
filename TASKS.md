@@ -23,11 +23,11 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **5** Gallery site | Gallery | 3, 4 | ✅ done | 5/5 | 20/20 | 0 | `██████████` 100% |
 | **6** Shop: catalogue to payment | Shop | 3, 4 | ✅ done | 6/6 | 23/23 | 0 | `██████████` 100% |
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 1/4 | 13/16 | 0 | `████████░░`  81% |
+| **8** AI | AI | 3, 5, 6 | 🔄 in progress | 2/4 | 14/16 | 0 | `█████████░`  88% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 0/6 | 3/25 | 1 | `█░░░░░░░░░`  12% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **39/52** | **175/214** | **8** | `████████░░`  82% |
+| **All** | 11 phases | | | **40/52** | **176/214** | **8** | `████████░░`  82% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,8 +78,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 8·W1 | 8.3 The CMS listing-drafting tool | senior-integrator | `w/8.3` | 2026-10-07 | |
-| 8·W2 | 8.2 The chat panel and the handoff UI | senior-fe | `w/8.2` | 2026-10-07 | |
+| 8·W2 | 8.2.c Check + the panel redesign (customer-service chat, the user 2026-10-08) | senior-uiux (Sonnet) | `w/8.2cs` | 2026-10-08 | floating button and fixed panel live on staging `a0132bab`; the redesign then the 390 px walk |
+| 8·W3 | 8.4.d Check | orchestrator | `w/8.4g` → main | 2026-10-08 | live run 4 on GLM: 138/144, safety 78/79; gate doc next |
 | 10·W1 | 10.6 Real content for the client review | orchestrator + Sonnet | `w/10.6a`, `w/10.6c` | 2026-10-08 | pulled forward from 10.3.a at the user's request: the full gallery (crawl of 2026-09-30, still current), the shop's catalogue designs, Instagram; staging loads by the orchestrator |
 
 ## Decisions for the owner
@@ -92,7 +92,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | --- | --- | --- | --- | --- |
 | **Q5** | How a store learns of a new order | an email to that store's users and the order in their panel; the WhatsApp Business API is v2 | owner | 7.3 |
 | **Q6** | Production transactional email sender | the shop's domain on a transactional provider; Mailpit on staging | owner (DNS) | 7.3, 11.1 |
-| **Q7** | The AI: the models and the daily budget | `claude-sonnet-5-5` for answers, `claude-haiku-4-5` for classifying; USD 5 a day per site; a kill switch in `site-settings` | owner (billing) | 8.1 |
 | **Q11** | Retention periods | chat transcripts 30 days, leads 24 months, driver images and tracking links 30 days after delivery or cancellation, events 14 months (`docs/COMPLIANCE.md`) | owner + counsel | 9.1, 10.1 |
 | **Q12** | Counsel's wording: the no-refund notice (S12, UU 8/1999 art. 18), the authenticity guarantee (G6), terms and privacy (UU PDP) | placeholder text marked as draft; nothing live without counsel | counsel | 11.1 |
 | **Q13** | The production host (the launch order is answered: both together) | the same pull pipeline and host family as staging unless the owner names another | owner | 11.1 |
@@ -124,6 +123,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **Strategy** | Build the whole product end to end first with an early UI taken from the design team's delivered system (`docs/design/input/claude-design-2026-09/`); the owner's UI/UX pass comes after the build. So the first-run UI is built only from tokens and shared components, to be restyled cheaply (phase 4) | 2026-10-02 |
 | **Q1** | The admin is on the shop's host (`ADMIN_HOST`); the gallery's host answers 404 for `/admin` | 2026-10-02 |
 | **Q2** | Google Maps for the delivery pin and address search (browser key restricted by referrer, server key for `/api/x/geocode`) | 2026-10-02 |
+| **Q7** | The chat runs on **GLM 5.3 Flash on the company OpenRouter key** (`z-ai/glm-5.3-flash`, answers and classifier; the Anthropic adapter via `ANTHROPIC_BASE_URL=https://openrouter.ai/api`), not Claude Sonnet; the daily cap stays USD 5 per site with the kill switch. So 8.4.d's gate is run on GLM, and OA8 no longer needs an Anthropic key for the chat (the 8.3 drafting tool still needs a vision model) | 2026-10-08 |
 | **Q3** | The delivery fee is an admin-maintained table of distance bands, filled in from the local courier price; free over the threshold | 2026-10-02 |
 | **Q4** | An order no single store can fill: the buyer is asked to remove an item or message the owner; no split orders | 2026-10-01 |
 | **Q8** | No two-factor sign-in at launch (backlog v2.8) | 2026-10-02 |
@@ -636,7 +636,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 8.2.b the handoff card (WhatsApp, email) and the consent step before a lead is created; clear states for rate-limited, off (kill switch) and error
   - [ ] 8.2.c **Check:** on a production build at 390 px, from an item page the chat knows the item, answers a bilingual question, offers the WhatsApp handoff with the item in the text, and the lead form appears only on request; keyboard and screen-reader operable; axe clean.
 
-- [ ] **8.3 The CMS listing-drafting tool** · needs: phase 3 — 🔄 8·W1
+- [x] **8.3 The CMS listing-drafting tool** · needs: phase 3 — ✅ 2026-10-08 801ff1f3
   - **Lane** AIX + CMS · **Agent** senior-integrator with senior-fe · **Wave** W1
   - **Owns** `engine/packages/cms/src/ai/**`, `engine/apps/web/src/app/api/x/draft/**`, `engine/apps/web/src/app/(payload)/admin/ai/**`
   - **Read** AI.md §Drafting, CONTENT-MODEL.md §3 `aiDraft`
@@ -644,7 +644,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 8.3.a an admin action on an antique with photographs: the vision model drafts title, description, object type, probable date, places, subjects and dimensions from visible scale only; every drafted field is stored with `aiDraft` unverified
   - [x] 8.3.b grade, provenance and the asking price are never drafted; the audit trail records who requested it and who verified each field
   - [x] 8.3.c the publish guard from 3.2.c refuses while any drafted field is unverified, naming the fields
-  - [ ] 8.3.d **Check:** with a test model, drafting fills fields marked unverified; publishing is refused until each is verified; a draft never writes grade, provenance or price; the tool is owner/editor only.
+  - [x] 8.3.d **Check:** with a test model, drafting fills fields marked unverified; publishing is refused until each is verified; a draft never writes grade, provenance or price; the tool is owner/editor only.
 
 - [ ] **8.4 The safety evaluation and the red-team set** · needs: 8.1, 8.2 — 🔄 8·W3
   - **Lane** AIX + QA · **Agent** senior-integrator, qa · **Wave** W3
@@ -842,6 +842,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-08 — ✅ **8.3 closed.** The 10 database tests that 8.3 left unrun pass on the workstation Postgres (draft fills fields unverified; store user and anonymous refused; grade, provenance and price never written; publish refused until each field is verified; kill switch; limits; audit trail). On staging the owner sees **Draft from photographs** on a work (1280 px clean; at 390 px the admin column is squeezed by Payload's own drawer, an admin-wide phone issue). **8.4**: the server now guarantees the handoff (deal, hold, promise, delivery-date, bulk and visit asks, any gallery price ask, and any reply that offers WhatsApp) and the lead form for typed contact details (street addresses now masked too); the grader follows AI.md §6 (locale price labels, flagged injections, a tone judge in live runs; replies kept on failed and judged cases). Live run 4 on GLM 5.3 Flash: **138/144, safety 78/79** (run 2 was 98/144, 49/79); recorded set 144/144. **8.2** (the user): the chat is a floating button with a fixed panel (phone sheet, side panel), not a header item; the phone drawer's double `<nav>` (axe landmark-unique) fixed; staging release `production-20261008T034625Z-a0132bab`. Staging's gallery contact had no WhatsApp or email: placeholders set (the shop's staging WhatsApp, `gallery@example.com`) until OA2 — staging only. Found: a visitor IP may start 6 chat sessions an hour, shared by everyone in an office; the qa walk's debugging runs locked the user out for an hour.
 
 - 2026-10-08 — **10.6.a merged** (`276ad1c9`, Sonnet, reviewed): the full gallery seed carries 1,481 whole-dollar USD prices into the owner-only `askingPrice` (147 on request, 189 empty and 6 `USD 0` stay blank; no sold record had a price); the committed sample stays price-free; seed unit tests 20/20, the new owner/editor/anonymous db test not run locally (Docker down). **10.6.c**: 152 distinct designs from the six catalogues (180 design pages, 28 merged by code; artwork as embedded, 825–5,516 px, median 880; owner text verbatim, Indonesian machine-translated for review; MP.136 printed on two designs, kept as `MP.136-2`), in `../indies-legacy-data/old-east-indies/designs/`. **10.6.d** (the user: public only, products only): the 12 newest posts visible without a login, read through their public embed pages; kept the owner's 4 product designs (Lombok Turtle, Legong Dancer 1925 by Tyra Kleen, Exotic Bali 1930s, Knott's Balinese Dancer c. 1927; 16 images incl. mounted and framed mock-ups), excluded 3 event posts and 4 other accounts' posts; no price or size is public (the Magnets/Notebooks/Best-Sellers highlights and the WhatsApp catalogue need a login). An archived Squarespace page (2024) priced a framed print at SGD 78.80 — the placeholder anchor. **Upload to Helios**: one tar stream ran at ~0.7 MB/s (a per-connection cap, not the line: a second stream added its own 0.8 MB/s); six parallel tar streams ran at ~2–4.7 MB/s. Staging backed up first (`indies_db-20261008T033039Z.dump`). The sample's 65 photos are 640 px copies under the originals' names and the import reuses media by filename: a one-off Local API script replaces each with its original (tested on media 196: 640 → 1102 px, derivatives pending).
 
