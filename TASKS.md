@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 1/6 | 12/25 | 1 | `█████░░░░░`  48% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 2/6 | 13/25 | 1 | `█████░░░░░`  52% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **43/52** | **187/214** | **8** | `█████████░`  87% |
+| **All** | 11 phases | | | **44/52** | **188/214** | **8** | `█████████░`  88% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 10·W1 | 10.6 Real content for the client review | orchestrator + Sonnet | `w/10.6a`, `w/10.6c` | 2026-10-08 | pulled forward from 10.3.a at the user's request: the full gallery (crawl of 2026-09-30, still current), the shop's catalogue designs, Instagram; staging loads by the orchestrator |
 | 10·W1 | 10.1 Security review and fixes | senior-integrator | `worktree-agent-a2683e59411a2c50a` | 2026-10-08 | |
 | 10·W1 | 10.2 Performance and accessibility pass | senior-fe | `worktree-agent-aa631d14b8accce70` | 2026-10-08 | |
 
@@ -761,7 +760,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.5.b `createOrder`: a stock decrement that loses its lock (`lock_not_available` 55P03 / `lock_timeout`) returns the designed refusal (`out_of_stock`, or a plain "busy, try again"), never a thrown database error
   - [x] 10.5.c **Check:** db tests prove, each under an artificially held lock: ten parallel identical webhooks give no 500 and exactly one applied payment; a process killed mid-apply leaves nothing claimed and the retry applies it; twenty concurrent orders for the last unit give one order and nineteen designed refusals, no throw; the 6.3.d and 6.4.d tests still pass.
 
-- [ ] **10.6 The owner's real content on staging, for the client review** · needs: phase 5, phase 6
+- [x] **10.6 The owner's real content on staging, for the client review** · needs: phase 5, phase 6 — ✅ 2026-10-08 88ceeee7
   - **Lane** CMS + OPS · **Agent** medior (Sonnet), orchestrator for staging · **Wave** W1
   - **Owns** `engine/packages/cms/src/seed/{gallery,catalogue}/**`, `engine/packages/cms/src/seed/{run,cli,seed.db.test}.ts`, `docs/DATA.md`
   - **Read** DATA.md §2–§5 and §8, CONTENT-MODEL.md §9, the 2026-10-08 entries in **Log**
@@ -771,7 +770,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.6.c the shop's designs from the owner's six catalogue PDFs (Linktree → Drive, May 2024): each design's picture, title, year, history text and design code, in English and Indonesian, deduplicated across catalogues
   - [x] 10.6.d @oldeastindiesart's Instagram posts read for their pictures, captions and prices (product types, sizes, prices) to complete 10.6.c's products
   - [x] 10.6.e the shop on staging carries the designs as products with marked placeholder prices, replacing the 80 mock products (mock stores and stock stay); both sites' footers link their Instagram and Facebook
-  - [ ] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
+  - [x] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
 
 ---
 
@@ -842,6 +841,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-08 — ✅ **10.6 closed** (`88ceeee7`). Check 10.6.f on staging (`tests/e2e/review/`, Sonnet qa, reviewed; `docs/gates/review-content.md`), whole suite **51/51 twice** at 390 and 1280 px: `/browse` states and lists 1,513 available (64 pages) and 1,709 with sold (72 pages), every link distinct; zoom on items 507, 1237, 468 — `info.json` and every tile 200 only after Zoom, the canvas draws; **no price** in 280 documents (70 priced works × en/id × HTML/RSC — no `askingPrice`, no `USD`, no figure standalone or beside a currency) nor in `/browse`, `/search`, `/id/jelajah` or the 3,816-URL sitemap; the shop states and lists 156 designs on 7 pages with loading srcset derivatives, no mock product, variants Rp 450.000 / 950.000, "Digital mockup" exactly on the four Instagram products (id "Mockup digital"); the retired mock now answers 404; both footers' Instagram and Facebook hrefs exact in en and id; axe 0 violations on both listings at both widths. The owner/editor clause: the orchestrator's REST evidence on staging plus `works-price.db.test.ts` (not re-run: no staging editor, local Docker down). Found in review and fixed before the re-runs: the currency-figure regex had lost its backslashes in a plain template literal (`String.raw` now), the price sample is read only from `E2E_PRICE_SAMPLE` (owner-only data stays out of git). **For the owner at the client review:** the placeholder prices (OA4), the Indonesian machine translations, MP.136 printed on two designs, four catalogue headings whose year differs from their text, and the 114 unpublished antiques (101 lacking maker/place or date certainty, 3 without a photograph, 10 held).
 
 - 2026-10-08 — **main pushed to GitHub** (`215c6089..0c693695`, 1,030 commits, as web-gaiada) and released to staging. The first CI run on that history (`37733028891`, `37733028635`, `37733028649`) is red, none of it from phase 8: **unit** — 4 timeouts in `engine/packages/media/src/derivatives/index.test.ts` (sharp under CI's 5–30 s limits; 2,614 others pass); **db tests** — `migrate/src/redirects/test/load.db.test.ts` and 2 cases of `cms/src/seed/seed.db.test.ts` (`--publish`, the shop-catalogue layer); **audit** — high advisories in `next` (Image SSRF), `braces` and `source-map-js` (`pnpm audit --prod --audit-level=high`); **CodeQL** — the SARIF upload failed (incremental analysis, likely runner disk; also needs code scanning enabled on the repo); **gitleaks** — 2 false positives (the 8.1 Turnstile test's made-up secret, an ops `curl -u` that reads its password from a host file), fingerprinted in `.github/.gitleaksignore` (`29b4fd37`). For phase 10 (10.1 / the quality gate): fix the four, then CI is the merge gate again.
 
