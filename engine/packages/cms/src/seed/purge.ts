@@ -1,7 +1,9 @@
 /**
  * The seed purge (DATA.md §2): `pnpm data:purge-seed` deletes every row the shop seed layer
  * created — the `SEED-` products, their stock rows and the seed stores — identified by the
- * seed's own committed sheets, so purge and seed always agree on what "seed data" is. The
+ * seed's own committed sheets, so purge and seed always agree on what "seed data" is, plus
+ * every product whose SKU starts `SEED-` (the shop-catalogue layer's, generated from
+ * LEGACY_DATA_DIR rather than committed; 10.6.e). The
  * welcome discount is not seed data and stays. It refuses production outright (the codebase's
  * fail-closed env check, as in `db/adapter.ts`): a purge is for a development database being
  * re-freshed, nothing else.
@@ -11,6 +13,9 @@ import { fileURLToPath } from 'node:url'
 import { readCsv } from '../import/csv'
 import { PRODUCT_COLUMNS, STORE_COLUMNS } from '../import/kinds'
 import type { Payload, PayloadRequest, Where } from 'payload'
+
+/** Every seed product's SKU starts with this; no real SKU may (DATA.md §2). */
+const SEED_PREFIX = 'SEED-'
 
 const SHOP_DATA = (file: string) => fileURLToPath(new URL(`./shop/data/${file}`, import.meta.url))
 
@@ -78,7 +83,13 @@ export async function purgeSeed(payload: Payload): Promise<PurgeReport> {
     // Stock first (its rows reference the products and stores), then the rows it points at.
     const report: PurgeReport = {
       stockLevels: await purge(req, 'stock-levels', { 'store.code': { in: storeCodes } }),
-      products: await purge(req, 'products', { sku: { in: skus } }),
+      products: await purge(
+        req,
+        'products',
+        { or: [{ sku: { in: skus } }, { sku: { like: SEED_PREFIX } }] },
+        // `like` matches anywhere in the SKU; only a SKU that starts with the prefix is seed data.
+        (doc) => String(doc.sku ?? '').startsWith(SEED_PREFIX),
+      ),
       stores: await purge(req, 'stores', { code: { in: storeCodes } }),
     }
     if (transactionID !== undefined) await payload.db.commitTransaction(transactionID)
@@ -91,11 +102,12 @@ export async function purgeSeed(payload: Payload): Promise<PurgeReport> {
   }
 }
 
-/** Deletes every row the `where` finds, in chunks by id, and counts them. */
+/** Deletes every row the `where` finds that `keep` accepts, in chunks by id, and counts them. */
 async function purge(
   req: PayloadRequest,
   collection: 'stock-levels' | 'products' | 'stores',
   where: Where,
+  keep: (doc: Record<string, unknown>) => boolean = () => true,
 ): Promise<number> {
   const { payload } = req
   const { docs } = await payload.find({
@@ -106,7 +118,9 @@ async function purge(
     req,
     where,
   })
-  const ids = docs.map((doc) => doc.id as number)
+  const ids = (docs as unknown as Array<Record<string, unknown>>)
+    .filter(keep)
+    .map((doc) => doc.id as number)
   for (let start = 0; start < ids.length; start += 500) {
     const result = await payload.delete({
       collection,

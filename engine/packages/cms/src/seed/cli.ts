@@ -1,7 +1,7 @@
 /**
  * The seed CLI (DATA.md §2): one layer, one command.
  *
- *   pnpm data:seed --layer <vocabulary|gallery-sample|gallery-full|shop> [--dry-run] [--publish]
+ *   pnpm data:seed --layer <vocabulary|gallery-sample|gallery-full|shop|shop-catalogue> [--dry-run] [--publish]
  *
  * `--dry-run` applies the layer's files in transactions it then rolls back: the report is the
  * real one, nothing is written. `--publish` is the importer's publish-these-records flag, and it
@@ -13,7 +13,7 @@ import { seedEnv } from './env'
 import { renderSeedRun, SEED_LAYERS, seedLayer, type SeedLayer } from './run'
 
 const USAGE =
-  'Usage: pnpm data:seed --layer <vocabulary|gallery-sample|gallery-full|shop> [--dry-run] [--publish]'
+  'Usage: pnpm data:seed --layer <vocabulary|gallery-sample|gallery-full|shop|shop-catalogue> [--dry-run] [--publish]'
 
 function args(argv: readonly string[]): { layer: SeedLayer; dryRun: boolean; publish: boolean } {
   const out = { layer: '', dryRun: false, publish: false }
