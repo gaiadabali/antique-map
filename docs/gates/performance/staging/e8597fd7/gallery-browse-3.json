@@ -489,9 +489,7 @@
             "duration": 6.34
           }
         ],
-        "sortedBy": [
-          "duration"
-        ]
+        "sortedBy": ["duration"]
       },
       "guidanceLevel": 1
     },
@@ -557,9 +555,7 @@
         "summary": {
           "wastedMs": 247.64399999999912
         },
-        "sortedBy": [
-          "total"
-        ]
+        "sortedBy": ["total"]
       },
       "guidanceLevel": 1
     },
@@ -582,9 +578,7 @@
         "headings": [],
         "items": [],
         "overallSavingsMs": 0,
-        "sortedBy": [
-          "wastedMs"
-        ]
+        "sortedBy": ["wastedMs"]
       },
       "guidanceLevel": 3
     },
@@ -1354,9 +1348,7 @@
             "rtt": 11.34324
           }
         ],
-        "sortedBy": [
-          "rtt"
-        ]
+        "sortedBy": ["rtt"]
       }
     },
     "network-server-latency": {
@@ -1393,9 +1385,7 @@
             "serverResponseTime": 27.776999999999997
           }
         ],
-        "sortedBy": [
-          "serverResponseTime"
-        ]
+        "sortedBy": ["serverResponseTime"]
       }
     },
     "main-thread-tasks": {
@@ -1781,12 +1771,8 @@
             "startTime": 989.3520400000001
           }
         ],
-        "sortedBy": [
-          "duration"
-        ],
-        "skipSumming": [
-          "startTime"
-        ],
+        "sortedBy": ["duration"],
+        "skipSumming": ["startTime"],
         "debugData": {
           "type": "debugdata",
           "urls": [
@@ -2847,9 +2833,7 @@
             "totalBytes": 11903
           }
         ],
-        "sortedBy": [
-          "totalBytes"
-        ]
+        "sortedBy": ["totalBytes"]
       },
       "guidanceLevel": 1
     },
@@ -2873,9 +2857,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -2948,9 +2930,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -2981,9 +2961,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3013,9 +2991,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3078,9 +3054,7 @@
         ],
         "overallSavingsMs": 170,
         "overallSavingsBytes": 20688,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3111,9 +3085,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3144,9 +3116,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3176,9 +3146,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3208,9 +3176,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3240,9 +3206,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3272,9 +3236,7 @@
         "items": [],
         "overallSavingsMs": 0,
         "overallSavingsBytes": 0,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3409,9 +3371,7 @@
         ],
         "overallSavingsMs": 50,
         "overallSavingsBytes": 9564,
-        "sortedBy": [
-          "wastedBytes"
-        ],
+        "sortedBy": ["wastedBytes"],
         "debugData": {
           "type": "debugdata",
           "metricSavings": {
@@ -3826,9 +3786,7 @@
       "score": null,
       "scoreDisplayMode": "notApplicable",
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "uses-long-cache-ttl"
-      ]
+      "replacesAudits": ["uses-long-cache-ttl"]
     },
     "cls-culprits-insight": {
       "id": "cls-culprits-insight",
@@ -3844,11 +3802,7 @@
         "items": []
       },
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "layout-shifts",
-        "non-composited-animations",
-        "unsized-images"
-      ]
+      "replacesAudits": ["layout-shifts", "non-composited-animations", "unsized-images"]
     },
     "document-latency-insight": {
       "id": "document-latency-insight",
@@ -3885,11 +3839,7 @@
         }
       },
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "redirects",
-        "server-response-time",
-        "uses-text-compression"
-      ]
+      "replacesAudits": ["redirects", "server-response-time", "uses-text-compression"]
     },
     "dom-size-insight": {
       "id": "dom-size-insight",
@@ -3985,9 +3935,7 @@
         }
       },
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "dom-size"
-      ]
+      "replacesAudits": ["dom-size"]
     },
     "duplicated-javascript-insight": {
       "id": "duplicated-javascript-insight",
@@ -3996,9 +3944,7 @@
       "score": null,
       "scoreDisplayMode": "notApplicable",
       "guidanceLevel": 2,
-      "replacesAudits": [
-        "duplicated-javascript"
-      ]
+      "replacesAudits": ["duplicated-javascript"]
     },
     "font-display-insight": {
       "id": "font-display-insight",
@@ -4007,9 +3953,7 @@
       "score": null,
       "scoreDisplayMode": "notApplicable",
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "font-display"
-      ]
+      "replacesAudits": ["font-display"]
     },
     "forced-reflow-insight": {
       "id": "forced-reflow-insight",
@@ -4117,9 +4061,7 @@
       "score": null,
       "scoreDisplayMode": "notApplicable",
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "work-during-interaction"
-      ]
+      "replacesAudits": ["work-during-interaction"]
     },
     "lcp-discovery-insight": {
       "id": "lcp-discovery-insight",
@@ -4128,10 +4070,7 @@
       "score": null,
       "scoreDisplayMode": "notApplicable",
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "prioritize-lcp-image",
-        "lcp-lazy-loaded"
-      ]
+      "replacesAudits": ["prioritize-lcp-image", "lcp-lazy-loaded"]
     },
     "lcp-phases-insight": {
       "id": "lcp-phases-insight",
@@ -4191,9 +4130,7 @@
         ]
       },
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "largest-contentful-paint-element"
-      ]
+      "replacesAudits": ["largest-contentful-paint-element"]
     },
     "legacy-javascript-insight": {
       "id": "legacy-javascript-insight",
@@ -4379,9 +4316,7 @@
         }
       },
       "guidanceLevel": 1,
-      "replacesAudits": [
-        "critical-request-chains"
-      ]
+      "replacesAudits": ["critical-request-chains"]
     },
     "render-blocking-insight": {
       "id": "render-blocking-insight",
@@ -4429,9 +4364,7 @@
         ]
       },
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "render-blocking-resources"
-      ]
+      "replacesAudits": ["render-blocking-resources"]
     },
     "third-parties-insight": {
       "id": "third-parties-insight",
@@ -4440,9 +4373,7 @@
       "score": null,
       "scoreDisplayMode": "notApplicable",
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "third-party-summary"
-      ]
+      "replacesAudits": ["third-party-summary"]
     },
     "viewport-insight": {
       "id": "viewport-insight",
@@ -4484,15 +4415,11 @@
         ]
       },
       "guidanceLevel": 3,
-      "replacesAudits": [
-        "viewport"
-      ]
+      "replacesAudits": ["viewport"]
     }
   },
   "configSettings": {
-    "output": [
-      "json"
-    ],
+    "output": ["json"],
     "maxWaitForFcp": 30000,
     "maxWaitForLoad": 45000,
     "pauseAfterFcpMs": 1000,
@@ -4519,12 +4446,7 @@
     "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
     "auditMode": false,
     "gatherMode": false,
-    "clearStorageTypes": [
-      "file_systems",
-      "shader_cache",
-      "service_workers",
-      "cache_storage"
-    ],
+    "clearStorageTypes": ["file_systems", "shader_cache", "service_workers", "cache_storage"],
     "disableStorageReset": false,
     "debugNavigation": false,
     "channel": "cli",
@@ -4539,22 +4461,13 @@
     "extraHeaders": null,
     "precomputedLanternData": null,
     "onlyAudits": null,
-    "onlyCategories": [
-      "performance",
-      "accessibility",
-      "best-practices",
-      "seo"
-    ],
+    "onlyCategories": ["performance", "accessibility", "best-practices", "seo"],
     "skipAudits": null
   },
   "categories": {
     "performance": {
       "title": "Performance",
-      "supportedModes": [
-        "navigation",
-        "timespan",
-        "snapshot"
-      ],
+      "supportedModes": ["navigation", "timespan", "snapshot"],
       "auditRefs": [
         {
           "id": "first-contentful-paint",
@@ -4936,10 +4849,7 @@
       "title": "Accessibility",
       "description": "These checks highlight opportunities to [improve the accessibility of your web app](https://developer.chrome.com/docs/lighthouse/accessibility/). Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so [manual testing](https://web.dev/articles/how-to-review) is also encouraged.",
       "manualDescription": "These items address areas which an automated testing tool cannot cover. Learn more in our guide on [conducting an accessibility review](https://web.dev/articles/how-to-review).",
-      "supportedModes": [
-        "navigation",
-        "snapshot"
-      ],
+      "supportedModes": ["navigation", "snapshot"],
       "auditRefs": [
         {
           "id": "accesskeys",
@@ -5302,11 +5212,7 @@
     },
     "best-practices": {
       "title": "Best Practices",
-      "supportedModes": [
-        "navigation",
-        "timespan",
-        "snapshot"
-      ],
+      "supportedModes": ["navigation", "timespan", "snapshot"],
       "auditRefs": [
         {
           "id": "is-on-https",
@@ -5421,10 +5327,7 @@
       "title": "SEO",
       "description": "These checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on [Core Web Vitals](https://web.dev/explore/vitals). [Learn more about Google Search Essentials](https://support.google.com/webmasters/answer/35769).",
       "manualDescription": "Run these additional validators on your site to check additional SEO best practices.",
-      "supportedModes": [
-        "navigation",
-        "snapshot"
-      ],
+      "supportedModes": ["navigation", "snapshot"],
       "auditRefs": [
         {
           "id": "is-crawlable",
@@ -5561,10 +5464,7 @@
   "entities": [
     {
       "name": "gaiada.com",
-      "origins": [
-        "https://indies-gallery.gaiada.com",
-        "https://old-east-indies.gaiada.com"
-      ],
+      "origins": ["https://indies-gallery.gaiada.com", "https://old-east-indies.gaiada.com"],
       "isFirstParty": true,
       "isUnrecognized": true
     }
@@ -11957,24 +11857,12 @@
       "warningHeader": "Warnings: "
     },
     "icuMessagePaths": {
-      "core/audits/is-on-https.js | title": [
-        "audits[is-on-https].title"
-      ],
-      "core/audits/is-on-https.js | description": [
-        "audits[is-on-https].description"
-      ],
-      "core/audits/redirects-http.js | title": [
-        "audits[redirects-http].title"
-      ],
-      "core/audits/redirects-http.js | description": [
-        "audits[redirects-http].description"
-      ],
-      "core/audits/viewport.js | title": [
-        "audits.viewport.title"
-      ],
-      "core/audits/viewport.js | description": [
-        "audits.viewport.description"
-      ],
+      "core/audits/is-on-https.js | title": ["audits[is-on-https].title"],
+      "core/audits/is-on-https.js | description": ["audits[is-on-https].description"],
+      "core/audits/redirects-http.js | title": ["audits[redirects-http].title"],
+      "core/audits/redirects-http.js | description": ["audits[redirects-http].description"],
+      "core/audits/viewport.js | title": ["audits.viewport.title"],
+      "core/audits/viewport.js | description": ["audits.viewport.description"],
       "core/lib/i18n/i18n.js | firstContentfulPaintMetric": [
         "audits[first-contentful-paint].title"
       ],
@@ -12031,15 +11919,9 @@
       "core/audits/metrics/first-meaningful-paint.js | description": [
         "audits[first-meaningful-paint].description"
       ],
-      "core/lib/i18n/i18n.js | speedIndexMetric": [
-        "audits[speed-index].title"
-      ],
-      "core/audits/metrics/speed-index.js | description": [
-        "audits[speed-index].description"
-      ],
-      "core/lib/i18n/i18n.js | totalBlockingTimeMetric": [
-        "audits[total-blocking-time].title"
-      ],
+      "core/lib/i18n/i18n.js | speedIndexMetric": ["audits[speed-index].title"],
+      "core/audits/metrics/speed-index.js | description": ["audits[speed-index].description"],
+      "core/lib/i18n/i18n.js | totalBlockingTimeMetric": ["audits[total-blocking-time].title"],
       "core/audits/metrics/total-blocking-time.js | description": [
         "audits[total-blocking-time].description"
       ],
@@ -12075,9 +11957,7 @@
           "path": "audits[largest-contentful-paint-element].displayValue"
         }
       ],
-      "core/lib/i18n/i18n.js | maxPotentialFIDMetric": [
-        "audits[max-potential-fid].title"
-      ],
+      "core/lib/i18n/i18n.js | maxPotentialFIDMetric": ["audits[max-potential-fid].title"],
       "core/audits/metrics/max-potential-fid.js | description": [
         "audits[max-potential-fid].description"
       ],
@@ -12087,15 +11967,9 @@
       "core/audits/metrics/cumulative-layout-shift.js | description": [
         "audits[cumulative-layout-shift].description"
       ],
-      "core/audits/errors-in-console.js | title": [
-        "audits[errors-in-console].title"
-      ],
-      "core/audits/errors-in-console.js | description": [
-        "audits[errors-in-console].description"
-      ],
-      "core/audits/server-response-time.js | title": [
-        "audits[server-response-time].title"
-      ],
+      "core/audits/errors-in-console.js | title": ["audits[errors-in-console].title"],
+      "core/audits/errors-in-console.js | description": ["audits[errors-in-console].description"],
+      "core/audits/server-response-time.js | title": ["audits[server-response-time].title"],
       "core/audits/server-response-time.js | description": [
         "audits[server-response-time].description"
       ],
@@ -12128,21 +12002,11 @@
         "audits[network-rtt].details.headings[1].label",
         "audits[network-server-latency].details.headings[1].label"
       ],
-      "core/lib/i18n/i18n.js | interactiveMetric": [
-        "audits.interactive.title"
-      ],
-      "core/audits/metrics/interactive.js | description": [
-        "audits.interactive.description"
-      ],
-      "core/audits/user-timings.js | title": [
-        "audits[user-timings].title"
-      ],
-      "core/audits/user-timings.js | description": [
-        "audits[user-timings].description"
-      ],
-      "core/audits/critical-request-chains.js | title": [
-        "audits[critical-request-chains].title"
-      ],
+      "core/lib/i18n/i18n.js | interactiveMetric": ["audits.interactive.title"],
+      "core/audits/metrics/interactive.js | description": ["audits.interactive.description"],
+      "core/audits/user-timings.js | title": ["audits[user-timings].title"],
+      "core/audits/user-timings.js | description": ["audits[user-timings].description"],
+      "core/audits/critical-request-chains.js | title": ["audits[critical-request-chains].title"],
       "core/audits/critical-request-chains.js | description": [
         "audits[critical-request-chains].description"
       ],
@@ -12154,33 +12018,17 @@
           "path": "audits[critical-request-chains].displayValue"
         }
       ],
-      "core/audits/redirects.js | title": [
-        "audits.redirects.title"
-      ],
-      "core/audits/redirects.js | description": [
-        "audits.redirects.description"
-      ],
-      "core/audits/image-aspect-ratio.js | title": [
-        "audits[image-aspect-ratio].title"
-      ],
-      "core/audits/image-aspect-ratio.js | description": [
-        "audits[image-aspect-ratio].description"
-      ],
-      "core/audits/image-size-responsive.js | title": [
-        "audits[image-size-responsive].title"
-      ],
+      "core/audits/redirects.js | title": ["audits.redirects.title"],
+      "core/audits/redirects.js | description": ["audits.redirects.description"],
+      "core/audits/image-aspect-ratio.js | title": ["audits[image-aspect-ratio].title"],
+      "core/audits/image-aspect-ratio.js | description": ["audits[image-aspect-ratio].description"],
+      "core/audits/image-size-responsive.js | title": ["audits[image-size-responsive].title"],
       "core/audits/image-size-responsive.js | description": [
         "audits[image-size-responsive].description"
       ],
-      "core/audits/deprecations.js | title": [
-        "audits.deprecations.title"
-      ],
-      "core/audits/deprecations.js | description": [
-        "audits.deprecations.description"
-      ],
-      "core/audits/third-party-cookies.js | title": [
-        "audits[third-party-cookies].title"
-      ],
+      "core/audits/deprecations.js | title": ["audits.deprecations.title"],
+      "core/audits/deprecations.js | description": ["audits.deprecations.description"],
+      "core/audits/third-party-cookies.js | title": ["audits[third-party-cookies].title"],
       "core/audits/third-party-cookies.js | description": [
         "audits[third-party-cookies].description"
       ],
@@ -12193,42 +12041,24 @@
       "core/audits/mainthread-work-breakdown.js | columnCategory": [
         "audits[mainthread-work-breakdown].details.headings[0].label"
       ],
-      "core/audits/bootup-time.js | title": [
-        "audits[bootup-time].title"
-      ],
-      "core/audits/bootup-time.js | description": [
-        "audits[bootup-time].description"
-      ],
-      "core/audits/bootup-time.js | columnTotal": [
-        "audits[bootup-time].details.headings[1].label"
-      ],
+      "core/audits/bootup-time.js | title": ["audits[bootup-time].title"],
+      "core/audits/bootup-time.js | description": ["audits[bootup-time].description"],
+      "core/audits/bootup-time.js | columnTotal": ["audits[bootup-time].details.headings[1].label"],
       "core/audits/bootup-time.js | columnScriptEval": [
         "audits[bootup-time].details.headings[2].label"
       ],
       "core/audits/bootup-time.js | columnScriptParse": [
         "audits[bootup-time].details.headings[3].label"
       ],
-      "core/audits/uses-rel-preconnect.js | title": [
-        "audits[uses-rel-preconnect].title"
-      ],
+      "core/audits/uses-rel-preconnect.js | title": ["audits[uses-rel-preconnect].title"],
       "core/audits/uses-rel-preconnect.js | description": [
         "audits[uses-rel-preconnect].description"
       ],
-      "core/audits/font-display.js | title": [
-        "audits[font-display].title"
-      ],
-      "core/audits/font-display.js | description": [
-        "audits[font-display].description"
-      ],
-      "core/audits/network-rtt.js | title": [
-        "audits[network-rtt].title"
-      ],
-      "core/audits/network-rtt.js | description": [
-        "audits[network-rtt].description"
-      ],
-      "core/audits/network-server-latency.js | title": [
-        "audits[network-server-latency].title"
-      ],
+      "core/audits/font-display.js | title": ["audits[font-display].title"],
+      "core/audits/font-display.js | description": ["audits[font-display].description"],
+      "core/audits/network-rtt.js | title": ["audits[network-rtt].title"],
+      "core/audits/network-rtt.js | description": ["audits[network-rtt].description"],
+      "core/audits/network-server-latency.js | title": ["audits[network-server-latency].title"],
       "core/audits/network-server-latency.js | description": [
         "audits[network-server-latency].description"
       ],
@@ -12245,9 +12075,7 @@
         "audits[unused-javascript].details.headings[1].label",
         "audits[render-blocking-insight].details.headings[1].label"
       ],
-      "core/lib/i18n/i18n.js | total": [
-        "audits[resource-summary].details.items[0].label"
-      ],
+      "core/lib/i18n/i18n.js | total": ["audits[resource-summary].details.items[0].label"],
       "core/lib/i18n/i18n.js | imageResourceType": [
         "audits[resource-summary].details.items[1].label"
       ],
@@ -12272,15 +12100,11 @@
       "core/lib/i18n/i18n.js | thirdPartyResourceType": [
         "audits[resource-summary].details.items[8].label"
       ],
-      "core/audits/third-party-summary.js | title": [
-        "audits[third-party-summary].title"
-      ],
+      "core/audits/third-party-summary.js | title": ["audits[third-party-summary].title"],
       "core/audits/third-party-summary.js | description": [
         "audits[third-party-summary].description"
       ],
-      "core/audits/third-party-facades.js | title": [
-        "audits[third-party-facades].title"
-      ],
+      "core/audits/third-party-facades.js | title": ["audits[third-party-facades].title"],
       "core/audits/third-party-facades.js | description": [
         "audits[third-party-facades].description"
       ],
@@ -12316,24 +12140,12 @@
       "core/audits/largest-contentful-paint-element.js | itemRenderDelay": [
         "audits[largest-contentful-paint-element].details.items[1].items[3].phase"
       ],
-      "core/audits/lcp-lazy-loaded.js | title": [
-        "audits[lcp-lazy-loaded].title"
-      ],
-      "core/audits/lcp-lazy-loaded.js | description": [
-        "audits[lcp-lazy-loaded].description"
-      ],
-      "core/audits/layout-shifts.js | title": [
-        "audits[layout-shifts].title"
-      ],
-      "core/audits/layout-shifts.js | description": [
-        "audits[layout-shifts].description"
-      ],
-      "core/audits/long-tasks.js | title": [
-        "audits[long-tasks].title"
-      ],
-      "core/audits/long-tasks.js | description": [
-        "audits[long-tasks].description"
-      ],
+      "core/audits/lcp-lazy-loaded.js | title": ["audits[lcp-lazy-loaded].title"],
+      "core/audits/lcp-lazy-loaded.js | description": ["audits[lcp-lazy-loaded].description"],
+      "core/audits/layout-shifts.js | title": ["audits[layout-shifts].title"],
+      "core/audits/layout-shifts.js | description": ["audits[layout-shifts].description"],
+      "core/audits/long-tasks.js | title": ["audits[long-tasks].title"],
+      "core/audits/long-tasks.js | description": ["audits[long-tasks].description"],
       "core/audits/long-tasks.js | displayValue": [
         {
           "values": {
@@ -12342,9 +12154,7 @@
           "path": "audits[long-tasks].displayValue"
         }
       ],
-      "core/lib/i18n/i18n.js | columnStartTime": [
-        "audits[long-tasks].details.headings[1].label"
-      ],
+      "core/lib/i18n/i18n.js | columnStartTime": ["audits[long-tasks].details.headings[1].label"],
       "core/lib/i18n/i18n.js | columnDuration": [
         "audits[long-tasks].details.headings[2].label",
         "audits[lcp-phases-insight].details.items[0].headings[1].label"
@@ -12355,40 +12165,22 @@
       "core/audits/non-composited-animations.js | description": [
         "audits[non-composited-animations].description"
       ],
-      "core/audits/unsized-images.js | failureTitle": [
-        "audits[unsized-images].title"
-      ],
-      "core/audits/unsized-images.js | description": [
-        "audits[unsized-images].description"
-      ],
-      "core/audits/valid-source-maps.js | title": [
-        "audits[valid-source-maps].title"
-      ],
-      "core/audits/valid-source-maps.js | description": [
-        "audits[valid-source-maps].description"
-      ],
-      "core/audits/prioritize-lcp-image.js | title": [
-        "audits[prioritize-lcp-image].title"
-      ],
+      "core/audits/unsized-images.js | failureTitle": ["audits[unsized-images].title"],
+      "core/audits/unsized-images.js | description": ["audits[unsized-images].description"],
+      "core/audits/valid-source-maps.js | title": ["audits[valid-source-maps].title"],
+      "core/audits/valid-source-maps.js | description": ["audits[valid-source-maps].description"],
+      "core/audits/prioritize-lcp-image.js | title": ["audits[prioritize-lcp-image].title"],
       "core/audits/prioritize-lcp-image.js | description": [
         "audits[prioritize-lcp-image].description"
       ],
-      "core/audits/csp-xss.js | title": [
-        "audits[csp-xss].title"
-      ],
-      "core/audits/csp-xss.js | description": [
-        "audits[csp-xss].description"
-      ],
+      "core/audits/csp-xss.js | title": ["audits[csp-xss].title"],
+      "core/audits/csp-xss.js | description": ["audits[csp-xss].description"],
       "core/lib/i18n/i18n.js | columnDescription": [
         "audits[csp-xss].details.headings[0].label",
         "audits[has-hsts].details.headings[0].label"
       ],
-      "core/audits/csp-xss.js | columnDirective": [
-        "audits[csp-xss].details.headings[1].label"
-      ],
-      "core/audits/csp-xss.js | columnSeverity": [
-        "audits[csp-xss].details.headings[2].label"
-      ],
+      "core/audits/csp-xss.js | columnDirective": ["audits[csp-xss].details.headings[1].label"],
+      "core/audits/csp-xss.js | columnSeverity": ["audits[csp-xss].details.headings[2].label"],
       "core/lib/csp-evaluator.js | unsafeInlineFallback": [
         "audits[csp-xss].details.items[0].description"
       ],
@@ -12399,57 +12191,29 @@
       "core/lib/csp-evaluator.js | allowlistFallback": [
         "audits[csp-xss].details.items[1].description"
       ],
-      "core/audits/has-hsts.js | title": [
-        "audits[has-hsts].title"
-      ],
-      "core/audits/has-hsts.js | description": [
-        "audits[has-hsts].description"
-      ],
-      "core/audits/has-hsts.js | columnDirective": [
-        "audits[has-hsts].details.headings[1].label"
-      ],
-      "core/audits/has-hsts.js | columnSeverity": [
-        "audits[has-hsts].details.headings[2].label"
-      ],
-      "core/lib/i18n/i18n.js | itemSeverityHigh": [
-        "audits[has-hsts].details.items[0].severity"
-      ],
-      "core/audits/has-hsts.js | noHsts": [
-        "audits[has-hsts].details.items[0].description"
-      ],
-      "core/audits/origin-isolation.js | title": [
-        "audits[origin-isolation].title"
-      ],
-      "core/audits/origin-isolation.js | description": [
-        "audits[origin-isolation].description"
-      ],
-      "core/audits/clickjacking-mitigation.js | title": [
-        "audits[clickjacking-mitigation].title"
-      ],
+      "core/audits/has-hsts.js | title": ["audits[has-hsts].title"],
+      "core/audits/has-hsts.js | description": ["audits[has-hsts].description"],
+      "core/audits/has-hsts.js | columnDirective": ["audits[has-hsts].details.headings[1].label"],
+      "core/audits/has-hsts.js | columnSeverity": ["audits[has-hsts].details.headings[2].label"],
+      "core/lib/i18n/i18n.js | itemSeverityHigh": ["audits[has-hsts].details.items[0].severity"],
+      "core/audits/has-hsts.js | noHsts": ["audits[has-hsts].details.items[0].description"],
+      "core/audits/origin-isolation.js | title": ["audits[origin-isolation].title"],
+      "core/audits/origin-isolation.js | description": ["audits[origin-isolation].description"],
+      "core/audits/clickjacking-mitigation.js | title": ["audits[clickjacking-mitigation].title"],
       "core/audits/clickjacking-mitigation.js | description": [
         "audits[clickjacking-mitigation].description"
       ],
-      "core/audits/accessibility/accesskeys.js | title": [
-        "audits.accesskeys.title"
-      ],
-      "core/audits/accessibility/accesskeys.js | description": [
-        "audits.accesskeys.description"
-      ],
-      "core/audits/accessibility/aria-allowed-attr.js | title": [
-        "audits[aria-allowed-attr].title"
-      ],
+      "core/audits/accessibility/accesskeys.js | title": ["audits.accesskeys.title"],
+      "core/audits/accessibility/accesskeys.js | description": ["audits.accesskeys.description"],
+      "core/audits/accessibility/aria-allowed-attr.js | title": ["audits[aria-allowed-attr].title"],
       "core/audits/accessibility/aria-allowed-attr.js | description": [
         "audits[aria-allowed-attr].description"
       ],
-      "core/audits/accessibility/aria-allowed-role.js | title": [
-        "audits[aria-allowed-role].title"
-      ],
+      "core/audits/accessibility/aria-allowed-role.js | title": ["audits[aria-allowed-role].title"],
       "core/audits/accessibility/aria-allowed-role.js | description": [
         "audits[aria-allowed-role].description"
       ],
-      "core/audits/accessibility/aria-command-name.js | title": [
-        "audits[aria-command-name].title"
-      ],
+      "core/audits/accessibility/aria-command-name.js | title": ["audits[aria-command-name].title"],
       "core/audits/accessibility/aria-command-name.js | description": [
         "audits[aria-command-name].description"
       ],
@@ -12465,21 +12229,15 @@
       "core/audits/accessibility/aria-deprecated-role.js | description": [
         "audits[aria-deprecated-role].description"
       ],
-      "core/audits/accessibility/aria-dialog-name.js | title": [
-        "audits[aria-dialog-name].title"
-      ],
+      "core/audits/accessibility/aria-dialog-name.js | title": ["audits[aria-dialog-name].title"],
       "core/audits/accessibility/aria-dialog-name.js | description": [
         "audits[aria-dialog-name].description"
       ],
-      "core/audits/accessibility/aria-hidden-body.js | title": [
-        "audits[aria-hidden-body].title"
-      ],
+      "core/audits/accessibility/aria-hidden-body.js | title": ["audits[aria-hidden-body].title"],
       "core/audits/accessibility/aria-hidden-body.js | description": [
         "audits[aria-hidden-body].description"
       ],
-      "core/audits/accessibility/aria-hidden-focus.js | title": [
-        "audits[aria-hidden-focus].title"
-      ],
+      "core/audits/accessibility/aria-hidden-focus.js | title": ["audits[aria-hidden-focus].title"],
       "core/audits/accessibility/aria-hidden-focus.js | description": [
         "audits[aria-hidden-focus].description"
       ],
@@ -12489,9 +12247,7 @@
       "core/audits/accessibility/aria-input-field-name.js | description": [
         "audits[aria-input-field-name].description"
       ],
-      "core/audits/accessibility/aria-meter-name.js | title": [
-        "audits[aria-meter-name].title"
-      ],
+      "core/audits/accessibility/aria-meter-name.js | title": ["audits[aria-meter-name].title"],
       "core/audits/accessibility/aria-meter-name.js | description": [
         "audits[aria-meter-name].description"
       ],
@@ -12525,27 +12281,17 @@
       "core/audits/accessibility/aria-required-parent.js | description": [
         "audits[aria-required-parent].description"
       ],
-      "core/audits/accessibility/aria-roles.js | title": [
-        "audits[aria-roles].title"
-      ],
-      "core/audits/accessibility/aria-roles.js | description": [
-        "audits[aria-roles].description"
-      ],
-      "core/audits/accessibility/aria-text.js | title": [
-        "audits[aria-text].title"
-      ],
-      "core/audits/accessibility/aria-text.js | description": [
-        "audits[aria-text].description"
-      ],
+      "core/audits/accessibility/aria-roles.js | title": ["audits[aria-roles].title"],
+      "core/audits/accessibility/aria-roles.js | description": ["audits[aria-roles].description"],
+      "core/audits/accessibility/aria-text.js | title": ["audits[aria-text].title"],
+      "core/audits/accessibility/aria-text.js | description": ["audits[aria-text].description"],
       "core/audits/accessibility/aria-toggle-field-name.js | title": [
         "audits[aria-toggle-field-name].title"
       ],
       "core/audits/accessibility/aria-toggle-field-name.js | description": [
         "audits[aria-toggle-field-name].description"
       ],
-      "core/audits/accessibility/aria-tooltip-name.js | title": [
-        "audits[aria-tooltip-name].title"
-      ],
+      "core/audits/accessibility/aria-tooltip-name.js | title": ["audits[aria-tooltip-name].title"],
       "core/audits/accessibility/aria-tooltip-name.js | description": [
         "audits[aria-tooltip-name].description"
       ],
@@ -12561,57 +12307,33 @@
       "core/audits/accessibility/aria-valid-attr-value.js | description": [
         "audits[aria-valid-attr-value].description"
       ],
-      "core/audits/accessibility/aria-valid-attr.js | title": [
-        "audits[aria-valid-attr].title"
-      ],
+      "core/audits/accessibility/aria-valid-attr.js | title": ["audits[aria-valid-attr].title"],
       "core/audits/accessibility/aria-valid-attr.js | description": [
         "audits[aria-valid-attr].description"
       ],
-      "core/audits/accessibility/button-name.js | title": [
-        "audits[button-name].title"
-      ],
-      "core/audits/accessibility/button-name.js | description": [
-        "audits[button-name].description"
-      ],
-      "core/audits/accessibility/bypass.js | title": [
-        "audits.bypass.title"
-      ],
-      "core/audits/accessibility/bypass.js | description": [
-        "audits.bypass.description"
-      ],
-      "core/audits/accessibility/color-contrast.js | title": [
-        "audits[color-contrast].title"
-      ],
+      "core/audits/accessibility/button-name.js | title": ["audits[button-name].title"],
+      "core/audits/accessibility/button-name.js | description": ["audits[button-name].description"],
+      "core/audits/accessibility/bypass.js | title": ["audits.bypass.title"],
+      "core/audits/accessibility/bypass.js | description": ["audits.bypass.description"],
+      "core/audits/accessibility/color-contrast.js | title": ["audits[color-contrast].title"],
       "core/audits/accessibility/color-contrast.js | description": [
         "audits[color-contrast].description"
       ],
-      "core/audits/accessibility/definition-list.js | title": [
-        "audits[definition-list].title"
-      ],
+      "core/audits/accessibility/definition-list.js | title": ["audits[definition-list].title"],
       "core/audits/accessibility/definition-list.js | description": [
         "audits[definition-list].description"
       ],
-      "core/audits/accessibility/dlitem.js | title": [
-        "audits.dlitem.title"
-      ],
-      "core/audits/accessibility/dlitem.js | description": [
-        "audits.dlitem.description"
-      ],
-      "core/audits/accessibility/document-title.js | title": [
-        "audits[document-title].title"
-      ],
+      "core/audits/accessibility/dlitem.js | title": ["audits.dlitem.title"],
+      "core/audits/accessibility/dlitem.js | description": ["audits.dlitem.description"],
+      "core/audits/accessibility/document-title.js | title": ["audits[document-title].title"],
       "core/audits/accessibility/document-title.js | description": [
         "audits[document-title].description"
       ],
-      "core/audits/accessibility/duplicate-id-aria.js | title": [
-        "audits[duplicate-id-aria].title"
-      ],
+      "core/audits/accessibility/duplicate-id-aria.js | title": ["audits[duplicate-id-aria].title"],
       "core/audits/accessibility/duplicate-id-aria.js | description": [
         "audits[duplicate-id-aria].description"
       ],
-      "core/audits/accessibility/empty-heading.js | title": [
-        "audits[empty-heading].title"
-      ],
+      "core/audits/accessibility/empty-heading.js | title": ["audits[empty-heading].title"],
       "core/audits/accessibility/empty-heading.js | description": [
         "audits[empty-heading].description"
       ],
@@ -12621,27 +12343,17 @@
       "core/audits/accessibility/form-field-multiple-labels.js | description": [
         "audits[form-field-multiple-labels].description"
       ],
-      "core/audits/accessibility/frame-title.js | title": [
-        "audits[frame-title].title"
-      ],
-      "core/audits/accessibility/frame-title.js | description": [
-        "audits[frame-title].description"
-      ],
-      "core/audits/accessibility/heading-order.js | title": [
-        "audits[heading-order].title"
-      ],
+      "core/audits/accessibility/frame-title.js | title": ["audits[frame-title].title"],
+      "core/audits/accessibility/frame-title.js | description": ["audits[frame-title].description"],
+      "core/audits/accessibility/heading-order.js | title": ["audits[heading-order].title"],
       "core/audits/accessibility/heading-order.js | description": [
         "audits[heading-order].description"
       ],
-      "core/audits/accessibility/html-has-lang.js | title": [
-        "audits[html-has-lang].title"
-      ],
+      "core/audits/accessibility/html-has-lang.js | title": ["audits[html-has-lang].title"],
       "core/audits/accessibility/html-has-lang.js | description": [
         "audits[html-has-lang].description"
       ],
-      "core/audits/accessibility/html-lang-valid.js | title": [
-        "audits[html-lang-valid].title"
-      ],
+      "core/audits/accessibility/html-lang-valid.js | title": ["audits[html-lang-valid].title"],
       "core/audits/accessibility/html-lang-valid.js | description": [
         "audits[html-lang-valid].description"
       ],
@@ -12657,27 +12369,19 @@
       "core/audits/accessibility/identical-links-same-purpose.js | description": [
         "audits[identical-links-same-purpose].description"
       ],
-      "core/audits/accessibility/image-alt.js | title": [
-        "audits[image-alt].title"
-      ],
-      "core/audits/accessibility/image-alt.js | description": [
-        "audits[image-alt].description"
-      ],
+      "core/audits/accessibility/image-alt.js | title": ["audits[image-alt].title"],
+      "core/audits/accessibility/image-alt.js | description": ["audits[image-alt].description"],
       "core/audits/accessibility/image-redundant-alt.js | title": [
         "audits[image-redundant-alt].title"
       ],
       "core/audits/accessibility/image-redundant-alt.js | description": [
         "audits[image-redundant-alt].description"
       ],
-      "core/audits/accessibility/input-button-name.js | title": [
-        "audits[input-button-name].title"
-      ],
+      "core/audits/accessibility/input-button-name.js | title": ["audits[input-button-name].title"],
       "core/audits/accessibility/input-button-name.js | description": [
         "audits[input-button-name].description"
       ],
-      "core/audits/accessibility/input-image-alt.js | title": [
-        "audits[input-image-alt].title"
-      ],
+      "core/audits/accessibility/input-image-alt.js | title": ["audits[input-image-alt].title"],
       "core/audits/accessibility/input-image-alt.js | description": [
         "audits[input-image-alt].description"
       ],
@@ -12687,78 +12391,40 @@
       "core/audits/accessibility/label-content-name-mismatch.js | description": [
         "audits[label-content-name-mismatch].description"
       ],
-      "core/audits/accessibility/label.js | title": [
-        "audits.label.title"
-      ],
-      "core/audits/accessibility/label.js | description": [
-        "audits.label.description"
-      ],
-      "core/audits/accessibility/landmark-one-main.js | title": [
-        "audits[landmark-one-main].title"
-      ],
+      "core/audits/accessibility/label.js | title": ["audits.label.title"],
+      "core/audits/accessibility/label.js | description": ["audits.label.description"],
+      "core/audits/accessibility/landmark-one-main.js | title": ["audits[landmark-one-main].title"],
       "core/audits/accessibility/landmark-one-main.js | description": [
         "audits[landmark-one-main].description"
       ],
-      "core/audits/accessibility/link-name.js | title": [
-        "audits[link-name].title"
-      ],
-      "core/audits/accessibility/link-name.js | description": [
-        "audits[link-name].description"
-      ],
+      "core/audits/accessibility/link-name.js | title": ["audits[link-name].title"],
+      "core/audits/accessibility/link-name.js | description": ["audits[link-name].description"],
       "core/audits/accessibility/link-in-text-block.js | title": [
         "audits[link-in-text-block].title"
       ],
       "core/audits/accessibility/link-in-text-block.js | description": [
         "audits[link-in-text-block].description"
       ],
-      "core/audits/accessibility/list.js | title": [
-        "audits.list.title"
-      ],
-      "core/audits/accessibility/list.js | description": [
-        "audits.list.description"
-      ],
-      "core/audits/accessibility/listitem.js | title": [
-        "audits.listitem.title"
-      ],
-      "core/audits/accessibility/listitem.js | description": [
-        "audits.listitem.description"
-      ],
-      "core/audits/accessibility/meta-refresh.js | title": [
-        "audits[meta-refresh].title"
-      ],
+      "core/audits/accessibility/list.js | title": ["audits.list.title"],
+      "core/audits/accessibility/list.js | description": ["audits.list.description"],
+      "core/audits/accessibility/listitem.js | title": ["audits.listitem.title"],
+      "core/audits/accessibility/listitem.js | description": ["audits.listitem.description"],
+      "core/audits/accessibility/meta-refresh.js | title": ["audits[meta-refresh].title"],
       "core/audits/accessibility/meta-refresh.js | description": [
         "audits[meta-refresh].description"
       ],
-      "core/audits/accessibility/meta-viewport.js | title": [
-        "audits[meta-viewport].title"
-      ],
+      "core/audits/accessibility/meta-viewport.js | title": ["audits[meta-viewport].title"],
       "core/audits/accessibility/meta-viewport.js | description": [
         "audits[meta-viewport].description"
       ],
-      "core/audits/accessibility/object-alt.js | title": [
-        "audits[object-alt].title"
-      ],
-      "core/audits/accessibility/object-alt.js | description": [
-        "audits[object-alt].description"
-      ],
-      "core/audits/accessibility/select-name.js | title": [
-        "audits[select-name].title"
-      ],
-      "core/audits/accessibility/select-name.js | description": [
-        "audits[select-name].description"
-      ],
-      "core/audits/accessibility/skip-link.js | title": [
-        "audits[skip-link].title"
-      ],
-      "core/audits/accessibility/skip-link.js | description": [
-        "audits[skip-link].description"
-      ],
-      "core/audits/accessibility/tabindex.js | title": [
-        "audits.tabindex.title"
-      ],
-      "core/audits/accessibility/tabindex.js | description": [
-        "audits.tabindex.description"
-      ],
+      "core/audits/accessibility/object-alt.js | title": ["audits[object-alt].title"],
+      "core/audits/accessibility/object-alt.js | description": ["audits[object-alt].description"],
+      "core/audits/accessibility/select-name.js | title": ["audits[select-name].title"],
+      "core/audits/accessibility/select-name.js | description": ["audits[select-name].description"],
+      "core/audits/accessibility/skip-link.js | title": ["audits[skip-link].title"],
+      "core/audits/accessibility/skip-link.js | description": ["audits[skip-link].description"],
+      "core/audits/accessibility/tabindex.js | title": ["audits.tabindex.title"],
+      "core/audits/accessibility/tabindex.js | description": ["audits.tabindex.description"],
       "core/audits/accessibility/table-duplicate-name.js | title": [
         "audits[table-duplicate-name].title"
       ],
@@ -12771,39 +12437,23 @@
       "core/audits/accessibility/table-fake-caption.js | description": [
         "audits[table-fake-caption].description"
       ],
-      "core/audits/accessibility/target-size.js | title": [
-        "audits[target-size].title"
-      ],
-      "core/audits/accessibility/target-size.js | description": [
-        "audits[target-size].description"
-      ],
-      "core/audits/accessibility/td-has-header.js | title": [
-        "audits[td-has-header].title"
-      ],
+      "core/audits/accessibility/target-size.js | title": ["audits[target-size].title"],
+      "core/audits/accessibility/target-size.js | description": ["audits[target-size].description"],
+      "core/audits/accessibility/td-has-header.js | title": ["audits[td-has-header].title"],
       "core/audits/accessibility/td-has-header.js | description": [
         "audits[td-has-header].description"
       ],
-      "core/audits/accessibility/td-headers-attr.js | title": [
-        "audits[td-headers-attr].title"
-      ],
+      "core/audits/accessibility/td-headers-attr.js | title": ["audits[td-headers-attr].title"],
       "core/audits/accessibility/td-headers-attr.js | description": [
         "audits[td-headers-attr].description"
       ],
-      "core/audits/accessibility/th-has-data-cells.js | title": [
-        "audits[th-has-data-cells].title"
-      ],
+      "core/audits/accessibility/th-has-data-cells.js | title": ["audits[th-has-data-cells].title"],
       "core/audits/accessibility/th-has-data-cells.js | description": [
         "audits[th-has-data-cells].description"
       ],
-      "core/audits/accessibility/valid-lang.js | title": [
-        "audits[valid-lang].title"
-      ],
-      "core/audits/accessibility/valid-lang.js | description": [
-        "audits[valid-lang].description"
-      ],
-      "core/audits/accessibility/video-caption.js | title": [
-        "audits[video-caption].title"
-      ],
+      "core/audits/accessibility/valid-lang.js | title": ["audits[valid-lang].title"],
+      "core/audits/accessibility/valid-lang.js | description": ["audits[valid-lang].description"],
+      "core/audits/accessibility/video-caption.js | title": ["audits[video-caption].title"],
       "core/audits/accessibility/video-caption.js | description": [
         "audits[video-caption].description"
       ],
@@ -12835,9 +12485,7 @@
           "path": "audits[total-byte-weight].displayValue"
         }
       ],
-      "core/audits/byte-efficiency/offscreen-images.js | title": [
-        "audits[offscreen-images].title"
-      ],
+      "core/audits/byte-efficiency/offscreen-images.js | title": ["audits[offscreen-images].title"],
       "core/audits/byte-efficiency/offscreen-images.js | description": [
         "audits[offscreen-images].description"
       ],
@@ -12862,9 +12510,7 @@
         "audits[image-delivery-insight].details.headings[2].label",
         "audits[render-blocking-insight].details.headings[2].label"
       ],
-      "core/audits/byte-efficiency/unminified-css.js | title": [
-        "audits[unminified-css].title"
-      ],
+      "core/audits/byte-efficiency/unminified-css.js | title": ["audits[unminified-css].title"],
       "core/audits/byte-efficiency/unminified-css.js | description": [
         "audits[unminified-css].description"
       ],
@@ -12874,9 +12520,7 @@
       "core/audits/byte-efficiency/unminified-javascript.js | description": [
         "audits[unminified-javascript].description"
       ],
-      "core/audits/byte-efficiency/unused-css-rules.js | title": [
-        "audits[unused-css-rules].title"
-      ],
+      "core/audits/byte-efficiency/unused-css-rules.js | title": ["audits[unused-css-rules].title"],
       "core/audits/byte-efficiency/unused-css-rules.js | description": [
         "audits[unused-css-rules].description"
       ],
@@ -12954,24 +12598,12 @@
       "core/audits/byte-efficiency/legacy-javascript.js | description": [
         "audits[legacy-javascript].description"
       ],
-      "core/audits/dobetterweb/doctype.js | title": [
-        "audits.doctype.title"
-      ],
-      "core/audits/dobetterweb/doctype.js | description": [
-        "audits.doctype.description"
-      ],
-      "core/audits/dobetterweb/charset.js | title": [
-        "audits.charset.title"
-      ],
-      "core/audits/dobetterweb/charset.js | description": [
-        "audits.charset.description"
-      ],
-      "core/audits/dobetterweb/dom-size.js | failureTitle": [
-        "audits[dom-size].title"
-      ],
-      "core/audits/dobetterweb/dom-size.js | description": [
-        "audits[dom-size].description"
-      ],
+      "core/audits/dobetterweb/doctype.js | title": ["audits.doctype.title"],
+      "core/audits/dobetterweb/doctype.js | description": ["audits.doctype.description"],
+      "core/audits/dobetterweb/charset.js | title": ["audits.charset.title"],
+      "core/audits/dobetterweb/charset.js | description": ["audits.charset.description"],
+      "core/audits/dobetterweb/dom-size.js | failureTitle": ["audits[dom-size].title"],
+      "core/audits/dobetterweb/dom-size.js | description": ["audits[dom-size].description"],
       "core/audits/dobetterweb/dom-size.js | displayValue": [
         {
           "values": {
@@ -13001,24 +12633,16 @@
       "core/audits/dobetterweb/geolocation-on-start.js | description": [
         "audits[geolocation-on-start].description"
       ],
-      "core/audits/dobetterweb/inspector-issues.js | title": [
-        "audits[inspector-issues].title"
-      ],
+      "core/audits/dobetterweb/inspector-issues.js | title": ["audits[inspector-issues].title"],
       "core/audits/dobetterweb/inspector-issues.js | description": [
         "audits[inspector-issues].description"
       ],
-      "core/audits/dobetterweb/no-document-write.js | title": [
-        "audits[no-document-write].title"
-      ],
+      "core/audits/dobetterweb/no-document-write.js | title": ["audits[no-document-write].title"],
       "core/audits/dobetterweb/no-document-write.js | description": [
         "audits[no-document-write].description"
       ],
-      "core/audits/dobetterweb/js-libraries.js | title": [
-        "audits[js-libraries].title"
-      ],
-      "core/audits/dobetterweb/js-libraries.js | description": [
-        "audits[js-libraries].description"
-      ],
+      "core/audits/dobetterweb/js-libraries.js | title": ["audits[js-libraries].title"],
+      "core/audits/dobetterweb/js-libraries.js | description": ["audits[js-libraries].description"],
       "core/audits/dobetterweb/notification-on-start.js | title": [
         "audits[notification-on-start].title"
       ],
@@ -13031,36 +12655,20 @@
       "core/audits/dobetterweb/paste-preventing-inputs.js | description": [
         "audits[paste-preventing-inputs].description"
       ],
-      "core/audits/dobetterweb/uses-http2.js | title": [
-        "audits[uses-http2].title"
-      ],
-      "core/audits/dobetterweb/uses-http2.js | description": [
-        "audits[uses-http2].description"
-      ],
+      "core/audits/dobetterweb/uses-http2.js | title": ["audits[uses-http2].title"],
+      "core/audits/dobetterweb/uses-http2.js | description": ["audits[uses-http2].description"],
       "core/audits/dobetterweb/uses-passive-event-listeners.js | title": [
         "audits[uses-passive-event-listeners].title"
       ],
       "core/audits/dobetterweb/uses-passive-event-listeners.js | description": [
         "audits[uses-passive-event-listeners].description"
       ],
-      "core/audits/seo/meta-description.js | title": [
-        "audits[meta-description].title"
-      ],
-      "core/audits/seo/meta-description.js | description": [
-        "audits[meta-description].description"
-      ],
-      "core/audits/seo/http-status-code.js | title": [
-        "audits[http-status-code].title"
-      ],
-      "core/audits/seo/http-status-code.js | description": [
-        "audits[http-status-code].description"
-      ],
-      "core/audits/seo/font-size.js | title": [
-        "audits[font-size].title"
-      ],
-      "core/audits/seo/font-size.js | description": [
-        "audits[font-size].description"
-      ],
+      "core/audits/seo/meta-description.js | title": ["audits[meta-description].title"],
+      "core/audits/seo/meta-description.js | description": ["audits[meta-description].description"],
+      "core/audits/seo/http-status-code.js | title": ["audits[http-status-code].title"],
+      "core/audits/seo/http-status-code.js | description": ["audits[http-status-code].description"],
+      "core/audits/seo/font-size.js | title": ["audits[font-size].title"],
+      "core/audits/seo/font-size.js | description": ["audits[font-size].description"],
       "core/audits/seo/font-size.js | displayValue": [
         {
           "values": {
@@ -13069,9 +12677,7 @@
           "path": "audits[font-size].displayValue"
         }
       ],
-      "core/lib/i18n/i18n.js | columnSource": [
-        "audits[font-size].details.headings[0].label"
-      ],
+      "core/lib/i18n/i18n.js | columnSource": ["audits[font-size].details.headings[0].label"],
       "core/audits/seo/font-size.js | columnSelector": [
         "audits[font-size].details.headings[1].label"
       ],
@@ -13087,54 +12693,26 @@
       "core/audits/seo/font-size.js | legibleText": [
         "audits[font-size].details.items[3].source.value"
       ],
-      "core/audits/seo/link-text.js | title": [
-        "audits[link-text].title"
-      ],
-      "core/audits/seo/link-text.js | description": [
-        "audits[link-text].description"
-      ],
-      "core/audits/seo/crawlable-anchors.js | title": [
-        "audits[crawlable-anchors].title"
-      ],
+      "core/audits/seo/link-text.js | title": ["audits[link-text].title"],
+      "core/audits/seo/link-text.js | description": ["audits[link-text].description"],
+      "core/audits/seo/crawlable-anchors.js | title": ["audits[crawlable-anchors].title"],
       "core/audits/seo/crawlable-anchors.js | description": [
         "audits[crawlable-anchors].description"
       ],
-      "core/audits/seo/is-crawlable.js | failureTitle": [
-        "audits[is-crawlable].title"
-      ],
-      "core/audits/seo/is-crawlable.js | description": [
-        "audits[is-crawlable].description"
-      ],
-      "core/audits/seo/robots-txt.js | title": [
-        "audits[robots-txt].title"
-      ],
-      "core/audits/seo/robots-txt.js | description": [
-        "audits[robots-txt].description"
-      ],
-      "core/audits/seo/hreflang.js | title": [
-        "audits.hreflang.title"
-      ],
-      "core/audits/seo/hreflang.js | description": [
-        "audits.hreflang.description"
-      ],
-      "core/audits/seo/canonical.js | title": [
-        "audits.canonical.title"
-      ],
-      "core/audits/seo/canonical.js | description": [
-        "audits.canonical.description"
-      ],
-      "core/audits/seo/manual/structured-data.js | title": [
-        "audits[structured-data].title"
-      ],
+      "core/audits/seo/is-crawlable.js | failureTitle": ["audits[is-crawlable].title"],
+      "core/audits/seo/is-crawlable.js | description": ["audits[is-crawlable].description"],
+      "core/audits/seo/robots-txt.js | title": ["audits[robots-txt].title"],
+      "core/audits/seo/robots-txt.js | description": ["audits[robots-txt].description"],
+      "core/audits/seo/hreflang.js | title": ["audits.hreflang.title"],
+      "core/audits/seo/hreflang.js | description": ["audits.hreflang.description"],
+      "core/audits/seo/canonical.js | title": ["audits.canonical.title"],
+      "core/audits/seo/canonical.js | description": ["audits.canonical.description"],
+      "core/audits/seo/manual/structured-data.js | title": ["audits[structured-data].title"],
       "core/audits/seo/manual/structured-data.js | description": [
         "audits[structured-data].description"
       ],
-      "core/audits/bf-cache.js | title": [
-        "audits[bf-cache].title"
-      ],
-      "core/audits/bf-cache.js | description": [
-        "audits[bf-cache].description"
-      ],
+      "core/audits/bf-cache.js | title": ["audits[bf-cache].title"],
+      "core/audits/bf-cache.js | description": ["audits[bf-cache].description"],
       "node_modules/@paulirish/trace_engine/models/trace/insights/Cache.js | title": [
         "audits[cache-insight].title"
       ],
@@ -13297,12 +12875,8 @@
       "node_modules/@paulirish/trace_engine/models/trace/insights/Viewport.js | description": [
         "audits[viewport-insight].description"
       ],
-      "core/config/default-config.js | performanceCategoryTitle": [
-        "categories.performance.title"
-      ],
-      "core/config/default-config.js | a11yCategoryTitle": [
-        "categories.accessibility.title"
-      ],
+      "core/config/default-config.js | performanceCategoryTitle": ["categories.performance.title"],
+      "core/config/default-config.js | a11yCategoryTitle": ["categories.accessibility.title"],
       "core/config/default-config.js | a11yCategoryDescription": [
         "categories.accessibility.description"
       ],
@@ -13312,27 +12886,17 @@
       "core/config/default-config.js | bestPracticesCategoryTitle": [
         "categories[best-practices].title"
       ],
-      "core/config/default-config.js | seoCategoryTitle": [
-        "categories.seo.title"
-      ],
-      "core/config/default-config.js | seoCategoryDescription": [
-        "categories.seo.description"
-      ],
+      "core/config/default-config.js | seoCategoryTitle": ["categories.seo.title"],
+      "core/config/default-config.js | seoCategoryDescription": ["categories.seo.description"],
       "core/config/default-config.js | seoCategoryManualDescription": [
         "categories.seo.manualDescription"
       ],
-      "core/config/default-config.js | metricGroupTitle": [
-        "categoryGroups.metrics.title"
-      ],
-      "core/config/default-config.js | insightsGroupTitle": [
-        "categoryGroups.insights.title"
-      ],
+      "core/config/default-config.js | metricGroupTitle": ["categoryGroups.metrics.title"],
+      "core/config/default-config.js | insightsGroupTitle": ["categoryGroups.insights.title"],
       "core/config/default-config.js | insightsGroupDescription": [
         "categoryGroups.insights.description"
       ],
-      "core/config/default-config.js | diagnosticsGroupTitle": [
-        "categoryGroups.diagnostics.title"
-      ],
+      "core/config/default-config.js | diagnosticsGroupTitle": ["categoryGroups.diagnostics.title"],
       "core/config/default-config.js | diagnosticsGroupDescription": [
         "categoryGroups.diagnostics.description"
       ],
@@ -13360,9 +12924,7 @@
       "core/config/default-config.js | a11yNavigationGroupDescription": [
         "categoryGroups[a11y-navigation].description"
       ],
-      "core/config/default-config.js | a11yAriaGroupTitle": [
-        "categoryGroups[a11y-aria].title"
-      ],
+      "core/config/default-config.js | a11yAriaGroupTitle": ["categoryGroups[a11y-aria].title"],
       "core/config/default-config.js | a11yAriaGroupDescription": [
         "categoryGroups[a11y-aria].description"
       ],
@@ -13384,21 +12946,15 @@
       "core/config/default-config.js | a11yTablesListsVideoGroupDescription": [
         "categoryGroups[a11y-tables-lists].description"
       ],
-      "core/config/default-config.js | seoMobileGroupTitle": [
-        "categoryGroups[seo-mobile].title"
-      ],
+      "core/config/default-config.js | seoMobileGroupTitle": ["categoryGroups[seo-mobile].title"],
       "core/config/default-config.js | seoMobileGroupDescription": [
         "categoryGroups[seo-mobile].description"
       ],
-      "core/config/default-config.js | seoContentGroupTitle": [
-        "categoryGroups[seo-content].title"
-      ],
+      "core/config/default-config.js | seoContentGroupTitle": ["categoryGroups[seo-content].title"],
       "core/config/default-config.js | seoContentGroupDescription": [
         "categoryGroups[seo-content].description"
       ],
-      "core/config/default-config.js | seoCrawlingGroupTitle": [
-        "categoryGroups[seo-crawl].title"
-      ],
+      "core/config/default-config.js | seoCrawlingGroupTitle": ["categoryGroups[seo-crawl].title"],
       "core/config/default-config.js | seoCrawlingGroupDescription": [
         "categoryGroups[seo-crawl].description"
       ],

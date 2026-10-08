@@ -16,3 +16,13 @@ ef7264343361ad830463c207a605eade7336e359:engine/packages/view-models/src/fixture
 2233a43b42f902cff13e2f50af360961629b90a0:engine/apps/web/src/server/chat/adapters/turnstile.test.ts:generic-api-key:27
 # Ops check: curl -u reads the Mailpit password from a host file at run time; no secret in the repo.
 9663d96624e71e496925d733d4aa5921d644b02e:scripts/ops/test/steps-checks.sh:curl-auth-user:30
+# 2026-10-09: tracking tokens of the 10.3 rehearsal orders 100019-100029 on STAGING only (fake buyer "REHEARSAL 10.3",
+# example.test emails), in cc51ccfa before the ledger was redacted (bd45e34b). They open nothing but those test orders.
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:11
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:13
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:15
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:17
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:3
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:5
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:7
+cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:9
