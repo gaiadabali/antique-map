@@ -122,6 +122,40 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
       await stack.rest('DELETE', `/api/users/${owner}`, { as: 'owner' })
       expect((await userNow(owner)).role).toBe('owner')
     })
+
+    it('records a role or store change the owner makes: who, when, from, to — and shows it to the owner alone (R7)', async () => {
+      const target = stack.seeded.users!.id
+      const before = (await stack.api.findByID({ collection: 'users', id: target, depth: 0, overrideAccess: true })) as {
+        accessChanges?: unknown[]
+      }
+      const was = before.accessChanges?.length ?? 0
+      const changed = await stack.rest('PATCH', `/api/users/${target}`, {
+        as: 'owner',
+        json: { store: stack.stores.A.id },
+      })
+      expect(changed.status).toBe(200)
+      const asOwner = await stack.rest('GET', `/api/users/${target}?depth=0`, { as: 'owner' })
+      const history = (asOwner.body as { accessChanges?: Array<Record<string, unknown>> }).accessChanges ?? []
+      expect(history.length).toBe(was + 1)
+      expect(history.at(-1)).toMatchObject({ by: stack.users.owner.id })
+      expect(history.at(-1)).toHaveProperty('at')
+      // The editor's own account was recorded when it was made (the owner sees that row), yet an
+      // editor reading it gets no history: Payload answers a hidden array as an empty one.
+      const editorId = stack.users.editor.id
+      const seenByOwner = await stack.rest('GET', `/api/users/${editorId}?depth=0`, { as: 'owner' })
+      expect(((seenByOwner.body as { accessChanges?: unknown[] }).accessChanges ?? []).length).toBeGreaterThan(0)
+      const seenByEditor = await stack.rest('GET', `/api/users/${editorId}?depth=0`, { as: 'editor' })
+      expect((seenByEditor.body as { accessChanges?: unknown[] }).accessChanges ?? []).toEqual([])
+    })
+
+    it('only `users` sign in, with the three roles of the table (A1)', () => {
+      const withAuth = stack.config.collections.filter((collection) => collection.auth).map((c) => c.slug)
+      expect(withAuth).toEqual(['users'])
+      const role = stack.config.collections
+        .find((collection) => collection.slug === 'users')!
+        .fields.find((field) => 'name' in field && field.name === 'role') as { options?: Array<{ value: string }> }
+      expect(role.options?.map((option) => option.value).sort()).toEqual(['editor', 'owner', 'store'])
+    })
   })
 
   describe('sign-in (A3–A6)', () => {
@@ -191,6 +225,42 @@ describe.skipIf(!server)('fields and authentication, on a real database', () => 
       expect(cookie).toMatch(/HttpOnly/i)
       expect(cookie).toMatch(/SameSite=Lax/i)
       expect(cookie).not.toMatch(/Domain=/i)
+    })
+
+    it('a password-reset token expires within the hour and works once (A6)', async () => {
+      const email = await make('resetter')
+      expect((await stack.rest('POST', '/api/users/forgot-password', { json: { email } })).status).toBe(200)
+      const row = (
+        await stack.pool.query(
+          `SELECT reset_password_token AS token, reset_password_expiration AS expires FROM users WHERE email = '${email}'`,
+        )
+      ).rows[0] as { token: string; expires: Date }
+      expect(row.token).toMatch(/^[0-9a-f]{40}$/)
+      const lifetime = new Date(row.expires).getTime() - Date.now()
+      expect(lifetime).toBeGreaterThan(0)
+      expect(lifetime).toBeLessThanOrEqual(60 * 60 * 1000)
+
+      const fresh = 'a-new-password-for-the-test-1'
+      const used = await stack.rest('POST', '/api/users/reset-password', { json: { token: row.token, password: fresh } })
+      expect(used.status).toBe(200)
+      expect((await login(email, fresh)).status).toBe(200)
+      const again = await stack.rest('POST', '/api/users/reset-password', {
+        json: { token: row.token, password: 'another-password-for-the-test-2' },
+      })
+      expect(again.status).toBeGreaterThanOrEqual(400)
+      expect((await login(email, 'another-password-for-the-test-2')).status).toBe(401)
+    })
+
+    it('an expired reset token is refused (A6)', async () => {
+      const email = await make('expired')
+      await stack.rest('POST', '/api/users/forgot-password', { json: { email } })
+      await stack.pool.query(`UPDATE users SET reset_password_expiration = now() - interval '1 minute' WHERE email = '${email}'`)
+      const token = ((await stack.pool.query(`SELECT reset_password_token AS t FROM users WHERE email = '${email}'`)).rows[0] as { t: string }).t
+      const reply = await stack.rest('POST', '/api/users/reset-password', {
+        json: { token, password: 'a-new-password-for-the-test-3' },
+      })
+      expect(reply.status).toBeGreaterThanOrEqual(400)
+      expect((await login(email, 'a-new-password-for-the-test-3')).status).toBe(401)
     })
 
     it('a session token lives at most 8 hours (A6)', async () => {
