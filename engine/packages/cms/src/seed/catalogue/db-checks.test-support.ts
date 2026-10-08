@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { invalidationBatch } from '@engine/cache'
 import type { Payload } from 'payload'
 import { expect } from 'vitest'
 
@@ -79,21 +80,30 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
   const fixture = makeFixture()
   const previous = process.env.LEGACY_DATA_DIR
   process.env.LEGACY_DATA_DIR = fixture
+  // Outside a request, the CLI's way: a batch's own collector on the run (`../cli.ts`), which a
+  // publishing run needs for its cache hooks.
+  const context = invalidationBatch().context()
   try {
     await seedLayer('shop', { payload })
-    const first = await seedLayer('shop-catalogue', { payload, publish: true })
+    const first = await seedLayer('shop-catalogue', { payload, publish: true, context })
     for (const report of first.imports as unknown as Counted[]) {
       expect(report.counts.rejected).toBe(0)
       expect(report.counts.held).toBe(0)
     }
-    expect((first.imports[0] as unknown as Counted).counts.new).toBe(9)
+    // Nine rows: three products (new) and their six variant rows, which report as updates of
+    // the product they join (`import/apply-products.ts` applyVariantRow).
+    expect((first.imports[0] as unknown as Counted).counts).toMatchObject({ new: 3, updated: 6 })
     expect(first.catalogue!.attach).toEqual({
       mediaCreated: 4,
       imagesSet: 3,
       published: 3,
       held: [],
     })
-    expect(first.catalogue!.retire).toEqual({ retired: 80, alreadyRetired: 0 })
+    // The mocks seed as drafts: those with no variant are already off sale, so the 80 split between
+    // "retired" now and "already retired" (`./retire.ts`); the states below prove all 80 are off.
+    const retire = first.catalogue!.retire!
+    expect(retire.retired + retire.alreadyRetired).toBe(80)
+    expect(retire.retired).toBeGreaterThan(0)
 
     // The shop lists the three designs and none of the 80 mock products.
     const listed = await payload.find({
@@ -171,7 +181,7 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
     expect(stock.totalDocs).toBeGreaterThan(0)
 
     // The same run twice changes nothing.
-    const second = await seedLayer('shop-catalogue', { payload, publish: true })
+    const second = await seedLayer('shop-catalogue', { payload, publish: true, context })
     for (const report of second.imports as unknown as Counted[]) {
       expect(report.counts.new).toBe(0)
       expect(report.counts.updated).toBe(0)

@@ -47,8 +47,8 @@ export async function loadFunnel(ctx: DashboardContext): Promise<FunnelPanel | n
 
   const totalsSelect = sql.join(
     STEPS.flatMap(({ key, match }) => [
-      sql`count(*) FILTER (WHERE (${match}) AND ${inPeriod(ctx)}) AS ${sql.raw(`${key}_current`)}`,
-      sql`count(*) FILTER (WHERE (${match}) AND ${inPrevious(ctx)}) AS ${sql.raw(`${key}_previous`)}`,
+      sql`count(*) FILTER (WHERE (${match}) AND ${inPeriod(ctx)}) AS ${sql.raw(`"${key}_current"`)}`,
+      sql`count(*) FILTER (WHERE (${match}) AND ${inPrevious(ctx)}) AS ${sql.raw(`"${key}_previous"`)}`,
     ]),
     sql`, `,
   )
@@ -63,7 +63,7 @@ export async function loadFunnel(ctx: DashboardContext): Promise<FunnelPanel | n
   }))
 
   const deviceSelect = sql.join(
-    STEPS.map(({ key, match }) => sql`count(*) FILTER (WHERE ${match}) AS ${sql.raw(key)}`),
+    STEPS.map(({ key, match }) => sql`count(*) FILTER (WHERE ${match}) AS ${sql.raw(`"${key}"`)}`),
     sql`, `,
   )
   const deviceRows = await rowsOf<{ device: string } & Record<string, unknown>>(

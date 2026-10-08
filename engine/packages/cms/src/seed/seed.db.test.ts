@@ -12,6 +12,7 @@
  * second run changes nothing.
  * Without `CMS_TEST_POSTGRES_URL` these skip — a setup state.
  */
+import { invalidationBatch } from '@engine/cache'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
@@ -106,7 +107,10 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
 
     // A re-run publishes nothing; a row the seed creates on a --publish run is published at once.
     const maker = before.makers[0] as { id: number; name: string }
-    await payload.delete({ collection: 'makers', id: maker.id, overrideAccess: true })
+    // Outside a request the vocabulary hook needs a collector (`@engine/cache` batch).
+    await invalidationBatch().operation((context) =>
+      payload.delete({ collection: 'makers', id: maker.id, overrideAccess: true, context }),
+    )
     const again = await seedLayer('vocabulary', { payload, publish: true })
     expect(again.vocabulary!.makers.created).toBe(1)
     expect(again.vocabulary!.published).toEqual({ places: 0, terms: 0, makers: 1, held: [] })

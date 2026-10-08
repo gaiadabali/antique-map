@@ -65,8 +65,14 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
         collection: 'places',
         data: { name: 'Bali', slug: 'bali', _status: 'published' },
       })
+      // An original publishes with its condition graded (a term of the gallery's scale).
+      const grade = await api.create({
+        collection: 'terms',
+        data: { kind: 'grade', label: 'VG+', definition: 'Very good.', equivalent: 'A' },
+      })
       const base = {
         objectType: 'map',
+        condition: { grade: grade.id },
         makers: [{ maker: maker.id, role: 'cartographer', certainty: 'certain' }],
         places: [{ place: place.id, role: 'depicts', primary: true }],
         date: { precision: 'exact', from: 1726 },

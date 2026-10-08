@@ -59,10 +59,13 @@ describe.skipIf(!server)('the shop funnel and web vitals panels, on a real datab
     t = await startDashboardStack('web_dash_shop_funnel')
 
     // Funnel: a clear drop at every step, plus one blocked checkout.
+    // `collect` takes at most MAX_EVENTS (20) per request, so the 26 events go in two requests.
     await t.send('shop', [
       ...Array.from({ length: 10 }, () => viewed(t.noon(2))),
       ...Array.from({ length: 6 }, () => added(t.noon(2))),
       ...Array.from({ length: 4 }, () => started(t.noon(2))),
+    ])
+    await t.send('shop', [
       ...Array.from({ length: 3 }, () => delivery(t.noon(2))),
       ...Array.from({ length: 2 }, () => paidEvent(t.noon(2))),
       blocked(t.noon(2), 'out-of-stock'),
