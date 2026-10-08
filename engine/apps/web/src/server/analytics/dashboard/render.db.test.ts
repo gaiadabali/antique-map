@@ -57,12 +57,14 @@ describe.skipIf(!server)('the dashboard view, on a real database', () => {
     expect(html).toContain('Belum ada peristiwa pada periode ini.')
   }, 60_000)
 
-  it('the shop tab has its run-2 panels as stubs', async () => {
+  it('the shop tab has its shop panels, empty without events', async () => {
     const html = await render('owner', { site: 'shop', period: '30' })
     for (const title of ['Funnel', 'Sales', 'Fulfilment', 'Payments', 'Web vitals']) {
       expect(html).toContain(`>${title}<`)
     }
-    expect(html).toContain('arrives with the checkout events')
+    // The run-2 stubs are real panels now: with no events they say so, with no stub copy left.
+    expect(html).toContain('No events yet in this period.')
+    expect(html).not.toContain('arrives with the checkout events')
     expect(html).not.toContain('>Antiques<')
   }, 60_000)
 

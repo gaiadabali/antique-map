@@ -39,22 +39,30 @@ describe.skipIf(!server)('shop catalogue loaders, on a real database', () => {
 
   /** A published product in the shop, with a category term and an image, as publishing demands. */
   const publishProduct = async (data: Record<string, unknown>) => {
-    const draft = await stack.payload.create({
-      collection: 'products',
-      data: {
-        site: 'shop',
-        category: term,
-        images: [{ image: media }],
-        price: 95000,
-        _status: 'draft',
-        ...data,
-      } as never,
-    })
-    return stack.payload.update({
-      collection: 'products',
-      id: (draft as unknown as { id: number }).id,
-      data: { _status: 'published' } as never,
-    }) as unknown as Promise<{ id: number; slug: string; name: string }>
+    // Outside a request the invalidation hook needs a collector (`@engine/cache` batch).
+    const write = invalidationBatch()
+    const draft = await write.operation((context) =>
+      stack.payload.create({
+        context,
+        collection: 'products',
+        data: {
+          site: 'shop',
+          category: term,
+          images: [{ image: media }],
+          price: 95000,
+          _status: 'draft',
+          ...data,
+        } as never,
+      }),
+    )
+    return write.operation((context) =>
+      stack.payload.update({
+        context,
+        collection: 'products',
+        id: (draft as unknown as { id: number }).id,
+        data: { _status: 'published' } as never,
+      }),
+    ) as unknown as Promise<{ id: number; slug: string; name: string }>
   }
 
   const previousMediaPublicUrl = process.env.MEDIA_PUBLIC_URL
