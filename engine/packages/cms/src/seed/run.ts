@@ -127,14 +127,17 @@ function sampleLayer(): { bytes: Uint8Array; name: string; rows: readonly Antiqu
   return { bytes: utf8(antiqueCsv(rows)), name: 'gallery-sample.csv', rows }
 }
 
-/** The full layer: every normalised record in LEGACY_DATA_DIR, generated in memory (§2). */
+/**
+ * The full layer: every normalised record in LEGACY_DATA_DIR, generated in memory (§2). It alone
+ * carries the old price into the owner-only asking price (owner decision 2026-10-08).
+ */
 function fullLayer(): { bytes: Uint8Array; name: string; rows: readonly AntiqueRow[] } {
   const dir = legacyDataDir()
   const records = loadRecords(dir)
   const images = loadImages(dir)
   const legacyPathOf = (image: LegacyImage) =>
     join(dir, 'indies-gallery', 'public-read', image.file)
-  const rows = antiqueRows(records, images, legacyPathOf)
+  const rows = antiqueRows(records, images, legacyPathOf, true)
   return { bytes: utf8(antiqueCsv(rows)), name: 'gallery-full.csv', rows }
 }
 

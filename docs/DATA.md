@@ -41,7 +41,10 @@ seed without a code change (requirement 10.3).
   only the fields the normaliser read with confidence (§8); the rest waits in the review file. Their `publicId` is
   the old product id, so old addresses work on staging from the first load (§6). Status is `available` or `sold` as
   the old page showed; `location` is `singapore` (PLAN: the antiques are held there) until his sheet says
-  otherwise. **The old USD prices are not loaded**: the gallery shows none (DR-3), and the asking price is his.
+  otherwise. **The old USD prices load into the owner-only asking price** (the full layer
+  only; the committed sample stays price-free), in whole dollars. A price the normaliser could not read with
+  confidence (empty, on request, in review, not in whole dollars) stays blank, never rounded or guessed. The
+  gallery still shows no price (DR-3); the owner changes it in the admin. Decision 2026-10-08.
 - **Every seeded antique and product arrives as a draft** (stores and stock apply at once), and publishes through
   its checks (CONTENT-MODEL.md §8) by the import's **Publish these records** (§3).
 - **When his data arrives**, his sheets update the seeded antiques in place by stock number, and
@@ -225,7 +228,8 @@ The package that turns outside data into rows the import loads. It reads copies 
   committed copies are the address inventories and, once reviewed, the mappings.
 - **The full gallery seed is its output**: `records.jsonl` becomes an antiques import file carrying only parsed
   values, plus an image batch; `review.csv` goes to the curator. Parsed so far: titles 1,709 (114 for review),
-  dates 1,749, conditions 1,783, dimensions 1,614, stock numbers 1,734.
+  dates 1,749, conditions 1,783, dimensions 1,614, stock numbers 1,734,
+  prices 1,628 (1,481 fixed in USD, 147 on request; 6 more for review).
 - **The crawl exists on one workstation only** (3.3 GB). It is copied to the private bucket before the reshape: a
   second read needs the owner's OK again and takes hours (CARRY-OVER.md §6).
 - *Reshape note:* the inventories move out of the brand folders to `engine/packages/migrate/data/{gallery,shop}/`
