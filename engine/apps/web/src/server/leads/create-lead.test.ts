@@ -115,24 +115,24 @@ describe('createLead', () => {
     expect(d.turnstile.calls).toBe(0)
   })
 
-  it('the eleventh post in a minute from one address is refused', async () => {
+  it('the sixth post in an hour from one address is refused', async () => {
     const d = doubles()
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < 5; i += 1) {
       expect((await createLead(d.deps, request())).ok).toBe(true)
     }
     expect(await createLead(d.deps, request())).toEqual({ ok: false, reason: 'rate' })
-    expect(d.created).toHaveLength(10)
+    expect(d.created).toHaveLength(5)
     // Another address is its own allowance.
     expect((await createLead(d.deps, request({ ip: '203.0.113.10' }))).ok).toBe(true)
   })
 
-  it('a failed challenge still counts against the limit, so the eleventh post is refused before siteverify', async () => {
+  it('a failed challenge still counts against the limit, so the sixth post is refused before siteverify', async () => {
     const d = doubles()
     d.turnstile.pass = false
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < 5; i += 1) {
       expect((await createLead(d.deps, request())).ok).toBe(false)
     }
-    // The eleventh call must not even call verifyTurnstile.
+    // The sixth call must not even call verifyTurnstile.
     const turnstileCalls = d.turnstile.calls
     expect(await createLead(d.deps, request())).toEqual({ ok: false, reason: 'rate' })
     expect(d.turnstile.calls).toBe(turnstileCalls)
@@ -215,11 +215,11 @@ describe('the new-lead email', () => {
 })
 
 describe('PostLimiter', () => {
-  it('opens a fresh minute after the window', () => {
+  it('opens a fresh hour after the window', () => {
     const limiter = new PostLimiter(2)
     expect(limiter.allow('a', 0)).toBe(true)
     expect(limiter.allow('a', 1)).toBe(true)
     expect(limiter.allow('a', 2)).toBe(false)
-    expect(limiter.allow('a', 60_000)).toBe(true)
+    expect(limiter.allow('a', 3_600_000)).toBe(true)
   })
 })

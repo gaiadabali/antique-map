@@ -13,6 +13,7 @@ import { clientAddress } from '../../../../server/chat/identity'
 import {
   createLead,
   LEAD_ERROR_KEYS,
+  LEAD_WINDOW_SECONDS,
   type CreateLeadResult,
   type LeadDeps,
 } from '../../../../server/leads'
@@ -31,8 +32,8 @@ export const MAX_BODY_BYTES = 16 * 1024
 /** The idempotency key's longest accepted form (a UUID is 36). */
 const MAX_KEY_LENGTH = 64
 
-/** The limit's window is a fixed minute (`server/leads/rate`): a minute is always long enough. */
-const RETRY_AFTER_SECONDS = '60'
+/** The limit's window is a fixed hour (`server/leads/rate`): a refused post may wait up to one. */
+const RETRY_AFTER_SECONDS = String(LEAD_WINDOW_SECONDS)
 
 /** The body's own keys: the kind, the visitor's fields and the Turnstile answer. */
 const BODY_FIELDS = new Set(['kind', 'input', 'turnstileToken'])

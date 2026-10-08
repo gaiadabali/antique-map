@@ -151,13 +151,27 @@ describe('outbound requests go to listed hosts, with a timeout (S1, S3)', () => 
     expect([...hosts].filter((host) => !allowed.has(host))).toEqual([])
   })
 
-  it('has a timeout on all but the geocoder, which is finding F-07', () => {
+  it('has a timeout on every server-side fetch, the geocoder included (F-07, fixed)', () => {
     const without = callers
       .filter((file) => !/AbortSignal\.(timeout|any)/.test(code(file.text)))
       .map((file) => file.path)
-    // FINDING F-07 (medium-low): the geocode proxy's `fetch(url)` has no timeout, no size cap and
-    // follows redirects (S3). Fix: AbortSignal.timeout(5_000) and redirect: 'error'.
-    expect(without).toEqual(['engine/apps/web/src/server/shop/checkout/geocode.ts'])
+    expect(without).toEqual([])
+  })
+
+  it('the geocoder and Turnstile follow no redirect and have a 5 second budget (S3, F-07)', () => {
+    for (const path of [
+      'engine/apps/web/src/server/shop/checkout/geocode.ts',
+      'engine/apps/web/src/server/chat/adapters/turnstile.ts',
+    ]) {
+      const text = code(source.find((file) => file.path === path)!.text)
+      expect(text, path).toContain("redirect: 'error'")
+      // The geocoder names its budget once, as a constant the unit tests also read.
+      const geocoder = path.endsWith('geocode.ts')
+      expect(text, path).toContain(
+        geocoder ? 'AbortSignal.timeout(GEOCODE_TIMEOUT_MS)' : 'AbortSignal.timeout(5_000)',
+      )
+      if (geocoder) expect(text).toContain('GEOCODE_TIMEOUT_MS = 5_000')
+    }
   })
 })
 

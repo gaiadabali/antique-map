@@ -74,6 +74,12 @@ describe('the storefront policy (B2)', () => {
     expect(
       directive(buildCsp('storefront', 'N', { mediaOrigin: 'https://media.example' }), 'img-src'),
     ).toContain('https://media.example')
+    // The viewer's tile metadata (IIIF info.json) is fetched, not loaded: connect-src too.
+    const withMedia = buildCsp('storefront', 'N', { mediaOrigin: 'https://media.example' })
+    expect(directive(withMedia, 'connect-src')).toContain('https://media.example')
+    expect(
+      directive(buildCsp('admin', 'N', { mediaOrigin: 'https://media.example' }), 'connect-src'),
+    ).toEqual([`'self'`])
     expect(mediaOriginOf({ MEDIA_PUBLIC_URL: 'https://media.example/bucket/x' })).toBe(
       'https://media.example',
     )

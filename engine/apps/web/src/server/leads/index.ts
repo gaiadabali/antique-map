@@ -14,4 +14,4 @@ export {
 } from './input'
 export { notifyNewLead, type LeadMailer } from './notify'
 export type { LeadDeps, NewLeadNotice, NewLeadRecord } from './ports'
-export { LEAD_POSTS_PER_MINUTE, PostLimiter } from './rate'
+export { LEAD_POSTS_PER_HOUR, LEAD_WINDOW_SECONDS, PostLimiter } from './rate'

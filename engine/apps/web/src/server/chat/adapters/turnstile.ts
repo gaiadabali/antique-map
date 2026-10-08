@@ -26,8 +26,9 @@ export function turnstileVerifier(secret: string): TurnstileVerifier {
         const response = await fetch(SITEVERIFY_URL, {
           method: 'POST',
           body: form,
-          signal: AbortSignal.any([signal, AbortSignal.timeout(10_000)]),
+          signal: AbortSignal.any([signal, AbortSignal.timeout(5_000)]),
           cache: 'no-store',
+          redirect: 'error',
         })
         if (!response.ok) return { success: false, hostname: null }
         const body = (await response.json()) as { success?: unknown; hostname?: unknown }

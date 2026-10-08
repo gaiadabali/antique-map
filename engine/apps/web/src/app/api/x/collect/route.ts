@@ -3,7 +3,14 @@
  * pipeline is `server/analytics/collect`'s; this file only hands it the request's pieces and the
  * process's Payload, opened lazily so a refused request never touches the database.
  */
+import { clientAddress } from '../../../../security/rate-limit'
 import { collect } from '../../../../server/analytics/collect'
+
+/** The caller's address, or null off nginx (a workstation, CI): `collect` counts those apart. */
+function knownAddress(headers: Headers): string | null {
+  const address = clientAddress(headers)
+  return address === 'unknown' ? null : address
+}
 
 export async function POST(request: Request): Promise<Response> {
   const body = await request.text().catch(() => null)
@@ -13,7 +20,9 @@ export async function POST(request: Request): Promise<Response> {
       origin: request.headers.get('origin'),
       contentType: request.headers.get('content-type'),
       userAgent: request.headers.get('user-agent'),
-      address: request.headers.get('x-forwarded-for'),
+      // The address nginx appended, never the whole header: `collect` reads its first entry, which a
+      // client chooses, so a forged prefix would be a fresh bucket and a fresh session each time.
+      address: knownAddress(request.headers),
       body,
       referer: request.headers.get('referer'),
     },
