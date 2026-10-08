@@ -73,6 +73,8 @@ async function draftingEnabled(payload: Payload): Promise<boolean> {
   const settings = await payload.findGlobal({
     slug: 'site-settings',
     depth: 0,
+    // Deliberate: a server-side switch read on every run, whoever the caller is (SECURITY.md R4).
+    overrideAccess: true,
     select: { gallery: { ai: { draftingEnabled: true } } },
   } as Parameters<Payload['findGlobal']>[0])
   return obj(obj(obj(settings).gallery).ai).draftingEnabled === true

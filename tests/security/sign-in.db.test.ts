@@ -166,15 +166,15 @@ describe.skipIf(!server)('sign-in and the browser rules, on a real database', ()
       console.info(`[security] session token lifetime: ${claims.exp - claims.iat} s`)
     })
 
-    // FINDING F-03 (docs/gates/security.md): no password policy exists, so A2 does not hold.
-    it.fails('refuses a password shorter than 12 characters on create (A2)', async () => {
+    // F-03 (docs/gates/security.md): the password policy.
+    it('refuses a password shorter than 12 characters on create (A2)', async () => {
       const reply = await stack.rest('POST', '/api/users', {
         as: 'owner',
         json: { email: 'weak@security.test', password: 'short', name: 'Weak', role: 'editor' },
       })
       expect(reply.status).toBe(400)
     })
-    it.fails('refuses a common password on create (A2)', async () => {
+    it('refuses a common password on create (A2)', async () => {
       const reply = await stack.rest('POST', '/api/users', {
         as: 'owner',
         json: {
