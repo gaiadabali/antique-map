@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | 🔄 in progress | 2/4 | 14/16 | 0 | `█████████░`  88% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 0/6 | 5/25 | 1 | `██░░░░░░░░`  20% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 0/6 | 6/25 | 1 | `██░░░░░░░░`  24% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **40/52** | **178/214** | **8** | `████████░░`  83% |
+| **All** | 11 phases | | | **40/52** | **179/214** | **8** | `████████░░`  84% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -773,7 +773,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.6.b the full gallery on staging: the 1,823 crawled records and their 2,289 photographs, the derivatives and tiles made on the workstation first, then loaded and published through the publish checks
   - [x] 10.6.c the shop's designs from the owner's six catalogue PDFs (Linktree → Drive, May 2024): each design's picture, title, year, history text and design code, in English and Indonesian, deduplicated across catalogues
   - [x] 10.6.d @oldeastindiesart's Instagram posts read for their pictures, captions and prices (product types, sizes, prices) to complete 10.6.c's products
-  - [ ] 10.6.e the shop on staging carries the designs as products with marked placeholder prices, replacing the 80 mock products (mock stores and stock stay); both sites' footers link their Instagram and Facebook
+  - [x] 10.6.e the shop on staging carries the designs as products with marked placeholder prices, replacing the 80 mock products (mock stores and stock stay); both sites' footers link their Instagram and Facebook
   - [ ] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
 
 ---
