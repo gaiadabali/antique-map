@@ -55,4 +55,11 @@ describe('checkout lexicon', () => {
     expect(en['checkout.problem.no-single-store']).toContain('{items}')
     expect(id['checkout.problem.no-single-store']).toContain('{items}')
   })
+
+  it('the checkout rate-limit refusal has its own words in both languages (F-02)', () => {
+    expect(CHECKOUT_KEYS['checkout.problem.rate-limited']).toBeTruthy()
+    expect(en['checkout.problem.rate-limited']).toMatch(/WhatsApp/)
+    expect(id['checkout.problem.rate-limited']).toMatch(/WhatsApp/)
+    expect(id['checkout.problem.rate-limited']).not.toBe(en['checkout.problem.rate-limited'])
+  })
 })

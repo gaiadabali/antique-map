@@ -103,6 +103,7 @@
   "checkout.problem.no-single-store": "Tidak ada satu toko pun yang bisa mengirim seluruh tas ini. Hapus {items} lalu coba lagi, atau tanyakan pada kami di WhatsApp dan kami akan mencarikan jalan.",
   "checkout.problem.out-of-stock": "Baru saja habis: {items}. Hapus untuk melanjutkan, atau tanyakan pada kami di WhatsApp.",
   "checkout.problem.busy": "Banyak pesanan masuk bersamaan saat ini. Tidak ada yang ditagih atau ditahan — silakan coba lagi sebentar lagi.",
+  "checkout.problem.rate-limited": "Anda sudah membuat beberapa pesanan dalam waktu singkat, jadi checkout dijeda sementara. Tidak ada yang ditagih. Silakan coba lagi nanti, atau kirim pesan ke kami lewat WhatsApp dan kami akan mencatat pesanan Anda.",
   "checkout.problem.outside-indonesia": "Untuk saat ini kami hanya mengirim di dalam Indonesia. Hubungi kami di WhatsApp dan kami akan mencarikan jalan.",
   "checkout.shipTo": "Kirim ke {country}",
   "checkout.step.confirmation": "Konfirmasi",

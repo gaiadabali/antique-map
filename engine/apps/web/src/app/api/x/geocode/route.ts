@@ -3,6 +3,7 @@
  * file only hands the handler (`server/shop/checkout/geocode`) the request's pieces; the body is
  * read once, as text, so a bad payload is refused without ever throwing.
  */
+import { clientAddress } from '../../../../security/rate-limit'
 import { geocode } from '../../../../server/shop/checkout/geocode'
 
 export async function POST(request: Request): Promise<Response> {
@@ -21,7 +22,8 @@ export async function POST(request: Request): Promise<Response> {
   const answer = await geocode(
     { lat: input.lat, lng: input.lng, link: input.link },
     {
-      address: request.headers.get('x-forwarded-for'),
+      // The address nginx appended, never the whole header: a client chooses its leading entries.
+      address: clientAddress(request.headers),
       // `||`, not `??`: a blank key in a host's .env means no key (no outbound call).
       serverKey: process.env.GOOGLE_MAPS_SERVER_KEY || null,
     },
