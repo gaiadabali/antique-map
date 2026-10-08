@@ -3,7 +3,7 @@
  * that never echoes the id, the service's field refusals as 422 lexicon keys, the shapes the
  * route itself owns (415 for a non-JSON body — a renamed `.exe` posted as multipart included —
  * and 413 for an oversize one, each without calling the service), a repeated idempotency key
- * answered once, and the eleventh post in a minute refused with `Retry-After`.
+ * answered once, and the sixth post in an hour refused with `Retry-After`.
  */
 import { describe, expect, it, vi } from 'vitest'
 
@@ -261,16 +261,16 @@ describe('the service’s answers, mapped', () => {
     expect(deps.created.at(-1)?.items).toEqual([1, 2])
   })
 
-  it('the eleventh post in a minute from one address is 429 with Retry-After', async () => {
+  it('the sixth post in an hour from one address is 429 with Retry-After', async () => {
     const limiter = new PostLimiter()
     const deps = fakeDeps({ allow: (ipKey) => limiter.allow(ipKey) })
     const statuses: number[] = []
     let last: Response | null = null
-    for (let n = 0; n < 11; n += 1) {
+    for (let n = 0; n < 6; n += 1) {
       last = await run(deps, post({ ...SELL, input: { ...SELL.input, name: `Visitor ${n}` } }))
       statuses.push(last.status)
     }
-    expect(statuses).toEqual([...Array<number>(10).fill(201), 429])
-    expect(last?.headers.get('retry-after')).toBe('60')
+    expect(statuses).toEqual([...Array<number>(5).fill(201), 429])
+    expect(last?.headers.get('retry-after')).toBe('3600')
   })
 })

@@ -3,14 +3,15 @@
  * link into a pin, checks the pin is a real coordinate inside Indonesia (`@engine/cms/shop/orders`'s
  * `isValidPin` + the Indonesia bounds), and — only when `GOOGLE_MAPS_SERVER_KEY` is set — asks
  * Google for a display address. Without the key the pin is answered with `address: null` and
- * nothing leaves the machine. Rate-limited per address the way `/api/x/collect` is.
+ * nothing leaves the machine. Rate-limited to 30 a minute per address (SECURITY.md §2.10), on its
+ * own limiter: a Google bill is at stake, which the beacon's looser bucket does not protect.
  *
  * This file is the handler; `route.ts` only hands it the request's pieces, so it is unit-tested
  * without a server (`app/api/x/geocode/geocode.test.ts`).
  */
 import { isInIndonesia, isValidPin, type Pin } from '@engine/cms/shop/orders'
 
-import { rateLimiter } from '../../analytics/rate'
+import { limiters } from '../../../security/rate-limit'
 
 export type GeocodeInput = {
   readonly lat?: unknown
@@ -28,7 +29,7 @@ export type GeocodeAnswer =
   | { readonly ok: false; readonly status: 400 | 429; readonly message: string }
 
 export type GeocodeDeps = {
-  /** The caller's address, for the rate limit (`x-forwarded-for`). */
+  /** The caller's address, for the rate limit: the one nginx appended to `x-forwarded-for`. */
   readonly address: string | null
   /** `GOOGLE_MAPS_SERVER_KEY`; absent in dev and CI, where nothing is fetched. */
   readonly serverKey: string | null
@@ -83,9 +84,51 @@ export function parseMapsLink(input: string): Pin | null {
   return null
 }
 
-async function defaultFetchJson(url: string) {
-  const response = await fetch(url)
-  return { status: response.status, body: (await response.json().catch(() => null)) as never }
+/** Google answers a reverse geocode in a few KB; anything near this is not Google's answer. */
+export const MAX_GEOCODE_BYTES = 64 * 1024
+/** The upstream call's whole budget (SECURITY.md S3). */
+export const GEOCODE_TIMEOUT_MS = 5_000
+
+/** The body as text, never buffered past `max` bytes; `null` when it is longer. */
+async function readCapped(response: Response, max: number): Promise<string | null> {
+  const declared = Number(response.headers.get('content-length'))
+  if (Number.isFinite(declared) && declared > max) return null
+  if (response.body === null) return ''
+  const reader = response.body.getReader()
+  const chunks: Uint8Array[] = []
+  let size = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    size += value.byteLength
+    if (size > max) {
+      await reader.cancel().catch(() => undefined)
+      return null
+    }
+    chunks.push(value)
+  }
+  return Buffer.concat(chunks).toString('utf8')
+}
+
+/**
+ * The real upstream call (SECURITY.md S3): a timeout, no redirect followed, a capped body. A
+ * redirect, an overlong answer or a timeout is a refusal to the caller, which shows no address.
+ */
+export async function fetchGeocodeJson(
+  url: string,
+  fetcher: typeof fetch = fetch,
+): Promise<{ status: number; body: { results?: { formatted_address?: unknown }[] } | null }> {
+  const response = await fetcher(url, {
+    redirect: 'error',
+    signal: AbortSignal.timeout(GEOCODE_TIMEOUT_MS),
+  })
+  const text = await readCapped(response, MAX_GEOCODE_BYTES)
+  if (text === null) return { status: response.status, body: null }
+  try {
+    return { status: response.status, body: JSON.parse(text) as never }
+  } catch {
+    return { status: response.status, body: null }
+  }
 }
 
 /** The display address Google holds for the pin, or `null` — never an error to the buyer. */
@@ -109,8 +152,7 @@ async function reverseGeocode(
 
 /** The geocode answer for one request. Never throws on visitor input. */
 export async function geocode(input: GeocodeInput, deps: GeocodeDeps): Promise<GeocodeAnswer> {
-  const address = deps.address ?? 'unknown'
-  if (!rateLimiter.allowAddress(address)) {
+  if (limiters.geocode.hit(deps.address ?? 'unknown') > 0) {
     return { ok: false, status: 429, message: 'Too many requests — try again in a moment.' }
   }
 
@@ -143,6 +185,6 @@ export async function geocode(input: GeocodeInput, deps: GeocodeDeps): Promise<G
   const display =
     serverKey === null
       ? null
-      : await reverseGeocode(pin, serverKey, deps.fetchJson ?? defaultFetchJson)
+      : await reverseGeocode(pin, serverKey, deps.fetchJson ?? fetchGeocodeJson)
   return { ok: true, lat: pin.lat, lng: pin.lng, address: display }
 }

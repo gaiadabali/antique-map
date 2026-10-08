@@ -1,11 +1,13 @@
 /**
- * The lead forms' per-address limit (SECURITY.md §2.10): 10 posts a minute from one address, in
+ * The lead forms' per-address limit (SECURITY.md §2.10): 5 posts an hour from one address, in
  * this process's memory — per instance, reset on restart, like `../analytics/rate.ts` (the pattern).
- * A fixed one-minute window per key; entries older than a window are swept as the map grows.
+ * A fixed one-hour window per key; entries older than a window are swept as the map grows.
  */
 
-export const LEAD_POSTS_PER_MINUTE = 10
-const WINDOW_MS = 60_000
+export const LEAD_POSTS_PER_HOUR = 5
+/** The window, in seconds: what a refused post is told to wait at most (`Retry-After`). */
+export const LEAD_WINDOW_SECONDS = 3600
+const WINDOW_MS = LEAD_WINDOW_SECONDS * 1000
 const SWEEP_AT = 5_000
 
 type Window = { start: number; count: number }
@@ -13,9 +15,9 @@ type Window = { start: number; count: number }
 export class PostLimiter {
   private readonly windows = new Map<string, Window>()
 
-  constructor(private readonly limit: number = LEAD_POSTS_PER_MINUTE) {}
+  constructor(private readonly limit: number = LEAD_POSTS_PER_HOUR) {}
 
-  /** Counts this post and answers whether it fits in the key's current minute. */
+  /** Counts this post and answers whether it fits in the key's current hour. */
   allow(key: string, now: number = Date.now()): boolean {
     if (this.windows.size >= SWEEP_AT) this.sweep(now)
     const window = this.windows.get(key)

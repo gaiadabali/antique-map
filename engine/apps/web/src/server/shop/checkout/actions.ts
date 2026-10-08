@@ -14,7 +14,7 @@
  */
 import 'server-only'
 
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import { cms } from '@engine/cms/instance'
@@ -23,6 +23,7 @@ import { BAG_COOKIE_NAME, bagCookieKeyFromEnv, parseBag } from '@engine/cms/shop
 
 import { CODE_COOKIE_NAME, parseCodeCookie } from '../bag/code-cookie'
 import { displayFor, type BagDisplay } from '../bag/display'
+import { checkoutWait } from '../../../security/guard'
 import { siteHref } from '../../../shell/site'
 import { checkoutText, type CheckoutText } from '../../../sites/shop/checkout/copy'
 import { valuesFromForm, type CheckoutFormValues } from './form-values'
@@ -78,6 +79,17 @@ export async function submitOrderAction(_prev: unknown, formData: FormData): Pro
       lng: empty(formData.get('lng')),
     },
     giftNote: giftNote === '' ? null : giftNote,
+  }
+
+  // F-02: an order is a database write and a held stock: ten submits an hour per address. Off nginx
+  // (a workstation, CI) there is no address to count, so nothing is.
+  if (checkoutWait(await headers()) > 0) {
+    return {
+      ok: false,
+      message: text('checkout.problem.rate-limited'),
+      fields: [],
+      values: valuesFromForm(formData),
+    }
   }
 
   const rawExpected = empty(formData.get('expectedTotalIdr'))

@@ -12,3 +12,7 @@ ef7264343361ad830463c207a605eade7336e359:engine/packages/view-models/src/fixture
 ef7264343361ad830463c207a605eade7336e359:engine/packages/view-models/src/fixtures/order.ts:generic-api-key:161
 8d10ac6cb69ef0df44b2e435f3d1a6658d527221:engine/packages/view-models/src/fixtures/order-lookup.ts:generic-api-key:32
 8d10ac6cb69ef0df44b2e435f3d1a6658d527221:engine/packages/view-models/src/fixtures/pay.ts:generic-api-key:54
+# 8.1 Turnstile adapter test: the made-up test secret 'secret-0123456789abcdef'.
+2233a43b42f902cff13e2f50af360961629b90a0:engine/apps/web/src/server/chat/adapters/turnstile.test.ts:generic-api-key:27
+# Ops check: curl -u reads the Mailpit password from a host file at run time; no secret in the repo.
+9663d96624e71e496925d733d4aa5921d644b02e:scripts/ops/test/steps-checks.sh:curl-auth-user:30
