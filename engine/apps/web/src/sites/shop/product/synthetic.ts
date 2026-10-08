@@ -1,6 +1,6 @@
 /**
  * A synthetic product image's label (10.6): anything but a photograph is labelled wherever it is
- * shown (CONTENT-MODEL.md �5). The words are the lexicon's `image.synthetic.<label>` (the visible
+ * shown (CONTENT-MODEL.md §5). The words are the lexicon's `image.synthetic.<label>` (the visible
  * label) and `image.syntheticAlt.<label>` (the alt's prefix, never stored in the media's own alt).
  */
 import { renderedAlt } from '@engine/media/contract'

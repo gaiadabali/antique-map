@@ -29,14 +29,16 @@ import { cacheTags, catalogueTag, productPriceTag, productTag } from '@engine/ca
 import { cms } from '@engine/cms/instance'
 import type { SiteLocale } from '@engine/config/sites'
 
-import { derivativeUrlOf, PUBLIC_IMAGE_SELECT } from '../../media/public-image'
+import { PUBLIC_IMAGE_SELECT } from '../../media/public-image'
+import { imageOf } from '../catalogue/images'
+import type { CatalogueImage } from '../catalogue/view-models'
 
 export type FeaturedProduct = {
   readonly name: string
   readonly slug: string
   readonly price: number
-  readonly imageUrl: string | null
-  readonly imageAlt: string
+  /** The lead image as the catalogue shows it (derivative, srcSet, synthetic label), or null. */
+  readonly image: CatalogueImage | null
 }
 
 const LIMIT = 4
@@ -57,7 +59,7 @@ export async function loadFeaturedProducts(
       name: true,
       slug: true,
       price: true,
-      images: { image: PUBLIC_IMAGE_SELECT },
+      images: { image: { ...PUBLIC_IMAGE_SELECT, provenance: true } },
     },
   })
   cacheTags([
@@ -71,21 +73,15 @@ export async function loadFeaturedProducts(
   ])
   return found.docs.map((product) => {
     // The `select` projection types `images` as `{}`; shape it here once, defensively.
-    const images = product.images as readonly { image?: Record<string, unknown> }[] | undefined
-    const media = images?.[0]?.image
+    const images = product.images as readonly { image?: unknown }[] | undefined
     return {
       name: typeof product.name === 'string' ? product.name : '',
       slug: typeof product.slug === 'string' ? product.slug : '',
       price: typeof product.price === 'number' ? product.price : 0,
-      // The public derivative once the media pipeline has made it (`../../media/public-image`);
-      // never Payload's staff-only file route, which a not-ready record shows no image instead of.
-      imageUrl: media ? derivativeUrlOf(media) : null,
-      imageAlt:
-        typeof media?.alt === 'string' && media.alt
-          ? media.alt
-          : typeof product.name === 'string'
-            ? product.name
-            : '',
+      // The catalogue's own image reading (`../catalogue/images`): the public derivative once the
+      // media pipeline has made it, its srcSet ladder and its synthetic label (10.6) — never
+      // Payload's staff-only file route, which a not-ready record shows no image instead of.
+      image: imageOf(images?.[0]?.image),
     }
   })
 }

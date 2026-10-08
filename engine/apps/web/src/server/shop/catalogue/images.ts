@@ -1,5 +1,5 @@
 /**
- * The shop's product images (6-followup-5, 10.6): a media record as a page shows it � the public
+ * The shop's product images (6-followup-5, 10.6): a media record as a page shows it — the public
  * derivative, its alt, and the synthetic label its provenance carries.
  */
 import {
