@@ -64,6 +64,17 @@ for (const role of ROLES) {
       await page.screenshot({ path: shot(`sidebar-${role}-${language}-1280`) })
 
       const store = role === 'storeA' ? fx.stores.a.id : null
+      if (role === 'storeA') {
+        // Store staff land on their order panel, not the dashboard (10.8.c, `StoreHomeRedirect`),
+        // inside Payload's frame (the sidebar above was read there).
+        await page.goto('/admin')
+        await expect(page).toHaveURL(/\/admin\/orders$/)
+        await expect(page.locator('h1').first()).toHaveText(
+          language === 'en' ? 'Your orders' : 'Pesanan Anda',
+        )
+        await record(`dashboard.${role}.${language}`, { landing: '/admin/orders', groups })
+        continue
+      }
       const ordersSql = count(
         `SELECT count(*) FROM orders WHERE ${ACTING}${store ? ` AND store_id = ${store}` : ''}`,
       )

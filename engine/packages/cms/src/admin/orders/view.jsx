@@ -20,6 +20,7 @@ import { OwnerDetail, OwnerFilterBar, OwnerList } from './owner-panel'
 import { L, Notice, str } from './shared'
 import { nextBackward, nextForward, nextStep } from './status-help'
 import { StoreDetail, StoreQueue } from './store-panel'
+import { AdminPage } from '../page'
 
 function storeIdOf(order) {
   return typeof order.store === 'number' ? order.store : (order.store?.id ?? null)
@@ -85,7 +86,12 @@ function buildOwnerStep({ order, role, searchParams }) {
   }
 }
 
+/** The view inside Payload's page frame (`../page.jsx`): the sidebar stays on every screen. */
 export async function OrdersPanelView(props) {
+  return <AdminPage view={props}>{await OrdersPanelViewBody(props)}</AdminPage>
+}
+
+async function OrdersPanelViewBody(props) {
   const req = props.initPageResult?.req
   const language = props.i18n?.language === 'id' ? 'id' : 'en'
   const role = roleOf(req?.user)

@@ -8,8 +8,14 @@ import { roleOf } from '../../collections/users/roles'
 import { Notice } from '../leads/shared'
 import { StockImportClient } from './client'
 import { L } from './copy'
+import { AdminPage } from '../page'
 
+/** The view inside Payload's page frame (`../page.jsx`): the sidebar stays on every screen. */
 export async function StockImportView(props) {
+  return <AdminPage view={props}>{await StockImportViewBody(props)}</AdminPage>
+}
+
+async function StockImportViewBody(props) {
   const req = props.initPageResult?.req
   const language = props.i18n?.language === 'id' ? 'id' : 'en'
   if (roleOf(req?.user) !== 'owner') {

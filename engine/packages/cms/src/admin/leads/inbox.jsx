@@ -5,14 +5,24 @@
  * data; access still refuses the query itself (`loadInboxLeads` reads with `overrideAccess: false`,
  * so this check is belt and braces, not the only guard). `.jsx`: see `./shared.jsx`'s header.
  */
-import { LEAD_KIND_LABELS, LEAD_KINDS, LEAD_STATUS_LABELS, LEAD_STATUSES } from '../../collections/leads/kinds'
+import {
+  LEAD_KIND_LABELS,
+  LEAD_KINDS,
+  LEAD_STATUS_LABELS,
+  LEAD_STATUSES,
+} from '../../collections/leads/kinds'
 import { roleOf } from '../../collections/users/roles'
 import { firstLine, loadInboxLeads, loadStatusCounts, timeAgo } from './data'
 import { Card, L, Notice, QuietLink, str } from './shared'
+import { AdminPage } from '../page'
 
 function FilterBar({ filter, counts, language }) {
   return (
-    <form method="get" action="/admin/leads" style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+    <form
+      method="get"
+      action="/admin/leads"
+      style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}
+    >
       <label>
         {L('filterSite', language)}
         <select name="site" defaultValue={filter.site} style={{ display: 'block' }}>
@@ -54,7 +64,10 @@ function Row({ lead, language }) {
   const channel = lead.payload?.preferredChannel || '—'
   const message = firstLine(lead.payload?.message)
   return (
-    <a href={`/admin/collections/leads/${lead.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <a
+      href={`/admin/collections/leads/${lead.id}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <strong>
@@ -67,7 +80,9 @@ function Row({ lead, language }) {
         </div>
         {message && <div style={{ fontSize: 14, marginTop: 4 }}>{message}</div>}
         {!message && (
-          <div style={{ fontSize: 14, marginTop: 4, fontStyle: 'italic' }}>{L('noMessage', language)}</div>
+          <div style={{ fontSize: 14, marginTop: 4, fontStyle: 'italic' }}>
+            {L('noMessage', language)}
+          </div>
         )}
       </Card>
     </a>
@@ -88,16 +103,29 @@ function Pager({ page, totalPages, searchParams, language }) {
   }
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
-      {page > 1 ? <QuietLink href={query(page - 1)}>{L('pagePrev', language)}</QuietLink> : <span />}
+      {page > 1 ? (
+        <QuietLink href={query(page - 1)}>{L('pagePrev', language)}</QuietLink>
+      ) : (
+        <span />
+      )}
       <span style={{ fontSize: 14 }}>
         {L('pageOf', language)} {page} / {totalPages}
       </span>
-      {page < totalPages ? <QuietLink href={query(page + 1)}>{L('pageNext', language)}</QuietLink> : <span />}
+      {page < totalPages ? (
+        <QuietLink href={query(page + 1)}>{L('pageNext', language)}</QuietLink>
+      ) : (
+        <span />
+      )}
     </div>
   )
 }
 
+/** The view inside Payload's page frame (`../page.jsx`): the sidebar stays on every screen. */
 export async function LeadsInboxView(props) {
+  return <AdminPage view={props}>{await LeadsInboxViewBody(props)}</AdminPage>
+}
+
+async function LeadsInboxViewBody(props) {
   const req = props.initPageResult?.req
   const language = props.i18n?.language === 'id' ? 'id' : 'en'
   const role = roleOf(req?.user)
