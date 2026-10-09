@@ -89,6 +89,11 @@ jobs:
           key="$(openssl rand -base64 32)"
           echo "::add-mask::$key"
           echo "ORDER_LINK_KEY=$key" >> "$GITHUB_ENV"
+          # The bag cookie's signing secret (32+ chars; every page that reads the bag 500s
+          # without it: docs/gates/phase-6-checks.md Finding 3).
+          bag="$(openssl rand -base64 32)"
+          echo "::add-mask::$bag"
+          echo "BAG_COOKIE_KEY=$bag" >> "$GITHUB_ENV"
 
       - name: unaccent and pg_trgm in the e2e database
         run: |
@@ -145,7 +150,10 @@ jobs:
         run: >-
           bash .github/scripts/start-server.sh web "$RUNNER_TEMP/artifact/web" "$E2E_PORT"
           "indies_$DB_SUFFIX" "ORDER_LINK_KEY=$ORDER_LINK_KEY" SMTP_HOST=127.0.0.1 SMTP_PORT=1025 \
-          SMTP_FROM_ADDRESS=no-reply@example.test
+          SMTP_FROM_ADDRESS=no-reply@example.test MIDTRANS_MODE=simulate \
+          "BAG_COOKIE_KEY=$BAG_COOKIE_KEY" CRON_SECRET=dev-only-not-a-secret \
+          TURNSTILE_SITE_KEY=1x00000000000000000000AA \
+          TURNSTILE_SECRET=1x0000000000000000000000000000000AA
 
       - name: Playwright browsers
         run: pnpm exec playwright install --with-deps chromium

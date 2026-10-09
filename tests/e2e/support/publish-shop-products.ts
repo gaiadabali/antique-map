@@ -32,18 +32,37 @@ async function main(): Promise<void> {
 
   const drafts = await payload.find({
     collection: 'products',
-    where: { _status: { equals: 'draft' } },
+    where: { and: [{ _status: { equals: 'draft' } }, { sku: { like: 'SEED-SHOP-' } }] },
     draft: true,
     limit: 500,
     depth: 0,
     overrideAccess: true,
   })
   let published = 0
+  let repriced = false
   for (const product of drafts.docs) {
+    // The mock variants all cost what their product does; the product-page spec needs one product
+    // whose variants differ in price (the picker changes the price), so the first product with two
+    // or more variants gets its second variant dearer. Test data shaping, CI only.
+    const variants = Array.isArray(product.variants)
+      ? (product.variants as { price?: number | null }[])
+      : []
+    const reprice = !repriced && variants.length >= 2 && typeof product.price === 'number'
+    if (reprice) {
+      repriced = true
+      variants[1] = {
+        ...variants[1],
+        price: (variants[1]?.price ?? (product.price as number)) + 100_000,
+      }
+    }
     await payload.update({
       collection: 'products',
       id: product.id,
-      data: { images: [{ image: media.id }], _status: 'published' },
+      data: {
+        images: [{ image: media.id }],
+        ...(reprice ? { variants } : {}),
+        _status: 'published',
+      },
       overrideAccess: true,
       context: batch.context(),
     })
