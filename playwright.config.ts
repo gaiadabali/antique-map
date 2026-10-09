@@ -162,6 +162,8 @@ export default defineConfig({
   // Signs the staff accounts in once; sign-in is limited per address (tests/e2e/support/sessions.ts).
   globalSetup: './tests/e2e/support/global-setup.ts',
   fullyParallel: true,
+  // CI sets E2E_WORKERS to the runner's cores (e2e.yml); Playwright's default is half of them.
+  workers: process.env.E2E_WORKERS ? Number(process.env.E2E_WORKERS) : undefined,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
