@@ -1,0 +1,137 @@
+/* The stores page in the hero's hand: full breakout width, quiet area links, square raised cards.
+   390 px first; tokens only (DESIGN-SYSTEM.md). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding: var(--space-4) var(--gutter) var(--space-7);
+}
+
+/* On a phone one row that scrolls inside itself, never the page; it wraps from 768 px up. */
+.areas {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-6);
+  margin-block: var(--space-6) var(--space-7);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-block: var(--rule-hair) solid var(--color-border);
+}
+
+.areas::-webkit-scrollbar {
+  display: none;
+}
+
+.areaLink {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  min-height: 44px;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  text-underline-offset: 6px;
+  text-decoration-thickness: var(--rule-hair);
+  white-space: nowrap;
+}
+
+.areaLink:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.area {
+  scroll-margin-block-start: var(--space-7);
+  margin-block-end: var(--space-7);
+}
+
+.area > div:first-child {
+  margin-block-end: var(--space-5);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.name {
+  margin: 0;
+  font: var(--text-card-title);
+  color: var(--color-text);
+}
+
+.address,
+.hours {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.hours {
+  white-space: pre-line;
+}
+
+.hoursLabel {
+  display: block;
+  color: var(--color-text);
+}
+
+.map {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block-start: auto;
+}
+
+.empty {
+  margin-block: var(--space-7);
+  font: var(--text-body);
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding-block-end: var(--space-9);
+  }
+
+  /* Room enough to show every area: the row wraps rather than hiding the last ones. */
+  .areas {
+    flex-wrap: wrap;
+    row-gap: 0;
+    overflow-x: visible;
+  }
+
+  .area {
+    margin-block-end: var(--space-9);
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
