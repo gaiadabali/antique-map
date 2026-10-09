@@ -29,7 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 2/6 | 0 | `███░░░░░░░`  33% |
-| **All** | 13 phases | | | **57/65** | **222/243** | **8** | `█████████░`  91% |
+| **14** The gallery's luxury pass | UI | 12 | · not started | 0/8 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 14 phases | | | **57/73** | **222/260** | **8** | `█████████░`  85% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -945,6 +946,79 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 12.1_
   - [ ] 13.3.a released to staging; the header's and footer's links to both pages answer 200
   - [ ] 13.3.b **Check:** `docs/gates/luxury-pass.md` §Phase 13 records both pages at 390 and 1280 in both languages, axe clean, and the stores page's HTML free of codes, WhatsApp numbers and coordinates.
+
+---
+
+## Phase 14 — The gallery's luxury pass · UI · needs 12 · ~2d
+
+**Goal:** every page of Indies Gallery carries phase 12's language in the gallery's own hand (user request, 2026-10-09: "upgrade the gallery's pages, so we have a proper UI too"): the sheet whole on its mat, never cropped; the eyebrow marked by a hairline (the shop keeps its scale bar); museum captions with the stock-number tag; balanced serif heads; proof points under hairlines; generous space — tokens and shared components only (DESIGN-SYSTEM.md §Built to be restyled). The home's copy returns to the owner's answers on the way: no institution named (G10), the reply promise "the same working day, Singapore time" (G9), the founding year (G13).
+**Done when:** on staging, every gallery page (home, browse, a type page, search, item, makers, a maker, places, a place, sell to us, contact, a story page, not-found) shows the language at 390 px and 1280 px in both languages with axe clean and no sideways scroll; no price and no institution appear anywhere; facets, sort, paging, zoom and both enquiry forms still work; the shop's pages look as they did.
+**Waves:** W1 — 14.1, 14.2 · W2 — 14.3, 14.4, 14.5, 14.6, 14.7 · W3 — 14.8
+
+- [ ] **14.1 The gallery's hand in the shared pieces** · needs: phase 12
+  - **Lane** DSG · **Agent** orchestrator · **Wave** W1
+  - **Owns** `engine/apps/web/src/shared/ui/{mat,eyebrow,pagination,stock-tag}/**`, `engine/apps/web/src/shared/ui/index.ts`, `engine/apps/web/src/shared/style-guide/**`, `engine/apps/web/src/shared/styles/tokens/semantic.css`, `engine/apps/web/src/sites/gallery/tokens/brand.css`, `engine/apps/web/src/sites/shop/tokens/brand.css`, `engine/apps/web/src/sites/gallery/browse/{work-card.tsx,card.module.css}`
+  - **Read** DESIGN-SYSTEM.md §1, §5, §7; DESIGN.md §The luxury pass
+  - _Requirements: 12.1_
+  - [ ] 14.1.a the eyebrow's mark drawn from tokens — the shop's scale bar unchanged, the gallery's one hairline rule; `Mat fit="contain"` for originals (whole, never cropped, on the mat's ground); `StockTag` for a stock number; a square, quiet `Pagination` variant; each on the style guide
+  - [ ] 14.1.b the work card on a compact contained `Mat` with a museum caption — serif title, maker and date, dimensions, the stock tag and the one status line, never a price
+  - [ ] 14.1.c **Check:** the style guide shows each piece at 390 and 1280; the shop's home and browse look as on `aa7469b1`; lint, tokens, file size and the shared tests pass.
+
+- [ ] **14.2 The home's hero** · needs: phase 12
+  - **Lane** WEB · **Agent** orchestrator · **Wave** W1
+  - **Owns** `engine/apps/web/src/sites/gallery/home/{hero.tsx,hero.module.css,gallery-home.tsx}`
+  - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G6, G7, G10, G13), 12.1's hero
+  - _Requirements: 12.1_
+  - [ ] 14.2.a the lead work — the newest available work with a published image — whole in a `Mat` with a museum caption (title, maker and date, the stock tag, *Price on request*) in place of the film's empty placeholder; the headline balanced under the marked eyebrow; the owner's facts as `ProofPoints` (since 2001, over 9,500 antiques, a certificate with every original) in place of the three trust cards, none naming an institution; the hero's words under `home.gallery.hero*` and `home.gallery.{eyebrow,title,lede}`, both languages
+  - [ ] 14.2.b **Check:** the home's first screen on a production build at 390, 1280 and 1995 px in both languages: the sheet loads at high priority and uncropped, axe clean, no sideways scroll.
+
+- [ ] **14.3 The home below the hero** · needs: 14.1, 14.2
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/home/**` (not `hero.tsx` or `hero.module.css`), `engine/apps/web/src/server/gallery/home/**`
+  - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G3, G6, G7, G9, G10, G13), DESIGN.md §The luxury pass, 12.3's shop home
+  - _Requirements: 12.1_
+  - [ ] 14.3.a the bands on `SectionHead`, `Mat`, `ProofPoints` and the work card: about (no institution named), the collection, the curator, **recently placed — three real sold works, "Sold" and nothing more** (a public, projected, cached read), live with the collection, makers and places as square links, the enquiry band with the same-working-day promise; the hard-coded stand-ins and the institution copy gone; words under `home.gallery.*` (not 14.2's), both languages
+  - [ ] 14.3.b **Check:** the home at 390 and 1280 on a production build with the real catalogue, both languages, axe clean, no sideways scroll; the HTML names no institution and no price.
+
+- [ ] **14.4 Browse and search** · needs: 14.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/browse/**` (not 14.1's files), `engine/apps/web/src/sites/gallery/search/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
+  - **Read** EXPERIENCE-GALLERY.md §4, DESIGN-SYSTEM.md §5, 12.4's shop browse
+  - _Requirements: 12.1_
+  - [ ] 14.4.a the listing at full width under a `SectionHead` with its count; the facet column quiet — hairline groups, a long list (makers, places) shows its first eight with "All n" opening the rest, every option still a real link; sort as underlined text tabs; applied filters as square chips; the quiet pagination; the phone's filter sheet in the same hand; search's form, suggestion and empty state alike; words under `browse.*`, `listing.*`, `search.*`, both languages
+  - [ ] 14.4.b **Check:** browse, `/antique-maps`, a filtered page, `/search?q=batavia` and a search with no result at 390 and 1280 in both languages, axe clean, no sideways scroll; facets, sort, paging and "Include sold" still work; the facet column no longer sets the page's height.
+
+- [ ] **14.5 The item page** · needs: 14.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
+  - **Read** EXPERIENCE-GALLERY.md §5–§6, §8, 12.5's shop product page
+  - _Requirements: 12.1_
+  - [ ] 14.5.a two columns on a desktop: the sheet whole in a `Mat`, other images as compact-mat thumbnails, Zoom a quiet button under the mat; beside it the marked eyebrow (type · place), the balanced serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised — the status line, WhatsApp first, email, the reply promise (G9); the record under a section head in hairline rows; proof points (a certificate, originals only, the lifetime guarantee); one column on a phone; words under `item.*`, both languages
+  - [ ] 14.5.b **Check:** an available work, a sold one and one with several images at 390 and 1280 in both languages, axe clean; zoom opens and draws tiles; Ask carries the stock number; no price in the HTML.
+
+- [ ] **14.6 Makers, places, pages and not-found** · needs: 14.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
+  - **Read** EXPERIENCE-GALLERY.md §7, §9
+  - _Requirements: 12.1_
+  - [ ] 14.6.a the makers index an A–Z index in columns (letter heads, names with life dates and counts, hairlines — no boxed cards); a maker under a `SectionHead` with life dates, the biography at the reading measure, the works as work cards; the places index as island groups in headed columns with counts; a place alike; CMS pages and stories under a `SectionHead` at the reading measure; not-found invites to search and the collection; words under `makerPage.*`, `placePage.*`, `cmsPage.*`, `notFound.*`, both languages
+  - [ ] 14.6.b **Check:** makers, a maker, places, a place, a story page and not-found at 390 and 1280 in both languages, axe clean, no sideways scroll; the makers index at 1280 fits in a few screens.
+
+- [ ] **14.7 Sell to us and contact** · needs: 14.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/contact/**` (markup and CSS only), `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`
+  - **Read** EXPERIENCE-GALLERY.md §8, 12.7's partnership page
+  - _Requirements: 12.1_
+  - [ ] 14.7.a each page opens on a `SectionHead`; how selling works as numbered steps; WhatsApp first and email beside the reply promise (G9); the form in a raised panel in the partnership page's hand; words under `sellToUs.*`, `contact.*`, `contactPage.*`, `contactForm.*`, both languages
+  - [ ] 14.7.b **Check:** both pages at 390 and 1280 in both languages, axe clean; an empty Send is refused with its messages; the form's tests pass.
+
+- [ ] **14.8 The pass on staging** · needs: 14.3, 14.4, 14.5, 14.6, 14.7
+  - **Lane** QA · **Agent** qa (Sonnet), orchestrator for staging · **Wave** W3
+  - **Owns** `docs/gates/gallery-luxury.md`
+  - **Read** this phase's **Done when**
+  - _Requirements: 12.1_
+  - [ ] 14.8.a released to staging; every gallery page at 390 and 1280 in both languages, screenshots recorded
+  - [ ] 14.8.b **Check:** `docs/gates/gallery-luxury.md` shows each page with axe clean, no sideways scroll, no broken image, no price and no institution named, and the shop's home, browse and product pages unchanged.
 
 ---
 
