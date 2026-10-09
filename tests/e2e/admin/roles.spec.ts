@@ -13,6 +13,11 @@ import { choose, fieldError, rest, setLanguage, sidebar, signIn, toast, widgetCo
 import { record, shot } from './evidence'
 import { fixtures, sql, type Fixtures } from './local.mjs'
 
+// One worker, in order: each role's cases switch that one account's admin language (en, then id), so
+// two cases of one role side by side flip it under each other (CI run 37985600912: the editor's and
+// the store user's invalid-save cases flaky at 4 workers).
+test.describe.configure({ mode: 'default' })
+
 // The cases are independent of each other (a failing one does not skip the rest). The config runs
 // this file apart from the other admin files: they share its accounts and the counts it reads.
 let fx: Fixtures
