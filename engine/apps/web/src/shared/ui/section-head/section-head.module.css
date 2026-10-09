@@ -1,0 +1,56 @@
+/* Every value is a token — no raw colour, no font-family. */
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: var(--space-6);
+  margin-block-end: var(--space-7);
+}
+
+.text {
+  min-width: 0;
+}
+
+/* Two selectors deep: the shell's `.site-main h1` sets its own margin. */
+.head .titlePage,
+.head .titleSection {
+  margin: var(--space-5) 0 0;
+  text-wrap: balance;
+}
+
+.head .titlePage {
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+  max-inline-size: 18ch;
+}
+
+.head .titleSection {
+  font: var(--text-h2);
+  max-inline-size: 26ch;
+}
+
+.text > :first-child {
+  margin-block-start: 0;
+}
+
+.lede {
+  margin: var(--space-4) 0 0;
+  max-inline-size: 36rem;
+  font: var(--text-body-large);
+  color: var(--color-text-muted);
+}
+
+.action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+@media (max-width: 47.5rem) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-4);
+    margin-block-end: var(--space-6);
+  }
+}

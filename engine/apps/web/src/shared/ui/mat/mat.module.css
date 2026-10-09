@@ -1,0 +1,75 @@
+/* A framer's mat. Every value is a token — no raw colour, no font-family. */
+
+.mat {
+  display: block;
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+}
+
+.default {
+  padding: var(--space-6) var(--space-6) var(--space-8);
+}
+
+.compact {
+  padding: var(--space-3) var(--space-3) var(--space-5);
+}
+
+.window {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface-deep);
+  outline: var(--rule-hair) solid var(--color-border);
+  outline-offset: var(--space-2);
+}
+
+.compact .window {
+  outline-offset: var(--space-1);
+}
+
+.window > img,
+.window > picture,
+.window > picture > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.window img {
+  transition: transform var(--dur-loop) var(--ease);
+}
+
+:global(a):hover .window img {
+  transform: scale(1.03);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .window img {
+    transition: none;
+  }
+
+  :global(a):hover .window img {
+    transform: none;
+  }
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-5);
+  text-align: center;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 47.5rem) {
+  .default {
+    padding: var(--space-4) var(--space-4) var(--space-6);
+  }
+
+  .default .window {
+    outline-offset: var(--space-1);
+  }
+}

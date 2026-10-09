@@ -74,3 +74,7 @@
 .field {
   min-width: 260px;
 }
+
+.matSample {
+  inline-size: min(100%, 16rem);
+}

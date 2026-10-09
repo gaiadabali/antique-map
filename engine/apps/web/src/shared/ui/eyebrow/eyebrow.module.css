@@ -6,3 +6,19 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
+
+/* The scale bar beside the words; a line too long for both drops the words below the bar. */
+.marked {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.scale {
+  flex: none;
+  inline-size: var(--space-8);
+  block-size: calc(var(--space-1) * 1.5);
+  border: var(--rule-hair) solid var(--color-accent);
+  background: repeating-linear-gradient(90deg, var(--color-accent) 0 25%, transparent 25% 50%);
+}
