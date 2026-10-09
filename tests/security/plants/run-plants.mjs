@@ -37,7 +37,7 @@ const PLANTS = {
   },
   xss: {
     what: 'the leads inbox renders a visitor’s message as HTML (dangerouslySetInnerHTML)',
-    file: 'engine/packages/cms/src/admin/leads/inbox.jsx',
+    file: 'engine/packages/cms/src/admin/leads/inbox-body.jsx',
     find: /\{message && <div style=\{\{ fontSize: 14, marginTop: 4 \}\}>\{message\}<\/div>\}/,
     replace:
       '{message && <div style={{ fontSize: 14, marginTop: 4 }} dangerouslySetInnerHTML={{ __html: message }} />}',

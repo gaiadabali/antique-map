@@ -13,7 +13,7 @@ import {
   type StaffStack,
 } from '../../collections/users/staff.test-support'
 
-import { LeadsInboxView } from './inbox'
+import { LeadsInboxViewBody } from './inbox-body'
 
 /** The row ids an inbox render shows, in order — reading the markup, not re-querying. */
 function rowIds(element: unknown): number[] {
@@ -31,7 +31,7 @@ function rowIds(element: unknown): number[] {
 }
 
 const view = (payload: unknown, user: unknown, searchParams: Record<string, string> = {}) =>
-  LeadsInboxView({
+  LeadsInboxViewBody({
     payload,
     i18n: { language: 'en' },
     searchParams,

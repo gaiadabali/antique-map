@@ -12,6 +12,7 @@
  *   update, a rollback, `disableTransaction` and a hook's nested write each keep exactly the right
  *   tags, and a `req` goes in through `operation(write, { req })` alone.
  */
+import { createTestDatabase } from './db/test-database.test-support'
 import { realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
@@ -90,7 +91,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
 
   beforeAll(async () => {
     admin = new PgPool({ connectionString: server })
-    await admin.query(`CREATE DATABASE "${database}"`)
+    await createTestDatabase(admin, database, 'migrated')
     const saved = { ...process.env }
     Object.assign(process.env, env)
     for (const key of ['RUN_MIGRATIONS', 'PAYLOAD_DEV_PUSH', 'PGHOST', 'PGPORT'])

@@ -29,6 +29,8 @@ export default defineConfig({
     root,
     include: ['tests/security/**/*.test.{ts,tsx}'],
     exclude: ['**/node_modules/**', '**/.claude/**', 'tests/security/plants/**'],
+    // One migrated and one pushed template database, built once: each file clones the pushed one.
+    globalSetup: ['engine/packages/cms/src/db/test-templates.global-setup.test-support.ts'],
     testTimeout: 60_000,
     hookTimeout: 180_000,
     // One Payload instance per file, each on its own database; files run one after the other so a

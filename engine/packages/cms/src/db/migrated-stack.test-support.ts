@@ -9,6 +9,7 @@
  * store's staff member, each signed in over REST through Payload's own handler, so access, hooks
  * and the query parser are the real ones. Without `CMS_TEST_POSTGRES_URL` the tests skip.
  */
+import { createTestDatabase } from './test-database.test-support'
 import { realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
@@ -63,7 +64,7 @@ export async function startMigratedStack(prefix: string, connect: Connect): Prom
   const env = { DATABASE_URL: url.toString(), PAYLOAD_SECRET: 'm'.repeat(48) }
   const config = await buildEngineConfig(engineConfig(env))
   const admin = adminPool()
-  await admin.query(`CREATE DATABASE "${database}"`)
+  await createTestDatabase(admin, database, 'migrated')
   await admin.end()
   const payload = await connect(config, database)
   await payload.db.migrate({ migrations: [...migrations] } as never)
