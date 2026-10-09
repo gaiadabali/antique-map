@@ -1,22 +1,20 @@
-/* The gallery's browse and search layout (5.1.b): 390 px first, tokens only (DESIGN-SYSTEM.md).
-   The cards are `card.module.css`; the facets and chips `facets.module.css`. */
+/* The gallery's browse and search layout (5.1.b, 14.4): 390 px first, tokens only
+   (DESIGN-SYSTEM.md). The cards are `card.module.css`; the facets and chips `facets.module.css`. */
 
 /* The shell's main is a reading measure; a listing needs the page's width. It centres itself
    on the main column and spans the viewport less the shell's gutters — never wider. */
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
   width: min(calc(100vw - 2 * var(--gutter)), 80rem);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding-bottom: var(--space-8);
+  padding-bottom: var(--space-7);
 }
 
-.page .title {
-  font: var(--text-h2);
-  color: var(--color-text);
-  margin: 0;
+/* The head sits closer to its toolbar than a section's does. */
+.page .head {
+  margin-block-end: var(--space-5);
 }
 
 .toolbar {
@@ -24,45 +22,70 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: 0 var(--space-6);
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
 .sortRow {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0 var(--space-3);
+  gap: var(--space-2) var(--space-6);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sortRow::-webkit-scrollbar {
+  display: none;
 }
 
 .sortLabel {
+  flex: none;
   font: var(--text-tagline);
   color: var(--color-text-muted);
 }
 
 .sorts {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--space-3);
+  flex-wrap: nowrap;
+  gap: var(--space-6);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* Quiet underlined text tabs, as on the shop: the current one in full ink and underlined. */
 .sortLink {
   display: inline-flex;
   align-items: center;
+  flex: none;
   min-height: 44px;
   font: var(--text-small);
   color: var(--color-text-muted);
+  text-decoration: none;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
+  white-space: nowrap;
+}
+
+.sortLink:hover {
+  color: var(--color-text);
+  text-decoration: underline;
 }
 
 .sortLink[aria-current='true'] {
   color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-strong);
 }
 
 /* Phone: the facets live in the bottom sheet; the column is the desktop's. */
 .phoneFacets {
   display: block;
+}
+
+.phoneFacets .openSheet {
+  border-radius: var(--radius-none);
 }
 
 .desktopFacets {
@@ -73,6 +96,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  padding-block-start: var(--space-5);
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
 .results {
@@ -83,8 +108,9 @@
 }
 
 .count {
-  font: var(--text-caption);
+  font: var(--text-small);
   color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
   margin: 0;
 }
 
@@ -92,6 +118,10 @@
   font: var(--text-body);
   color: var(--color-text);
   margin: 0;
+}
+
+.pager {
+  padding-block-start: var(--space-5);
 }
 
 /* The bottom sheet: full width, docked to the bottom, its footer sticky. */
@@ -104,7 +134,7 @@
   color: var(--color-text);
   background: var(--color-surface);
   border: none;
-  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  border-radius: var(--radius-none);
 }
 
 .sheet::backdrop {
@@ -114,7 +144,7 @@
 .sheetBody {
   max-height: calc(85vh - 5rem);
   overflow-y: auto;
-  padding: var(--space-4);
+  padding: var(--space-5) var(--gutter);
 }
 
 .sheetFooter {
@@ -122,9 +152,13 @@
   bottom: 0;
   display: flex;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--gutter);
   background: var(--color-surface);
   border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.sheetFooter > * {
+  border-radius: var(--radius-none);
 }
 
 .sheetClear {
@@ -135,8 +169,12 @@
   flex: 2;
 }
 
-/* Desktop: the facets a left column beside the grid (EXPERIENCE-GALLERY.md §4). */
+/* Desktop: the facets a quiet left column beside the grid (EXPERIENCE-GALLERY.md §4). */
 @media (min-width: 768px) {
+  .page {
+    padding-bottom: var(--space-9);
+  }
+
   .phoneFacets {
     display: none;
   }
@@ -150,7 +188,8 @@
   .columns {
     flex-direction: row;
     align-items: flex-start;
-    gap: var(--space-6);
+    gap: var(--space-8);
+    padding-block-start: var(--space-7);
   }
 
   .results {

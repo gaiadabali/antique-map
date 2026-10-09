@@ -1,18 +1,26 @@
-/* The gallery's facets, year pair and applied chips (5.1.b): tokens only (DESIGN-SYSTEM.md). */
+/* The gallery's facets, year pair and applied chips (5.1.b, 14.4): quiet groups on hairlines, no
+   boxes, square corners. Tokens only (DESIGN-SYSTEM.md). */
 
 .facets {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
 }
 
 .facet {
+  padding-block: var(--space-5);
   border-top: var(--rule-hair) solid var(--color-border);
-  padding-top: var(--space-3);
+}
+
+.facet:first-child {
+  padding-block-start: 0;
+  border-top: none;
 }
 
 .facetName {
-  font: var(--text-tagline);
+  font: var(--text-small);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
   color: var(--color-text-muted);
   margin: 0 0 var(--space-2);
 }
@@ -25,8 +33,17 @@
   list-style: none;
 }
 
-.placeChildren {
+/* The place tree, in tree order: each depth indents one step. */
+.placeRow[data-depth='1'] {
   padding-inline-start: var(--space-4);
+}
+
+.placeRow[data-depth='2'] {
+  padding-inline-start: calc(2 * var(--space-4));
+}
+
+.placeRow[data-depth='3'] {
+  padding-inline-start: calc(3 * var(--space-4));
 }
 
 /* One option: a 44 px link, its name, its count — a zero shown like any count. */
@@ -39,21 +56,63 @@
   font: var(--text-small);
   color: var(--color-text);
   text-decoration: none;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
 }
 
 .option:hover .optionLabel {
   text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
 }
 
-.option[aria-current='true'] {
-  color: var(--color-accent);
-  font-weight: 600;
+.option[aria-current='true'] .optionLabel {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-strong);
+  text-underline-offset: 6px;
 }
 
 .optionCount {
   font: var(--text-caption);
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* "All 128 makers": a native disclosure, quiet and square, the rest opening in place. */
+.more {
+  margin-block-start: var(--space-1);
+}
+
+.moreSummary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font: var(--text-small);
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.moreSummary::-webkit-details-marker {
+  display: none;
+}
+
+.moreSummary::after {
+  content: '+';
+  margin-inline-start: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.more[open] > .moreSummary::after {
+  content: '–';
+}
+
+.more[open] > .moreSummary {
+  margin-block-end: var(--space-1);
 }
 
 .yearPair {
@@ -97,10 +156,14 @@
   padding: var(--space-2) var(--space-3);
   font: var(--text-small);
   color: var(--color-text);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
-  border-radius: var(--radius-control);
+  background: transparent;
+  border: var(--rule-hair) solid var(--color-text);
+  border-radius: var(--radius-none);
   text-decoration: none;
+}
+
+.appliedChip:hover {
+  background: var(--color-surface-raised);
 }
 
 .clearAll {
@@ -108,5 +171,12 @@
   align-items: center;
   min-height: 44px;
   font: var(--text-small);
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
+}
+
+.clearAll:hover {
   color: var(--color-text);
 }

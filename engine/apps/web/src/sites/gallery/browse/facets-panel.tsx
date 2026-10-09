@@ -6,17 +6,14 @@
  */
 import type { SiteLocale } from '@engine/config/sites'
 
-import type {
-  FacetSetVM,
-  FacetVM,
-  PlaceFacetVM,
-} from '../../../server/gallery/catalogue/view-models'
+import type { FacetSetVM } from '../../../server/gallery/catalogue/view-models'
 import type { PlaceNode } from '../../../server/gallery/catalogue/places'
 import type { FacetState } from '../../../server/gallery/catalogue/state'
 import { listingOfState } from '../../../server/gallery/catalogue/url-state'
 import { browseText } from './copy'
+import { Option, Options, PlaceTree, type Link } from './facet-list'
 import styles from './facets.module.css'
-import { centuryLabel, objectTypeLabel } from './labels'
+import { centuryLabel } from './labels'
 import { browseBase, browseHref, hiddenInputsOf } from './state-links'
 import { YearPair } from './year-pair'
 
@@ -29,8 +26,11 @@ export type FacetsPanelProps = {
   readonly idPrefix: string
 }
 
-type Link = (next: FacetState) => string
-type ListKey = 'objectType' | 'maker' | 'subject'
+const ALL_KEYS = {
+  objectType: 'listing.allTypes',
+  maker: 'listing.allMakers',
+  subject: 'listing.allSubjects',
+} as const
 
 /** The facet a state filters by, as the beacon's `listing` prop names it. */
 export function listingTypeOf(state: FacetState): 'type' | 'maker' | 'place' | 'subject' | 'all' {
@@ -52,7 +52,7 @@ export function FacetsPanel({
   const link: Link = (next) => browseHref({ ...next, page: 1 }, places, locale)
   return (
     <div className={styles.facets}>
-      {facets.map((facet) => (
+      {facets.filter(hasOptions).map((facet) => (
         <section
           key={facet.key}
           className={styles.facet}
@@ -70,9 +70,23 @@ export function FacetsPanel({
             />
           )}
           {(facet.key === 'objectType' || facet.key === 'maker' || facet.key === 'subject') && (
-            <Options facet={facet} name={facet.key} state={state} link={link} locale={locale} />
+            <Options
+              facet={facet}
+              name={facet.key}
+              state={state}
+              link={link}
+              locale={locale}
+              allLabel={t(ALL_KEYS[facet.key], { count: facet.options.length })}
+            />
           )}
-          {facet.key === 'place' && <PlaceTree places={facet.places} state={state} link={link} />}
+          {facet.key === 'place' && (
+            <PlaceTree
+              places={facet.places}
+              state={state}
+              link={link}
+              allLabel={t('listing.allPlaces')}
+            />
+          )}
           {facet.key === 'date' && (
             <>
               <ul className={styles.facetList}>
@@ -115,98 +129,9 @@ export function FacetsPanel({
   )
 }
 
-/** One option: a link, its name, its count — `aria-current` marks the applied ones. */
-function Option({
-  href,
-  applied,
-  label,
-  count,
-}: {
-  readonly href: string
-  readonly applied: boolean
-  readonly label: string
-  readonly count: number
-}): React.ReactElement {
-  return (
-    <a href={href} aria-current={applied ? 'true' : undefined} className={styles.option}>
-      <span className={styles.optionLabel}>{label}</span>
-      <span className={styles.optionCount}>{count}</span>
-    </a>
-  )
-}
-
-/** A list facet: object types (the fixed list, zeros included), makers and subjects. */
-function Options({
-  facet,
-  name,
-  state,
-  link,
-  locale,
-}: {
-  readonly facet: FacetVM
-  readonly name: ListKey
-  readonly state: FacetState
-  readonly link: Link
-  readonly locale: SiteLocale
-}): React.ReactElement {
-  return (
-    <ul className={styles.facetList}>
-      {facet.options.map((option) => (
-        <li key={option.value}>
-          <Option
-            href={link(toggled(state, name, option.value))}
-            applied={option.applied}
-            label={name === 'objectType' ? objectTypeLabel(option.value, locale) : option.label}
-            count={option.count}
-          />
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-/** The state with one list option added, or removed when it was applied. */
-function toggled(state: FacetState, name: ListKey, value: string): FacetState {
-  if (name === 'objectType') {
-    const on = state.objectType.includes(value)
-    return {
-      ...state,
-      objectType: on ? state.objectType.filter((v) => v !== value) : [...state.objectType, value],
-    }
-  }
-  const id = Number(value)
-  const on = state[name].includes(id)
-  return { ...state, [name]: on ? state[name].filter((v) => v !== id) : [...state[name], id] }
-}
-
-/** The place tree: island group → region → town, each count rolled up. The applied place's link
- * clears it; any other narrows (or widens) to that place. */
-function PlaceTree({
-  places,
-  state,
-  link,
-}: {
-  readonly places: readonly PlaceFacetVM[]
-  readonly state: FacetState
-  readonly link: Link
-}): React.ReactElement {
-  const branch = (place: PlaceFacetVM): React.ReactElement => {
-    const id = Number(place.value)
-    return (
-      <li key={place.value}>
-        <Option
-          href={link({ ...state, place: state.place === id ? null : id })}
-          applied={state.place === id}
-          label={place.label}
-          count={place.count}
-        />
-        {place.children.length > 0 && (
-          <ul className={`${styles.facetList} ${styles.placeChildren}`}>
-            {place.children.map(branch)}
-          </ul>
-        )}
-      </li>
-    )
-  }
-  return <ul className={styles.facetList}>{places.map(branch)}</ul>
+/** A facet with nothing to offer (no places, no subjects on this selection) shows no heading. */
+function hasOptions(facet: FacetSetVM[number]): boolean {
+  if (facet.key === 'place') return facet.places.length > 0
+  if (facet.key === 'maker' || facet.key === 'subject') return facet.options.length > 0
+  return true
 }

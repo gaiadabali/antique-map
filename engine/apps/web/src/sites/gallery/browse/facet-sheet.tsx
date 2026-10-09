@@ -18,6 +18,7 @@ export function FacetSheet({
   apply,
   clearHref,
   clearLabel,
+  buttonClassName,
   children,
 }: {
   /** The opener's and the sheet's name: the lexicon's `listing.filters`. */
@@ -27,6 +28,8 @@ export function FacetSheet({
   /** The footer's Clear: the listing with every filter cleared. */
   readonly clearHref: string
   readonly clearLabel: string
+  /** A class for the opener: the listing squares it. */
+  readonly buttonClassName?: string
   readonly children: React.ReactNode
 }): React.ReactElement {
   const sheet = useRef<HTMLDialogElement>(null)
@@ -54,6 +57,7 @@ export function FacetSheet({
         type="button"
         variant="secondary"
         size="small"
+        className={buttonClassName}
         onClick={() => sheet.current?.showModal()}
       >
         {label}

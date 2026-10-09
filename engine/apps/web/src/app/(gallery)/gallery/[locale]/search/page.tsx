@@ -15,6 +15,7 @@ import { search } from '../../../../../server/gallery/catalogue'
 import { isStockNumber } from '../../../../../server/gallery/catalogue/search'
 import { pageMetadata } from '../../../../../server/seo'
 import { loadSiteSettings } from '../../../../../server/site-settings'
+import { SectionHead } from '../../../../../shared/ui'
 import { siteLocale } from '../../../../../shell/messages'
 import { currentSite } from '../../../../../shell/site'
 import browse from '../../../../../sites/gallery/browse/browse.module.css'
@@ -74,7 +75,7 @@ export default async function GallerySearch(props: Props) {
 
   return (
     <div className={browse.page}>
-      <h1 className={browse.title}>{text('search.title')}</h1>
+      <SectionHead level={1} className={browse.head} title={text('search.title')} />
       <SearchForm query={query} includeSold={includeSold} locale={locale} />
       {query === '' ? (
         <p className={styles.prompt}>{text('search.prompt')}</p>
