@@ -3,7 +3,6 @@
  * and phone from `site-settings`, or the lexicon's placeholder when it answers none; then the site's
  * social accounts (`site-settings.social`, 10.6.e), each named by its platform as the owner typed it.
  */
-import { TextLink } from '../shared/ui'
 import type { PublicSiteSettings } from '../server/site-settings'
 
 import type { ShellText } from './site'
@@ -46,7 +45,9 @@ export function ContactBlock({ settings, t }: { settings: PublicSiteSettings; t:
         <ul className={styles.footerList}>
           {items.map((item) => (
             <li key={item.key}>
-              <TextLink href={item.href}>{item.label}</TextLink>
+              <a className={styles.footerLink} href={item.href}>
+                {item.label}
+              </a>
             </li>
           ))}
         </ul>
@@ -55,9 +56,9 @@ export function ContactBlock({ settings, t }: { settings: PublicSiteSettings; t:
         <ul className={styles.footerList}>
           {social.map((link) => (
             <li key={link.url}>
-              <TextLink href={link.url} rel="me noopener noreferrer">
+              <a className={styles.footerLink} href={link.url} rel="me noopener noreferrer">
                 {link.platform}
-              </TextLink>
+              </a>
             </li>
           ))}
         </ul>

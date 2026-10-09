@@ -5,7 +5,7 @@
  * buttons with a prepared message, and a short form that creates a `partnership` lead (9.1.c,
  * `sites/shop/partnership`). No sign-up and no sign-in anywhere.
  */
-import { Button, Eyebrow } from '../../../../../shared/ui'
+import { Button, Mat, MatNote, ProofPoints, SectionHead } from '../../../../../shared/ui'
 import { formText } from '../../../../../sites/shop/partnership/form-text'
 import { PartnershipForm } from '../../../../../sites/shop/partnership/partnership-form'
 
@@ -25,13 +25,16 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
   return (
     <div className={styles.wrap}>
       <Hero t={t} />
-      <div className={styles.signals}>
-        <Eyebrow>{t('partnership.signalShops')}</Eyebrow>
-        <Eyebrow>{t('partnership.signalWorkshop')}</Eyebrow>
-        <Eyebrow>{t('partnership.signalPaper')}</Eyebrow>
-        <Eyebrow>{t('partnership.signalShipping')}</Eyebrow>
-      </div>
+      <ProofPoints
+        items={[
+          t('partnership.signalShops'),
+          t('partnership.signalWorkshop'),
+          t('partnership.signalPaper'),
+          t('partnership.signalShipping'),
+        ]}
+      />
       <Offer
+        flip={false}
         eyebrow={t('partnership.resellerEyebrow')}
         title={t('partnership.resellerTitle')}
         body={t('partnership.resellerBody')}
@@ -45,6 +48,7 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
         ]}
       />
       <Offer
+        flip={true}
         eyebrow={t('partnership.companyEyebrow')}
         title={t('partnership.companyTitle')}
         body={t('partnership.companyBody')}
@@ -58,6 +62,7 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
         ]}
       />
       <Offer
+        flip={false}
         eyebrow={t('partnership.hotelEyebrow')}
         title={t('partnership.hotelTitle')}
         body={t('partnership.hotelBody')}
@@ -77,20 +82,24 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
 
 function Hero({ t }: Pick<Props, 't'>) {
   return (
-    <section className={styles.section}>
-      <Eyebrow>{t('partnership.eyebrow')}</Eyebrow>
-      <h1>{t('partnership.title')}</h1>
-      <p className={`site-lede ${styles.lede}`}>{t('partnership.lede')}</p>
-      <div className={styles.actions}>
-        <Button variant="primary" href="#enquire">
-          {t('partnership.ctaApply')}
-        </Button>
-      </div>
+    <section className={styles.hero}>
+      <SectionHead
+        level={1}
+        eyebrow={t('partnership.eyebrow')}
+        title={t('partnership.title')}
+        lede={t('partnership.lede')}
+        action={
+          <Button variant="primary" href="#enquire">
+            {t('partnership.ctaApply')}
+          </Button>
+        }
+      />
     </section>
   )
 }
 
 function Offer({
+  flip,
   eyebrow,
   title,
   body,
@@ -98,6 +107,7 @@ function Offer({
   poster,
   specs,
 }: {
+  flip: boolean
   eyebrow: string
   title: string
   body: string
@@ -106,28 +116,26 @@ function Offer({
   specs: readonly (readonly [string, string])[]
 }) {
   return (
-    <section className={styles.section}>
-      <div className={styles.offer}>
-        <div className={styles.offerBody}>
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <h2>{title}</h2>
-          <p className={styles.specValue}>{body}</p>
+    <section className={`${styles.section} ${styles.offer} ${flip ? styles.flip : ''}`}>
+      <div className={styles.offerBody}>
+        <SectionHead eyebrow={eyebrow} title={title} lede={body} />
+        <dl className={styles.specs}>
           {specs.map(([label, value]) => (
-            <p className={styles.spec} key={label}>
-              <span className={styles.specLabel}>{label}</span>
-              <span className={styles.specValue}>{value}</span>
-            </p>
+            <div className={styles.spec} key={label}>
+              <dt className={styles.specLabel}>{label}</dt>
+              <dd className={styles.specValue}>{value}</dd>
+            </div>
           ))}
-          <div className={styles.actions}>
-            <Button variant="secondary" href="#enquire">
-              {cta}
-            </Button>
-          </div>
-        </div>
-        <div className={styles.plate}>
-          <span className={styles.plateInner}>{poster}</span>
+        </dl>
+        <div className={styles.actions}>
+          <Button variant="quiet" href="#enquire">
+            {cta}
+          </Button>
         </div>
       </div>
+      <Mat ratio={4 / 3}>
+        <MatNote>{poster}</MatNote>
+      </Mat>
     </section>
   )
 }
@@ -145,32 +153,34 @@ function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
       )}&body=${encodeURIComponent(t('partnership.emailBody'))}`
     : null
   return (
-    <section className={styles.section} id="enquire">
-      <div className={styles.enquire}>
-        <div>
-          <Eyebrow>{t('partnership.enquireEyebrow')}</Eyebrow>
-          <h2>{t('partnership.enquireTitle')}</h2>
-          <p className={styles.specValue}>{t('partnership.enquireBody')}</p>
-          <div className={styles.talk}>
-            <p className={styles.specValue}>{t('partnership.talkFirst')}</p>
-            {wa || mail ? (
-              <div className={styles.talkActions}>
-                {wa && (
-                  <Button variant="primary" href={wa}>
-                    {t('partnership.ctaWhatsapp')}
-                  </Button>
-                )}
-                {mail && (
-                  <Button variant="quiet" href={mail}>
-                    {t('partnership.ctaEmail')}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <p className={styles.formNote}>{t('partnership.contactMissing')}</p>
-            )}
-          </div>
+    <section className={`${styles.section} ${styles.enquire}`} id="enquire">
+      <div className={styles.enquireText}>
+        <SectionHead
+          eyebrow={t('partnership.enquireEyebrow')}
+          title={t('partnership.enquireTitle')}
+          lede={t('partnership.enquireBody')}
+        />
+        <div className={styles.talk}>
+          <p className={styles.specValue}>{t('partnership.talkFirst')}</p>
+          {wa || mail ? (
+            <div className={styles.talkActions}>
+              {wa && (
+                <Button variant="primary" href={wa}>
+                  {t('partnership.ctaWhatsapp')}
+                </Button>
+              )}
+              {mail && (
+                <Button variant="quiet" href={mail}>
+                  {t('partnership.ctaEmail')}
+                </Button>
+              )}
+            </div>
+          ) : (
+            <p className={styles.formNote}>{t('partnership.contactMissing')}</p>
+          )}
         </div>
+      </div>
+      <div className={styles.panel}>
         <PartnershipForm text={formText(t)} locale={locale} siteKey={turnstileSiteKey} />
       </div>
     </section>

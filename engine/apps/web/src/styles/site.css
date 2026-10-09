@@ -70,6 +70,10 @@ a {
   min-height: 44px;
 }
 
+.site-name {
+  white-space: nowrap;
+}
+
 .site-logo {
   display: block;
   height: 2.5rem;
@@ -87,8 +91,18 @@ a {
 }
 
 .site-locales a {
-  display: inline-block;
-  padding: var(--space-3) var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-1);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  text-underline-offset: 0.3em;
+}
+
+.site-locales a:hover {
+  color: var(--color-text);
+  text-decoration: underline;
 }
 
 .site-locales a[aria-current='true'] {
@@ -143,6 +157,14 @@ a {
 .site-footer p {
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+/* On a phone the logo stands alone: it already carries the name, and the wordmark would wrap.
+   The brand link keeps its accessible name (its aria-label). */
+@media (max-width: 40rem) {
+  .site-name {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

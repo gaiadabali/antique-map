@@ -1,23 +1,66 @@
-/* The partnership page's layout styles, from the design team's drawing. Every value is a token
-   from shared/styles/tokens or the shop brand file — no raw colour, no font-family. */
+/* The partnership page's layout: the shop's full breakout width (the home's wrap), hairline-parted
+   sections, offers as two columns that alternate sides. Every value is a token. */
 
 .wrap {
-  max-width: 80rem;
-  margin: 0 auto;
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
   padding-inline: var(--gutter);
 }
 
+.hero {
+  padding-block-end: var(--space-7);
+}
+
 .section {
-  padding-block: var(--space-7);
+  padding-block: var(--space-9);
   border-top: var(--rule-hair) solid var(--color-border);
 }
 
-.section:first-child {
-  border-top: 0;
+.offer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: center;
 }
 
-.lede {
-  max-width: 47rem;
+.flip > :first-child {
+  order: 2;
+}
+
+.offerBody {
+  max-width: 36rem;
+}
+
+.specs {
+  margin: var(--space-6) 0 0;
+}
+
+.spec {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  margin: 0;
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.spec:last-child {
+  border-bottom: var(--rule-hair) solid var(--color-border);
+}
+
+.specLabel {
+  flex: none;
+  width: 6rem;
+  font: var(--text-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.specValue {
+  font: var(--text-body);
+  margin: 0;
 }
 
 .actions {
@@ -27,79 +70,19 @@
   margin-block-start: var(--space-5);
 }
 
-.signals {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4) var(--space-7);
-  padding-block: var(--space-5);
-  border-block: var(--rule-hair) solid var(--color-border);
-}
-
-.offer {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-7);
-  align-items: center;
-}
-
-.offerBody p {
-  max-width: 32rem;
-}
-
-.spec {
-  display: flex;
-  gap: var(--space-4);
-  align-items: baseline;
-  margin: 0;
-  padding-block-start: var(--space-3);
-  border-top: var(--rule-hair) solid var(--color-border);
-}
-
-.spec + .spec {
-  margin-block-start: var(--space-3);
-}
-
-.specLabel {
-  flex: none;
-  width: 6rem;
-  font: var(--text-caption);
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-}
-
-.specValue {
-  font: var(--text-body);
-  margin: 0;
-}
-
-.plate {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: var(--color-surface-deep);
-  color: var(--color-text-muted);
-  font: var(--text-caption);
-  overflow: hidden;
-}
-
-.plateInner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--space-4);
-  height: 100%;
-}
-
 .enquire {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-7);
+  gap: var(--space-8);
   align-items: start;
 }
 
+.enquireText {
+  max-width: 36rem;
+}
+
 .talk {
-  margin-block-start: var(--space-5);
+  margin-block-start: var(--space-6);
   padding-block-start: var(--space-5);
   border-top: var(--rule-hair) solid var(--color-border);
 }
@@ -111,10 +94,10 @@
   margin-block-start: var(--space-4);
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+.panel {
+  padding: var(--space-7);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
 }
 
 .formNote {
@@ -124,8 +107,21 @@
 }
 
 @media (max-width: 47.5rem) {
+  .section {
+    padding-block: var(--space-7);
+  }
+
   .offer,
   .enquire {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .flip > :first-child {
+    order: 0;
+  }
+
+  .panel {
+    padding: var(--space-5);
   }
 }

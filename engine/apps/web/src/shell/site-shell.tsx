@@ -23,21 +23,18 @@ import { PROXY_REQUEST_HEADERS } from '@engine/http/manifest'
 import type { ReactNode } from 'react'
 import { headers } from 'next/headers'
 
-import { Footer, Header, TextLink } from '../shared/ui'
+import { Header } from '../shared/ui'
 import { ChatLauncher } from '../shared/chat/chat-launcher'
 import { ChatPageProvider } from '../shared/chat/chat-page-context'
 import { chatPanelText, suggestedStarts } from '../shared/chat/lexicon'
 
 import { Announcement } from './announcement'
 import { chatContact } from './chat-contact'
-import { ContactBlock } from './contact-block'
+import { PrimaryNav } from './primary-nav'
+import { SiteFooter } from './site-footer'
 import type { ShellMessageKey } from './messages'
 import { siteHref, type ShellText } from './site'
-import { loadSiteSettings, type PublicSiteSettings } from '../server/site-settings'
-import styles from './shell.module.css'
-
-/** What the footer knows of `site-settings`: the public contact fields only. */
-type Settings = PublicSiteSettings
+import { loadSiteSettings } from '../server/site-settings'
 
 type ShellPart = {
   readonly site: { key: SiteKey; name: string }
@@ -103,45 +100,6 @@ function BrandLink({ shell, t }: { shell: ShellPart; t: ShellText }) {
   )
 }
 
-/** One header link: its surface, its params and the lexicon key of its label. */
-type NavItemSpec = {
-  readonly label: ShellMessageKey
-  readonly href: (locale: LocaleCode) => string
-}
-
-/** The site's header links, from the drawing, each a real surface of that site. */
-function navItems(site: SiteKey): readonly NavItemSpec[] {
-  const href = siteHref(site)
-  return site === 'gallery'
-    ? [
-        { label: 'nav.collection', href: (l) => href('browse', {}, l) },
-        { label: 'nav.makers', href: (l) => href('maker', {}, l) },
-        { label: 'nav.places', href: (l) => href('place', {}, l) },
-        { label: 'nav.stories', href: (l) => href('story', {}, l) },
-        { label: 'nav.sellToUs', href: (l) => href('sellToUs', {}, l) },
-      ]
-    : [
-        { label: 'nav.shop', href: (l) => href('browse', {}, l) },
-        { label: 'nav.collections', href: (l) => href('collection', {}, l) },
-        { label: 'nav.stores', href: (l) => href('stores', {}, l) },
-        { label: 'nav.partnership', href: (l) => href('partnership', {}, l) },
-      ]
-}
-
-function PrimaryNav({ site, locale, t }: { site: SiteKey; locale: LocaleCode; t: ShellText }) {
-  return (
-    <nav className={styles.nav} aria-label={t('shell.menu')}>
-      <ul className={styles.navList}>
-        {navItems(site).map((item) => (
-          <li key={item.label}>
-            <TextLink href={item.href(locale)}>{t(item.label)}</TextLink>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  )
-}
-
 /**
  * The language switcher keeps the visitor's page: the proxy hands the request its public path
  * (`x-public-path`), which `parsePublicPath()` reads back into a surface and params, so the other
@@ -191,88 +149,4 @@ async function keptPathHref(site: SiteKey, locale: SiteLocale, fallback: string)
   } catch {
     return fallback
   }
-}
-
-/** The sister site's home on its own host: an absolute URL, or the path when no origin is known. */
-function sisterHref(sister: SiteKey, locale: LocaleCode): string {
-  const path = siteHref(sister)('home', {}, locale)
-  const origin = siteOrigin(sister)
-  return origin === null ? path : `${origin}${path}`
-}
-
-/** The footer: the site's links, contact and hours from `site-settings`, the sister bridge. */
-function SiteFooter({
-  shell,
-  settings,
-  t,
-}: {
-  shell: ShellPart
-  settings: Settings
-  t: ShellText
-}) {
-  const { key: site, locale } = { key: shell.site.key, locale: shell.locale }
-  const href = siteHref(site)
-  const sister: SiteKey = site === 'gallery' ? 'shop' : 'gallery'
-  const page = (slug: string) => href('page', { slug }, locale)
-  const links: readonly NavItemSpec[] =
-    site === 'gallery'
-      ? [
-          { label: 'footer.collection', href: (l) => href('browse', {}, l) },
-          { label: 'footer.makers', href: (l) => href('maker', {}, l) },
-          { label: 'footer.places', href: (l) => href('place', {}, l) },
-          { label: 'footer.stories', href: (l) => href('story', {}, l) },
-          { label: 'footer.sellToUs', href: (l) => href('sellToUs', {}, l) },
-          { label: 'footer.about', href: () => page('about') },
-          { label: 'footer.contact', href: (l) => href('contact', {}, l) },
-        ]
-      : [
-          { label: 'footer.shop', href: (l) => href('browse', {}, l) },
-          { label: 'footer.collections', href: (l) => href('collection', {}, l) },
-          { label: 'footer.stores', href: (l) => href('stores', {}, l) },
-          { label: 'footer.partnership', href: (l) => href('partnership', {}, l) },
-          { label: 'footer.delivery', href: () => page('delivery') },
-          { label: 'footer.faq', href: () => page('faq') },
-          { label: 'footer.about', href: () => page('about') },
-          { label: 'footer.contact', href: () => page('contact') },
-        ]
-  return (
-    <Footer
-      logo={<img className="site-logo" src={shell.logo} alt="" />}
-      nav={
-        <ul className={styles.footerList}>
-          {links.map((item) => (
-            <li key={item.label}>
-              <TextLink href={item.href(locale)}>{t(item.label)}</TextLink>
-            </li>
-          ))}
-        </ul>
-      }
-      legal={
-        <ul className={styles.footerList}>
-          <li>
-            <TextLink href={page('privacy')}>{t('shell.privacy')}</TextLink>
-          </li>
-          <li>
-            <TextLink href={page('terms')}>{t('shell.terms')}</TextLink>
-          </li>
-          <li>
-            {/* The two-way bridge: the other site lives on its own host, so the link is
-                absolute — a root-relative path would land on this site's own home. */}
-            <TextLink href={sisterHref(sister, locale)}>{t('shell.sister')}</TextLink>
-          </li>
-        </ul>
-      }
-      social={
-        <div className={styles.footerContact}>
-          <ContactBlock settings={settings} t={t} />
-          {settings.hours && (
-            <p className={styles.footerLine}>
-              {t('shell.hours')}: {settings.hours}
-            </p>
-          )}
-          {settings.replyPromise && <p className={styles.footerLine}>{settings.replyPromise}</p>}
-        </div>
-      }
-    />
-  )
 }
