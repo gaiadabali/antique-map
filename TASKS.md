@@ -30,8 +30,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
-| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 15 phases | | | **68/77** | **243/273** | **8** | `█████████░`  89% |
+| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 3/13 | 0 | `██░░░░░░░░`  23% |
+| **All** | 15 phases | | | **68/77** | **246/273** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1042,9 +1042,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** OPS · **Agent** orchestrator (server), medior (Sonnet, the code fixes) · **Wave** W1
   - **Owns** `scripts/ops/**`, `docs/DEPLOYMENT.md`, `engine/apps/web/src/server/{analytics,leads,chat}/**`, `engine/apps/web/src/security/rate-limit.ts`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/packages/{http,media}/src/**`, `engine/packages/cms/src/{db/adapter.ts,collections/media/pipeline.ts}`
   - **Read** DEPLOYMENT.md §3–§5; SECURITY.md §2.10
-  - [ ] 15.2.a the analytics limiter sweeps on time and caps its maps (the one leak under real traffic); the other in-process limiters sweep on time and cap
-  - [ ] 15.2.b public bodies read with a cap (collect, geocode, chat); S3 timeouts and one pipeline client; sharp at two threads; a stuck jobs run answers 503; the pool's size explicit; unread fetch bodies cancelled; the chat stream ends after 30 s of silence
-  - [ ] 15.2.c pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2` and a restart backoff; `pm2.log` rotated; the role ends a transaction idle for 5 minutes — the container test ALL PASS
+  - [x] 15.2.a the analytics limiter sweeps on time and caps its maps (the one leak under real traffic); the other in-process limiters sweep on time and cap
+  - [x] 15.2.b public bodies read with a cap (collect, geocode, chat); S3 timeouts and one pipeline client; sharp at two threads; a stuck jobs run answers 503; the pool's size explicit; unread fetch bodies cancelled; the chat stream ends after 30 s of silence
+  - [x] 15.2.c pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2` and a restart backoff; `pm2.log` rotated; the role ends a transaction idle for 5 minutes — the container test ALL PASS
   - [ ] 15.2.d **Check:** staging on the fixed release with the new ecosystem; a soak of distinct search pages levels off well under 1536M with no restart but reloads; the figures in DEPLOYMENT.md §3.
 
 - [ ] **15.3 The CMS says which site and speaks plainly** · needs: — — 🔄 15·W1
