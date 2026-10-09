@@ -186,3 +186,31 @@ describe('the upstream call (S3, F-07)', () => {
     ).toMatchObject({ ok: true, address: null })
   })
 })
+
+describe('POST /api/x/geocode body cap', () => {
+  /** A chunked body (no Content-Length) whose pulls are counted, to see the read stop. */
+  function chunked(totalKb: number, pulled: { kb: number }): Request {
+    const stream = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (pulled.kb >= totalKb) return controller.close()
+        pulled.kb += 1
+        controller.enqueue(new Uint8Array(1024).fill(97))
+      },
+    })
+    return new Request('http://localhost/api/x/geocode', {
+      method: 'POST',
+      body: stream,
+      duplex: 'half',
+    } as RequestInit)
+  }
+
+  it('stops reading a chunked body past the cap and answers as for an empty one', async () => {
+    const pulled = { kb: 0 }
+    const over = await POST(chunked(4096, pulled))
+    const empty = await POST(
+      new Request('http://localhost/api/x/geocode', { method: 'POST', body: '' }),
+    )
+    expect(over.status).toBe(empty.status)
+    expect(pulled.kb).toBeLessThan(64)
+  })
+})
