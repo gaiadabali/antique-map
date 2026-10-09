@@ -187,6 +187,19 @@ describe('the upstream call (S3, F-07)', () => {
   })
 })
 
+describe('fetchGeocodeJson releases an over-long answer', () => {
+  it('cancels the body when the declared length is over the cap', async () => {
+    const cancelled = vi.fn()
+    const body = new ReadableStream({ pull: () => undefined, cancel: cancelled })
+    const fetcher = vi.fn(
+      async () =>
+        new Response(body, { headers: { 'content-length': String(MAX_GEOCODE_BYTES + 1) } }),
+    )
+    expect((await fetchGeocodeJson('u', fetcher as unknown as typeof fetch)).body).toBeNull()
+    expect(cancelled).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('POST /api/x/geocode body cap', () => {
   /** A chunked body (no Content-Length) whose pulls are counted, to see the read stop. */
   function chunked(totalKb: number, pulled: { kb: number }): Request {

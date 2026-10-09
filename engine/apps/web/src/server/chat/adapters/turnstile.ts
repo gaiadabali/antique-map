@@ -30,7 +30,10 @@ export function turnstileVerifier(secret: string): TurnstileVerifier {
           cache: 'no-store',
           redirect: 'error',
         })
-        if (!response.ok) return { success: false, hostname: null }
+        if (!response.ok) {
+          await response.body?.cancel().catch(() => undefined) // release the socket
+          return { success: false, hostname: null }
+        }
         const body = (await response.json()) as { success?: unknown; hostname?: unknown }
         return {
           success: body.success === true,

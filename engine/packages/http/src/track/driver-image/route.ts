@@ -86,12 +86,19 @@ export function driverImageRoute(
       console.error(`[track/driver-image] the storage read failed: ${errorName(error)}`)
       return plain(502, UNAVAILABLE)
     }
+    // Every early return below leaves the body unread, which would hold the socket until timeout.
+    const release = () => upstream.body?.cancel().catch(() => undefined)
     if (upstream.status >= 500) {
+      await release()
       console.error(`[track/driver-image] storage answered ${upstream.status}`)
       return plain(502, UNAVAILABLE)
     }
-    if (!upstream.ok) return notFound()
+    if (!upstream.ok) {
+      await release()
+      return notFound()
+    }
     if (Number(upstream.headers.get('content-length') ?? 0) > MAX_BYTES) {
+      await release()
       return plain(502, UNAVAILABLE)
     }
 

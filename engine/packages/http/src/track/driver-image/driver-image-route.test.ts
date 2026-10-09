@@ -34,6 +34,29 @@ const served = (
 
 afterEach(() => vi.restoreAllMocks())
 
+describe('driver-image early returns release the upstream body', () => {
+  it.each([
+    ['a 5xx', { status: 503 }, 502],
+    ['a 404', { status: 404 }, 404],
+    [
+      'an oversized declared length',
+      { status: 200, headers: { 'content-length': '999999999' } },
+      502,
+    ],
+  ])('cancels the body on %s', async (_name, init, expected) => {
+    const cancelled = vi.fn()
+    const body = new ReadableStream({ pull: () => undefined, cancel: cancelled })
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const source = vi.fn<DriverImageUrlSource>(async () => PRESIGNED)
+    const response = await driverImageRoute(loaderOf(source), served(body, init))(
+      request(),
+      context(),
+    )
+    expect(response.status).toBe(expected)
+    expect(cancelled).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('GET /api/x/track/{token}/driver-image', () => {
   it('streams the stored bytes, with private, no-store, nosniff headers', async () => {
     const source = vi.fn<DriverImageUrlSource>(async () => PRESIGNED)

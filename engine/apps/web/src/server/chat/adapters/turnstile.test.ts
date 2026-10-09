@@ -30,6 +30,14 @@ describe('the Turnstile verifier', () => {
     })
   })
 
+  it('cancels the body of a non-200 answer so its socket is released', async () => {
+    const cancelled = vi.fn()
+    const body = new ReadableStream({ pull: () => undefined, cancel: cancelled })
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(body, { status: 503 }))
+    await turnstileVerifier('secret-0123456789abcdef').verify('tok', null, signal)
+    expect(cancelled).toHaveBeenCalledTimes(1)
+  })
+
   it.each([
     ['a failed challenge', () => Promise.resolve(Response.json({ success: false }))],
     ['a non-200 answer', () => Promise.resolve(new Response('busy', { status: 503 }))],
