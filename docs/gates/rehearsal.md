@@ -109,19 +109,19 @@ payment. **Written by** devops agent, 2026-10-08.
 | Roll back (§3)       | orchestrator | 2026-10-09 | yes                                   | none: back to `7733d424` healthy in 6 s (no AVIF on `/shop`: the old code served), forward to `e8597fd7` healthy in 6 s                                                                                                                                                                                                                                                                                                                             |
 | Restore (§4.1)       | orchestrator | 2026-10-08 | yes                                   | the drill's `pgrep` guard failed every run from a file; replaced with a lock before the run                                                                                                                                                                                                                                                                                                                                                         |
 | Kill the chat (§6)   | orchestrator | 2026-10-09 | yes                                   | the click path: it is one **Site settings** page with an **Indies Gallery** and an **Old East Indies** section, not "Settings → Gallery / Shop" (fixed). Off: the gallery's chat answered `503 disabled` at once; back on                                                                                                                                                                                                                           |
-| Rotate a secret (§5) | —            |            | not run                               | read only: rotating on staging logs every user out; walk it with the owner's team at handover (11.4.b)                                                                                                                                                                                                                                                                                                                                              |
+| Rotate a secret (§5) | orchestrator | 2026-10-09 | yes                                   | `PAYLOAD_SECRET` by the pattern (backup, `openssl rand -hex 32` written by the site user without printing, `pm2 restart --update-env`): health 200/200; an owner session from before answers `user: null`; a new sign-in works; the backup deleted. The steps are right; `nano` is interactive, a `perl -pi` with the value in an env var is the scriptable form                                                                                    |
 | Late payment (§7)    | orchestrator | 2026-10-09 | step 1 yes; step 3 **cannot be done** | `tests/e2e/rehearsal/late-payment.spec.ts`: order 100036 priced, the simulator opened, the deadline moved 10 min back (one SQL update; the sweep allows 5 min grace), the real sweep expired it, the buyer settled: the order stays `expired`, flagged, and the owner sees **Needs you** with the reason. But the order page has no action at all, and **Replace damaged item does not exist** (finding R-2): the only path is a refund in Midtrans |
 
 **Followed by:** the orchestrator, not the devops agent that wrote it, for deploy, rollback, restore and the chat
-switch. Before launch a person of the owner's team should follow §1–§3 and §6 once (11.4.b's handover).
+switch, and the Payload secret rotation. Before launch a person of the owner's team should follow §1–§3 and §6 once (11.4.b's handover).
 
 ## 10.3.e Verdict
 
-| Clause                                                             | Met?                                                                       |
-| ------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| The run is recorded (a, b)                                         | yes                                                                        |
-| The restore timing and verification are recorded (c)               | yes: PASS, 816 s down, every row, object and sample identical              |
-| The runbook has been followed by someone other than its author (d) | yes for deploy, rollback, restore and the chat switch; §5 and §7 read only |
+| Clause                                                             | Met?                                                                              |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| The run is recorded (a, b)                                         | yes                                                                               |
+| The restore timing and verification are recorded (c)               | yes: PASS, 816 s down, every row, object and sample identical                     |
+| The runbook has been followed by someone other than its author (d) | yes for every section; §7 stops at step 3 until 10.7 builds the replacement order |
 
 ## Open
 
