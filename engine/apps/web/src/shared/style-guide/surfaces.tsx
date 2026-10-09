@@ -1,4 +1,16 @@
-import { Badge, Card, Eyebrow, FormMessage, Hairline, Skeleton, Toast } from '../ui'
+import {
+  Badge,
+  Card,
+  Eyebrow,
+  FormMessage,
+  Hairline,
+  Mat,
+  MatNote,
+  ProofPoints,
+  SectionHead,
+  Skeleton,
+  Toast,
+} from '../ui'
 
 import { Section } from './section'
 import styles from './style-guide.module.css'
@@ -26,7 +38,36 @@ export function Surfaces(): React.ReactElement {
       <Section id="sg-eyebrow" title="Eyebrow">
         <div className={styles.row}>
           <Eyebrow>Featured</Eyebrow>
+          <Eyebrow mark>Art souvenirs of the East Indies</Eyebrow>
         </div>
+      </Section>
+
+      <Section id="sg-section-head" title="Section head">
+        <SectionHead
+          eyebrow="How we make them"
+          title="From an original in our hands to a print on your wall"
+          lede="300gsm cotton and archival pigment inks, printed in Bali."
+          action={<a href="#sg-section-head">Shop all prints</a>}
+        />
+      </Section>
+
+      <Section id="sg-mat" title="Mat">
+        <div className={styles.row}>
+          <div className={styles.matSample}>
+            <Mat ratio={4 / 5}>
+              <MatNote>Default mat, 4:5</MatNote>
+            </Mat>
+          </div>
+          <div className={styles.matSample}>
+            <Mat ratio={1} size="compact">
+              <MatNote>Compact mat</MatNote>
+            </Mat>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="sg-proof-points" title="Proof points">
+        <ProofPoints items={['Restored by hand', 'Printed in Bali', 'Stocked in 100+ shops']} />
       </Section>
 
       <Section id="sg-hairline" title="Hairline">

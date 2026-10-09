@@ -7,7 +7,16 @@
  */
 import { Suspense, type ReactNode } from 'react'
 
-import { Button, Eyebrow, Price, Skeleton } from '../../../shared/ui'
+import {
+  Button,
+  Eyebrow,
+  Mat,
+  MatNote,
+  Price,
+  ProofPoints,
+  ResponsiveImage,
+  Skeleton,
+} from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'
 
@@ -36,10 +45,7 @@ export function Hero({ locale, shopHref, t }: Props) {
   return (
     <section className={styles.hero}>
       <div className={styles.copy}>
-        <p className={styles.mark}>
-          <span className={styles.scale} aria-hidden="true" />
-          <Eyebrow>{t('home.shop.eyebrow')}</Eyebrow>
-        </p>
+        <Eyebrow mark>{t('home.shop.eyebrow')}</Eyebrow>
         <h1 className={styles.title}>{t('home.shop.title')}</h1>
         <p className={`site-lede ${styles.lede}`}>{t('home.shop.lede')}</p>
         <div className={styles.actions}>
@@ -54,23 +60,20 @@ export function Hero({ locale, shopHref, t }: Props) {
       <Suspense
         fallback={
           <Frame
+            ratio={1}
             caption={
               <div className={styles.caption} aria-hidden="true">
                 <Skeleton width="60%" height="1.5rem" />
               </div>
             }
-          />
+          >
+            {null}
+          </Frame>
         }
       >
         <LeadPrint locale={locale} t={t} />
       </Suspense>
-      <ul className={styles.signals}>
-        {SIGNALS.map((key) => (
-          <li key={key}>
-            <Eyebrow>{t(key)}</Eyebrow>
-          </li>
-        ))}
-      </ul>
+      <ProofPoints className={styles.signals} items={SIGNALS.map((key) => t(key))} />
     </section>
   )
 }
@@ -85,65 +88,61 @@ async function LeadPrint({ locale, t }: Pick<Props, 'locale' | 't'>) {
   const lead = products.find((product) => product.image !== null) ?? products[0]
   if (lead === undefined) {
     return (
-      <Frame>
-        <span className={styles.empty}>{t('home.shop.heroA')}</span>
+      <Frame ratio={1}>
+        <MatNote>{t('home.shop.heroA')}</MatNote>
       </Frame>
     )
   }
   const words = productText(locale)
   const label = lead.image === null ? null : syntheticLabelText(words, lead.image)
+  const caption = (
+    <figcaption className={styles.caption}>
+      <span className={styles.captionText}>
+        <a className={styles.captionTitle} href={`/product/${lead.slug}`}>
+          {lead.name}
+        </a>
+        {label !== null && <span className={styles.captionMeta}>{label}</span>}
+      </span>
+      <span className={styles.captionMeta}>
+        {t('home.shop.pricePrefix')} <Price amount={lead.price} />
+      </span>
+    </figcaption>
+  )
+  if (lead.image === null) {
+    return (
+      <Frame ratio={1} caption={caption}>
+        <MatNote>{t('home.shop.heroA')}</MatNote>
+      </Frame>
+    )
+  }
   return (
-    <Frame
-      ratio={windowRatio(lead.image)}
-      caption={
-        <figcaption className={styles.caption}>
-          <span className={styles.captionText}>
-            <a className={styles.captionTitle} href={`/product/${lead.slug}`}>
-              {lead.name}
-            </a>
-            {label !== null && <span className={styles.captionMeta}>{label}</span>}
-          </span>
-          <span className={styles.captionMeta}>
-            {t('home.shop.pricePrefix')} <Price amount={lead.price} />
-          </span>
-        </figcaption>
-      }
-    >
-      {lead.image === null ? (
-        <span className={styles.empty}>{t('home.shop.heroA')}</span>
-      ) : (
-        // The public derivative, a plain `<img>` as the rail's cards use (`./featured-products`);
-        // eager and high priority, since it is the page's largest paint.
-        <img
-          className={styles.image}
-          src={lead.image.url}
-          srcSet={lead.image.srcSet}
-          sizes="(max-width: 47.5rem) 100vw, min(45vw, 34rem)"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-          alt={imageAlt(words, lead.image)}
-        />
-      )}
+    <Frame caption={caption}>
+      {/* The page's largest paint: preloaded at high priority, AVIF where the browser takes it. */}
+      <ResponsiveImage
+        variant="fill"
+        aspectRatio={`${windowRatio(lead.image)} / 1`}
+        src={lead.image.url}
+        srcSet={lead.image.srcSet}
+        sizes="(max-width: 47.5rem) 100vw, min(45vw, 34rem)"
+        alt={imageAlt(words, lead.image)}
+        priority
+        unoptimized
+      />
     </Frame>
   )
 }
 
 type FrameProps = {
-  /** The window's width over its height; square until the print's own shape is known. */
+  /** The window's shape, when the picture inside does not carry its own. */
   readonly ratio?: number
   readonly caption?: ReactNode
-  readonly children?: ReactNode
+  readonly children: ReactNode
 }
 
-function Frame({ ratio = 1, caption, children }: FrameProps) {
+function Frame({ ratio, caption, children }: FrameProps) {
   return (
     <figure className={styles.frame}>
-      <div className={styles.mat}>
-        <div className={styles.window} style={{ aspectRatio: ratio }}>
-          {children}
-        </div>
-      </div>
+      <Mat ratio={ratio}>{children}</Mat>
       {caption}
     </figure>
   )
