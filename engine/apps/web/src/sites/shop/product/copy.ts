@@ -27,6 +27,8 @@ export const PRODUCT_KEYS = defineMessages({
   'product.original': 'Made from {title}, an original at Indies Gallery',
   'product.originalSold': 'Made from our scan of the original, now sold',
   'product.description': 'About this product',
+  'product.signalPaper': '300gsm cotton · archival inks',
+  'product.signalWorkshop': 'Printed in our own workshop',
   'product.sku': 'SKU {sku}',
   'product.breadcrumbShop': 'Shop',
 })

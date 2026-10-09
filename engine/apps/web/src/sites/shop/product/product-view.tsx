@@ -1,13 +1,20 @@
 /**
- * The product page (6.1.b; EXPERIENCE-SHOP.md §4), top to bottom on a phone: images, the title
- * block (name, Reproduction, SKU, price), the options as a radio group, stock and add to bag in
- * a sticky bar, the delivery line, the original it is made from (never with a price), then the
- * description. The words come from the lexicon; the prices are whole rupiah the server formats.
+ * The product page (6.1.b; EXPERIENCE-SHOP.md §4), in the luxury pass (12.5): the matted pictures on the left, the details (category, name, price,
+ * options, add to bag, delivery, proof points) sticky on the right, the story below; one column on
+ * a phone. The words come from the lexicon; the prices are whole rupiah the server formats.
  */
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
 import type { ProductVM } from '../../../server/shop/catalogue/view-models'
-import { Breadcrumbs, ResponsiveImage, TextLink } from '../../../shared/ui'
+import {
+  Breadcrumbs,
+  Eyebrow,
+  Mat,
+  ProofPoints,
+  ResponsiveImage,
+  SectionHead,
+  TextLink,
+} from '../../../shared/ui'
 import { ChatPageContext } from '../../../shared/chat/chat-page-context'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { productText, variantPickerText } from './copy'
@@ -66,79 +73,92 @@ export function ProductView({
         />
       </div>
 
-      <div className={styles.gallery}>
-        {lead && (
-          <figure className={styles.figure}>
-            <ResponsiveImage
-              variant="fill"
-              aspectRatio="1 / 1"
-              src={lead.url}
-              srcSet={lead.srcSet}
-              alt={imageAlt(text, lead)}
-              sizes="(max-width: 767px) 100vw, 50vw"
-              priority
-              className={styles.leadImage}
-              unoptimized
-            />
-            <Label text={syntheticLabelText(text, lead)} />
-          </figure>
-        )}
-        {rest.length > 0 && (
-          <div className={styles.thumbs}>
-            {rest.map((image) => (
-              <figure key={image.url} className={styles.figure}>
+      <div className={styles.layout}>
+        <div className={styles.gallery}>
+          {lead && (
+            <figure className={styles.figure}>
+              <Mat>
                 <ResponsiveImage
                   variant="fill"
                   aspectRatio="1 / 1"
-                  src={image.url}
-                  srcSet={image.srcSet}
-                  alt={imageAlt(text, image)}
-                  sizes="(max-width: 767px) 33vw, 120px"
-                  className={styles.thumb}
+                  src={lead.url}
+                  srcSet={lead.srcSet}
+                  alt={imageAlt(text, lead)}
+                  sizes="(max-width: 767px) 100vw, 58vw"
+                  priority
                   unoptimized
                 />
-                <Label text={syntheticLabelText(text, image)} />
-              </figure>
-            ))}
-          </div>
-        )}
+              </Mat>
+              <Label text={syntheticLabelText(text, lead)} />
+            </figure>
+          )}
+          {rest.length > 0 && (
+            <div className={styles.thumbs}>
+              {rest.map((image) => (
+                <figure key={image.url} className={styles.figure}>
+                  <Mat size="compact">
+                    <ResponsiveImage
+                      variant="fill"
+                      aspectRatio="1 / 1"
+                      src={image.url}
+                      srcSet={image.srcSet}
+                      alt={imageAlt(text, image)}
+                      sizes="(max-width: 767px) 33vw, 160px"
+                      unoptimized
+                    />
+                  </Mat>
+                  <Label text={syntheticLabelText(text, image)} />
+                </figure>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.details}>
+          <header className={styles.header}>
+            {product.category && <Eyebrow mark>{product.category.label}</Eyebrow>}
+            <h1 className={styles.name}>{product.name}</h1>
+            <p className={styles.meta}>
+              {text.shared('label.reproduction')} · {text('product.sku', { sku: product.sku })}
+            </p>
+          </header>
+
+          <VariantPicker
+            productId={product.id}
+            sku={product.sku}
+            text={variantPickerText(text)}
+            variants={variants}
+            productPriceText={priceText}
+            available={product.available}
+            bagHref={bagHref}
+          />
+
+          <p className={styles.delivery}>{text('product.delivery')}</p>
+
+          {product.relatedWork && (
+            <p className={styles.original}>
+              {text('product.original', { title: product.relatedWork.title })}{' '}
+              <TextLink href={product.relatedWork.href} rel="noopener">
+                {product.relatedWork.href.replace(/^https?:\/\/[^/]+/, '') || 'Indies Gallery'}
+              </TextLink>
+            </p>
+          )}
+
+          <ProofPoints
+            items={[
+              text('product.signalPaper'),
+              text('product.signalWorkshop'),
+            ]}
+          />
+        </div>
       </div>
 
-      <div className={styles.details}>
-        <header className={styles.header}>
-          <h1 className={styles.name}>{product.name}</h1>
-          <p className={styles.reproduction}>{text.shared('label.reproduction')}</p>
-          <p className={styles.sku}>{text('product.sku', { sku: product.sku })}</p>
-        </header>
-
-        <VariantPicker
-          productId={product.id}
-          sku={product.sku}
-          text={variantPickerText(text)}
-          variants={variants}
-          productPriceText={priceText}
-          available={product.available}
-          bagHref={bagHref}
-        />
-
-        <p className={styles.delivery}>{text('product.delivery')}</p>
-
-        {product.relatedWork && (
-          <p className={styles.original}>
-            {text('product.original', { title: product.relatedWork.title })}{' '}
-            <TextLink href={product.relatedWork.href} rel="noopener">
-              {product.relatedWork.href.replace(/^https?:\/\/[^/]+/, '') || 'Indies Gallery'}
-            </TextLink>
-          </p>
-        )}
-
-        {product.description !== '' && (
-          <section className={styles.description}>
-            <h2 className={styles.sectionTitle}>{text('product.description')}</h2>
-            <p>{product.description}</p>
-          </section>
-        )}
-      </div>
+      {product.description !== '' && (
+        <section className={styles.story} aria-labelledby="product-story">
+          <SectionHead id="product-story" title={text('product.description')} />
+          <p className={styles.storyText}>{product.description}</p>
+        </section>
+      )}
     </article>
   )
 }
