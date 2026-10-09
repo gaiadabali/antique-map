@@ -14,6 +14,7 @@
  * No Payload and no environment here: the store is a port, the caller (`@engine/cms`'s media
  * pipeline) reads the record, the bucket and the public base.
  */
+import '../sharp-concurrency'
 import sharp from 'sharp'
 
 import {
