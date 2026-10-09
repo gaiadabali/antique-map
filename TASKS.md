@@ -30,8 +30,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
-| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 2/4 | 8/13 | 0 | `██████░░░░`  62% |
-| **All** | 15 phases | | | **70/77** | **251/273** | **8** | `█████████░`  92% |
+| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 3/4 | 9/13 | 0 | `███████░░░`  69% |
+| **All** | 15 phases | | | **71/77** | **252/273** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -83,7 +83,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 15·W1 | 15.1 CI's wall clock and a green main | orchestrator | `main` | 2026-10-10 | |
-| 15·W1 | 15.3 The CMS says which site and speaks plainly | orchestrator | `main` | 2026-10-10 | |
 
 ## Decisions for the owner
 
@@ -1045,13 +1044,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 15.2.c pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2` and a restart backoff; `pm2.log` rotated; the role ends a transaction idle for 5 minutes — the container test ALL PASS
   - [x] 15.2.d **Check:** staging on the fixed release with the new ecosystem; a soak of distinct search pages levels off well under 1536M with no restart but reloads; the figures in DEPLOYMENT.md §3.
 
-- [ ] **15.3 The CMS says which site and speaks plainly** · needs: — — 🔄 15·W1
+- [x] **15.3 The CMS says which site and speaks plainly** · needs: — — ✅ 2026-10-10 10622217
   - **Lane** CMS · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/{groups.ts,nav/*,orders/nav-link.jsx}`, `engine/packages/cms/src/collections/*/{index,fields}.ts`, `engine/packages/cms/src/collections/works/fields-*.ts`, `engine/packages/cms/src/globals/*/*`, `engine/packages/cms/src/fields/*` — admin config only, no schema change; `docs/gates/cms-clarity.md`, `docs/gates/cms-clarity/*`
   - **Read** CONTENT-OPERATIONS.md; `docs/gates/admin-usability.md`
   - [x] 15.3.a the sidebar's groups name their site; the Order panel, Leads inbox and Import stock first under Daily work; the system's logs last under Technical records
   - [x] 15.3.b the Antiques list without doubled columns; Availability and Cataloguing progress apart; each record says which site shows it; Site settings a tab per site; developer words and task numbers out of every description; the stock and order forms ordered for a person
-  - [ ] 15.3.c **Check:** `docs/gates/cms-clarity.md` — owner and store user at 390 and 1280 on a production build, both languages of each changed label, `payload-types.ts` unchanged and no migration.
+  - [x] 15.3.c **Check:** `docs/gates/cms-clarity.md` — owner and store user at 390 and 1280 on a production build, both languages of each changed label, `payload-types.ts` unchanged and no migration.
 
 - [x] **15.4 The gallery's search answers fast** · needs: — — ✅ 2026-10-10 c8d9a577
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
@@ -1082,6 +1081,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-10 — ✅ **15.3 closed** (Sonnet audited staging and built it, orchestrator reviewed and fixed the Daily-work spacing; merged `86c460ba`, live on `1f9e709e`). The CMS names each site: the sidebar's groups are Gallery — antiques, Shop — products, Stores and stock, Orders, Leads and partners, Photos and tags (both sites), Content, Settings and, last, Technical records; the Order panel, Leads inbox and Import stock sit first under Daily work; a Bahasa Indonesia / English link at the bottom opens the language setting (the default stays English, the user's decision). Antiques no longer shows Title and Object type twice (the AI-draft groups named like the fields were list columns); Availability and Cataloguing progress are apart; Site settings is a tab per site with plain descriptions (no task numbers); Masters is Original photo files (private), Terms is Tags and grades; the order form folds its rarely-read sections; the stock form asks for the shelf count first. No schema change (`payload-types.ts` equal but comments; no migration). **Check** on staging as owner (both languages) and store user at 390 and 1280 (`docs/gates/cms-clarity.md`).
 - 2026-10-10 — ✅ **15.2 and 15.4 closed** (orchestrator; Sonnet built the code fixes, Opus audited). **15.2:** the one leak under real traffic — the analytics limiter never swept its maps — fixed; every in-process limiter now sweeps on time and caps at 100,000 keys; collect, geocode and chat read bodies with a cap; S3 clients time out and the pipeline keeps one; sharp at two threads; a jobs run stuck past 15 min answers 503; the pool explicit (8, idle 30 s); unread upstream bodies cancelled; the chat ends a stream silent for 30 s. Server: pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2`, a restart backoff, `pm2.log` rotated; the role ends a transaction idle 5 min; RustFS's MemoryMax raised to the repo's 6G (the host had drifted at 2G). Staging `production-20261009T185720Z-1f9e709e`, re-provisioned (second run: changes 0), one pm2 restart. **Soak** (5,000 requests, 3,000 distinct searches): flat at 645–652 MB under load, **440 MB after 90 s idle** (it held 648 MB before), no restart. **15.4:** the search SQL is 0.1 s and the cards' load is batched; the 3.4 s was a cold route; fresh searches 0.22–0.83 s on the new runtime ("river" 1.66 → 0.49 s), a 200-result one 0.98 s; a draft maker or place never reaches a card (`projection.db.test.ts`). Found on the way: `tests/security` is not in CI and has two stale cases (W4 expects the pre-10.7 late-payment behaviour; `stock-import/client.jsx` fetch has no timeout).
 - 2026-10-10 — ✅ **phase 14 — the gallery's luxury pass closed** (8/8 tasks, 17/17 subtasks; the user's request 2026-10-09: "upgrade the gallery's pages, so we have a proper UI too"). Indies Gallery now carries phase 12's language in its own hand: the sheet whole on a contained mat (never cropped), a hairline-marked eyebrow (the shop keeps its scale bar — both from tokens), museum captions with the status line and the `StockTag`, `SectionHead`, `ProofPoints`, hairlines and square corners. The orchestrator built the shared pieces and the hero (the newest available map — on staging De Bry's 1598 *Nova tabula Insularum Iava, Sumatra, Borneonis*); Sonnet agents rebuilt the home, browse and search, the item page, makers/places/pages/not-found, and sell to us/contact; the orchestrator reviewed every diff. The home's copy is back to the owner's answers — no institution named (G10), the same working day, Singapore time (G9), "Recently placed" from real sold works. **Done when** met on staging `production-20261009T154502Z-ca01da38` (`docs/gates/gallery-luxury.md`, qa Sonnet): 25 gallery addresses at 390 and 1280, en and id, axe clean, no sideways scroll, no broken image; price regex 0 on all, institution regex 0; sort, paging, include sold, a maker inside "All 112 makers", the year pair, zoom (info.json and tiles 200, canvas drawn), Ask carrying the stock number and an empty Send on both forms in both languages all work; the shop's pages and marks as before. **Stories:** staging holds no `pages` record — the story layout and its hero were checked on a local build. **A regression found on staging and fixed (`ca01da38`):** the shop's dark trade band drew its scale bar's stripes in bronze — the gradient had moved into a root-resolved token; the phase 13 session spotted it. Released together with phase 13 by that session (one release, one push). Follow-ups: the floating chat button covers a card's stock tag and list ends (shell); the curator's portrait (owner); the item's thumbnails should open the viewer at their image; a fade at the edge of the phone's scrolling sort row; gallery zoom tiles are served from the shop host's media path; the shop browse can drop its local pager override for `variant="quiet"`.
 
