@@ -27,8 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 4/16 | 0 | `███░░░░░░░`  25% |
-| **All** | 12 phases | | | **51/62** | **208/237** | **8** | `█████████░`  88% |
+| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 5/16 | 0 | `███░░░░░░░`  31% |
+| **All** | 12 phases | | | **51/62** | **209/237** | **8** | `█████████░`  88% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -889,7 +889,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/product/{product-view.tsx,product.module.css,variant-picker.tsx}` and new files beside them, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
   - **Read** EXPERIENCE-SHOP.md §5, COMMERCE.md §Prices (no price logic changes)
   - _Requirements: 12.1_
-  - [ ] 12.5.a two columns on a desktop: the lead image in a mat with its thumbnails, the details beside it (marked category, serif title, price before the button, stock, delivery note, proof points); the story below; one column on a phone
+  - [x] 12.5.a two columns on a desktop: the lead image in a mat with its thumbnails, the details beside it (marked category, serif title, price before the button, stock, delivery note, proof points); the story below; one column on a phone
   - [ ] 12.5.b **Check:** a product with variants and one without at 390 and 1280, axe clean; adding to the bag still works.
 
 - [ ] **12.6 Bag, checkout, tracking, order and not-found** · needs: 12.2 — 🔄 12·W2
