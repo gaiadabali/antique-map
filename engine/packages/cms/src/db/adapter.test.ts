@@ -49,6 +49,8 @@ describe('the database adapter', () => {
     expect(adapter.poolOptions).toEqual({
       connectionString: 'postgres://u:p@db.invalid:5432/x',
       connectionTimeoutMillis: POOL_CONNECT_TIMEOUT_MS,
+      max: 8,
+      idleTimeoutMillis: 30_000,
       query_timeout: QUERY_TIMEOUT_MS,
     })
     expect(adapter.pool).toBeUndefined()

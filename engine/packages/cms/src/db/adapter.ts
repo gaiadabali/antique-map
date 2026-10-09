@@ -69,6 +69,10 @@ export function devPushRequested(env: DatabaseEnv): boolean {
 
 /** How long a pool connect waits, for a new connection or a free client. */
 export const POOL_CONNECT_TIMEOUT_MS = 5_000
+/** The pool's size, explicit (pg's implicit 10) so one process stays well inside the role's 20. */
+export const POOL_MAX = 8
+/** How long an idle pooled connection is kept before it is closed. */
+export const POOL_IDLE_TIMEOUT_MS = 30_000
 /** How long one query waits for its answer: the longest statement a process may run. */
 export const QUERY_TIMEOUT_MS = 60_000
 /** setTimeout's largest delay: the migration lock's wait, bounded by nothing short of it. */
@@ -82,6 +86,8 @@ export function buildDatabaseAdapter(
     pool: {
       connectionString: env.DATABASE_URL,
       connectionTimeoutMillis: POOL_CONNECT_TIMEOUT_MS,
+      max: POOL_MAX,
+      idleTimeoutMillis: POOL_IDLE_TIMEOUT_MS,
       query_timeout: QUERY_TIMEOUT_MS,
     },
     disableCreateDatabase: true,
