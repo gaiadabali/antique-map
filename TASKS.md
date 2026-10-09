@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 0/8 | 0/17 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 14 phases | | | **60/73** | **226/260** | **8** | `█████████░`  87% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 0/8 | 3/17 | 0 | `██░░░░░░░░`  18% |
+| **All** | 14 phases | | | **60/73** | **229/260** | **8** | `█████████░`  88% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -960,8 +960,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/shared/ui/{mat,eyebrow,pagination,stock-tag}/**`, `engine/apps/web/src/shared/ui/index.ts`, `engine/apps/web/src/shared/style-guide/**`, `engine/apps/web/src/shared/styles/tokens/semantic.css`, `engine/apps/web/src/sites/gallery/tokens/brand.css`, `engine/apps/web/src/sites/shop/tokens/brand.css`, `engine/apps/web/src/sites/gallery/browse/{work-card.tsx,card.module.css}`
   - **Read** DESIGN-SYSTEM.md §1, §5, §7; DESIGN.md §The luxury pass
   - _Requirements: 12.1_
-  - [ ] 14.1.a the eyebrow's mark drawn from tokens — the shop's scale bar unchanged, the gallery's one hairline rule; `Mat fit="contain"` for originals (whole, never cropped, on the mat's ground); `StockTag` for a stock number; a square, quiet `Pagination` variant; each on the style guide
-  - [ ] 14.1.b the work card on a compact contained `Mat` with a museum caption — serif title, maker and date, dimensions, the stock tag and the one status line, never a price
+  - [x] 14.1.a the eyebrow's mark drawn from tokens — the shop's scale bar unchanged, the gallery's one hairline rule; `Mat fit="contain"` for originals (whole, never cropped, on the mat's ground); `StockTag` for a stock number; a square, quiet `Pagination` variant; each on the style guide
+  - [x] 14.1.b the work card on a compact contained `Mat` with a museum caption — serif title, maker and date, dimensions, the stock tag and the one status line, never a price
   - [ ] 14.1.c **Check:** the style guide shows each piece at 390 and 1280; the shop's home and browse look as on `aa7469b1`; lint, tokens, file size and the shared tests pass.
 
 - [ ] **14.2 The home's hero** · needs: phase 12 — 🔄 14·W1
@@ -969,7 +969,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/home/{hero.tsx,hero.module.css,gallery-home.tsx}`
   - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G6, G7, G10, G13), 12.1's hero
   - _Requirements: 12.1_
-  - [ ] 14.2.a the lead work — the newest available work with a published image — whole in a `Mat` with a museum caption (title, maker and date, the stock tag, *Price on request*) in place of the film's empty placeholder; the headline balanced under the marked eyebrow; the owner's facts as `ProofPoints` (since 2001, over 9,500 antiques, a certificate with every original) in place of the three trust cards, none naming an institution; the hero's words under `home.gallery.hero*` and `home.gallery.{eyebrow,title,lede}`, both languages
+  - [x] 14.2.a the lead work — the newest available work with a published image — whole in a `Mat` with a museum caption (title, maker and date, the stock tag, *Price on request*) in place of the film's empty placeholder; the headline balanced under the marked eyebrow; the owner's facts as `ProofPoints` (since 2001, over 9,500 antiques, a certificate with every original) in place of the three trust cards, none naming an institution; the hero's words under `home.gallery.hero*` and `home.gallery.{eyebrow,title,lede}`, both languages
   - [ ] 14.2.b **Check:** the home's first screen on a production build at 390, 1280 and 1995 px in both languages: the sheet loads at high priority and uncropped, axe clean, no sideways scroll.
 
 - [ ] **14.3 The home below the hero** · needs: 14.1, 14.2
