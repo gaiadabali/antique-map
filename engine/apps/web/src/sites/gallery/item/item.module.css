@@ -1,31 +1,42 @@
-/* The gallery's item page (5.2.b): 390 px first, tokens only (DESIGN-SYSTEM.md). */
+/* The gallery's item page (5.2.b, luxury pass 14.5): 390 px first, tokens only (DESIGN-SYSTEM.md). */
 
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-7);
   /* The browse page's full-bleed measure: the shell's main column is the prose width. */
   width: min(calc(100vw - 2 * var(--gutter)), 80rem);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding-block: var(--space-5);
+  padding-block: var(--space-4) var(--space-7);
 }
 
-/* Title block: hook title, original title in italic, maker line, stock number (§5). */
+/* Phone: title block, media, Ask panel. Desktop: media left; title block and panel right. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
 .head {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  min-width: 0;
 }
 
-.title {
+/* Two selectors deep: the shell's h1 rule sets its own font and margin. */
+.head .title {
   margin: 0;
-  font: var(--text-h1);
+  font: var(--text-h2);
   letter-spacing: var(--tracking-h1);
+  text-wrap: balance;
 }
 
 .originalTitle {
   margin: 0;
+  font: var(--text-h3);
   color: var(--color-text-muted);
 }
 
@@ -36,30 +47,20 @@
 
 .stock {
   margin: 0;
-  font: var(--text-small);
-  letter-spacing: var(--tracking-eyebrow);
-  color: var(--color-text-muted);
-}
-
-/* Phone: one column, top to bottom. Desktop: media left, record and panel right (§5). */
-.columns {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
 }
 
 .media {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
+  min-width: 0;
 }
 
-.primaryImage {
-  background: var(--color-surface-raised);
-}
-
-.primaryImage img {
-  object-fit: contain;
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 .mockupNote {
@@ -68,22 +69,37 @@
   color: var(--color-text-muted);
 }
 
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .side {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  min-width: 0;
 }
 
-/* Status and Ask panel: a conversation, never a checkout (§5). */
+/* The Ask panel: raised paper, a hairline, square, no shadow — a conversation, never a checkout. */
 .panel {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   align-items: flex-start;
-  padding: var(--space-4);
+  padding: var(--space-5);
   border: var(--rule-hair) solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: 0;
   background: var(--color-surface-raised);
+}
+
+.statusLine {
+  font: var(--text-h3);
+  color: var(--color-text);
 }
 
 .panelNote {
@@ -97,31 +113,40 @@
   color: var(--color-text-muted);
 }
 
-.priceOnRequest {
-  font: var(--text-h3);
+.panelEmail {
+  margin: 0;
+  font: var(--text-small);
 }
 
-/* The record: a definition list in the collectors' order (§5). */
+.side .proof {
+  margin: 0;
+}
+
+/* The record: hairline rows, the term in muted small capitals, the value beside it (§5). */
 .record {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-5);
+  max-inline-size: 48rem;
 }
 
 .list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
   margin: 0;
+  border-top: var(--rule-hair) solid var(--color-border);
 }
 
 .row {
   display: grid;
-  grid-template-columns: minmax(6rem, 10rem) 1fr;
-  gap: var(--space-3);
+  grid-template-columns: minmax(6rem, 10rem) minmax(0, 1fr);
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-bottom: var(--rule-hair) solid var(--color-border);
 }
 
 .term {
+  font: var(--text-small);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
@@ -173,10 +198,6 @@
 
 .zoomDoor {
   display: flex;
-  justify-content: center;
-  padding: var(--space-3);
-  border: var(--rule-hair) dashed var(--color-border);
-  border-radius: var(--radius-card);
 }
 
 .zoomEmpty {
@@ -209,25 +230,32 @@
   margin: 0;
 }
 
-@media (min-width: 1024px) {
-  .columns {
-    flex-direction: row;
-    align-items: flex-start;
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'media head'
+      'media side';
+    column-gap: var(--space-8);
+    row-gap: var(--space-6);
+  }
+
+  .head {
+    grid-area: head;
   }
 
   .media {
-    flex: 1 1 55%;
-    position: sticky;
-    top: var(--space-4);
+    grid-area: media;
   }
 
   .side {
-    flex: 1 1 40%;
+    grid-area: side;
+    position: sticky;
+    top: var(--space-6);
   }
 
-  /* The panel is the sticky one on the desktop (§5); the record scrolls beside it. */
-  .side > .panel {
-    position: sticky;
-    top: var(--space-4);
+  .thumbs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
