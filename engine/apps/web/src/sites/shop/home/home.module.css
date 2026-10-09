@@ -1,53 +1,23 @@
-/* The shop home's layout styles (ticket 4.3.b), from the design team's drawing. Every value is a
-   token from shared/styles/tokens or the shop brand file — no raw colour, no font-family. */
+/* The shop home's layout styles (ticket 4.3.b, luxury pass 12.3). Every value is a token from
+   shared/styles/tokens or the shop brand file — no raw colour, no font-family. */
 
 .section {
-  padding-block: var(--space-7);
-  border-top: var(--rule-hair) solid var(--color-border);
-}
-
-.section:first-child {
-  border-top: 0;
+  padding-block-start: var(--space-9);
 }
 
 /* Breaks out of the shell's reading-measure column the way `browse.module.css`'s `.page` does
-   (qa 4.qa, finding F1): the home needs the drawing's full-bleed width at 1280 px, not the 66ch
-   cap `.site-main` gives long-form pages. */
+   (qa 4.qa, finding F1): the home needs the full-bleed width at 1280 px, not the 66ch cap. */
 .wrap {
   width: min(calc(100vw - 2 * var(--gutter)), 80rem);
   margin-inline-start: 50%;
   translate: -50% 0;
   padding-inline: var(--gutter);
+  padding-block-end: var(--space-9);
 }
 
-.plate {
-  display: block;
-  width: 100%;
-  background: var(--color-surface-deep);
-  color: var(--color-text-muted);
-  font: var(--text-caption);
-  overflow: hidden;
-}
-
-.plateInner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--space-4);
-  height: 100%;
-}
-
-.four {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-5);
-}
-
-.rail {
-  display: grid;
-  grid-template-columns: 6rem minmax(0, 1fr);
-  gap: var(--space-6);
+.railHeading {
+  margin: 0;
+  line-height: 1;
 }
 
 .num {
@@ -57,13 +27,74 @@
 
 .cardTitle {
   font: var(--text-card-title);
-  margin: var(--space-2) 0 0;
+  margin: var(--space-3) 0 0;
 }
 
 .cardBody {
   font: var(--text-small);
   color: var(--color-text-muted);
   margin: var(--space-2) 0 0;
+}
+
+.sectionBody {
+  margin-block-start: var(--space-7);
+}
+
+/* Shop by: quiet text links, parted by hairlines, underlined on hover. */
+.chips {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  align-items: center;
+  column-gap: var(--space-7);
+  padding-block: var(--space-4);
+  border-block: var(--rule-hair) solid var(--color-border);
+}
+
+.chipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chipsRow li + li {
+  border-inline-start: var(--rule-hair) solid var(--color-border);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-4);
+  font: var(--text-card-title);
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
+}
+
+.chipsRow li:first-child .chip {
+  padding-inline-start: 0;
+}
+
+.chip:hover {
+  text-decoration-color: currentColor;
+}
+
+.chip:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* A grid of cards, four across on a desktop, two on a phone. */
+.four {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-7) var(--space-5);
+  margin-block-start: var(--space-7);
 }
 
 .productCard {
@@ -73,40 +104,84 @@
 }
 
 .productCard:hover .cardTitle {
-  color: var(--color-accent-secondary);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.2em;
 }
 
-.process {
+.productImage {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.three {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-7);
+  margin-block-start: var(--space-7);
+}
+
+.set {
+  margin: 0;
+}
+
+.caption {
+  display: grid;
+  gap: var(--space-1);
+  margin-block-start: var(--space-4);
+}
+
+.captionTitle {
+  font: var(--text-h3);
+  color: var(--color-text);
+}
+
+.captionBody {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  max-inline-size: 36rem;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-8);
   align-items: center;
 }
 
-.processStep {
-  margin-block-start: var(--space-5);
+.steps {
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--rule-hair) solid var(--color-border);
 }
 
-.processStep p {
-  margin: var(--space-2) 0 0;
+.step {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: var(--space-4);
+  padding-block: var(--space-5);
+  border-bottom: var(--rule-hair) solid var(--color-border);
 }
 
 .stepTitle {
-  font: var(--text-body);
-  font-weight: 700;
-  margin: var(--space-2) 0 0;
+  font: var(--text-card-title);
+  margin: 0;
 }
 
 .band {
-  padding-block: var(--space-8);
+  margin-block-start: var(--space-9);
+  padding-block: var(--space-9);
+}
+
+.bandWrap {
+  padding-inline: var(--space-8);
 }
 
 .bandDark {
   background: var(--color-surface-dark);
-  color: var(--color-text-on-dark);
-}
-
-.bandDark .cardBody {
   color: var(--color-text-on-dark);
 }
 
@@ -116,70 +191,74 @@
   --color-text-muted: var(--color-text-on-dark);
   --color-accent: var(--color-text-on-dark);
   --color-focus: var(--color-text-on-dark);
+  --color-border: var(--color-text-on-dark);
 }
 
-.railHeading {
-  margin: 0;
-  line-height: 1;
-}
-
-/* The island and room chips (qa 4.qa, finding F4): a plain pill link, token colours only. */
-.chipsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin-block-start: var(--space-4);
-}
-
-.chip {
-  display: inline-block;
-  padding: var(--space-2) var(--space-4);
-  border: var(--rule-hair) solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-text);
-  text-decoration: none;
-  font: var(--text-small);
-}
-
-.chip:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.setCard {
-  display: flex;
-  flex-direction: column;
+.bandDark h2 {
+  color: var(--color-text-on-dark);
 }
 
 .bandTint {
   background: var(--color-surface-raised);
 }
 
-.trade,
-.originals {
+.facts {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-7);
-  align-items: center;
+  grid-auto-flow: row;
+  grid-auto-columns: auto;
+  padding-block-start: 0;
+}
+
+.facts li,
+.facts li + li {
+  padding: var(--space-5) 0;
+  border-inline-start: 0;
+  border-bottom: var(--rule-hair) solid var(--color-border);
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  margin-block-start: var(--space-5);
+  margin-block-start: var(--space-6);
 }
 
 @media (max-width: 47.5rem) {
-  .process,
-  .trade,
-  .originals,
-  .four {
-    grid-template-columns: minmax(0, 1fr);
+  .section {
+    padding-block-start: var(--space-7);
   }
 
-  .rail {
+  .wrap {
+    padding-block-end: var(--space-7);
+  }
+
+  .band {
+    margin-block-start: var(--space-7);
+    padding-block: var(--space-7);
+  }
+
+  .bandWrap {
+    padding-inline: var(--space-5);
+  }
+
+  .chips {
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
+    row-gap: var(--space-2);
+  }
+
+  .four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-4);
+    margin-block-start: var(--space-6);
+  }
+
+  .three,
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .three {
+    margin-block-start: var(--space-6);
   }
 }
