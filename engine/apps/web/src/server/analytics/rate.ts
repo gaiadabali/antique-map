@@ -13,18 +13,44 @@ export const ADDRESS_CAPACITY = 240
 /** …and it refills at this many requests a second. */
 export const ADDRESS_REFILL_PER_SECOND = 2
 
+/** Hard cap per map: past it the oldest entries go, so live distinct keys cannot grow memory. */
+export const MAX_ENTRIES = 100_000
+const SWEEP_EVERY_MS = 60_000
+
 type SessionWindow = { windowStart: number; count: number }
 type Bucket = { tokens: number; updatedAt: number }
 
 export class RateLimiter {
   private readonly sessions = new Map<string, SessionWindow>()
   private readonly addresses = new Map<string, Bucket>()
+  private lastSweep: number | null = null
+
+  /** The time trigger: a sweep at most once a minute, from the hot path, so no caller must run it. */
+  private maybeSweep(now: number): void {
+    if (this.lastSweep === null) this.lastSweep = now
+    if (now - this.lastSweep >= SWEEP_EVERY_MS) {
+      this.sweep(now)
+      this.lastSweep = now
+    }
+  }
+
+  /** Set with recency, then drop the oldest entries past the cap (a Map iterates oldest first). */
+  private put<V>(map: Map<string, V>, key: string, value: V): void {
+    map.delete(key)
+    map.set(key, value)
+    while (map.size > MAX_ENTRIES) {
+      const oldest = map.keys().next()
+      if (oldest.done) break
+      map.delete(oldest.value)
+    }
+  }
 
   /** Whether this session's next `count` events fit in the last minute's 120; they count at once. */
   allowSession(sessionId: string, now: number = Date.now(), count = 1): boolean {
+    this.maybeSweep(now)
     const window = this.sessions.get(sessionId)
     if (window === undefined || now - window.windowStart >= 60_000) {
-      this.sessions.set(sessionId, { windowStart: now, count })
+      this.put(this.sessions, sessionId, { windowStart: now, count })
       return count <= SESSION_LIMIT
     }
     if (window.count + count > SESSION_LIMIT) return false
@@ -34,6 +60,7 @@ export class RateLimiter {
 
   /** Whether the address's bucket had `count` tokens; it consumes them when it did. */
   allowAddress(address: string, now: number = Date.now(), count = 1): boolean {
+    this.maybeSweep(now)
     const bucket = this.addresses.get(address) ?? {
       tokens: ADDRESS_CAPACITY,
       updatedAt: now,
@@ -45,11 +72,11 @@ export class RateLimiter {
     )
     bucket.updatedAt = now
     if (bucket.tokens < count) {
-      this.addresses.set(address, bucket)
+      this.put(this.addresses, address, bucket)
       return false
     }
     bucket.tokens -= count
-    this.addresses.set(address, bucket)
+    this.put(this.addresses, address, bucket)
     return true
   }
 
@@ -65,6 +92,7 @@ export class RateLimiter {
 
   /** The tests' reset: process state, so a test that does not clear it sees another's. */
   reset(): void {
+    this.lastSweep = null
     this.sessions.clear()
     this.addresses.clear()
   }
