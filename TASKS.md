@@ -27,8 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 9/16 | 0 | `██████░░░░`  56% |
-| **All** | 12 phases | | | **51/62** | **213/237** | **8** | `█████████░`  90% |
+| **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
+| **All** | 12 phases | | | **57/62** | **220/237** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -79,11 +79,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 12·W2 | 12.5 The product page | medior | `feat/p12-product` | 2026-10-09 | |
-| 12·W2 | 12.4 Browse, search and collections | medior | `feat/p12-browse` | 2026-10-09 | |
-| 12·W2 | 12.6 Bag, checkout, tracking, order and not-found | medior | `feat/p12-flow` | 2026-10-09 | |
-| 12·W2 | 12.3 The home below the hero | medior | `feat/p12-home` | 2026-10-09 | |
-| 12·W2 | 12.7 Partnership and the shell | medior | `feat/p12-shell` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -868,53 +863,53 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 12.2.a `Mat` (default and compact, `MatNote`), `Eyebrow mark`, `ProofPoints` and `SectionHead`, on the style guide; the hero rebuilt on them, its lead image through `ResponsiveImage` (AVIF, preloaded)
   - [x] 12.2.b **Check:** the style guide shows each at 390 and 1280; the hero renders as before; lint, tokens, file size and the shared tests pass.
 
-- [ ] **12.3 The home below the hero** · needs: 12.2 — 🔄 12·W2
+- [x] **12.3 The home below the hero** · needs: 12.2 — ✅ 2026-10-09 aa7469b1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/home/**` (not 12.1's files), the `home.shop.*` keys in `sites/shop/lexicon/{en,id}.json`
   - **Read** DESIGN-SYSTEM.md §1–§5, 12.1 and 12.2's components
   - _Requirements: 12.1_
   - [x] 12.3.a best sellers, sets, process, trade and originals bands rebuilt on `SectionHead`, `Mat` and `ProofPoints`; square "shop by" links in place of pills
-  - [ ] 12.3.b **Check:** the home at 390 and 1280 on a production build with the real designs, axe clean, no sideways scroll.
+  - [x] 12.3.b **Check:** the home at 390 and 1280 on a production build with the real designs, axe clean, no sideways scroll.
 
-- [ ] **12.4 Browse, search and collections** · needs: 12.2 — 🔄 12·W2
+- [x] **12.4 Browse, search and collections** · needs: 12.2 — ✅ 2026-10-09 aa7469b1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/browse/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection}/**`
   - **Read** EXPERIENCE-SHOP.md §4, DESIGN-SYSTEM.md §1–§5
   - _Requirements: 12.1_
   - [x] 12.4.a the listing at full width under a `SectionHead`; cards in compact mats with museum captions; filters and sort as quiet underlined tabs; pagination in the same hand; search and collection pages alike
-  - [ ] 12.4.b **Check:** browse, a search and a collection at 390 and 1280 with the real designs, axe clean, no sideways scroll; filters, sort and paging still work.
+  - [x] 12.4.b **Check:** browse, a search and a collection at 390 and 1280 with the real designs, axe clean, no sideways scroll; filters, sort and paging still work.
 
-- [ ] **12.5 The product page** · needs: 12.2 — 🔄 12·W2
+- [x] **12.5 The product page** · needs: 12.2 — ✅ 2026-10-09 aa7469b1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/product/{product-view.tsx,product.module.css,variant-picker.tsx}` and new files beside them, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
   - **Read** EXPERIENCE-SHOP.md §5, COMMERCE.md §Prices (no price logic changes)
   - _Requirements: 12.1_
   - [x] 12.5.a two columns on a desktop: the lead image in a mat with its thumbnails, the details beside it (marked category, serif title, price before the button, stock, delivery note, proof points); the story below; one column on a phone
-  - [ ] 12.5.b **Check:** a product with variants and one without at 390 and 1280, axe clean; adding to the bag still works.
+  - [x] 12.5.b **Check:** a product with variants and one without at 390 and 1280, axe clean; adding to the bag still works.
 
-- [ ] **12.6 Bag, checkout, tracking, order and not-found** · needs: 12.2 — 🔄 12·W2
+- [x] **12.6 Bag, checkout, tracking, order and not-found** · needs: 12.2 — ✅ 2026-10-09 aa7469b1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{bag,checkout,tracking,payment}/**` (markup and CSS only), `engine/apps/web/src/app/(shop)/shop/[locale]/{cart,checkout,track,order,not-found,[...missing]}/**`
   - **Read** COMMERCE.md (no behaviour changes), DESIGN-SYSTEM.md §1–§5
   - _Requirements: 12.1_
   - [x] 12.6.a each page opens on a `SectionHead`; bag lines with compact matted thumbnails and a summary panel; checkout and tracking forms in the same hand; the not-found page invites back to the shop
-  - [ ] 12.6.b **Check:** an empty bag, a bag with two lines, checkout to the simulator, tracking and not-found at 390 and 1280, axe clean; the purchase still completes on the simulator.
+  - [x] 12.6.b **Check:** an empty bag, a bag with two lines, checkout to the simulator, tracking and not-found at 390 and 1280, axe clean; the purchase still completes on the simulator.
 
-- [ ] **12.7 Partnership and the shell** · needs: 12.2 — 🔄 12·W2
+- [x] **12.7 Partnership and the shell** · needs: 12.2 — ✅ 2026-10-09 aa7469b1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/apps/web/src/sites/shop/partnership/**` (markup and CSS only), `engine/apps/web/src/shared/ui/{header,footer}/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/styles/site.css`
   - **Read** DESIGN-SYSTEM.md §1–§5
   - _Requirements: 12.1_
   - [x] 12.7.a partnership at full width: `SectionHead`, `ProofPoints`, offers in mats beside their terms, the form in the same hand; the header's navigation quieter and the wordmark not wrapping on a phone; the footer in titled columns
-  - [ ] 12.7.b **Check:** partnership at 390 and 1280, the header and footer on both sites, axe clean; the enquiry still submits.
+  - [x] 12.7.b **Check:** partnership at 390 and 1280, the header and footer on both sites, axe clean; the enquiry still submits.
 
-- [ ] **12.8 The pass on staging** · needs: 12.3, 12.4, 12.5, 12.6, 12.7
+- [x] **12.8 The pass on staging** · needs: 12.3, 12.4, 12.5, 12.6, 12.7 — ✅ 2026-10-09 aa7469b1
   - **Lane** QA · **Agent** qa (Sonnet), orchestrator for staging · **Wave** W3
   - **Owns** `docs/gates/luxury-pass.md`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
-  - [ ] 12.8.a released to staging; every shop page and the gallery's home at 390 and 1280, screenshots recorded
-  - [ ] 12.8.b **Check:** `docs/gates/luxury-pass.md` shows each page with axe clean and no sideways scroll, and the shop's purchase path completing on the simulator.
+  - [x] 12.8.a released to staging; every shop page and the gallery's home at 390 and 1280, screenshots recorded
+  - [x] 12.8.b **Check:** `docs/gates/luxury-pass.md` shows each page with axe clean and no sideways scroll, and the shop's purchase path completing on the simulator.
 
 ---
 
@@ -937,6 +932,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **phase 12 — the shop's luxury pass closed** (8/8 tasks, 16/16 subtasks; pulled forward from backlog v2.0 at the user's request). The hero (12.1, live `fb7ef553`) set the language the user approved — prints in paper mats, the scale-bar eyebrow, balanced serif heads, museum captions, proof points under hairlines — and four shared pieces carry it (`Mat`, `Eyebrow mark`, `SectionHead`, `ProofPoints`; 12.2, `DESIGN.md`). Sonnet agents rebuilt the home, browse/search/collections, the product page, bag→checkout→order→tracking→not-found, and partnership with a quieter shared header and a titled footer (both sites); the orchestrator reviewed every diff and fixed prices set in the display serif, Add to bag's lost busy state, the bag's misplaced line total and checkout's source order. **Done when** met on staging `production-20261009T133403Z-aa7469b1`: every shop page and the gallery home at 390 and 1280 axe clean, no sideways scroll, no broken image; the purchase path bag→order on the build and `payment.spec.ts` 6/6 (pay→Settle→paid) (`docs/gates/luxury-pass.md`). Follow-ups: a square `Pagination` variant, the 404 nav and footer targets, `inbox.db.test.ts` fails to load (`.css` import; already on `fb7ef553`).
 
 - 2026-10-09 — ✅ **10.8 closed** (Sonnet built, orchestrator reviewed and finished on staging `252b625a`). **Import stock** (owner, `/admin/stock-import`: CSV preview then apply through the 3.7 importer; `.xlsx` not read — needs a dependency, the user's call), **Reply on WhatsApp / by email** on a lead, the category picker lists categories, a duplicate SKU names its product, image intake guidance (subject, role and provenance deliberately never pre-filled), store staff land on their **Order panel**, **Leads inbox** named apart. Found on the way and fixed by the orchestrator: the custom admin pages (order panel, inbox, import) rendered **without Payload's frame** — no sidebar, so a store user on their panel could not reach Stock — now inside `DefaultTemplate` (`admin/page.jsx`; `@payloadcms/next` 3.90.2 added to the cms package, one copy). **Check:** `tests/e2e/admin-usability/` on staging, every recipe passes at both widths (gate `docs/gates/admin-usability.md`, re-run note). **Follow-ups:** the store user's landing is blank for about a second (the redirect runs in the streamed dashboard; move it to the proxy); `orders.stock_held` column (10.7); the rehearsal specs share checkout's 10/hour per address (wait it out, as here). Phase 10 now waits on **10.4** alone: the owner's people.
 
