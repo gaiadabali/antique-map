@@ -78,6 +78,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 10·W2 | 10.7 Replacement orders and late payments | senior-be | `worktree-agent-a721e11ba1a215fcb` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -771,7 +772,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
 
 
-- [ ] **10.7 Replacement orders and late payments** · needs: phase 7
+- [ ] **10.7 Replacement orders and late payments** · needs: phase 7 — 🔄 10·W2
   - **Lane** SHP + CMS · **Agent** senior-be, Opus review · **Wave** W2
   - **Owns** `engine/packages/cms/src/shop/{orders,payments,fulfilment}/**`, `engine/packages/cms/src/admin/orders/**`
   - **Read** COMMERCE.md §4, §12, §13; CONTENT-OPERATIONS.md §5.5; `docs/gates/rehearsal.md` R-1 and R-2 (found by the rehearsal); Q10
