@@ -1,0 +1,74 @@
+/* The collections index in the hero's hand: full breakout width, matted lead pictures, museum
+   captions. 390 px first; tokens only (DESIGN-SYSTEM.md). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding: var(--space-4) var(--gutter) var(--space-7);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7) var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .page {
+    padding-block-end: var(--space-9);
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-8) var(--space-7);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-1) 0;
+}
+
+.name {
+  font: var(--text-h3);
+  text-wrap: balance;
+}
+
+.card:hover .name {
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 4px;
+}
+
+.count {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.empty {
+  margin: 0;
+  font: var(--text-body);
+  color: var(--color-text-muted);
+}
