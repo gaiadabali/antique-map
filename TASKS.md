@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 6/8 | 28/32 | 1 | `█████████░`  88% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **48/54** | **203/221** | **8** | `█████████░`  92% |
+| **All** | 11 phases | | | **49/54** | **204/221** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 10·W2 | 10.8 Staff admin gaps from the 10.4 proxy run | medior | `worktree-agent-a5ce820d46bdba8fc` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -781,7 +780,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.7.b a payment after expiry (COMMERCE.md §13): if the same store still holds every unit, re-take them in the same transaction and mark the order `paid`; else `paid` with "reassign, or cancel and return the money"; the flag stays until staff clear it, and the panel offers that
   - [x] 10.7.c **Check:** db tests for both (stock short, stock present, concurrent retake); on staging the late-payment spec (`tests/e2e/rehearsal/late-payment.spec.ts`) ends with the order paid at its store, and a replacement of a delivered order reaches the store panel.
 
-- [ ] **10.8 Staff admin gaps from the 10.4 proxy run** · needs: phase 7 — 🔄 10·W2
+- [x] **10.8 Staff admin gaps from the 10.4 proxy run** · needs: phase 7 — ✅ 2026-10-09 bfbb930d
   - **Lane** CMS · **Agent** medior (Sonnet), senior-uiux review · **Wave** W2
   - **Owns** `engine/packages/cms/src/admin/{leads,widgets,dashboard,stock-import}/**`, `engine/packages/cms/src/collections/{products,media,stock-levels}/admin/**` (CONTENT-OPERATIONS.md changes go to 10.4.b)
   - **Read** `docs/gates/admin-usability.md`, CONTENT-OPERATIONS.md §3–§5, 3.7 (the import)
@@ -789,7 +788,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.8.a the stock spreadsheet import in the admin (3.7's importer behind an upload screen with its rejected-rows report), or CONTENT-OPERATIONS says how the owner hands it over instead
   - [x] 10.8.b leads: Reply on WhatsApp and Reply by email on a lead; product intake: image fields default sensibly, the category picker lists categories only, a duplicate SKU says which product has it
   - [x] 10.8.c store staff land on their order panel (the dashboard); the driver-details button is phone-sized (with 10.7's owner for `admin/orders/**`); the owner's two sidebar entries both named "Leads" (the list and the inbox) get distinct names
-  - [ ] 10.8.d **Check:** `tests/e2e/admin-usability/` re-run on staging: every recipe passes unaided at its target.
+  - [x] 10.8.d **Check:** `tests/e2e/admin-usability/` re-run on staging: every recipe passes unaided at its target.
 
 ---
 
@@ -860,6 +859,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **10.8 closed** (Sonnet built, orchestrator reviewed and finished on staging `252b625a`). **Import stock** (owner, `/admin/stock-import`: CSV preview then apply through the 3.7 importer; `.xlsx` not read — needs a dependency, the user's call), **Reply on WhatsApp / by email** on a lead, the category picker lists categories, a duplicate SKU names its product, image intake guidance (subject, role and provenance deliberately never pre-filled), store staff land on their **Order panel**, **Leads inbox** named apart. Found on the way and fixed by the orchestrator: the custom admin pages (order panel, inbox, import) rendered **without Payload's frame** — no sidebar, so a store user on their panel could not reach Stock — now inside `DefaultTemplate` (`admin/page.jsx`; `@payloadcms/next` 3.90.2 added to the cms package, one copy). **Check:** `tests/e2e/admin-usability/` on staging, every recipe passes at both widths (gate `docs/gates/admin-usability.md`, re-run note). **Follow-ups:** the store user's landing is blank for about a second (the redirect runs in the streamed dashboard; move it to the proxy); `orders.stock_held` column (10.7); the rehearsal specs share checkout's 10/hour per address (wait it out, as here). Phase 10 now waits on **10.4** alone: the owner's people.
 
 - 2026-10-09 — ✅ **10.7 closed** (Opus built, orchestrator reviewed). **Replace damaged item** (owner, editor, on a delivered order): a Rp 0 `replacement` order linked both ways, `processing` at the original's store, stock taken atomically (short → nothing written), history on both, the buyer's tracking email. **Late payments** (COMMERCE.md §13): an expired order is `paid` — units re-taken all-or-none at its store, or flagged "stock gone — reassign, or cancel and refund"; a cancelled order stays cancelled, flagged for a refund; staff **clear the flag** with a note. 13 new db tests incl. ten concurrent replays (stock once) and a late payment racing a checkout for the last unit (sold once). On staging (`production-20261009T091838Z-dad846ef`): `late-payment.spec.ts` (paid at DPS-004, unit re-taken, flag cleared) and `replacement.spec.ts` (the replacement reaches the store panel) pass. **Follow-ups:** an order paid with its stock gone is marked by a history note (`shop/fulfilment/held-units.ts`) — replace with an `orders.stock_held` column in the next migration; the buyer's order page shows no late-payment text now that the order is paid (`server/shop/payment/load-order.ts`); a replacement sends the store no email; a late payment counts its discount use again (can pass `usage_limit` by one).
 

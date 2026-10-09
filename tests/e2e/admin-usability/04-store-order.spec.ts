@@ -147,7 +147,13 @@ test.describe.serial('R4 store user moves an order to delivered', () => {
     squeezed.push(`orders-list ${await overflow(page)}`)
     const listUrl = page.url()
     done('dashboard to the orders list')
-    await tap('open', page.getByRole('link', { name: new RegExp(`^#?${number}$`) }).first())
+    await tap(
+      'open',
+      page
+        .locator('a[href^="/admin/orders/"]')
+        .filter({ hasText: `#${number}` })
+        .first(),
+    )
     await page.waitForLoadState('networkidle')
     await expect(page).toHaveURL(/\/orders\/\d+/)
     const id = Number(/orders\/(\d+)/.exec(page.url())![1])
