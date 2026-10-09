@@ -27,8 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 6/16 | 0 | `████░░░░░░`  38% |
-| **All** | 12 phases | | | **51/62** | **210/237** | **8** | `█████████░`  89% |
+| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 7/16 | 0 | `████░░░░░░`  44% |
+| **All** | 12 phases | | | **51/62** | **211/237** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -905,7 +905,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/apps/web/src/sites/shop/partnership/**` (markup and CSS only), `engine/apps/web/src/shared/ui/{header,footer}/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/styles/site.css`
   - **Read** DESIGN-SYSTEM.md §1–§5
   - _Requirements: 12.1_
-  - [ ] 12.7.a partnership at full width: `SectionHead`, `ProofPoints`, offers in mats beside their terms, the form in the same hand; the header's navigation quieter and the wordmark not wrapping on a phone; the footer in titled columns
+  - [x] 12.7.a partnership at full width: `SectionHead`, `ProofPoints`, offers in mats beside their terms, the form in the same hand; the header's navigation quieter and the wordmark not wrapping on a phone; the footer in titled columns
   - [ ] 12.7.b **Check:** partnership at 390 and 1280, the header and footer on both sites, axe clean; the enquiry still submits.
 
 - [ ] **12.8 The pass on staging** · needs: 12.3, 12.4, 12.5, 12.6, 12.7
