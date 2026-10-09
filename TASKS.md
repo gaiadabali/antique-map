@@ -30,8 +30,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
-| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 3/13 | 0 | `██░░░░░░░░`  23% |
-| **All** | 15 phases | | | **68/77** | **246/273** | **8** | `█████████░`  90% |
+| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 4/13 | 0 | `███░░░░░░░`  31% |
+| **All** | 15 phases | | | **68/77** | **247/273** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1059,8 +1059,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/server/gallery/catalogue/**`, `engine/apps/web/src/sites/gallery/search/**`, the gallery search page
   - **Read** EXPERIENCE-GALLERY.md §4, §9
-  - [ ] 15.4.a the cards' load cut to the fields a card shows (still published-only and `overrideAccess: false`; a draft maker or place never reaches a card), or the results paged as browse is
-  - [ ] 15.4.b **Check:** on staging `/search?q=map` uncached under 1 s (3.4 s on 2026-10-10, the SQL 0.1 s of it), at 390 and 1280.
+  - [x] 15.4.a measured where the time goes and cut what costs: the cards' load is already batched (5 queries at any count; 200 cards 58 ms, `populate` no gain, so unchanged); the 3.4 s was a cold route after a release; a test now proves a draft maker or place never reaches a card (`projection.db.test.ts`)
+  - [ ] 15.4.b **Check:** on warm staging an uncached 200-result search (`the`, `of`, `de`, `and`) answers under 1 s compressed (3.4 s once on 2026-10-10, the SQL 0.1 s of it).
 
 ---
 
