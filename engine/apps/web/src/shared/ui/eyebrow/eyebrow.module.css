@@ -7,7 +7,7 @@
   color: var(--color-text-muted);
 }
 
-/* The scale bar beside the words; a line too long for both drops the words below the bar. */
+/* The site's mark beside the words; a line too long for both drops the words below the mark. */
 .marked {
   display: inline-flex;
   flex-wrap: wrap;
@@ -15,10 +15,11 @@
   gap: var(--space-3) var(--space-4);
 }
 
+/* Drawn from the site's mark tokens: the shop's scale bar, the gallery's hairline rule. */
 .scale {
   flex: none;
-  inline-size: var(--space-8);
-  block-size: calc(var(--space-1) * 1.5);
-  border: var(--rule-hair) solid var(--color-accent);
-  background: repeating-linear-gradient(90deg, var(--color-accent) 0 25%, transparent 25% 50%);
+  inline-size: var(--mark-inline-size);
+  block-size: var(--mark-block-size);
+  border: var(--mark-border-width) solid var(--color-accent);
+  background: var(--mark-fill);
 }

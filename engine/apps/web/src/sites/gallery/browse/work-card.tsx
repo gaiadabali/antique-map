@@ -1,14 +1,15 @@
 /**
- * One work card (5.1.b; EXPERIENCE-GALLERY.md §4): the image on its mat, contained — never
- * cropped — then the title, the maker and the date with its precision, the dimensions, and ONE
- * status line. The gallery never names a price: the line says *Price on request*, *On hold* or
- * *Sold*, and nothing else. The card is one plain `<a>` to the item's `publicId` route —
- * prefetching a listing costs a database read (ARCHITECTURE.md §6).
+ * One work card (5.1.b, 14.1; EXPERIENCE-GALLERY.md §4): the sheet whole on a compact mat —
+ * contained, never cropped — then a museum caption: the title, the maker and the date with its
+ * precision, the dimensions, ONE status line and the stock-number tag. The gallery never names a
+ * price: the line says *Price on request*, *On hold* or *Sold*, and nothing else. The card is one
+ * plain `<a>` to the item's `publicId` route — prefetching a listing costs a database read
+ * (ARCHITECTURE.md §6). Browse, search, makers, places and the home all show this card.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { WorkCardVM } from '../../../server/gallery/catalogue/view-models'
-import { ResponsiveImage } from '../../../shared/ui/responsive-image'
+import { Mat, ResponsiveImage, StockTag } from '../../../shared/ui'
 import { browseText } from './copy'
 import styles from './card.module.css'
 
@@ -22,7 +23,7 @@ export function statusLineOf(status: WorkCardVM['status'], locale: SiteLocale): 
 
 /**
  * The image's slot, for the browser's pick from the ladder: on the phone half the page less the
- * gutters, the column gap and the mat's padding; on the desktop a quarter of the results column.
+ * gutters, the column gap and the mat; on the desktop a quarter of the results column.
  */
 const CARD_IMAGE_SIZES = '(min-width: 768px) 15vw, calc(50vw - 3rem)'
 
@@ -41,7 +42,7 @@ export function WorkCard({
   const byline = [work.maker?.name, work.date].filter(Boolean).join(', ')
   return (
     <a href={href} className={styles.card}>
-      <div className={styles.mat}>
+      <Mat size="compact" fit="contain" ratio={work.image === null ? 1 : undefined}>
         {work.image !== null ? (
           <ResponsiveImage
             variant="fill"
@@ -51,20 +52,27 @@ export function WorkCard({
             alt={work.image.alt}
             sizes={CARD_IMAGE_SIZES}
             priority={lead}
-            className={styles.image}
           />
-        ) : (
-          <div className={styles.noImage} aria-hidden="true" />
-        )}
-      </div>
-      <div className={styles.body}>
+        ) : // No picture: the window stays empty — the caption below already names the work.
+        null}
+      </Mat>
+      <span className={styles.body}>
         <span className={styles.title}>{work.title}</span>
         {byline !== '' && <span className={styles.meta}>{byline}</span>}
         {work.dimensions !== null && <span className={styles.meta}>{work.dimensions}</span>}
-        <span className={`${styles.status} ${styles[`status-${work.status}`] ?? ''}`}>
-          {statusLineOf(work.status, locale)}
+        <span className={styles.foot}>
+          <span className={`${styles.status} ${styles[`status-${work.status}`] ?? ''}`}>
+            {statusLineOf(work.status, locale)}
+          </span>
+          {work.stockNumber !== null && work.stockNumber !== '' && (
+            <StockTag
+              label={browseText(locale)('label.stockNumber', { stockNumber: work.stockNumber })}
+            >
+              {work.stockNumber}
+            </StockTag>
+          )}
         </span>
-      </div>
+      </span>
     </a>
   )
 }

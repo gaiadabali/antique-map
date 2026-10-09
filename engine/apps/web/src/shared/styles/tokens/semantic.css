@@ -100,6 +100,15 @@
   --ease: var(--brand-ease, var(--primitive-ease));
   --dur-loop: var(--brand-dur-loop, var(--primitive-dur-loop));
 
+  /* the eyebrow's mark, a site's signature (DESIGN-SYSTEM.md §1); each site's brand file sets it */
+  --mark-inline-size: var(--brand-mark-inline-size, var(--primitive-space-8));
+  --mark-block-size: var(--brand-mark-block-size, var(--primitive-rule-hair));
+  --mark-border-width: var(--brand-mark-border-width, 0);
+  --mark-fill: var(--brand-mark-fill, var(--color-accent));
+
+  /* the words in an empty mat window, on the window's deep ground (AA on each palette) */
+  --color-mat-note: var(--brand-mat-note, var(--color-text-muted));
+
   /* chat roles � the messenger's surfaces, aliases of the roles above so a site restyles them once */
   --color-chat-ground: var(--color-surface);
   --color-chat-agent: var(--color-surface-raised);

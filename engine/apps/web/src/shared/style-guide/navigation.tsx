@@ -18,6 +18,16 @@ export function Navigation(): React.ReactElement {
       <Section id="sg-pagination" title="Pagination">
         <Pagination currentPage={3} totalPages={10} getHref={(p: number) => `/?page=${p}`} />
       </Section>
+
+      <Section id="sg-pagination-quiet" title="Pagination — quiet">
+        <Pagination
+          variant="quiet"
+          ariaLabel="Pagination, quiet"
+          currentPage={5}
+          totalPages={64}
+          getHref={(p: number) => `/?page=${p}`}
+        />
+      </Section>
     </>
   )
 }

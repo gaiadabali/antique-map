@@ -9,9 +9,11 @@ import {
   ProofPoints,
   SectionHead,
   Skeleton,
+  StockTag,
   Toast,
 } from '../ui'
 
+import { samplePlate } from './fixtures'
 import { Section } from './section'
 import styles from './style-guide.module.css'
 
@@ -63,6 +65,23 @@ export function Surfaces(): React.ReactElement {
               <MatNote>Compact mat</MatNote>
             </Mat>
           </div>
+          <div className={styles.matSample}>
+            <Mat ratio={1} size="compact" fit="contain">
+              <img src={samplePlate(350, 100)} alt="A 3.5 : 1 sheet, whole" />
+            </Mat>
+          </div>
+          <div className={styles.matSample}>
+            <Mat ratio={1} size="compact" fit="contain">
+              <img src={samplePlate(30, 100)} alt="A 0.3 : 1 sheet, whole" />
+            </Mat>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="sg-stock-tag" title="Stock tag">
+        <div className={styles.row}>
+          <StockTag label="Stock no. M.0500">M.0500</StockTag>
+          <StockTag label="Stock no. P.1180">P.1180</StockTag>
         </div>
       </Section>
 

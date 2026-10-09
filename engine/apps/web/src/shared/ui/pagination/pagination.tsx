@@ -7,6 +7,12 @@ export type PaginationProps = {
   readonly ariaLabel?: string
   readonly previousLabel?: string
   readonly nextLabel?: string
+  /**
+   * `quiet` squares the page links, keeps them unfilled (the current page under a dark hairline)
+   * and gives each a 44 px target; on a phone the numbers sit on their own row above Previous and
+   * Next. The luxury pass's pager (DESIGN.md).
+   */
+  readonly variant?: 'default' | 'quiet'
 }
 
 /** Numbered pagination using plain <a> (prefetching a storefront page costs a database read). */
@@ -17,6 +23,7 @@ export function Pagination({
   ariaLabel = 'Pagination',
   previousLabel = 'Previous',
   nextLabel = 'Next',
+  variant = 'default',
 }: PaginationProps): React.ReactElement {
   const pages = buildPages(currentPage, totalPages)
 
@@ -24,7 +31,10 @@ export function Pagination({
   const nextDisabled = currentPage >= totalPages
 
   return (
-    <nav aria-label={ariaLabel} className={styles.nav}>
+    <nav
+      aria-label={ariaLabel}
+      className={[styles.nav, variant === 'quiet' && styles.quiet].filter(Boolean).join(' ')}
+    >
       <a
         href={prevDisabled ? getHref(currentPage) : getHref(currentPage - 1)}
         aria-disabled={prevDisabled}

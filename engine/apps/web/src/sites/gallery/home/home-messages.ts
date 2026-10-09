@@ -13,14 +13,11 @@ export const HOME_MESSAGES = defineMessages({
   'home.gallery.title': 'The islands, first drawn.',
   'home.gallery.lede':
     'Original maps and engravings of the East Indies, 1550–1900, held in Singapore and offered with the curator’s certificate.',
-  'home.gallery.poster':
-    'A still from the gallery film — shown here as a poster until the film loads',
-  'home.gallery.trustCuratorTitle': 'Curator-certified',
-  'home.gallery.trustCuratorBody': 'Every piece signed by Dr David E. Parry',
-  'home.gallery.trustOriginalsTitle': 'Originals only',
-  'home.gallery.trustOriginalsBody': 'Not one reproduction in the gallery',
-  'home.gallery.trustMuseumsTitle': 'Museum-collected',
-  'home.gallery.trustMuseumsBody': 'Singapore, Leiden and Louvre Abu Dhabi',
+  'home.gallery.heroCtaBrowse': 'Explore the collection',
+  // The owner's facts (G7, G13): no institution is named (G10).
+  'home.gallery.heroSince': 'Since 2001',
+  'home.gallery.heroCount': 'Over 9,500 antiques',
+  'home.gallery.heroCertificate': 'A certificate with every original',
   'home.gallery.aboutEyebrow': 'About',
   'home.gallery.aboutLead':
     'Indies Gallery has bought and sold antique maps, prints, books and photographs of the East Indies for over twenty-five years. Our inventory runs past 9,500 authentic pieces, from the fifteenth century to the twentieth; 2,090 of them are listed online at any time.',
