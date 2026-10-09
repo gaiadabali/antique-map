@@ -27,8 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **12** The shop's luxury pass | UI | 4, 6 | · not started | 0/8 | 0/16 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 12 phases | | | **49/62** | **204/237** | **8** | `█████████░`  86% |
+| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 4/16 | 0 | `███░░░░░░░`  25% |
+| **All** | 12 phases | | | **51/62** | **208/237** | **8** | `█████████░`  88% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -847,21 +847,21 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every shop page (home, browse, search, collection, product, bag, checkout, tracking, order, partnership, not-found) shows the language at 390 px and 1280 px with axe clean and no sideways scroll; behaviour, prices and stock are untouched; the gallery's pages change only through the shared header and footer.
 **Waves:** W1 — 12.1, 12.2 · W2 — 12.3, 12.4, 12.5, 12.6, 12.7 · W3 — 12.8
 
-- [ ] **12.1 The home's hero** · needs: phase 4, phase 6
+- [x] **12.1 The home's hero** · needs: phase 4, phase 6 — ✅ 2026-10-09 d7deddd9
   - **Lane** WEB · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/shop/home/{hero.tsx,hero.module.css,frame-ratio.ts,hero.test.ts}`
   - **Read** DESIGN-SYSTEM.md §1–§4
   - _Requirements: 12.1_
-  - [ ] 12.1.a the lead print (the first featured product with a published image) in a paper mat with a museum caption; the headline on two balanced lines under a scale-bar eyebrow; three proof points; the copy in both locales
-  - [ ] 12.1.b **Check:** live on staging (`fb7ef553`) at 390, 1280 and 1995 px in both locales: the photograph loads at high priority, the caption names it with its label and price, axe clean, no sideways scroll.
+  - [x] 12.1.a the lead print (the first featured product with a published image) in a paper mat with a museum caption; the headline on two balanced lines under a scale-bar eyebrow; three proof points; the copy in both locales
+  - [x] 12.1.b **Check:** live on staging (`fb7ef553`) at 390, 1280 and 1995 px in both locales: the photograph loads at high priority, the caption names it with its label and price, axe clean, no sideways scroll.
 
-- [ ] **12.2 The shared pieces of the language** · needs: phase 4
+- [x] **12.2 The shared pieces of the language** · needs: phase 4 — ✅ 2026-10-09 ef355cb7
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/shared/ui/{mat,proof-points,section-head,eyebrow}/**`, `engine/apps/web/src/shared/ui/index.ts`, `engine/apps/web/src/shared/style-guide/**`, the token files
   - **Read** DESIGN-SYSTEM.md §Built to be restyled, §5
   - _Requirements: 12.1_
-  - [ ] 12.2.a `Mat` (default and compact, `MatNote`), `Eyebrow mark`, `ProofPoints` and `SectionHead`, on the style guide; the hero rebuilt on them, its lead image through `ResponsiveImage` (AVIF, preloaded)
-  - [ ] 12.2.b **Check:** the style guide shows each at 390 and 1280; the hero renders as before; lint, tokens, file size and the shared tests pass.
+  - [x] 12.2.a `Mat` (default and compact, `MatNote`), `Eyebrow mark`, `ProofPoints` and `SectionHead`, on the style guide; the hero rebuilt on them, its lead image through `ResponsiveImage` (AVIF, preloaded)
+  - [x] 12.2.b **Check:** the style guide shows each at 390 and 1280; the hero renders as before; lint, tokens, file size and the shared tests pass.
 
 - [ ] **12.3 The home below the hero** · needs: 12.2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
