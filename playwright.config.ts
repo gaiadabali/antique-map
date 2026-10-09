@@ -147,16 +147,33 @@ const hosts: Project = {
 // The admin role drive (TASKS.md 3.6.d, `docs/gates/3.6.md`): the shop host, the admin's
 // (Q1), on this worktree's own port and database (`pnpm worktree:env`, `local.mjs`'s
 // `localPort()`) — CI sets E2E_PORT the same way `start-server.sh` runs the server.
-const admin: Project = {
-  name: 'admin',
+// The three admin files share one database and one set of staff accounts: roles.spec switches the
+// owner's profile language and counts orders, owner-flow adds records and signs in as the owner in
+// English, store-panel moves and reassigns orders. Run side by side in separate workers (this
+// config is `fullyParallel`), they flip each other's language and change the counts the other
+// reads, so each file is its own project and each waits for the one before it (the folder's own
+// config, `tests/e2e/admin/playwright.config.ts`, gets the same by `workers: 1`).
+const adminProject = (name: string, testMatch: string, dependencies?: string[]): Project => ({
+  name,
   testDir: './tests/e2e/admin',
+  testMatch,
+  dependencies,
+  // As the folder's own config: the admin renders after the server answers, slower than 30 s / 5 s
+  // on a loaded machine (a role's case signs in, switches language twice and reads SQL counts).
+  timeout: 120_000,
+  expect: { timeout: 15_000 },
   // `port` and `gallery`: roles.spec's "/admin is a 404 on the gallery's host" names the other host.
   metadata: { ...metadataOf(ADMIN_SITE), port: localPort(), gallery: galleryHost },
   use: {
     ...desktop,
     baseURL: `http://${SITES[ADMIN_SITE].hostnames.local[0]}:${localPort()}`,
   },
-}
+})
+const admin: Project[] = [
+  adminProject('admin', '**/roles.spec.ts'),
+  adminProject('admin-owner-flow', '**/owner-flow.spec.ts', ['admin']),
+  adminProject('admin-store-panel', '**/store-panel.spec.ts', ['admin-owner-flow']),
+]
 
 export default defineConfig({
   // Signs the staff accounts in once; sign-in is limited per address (tests/e2e/support/sessions.ts).
@@ -165,5 +182,5 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['list'], ['github'], ['html', { open: 'never' }]] : 'list',
-  projects: [...smoke, ...status, ...a11y, shopE2e, galleryE2e, hosts, admin],
+  projects: [...smoke, ...status, ...a11y, shopE2e, galleryE2e, hosts, ...admin],
 })

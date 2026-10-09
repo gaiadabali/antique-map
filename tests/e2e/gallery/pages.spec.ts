@@ -51,10 +51,16 @@ test.describe('a maker page', () => {
   })
 
   test('is listed on the makers index, linked to its page', async ({ page }) => {
-    const response = await page.goto('/makers')
-    expect(response?.status()).toBe(200)
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Makers')
+    // The index is cached under the gallery's catalogue tag, which expires stale-while-revalidate
+    // (`@engine/cache` EDITORIAL_EXPIRY): the first request after the seed's write can still be
+    // served the copy without the new maker, and the next one is fresh. So: look, reload, look.
     const link = page.getByRole('link', { name: /E2E François Valentijn/ })
+    await expect(async () => {
+      const response = await page.goto('/makers')
+      expect(response?.status()).toBe(200)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Makers')
+      await expect(link).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
     await expect(link).toHaveAttribute('href', `/makers/${fixture.makerSlug}`)
   })
 })

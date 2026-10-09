@@ -16,6 +16,10 @@ const STORE_CODE = `E2E-${RUN}`
 const SKU = `E2E-PRINT-${RUN}`
 const ALT = `A hand-coloured map of Bali, run ${RUN}`
 
+// Each step uses what the one before it made (the photo, the antique, the store, the product), so
+// the file runs as one serial group in one worker, in order, even under `fullyParallel`.
+test.describe.configure({ mode: 'serial' })
+
 let fx: Fixtures
 const timings: Record<string, number> = {}
 test.beforeAll(() => {

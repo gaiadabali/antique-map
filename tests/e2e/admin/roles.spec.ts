@@ -13,7 +13,8 @@ import { choose, fieldError, rest, setLanguage, sidebar, signIn, toast, widgetCo
 import { record, shot } from './evidence'
 import { fixtures, sql, type Fixtures } from './local.mjs'
 
-// One worker, in file order (the config): a failing case does not skip the ones after it.
+// The cases are independent of each other (a failing one does not skip the rest). The config runs
+// this file apart from the other admin files: they share its accounts and the counts it reads.
 let fx: Fixtures
 test.beforeAll(() => {
   fx = fixtures()
@@ -22,27 +23,47 @@ test.beforeAll(() => {
 const ROLES = ['owner', 'editor', 'storeA'] as const satisfies readonly AccountKey[]
 const LANGUAGES = ['en', 'id'] as const
 
-/** The sidebar each role may see (TASKS.md 3.6.b; CONTENT-MODEL.md §7), in English. */
+/**
+ * The sidebar each role may see (TASKS.md 3.6.b; CONTENT-MODEL.md §7; 15.3's regrouping, `docs/gates/cms-clarity.md`),
+ * in English: each group names its site, in the order daily work first and the technical records
+ * last (`registries/collections.ts`, `admin/groups.ts`). Object order is the order shown.
+ */
 const SIDEBARS: Record<(typeof ROLES)[number], Record<string, string[]>> = {
   owner: {
-    Settings: ['Staff', 'Events', 'Site settings'],
-    'Stores and stock': ['Stores', 'Stock'],
-    Orders: ['Orders', 'Payment events'],
-    Shop: ['Discount codes', 'Products'],
-    Antiques: ['Antiques', 'Makers', 'Places', 'Terms', 'Images', 'Masters'],
-    Content: ['Pages', 'Redirects'],
-    'Leads and partners': ['Leads', 'Partners', 'Chat sessions'],
-  },
-  // Staff: the editor's own account, the only one they may read.
-  editor: {
-    Settings: ['Staff'],
+    'Gallery — antiques': ['Antiques', 'Makers', 'Places'],
+    'Shop — products': ['Products', 'Discount codes'],
     'Stores and stock': ['Stores', 'Stock'],
     Orders: ['Orders'],
-    Shop: ['Products'],
-    Antiques: ['Antiques', 'Makers', 'Places', 'Terms', 'Images', 'Masters'],
+    'Leads and partners': ['Leads', 'Partners', 'Chat sessions'],
+    'Photos and tags (both sites)': ['Tags and grades', 'Images', 'Original photo files (private)'],
     Content: ['Pages', 'Redirects'],
+    Settings: ['Staff', 'Site settings'],
+    'Technical records': ['Events', 'Payment events'],
+  },
+  // Staff: the editor's own account, the only one they may read; no leads, settings or records.
+  editor: {
+    'Gallery — antiques': ['Antiques', 'Makers', 'Places'],
+    'Shop — products': ['Products'],
+    'Stores and stock': ['Stores', 'Stock'],
+    Orders: ['Orders'],
+    'Photos and tags (both sites)': ['Tags and grades', 'Images', 'Original photo files (private)'],
+    Content: ['Pages', 'Redirects'],
+    Settings: ['Staff'],
   },
   storeA: { 'Stores and stock': ['Stores', 'Stock'], Orders: ['Orders'] },
+}
+
+/** The same groups' titles in Indonesian (the entries under them follow the collections' own labels). */
+const GROUPS_ID: Record<string, string> = {
+  'Gallery — antiques': 'Galeri — antik',
+  'Shop — products': 'Toko daring — produk',
+  'Stores and stock': 'Toko dan stok',
+  Orders: 'Pesanan',
+  'Leads and partners': 'Calon pembeli dan mitra',
+  'Photos and tags (both sites)': 'Foto dan tag (kedua situs)',
+  Content: 'Konten',
+  Settings: 'Pengaturan',
+  'Technical records': 'Catatan teknis',
 }
 
 const ACTING = `status NOT IN ('delivered', 'cancelled', 'expired')`
@@ -54,8 +75,20 @@ for (const role of ROLES) {
     for (const language of LANGUAGES) {
       await setLanguage(page, language)
       const groups = await sidebar(page)
-      if (language === 'en') expect(groups).toEqual(SIDEBARS[role])
-      else expect(Object.keys(groups)).toHaveLength(Object.keys(SIDEBARS[role]).length)
+      // Same groups, same order, each entry named (English), or each group titled (Indonesian).
+      if (language === 'en') {
+        expect(groups).toEqual(SIDEBARS[role])
+        expect(Object.keys(groups)).toEqual(Object.keys(SIDEBARS[role]))
+      } else {
+        expect(Object.keys(groups)).toEqual(Object.keys(SIDEBARS[role]).map((en) => GROUPS_ID[en]))
+      }
+      // The "Daily work" heading above the working views, and the language link under the groups.
+      await expect(
+        page.locator('nav .nav-group__label', { hasText: /^(Daily work|Pekerjaan harian)$/ }),
+      ).toHaveText(language === 'en' ? 'Daily work' : 'Pekerjaan harian')
+      await expect(page.locator('nav a[href="/admin/account#language-select"]')).toHaveText(
+        'Bahasa Indonesia / English',
+      )
       // The Order panel link under the groups (owner, editor and store staff; 10.4 proxy run), and
       // the dashboard's widgets open the panel (`/admin/orders`) and the inbox (`/admin/leads`).
       await expect(page.locator('nav a.nav__link[href="/admin/orders"]')).toHaveText(
