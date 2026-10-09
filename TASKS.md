@@ -30,8 +30,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
-| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 6/13 | 0 | `█████░░░░░`  46% |
-| **All** | 15 phases | | | **68/77** | **249/273** | **8** | `█████████░`  91% |
+| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 2/4 | 8/13 | 0 | `██████░░░░`  62% |
+| **All** | 15 phases | | | **70/77** | **251/273** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -83,9 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 15·W1 | 15.1 CI's wall clock and a green main | orchestrator | `main` | 2026-10-10 | |
-| 15·W1 | 15.2 No leak, and the server set for it | orchestrator | `main` | 2026-10-10 | |
 | 15·W1 | 15.3 The CMS says which site and speaks plainly | orchestrator | `main` | 2026-10-10 | |
-| 15·W1 | 15.4 The gallery's search answers fast | orchestrator | `main` | 2026-10-10 | |
 
 ## Decisions for the owner
 
@@ -1038,14 +1036,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 15.1.c CodeQL once: the advanced `codeql.yml` removed while the repository's default setup scans (it refuses the workflow's upload on every push) — the user's go-ahead
   - [ ] 15.1.d **Check:** CI on main green, its wall clock against run 37902899675 (12m20s), the per-job times recorded in the log line.
 
-- [ ] **15.2 No leak, and the server set for it** · needs: — — 🔄 15·W1
+- [x] **15.2 No leak, and the server set for it** · needs: — — ✅ 2026-10-10 c8d9a577
   - **Lane** OPS · **Agent** orchestrator (server), medior (Sonnet, the code fixes) · **Wave** W1
   - **Owns** `scripts/ops/**`, `docs/DEPLOYMENT.md`, `engine/apps/web/src/server/{analytics,leads,chat}/**`, `engine/apps/web/src/security/rate-limit.ts`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/packages/{http,media}/src/**`, `engine/packages/cms/src/{db/adapter.ts,collections/media/pipeline.ts}`
   - **Read** DEPLOYMENT.md §3–§5; SECURITY.md §2.10
   - [x] 15.2.a the analytics limiter sweeps on time and caps its maps (the one leak under real traffic); the other in-process limiters sweep on time and cap
   - [x] 15.2.b public bodies read with a cap (collect, geocode, chat); S3 timeouts and one pipeline client; sharp at two threads; a stuck jobs run answers 503; the pool's size explicit; unread fetch bodies cancelled; the chat stream ends after 30 s of silence
   - [x] 15.2.c pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2` and a restart backoff; `pm2.log` rotated; the role ends a transaction idle for 5 minutes — the container test ALL PASS
-  - [ ] 15.2.d **Check:** staging on the fixed release with the new ecosystem; a soak of distinct search pages levels off well under 1536M with no restart but reloads; the figures in DEPLOYMENT.md §3.
+  - [x] 15.2.d **Check:** staging on the fixed release with the new ecosystem; a soak of distinct search pages levels off well under 1536M with no restart but reloads; the figures in DEPLOYMENT.md §3.
 
 - [ ] **15.3 The CMS says which site and speaks plainly** · needs: — — 🔄 15·W1
   - **Lane** CMS · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
@@ -1055,12 +1053,12 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 15.3.b the Antiques list without doubled columns; Availability and Cataloguing progress apart; each record says which site shows it; Site settings a tab per site; developer words and task numbers out of every description; the stock and order forms ordered for a person
   - [ ] 15.3.c **Check:** `docs/gates/cms-clarity.md` — owner and store user at 390 and 1280 on a production build, both languages of each changed label, `payload-types.ts` unchanged and no migration.
 
-- [ ] **15.4 The gallery's search answers fast** · needs: — — 🔄 15·W1
+- [x] **15.4 The gallery's search answers fast** · needs: — — ✅ 2026-10-10 c8d9a577
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/server/gallery/catalogue/**`, `engine/apps/web/src/sites/gallery/search/**`, the gallery search page
   - **Read** EXPERIENCE-GALLERY.md §4, §9
   - [x] 15.4.a measured where the time goes and cut what costs: the cards' load is already batched (5 queries at any count; 200 cards 58 ms, `populate` no gain, so unchanged); the 3.4 s was a cold route after a release; a test now proves a draft maker or place never reaches a card (`projection.db.test.ts`)
-  - [ ] 15.4.b **Check:** on warm staging an uncached 200-result search (`the`, `of`, `de`, `and`) answers under 1 s compressed (3.4 s once on 2026-10-10, the SQL 0.1 s of it).
+  - [x] 15.4.b **Check:** on warm staging an uncached 200-result search (`the`, `of`, `de`, `and`) answers under 1 s compressed (3.4 s once on 2026-10-10, the SQL 0.1 s of it).
 
 ---
 
@@ -1084,6 +1082,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-10 — ✅ **15.2 and 15.4 closed** (orchestrator; Sonnet built the code fixes, Opus audited). **15.2:** the one leak under real traffic — the analytics limiter never swept its maps — fixed; every in-process limiter now sweeps on time and caps at 100,000 keys; collect, geocode and chat read bodies with a cap; S3 clients time out and the pipeline keeps one; sharp at two threads; a jobs run stuck past 15 min answers 503; the pool explicit (8, idle 30 s); unread upstream bodies cancelled; the chat ends a stream silent for 30 s. Server: pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2`, a restart backoff, `pm2.log` rotated; the role ends a transaction idle 5 min; RustFS's MemoryMax raised to the repo's 6G (the host had drifted at 2G). Staging `production-20261009T185720Z-1f9e709e`, re-provisioned (second run: changes 0), one pm2 restart. **Soak** (5,000 requests, 3,000 distinct searches): flat at 645–652 MB under load, **440 MB after 90 s idle** (it held 648 MB before), no restart. **15.4:** the search SQL is 0.1 s and the cards' load is batched; the 3.4 s was a cold route; fresh searches 0.22–0.83 s on the new runtime ("river" 1.66 → 0.49 s), a 200-result one 0.98 s; a draft maker or place never reaches a card (`projection.db.test.ts`). Found on the way: `tests/security` is not in CI and has two stale cases (W4 expects the pre-10.7 late-payment behaviour; `stock-import/client.jsx` fetch has no timeout).
 - 2026-10-10 — ✅ **phase 14 — the gallery's luxury pass closed** (8/8 tasks, 17/17 subtasks; the user's request 2026-10-09: "upgrade the gallery's pages, so we have a proper UI too"). Indies Gallery now carries phase 12's language in its own hand: the sheet whole on a contained mat (never cropped), a hairline-marked eyebrow (the shop keeps its scale bar — both from tokens), museum captions with the status line and the `StockTag`, `SectionHead`, `ProofPoints`, hairlines and square corners. The orchestrator built the shared pieces and the hero (the newest available map — on staging De Bry's 1598 *Nova tabula Insularum Iava, Sumatra, Borneonis*); Sonnet agents rebuilt the home, browse and search, the item page, makers/places/pages/not-found, and sell to us/contact; the orchestrator reviewed every diff. The home's copy is back to the owner's answers — no institution named (G10), the same working day, Singapore time (G9), "Recently placed" from real sold works. **Done when** met on staging `production-20261009T154502Z-ca01da38` (`docs/gates/gallery-luxury.md`, qa Sonnet): 25 gallery addresses at 390 and 1280, en and id, axe clean, no sideways scroll, no broken image; price regex 0 on all, institution regex 0; sort, paging, include sold, a maker inside "All 112 makers", the year pair, zoom (info.json and tiles 200, canvas drawn), Ask carrying the stock number and an empty Send on both forms in both languages all work; the shop's pages and marks as before. **Stories:** staging holds no `pages` record — the story layout and its hero were checked on a local build. **A regression found on staging and fixed (`ca01da38`):** the shop's dark trade band drew its scale bar's stripes in bronze — the gradient had moved into a root-resolved token; the phase 13 session spotted it. Released together with phase 13 by that session (one release, one push). Follow-ups: the floating chat button covers a card's stock tag and list ends (shell); the curator's portrait (owner); the item's thumbnails should open the viewer at their image; a fade at the edge of the phone's scrolling sort row; gallery zoom tiles are served from the shop host's media path; the shop browse can drop its local pager override for `variant="quiet"`.
 
 - 2026-10-09 — ✅ **14.4 and 14.6 closed** (Sonnet built, orchestrator reviewed; merged `c0196bcf`, `db2e7068`, review fixes `cfa3a496`). **14.4 browse and search:** the listing under `SectionHead` (a type page titled by its type), the facet column quiet on hairlines, **a long list shows its first eight and an "All n" disclosure reveals the rest in place** (every option still a real link; it opens itself when it holds the selection), sort as underlined tabs, square chips, the quiet pager, search and its no-result state in the same hand — `/browse` at 1280 is **3,678 px, from 8,507**; facets, sort, paging, "Include sold", the year pair and a place deep in the tree clicked through on the build. **14.6:** the makers index an A–Z index in columns (**3,955 px, from 10,518**), a maker and a place over the shared work grid, the places index as headed island groups, CMS pages and stories at the reading measure, the gallery's own 404 with search. **Review fixes (orchestrator):** a CMS page or story with a hero image answered **500** — its loader handed next/image the staff-only `/api/media/file/…?prefix=` URL (a defect since 5.x, found by 14.6); it now projects the hero through the public derivative like a work card; the makers index no longer prints "0 works"; the home's work bands no longer load their pictures at high priority beside the hero's sheet; one prettier miss. **Check, on main + fixes, production build, local gallery sample:** home, browse, a type page, search, no-result search, an available and a sold item, makers, a maker, places, a place, a story with its hero, sell to us, contact and not-found (404), and the same in Indonesian — **every page axe clean at 390 and 1280, no sideways scroll, no broken image**; the shop's home, browse, product, collections and stores unchanged (home and browse heights identical to before). Follow-ups: the place facet's first eight follow tree order; the maker page has no biography field yet (9.3); the places index counts places, not works; the floating chat button sits over the right edge of long lists and forms.
