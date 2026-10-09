@@ -64,12 +64,6 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
       )}
 
       <div className={styles.columns}>
-        <CheckoutForm
-          locale={locale}
-          labels={labels}
-          browserKey={browserKey}
-          expectedTotalIdr={read.totalIdr}
-        />
         <div className={styles.review} aria-label={text('checkout.reviewTitle')}>
           <ul>
             {read.lines.map((line) => (
@@ -111,6 +105,13 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
             </Button>
           </div>
         </div>
+
+        <CheckoutForm
+          locale={locale}
+          labels={labels}
+          browserKey={browserKey}
+          expectedTotalIdr={read.totalIdr}
+        />
       </div>
     </section>
   )

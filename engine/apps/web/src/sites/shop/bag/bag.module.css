@@ -93,7 +93,8 @@
     column-gap: var(--space-6);
   }
 
-  .lineTotal {
+  /* Two selectors deep: the base `.lineTotal` below (column 2, for a phone) comes later. */
+  .line .lineTotal {
     grid-column: 3;
     grid-row: 1;
     margin: 0;
@@ -291,6 +292,12 @@
 .grand dd {
   font: var(--text-h3);
   color: var(--color-text);
+}
+
+/* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
+.grand dd {
+  font: var(--text-price);
+  font-variant-numeric: var(--numeric-tabular);
 }
 
 .checkout {

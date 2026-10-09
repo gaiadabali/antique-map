@@ -13,12 +13,8 @@
   gap: var(--space-7);
 }
 
-/* On a phone the summary reads first; the form is first in the source so the desktop's left
-   column is also the first in the tab order. */
-.review {
-  order: -1;
-}
-
+/* The summary comes first in the source, as on a phone it reads: the order you see is the order a
+   keyboard and a screen reader follow. On a desktop the grid sets it in the right-hand column. */
 @media (min-width: 768px) {
   .checkout {
     padding-block: var(--space-7) var(--space-9);
@@ -31,8 +27,14 @@
     align-items: start;
   }
 
+  .columns > .form {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
   .review {
-    order: 0;
+    grid-column: 2;
+    grid-row: 1;
     position: sticky;
     top: var(--space-6);
   }
@@ -103,6 +105,12 @@
 .grand dd {
   font: var(--text-h3);
   color: var(--color-text);
+}
+
+/* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
+.grand dd {
+  font: var(--text-price);
+  font-variant-numeric: var(--numeric-tabular);
 }
 
 .grand {

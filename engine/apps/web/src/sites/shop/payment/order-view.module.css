@@ -63,6 +63,12 @@
   margin: 0;
 }
 
+/* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
+.grand dd {
+  font: var(--text-price);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
 .actions {
   display: flex;
   flex-direction: column;
