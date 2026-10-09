@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 3/8 | 8/17 | 0 | `█████░░░░░`  47% |
-| **All** | 14 phases | | | **63/73** | **234/260** | **8** | `█████████░`  90% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 4/8 | 9/17 | 0 | `█████░░░░░`  53% |
+| **All** | 14 phases | | | **64/73** | **235/260** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -83,7 +83,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
 | 14·W2 | 14.5 The item page | medior | `feat/p14-item` | 2026-10-09 | |
-| 14·W2 | 14.7 Sell to us and contact | medior | `feat/p14-contact` | 2026-10-09 | |
 | 14·W2 | 14.6 Makers, places, pages and not-found | medior | `feat/p14-index` | 2026-10-09 | |
 
 ## Decisions for the owner
@@ -1006,13 +1005,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 14.6.a the makers index an A–Z index in columns (letter heads, names with life dates and counts, hairlines — no boxed cards); a maker under a `SectionHead` with life dates, the biography at the reading measure, the works as work cards; the places index as island groups in headed columns with counts; a place alike; CMS pages and stories under a `SectionHead` at the reading measure; not-found invites to search and the collection; words under `makerPage.*`, `placePage.*`, `cmsPage.*`, `notFound.*`, both languages
   - [ ] 14.6.b **Check:** makers, a maker, places, a place, a story page and not-found at 390 and 1280 in both languages, axe clean, no sideways scroll; the makers index at 1280 fits in a few screens.
 
-- [ ] **14.7 Sell to us and contact** · needs: 14.1 — 🔄 14·W2
+- [x] **14.7 Sell to us and contact** · needs: 14.1 — ✅ 2026-10-09 437b715f
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**` (markup and CSS only), `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`
   - **Read** EXPERIENCE-GALLERY.md §8, 12.7's partnership page
   - _Requirements: 12.1_
   - [x] 14.7.a each page opens on a `SectionHead`; how selling works as numbered steps; WhatsApp first and email beside the reply promise (G9); the form in a raised panel in the partnership page's hand; words under `sellToUs.*`, `contact.*`, `contactPage.*`, `contactForm.*`, both languages
-  - [ ] 14.7.b **Check:** both pages at 390 and 1280 in both languages, axe clean; an empty Send is refused with its messages; the form's tests pass.
+  - [x] 14.7.b **Check:** both pages at 390 and 1280 in both languages, axe clean; an empty Send is refused with its messages; the form's tests pass.
 
 - [ ] **14.8 The pass on staging** · needs: 14.3, 14.4, 14.5, 14.6, 14.7
   - **Lane** QA · **Agent** qa (Sonnet), orchestrator for staging · **Wave** W3
@@ -1043,6 +1042,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **14.7 closed** (Sonnet built, orchestrator reviewed; merged). Sell to us and contact in the partnership page's hand: `SectionHead`, WhatsApp first and email beside the reply promise "the same working day, Singapore time" (G9), the viewing note (by appointment, Singapore and Jakarta), **how selling works in three numbered steps**, the form in a raised panel; field names, action, validation, Turnstile, consent and hrefs untouched. Review fix: step 3 said "we arrange collection" — an operation the owner never offered; now "If we agree on a price, we settle the details with you". **Check:** `/sell-to-us`, `/contact`, `/id/jual-ke-kami`, `/id/kontak` at 390 and 1280, axe clean; the form tests 15/15. An empty Send shows its four field messages in en and id — through a stubbed 422, since locally the Turnstile dummy key fails the server's check before field validation; the real refusal is checked on staging (14.8). Locally the buttons show the "being connected" note (no contact settings); staging has placeholders (OA2).
 
 - 2026-10-09 — ✅ **14.3 closed** (Sonnet built, orchestrator reviewed; merged `78061bdf`). The gallery home below the hero on `SectionHead`, `Mat` and the shared work card: About without institutions or the stale "2,090 online"; the collection (four newest available works, skipping the hero's lead); the curator beside a placeholder mat (portrait to come, OA2); **recently placed — three real sold works through a new public, projected, cached read (`load-recently-placed.ts`), "Sold" and nothing more** in place of the hard-coded "placed with a private collector" stand-ins (G10); makers and places as two panels; the enquiry band promising the same working day, Singapore time (G9). The unused featured-works rail and its loader are deleted. **Check:** `/` and `/id` at 390 and 1280 on the build, axe clean, no sideways scroll; the HTML holds no Louvre, Leiden, National Museum/Library, "national collections", "two working days" or USD. Follow-ups: `WorkGrid` marks its first two cards high priority, which on the home competes with the hero's sheet (a `leads` prop after 14.4); the catalogue's unknown-date words are copied into the new loader (export them).
 
