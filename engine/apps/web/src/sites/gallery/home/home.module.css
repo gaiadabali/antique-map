@@ -1,18 +1,10 @@
-/* The gallery home's layout styles (ticket 4.3.b), from the design team's drawing. Every value
-   is a token from shared/styles/tokens or the gallery brand file — no raw colour, no font. */
-
-.section {
-  padding-block: var(--space-8);
-  border-top: var(--rule-hair) solid var(--color-border);
-}
-
-.section:first-child {
-  border-top: 0;
-}
+/* The gallery home's layout styles (ticket 4.3.b, 14.3). The hero's own styles are in
+   hero.module.css. Every value is a token from shared/styles/tokens or the gallery brand file —
+   no raw colour, no font. */
 
 /* Breaks out of the shell's reading-measure column the way `browse.module.css`'s `.page` does
-   (qa 4.qa, finding F1): the home needs the drawing's full-bleed width at 1280 px, not the 66ch
-   cap `.site-main` gives long-form pages. */
+   (qa 4.qa, finding F1): the home needs the full-bleed width at 1280 px, not the 66ch cap
+   `.site-main` gives long-form pages. */
 .wrap {
   width: min(calc(100vw - 2 * var(--gutter)), 80rem);
   margin-inline-start: 50%;
@@ -20,201 +12,102 @@
   padding-inline: var(--gutter);
 }
 
-.eyebrow {
-  color: var(--color-text-muted);
+/* Bands breathe and are parted by hairlines, as on the shop's home. */
+.section {
+  padding-block: var(--space-9);
+  border-top: var(--rule-hair) solid var(--color-border);
 }
 
-.plate {
-  display: block;
-  width: 100%;
-  background: var(--color-surface-deep);
-  /* Full ink: muted text on the deep surface is under AA (4.36:1, qa 4.qa). */
+.body {
+  margin: var(--space-6) 0 0;
+  max-inline-size: 36rem;
   color: var(--color-text);
-  font: var(--text-caption);
-  overflow: hidden;
 }
 
-.platePicture {
-  margin-block-start: var(--space-4);
+.grid {
+  margin-block-start: var(--space-7);
 }
 
-.plateInner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--space-4);
-  height: 100%;
-}
-
-.hero {
-  display: grid;
-  gap: var(--space-6);
-  align-items: end;
-}
-
-/* The drawing's dark hero band (qa 4.qa, finding F4), the same pattern as the shop's trade band:
-   `color` is inherited, so a bare heading or lede needs no override; only the muted, accent and
-   focus roles are repointed at the on-dark ink. */
-.band {
-  padding-block: var(--space-8);
-}
-
-.bandDark {
-  background: var(--color-surface-dark);
-  color: var(--color-text-on-dark);
-}
-
-.bandDark .cardBody {
-  color: var(--color-text-on-dark);
-}
-
-.bandDark {
-  --color-text-muted: var(--color-text-on-dark);
-  --color-accent: var(--color-text-on-dark);
-  --color-focus: var(--color-text-on-dark);
-}
-
-.heroPoster {
-  aspect-ratio: 16 / 9;
-}
-
-.trust {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-}
-
-.trustCard {
-  width: min(100%, 13rem);
-  padding: var(--space-4);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
-}
-
-.trustCard p {
-  margin: var(--space-2) 0 0;
-}
-
-.aboutGrid {
-  display: grid;
-  gap: var(--space-5);
-  max-width: 54rem;
-}
-
-.aboutGrid p {
-  margin: var(--space-4) 0 0;
-}
-
-.signals {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-6);
-  max-width: 54rem;
-  margin-block-start: var(--space-6);
-}
-
-.signal {
-  border-inline-start: var(--rule-hair) solid var(--color-border);
-  padding-inline-start: var(--space-4);
-}
-
-.signalNote {
-  font: var(--text-body-large);
-  font-weight: 700;
-}
-
-.three {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-6);
-}
-
-.rail {
-  display: grid;
-  grid-template-columns: 6rem minmax(0, 1fr);
-  gap: var(--space-6);
-}
-
-.num {
-  font: var(--text-number);
-  color: var(--color-text-muted);
-}
-
-.cardTitle {
-  font: var(--text-card-title);
-  margin: var(--space-3) 0 0;
-}
-
-.cardBody {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-  margin: var(--space-3) 0 0;
-}
-
-.curator {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: var(--space-7);
-  align-items: center;
-}
-
-.curatorPoster {
-  aspect-ratio: 5 / 4;
-}
-
-.entry {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.entryCard {
-  display: block;
-  padding: var(--space-6);
-  border: var(--rule-hair) solid var(--color-border);
-  background: var(--color-surface-raised);
-  color: var(--color-text);
-  text-decoration: none;
-}
-
-.entryCard:hover {
-  color: var(--color-accent-secondary);
-}
-
-.entryCard p {
-  margin: var(--space-3) 0 0;
-}
-
-.enquire {
+.skeletons {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-7);
-  align-items: start;
+  gap: var(--space-6) var(--space-5);
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
-  margin-block-start: var(--space-5);
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  margin-block-start: var(--space-6);
+}
+
+.curator {
+  display: grid;
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin-block-start: var(--space-7);
+}
+
+/* One link, square-cornered and hairlined: the title in the serif, one line under it. */
+.panel {
+  display: grid;
+  align-content: end;
+  gap: var(--space-3);
+  min-block-size: 12rem;
+  padding: var(--space-7);
+  border: var(--rule-hair) solid var(--color-border);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color var(--dur-out) var(--ease);
+}
+
+.panel:hover {
+  border-color: var(--color-text);
+}
+
+.panel:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset, 2px);
+}
+
+.panelTitle {
+  font: var(--text-h2);
+}
+
+.panelLine {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 48rem) {
+  .skeletons {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .curator {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--space-8);
+  }
 }
 
 @media (max-width: 47.5rem) {
-  .signals,
-  .three,
-  .curator,
-  .enquire,
-  .entry {
+  .section {
+    padding-block: var(--space-7);
+  }
+
+  .panels {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .rail {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
-  }
-
-  .railNote {
-    display: none;
+  .panel {
+    min-block-size: 9rem;
+    padding: var(--space-6);
   }
 }
