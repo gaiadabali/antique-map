@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 15·W1 | 15.1 CI's wall clock and a green main | orchestrator | `main` | 2026-10-10 | |
+| 15·W1 | 15.2 No leak, and the server set for it | orchestrator | `main` | 2026-10-10 | |
 
 ## Decisions for the owner
 
@@ -1035,7 +1036,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 15.1.c CodeQL once: the advanced `codeql.yml` removed while the repository's default setup scans (it refuses the workflow's upload on every push) — the user's go-ahead
   - [ ] 15.1.d **Check:** CI on main green, its wall clock against run 37902899675 (12m20s), the per-job times recorded in the log line.
 
-- [ ] **15.2 No leak, and the server set for it** · needs: —
+- [ ] **15.2 No leak, and the server set for it** · needs: — — 🔄 15·W1
   - **Lane** OPS · **Agent** orchestrator (server), medior (Sonnet, the code fixes) · **Wave** W1
   - **Owns** `scripts/ops/**`, `docs/DEPLOYMENT.md`, `engine/apps/web/src/server/{analytics,leads,chat}/**`, `engine/apps/web/src/security/rate-limit.ts`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/packages/{http,media}/src/**`, `engine/packages/cms/src/{db/adapter.ts,collections/media/pipeline.ts}`
   - **Read** DEPLOYMENT.md §3–§5; SECURITY.md §2.10
