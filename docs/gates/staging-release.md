@@ -119,6 +119,7 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 | `production-20261008T143718Z-e8597fd7` | e8597fd7 (10.2: AVIF `<picture>`, ladders, italic not preloaded, checkout pin fixes; LCP warns in CI) | none new (6 = 6)                 | healthy; smoke below                                                         |
 | `production-20261008T173615Z-eb85ea5f` | eb85ea5f (no app change: tests, docs, ops scripts)                                                    | none new (6 = 6)                 | healthy; smoke passed                                                        |
 | `production-20261009T072110Z-4ea2b1c9` | 4ea2b1c9 (Order panel link in the admin sidebar, dashboard widgets open the panel and inbox)          | none new (6 = 6)                 | healthy; store and owner reach `/admin/orders` from the dashboard in one tap |
+| `production-20261009T113943Z-fb7ef553` | fb7ef553 (the shop home's gallery-wall hero: the lead print in a mat, caption, proof points)          | none new (0 changed since live)  | healthy, try 1; smoke passed; hero photo loads at 390/1280/1995, axe 0       |
 
 On `e8597fd7` the shop listing and the gallery home and browse serve `<source type="image/avif">`; 24 sampled AVIF rungs 200 (`image/avif`).
 
