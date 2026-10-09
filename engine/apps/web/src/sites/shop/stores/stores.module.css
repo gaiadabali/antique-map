@@ -10,7 +10,7 @@
   padding: var(--space-4) var(--gutter) var(--space-7);
 }
 
-/* One row; on a phone it scrolls inside itself, never the page. */
+/* On a phone one row that scrolls inside itself, never the page; it wraps from 768 px up. */
 .areas {
   display: flex;
   flex-wrap: nowrap;
@@ -111,6 +111,13 @@
 @media (min-width: 768px) {
   .page {
     padding-block-end: var(--space-9);
+  }
+
+  /* Room enough to show every area: the row wraps rather than hiding the last ones. */
+  .areas {
+    flex-wrap: wrap;
+    row-gap: 0;
+    overflow-x: visible;
   }
 
   .area {
