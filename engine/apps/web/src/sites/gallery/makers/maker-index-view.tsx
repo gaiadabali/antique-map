@@ -1,9 +1,11 @@
-/** The makers index (5.4.a; EXPERIENCE-GALLERY.md §7): every published maker, A–Z, with its life
- * dates and a count of its published works. */
+/** The makers index (5.4.a, 14.6; EXPERIENCE-GALLERY.md §7): every published maker as an A–Z
+ * index — a row of letters, then a section per initial with the makers in hairline rows. */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { MakerIndexItemVM } from '../../../server/gallery/makers/view-models'
+import { SectionHead } from '../../../shared/ui'
 import type { MakerText } from './copy'
+import { ALPHABET, groupByLetter, letterId } from './letters'
 import { makerHref } from './links'
 import styles from './makers.module.css'
 
@@ -14,28 +16,61 @@ type Props = {
 }
 
 export function MakerIndexView({ items, locale, t }: Props) {
+  const groups = groupByLetter(items)
+  const present = new Set(groups.map((group) => group.letter))
   return (
     <div className={styles.wrap}>
-      <section className={styles.section}>
-        <h1>{t('makerPage.indexTitle')}</h1>
-        <p className="site-lede">{t('makerPage.indexDescription')}</p>
-        <ul className={styles.indexList}>
-          {items.map((item) => {
-            const lifeDates = [item.bornText, item.diedText].filter(Boolean).join('–')
-            return (
-              <li key={item.slug}>
-                <a className={styles.indexCard} href={makerHref(item.slug, locale)}>
-                  <h2>{item.name}</h2>
-                  {lifeDates !== '' && <p className={styles.indexMeta}>{lifeDates}</p>}
-                  <p className={styles.indexMeta}>
-                    {t('makerPage.workCount', { count: item.workCount })}
-                  </p>
-                </a>
+      <section className={styles.opening}>
+        <SectionHead
+          level={1}
+          title={t('makerPage.indexTitle')}
+          lede={t('makerPage.indexDescription')}
+        />
+        <nav aria-label={t('makerPage.lettersLabel')}>
+          <ul className={styles.letters}>
+            {ALPHABET.map((letter) => (
+              <li key={letter}>
+                {present.has(letter) ? (
+                  <a className={styles.letter} href={`#${letterId(letter)}`}>
+                    {letter}
+                  </a>
+                ) : (
+                  <span className={styles.letterOff}>{letter}</span>
+                )}
               </li>
-            )
-          })}
-        </ul>
+            ))}
+          </ul>
+        </nav>
       </section>
+      {groups.map((group) => (
+        <section
+          key={group.letter}
+          id={letterId(group.letter)}
+          className={styles.group}
+          aria-label={group.letter}
+        >
+          <p className={styles.initial} aria-hidden="true">
+            {group.letter}
+          </p>
+          <ul className={styles.names}>
+            {group.items.map((item) => {
+              const lifeDates = [item.bornText, item.diedText].filter(Boolean).join('–')
+              return (
+                <li key={item.slug} className={styles.row}>
+                  <a className={styles.name} href={makerHref(item.slug, locale)}>
+                    {item.name}
+                  </a>
+                  <span className={styles.meta}>
+                    {[lifeDates, t('makerPage.workCount', { count: item.workCount })]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      ))}
     </div>
   )
 }

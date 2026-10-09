@@ -1,13 +1,15 @@
 /**
- * One maker page (5.4.a; EXPERIENCE-GALLERY.md §7): name with life dates and roles, a biography
- * (not in the collection yet — `view-models.ts`'s own note: it lands with blocks, TASKS.md 9.3.a),
- * then the works, available first, then sold. A maker with no available works still shows the
- * sold ones, with the empty state in their place (EXPERIENCE-GALLERY.md §9) — never a dead end.
+ * One maker page (5.4.a, 14.6; EXPERIENCE-GALLERY.md §7): the name under a level-1 `SectionHead`
+ * with life dates and roles as its lede, then the works, available first, then sold, each under a
+ * level-2 head through the shared `WorkGrid`. The collection holds no biography yet
+ * (`view-models.ts`: it lands with blocks, TASKS.md 9.3.a), so none is drawn. A maker with no
+ * available works still shows the sold ones, with the empty state in their place
+ * (EXPERIENCE-GALLERY.md §9) — never a dead end.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { MakerVM } from '../../../server/gallery/makers/view-models'
-import { ResponsiveImage } from '../../../shared/ui'
+import { ResponsiveImage, SectionHead } from '../../../shared/ui'
 import { lexiconMessages, type LexiconMessageKey } from '../../../messages/keys'
 import { WorkGrid } from '../browse/work-grid'
 import type { MakerText } from './copy'
@@ -25,9 +27,10 @@ export function MakerView({ maker, locale, t }: Props) {
   const roles = maker.roles
     .map((role) => lexicon.t(`maker.role.${role}` as LexiconMessageKey))
     .join(', ')
+  const lede = [lifeDates, roles].filter(Boolean).join(' · ')
   return (
     <div className={styles.wrap}>
-      <section className={styles.section}>
+      <section className={styles.page}>
         {/* No portrait, no empty frame: the name leads (a blank 4:5 box filled a phone's first screen). */}
         <div className={maker.portrait !== null ? styles.header : undefined}>
           {maker.portrait !== null && (
@@ -40,28 +43,23 @@ export function MakerView({ maker, locale, t }: Props) {
               className={styles.portrait}
             />
           )}
-          <div>
-            <h1>{maker.name}</h1>
-            {(lifeDates !== '' || roles !== '') && (
-              <p className={styles.roles}>{[lifeDates, roles].filter(Boolean).join(' · ')}</p>
-            )}
-          </div>
+          <SectionHead level={1} title={maker.name} lede={lede !== '' ? lede : undefined} />
         </div>
-      </section>
-      <section className={styles.section}>
-        <h2>{t('makerPage.availableHeading')}</h2>
-        {maker.available.length > 0 ? (
-          <WorkGrid works={maker.available} locale={locale} />
-        ) : (
-          <p className="site-lede">{t('empty.makerAvailable', { maker: maker.name })}</p>
+        <div className={styles.section}>
+          <SectionHead level={2} title={t('makerPage.availableHeading')} />
+          {maker.available.length > 0 ? (
+            <WorkGrid works={maker.available} locale={locale} />
+          ) : (
+            <p className={styles.empty}>{t('empty.makerAvailable', { maker: maker.name })}</p>
+          )}
+        </div>
+        {maker.sold.length > 0 && (
+          <div className={styles.section}>
+            <SectionHead level={2} title={t('makerPage.soldHeading')} />
+            <WorkGrid works={maker.sold} locale={locale} />
+          </div>
         )}
       </section>
-      {maker.sold.length > 0 && (
-        <section className={styles.section}>
-          <h2>{t('makerPage.soldHeading')}</h2>
-          <WorkGrid works={maker.sold} locale={locale} />
-        </section>
-      )}
     </div>
   )
 }

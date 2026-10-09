@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { connection } from 'next/server'
 
-import { loadPlaceIndex } from '../../../../../server/gallery/places'
+import { loadPlace, loadPlaceIndex } from '../../../../../server/gallery/places'
 import { pageMetadata } from '../../../../../server/seo'
 import { siteLocale } from '../../../../../shell/messages'
 import { currentSite } from '../../../../../shell/site'
@@ -37,6 +37,13 @@ export default async function GalleryPlaceIndexPage({ params }: Props) {
   const { locale: raw } = await params
   const locale = siteLocale('gallery', raw)
   if (locale === null) notFound()
-  const items = await loadPlaceIndex(locale)
-  return <PlaceIndexView items={items} locale={locale} t={placeText(locale)} />
+  const roots = await loadPlaceIndex(locale)
+  // Each branch's places come from the place loader the branch's own page uses (same cache entry).
+  const groups = await Promise.all(
+    roots.map(async (root) => ({
+      root,
+      children: (await loadPlace(root.path, locale))?.children ?? [],
+    })),
+  )
+  return <PlaceIndexView groups={groups} locale={locale} t={placeText(locale)} />
 }
