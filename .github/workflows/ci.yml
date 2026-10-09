@@ -2,10 +2,11 @@ name: CI
 
 # Every push to main and every PR into it gets the static checks and the production-dependency
 # audit; the unit tests, the real-database tests, e2e and Lighthouse are skipped on a docs-only
-# change (`changes`). The secret scan (secrets.yml) runs on every push to any branch, CodeQL
-# (codeql.yml) on main and its PRs. The deploy artifact and its release are a separate workflow
-# (release.yml), triggered by a push to `production` (DEPLOYMENT.md §3) — this file never writes
-# to Helios or GitHub Releases.
+# change (`changes`). The secret scan (secrets.yml) runs on every push to any branch; CodeQL is
+# GitHub's default setup, a repository setting with no workflow file (the user's decision of
+# 2026-10-08, the file removed 2026-10-10: the default setup refused its upload on every push).
+# The deploy artifact and its release are a separate workflow (release.yml), triggered by a push
+# to `production` (DEPLOYMENT.md §3) — this file never writes to Helios or GitHub Releases.
 #
 # Wall clock is the longest job, not the sum: the jobs run side by side, and inside a job the
 # independent steps run together (.github/scripts/run-parallel.sh). The e2e job is the long pole;
