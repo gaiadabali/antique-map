@@ -23,6 +23,24 @@ import { runTool, type ToolContext } from '../tools/run'
 import { validateToolCall } from '../tools/validate'
 import type { ChatEvent, TokenUsage } from '../types'
 
+/** How long the upstream stream may be silent, after its headers, before the call is aborted. */
+export const STREAM_STALL_MS = 30_000
+
+type StallGuard = { readonly promise: Promise<never>; readonly clear: () => void }
+
+/** A timer that rejects `promise` (after `onStall`) once `ms` pass without being cleared. */
+function stallGuard(ms: number, onStall: () => void): StallGuard {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const promise = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      onStall()
+      reject(new Error('stream-stalled'))
+    }, ms)
+  })
+  promise.catch(() => undefined) // a cleared or lost race must not become an unhandled rejection
+  return { promise, clear: () => clearTimeout(timer) }
+}
+
 export type AnswerInput = {
   readonly client: ChatModelClient
   readonly models: ChatModels
@@ -103,12 +121,21 @@ export async function answer(input: AnswerInput): Promise<AnswerResult> {
     input.signal.addEventListener('abort', stop, { once: true })
     const callUsage = emptyUsage()
     let final: Anthropic.Message | null = null
+    let stallTimer: StallGuard | null = null
     try {
       const stream = input.client.streamAnswer(
         answerParams(input, messages, round === CHAT_LIMITS.toolRoundsPerTurn),
         call.signal,
       )
-      for await (const event of stream.events) {
+      const events = stream.events[Symbol.asyncIterator]()
+      for (;;) {
+        // Each event must arrive within the stall window, or the upstream call is aborted and the
+        // turn ends as an upstream error does. The race also frees a stream that ignores the abort.
+        const stall = stallGuard(STREAM_STALL_MS, () => call.abort())
+        stallTimer = stall
+        const next = await Promise.race([events.next(), stall.promise]).finally(stall.clear)
+        if (next.done) break
+        const event = next.value
         if (event.type === 'message_start') addUsage(callUsage, event.message.usage)
         if (event.type === 'message_delta') {
           // `message_delta.usage` is cumulative for the call: take its output count as the total.
@@ -119,6 +146,7 @@ export async function answer(input: AnswerInput): Promise<AnswerResult> {
           if (step.released) input.emit({ type: 'delta', text: step.released })
           if (step.blocked) {
             call.abort()
+            void events.return?.().catch(() => undefined)
             break
           }
         }
@@ -131,6 +159,7 @@ export async function answer(input: AnswerInput): Promise<AnswerResult> {
         return result('failed')
       }
     } finally {
+      stallTimer?.clear()
       input.signal.removeEventListener('abort', stop)
       for (const key of Object.keys(usage) as (keyof TokenUsage)[]) usage[key] += callUsage[key]
       cost += costUsd(input.models.chat, callUsage)

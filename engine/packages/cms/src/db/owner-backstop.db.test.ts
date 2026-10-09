@@ -7,6 +7,7 @@
  * Its own database on the server `CMS_TEST_POSTGRES_URL` names, migrated with the one migration
  * set and dropped afterwards; without that variable it skips (a setup state, CONVENTIONS.md §10).
  */
+import { createTestDatabase } from './test-database.test-support'
 import {
   buildConfig,
   commitTransaction,
@@ -88,7 +89,7 @@ describe.skipIf(!server)('the last-owner backstop on a migrated database', () =>
       Pool: new (o: object) => Pool
     }
     const admin = new pg.Pool({ connectionString: server })
-    await admin.query(`CREATE DATABASE "${database}"`)
+    await createTestDatabase(admin, database, 'migrated')
     await admin.end()
     payload = await getPayload({ config, key: database, disableOnInit: true })
     await payload.db.migrate({ migrations: [...migrations] } as never)

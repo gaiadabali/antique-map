@@ -78,9 +78,19 @@ production:
 ```
 script     <current>/engine/apps/web/server.js     Next's standalone server; it sets NODE_ENV=production
 node_args  --dns-result-order=ipv4first            so `localhost` binds 127.0.0.1
+           --max-old-space-size=1024               V8 collects before pm2's 1536M restart threshold
+           --env-file=<shared>/.env                the rest of the environment (§8)
 exec_mode  fork    instances 1                     one process, never cluster
-env        HOSTNAME=localhost  PORT=4030           the rest from shared/.env (§8)
+env        HOSTNAME=localhost  PORT=4030
+           MALLOC_ARENA_MAX=2                      glibc arenas capped; read at exec, so never in .env
+max_memory_restart 1536M   exp_backoff_restart_delay 200   kill_timeout 10000
 ```
+
+- **Memory.** A healthy process sits around 250–300 MB after a deploy and levels off near 650 MB once its caches
+  fill (a 2026-10-10 soak on staging: 3,500 distinct search pages and 1,500 fixed ones, no restart). A restart
+  logged as anything but `exited with code [130] via signal [SIGINT]` (a reload) is worth reading. Changing
+  `node_args` or `env` needs `pm2 delete uindies && pm2 start ~/ecosystem.config.cjs && pm2 save` as the site
+  user — `pm2 reload` keeps the old ones.
 
 - **One process, in fork mode.** The jobs run's single-flight, the in-process rate limits and the health check's
   memo are exact only with one process; a template running cluster mode or `-i max` breaks all three silently.

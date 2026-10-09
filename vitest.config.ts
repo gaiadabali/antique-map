@@ -10,6 +10,8 @@
 import { defineConfig } from 'vitest/config'
 
 const EXCLUDE = ['**/node_modules/**', '**/.claude/**', '**/dist/**', '**/.next/**']
+/** Real-database tests: they need Postgres, so they have their own project (`pnpm test:db`). */
+const DB_TESTS = '**/*.db.test.{ts,tsx}'
 
 export default defineConfig({
   test: {
@@ -25,13 +27,22 @@ export default defineConfig({
         test: {
           name: 'packages',
           include: ['engine/packages/**/*.test.{mjs,ts,tsx}'],
-          exclude: EXCLUDE,
+          exclude: [...EXCLUDE, DB_TESTS],
         },
       },
       {
         test: {
           name: 'apps',
           include: ['engine/apps/**/*.test.{mjs,ts,tsx}'],
+          exclude: [...EXCLUDE, DB_TESTS],
+        },
+      },
+      {
+        test: {
+          name: 'db',
+          include: ['engine/**/*.db.test.{ts,tsx}'],
+          // One migrated and one pushed template database, built once; each file clones one.
+          globalSetup: ['engine/packages/cms/src/db/test-templates.global-setup.test-support.ts'],
           exclude: EXCLUDE,
         },
       },

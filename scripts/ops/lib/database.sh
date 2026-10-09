@@ -3,10 +3,16 @@
 #
 # The role has LOGIN and nothing else: no CREATEDB, because Payload creates a database it cannot
 # find, and a mistyped DATABASE_URL would then boot green on an empty one (4.8's independent
-# review, S4); no CREATEROLE, SUPERUSER, REPLICATION or BYPASSRLS. CONNECTION LIMIT 20: pg's pool
-# default is 10 per process (cms db/adapter.ts), and a pm2 reload briefly runs the old and the
-# new process side by side, so 20 is the most the app can need, of the host's 100 connections.
-# PUBLIC may not connect, so no other role on the host opens this database.
+# review, S4); no CREATEROLE, SUPERUSER, REPLICATION or BYPASSRLS. CONNECTION LIMIT 20: the app's
+# pool holds at most 8 (cms db/adapter.ts), and a fork-mode `pm2 reload` stops the old process
+# before it starts the new one, so 20 leaves room for a migration CLI or a psql session beside
+# it, of the host's 100 connections. PUBLIC may not connect, so no other role on the host opens
+# this database.
+#
+# The role ends a transaction left idle for 5 minutes (ROLE_IDLE_TX_TIMEOUT): one a crashed
+# request left open would otherwise hold its locks and a pool slot until a restart. Generous on
+# purpose — Payload keeps a transaction open while an upload streams to the bucket. Never a
+# statement_timeout: the migration lock wait in cms db/adapter.ts is unbounded by design.
 #
 # Ours only (should-fix 3): a role this script creates is marked COMMENT 'indies-provision'. An
 # existing role without the mark, or with it but without its database, is someone else's or a
@@ -20,6 +26,7 @@
 
 ROLE_MARK=indies-provision
 ROLE_CONN_LIMIT=20
+ROLE_IDLE_TX_TIMEOUT=5min
 
 pg() { runuser -u postgres -- psql -X -q -At -v ON_ERROR_STOP=1 -p "$PG_PORT" -d postgres -c "$1"; }
 
@@ -31,6 +38,25 @@ ROLE_FLAGS_WANTED="t|f|f|f|f|f|$ROLE_CONN_LIMIT"
 role_flags() {
   pg "select concat_ws('|', rolcanlogin, rolsuper, rolcreatedb, rolcreaterole, rolreplication,
       rolbypassrls, rolconnlimit) from pg_roles where rolname = '$1'"
+}
+
+role_idle_tx() {
+  pg "select coalesce((select option_value from pg_options_to_table(
+        (select rolconfig from pg_roles where rolname = '$1'))
+      where option_name = 'idle_in_transaction_session_timeout'), '')"
+}
+
+converge_idle_tx() {
+  if dry && ! role_exists "$S_ROLE"; then
+    act "set idle_in_transaction_session_timeout = $ROLE_IDLE_TX_TIMEOUT on role $S_ROLE" true
+  elif [ "$(role_mark "$S_ROLE")" != "$ROLE_MARK" ]; then
+    return 0 # not ours: db_preflight has already failed the run
+  elif [ "$(role_idle_tx "$S_ROLE")" = "$ROLE_IDLE_TX_TIMEOUT" ]; then
+    ok "role $S_ROLE ends a transaction idle for $ROLE_IDLE_TX_TIMEOUT"
+  else
+    act "set idle_in_transaction_session_timeout = $ROLE_IDLE_TX_TIMEOUT on role $S_ROLE (was '$(role_idle_tx "$S_ROLE")'; new sessions only)" \
+      pg "alter role $S_ROLE set idle_in_transaction_session_timeout = '$ROLE_IDLE_TX_TIMEOUT'"
+  fi
 }
 
 db_preflight() {
@@ -75,6 +101,7 @@ ensure_database() {
     act "create role $S_ROLE (LOGIN only, CONNECTION LIMIT $ROLE_CONN_LIMIT, marked '$ROLE_MARK', no password yet) and database $S_DB owned by it (UTF8, from template0)" \
       create_role_and_db
   fi
+  converge_idle_tx
   if dry && [ -z "$(db_owner "$S_DB")" ]; then
     act "revoke CONNECT and TEMPORARY on $S_DB from PUBLIC" true
   elif [ "$(pg "select count(*) from pg_database d, aclexplode(coalesce(d.datacl, acldefault('d', d.datdba))) a

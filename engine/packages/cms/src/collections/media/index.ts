@@ -46,7 +46,7 @@ export const Media: CollectionConfig = {
     plural: { en: 'Images', id: 'Gambar' },
   },
   admin: {
-    group: ADMIN_GROUPS.antiques,
+    group: ADMIN_GROUPS.photosAndTags,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'alt',
     defaultColumns: ['filename', 'alt', 'role', 'provenance', 'updatedAt'],

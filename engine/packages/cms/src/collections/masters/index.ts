@@ -39,17 +39,17 @@ import { uploadUrlEndpoint } from './upload-url'
 export const Masters: CollectionConfig = {
   slug: 'masters',
   labels: {
-    singular: { en: 'Master', id: 'Master' },
-    plural: { en: 'Masters', id: 'Master' },
+    singular: { en: 'Original photo file (private)', id: 'File foto asli (privat)' },
+    plural: { en: 'Original photo files (private)', id: 'File foto asli (privat)' },
   },
   admin: {
-    group: ADMIN_GROUPS.antiques,
+    group: ADMIN_GROUPS.photosAndTags,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'storageKey',
     defaultColumns: ['storageKey', 'kind', 'role', 'work', 'updatedAt'],
     description: {
-      en: 'The private files images are made from: every capture as received. Never shown on the site.',
-      id: 'Berkas pribadi tempat gambar dibuat: setiap tangkapan sebagaimana diterima. Tidak pernah ditampilkan di situs.',
+      en: 'The full-size photos exactly as they came from the camera or scanner. Kept private and never shown on a site; the pictures visitors see are made from them.',
+      id: 'Foto ukuran penuh persis seperti dari kamera atau pemindai. Disimpan privat dan tidak pernah tampil di situs; gambar yang dilihat pengunjung dibuat dari file ini.',
     },
   },
   access: MASTERS_ACCESS,

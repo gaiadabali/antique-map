@@ -9,6 +9,7 @@
  */
 import 'server-only'
 
+import { setNewest, SweepClock } from '../bounded-map'
 import { CHAT_LIMITS } from './env'
 
 const HOUR = 60 * 60 * 1000
@@ -16,22 +17,25 @@ const HOUR = 60 * 60 * 1000
 /** A sliding-window counter: at most `max` hits per `windowMs` per key. */
 export class SlidingWindow {
   private readonly hits = new Map<string, number[]>()
+  private readonly clock: SweepClock
 
   constructor(
     private readonly max: number,
     private readonly windowMs: number,
-  ) {}
+  ) {
+    this.clock = new SweepClock(windowMs)
+  }
 
   /** Records a hit and answers 0, or answers the seconds until one is allowed (recording none). */
   take(key: string, now: number): number {
+    if (this.clock.due(now, this.hits.size > 50_000)) this.prune(now)
     const recent = (this.hits.get(key) ?? []).filter((at) => at > now - this.windowMs)
     if (recent.length >= this.max) {
-      this.hits.set(key, recent)
+      setNewest(this.hits, key, recent)
       return Math.max(1, Math.ceil(((recent[0] ?? now) + this.windowMs - now) / 1000))
     }
     recent.push(now)
-    this.hits.set(key, recent)
-    if (this.hits.size > 50_000) this.prune(now)
+    setNewest(this.hits, key, recent)
     return 0
   }
 

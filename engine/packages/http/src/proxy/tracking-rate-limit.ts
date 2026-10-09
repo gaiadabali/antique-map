@@ -18,6 +18,9 @@ const WINDOW_MS = 60_000
 
 /** Per address: each distinct token and when it was last presented. */
 const seen = new Map<string, Map<string, number>>()
+/** Live distinct addresses past this evict the oldest, so the map (and every prune) stays bounded. */
+const MAX_ADDRESSES = 100_000
+let lastPrune: number | null = null
 
 /**
  * Records `token` for `address` and answers 0 (allowed), or the seconds until a new token is. A
@@ -28,22 +31,37 @@ export function trackingGuessAllowed(
   token: string,
   now: number = Date.now(),
 ): number {
+  if (lastPrune === null) lastPrune = now
+  if (now - lastPrune >= (seen.size > 50_000 ? 1_000 : WINDOW_MS)) {
+    prune(now)
+    lastPrune = now
+  }
   const tokens = seen.get(address) ?? new Map<string, number>()
   for (const [each, at] of tokens) if (at <= now - WINDOW_MS) tokens.delete(each)
   if (tokens.has(token)) {
     tokens.set(token, now)
-    seen.set(address, tokens)
+    remember(address, tokens)
     return 0
   }
   if (tokens.size >= TRACKING_GUESSES_PER_MINUTE) {
-    seen.set(address, tokens)
+    remember(address, tokens)
     const oldest = Math.min(...tokens.values())
     return Math.max(1, Math.ceil((oldest + WINDOW_MS - now) / 1000))
   }
   tokens.set(token, now)
-  seen.set(address, tokens)
-  if (seen.size > 50_000) prune(now)
+  remember(address, tokens)
   return 0
+}
+
+/** Stores the address as the newest entry (a re-set keeps its place), evicting the oldest past the cap. */
+function remember(address: string, tokens: Map<string, number>): void {
+  seen.delete(address)
+  seen.set(address, tokens)
+  while (seen.size > MAX_ADDRESSES) {
+    const oldest = seen.keys().next()
+    if (oldest.done) break
+    seen.delete(oldest.value)
+  }
 }
 
 function prune(now: number): void {
@@ -55,4 +73,5 @@ function prune(now: number): void {
 /** Tests only: clears every address's history. */
 export function resetTrackingGuessLimit(): void {
   seen.clear()
+  lastPrune = null
 }

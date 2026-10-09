@@ -38,7 +38,15 @@ export const Leads: CollectionConfig = {
     group: ADMIN_GROUPS.leadsAndPartners,
     hidden: hiddenFromAllButOwner,
     useAsTitle: 'id',
-    defaultColumns: ['kind', 'site', 'status', 'source', 'createdAt'],
+    defaultColumns: [
+      'payload.name',
+      'payload.message',
+      'kind',
+      'site',
+      'status',
+      'source',
+      'createdAt',
+    ],
     description: {
       en: 'People the client should reply to: enquiries, sellers, partners and chat hand-offs.',
       id: 'Orang yang harus dijawab klien: pertanyaan, penjual, mitra, dan percakapan yang diteruskan.',

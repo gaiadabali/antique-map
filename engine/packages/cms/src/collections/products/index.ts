@@ -39,8 +39,8 @@ export const Products: CollectionConfig = {
     defaultColumns: ['name', 'sku', 'price', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'sku', 'variants.sku'],
     description: {
-      en: 'What the shop sells. Stock is entered per store under Stock.',
-      id: 'Barang yang dijual toko. Stok dicatat per toko di menu Stok.',
+      en: 'Shown on Old East Indies only. What the shop sells. Stock is entered per store under Stock.',
+      id: 'Hanya tampil di Old East Indies. Barang yang dijual toko. Stok dicatat per toko di menu Stok.',
     },
   },
   access: PRODUCTS_ACCESS,
