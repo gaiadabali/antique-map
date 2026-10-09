@@ -231,7 +231,10 @@ test.describe('Gallery contact (5.3.d)', () => {
     const answer = await posted
     expect(answer.status(), 'the route accepts the visitor’s sell lead').toBe(201)
     expect(await answer.json(), 'no stored field comes back, not even the id').toEqual({ ok: true })
-    await expect(page.getByText('We reply the same working day, Singapore time')).toBeVisible()
+    // The success message, not the page's own reply promise (14.7 keeps both: two places by design).
+    await expect(
+      page.getByText('We reply the same working day, Singapore time, on the WhatsApp'),
+    ).toBeVisible()
 
     // The owner reads the lead: kind, site, source and the visitor's own fields.
     const found = await api.get(
