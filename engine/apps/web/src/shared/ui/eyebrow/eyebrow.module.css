@@ -15,11 +15,17 @@
   gap: var(--space-3) var(--space-4);
 }
 
-/* Drawn from the site's mark tokens: the shop's scale bar, the gallery's hairline rule. */
+/* Drawn from the site's mark tokens: the shop's scale bar (25% dashes), the gallery's hairline
+   rule (one solid dash). The accent is read here, on the mark, so a dark band that re-points
+   --color-accent re-colours the stripes with the border. */
 .scale {
   flex: none;
   inline-size: var(--mark-inline-size);
   block-size: var(--mark-block-size);
   border: var(--mark-border-width) solid var(--color-accent);
-  background: var(--mark-fill);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-accent) 0 var(--mark-dash),
+    transparent var(--mark-dash) var(--mark-period)
+  );
 }
