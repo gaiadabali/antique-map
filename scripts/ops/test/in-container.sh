@@ -13,6 +13,7 @@ set -euo pipefail
 # 7. What the runs built (DEPLOYMENT.md §2, §3, §8).
 [ "$(runuser -u postgres -- psql -XAtc "select string_agg(concat_ws('|', rolname, rolcreatedb, rolconnlimit, shobj_description(oid, 'pg_authid')), ',') from pg_roles where rolname = 'indies'")" = 'indies|f|20|indies-provision' ] || die "role"
 [ "$(runuser -u postgres -- psql -XAtc "select pg_get_userbyid(datdba) from pg_database where datname = 'indies_db'")" = indies ] || die "indies_db"
+[ "$(runuser -u postgres -- psql -XAtc "select array_to_string(rolconfig, ',') from pg_roles where rolname = 'indies'")" = idle_in_transaction_session_timeout=5min ] || die "role idle-in-transaction timeout"
 ss -Hltn | awk '{print $4}' | grep -E ':(403[0-9]|9001)$' | sort | tee /tmp/listen
 grep -vq '^127\.0\.0\.1:' /tmp/listen && die "something listens beyond loopback"
 [ "$(wc -l </tmp/listen)" = 4 ] || die "expected 4 loopback listeners: the app, RustFS, Mailpit's two (no console)"
@@ -24,7 +25,9 @@ grep -q "^User=$U$" "/etc/systemd/system/pm2-$U.service" && grep -q '^ExecStart=
 E="/home/$U/ecosystem.config.cjs"
 grep -q "name: '$U'" "$E" && grep -q "exec_mode: 'fork'" "$E" && grep -q 'instances: 1,' "$E" && grep -q "HOSTNAME: 'localhost'" "$E" &&
   grep -q "PORT: '4030'" "$E" && grep -q "script: '/home/$U/current/engine/apps/web/server.js'" "$E" &&
-  grep -q -- '--dns-result-order=ipv4first' "$E" && ! grep -q BRAND "$E" || die "ecosystem"
+  grep -q -- '--dns-result-order=ipv4first --max-old-space-size=1024' "$E" && grep -q "MALLOC_ARENA_MAX: '2'" "$E" &&
+  grep -q 'exp_backoff_restart_delay: 200,' "$E" && ! grep -q BRAND "$E" || die "ecosystem"
+grep -q "/home/$U/.pm2/pm2.log {" "/etc/logrotate.d/pm2-$U" || die "pm2.log not rotated"
 crontab -u "$U" -l | grep -qx 'MAILTO=""' && crontab -u "$U" -l | grep -q "^\* \* \* \* \* /home/$U/bin/indies-cron jobs 200,409 900$" &&
   crontab -u "$U" -l | grep -q "^\*/10 \* \* \* \* /home/$U/bin/indies-cron reconcile 200,204 300$" || die "crontab"
 [ -z "$(find /etc/systemd/system /etc/logrotate.d /usr/local/sbin -name '*.bak*')" ] || die ".bak files in config dirs"
