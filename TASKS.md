@@ -27,8 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 5/16 | 0 | `███░░░░░░░`  31% |
-| **All** | 12 phases | | | **51/62** | **209/237** | **8** | `█████████░`  88% |
+| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 6/16 | 0 | `████░░░░░░`  38% |
+| **All** | 12 phases | | | **51/62** | **210/237** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -881,7 +881,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/browse/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection}/**`
   - **Read** EXPERIENCE-SHOP.md §4, DESIGN-SYSTEM.md §1–§5
   - _Requirements: 12.1_
-  - [ ] 12.4.a the listing at full width under a `SectionHead`; cards in compact mats with museum captions; filters and sort as quiet underlined tabs; pagination in the same hand; search and collection pages alike
+  - [x] 12.4.a the listing at full width under a `SectionHead`; cards in compact mats with museum captions; filters and sort as quiet underlined tabs; pagination in the same hand; search and collection pages alike
   - [ ] 12.4.b **Check:** browse, a search and a collection at 390 and 1280 with the real designs, axe clean, no sideways scroll; filters, sort and paging still work.
 
 - [ ] **12.5 The product page** · needs: 12.2 — 🔄 12·W2
