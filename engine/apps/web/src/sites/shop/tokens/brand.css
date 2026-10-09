@@ -61,11 +61,8 @@
   --brand-mark-inline-size: var(--primitive-space-8);
   --brand-mark-block-size: calc(var(--primitive-space-1) * 1.5);
   --brand-mark-border-width: var(--primitive-rule-hair);
-  --brand-mark-fill: repeating-linear-gradient(
-    90deg,
-    var(--brand-accent) 0 25%,
-    transparent 25% 50%
-  );
+  --brand-mark-dash: 25%;
+  --brand-mark-period: 50%;
 
   /* An empty mat window's words: muted ink passes AA on the shop's window. */
   --brand-mat-note: var(--brand-text-muted);
