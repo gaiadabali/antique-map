@@ -37,16 +37,32 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 - **Lint gate.** `engine/tooling/token-lint/cli.mjs` fails the build on any raw hex, `rgb()/rgba()/hsl()/hsla()`,
   or `font-family` outside the token files.
 
+## The luxury pass (phase 12, 2026-10-09)
+
+The user asked for the shop to feel luxury and premium; the home's hero was redesigned first, approved, and its
+language carried to every shop page. Four shared pieces carry it, so a later change is still a component edit:
+
+| Piece                   | What it is                                                                                                                                                                                                                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Mat` (`shared/ui/mat`) | a framer's mat: paper ground, hairline edge, weighted at the foot, a hairline bevel just outside the window; `default` for a lead image, `compact` in a grid; `MatNote` for a window with no picture; a picture inside a link eases closer on hover (reduced motion: none) |
+| `Eyebrow mark`          | the eyebrow opened by a map's scale bar — the shop's cartographic signature (DESIGN-SYSTEM.md §1)                                                                                                                                                                          |
+| `SectionHead`           | a page's (`level={1}`) or a section's opening: marked eyebrow, balanced serif title, muted lede, an optional action                                                                                                                                                        |
+| `ProofPoints`           | a row of short facts under a hairline, parted by hairlines; a stack on a phone                                                                                                                                                                                             |
+
+The rules of the language: prints always sit in mats; museum captions under them (serif name, muted meta, price);
+hairlines and square corners only (no pills, no new shadows); full breakout width for listing and landing pages,
+the reading measure for long text; generous space. The shared header and footer were quietened for both sites.
+
 ## Swap points
 
 The owner's later look-and-feel pass changes only these:
 
-| What to change | File(s) |
-| --- | --- |
-| Final colours (Q16) | `engine/apps/web/src/sites/gallery/tokens/brand.css`<br>`engine/apps/web/src/sites/shop/tokens/brand.css` |
-| Font family | `engine/apps/web/src/shared/styles/fonts.ts` |
-| Hero media (film, poster, images) | CMS `pages` and `media` (not code) |
-| Logo lock-up | `site-settings` assets + the logo component in 4.3 |
-| Motion per site | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2 |
+| What to change                    | File(s)                                                                                                   |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Final colours (Q16)               | `engine/apps/web/src/sites/gallery/tokens/brand.css`<br>`engine/apps/web/src/sites/shop/tokens/brand.css` |
+| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                              |
+| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                        |
+| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                        |
+| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                       |
 
 No dark mode. No raw colour or `font-family` is allowed outside the token files.
