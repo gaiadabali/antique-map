@@ -28,8 +28,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
-| **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 1/6 | 0 | `██░░░░░░░░`  17% |
-| **All** | 13 phases | | | **57/65** | **221/243** | **8** | `█████████░`  91% |
+| **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 2/6 | 0 | `███░░░░░░░`  33% |
+| **All** | 13 phases | | | **57/65** | **222/243** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -927,7 +927,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/collection/page.tsx`, `engine/apps/web/src/sites/shop/collections/**`, `engine/apps/web/src/server/shop/catalogue/collections.ts` (new, beside the catalogue's loaders)
   - **Read** EXPERIENCE-SHOP.md §2, `docs/gates/luxury-pass.md`, the collection page (`collection/[slug]/page.tsx`)
   - _Requirements: 12.1_
-  - [ ] 13.1.a `/collections` lists every category that holds published products — a matted lead print, its name and its count — each linking to its `/collections/<slug>` page; public reads through the catalogue's cached, projected loaders; its words under `collections.*` in the shop lexicon, both languages
+  - [x] 13.1.a `/collections` lists every category that holds published products — a matted lead print, its name and its count — each linking to its `/collections/<slug>` page; public reads through the catalogue's cached, projected loaders; its words under `collections.*` in the shop lexicon, both languages
   - [ ] 13.1.b **Check:** `/collections` and `/id/koleksi` at 390 and 1280, axe clean, every card links to a 200.
 
 - [ ] **13.2 The stores page** · needs: phase 12 — 🔄 13·W1
