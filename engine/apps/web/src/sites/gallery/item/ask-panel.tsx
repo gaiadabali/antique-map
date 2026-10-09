@@ -10,7 +10,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
-import { Badge, Button, TextLink } from '../../../shared/ui'
+import { Button, ProofPoints, TextLink } from '../../../shared/ui'
 import { contactText } from '../contact/messages'
 import { itemText } from './copy'
 import styles from './item.module.css'
@@ -40,13 +40,25 @@ export function AskPanel({
   const t = itemText(locale)
   const c = contactText(locale)
 
+  const promise = <p className={styles.panelFine}>{t('item.replyPromise')}</p>
+  const proof = (
+    <ProofPoints
+      className={styles.proof}
+      items={[t('item.proofCertificate'), t('item.proofOriginals'), t('item.proofGuarantee')]}
+    />
+  )
+
   if (work.status === 'sold') {
     return (
-      <div className={styles.panel} data-status="sold">
-        <Badge tone="default">{t('status.sold')}</Badge>
-        <Button href={askHref}>{c('item.askAnother')}</Button>
-        {missing && <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>}
-      </div>
+      <>
+        <div className={styles.panel} data-status="sold">
+          <span className={styles.statusLine}>{t('status.sold')}</span>
+          <Button href={askHref}>{c('item.askAnother')}</Button>
+          {missing && <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>}
+          {promise}
+        </div>
+        {proof}
+      </>
     )
   }
 
@@ -56,24 +68,32 @@ export function AskPanel({
 
   if (work.status === 'on-hold') {
     return (
-      <div className={styles.panel} data-status="on-hold">
-        <Badge tone="caution">{t('status.onHold')}</Badge>
-        <p className={styles.panelNote}>{t('item.onHoldExplain')}</p>
-        <Button href={askHref}>{t('item.askOnHold')}</Button>
-        {contact}
-        <p className={styles.panelFine}>{t('item.shipping')}</p>
-      </div>
+      <>
+        <div className={styles.panel} data-status="on-hold">
+          <span className={styles.statusLine}>{t('status.onHold')}</span>
+          <p className={styles.panelNote}>{t('item.onHoldExplain')}</p>
+          <Button href={askHref}>{t('item.askOnHold')}</Button>
+          {contact}
+          {promise}
+          <p className={styles.panelFine}>{t('item.shipping')}</p>
+        </div>
+        {proof}
+      </>
     )
   }
 
   return (
-    <div className={styles.panel} data-status="available">
-      <span className={styles.priceOnRequest}>{t('price.onRequest')}</span>
-      <p className={styles.panelNote}>{t('item.heldIn')}</p>
-      <Button href={askHref}>{t('item.ask')}</Button>
-      {contact}
-      <p className={styles.panelFine}>{t('item.shipping')}</p>
-    </div>
+    <>
+      <div className={styles.panel} data-status="available">
+        <span className={styles.statusLine}>{t('price.onRequest')}</span>
+        <p className={styles.panelNote}>{t('item.heldIn')}</p>
+        <Button href={askHref}>{t('item.ask')}</Button>
+        {contact}
+        {promise}
+        <p className={styles.panelFine}>{t('item.shipping')}</p>
+      </div>
+      {proof}
+    </>
   )
 }
 
@@ -91,7 +111,7 @@ function PanelContact({
 }): React.ReactElement | null {
   if (emailHref !== null) {
     return (
-      <p className={styles.panelFine}>
+      <p className={styles.panelEmail}>
         {address === null ? (
           <TextLink href={emailHref}>{c('contactPage.emailLink')}</TextLink>
         ) : (

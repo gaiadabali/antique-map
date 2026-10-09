@@ -8,7 +8,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
-import { Eyebrow } from '../../../shared/ui'
+import { SectionHead } from '../../../shared/ui'
 import { creditLine, itemText, type ItemText } from './copy'
 import styles from './item.module.css'
 
@@ -65,9 +65,7 @@ export function ItemRecord({
   )
   return (
     <section className={styles.record} aria-labelledby="item-record">
-      <Eyebrow>
-        <span id="item-record">{t('item.record')}</span>
-      </Eyebrow>
+      <SectionHead id="item-record" title={t('item.record')} />
       <dl className={styles.list}>
         {work.objectType !== null && (
           <Row term={t('record.objectType')}>{t.code('objectType', work.objectType)}</Row>
