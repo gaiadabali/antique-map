@@ -15,9 +15,13 @@ const LEAD_CARDS = 2
 export function WorkGrid({
   works,
   locale,
+  leads = LEAD_CARDS,
 }: {
   readonly works: readonly WorkCardVM[]
   readonly locale: SiteLocale
+  /** How many first cards load eagerly at high priority: 0 where the grid sits below the fold
+   * (the home's bands, under the hero's own lead sheet). */
+  readonly leads?: number
 }): React.ReactElement {
   return (
     <ul className={styles.grid}>
@@ -27,7 +31,7 @@ export function WorkGrid({
             work={work}
             locale={locale}
             href={itemHref(work.publicId, locale)}
-            lead={index < LEAD_CARDS}
+            lead={index < leads}
           />
         </li>
       ))}

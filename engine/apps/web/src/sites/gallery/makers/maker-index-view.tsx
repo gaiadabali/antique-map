@@ -61,7 +61,11 @@ export function MakerIndexView({ items, locale, t }: Props) {
                     {item.name}
                   </a>
                   <span className={styles.meta}>
-                    {[lifeDates, t('makerPage.workCount', { count: item.workCount })]
+                    {[
+                      lifeDates,
+                      // A maker with no work on show yet carries no "0 works" beside the name.
+                      item.workCount > 0 ? t('makerPage.workCount', { count: item.workCount }) : '',
+                    ]
                       .filter(Boolean)
                       .join(' · ')}
                   </span>

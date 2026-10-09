@@ -14,8 +14,8 @@
 import type { SiteLocale } from '@engine/config/sites'
 import type { Payload } from 'payload'
 
-import { projectCards } from '../catalogue/projection'
-import type { CardImage } from '../catalogue/view-models'
+import { PUBLIC_IMAGE_SELECT } from '../../media/public-image'
+import { cardImageOf, projectCards } from '../catalogue/projection'
 import type { PageVM } from './view-models'
 
 const UNKNOWN_DATE: Record<SiteLocale, string> = {
@@ -24,14 +24,6 @@ const UNKNOWN_DATE: Record<SiteLocale, string> = {
 }
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
-
-function mediaOf(value: unknown): CardImage | null {
-  if (typeof value !== 'object' || value === null) return null
-  const media = value as { url?: unknown; alt?: unknown; width?: unknown; height?: unknown }
-  if (typeof media.url !== 'string' || typeof media.alt !== 'string') return null
-  const int = (n: unknown) => (typeof n === 'number' && Number.isSafeInteger(n) ? n : null)
-  return { url: media.url, alt: media.alt, width: int(media.width), height: int(media.height) }
-}
 
 /** The body's paragraphs: blank lines split it, each trimmed, empties dropped. */
 function paragraphsOf(value: unknown): readonly string[] {
@@ -70,7 +62,8 @@ export async function loadPageWith(
     select: {
       title: true,
       intro: true,
-      hero: { url: true, alt: true, width: true, height: true },
+      // The public derivative and its ladder, as a work card's (never the staff-only file route).
+      hero: PUBLIC_IMAGE_SELECT,
       body: true,
       works: true,
       seo: { title: true, description: true },
@@ -86,7 +79,7 @@ export async function loadPageWith(
   return {
     title: str(doc.title),
     intro: str(doc.intro) || null,
-    hero: mediaOf(doc.hero),
+    hero: cardImageOf(doc.hero),
     body: paragraphsOf(doc.body),
     works,
     seoTitle: str(seo.title) || null,
