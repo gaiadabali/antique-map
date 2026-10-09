@@ -38,6 +38,15 @@ export const CONTACT_MESSAGES = defineMessages({
   'sellToUs.whatButton': 'a map, print or photograph',
   'sellToUs.photosNote':
     'The form takes no photographs. Please send photos on WhatsApp or by email once we reply.',
+  'sellToUs.stepsTitle': 'How selling works',
+  'sellToUs.step1Title': 'Send photographs',
+  'sellToUs.step1Body': 'On WhatsApp or by email, with whatever you know of the piece.',
+  'sellToUs.step2Title': 'The curator assesses it',
+  'sellToUs.step2Body': 'We look at what you send and tell you what we make of it.',
+  'sellToUs.step3Title': 'We make an offer',
+  'sellToUs.step3Body': 'If we agree on a price, we settle the details with you.',
+  'contactPage.replyPromise': 'We reply the same working day, Singapore time.',
+  'contact.viewingNote': 'Viewings are by appointment, in Singapore and Jakarta.',
   // the contact page's words (EXPERIENCE-GALLERY.md §2)
   'contact.eyebrow': 'Contact',
   'contact.title': 'Talk to the gallery',

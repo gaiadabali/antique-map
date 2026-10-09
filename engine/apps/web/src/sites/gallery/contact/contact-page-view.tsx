@@ -6,7 +6,7 @@
  * from `loadSiteSettings()`; when neither has arrived yet (OA2) the buttons give way to the
  * placeholder notice and the button links the Contact page — never a fake number.
  */
-import { Button, Eyebrow, TextLink } from '../../../shared/ui'
+import { Button, SectionHead, TextLink } from '../../../shared/ui'
 
 import type { LeadFormKind } from './lead-form-view'
 import { LeadForm } from './lead-form'
@@ -43,45 +43,66 @@ export function ContactPageView({
   formText,
   siteKey,
 }: Props) {
+  const STEPS = [1, 2, 3] as const
   return (
     <div className={styles.wrap}>
-      <section>
-        <Eyebrow>{head.eyebrow}</Eyebrow>
-        <h1>{head.title}</h1>
-        <p className={`site-lede ${styles.lede}`}>{head.lede}</p>
-        <div className={styles.talk}>
-          {contactMissing ? (
-            <>
-              <p className={styles.note}>{t('contactPage.placeholder')}</p>
-              {contactHref !== null && (
-                <TextLink href={contactHref}>{t('contact.eyebrow')}</TextLink>
-              )}
-            </>
-          ) : (
-            <>
-              {links.wa !== null && (
-                <Button variant="primary" href={links.wa}>
-                  {t('contactPage.whatsappLink')}
-                </Button>
-              )}
-              {links.mail !== null && (
-                <Button variant="quiet" href={links.mail}>
-                  {t('contactPage.emailLink')}
-                </Button>
-              )}
-            </>
+      <SectionHead level={1} eyebrow={head.eyebrow} title={head.title} lede={head.lede} />
+      <div className={styles.grid}>
+        <div className={styles.side}>
+          <div className={styles.talk}>
+            {contactMissing ? (
+              <>
+                <p className={styles.note}>{t('contactPage.placeholder')}</p>
+                {contactHref !== null && (
+                  <TextLink href={contactHref}>{t('contact.eyebrow')}</TextLink>
+                )}
+              </>
+            ) : (
+              <div className={styles.actions}>
+                {links.wa !== null && (
+                  <Button variant="primary" href={links.wa}>
+                    {t('contactPage.whatsappLink')}
+                  </Button>
+                )}
+                {links.mail !== null && (
+                  <Button variant="quiet" href={links.mail}>
+                    {t('contactPage.emailLink')}
+                  </Button>
+                )}
+              </div>
+            )}
+            {links.mail !== null && links.address !== null && (
+              <p className={styles.note}>
+                {t('contactPage.emailOr')} <TextLink href={links.mail}>{links.address}</TextLink>
+              </p>
+            )}
+            <p className={styles.promise}>{t('contactPage.replyPromise')}</p>
+            {kind === 'sell' && <p className={styles.note}>{t('sellToUs.photosNote')}</p>}
+            {kind === 'contact' && <p className={styles.note}>{t('contact.viewingNote')}</p>}
+          </div>
+          {kind === 'sell' && (
+            <section className={styles.steps} aria-labelledby="sell-steps">
+              <SectionHead id="sell-steps" title={t('sellToUs.stepsTitle')} />
+              <ol className={styles.stepList}>
+                {STEPS.map((n) => (
+                  <li className={styles.step} key={n}>
+                    <span className={styles.number} aria-hidden="true">
+                      {`0${n}`}
+                    </span>
+                    <div>
+                      <h3 className={styles.stepTitle}>{t(`sellToUs.step${n}Title`)}</h3>
+                      <p className={styles.stepBody}>{t(`sellToUs.step${n}Body`)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
           )}
-          {links.mail !== null && links.address !== null && (
-            <p className={styles.note}>
-              {t('contactPage.emailOr')} <TextLink href={links.mail}>{links.address}</TextLink>
-            </p>
-          )}
-          {kind === 'sell' && <p className={styles.note}>{t('sellToUs.photosNote')}</p>}
         </div>
-      </section>
-      <section>
-        <LeadForm kind={kind} text={formText} locale={locale} siteKey={siteKey} />
-      </section>
+        <div className={styles.panel}>
+          <LeadForm kind={kind} text={formText} locale={locale} siteKey={siteKey} />
+        </div>
+      </div>
     </div>
   )
 }

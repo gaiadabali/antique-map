@@ -779,5 +779,14 @@
   "contactPage.whatsappLink": "WhatsApp",
   "contact.waText": "Halo, saya ingin bertanya kepada Indies Gallery.",
   "contact.emailSubject": "Pertanyaan untuk Indies Gallery",
-  "contactPage.emailOr": "Atau email"
+  "contactPage.emailOr": "Atau email",
+  "sellToUs.stepsTitle": "Cara kami membeli",
+  "sellToUs.step1Title": "Kirim foto",
+  "sellToUs.step1Body": "Lewat WhatsApp atau email, beserta yang Anda ketahui tentang benda itu.",
+  "sellToUs.step2Title": "Kurator menilainya",
+  "sellToUs.step2Body": "Kami melihat kiriman Anda dan menyampaikan penilaian kami.",
+  "sellToUs.step3Title": "Kami mengajukan penawaran",
+  "sellToUs.step3Body": "Bila harga disepakati, kami atur detailnya bersama Anda.",
+  "contactPage.replyPromise": "Kami membalas di hari kerja yang sama, waktu Singapura.",
+  "contact.viewingNote": "Kunjungan melihat koleksi dengan janji temu, di Singapura dan Jakarta."
 }
