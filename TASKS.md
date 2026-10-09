@@ -79,6 +79,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 12·W2 | 12.5 The product page | medior | `feat/p12-product` | 2026-10-09 | |
+| 12·W2 | 12.4 Browse, search and collections | medior | `feat/p12-browse` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -871,7 +873,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 12.3.a best sellers, sets, process, trade and originals bands rebuilt on `SectionHead`, `Mat` and `ProofPoints`; square "shop by" links in place of pills
   - [ ] 12.3.b **Check:** the home at 390 and 1280 on a production build with the real designs, axe clean, no sideways scroll.
 
-- [ ] **12.4 Browse, search and collections** · needs: 12.2
+- [ ] **12.4 Browse, search and collections** · needs: 12.2 — 🔄 12·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/browse/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection}/**`
   - **Read** EXPERIENCE-SHOP.md §4, DESIGN-SYSTEM.md §1–§5
@@ -879,7 +881,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 12.4.a the listing at full width under a `SectionHead`; cards in compact mats with museum captions; filters and sort as quiet underlined tabs; pagination in the same hand; search and collection pages alike
   - [ ] 12.4.b **Check:** browse, a search and a collection at 390 and 1280 with the real designs, axe clean, no sideways scroll; filters, sort and paging still work.
 
-- [ ] **12.5 The product page** · needs: 12.2
+- [ ] **12.5 The product page** · needs: 12.2 — 🔄 12·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/product/{product-view.tsx,product.module.css,variant-picker.tsx}` and new files beside them, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
   - **Read** EXPERIENCE-SHOP.md §5, COMMERCE.md §Prices (no price logic changes)
