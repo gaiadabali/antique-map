@@ -27,7 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **49/54** | **204/221** | **8** | `█████████░`  92% |
+| **12** The shop's luxury pass | UI | 4, 6 | · not started | 0/8 | 0/16 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 12 phases | | | **49/62** | **204/237** | **8** | `█████████░`  86% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -837,6 +838,78 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 11.4.c **Check:** `docs/gates/day-30.md` holds the four weekly reviews, every incident with its fix, and the owner's sign-off.
 
 ---
+
+---
+
+## Phase 12 — The shop's luxury pass · UI · needs 4, 6 · ~2d
+
+**Goal:** every page of Old East Indies carries the premium language the user approved on the home's hero (2026-10-09): prints in paper mats, marked eyebrows on a scale bar, balanced serif heads, museum captions, proof points under hairlines, generous space — built from tokens and shared components only (DESIGN-SYSTEM.md §Built to be restyled), pulled forward from backlog v2.0 for the shop.
+**Done when:** on staging, every shop page (home, browse, search, collection, product, bag, checkout, tracking, order, partnership, not-found) shows the language at 390 px and 1280 px with axe clean and no sideways scroll; behaviour, prices and stock are untouched; the gallery's pages change only through the shared header and footer.
+**Waves:** W1 — 12.1, 12.2 · W2 — 12.3, 12.4, 12.5, 12.6, 12.7 · W3 — 12.8
+
+- [ ] **12.1 The home's hero** · needs: phase 4, phase 6
+  - **Lane** WEB · **Agent** orchestrator · **Wave** W1
+  - **Owns** `engine/apps/web/src/sites/shop/home/{hero.tsx,hero.module.css,frame-ratio.ts,hero.test.ts}`
+  - **Read** DESIGN-SYSTEM.md §1–§4
+  - _Requirements: 12.1_
+  - [ ] 12.1.a the lead print (the first featured product with a published image) in a paper mat with a museum caption; the headline on two balanced lines under a scale-bar eyebrow; three proof points; the copy in both locales
+  - [ ] 12.1.b **Check:** live on staging (`fb7ef553`) at 390, 1280 and 1995 px in both locales: the photograph loads at high priority, the caption names it with its label and price, axe clean, no sideways scroll.
+
+- [ ] **12.2 The shared pieces of the language** · needs: phase 4
+  - **Lane** DSG · **Agent** orchestrator · **Wave** W1
+  - **Owns** `engine/apps/web/src/shared/ui/{mat,proof-points,section-head,eyebrow}/**`, `engine/apps/web/src/shared/ui/index.ts`, `engine/apps/web/src/shared/style-guide/**`, the token files
+  - **Read** DESIGN-SYSTEM.md §Built to be restyled, §5
+  - _Requirements: 12.1_
+  - [ ] 12.2.a `Mat` (default and compact, `MatNote`), `Eyebrow mark`, `ProofPoints` and `SectionHead`, on the style guide; the hero rebuilt on them, its lead image through `ResponsiveImage` (AVIF, preloaded)
+  - [ ] 12.2.b **Check:** the style guide shows each at 390 and 1280; the hero renders as before; lint, tokens, file size and the shared tests pass.
+
+- [ ] **12.3 The home below the hero** · needs: 12.2
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/home/**` (not 12.1's files), the `home.shop.*` keys in `sites/shop/lexicon/{en,id}.json`
+  - **Read** DESIGN-SYSTEM.md §1–§5, 12.1 and 12.2's components
+  - _Requirements: 12.1_
+  - [ ] 12.3.a best sellers, sets, process, trade and originals bands rebuilt on `SectionHead`, `Mat` and `ProofPoints`; square "shop by" links in place of pills
+  - [ ] 12.3.b **Check:** the home at 390 and 1280 on a production build with the real designs, axe clean, no sideways scroll.
+
+- [ ] **12.4 Browse, search and collections** · needs: 12.2
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/browse/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection}/**`
+  - **Read** EXPERIENCE-SHOP.md §4, DESIGN-SYSTEM.md §1–§5
+  - _Requirements: 12.1_
+  - [ ] 12.4.a the listing at full width under a `SectionHead`; cards in compact mats with museum captions; filters and sort as quiet underlined tabs; pagination in the same hand; search and collection pages alike
+  - [ ] 12.4.b **Check:** browse, a search and a collection at 390 and 1280 with the real designs, axe clean, no sideways scroll; filters, sort and paging still work.
+
+- [ ] **12.5 The product page** · needs: 12.2
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/product/{product-view.tsx,product.module.css,variant-picker.tsx}` and new files beside them, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
+  - **Read** EXPERIENCE-SHOP.md §5, COMMERCE.md §Prices (no price logic changes)
+  - _Requirements: 12.1_
+  - [ ] 12.5.a two columns on a desktop: the lead image in a mat with its thumbnails, the details beside it (marked category, serif title, price before the button, stock, delivery note, proof points); the story below; one column on a phone
+  - [ ] 12.5.b **Check:** a product with variants and one without at 390 and 1280, axe clean; adding to the bag still works.
+
+- [ ] **12.6 Bag, checkout, tracking, order and not-found** · needs: 12.2
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/{bag,checkout,tracking,payment}/**` (markup and CSS only), `engine/apps/web/src/app/(shop)/shop/[locale]/{cart,checkout,track,order,not-found,[...missing]}/**`
+  - **Read** COMMERCE.md (no behaviour changes), DESIGN-SYSTEM.md §1–§5
+  - _Requirements: 12.1_
+  - [ ] 12.6.a each page opens on a `SectionHead`; bag lines with compact matted thumbnails and a summary panel; checkout and tracking forms in the same hand; the not-found page invites back to the shop
+  - [ ] 12.6.b **Check:** an empty bag, a bag with two lines, checkout to the simulator, tracking and not-found at 390 and 1280, axe clean; the purchase still completes on the simulator.
+
+- [ ] **12.7 Partnership and the shell** · needs: 12.2
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/apps/web/src/sites/shop/partnership/**` (markup and CSS only), `engine/apps/web/src/shared/ui/{header,footer}/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/styles/site.css`
+  - **Read** DESIGN-SYSTEM.md §1–§5
+  - _Requirements: 12.1_
+  - [ ] 12.7.a partnership at full width: `SectionHead`, `ProofPoints`, offers in mats beside their terms, the form in the same hand; the header's navigation quieter and the wordmark not wrapping on a phone; the footer in titled columns
+  - [ ] 12.7.b **Check:** partnership at 390 and 1280, the header and footer on both sites, axe clean; the enquiry still submits.
+
+- [ ] **12.8 The pass on staging** · needs: 12.3, 12.4, 12.5, 12.6, 12.7
+  - **Lane** QA · **Agent** qa (Sonnet), orchestrator for staging · **Wave** W3
+  - **Owns** `docs/gates/luxury-pass.md`
+  - **Read** this phase's **Done when**
+  - _Requirements: 12.1_
+  - [ ] 12.8.a released to staging; every shop page and the gallery's home at 390 and 1280, screenshots recorded
+  - [ ] 12.8.b **Check:** `docs/gates/luxury-pass.md` shows each page with axe clean and no sideways scroll, and the shop's purchase path completing on the simulator.
 
 ---
 
