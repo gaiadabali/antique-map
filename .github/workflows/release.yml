@@ -40,8 +40,10 @@ jobs:
       DB_SUFFIX: release
       NEXT_TELEMETRY_DISABLED: '1'
     services:
+      # Docker's official image through AWS's public mirror (the same digest): Docker Hub's
+      # anonymous pull limit, shared by every GitHub runner, failed CI run 37990518795 in setup.
       postgres:
-        image: postgres:18.0
+        image: public.ecr.aws/docker/library/postgres:18.0
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres

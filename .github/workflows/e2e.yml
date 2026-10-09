@@ -60,8 +60,10 @@ jobs:
       REVALIDATE_ORIGIN: http://127.0.0.1:4200
       SNAPSHOT_DIR: ${{ github.workspace }}/.e2e-db
     services:
+      # Docker's official image through AWS's public mirror (the same digest): Docker Hub's
+      # anonymous pull limit, shared by every GitHub runner, failed CI run 37990518795 in setup.
       postgres:
-        image: postgres:18.0
+        image: public.ecr.aws/docker/library/postgres:18.0
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -74,7 +76,7 @@ jobs:
       # The mail the order and enquiry flows send, read back by the specs through its API
       # (MAILPIT_URL): SMTP on 1025 for the server, the HTTP API on 8025 for Playwright.
       mailpit:
-        image: axllent/mailpit:v1.21
+        image: ghcr.io/axllent/mailpit:v1.21
         ports: ['1025:1025', '8025:8025']
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
