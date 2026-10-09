@@ -1,26 +1,111 @@
-/* The gallery's Sell-to-us and Contact pages' layout (5.3.b). Tokens only. */
+/* The gallery's Sell-to-us and Contact pages' layout, in the partnership page's hand: the full
+   breakout width, the opening, then the explanation beside the form in a raised panel.
+   Tokens only. */
 
 .wrap {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  max-inline-size: 46rem;
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-inline: var(--gutter);
+  padding-block-end: var(--space-7);
 }
 
-.lede {
-  color: var(--color-text-muted);
-  margin: 0;
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+  margin-block-start: var(--space-7);
+  padding-block-start: var(--space-7);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  max-inline-size: 36rem;
 }
 
 .talk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-4);
 }
 
+.promise {
+  font: var(--text-body);
+  margin: 0;
+}
+
 .note {
   font: var(--text-caption);
   color: var(--color-text-muted);
   margin: 0;
+}
+
+.steps {
+  border-top: var(--rule-hair) solid var(--color-border);
+  padding-block-start: var(--space-6);
+}
+
+.stepList {
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: var(--space-8) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: baseline;
+  padding-block: var(--space-4);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.step:last-child {
+  border-bottom: var(--rule-hair) solid var(--color-border);
+}
+
+.number {
+  font: var(--text-number);
+  color: var(--color-text-muted);
+}
+
+.stepTitle {
+  font: var(--text-h3);
+  margin: 0;
+}
+
+.stepBody {
+  font: var(--text-body);
+  color: var(--color-text-muted);
+  margin: var(--space-1) 0 0;
+}
+
+.panel {
+  padding: var(--space-7);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+}
+
+@media (max-width: 47.5rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-7);
+    margin-block-start: var(--space-5);
+    padding-block-start: var(--space-5);
+  }
+
+  .panel {
+    padding: var(--space-5);
+  }
 }
