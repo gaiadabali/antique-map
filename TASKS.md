@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 5/8 | 12/17 | 0 | `███████░░░`  71% |
-| **All** | 14 phases | | | **65/73** | **238/260** | **8** | `█████████░`  92% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 5/8 | 13/17 | 0 | `████████░░`  76% |
+| **All** | 14 phases | | | **65/73** | **239/260** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1001,7 +1001,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
   - **Read** EXPERIENCE-GALLERY.md §7, §9
   - _Requirements: 12.1_
-  - [ ] 14.6.a the makers index an A–Z index in columns (letter heads, names with life dates and counts, hairlines — no boxed cards); a maker under a `SectionHead` with life dates, the biography at the reading measure, the works as work cards; the places index as island groups in headed columns with counts; a place alike; CMS pages and stories under a `SectionHead` at the reading measure; not-found invites to search and the collection; words under `makerPage.*`, `placePage.*`, `cmsPage.*`, `notFound.*`, both languages
+  - [x] 14.6.a the makers index an A–Z index in columns (letter heads, names with life dates and counts, hairlines — no boxed cards); a maker under a `SectionHead` with life dates, the biography at the reading measure, the works as work cards; the places index as island groups in headed columns with counts; a place alike; CMS pages and stories under a `SectionHead` at the reading measure; not-found invites to search and the collection; words under `makerPage.*`, `placePage.*`, `cmsPage.*`, `notFound.*`, both languages
   - [ ] 14.6.b **Check:** makers, a maker, places, a place, a story page and not-found at 390 and 1280 in both languages, axe clean, no sideways scroll; the makers index at 1280 fits in a few screens.
 
 - [x] **14.7 Sell to us and contact** · needs: 14.1 — ✅ 2026-10-09 437b715f
