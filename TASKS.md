@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 7/8 | 16/17 | 0 | `█████████░`  94% |
-| **All** | 14 phases | | | **67/73** | **242/260** | **8** | `█████████░`  93% |
+| **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
+| **All** | 14 phases | | | **68/73** | **243/260** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,7 +81,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 14·W3 | 14.8 The pass on staging | qa | `main` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -1011,13 +1010,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 14.7.a each page opens on a `SectionHead`; how selling works as numbered steps; WhatsApp first and email beside the reply promise (G9); the form in a raised panel in the partnership page's hand; words under `sellToUs.*`, `contact.*`, `contactPage.*`, `contactForm.*`, both languages
   - [x] 14.7.b **Check:** both pages at 390 and 1280 in both languages, axe clean; an empty Send is refused with its messages; the form's tests pass.
 
-- [ ] **14.8 The pass on staging** · needs: 14.3, 14.4, 14.5, 14.6, 14.7 — 🔄 14·W3
+- [x] **14.8 The pass on staging** · needs: 14.3, 14.4, 14.5, 14.6, 14.7 — ✅ 2026-10-10 abf88683
   - **Lane** QA · **Agent** qa (Sonnet), orchestrator for staging · **Wave** W3
   - **Owns** `docs/gates/gallery-luxury.md`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
   - [x] 14.8.a released to staging; every gallery page at 390 and 1280 in both languages, screenshots recorded
-  - [ ] 14.8.b **Check:** `docs/gates/gallery-luxury.md` shows each page with axe clean, no sideways scroll, no broken image, no price and no institution named, and the shop's home, browse and product pages unchanged.
+  - [x] 14.8.b **Check:** `docs/gates/gallery-luxury.md` shows each page with axe clean, no sideways scroll, no broken image, no price and no institution named, and the shop's home, browse and product pages unchanged.
 
 ---
 
@@ -1040,6 +1039,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-10 — ✅ **phase 14 — the gallery's luxury pass closed** (8/8 tasks, 22/22 subtasks; the user's request 2026-10-09: "upgrade the gallery's pages, so we have a proper UI too"). Indies Gallery now carries phase 12's language in its own hand: the sheet whole on a contained mat (never cropped), a hairline-marked eyebrow (the shop keeps its scale bar — both from tokens), museum captions with the status line and the `StockTag`, `SectionHead`, `ProofPoints`, hairlines and square corners. The orchestrator built the shared pieces and the hero (the newest available map — on staging De Bry's 1598 *Nova tabula Insularum Iava, Sumatra, Borneonis*); Sonnet agents rebuilt the home, browse and search, the item page, makers/places/pages/not-found, and sell to us/contact; the orchestrator reviewed every diff. The home's copy is back to the owner's answers — no institution named (G10), the same working day, Singapore time (G9), "Recently placed" from real sold works. **Done when** met on staging `production-20261009T154502Z-ca01da38` (`docs/gates/gallery-luxury.md`, qa Sonnet): 25 gallery addresses at 390 and 1280, en and id, axe clean, no sideways scroll, no broken image; price regex 0 on all, institution regex 0; sort, paging, include sold, a maker inside "All 112 makers", the year pair, zoom (info.json and tiles 200, canvas drawn), Ask carrying the stock number and an empty Send on both forms in both languages all work; the shop's pages and marks as before. **Stories:** staging holds no `pages` record — the story layout and its hero were checked on a local build. **A regression found on staging and fixed (`ca01da38`):** the shop's dark trade band drew its scale bar's stripes in bronze — the gradient had moved into a root-resolved token; the phase 13 session spotted it. Released together with phase 13 by that session (one release, one push). Follow-ups: the floating chat button covers a card's stock tag and list ends (shell); the curator's portrait (owner); the item's thumbnails should open the viewer at their image; a fade at the edge of the phone's scrolling sort row; gallery zoom tiles are served from the shop host's media path; the shop browse can drop its local pager override for `variant="quiet"`.
 
 - 2026-10-09 — ✅ **14.4 and 14.6 closed** (Sonnet built, orchestrator reviewed; merged `c0196bcf`, `db2e7068`, review fixes `cfa3a496`). **14.4 browse and search:** the listing under `SectionHead` (a type page titled by its type), the facet column quiet on hairlines, **a long list shows its first eight and an "All n" disclosure reveals the rest in place** (every option still a real link; it opens itself when it holds the selection), sort as underlined tabs, square chips, the quiet pager, search and its no-result state in the same hand — `/browse` at 1280 is **3,678 px, from 8,507**; facets, sort, paging, "Include sold", the year pair and a place deep in the tree clicked through on the build. **14.6:** the makers index an A–Z index in columns (**3,955 px, from 10,518**), a maker and a place over the shared work grid, the places index as headed island groups, CMS pages and stories at the reading measure, the gallery's own 404 with search. **Review fixes (orchestrator):** a CMS page or story with a hero image answered **500** — its loader handed next/image the staff-only `/api/media/file/…?prefix=` URL (a defect since 5.x, found by 14.6); it now projects the hero through the public derivative like a work card; the makers index no longer prints "0 works"; the home's work bands no longer load their pictures at high priority beside the hero's sheet; one prettier miss. **Check, on main + fixes, production build, local gallery sample:** home, browse, a type page, search, no-result search, an available and a sold item, makers, a maker, places, a place, a story with its hero, sell to us, contact and not-found (404), and the same in Indonesian — **every page axe clean at 390 and 1280, no sideways scroll, no broken image**; the shop's home, browse, product, collections and stores unchanged (home and browse heights identical to before). Follow-ups: the place facet's first eight follow tree order; the maker page has no biography field yet (9.3); the places index counts places, not works; the floating chat button sits over the right edge of long lists and forms.
 
