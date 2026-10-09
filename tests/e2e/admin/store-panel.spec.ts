@@ -50,6 +50,11 @@ function storePanelOrders(storeAId: number, storeBId: number): { mine: number; o
 
 test.use({ viewport: { width: 390, height: 844 } })
 
+// beforeAll makes this file's own orders and their stock rows (not idempotent: a second worker
+// doing it at once collides on the stock row's unique key), and the cases share them. So the file
+// runs in one worker, in order, even under `fullyParallel`.
+test.describe.configure({ mode: 'default' })
+
 let fx: Fixtures
 let orders: { mine: number; other: number }
 test.beforeAll(() => {

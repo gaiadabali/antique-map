@@ -26,3 +26,24 @@ lint, typecheck, format:check, check:filesize, check:generated pass. `vitest --p
 ## Screenshots (`docs/gates/cms-clarity/shots/`)
 
 Owner and store, at 390 and 1280 px, on a production build (`LOCAL_PRODUCTION_BUILD=1`, own port, DB copy of `indies_p14_gallery`): `<role>-<width>-sidebar`, `order`, `stock-create`; owner only: `antiques-list`, `antique-edit`, `product-edit`, `site-settings-gallery`, `site-settings-shop`, `site-settings-shop-delivery`, `terms-list`, `leads-list`, `masters-list`, `account-language` (1280).
+
+## On staging (orchestrator, 2026-10-10, `production-20261009T185720Z-1f9e709e`)
+
+Signed in through the UI (credentials loaded from Helios into the process only), the sidebar read as text:
+
+- **Owner, 1280 and 390, English:** Daily work · Order panel · Leads inbox · Import stock | Gallery — antiques ·
+  Antiques · Makers · Places | Shop — products · Products · Discount codes | Stores and stock · Stores · Stock |
+  Orders · Orders | Leads and partners · Leads · Partners · Chat sessions | Photos and tags (both sites) · Tags and
+  grades · Images · Original photo files (private) | Content · Pages · Redirects | Settings · Staff · Site settings |
+  Technical records · Events · Payment events | Bahasa Indonesia / English.
+- **Owner, 1280, Indonesian** (switched on the account page, then back to English): Pekerjaan harian · Panel pesanan
+  · Kotak masuk calon pembeli · Impor stok | Galeri — antik … | Toko daring — produk … | Foto dan tag (kedua situs) ·
+  Tag dan kelas kondisi · Gambar · File foto asli (privat) | … | Catatan teknis · Peristiwa · Peristiwa pembayaran.
+- **Store user, 1280 and 390:** Daily work · Order panel | Stores and stock · Stores · Stock | Orders · Orders |
+  the language link; they land on **Your orders**.
+- **Antiques list columns:** Title | Stock number | Object type | Availability | Status | Updated At — no column twice.
+- **Schema:** `payload-types.ts` equals main's line for line once its JSDoc comments are set aside (sorted
+  comparison); the migration generator found no change; staging applied no migration (6 = 6).
+
+Left as is: the Orders group holds one entry also called Orders (the plain table) beside the Order panel under
+Daily work — renaming the collection to "All orders (table)" is a small follow-up if staff find it confusing.

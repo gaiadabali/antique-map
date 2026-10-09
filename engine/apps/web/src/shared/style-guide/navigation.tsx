@@ -15,11 +15,14 @@ export function Navigation(): React.ReactElement {
         <Breadcrumbs items={sampleItems} />
       </Section>
 
-      <Section id="sg-pagination" title="Pagination">
+      {/* One section per shared component folder (phase-4.spec.ts 4.2.c): the quiet variant sits
+          inside Pagination's section, not in a section of its own. */}
+      <Section
+        id="sg-pagination"
+        title="Pagination"
+        note="Default, then the quiet variant for long lists."
+      >
         <Pagination currentPage={3} totalPages={10} getHref={(p: number) => `/?page=${p}`} />
-      </Section>
-
-      <Section id="sg-pagination-quiet" title="Pagination — quiet">
         <Pagination
           variant="quiet"
           ariaLabel="Pagination, quiet"
