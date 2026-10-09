@@ -1,5 +1,7 @@
 # Gate — the timed admin tests (10.4)
 
+> **Orchestrator review, 2026-10-09.** (1) **Recipe 5 is not broken, and passes with a stumble:** the shop's Distance bands and Social links rows were *collapsed* (Payload keeps each user's collapsed rows), and a collapsed row shows only its header, so it looked empty. **Show All** opens them: bands 5 km Rp 10,000 / 15 km Rp 15,000 / 30 km Rp 20,000, editable; the shop's AI group and Free delivery over render on every load. (2) Fixed: **F1** and **F2** (the dashboard's Orders to act on and New leads open the panel and the inbox), **F3** ("Rentang jarak"), and a new **Order panel** link in the sidebar for owner, editor and store staff (`admin/orders/nav-link.jsx`) — the cause of recipe 4's "not unaided". (3) The gaps that are features, not fixes, are tasks **10.7** and **10.8** in TASKS.md.
+
 **Task:** TASKS.md 10.4 · **Environment:** Helios staging (`old-east-indies.gaiada.com/admin`) · **Run:** 2026-10-09, twice (`run1`, `run2`) · **Status:** 10.4.a **not met** — the owner's people have not run it; this file holds the qa agent's proxy run only.
 
 ## Proxy run by the qa agent — not the owner's team (10.4.a still needs them)

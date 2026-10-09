@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/6 | 22/25 | 1 | `█████████░`  88% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/8 | 22/32 | 1 | `███████░░░`  69% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **47/52** | **197/214** | **8** | `█████████░`  92% |
+| **All** | 11 phases | | | **47/54** | **197/221** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -707,7 +707,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 **Goal:** the whole thing is reviewed for safety, speed and usability on staging with a realistic load of data.
 **Done when:** `docs/SECURITY.md`'s checklist is run and every finding is fixed or accepted by the owner; budgets pass on both sites; a rehearsal on staging runs both sites with the full data volume and a restore from backup; the owner's team completes the timed admin tests.
-**Waves:** W1 — 10.1, 10.2, 10.5, 10.6 · W2 — 10.3 · W3 — 10.4
+**Waves:** W1 — 10.1, 10.2, 10.5, 10.6 · W2 — 10.3, 10.7, 10.8 · W3 — 10.4
 
 - [x] **10.1 Security review and fixes** · needs: phase 7, phase 8, phase 9 — ✅ 2026-10-08 9a6909b9
   - **Lane** PLT + QA · **Agent** senior-integrator, qa · **Wave** W1
@@ -740,7 +740,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.3.d write the runbook: deploy, roll back, restore, rotate a secret, kill the chat, handle a late payment
   - [x] 10.3.e **Check:** `docs/gates/rehearsal.md` records the run, the restore timing and verification, and the runbook has been followed by someone other than its author.
 
-- [ ] **10.4 👤 Timed admin tests with the owner's team** · needs: 10.3
+- [ ] **10.4 👤 Timed admin tests with the owner's team** · needs: 10.3, 10.7, 10.8
   - **Lane** QA + DOC · **Agent** qa, senior-uiux · **Wave** W3
   - **Owns** `docs/gates/admin-usability.md`, `docs/CONTENT-OPERATIONS.md`
   - **Read** CONTENT-OPERATIONS.md §Targets, OA9
@@ -769,6 +769,26 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.6.d @oldeastindiesart's Instagram posts read for their pictures, captions and prices (product types, sizes, prices) to complete 10.6.c's products
   - [x] 10.6.e the shop on staging carries the designs as products with marked placeholder prices, replacing the 80 mock products (mock stores and stock stay); both sites' footers link their Instagram and Facebook
   - [x] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
+
+
+- [ ] **10.7 Replacement orders and late payments** · needs: phase 7
+  - **Lane** SHP + CMS · **Agent** senior-be, Opus review · **Wave** W2
+  - **Owns** `engine/packages/cms/src/shop/{orders,payments,fulfilment}/**`, `engine/packages/cms/src/admin/orders/**`
+  - **Read** COMMERCE.md §4, §12, §13; CONTENT-OPERATIONS.md §5.5; `docs/gates/rehearsal.md` R-1 and R-2 (found by the rehearsal); Q10
+  - _Requirements: 6.4, 7.5_
+  - [ ] 10.7.a **Replace damaged item** on a delivered order (owner, editor): tick lines and quantities, a note, Confirm; a Rp 0 order, `channel: replacement`, `replacementOf` the original, at the original's store, stock taken atomically (a short store is refused with a reason), tracking email, statuses from `processing`
+  - [ ] 10.7.b a payment after expiry (COMMERCE.md §13): if the same store still holds every unit, re-take them in the same transaction and mark the order `paid`; else `paid` with "reassign, or cancel and return the money"; the flag stays until staff clear it, and the panel offers that
+  - [ ] 10.7.c **Check:** db tests for both (stock short, stock present, concurrent retake); on staging the late-payment spec (`tests/e2e/rehearsal/late-payment.spec.ts`) ends with the order paid at its store, and a replacement of a delivered order reaches the store panel.
+
+- [ ] **10.8 Staff admin gaps from the 10.4 proxy run** · needs: phase 7
+  - **Lane** CMS · **Agent** medior (Sonnet), senior-uiux review · **Wave** W2
+  - **Owns** `engine/packages/cms/src/admin/{leads,widgets,dashboard,stock-import}/**`, `engine/packages/cms/src/collections/{products,media,stock-levels}/admin/**` (CONTENT-OPERATIONS.md changes go to 10.4.b)
+  - **Read** `docs/gates/admin-usability.md`, CONTENT-OPERATIONS.md §3–§5, 3.7 (the import)
+  - _Requirements: 10.4_
+  - [ ] 10.8.a the stock spreadsheet import in the admin (3.7's importer behind an upload screen with its rejected-rows report), or CONTENT-OPERATIONS says how the owner hands it over instead
+  - [ ] 10.8.b leads: Reply on WhatsApp and Reply by email on a lead; product intake: image fields default sensibly, the category picker lists categories only, a duplicate SKU says which product has it
+  - [ ] 10.8.c store staff land on their order panel (the dashboard); the driver-details button is phone-sized (with 10.7's owner for `admin/orders/**`)
+  - [ ] 10.8.d **Check:** `tests/e2e/admin-usability/` re-run on staging: every recipe passes unaided at its target.
 
 ---
 
