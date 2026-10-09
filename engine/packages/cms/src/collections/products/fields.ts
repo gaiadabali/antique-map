@@ -161,7 +161,16 @@ export const PRODUCT_FIELDS: Field[] = [
     name: 'category',
     type: 'relationship',
     relationTo: 'terms',
-    label: { en: 'Category', id: 'Kategori' },
+    label: {
+      en: 'Category — pick one of the shop’s categories',
+      id: 'Kategori — pilih salah satu kategori toko',
+    },
+    admin: {
+      description: {
+        en: 'The shop category this product belongs to. The list also shows other subject tags; ignore those.',
+        id: 'Kategori toko untuk produk ini. Daftarnya juga memuat tag subjek lain; abaikan saja.',
+      },
+    },
     filterOptions: categoriesOnly,
     validate: requiredToPublish('Choose the category before publishing.'),
   },

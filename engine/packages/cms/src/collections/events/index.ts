@@ -85,7 +85,7 @@ export const Events: CollectionConfig = {
     plural: { en: 'Events', id: 'Peristiwa' },
   },
   admin: {
-    group: ADMIN_GROUPS.settings,
+    group: ADMIN_GROUPS.technical,
     hidden: hiddenFromAllButOwner,
     useAsTitle: 'name',
     defaultColumns: ['name', 'site', 'source', 'at', 'day'],

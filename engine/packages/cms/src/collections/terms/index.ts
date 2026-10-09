@@ -58,15 +58,19 @@ const validatePosition: Validate = (value) =>
 export const Terms: CollectionConfig = {
   slug: 'terms',
   labels: {
-    singular: { en: 'Term', id: 'Istilah' },
-    plural: { en: 'Terms', id: 'Istilah' },
+    singular: { en: 'Tag or grade', id: 'Tag atau kelas kondisi' },
+    plural: { en: 'Tags and grades', id: 'Tag dan kelas kondisi' },
   },
   admin: {
-    group: ADMIN_GROUPS.antiques,
+    group: ADMIN_GROUPS.photosAndTags,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'label',
     defaultColumns: ['label', 'kind', 'position', '_status', 'updatedAt'],
     listSearchableFields: ['label', 'slug'],
+    description: {
+      en: 'The tags and condition grades used to describe antiques and products, on both sites.',
+      id: 'Tag dan kelas kondisi untuk menjelaskan barang antik dan produk, di kedua situs.',
+    },
   },
   access: VOCABULARY_ACCESS,
   versions: VOCABULARY_VERSIONS,
@@ -82,7 +86,7 @@ export const Terms: CollectionConfig = {
     {
       name: 'kind',
       type: 'select',
-      label: { en: 'Vocabulary', id: 'Kosakata' },
+      label: { en: 'Type', id: 'Jenis' },
       required: true,
       index: true,
       options: TERM_KINDS.map((value) => ({ value, label: TERM_KIND_LABELS[value] })),

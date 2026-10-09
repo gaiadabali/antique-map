@@ -70,23 +70,23 @@ export interface Config {
     works: Work
     makers: Maker
     places: Place
-    terms: Term
-    media: Media
-    masters: Master
-    discounts: Discount
     products: Product
+    discounts: Discount
     stores: Store
     'stock-levels': StockLevel
     orders: Order
     'order-notifications': OrderNotification
-    'payment-events': PaymentEvent
     leads: Lead
     partners: Partner
     'chat-sessions': ChatSession
+    terms: Term
+    media: Media
+    masters: Master
     pages: Page
     redirects: Redirect
     users: User
     events: Event
+    'payment-events': PaymentEvent
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -101,23 +101,23 @@ export interface Config {
     works: WorksSelect<false> | WorksSelect<true>
     makers: MakersSelect<false> | MakersSelect<true>
     places: PlacesSelect<false> | PlacesSelect<true>
-    terms: TermsSelect<false> | TermsSelect<true>
-    media: MediaSelect<false> | MediaSelect<true>
-    masters: MastersSelect<false> | MastersSelect<true>
-    discounts: DiscountsSelect<false> | DiscountsSelect<true>
     products: ProductsSelect<false> | ProductsSelect<true>
+    discounts: DiscountsSelect<false> | DiscountsSelect<true>
     stores: StoresSelect<false> | StoresSelect<true>
     'stock-levels': StockLevelsSelect<false> | StockLevelsSelect<true>
     orders: OrdersSelect<false> | OrdersSelect<true>
     'order-notifications': OrderNotificationsSelect<false> | OrderNotificationsSelect<true>
-    'payment-events': PaymentEventsSelect<false> | PaymentEventsSelect<true>
     leads: LeadsSelect<false> | LeadsSelect<true>
     partners: PartnersSelect<false> | PartnersSelect<true>
     'chat-sessions': ChatSessionsSelect<false> | ChatSessionsSelect<true>
+    terms: TermsSelect<false> | TermsSelect<true>
+    media: MediaSelect<false> | MediaSelect<true>
+    masters: MastersSelect<false> | MastersSelect<true>
     pages: PagesSelect<false> | PagesSelect<true>
     redirects: RedirectsSelect<false> | RedirectsSelect<true>
     users: UsersSelect<false> | UsersSelect<true>
     events: EventsSelect<false> | EventsSelect<true>
+    'payment-events': PaymentEventsSelect<false> | PaymentEventsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -166,7 +166,7 @@ export interface UserAuthOperations {
   }
 }
 /**
- * The objects themselves — each map, print, photograph or book. How one is sold is its product.
+ * Shown on Indies Gallery only — never priced, never in a cart. The objects themselves: each map, print, photograph or book.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "works".
@@ -752,7 +752,7 @@ export interface Media {
   focalY?: number | null
 }
 /**
- * The private files images are made from: every capture as received. Never shown on the site.
+ * The full-size photos exactly as they came from the camera or scanner. Kept private and never shown on a site; the pictures visitors see are made from them.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "masters".
@@ -918,6 +918,8 @@ export interface Place {
   _status?: ('draft' | 'published') | null
 }
 /**
+ * The tags and condition grades used to describe antiques and products, on both sites.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "terms".
  */
@@ -1056,31 +1058,7 @@ export interface Store {
   createdAt: string
 }
 /**
- * Codes buyers type at checkout. A discount applies to the items, never the delivery fee.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "discounts".
- */
-export interface Discount {
-  id: number
-  code: string
-  kind: 'percent' | 'fixed'
-  /**
-   * For a percent code, 1 to 100. For a rupiah code, whole rupiah: 50000 for Rp 50.000.
-   */
-  value: number
-  minSpend?: number | null
-  oncePerBuyer?: boolean | null
-  startsAt?: string | null
-  endsAt?: string | null
-  usageLimit?: number | null
-  usedCount: number
-  active?: boolean | null
-  updatedAt: string
-  createdAt: string
-}
-/**
- * What the shop sells. Stock is entered per store under Stock.
+ * Shown on Old East Indies only. What the shop sells. Stock is entered per store under Stock.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
@@ -1100,6 +1078,9 @@ export interface Product {
    */
   slug: string
   description?: string | null
+  /**
+   * The shop category this product belongs to. The list also shows other subject tags; ignore those.
+   */
   category?: (number | null) | Term
   images?:
     | {
@@ -1140,6 +1121,30 @@ export interface Product {
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
+}
+/**
+ * Codes buyers type at checkout. A discount applies to the items, never the delivery fee.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts".
+ */
+export interface Discount {
+  id: number
+  code: string
+  kind: 'percent' | 'fixed'
+  /**
+   * For a percent code, 1 to 100. For a rupiah code, whole rupiah: 50000 for Rp 50.000.
+   */
+  value: number
+  minSpend?: number | null
+  oncePerBuyer?: boolean | null
+  startsAt?: string | null
+  endsAt?: string | null
+  usageLimit?: number | null
+  usedCount: number
+  active?: boolean | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * What each store can still sell. Enter what is on the shelf; units waiting for a driver are taken off for you.
@@ -1316,29 +1321,6 @@ export interface OrderNotification {
     | 'cancelled'
     | 'expired'
   sentAt?: string | null
-  updatedAt: string
-  createdAt: string
-}
-/**
- * What the payment provider reported, in order. A record only: never edited.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payment-events".
- */
-export interface PaymentEvent {
-  id: number
-  provider: 'midtrans'
-  dedupeKey: string
-  order?: (number | null) | Order
-  midtransOrderId?: string | null
-  transactionStatus?: string | null
-  fraudStatus?: string | null
-  statusCode?: string | null
-  grossAmount?: number | null
-  source: 'webhook' | 'reconcile' | 'simulate'
-  outcome?: string | null
-  payloadHash?: string | null
-  receivedAt: string
   updatedAt: string
   createdAt: string
 }
@@ -1584,6 +1566,29 @@ export interface Event {
   createdAt: string
 }
 /**
+ * What the payment provider reported, in order. A record only: never edited.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-events".
+ */
+export interface PaymentEvent {
+  id: number
+  provider: 'midtrans'
+  dedupeKey: string
+  order?: (number | null) | Order
+  midtransOrderId?: string | null
+  transactionStatus?: string | null
+  fraudStatus?: string | null
+  statusCode?: string | null
+  grossAmount?: number | null
+  source: 'webhook' | 'reconcile' | 'simulate'
+  outcome?: string | null
+  payloadHash?: string | null
+  receivedAt: string
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -1620,24 +1625,12 @@ export interface PayloadLockedDocument {
         value: number | Place
       } | null)
     | ({
-        relationTo: 'terms'
-        value: number | Term
-      } | null)
-    | ({
-        relationTo: 'media'
-        value: number | Media
-      } | null)
-    | ({
-        relationTo: 'masters'
-        value: number | Master
+        relationTo: 'products'
+        value: number | Product
       } | null)
     | ({
         relationTo: 'discounts'
         value: number | Discount
-      } | null)
-    | ({
-        relationTo: 'products'
-        value: number | Product
       } | null)
     | ({
         relationTo: 'stores'
@@ -1656,10 +1649,6 @@ export interface PayloadLockedDocument {
         value: number | OrderNotification
       } | null)
     | ({
-        relationTo: 'payment-events'
-        value: number | PaymentEvent
-      } | null)
-    | ({
         relationTo: 'leads'
         value: number | Lead
       } | null)
@@ -1670,6 +1659,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'chat-sessions'
         value: number | ChatSession
+      } | null)
+    | ({
+        relationTo: 'terms'
+        value: number | Term
+      } | null)
+    | ({
+        relationTo: 'media'
+        value: number | Media
+      } | null)
+    | ({
+        relationTo: 'masters'
+        value: number | Master
       } | null)
     | ({
         relationTo: 'pages'
@@ -1686,6 +1687,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'events'
         value: number | Event
+      } | null)
+    | ({
+        relationTo: 'payment-events'
+        value: number | PaymentEvent
       } | null)
   globalSlug?: string | null
   user: {
@@ -2075,126 +2080,6 @@ export interface PlacesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "terms_select".
- */
-export interface TermsSelect<T extends boolean = true> {
-  kind?: T
-  label?: T
-  slug?: T
-  definition?: T
-  equivalent?: T
-  position?: T
-  translationStatus?: T
-  updatedAt?: T
-  createdAt?: T
-  _status?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T
-  altSource?: T
-  translationStatus?: T
-  caption?: T
-  credit?: T
-  licence?: T
-  subject?: T
-  role?: T
-  provenance?: T
-  master?: T
-  assetId?: T
-  derivatives?:
-    | T
-    | {
-        status?: T
-        version?: T
-        blurDataUri?: T
-      }
-  iiif?:
-    | T
-    | {
-        status?: T
-      }
-  prefix?: T
-  _objectKey?: T
-  updatedAt?: T
-  createdAt?: T
-  url?: T
-  thumbnailURL?: T
-  filename?: T
-  mimeType?: T
-  filesize?: T
-  width?: T
-  height?: T
-  focalX?: T
-  focalY?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "masters_select".
- */
-export interface MastersSelect<T extends boolean = true> {
-  kind?: T
-  storageKey?: T
-  checksum?: T
-  byteSize?: T
-  contentType?: T
-  widthPx?: T
-  heightPx?: T
-  colourProfile?: T
-  work?: T
-  role?: T
-  provenance?: T
-  objectBox?:
-    | T
-    | {
-        x?: T
-        y?: T
-        width?: T
-        height?: T
-      }
-  objectPpi?: T
-  captureTier?: T
-  intake?:
-    | T
-    | {
-        batch?: T
-        reference?: T
-        receivedAs?: T
-        verdict?: T
-        retouching?: T
-        notes?:
-          | T
-          | {
-              note?: T
-              id?: T
-            }
-      }
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "discounts_select".
- */
-export interface DiscountsSelect<T extends boolean = true> {
-  code?: T
-  kind?: T
-  value?: T
-  minSpend?: T
-  oncePerBuyer?: T
-  startsAt?: T
-  endsAt?: T
-  usageLimit?: T
-  usedCount?: T
-  active?: T
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
@@ -2232,6 +2117,24 @@ export interface ProductsSelect<T extends boolean = true> {
   updatedAt?: T
   createdAt?: T
   _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts_select".
+ */
+export interface DiscountsSelect<T extends boolean = true> {
+  code?: T
+  kind?: T
+  value?: T
+  minSpend?: T
+  oncePerBuyer?: T
+  startsAt?: T
+  endsAt?: T
+  usageLimit?: T
+  usedCount?: T
+  active?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2398,26 +2301,6 @@ export interface OrderNotificationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payment-events_select".
- */
-export interface PaymentEventsSelect<T extends boolean = true> {
-  provider?: T
-  dedupeKey?: T
-  order?: T
-  midtransOrderId?: T
-  transactionStatus?: T
-  fraudStatus?: T
-  statusCode?: T
-  grossAmount?: T
-  source?: T
-  outcome?: T
-  payloadHash?: T
-  receivedAt?: T
-  updatedAt?: T
-  createdAt?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads_select".
  */
 export interface LeadsSelect<T extends boolean = true> {
@@ -2508,6 +2391,108 @@ export interface ChatSessionsSelect<T extends boolean = true> {
   outcome?: T
   lead?: T
   expiresAt?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "terms_select".
+ */
+export interface TermsSelect<T extends boolean = true> {
+  kind?: T
+  label?: T
+  slug?: T
+  definition?: T
+  equivalent?: T
+  position?: T
+  translationStatus?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T
+  altSource?: T
+  translationStatus?: T
+  caption?: T
+  credit?: T
+  licence?: T
+  subject?: T
+  role?: T
+  provenance?: T
+  master?: T
+  assetId?: T
+  derivatives?:
+    | T
+    | {
+        status?: T
+        version?: T
+        blurDataUri?: T
+      }
+  iiif?:
+    | T
+    | {
+        status?: T
+      }
+  prefix?: T
+  _objectKey?: T
+  updatedAt?: T
+  createdAt?: T
+  url?: T
+  thumbnailURL?: T
+  filename?: T
+  mimeType?: T
+  filesize?: T
+  width?: T
+  height?: T
+  focalX?: T
+  focalY?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "masters_select".
+ */
+export interface MastersSelect<T extends boolean = true> {
+  kind?: T
+  storageKey?: T
+  checksum?: T
+  byteSize?: T
+  contentType?: T
+  widthPx?: T
+  heightPx?: T
+  colourProfile?: T
+  work?: T
+  role?: T
+  provenance?: T
+  objectBox?:
+    | T
+    | {
+        x?: T
+        y?: T
+        width?: T
+        height?: T
+      }
+  objectPpi?: T
+  captureTier?: T
+  intake?:
+    | T
+    | {
+        batch?: T
+        reference?: T
+        receivedAs?: T
+        verdict?: T
+        retouching?: T
+        notes?:
+          | T
+          | {
+              note?: T
+              id?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }
@@ -2614,6 +2599,26 @@ export interface EventsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-events_select".
+ */
+export interface PaymentEventsSelect<T extends boolean = true> {
+  provider?: T
+  dedupeKey?: T
+  order?: T
+  midtransOrderId?: T
+  transactionStatus?: T
+  fraudStatus?: T
+  statusCode?: T
+  grossAmount?: T
+  source?: T
+  outcome?: T
+  payloadHash?: T
+  receivedAt?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -2664,8 +2669,14 @@ export interface SiteSetting {
       email?: string | null
       phone?: string | null
     }
+    /**
+     * One line telling visitors how fast you answer, such as "We reply within a day".
+     */
     replyPromise?: string | null
     hours?: string | null
+    /**
+     * A notice shown to visitors of this site, such as a holiday closure. Leave empty for none.
+     */
     announcement?: string | null
     social?:
       | {
@@ -2674,11 +2685,26 @@ export interface SiteSetting {
           id?: string | null
         }[]
       | null
+    /**
+     * These addresses get an email when a new enquiry arrives.
+     */
     leadNotifyEmails?: string[] | null
     ai?: {
+      /**
+       * Turns the chat helper on for this site. Off means visitors do not see it.
+       */
       chatEnabled?: boolean | null
+      /**
+       * Lets staff use Draft from photos to get a suggested title and description. Off hides that button.
+       */
       draftingEnabled?: boolean | null
+      /**
+       * The most the chat may cost in one day, in US dollars. Once it is used up, the chat pauses until tomorrow.
+       */
       dailyBudgetUsd?: number | null
+      /**
+       * How long one visitor can chat before the chat stops for them. Raise it for longer conversations; lower it to save cost.
+       */
       sessionTokenCap?: number | null
     }
   }
@@ -2688,8 +2714,14 @@ export interface SiteSetting {
       email?: string | null
       phone?: string | null
     }
+    /**
+     * One line telling visitors how fast you answer, such as "We reply within a day".
+     */
     replyPromise?: string | null
     hours?: string | null
+    /**
+     * A notice shown to visitors of this site, such as a holiday closure. Leave empty for none.
+     */
     announcement?: string | null
     social?:
       | {
@@ -2698,15 +2730,36 @@ export interface SiteSetting {
           id?: string | null
         }[]
       | null
+    /**
+     * These addresses get an email when a new enquiry arrives.
+     */
     leadNotifyEmails?: string[] | null
     ai?: {
+      /**
+       * Turns the chat helper on for this site. Off means visitors do not see it.
+       */
       chatEnabled?: boolean | null
+      /**
+       * Lets staff use Draft from photos to get a suggested title and description. Off hides that button.
+       */
       draftingEnabled?: boolean | null
+      /**
+       * The most the chat may cost in one day, in US dollars. Once it is used up, the chat pauses until tomorrow.
+       */
       dailyBudgetUsd?: number | null
+      /**
+       * How long one visitor can chat before the chat stops for them. Raise it for longer conversations; lower it to save cost.
+       */
       sessionTokenCap?: number | null
     }
+    /**
+     * Turn off to stop new orders, for example while stock is being counted.
+     */
     checkoutEnabled?: boolean | null
     delivery?: {
+      /**
+       * Delivery fee by distance. The chat helper quotes these when a visitor asks; staff still enter the real fee on each order.
+       */
       bands?:
         | {
             upToKm: number
@@ -2714,14 +2767,26 @@ export interface SiteSetting {
             id?: string | null
           }[]
         | null
+      /**
+       * Orders above this amount ship free. Leave it at 0 for no free delivery.
+       */
       freeOverIdr?: number | null
     }
     /**
-     * The welcome code text for now. Task 3.3 relates this to discounts.
+     * The code new buyers see. Create the code itself under Discount codes first.
      */
     welcomeDiscount?: string | null
+    /**
+     * How long a buyer has to pay once the delivery fee is set. After that the order is cancelled and the stock goes back on sale.
+     */
     orderExpiryMinutes?: number | null
+    /**
+     * How long staff have to enter the delivery fee on a new order before it is cancelled and its stock returned.
+     */
     quoteWindowMinutes?: number | null
+    /**
+     * Alert store staff when an order needs them.
+     */
     storeAlerts?: boolean | null
   }
   updatedAt?: string | null

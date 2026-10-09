@@ -25,6 +25,7 @@ import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButAllStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
 import { ORDERS_ACCESS } from './access'
+import { foldRarelyReadSections } from './collapse'
 import { ORDER_CONSTRAINTS } from './constraints'
 import { ORDER_ENDPOINTS } from './endpoints'
 import { SALE_FIELDS } from './fields-sale'
@@ -52,5 +53,5 @@ export const Orders: CollectionConfig = {
   endpoints: ORDER_ENDPOINTS,
   custom: dbConstraints(...ORDER_CONSTRAINTS),
   hooks: { beforeChange: [guardStatusMove], afterChange: [notifyOnStatusChange] },
-  fields: [...SALE_FIELDS, ...TRACKING_FIELDS],
+  fields: foldRarelyReadSections([...SALE_FIELDS, ...TRACKING_FIELDS]),
 }

@@ -257,7 +257,7 @@ export const RECORD_FIELDS: Field[] = [
       {
         name: 'status',
         type: 'select',
-        label: { en: 'Status', id: 'Status' },
+        label: { en: 'Availability', id: 'Ketersediaan' },
         // Not `enum_works_status`: toSnakeCase('_status') is 'status', so that name is taken by
         // the drafts column's enum — this one needs its own.
         enumName: 'work_status_vocabulary',
