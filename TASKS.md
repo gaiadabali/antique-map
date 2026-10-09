@@ -27,8 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 8/16 | 0 | `█████░░░░░`  50% |
-| **All** | 12 phases | | | **51/62** | **212/237** | **8** | `█████████░`  89% |
+| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 9/16 | 0 | `██████░░░░`  56% |
+| **All** | 12 phases | | | **51/62** | **213/237** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -873,7 +873,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/home/**` (not 12.1's files), the `home.shop.*` keys in `sites/shop/lexicon/{en,id}.json`
   - **Read** DESIGN-SYSTEM.md §1–§5, 12.1 and 12.2's components
   - _Requirements: 12.1_
-  - [ ] 12.3.a best sellers, sets, process, trade and originals bands rebuilt on `SectionHead`, `Mat` and `ProofPoints`; square "shop by" links in place of pills
+  - [x] 12.3.a best sellers, sets, process, trade and originals bands rebuilt on `SectionHead`, `Mat` and `ProofPoints`; square "shop by" links in place of pills
   - [ ] 12.3.b **Check:** the home at 390 and 1280 on a production build with the real designs, axe clean, no sideways scroll.
 
 - [ ] **12.4 Browse, search and collections** · needs: 12.2 — 🔄 12·W2
