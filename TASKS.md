@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/8 | 27/32 | 1 | `████████░░`  84% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 6/8 | 28/32 | 1 | `█████████░`  88% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **47/54** | **202/221** | **8** | `█████████░`  91% |
+| **All** | 11 phases | | | **48/54** | **203/221** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -78,7 +78,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 10·W2 | 10.7 Replacement orders and late payments | senior-be | `worktree-agent-a721e11ba1a215fcb` | 2026-10-09 | |
 | 10·W2 | 10.8 Staff admin gaps from the 10.4 proxy run | medior | `worktree-agent-a5ce820d46bdba8fc` | 2026-10-09 | |
 
 ## Decisions for the owner
@@ -773,14 +772,14 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.6.f **Check:** on staging at 390 px and 1280 px, the gallery lists every published record and an item zooms on its full-size photograph; no price figure is in any gallery HTML, RSC or JSON; the owner reads `askingPrice` in the admin and an editor does not; the shop lists the designs with their real pictures; both footers link the right Instagram.
 
 
-- [ ] **10.7 Replacement orders and late payments** · needs: phase 7 — 🔄 10·W2
+- [x] **10.7 Replacement orders and late payments** · needs: phase 7 — ✅ 2026-10-09 3f7590a0
   - **Lane** SHP + CMS · **Agent** senior-be, Opus review · **Wave** W2
   - **Owns** `engine/packages/cms/src/shop/{orders,payments,fulfilment}/**`, `engine/packages/cms/src/admin/orders/**`
   - **Read** COMMERCE.md §4, §12, §13; CONTENT-OPERATIONS.md §5.5; `docs/gates/rehearsal.md` R-1 and R-2 (found by the rehearsal); Q10
   - _Requirements: 6.4, 7.5_
   - [x] 10.7.a **Replace damaged item** on a delivered order (owner, editor): tick lines and quantities, a note, Confirm; a Rp 0 order, `channel: replacement`, `replacementOf` the original, at the original's store, stock taken atomically (a short store is refused with a reason), tracking email, statuses from `processing`
   - [x] 10.7.b a payment after expiry (COMMERCE.md §13): if the same store still holds every unit, re-take them in the same transaction and mark the order `paid`; else `paid` with "reassign, or cancel and return the money"; the flag stays until staff clear it, and the panel offers that
-  - [ ] 10.7.c **Check:** db tests for both (stock short, stock present, concurrent retake); on staging the late-payment spec (`tests/e2e/rehearsal/late-payment.spec.ts`) ends with the order paid at its store, and a replacement of a delivered order reaches the store panel.
+  - [x] 10.7.c **Check:** db tests for both (stock short, stock present, concurrent retake); on staging the late-payment spec (`tests/e2e/rehearsal/late-payment.spec.ts`) ends with the order paid at its store, and a replacement of a delivered order reaches the store panel.
 
 - [ ] **10.8 Staff admin gaps from the 10.4 proxy run** · needs: phase 7 — 🔄 10·W2
   - **Lane** CMS · **Agent** medior (Sonnet), senior-uiux review · **Wave** W2
@@ -861,6 +860,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **10.7 closed** (Opus built, orchestrator reviewed). **Replace damaged item** (owner, editor, on a delivered order): a Rp 0 `replacement` order linked both ways, `processing` at the original's store, stock taken atomically (short → nothing written), history on both, the buyer's tracking email. **Late payments** (COMMERCE.md §13): an expired order is `paid` — units re-taken all-or-none at its store, or flagged "stock gone — reassign, or cancel and refund"; a cancelled order stays cancelled, flagged for a refund; staff **clear the flag** with a note. 13 new db tests incl. ten concurrent replays (stock once) and a late payment racing a checkout for the last unit (sold once). On staging (`production-20261009T091838Z-dad846ef`): `late-payment.spec.ts` (paid at DPS-004, unit re-taken, flag cleared) and `replacement.spec.ts` (the replacement reaches the store panel) pass. **Follow-ups:** an order paid with its stock gone is marked by a history note (`shop/fulfilment/held-units.ts`) — replace with an `orders.stock_held` column in the next migration; the buyer's order page shows no late-payment text now that the order is paid (`server/shop/payment/load-order.ts`); a replacement sends the store no email; a late payment counts its discount use again (can pass `usage_limit` by one).
 
 - 2026-10-09 — **CI green on GitHub for the first time** (`9c0d7de3`, F-13): static checks, unit, db, audit, Lighthouse and **End-to-end** all pass. Merged `m/10.fixes` (the owner funnel's unquoted SQL aliases: three steps always read 0; media tests sized for a 2-core runner; the audit job's cache step) and two rounds of Sonnet qa e2e work: 47 failures → 21 → 0, none weakened — stale specs followed phases 4/9/10, CI now seeds and publishes the catalogue, shares ORDER_LINK_KEY / BAG_COOKIE_KEY / REVALIDATE_*, runs Mailpit, signs staff in once (the limiter untouched), media-pipeline specs run on staging only. **Real defect found by it:** the admin sidebar links (the leads inbox since 9.1, and the new Order panel) never rendered — Payload passes `{ user, i18n }`, not `req`; fixed and live on staging (`production-20261009T080200Z-9c0d7de3`). **CodeQL** stays red until the repo's code-scanning *default setup* (Actions only) is switched off: the user's call. **Tested ourselves what waited for people** (user, 2026-10-09): runbook §5 (PAYLOAD_SECRET rotated on staging) and §7 (a late payment flagged, `late-payment.spec.ts`); the 10.4 recipes by a qa proxy (`docs/gates/admin-usability.md`) — product and lead pass; delivery bands work (the rows were only collapsed); the stock import screen, lead replies and **Replace damaged item were never built** → new tasks **10.7** and **10.8**; the store panel was unlinked → fixed (sidebar link, dashboard widgets). 10.4 itself still needs the owner's people. `BAG_COOKIE_KEY` is missing from `.env.example` and the boot check (11.1).
 
