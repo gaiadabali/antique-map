@@ -89,6 +89,9 @@ const mediaOf = (value: unknown): CardImage | null => {
   }
 }
 
+/** A media relation as a card or a page shows it: its public URL and ladder, or nothing. */
+export const cardImageOf = mediaOf
+
 const makerOf = (row: { maker?: unknown; certainty?: unknown }): CardMaker | null => {
   if (typeof row.maker !== 'object' || row.maker === null) return null
   const name = str((row.maker as { name?: unknown }).name)

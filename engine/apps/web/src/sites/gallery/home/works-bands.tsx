@@ -72,7 +72,7 @@ async function CollectionWorks({ locale, browseHref, t }: Props) {
     <CollectionFrame
       browseHref={browseHref}
       t={t}
-      body={<WorkGrid works={works} locale={locale} />}
+      body={<WorkGrid works={works} locale={locale} leads={0} />}
     />
   )
 }
@@ -118,7 +118,7 @@ async function RecentlyWorks({ locale, t }: Omit<Props, 'browseHref'>) {
     works = []
   }
   if (works.length === 0) return null
-  return <RecentlyFrame t={t} body={<WorkGrid works={works} locale={locale} />} />
+  return <RecentlyFrame t={t} body={<WorkGrid works={works} locale={locale} leads={0} />} />
 }
 
 function RecentlyFrame({ t, body }: { readonly t: HomeText; readonly body: React.ReactNode }) {
