@@ -73,3 +73,22 @@ stylesheet) — the same on `fb7ef553`, before this phase: not a phase-12 change
   at pages not built yet (404).
 - On a phone the floating chat button can sit over the product's options; the bag's line total sits below Remove.
 - The style guide's two sample images (`/gallery/placeholder.svg`) do not load on the shop host.
+
+## Phase 13 — the Collections and Stores pages
+
+The header's Collections and Stores links (and the footer's Gallery walls and Where to buy) answered 404: their
+routes were in the table but no page existed. Released as `production-20261009T142432Z-c25f6af4` (no migration;
+healthy, try 1).
+
+| Page        | Address                       | Status | axe (390, 1280) | Sideways | Broken images |
+| ----------- | ----------------------------- | ------ | --------------- | -------- | ------------- |
+| Collections | `/collections`, `/id/koleksi` | 200    | none            | no       | 0             |
+| Stores      | `/stores`, `/id/toko`         | 200    | none            | no       | 0             |
+
+- **Collections** lists every category that holds a published product — a matted lead print, its name and its
+  count — read through the catalogue's own cached, published-only queries (no price). Every card's link answers 200.
+- **Stores** lists the active, listed stores by area — name, address, hours and an "Open in Maps" link built from
+  name and address — read with `overrideAccess: false` and a `select` of those four fields, cached for minutes (no
+  stores cache tag exists). Checked against the store list on staging, in both languages: **0** store codes, **0**
+  WhatsApp numbers (no `+62` at all), **0** coordinates in the HTML; **96 of 96** listed stores shown and **0 of 24**
+  unlisted or inactive ones. The stores are still the mock set until the owner's list arrives (OA3).

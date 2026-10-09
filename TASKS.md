@@ -28,9 +28,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
-| **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 2/6 | 0 | `███░░░░░░░`  33% |
+| **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 0/8 | 0/17 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 14 phases | | | **57/73** | **222/260** | **8** | `█████████░`  85% |
+| **All** | 14 phases | | | **60/73** | **226/260** | **8** | `█████████░`  87% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,8 +81,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 13·W1 | 13.2 The stores page | medior | `feat/p13-stores` | 2026-10-09 | |
-| 13·W1 | 13.1 The collections index | medior | `feat/p13-coll` | 2026-10-09 | |
 | 14·W1 | 14.1 The gallery's hand in the shared pieces | orchestrator | `feat/p14-w1` | 2026-10-09 | |
 | 14·W1 | 14.2 The home's hero | orchestrator | `feat/p14-w1` | 2026-10-09 | |
 
@@ -925,29 +923,29 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, `/collections`, `/id/koleksi`, `/stores` and `/id/toko` answer 200 at 390 px and 1280 px with axe clean and no sideways scroll; the stores page shows only active, listed stores and never a store's code, WhatsApp, coordinates or notes.
 **Waves:** W1 — 13.1, 13.2 · W2 — 13.3
 
-- [ ] **13.1 The collections index** · needs: phase 12 — 🔄 13·W1
+- [x] **13.1 The collections index** · needs: phase 12 — ✅ 2026-10-09 126e0520
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/collection/page.tsx`, `engine/apps/web/src/sites/shop/collections/**`, `engine/apps/web/src/server/shop/catalogue/collections.ts` (new, beside the catalogue's loaders)
   - **Read** EXPERIENCE-SHOP.md §2, `docs/gates/luxury-pass.md`, the collection page (`collection/[slug]/page.tsx`)
   - _Requirements: 12.1_
   - [x] 13.1.a `/collections` lists every category that holds published products — a matted lead print, its name and its count — each linking to its `/collections/<slug>` page; public reads through the catalogue's cached, projected loaders; its words under `collections.*` in the shop lexicon, both languages
-  - [ ] 13.1.b **Check:** `/collections` and `/id/koleksi` at 390 and 1280, axe clean, every card links to a 200.
+  - [x] 13.1.b **Check:** `/collections` and `/id/koleksi` at 390 and 1280, axe clean, every card links to a 200.
 
-- [ ] **13.2 The stores page** · needs: phase 12 — 🔄 13·W1
+- [x] **13.2 The stores page** · needs: phase 12 — ✅ 2026-10-09 126e0520
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/stores/**`, `engine/apps/web/src/sites/shop/stores/**`, `engine/apps/web/src/server/shop/stores/**`
   - **Read** EXPERIENCE-SHOP.md §2, CONTENT-MODEL.md §4 and its Open "Public store list", `collections/stores/index.ts` (the public access), `server/chat/projection/stores.ts`
   - _Requirements: 12.1_
   - [x] 13.2.a `/stores`: the active, listed stores by area — name, address, hours and an "Open in Maps" link built from name and address — read with `overrideAccess: false` and a `select` of those fields only, cached for minutes; a unit test for the grouping and the link; its words under `stores.*` in the shop lexicon, both languages
-  - [ ] 13.2.b **Check:** `/stores` and `/id/toko` at 390 and 1280, axe clean; the HTML carries no store code, WhatsApp number or coordinate.
+  - [x] 13.2.b **Check:** `/stores` and `/id/toko` at 390 and 1280, axe clean; the HTML carries no store code, WhatsApp number or coordinate.
 
-- [ ] **13.3 The pages on staging** · needs: 13.1, 13.2
+- [x] **13.3 The pages on staging** · needs: 13.1, 13.2 — ✅ 2026-10-09 126e0520
   - **Lane** QA · **Agent** orchestrator · **Wave** W2
   - **Owns** `docs/gates/luxury-pass.md` (§Phase 13)
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
-  - [ ] 13.3.a released to staging; the header's and footer's links to both pages answer 200
-  - [ ] 13.3.b **Check:** `docs/gates/luxury-pass.md` §Phase 13 records both pages at 390 and 1280 in both languages, axe clean, and the stores page's HTML free of codes, WhatsApp numbers and coordinates.
+  - [x] 13.3.a released to staging; the header's and footer's links to both pages answer 200
+  - [x] 13.3.b **Check:** `docs/gates/luxury-pass.md` §Phase 13 records both pages at 390 and 1280 in both languages, axe clean, and the stores page's HTML free of codes, WhatsApp numbers and coordinates.
 
 ---
 
@@ -1043,6 +1041,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **phase 13 — the shop's Collections and Stores pages closed** (3/3 tasks; user request). The header's Collections and Stores links and the footer's Gallery walls and Where to buy answered 404 — routed, never built. Now `/collections` (`/id/koleksi`) lists every category with products as matted lead prints with counts, and `/stores` (`/id/toko`) lists the active, listed stores by area with hours and an "Open in Maps" link from name and address (`overrideAccess: false`, four fields selected, cached for minutes). Live on staging `production-20261009T142432Z-c25f6af4`: both pages 200 in both languages, axe clean at 390 and 1280; the stores HTML carries 0 codes, 0 WhatsApp numbers, 0 coordinates, 96/96 listed stores and 0/24 hidden (`docs/gates/luxury-pass.md` §Phase 13). Sonnet built, orchestrator reviewed (the area row now wraps on a desktop).
 
 - 2026-10-09 — ✅ **phase 12 — the shop's luxury pass closed** (8/8 tasks, 16/16 subtasks; pulled forward from backlog v2.0 at the user's request). The hero (12.1, live `fb7ef553`) set the language the user approved — prints in paper mats, the scale-bar eyebrow, balanced serif heads, museum captions, proof points under hairlines — and four shared pieces carry it (`Mat`, `Eyebrow mark`, `SectionHead`, `ProofPoints`; 12.2, `DESIGN.md`). Sonnet agents rebuilt the home, browse/search/collections, the product page, bag→checkout→order→tracking→not-found, and partnership with a quieter shared header and a titled footer (both sites); the orchestrator reviewed every diff and fixed prices set in the display serif, Add to bag's lost busy state, the bag's misplaced line total and checkout's source order. **Done when** met on staging `production-20261009T133403Z-aa7469b1`: every shop page and the gallery home at 390 and 1280 axe clean, no sideways scroll, no broken image; the purchase path bag→order on the build and `payment.spec.ts` 6/6 (pay→Settle→paid) (`docs/gates/luxury-pass.md`). Follow-ups: a square `Pagination` variant, the 404 nav and footer targets, `inbox.db.test.ts` fails to load (`.css` import; already on `fb7ef553`).
 
