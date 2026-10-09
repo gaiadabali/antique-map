@@ -1,6 +1,6 @@
 /**
  * Test support only — how a real-database test makes its database. With the template databases
- * (`./test-templates.global-setup.ts`: one migrated, one pushed, built once per run) a test's
+ * (`./test-templates.global-setup.test-support.ts`: one migrated, one pushed, built once per run) a test's
  * database is `CREATE DATABASE … TEMPLATE …`, a file copy, not a schema built from scratch. Without
  * them (a test run through a config that has no global setup) it is a plain empty one, so every
  * helper works both ways.

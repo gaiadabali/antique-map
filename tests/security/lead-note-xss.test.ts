@@ -9,13 +9,13 @@
  * lead rows, no database needed — the safety is in the render, not in the query.
  *
  * Planted violation (tests/security/plants/run-plants.mjs, class "xss"): the inbox row's message
- * rendered with `dangerouslySetInnerHTML` in `engine/packages/cms/src/admin/leads/inbox.jsx`.
+ * rendered with `dangerouslySetInnerHTML` in `engine/packages/cms/src/admin/leads/inbox-body.jsx`.
  */
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
 import { LeadSourceBlock } from '../../engine/packages/cms/src/admin/leads/source-block'
-import { LeadsInboxView } from '../../engine/packages/cms/src/admin/leads/inbox'
+import { LeadsInboxViewBody } from '../../engine/packages/cms/src/admin/leads/inbox-body'
 import { jsonLdScript } from '../../engine/apps/web/src/server/seo/json-ld'
 import { LEAD_LIMITS, parseLeadInput } from '../../engine/apps/web/src/server/leads/input'
 
@@ -40,7 +40,7 @@ const payloadWith = (docs: unknown[]) => ({
 
 const inbox = async (docs: unknown[]) =>
   renderToStaticMarkup(
-    (await LeadsInboxView({
+    (await LeadsInboxViewBody({
       payload: payloadWith(docs),
       i18n: { language: 'en' },
       searchParams: {},

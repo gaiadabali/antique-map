@@ -42,7 +42,7 @@ export default defineConfig({
           name: 'db',
           include: ['engine/**/*.db.test.{ts,tsx}'],
           // One migrated and one pushed template database, built once; each file clones one.
-          globalSetup: ['engine/packages/cms/src/db/test-templates.global-setup.ts'],
+          globalSetup: ['engine/packages/cms/src/db/test-templates.global-setup.test-support.ts'],
           exclude: EXCLUDE,
         },
       },
