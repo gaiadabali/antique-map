@@ -82,6 +82,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
+| 14·W2 | 14.3 The home below the hero | medior | `feat/p14-home` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -971,7 +972,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 14.2.a the lead work — the newest available work with a published image — whole in a `Mat` with a museum caption (title, maker and date, the stock tag, *Price on request*) in place of the film's empty placeholder; the headline balanced under the marked eyebrow; the owner's facts as `ProofPoints` (since 2001, over 9,500 antiques, a certificate with every original) in place of the three trust cards, none naming an institution; the hero's words under `home.gallery.hero*` and `home.gallery.{eyebrow,title,lede}`, both languages
   - [x] 14.2.b **Check:** the home's first screen on a production build at 390, 1280 and 1995 px in both languages: the sheet loads at high priority and uncropped, axe clean, no sideways scroll.
 
-- [ ] **14.3 The home below the hero** · needs: 14.1, 14.2
+- [ ] **14.3 The home below the hero** · needs: 14.1, 14.2 — 🔄 14·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/home/**` (not `hero.tsx` or `hero.module.css`), `engine/apps/web/src/server/gallery/home/**`
   - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G3, G6, G7, G9, G10, G13), DESIGN.md §The luxury pass, 12.3's shop home
