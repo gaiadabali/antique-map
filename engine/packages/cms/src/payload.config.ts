@@ -93,12 +93,16 @@ export function engineConfig(env: Env = process.env): Config {
       avatar: 'default',
       components: {
         views: adminViews(),
+        // Store staff's admin home is the order panel (10.8.c): this redirects them there and
+        // renders nothing for the owner and editors.
+        beforeDashboard: ['@engine/cms/admin/views#StoreHomeRedirect'],
         // The order panel and the leads inbox are custom views no collection list leads to: the
         // Orders entry opens Payload's plain table, with no next-step button (10.4 proxy run).
         // Staff see the panel link; the inbox link is owner-only (`admin/*/nav-link.jsx`).
         afterNavLinks: [
           '@engine/cms/admin/views#OrdersNavLink',
           '@engine/cms/admin/views#LeadsNavLink',
+          '@engine/cms/admin/views#StockImportNavLink',
         ],
       },
       dashboard: {

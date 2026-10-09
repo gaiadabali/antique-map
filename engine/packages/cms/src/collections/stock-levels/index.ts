@@ -19,6 +19,7 @@ import { dbConstraints } from '../../db/constraints'
 import { KEY_ACCESS, QUANTITY_ACCESS, STOCK_LEVELS_ACCESS } from './access'
 import { STOCK_LEVEL_CONSTRAINTS } from './constraints'
 import { blankVariantIsNone, countToQuantity } from './count'
+import { stockImportEndpoint } from './import-endpoint'
 
 export const StockLevels: CollectionConfig = {
   slug: 'stock-levels',
@@ -36,6 +37,7 @@ export const StockLevels: CollectionConfig = {
     },
   },
   access: STOCK_LEVELS_ACCESS,
+  endpoints: [stockImportEndpoint],
   custom: dbConstraints(...STOCK_LEVEL_CONSTRAINTS),
   hooks: { beforeChange: [countToQuantity] },
   fields: [

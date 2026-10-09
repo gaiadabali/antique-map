@@ -682,7 +682,7 @@ export interface Maker {
 export interface Media {
   id: number
   /**
-   * What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
+   * What the image shows, for someone who cannot see it. For a product: what it is, its colour and material, e.g. "Black batik tote bag, front view". For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
    */
   alt: string
   /**
@@ -694,11 +694,11 @@ export interface Media {
   credit?: string | null
   licence?: string | null
   /**
-   * What it is an image of — a work, a product, a store, or something else. Set at intake, with the role.
+   * What it is an image of. Choose Product for a shop product photo, Work for an antique (store staff cannot read those), Store for a shop front. Set at intake, with the role. No default: a wrong subject changes who can read the image.
    */
   subject: 'work' | 'product' | 'store' | 'other'
   /**
-   * What the image is — set at intake, the same as its master’s.
+   * What the image is — set at intake, the same as its master’s. For a product photo on a plain background choose "Flat (a product)"; a product being used, "In use (a product)".
    */
   role:
     | 'recto'
@@ -715,7 +715,7 @@ export interface Media {
     | 'showroom'
     | 'editorial'
   /**
-   * How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.
+   * How it was made. For a picture you took of the real thing, choose "Photograph of the real thing". Anything else is labelled wherever it is shown. There is no default on purpose: a mockup or AI image must be declared, never assumed to be a photograph.
    */
   provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
   /**
@@ -1103,6 +1103,9 @@ export interface Product {
   category?: (number | null) | Term
   images?:
     | {
+        /**
+         * Pick a picture, or Create New to upload one. A new picture asks for four things: alt text (what it shows), Subject = Product, Role = Flat (a product), and Provenance = Photograph of the real thing.
+         */
         image: number | Media
         caption?: string | null
         id?: string | null

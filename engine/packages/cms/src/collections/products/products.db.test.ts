@@ -26,19 +26,23 @@ describe.skipIf(!server)('products, on a real database', () => {
 
   it('keeps one SKU to one thing, across products and their variants', async () => {
     expect(await refusedWith(() => create({ sku: 'OEI-PRINT-A3' }))).toEqual({
-      sku: 'The SKU "OEI-PRINT-A3" is already a variant of another product.',
+      sku: 'The SKU "OEI-PRINT-A3" is already a variant of "Product OEI-PRINT" (SKU OEI-PRINT).',
     })
     expect(
       await refusedWith(() =>
         create({ sku: 'OEI-MAP', variants: [{ sku: 'OEI-PRINT', label: 'A' }] }),
       ),
-    ).toEqual({ 'variants.0.sku': 'The SKU "OEI-PRINT" is already another product’s.' })
+    ).toEqual({
+      'variants.0.sku':
+        'The SKU "OEI-PRINT" is already the SKU of "Product OEI-PRINT" (SKU OEI-PRINT).',
+    })
     expect(
       await refusedWith(() =>
         create({ sku: 'OEI-MAP', variants: [{ sku: 'OEI-PRINT-A4', label: 'A' }] }),
       ),
     ).toEqual({
-      'variants.0.sku': 'The SKU "OEI-PRINT-A4" is already a variant of another product.',
+      'variants.0.sku':
+        'The SKU "OEI-PRINT-A4" is already a variant of "Product OEI-PRINT" (SKU OEI-PRINT).',
     })
     const twins = await refusedWith(() =>
       create({
@@ -54,8 +58,11 @@ describe.skipIf(!server)('products, on a real database', () => {
       sku: 'Use letters, digits, dots, hyphens, underscores or slashes in a SKU, with no spaces.',
     })
     expect(Object.keys(await refusedWith(() => create({ sku: '' })))).toEqual(['sku'])
-    // A trailing space is trimmed, so it is the same key — and refused as one.
-    await expect(create({ sku: 'OEI-PRINT ' })).rejects.toThrow()
+    // A trailing space is trimmed, so it is the same key — and refused as one, naming the product
+    // that holds it (10.8.b), not Payload's bare "The following field is invalid: sku".
+    expect(await refusedWith(() => create({ sku: 'OEI-PRINT ' }))).toEqual({
+      sku: 'The SKU "OEI-PRINT" is already used by "Product OEI-PRINT" (SKU OEI-PRINT). Open that product, or give this one another SKU.',
+    })
   })
 
   it('keeps a price to whole rupiah above zero, in Payload and in the database', async () => {

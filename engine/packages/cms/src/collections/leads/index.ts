@@ -51,6 +51,12 @@ export const Leads: CollectionConfig = {
   },
   fields: [
     {
+      name: 'reply_block',
+      type: 'ui',
+      label: { en: 'Reply', id: 'Balas' },
+      admin: { components: { Field: '@engine/cms/admin/views#LeadReplyBlock' } },
+    },
+    {
       name: 'source_block',
       type: 'ui',
       label: { en: 'Open the source', id: 'Buka sumbernya' },

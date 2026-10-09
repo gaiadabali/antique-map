@@ -125,7 +125,12 @@ test.describe.serial('R4 store user moves an order to delivered', () => {
     squeezed.push(`list ${await overflow(page)}`)
     await m.shot('r4-1-store-landing')
     const landing = page.url()
-    await tap('orders', page.getByRole('link', { name: /Orders to act on/ }))
+    // From 10.8.c store staff land on their order panel: no tap. If the admin home opened instead, that
+    // is a stumble and the dashboard's own link is tapped as before.
+    if (new URL(landing).pathname.replace(/\/$/, '') !== '/admin/orders') {
+      m.stumble(`store staff landed on ${landing}, not on their order panel (/admin/orders)`)
+      await tap('orders', page.getByRole('link', { name: /Orders to act on/ }))
+    }
     await page.waitForLoadState('networkidle')
     await m.shot('r4-1b-store-orders-list')
     squeezed.push(`orders-list ${await overflow(page)}`)
