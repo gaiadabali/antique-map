@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 5/8 | 13/17 | 0 | `████████░░`  76% |
-| **All** | 14 phases | | | **65/73** | **239/260** | **8** | `█████████░`  92% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 7/8 | 15/17 | 0 | `█████████░`  88% |
+| **All** | 14 phases | | | **67/73** | **241/260** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,8 +81,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
-| 14·W2 | 14.6 Makers, places, pages and not-found | medior | `feat/p14-index` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -980,13 +978,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 14.3.a the bands on `SectionHead`, `Mat`, `ProofPoints` and the work card: about (no institution named), the collection, the curator, **recently placed — three real sold works, "Sold" and nothing more** (a public, projected, cached read), live with the collection, makers and places as square links, the enquiry band with the same-working-day promise; the hard-coded stand-ins and the institution copy gone; words under `home.gallery.*` (not 14.2's), both languages
   - [x] 14.3.b **Check:** the home at 390 and 1280 on a production build with the real catalogue, both languages, axe clean, no sideways scroll; the HTML names no institution and no price.
 
-- [ ] **14.4 Browse and search** · needs: 14.1 — 🔄 14·W2
+- [x] **14.4 Browse and search** · needs: 14.1 — ✅ 2026-10-09 cfa3a496
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/browse/**` (not 14.1's files), `engine/apps/web/src/sites/gallery/search/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
   - **Read** EXPERIENCE-GALLERY.md §4, DESIGN-SYSTEM.md §5, 12.4's shop browse
   - _Requirements: 12.1_
   - [x] 14.4.a the listing at full width under a `SectionHead` with its count; the facet column quiet — hairline groups, a long list (makers, places) shows its first eight with "All n" opening the rest, every option still a real link; sort as underlined text tabs; applied filters as square chips; the quiet pagination; the phone's filter sheet in the same hand; search's form, suggestion and empty state alike; words under `browse.*`, `listing.*`, `search.*`, both languages
-  - [ ] 14.4.b **Check:** browse, `/antique-maps`, a filtered page, `/search?q=batavia` and a search with no result at 390 and 1280 in both languages, axe clean, no sideways scroll; facets, sort, paging and "Include sold" still work; the facet column no longer sets the page's height.
+  - [x] 14.4.b **Check:** browse, `/antique-maps`, a filtered page, `/search?q=batavia` and a search with no result at 390 and 1280 in both languages, axe clean, no sideways scroll; facets, sort, paging and "Include sold" still work; the facet column no longer sets the page's height.
 
 - [x] **14.5 The item page** · needs: 14.1 — ✅ 2026-10-09 83300af4
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
@@ -996,13 +994,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 14.5.a two columns on a desktop: the sheet whole in a `Mat`, other images as compact-mat thumbnails, Zoom a quiet button under the mat; beside it the marked eyebrow (type · place), the balanced serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised — the status line, WhatsApp first, email, the reply promise (G9); the record under a section head in hairline rows; proof points (a certificate, originals only, the lifetime guarantee); one column on a phone; words under `item.*`, both languages
   - [x] 14.5.b **Check:** an available work, a sold one and one with several images at 390 and 1280 in both languages, axe clean; zoom opens and draws tiles; Ask carries the stock number; no price in the HTML.
 
-- [ ] **14.6 Makers, places, pages and not-found** · needs: 14.1 — 🔄 14·W2
+- [x] **14.6 Makers, places, pages and not-found** · needs: 14.1 — ✅ 2026-10-09 cfa3a496
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
   - **Read** EXPERIENCE-GALLERY.md §7, §9
   - _Requirements: 12.1_
   - [x] 14.6.a the makers index an A–Z index in columns (letter heads, names with life dates and counts, hairlines — no boxed cards); a maker under a `SectionHead` with life dates, the biography at the reading measure, the works as work cards; the places index as island groups in headed columns with counts; a place alike; CMS pages and stories under a `SectionHead` at the reading measure; not-found invites to search and the collection; words under `makerPage.*`, `placePage.*`, `cmsPage.*`, `notFound.*`, both languages
-  - [ ] 14.6.b **Check:** makers, a maker, places, a place, a story page and not-found at 390 and 1280 in both languages, axe clean, no sideways scroll; the makers index at 1280 fits in a few screens.
+  - [x] 14.6.b **Check:** makers, a maker, places, a place, a story page and not-found at 390 and 1280 in both languages, axe clean, no sideways scroll; the makers index at 1280 fits in a few screens.
 
 - [x] **14.7 Sell to us and contact** · needs: 14.1 — ✅ 2026-10-09 437b715f
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
@@ -1041,6 +1039,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **14.4 and 14.6 closed** (Sonnet built, orchestrator reviewed; merged `c0196bcf`, `db2e7068`, review fixes `cfa3a496`). **14.4 browse and search:** the listing under `SectionHead` (a type page titled by its type), the facet column quiet on hairlines, **a long list shows its first eight and an "All n" disclosure reveals the rest in place** (every option still a real link; it opens itself when it holds the selection), sort as underlined tabs, square chips, the quiet pager, search and its no-result state in the same hand — `/browse` at 1280 is **3,678 px, from 8,507**; facets, sort, paging, "Include sold", the year pair and a place deep in the tree clicked through on the build. **14.6:** the makers index an A–Z index in columns (**3,955 px, from 10,518**), a maker and a place over the shared work grid, the places index as headed island groups, CMS pages and stories at the reading measure, the gallery's own 404 with search. **Review fixes (orchestrator):** a CMS page or story with a hero image answered **500** — its loader handed next/image the staff-only `/api/media/file/…?prefix=` URL (a defect since 5.x, found by 14.6); it now projects the hero through the public derivative like a work card; the makers index no longer prints "0 works"; the home's work bands no longer load their pictures at high priority beside the hero's sheet; one prettier miss. **Check, on main + fixes, production build, local gallery sample:** home, browse, a type page, search, no-result search, an available and a sold item, makers, a maker, places, a place, a story with its hero, sell to us, contact and not-found (404), and the same in Indonesian — **every page axe clean at 390 and 1280, no sideways scroll, no broken image**; the shop's home, browse, product, collections and stores unchanged (home and browse heights identical to before). Follow-ups: the place facet's first eight follow tree order; the maker page has no biography field yet (9.3); the places index counts places, not works; the floating chat button sits over the right edge of long lists and forms.
 
 - 2026-10-09 — ✅ **14.5 closed** (Sonnet built, orchestrator reviewed; merged `83300af4`). The item page in the shop product page's hand: two columns on a desktop — the sheet whole in a contained `Mat` (its own shape, clamped 0.8–1.5, preloaded), Zoom as a quiet square button, the other views in compact mats; beside it the marked eyebrow (type · place), the serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised with the status line, Ask first, email, **the reply promise (G9, new on this page)** and the shipping note; proof points (certificate, originals only, lifetime guarantee); the record under "About this work" in hairline rows. Zoom, Ask's hrefs and the status logic untouched. **Check:** `/product/574`, `/product/1207`, `/product/156` (sold) and `/id/produk/574` at 390 and 1280, axe clean, no price in the HTML; the viewer opens (no tiles locally — staging, 14.8); the WhatsApp text from the page's own code carries the stock number (locally no number is set). Found by it and fixed on main: the gallery lexicon's unused `shell.replyPromise` said "two working days" (`78c0b048`). Follow-up: the thumbnails under the mat are pictures, not buttons — let each open the viewer at its image.
 
