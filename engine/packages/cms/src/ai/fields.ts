@@ -23,6 +23,9 @@ function entry(field: (typeof AI_DRAFTABLE_FIELDS)[number]): GroupField {
     name: field,
     type: 'group',
     label: AI_DRAFTABLE_LABELS[field],
+    // Not a list column: a group named like the real field (`title`, `objectType`) made
+    // the Antiques list show that column twice.
+    admin: { disableListColumn: true },
     // Flat, not in rows: a row is a field without a name, and every entry reads the same four.
     fields: [
       {
@@ -66,6 +69,7 @@ export const aiDraftField: GroupField = {
   type: 'group',
   label: { en: 'Drafted by AI, not yet checked', id: 'Dibuat draf oleh AI, belum diperiksa' },
   admin: {
+    disableListColumn: true,
     description: {
       en: 'One entry per field the drafting tool filled. The work cannot publish until each drafted field is ticked Verified; the server records who ticked it and when.',
       id: 'Satu entri per bidang yang diisi alat draf. Karya tidak dapat diterbitkan sampai setiap bidang yang didraf dicentang Diverifikasi; server mencatat siapa yang mencentang dan kapan.',
@@ -80,6 +84,7 @@ export const aiDraftRunField: GroupField = {
   type: 'group',
   label: { en: 'Last drafting run', id: 'Pembuatan draf terakhir' },
   admin: {
+    disableListColumn: true,
     readOnly: true,
     description: {
       en: 'Who asked the drafting tool, when, and what it answered. Earlier runs are in the version history.',

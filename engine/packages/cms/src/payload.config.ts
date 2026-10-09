@@ -106,6 +106,8 @@ export function engineConfig(env: Env = process.env): Config {
           '@engine/cms/admin/views#LeadsNavLink',
           '@engine/cms/admin/views#StockImportNavLink',
         ],
+        // The language switch: a link to the account page, at the bottom of the sidebar.
+        afterNavLinks: ['@engine/cms/admin/views#LanguageLink'],
       },
       dashboard: {
         defaultLayout: [
