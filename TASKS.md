@@ -28,7 +28,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
-| **All** | 12 phases | | | **57/62** | **220/237** | **8** | `█████████░`  93% |
+| **13** The shop's Collections and Stores pages | UI | 12 | · not started | 0/3 | 0/6 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 13 phases | | | **57/65** | **220/243** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -910,6 +911,38 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 12.1_
   - [x] 12.8.a released to staging; every shop page and the gallery's home at 390 and 1280, screenshots recorded
   - [x] 12.8.b **Check:** `docs/gates/luxury-pass.md` shows each page with axe clean and no sideways scroll, and the shop's purchase path completing on the simulator.
+
+---
+
+## Phase 13 — The shop's Collections and Stores pages · UI · needs 12 · ~1d
+
+**Goal:** the header's Collections and Stores links (and the footer's Gallery walls and Where to buy) land on real pages, not a 404, in phase 12's language (user request, 2026-10-09).
+**Done when:** on staging, `/collections`, `/id/koleksi`, `/stores` and `/id/toko` answer 200 at 390 px and 1280 px with axe clean and no sideways scroll; the stores page shows only active, listed stores and never a store's code, WhatsApp, coordinates or notes.
+**Waves:** W1 — 13.1, 13.2 · W2 — 13.3
+
+- [ ] **13.1 The collections index** · needs: phase 12
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
+  - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/collection/page.tsx`, `engine/apps/web/src/sites/shop/collections/**`, `engine/apps/web/src/server/shop/catalogue/collections.ts` (new, beside the catalogue's loaders), the `collections.*` keys in `sites/shop/lexicon/{en,id}.json`
+  - **Read** EXPERIENCE-SHOP.md §2, `docs/gates/luxury-pass.md`, the collection page (`collection/[slug]/page.tsx`)
+  - _Requirements: 12.1_
+  - [ ] 13.1.a `/collections` lists every category that holds published products — a matted lead print, its name and its count — each linking to its `/collections/<slug>` page; public reads through the catalogue's cached, projected loaders
+  - [ ] 13.1.b **Check:** `/collections` and `/id/koleksi` at 390 and 1280, axe clean, every card links to a 200.
+
+- [ ] **13.2 The stores page** · needs: phase 12
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
+  - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/stores/**`, `engine/apps/web/src/sites/shop/stores/**`, `engine/apps/web/src/server/shop/stores/**`, the `stores.*` keys in `sites/shop/lexicon/{en,id}.json`
+  - **Read** EXPERIENCE-SHOP.md §2, CONTENT-MODEL.md §4 and its Open "Public store list", `collections/stores/index.ts` (the public access), `server/chat/projection/stores.ts`
+  - _Requirements: 12.1_
+  - [ ] 13.2.a `/stores`: the active, listed stores by area — name, address, hours and an "Open in Maps" link built from name and address — read with `overrideAccess: false` and a `select` of those fields only, cached for minutes; a unit test for the grouping and the link
+  - [ ] 13.2.b **Check:** `/stores` and `/id/toko` at 390 and 1280, axe clean; the HTML carries no store code, WhatsApp number or coordinate.
+
+- [ ] **13.3 The pages on staging** · needs: 13.1, 13.2
+  - **Lane** QA · **Agent** orchestrator · **Wave** W2
+  - **Owns** `docs/gates/luxury-pass.md` (§Phase 13)
+  - **Read** this phase's **Done when**
+  - _Requirements: 12.1_
+  - [ ] 13.3.a released to staging; the header's and footer's links to both pages answer 200
+  - [ ] 13.3.b **Check:** `docs/gates/luxury-pass.md` §Phase 13 records both pages at 390 and 1280 in both languages, axe clean, and the stores page's HTML free of codes, WhatsApp numbers and coordinates.
 
 ---
 
