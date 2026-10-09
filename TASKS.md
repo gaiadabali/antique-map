@@ -30,7 +30,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
-| **All** | 14 phases | | | **68/73** | **243/260** | **8** | `█████████░`  93% |
+| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 0/13 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 15 phases | | | **68/77** | **243/273** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,6 +82,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 15·W1 | 15.1 CI's wall clock and a green main | orchestrator | `main` | 2026-10-10 | |
 
 ## Decisions for the owner
 
@@ -1017,6 +1019,45 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 12.1_
   - [x] 14.8.a released to staging; every gallery page at 390 and 1280 in both languages, screenshots recorded
   - [x] 14.8.b **Check:** `docs/gates/gallery-luxury.md` shows each page with axe clean, no sideways scroll, no broken image, no price and no institution named, and the shop's home, browse and product pages unchanged.
+
+## Phase 15 — The optimisation pass · Launch · needs 7, 8, 9 · ~2d
+
+**Goal:** the project runs lean before launch (user request, 2026-10-10: "ensure that it will be properly optimized; the GitHub build time as low as possible; the server setup correct without any memory leak; the CMS for both sites high level, easy to use and without confusion"). Audited on 2026-10-10: CI on main red since phase 12 and about 12 minutes when green (the db tests, the unit run and the seed in series); one real leak (the analytics limiter never sweeps) and pm2 without a heap limit; the CMS sidebar mixing both sites with developer words; the gallery's search 3.4 s for a common word.
+**Done when:** CI on main is green and its wall clock is at most half of the 12 minutes it was; staging runs the fixed release with the new pm2 settings and a soak levels off well under the restart threshold; the owner and a store user see a sidebar that names each site, plain labels and no internal codes, at 390 and 1280; a common-word gallery search answers in under a second uncached.
+**Waves:** W1 — 15.1, 15.2, 15.3, 15.4
+
+- [ ] **15.1 CI's wall clock and a green main** · needs: — — 🔄 15·W1
+  - **Lane** OPS · **Agent** orchestrator (workflows), medior (Sonnet, the test suites) · **Wave** W1
+  - **Owns** `.github/**`, `playwright.config.ts`, `vitest.config.ts`, `engine/packages/cms/src/collections/{users/staff,media/test-stack}.test-support.ts`, `engine/packages/cms/src/test-db/*`, `engine/packages/cms/src/admin/leads/inbox*.tsx`, `package.json`
+  - **Read** CONVENTIONS.md §12, §15; DEPLOYMENT.md §3
+  - [ ] 15.1.a the unit tests, the real-database tests, e2e and Lighthouse as jobs side by side; the static checks side by side in one job; e2e's build, database and browsers at once; the seeded database a cached snapshot; Turbopack's build cache restored, saved by main alone; Playwright on every core
+  - [ ] 15.1.b `inbox.db.test.ts` loads again (no `.css` through Payload's admin template); the db tests are their own run, never imported by the unit run; one migrated template database cloned per test file
+  - [ ] 15.1.c CodeQL once: the advanced `codeql.yml` removed while the repository's default setup scans (it refuses the workflow's upload on every push) — the user's go-ahead
+  - [ ] 15.1.d **Check:** CI on main green, its wall clock against run 37902899675 (12m20s), the per-job times recorded in the log line.
+
+- [ ] **15.2 No leak, and the server set for it** · needs: —
+  - **Lane** OPS · **Agent** orchestrator (server), medior (Sonnet, the code fixes) · **Wave** W1
+  - **Owns** `scripts/ops/**`, `docs/DEPLOYMENT.md`, `engine/apps/web/src/server/{analytics,leads,chat}/**`, `engine/apps/web/src/security/rate-limit.ts`, `engine/apps/web/src/app/api/x/{collect,geocode}/**`, `engine/packages/{http,media}/src/**`, `engine/packages/cms/src/{db/adapter.ts,collections/media/pipeline.ts}`
+  - **Read** DEPLOYMENT.md §3–§5; SECURITY.md §2.10
+  - [ ] 15.2.a the analytics limiter sweeps on time and caps its maps (the one leak under real traffic); the other in-process limiters sweep on time and cap
+  - [ ] 15.2.b public bodies read with a cap (collect, geocode, chat); S3 timeouts and one pipeline client; sharp at two threads; a stuck jobs run answers 503; the pool's size explicit; unread fetch bodies cancelled; the chat stream ends after 30 s of silence
+  - [ ] 15.2.c pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2` and a restart backoff; `pm2.log` rotated; the role ends a transaction idle for 5 minutes — the container test ALL PASS
+  - [ ] 15.2.d **Check:** staging on the fixed release with the new ecosystem; a soak of distinct search pages levels off well under 1536M with no restart but reloads; the figures in DEPLOYMENT.md §3.
+
+- [ ] **15.3 The CMS says which site and speaks plainly** · needs: —
+  - **Lane** CMS · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
+  - **Owns** `engine/packages/cms/src/admin/{groups.ts,nav/*,orders/nav-link.jsx}`, `engine/packages/cms/src/collections/*/{index,fields}.ts`, `engine/packages/cms/src/collections/works/fields-*.ts`, `engine/packages/cms/src/globals/*/*`, `engine/packages/cms/src/fields/*` — admin config only, no schema change; `docs/gates/cms-clarity.md`, `docs/gates/cms-clarity/*`
+  - **Read** CONTENT-OPERATIONS.md; `docs/gates/admin-usability.md`
+  - [ ] 15.3.a the sidebar's groups name their site; the Order panel, Leads inbox and Import stock first under Daily work; the system's logs last under Technical records
+  - [ ] 15.3.b the Antiques list without doubled columns; Availability and Cataloguing progress apart; each record says which site shows it; Site settings a tab per site; developer words and task numbers out of every description; the stock and order forms ordered for a person
+  - [ ] 15.3.c **Check:** `docs/gates/cms-clarity.md` — owner and store user at 390 and 1280 on a production build, both languages of each changed label, `payload-types.ts` unchanged and no migration.
+
+- [ ] **15.4 The gallery's search answers fast** · needs: —
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
+  - **Owns** `engine/apps/web/src/server/gallery/catalogue/**`, `engine/apps/web/src/sites/gallery/search/**`, the gallery search page
+  - **Read** EXPERIENCE-GALLERY.md §4, §9
+  - [ ] 15.4.a the cards' load cut to the fields a card shows (still published-only and `overrideAccess: false`; a draft maker or place never reaches a card), or the results paged as browse is
+  - [ ] 15.4.b **Check:** on staging `/search?q=map` uncached under 1 s (3.4 s on 2026-10-10, the SQL 0.1 s of it), at 390 and 1280.
 
 ---
 
