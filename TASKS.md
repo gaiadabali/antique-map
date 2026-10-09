@@ -84,6 +84,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 13·W1 | 13.2 The stores page | medior | `feat/p13-stores` | 2026-10-09 | |
 | 13·W1 | 13.1 The collections index | medior | `feat/p13-coll` | 2026-10-09 | |
 | 14·W1 | 14.1 The gallery's hand in the shared pieces | orchestrator | `feat/p14-w1` | 2026-10-09 | |
+| 14·W1 | 14.2 The home's hero | orchestrator | `feat/p14-w1` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -965,7 +966,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 14.1.b the work card on a compact contained `Mat` with a museum caption — serif title, maker and date, dimensions, the stock tag and the one status line, never a price
   - [ ] 14.1.c **Check:** the style guide shows each piece at 390 and 1280; the shop's home and browse look as on `aa7469b1`; lint, tokens, file size and the shared tests pass.
 
-- [ ] **14.2 The home's hero** · needs: phase 12
+- [ ] **14.2 The home's hero** · needs: phase 12 — 🔄 14·W1
   - **Lane** WEB · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/home/{hero.tsx,hero.module.css,gallery-home.tsx}`
   - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G6, G7, G10, G13), 12.1's hero
