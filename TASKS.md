@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 0/8 | 3/17 | 0 | `██░░░░░░░░`  18% |
-| **All** | 14 phases | | | **60/73** | **229/260** | **8** | `█████████░`  88% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 2/8 | 5/17 | 0 | `███░░░░░░░`  29% |
+| **All** | 14 phases | | | **62/73** | **231/260** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -81,8 +81,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
-| 14·W1 | 14.1 The gallery's hand in the shared pieces | orchestrator | `feat/p14-w1` | 2026-10-09 | |
-| 14·W1 | 14.2 The home's hero | orchestrator | `feat/p14-w1` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -955,22 +953,22 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every gallery page (home, browse, a type page, search, item, makers, a maker, places, a place, sell to us, contact, a story page, not-found) shows the language at 390 px and 1280 px in both languages with axe clean and no sideways scroll; no price and no institution appear anywhere; facets, sort, paging, zoom and both enquiry forms still work; the shop's pages look as they did.
 **Waves:** W1 — 14.1, 14.2 · W2 — 14.3, 14.4, 14.5, 14.6, 14.7 · W3 — 14.8
 
-- [ ] **14.1 The gallery's hand in the shared pieces** · needs: phase 12 — 🔄 14·W1
+- [x] **14.1 The gallery's hand in the shared pieces** · needs: phase 12 — ✅ 2026-10-09 7cea1f6e
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/shared/ui/{mat,eyebrow,pagination,stock-tag}/**`, `engine/apps/web/src/shared/ui/index.ts`, `engine/apps/web/src/shared/style-guide/**`, `engine/apps/web/src/shared/styles/tokens/semantic.css`, `engine/apps/web/src/sites/gallery/tokens/brand.css`, `engine/apps/web/src/sites/shop/tokens/brand.css`, `engine/apps/web/src/sites/gallery/browse/{work-card.tsx,card.module.css}`
   - **Read** DESIGN-SYSTEM.md §1, §5, §7; DESIGN.md §The luxury pass
   - _Requirements: 12.1_
   - [x] 14.1.a the eyebrow's mark drawn from tokens — the shop's scale bar unchanged, the gallery's one hairline rule; `Mat fit="contain"` for originals (whole, never cropped, on the mat's ground); `StockTag` for a stock number; a square, quiet `Pagination` variant; each on the style guide
   - [x] 14.1.b the work card on a compact contained `Mat` with a museum caption — serif title, maker and date, dimensions, the stock tag and the one status line, never a price
-  - [ ] 14.1.c **Check:** the style guide shows each piece at 390 and 1280; the shop's home and browse look as on `aa7469b1`; lint, tokens, file size and the shared tests pass.
+  - [x] 14.1.c **Check:** the style guide shows each piece at 390 and 1280; the shop's home and browse look as on `aa7469b1`; lint, tokens, file size and the shared tests pass.
 
-- [ ] **14.2 The home's hero** · needs: phase 12 — 🔄 14·W1
+- [x] **14.2 The home's hero** · needs: phase 12 — ✅ 2026-10-09 7cea1f6e
   - **Lane** WEB · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/gallery/home/{hero.tsx,hero.module.css,gallery-home.tsx}`
   - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G6, G7, G10, G13), 12.1's hero
   - _Requirements: 12.1_
   - [x] 14.2.a the lead work — the newest available work with a published image — whole in a `Mat` with a museum caption (title, maker and date, the stock tag, *Price on request*) in place of the film's empty placeholder; the headline balanced under the marked eyebrow; the owner's facts as `ProofPoints` (since 2001, over 9,500 antiques, a certificate with every original) in place of the three trust cards, none naming an institution; the hero's words under `home.gallery.hero*` and `home.gallery.{eyebrow,title,lede}`, both languages
-  - [ ] 14.2.b **Check:** the home's first screen on a production build at 390, 1280 and 1995 px in both languages: the sheet loads at high priority and uncropped, axe clean, no sideways scroll.
+  - [x] 14.2.b **Check:** the home's first screen on a production build at 390, 1280 and 1995 px in both languages: the sheet loads at high priority and uncropped, axe clean, no sideways scroll.
 
 - [ ] **14.3 The home below the hero** · needs: 14.1, 14.2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
@@ -1041,6 +1039,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **14.1 and 14.2 closed** (orchestrator; merged `1ad211ff`). Phase 14, the gallery's luxury pass, opened at the user's request ("upgrade the gallery's pages, so we have a proper UI too"). **14.1:** the eyebrow's mark comes from site tokens — the shop's scale bar computes identical to staging (60 × 5.6 px, the same gradient), the gallery's is one hairline rule; `Mat fit="contain"` floats an original whole in its window, never cropped; `StockTag`; a quiet, square `Pagination` variant; the work card rebuilt on a compact contained mat with a museum caption (title clamped to three lines, maker and date, dimensions, status line, stock tag). Found and fixed: an empty mat's muted words were 4.46:1 on the gallery's cream window (a token now gives them full ink on the gallery; the shop keeps its muted ink); the style guide's `/gallery/placeholder.svg` never existed (inline fixtures now, loading on both hosts). **14.2:** the home opens on the newest available map whole on its mat with a museum caption and *Price on request*, preloaded at high priority, the owner's facts as proof points (since 2001, over 9,500 antiques, a certificate with every original) — the empty film placeholder and the trust card naming the Louvre, Leiden and Singapore (against G10) are gone. **Check:** a production build on a local copy with the published gallery sample (`indies_p14_gallery`, 49 works, derivatives built): home, browse and the style guide on both hosts at 390 and 1280 (and the home at 1995, en and id) axe clean, no sideways scroll, no broken image; the shop's home and browse unchanged. The rest of the home still names institutions and promises "two working days" — 14.3 removes them. Two unit tests red on main came from phase 13 (stores route still "pending"; three `.one` plural keys only in id) — with that session.
 
 - 2026-10-09 — ✅ **phase 13 — the shop's Collections and Stores pages closed** (3/3 tasks; user request). The header's Collections and Stores links and the footer's Gallery walls and Where to buy answered 404 — routed, never built. Now `/collections` (`/id/koleksi`) lists every category with products as matted lead prints with counts, and `/stores` (`/id/toko`) lists the active, listed stores by area with hours and an "Open in Maps" link from name and address (`overrideAccess: false`, four fields selected, cached for minutes). Live on staging `production-20261009T142432Z-c25f6af4`: both pages 200 in both languages, axe clean at 390 and 1280; the stores HTML carries 0 codes, 0 WhatsApp numbers, 0 coordinates, 96/96 listed stores and 0/24 hidden (`docs/gates/luxury-pass.md` §Phase 13). Sonnet built, orchestrator reviewed (the area row now wraps on a desktop).
 
