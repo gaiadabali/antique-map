@@ -8,7 +8,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { CheckoutRead } from '../../../server/shop/checkout'
-import { Button } from '../../../shared/ui'
+import { Button, SectionHead } from '../../../shared/ui'
 import { createHref, SITES } from '@engine/config/sites'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { checkoutText } from './copy'
@@ -51,9 +51,7 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
 
   return (
     <section className={styles.checkout} aria-labelledby="checkout-title">
-      <h1 id="checkout-title" className={styles.title}>
-        {text('checkout.reviewTitle')}
-      </h1>
+      <SectionHead level={1} id="checkout-title" title={text('checkout.reviewTitle')} />
 
       {read.refusal !== null && (
         <p role="status">
@@ -66,6 +64,12 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
       )}
 
       <div className={styles.columns}>
+        <CheckoutForm
+          locale={locale}
+          labels={labels}
+          browserKey={browserKey}
+          expectedTotalIdr={read.totalIdr}
+        />
         <div className={styles.review} aria-label={text('checkout.reviewTitle')}>
           <ul>
             {read.lines.map((line) => (
@@ -107,13 +111,6 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
             </Button>
           </div>
         </div>
-
-        <CheckoutForm
-          locale={locale}
-          labels={labels}
-          browserKey={browserKey}
-          expectedTotalIdr={read.totalIdr}
-        />
       </div>
     </section>
   )

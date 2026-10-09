@@ -8,6 +8,7 @@
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
 
+import { Button } from '../../../shared/ui'
 import { payAction, type PayState } from '../../../server/shop/payment/actions'
 import { SnapPay } from './snap-pay'
 import styles from './order-view.module.css'
@@ -37,9 +38,9 @@ export function PayForm({
       <form action={dispatch}>
         <input type="hidden" name="token" value={token} />
         <input type="hidden" name="locale" value={locale} />
-        <button type="submit" disabled={pending}>
+        <Button type="submit" loading={pending}>
           {label}
-        </button>
+        </Button>
       </form>
       {state !== null && state.ok && (
         <SnapPay

@@ -5,7 +5,7 @@
  */
 import type { SiteLocale } from '@engine/config/sites'
 
-import { Price, ResponsiveImage, StatusTimeline, TextLink } from '../../../shared/ui'
+import { Price, ResponsiveImage, SectionHead, StatusTimeline, TextLink } from '../../../shared/ui'
 import type { TrackingView } from '../../../server/shop/tracking/load-tracking'
 import { baliDateTime } from './bali-datetime'
 import { trackingText } from './copy'
@@ -38,9 +38,11 @@ export function TrackingPage({
 
   return (
     <section className={styles.tracking} aria-labelledby="tracking-title">
-      <h1 id="tracking-title" className={styles.title}>
-        {text('tracking.title', { number: String(view.orderNumber) })}
-      </h1>
+      <SectionHead
+        level={1}
+        id="tracking-title"
+        title={text('tracking.title', { number: String(view.orderNumber) })}
+      />
 
       {view.status === 'pending_payment' && <p role="status">{text('tracking.pendingNote')}</p>}
       {view.status === 'cancelled' && <p role="status">{text('tracking.cancelledNote')}</p>}

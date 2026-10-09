@@ -1,6 +1,6 @@
 /** The shop's designed not-found page, inside its layout. */
-import { NotFoundPage } from '../../../../shell/placeholder-pages'
+import { ShopNotFoundView } from './not-found/not-found-view'
 
 export default function ShopNotFound() {
-  return <NotFoundPage site="shop" />
+  return <ShopNotFoundView />
 }

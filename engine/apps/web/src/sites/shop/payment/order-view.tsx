@@ -3,6 +3,7 @@
  * status — pending, confirming, failed, paid, expired, or an expired order a late payment reached.
  * Every figure is the server's own (`OrderView`); nothing here prices anything.
  */
+import { Button, SectionHead, TextLink } from '../../../shared/ui'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { baliTime } from './bali-time'
 import { paymentText, type PaymentText } from './copy'
@@ -112,16 +113,16 @@ export function OrderView({
     <form action={putBackInBagAction}>
       <input type="hidden" name="token" value={token} />
       <input type="hidden" name="locale" value={locale} />
-      <button type="submit">{t('order.putBackInBag')}</button>
+      <Button type="submit" variant="secondary">
+        {t('order.putBackInBag')}
+      </Button>
     </form>
   )
 
   if (order.status === 'expired' && order.needsAttention?.reason === 'late_payment') {
     return (
       <section className={styles.page} aria-labelledby="order-status">
-        <h1 id="order-status" className={styles.status}>
-          {t('order.lateChargeTitle')}
-        </h1>
+        <SectionHead level={1} id="order-status" title={t('order.lateChargeTitle')} />
         <Totals order={order} t={t} />
       </section>
     )
@@ -132,9 +133,7 @@ export function OrderView({
   if (order.status === 'expired' && order.totals.deliveryIdr === null) {
     return (
       <section className={styles.page} aria-labelledby="order-status">
-        <h1 id="order-status" className={styles.status}>
-          {t('order.quotedExpiredTitle')}
-        </h1>
+        <SectionHead level={1} id="order-status" title={t('order.quotedExpiredTitle')} />
         {putBackForm}
         <ItemsTotal order={order} t={t} />
       </section>
@@ -144,9 +143,11 @@ export function OrderView({
   if (order.status === 'expired') {
     return (
       <section className={styles.page} aria-labelledby="order-status">
-        <h1 id="order-status" className={styles.status}>
-          {t('order.expiredTitle', { time: deadline })}
-        </h1>
+        <SectionHead
+          level={1}
+          id="order-status"
+          title={t('order.expiredTitle', { time: deadline })}
+        />
         <p className={styles.body}>{t('order.expiredBody')}</p>
         {putBackForm}
         <Totals order={order} t={t} />
@@ -158,17 +159,19 @@ export function OrderView({
     return (
       <section className={styles.page} aria-labelledby="order-status">
         <AutoRefresh />
-        <p className={styles.title}>{t('order.title', { number: String(order.number) })}</p>
-        <h1 id="order-status" className={styles.status}>
-          {t('order.confirmingDeliveryTitle')}
-        </h1>
+        <SectionHead
+          level={1}
+          id="order-status"
+          eyebrow={t('order.title', { number: String(order.number) })}
+          title={t('order.confirmingDeliveryTitle')}
+        />
         {order.storeArea !== null && (
           <p className={styles.body}>
             {t('order.confirmingDeliverySendingFrom', { store: order.storeArea })}
           </p>
         )}
         <p className={styles.notice}>{t('order.confirmingDeliveryBody')}</p>
-        <a href={orderHref}>{t('order.checkAgain')}</a>
+        <TextLink href={orderHref}>{t('order.checkAgain')}</TextLink>
         <ItemsTotal order={order} t={t} />
       </section>
     )
@@ -177,10 +180,8 @@ export function OrderView({
   if (order.status === 'cancelled') {
     return (
       <section className={styles.page} aria-labelledby="order-status">
-        <h1 id="order-status" className={styles.status}>
-          {t('order.cancelledTitle')}
-        </h1>
-        <a href={trackingHref}>{t('order.trackingLink')}</a>
+        <SectionHead level={1} id="order-status" title={t('order.cancelledTitle')} />
+        <TextLink href={trackingHref}>{t('order.trackingLink')}</TextLink>
         <Totals order={order} t={t} />
       </section>
     )
@@ -193,19 +194,23 @@ export function OrderView({
     return (
       <section className={styles.page} aria-labelledby="order-status">
         <AutoRefresh />
-        <h1 id="order-status" className={styles.status}>
-          {failed
-            ? t('order.failedTitle')
-            : confirming
-              ? t('order.confirmingTitle')
-              : t('order.title', { number: String(order.number) })}
-        </h1>
+        <SectionHead
+          level={1}
+          id="order-status"
+          title={
+            failed
+              ? t('order.failedTitle')
+              : confirming
+                ? t('order.confirmingTitle')
+                : t('order.title', { number: String(order.number) })
+          }
+        />
         <p className={styles.body}>
           {confirming ? t('order.confirmingText') : !failed && t('order.payBy', { time: deadline })}
         </p>
         {!confirming && payForm(failed ? t('order.tryAgain') : payingLabel)}
         {!confirming && !failed && <p className={styles.notice}>{t('order.pendingText')}</p>}
-        <a href={orderHref}>{t('order.checkAgain')}</a>
+        <TextLink href={orderHref}>{t('order.checkAgain')}</TextLink>
         <Totals order={order} t={t} />
       </section>
     )
@@ -214,13 +219,11 @@ export function OrderView({
   // paid, processing, waiting_driver, on_the_way, delivered: the confirmation.
   return (
     <section className={styles.page} aria-labelledby="order-status">
-      <h1 id="order-status" className={styles.status}>
-        {t('order.paidTitle')}
-      </h1>
+      <SectionHead level={1} id="order-status" title={t('order.paidTitle')} />
       {order.storeArea !== null && (
         <p className={styles.body}>{t('order.paidBody', { store: order.storeArea })}</p>
       )}
-      <a href={trackingHref}>{t('order.trackingLink')}</a>
+      <TextLink href={trackingHref}>{t('order.trackingLink')}</TextLink>
       <Totals order={order} t={t} />
     </section>
   )
