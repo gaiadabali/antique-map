@@ -29,7 +29,7 @@ const quietButton = {
 }
 
 async function post(file, mode) {
-  const body = new FormData()
+  const body = new globalThis.FormData()
   body.set('file', file)
   body.set('mode', mode)
   const response = await globalThis.fetch('/api/stock-levels/import', {

@@ -10,6 +10,15 @@ import { server, startStaffStack, type StaffStack } from '../users/staff.test-su
 import { stockImportEndpoint } from './import-endpoint'
 import { makeProduct } from './shop.test-support'
 
+type Body = {
+  error?: string
+  report: {
+    dryRun: boolean
+    counts: Record<string, number>
+    rows: Array<{ outcome: string; key: string; problem: string }>
+  }
+}
+
 describe.skipIf(!server)('stock import endpoint, on a real database', () => {
   let stack: StaffStack
 
@@ -36,7 +45,7 @@ describe.skipIf(!server)('stock import endpoint, on a real database', () => {
       formData: async () => form,
     } as unknown as PayloadRequest
     const response = await stockImportEndpoint.handler(req)
-    return { status: response.status, body: (await response.json()) as Record<string, any> }
+    return { status: response.status, body: (await response.json()) as Body }
   }
 
   const rowsIn = () =>
@@ -61,8 +70,8 @@ describe.skipIf(!server)('stock import endpoint, on a real database', () => {
     // An unknown SKU is held (valid, waiting on a person), listed with its reason.
     expect(preview.body.report.counts).toMatchObject({ new: 1, held: 1 })
     const held = preview.body.report.rows.find((r: { outcome: string }) => r.outcome === 'held')
-    expect(held.key).toContain('NOPE')
-    expect(held.problem).toBeTruthy()
+    expect(held!.key).toContain('NOPE')
+    expect(held!.problem).toBeTruthy()
     expect(await rowsIn()).toBe(before)
 
     const applied = await call('owner', { name: 'stock.csv', text: sheet }, 'apply')

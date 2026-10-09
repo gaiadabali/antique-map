@@ -18,8 +18,9 @@ test('R3 owner: work a lead through its statuses and add a note', async ({ page 
   m.start()
   await page.goto(`${SHOP}/admin`)
   const inbox = await page.locator('a[href="/admin/leads"]').count()
+  const named = await page.getByRole('link', { name: /^Leads inbox$/ }).count()
   m.stumble(
-    `the sidebar has ${inbox} link(s) to the leads inbox (/admin/leads); the "Leads" entry opens the plain list`,
+    `the sidebar has ${inbox} link(s) to the leads inbox (/admin/leads), ${named} named "Leads inbox"; the "Leads" entry opens the plain list`,
   )
   await m.click(
     page.locator('.template-default__wrap a.card__click[href="/admin/collections/leads"]'),
@@ -39,6 +40,17 @@ test('R3 owner: work a lead through its statuses and add a note', async ({ page 
   m.stumble(
     `"Reply on WhatsApp" links on the lead: ${whatsapp}; "Reply by email": ${email} (CONTENT-OPERATIONS 4.1 step 3)`,
   )
+  // The buttons exist from 10.8.b; a lead with a number or an address gets at least one of them.
+  expect(whatsapp + email, 'Reply on WhatsApp / Reply by email on the lead').toBeGreaterThan(0)
+  if (whatsapp > 0) {
+    const href = await page
+      .getByRole('link', { name: /reply on whatsapp/i })
+      .first()
+      .getAttribute('href')
+    expect(href, 'a wa.me link with the lead number and an opening line').toMatch(
+      /^https:\/\/wa\.me\/\d{7,15}\?text=/,
+    )
+  }
 
   const history = page.locator(
     '#field-statusHistory .array-field__row, #field-statusHistory [id^="statusHistory-row"]',
