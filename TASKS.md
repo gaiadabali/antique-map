@@ -79,6 +79,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W2 | 10.7 Replacement orders and late payments | senior-be | `worktree-agent-a721e11ba1a215fcb` | 2026-10-09 | |
+| 10·W2 | 10.8 Staff admin gaps from the 10.4 proxy run | medior | `worktree-agent-a5ce820d46bdba8fc` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -781,7 +782,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 10.7.b a payment after expiry (COMMERCE.md §13): if the same store still holds every unit, re-take them in the same transaction and mark the order `paid`; else `paid` with "reassign, or cancel and return the money"; the flag stays until staff clear it, and the panel offers that
   - [ ] 10.7.c **Check:** db tests for both (stock short, stock present, concurrent retake); on staging the late-payment spec (`tests/e2e/rehearsal/late-payment.spec.ts`) ends with the order paid at its store, and a replacement of a delivered order reaches the store panel.
 
-- [ ] **10.8 Staff admin gaps from the 10.4 proxy run** · needs: phase 7
+- [ ] **10.8 Staff admin gaps from the 10.4 proxy run** · needs: phase 7 — 🔄 10·W2
   - **Lane** CMS · **Agent** medior (Sonnet), senior-uiux review · **Wave** W2
   - **Owns** `engine/packages/cms/src/admin/{leads,widgets,dashboard,stock-import}/**`, `engine/packages/cms/src/collections/{products,media,stock-levels}/admin/**` (CONTENT-OPERATIONS.md changes go to 10.4.b)
   - **Read** `docs/gates/admin-usability.md`, CONTENT-OPERATIONS.md §3–§5, 3.7 (the import)
