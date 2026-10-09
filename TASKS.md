@@ -84,6 +84,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 15·W1 | 15.1 CI's wall clock and a green main | orchestrator | `main` | 2026-10-10 | |
 | 15·W1 | 15.2 No leak, and the server set for it | orchestrator | `main` | 2026-10-10 | |
+| 15·W1 | 15.3 The CMS says which site and speaks plainly | orchestrator | `main` | 2026-10-10 | |
 
 ## Decisions for the owner
 
@@ -1045,7 +1046,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 15.2.c pm2 with `--max-old-space-size=1024`, `MALLOC_ARENA_MAX=2` and a restart backoff; `pm2.log` rotated; the role ends a transaction idle for 5 minutes — the container test ALL PASS
   - [ ] 15.2.d **Check:** staging on the fixed release with the new ecosystem; a soak of distinct search pages levels off well under 1536M with no restart but reloads; the figures in DEPLOYMENT.md §3.
 
-- [ ] **15.3 The CMS says which site and speaks plainly** · needs: —
+- [ ] **15.3 The CMS says which site and speaks plainly** · needs: — — 🔄 15·W1
   - **Lane** CMS · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/{groups.ts,nav/*,orders/nav-link.jsx}`, `engine/packages/cms/src/collections/*/{index,fields}.ts`, `engine/packages/cms/src/collections/works/fields-*.ts`, `engine/packages/cms/src/globals/*/*`, `engine/packages/cms/src/fields/*` — admin config only, no schema change; `docs/gates/cms-clarity.md`, `docs/gates/cms-clarity/*`
   - **Read** CONTENT-OPERATIONS.md; `docs/gates/admin-usability.md`
