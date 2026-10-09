@@ -84,6 +84,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
 | 14·W2 | 14.3 The home below the hero | medior | `feat/p14-home` | 2026-10-09 | |
 | 14·W2 | 14.5 The item page | medior | `feat/p14-item` | 2026-10-09 | |
+| 14·W2 | 14.7 Sell to us and contact | medior | `feat/p14-contact` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -1005,7 +1006,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 14.6.a the makers index an A–Z index in columns (letter heads, names with life dates and counts, hairlines — no boxed cards); a maker under a `SectionHead` with life dates, the biography at the reading measure, the works as work cards; the places index as island groups in headed columns with counts; a place alike; CMS pages and stories under a `SectionHead` at the reading measure; not-found invites to search and the collection; words under `makerPage.*`, `placePage.*`, `cmsPage.*`, `notFound.*`, both languages
   - [ ] 14.6.b **Check:** makers, a maker, places, a place, a story page and not-found at 390 and 1280 in both languages, axe clean, no sideways scroll; the makers index at 1280 fits in a few screens.
 
-- [ ] **14.7 Sell to us and contact** · needs: 14.1
+- [ ] **14.7 Sell to us and contact** · needs: 14.1 — 🔄 14·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**` (markup and CSS only), `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`
   - **Read** EXPERIENCE-GALLERY.md §8, 12.7's partnership page
