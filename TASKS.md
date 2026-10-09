@@ -30,8 +30,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
-| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 3/4 | 10/13 | 0 | `████████░░`  77% |
-| **All** | 15 phases | | | **71/77** | **253/273** | **8** | `█████████░`  93% |
+| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 3/4 | 12/13 | 0 | `█████████░`  92% |
+| **All** | 15 phases | | | **71/77** | **255/273** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1030,9 +1030,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** OPS · **Agent** orchestrator (workflows), medior (Sonnet, the test suites) · **Wave** W1
   - **Owns** `.github/**`, `playwright.config.ts`, `vitest.config.ts`, `engine/packages/cms/src/collections/{users/staff,media/test-stack}.test-support.ts`, `engine/packages/cms/src/test-db/*`, `engine/packages/cms/src/admin/leads/inbox*.tsx`, `package.json`
   - **Read** CONVENTIONS.md §12, §15; DEPLOYMENT.md §3
-  - [ ] 15.1.a the unit tests, the real-database tests, e2e and Lighthouse as jobs side by side; the static checks side by side in one job; e2e's build, database and browsers at once; the seeded database a cached snapshot; Turbopack's build cache restored, saved by main alone; Playwright on every core
+  - [x] 15.1.a the unit tests, the real-database tests, e2e and Lighthouse as jobs side by side; the static checks side by side in one job; e2e's build, database and browsers at once; the seeded database a cached snapshot; Turbopack's build cache restored, saved by main alone; Playwright on every core
   - [x] 15.1.b `inbox.db.test.ts` loads again (no `.css` through Payload's admin template); the db tests are their own run, never imported by the unit run; one migrated template database cloned per test file
-  - [ ] 15.1.c CodeQL once: the advanced `codeql.yml` removed while the repository's default setup scans (it refuses the workflow's upload on every push) — the user's go-ahead
+  - [x] 15.1.c CodeQL once: the advanced `codeql.yml` removed while the repository's default setup scans (it refuses the workflow's upload on every push) — the user's go-ahead
   - [ ] 15.1.d **Check:** CI on main green, its wall clock against run 37902899675 (12m20s), the per-job times recorded in the log line.
 
 - [x] **15.2 No leak, and the server set for it** · needs: — — ✅ 2026-10-10 c8d9a577
