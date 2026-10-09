@@ -1,0 +1,196 @@
+/* The shop home's hero: copy and proof points on the left, the lead print in a paper mat on the
+   right. Every value is a token from shared/styles/tokens or the shop brand file — no raw colour,
+   no font-family. */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    'copy frame'
+    'signals frame';
+  column-gap: var(--space-8);
+  padding-block: var(--space-6) var(--space-9);
+}
+
+.copy {
+  grid-area: copy;
+  align-self: center;
+}
+
+/* The eyebrow opens on a map's scale bar: the shop's cartographic signature (DESIGN-SYSTEM.md §1). */
+.mark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.scale {
+  flex: none;
+  inline-size: var(--space-8);
+  block-size: calc(var(--space-1) * 1.5);
+  border: var(--rule-hair) solid var(--color-accent);
+  background: repeating-linear-gradient(90deg, var(--color-accent) 0 25%, transparent 25% 50%);
+}
+
+/* Two selectors deep: the shell's `.site-main h1` and `.site-lede` set their own margins. */
+.copy .title {
+  margin: var(--space-6) 0 0;
+  text-wrap: balance;
+}
+
+.copy .lede {
+  margin: var(--space-6) 0 0;
+  max-inline-size: 32rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-start: var(--space-7);
+}
+
+/* One row of three at every desktop width: a cell wraps its own words rather than the row wrapping
+   and opening a line on a divider. */
+.signals {
+  grid-area: signals;
+  align-self: end;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  margin: var(--space-7) 0 0;
+  padding: var(--space-5) 0 0;
+  border-top: var(--rule-hair) solid var(--color-border);
+  list-style: none;
+}
+
+.signals li {
+  padding-inline: var(--space-5);
+}
+
+.signals li:first-child {
+  padding-inline-start: 0;
+}
+
+.signals li + li {
+  border-inline-start: var(--rule-hair) solid var(--color-border);
+}
+
+.frame {
+  grid-area: frame;
+  margin: 0;
+}
+
+/* A framer's mat: weighted at the foot, with a hairline bevel drawn just outside the window. */
+.mat {
+  padding: var(--space-6) var(--space-6) var(--space-8);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+}
+
+.window {
+  overflow: hidden;
+  background: var(--color-surface-deep);
+  outline: var(--rule-hair) solid var(--color-border);
+  outline-offset: var(--space-2);
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-5);
+  text-align: center;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  margin-block-start: var(--space-4);
+}
+
+.captionText {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.captionTitle {
+  font: var(--text-h3);
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
+}
+
+.captionTitle:hover {
+  text-decoration-color: currentColor;
+}
+
+.captionTitle:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.captionMeta {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 47.5rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      'copy'
+      'frame'
+      'signals';
+    row-gap: var(--space-7);
+    padding-block: var(--space-4) var(--space-7);
+  }
+
+  /* The scale bar stands above the eyebrow, so the eyebrow keeps the full measure. */
+  .mark {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .mat {
+    padding: var(--space-4) var(--space-4) var(--space-6);
+  }
+
+  .window {
+    outline-offset: var(--space-1);
+  }
+
+  .signals {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-3);
+    margin: 0;
+  }
+
+  .signals li,
+  .signals li + li {
+    padding: 0;
+    border: 0;
+  }
+}

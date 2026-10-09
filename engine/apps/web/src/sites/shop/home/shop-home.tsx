@@ -1,5 +1,5 @@
 /**
- * The shop's home (ticket 4.3.b), from the design team's drawing: hero with two print slots, the
+ * The shop's home (ticket 4.3.b), from the design team's drawing: the hero (`./hero`), the
  * streamed best sellers, the process, the trade band linking the partnership page and the
  * originals band bridging to the gallery. Sections are compositions of the shared UI components
  * and the tokens in `home.module.css`; every word comes from the shop's lexicon.
@@ -7,6 +7,7 @@
 import { Button, Eyebrow } from '../../../shared/ui'
 
 import { FeaturedProducts } from './featured-products'
+import { Hero } from './hero'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
 
@@ -48,7 +49,7 @@ type Props = {
 export function ShopHome({ locale, href, sisterHref, t }: Props) {
   return (
     <div className={styles.wrap}>
-      <Hero locale={locale} href={href} t={t} />
+      <Hero locale={locale} shopHref={href('browse', {}, locale)} t={t} />
       <Chips href={href} locale={locale} t={t} />
       <section className={styles.section}>
         <div className={styles.rail}>
@@ -119,36 +120,6 @@ function Sets({ locale, href, t }: Pick<Props, 'locale' | 'href' | 't'>) {
         <Button variant="quiet" href={href('collection', {}, locale)}>
           {t('home.shop.setsCta')}
         </Button>
-      </div>
-    </section>
-  )
-}
-
-function Hero({ locale, href, t }: Pick<Props, 'locale' | 'href' | 't'>) {
-  return (
-    <section className={`${styles.section} ${styles.hero}`}>
-      <div className={styles.heroCopy}>
-        <Eyebrow>{t('home.shop.eyebrow')}</Eyebrow>
-        <h1>{t('home.shop.title')}</h1>
-        <p className="site-lede">{t('home.shop.lede')}</p>
-        <div className={styles.actions}>
-          <Button variant="primary" href={href('browse', {}, locale)}>
-            {t('home.shop.ctaShop')}
-          </Button>
-          <Button variant="quiet" href="#process">
-            {t('home.shop.ctaProcess')}
-          </Button>
-        </div>
-      </div>
-      <div>
-        <div className={styles.plate} style={{ aspectRatio: '4 / 5' }}>
-          <span className={styles.plateInner}>{t('home.shop.heroA')}</span>
-        </div>
-      </div>
-      <div className={styles.heroThird}>
-        <div className={styles.plate} style={{ aspectRatio: '3 / 4' }}>
-          <span className={styles.plateInner}>{t('home.shop.heroB')}</span>
-        </div>
       </div>
     </section>
   )
