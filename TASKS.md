@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 4/8 | 9/17 | 0 | `█████░░░░░`  53% |
-| **All** | 14 phases | | | **64/73** | **235/260** | **8** | `█████████░`  90% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 4/8 | 10/17 | 0 | `██████░░░░`  59% |
+| **All** | 14 phases | | | **64/73** | **236/260** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -994,7 +994,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
   - **Read** EXPERIENCE-GALLERY.md §5–§6, §8, 12.5's shop product page
   - _Requirements: 12.1_
-  - [ ] 14.5.a two columns on a desktop: the sheet whole in a `Mat`, other images as compact-mat thumbnails, Zoom a quiet button under the mat; beside it the marked eyebrow (type · place), the balanced serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised — the status line, WhatsApp first, email, the reply promise (G9); the record under a section head in hairline rows; proof points (a certificate, originals only, the lifetime guarantee); one column on a phone; words under `item.*`, both languages
+  - [x] 14.5.a two columns on a desktop: the sheet whole in a `Mat`, other images as compact-mat thumbnails, Zoom a quiet button under the mat; beside it the marked eyebrow (type · place), the balanced serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised — the status line, WhatsApp first, email, the reply promise (G9); the record under a section head in hairline rows; proof points (a certificate, originals only, the lifetime guarantee); one column on a phone; words under `item.*`, both languages
   - [ ] 14.5.b **Check:** an available work, a sold one and one with several images at 390 and 1280 in both languages, axe clean; zoom opens and draws tiles; Ask carries the stock number; no price in the HTML.
 
 - [ ] **14.6 Makers, places, pages and not-found** · needs: 14.1 — 🔄 14·W2
