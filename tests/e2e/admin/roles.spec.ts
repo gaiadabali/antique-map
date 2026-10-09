@@ -56,6 +56,11 @@ for (const role of ROLES) {
       const groups = await sidebar(page)
       if (language === 'en') expect(groups).toEqual(SIDEBARS[role])
       else expect(Object.keys(groups)).toHaveLength(Object.keys(SIDEBARS[role]).length)
+      // The Order panel link under the groups (owner, editor and store staff; 10.4 proxy run), and
+      // the dashboard's widgets open the panel (`/admin/orders`) and the inbox (`/admin/leads`).
+      await expect(page.locator('nav a.nav__link[href="/admin/orders"]')).toHaveText(
+        language === 'en' ? 'Order panel' : 'Panel pesanan',
+      )
       await page.screenshot({ path: shot(`sidebar-${role}-${language}-1280`) })
 
       const store = role === 'storeA' ? fx.stores.a.id : null
@@ -63,13 +68,13 @@ for (const role of ROLES) {
         `SELECT count(*) FROM orders WHERE ${ACTING}${store ? ` AND store_id = ${store}` : ''}`,
       )
       const leadsSql = count(`SELECT count(*) FROM leads WHERE status = 'new'`)
-      const orders = await widgetCount(page, '/admin/collections/orders')
-      const leads = await widgetCount(page, '/admin/collections/leads')
+      const orders = await widgetCount(page, '/admin/orders')
+      const leads = await widgetCount(page, '/admin/leads')
       expect(orders).toBe(ordersSql)
       // New leads are the owner's panel; nobody else is shown one.
       expect(leads).toBe(role === 'owner' ? leadsSql : null)
       const panel = language === 'en' ? 'Orders to act on' : 'Pesanan perlu tindakan'
-      const widget = page.locator('a[href="/admin/collections/orders"]').filter({ hasText: /\d$/ })
+      const widget = page.locator('a[href="/admin/orders"]').filter({ hasText: /\d$/ })
       await expect(widget).toContainText(panel)
       await record(`dashboard.${role}.${language}`, { orders, ordersSql, leads, leadsSql, groups })
     }
