@@ -10,10 +10,10 @@ import type { FacetState } from '../../../server/gallery/catalogue/state'
 import { WORK_SORTS } from '../../../server/gallery/catalogue/state'
 import { clearedState } from '../../../server/gallery/catalogue/url-state'
 import type { FacetSetVM, WorkListingVM } from '../../../server/gallery/catalogue/view-models'
-import { Pagination } from '../../../shared/ui'
+import { Pagination, SectionHead } from '../../../shared/ui'
 import { AppliedFilters } from './applied-filters'
 import styles from './browse.module.css'
-import { browseText } from './copy'
+import { browseText, type BrowseKey } from './copy'
 import { FacetSheet } from './facet-sheet'
 import { FacetsPanel } from './facets-panel'
 import { browseHref } from './state-links'
@@ -36,11 +36,15 @@ export function ListingView({
 }: ListingViewProps): React.ReactElement {
   const t = browseText(locale)
   const link = (next: FacetState): string => browseHref(next, places, locale)
+  const onlyType = state.objectType.length === 1 ? state.objectType[0] : undefined
+  const title = t(
+    onlyType === undefined ? 'browse.title' : (`browse.typeTitle.${onlyType}` as BrowseKey),
+  )
   const panel = { state, facets, places, locale }
   return (
     // A plain block, not a labelled section: the facet column stays a top-level landmark.
     <div className={styles.page}>
-      <h1 className={styles.title}>{t('browse.title')}</h1>
+      <SectionHead level={1} className={styles.head} title={title} />
 
       <div className={styles.toolbar}>
         <div className={styles.phoneFacets}>
@@ -49,6 +53,7 @@ export function ListingView({
             apply={t('listing.showResults', { count: listing.total })}
             clearHref={link(clearedState(state))}
             clearLabel={t('listing.clearAll')}
+            buttonClassName={styles.openSheet}
           >
             <FacetsPanel {...panel} idPrefix="sheet" />
           </FacetSheet>
@@ -89,14 +94,17 @@ export function ListingView({
             <WorkGrid works={listing.items} locale={locale} />
           )}
           {listing.pages > 1 && (
-            <Pagination
-              currentPage={listing.page}
-              totalPages={listing.pages}
-              getHref={(page) => link({ ...state, page })}
-              ariaLabel={t('listing.pagination', { page: listing.page, pages: listing.pages })}
-              previousLabel={t('listing.previous')}
-              nextLabel={t('listing.next')}
-            />
+            <div className={styles.pager}>
+              <Pagination
+                variant="quiet"
+                currentPage={listing.page}
+                totalPages={listing.pages}
+                getHref={(page) => link({ ...state, page })}
+                ariaLabel={t('listing.pagination', { page: listing.page, pages: listing.pages })}
+                previousLabel={t('listing.previous')}
+                nextLabel={t('listing.next')}
+              />
+            </div>
           )}
         </div>
       </div>

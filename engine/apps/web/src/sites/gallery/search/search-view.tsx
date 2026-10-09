@@ -7,7 +7,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { SearchResultVM } from '../../../server/gallery/catalogue/view-models'
-import { Button, TextLink } from '../../../shared/ui'
+import { Button, SectionHead, TextLink } from '../../../shared/ui'
 import browse from '../browse/browse.module.css'
 import { browseText } from '../browse/copy'
 import { searchHref } from '../browse/state-links'
@@ -76,8 +76,7 @@ function AskUs({
   const digits = contact.whatsapp?.replace(/\D/g, '') ?? ''
   return (
     <div className={styles.ask}>
-      <p className={browse.empty}>{t('empty.search', { query })}</p>
-      <p className={styles.askBody}>{t('empty.askUs', { query })}</p>
+      <SectionHead title={t('empty.search', { query })} lede={t('empty.askUs', { query })} />
       <div className={styles.askActions}>
         {digits !== '' && (
           <Button href={`https://wa.me/${digits}?text=${encodeURIComponent(query)}`}>

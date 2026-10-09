@@ -1,15 +1,23 @@
-/* The gallery search (5.1.b): the form, the answer's lines and the Ask us handoff; the page
-   and the cards share the browse styles. Tokens only (DESIGN-SYSTEM.md). */
+/* The gallery search (5.1.b, 14.4): a square form, quiet lines and a designed no-result state;
+   the page and the cards share the browse styles. Tokens only (DESIGN-SYSTEM.md). */
 
 .form {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: var(--space-2);
+  padding-block-end: var(--space-6);
 }
 
 .form > :first-of-type {
   flex: 1 1 14rem;
+}
+
+/* Square: the input and its button take the gallery's zero radius. */
+.form .input,
+.form .input input,
+.form .submit {
+  border-radius: var(--radius-none);
 }
 
 .input {
@@ -34,8 +42,10 @@
   margin: 0;
 }
 
+/* “Did you mean …”: one quiet line, not a box. */
 .didYouMean {
-  font: var(--text-body);
+  font: var(--text-small);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -45,23 +55,25 @@
   margin: 0;
 }
 
+/* No result: an opening line on a hairline, then the channels. No raised box. */
 .ask {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-5) var(--space-4);
-  background: var(--color-surface-raised);
-  border-radius: var(--radius-card);
+  gap: var(--space-5);
+  padding-block: var(--space-6) var(--space-3);
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
-.askBody {
-  font: var(--text-small);
-  color: var(--color-text);
-  margin: 0;
+.ask > :first-child {
+  margin-block-end: 0;
 }
 
 .askActions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
+}
+
+.askActions > * {
+  border-radius: var(--radius-none);
 }
