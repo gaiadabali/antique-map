@@ -177,7 +177,11 @@ async function rectoId(request: APIRequestContext, token: Jwt, alt: string): Pro
           role: 'recto',
           provenance: 'photograph',
         }),
-        file: { name: 'e2e-recto.png', mimeType: 'image/png', buffer: PNG_1X1 },
+        file: {
+          name: `e2e-recto-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`,
+          mimeType: 'image/png',
+          buffer: PNG_1X1,
+        },
       },
     }),
     'POST /api/media',

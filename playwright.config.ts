@@ -116,9 +116,22 @@ const shopE2e: Project = {
 // The gallery's flows (browse, item, makers/places/pages, contact, the gate) on the gallery host;
 // each spec sets its own widths (5.1.d, 5.4.c, 5.5).
 const galleryHost = HOSTS.find((each) => each.site === 'gallery')?.host ?? ''
+// Specs that need what CI's server lacks: the media pipeline (object storage, the derivatives
+// worker and its IIIF tiles: a lead image decodes only once derivatives exist, and the item
+// fixtures wait up to 180 s for them) and, for the journey and Done-when walks, the real mail and
+// bot-check round trips on top. They run where that stack is — staging, with `E2E_BASE_GALLERY` and
+// `E2E_BASE_SHOP` set (see done-when.spec.ts's header) — and their zoom, tile and no-price claims
+// are also held by `tests/e2e/review/` (zoom.ui, no-price.data) and `tests/e2e/rehearsal/`.
+const GALLERY_STAGING_ONLY = [
+  '**/done-when.spec.ts',
+  '**/dpr3-navigation.spec.ts',
+  '**/item.spec.ts',
+  '**/journey.spec.ts',
+]
 const galleryE2e: Project = {
   name: 'gallery-e2e',
   testDir: './tests/e2e/gallery',
+  testIgnore: process.env.E2E_BASE_GALLERY ? undefined : GALLERY_STAGING_ONLY,
   metadata: metadataOf('gallery'),
   use: { ...desktop, baseURL: baseURLOf(galleryHost) },
 }

@@ -185,6 +185,7 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
 
     const targets = await discover(page, request)
     const notBuiltYet: string[] = []
+    const vanished: string[] = []
     const reached: string[] = []
     const violations: Violation[] = []
 
@@ -192,9 +193,16 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
       const status = await statusOf(request, path)
       const ok = status === 200
       if (!ok && !scanAt404) {
-        if (required) {
-          // The four pages a visitor reaches first: a non-200 here is a hard failure.
+        if (required && status !== 404) {
+          // The pages a visitor reaches first: anything but a 200 (or the 404 below) is a failure.
           throw new Error(`required page ${path} answered ${status}, not 200`)
+        }
+        if (required) {
+          // A 404 on the first listed item: the gallery specs run in parallel and make and remove
+          // fixture works, so a work browse listed can be gone a moment later. Not a pass by
+          // itself: the closing assertion still needs an item page scanned with a 200.
+          vanished.push(path)
+          continue
         }
         notBuiltYet.push(`${path} (HTTP ${status})`)
         continue
@@ -239,6 +247,9 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
     const items = reached.filter(
       (p) => p.startsWith(itemPrefix('en')) || p.startsWith(itemPrefix('id')),
     )
-    expect(items.length, 'at least one gallery item page was scanned (200)').toBeGreaterThan(0)
+    expect(
+      items.length,
+      `at least one gallery item page was scanned (200); first-listed items that answered 404: ${vanished.join(', ') || 'none'}`,
+    ).toBeGreaterThan(0)
   })
 })
