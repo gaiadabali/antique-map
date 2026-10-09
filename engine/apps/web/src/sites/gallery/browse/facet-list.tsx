@@ -149,7 +149,10 @@ export function PlaceTree({
     <>
       <ul className={styles.facetList}>{shown.map(row)}</ul>
       {rest.length > 0 && (
-        <More label={allLabel} open={rest.some(({ place }) => place.applied || state.place === Number(place.value))}>
+        <More
+          label={allLabel}
+          open={rest.some(({ place }) => place.applied || state.place === Number(place.value))}
+        >
           <ul className={styles.facetList}>{rest.map(row)}</ul>
         </More>
       )}
