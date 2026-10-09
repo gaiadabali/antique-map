@@ -1,58 +1,78 @@
-/* The checkout page (6.3.a): 390 px first, tokens only (DESIGN-SYSTEM.md). */
+/* The checkout page (6.3.a; 12.6 luxury pass): 390 px first, tokens only (DESIGN-SYSTEM.md). The
+   page breaks out of the reading column to the shop's full width, like the home. */
 .checkout {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-6) var(--brand-gutter);
-  max-width: 60rem;
-}
-
-.title {
-  font: var(--text-h2);
-  color: var(--color-text);
-  margin: 0;
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-block: var(--space-6) var(--space-7);
 }
 
 .columns {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-7);
 }
 
+/* The summary comes first in the source, as on a phone it reads: the order you see is the order a
+   keyboard and a screen reader follow. On a desktop the grid sets it in the right-hand column. */
 @media (min-width: 768px) {
+  .checkout {
+    padding-block: var(--space-7) var(--space-9);
+  }
+
   .columns {
-    flex-direction: row;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .columns > .form {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .review {
-    flex: 2;
-  }
-
-  .form {
-    flex: 3;
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: var(--space-6);
   }
 }
 
 .review {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
   font: var(--text-body);
   color: var(--color-text);
   min-width: 0;
 }
 
+.review ul {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .line {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-4);
   align-items: baseline;
   justify-content: space-between;
+  padding-block: var(--space-3);
+  border-bottom: var(--rule-hair) solid var(--color-border);
 }
 
 .lineName {
   margin: 0;
   min-width: 0;
+  font: var(--text-card-title);
 }
 
 .lineTotal {
@@ -73,27 +93,59 @@
   gap: var(--space-4);
 }
 
+.totalRow dt {
+  color: var(--color-text-muted);
+}
+
+.totalRow dd {
+  margin: 0;
+}
+
+.grand dt,
+.grand dd {
+  font: var(--text-h3);
+  color: var(--color-text);
+}
+
+/* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
+.grand dd {
+  font: var(--text-price);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
 .grand {
-  color: var(--color-text-strong);
+  padding-top: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-7);
   min-width: 0;
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
+  max-inline-size: 40rem;
 }
 
+/* A fieldset's title: the serif over a hairline, as a section of a catalogue. */
 .sectionTitle {
   font: var(--text-h3);
   color: var(--color-text);
   margin: 0;
+  padding-block-end: var(--space-3);
+  border-bottom: var(--rule-hair) solid var(--color-border);
+}
+
+.pinGroup .sectionTitle {
+  font: var(--text-body);
+  font-weight: 500;
+  padding: 0;
+  border: none;
 }
 
 .pinGroup {
@@ -123,16 +175,16 @@
 .search {
   width: 100%;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
+  border: var(--rule-hair) solid var(--color-border-strong);
+  border-radius: 0;
   font: var(--text-body);
   color: var(--color-text);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
 }
 
 .mapCanvas {
   height: 16rem;
-  border-radius: var(--radius-control);
+  border: var(--rule-hair) solid var(--color-border);
 }
 
 .latLng {
@@ -147,11 +199,11 @@
 .latLng input {
   width: 10rem;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
+  border: var(--rule-hair) solid var(--color-border-strong);
+  border-radius: 0;
   font: var(--text-body);
   color: var(--color-text);
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
 }
 
 .deliveryNote {

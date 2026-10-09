@@ -4,6 +4,7 @@
  * mistakes it for the real pay step. Shown only when the token's order has an attempt still `open`
  * or `pending`; otherwise a link back to the order page (`6.5-r2`: no attempt id in the URL).
  */
+import { Button, TextLink } from '../../../shared/ui'
 import {
   SIMULATOR_ACTIONS,
   simulateAction,
@@ -40,7 +41,7 @@ export function SimulateView({
         <p className={styles.banner} role="status">
           {t('order.testPayment')}
         </p>
-        <a href={orderHref}>{t('order.checkAgain')}</a>
+        <TextLink href={orderHref}>{t('order.checkAgain')}</TextLink>
       </section>
     )
   }
@@ -55,7 +56,9 @@ export function SimulateView({
             <input type="hidden" name="token" value={token} />
             <input type="hidden" name="locale" value={locale} />
             <input type="hidden" name="action" value={action} />
-            <button type="submit">{LABELS[action]}</button>
+            <Button type="submit" variant="secondary">
+              {LABELS[action]}
+            </Button>
           </form>
         ))}
       </div>

@@ -7,7 +7,7 @@
  */
 import { useActionState } from 'react'
 
-import { Button, FormMessage, Input } from '../../../shared/ui'
+import { Button, FormMessage, Input, SectionHead } from '../../../shared/ui'
 import {
   requestTrackingLinkAction,
   type FindOrderState,
@@ -28,10 +28,12 @@ export function FindOrder({ locale }: FindOrderProps): React.ReactElement {
 
   return (
     <section className={styles.tracking} aria-labelledby="find-order-title">
-      <h1 id="find-order-title" className={styles.title}>
-        {text('tracking.find.title')}
-      </h1>
-      <form action={submit} className={styles.section} aria-label={text('tracking.find.title')}>
+      <SectionHead level={1} id="find-order-title" title={text('tracking.find.title')} />
+      <form
+        action={submit}
+        className={[styles.section, styles.find].join(' ')}
+        aria-label={text('tracking.find.title')}
+      >
         <input type="hidden" name="locale" value={locale} />
         <Input
           id="find-order-number"

@@ -1,0 +1,7 @@
+/* The shop's 404 (12.6): a calm page head and one way back. Tokens only. */
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-block: var(--space-7) var(--space-9);
+}

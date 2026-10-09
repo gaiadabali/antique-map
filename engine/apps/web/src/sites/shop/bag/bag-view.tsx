@@ -10,7 +10,7 @@ import type { SiteLocale } from '@engine/config/sites'
 
 import type { BagVM } from '../../../server/shop/bag'
 import { createHref, SITES } from '@engine/config/sites'
-import { Button } from '../../../shared/ui'
+import { Button, Mat, MatNote, SectionHead } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { bagText } from './copy'
@@ -49,32 +49,57 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
   )
   return (
     <section className={styles.bag} aria-labelledby="bag-title">
-      <h1 id="bag-title" className={styles.title}>
-        {text.shared('cart.title')}
-      </h1>
+      <SectionHead level={1} id="bag-title" title={text.shared('cart.title')} />
 
       {bag.lines.length === 0 ? (
         <div className={styles.empty}>
-          <p>{text.shared('cart.empty')}</p>
-          <a href={href('browse', {}, locale)}>{text.shared('cart.emptyAction')}</a>
+          <p className={styles.emptyText}>{text.shared('cart.empty')}</p>
+          <div>
+            <Button variant="primary" href={href('browse', {}, locale)}>
+              {text.shared('cart.emptyAction')}
+            </Button>
+          </div>
         </div>
       ) : (
         <div className={styles.columns}>
           <ul className={styles.lines}>
             {bag.lines.map((line) => (
               <li key={`${line.productId}-${line.variantSku ?? ''}`} className={styles.line}>
-                {line.image !== null && (
-                  <img
-                    className={styles.thumb}
-                    src={line.image.url}
-                    srcSet={line.image.srcSet}
-                    sizes="5rem"
-                    width={80}
-                    height={80}
-                    decoding="async"
-                    alt={imageAlt(words, { ...line.image, alt: line.image.alt || line.name })}
-                  />
-                )}
+                <div className={styles.thumb} aria-hidden={line.image === null ? true : undefined}>
+                  {(() => {
+                    const picture = (
+                      <Mat size="compact" ratio={1}>
+                        {line.image !== null ? (
+                          <img
+                            src={line.image.url}
+                            srcSet={line.image.srcSet}
+                            sizes="8rem"
+                            width={80}
+                            height={80}
+                            decoding="async"
+                            alt={imageAlt(words, {
+                              ...line.image,
+                              alt: line.image.alt || line.name,
+                            })}
+                          />
+                        ) : (
+                          <MatNote>{line.name}</MatNote>
+                        )}
+                      </Mat>
+                    )
+                    return line.slug !== null ? (
+                      <a
+                        href={href('product', { slug: line.slug }, locale)}
+                        aria-hidden="true"
+                        tabIndex={-1}
+                      >
+                        {picture}
+                      </a>
+                    ) : (
+                      picture
+                    )
+                  })()}
+                </div>
                 <div className={styles.lineBody}>
                   <p className={styles.name}>
                     {line.slug !== null ? (

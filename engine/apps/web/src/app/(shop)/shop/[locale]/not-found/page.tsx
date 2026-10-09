@@ -7,8 +7,8 @@
  * `lang` and a body built only in the browser — the one thing this route exists to prevent (the
  * Cache Components spike §8).
  */
-import { NotFoundPage } from '../../../../../shell/placeholder-pages'
+import { ShopNotFoundView } from './not-found-view'
 
 export default function ShopNotFoundRoute() {
-  return <NotFoundPage site="shop" />
+  return <ShopNotFoundView />
 }
