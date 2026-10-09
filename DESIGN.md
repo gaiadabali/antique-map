@@ -53,6 +53,20 @@ The rules of the language: prints always sit in mats; museum captions under them
 hairlines and square corners only (no pills, no new shadows); full breakout width for listing and landing pages,
 the reading measure for long text; generous space. The shared header and footer were quietened for both sites.
 
+**The gallery's hand (phase 14).** The same pieces carry Indies Gallery, with its own signatures (DESIGN-SYSTEM.md
+§1) set by tokens, never by a component branching on the site:
+
+| Piece                      | On the gallery                                                                                                                                                                           |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The eyebrow's mark         | one hairline rule, as on a museum label (`--brand-mark-*` in each site's brand file; the shop keeps its scale bar)                                                                       |
+| `Mat fit="contain"`        | an original floats whole in its window on the mat's paper, a little in from the bevel — never cropped (§7). Every antique's picture uses it; a print or mockup on the shop keeps `cover` |
+| `StockTag`                 | the stock number in spaced capitals in a hairline box, the reference a buyer quotes on WhatsApp; the label reads "Stock no." aloud                                                       |
+| The work card              | a compact contained mat, then a museum caption: title (three lines at most), maker and date, dimensions, one status line (never a price) and the stock tag                               |
+| `Pagination variant=quiet` | square, unfilled, 44 px targets; the numbers on their own row on a phone                                                                                                                 |
+
+An empty mat's words take full ink on the gallery (`--brand-mat-note`): muted ink is 4.46:1 on its cream window.
+The home leads with the newest available map whole on its mat, captioned, in place of the hero film's poster.
+
 ## Swap points
 
 The owner's later look-and-feel pass changes only these:
