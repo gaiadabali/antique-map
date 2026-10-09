@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
 | 14·W2 | 14.3 The home below the hero | medior | `feat/p14-home` | 2026-10-09 | |
+| 14·W2 | 14.5 The item page | medior | `feat/p14-item` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -988,7 +989,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 14.4.a the listing at full width under a `SectionHead` with its count; the facet column quiet — hairline groups, a long list (makers, places) shows its first eight with "All n" opening the rest, every option still a real link; sort as underlined text tabs; applied filters as square chips; the quiet pagination; the phone's filter sheet in the same hand; search's form, suggestion and empty state alike; words under `browse.*`, `listing.*`, `search.*`, both languages
   - [ ] 14.4.b **Check:** browse, `/antique-maps`, a filtered page, `/search?q=batavia` and a search with no result at 390 and 1280 in both languages, axe clean, no sideways scroll; facets, sort, paging and "Include sold" still work; the facet column no longer sets the page's height.
 
-- [ ] **14.5 The item page** · needs: 14.1
+- [ ] **14.5 The item page** · needs: 14.1 — 🔄 14·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
   - **Read** EXPERIENCE-GALLERY.md §5–§6, §8, 12.5's shop product page
