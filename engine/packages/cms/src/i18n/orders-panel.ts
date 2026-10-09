@@ -16,6 +16,8 @@ export const ORDERS_PANEL_COPY = t({
   // Page titles
   queueTitle: { en: 'Your orders', id: 'Pesanan Anda' },
   ordersTitle: { en: 'Orders', id: 'Pesanan' },
+  // The sidebar link to the panel (the collection list is Payload's plain table)
+  navLink: { en: 'Order panel', id: 'Panel pesanan' },
 
   // Store view: groups
   groupNeedsPrice: { en: 'Needs a delivery price', id: 'Perlu ongkos kirim' },

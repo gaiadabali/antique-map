@@ -74,7 +74,7 @@ function label(key, req) {
 export async function OrdersToActOnWidget({ req }) {
   const count = await countOrders({ req })
   return (
-    <a href="/admin/collections/orders">
+    <a href="/admin/orders">
       {label('ordersToActOn', req)}: {count}
     </a>
   )
@@ -85,7 +85,7 @@ export async function NewLeadsWidget({ req }) {
   if (!hasRole(req?.user, 'owner')) return null
   const count = await countNewLeads({ req })
   return (
-    <a href="/admin/collections/leads">
+    <a href="/admin/leads">
       {label('newLeads', req)}: {count}
     </a>
   )

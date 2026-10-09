@@ -93,9 +93,13 @@ export function engineConfig(env: Env = process.env): Config {
       avatar: 'default',
       components: {
         views: adminViews(),
-        // The inbox has no collection list of its own to be reached from (TASKS.md 9.1.a);
-        // owner-only, like the view itself (`admin/leads/nav-link.jsx`).
-        afterNavLinks: ['@engine/cms/admin/views#LeadsNavLink'],
+        // The order panel and the leads inbox are custom views no collection list leads to: the
+        // Orders entry opens Payload's plain table, with no next-step button (10.4 proxy run).
+        // Staff see the panel link; the inbox link is owner-only (`admin/*/nav-link.jsx`).
+        afterNavLinks: [
+          '@engine/cms/admin/views#OrdersNavLink',
+          '@engine/cms/admin/views#LeadsNavLink',
+        ],
       },
       dashboard: {
         defaultLayout: [

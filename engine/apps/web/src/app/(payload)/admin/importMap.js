@@ -2,6 +2,7 @@ import { DraftFromPhotosButton as DraftFromPhotosButton_4013f4520eeb415b79ebee39
 import { LeadSourceBlock as LeadSourceBlock_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { CreatePartnerButton as CreatePartnerButton_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { PartnerLeadsList as PartnerLeadsList_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { OrdersNavLink as OrdersNavLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { LeadsNavLink as LeadsNavLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { DashboardView as DashboardView_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { OrdersPanelView as OrdersPanelView_07c20cc8cfdd15dc6bf0685c62e5eb2d } from '@engine/cms/admin/orders'
@@ -17,6 +18,7 @@ export const importMap = {
   "@engine/cms/admin/views#LeadSourceBlock": LeadSourceBlock_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#CreatePartnerButton": CreatePartnerButton_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#PartnerLeadsList": PartnerLeadsList_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#OrdersNavLink": OrdersNavLink_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#LeadsNavLink": LeadsNavLink_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#DashboardView": DashboardView_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/orders#OrdersPanelView": OrdersPanelView_07c20cc8cfdd15dc6bf0685c62e5eb2d,

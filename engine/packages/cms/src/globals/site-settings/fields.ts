@@ -110,7 +110,7 @@ export function deliveryGroup(label: { en: string; id: string }): import('payloa
       {
         name: 'bands',
         type: 'array',
-        label: { en: 'Distance bands', id: 'Gelombang jarak' },
+        label: { en: 'Distance bands', id: 'Rentang jarak' },
         fields: [
           {
             type: 'row',
