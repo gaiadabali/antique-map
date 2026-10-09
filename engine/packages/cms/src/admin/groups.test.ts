@@ -1,7 +1,7 @@
 /**
  * Static checks for TASKS.md 3.6.b: every registered collection and global is grouped in the
- * sidebar, each group is one of the named task groups (Antiques, Shop, Stores and stock, Orders,
- * Leads and partners, Content, Settings), and the menu a role sees is the menu its access allows
+ * sidebar, each group is one of the named task groups (Gallery, Shop, Stores and stock, Orders,
+ * Leads and partners, Photos and tags, Content, Settings, Technical records), and the menu a role sees is the menu its access allows
  * (`admin.hidden` is built from the same role helpers, `./hidden`). Access still enforces the
  * reads; these tests prove the menu agrees with it.
  */

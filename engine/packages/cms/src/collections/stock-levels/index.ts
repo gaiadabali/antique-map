@@ -76,12 +76,18 @@ export const StockLevels: CollectionConfig = {
     {
       name: 'quantity',
       type: 'number',
-      label: { en: 'Can still sell', id: 'Masih bisa dijual' },
+      label: {
+        en: 'Can still be sold (worked out for you)',
+        id: 'Masih bisa dijual (dihitung otomatis)',
+      },
       required: true,
       defaultValue: 0,
       min: 0,
       access: QUANTITY_ACCESS,
       admin: {
+        // In the sidebar so the count staff type comes first in the form (field order is the
+        // generated types' order, so the fields themselves are not moved).
+        position: 'sidebar',
         readOnly: true,
         description: {
           en: 'The shelf count less the units held by orders not yet collected by a driver.',
@@ -93,7 +99,10 @@ export const StockLevels: CollectionConfig = {
       name: 'physicalCount',
       type: 'number',
       virtual: true,
-      label: { en: 'Count on the shelf', id: 'Jumlah di rak' },
+      label: {
+        en: 'Count on the shelf — type the number here',
+        id: 'Jumlah di rak — isi angkanya di sini',
+      },
       min: 0,
       admin: {
         readOnly: false,

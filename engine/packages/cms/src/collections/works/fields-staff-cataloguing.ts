@@ -26,7 +26,7 @@ export const CATALOGUING_FIELDS: Field[] = [
           {
             name: 'status',
             type: 'select',
-            label: { en: 'Status', id: 'Status' },
+            label: { en: 'Cataloguing progress', id: 'Progres katalogisasi' },
             defaultValue: 'draft',
             options: CATALOGUING_STATUS_OPTIONS,
           },

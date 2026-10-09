@@ -36,7 +36,7 @@ export const PaymentEvents: CollectionConfig = {
     plural: { en: 'Payment events', id: 'Peristiwa pembayaran' },
   },
   admin: {
-    group: ADMIN_GROUPS.orders,
+    group: ADMIN_GROUPS.technical,
     hidden: hiddenFromAllButOwner,
     useAsTitle: 'dedupeKey',
     defaultColumns: ['receivedAt', 'order', 'transactionStatus', 'outcome', 'source'],

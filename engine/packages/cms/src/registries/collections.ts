@@ -36,30 +36,30 @@ import { SiteSettings } from '../globals/site-settings'
 
 /**
  * The admin sidebar's order: a group appears where its first collection here does, so this list
- * is ordered Antiques, Shop, Stores and stock, Orders, Leads and partners, Content, Settings
- * (TASKS.md 3.6.b), each group's own collections kept together.
+ * is ordered Gallery, Shop, Stores and stock, Orders, Leads and partners, Photos and tags,
+ * Content, Settings, Technical records (TASKS.md 3.6.b), each group's own collections kept together.
  */
 const COLLECTIONS: readonly CollectionConfig[] = [
   Works,
   Makers,
   Places,
-  Terms,
-  Media,
-  Masters,
-  Discounts,
   Products,
+  Discounts,
   Stores,
   StockLevels,
   Orders,
   OrderNotifications,
-  PaymentEvents,
   Leads,
   Partners,
   ChatSessions,
+  Terms,
+  Media,
+  Masters,
   Pages,
   Redirects,
   Users,
   Events,
+  PaymentEvents,
 ]
 
 const GLOBALS: readonly GlobalConfig[] = [SiteSettings]
