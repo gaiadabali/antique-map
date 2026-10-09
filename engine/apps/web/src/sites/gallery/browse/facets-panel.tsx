@@ -52,7 +52,7 @@ export function FacetsPanel({
   const link: Link = (next) => browseHref({ ...next, page: 1 }, places, locale)
   return (
     <div className={styles.facets}>
-      {facets.map((facet) => (
+      {facets.filter(hasOptions).map((facet) => (
         <section
           key={facet.key}
           className={styles.facet}
@@ -127,4 +127,11 @@ export function FacetsPanel({
       ))}
     </div>
   )
+}
+
+/** A facet with nothing to offer (no places, no subjects on this selection) shows no heading. */
+function hasOptions(facet: FacetSetVM[number]): boolean {
+  if (facet.key === 'place') return facet.places.length > 0
+  if (facet.key === 'maker' || facet.key === 'subject') return facet.options.length > 0
+  return true
 }

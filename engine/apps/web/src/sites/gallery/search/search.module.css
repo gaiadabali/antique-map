@@ -9,7 +9,7 @@
   padding-block-end: var(--space-6);
 }
 
-.form > :first-of-type {
+.form > div:first-of-type {
   flex: 1 1 14rem;
 }
 
