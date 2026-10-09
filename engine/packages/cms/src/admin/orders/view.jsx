@@ -10,6 +10,7 @@ import { judgeMove } from '../../shop/fulfilment/transitions'
 import {
   loadActiveStores,
   loadDriverImagePreview,
+  loadLinkedOrders,
   loadOrder,
   loadOrderPayLink,
   loadOwnerOrders,
@@ -67,6 +68,9 @@ function buildOwnerStep({ order, role, searchParams }) {
     }).ok
   const canCancel = !['delivered', 'cancelled', 'expired'].includes(order.status)
   const canReassign = order.status === 'paid' || order.status === 'processing'
+  // TASKS.md 10.7: the core refuses anything else (`replaceDamagedItem`, `clearOrderFlag`).
+  const canReplace = order.status === 'delivered'
+  const canClearFlag = Boolean(order.needsAttention?.flag)
   return {
     forward: forwardOk ? { to: forwardTo } : null,
     backward: backwardOk ? backwardTo : null,
@@ -74,6 +78,10 @@ function buildOwnerStep({ order, role, searchParams }) {
     canReassign,
     reassigning: canReassign && str(searchParams.reassign) === '1',
     cancelling: canCancel && str(searchParams.cancel) === '1',
+    canReplace,
+    replacing: canReplace && str(searchParams.replace) === '1',
+    canClearFlag,
+    clearingFlag: canClearFlag && str(searchParams.clearflag) === '1',
   }
 }
 
@@ -107,9 +115,10 @@ export async function OrdersPanelView(props) {
     const order = Number.isInteger(orderId) ? await loadOrder(payload, req, orderId) : null
     if (!order) return <Notice tone="error">{L('refusal_not_found', language)}</Notice>
     const step = buildStoreStep({ order, actorStore, role, searchParams })
-    const [imagePreviewUrl, payLink] = await Promise.all([
+    const [imagePreviewUrl, payLink, linked] = await Promise.all([
       loadDriverImagePreview(payload, order),
       order.status === 'awaiting_quote' ? loadOrderPayLink(payload, req, order) : null,
+      loadLinkedOrders(payload, req, order),
     ])
     return (
       <StoreDetail
@@ -118,6 +127,7 @@ export async function OrdersPanelView(props) {
         language={language}
         imagePreviewUrl={imagePreviewUrl}
         payLink={payLink}
+        linked={linked}
         error={error}
       />
     )
@@ -136,7 +146,11 @@ export async function OrdersPanelView(props) {
     return (
       <div>
         <h1>{L('ordersTitle', language)}</h1>
-        <OwnerFilterBar stores={stores} filter={{ status, store: storeFilter }} language={language} />
+        <OwnerFilterBar
+          stores={stores}
+          filter={{ status, store: storeFilter }}
+          language={language}
+        />
         <OwnerList orders={orders} language={language} />
       </div>
     )
@@ -145,9 +159,10 @@ export async function OrdersPanelView(props) {
   const orderId = Number(id)
   const order = Number.isInteger(orderId) ? await loadOrder(payload, req, orderId) : null
   if (!order) return <Notice tone="error">{L('refusal_not_found', language)}</Notice>
-  const [stores, payLink] = await Promise.all([
+  const [stores, payLink, linked] = await Promise.all([
     loadActiveStores(payload, req),
     order.status === 'awaiting_quote' ? loadOrderPayLink(payload, req, order) : null,
+    loadLinkedOrders(payload, req, order),
   ])
   const step = buildOwnerStep({ order, role, searchParams })
   return (
@@ -157,6 +172,7 @@ export async function OrdersPanelView(props) {
       step={step}
       language={language}
       payLink={payLink}
+      linked={linked}
       error={error}
     />
   )

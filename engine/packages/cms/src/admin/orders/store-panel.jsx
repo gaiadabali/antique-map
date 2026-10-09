@@ -7,6 +7,7 @@ import { ORDER_STATUS_LABELS } from '../../collections/orders/statuses'
 import { BigButton, Card, L, Notice, QuietLink, SubmitButton, refusalCopy, rupiah } from './shared'
 import { googleMapsLink, whatsappLink } from './data'
 import { QuotePanel } from './quote-panel'
+import { ReplacementLinks } from './replace-panel'
 
 /** "14:30" in Bali time (Asia/Makassar, UTC+8) — mirrors `./quote-panel.jsx`'s `baliClock`. */
 function baliClock(iso) {
@@ -27,7 +28,9 @@ function baliClock(iso) {
 
 function LineItem({ line }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, padding: '4px 0' }}>
+    <div
+      style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, padding: '4px 0' }}
+    >
       <span>
         {line.qty}× {line.name}
         {line.variantLabel ? ` — ${line.variantLabel}` : ''}
@@ -87,6 +90,11 @@ export function StoreQueue({ orders, language }) {
                   <div style={{ fontSize: 14, color: 'var(--theme-elevation-600)' }}>
                     {order.contact.name} · {rupiah(order.totals.total)}
                   </div>
+                  {order.channel === 'replacement' && (
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>
+                      {L('replacementBadge', language)}
+                    </div>
+                  )}
                   {order.status === 'awaiting_quote' && order.expiresAt && (
                     <div style={{ fontSize: 13, color: 'var(--theme-elevation-600)' }}>
                       {L('quoteByPrefix', language)} {baliClock(order.expiresAt)}
@@ -102,7 +110,7 @@ export function StoreQueue({ orders, language }) {
   )
 }
 
-export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, error }) {
+export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, linked, error }) {
   const confirmTo = step.confirmTo
   const handback = step.handback
   return (
@@ -112,6 +120,7 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, e
         #{order.number} — {ORDER_STATUS_LABELS[order.status]?.[language]}
       </h2>
       <Notice tone="error">{error ? refusalCopy(error, language) : null}</Notice>
+      <ReplacementLinks order={order} linked={linked} language={language} />
 
       {order.status === 'awaiting_quote' && (
         <QuotePanel order={order} language={language} payLink={payLink} />
@@ -123,12 +132,21 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, e
           <LineItem key={line.id ?? i} line={line} />
         ))}
         {order.totals.deliveryFee != null && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginTop: 4 }}>
+          <div
+            style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginTop: 4 }}
+          >
             <span>{L('deliveryFee', language)}</span>
             <span>{rupiah(order.totals.deliveryFee)}</span>
           </div>
         )}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: 8 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontWeight: 700,
+            marginTop: 8,
+          }}
+        >
           <span>{L('total', language)}</span>
           <span>{rupiah(order.totals.total)}</span>
         </div>
@@ -139,7 +157,11 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, e
         <p style={{ whiteSpace: 'pre-wrap' }}>{order.delivery.address}</p>
         {order.delivery.notes && <p>{order.delivery.notes}</p>}
         <div style={{ display: 'flex', gap: 16 }}>
-          <a href={googleMapsLink(order.delivery.lat, order.delivery.lng)} target="_blank" rel="noreferrer">
+          <a
+            href={googleMapsLink(order.delivery.lat, order.delivery.lng)}
+            target="_blank"
+            rel="noreferrer"
+          >
             {L('openInMaps', language)}
           </a>
           <a href={whatsappLink(order.contact.whatsapp)} target="_blank" rel="noreferrer">
@@ -165,10 +187,22 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, e
           action={`/api/x/orders/${order.id}/driver-image`}
           encType="multipart/form-data"
         >
-          <input type="file" name="file" accept="image/*" capture="environment" required />
-          <button type="submit" style={{ marginLeft: 8 }}>
-            {L('driverImageUpload', language)}
-          </button>
+          {/* Phone-sized (10.4 proxy run, S3: the plain button was about 26 px tall at 390 px). */}
+          <input
+            type="file"
+            name="file"
+            accept="image/*"
+            capture="environment"
+            required
+            style={{
+              display: 'block',
+              minHeight: 44,
+              fontSize: 16,
+              margin: '0 0 12px',
+              maxWidth: '100%',
+            }}
+          />
+          <SubmitButton>{L('driverImageUpload', language)}</SubmitButton>
         </form>
       </Card>
 

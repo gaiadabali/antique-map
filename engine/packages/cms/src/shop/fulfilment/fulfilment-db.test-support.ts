@@ -36,7 +36,10 @@ export async function placeOrder(
 ): Promise<Placed> {
   const made: Array<Awaited<ReturnType<typeof product>>> = []
   for (const line of input.lines) made.push(await product(stack, line.stock))
-  orderNumber += 1
+  // Past any number the server's own code drew in this database (`nextOrderNumber`: MAX + 1 when
+  // the pushed database has no sequence — a replacement draws one), so the two never collide.
+  const { rows } = await stack.pool.query('SELECT COALESCE(MAX(number), 0) AS n FROM orders')
+  orderNumber = Math.max(orderNumber, Number(rows[0]!.n)) + 1
   const lines = input.lines.map((line, i) => ({
     product: made[i]!.id,
     sku: `FUL-${orderNumber}-${i}`,

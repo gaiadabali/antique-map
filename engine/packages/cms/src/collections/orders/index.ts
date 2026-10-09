@@ -12,6 +12,9 @@
  * - **The database** refuses an order without a store, without a priced total, or with a total
  *   that is not `subtotal − discount + deliveryFee` (`./constraints`).
  *
+ * - **Staff actions** beyond a status move (`./endpoints`, TASKS.md 10.7): Replace damaged item and
+ *   clearing the flag, owner and editor only, carried out by the fulfilment core.
+ *
  * The order number comes from `orders_number_seq` (from 100001, the wave migration's — the order
  * code takes `nextval`). Not yet here (phase 6–7): a lead raised from an order's
  * WhatsApp chat (3.4's `leads`) points at the order from its side.
@@ -23,6 +26,7 @@ import { hiddenFromAllButAllStaff } from '../../admin/hidden'
 import { dbConstraints } from '../../db/constraints'
 import { ORDERS_ACCESS } from './access'
 import { ORDER_CONSTRAINTS } from './constraints'
+import { ORDER_ENDPOINTS } from './endpoints'
 import { SALE_FIELDS } from './fields-sale'
 import { TRACKING_FIELDS } from './fields-tracking'
 import { notifyOnStatusChange } from './hooks/notify-on-status-change'
@@ -45,6 +49,7 @@ export const Orders: CollectionConfig = {
     },
   },
   access: ORDERS_ACCESS,
+  endpoints: ORDER_ENDPOINTS,
   custom: dbConstraints(...ORDER_CONSTRAINTS),
   hooks: { beforeChange: [guardStatusMove], afterChange: [notifyOnStatusChange] },
   fields: [...SALE_FIELDS, ...TRACKING_FIELDS],

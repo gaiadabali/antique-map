@@ -11,6 +11,8 @@
  *    the new store cannot fill that line: every line is still checked, so the refusal names them
  *    all, and then the transaction **rolls back** — the increments already made with it — so both
  *    stores' stock is exactly as it was.
+ *    An order paid after expiry that holds no units (`./held-units`) gives the first store
+ *    nothing back: the units are only taken at the new one, and the history says so.
  * 4. **The order** points at the new store, its snapshot and distance; the delivery fee the buyer
  *    paid never changes. `needsAttention` is left as it is: the payments core raises it too (a
  *    late or doubled payment), so the owner clears it in the admin once every reason is handled.
@@ -23,6 +25,7 @@ import { roundedDistanceKm } from '../orders/geo'
 import { notifyStoreReassigned } from '../notify'
 import { inTransaction, sql, type Tx } from '../payments/transaction'
 import { isManager, staffOf } from './actor'
+import { holdsUnits, UNITS_TAKEN_NOTE } from './held-units'
 import {
   activeStore,
   addUserHistory,
@@ -44,7 +47,13 @@ class ShortStock extends Error {
   }
 }
 
-async function moveUnits(tx: Tx, from: number, to: StoreRow, units: readonly Unit[], at: Date) {
+async function moveUnits(
+  tx: Tx,
+  from: number | null,
+  to: StoreRow,
+  units: readonly Unit[],
+  at: Date,
+) {
   const short: FulfilmentLineRef[] = []
   for (const unit of units) {
     const take = async () => {
@@ -53,7 +62,9 @@ async function moveUnits(tx: Tx, from: number, to: StoreRow, units: readonly Uni
         short.push({ productId: unit.productId, variantSku: unit.variantSku })
       }
     }
-    if (to.id < from) {
+    if (from === null) {
+      await take()
+    } else if (to.id < from) {
       await take()
       await putBack(tx, from, unit, at)
     } else {
@@ -115,15 +126,17 @@ export async function reassignOrder(
           message: 'That store is not active, or has no map pin.',
         }
       }
-      await moveUnits(tx, order.store, target, await orderUnits(tx, order.id), at)
+      const held = await holdsUnits(tx, order.id)
+      await moveUnits(tx, held ? order.store : null, target, await orderUnits(tx, order.id), at)
       const distanceKm = roundedDistanceKm(target, order.pin)
       await pointAt(tx, order.id, target, distanceKm, at)
+      const moved = `Reassigned from ${await storeName(tx, order.store)} to ${target.name} (${target.code}).`
       await addUserHistory(tx, order.id, {
         from: order.status,
         to: order.status,
         at,
         by: staff.id,
-        note: `Reassigned from ${await storeName(tx, order.store)} to ${target.name} (${target.code}).`,
+        note: held ? moved : `${UNITS_TAKEN_NOTE} ${moved}`,
       })
       return {
         ok: true,

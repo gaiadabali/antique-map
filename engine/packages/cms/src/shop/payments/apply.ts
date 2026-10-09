@@ -14,7 +14,8 @@
  * 3. **Insert the ledger row** with its outcome, `ON CONFLICT (dedupe_key) DO NOTHING`. No row
  *    came back → a duplicate → nothing else happens; the caller answers 200.
  * 4. **Carry the decision out**: the attempt's state; `paid` (compare-and-set) with its history;
- *    `expired` with the stock released once (`./release`); the staff flag; a history note.
+ *    `expired` with the stock released once (`./release`); a payment after expiry `paid` with its
+ *    units re-taken when its store still holds them (`./late-payment`); the staff flag; a note.
  *
  * **Contention** (TASKS.md 10.5.a). A delivery that cannot take the order's lock (or the dedupe
  * key's index entry) within `ORDER_LOCK_TIMEOUT` writes nothing and looks the key up in the
@@ -48,6 +49,7 @@ import {
   recordedEvent,
   setAttemptState,
 } from './order-sql'
+import { applyLatePayment } from './late-payment'
 import { expireAndRelease } from './release'
 import { inTransaction, isLockContention, underShortLock } from './transaction'
 
@@ -75,6 +77,8 @@ export type ApplyResult = {
    */
   readonly outcome: Outcome | 'duplicate' | 'busy'
   readonly orderId: number | null
+  /** The status move this delivery made, for the buyer's email after commit. */
+  readonly moved?: { readonly from: 'pending_payment' | 'expired'; readonly to: 'paid' | 'expired' }
 }
 
 export async function applyPaymentStatus(
@@ -107,6 +111,15 @@ export async function applyPaymentStatus(
     if (!order) return { outcome: decision.outcome, orderId: null }
 
     await setAttemptState(tx, order.id, status)
+    if (decision.move === 'late-paid') {
+      // Its own flag: "stock re-taken, send it", or "stock gone" (`./late-payment`).
+      await applyLatePayment(tx, order, status, decision, now)
+      return {
+        outcome: decision.outcome,
+        orderId: order.id,
+        moved: { from: 'expired', to: 'paid' },
+      }
+    }
     if (decision.move === 'paid') await markPaid(tx, order, status, now)
     if (decision.move === 'expired') {
       await expireAndRelease(
@@ -127,27 +140,20 @@ export async function applyPaymentStatus(
         note: decision.note,
       })
     }
-    return { outcome: decision.outcome, orderId: order.id }
+    const moved =
+      decision.move === 'paid' || decision.move === 'expired'
+        ? ({ from: 'pending_payment', to: decision.move } as const)
+        : undefined
+    return { outcome: decision.outcome, orderId: order.id, moved }
   }).catch(async (error: unknown): Promise<ApplyResult> => {
     // A lock lost after the claim (under the transaction's own LOCK_TIMEOUT): all rolled back.
     if (!isLockContention(error)) throw error
     return lostLock(await inTransaction(payload, (tx) => recordedEvent(tx, dedupeKey)))
   })
-  // After commit (TASKS.md 6.6, orchestrator decision B): the buyer's "paid" or "expired" email.
-  if (result.orderId !== null) {
-    if (result.outcome === 'paid') {
-      await notifyOrderEvent(payload, {
-        orderId: result.orderId,
-        from: 'pending_payment',
-        to: 'paid',
-      }).catch(() => {})
-    } else if (result.outcome === 'expired') {
-      await notifyOrderEvent(payload, {
-        orderId: result.orderId,
-        from: 'pending_payment',
-        to: 'expired',
-      }).catch(() => {})
-    }
+  // After commit (TASKS.md 6.6, orchestrator decision B): the buyer's "paid" or "expired" email —
+  // and the store's, on `paid`, a late payment's included.
+  if (result.orderId !== null && result.moved) {
+    await notifyOrderEvent(payload, { orderId: result.orderId, ...result.moved }).catch(() => {})
   }
   return result
 }

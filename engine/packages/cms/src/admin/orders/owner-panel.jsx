@@ -1,15 +1,21 @@
 /**
- * The owner and editor order views (TASKS.md 7.2.b; CONTENT-OPERATIONS.md §5.2–§5.4): filter by
- * status and store, reassign, cancel, and the "needs you" flag for a hand-back. Plain links and
- * forms, as `store-panel.jsx`. `.jsx`: see `shared.jsx`'s header.
+ * The owner and editor order views (TASKS.md 7.2.b; CONTENT-OPERATIONS.md §5.2–§5.5): filter by
+ * status and store, reassign, cancel, the "needs you" flag with its reason and a way to clear it,
+ * and Replace damaged item on a delivered order (TASKS.md 10.7, `./replace-panel`). Plain links
+ * and forms, as `store-panel.jsx`. `.jsx`: see `shared.jsx`'s header.
  */
 import { ORDER_STATUS_OPTIONS, ORDER_STATUS_LABELS } from '../../collections/orders/statuses'
 import { BigButton, Card, L, Notice, QuietLink, SubmitButton, refusalCopy, rupiah } from './shared'
 import { QuotePanel } from './quote-panel'
+import { ClearFlagSheet, LinesCard, ReplaceSheet, ReplacementLinks } from './replace-panel'
 
 export function OwnerFilterBar({ stores, filter, language }) {
   return (
-    <form method="get" action="/admin/orders" style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+    <form
+      method="get"
+      action="/admin/orders"
+      style={{ display: 'flex', gap: 12, marginBottom: 16 }}
+    >
       <label>
         {L('filterStatus', language)}
         <select name="status" defaultValue={filter.status} style={{ display: 'block' }}>
@@ -53,7 +59,8 @@ export function OwnerList({ orders, language }) {
               <span>{ORDER_STATUS_LABELS[order.status]?.[language]}</span>
             </div>
             <div style={{ fontSize: 14, color: 'var(--theme-elevation-600)' }}>
-              {order.storeSnapshot?.name ?? '—'} · {order.contact.name} · {rupiah(order.totals.total)}
+              {order.storeSnapshot?.name ?? '—'} · {order.contact.name} ·{' '}
+              {rupiah(order.totals.total)}
               {order.needsAttention?.flag && (
                 <strong style={{ color: 'var(--theme-error-500)', marginLeft: 8 }}>
                   {L('needsAttention', language)}
@@ -67,21 +74,24 @@ export function OwnerList({ orders, language }) {
   )
 }
 
-export function OwnerDetail({ order, stores, step, language, payLink, error }) {
-  const reassigning = step.reassigning
-  const cancelling = step.cancelling
+export function OwnerDetail({ order, stores, step, language, payLink, linked, error }) {
+  const { reassigning, cancelling, replacing, clearingFlag } = step
+  const refused = error
+    ? refusalCopy(error, language).replace('{store}', order.storeSnapshot?.name ?? '—')
+    : null
   return (
     <div>
       <QuietLink href="/admin/orders">← {L('back', language)}</QuietLink>
       <h2 style={{ marginTop: 8 }}>
         #{order.number} — {ORDER_STATUS_LABELS[order.status]?.[language]}
       </h2>
-      <Notice tone="error">{error ? refusalCopy(error, language) : null}</Notice>
+      <Notice tone="error">{refused}</Notice>
       {order.needsAttention?.flag && (
         <Notice tone="error">
           {L('needsAttention', language)}: {order.needsAttention.reason}
         </Notice>
       )}
+      <ReplacementLinks order={order} linked={linked} language={language} />
 
       {order.status === 'awaiting_quote' && (
         <QuotePanel order={order} language={language} payLink={payLink} />
@@ -91,17 +101,30 @@ export function OwnerDetail({ order, stores, step, language, payLink, error }) {
         <p>
           {order.storeSnapshot?.name ?? '—'} · {order.contact.name} · {rupiah(order.totals.total)}
           {order.totals.deliveryFee != null && (
-            <> · {L('deliveryFee', language)}: {rupiah(order.totals.deliveryFee)}</>
+            <>
+              {' '}
+              · {L('deliveryFee', language)}: {rupiah(order.totals.deliveryFee)}
+            </>
           )}
         </p>
         <p style={{ whiteSpace: 'pre-wrap' }}>{order.delivery.address}</p>
       </Card>
+      <LinesCard order={order} language={language} />
 
-      {reassigning ? (
+      {replacing ? (
+        <ReplaceSheet order={order} language={language} />
+      ) : clearingFlag ? (
+        <ClearFlagSheet order={order} language={language} />
+      ) : reassigning ? (
         <Card>
           <form method="post" action={`/api/x/orders/${order.id}/reassign`}>
             <label htmlFor="reassign-store">{L('reassignToStore', language)}</label>
-            <select id="reassign-store" name="toStoreId" required style={{ display: 'block', margin: '8px 0' }}>
+            <select
+              id="reassign-store"
+              name="toStoreId"
+              required
+              style={{ display: 'block', margin: '8px 0' }}
+            >
               {stores
                 .filter((s) => s.id !== order.store)
                 .map((s) => (
@@ -145,12 +168,24 @@ export function OwnerDetail({ order, stores, step, language, payLink, error }) {
           {step.backward && (
             <form method="post" action={`/api/x/orders/${order.id}/move`}>
               <input type="hidden" name="to" value={step.backward} />
-              <SubmitButton variant="quiet">{ORDER_STATUS_LABELS[step.backward]?.[language]}</SubmitButton>
+              <SubmitButton variant="quiet">
+                {ORDER_STATUS_LABELS[step.backward]?.[language]}
+              </SubmitButton>
             </form>
           )}
           {step.canReassign && (
             <BigButton href={`/admin/orders/${order.id}?reassign=1`} variant="quiet">
               {L('reassign', language)}
+            </BigButton>
+          )}
+          {step.canReplace && (
+            <BigButton href={`/admin/orders/${order.id}?replace=1`} variant="quiet">
+              {L('replaceDamaged', language)}
+            </BigButton>
+          )}
+          {step.canClearFlag && (
+            <BigButton href={`/admin/orders/${order.id}?clearflag=1`} variant="quiet">
+              {L('clearFlag', language)}
             </BigButton>
           )}
           {step.canCancel && (

@@ -167,3 +167,63 @@ export type HandBackRefusal =
 export type HandBackResult =
   | { readonly ok: true; readonly orderId: number }
   | { readonly ok: false; readonly refusal: HandBackRefusal; readonly message: string }
+
+// ── a replacement order, and clearing a flag ─────────────────────────────────────────────────
+
+/** The longest note a replacement or a cleared flag keeps — "a one-line note" (§5.5). */
+export const STAFF_NOTE_MAX = 200
+
+export type ReplaceInput = {
+  readonly orderId: number
+  /** The original's lines to replace, by their row id, and how many of each. */
+  readonly lines: ReadonlyArray<{ readonly lineId: string; readonly qty: number }>
+  /** Why — "Frame cracked, photo on WhatsApp". Required. */
+  readonly note: string
+  readonly actor: FulfilmentActor
+  readonly now?: Date
+}
+
+export type ReplaceRefusal =
+  /** Only the owner and editors create a replacement. */
+  | 'not_allowed'
+  | 'not_found'
+  /** Only a `delivered` order is replaced (COMMERCE.md §12). */
+  | 'wrong_status'
+  | 'note_required'
+  /** No line ticked, a line that is not the order's, or a quantity that is not a whole number. */
+  | 'replace_no_lines'
+  /** More than the order sold of a line, counting the replacements already made of it. */
+  | 'replace_too_many'
+  /** The original's store cannot fill every line; nothing was written. */
+  | 'replace_short'
+  /** A stock row or the order stayed locked by another action; nothing was written. */
+  | 'busy'
+
+export type ReplaceResult =
+  | {
+      readonly ok: true
+      readonly orderId: number
+      readonly number: number
+      readonly originalId: number
+    }
+  | {
+      readonly ok: false
+      readonly refusal: ReplaceRefusal
+      readonly message: string
+      /** For `replace_short`: the line the store cannot fill — product and variant, never counts. */
+      readonly lines?: readonly FulfilmentLineRef[]
+    }
+
+export type ClearFlagInput = {
+  readonly orderId: number
+  /** What was done about it — required, kept on the history row. */
+  readonly note: string
+  readonly actor: FulfilmentActor
+  readonly now?: Date
+}
+
+export type ClearFlagRefusal = 'not_allowed' | 'not_found' | 'note_required' | 'not_flagged'
+
+export type ClearFlagResult =
+  | { readonly ok: true; readonly orderId: number }
+  | { readonly ok: false; readonly refusal: ClearFlagRefusal; readonly message: string }
