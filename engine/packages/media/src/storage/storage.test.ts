@@ -180,7 +180,14 @@ describe('which bucket a process writes', () => {
       region: 'ap-southeast-1',
       credentials: { accessKeyId: 'masters-key', secretAccessKey: 'masters-secret' },
     })
-    expect(s3ClientConfig(mastersStorageTarget(env)!)).toMatchObject({ forcePathStyle: true })
+    expect(s3ClientConfig(mastersStorageTarget(env)!)).toMatchObject({
+      forcePathStyle: true,
+      requestHandler: {
+        connectionTimeout: 5_000,
+        requestTimeout: 120_000,
+        throwOnRequestTimeout: true,
+      },
+    })
   })
 
   it('is none without a bucket or an endpoint, and no credentials without both halves', () => {

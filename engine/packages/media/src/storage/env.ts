@@ -56,6 +56,12 @@ export function s3ClientConfig(target: S3Target) {
     endpoint: target.endpoint,
     region: target.region,
     forcePathStyle: true,
+    // The SDK default has no timeouts: a stalled socket would hold a request (and its memory) forever.
+    requestHandler: {
+      connectionTimeout: 5_000,
+      requestTimeout: 120_000,
+      throwOnRequestTimeout: true,
+    },
     ...(target.credentials ? { credentials: { ...target.credentials } } : {}),
   }
 }
