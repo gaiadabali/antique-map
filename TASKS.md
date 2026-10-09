@@ -28,7 +28,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
-| **13** The shop's Collections and Stores pages | UI | 12 | · not started | 0/3 | 0/6 | 0 | `░░░░░░░░░░`   0% |
+| **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 0/6 | 0 | `░░░░░░░░░░`   0% |
 | **All** | 13 phases | | | **57/65** | **220/243** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
@@ -80,6 +80,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 13·W1 | 13.2 The stores page | medior | `feat/p13-stores` | 2026-10-09 | |
+| 13·W1 | 13.1 The collections index | medior | `feat/p13-coll` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -920,7 +922,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, `/collections`, `/id/koleksi`, `/stores` and `/id/toko` answer 200 at 390 px and 1280 px with axe clean and no sideways scroll; the stores page shows only active, listed stores and never a store's code, WhatsApp, coordinates or notes.
 **Waves:** W1 — 13.1, 13.2 · W2 — 13.3
 
-- [ ] **13.1 The collections index** · needs: phase 12
+- [ ] **13.1 The collections index** · needs: phase 12 — 🔄 13·W1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/collection/page.tsx`, `engine/apps/web/src/sites/shop/collections/**`, `engine/apps/web/src/server/shop/catalogue/collections.ts` (new, beside the catalogue's loaders)
   - **Read** EXPERIENCE-SHOP.md §2, `docs/gates/luxury-pass.md`, the collection page (`collection/[slug]/page.tsx`)
@@ -928,7 +930,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 13.1.a `/collections` lists every category that holds published products — a matted lead print, its name and its count — each linking to its `/collections/<slug>` page; public reads through the catalogue's cached, projected loaders; its words under `collections.*` in the shop lexicon, both languages
   - [ ] 13.1.b **Check:** `/collections` and `/id/koleksi` at 390 and 1280, axe clean, every card links to a 200.
 
-- [ ] **13.2 The stores page** · needs: phase 12
+- [ ] **13.2 The stores page** · needs: phase 12 — 🔄 13·W1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/stores/**`, `engine/apps/web/src/sites/shop/stores/**`, `engine/apps/web/src/server/shop/stores/**`
   - **Read** EXPERIENCE-SHOP.md §2, CONTENT-MODEL.md §4 and its Open "Public store list", `collections/stores/index.ts` (the public access), `server/chat/projection/stores.ts`
