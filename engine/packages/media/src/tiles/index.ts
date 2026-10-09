@@ -9,6 +9,7 @@ import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, relative, sep } from 'node:path'
 
+import '../sharp-concurrency'
 import sharp from 'sharp'
 
 import { IIIF_TILE_SIZE, iiifPublicKey } from '../contract'

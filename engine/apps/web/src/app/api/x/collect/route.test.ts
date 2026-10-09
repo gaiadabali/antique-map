@@ -6,11 +6,30 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const collect = vi.fn(
-  async (_input: { address: string | null }) => new Response(null, { status: 204 }),
+  async (_input: { address: string | null; body: string | null }) =>
+    new Response(null, { status: 204 }),
 )
 vi.mock('../../../../server/analytics/collect', () => ({
-  collect: (input: { address: string | null }) => collect(input),
+  MAX_BODY_BYTES: 8192,
+  collect: (input: { address: string | null; body: string | null }) => collect(input),
 }))
+
+/** A chunked body: a stream, so the request carries no Content-Length. */
+function chunked(bytes: number): Request {
+  let sent = 0
+  const stream = new ReadableStream<Uint8Array>({
+    pull(controller) {
+      if (sent >= bytes) return controller.close()
+      sent += 1024
+      controller.enqueue(new Uint8Array(1024).fill(97))
+    },
+  })
+  return new Request('http://localhost/api/x/collect', {
+    method: 'POST',
+    body: stream,
+    duplex: 'half',
+  } as RequestInit)
+}
 
 import { POST } from './route'
 
@@ -27,6 +46,17 @@ describe('POST /api/x/collect', () => {
       '203.0.113.9',
       '203.0.113.9',
     ])
+  })
+
+  it('stops reading a chunked body at the cap and hands collect null', async () => {
+    const response = await POST(chunked(1024 * 1024))
+    expect(response.status).toBe(204)
+    expect(collect.mock.calls[0]?.[0].body).toBeNull()
+  })
+
+  it('reads a chunked body within the cap', async () => {
+    await POST(chunked(2048))
+    expect(collect.mock.calls[0]?.[0].body).toHaveLength(2048)
   })
 
   it('passes null off nginx, and for a malformed last entry', async () => {

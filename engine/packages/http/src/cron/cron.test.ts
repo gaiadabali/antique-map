@@ -137,6 +137,29 @@ describe('POST /api/x/cron/jobs', () => {
     expect((await third).status).toBe(200)
   })
 
+  it('answers 503 stuck, and logs once, for a run in flight past 15 minutes', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    let clock = 1_000_000
+    let release!: () => void
+    const route = jobsRoute(
+      loaderOf(() => new Promise<QueueRun>((resolve) => (release = () => resolve(RAN)))),
+      SECRET,
+      () => clock,
+    )
+    const first = route(call('Bearer s3cret-value'))
+    await vi.waitFor(() => expect(release).toBeTypeOf('function'))
+    clock += 14 * 60_000
+    expect((await route(call('Bearer s3cret-value'))).status).toBe(409)
+    clock += 2 * 60_000
+    const stuck = await route(call('Bearer s3cret-value'))
+    expect(stuck.status).toBe(503)
+    expect(await stuck.json()).toEqual({ stuck: true })
+    expect((await route(call('Bearer s3cret-value'))).status).toBe(503)
+    expect(error).toHaveBeenCalledTimes(1)
+    release()
+    expect((await first).status).toBe(200)
+  })
+
   it('logs a throw with its cause redacted and answers a plain 500, then runs again', async () => {
     const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
     let fail = true

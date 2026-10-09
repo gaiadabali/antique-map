@@ -27,18 +27,38 @@ export type QueuePortLoader = () => Promise<{ runQueue: QueuePort }>
 
 const loadQueue: QueuePortLoader = () => import('./payload-queue')
 
+/** A run in flight longer than this is reported `stuck` (503), not `busy` (409). */
+const STUCK_AFTER_MS = 15 * 60_000
+
 const JSON_HEADERS = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }
 
 export function jobsRoute(
   load: QueuePortLoader = loadQueue,
   env: Env = process.env,
+  now: () => number = Date.now,
 ): (request: Request) => Promise<Response> {
   let running: Promise<QueueRun> | null = null
+  let startedAt = 0
+  let stuckLogged = false
 
   return async function POST(request: Request): Promise<Response> {
     const refused = refuseCron(request, env)
     if (refused) return refused
     if (running !== null) {
+      // A run in flight past the stuck threshold is a hang, not "busy": a 503 makes the cron log a
+      // failure (it counts a 409 as success). The run itself is not aborted.
+      if (now() - startedAt > STUCK_AFTER_MS) {
+        if (!stuckLogged) {
+          stuckLogged = true
+          console.error(
+            `[cron/jobs] a run has been in flight for over ${STUCK_AFTER_MS / 60_000} min`,
+          )
+        }
+        return Response.json(
+          { stuck: true },
+          { status: 503, headers: { ...JSON_HEADERS, 'Retry-After': '60' } },
+        )
+      }
       return Response.json(
         { busy: true },
         { status: 409, headers: { ...JSON_HEADERS, 'Retry-After': '60' } },
@@ -47,6 +67,8 @@ export function jobsRoute(
     const limit = perRunLimit(new URL(request.url), env)
     const run = load().then(({ runQueue }) => runQueue({ limit }))
     running = run
+    startedAt = now()
+    stuckLogged = false
     try {
       const result = await run
       return Response.json({ ...result, limit }, { headers: JSON_HEADERS })

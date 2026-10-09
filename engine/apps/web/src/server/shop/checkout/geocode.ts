@@ -92,7 +92,10 @@ export const GEOCODE_TIMEOUT_MS = 5_000
 /** The body as text, never buffered past `max` bytes; `null` when it is longer. */
 async function readCapped(response: Response, max: number): Promise<string | null> {
   const declared = Number(response.headers.get('content-length'))
-  if (Number.isFinite(declared) && declared > max) return null
+  if (Number.isFinite(declared) && declared > max) {
+    await response.body?.cancel().catch(() => undefined) // release the socket
+    return null
+  }
   if (response.body === null) return ''
   const reader = response.body.getReader()
   const chunks: Uint8Array[] = []

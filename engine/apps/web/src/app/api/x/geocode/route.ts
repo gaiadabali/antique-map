@@ -4,10 +4,16 @@
  * read once, as text, so a bad payload is refused without ever throwing.
  */
 import { clientAddress } from '../../../../security/rate-limit'
+import { readCappedText } from '../../../../server/capped-body'
 import { geocode } from '../../../../server/shop/checkout/geocode'
 
+const MAX_BODY_BYTES = 4096
+
 export async function POST(request: Request): Promise<Response> {
-  const body = await request.text().catch(() => null)
+  // Capped while read (a chunked body has no Content-Length); over the cap is refused like a bad
+  // payload, i.e. an empty input. The payload is a pin or a pasted link — well under 4 KB.
+  const read = await readCappedText(request, MAX_BODY_BYTES).catch(() => null)
+  const body = read === 'too-large' ? null : read
   let parsed: unknown = null
   if (body !== null && body !== '') {
     try {
