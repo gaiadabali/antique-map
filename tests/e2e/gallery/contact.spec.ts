@@ -27,10 +27,11 @@ import { expect, request as newRequest, test, type APIRequestContext } from '@pl
 
 import { createHref } from '../../../engine/packages/config/src/sites/routes/href'
 import { SITES } from '../../../engine/packages/config/src/sites/table'
-import { BASE_URL, GALLERY_ORIGIN, HOST_HEADER, OWNER } from './support/env'
+import { BASE_URL, GALLERY_ORIGIN, HOST_HEADER } from './support/env'
 import {
   createGalleryFixtures,
   newLedger,
+  signIn,
   type GalleryFixtures,
   type Ledger,
 } from './support/fixtures'
@@ -123,15 +124,6 @@ test.describe('Gallery contact (5.3.d)', () => {
       await api?.dispose()
     }
   })
-
-  async function signIn(request: APIRequestContext): Promise<string> {
-    const login = await request.post(`${BASE_URL}/api/users/login`, {
-      headers: HOST_HEADER,
-      data: { email: OWNER.email, password: OWNER.password },
-    })
-    expect(login.ok(), 'the owner signs in').toBeTruthy()
-    return ((await login.json()) as { token: string }).token
-  }
 
   type Work = { id: number; publicId: number; slug: string; stockNumber: string | null }
 

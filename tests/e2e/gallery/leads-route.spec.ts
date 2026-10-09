@@ -1,11 +1,15 @@
 /**
  * The gallery's lead route refuses what is not a visitor's form post (TASKS.md 5.3.d; SECURITY.md
  * §2.7, §2.10): a bot-like post with no Turnstile answer (403), an oversize body (413), a renamed
- * `.exe` posted as a multipart file (415), and the eleventh post in a minute from one address
- * (429 with `Retry-After`). No fixture is needed: nothing here reaches the store.
+ * `.exe` posted as a multipart file (415), and the post past the hourly limit from one address
+ * (429 with `Retry-After`). The limit is 5 posts an hour per address (`server/leads/rate`, SECURITY.md §2.10), no longer 10 a minute: the cases below read it from there.. No fixture is needed: nothing here reaches the store.
  */
 import { expect, request as newRequest, test, type APIRequestContext } from '@playwright/test'
 
+import {
+  LEAD_POSTS_PER_HOUR,
+  LEAD_WINDOW_SECONDS,
+} from '../../../engine/apps/web/src/server/leads/rate'
 import { BASE_URL, GALLERY_ORIGIN } from './support/env'
 
 /** The gallery's own host: the forms post from it. */
@@ -21,7 +25,7 @@ test.afterAll(async () => {
   await api?.dispose()
 })
 
-test('the route refuses a bot-like post, an oversize body, a renamed .exe and the 11th post', async () => {
+test('the route refuses a bot-like post, an oversize body, a renamed .exe and the post past the hourly limit', async () => {
   const leads = `${BASE_URL}/api/x/leads`
   const json = { ...HOST_HEADER, 'content-type': 'application/json' }
   const input = {
@@ -53,12 +57,12 @@ test('the route refuses a bot-like post, an oversize body, a renamed .exe and th
     },
   })
   expect(exe.status(), 'multipart with a renamed .exe').toBe(415)
-  // Eleven posts in a minute from one address of its own (no other test shares the window).
-  // Each passes the token's shape, so each is counted; the first ten are refused as invalid.
+  // One more post than the hourly limit, from an address of its own (no other test shares the window).
+  // Each passes the token's shape, so each is counted; the first ones up to the limit are refused as invalid.
   const from = { ...json, 'x-forwarded-for': `198.51.100.${(Date.now() % 200) + 20}` }
   const statuses: number[] = []
   let retryAfter: string | undefined
-  for (let n = 0; n < 11; n += 1) {
+  for (let n = 0; n <= LEAD_POSTS_PER_HOUR; n += 1) {
     const res = await api.post(leads, {
       headers: from,
       data: { kind: 'sell', turnstileToken: 't', input: { ...input, name: '' } },
@@ -66,6 +70,6 @@ test('the route refuses a bot-like post, an oversize body, a renamed .exe and th
     statuses.push(res.status())
     retryAfter = res.headers()['retry-after']
   }
-  expect(statuses).toEqual([...Array<number>(10).fill(422), 429])
-  expect(retryAfter, 'the 429 says when to come back').toBe('60')
+  expect(statuses).toEqual([...Array<number>(LEAD_POSTS_PER_HOUR).fill(422), 429])
+  expect(retryAfter, 'the 429 says when to come back').toBe(String(LEAD_WINDOW_SECONDS))
 })

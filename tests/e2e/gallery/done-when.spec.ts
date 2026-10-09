@@ -23,10 +23,11 @@ import {
 import en from '../../../engine/apps/web/src/sites/gallery/lexicon/en.json' with { type: 'json' }
 import { createHref } from '../../../engine/packages/config/src/sites/routes/href'
 import { SITES } from '../../../engine/packages/config/src/sites/table'
-import { BASE_URL, GALLERY_ORIGIN, HOST_HEADER, OWNER } from './support/env'
+import { BASE_URL, GALLERY_ORIGIN, HOST_HEADER } from './support/env'
 import {
   createGalleryFixtures,
   newLedger,
+  signIn,
   type GalleryFixtures,
   type Ledger,
 } from './support/fixtures'
@@ -92,12 +93,7 @@ test.describe('Phase 5 Done when, at 390 px on staging', () => {
     api = await newRequest.newContext()
     ledger = newLedger(api)
     fx = await createGalleryFixtures(api, ledger)
-    const login = await api.post(`${BASE_URL}/api/users/login`, {
-      headers: HOST_HEADER,
-      data: { email: OWNER.email, password: OWNER.password },
-    })
-    expect(login.status(), 'the owner signs in').toBe(200)
-    token = ((await login.json()) as { token: string }).token
+    token = await signIn(api)
     notifyEmail = `e2e-done-when.${Date.now()}@example.test`
     settingsBefore = (await owner('/api/globals/site-settings?depth=0')) as Record<string, unknown>
     const gallery = galleryOf(settingsBefore)

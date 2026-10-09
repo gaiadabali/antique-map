@@ -88,14 +88,19 @@ test.describe('a spoofed X-Forwarded-Host', () => {
   test('changes nothing: each host still serves its own site', async () => {
     const testInfo = test.info()
     const { gallery, shop } = metaOf(testInfo)
-    for (const [host, other, own] of [
-      [gallery, shop, 'Indies Gallery'],
-      [shop, gallery, 'Old East Indies'],
+    // Since phase 4 the home's <h1> is the hero line, so a site is told by what the page says of
+    // itself: its `data-site` and the brand name in its header.
+    for (const [host, other, key, own] of [
+      [gallery, shop, 'gallery', 'Indies Gallery'],
+      [shop, gallery, 'shop', 'Old East Indies'],
     ] as const) {
       for (const spoof of [other, 'evil.example.com']) {
         const answer = await ask(testInfo, host, '/', { 'x-forwarded-host': spoof })
         expect(answer.status, `${host} as ${spoof}`).toBe(200)
-        expect(answer.body, `${host} as ${spoof}`).toContain(`<h1>${own}</h1>`)
+        expect(answer.body, `${host} as ${spoof}`).toContain(`data-site="${key}"`)
+        expect(answer.body, `${host} as ${spoof}`).toContain(
+          `<span class="site-name">${own}</span>`,
+        )
         expect(answer.body, `${host} as ${spoof}`).not.toContain('evil.example.com')
       }
     }

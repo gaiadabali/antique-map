@@ -115,7 +115,7 @@ function rupiahToNumber(text: string): number {
 // (never hard-coded — `product.spec.ts`'s own "a missing candidate is a failure" rule applies).
 // ---------------------------------------------------------------------------------------------
 
-type ProductSummary = { readonly id: number; readonly slug: string }
+type ProductSummary = { readonly id: number; readonly slug: string; readonly sku?: string }
 
 async function listProducts(request: APIRequestContext): Promise<ProductSummary[]> {
   const res = await request.get(`${API_BASE}/api/products?limit=200&depth=0`, {
@@ -123,7 +123,8 @@ async function listProducts(request: APIRequestContext): Promise<ProductSummary[
   })
   expect(res.ok(), 'GET /api/products').toBeTruthy()
   const body = (await res.json()) as { docs: ProductSummary[] }
-  return body.docs
+  // Not the products other specs make and drain while this one runs in parallel (`E2E-PAY-…`, payment.spec).
+  return body.docs.filter((product) => !(product.sku ?? '').startsWith('E2E-'))
 }
 
 /** Sellable (add button enabled) and unvarianted (one click adds it, no picker involved). */

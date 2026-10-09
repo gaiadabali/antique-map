@@ -167,7 +167,7 @@ test('a store user sees only their own store’s orders; the other store’s use
     const otherId = sql(`SELECT id FROM orders WHERE store_id = ${other.id} LIMIT 1`)
     expect((await rest(page, `/api/orders/${otherId}?depth=0`)).status).not.toBe(200)
 
-    await page.goto('/admin/collections/orders')
+    await page.goto('/admin/collections/orders?limit=100')
     await expect(page.locator('.table tbody tr, table tbody tr')).toHaveCount(docs.length)
     await page.screenshot({ path: shot(`orders-${who}-1280`) })
     await page.goto(`/admin/collections/orders?where[store][equals]=${other.id}`)

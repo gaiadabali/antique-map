@@ -27,7 +27,17 @@ async function main(): Promise<void> {
   process.env.PAYLOAD_SECRET ??= 'e2e-fixtures-dev-only-never-signs-anything'
   // Deferred: the config reads the environment as it loads.
   const { cms } = await import('../../../engine/packages/cms/src/instance')
-  const payload = (await cms()) as unknown as Api
+  const instance = (await cms()) as unknown as Api
+  // Outside a request the cache hooks' `after()` throws (a created term or maker invalidates the
+  // vocabulary's tags): every write hands its tags to the CLI's collector, the way the seed's do
+  // (`import/cli-cache`), and the tags are not posted — nothing here serves from the cache.
+  const { cliInvalidation } = await import('../../../engine/packages/cms/src/import/cli-cache')
+  const batch = cliInvalidation()
+  const payload: Api = {
+    find: (args) => instance.find(args),
+    create: (args) => instance.create({ ...args, context: batch.context() }),
+    destroy: () => instance.destroy(),
+  }
   const one = async (collection: string, where: object) =>
     (await payload.find({ collection, where, limit: 1, depth: 0, draft: true })).docs[0]
 

@@ -50,7 +50,7 @@ export function localPort() {
 export function sql(query) {
   const { url, database } = settings()
   if (process.env.E2E_DATABASE_URL || !database) {
-    return execFileSync('psql', [url, '-tAc', query], { encoding: 'utf8' }).trim()
+    return execFileSync('psql', ['-tAc', query, url], { encoding: 'utf8' }).trim()
   }
   const args = ['exec', CONTAINER, 'psql', '-U', 'postgres', '-d', database, '-tAc', query]
   return execFileSync('docker', args, { encoding: 'utf8' }).trim()

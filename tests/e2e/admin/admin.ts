@@ -2,8 +2,9 @@
  * What the admin roles drive does in the browser (TASKS.md 3.6.d): sign in, switch the admin's
  * language on the profile, read the sidebar, and collect the messages an invalid save shows.
  */
-import { expect, type Page } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
+import { savedToken } from '../support/sessions'
 import { PASSWORD } from './accounts'
 
 export type Language = 'en' | 'id'
@@ -11,8 +12,22 @@ export type Language = 'en' | 'id'
 /** What the profile's language select lists each language as (Payload's own names). */
 const LANGUAGE_NAMES: Record<Language, RegExp> = { en: /^English$/, id: /Indonesia/ }
 
+/**
+ * Signs in as `email`. The account's session from the run's global setup is used when there is one
+ * (sign-in is limited to 10 per address per 15 minutes, `support/sessions.ts`); otherwise, or when
+ * the saved session is not accepted, the form is filled in as a person would.
+ */
 export async function signIn(page: Page, email: string): Promise<void> {
   await page.context().clearCookies()
+  const token = savedToken(email)
+  const base = test.info().project.use.baseURL
+  if (token && base) {
+    const domain = new URL(base).hostname
+    await page.context().addCookies([{ name: 'payload-token', value: token, domain, path: '/' }])
+    await page.goto('/admin')
+    if (!new URL(page.url()).pathname.endsWith('/login')) return
+    await page.context().clearCookies()
+  }
   await page.goto('/admin/login')
   await page.locator('#field-email').fill(email)
   await page.locator('#field-password').fill(PASSWORD)

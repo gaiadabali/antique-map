@@ -122,10 +122,18 @@ test.describe('status codes on each host', () => {
 })
 
 test.describe('headers on each host', () => {
-  test('robots fails closed until SEO builds it', async ({ request }) => {
+  // SEO is built (phase 9, `api/x/robots`): indexing is off unless SEO_ALLOW_INDEXING=1, so a
+  // server started without it (CI's, staging) still fails closed (`Disallow: /`) and now also
+  // names the site's own canonical sitemap (`buildRobots`, from `SITES`, never the request's Host).
+  test('robots fails closed unless indexing is switched on, and names its sitemap', async ({
+    request,
+  }) => {
     const response = await ask(request, '/robots.txt')
     expect(response.status()).toBe(200)
-    expect(await response.text()).toBe('User-agent: *\nDisallow: /\n')
+    expect(response.headers()['content-type']).toContain('text/plain')
+    expect(await response.text()).toMatch(
+      /^User-agent: \*\nDisallow: \/\nSitemap: https?:\/\/[^\s/]+\/sitemap\.xml\n$/,
+    )
   })
 
   test('the admin’s client hints stay on the admin (one document request per first visit)', async ({

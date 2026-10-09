@@ -5,6 +5,8 @@
  * `/api/health`. What the site is comes from the project's `metadata` (`SITES`,
  * playwright.config.ts), never from this file.
  */
+import { readFileSync } from 'node:fs'
+
 import { expect, test, type TestInfo } from '@playwright/test'
 
 import type { SmokeMetadata } from '../../../playwright.config'
@@ -14,6 +16,20 @@ const siteOf = (testInfo: TestInfo) => testInfo.project.metadata as SmokeMetadat
 /** The default locale is unprefixed (ARCHITECTURE.md §11); every other one is `/<locale>`. */
 const homeOf = (site: SmokeMetadata, locale: string) =>
   locale === site.locales.default ? '/' : `/${locale}`
+
+/**
+ * The site's own home copy, read from its lexicon (the one source the page renders from): since
+ * phase 4 the home's `<h1>` is the hero line (`home.<site>.title`), no longer the site's name,
+ * which the header and the `<title>` carry; the hero's lede is the first `.site-lede` (the
+ * gallery's second is its about lead).
+ */
+const homeCopy = (site: SmokeMetadata, locale: string, key: 'title' | 'lede'): string => {
+  const file = `engine/apps/web/src/sites/${site.site}/lexicon/${locale}.json`
+  const messages = JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>
+  const text = messages[`home.${site.site}.${key}`]
+  if (!text) throw new Error(`${file} has no home.${site.site}.${key}`)
+  return text
+}
 
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -29,8 +45,8 @@ for (const locale of ['en', 'id']) {
     await expect(page.locator('html')).toHaveAttribute('data-site', site.site)
     await expect(page).toHaveTitle(new RegExp(escape(site.name)))
     await expect(page.locator('header')).toContainText(site.name)
-    await expect(page.locator('h1')).toHaveText(site.name)
-    await expect(page.locator('.site-lede')).not.toBeEmpty()
+    await expect(page.locator('h1')).toHaveText(homeCopy(site, locale, 'title'))
+    await expect(page.locator('.site-lede').first()).toHaveText(homeCopy(site, locale, 'lede'))
   })
 }
 
@@ -39,12 +55,12 @@ test('each site’s home says its own line, in each language', async ({ page }, 
   const ledes: string[] = []
   for (const locale of site.locales.supported) {
     await page.goto(homeOf(site, locale))
-    ledes.push((await page.locator('.site-lede').textContent()) ?? '')
+    ledes.push((await page.locator('.site-lede').first().textContent()) ?? '')
   }
   expect(new Set(ledes).size, 'one line per language').toBe(site.locales.supported.length)
   // The other site's home, asked for by its own host, says something else.
   await page.goto(`http://${site.otherHost}:${new URL(page.url()).port}/`)
-  expect(await page.locator('.site-lede').textContent()).not.toBe(ledes[0])
+  expect(await page.locator('.site-lede').first().textContent()).not.toBe(ledes[0])
 })
 
 test('the home links its canonical and alternates on the site’s own origin', async ({

@@ -19,6 +19,7 @@
  */
 import type { APIRequestContext, APIResponse } from '@playwright/test'
 
+import { savedToken } from '../../support/sessions'
 import { BASE_URL, HOST_HEADER, OWNER } from './env'
 
 /** A 1×1 PNG — a real, sniffable raster for the recto upload. */
@@ -74,8 +75,12 @@ async function retrying(call: () => Promise<APIResponse>, tries = 4): Promise<AP
   }
 }
 
-async function signIn(request: APIRequestContext): Promise<Jwt> {
+/** The owner's token: the global setup's saved session first (sign-in is rate-limited per address,
+ * `support/sessions.ts`), else a login, else the first-register bootstrap. */
+export async function signIn(request: APIRequestContext): Promise<Jwt> {
   if (cachedToken !== null) return cachedToken
+  const saved = savedToken(OWNER.email)
+  if (saved) return (cachedToken = saved)
   const post = (path: string, data: Record<string, unknown>) =>
     retrying(() => request.post(`${BASE_URL}${path}`, { headers: HOST_HEADER, data }))
   const tokenOf = async (res: APIResponse) =>
@@ -172,7 +177,11 @@ async function rectoId(request: APIRequestContext, token: Jwt, alt: string): Pro
           role: 'recto',
           provenance: 'photograph',
         }),
-        file: { name: 'e2e-recto.png', mimeType: 'image/png', buffer: PNG_1X1 },
+        file: {
+          name: `e2e-recto-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`,
+          mimeType: 'image/png',
+          buffer: PNG_1X1,
+        },
       },
     }),
     'POST /api/media',

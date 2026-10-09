@@ -31,9 +31,8 @@ import {
   GALLERY_HOST_HEADER,
   GALLERY_ORIGIN,
   HOST_HEADER,
-  OWNER,
 } from './support/env'
-import { newLedger, type Ledger } from './support/fixtures'
+import { newLedger, signIn, type Ledger } from './support/fixtures'
 import { createItemFixtures, type ItemFixtures, type WorkRef } from './support/item-fixtures'
 
 const href = createHref(SITES.gallery)
@@ -81,12 +80,7 @@ test.describe('Gallery item page and deep zoom (5.2.e)', () => {
   test.beforeAll(async () => {
     test.setTimeout(300_000)
     api = await newRequest.newContext({ baseURL: BASE_URL })
-    const login = await api.post(`${BASE_URL}/api/users/login`, {
-      headers: HOST_HEADER,
-      data: { email: OWNER.email, password: OWNER.password },
-    })
-    expect(login.status(), 'the owner signs in').toBe(200)
-    token = ((await login.json()) as { token: string }).token
+    token = await signIn(api)
     ledger = newLedger(api)
 
     const before = await api.get(`${BASE_URL}/api/globals/site-settings?depth=0`, {
