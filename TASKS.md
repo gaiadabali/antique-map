@@ -922,18 +922,18 @@ Paste this into a Claude Code session opened at the repo root:
 
 - [ ] **13.1 The collections index** · needs: phase 12
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
-  - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/collection/page.tsx`, `engine/apps/web/src/sites/shop/collections/**`, `engine/apps/web/src/server/shop/catalogue/collections.ts` (new, beside the catalogue's loaders), the `collections.*` keys in `sites/shop/lexicon/{en,id}.json`
+  - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/collection/page.tsx`, `engine/apps/web/src/sites/shop/collections/**`, `engine/apps/web/src/server/shop/catalogue/collections.ts` (new, beside the catalogue's loaders)
   - **Read** EXPERIENCE-SHOP.md §2, `docs/gates/luxury-pass.md`, the collection page (`collection/[slug]/page.tsx`)
   - _Requirements: 12.1_
-  - [ ] 13.1.a `/collections` lists every category that holds published products — a matted lead print, its name and its count — each linking to its `/collections/<slug>` page; public reads through the catalogue's cached, projected loaders
+  - [ ] 13.1.a `/collections` lists every category that holds published products — a matted lead print, its name and its count — each linking to its `/collections/<slug>` page; public reads through the catalogue's cached, projected loaders; its words under `collections.*` in the shop lexicon, both languages
   - [ ] 13.1.b **Check:** `/collections` and `/id/koleksi` at 390 and 1280, axe clean, every card links to a 200.
 
 - [ ] **13.2 The stores page** · needs: phase 12
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
-  - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/stores/**`, `engine/apps/web/src/sites/shop/stores/**`, `engine/apps/web/src/server/shop/stores/**`, the `stores.*` keys in `sites/shop/lexicon/{en,id}.json`
+  - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/stores/**`, `engine/apps/web/src/sites/shop/stores/**`, `engine/apps/web/src/server/shop/stores/**`
   - **Read** EXPERIENCE-SHOP.md §2, CONTENT-MODEL.md §4 and its Open "Public store list", `collections/stores/index.ts` (the public access), `server/chat/projection/stores.ts`
   - _Requirements: 12.1_
-  - [ ] 13.2.a `/stores`: the active, listed stores by area — name, address, hours and an "Open in Maps" link built from name and address — read with `overrideAccess: false` and a `select` of those fields only, cached for minutes; a unit test for the grouping and the link
+  - [ ] 13.2.a `/stores`: the active, listed stores by area — name, address, hours and an "Open in Maps" link built from name and address — read with `overrideAccess: false` and a `select` of those fields only, cached for minutes; a unit test for the grouping and the link; its words under `stores.*` in the shop lexicon, both languages
   - [ ] 13.2.b **Check:** `/stores` and `/id/toko` at 390 and 1280, axe clean; the HTML carries no store code, WhatsApp number or coordinate.
 
 - [ ] **13.3 The pages on staging** · needs: 13.1, 13.2
