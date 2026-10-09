@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 4/8 | 10/17 | 0 | `██████░░░░`  59% |
-| **All** | 14 phases | | | **64/73** | **236/260** | **8** | `█████████░`  91% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 5/8 | 11/17 | 0 | `███████░░░`  65% |
+| **All** | 14 phases | | | **65/73** | **237/260** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -82,7 +82,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
-| 14·W2 | 14.5 The item page | medior | `feat/p14-item` | 2026-10-09 | |
 | 14·W2 | 14.6 Makers, places, pages and not-found | medior | `feat/p14-index` | 2026-10-09 | |
 
 ## Decisions for the owner
@@ -989,13 +988,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 14.4.a the listing at full width under a `SectionHead` with its count; the facet column quiet — hairline groups, a long list (makers, places) shows its first eight with "All n" opening the rest, every option still a real link; sort as underlined text tabs; applied filters as square chips; the quiet pagination; the phone's filter sheet in the same hand; search's form, suggestion and empty state alike; words under `browse.*`, `listing.*`, `search.*`, both languages
   - [ ] 14.4.b **Check:** browse, `/antique-maps`, a filtered page, `/search?q=batavia` and a search with no result at 390 and 1280 in both languages, axe clean, no sideways scroll; facets, sort, paging and "Include sold" still work; the facet column no longer sets the page's height.
 
-- [ ] **14.5 The item page** · needs: 14.1 — 🔄 14·W2
+- [x] **14.5 The item page** · needs: 14.1 — ✅ 2026-10-09 83300af4
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
   - **Read** EXPERIENCE-GALLERY.md §5–§6, §8, 12.5's shop product page
   - _Requirements: 12.1_
   - [x] 14.5.a two columns on a desktop: the sheet whole in a `Mat`, other images as compact-mat thumbnails, Zoom a quiet button under the mat; beside it the marked eyebrow (type · place), the balanced serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised — the status line, WhatsApp first, email, the reply promise (G9); the record under a section head in hairline rows; proof points (a certificate, originals only, the lifetime guarantee); one column on a phone; words under `item.*`, both languages
-  - [ ] 14.5.b **Check:** an available work, a sold one and one with several images at 390 and 1280 in both languages, axe clean; zoom opens and draws tiles; Ask carries the stock number; no price in the HTML.
+  - [x] 14.5.b **Check:** an available work, a sold one and one with several images at 390 and 1280 in both languages, axe clean; zoom opens and draws tiles; Ask carries the stock number; no price in the HTML.
 
 - [ ] **14.6 Makers, places, pages and not-found** · needs: 14.1 — 🔄 14·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
@@ -1042,6 +1041,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **14.5 closed** (Sonnet built, orchestrator reviewed; merged `83300af4`). The item page in the shop product page's hand: two columns on a desktop — the sheet whole in a contained `Mat` (its own shape, clamped 0.8–1.5, preloaded), Zoom as a quiet square button, the other views in compact mats; beside it the marked eyebrow (type · place), the serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised with the status line, Ask first, email, **the reply promise (G9, new on this page)** and the shipping note; proof points (certificate, originals only, lifetime guarantee); the record under "About this work" in hairline rows. Zoom, Ask's hrefs and the status logic untouched. **Check:** `/product/574`, `/product/1207`, `/product/156` (sold) and `/id/produk/574` at 390 and 1280, axe clean, no price in the HTML; the viewer opens (no tiles locally — staging, 14.8); the WhatsApp text from the page's own code carries the stock number (locally no number is set). Found by it and fixed on main: the gallery lexicon's unused `shell.replyPromise` said "two working days" (`78c0b048`). Follow-up: the thumbnails under the mat are pictures, not buttons — let each open the viewer at its image.
 
 - 2026-10-09 — ✅ **14.7 closed** (Sonnet built, orchestrator reviewed; merged). Sell to us and contact in the partnership page's hand: `SectionHead`, WhatsApp first and email beside the reply promise "the same working day, Singapore time" (G9), the viewing note (by appointment, Singapore and Jakarta), **how selling works in three numbered steps**, the form in a raised panel; field names, action, validation, Turnstile, consent and hrefs untouched. Review fix: step 3 said "we arrange collection" — an operation the owner never offered; now "If we agree on a price, we settle the details with you". **Check:** `/sell-to-us`, `/contact`, `/id/jual-ke-kami`, `/id/kontak` at 390 and 1280, axe clean; the form tests 15/15. An empty Send shows its four field messages in en and id — through a stubbed 422, since locally the Turnstile dummy key fails the server's check before field validation; the real refusal is checked on staging (14.8). Locally the buttons show the "being connected" note (no contact settings); staging has placeholders (OA2).
 
