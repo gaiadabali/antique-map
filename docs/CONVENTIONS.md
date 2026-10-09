@@ -193,7 +193,8 @@ tasks:check`.
 | `format:check` | Prettier |
 | `lint` | ESLint with typescript-eslint; the import boundaries (Payload and `@engine/cms` only in `src/server/**` and `(payload)`; packages never import the app; a `'use client'` module never reaches server-only code); the rendering rules (one segment config; no prefetching link, `next/form` or `router.prefetch()`) |
 | `typecheck` | `tsc --noEmit` per package, with `next typegen` for the app |
-| `test` | Vitest: unit tests, `checkCopy()`, the reserved `/api/` segment test, the mocked AI evaluation; the `*.db.test.ts` suite as well when `CMS_TEST_POSTGRES_URL` is set |
+| `test` | Vitest: unit tests, `checkCopy()`, the reserved `/api/` segment test, the mocked AI evaluation; it never imports a `*.db.test.ts` |
+| `test:db` | Vitest's `db` project: every `*.db.test.ts` in the packages and the app, each file on its own clone of a migrated or pushed template database; needs `CMS_TEST_POSTGRES_URL` (a role that may CREATE DATABASE), and skips without it. CI runs it as its own job |
 | `check:filesize` | §2 |
 | `check:generated` | `payload-types.ts`, `importMap.js`, and the Payload config against the latest migration snapshot — a collection changed without its migration fails |
 | `tasks:lint`, `tasks:check` | the board's shape and its generated progress table |
