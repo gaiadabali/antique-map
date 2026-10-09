@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 12·W2 | 12.4 Browse, search and collections | medior | `feat/p12-browse` | 2026-10-09 | |
 | 12·W2 | 12.6 Bag, checkout, tracking, order and not-found | medior | `feat/p12-flow` | 2026-10-09 | |
 | 12·W2 | 12.3 The home below the hero | medior | `feat/p12-home` | 2026-10-09 | |
+| 12·W2 | 12.7 Partnership and the shell | medior | `feat/p12-shell` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -899,7 +900,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 12.6.a each page opens on a `SectionHead`; bag lines with compact matted thumbnails and a summary panel; checkout and tracking forms in the same hand; the not-found page invites back to the shop
   - [ ] 12.6.b **Check:** an empty bag, a bag with two lines, checkout to the simulator, tracking and not-found at 390 and 1280, axe clean; the purchase still completes on the simulator.
 
-- [ ] **12.7 Partnership and the shell** · needs: 12.2
+- [ ] **12.7 Partnership and the shell** · needs: 12.2 — 🔄 12·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/partnership/**`, `engine/apps/web/src/sites/shop/partnership/**` (markup and CSS only), `engine/apps/web/src/shared/ui/{header,footer}/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/styles/site.css`
   - **Read** DESIGN-SYSTEM.md §1–§5
