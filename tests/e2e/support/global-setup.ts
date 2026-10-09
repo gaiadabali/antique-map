@@ -22,7 +22,10 @@ export default async function globalSetup(): Promise<void> {
     extraHTTPHeaders: { Host: `${SHOP_HOST}:${port}` },
   })
   const login = async (email: string): Promise<string | null> => {
-    const res = await api.post('/api/users/login', { data: { email, password: PASSWORD } })
+    const res = await api.post('/api/users/login', {
+      data: { email, password: PASSWORD },
+      timeout: 120_000, // a cold server compiles the route on its first hit
+    })
     return res.ok() ? (((await res.json()) as { token?: string }).token ?? null) : null
   }
   try {
@@ -30,6 +33,7 @@ export default async function globalSetup(): Promise<void> {
     if (!owner) {
       // No user yet: first-register answers 403 once one exists, so this only ever makes the first.
       await api.post('/api/users/first-register', {
+        timeout: 120_000,
         data: {
           email: ACCOUNTS.owner.email,
           password: PASSWORD,
@@ -55,6 +59,10 @@ export default async function globalSetup(): Promise<void> {
       const token = await login(ACCOUNTS[key].email)
       if (token) saveTokens({ [ACCOUNTS[key].email]: token })
     }
+  } catch (error) {
+    console.warn(
+      `global setup: skipped (${String(error).slice(0, 160)}); specs sign in on their own`,
+    )
   } finally {
     await api.dispose()
   }
