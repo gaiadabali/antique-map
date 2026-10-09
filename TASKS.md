@@ -28,8 +28,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
-| **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 0/6 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 13 phases | | | **57/65** | **220/243** | **8** | `█████████░`  91% |
+| **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 1/6 | 0 | `██░░░░░░░░`  17% |
+| **All** | 13 phases | | | **57/65** | **221/243** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -935,7 +935,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/app/(shop)/shop/[locale]/stores/**`, `engine/apps/web/src/sites/shop/stores/**`, `engine/apps/web/src/server/shop/stores/**`
   - **Read** EXPERIENCE-SHOP.md §2, CONTENT-MODEL.md §4 and its Open "Public store list", `collections/stores/index.ts` (the public access), `server/chat/projection/stores.ts`
   - _Requirements: 12.1_
-  - [ ] 13.2.a `/stores`: the active, listed stores by area — name, address, hours and an "Open in Maps" link built from name and address — read with `overrideAccess: false` and a `select` of those fields only, cached for minutes; a unit test for the grouping and the link; its words under `stores.*` in the shop lexicon, both languages
+  - [x] 13.2.a `/stores`: the active, listed stores by area — name, address, hours and an "Open in Maps" link built from name and address — read with `overrideAccess: false` and a `select` of those fields only, cached for minutes; a unit test for the grouping and the link; its words under `stores.*` in the shop lexicon, both languages
   - [ ] 13.2.b **Check:** `/stores` and `/id/toko` at 390 and 1280, axe clean; the HTML carries no store code, WhatsApp number or coordinate.
 
 - [ ] **13.3 The pages on staging** · needs: 13.1, 13.2
