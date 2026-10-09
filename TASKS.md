@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 2/8 | 6/17 | 0 | `████░░░░░░`  35% |
-| **All** | 14 phases | | | **62/73** | **232/260** | **8** | `█████████░`  89% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 3/8 | 7/17 | 0 | `████░░░░░░`  41% |
+| **All** | 14 phases | | | **63/73** | **233/260** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -82,7 +82,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
-| 14·W2 | 14.3 The home below the hero | medior | `feat/p14-home` | 2026-10-09 | |
 | 14·W2 | 14.5 The item page | medior | `feat/p14-item` | 2026-10-09 | |
 | 14·W2 | 14.7 Sell to us and contact | medior | `feat/p14-contact` | 2026-10-09 | |
 | 14·W2 | 14.6 Makers, places, pages and not-found | medior | `feat/p14-index` | 2026-10-09 | |
@@ -975,13 +974,13 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 14.2.a the lead work — the newest available work with a published image — whole in a `Mat` with a museum caption (title, maker and date, the stock tag, *Price on request*) in place of the film's empty placeholder; the headline balanced under the marked eyebrow; the owner's facts as `ProofPoints` (since 2001, over 9,500 antiques, a certificate with every original) in place of the three trust cards, none naming an institution; the hero's words under `home.gallery.hero*` and `home.gallery.{eyebrow,title,lede}`, both languages
   - [x] 14.2.b **Check:** the home's first screen on a production build at 390, 1280 and 1995 px in both languages: the sheet loads at high priority and uncropped, axe clean, no sideways scroll.
 
-- [ ] **14.3 The home below the hero** · needs: 14.1, 14.2 — 🔄 14·W2
+- [x] **14.3 The home below the hero** · needs: 14.1, 14.2 — ✅ 2026-10-09 78061bdf
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/home/**` (not `hero.tsx` or `hero.module.css`), `engine/apps/web/src/server/gallery/home/**`
   - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G3, G6, G7, G9, G10, G13), DESIGN.md §The luxury pass, 12.3's shop home
   - _Requirements: 12.1_
   - [x] 14.3.a the bands on `SectionHead`, `Mat`, `ProofPoints` and the work card: about (no institution named), the collection, the curator, **recently placed — three real sold works, "Sold" and nothing more** (a public, projected, cached read), live with the collection, makers and places as square links, the enquiry band with the same-working-day promise; the hard-coded stand-ins and the institution copy gone; words under `home.gallery.*` (not 14.2's), both languages
-  - [ ] 14.3.b **Check:** the home at 390 and 1280 on a production build with the real catalogue, both languages, axe clean, no sideways scroll; the HTML names no institution and no price.
+  - [x] 14.3.b **Check:** the home at 390 and 1280 on a production build with the real catalogue, both languages, axe clean, no sideways scroll; the HTML names no institution and no price.
 
 - [ ] **14.4 Browse and search** · needs: 14.1 — 🔄 14·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
@@ -1044,6 +1043,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-09 — ✅ **14.3 closed** (Sonnet built, orchestrator reviewed; merged `78061bdf`). The gallery home below the hero on `SectionHead`, `Mat` and the shared work card: About without institutions or the stale "2,090 online"; the collection (four newest available works, skipping the hero's lead); the curator beside a placeholder mat (portrait to come, OA2); **recently placed — three real sold works through a new public, projected, cached read (`load-recently-placed.ts`), "Sold" and nothing more** in place of the hard-coded "placed with a private collector" stand-ins (G10); makers and places as two panels; the enquiry band promising the same working day, Singapore time (G9). The unused featured-works rail and its loader are deleted. **Check:** `/` and `/id` at 390 and 1280 on the build, axe clean, no sideways scroll; the HTML holds no Louvre, Leiden, National Museum/Library, "national collections", "two working days" or USD. Follow-ups: `WorkGrid` marks its first two cards high priority, which on the home competes with the hero's sheet (a `leads` prop after 14.4); the catalogue's unknown-date words are copied into the new loader (export them).
 
 - 2026-10-09 — ✅ **14.1 and 14.2 closed** (orchestrator; merged `1ad211ff`). Phase 14, the gallery's luxury pass, opened at the user's request ("upgrade the gallery's pages, so we have a proper UI too"). **14.1:** the eyebrow's mark comes from site tokens — the shop's scale bar computes identical to staging (60 × 5.6 px, the same gradient), the gallery's is one hairline rule; `Mat fit="contain"` floats an original whole in its window, never cropped; `StockTag`; a quiet, square `Pagination` variant; the work card rebuilt on a compact contained mat with a museum caption (title clamped to three lines, maker and date, dimensions, status line, stock tag). Found and fixed: an empty mat's muted words were 4.46:1 on the gallery's cream window (a token now gives them full ink on the gallery; the shop keeps its muted ink); the style guide's `/gallery/placeholder.svg` never existed (inline fixtures now, loading on both hosts). **14.2:** the home opens on the newest available map whole on its mat with a museum caption and *Price on request*, preloaded at high priority, the owner's facts as proof points (since 2001, over 9,500 antiques, a certificate with every original) — the empty film placeholder and the trust card naming the Louvre, Leiden and Singapore (against G10) are gone. **Check:** a production build on a local copy with the published gallery sample (`indies_p14_gallery`, 49 works, derivatives built): home, browse and the style guide on both hosts at 390 and 1280 (and the home at 1995, en and id) axe clean, no sideways scroll, no broken image; the shop's home and browse unchanged. The rest of the home still names institutions and promises "two working days" — 14.3 removes them. Two unit tests red on main came from phase 13 (stores route still "pending"; three `.one` plural keys only in id) — with that session.
 
