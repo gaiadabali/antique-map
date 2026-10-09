@@ -29,7 +29,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | 🔄 in progress | 0/3 | 2/6 | 0 | `███░░░░░░░`  33% |
-| **14** The gallery's luxury pass | UI | 12 | · not started | 0/8 | 0/17 | 0 | `░░░░░░░░░░`   0% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 0/8 | 0/17 | 0 | `░░░░░░░░░░`   0% |
 | **All** | 14 phases | | | **57/73** | **222/260** | **8** | `█████████░`  85% |
 <!-- progress:end -->
 
@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 13·W1 | 13.2 The stores page | medior | `feat/p13-stores` | 2026-10-09 | |
 | 13·W1 | 13.1 The collections index | medior | `feat/p13-coll` | 2026-10-09 | |
+| 14·W1 | 14.1 The gallery's hand in the shared pieces | orchestrator | `feat/p14-w1` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -955,7 +956,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every gallery page (home, browse, a type page, search, item, makers, a maker, places, a place, sell to us, contact, a story page, not-found) shows the language at 390 px and 1280 px in both languages with axe clean and no sideways scroll; no price and no institution appear anywhere; facets, sort, paging, zoom and both enquiry forms still work; the shop's pages look as they did.
 **Waves:** W1 — 14.1, 14.2 · W2 — 14.3, 14.4, 14.5, 14.6, 14.7 · W3 — 14.8
 
-- [ ] **14.1 The gallery's hand in the shared pieces** · needs: phase 12
+- [ ] **14.1 The gallery's hand in the shared pieces** · needs: phase 12 — 🔄 14·W1
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/shared/ui/{mat,eyebrow,pagination,stock-tag}/**`, `engine/apps/web/src/shared/ui/index.ts`, `engine/apps/web/src/shared/style-guide/**`, `engine/apps/web/src/shared/styles/tokens/semantic.css`, `engine/apps/web/src/sites/gallery/tokens/brand.css`, `engine/apps/web/src/sites/shop/tokens/brand.css`, `engine/apps/web/src/sites/gallery/browse/{work-card.tsx,card.module.css}`
   - **Read** DESIGN-SYSTEM.md §1, §5, §7; DESIGN.md §The luxury pass
