@@ -27,8 +27,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 7/16 | 0 | `████░░░░░░`  44% |
-| **All** | 12 phases | | | **51/62** | **211/237** | **8** | `█████████░`  89% |
+| **12** The shop's luxury pass | UI | 4, 6 | 🔄 in progress | 2/8 | 8/16 | 0 | `█████░░░░░`  50% |
+| **All** | 12 phases | | | **51/62** | **212/237** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -897,7 +897,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/{bag,checkout,tracking,payment}/**` (markup and CSS only), `engine/apps/web/src/app/(shop)/shop/[locale]/{cart,checkout,track,order,not-found,[...missing]}/**`
   - **Read** COMMERCE.md (no behaviour changes), DESIGN-SYSTEM.md §1–§5
   - _Requirements: 12.1_
-  - [ ] 12.6.a each page opens on a `SectionHead`; bag lines with compact matted thumbnails and a summary panel; checkout and tracking forms in the same hand; the not-found page invites back to the shop
+  - [x] 12.6.a each page opens on a `SectionHead`; bag lines with compact matted thumbnails and a summary panel; checkout and tracking forms in the same hand; the not-found page invites back to the shop
   - [ ] 12.6.b **Check:** an empty bag, a bag with two lines, checkout to the simulator, tracking and not-found at 390 and 1280, axe clean; the purchase still completes on the simulator.
 
 - [ ] **12.7 Partnership and the shell** · needs: 12.2 — 🔄 12·W2
