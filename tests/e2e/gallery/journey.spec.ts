@@ -28,11 +28,11 @@ import {
   GALLERY_HOST_HEADER,
   GALLERY_ORIGIN,
   HOST_HEADER,
-  OWNER,
 } from './support/env'
 import {
   createGalleryFixtures,
   newLedger,
+  signIn,
   type GalleryFixtures,
   type Ledger,
 } from './support/fixtures'
@@ -94,12 +94,7 @@ test.describe('The gallery journey (5.5.a)', () => {
     api = await newRequest.newContext()
     ledger = newLedger(api)
     fx = await createGalleryFixtures(api, ledger)
-    const login = await api.post(`${BASE_URL}/api/users/login`, {
-      headers: HOST_HEADER,
-      data: { email: OWNER.email, password: OWNER.password },
-    })
-    expect(login.status(), 'the owner signs in').toBe(200)
-    token = ((await login.json()) as { token: string }).token
+    token = await signIn(api)
     const stamp = Date.now()
     stockNumber = `M.55AE2E${stamp}`
     notifyEmail = `e2e-5.5a-notify.${stamp}@example.test`

@@ -10,6 +10,8 @@ import { request as httpRequest } from 'node:http'
 
 import { expect, test, type TestInfo } from '@playwright/test'
 
+import { savedToken } from '../support/sessions'
+
 type HostsMetadata = { port: string; gallery: string; shop: string }
 type Answer = {
   status: number
@@ -58,6 +60,8 @@ function send(
 
 /** The owner's session cookie, on the admin host: signed in, or registered as the first user. */
 async function ownerCookie(testInfo: TestInfo): Promise<string> {
+  const saved = savedToken(OWNER.email) // signed in once by the global setup (sign-in is rate-limited)
+  if (saved) return `payload-token=${saved}`
   const { shop } = testInfo.project.metadata as HostsMetadata
   const origin = { origin: `http://${shop}:${(testInfo.project.metadata as HostsMetadata).port}` }
   let answer = await send(testInfo, shop, '/api/users/login', {

@@ -145,6 +145,8 @@ const admin: Project = {
 }
 
 export default defineConfig({
+  // Signs the staff accounts in once; sign-in is limited per address (tests/e2e/support/sessions.ts).
+  globalSetup: './tests/e2e/support/global-setup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
