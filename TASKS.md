@@ -81,6 +81,8 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 12·W2 | 12.5 The product page | medior | `feat/p12-product` | 2026-10-09 | |
 | 12·W2 | 12.4 Browse, search and collections | medior | `feat/p12-browse` | 2026-10-09 | |
+| 12·W2 | 12.6 Bag, checkout, tracking, order and not-found | medior | `feat/p12-flow` | 2026-10-09 | |
+| 12·W2 | 12.3 The home below the hero | medior | `feat/p12-home` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -865,7 +867,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 12.2.a `Mat` (default and compact, `MatNote`), `Eyebrow mark`, `ProofPoints` and `SectionHead`, on the style guide; the hero rebuilt on them, its lead image through `ResponsiveImage` (AVIF, preloaded)
   - [x] 12.2.b **Check:** the style guide shows each at 390 and 1280; the hero renders as before; lint, tokens, file size and the shared tests pass.
 
-- [ ] **12.3 The home below the hero** · needs: 12.2
+- [ ] **12.3 The home below the hero** · needs: 12.2 — 🔄 12·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/home/**` (not 12.1's files), the `home.shop.*` keys in `sites/shop/lexicon/{en,id}.json`
   - **Read** DESIGN-SYSTEM.md §1–§5, 12.1 and 12.2's components
@@ -889,7 +891,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 12.5.a two columns on a desktop: the lead image in a mat with its thumbnails, the details beside it (marked category, serif title, price before the button, stock, delivery note, proof points); the story below; one column on a phone
   - [ ] 12.5.b **Check:** a product with variants and one without at 390 and 1280, axe clean; adding to the bag still works.
 
-- [ ] **12.6 Bag, checkout, tracking, order and not-found** · needs: 12.2
+- [ ] **12.6 Bag, checkout, tracking, order and not-found** · needs: 12.2 — 🔄 12·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{bag,checkout,tracking,payment}/**` (markup and CSS only), `engine/apps/web/src/app/(shop)/shop/[locale]/{cart,checkout,track,order,not-found,[...missing]}/**`
   - **Read** COMMERCE.md (no behaviour changes), DESIGN-SYSTEM.md §1–§5
