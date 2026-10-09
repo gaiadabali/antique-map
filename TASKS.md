@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 2/8 | 5/17 | 0 | `███░░░░░░░`  29% |
-| **All** | 14 phases | | | **62/73** | **231/260** | **8** | `█████████░`  89% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 2/8 | 6/17 | 0 | `████░░░░░░`  35% |
+| **All** | 14 phases | | | **62/73** | **232/260** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -980,7 +980,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/home/**` (not `hero.tsx` or `hero.module.css`), `engine/apps/web/src/server/gallery/home/**`
   - **Read** EXPERIENCE-GALLERY.md §3, `docs/design/journeys/owner-answers.md` (G3, G6, G7, G9, G10, G13), DESIGN.md §The luxury pass, 12.3's shop home
   - _Requirements: 12.1_
-  - [ ] 14.3.a the bands on `SectionHead`, `Mat`, `ProofPoints` and the work card: about (no institution named), the collection, the curator, **recently placed — three real sold works, "Sold" and nothing more** (a public, projected, cached read), live with the collection, makers and places as square links, the enquiry band with the same-working-day promise; the hard-coded stand-ins and the institution copy gone; words under `home.gallery.*` (not 14.2's), both languages
+  - [x] 14.3.a the bands on `SectionHead`, `Mat`, `ProofPoints` and the work card: about (no institution named), the collection, the curator, **recently placed — three real sold works, "Sold" and nothing more** (a public, projected, cached read), live with the collection, makers and places as square links, the enquiry band with the same-working-day promise; the hard-coded stand-ins and the institution copy gone; words under `home.gallery.*` (not 14.2's), both languages
   - [ ] 14.3.b **Check:** the home at 390 and 1280 on a production build with the real catalogue, both languages, axe clean, no sideways scroll; the HTML names no institution and no price.
 
 - [ ] **14.4 Browse and search** · needs: 14.1 — 🔄 14·W2
