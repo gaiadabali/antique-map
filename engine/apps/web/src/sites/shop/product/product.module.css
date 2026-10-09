@@ -79,6 +79,10 @@
   border-top: var(--rule-hair) solid var(--color-border);
 }
 
+.story .storyHead {
+  margin-block-end: var(--space-5);
+}
+
 .storyText {
   font: var(--text-body-large);
   color: var(--color-text);
@@ -185,7 +189,9 @@
 }
 
 .price {
-  font: var(--text-h3);
+  /* Karla, never the display serif, for a price (DESIGN-SYSTEM.md §2). */
+  font: var(--text-price);
+  font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text);
   margin: 0;
 }

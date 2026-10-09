@@ -1,7 +1,7 @@
 /**
- * The product page (6.1.b; EXPERIENCE-SHOP.md §4), in the luxury pass (12.5): the matted pictures on the left, the details (category, name, price,
- * options, add to bag, delivery, proof points) sticky on the right, the story below; one column on
- * a phone. The words come from the lexicon; the prices are whole rupiah the server formats.
+ * The product page (6.1.b; EXPERIENCE-SHOP.md §4), in the luxury pass (12.5): the matted pictures
+ * on the left, the details (category, name, price, options, add to bag, delivery, proof points)
+ * sticky on the right, the story below; one column on a phone. The words come from the lexicon; the prices are whole rupiah the server formats.
  */
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
@@ -144,18 +144,17 @@ export function ProductView({
             </p>
           )}
 
-          <ProofPoints
-            items={[
-              text('product.signalPaper'),
-              text('product.signalWorkshop'),
-            ]}
-          />
+          <ProofPoints items={[text('product.signalPaper'), text('product.signalWorkshop')]} />
         </div>
       </div>
 
       {product.description !== '' && (
         <section className={styles.story} aria-labelledby="product-story">
-          <SectionHead id="product-story" title={text('product.description')} />
+          <SectionHead
+            id="product-story"
+            className={styles.storyHead}
+            title={text('product.description')}
+          />
           <p className={styles.storyText}>{product.description}</p>
         </section>
       )}

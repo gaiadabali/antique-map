@@ -108,8 +108,8 @@ export function VariantPicker({
           type="submit"
           variant="primary"
           className={styles.addButton}
-          disabled={!canAdd || pending}
-          aria-busy={pending || undefined}
+          disabled={!canAdd}
+          loading={pending}
         >
           {canAdd ? text.addToBag : text.outOfStock}
         </Button>
