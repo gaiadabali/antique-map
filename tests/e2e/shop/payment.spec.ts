@@ -157,6 +157,9 @@ mkdirSync(seedOutDir)
  * console's handle rather than through the piped stream a captured `execFileSync` reads back.
  */
 function runSeed(op: Record<string, unknown>): Record<string, unknown> {
+  // A worker restarted after a failure runs this file's afterAll before its next test: write again.
+  if (!existsSync(seedScript)) writeFileSync(seedScript, SEED_SCRIPT)
+  mkdirSync(seedOutDir, { recursive: true })
   const seedOut = join(seedOutDir, `out-${randomBytes(6).toString('hex')}.json`)
   execFileSync('pnpm', ['--filter', '@engine/cms', 'payload', 'run', seedScript], {
     cwd: root,
