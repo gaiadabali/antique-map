@@ -1,35 +1,66 @@
-/* The editorial and information pages' layout styles (5.4.b). Every value is a token from
-   shared/styles/tokens or the gallery brand file — no raw colour, no font. */
+/* The editorial and information pages (5.4.b, 14.6): the head, the hero sheet in its mat, the body
+   at the reading measure, a works rail. Every value is a token from shared/styles/tokens or the
+   gallery brand file — no raw colour, no font-family. */
 
 .wrap {
-  width: min(calc(100vw - 2 * var(--gutter)), 48rem);
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
   margin-inline-start: 50%;
   translate: -50% 0;
   padding-inline: var(--gutter);
 }
 
-.section {
-  padding-block: var(--space-8);
+.page {
+  padding-block: var(--space-7) var(--space-9);
 }
 
-.hero {
-  aspect-ratio: 16 / 9;
-  margin-block-end: var(--space-6);
+.figure {
+  max-inline-size: 56rem;
+  margin: 0 0 var(--space-8);
 }
 
-.intro {
-  font: var(--text-body-large);
+.body {
+  max-inline-size: 36rem;
+  font: var(--text-body);
 }
 
 .body p {
   margin: var(--space-5) 0 0;
 }
 
-.worksWrap {
-  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
-  margin-inline-start: 50%;
-  translate: -50% 0;
-  padding-inline: var(--gutter);
-  padding-block: var(--space-8);
+.body p:first-child {
+  margin-block-start: 0;
+}
+
+.works {
+  margin-block-start: var(--space-9);
+  padding-block-start: var(--space-8);
   border-top: var(--rule-hair) solid var(--color-border);
+}
+
+@media (max-width: 47.5rem) {
+  .page {
+    padding-block: var(--space-6) var(--space-7);
+  }
+
+  .figure {
+    margin-block-end: var(--space-7);
+  }
+
+  .works {
+    margin-block-start: var(--space-7);
+    padding-block-start: var(--space-7);
+  }
+}
+
+.notFoundActions {
+  display: grid;
+  gap: var(--space-6);
+  max-inline-size: 36rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
 }

@@ -1,5 +1,5 @@
-/* The maker index and maker page's layout styles (5.4.a). Every value is a token from
-   shared/styles/tokens or the gallery brand file — no raw colour, no font. */
+/* The makers index (14.6) and the maker page: hairline rows, no boxed cards. Every value is a
+   token from shared/styles/tokens or the gallery brand file — no raw colour, no font-family. */
 
 .wrap {
   width: min(calc(100vw - 2 * var(--gutter)), 80rem);
@@ -8,41 +8,101 @@
   padding-inline: var(--gutter);
 }
 
+.opening {
+  padding-block: var(--space-7) var(--space-6);
+}
+
+.page {
+  padding-block: var(--space-7) var(--space-9);
+}
+
 .section {
-  padding-block: var(--space-8);
-  border-top: var(--rule-hair) solid var(--color-border);
+  padding-block: var(--space-8) 0;
 }
 
-.section:first-child {
-  border-top: 0;
-}
-
-.indexList {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+/* The A–Z row: quiet text, 44 px targets; a letter with no maker is muted and not a link. */
+.letters {
+  display: flex;
+  flex-wrap: wrap;
   list-style: none;
-  margin: var(--space-6) 0 0;
+  margin: 0;
   padding: 0;
 }
 
-.indexCard {
-  display: block;
-  padding: var(--space-5);
-  border: var(--rule-hair) solid var(--color-border);
-  background: var(--color-surface-raised);
+.letter,
+.letterOff {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  font: var(--text-body);
+}
+
+.letter {
   color: var(--color-text);
   text-decoration: none;
 }
 
-.indexCard:hover {
-  color: var(--color-accent-secondary);
+.letter:hover,
+.letter:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
 }
 
-.indexMeta {
+.letterOff {
+  color: var(--color-text-muted);
+  opacity: 0.55;
+}
+
+.group {
+  display: grid;
+  grid-template-columns: var(--space-9) minmax(0, 1fr);
+  column-gap: var(--space-6);
+  padding-block: var(--space-6);
+  border-top: var(--rule-hair) solid var(--color-border);
+  scroll-margin-block-start: var(--space-7);
+}
+
+.initial {
+  margin: 0;
+  font: var(--text-h2);
+  line-height: 1;
+  color: var(--color-text-strong);
+}
+
+.names {
+  columns: 4;
+  column-gap: var(--space-7);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  break-inside: avoid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-3);
+  padding-block: var(--space-2);
+  border-bottom: var(--rule-hair) solid var(--color-border);
+}
+
+.name {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.name:hover,
+.name:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.meta {
   font: var(--text-small);
   color: var(--color-text-muted);
-  margin: var(--space-2) 0 0;
 }
 
 .header {
@@ -56,28 +116,36 @@
   aspect-ratio: 4 / 5;
 }
 
-.roles {
-  font: var(--text-small);
+.empty {
+  margin: 0;
+  max-inline-size: 36rem;
   color: var(--color-text-muted);
-  margin: var(--space-2) 0 0;
 }
 
-.bio {
-  max-width: 54rem;
-  margin: var(--space-5) 0 0;
-}
-
-.bio p {
-  margin: var(--space-4) 0 0;
-}
-
-.bio p:first-child {
-  margin-top: 0;
+@media (max-width: 64rem) {
+  .names {
+    columns: 3;
+  }
 }
 
 @media (max-width: 47.5rem) {
-  .indexList {
+  .opening {
+    padding-block: var(--space-6) var(--space-5);
+  }
+
+  .section {
+    padding-block-start: var(--space-7);
+  }
+
+  .group {
     grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+
+  .names {
+    columns: 2;
+    column-gap: var(--space-5);
   }
 
   .header {

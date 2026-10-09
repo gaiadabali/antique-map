@@ -18,6 +18,11 @@ import { SITE_COPY } from '../../../shell/copy'
 
 export const CMS_PAGE_KEYS = defineMessages({
   'cmsPage.worksHeading': 'Works in this story',
+  'notFound.title': 'Page not found',
+  'notFound.body':
+    'There is nothing at this address. The piece may have moved or sold on; search the collection, or browse it from the start.',
+  'notFound.browse': 'Browse the collection',
+  'notFound.home': 'Go to the home page',
 })
 
 export type CmsPageMessageKey = keyof typeof CMS_PAGE_KEYS

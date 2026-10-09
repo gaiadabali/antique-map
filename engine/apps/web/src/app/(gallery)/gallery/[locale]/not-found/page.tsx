@@ -7,8 +7,8 @@
  * no shell, no `lang` and a body built only in the browser — the one thing this route exists to
  * prevent (the Cache Components spike §8).
  */
-import { NotFoundPage } from '../../../../../shell/placeholder-pages'
+import { GalleryNotFoundView } from '../../../../../sites/gallery/pages/not-found-view'
 
 export default function GalleryNotFoundRoute() {
-  return <NotFoundPage site="gallery" />
+  return <GalleryNotFoundView />
 }

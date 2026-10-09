@@ -26,6 +26,7 @@ export const MAKER_KEYS = defineMessages({
   'makerPage.workCount.other': '{count} works',
   'makerPage.availableHeading': 'Available',
   'makerPage.soldHeading': 'Previously sold',
+  'makerPage.lettersLabel': 'Makers, A to Z',
   'empty.makerAvailable': 'No works by {maker} are available right now.',
 })
 
