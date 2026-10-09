@@ -98,6 +98,10 @@ test.describe.serial('the store panel, at 390 px', () => {
   })
 
   timed('the store user uploads the driver’s details', async (page) => {
+    // The picture is stored in the private bucket (`?error=storage_unavailable` without one):
+    // CI's server has no object storage, so this runs where it has (`E2E_OBJECT_STORAGE=1`, the
+    // dev stack's MinIO or staging); staging's rehearsal covers the same step.
+    test.skip(process.env.E2E_OBJECT_STORAGE !== '1', 'needs object storage (E2E_OBJECT_STORAGE=1)')
     await signIn(page, ACCOUNTS.storeA.email)
     await page.goto(`/admin/orders/${orders.mine}`)
     const photo = await page.screenshot({ clip: { x: 0, y: 0, width: 300, height: 300 } })
@@ -111,6 +115,8 @@ test.describe.serial('the store panel, at 390 px', () => {
   })
 
   timed('the store user marks it on the way, then delivered', async (page) => {
+    // "On the way" needs the driver's details the step above stores (private bucket): same gate.
+    test.skip(process.env.E2E_OBJECT_STORAGE !== '1', 'needs object storage (E2E_OBJECT_STORAGE=1)')
     await signIn(page, ACCOUNTS.storeA.email)
     await page.goto(`/admin/orders/${orders.mine}`)
     await page.getByRole('link', { name: /^On the way$/ }).click()
