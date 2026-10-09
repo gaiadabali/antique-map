@@ -167,10 +167,18 @@ jobs:
       - name: Map gallery.localhost and shop.localhost to loopback
         run: echo '127.0.0.1 gallery.localhost shop.localhost' | sudo tee -a /etc/hosts
 
+      # The bag cookie's signing secret: without it every page that reads the bag logs an error
+      # (docs/gates/phase-6-checks.md Finding 3). One random value per job, masked.
+      - name: BAG_COOKIE_KEY for the server
+        run: |
+          bag="$(openssl rand -base64 32)"
+          echo "::add-mask::$bag"
+          echo "BAG_COOKIE_KEY=$bag" >> "$GITHUB_ENV"
+
       - name: Start the server (both hosts, one port)
         run: >-
           bash .github/scripts/start-server.sh web "$RUNNER_TEMP/artifact/web" 4200
-          "indies_$DB_SUFFIX"
+          "indies_$DB_SUFFIX" "BAG_COOKIE_KEY=$BAG_COOKIE_KEY"
 
       - name: Lighthouse budgets (both hosts)
         run: pnpm lhci
