@@ -1,12 +1,16 @@
 name: CI
 
-# Every push to main and every PR into it gets static checks and the
-# production-dependency audit; e2e and Lighthouse are skipped on a docs-only
-# change (`changes`). The secret scan (secrets.yml) runs on every push to any
-# branch, CodeQL (codeql.yml) on main and its PRs. The deploy artifact and its
-# release are a separate workflow (release.yml), triggered by a push to
-# `production` (DEPLOYMENT.md §3) — this file never writes to Helios or GitHub
-# Releases.
+# Every push to main and every PR into it gets the static checks and the production-dependency
+# audit; the unit tests, the real-database tests, e2e and Lighthouse are skipped on a docs-only
+# change (`changes`). The secret scan (secrets.yml) runs on every push to any branch; CodeQL is
+# GitHub's default setup, a repository setting with no workflow file (the user's decision of
+# 2026-10-08, the file removed 2026-10-10: the default setup refused its upload on every push).
+# The deploy artifact and its release are a separate workflow (release.yml), triggered by a push
+# to `production` (DEPLOYMENT.md §3) — this file never writes to Helios or GitHub Releases.
+#
+# Wall clock is the longest job, not the sum: the jobs run side by side, and inside a job the
+# independent steps run together (.github/scripts/run-parallel.sh). The e2e job is the long pole;
+# see e2e.yml for what it caches.
 on:
   push:
     branches: [main]
@@ -25,9 +29,9 @@ env:
   NEXT_TELEMETRY_DISABLED: '1'
 
 jobs:
-  # Docs-only pushes (docs/**, manual/**, *.md, TASKS.md, .claude/**) skip e2e
-  # and Lighthouse. `static` still runs — it is fast and `tasks:lint` reads
-  # TASKS.md itself, so a docs-only push is exactly the case it must not skip.
+  # Docs-only pushes (docs/**, manual/**, *.md, TASKS.md, .claude/**) skip every test job.
+  # `static` still runs — it is fast and `tasks:lint` reads TASKS.md itself, so a docs-only push is
+  # exactly the case it must not skip.
   changes:
     name: What changed
     runs-on: ubuntu-latest
@@ -51,36 +55,37 @@ jobs:
   static:
     name: Static checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node
 
-      - name: File size (300-line rule)
-        run: pnpm check:filesize
+      # High and critical advisories in what ships fail (SECURITY.md D2, CONVENTIONS.md §15). It
+      # reads the lockfile against the registry's advisories.
+      - name: pnpm audit --prod --audit-level=high
+        run: pnpm audit --prod --audit-level=high
+
+      - name: TASKS.md structure and progress table
+        run: pnpm tasks:lint && pnpm tasks:check
+
+      # Alone, before the others: it regenerates importMap.js in place and puts it back, and the
+      # type check reads that file.
       - name: Generated files are current
         run: pnpm check:generated
-      - name: TASKS.md structure
-        run: pnpm tasks:lint
-      - name: TASKS.md progress table is current
-        run: pnpm tasks:check
 
-      - name: Formatting
-        run: pnpm format:check
-      - name: Lint
-        run: pnpm lint
-      - name: Types
-        run: pnpm typecheck
-      - name: Unit tests
-        run: pnpm test
-      - name: AI eval (recorded set)
-        run: pnpm ai:eval
+      # Read-only checks over the same tree, side by side (each prints in its own group).
+      - name: File size, formatting, lint and types (in parallel)
+        run: >-
+          bash .github/scripts/run-parallel.sh
+          'File size (300-line rule)' 'pnpm check:filesize'
+          'Formatting' 'pnpm format:check'
+          'Lint' 'pnpm lint'
+          'Types' 'pnpm typecheck'
 
-      # Guard only: Helios fetches .gaiadeploy.yml itself from `production` at
-      # the pushed SHA, so this catches a bad manifest on the PR that broke
-      # it, not at deploy time. "Never commit TBD" (DEPLOYMENT.md §3) — a
-      # committed placeholder had another repo's poller failing every 60s for
-      # weeks. One app, one release subdir: exactly one entry, unpacking `web`.
+      # Guard only: Helios fetches .gaiadeploy.yml itself from `production` at the pushed SHA, so
+      # this catches a bad manifest on the PR that broke it, not at deploy time. "Never commit TBD"
+      # (DEPLOYMENT.md §3) — a committed placeholder had another repo's poller failing every 60s
+      # for weeks. One app, one release subdir: exactly one entry, unpacking `web`.
       - name: Deploy manifest exists, parses, has no TBD and one entry for web/
         run: |
           test -f .gaiadeploy.yml || { echo "::error::.gaiadeploy.yml is missing"; exit 1; }
@@ -96,19 +101,50 @@ jobs:
               sys.exit(1)
           PY
 
-  # High and critical advisories in what ships fail (SECURITY.md D2, CONVENTIONS.md §15). It reads
-  # the lockfile against the registry's advisories, so it needs no install.
-  audit:
-    name: Production dependency audit
+  # The unit tests import no database test (`*.db.test.*` are their own run, `db-tests` below).
+  unit:
+    name: Unit tests
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node
-        with:
-          install: 'false'
-      - name: pnpm audit --prod --audit-level=high
-        run: pnpm audit --prod --audit-level=high
+      - name: Unit tests
+        run: pnpm test
+      - name: AI eval (recorded set)
+        run: pnpm ai:eval
+
+  # The CMS's real-database tests (`*.db.test.*`). Each test file gets its own database, cloned
+  # from one migrated template, and drops it after. CMS_TEST_POSTGRES_URL names the maintenance
+  # database; the role must be able to CREATE DATABASE. Without the variable they skip, so this job
+  # is what runs them.
+  db-tests:
+    name: Database tests
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18.0
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-pnpm-node
+      - name: CMS real-database tests
+        run: pnpm test:db
 
   e2e:
     name: End-to-end
@@ -121,7 +157,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     # Lighthouse audits both sites' home pages (lighthouserc.web.json) on the release's own tree,
     # ONE server started as a host runs it (.github/scripts/start-server.sh) and asked for by each
     # hostname, gallery.localhost and shop.localhost, on one port, each host its own site.
@@ -150,16 +186,27 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node
 
+      # Turbopack's build cache, warm from the e2e job's last save on main (e2e.yml). Read only here.
+      - name: Restore the Next build cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: engine/apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
+      # The runner image ships psql; install it only if a future image drops it.
       - name: Postgres client
-        run: sudo apt-get install -y postgresql-client
+        run: command -v psql || sudo apt-get install -y postgresql-client
 
-      - name: db:fresh — the one database (created and migrated)
-        run: pnpm db:fresh --suffix "$DB_SUFFIX"
-
-      # No DATABASE_URL or PAYLOAD_SECRET, and pg's PGHOST fallback at a refusing port
-      # (CONVENTIONS.md §12): the job's PGHOST/PGPORT above point at the real Postgres.
-      - name: Build the app (no database env)
-        run: env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build
+      # The database (4 s) and the build, which never reads one (CONVENTIONS.md §12: no
+      # DATABASE_URL or PAYLOAD_SECRET, and pg's PGHOST fallback at a port that refuses every
+      # connection), side by side.
+      - name: Database (created and migrated) and the build (no database env), in parallel
+        run: >-
+          bash .github/scripts/run-parallel.sh
+          'db:fresh' 'pnpm db:fresh --suffix "$DB_SUFFIX"'
+          'Build' 'env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build'
 
       - name: Assemble the release tree
         run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"

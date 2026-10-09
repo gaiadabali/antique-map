@@ -3,6 +3,16 @@ name: E2E (reusable)
 # Split out of ci.yml to keep both files under the 300-line rule
 # (CONVENTIONS.md §2, applied to workflows). Called only from ci.yml's `e2e`
 # job, never triggered directly.
+#
+# This is CI's long pole, so it is built for wall clock:
+# - the seeded database is a cached snapshot (.github/scripts/e2e-db.sh), keyed on every file that
+#   decides what the seed writes; a hit restores it in seconds, a miss seeds it and saves one;
+# - the build, the database and Playwright's browser install run side by side
+#   (.github/scripts/run-parallel.sh): the build reads no database;
+# - Turbopack's build cache (`.next/cache`) is restored from the last main run, and saved by main
+#   pushes alone, so PRs never churn the repository's cache;
+# - Playwright runs on every core (E2E_WORKERS).
+# The CMS's real-database tests are ci.yml's own `db-tests` job, beside this one.
 on:
   workflow_call:
 
@@ -13,28 +23,25 @@ jobs:
   e2e:
     name: End-to-end
     runs-on: ubuntu-latest
-    timeout-minutes: 40
-    # A bare Postgres 18 service container (no docker-compose stack behind
-    # it) — the image's own docker-entrypoint-initdb.d never runs here
-    # (GitHub Actions `services:` supports no volume mounts), so the
-    # `unaccent`/`pg_trgm` extensions the one e2e database needs are created
-    # explicitly by `db:fresh`'s `createDatabase()`
-    # (engine/tooling/db/psql.mjs), not by docker-compose.dev.yml's init
-    # script.
+    timeout-minutes: 25
+    # A bare Postgres 18 service container (no docker-compose stack behind it) — the image's own
+    # docker-entrypoint-initdb.d never runs here (GitHub Actions `services:` supports no volume
+    # mounts), so the `unaccent`/`pg_trgm` extensions the one e2e database needs are created
+    # explicitly by `db:fresh`'s `createDatabase()` (engine/tooling/db/psql.mjs), not by
+    # docker-compose.dev.yml's init script; a restored snapshot carries them.
     #
-    # PGHOST switches `psql.mjs` to the direct transport
-    # (engine/tooling/db/transport.mjs) instead of `docker compose exec` —
-    # there is no compose project here for `exec` to reach.
+    # PGHOST switches `psql.mjs` to the direct transport (engine/tooling/db/transport.mjs) instead
+    # of `docker compose exec` — there is no compose project here for `exec` to reach. Only SQL
+    # goes through the runner's own psql, so its major version need not match the server's.
     #
-    # DB_SUFFIX names the one database (`indies_ci`): one app, one database,
-    # both sites picked by each request's Host (TASKS.md 2.2).
+    # DB_SUFFIX names the one database (`indies_ci`): one app, one database, both sites picked by
+    # each request's Host (TASKS.md 2.2).
     #
-    # LOCAL_PRODUCTION_BUILD=1: this job serves the production build on a
-    # loopback port for Playwright, which bootCheck() judges local only with
-    # it (DEPLOYMENT.md §7) — without it it is judged production and refuses
-    # to start on sandbox keys. Only CI and a worktree's
-    # .env.local set it; never a host. start-server.sh sets it on the server
-    # again, from an empty environment.
+    # LOCAL_PRODUCTION_BUILD=1: this job serves the production build on a loopback port for
+    # Playwright, which bootCheck() judges local only with it (DEPLOYMENT.md §7) — without it it
+    # is judged production and refuses to start on sandbox keys. Only CI and a worktree's
+    # .env.local set it; never a host. start-server.sh sets it on the server again, from an empty
+    # environment.
     env:
       LOCAL_PRODUCTION_BUILD: '1'
       NEXT_TELEMETRY_DISABLED: '1'
@@ -44,11 +51,14 @@ jobs:
       PGPASSWORD: postgres
       DB_SUFFIX: ci
       E2E_PORT: '4200'
+      # Playwright workers: the runner's 4 cores (playwright.config.ts reads it).
+      E2E_WORKERS: '4'
       # The specs' own SQL reads (tests/e2e/admin/local.mjs) go through psql here, not docker exec.
       E2E_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/indies_ci
       MAILPIT_URL: http://127.0.0.1:8025
       # Where the specs' seed scripts post their cache tags (the server below, same secret).
       REVALIDATE_ORIGIN: http://127.0.0.1:4200
+      SNAPSHOT_DIR: ${{ github.workspace }}/.e2e-db
     services:
       postgres:
         image: postgres:18.0
@@ -70,21 +80,44 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node
 
-      # A client matching the server's major version (18): the distro repo on
-      # ubuntu-latest ships 16; PGDG's own repo is the documented way to get 18.
-      - name: Install postgresql-client-18 (PGDG)
-        run: |
-          sudo apt-get install -y postgresql-common
-          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
-          sudo apt-get install -y postgresql-client-18
+      # The seeded database. The key covers everything the seed's writes depend on (e2e-db.sh key:
+      # the CMS and the packages it imports, the db tooling, the shop publish script, the lockfile,
+      # the snapshot script and the Postgres image); anything else changing cannot change them.
+      - name: The seeded database's cache key
+        id: snapshot-key
+        run: echo "key=$(bash .github/scripts/e2e-db.sh key)" >> "$GITHUB_OUTPUT"
 
-      # The one e2e database: created, then migrated with the committed
-      # migration set under the advisory lock (`pnpm --filter @engine/cms
-      # migrate`, TASKS.md 3.5.c), with a DATABASE_URL the hook builds from
-      # this job's PGHOST/PGPORT/POSTGRES_USER/PGPASSWORD and a dev
-      # PAYLOAD_SECRET of its own. A failed migration fails the step.
-      - name: db:fresh — the one e2e database (created and migrated)
-        run: pnpm db:fresh --suffix "$DB_SUFFIX"
+      - name: Restore the seeded database snapshot
+        id: snapshot
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: .e2e-db
+          key: ${{ steps.snapshot-key.outputs.key }}
+
+      - name: Restore the Next build cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: engine/apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
+      # Playwright's Chromium, cached on Playwright's version (installed in the parallel step below
+      # on a miss; .github/scripts/playwright-browsers.sh).
+      - name: Playwright's version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Playwright's Chromium
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      # The runner image ships psql (SQL only: see the job's note); install it only if a future
+      # image drops it.
+      - name: Postgres client
+        run: command -v psql || sudo apt-get install -y postgresql-client
 
       # One key for the job, shared by the server and by the specs' own seed scripts (placeOrder
       # seals the order links with it): 32 random bytes, base64 (link-key.ts).
@@ -102,43 +135,51 @@ jobs:
           echo "::add-mask::$rev"
           echo "REVALIDATE_SECRET=$rev" >> "$GITHUB_ENV"
 
+      # Three independent things at once; the step takes as long as the slowest.
+      # - The database: the snapshot restored, or on a miss created, migrated (the committed set,
+      #   under the advisory lock: `pnpm --filter @engine/cms migrate`, TASKS.md 3.5.c) and seeded —
+      #   the vocabulary and the 50-work gallery sample published; the shop's 80 mock products as
+      #   drafts, which a picture-less product cannot publish, so `publish-shop-products.ts` gives
+      #   each the gallery sample's first image and publishes it — then snapshotted before any spec
+      #   runs. DB_SUFFIX and PG* name the database.
+      # - The build, which touches no database (CONVENTIONS.md §12): no DATABASE_URL or
+      #   PAYLOAD_SECRET, and PGHOST/PGPORT — which `pg` falls back to — pointed at a port that
+      #   refuses every connection, so a build that tried to connect fails here.
+      # - Playwright's Chromium and its system libraries.
+      - name: Database, build and browsers (in parallel)
+        env:
+          SNAPSHOT_HIT: ${{ steps.snapshot.outputs.cache-hit }}
+          PG_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          bash .github/scripts/run-parallel.sh \
+            'Database (snapshot, or seed and snapshot)' \
+            'bash .github/scripts/e2e-db.sh prepare "$PG_CONTAINER" "indies_$DB_SUFFIX" "$SNAPSHOT_DIR" "$SNAPSHOT_HIT"' \
+            'Build (no database env)' \
+            'env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build' \
+            'Playwright browsers' \
+            'bash .github/scripts/playwright-browsers.sh'
+
+      - name: Save the seeded database snapshot
+        if: steps.snapshot.outputs.cache-hit != 'true'
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: .e2e-db
+          key: ${{ steps.snapshot-key.outputs.key }}
+
+      # Main pushes alone keep Turbopack's cache warm (about 365 MB); a PR reads it, never writes.
+      - name: Save the Next build cache
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: engine/apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+
       - name: unaccent and pg_trgm in the e2e database
         run: |
           db="indies_$DB_SUFFIX"
           found=$(psql -U "$POSTGRES_USER" -d "$db" -tAc "select string_agg(extname, ',' order by extname) from pg_extension where extname in ('pg_trgm','unaccent')")
           echo "$db: $found"
           [ "$found" = "pg_trgm,unaccent" ] || { echo "::error::$db lacks unaccent or pg_trgm"; exit 1; }
-
-      # The CMS's real-database tests (`*.db.test.ts`): the unit job has no
-      # Postgres, so they run here, where the service is. Each makes its own
-      # database on the server CMS_TEST_POSTGRES_URL names (the maintenance
-      # database; the role must be able to CREATE DATABASE), migrates it and
-      # drops it WITH (FORCE). Without the variable they skip, so this step is
-      # what runs them.
-      - name: CMS real-database tests
-        env:
-          CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
-        run: pnpm exec vitest run --project packages .db.test
-
-      # The catalogue the specs browse (the CI database is migrated but empty): the vocabulary and
-      # the 50-work gallery sample published; the shop's 80 mock products as drafts, which a
-      # picture-less product cannot publish, so `publish-shop-products.ts` gives each the gallery
-      # sample's first image and publishes it. DB_SUFFIX and PG* above name the database.
-      - name: Seed the catalogue (vocabulary, gallery sample, shop)
-        run: |
-          pnpm data:seed --layer vocabulary --publish
-          pnpm data:seed --layer gallery-sample --publish
-          pnpm data:seed --layer shop
-          DATABASE_URL="postgres://$POSTGRES_USER:$PGPASSWORD@$PGHOST:$PGPORT/indies_$DB_SUFFIX" \
-            NODE_ENV=development \
-            pnpm --filter @engine/cms payload run "$PWD/tests/e2e/support/publish-shop-products.ts"
-
-      # The build touches no database (CONVENTIONS.md §12): no DATABASE_URL or
-      # PAYLOAD_SECRET, and PGHOST/PGPORT — which this job sets for the steps
-      # above, and which `pg` falls back to — pointed at a port that refuses
-      # every connection, so a build that tried to connect fails here.
-      - name: Build the app (no database env — like the deploy artifact)
-        run: env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build
 
       # The release's own tree (release.yml runs the same script), so every push to main
       # proves the artifact a `production` push would publish boots and serves.
@@ -162,9 +203,6 @@ jobs:
           MIDTRANS_MODE=simulate CRON_SECRET=dev-only-not-a-secret
           TURNSTILE_SITE_KEY=1x00000000000000000000AA
           TURNSTILE_SECRET=1x0000000000000000000000000000000AA
-
-      - name: Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
 
       # playwright.config.ts: the smoke on {gallery, shop} × {390, 1280 px}; the status spec and
       # axe on each host; the host-trust spec (unknown host, spoofed X-Forwarded-Host, the admin
