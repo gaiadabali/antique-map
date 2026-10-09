@@ -5,3 +5,4 @@ export type DailyWorkHeadingProps = {
 }
 
 export function DailyWorkHeading(props: DailyWorkHeadingProps): Promise<unknown>
+export function DailyWorkEnd(props: DailyWorkHeadingProps): Promise<unknown>

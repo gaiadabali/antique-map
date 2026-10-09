@@ -20,3 +20,9 @@ export async function DailyWorkHeading({ user, i18n }) {
     </div>
   )
 }
+
+/** The space under the working views, before the first group, as between two groups. */
+export async function DailyWorkEnd({ user }) {
+  if (!hasRole(user, 'owner', 'editor', 'store')) return null
+  return <div aria-hidden="true" style={{ marginBlockEnd: 'calc(var(--base) * 0.75)' }} />
+}
