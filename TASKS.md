@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/8 | 25/32 | 1 | `████████░░`  78% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/8 | 27/32 | 1 | `████████░░`  84% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **47/54** | **200/221** | **8** | `█████████░`  90% |
+| **All** | 11 phases | | | **47/54** | **202/221** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -778,8 +778,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/shop/{orders,payments,fulfilment}/**`, `engine/packages/cms/src/admin/orders/**`
   - **Read** COMMERCE.md §4, §12, §13; CONTENT-OPERATIONS.md §5.5; `docs/gates/rehearsal.md` R-1 and R-2 (found by the rehearsal); Q10
   - _Requirements: 6.4, 7.5_
-  - [ ] 10.7.a **Replace damaged item** on a delivered order (owner, editor): tick lines and quantities, a note, Confirm; a Rp 0 order, `channel: replacement`, `replacementOf` the original, at the original's store, stock taken atomically (a short store is refused with a reason), tracking email, statuses from `processing`
-  - [ ] 10.7.b a payment after expiry (COMMERCE.md §13): if the same store still holds every unit, re-take them in the same transaction and mark the order `paid`; else `paid` with "reassign, or cancel and return the money"; the flag stays until staff clear it, and the panel offers that
+  - [x] 10.7.a **Replace damaged item** on a delivered order (owner, editor): tick lines and quantities, a note, Confirm; a Rp 0 order, `channel: replacement`, `replacementOf` the original, at the original's store, stock taken atomically (a short store is refused with a reason), tracking email, statuses from `processing`
+  - [x] 10.7.b a payment after expiry (COMMERCE.md §13): if the same store still holds every unit, re-take them in the same transaction and mark the order `paid`; else `paid` with "reassign, or cancel and return the money"; the flag stays until staff clear it, and the panel offers that
   - [ ] 10.7.c **Check:** db tests for both (stock short, stock present, concurrent retake); on staging the late-payment spec (`tests/e2e/rehearsal/late-payment.spec.ts`) ends with the order paid at its store, and a replacement of a delivered order reaches the store panel.
 
 - [ ] **10.8 Staff admin gaps from the 10.4 proxy run** · needs: phase 7 — 🔄 10·W2
