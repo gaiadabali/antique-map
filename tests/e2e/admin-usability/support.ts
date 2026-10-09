@@ -4,6 +4,7 @@
  * sign-in, screenshots and the ledger of what the run created on staging. Credentials come from the
  * environment (`run.sh` loads them from Helios) and are never printed or written anywhere.
  */
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import {
   appendFileSync,
@@ -36,6 +37,30 @@ export const MARK = 'REHEARSAL 10.4'
 export const PIN = { lat: -8.690738, lng: 115.185504 }
 /** A published design DPS-004 stocks (4 on 2026-10-09 per variant; the draft designs with more stock cannot be bought). */
 export const BUY_SLUG = process.env.USABILITY_PRODUCT ?? 'orchid-tree-1863'
+
+/**
+ * A published design whose first variant DPS-004 holds at least two of (one per width per run),
+ * read on Helios — the rehearsals drain the fixed one, and an order for a design DPS-004 lacks
+ * routes to another store, whose staff have no rehearsal account. `USABILITY_PRODUCT` overrides.
+ */
+export function dps004Slug(): string {
+  if (process.env.USABILITY_PRODUCT) return process.env.USABILITY_PRODUCT
+  const query =
+    'select p.slug from products p join products_variants v on v._parent_id = p.id' +
+    ' join stock_levels sl on sl.product_id = p.id and sl.variant_sku = v.sku join stores s on s.id = sl.store_id' +
+    " where s.code = 'DPS-004' and p._status = 'published' and sl.quantity >= 2" +
+    ' and v._order = (select min(_order) from products_variants w where w._parent_id = p.id)' +
+    ' order by sl.quantity desc, p.id limit 1'
+  const slug = execFileSync(
+    'ssh',
+    ['helios', `sudo -u postgres psql -d indies_db -Atc "${query}"`],
+    {
+      encoding: 'utf8',
+    },
+  ).trim()
+  if (!slug) throw new Error('BLOCKED: no published design with 2+ of its first variant at DPS-004')
+  return slug
+}
 
 export const widthOf = (info: TestInfo): number => (info.project.name === 'mobile' ? 390 : 1280)
 

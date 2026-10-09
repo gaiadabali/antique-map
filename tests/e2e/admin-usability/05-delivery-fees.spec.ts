@@ -11,8 +11,6 @@ import { expect, test, type Page } from '@playwright/test'
 import { Meter, need, record, SHOP, signIn } from './support'
 
 const FEE = 'input[id^="field-shop__delivery__bands__"][id$="__feeIdr"]'
-const FREE = '#field-shop__delivery__freeOverIdr'
-const ROW = '[id^="scroll-"][id*="-row-"]'
 
 async function save(page: Page, m?: Meter): Promise<void> {
   const button = page.getByRole('button', { name: 'Save' }).first()
@@ -21,9 +19,26 @@ async function save(page: Page, m?: Meter): Promise<void> {
   await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
 }
 
-test('R5 owner: edit the delivery fees (bands and free-delivery threshold)', async ({
-  page,
-}, info) => {
+/**
+ * Scroll the shop's Delivery group into being and open its rows. Payload renders form fields
+ * lazily as they near the viewport (RenderFields), so the group, far down the page, exists only
+ * once scrolled to; and it keeps each person's collapsed array rows, where a collapsed row shows
+ * only its header (what read as "empty" in the first proxy run): Show All opens the bands.
+ */
+async function openBands(page: Page, m?: Meter): Promise<void> {
+  const bands = page.locator('#field-shop__delivery__bands')
+  for (let n = 0; n < 20 && (await bands.count()) === 0; n += 1) {
+    await page.mouse.wheel(0, 1200)
+    await page.waitForTimeout(300)
+  }
+  await bands.scrollIntoViewIfNeeded()
+  const showAll = bands.getByRole('button', { name: /^(Show All|Tampilkan Semua)$/ })
+  if (m) await m.click(showAll)
+  else await showAll.click()
+  await expect(page.locator(FEE).first()).toBeVisible()
+}
+
+test('R5 owner: edit the delivery fees (the distance bands)', async ({ page }, info) => {
   const creds = need('E2E_OWNER_EMAIL', 'E2E_OWNER_PASSWORD')
   await signIn(page, creds.E2E_OWNER_EMAIL!, creds.E2E_OWNER_PASSWORD!)
   const m = new Meter(page, info, 'R5 edit the delivery fees', 120)
@@ -33,48 +48,41 @@ test('R5 owner: edit the delivery fees (bands and free-delivery threshold)', asy
   await m.click(page.locator('.template-default__wrap a[href="/admin/globals/site-settings"]'))
   await expect(page).toHaveURL(/\/admin\/globals\/site-settings/)
   await page.waitForLoadState('networkidle')
-  let reloads = 0
-  while ((await page.locator(FREE).count()) === 0 && reloads < 3) {
-    reloads += 1
-    await page.reload()
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000)
-  }
-  const thresholdShown = (await page.locator(FREE).count()) > 0
-  const bandRows = await page
-    .locator(ROW)
-    .filter({ hasText: /^Band \d+/ })
-    .count()
+  await openBands(page, m)
   const bandInputs = await page.locator(FEE).count()
-  const anyBandInput = await page
-    .locator(ROW)
-    .filter({ hasText: /^Band \d+/ })
-    .locator('input')
-    .count()
+  expect(bandInputs, 'the distance bands each show a fee to edit').toBeGreaterThan(0)
   await m.shot('r5-1-settings-delivery')
   m.stumble(
-    `Settings > Shop > Delivery: ${bandRows} "Band" rows (Distance bands) holding ${anyBandInput} inputs, so ${bandInputs} fee inputs: the rows open empty. "Free delivery over (IDR)" ${thresholdShown ? 'showed' : 'did not show'} after ${reloads} reload(s) (it was present on some loads and absent on others)`,
+    'the distance band rows may open collapsed (Payload remembers it per person): Show All opens them',
   )
+  // Every band's fee +1,000, saved: the recipe as written (restored off the stopwatch).
+  const fees = page.locator(FEE)
+  const before = await fees.evaluateAll((inputs) =>
+    inputs.map((i) => (i as HTMLInputElement).value),
+  )
+  for (const value of before) expect(value, 'each band has a whole-rupiah fee').toMatch(/^\d+$/)
+  for (let n = 0; n < before.length; n += 1)
+    await fees.nth(n).fill(String(Number(before[n]) + 1000))
+  await save(page, m)
   m.stop()
-  const reason = `the ${bandRows} distance-band rows render with no "Up to km" / "Fee (IDR)" fields, so no band fee can be edited in the admin${thresholdShown ? '' : '; the free-delivery threshold input did not render either'}`
-  m.finish(bandInputs > 0 ? 'PASS' : 'FAIL', { bandRows, bandInputs, thresholdShown, reason })
+  m.finish('PASS', { bandInputs })
+  record({ kind: 'delivery-band-fees-original', value: before.join(',') })
 
-  const original = thresholdShown ? await page.locator(FREE).inputValue() : ''
-  if (/^\d+$/.test(original)) {
-    // Exercise the one editable delivery number and put it back (off the stopwatch).
-    record({ kind: 'delivery-threshold-original', value: original })
-    try {
-      await page.locator(FREE).fill(String(Number(original) + 1000))
-      await save(page)
-      await page.reload()
-      await expect(page.locator(FREE)).toHaveValue(String(Number(original) + 1000))
-    } finally {
-      await page.goto(`${SHOP}/admin/globals/site-settings`)
-      await page.locator(FREE).fill(original)
-      await save(page)
-      await page.reload()
-      await expect(page.locator(FREE), 'the original threshold is back').toHaveValue(original)
+  try {
+    await page.reload()
+    await openBands(page)
+    for (let n = 0; n < before.length; n += 1) {
+      await expect(fees.nth(n)).toHaveValue(String(Number(before[n]) + 1000))
+    }
+  } finally {
+    await page.reload()
+    await openBands(page)
+    for (let n = 0; n < before.length; n += 1) await fees.nth(n).fill(before[n]!)
+    await save(page)
+    await page.reload()
+    await openBands(page)
+    for (let n = 0; n < before.length; n += 1) {
+      await expect(fees.nth(n), 'the original fees are back').toHaveValue(before[n]!)
     }
   }
-  expect(bandInputs, `FAIL: ${reason}`).toBeGreaterThan(0)
 })

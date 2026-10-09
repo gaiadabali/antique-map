@@ -7,7 +7,7 @@
  */
 import { expect, test, type Page } from '@playwright/test'
 
-import { BUY_SLUG, MARK, Meter, need, PIN, record, RUN, SHOP, signIn, widthOf } from './support'
+import { dps004Slug, MARK, Meter, need, PIN, record, RUN, SHOP, signIn, widthOf } from './support'
 
 const FEE = 15_000
 const rupiah = (text: string): number => Number(text.replace(/\D/g, ''))
@@ -25,6 +25,8 @@ test.describe.serial('R4 store user moves an order to delivered', () => {
     page,
   }, info) => {
     const width = widthOf(info)
+    // A design whose first (preselected) variant DPS-004 still stocks, so the order routes there.
+    const BUY_SLUG = dps004Slug()
     const html = await (await page.request.get(`${SHOP}/product/${BUY_SLUG}`)).text()
     expect(
       html.includes('Add to bag') && !/addButton"[^>]*disabled/.test(html),
@@ -66,8 +68,13 @@ test.describe.serial('R4 store user moves an order to delivered', () => {
     await page.goto(`${SHOP}/admin`)
     await pm.click(page.getByRole('link', { name: /Orders to act on/ }))
     await page.waitForLoadState('networkidle')
-    await pm.click(page.getByRole('link', { name: new RegExp(`^#?${number}$`) }).first())
-    await expect(page).toHaveURL(/\/orders\/\d+/)
+    await pm.click(
+      page
+        .locator('a[href^="/admin/orders/"]')
+        .filter({ hasText: `#${number}` })
+        .first(),
+    )
+    await expect(page).toHaveURL(/\/orders\/\d+/, { timeout: 15_000 })
     await page.waitForLoadState('networkidle')
     const priceBox = page.locator('input[name="feeIdr"]')
     const found = (await priceBox.count()) > 0
@@ -121,6 +128,10 @@ test.describe.serial('R4 store user moves an order to delivered', () => {
 
     m.start()
     await page.goto(`${SHOP}/admin`)
+    await page.waitForLoadState('networkidle')
+    // The store's redirect to its panel runs inside the streamed dashboard (`StoreHomeRedirect`), so
+    // it lands a moment after the network is idle: wait for it (on the stopwatch), up to 10 s.
+    await page.waitForURL(/\/admin\/orders$/, { timeout: 10_000 }).catch(() => undefined)
     await page.waitForLoadState('networkidle')
     squeezed.push(`list ${await overflow(page)}`)
     await m.shot('r4-1-store-landing')

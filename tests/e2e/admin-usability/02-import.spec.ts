@@ -20,13 +20,13 @@ test('R2 owner: import a stock spreadsheet', async ({ page }, info) => {
   m.start()
   await page.goto(`${SHOP}/admin`)
   await page.waitForLoadState('networkidle')
-  const link = page.getByRole('link', { name: /import stock|impor stok/i })
-  if ((await link.count()) > 0 && (await link.first().isVisible())) {
-    await m.click(link.first())
-  } else {
-    m.stumble('the sidebar is closed at this width, so the "Import stock" link was not visible')
-    await page.goto(`${SHOP}/admin/stock-import`)
+  // The sidebar opens closed (Payload keeps the choice per person): open it, then the link.
+  const menu = page.getByRole('button', { name: /^(Open Menu|Buka Menu)$/ })
+  if (await menu.isVisible()) {
+    m.stumble('the sidebar starts closed: one tap on the menu button opens it')
+    await m.click(menu)
   }
+  await m.click(page.getByRole('link', { name: /import stock|impor stok/i }).first())
   await page.waitForLoadState('networkidle')
   await expect(
     page.getByRole('heading', { name: /import stock from a spreadsheet/i }),
