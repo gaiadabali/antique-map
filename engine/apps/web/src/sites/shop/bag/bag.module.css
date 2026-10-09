@@ -103,12 +103,7 @@
 
 .variant,
 .unit,
-.lineProblem {
-  margin: 0;
-  font: var(--text-small);
-  color: var(--color-text-muted);
-}
-
+.lineProblem,
 .lineTotal {
   /* Its own height only: stretched to the whole row at 390 px it lay over the quantity form's
      Update button, took half its taps and hid its focus (WCAG 2.4.11; 10.2 keyboard pass). */
@@ -172,11 +167,7 @@
 }
 
 .qtyUpdate:disabled,
-.remove:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
+.remove:disabled,
 .summary {
   display: flex;
   flex-direction: column;
