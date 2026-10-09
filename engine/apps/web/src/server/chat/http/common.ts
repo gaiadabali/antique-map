@@ -8,6 +8,7 @@ import 'server-only'
 
 import { siteFromHost, siteOrigin, SITE_LOCALES } from '@engine/config/sites'
 
+import { readCappedText } from '../../capped-body'
 import type { ChatDeps } from '../context'
 import { CHAT_LIMITS } from '../env'
 import { readCookie, SESSION_COOKIE, verifySessionCookie } from '../identity'
@@ -42,15 +43,15 @@ export function localeOf(value: unknown): SiteLocale {
 
 /** The body as JSON, or `null` when it is too large, not JSON or not an object. */
 export async function readJson(request: Request): Promise<Record<string, unknown> | null> {
-  const declared = Number(request.headers.get('content-length') ?? '0')
-  if (declared > CHAT_LIMITS.maxBodyBytes) return null
   let text: string
   try {
-    text = await request.text()
+    // Capped while read: a chunked body has no Content-Length and would be buffered whole.
+    const read = await readCappedText(request, CHAT_LIMITS.maxBodyBytes)
+    if (read === 'too-large') return null
+    text = read
   } catch {
     return null
   }
-  if (Buffer.byteLength(text) > CHAT_LIMITS.maxBodyBytes) return null
   try {
     const value: unknown = JSON.parse(text)
     return value !== null && typeof value === 'object' && !Array.isArray(value)

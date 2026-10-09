@@ -5,6 +5,7 @@
  * processed upload and puts the results under the keys returned here in the public
  * `derivatives/` prefix (ARCHITECTURE.md §8).
  */
+import '../sharp-concurrency'
 import sharp from 'sharp'
 
 import {

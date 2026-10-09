@@ -17,6 +17,8 @@
  * Checkout is a server action, not a path: the order-creating action calls
  * `limiters.checkout.hit(address)` and answers its own 429 text when the wait is above 0.
  */
+import { setNewest, SweepClock } from '../server/bounded-map'
+
 export type Limit = { readonly name: string; readonly max: number; readonly windowMs: number }
 
 /** §2.10's table, per IP. */
@@ -35,18 +37,21 @@ type Window = { start: number; count: number }
 /** A fixed window per key; entries older than a window are swept as the map grows. */
 export class RateLimiter {
   private readonly windows = new Map<string, Window>()
+  private readonly clock: SweepClock
 
-  constructor(readonly limit: Limit) {}
+  constructor(readonly limit: Limit) {
+    this.clock = new SweepClock(limit.windowMs)
+  }
 
   /**
    * Counts a request from `key`. Returns 0 when it fits, else the whole seconds until the key's
    * window ends (the `Retry-After`).
    */
   hit(key: string, now: number = Date.now()): number {
-    if (this.windows.size >= SWEEP_AT) this.sweep(now)
+    if (this.clock.due(now, this.windows.size >= SWEEP_AT)) this.sweep(now)
     const window = this.windows.get(key)
     if (window === undefined || now - window.start >= this.limit.windowMs) {
-      this.windows.set(key, { start: now, count: 1 })
+      setNewest(this.windows, key, { start: now, count: 1 })
       return 0
     }
     if (window.count >= this.limit.max) {
@@ -64,6 +69,7 @@ export class RateLimiter {
 
   reset(): void {
     this.windows.clear()
+    this.clock.reset()
   }
 }
 

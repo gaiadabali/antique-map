@@ -17,23 +17,25 @@
  * falls back to the same 404 a wrong token gets — never worse than hiding the page, just less
  * precise than the 429 SECURITY.md asks for.
  */
+import { setNewest, SweepClock } from '../../../server/bounded-map'
 
 /** Per SECURITY.md §2.10. */
 export const TRACKING_GUESSES_PER_MINUTE = 30
 const WINDOW_MS = 60_000
 
 const hits = new Map<string, number[]>()
+const clock = new SweepClock(WINDOW_MS)
 
 /** Records a hit for `address` and answers 0 (allowed), or the seconds until the next is. */
 export function trackGuessAllowed(address: string, now: number = Date.now()): number {
+  if (clock.due(now, hits.size > 50_000)) prune(now)
   const recent = (hits.get(address) ?? []).filter((at) => at > now - WINDOW_MS)
   if (recent.length >= TRACKING_GUESSES_PER_MINUTE) {
-    hits.set(address, recent)
+    setNewest(hits, address, recent)
     return Math.max(1, Math.ceil(((recent[0] ?? now) + WINDOW_MS - now) / 1000))
   }
   recent.push(now)
-  hits.set(address, recent)
-  if (hits.size > 50_000) prune(now)
+  setNewest(hits, address, recent)
   return 0
 }
 
@@ -46,4 +48,5 @@ function prune(now: number): void {
 /** Tests only: clears every address's history. */
 export function resetTrackingRateLimit(): void {
   hits.clear()
+  clock.reset()
 }

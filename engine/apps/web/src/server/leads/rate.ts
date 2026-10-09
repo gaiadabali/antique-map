@@ -3,6 +3,7 @@
  * this process's memory — per instance, reset on restart, like `../analytics/rate.ts` (the pattern).
  * A fixed one-hour window per key; entries older than a window are swept as the map grows.
  */
+import { setNewest, SweepClock } from '../bounded-map'
 
 export const LEAD_POSTS_PER_HOUR = 5
 /** The window, in seconds: what a refused post is told to wait at most (`Retry-After`). */
@@ -14,15 +15,16 @@ type Window = { start: number; count: number }
 
 export class PostLimiter {
   private readonly windows = new Map<string, Window>()
+  private readonly clock = new SweepClock(WINDOW_MS)
 
   constructor(private readonly limit: number = LEAD_POSTS_PER_HOUR) {}
 
   /** Counts this post and answers whether it fits in the key's current hour. */
   allow(key: string, now: number = Date.now()): boolean {
-    if (this.windows.size >= SWEEP_AT) this.sweep(now)
+    if (this.clock.due(now, this.windows.size >= SWEEP_AT)) this.sweep(now)
     const window = this.windows.get(key)
     if (window === undefined || now - window.start >= WINDOW_MS) {
-      this.windows.set(key, { start: now, count: 1 })
+      setNewest(this.windows, key, { start: now, count: 1 })
       return true
     }
     if (window.count >= this.limit) return false
@@ -38,5 +40,6 @@ export class PostLimiter {
 
   reset(): void {
     this.windows.clear()
+    this.clock.reset()
   }
 }

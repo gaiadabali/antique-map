@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { RateLimiter, SESSION_LIMIT } from './rate'
+import { MAX_ENTRIES, RateLimiter, SESSION_LIMIT } from './rate'
 import { resetDropped } from './dropped'
 
 describe('the rate limits (ANALYTICS.md §6 step 3)', () => {
@@ -39,5 +39,21 @@ describe('the rate limits (ANALYTICS.md §6 step 3)', () => {
     limiter.allowSession('s1', start + 61_000) // must not have carried the old count
     expect(limiter.allowSession('s1', start + 61_000)).toBe(true)
     expect(resetDropped).toBeTypeOf('function')
+  })
+
+  it('sweeps itself on time and caps live keys, with nobody calling sweep', () => {
+    const size = (m: 'sessions' | 'addresses'): number =>
+      (limiter as unknown as Record<string, Map<string, unknown>>)[m]!.size
+    const now = 1_000_000
+    for (let i = 0; i < 1_000; i += 1) limiter.allowSession(`old-${i}`, now)
+    expect(size('sessions')).toBe(1_000)
+    limiter.allowSession('fresh', now + 61_000)
+    expect(size('sessions')).toBe(1)
+    for (let i = 0; i < MAX_ENTRIES + 50; i += 1) {
+      limiter.allowAddress(`a-${i}`, now + 61_000)
+      limiter.allowSession(`s-${i}`, now + 61_000)
+    }
+    expect(size('addresses')).toBe(MAX_ENTRIES)
+    expect(size('sessions')).toBe(MAX_ENTRIES)
   })
 })

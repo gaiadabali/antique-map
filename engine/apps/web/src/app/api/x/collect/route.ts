@@ -4,7 +4,8 @@
  * process's Payload, opened lazily so a refused request never touches the database.
  */
 import { clientAddress } from '../../../../security/rate-limit'
-import { collect } from '../../../../server/analytics/collect'
+import { collect, MAX_BODY_BYTES } from '../../../../server/analytics/collect'
+import { readCappedText } from '../../../../server/capped-body'
 
 /** The caller's address, or null off nginx (a workstation, CI): `collect` counts those apart. */
 function knownAddress(headers: Headers): string | null {
@@ -13,7 +14,10 @@ function knownAddress(headers: Headers): string | null {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const body = await request.text().catch(() => null)
+  // Capped while read: a chunked body has no Content-Length, and `text()` would buffer it whole.
+  // Over the cap → null, which `collect` drops and answers 204 like any too-large body.
+  const read = await readCappedText(request, MAX_BODY_BYTES).catch(() => null)
+  const body = read === 'too-large' ? null : read
   return collect(
     {
       method: request.method,

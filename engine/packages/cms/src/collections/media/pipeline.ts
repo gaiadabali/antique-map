@@ -62,9 +62,17 @@ const group = (value: unknown): Doc =>
 
 const DEFAULT_LONG_EDGE: number = SITES.gallery.media.publicZoomMaxPx
 
-function storeFromEnv(): MediaPipelineStore | null {
+let cachedStore: { readonly signature: string; readonly store: MediaPipelineStore } | null = null
+
+/** The process's one store (one S3 client), rebuilt only when the environment's target changes. */
+export function storeFromEnv(): MediaPipelineStore | null {
   const target = mediaStorageTarget(process.env)
-  return target ? s3PipelineStore(target) : null
+  if (!target) return null
+  const signature = JSON.stringify(target)
+  if (cachedStore?.signature !== signature) {
+    cachedStore = { signature, store: s3PipelineStore(target) }
+  }
+  return cachedStore.store
 }
 
 function publicUrlFromEnv(): string {
