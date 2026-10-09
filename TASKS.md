@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 5/8 | 11/17 | 0 | `███████░░░`  65% |
-| **All** | 14 phases | | | **65/73** | **237/260** | **8** | `█████████░`  91% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 5/8 | 12/17 | 0 | `███████░░░`  71% |
+| **All** | 14 phases | | | **65/73** | **238/260** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -985,7 +985,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/browse/**` (not 14.1's files), `engine/apps/web/src/sites/gallery/search/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
   - **Read** EXPERIENCE-GALLERY.md §4, DESIGN-SYSTEM.md §5, 12.4's shop browse
   - _Requirements: 12.1_
-  - [ ] 14.4.a the listing at full width under a `SectionHead` with its count; the facet column quiet — hairline groups, a long list (makers, places) shows its first eight with "All n" opening the rest, every option still a real link; sort as underlined text tabs; applied filters as square chips; the quiet pagination; the phone's filter sheet in the same hand; search's form, suggestion and empty state alike; words under `browse.*`, `listing.*`, `search.*`, both languages
+  - [x] 14.4.a the listing at full width under a `SectionHead` with its count; the facet column quiet — hairline groups, a long list (makers, places) shows its first eight with "All n" opening the rest, every option still a real link; sort as underlined text tabs; applied filters as square chips; the quiet pagination; the phone's filter sheet in the same hand; search's form, suggestion and empty state alike; words under `browse.*`, `listing.*`, `search.*`, both languages
   - [ ] 14.4.b **Check:** browse, `/antique-maps`, a filtered page, `/search?q=batavia` and a search with no result at 390 and 1280 in both languages, axe clean, no sideways scroll; facets, sort, paging and "Include sold" still work; the facet column no longer sets the page's height.
 
 - [x] **14.5 The item page** · needs: 14.1 — ✅ 2026-10-09 83300af4
