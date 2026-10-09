@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 7/8 | 15/17 | 0 | `█████████░`  88% |
-| **All** | 14 phases | | | **67/73** | **241/260** | **8** | `█████████░`  93% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 7/8 | 16/17 | 0 | `█████████░`  94% |
+| **All** | 14 phases | | | **67/73** | **242/260** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1016,7 +1016,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `docs/gates/gallery-luxury.md`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
-  - [ ] 14.8.a released to staging; every gallery page at 390 and 1280 in both languages, screenshots recorded
+  - [x] 14.8.a released to staging; every gallery page at 390 and 1280 in both languages, screenshots recorded
   - [ ] 14.8.b **Check:** `docs/gates/gallery-luxury.md` shows each page with axe clean, no sideways scroll, no broken image, no price and no institution named, and the shop's home, browse and product pages unchanged.
 
 ---
