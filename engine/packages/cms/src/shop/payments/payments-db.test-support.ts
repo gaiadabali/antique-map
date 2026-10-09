@@ -28,16 +28,30 @@ export type HeldOrder = { id: number; number: number; product: number; stock: nu
  */
 export async function heldOrder(
   payload: Payload,
-  input: { store: number; qty?: number; left?: number; expiresInMinutes?: number },
+  input: {
+    store: number
+    qty?: number
+    left?: number
+    expiresInMinutes?: number
+    /** An existing product and its stock row at `store` (e.g. one a checkout can buy), instead of a fresh one. */
+    product?: { id: number; stock: number }
+  },
 ): Promise<HeldOrder> {
   const qty = input.qty ?? 2
   sku += 1
-  const product = (await makeProduct(payload, `OEI-PAY-${sku}`)).id
-  const stock = (await payload.create({
-    collection: 'stock-levels',
-    data: { store: input.store, product, quantity: input.left ?? 3 } as never,
-  })) as unknown as { id: number }
-  orderNumber += 1
+  const product = input.product?.id ?? (await makeProduct(payload, `OEI-PAY-${sku}`)).id
+  const stock =
+    input.product === undefined
+      ? ((await payload.create({
+          collection: 'stock-levels',
+          data: { store: input.store, product, quantity: input.left ?? 3 } as never,
+        })) as unknown as { id: number })
+      : { id: input.product.stock }
+  // Past any number a checkout in the same database drew (`nextOrderNumber`: MAX + 1 when the
+  // pushed database has no sequence), so the two never collide.
+  const highest = await payload.find({ collection: 'orders', sort: '-number', limit: 1, depth: 0 })
+  const taken = Number((highest.docs[0] as { number?: unknown } | undefined)?.number ?? 0)
+  orderNumber = Math.max(orderNumber, taken) + 1
   const subtotal = UNIT_PRICE * qty
   const order = (await payload.create({
     collection: 'orders',

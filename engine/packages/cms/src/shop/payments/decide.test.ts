@@ -50,12 +50,20 @@ describe('deciding what a confirmed status does', () => {
     }
   })
 
-  it('flags a late payment on an expired or cancelled order and leaves it where it is', () => {
-    for (const status of ['expired', 'cancelled'] as const) {
-      const decision = decide(at(status), statusOf(), NOW)
-      expect(decision).toMatchObject({ outcome: 'late-payment', move: null })
-      expect(decision.flag).toMatch(new RegExp(`after the order was ${status}`))
-    }
+  it('pays an expired order paid late, with a flag for either stock outcome (COMMERCE.md §13)', () => {
+    const decision = decide(at('expired'), statusOf(), NOW)
+    expect(decision).toMatchObject({ outcome: 'late-payment', move: 'late-paid' })
+    expect(decision.flag).toMatch(
+      /^Paid after expiry \(Rp 205\.000, attempt 1001-1\): stock re-taken/,
+    )
+    expect(decision.flag).toMatch(/send it/)
+    expect(decision.goneFlag).toMatch(/stock gone .*reassign, or cancel and return the money/)
+  })
+
+  it('flags a payment on a cancelled order for the money to go back, and leaves it cancelled', () => {
+    const decision = decide(at('cancelled'), statusOf(), NOW)
+    expect(decision).toMatchObject({ outcome: 'late-payment', move: null, goneFlag: null })
+    expect(decision.flag).toMatch(/after the order was cancelled .*stays cancelled/)
   })
 
   it('changes nothing for the payment it already applied, and flags a second one', () => {

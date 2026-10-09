@@ -13,6 +13,9 @@
  *    the units have left the shelf (COMMERCE.md §4 "Release").
  * 5. **History**: one row — from, to, when, by whom, and the reason given.
  *
+ *    An order paid after expiry whose store no longer held its units holds none
+ *    (`./held-units`): its cancel returns nothing.
+ *
  * Because the status changes in the same transaction under the same lock, the units return once:
  * a second cancel finds the order `cancelled` and is refused before any stock moves. Expiry is the
  * payments core's (`../payments/release`), under the same rule.
@@ -30,6 +33,7 @@ import {
   putBack,
   setStatus,
 } from './order-sql'
+import { holdsUnits } from './held-units'
 import { judgeMove } from './transitions'
 import type { MoveInput, MoveResult } from './types'
 
@@ -68,7 +72,8 @@ export async function moveOrder(payload: Payload, input: MoveInput): Promise<Mov
     if (!judged.ok) return judged
 
     await setStatus(tx, order.id, order.status, input.to, at)
-    if (judged.returnsStock) {
+    const returnsStock = judged.returnsStock && (await holdsUnits(tx, order.id))
+    if (returnsStock) {
       for (const unit of await orderUnits(tx, order.id)) await putBack(tx, order.store, unit, at)
       if (order.status === 'pending_payment' && order.discountCode !== null) {
         await giveBackDiscount(tx, order.discountCode, at)
@@ -79,14 +84,14 @@ export async function moveOrder(payload: Payload, input: MoveInput): Promise<Mov
       to: input.to,
       at,
       by: staff.id,
-      note: judged.returnsStock ? (note ?? 'Cancelled; stock returned.') : note,
+      note: returnsStock ? (note ?? 'Cancelled; stock returned.') : note,
     })
     return {
       ok: true,
       orderId: order.id,
       from: order.status,
       to: input.to,
-      stockReturned: judged.returnsStock,
+      stockReturned: returnsStock,
     }
   })
   // After commit (TASKS.md 6.6, orchestrator decision B): the buyer's status email.

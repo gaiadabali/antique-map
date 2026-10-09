@@ -1,9 +1,9 @@
 /**
  * Expiry, release and reconciliation on a real, pushed Postgres (TASKS.md 6.4.c, 6.4.d): an unpaid
  * order past its window becomes `expired` and its stock returns exactly once — however many sweeps
- * run, one after another or at the same time; a settlement that arrives afterwards is flagged for
- * staff and changes nothing else; Midtrans's own `expire` inside the window closes only the
- * attempt; the reconciler applies a settlement whose notification never came; and opening a
+ * run, one after another or at the same time; a settlement that arrives afterwards re-takes the
+ * units and pays the order, flagged for staff (TASKS.md 10.7.b; `./late-payment.db.test.ts`);
+ * Midtrans's own `expire` inside the window closes only the attempt; the reconciler applies a settlement whose notification never came; and opening a
  * payment numbers its attempts and reopens an open one.
  */
 import { getPayload } from 'payload'
@@ -80,20 +80,18 @@ describe.skipIf(!server)('payment expiry and reconciliation, on a real database'
     expired = { id: paying.id, stock: paying.stock, attempt: midtransOrderId }
   }, 60_000)
 
-  it('flags a settlement that lands after the order expired, and applies nothing', async () => {
+  it('a settlement that lands after the order expired re-takes its units and pays it, flagged (10.7.b)', async () => {
     const { body } = simulator.emit(expired.attempt, 'settle')
     expect((await webhook(body)).status).toBe(200)
     const row = await read.order(expired.id)
-    expect(row).toMatchObject({
-      status: 'expired',
-      payment_paid_at: null,
-      needs_attention_flag: true,
-    })
-    expect(row.needs_attention_reason).toMatch(/after the order was expired/)
+    expect(row).toMatchObject({ status: 'paid', needs_attention_flag: true })
+    expect(row.payment_paid_at).not.toBeNull()
+    expect(row.needs_attention_reason).toMatch(/^Paid after expiry .*stock re-taken/)
     expect((await read.events(expired.id)).at(-1)).toMatchObject({ outcome: 'late-payment' })
-    // The stock it gave back stays given back; a sweep does not touch it again.
+    // Its two units are taken again, once; a sweep does not touch a paid order.
+    expect(await read.stock(expired.stock)).toBe(3)
     await sweep()
-    expect(await read.stock(expired.stock)).toBe(5)
+    expect(await read.stock(expired.stock)).toBe(3)
   })
 
   it('closes only the attempt on Midtrans expire inside the window; the sweep expires it after', async () => {

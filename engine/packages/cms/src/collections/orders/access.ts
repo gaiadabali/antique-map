@@ -6,7 +6,7 @@
  *   order code and the staff actions it allows" (CONTENT-MODEL.md §4): it is priced on the server,
  *   takes stock atomically and opens a payment, none of which a REST `POST` could do — and a body
  *   it accepted would be a price taken from a request (AGENTS.md). A replacement order (§12) is one
- *   of those staff actions, built in phase 7. An order is never deleted: it is the record the
+ *   of those staff actions (`./endpoints` → `shop/fulfilment/replace`, owner and editor only). An order is never deleted: it is the record the
  *   payment ledger, the stock and the buyer's tracking link point at.
  * - **Read and update**: the owner and the editors every order; store staff their own store's,
  *   by a `Where` on `store`, so lists, counts, lookups and updates by query are scoped.

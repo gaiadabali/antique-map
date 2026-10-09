@@ -30,7 +30,14 @@ export type OrderRow = {
   readonly store: number | Readonly<Record<string, unknown>>
   readonly storeSnapshot?: Readonly<Record<string, unknown>> | null
   readonly totals: Readonly<Record<string, unknown>>
-  readonly needsAttention?: boolean | null
+  readonly needsAttention?: {
+    readonly flag?: boolean | null
+    readonly reason?: string | null
+  } | null
+  /** `replacement` for a Rp 0 replacement of a damaged item (TASKS.md 10.7.a), else `web`. */
+  readonly channel?: 'web' | 'replacement' | null
+  /** The order a replacement replaces (its id: depth 0). */
+  readonly replacementOf?: number | null
   readonly driverImage?: { readonly key?: string | null } | null
   /** The quote deadline while `awaiting_quote` (TASKS.md 6.6); the payment deadline after. */
   readonly expiresAt?: string | null
@@ -49,6 +56,8 @@ const ORDER_ROW_SELECT = {
   storeSnapshot: true,
   totals: true,
   needsAttention: true,
+  channel: true,
+  replacementOf: true,
   driverImage: true,
   expiresAt: true,
   updatedAt: true,
@@ -128,6 +137,44 @@ export async function loadOrder(
     return doc as unknown as OrderRow
   } catch {
     return null
+  }
+}
+
+/** A replacement or an original, as the other's screen links to it (TASKS.md 10.7.a). */
+export type LinkedOrder = {
+  readonly id: number
+  readonly number: number
+  readonly status: OrderStatus
+}
+
+/**
+ * The orders linked to `order` as replacements: those that replace it, and the one it replaces —
+ * read as the signed-in user, so a store user sees only those at their own store.
+ */
+export async function loadLinkedOrders(
+  payload: Payload,
+  req: PayloadRequest,
+  order: Pick<OrderRow, 'id' | 'replacementOf'>,
+): Promise<{ replacements: readonly LinkedOrder[]; original: LinkedOrder | null }> {
+  const read = (where: Where) =>
+    payload.find({
+      collection: 'orders',
+      depth: 0,
+      limit: 20,
+      overrideAccess: false,
+      user: req.user,
+      req,
+      select: { number: true, status: true },
+      sort: 'createdAt',
+      where,
+    })
+  const [replacements, original] = await Promise.all([
+    read({ replacementOf: { equals: order.id } }),
+    order.replacementOf ? read({ id: { equals: order.replacementOf } }) : null,
+  ])
+  return {
+    replacements: replacements.docs as unknown as LinkedOrder[],
+    original: (original?.docs[0] as unknown as LinkedOrder | undefined) ?? null,
   }
 }
 

@@ -22,7 +22,7 @@ definitions are in [CONTENT-MODEL.md](CONTENT-MODEL.md); the threat model is [SE
 - **Rounding happens once**: a percentage discount is computed on the items subtotal, rounded half-up to the whole
   rupiah, and stored. Nothing else produces a fraction.
 - **Totals:** `subtotal = Σ unitPrice × qty` · `discount` · `deliveryFee` · `total = subtotal − discount +
-  deliveryFee`. Every figure is stored on the order.
+deliveryFee`. Every figure is stored on the order.
 - Midtrans receives the lines, the discount as one negative item and the delivery fee as one item, summing exactly
   to `gross_amount` (Midtrans refuses a mismatch). Item names are cut to its 50-character limit.
 
@@ -36,11 +36,11 @@ line nobody holds reads "Out of stock" and is left out of checkout.
 **Checkout** is one short page in three steps, phone first. Every order is delivered: there is no online pickup at
 launch (DR-6).
 
-| Step | Asks | Validated on the server |
-| --- | --- | --- |
-| 1. Contact | full name (one field), WhatsApp number, email, language | WhatsApp normalised to E.164 (a foreign number is accepted: buyers are often visitors); email shape; all required |
-| 2. Delivery | **a map pin** (lat/lng), the address as text, notes for the driver (landmark, villa name), an optional gift note (S10) | the pin is inside Indonesia and inside the last delivery band of a store that holds every line (§4); text ≤ 500 characters |
-| 3. Review and pay | the lines, the sending area, the delivery fee, the discount code field, the total | the code (§5); the total recomputed and compared with the one shown |
+| Step              | Asks                                                                                                                   | Validated on the server                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 1. Contact        | full name (one field), WhatsApp number, email, language                                                                | WhatsApp normalised to E.164 (a foreign number is accepted: buyers are often visitors); email shape; all required          |
+| 2. Delivery       | **a map pin** (lat/lng), the address as text, notes for the driver (landmark, villa name), an optional gift note (S10) | the pin is inside Indonesia and inside the last delivery band of a store that holds every line (§4); text ≤ 500 characters |
+| 3. Review and pay | the lines, the sending area, the delivery fee, the discount code field, the total                                      | the code (§5); the total recomputed and compared with the one shown                                                        |
 
 The delivery step shows the fee from the same assignment the order will use (§4), without taking stock. The pay
 button posts the cart, the contact, the pin and the total the buyer saw (`expectedTotal`, for comparison only). In
@@ -83,11 +83,11 @@ more on fresh counts, and if that fails too the buyer is told which item ran out
 change that justifies it, guarded by a compare-and-set (`… WHERE id = $1 AND status = $from`, one row), so it
 happens once:
 
-| When | Status after |
-| --- | --- |
-| **the payment window** (`expiresAt`, `orderExpiryMinutes` after creation, one for every method) passes unpaid — the sweep (§6) | `expired` |
-| Midtrans reports the last attempt `expire` or `cancel` and no time is left | `expired` |
-| owner or editor cancels, before or after payment, until a driver collects the order (`on_the_way`) | `cancelled` |
+| When                                                                                                                           | Status after |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| **the payment window** (`expiresAt`, `orderExpiryMinutes` after creation, one for every method) passes unpaid — the sweep (§6) | `expired`    |
+| Midtrans reports the last attempt `expire` or `cancel` and no time is left                                                     | `expired`    |
+| owner or editor cancels, before or after payment, until a driver collects the order (`on_the_way`)                             | `cancelled`  |
 
 A denied or failed card attempt does **not** release: the buyer can try another method until `expiresAt`. Nor does
 a cancellation once `on_the_way`: the units have left the shelf, and any that come back return with the next count.
@@ -95,6 +95,12 @@ a cancellation once `on_the_way`: the units have left the shelf, and any that co
 **Staff reassignment** (owner or editor, never store; `paid` or `processing`): one transaction decrements the new
 store (fails if short), returns the units to the old one, sets `store` and `distanceKm`, and writes a history
 entry. The delivery fee the buyer paid never changes.
+
+**An order that holds nothing.** One order is `paid` without units on its shelf: a payment after expiry whose
+store no longer held every unit (§13). Its history says so (the `expired → paid` note starts "Paid after expiry;
+its store no longer held every unit"), so its cancel returns nothing and its reassignment only takes at the new
+store (noting "Units taken at the new store"); from then on it holds them like any other order. A recount still
+counts it as held until then, which understates what the store can sell, never overstates it.
 
 **A count is the physical count.** Staff on the stock screen (a store user for their own store, an editor or the
 owner for any) and the stock import enter what is on the shelf, units packed for an order but not yet collected
@@ -137,7 +143,9 @@ apply    ONE transaction (READ COMMITTED):
      | fraud_status | status_code) ON CONFLICT DO NOTHING → no row: duplicate → commit no-op → 200
   2. lock the order (FOR UPDATE); no such order → record outcome `unknown-order` → 200
   3. gross_amount ≠ order total → outcome `amount-mismatch`, flag the order, do not mark paid
-  4. map the status:  settlement, capture+accept → paid (history: Midtrans)
+  4. map the status:  settlement, capture+accept → paid (history: Midtrans); on an expired order,
+                                                  paid after expiry (§13): units re-taken if the
+                                                  store still holds them, flagged either way
                       pending, deny, failure      → recorded; the order stays pending_payment
                       capture+challenge           → recorded; flagged for the owner (Midtrans dashboard)
                       expire, cancel              → expired + release, if no time is left (§4)
@@ -169,7 +177,7 @@ on the pay step, as a server-rendered prop — never a `NEXT_PUBLIC_*` variable,
 and production.
 
 **Simulate mode** (`MIDTRANS_MODE=simulate`: workstations, CI and staging; the boot check refuses it in
-production): no Midtrans at all. "Pay" opens a page of our own with *Settle*, *Pending*, *Deny* and *Expire*, each
+production): no Midtrans at all. "Pay" opens a page of our own with _Settle_, _Pending_, _Deny_ and _Expire_, each
 posting a notification signed with a fixed local key to the **same** webhook route, so the real path is exercised
 end to end.
 
@@ -188,12 +196,12 @@ end to end.
                                                 (stock released unless on_the_way; money returned, §12)
 ```
 
-| Who | May move |
-| --- | --- |
-| Midtrans and the sweep | `pending_payment` → `paid` or `expired` |
-| `store` (own store's orders only) | one step **forward** at a time, from `paid` to `delivered`; or hand the order back with a reason (`needsAttention`) for reassignment |
-| `owner`, `editor` | any forward step, one step back to correct a mistake, reassign (§4), cancel, and create a replacement (§12) |
-| the buyer | nothing |
+| Who                               | May move                                                                                                                                        |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Midtrans and the sweep            | `pending_payment` → `paid` or `expired`                                                                                                         |
+| `store` (own store's orders only) | one step **forward** at a time, from `paid` to `delivered`; or hand the order back with a reason (`needsAttention`) for reassignment            |
+| `owner`, `editor`                 | any forward step, one step back to correct a mistake, reassign (§4), cancel, create a replacement (§12), and clear `needsAttention` with a note |
+| the buyer                         | nothing                                                                                                                                         |
 
 Guards: `on_the_way` needs the driver image (§9); nothing moves out of `delivered`, `cancelled` or `expired` except
 an owner's or editor's one step back from `delivered`. Every change is a compare-and-set on the current status.
@@ -204,7 +212,7 @@ an owner's or editor's one step back from `delivered`. Every change is a compare
 product, variantSku, sku, name, variantLabel, unitPrice, qty, lineTotal, image }` · `contact { name, whatsapp,
 email, locale }` · `delivery { address, notes, lat, lng }` · `giftNote` · `store` + snapshot `{ code, name, area
 }` · `distanceKm` · `totals { subtotal, discount, deliveryFee, total }` · `discount { code, kind, value }` ·
-`status` · `history[] { from, to, at, by (a user, or `midtrans` / `system`), note }` · `payment { attempts[] {
+`status` · `history[] { from, to, at, by (a user, or `midtrans`/`system`), note }` · `payment { attempts[] {
 midtransOrderId, snapToken, createdAt, state }, method, transactionId, paidAt }` · `driverImage { key,
 contentType, width, height, uploadedAt, uploadedBy }` · `trackingTokenHash` · `expiresAt` · `needsAttention {
 flag, reason }`. The Snap token and the token hash are never in a public response.
@@ -228,8 +236,8 @@ the order is created; only its SHA-256 is stored, so a resent link is a new toke
 missing one; the token is scrubbed from logs and never reaches analytics. The link stops working 30 days after
 delivery or cancellation (COMPLIANCE.md §1; SECURITY.md §2.5).
 
-**The buyer sees:** the order number and date; a timeline — *payment received → processing → waiting for driver
-→ picked up, on the way → delivered* — with the time of each step reached (DR-7); the lines and totals; the
+**The buyer sees:** the order number and date; a timeline — _payment received → processing → waiting for driver
+→ picked up, on the way → delivered_ — with the time of each step reached (DR-7); the lines and totals; the
 delivery area; their phone and email masked; the sending store's name and area; the driver image once
 `on_the_way`; and the shop's WhatsApp (click-to-chat, the order number prefilled). While `pending_payment`, a
 **Pay** button reopens Snap with the time left; `expired` and `cancelled` say what happened and how to reach the
@@ -237,12 +245,12 @@ shop. Never shown: the pin, store stock, staff names or notes.
 
 ## 11. Notifications
 
-| When | Who | How |
-| --- | --- | --- |
-| order created | buyer | email: what was ordered, pay within N minutes, the tracking link |
-| `paid` and each later status, `cancelled`, `expired` | buyer | email in the buyer's language, with the tracking link; `on_the_way` includes the driver image |
-| `paid` (assigned) or reassigned | the store's users | Open: the store alert channel; default email to each `store` user of that store, plus the admin's "New orders" list |
-| `needsAttention` raised | owner, editor | email |
+| When                                                 | Who               | How                                                                                                                 |
+| ---------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------- |
+| order created                                        | buyer             | email: what was ordered, pay within N minutes, the tracking link                                                    |
+| `paid` and each later status, `cancelled`, `expired` | buyer             | email in the buyer's language, with the tracking link; `on_the_way` includes the driver image                       |
+| `paid` (assigned) or reassigned                      | the store's users | Open: the store alert channel; default email to each `store` user of that store, plus the admin's "New orders" list |
+| `needsAttention` raised                              | owner, editor     | email                                                                                                               |
 
 Emails are Payload jobs queued in the **same transaction** as the change, so a rolled-back change sends nothing
 and a crash after commit loses nothing; each job is keyed by order and status, so a retry sends once. Staging sends
@@ -254,36 +262,51 @@ prefilled with the tracking link. No WhatsApp API.
 
 There are **no refunds and no change-of-mind returns** (S12, DR-5; counsel confirms the wording against Indonesian
 consumer law, COMPLIANCE.md). A **damaged item is replaced on a photo**, off the site: the buyer sends the photo on
-WhatsApp, and the owner or an editor creates a **replacement order** in the admin (`channel: replacement`,
-`replacementOf` the original, total Rp 0 — no fee, no discount, no payment) at the original's store. It takes the
-stock atomically (§4; a short store is reassigned), emails the buyer a tracking link and goes through the same
-statuses from `processing` (CONTENT-OPERATIONS.md §5.5). It is a staff action, not a buyer flow. When the shop
+WhatsApp, and the owner or an editor opens the **delivered** order in the order panel → **Replace damaged item** →
+ticks the damaged lines and how many of each → a required one-line note → **Confirm**
+(`POST /api/orders/{id}/replace`; CONTENT-OPERATIONS.md §5.5). In one transaction, with the original locked:
+
+- a new order, `channel: replacement`, `replacementOf` the original, with its contact, delivery and store; the
+  lines at their original unit price, for the record, and every total Rp 0 (subtotal, discount, fee, total — no
+  payment, no payment window); status `processing`; a new tracking token; a history row naming the member of
+  staff and the note;
+- its units taken at the original's store by the atomic decrement (§4). **A short store writes nothing**: the
+  panel says "Not enough at {store}: restock it first, then try again";
+- never more than the original sold of a line, counting its replacements that still stand, so a second click
+  on Confirm is refused;
+- a history row on the original naming the replacement.
+
+After commit the buyer is emailed the replacement's tracking link ("being packed"); it shows in its store's
+_In progress_ list marked "Replacement — Rp 0" and goes through the same statuses as any order. Only the owner
+and editors may do it: store staff and anyone signed out are refused by the server, not just the screen. A
+replacement is never counted as a sale: it has no `paidAt`. It is a staff action, not a buyer flow. When the shop
 itself cannot fulfil a paid order (§13), the owner returns the money in the Midtrans dashboard and the order
 records it; that is the business correcting its own mistake, not a refund policy.
 
 ## 13. Edge cases
 
-| Case | What happens |
-| --- | --- |
-| The same notification twice | the dedupe key exists → no-op, 200 |
-| `pending`, then `settlement` | different keys → both recorded, the order `paid` once |
-| Bad signature | 401, alert, nothing written |
-| Amount differs from the order total | recorded, order flagged, not marked paid |
-| Notification for an unknown order | recorded as `unknown-order`, 200, alert |
-| Webhook never arrives | the sweep asks the status API before it expires anything |
-| Price changed between review and pay | no order; the page shows the new total and asks again |
-| Out of stock at pay time | cannot happen once the order exists (its stock is taken); at creation the decrement fails → one re-assignment → else "X just sold out" |
-| Two buyers, the last unit | one `UPDATE` wins; the other is told before paying |
-| Payment lands after the order expired | always flagged (`needsAttention`), never silently re-sold: if the units are still at the same store they are re-taken and the order is `paid`; if not, `paid` with "reassign, or cancel and return the money" |
-| Two attempts both settle | the second is recorded and flagged; the owner returns it in the Midtrans dashboard |
-| Fraud challenge on a card | stays `pending_payment`, flagged; the owner accepts or denies in Midtrans and its notification applies |
-| Store set inactive with open orders | no new assignments; open orders flagged for reassignment; its staff can still finish them |
-| The shelf is empty despite the count | the store tells the owner; reassign, or cancel and return the money |
-| No store holds every line | no order; remove a line or ask on WhatsApp (§4) |
-| Buyer outside Indonesia, or beyond the last band | no band applies → no order; WhatsApp offered. A foreign phone or card is fine: the charge is in rupiah |
-| Discount limit reached by a concurrent order | the atomic increment fails → the code is refused, nothing else changes |
-| Courier prices changed | the owner edits the bands (CONTENT-OPERATIONS.md §6.3) and new quotes use them at once; an order already created keeps the fee it was quoted; a band edited between the quote and Pay is caught like a price change (§3) |
-| Product edited or unpublished after the order | the order's snapshot is unchanged |
+| Case                                             | What happens                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The same notification twice                      | the dedupe key exists → no-op, 200                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `pending`, then `settlement`                     | different keys → both recorded, the order `paid` once                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Bad signature                                    | 401, alert, nothing written                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Amount differs from the order total              | recorded, order flagged, not marked paid                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Notification for an unknown order                | recorded as `unknown-order`, 200, alert                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Webhook never arrives                            | the sweep asks the status API before it expires anything                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Price changed between review and pay             | no order; the page shows the new total and asks again                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Out of stock at pay time                         | cannot happen once the order exists (its stock is taken); at creation the decrement fails → one re-assignment → else "X just sold out"                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Two buyers, the last unit                        | one `UPDATE` wins; the other is told before paying                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Payment lands after the order expired            | `paid` either way (the money is in), always flagged (`needsAttention`), in the same transaction as the event: if the same store still holds every unit they are re-taken by the atomic decrement ("stock re-taken at its store, send it"); if not, nothing is taken ("stock gone at its store — reassign, or cancel and return the money"; see §4, an order that holds nothing). A stock row locked past 2 s rolls it all back and answers 503 (§6); a replay is a no-op by its dedupe key. Staff clear the flag in the order panel with a note, kept in history |
+| Payment lands after the order was cancelled      | recorded and flagged ("it stays cancelled, return the money"): staff cancelled it on purpose, so a later payment does not reopen it; the owner returns it in the Midtrans dashboard                                                                                                                                                                                                                                                                                                                                                                              |
+| Two attempts both settle                         | the second is recorded and flagged; the owner returns it in the Midtrans dashboard                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Fraud challenge on a card                        | stays `pending_payment`, flagged; the owner accepts or denies in Midtrans and its notification applies                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Store set inactive with open orders              | no new assignments; open orders flagged for reassignment; its staff can still finish them                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| The shelf is empty despite the count             | the store tells the owner; reassign, or cancel and return the money                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| No store holds every line                        | no order; remove a line or ask on WhatsApp (§4)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Buyer outside Indonesia, or beyond the last band | no band applies → no order; WhatsApp offered. A foreign phone or card is fine: the charge is in rupiah                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Discount limit reached by a concurrent order     | the atomic increment fails → the code is refused, nothing else changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Courier prices changed                           | the owner edits the bands (CONTENT-OPERATIONS.md §6.3) and new quotes use them at once; an order already created keeps the fee it was quoted; a band edited between the quote and Pay is caught like a price change (§3)                                                                                                                                                                                                                                                                                                                                         |
+| Product edited or unpublished after the order    | the order's snapshot is unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ## 14. The gallery: no transaction
 
@@ -297,8 +320,8 @@ validates it, rate-limits it (SECURITY.md) and creates a `lead` (`ask`, `sell` o
 
 ## Open
 
-- **`orderExpiryMinutes`** (the payment window) — default 60 minutes. *Owner.*
-- **Free-shipping threshold** measured after the discount (default) or before. *Owner.*
-- **Store alert channel** — default email to the store's users and the admin list. *Owner.*
-- **Order number prefix** — default none. **Email provider for production** — DEPLOYMENT.md. *Owner, DevOps.*
-- **Welcome code value and how buyers receive it** (S13). *Owner.*
+- **`orderExpiryMinutes`** (the payment window) — default 60 minutes. _Owner._
+- **Free-shipping threshold** measured after the discount (default) or before. _Owner._
+- **Store alert channel** — default email to the store's users and the admin list. _Owner._
+- **Order number prefix** — default none. **Email provider for production** — DEPLOYMENT.md. _Owner, DevOps._
+- **Welcome code value and how buyers receive it** (S13). _Owner._

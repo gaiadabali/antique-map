@@ -9,9 +9,14 @@
  *
  * Money that arrives where it should not is **flagged for staff, never silently applied**:
  * - an amount other than the order's priced total — not marked paid (SECURITY.md W2);
- * - a payment on an `expired` or `cancelled` order — the order stays where it is, flagged: its
- *   units may have been sold again, so the owner decides (re-take the stock, reassign, or return
- *   the money in the Midtrans dashboard). See the report's Found note on COMMERCE.md §13.
+ * - a payment on an `expired` order (COMMERCE.md §13; TASKS.md 10.7.b) — `move: 'late-paid'`: the
+ *   order becomes `paid` either way, because the money is in. `./late-payment` re-takes its units
+ *   at the same store in the same transaction when the store still holds every one (`flag`:
+ *   "stock re-taken, send it"); otherwise it holds none (`goneFlag`: "reassign, or cancel and
+ *   return the money"). Always flagged, so staff look before it ships;
+ * - a payment on a `cancelled` order — it stays `cancelled`, flagged for the money's return: staff
+ *   cancelled it on purpose (the buyer asked, the shop could not send it), and a payment arriving
+ *   afterwards does not overrule them;
  * - a second settled payment on a paid order (another attempt) — flagged for a return;
  * - a card capture under fraud challenge — flagged for the owner's decision in Midtrans.
  */
@@ -49,9 +54,12 @@ export type LockedOrder = {
 
 export type Decision = {
   readonly outcome: Outcome
-  readonly move: 'paid' | 'expired' | null
-  /** A reason to raise `needsAttention` with, for staff. */
+  /** `late-paid`: an expired order paid after all — `paid`, its stock re-taken if it can be. */
+  readonly move: 'paid' | 'expired' | 'late-paid' | null
+  /** A reason to raise `needsAttention` with, for staff (for `late-paid`: the stock re-taken). */
   readonly flag: string | null
+  /** For `late-paid` only: the reason to raise instead when the store no longer holds the units. */
+  readonly goneFlag: string | null
   /** A history note written without a status change. */
   readonly note: string | null
 }
@@ -66,6 +74,7 @@ const decision = (outcome: Outcome, rest: Partial<Omit<Decision, 'outcome'>> = {
   outcome,
   move: null,
   flag: null,
+  goneFlag: null,
   note: null,
   ...rest,
 })
@@ -93,9 +102,17 @@ export function decide(order: LockedOrder | null, status: MidtransStatus, now: D
 
   if (isSuccess(status)) {
     if (order.status === 'pending_payment') return decision('paid', { move: 'paid' })
-    if (order.status === 'expired' || order.status === 'cancelled') {
+    const paid = `${rupiah(status.grossAmount)}, attempt ${attempt}`
+    if (order.status === 'expired') {
       return decision('late-payment', {
-        flag: `Paid (${rupiah(status.grossAmount)}, attempt ${attempt}) after the order was ${order.status}. Its stock may have sold again: re-take the stock and send it, or return the money in the Midtrans dashboard.`,
+        move: 'late-paid',
+        flag: `Paid after expiry (${paid}): stock re-taken at its store, send it.`,
+        goneFlag: `Paid after expiry (${paid}): stock gone at its store — reassign, or cancel and return the money in the Midtrans dashboard.`,
+      })
+    }
+    if (order.status === 'cancelled') {
+      return decision('late-payment', {
+        flag: `Paid after the order was cancelled (${paid}): it stays cancelled. Return the money in the Midtrans dashboard.`,
       })
     }
     if (status.transactionId !== null && status.transactionId === order.paidTransactionId) {

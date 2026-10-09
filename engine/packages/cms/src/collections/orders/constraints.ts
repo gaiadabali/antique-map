@@ -8,7 +8,8 @@
  *   discount no more than the subtotal, and `total = subtotal − discount + deliveryFee` exactly,
  *   the fee taken as zero while it is unset (COMMERCE.md §2; TASKS.md 6.6: `awaiting_quote` holds
  *   no fee yet): an order never carries a total that is not the sum of its parts. A replacement
- *   order (§12) is priced at Rp 0 throughout — lines at 0, no fee, no discount — and satisfies it.
+ *   order (§12) totals Rp 0 — subtotal, discount, fee and total all 0 — and satisfies it; its
+ *   lines keep their original unit price for the record (`lineTotal = unitPrice × qty` still holds).
  * - **`orders_totals_whole`** — whole rupiah, every one set; the delivery fee too, once quoted.
  * - **`orders_lines_priced`** — a line has a whole quantity of at least one, a whole unit price of
  *   zero or more, and `lineTotal = unitPrice × qty`.

@@ -89,6 +89,35 @@ export const ORDERS_PANEL_COPY = t({
   cancelReasonLabel: { en: 'Reason', id: 'Alasan' },
   cancelSubmit: { en: 'Confirm cancellation', id: 'Konfirmasi pembatalan' },
 
+  // Replace damaged item (TASKS.md 10.7.a; CONTENT-OPERATIONS.md §5.5)
+  replaceDamaged: { en: 'Replace damaged item', id: 'Ganti barang rusak' },
+  replaceHint: {
+    en: 'Tick the damaged items and how many. A new order goes to the buyer from {store} at Rp 0 — no payment, nothing refunded.',
+    id: 'Centang barang yang rusak dan jumlahnya. Pesanan baru dikirim ke pembeli dari {store} seharga Rp 0 — tanpa pembayaran, tanpa pengembalian dana.',
+  },
+  replaceQty: { en: 'How many', id: 'Jumlah' },
+  replaceNoteLabel: { en: 'What was damaged (one line)', id: 'Apa yang rusak (satu baris)' },
+  replaceNotePlaceholder: {
+    en: 'Frame cracked, photo on WhatsApp',
+    id: 'Bingkai retak, foto di WhatsApp',
+  },
+  replaceSubmit: { en: 'Confirm replacement', id: 'Konfirmasi penggantian' },
+  replacementBadge: {
+    en: 'Replacement — Rp 0, no payment to collect',
+    id: 'Pengganti — Rp 0, tidak ada pembayaran',
+  },
+  replacementOf: { en: 'Replaces order', id: 'Mengganti pesanan' },
+  replacedBy: { en: 'Replaced by', id: 'Diganti dengan' },
+
+  // Clearing the "Needs you" flag (TASKS.md 10.7.b; runbook §7)
+  clearFlag: { en: 'Clear the flag', id: 'Hapus tanda' },
+  clearFlagNoteLabel: { en: 'What was done about it', id: 'Apa yang sudah dilakukan' },
+  clearFlagNotePlaceholder: {
+    en: 'Sent from the same store; buyer told on WhatsApp',
+    id: 'Dikirim dari toko yang sama; pembeli sudah dikabari lewat WhatsApp',
+  },
+  clearFlagSubmit: { en: 'Confirm, clear the flag', id: 'Konfirmasi, hapus tanda' },
+
   // Send price (TASKS.md 6.6.c)
   deliveryFee: { en: 'Delivery', id: 'Ongkos kirim' },
   sendPriceTitle: { en: 'Send the delivery price', id: 'Kirim ongkos kirim' },
@@ -181,6 +210,28 @@ export const ORDERS_PANEL_COPY = t({
   refusal_forbidden: {
     en: 'You may not quote this order.',
     id: 'Anda tidak dapat memberi harga pesanan ini.',
+  },
+  // `ReplaceRefusal`, `ClearFlagRefusal` (TASKS.md 10.7)
+  refusal_note_required: { en: 'Write a short note first.', id: 'Tulis catatan singkat dulu.' },
+  refusal_replace_no_lines: {
+    en: 'Tick at least one item to replace.',
+    id: 'Centang setidaknya satu barang yang akan diganti.',
+  },
+  refusal_replace_too_many: {
+    en: 'That is more than the order sold of an item, counting earlier replacements.',
+    id: 'Jumlah itu melebihi yang terjual dalam pesanan ini, termasuk penggantian sebelumnya.',
+  },
+  refusal_replace_short: {
+    en: 'Not enough at {store}: restock it first, then try again. Nothing was created.',
+    id: 'Stok di {store} tidak cukup: tambah stok dulu, lalu coba lagi. Belum ada yang dibuat.',
+  },
+  refusal_busy: {
+    en: 'Someone else is working on this order or its stock. Try again in a moment.',
+    id: 'Pesanan atau stoknya sedang diproses orang lain. Coba lagi sebentar lagi.',
+  },
+  refusal_not_flagged: {
+    en: 'This order is not flagged.',
+    id: 'Pesanan ini tidak sedang ditandai.',
   },
   refusal_unavailable: {
     en: 'Something went wrong. Try again.',

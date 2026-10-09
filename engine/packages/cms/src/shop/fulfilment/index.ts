@@ -19,6 +19,11 @@
  *   // Store staff:
  *   const handed = await handBackOrder(payload, { orderId, actor: req.user, reason })
  *
+ *   // Owner or editor (TASKS.md 10.7): a Rp 0 replacement of a delivered order's damaged lines,
+ *   // and clearing a flag once its reasons are dealt with — each with a required note:
+ *   const replaced = await replaceDamagedItem(payload, { orderId, lines: [{ lineId, qty }], note, actor: req.user })
+ *   const cleared = await clearOrderFlag(payload, { orderId, note, actor: req.user })
+ *
  *   // The daily sweep (cron): images 30 days after delivery or cancellation are deleted.
  *   const run = await purgeDriverImages(payload, new Date())
  *
@@ -42,11 +47,17 @@ export { sniffImageType, type Reencoder } from './image'
 export { driverImageStoreFromEnv, type DriverImageStore } from './image-store'
 export { reassignOrder } from './reassign'
 export { HAND_BACK_REASON_MAX, handBackOrder } from './hand-back'
+export { replaceDamagedItem } from './replace'
+export { clearOrderFlag } from './clear-flag'
+export { STAFF_NOTE_MAX } from './types'
 export { judgeMove, type MoveJudgement } from './transitions'
 export type {
   AttachInput,
   AttachRefusal,
   AttachResult,
+  ClearFlagInput,
+  ClearFlagRefusal,
+  ClearFlagResult,
   DriverImageFile,
   FulfilmentActor,
   FulfilmentLineRef,
@@ -60,4 +71,7 @@ export type {
   ReassignInput,
   ReassignRefusal,
   ReassignResult,
+  ReplaceInput,
+  ReplaceRefusal,
+  ReplaceResult,
 } from './types'
