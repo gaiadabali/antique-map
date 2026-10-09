@@ -61,8 +61,8 @@ export const MEDIA_FIELDS: Field[] = [
     validate: validateAlt,
     admin: {
       description: {
-        en: 'What the image shows, for someone who cannot see it. For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.',
-        id: 'Apa yang ditunjukkan gambar, untuk seseorang yang tidak dapat melihatnya. Untuk peta atau cetakan: wilayahnya, kartusnya, pewarnaannya, apa pun yang mencolok. Untuk mockup digital atau gambar buatan AI, mulailah dengan apa itu.',
+        en: 'What the image shows, for someone who cannot see it. For a product: what it is, its colour and material, e.g. "Black batik tote bag, front view". For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.',
+        id: 'Apa yang ditunjukkan gambar, untuk seseorang yang tidak dapat melihatnya. Untuk produk: apa itu, warna dan bahannya, mis. "Tas tote batik hitam, tampak depan". Untuk peta atau cetakan: wilayahnya, kartusnya, pewarnaannya, apa pun yang mencolok. Untuk mockup digital atau gambar buatan AI, mulailah dengan apa itu.',
       },
     },
   },
@@ -106,8 +106,8 @@ export const MEDIA_FIELDS: Field[] = [
     options: SUBJECT_OPTIONS,
     admin: {
       description: {
-        en: 'What it is an image of — a work, a product, a store, or something else. Set at intake, with the role.',
-        id: 'Apa yang digambarkan — karya, produk, toko, atau yang lain. Diatur saat intake, bersama perannya.',
+        en: 'What it is an image of. Choose Product for a shop product photo, Work for an antique (store staff cannot read those), Store for a shop front. Set at intake, with the role. No default: a wrong subject changes who can read the image.',
+        id: 'Apa yang digambarkan. Pilih Product untuk foto produk toko, Work untuk barang antik (staf toko tidak dapat membacanya), Store untuk tampak toko. Diatur saat intake, bersama perannya. Tanpa default: subjek yang salah mengubah siapa yang dapat membaca gambar.',
       },
     },
   },
@@ -119,8 +119,8 @@ export const MEDIA_FIELDS: Field[] = [
     options: ROLE_OPTIONS,
     admin: {
       description: {
-        en: 'What the image is — set at intake, the same as its master’s.',
-        id: 'Apa gambar ini — diatur saat masuk, sama seperti master-nya.',
+        en: 'What the image is — set at intake, the same as its master’s. For a product photo on a plain background choose "Flat (a product)"; a product being used, "In use (a product)".',
+        id: 'Apa gambar ini — diatur saat masuk, sama seperti master-nya. Untuk foto produk berlatar polos pilih "Datar (produk)"; produk yang sedang dipakai, "Sedang dipakai (produk)".',
       },
     },
   },
@@ -132,8 +132,8 @@ export const MEDIA_FIELDS: Field[] = [
     options: PROVENANCE_OPTIONS,
     admin: {
       description: {
-        en: 'How it was made. Anything but a photograph is labelled wherever it is shown. There is no default: choose.',
-        id: 'Cara pembuatannya. Apa pun selain foto diberi label di mana pun ditampilkan. Tidak ada default: pilih.',
+        en: 'How it was made. For a picture you took of the real thing, choose "Photograph of the real thing". Anything else is labelled wherever it is shown. There is no default on purpose: a mockup or AI image must be declared, never assumed to be a photograph.',
+        id: 'Cara pembuatannya. Untuk gambar yang Anda ambil dari benda aslinya, pilih "Foto dari benda aslinya". Selain itu diberi label di mana pun ditampilkan. Tanpa default dengan sengaja: mockup atau gambar AI harus dinyatakan, tidak boleh dianggap foto.',
       },
     },
   },

@@ -28,12 +28,13 @@ import { wholeNumber } from './money'
 import { SKU_MAX_LENGTH, trimSku, validateProductSku, validateVariantSku } from './skus'
 
 /**
- * Only category terms. The `category` kind arrives with TASKS.md 3.2.a; until it does, the filter
- * is off rather than a query for an enum value Postgres would refuse.
+ * Only category terms, never the condition grades or the other facets (10.4 proxy run: the picker
+ * opened on VG+, VG, G+…). The `category` kind arrives with TASKS.md 3.2.a; until it does the
+ * shop's categories are `subject` terms (`seed/vocabulary`'s `CATEGORY_KIND`), so the filter
+ * names that kind rather than a query for an enum value Postgres would refuse.
  */
-const categoriesOnly = (TERM_KINDS as readonly string[]).includes('category')
-  ? { kind: { equals: 'category' } }
-  : undefined
+const categoryKind = (TERM_KINDS as readonly string[]).includes('category') ? 'category' : 'subject'
+const categoriesOnly = { kind: { equals: categoryKind } }
 
 const priceToPublish = requiredToPublish('Set the price before publishing.')
 const wholePrice = wholeNumber({ min: 1, what: { en: 'The price', id: 'Harga' } })
@@ -60,6 +61,12 @@ const images: ArrayField = {
       relationTo: 'media',
       label: { en: 'Image', id: 'Gambar' },
       required: true,
+      admin: {
+        description: {
+          en: 'Pick a picture, or Create New to upload one. A new picture asks for four things: alt text (what it shows), Subject = Product, Role = Flat (a product), and Provenance = Photograph of the real thing.',
+          id: 'Pilih gambar, atau Create New untuk mengunggah. Gambar baru meminta empat hal: teks alternatif (apa yang ditunjukkan), Subject = Product, Role = Datar (produk), dan Provenance = Foto dari benda aslinya.',
+        },
+      },
     },
     {
       name: 'caption',
@@ -155,7 +162,7 @@ export const PRODUCT_FIELDS: Field[] = [
     type: 'relationship',
     relationTo: 'terms',
     label: { en: 'Category', id: 'Kategori' },
-    ...(categoriesOnly ? { filterOptions: categoriesOnly } : {}),
+    filterOptions: categoriesOnly,
     validate: requiredToPublish('Choose the category before publishing.'),
   },
   images,

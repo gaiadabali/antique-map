@@ -32,21 +32,25 @@ const shapeError = (req: PayloadRequest | undefined, value: string): string | nu
   return null
 }
 
-/** Whether another product than `id` uses `sku` — as its own SKU (`field: 'sku'`) or a variant's. */
+/** The other product than `id` that uses `sku` — as its own SKU (`field: 'sku'`) or a variant's. */
 async function usedElsewhere(
   req: PayloadRequest,
   field: 'sku' | 'variants.sku',
   sku: string,
   id: Id | undefined,
-): Promise<boolean> {
+): Promise<{ name: string; sku: string } | null> {
   // The browser runs this validator too, before the save reaches the server; `req.payload` is
   // only there server-side (D3: the client had no way to answer this and surfaced a stray
   // "Error validating field" under an otherwise valid SKU). The server validates again regardless.
-  if (req.payload === undefined) return false
-  const { totalDocs } = await req.payload.count({
+  if (req.payload === undefined) return null
+  const { docs } = await req.payload.find({
     collection: 'products',
+    depth: 0,
+    limit: 1,
+    pagination: false,
     overrideAccess: true,
     req,
+    select: { sku: true, name: true },
     where: {
       and: [
         { [field]: { equals: sku } },
@@ -54,8 +58,13 @@ async function usedElsewhere(
       ],
     },
   })
-  return totalDocs > 0
+  const found = docs[0] as { sku?: string; name?: string } | undefined
+  return found ? { name: found.name ?? '', sku: found.sku ?? '' } : null
 }
+
+/** Which product holds a SKU, for a message: its name and SKU, so staff can open it (10.8.b). */
+const whose = ({ name, sku }: { name: string; sku: string }) =>
+  name ? `"${name}" (SKU ${sku})` : `SKU ${sku}`
 
 type ProductData = { sku?: unknown; variants?: Array<{ sku?: unknown }> | null }
 
@@ -80,10 +89,18 @@ export const validateProductSku: Validate<string | null | undefined> = async (
       id: 'Sebuah varian produk ini sudah memakai SKU ini. Berikan produk dan tiap varian SKU-nya sendiri.',
     })
   }
-  if (await usedElsewhere(req, 'variants.sku', value, id ?? undefined)) {
+  const sameSku = await usedElsewhere(req, 'sku', value, id ?? undefined)
+  if (sameSku) {
     return pickLanguage(req, {
-      en: `The SKU "${value}" is already a variant of another product.`,
-      id: `SKU "${value}" sudah menjadi varian produk lain.`,
+      en: `The SKU "${value}" is already used by ${whose(sameSku)}. Open that product, or give this one another SKU.`,
+      id: `SKU "${value}" sudah dipakai oleh ${whose(sameSku)}. Buka produk itu, atau beri produk ini SKU lain.`,
+    })
+  }
+  const asVariant = await usedElsewhere(req, 'variants.sku', value, id ?? undefined)
+  if (asVariant) {
+    return pickLanguage(req, {
+      en: `The SKU "${value}" is already a variant of ${whose(asVariant)}.`,
+      id: `SKU "${value}" sudah menjadi varian ${whose(asVariant)}.`,
     })
   }
   return true
@@ -116,16 +133,18 @@ export const validateVariantSku: Validate<string | null | undefined> = async (
       id: `Dua varian memakai SKU "${value}" yang sama. Berikan masing-masing SKU sendiri.`,
     })
   }
-  if (await usedElsewhere(req, 'sku', value, id ?? undefined)) {
+  const asProduct = await usedElsewhere(req, 'sku', value, id ?? undefined)
+  if (asProduct) {
     return pickLanguage(req, {
-      en: `The SKU "${value}" is already another product’s.`,
-      id: `SKU "${value}" sudah menjadi milik produk lain.`,
+      en: `The SKU "${value}" is already the SKU of ${whose(asProduct)}.`,
+      id: `SKU "${value}" sudah menjadi SKU ${whose(asProduct)}.`,
     })
   }
-  if (await usedElsewhere(req, 'variants.sku', value, id ?? undefined)) {
+  const asVariant = await usedElsewhere(req, 'variants.sku', value, id ?? undefined)
+  if (asVariant) {
     return pickLanguage(req, {
-      en: `The SKU "${value}" is already a variant of another product.`,
-      id: `SKU "${value}" sudah menjadi varian produk lain.`,
+      en: `The SKU "${value}" is already a variant of ${whose(asVariant)}.`,
+      id: `SKU "${value}" sudah menjadi varian ${whose(asVariant)}.`,
     })
   }
   return true

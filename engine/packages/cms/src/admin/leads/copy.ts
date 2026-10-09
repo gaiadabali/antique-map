@@ -15,7 +15,20 @@ export const LEADS_COPY = t({
     en: 'Only the owner opens the leads inbox.',
     id: 'Hanya pemilik yang dapat membuka kotak masuk calon pembeli.',
   },
-  inboxTitle: { en: 'Leads', id: 'Calon pembeli' },
+  // Not "Leads": the collection's own sidebar entry is that, and two entries of one name
+  // were indistinguishable (10.4 proxy run).
+  inboxTitle: { en: 'Leads inbox', id: 'Kotak masuk calon pembeli' },
+  replyTitle: { en: 'Reply to this person', id: 'Balas orang ini' },
+  replyWhatsapp: { en: 'Reply on WhatsApp', id: 'Balas lewat WhatsApp' },
+  replyEmail: { en: 'Reply by email', id: 'Balas lewat email' },
+  replyHint: {
+    en: 'Opens WhatsApp or your email app with a short opening line written. Edit it before you send, then set the status to Contacted below.',
+    id: 'Membuka WhatsApp atau aplikasi email dengan kalimat pembuka singkat. Ubah sebelum dikirim, lalu ubah status menjadi Sudah dihubungi di bawah.',
+  },
+  replyNoContact: {
+    en: 'This lead left no WhatsApp number or email address to reply to.',
+    id: 'Calon pembeli ini tidak meninggalkan nomor WhatsApp atau alamat email.',
+  },
   filterSite: { en: 'Site', id: 'Situs' },
   filterKind: { en: 'Kind', id: 'Jenis' },
   filterStatus: { en: 'Status', id: 'Status' },
