@@ -1,27 +1,37 @@
-/* The shop product page (6.1.b): 390 px first, tokens only (DESIGN-SYSTEM.md). */
+/* The shop product page (6.1.b; luxury pass 12.5): 390 px first, tokens only (DESIGN-SYSTEM.md). */
 
+/* The full breakout width, as the home's wrap. */
 .page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-4) var(--brand-gutter) var(--space-8);
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding: var(--space-4) var(--gutter) var(--space-7);
 }
 
 .crumbs {
   font: var(--text-caption);
+  margin-block-end: var(--space-5);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
 }
 
 .gallery {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-5);
+  min-width: 0;
 }
 
 .figure {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
 .mockupNote {
@@ -30,52 +40,75 @@
   color: var(--color-text-muted);
 }
 
-.leadImage {
-  border-radius: var(--radius-control);
-  overflow: hidden;
-  background: var(--color-surface-deep);
-}
-
 .thumbs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-2);
-}
-
-.thumb {
-  border-radius: var(--radius-control);
-  overflow: hidden;
-  background: var(--color-surface-deep);
+  gap: var(--space-3);
 }
 
 .details {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  min-width: 0;
 }
 
 .header {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-3);
 }
 
-.name {
+/* Two selectors deep: the shell's `.site-main h1` sets its own font and margin. */
+.header .name {
   font: var(--text-h2);
   color: var(--color-text);
   margin: 0;
+  text-wrap: balance;
 }
 
-.reproduction {
-  font: var(--text-tagline);
+.meta {
+  font: var(--text-small);
   color: var(--color-text-muted);
   margin: 0;
 }
 
-.sku {
-  font: var(--text-caption);
-  color: var(--color-text-muted);
+.story {
+  margin-block-start: var(--space-7);
+  padding-block-start: var(--space-7);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.story .storyHead {
+  margin-block-end: var(--space-5);
+}
+
+.storyText {
+  font: var(--text-body-large);
+  color: var(--color-text);
   margin: 0;
+  max-inline-size: 36rem;
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: var(--space-8);
+  }
+
+  .details {
+    position: sticky;
+    top: var(--space-6);
+  }
+
+  .thumbs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .story {
+    margin-block-start: var(--space-9);
+    padding-block-start: var(--space-9);
+  }
 }
 
 .picker {
@@ -116,8 +149,10 @@
   color: var(--color-text);
   background: var(--color-surface-raised);
   border: var(--rule-hair) solid var(--color-border);
-  border-radius: var(--radius-control);
+  border-radius: 0;
   min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -154,40 +189,23 @@
 }
 
 .price {
+  /* Karla, never the display serif, for a price (DESIGN-SYSTEM.md §2). */
   font: var(--text-price);
+  font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text);
   margin: 0;
 }
 
 .buyRow {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-3) 0;
-  background: var(--color-surface);
-  border-top: var(--rule-hair) solid var(--color-border);
 }
 
-.addButton {
-  flex: 1;
-  padding: var(--space-3) var(--space-4);
-  font: var(--text-small);
-  color: var(--color-accent-contrast);
-  background: var(--color-accent);
-  border: none;
-  border-radius: var(--radius-control);
-  min-height: 44px;
-  cursor: pointer;
-}
-
-.addButton:disabled {
-  color: var(--color-text-muted);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
-  cursor: not-allowed;
+.buyRow .addButton {
+  width: 100%;
+  min-height: 48px;
+  height: auto;
 }
 
 .stock {
@@ -210,25 +228,5 @@
 .original {
   font: var(--text-small);
   color: var(--color-text-muted);
-  margin: 0;
-}
-
-.description {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  border-top: var(--rule-hair) solid var(--color-border);
-  padding-top: var(--space-4);
-}
-
-.sectionTitle {
-  font: var(--text-h3);
-  color: var(--color-text);
-  margin: 0;
-}
-
-.description p {
-  font: var(--text-body);
-  color: var(--color-text);
   margin: 0;
 }

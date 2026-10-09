@@ -9,7 +9,7 @@
  */
 import { useActionState, useState } from 'react'
 
-import { TextLink } from '../../../shared/ui'
+import { Button, TextLink } from '../../../shared/ui'
 import { addToBagAction } from '../../../server/shop/bag/actions'
 import type { VariantPickerText } from './copy'
 import styles from './product.module.css'
@@ -102,16 +102,17 @@ export function VariantPicker({
 
       {priceText !== null && <p className={styles.price}>{priceText}</p>}
 
-      {/* `data-chat-clear`: the floating chat button rises above this sticky row on a phone. */}
+      {/* `data-chat-clear`: the floating chat button rises above this row on a phone. */}
       <div className={styles.buyRow} data-chat-clear>
-        <button
+        <Button
           type="submit"
+          variant="primary"
           className={styles.addButton}
-          disabled={!canAdd || pending}
-          aria-busy={pending || undefined}
+          disabled={!canAdd}
+          loading={pending}
         >
           {canAdd ? text.addToBag : text.outOfStock}
-        </button>
+        </Button>
         <span className={styles.stock} aria-live="polite">
           {canAdd ? text.inStock : text.outOfStock}
         </span>
