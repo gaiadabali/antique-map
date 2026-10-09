@@ -99,6 +99,7 @@ export function engineConfig(env: Env = process.env): Config {
         afterNavLinks: [
           '@engine/cms/admin/views#OrdersNavLink',
           '@engine/cms/admin/views#LeadsNavLink',
+          '@engine/cms/admin/views#StockImportNavLink',
         ],
       },
       dashboard: {
