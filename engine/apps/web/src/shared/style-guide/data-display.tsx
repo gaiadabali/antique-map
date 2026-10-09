@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { FacetChip, Price, ResponsiveImage, StatusTimeline } from '../ui'
 
+import { samplePlate } from './fixtures'
 import { Section } from './section'
 import styles from './style-guide.module.css'
 
@@ -31,7 +32,7 @@ export function DataDisplay(): React.ReactElement {
         <div className={styles.row}>
           <ResponsiveImage
             variant="fixed"
-            src="/gallery/placeholder.svg"
+            src={samplePlate(400, 300)}
             alt="A decorative placeholder"
             width={200}
             height={150}
@@ -40,7 +41,7 @@ export function DataDisplay(): React.ReactElement {
           <div style={{ width: 200 }}>
             <ResponsiveImage
               variant="fill"
-              src="/gallery/placeholder.svg"
+              src={samplePlate(400, 300)}
               alt="A decorative placeholder"
               aspectRatio="4 / 3"
               sizes="200px"

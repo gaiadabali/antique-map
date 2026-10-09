@@ -1,0 +1,115 @@
+/* The gallery home's hero (14.2): copy and the owner's facts on the left, the lead sheet whole on
+   a paper mat (shared `Mat`, contained) on the right. Every value is a token from
+   shared/styles/tokens or the gallery brand file — no raw colour, no font-family. */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    'copy frame'
+    'facts frame';
+  column-gap: var(--space-9);
+  padding-block: var(--space-7) var(--space-9);
+}
+
+.copy {
+  grid-area: copy;
+  align-self: center;
+}
+
+/* Two selectors deep: the shell's `.site-main h1` and `.site-lede` set their own margins. */
+.copy .title {
+  margin: var(--space-6) 0 0;
+  text-wrap: balance;
+}
+
+.copy .lede {
+  margin: var(--space-6) 0 0;
+  max-inline-size: 32rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-start: var(--space-7);
+}
+
+.hero .facts {
+  grid-area: facts;
+  align-self: end;
+  margin: var(--space-7) 0 0;
+}
+
+.frame {
+  grid-area: frame;
+  align-self: center;
+  margin: 0;
+}
+
+/* The museum caption under the mat: the work on the left, its status and tag on the right. */
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  margin-block-start: var(--space-4);
+}
+
+.captionText {
+  display: grid;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.captionTitle {
+  font: var(--text-h3);
+  color: var(--color-text);
+  text-wrap: balance;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
+}
+
+.captionTitle:hover {
+  text-decoration-color: currentColor;
+}
+
+.captionTitle:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.captionMeta {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.captionFoot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  white-space: nowrap;
+}
+
+@media (max-width: 47.5rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      'copy'
+      'frame'
+      'facts';
+    row-gap: var(--space-7);
+    padding-block: var(--space-4) var(--space-7);
+  }
+
+  .hero .facts {
+    margin: 0;
+  }
+}

@@ -4,7 +4,10 @@ import styles from './eyebrow.module.css'
 
 type Props = {
   children: ReactNode
-  /** Opens on a map's scale bar: a section's or a page's opening line. */
+  /**
+   * Opens on the site's mark — the shop's scale bar, the gallery's hairline rule: a section's
+   * or a page's opening line.
+   */
   mark?: boolean
 }
 

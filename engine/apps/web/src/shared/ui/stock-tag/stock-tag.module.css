@@ -1,0 +1,24 @@
+/* The stock-number tag. Every value is a token — no raw colour, no font-family. */
+
+.tag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.5rem;
+  padding-inline: var(--space-2);
+  border: var(--rule-hair) solid var(--color-border-strong);
+  font: var(--text-caption);
+  font-variant-numeric: var(--numeric-tabular);
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

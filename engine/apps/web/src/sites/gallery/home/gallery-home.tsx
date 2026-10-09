@@ -1,6 +1,6 @@
 /**
- * The gallery's home (ticket 4.3.b), from the design team's drawing: hero with the film's poster
- * slot as a placeholder, the about band with its three signals, the streamed featured works, the
+ * The gallery's home (ticket 4.3.b, 14.2), from the design team's drawing: the hero with the lead
+ * sheet on its mat (`./hero`), the about band with its three signals, the streamed featured works, the
  * curator, the makers-and-places entry points and the enquiry band. Sections are plain
  * compositions of the shared UI components and the tokens in `home.module.css`; every word comes
  * from the gallery's lexicon. No price appears anywhere on this page.
@@ -11,6 +11,7 @@ import { Button, Eyebrow, TextLink } from '../../../shared/ui'
 import { siteHref } from '../../../shell/site'
 
 import { FeaturedWorks } from './featured-works'
+import { Hero } from './hero'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
 
@@ -35,7 +36,12 @@ type Props = {
 export function GalleryHome({ locale, href, t }: Props) {
   return (
     <div className={styles.wrap}>
-      <Hero locale={locale} href={href} t={t} />
+      <Hero
+        locale={locale}
+        browseHref={href('browse', {}, locale)}
+        sellToUsHref={href('sellToUs', {}, locale)}
+        t={t}
+      />
       <About t={t} />
       <FeaturedWorks locale={locale} t={t} />
       <Curator t={t} />
@@ -43,62 +49,6 @@ export function GalleryHome({ locale, href, t }: Props) {
       <LiveWithCollection locale={locale} t={t} />
       <EntryPoints locale={locale} href={href} t={t} />
       <Enquire locale={locale} href={href} t={t} />
-    </div>
-  )
-}
-
-/* The drawing's hero sits on a dark band (qa 4.qa, finding F4); the trust cards follow it in
-   their own strip, each still a light card — a light card on a dark band would need its own
-   re-themed ink, and the band's on-dark override below would otherwise bleed into it. */
-function Hero({ locale, href, t }: Props) {
-  return (
-    <>
-      <section className={`${styles.band} ${styles.bandDark}`}>
-        <div className={styles.wrap}>
-          <div className={styles.hero}>
-            <div className={styles.plate} style={{ aspectRatio: '16 / 9' }}>
-              <span className={styles.plateInner}>{t('home.gallery.poster')}</span>
-            </div>
-            <div>
-              <Eyebrow>{t('home.gallery.eyebrow')}</Eyebrow>
-              <h1>{t('home.gallery.title')}</h1>
-              <p className="site-lede">{t('home.gallery.lede')}</p>
-              <div className={styles.actions}>
-                <Button variant="secondary" href={href('browse', {}, locale)}>
-                  {t('home.gallery.itemCta')}
-                </Button>
-                <Button variant="quiet" href={href('sellToUs', {}, locale)}>
-                  {t('home.gallery.sellToUsCta')}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <div className={`${styles.section} ${styles.trust}`}>
-        <TrustCard
-          title={t('home.gallery.trustCuratorTitle')}
-          body={t('home.gallery.trustCuratorBody')}
-        />
-        <TrustCard
-          title={t('home.gallery.trustOriginalsTitle')}
-          body={t('home.gallery.trustOriginalsBody')}
-        />
-        <TrustCard
-          title={t('home.gallery.trustMuseumsTitle')}
-          body={t('home.gallery.trustMuseumsBody')}
-        />
-      </div>
-    </>
-  )
-}
-
-function TrustCard({ title, body }: { title: string; body: string }) {
-  return (
-    <div className={styles.trustCard}>
-      {/* A signal under the h1, not a section: a heading here would skip h2 (axe heading-order). */}
-      <p className={styles.cardTitle}>{title}</p>
-      <p className={styles.cardBody}>{body}</p>
     </div>
   )
 }

@@ -12,6 +12,11 @@ type Props = {
   ratio?: number
   /** `default` for a lead or hero image; `compact` for a card in a grid. */
   size?: 'default' | 'compact'
+  /**
+   * `cover` fills the window (a print, a mockup); `contain` floats an original in it whole, on
+   * the mat's own paper — an antique sheet is never cropped (DESIGN-SYSTEM.md §7).
+   */
+  fit?: 'cover' | 'contain'
   className?: string
 }
 
@@ -20,9 +25,13 @@ type Props = {
  * hairline bevel drawn just outside the window (DESIGN-SYSTEM.md §1, the sheet leads). Inside a
  * link, the picture eases closer on hover.
  */
-export function Mat({ children, ratio, size = 'default', className }: Props) {
+export function Mat({ children, ratio, size = 'default', fit = 'cover', className }: Props) {
   return (
-    <div className={[styles.mat, styles[size], className ?? ''].filter(Boolean).join(' ')}>
+    <div
+      className={[styles.mat, styles[size], fit === 'contain' ? styles.contain : '', className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <div
         className={styles.window}
         style={ratio === undefined ? undefined : { aspectRatio: ratio }}

@@ -35,6 +35,25 @@
   object-fit: cover;
 }
 
+/* An original floats whole in its window, on the mat's own paper, a little in from the bevel:
+   never cropped, never on a toned box of its own (DESIGN-SYSTEM.md §7). */
+.contain .window {
+  padding: var(--space-3);
+  background: var(--color-surface-raised);
+}
+
+.contain.compact .window {
+  padding: var(--space-2);
+}
+
+.contain .window > div {
+  background: transparent;
+}
+
+.contain .window img {
+  object-fit: contain;
+}
+
 .window img {
   transition: transform var(--dur-loop) var(--ease);
 }
@@ -61,7 +80,7 @@
   padding: var(--space-5);
   text-align: center;
   font: var(--text-small);
-  color: var(--color-text-muted);
+  color: var(--color-mat-note);
 }
 
 @media (max-width: 47.5rem) {

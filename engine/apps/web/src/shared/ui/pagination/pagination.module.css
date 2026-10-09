@@ -49,3 +49,45 @@
   border-color: transparent;
   color: var(--color-text-muted);
 }
+
+/* The quiet pager: square, unfilled, 44 px targets; the current page under a dark hairline. */
+.quiet {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3) var(--space-2);
+}
+
+.quiet .list {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.quiet .link,
+.quiet .ellipsis {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border-radius: 0;
+  background: transparent;
+}
+
+.quiet .link:hover {
+  background: var(--color-surface-raised);
+}
+
+.quiet .current {
+  background: transparent;
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+/* A phone: the numbers on their own row, Previous and Next beneath at either end. */
+@media (max-width: 47.5rem) {
+  .quiet {
+    justify-content: space-between;
+  }
+
+  .quiet .list {
+    order: -1;
+    flex-basis: 100%;
+  }
+}

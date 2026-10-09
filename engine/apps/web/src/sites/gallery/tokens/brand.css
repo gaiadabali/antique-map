@@ -58,4 +58,13 @@
   --brand-dur-out: var(--primitive-dur-out);
   --brand-ease: var(--primitive-ease);
   --brand-dur-loop: var(--primitive-dur-loop);
+
+  /* The eyebrow's mark: one hairline rule, as on a museum label (the shop's is a scale bar). */
+  --brand-mark-inline-size: var(--primitive-space-7);
+  --brand-mark-block-size: var(--primitive-rule-hair);
+  --brand-mark-border-width: 0;
+  --brand-mark-fill: var(--brand-accent);
+
+  /* Muted ink on the cream window is 4.46:1, under AA: an empty mat's words take full ink. */
+  --brand-mat-note: var(--brand-text);
 }
