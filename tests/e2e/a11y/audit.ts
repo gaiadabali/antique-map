@@ -82,6 +82,12 @@ export type Stop = {
   readonly tag: string
   readonly focusVisible: boolean
   readonly obscured: boolean
+  /**
+   * An empty `<div>` Cloudflare's Turnstile widget makes focusable inside its box, beside the widget's hidden answer field
+   * `cf-turnstile-response` (the server runs with Turnstile's test keys in CI, so the form and
+   * chat pages show it). Cloudflare's markup, not ours: listed in the walk, never a problem of ours.
+   */
+  readonly thirdParty: boolean
 }
 
 export type Walk = {
@@ -127,6 +133,12 @@ export async function currentStop(page: Page): Promise<Stop | null> {
       tag: el.tagName.toLowerCase(),
       focusVisible: outline || shadow,
       obscured: hit !== null && hit !== el && !el.contains(hit) && !hit.contains(el),
+      thirdParty:
+        el.tagName === 'DIV' &&
+        el.childElementCount === 0 &&
+        (el.textContent ?? '').trim() === '' &&
+        !el.getAttribute('role') &&
+        el.parentElement?.querySelector('input[name="cf-turnstile-response"]') != null,
     }
   })
   if (look === null) return null
@@ -168,11 +180,13 @@ export async function tabWalk(page: Page, max = 80, fromCurrent = false): Promis
     stops.push(stop)
     seen.set(`${stop.role}|${stop.name}`, (seen.get(`${stop.role}|${stop.name}`) ?? 0) + 1)
     const where = `#${stops.length} ${stop.role} "${stop.name}" (${stop.tag})`
-    if (stop.name.trim() === '') problems.push(`${where}: no accessible name`)
-    if (!stop.focusVisible) problems.push(`${where}: no visible focus indicator`)
-    if (stop.obscured) problems.push(`${where}: focus hidden behind another element`)
+    if (!stop.thirdParty) {
+      if (stop.name.trim() === '') problems.push(`${where}: no accessible name`)
+      if (!stop.focusVisible) problems.push(`${where}: no visible focus indicator`)
+      if (stop.obscured) problems.push(`${where}: focus hidden behind another element`)
+    }
     if (stuck >= 2) {
-      problems.push(`${where}: focus did not move (trap)`)
+      if (!stop.thirdParty) problems.push(`${where}: focus did not move (trap)`)
       break
     }
   }

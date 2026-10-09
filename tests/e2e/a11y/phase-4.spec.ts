@@ -293,7 +293,8 @@ test.describe('4.3.e the homes and the partnership page', () => {
           const url = name === 'home' ? prefix || '/' : `${prefix}/${partnershipSlug(locale)}`
           expect((await page.goto(url))?.status(), url).toBe(200)
           await expect(page.locator('html')).toHaveAttribute('lang', locale)
-          await page.waitForLoadState('networkidle')
+          // `load`, not `networkidle`: the partnership form's Turnstile widget keeps polling Cloudflare.
+          await page.waitForLoadState('load')
           await axeClean(page, `${url} at ${viewport.width} px`)
           const scroll = await page.evaluate(() => document.documentElement.scrollWidth)
           expect(scroll, `${url} scrolls sideways at ${viewport.width} px`).toBeLessThanOrEqual(
