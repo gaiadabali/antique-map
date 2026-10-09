@@ -6,6 +6,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ListingVM, ProductCardVM } from '../../../server/shop/catalogue/view-models'
+import { SectionHead } from '../../../shared/ui'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -28,9 +29,12 @@ export function SearchView({
   const text = browseText(locale)
   return (
     <section className={styles.browse} aria-labelledby="search-title">
-      <h1 id="search-title" className={styles.title}>
-        {text('search.title')} “{query}”
-      </h1>
+      <SectionHead
+        level={1}
+        id="search-title"
+        eyebrow={text('search.title')}
+        title={<>“{query}”</>}
+      />
       {listing.items.length === 0 ? (
         <p className={styles.empty}>{text('search.empty', { query })}</p>
       ) : (

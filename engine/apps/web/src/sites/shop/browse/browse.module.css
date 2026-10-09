@@ -1,82 +1,96 @@
-/* The shop browse listing (6.1.b): 390 px first, tokens only (DESIGN-SYSTEM.md). */
+/* The shop listing in the hero's hand: full breakout width, quiet text tabs, matted cards.
+   390 px first; tokens only (DESIGN-SYSTEM.md). */
 
+/* Breaks out of the shell's 66ch reading column the way the home's `.wrap` does. */
 .browse {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-6) var(--brand-gutter);
+  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding: var(--space-4) var(--gutter) var(--space-7);
 }
 
-.title {
-  font: var(--text-h2);
-  color: var(--color-text);
-  margin: 0;
-}
-
-.chips {
+.toolbar {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-6);
+  border-block: var(--rule-hair) solid var(--color-border);
 }
 
-.chip {
+/* One row; on a phone it scrolls sideways inside itself, never the page. */
+.tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab,
+.sortLink {
   display: inline-flex;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
-  font: var(--text-small);
-  color: var(--color-text);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
-  border-radius: var(--radius-control);
-  text-decoration: none;
+  flex: none;
   min-height: 44px;
-  align-items: center;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  text-underline-offset: 6px;
+  text-decoration-thickness: var(--rule-hair);
+  white-space: nowrap;
 }
 
-.chip[aria-current='page'] {
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
-  border-color: var(--color-accent);
+.tab:hover,
+.sortLink:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.tab[aria-current='page'],
+.sortLink[aria-current='true'] {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-strong);
 }
 
 .sortRow {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  gap: var(--space-2) var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-block-start: var(--rule-hair) solid var(--color-border);
+}
+
+.sortRow::-webkit-scrollbar {
+  display: none;
 }
 
 .sortLabel {
+  flex: none;
   font: var(--text-tagline);
   color: var(--color-text-muted);
 }
 
 .sorts {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-4);
+  flex-wrap: nowrap;
+  gap: var(--space-6);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.sortLink {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.sortLink[aria-current='true'] {
-  color: var(--color-text);
-  font-weight: 600;
-  text-decoration: none;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4) var(--space-3);
+  gap: var(--space-6) var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -90,46 +104,45 @@
   text-decoration: none;
 }
 
-.image {
-  border-radius: var(--radius-control);
-  overflow: hidden;
-  background: var(--color-surface-deep);
-}
-
-.imageEmpty {
-  aspect-ratio: 4 / 3;
-}
-
 .cardBody {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-2) 0 0;
+  padding: var(--space-4) var(--space-1) 0;
 }
 
 .cardTitle {
   font: var(--text-card-title);
+  text-wrap: balance;
+}
+
+.card:hover .cardTitle {
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 4px;
 }
 
 .cardMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  font: var(--text-caption);
+  column-gap: var(--space-2);
+  font: var(--text-small);
+  color: var(--color-text-muted);
 }
 
-.reproduction {
-  color: var(--color-text-muted);
+.cardMeta > span + span::before {
+  content: '·';
+  margin-inline-end: var(--space-2);
 }
 
 .soldOut {
   color: var(--color-text);
-  font-weight: 600;
 }
 
 .price,
 .priceFrom {
   font: var(--text-price);
+  margin-block-start: var(--space-1);
 }
 
 .priceFrom {
@@ -137,18 +150,71 @@
 }
 
 .empty {
+  max-inline-size: 36rem;
+  margin: 0;
+  padding-block: var(--space-7);
   font: var(--text-body);
   color: var(--color-text-muted);
 }
 
+/* The shared pagination, made square, hairline and quiet from out here. */
+.pager {
+  margin-block-start: var(--space-8);
+}
+
+.pager nav,
+.pager ol {
+  flex-wrap: wrap;
+}
+
+.pager a,
+.pager span {
+  border-radius: 0;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  background: transparent;
+}
+
+.pager a:hover {
+  background: var(--color-surface-raised);
+}
+
+.pager a[aria-current='page'] {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-text);
+}
+
 .count {
-  font: var(--text-caption);
+  margin: var(--space-5) 0 0;
+  font: var(--text-small);
   color: var(--color-text-muted);
 }
 
 @media (min-width: 768px) {
+  .browse {
+    padding-block-end: var(--space-9);
+  }
+
+  .toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-7);
+  }
+
+  .tabs {
+    min-width: 0;
+  }
+
+  .sortRow {
+    flex: none;
+    border-block-start: 0;
+  }
+
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-7) var(--space-6);
   }
 }
 

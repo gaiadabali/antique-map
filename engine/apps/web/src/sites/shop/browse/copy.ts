@@ -14,6 +14,7 @@ export const BROWSE_KEYS = defineMessages({
   'browse.title': 'Shop all',
   'browse.description':
     'Reproductions of the archive’s maps, prints and photographs, sent from Bali.',
+  'browse.eyebrow': 'The archive',
   'browse.results.other': 'Show {count} products',
   'browse.results.one': 'Show {count} product',
   'browse.empty': 'Nothing here yet — try another category, or search.',

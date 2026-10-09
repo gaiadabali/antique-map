@@ -7,7 +7,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ProductCardVM } from '../../../server/shop/catalogue/view-models'
-import { Price, ResponsiveImage } from '../../../shared/ui'
+import { Mat, Price, ResponsiveImage } from '../../../shared/ui'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'
@@ -34,27 +34,27 @@ export function ProductCard({
     : null
   return (
     <a href={href} className={styles.card}>
-      {product.image ? (
-        <ResponsiveImage
-          variant="fill"
-          aspectRatio="4 / 3"
-          src={product.image.url}
-          srcSet={product.image.srcSet}
-          alt={imageAlt(words, product.image)}
-          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-          className={styles.image}
-          priority={lead}
-          unoptimized
-        />
-      ) : (
-        <div className={`${styles.image} ${styles.imageEmpty}`} aria-hidden="true" />
-      )}
+      <Mat size="compact" ratio={product.image ? undefined : 1}>
+        {product.image ? (
+          <ResponsiveImage
+            variant="fill"
+            aspectRatio="1 / 1"
+            src={product.image.url}
+            srcSet={product.image.srcSet}
+            alt={imageAlt(words, product.image)}
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            priority={lead}
+            unoptimized
+          />
+        ) : // No picture yet: the window stays empty — the caption below already names it.
+        null}
+      </Mat>
       <span className={styles.cardBody}>
         <span className={styles.cardTitle}>{product.name}</span>
         <span className={styles.cardMeta}>
-          <span className={styles.reproduction}>{text.shared('label.reproduction')}</span>
+          <span>{text.shared('label.reproduction')}</span>
           {product.image && syntheticLabelText(words, product.image) !== null && (
-            <span className={styles.reproduction}>{syntheticLabelText(words, product.image)}</span>
+            <span>{syntheticLabelText(words, product.image)}</span>
           )}
           {!product.available && <span className={styles.soldOut}>{text('listing.soldOut')}</span>}
         </span>
