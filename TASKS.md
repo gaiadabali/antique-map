@@ -85,6 +85,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 15·W1 | 15.1 CI's wall clock and a green main | orchestrator | `main` | 2026-10-10 | |
 | 15·W1 | 15.2 No leak, and the server set for it | orchestrator | `main` | 2026-10-10 | |
 | 15·W1 | 15.3 The CMS says which site and speaks plainly | orchestrator | `main` | 2026-10-10 | |
+| 15·W1 | 15.4 The gallery's search answers fast | orchestrator | `main` | 2026-10-10 | |
 
 ## Decisions for the owner
 
@@ -1054,7 +1055,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 15.3.b the Antiques list without doubled columns; Availability and Cataloguing progress apart; each record says which site shows it; Site settings a tab per site; developer words and task numbers out of every description; the stock and order forms ordered for a person
   - [ ] 15.3.c **Check:** `docs/gates/cms-clarity.md` — owner and store user at 390 and 1280 on a production build, both languages of each changed label, `payload-types.ts` unchanged and no migration.
 
-- [ ] **15.4 The gallery's search answers fast** · needs: —
+- [ ] **15.4 The gallery's search answers fast** · needs: — — 🔄 15·W1
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/server/gallery/catalogue/**`, `engine/apps/web/src/sites/gallery/search/**`, the gallery search page
   - **Read** EXPERIENCE-GALLERY.md §4, §9
