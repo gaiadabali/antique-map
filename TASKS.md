@@ -25,9 +25,9 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/8 | 22/32 | 1 | `███████░░░`  69% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 5/8 | 23/32 | 1 | `███████░░░`  72% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
-| **All** | 11 phases | | | **47/54** | **197/221** | **8** | `█████████░`  89% |
+| **All** | 11 phases | | | **47/54** | **198/221** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -787,7 +787,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/packages/cms/src/admin/{leads,widgets,dashboard,stock-import}/**`, `engine/packages/cms/src/collections/{products,media,stock-levels}/admin/**` (CONTENT-OPERATIONS.md changes go to 10.4.b)
   - **Read** `docs/gates/admin-usability.md`, CONTENT-OPERATIONS.md §3–§5, 3.7 (the import)
   - _Requirements: 10.4_
-  - [ ] 10.8.a the stock spreadsheet import in the admin (3.7's importer behind an upload screen with its rejected-rows report), or CONTENT-OPERATIONS says how the owner hands it over instead
+  - [x] 10.8.a the stock spreadsheet import in the admin (3.7's importer behind an upload screen with its rejected-rows report), or CONTENT-OPERATIONS says how the owner hands it over instead
   - [ ] 10.8.b leads: Reply on WhatsApp and Reply by email on a lead; product intake: image fields default sensibly, the category picker lists categories only, a duplicate SKU says which product has it
   - [ ] 10.8.c store staff land on their order panel (the dashboard); the driver-details button is phone-sized (with 10.7's owner for `admin/orders/**`); the owner's two sidebar entries both named "Leads" (the list and the inbox) get distinct names
   - [ ] 10.8.d **Check:** `tests/e2e/admin-usability/` re-run on staging: every recipe passes unaided at its target.
