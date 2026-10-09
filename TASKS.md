@@ -81,6 +81,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 14·W2 | 14.4 Browse and search | medior | `feat/p14-browse` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -978,7 +979,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 14.3.a the bands on `SectionHead`, `Mat`, `ProofPoints` and the work card: about (no institution named), the collection, the curator, **recently placed — three real sold works, "Sold" and nothing more** (a public, projected, cached read), live with the collection, makers and places as square links, the enquiry band with the same-working-day promise; the hard-coded stand-ins and the institution copy gone; words under `home.gallery.*` (not 14.2's), both languages
   - [ ] 14.3.b **Check:** the home at 390 and 1280 on a production build with the real catalogue, both languages, axe clean, no sideways scroll; the HTML names no institution and no price.
 
-- [ ] **14.4 Browse and search** · needs: 14.1
+- [ ] **14.4 Browse and search** · needs: 14.1 — 🔄 14·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/browse/**` (not 14.1's files), `engine/apps/web/src/sites/gallery/search/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
   - **Read** EXPERIENCE-GALLERY.md §4, DESIGN-SYSTEM.md §5, 12.4's shop browse
