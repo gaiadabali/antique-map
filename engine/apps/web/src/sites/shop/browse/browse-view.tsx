@@ -11,7 +11,7 @@ import type {
   ListingVM,
   ProductCardVM,
 } from '../../../server/shop/catalogue/view-models'
-import { Pagination } from '../../../shared/ui'
+import { Pagination, SectionHead } from '../../../shared/ui'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -52,45 +52,51 @@ export function BrowseView({
   const pageHref = (page: number): string => listingHref(listing.sort, page)
   return (
     <section className={styles.browse} aria-labelledby="browse-title">
-      <h1 id="browse-title" className={styles.title}>
-        {title}
-      </h1>
+      <SectionHead
+        level={1}
+        id="browse-title"
+        eyebrow={text('browse.eyebrow')}
+        title={title}
+        lede={categorySlug === undefined ? text('browse.description') : undefined}
+      />
 
-      <nav className={styles.chips} aria-label={text('listing.category')}>
-        <a
-          href={href('browse', {}, locale)}
-          aria-current={categorySlug === undefined ? 'page' : undefined}
-          className={styles.chip}
-        >
-          {text('browse.title')}
-        </a>
-        {categories.map((category) => (
+      <div className={styles.toolbar}>
+        <nav className={styles.tabs} aria-label={text('listing.category')}>
           <a
-            key={category.slug}
-            href={href('collection', { slug: category.slug }, locale)}
-            aria-current={category.slug === categorySlug ? 'page' : undefined}
-            className={styles.chip}
+            href={href('browse', {}, locale)}
+            aria-current={categorySlug === undefined ? 'page' : undefined}
+            className={styles.tab}
           >
-            {category.label}
+            {text('browse.title')}
           </a>
-        ))}
-      </nav>
-
-      <div className={styles.sortRow}>
-        <span className={styles.sortLabel}>{text('listing.sortBy')}</span>
-        <ul className={styles.sorts}>
-          {SORTS.map((sort) => (
-            <li key={sort}>
-              <a
-                href={listingHref(sort)}
-                aria-current={listing.sort === sort ? 'true' : undefined}
-                className={styles.sortLink}
-              >
-                {text(`sort.${sort}`)}
-              </a>
-            </li>
+          {categories.map((category) => (
+            <a
+              key={category.slug}
+              href={href('collection', { slug: category.slug }, locale)}
+              aria-current={category.slug === categorySlug ? 'page' : undefined}
+              className={styles.tab}
+            >
+              {category.label}
+            </a>
           ))}
-        </ul>
+        </nav>
+
+        <div className={styles.sortRow}>
+          <span className={styles.sortLabel}>{text('listing.sortBy')}</span>
+          <ul className={styles.sorts}>
+            {SORTS.map((sort) => (
+              <li key={sort}>
+                <a
+                  href={listingHref(sort)}
+                  aria-current={listing.sort === sort ? 'true' : undefined}
+                  className={styles.sortLink}
+                >
+                  {text(`sort.${sort}`)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       {listing.items.length === 0 ? (
@@ -110,14 +116,16 @@ export function BrowseView({
             ))}
           </ul>
           {listing.pages > 1 && (
-            <Pagination
-              currentPage={listing.page}
-              totalPages={listing.pages}
-              getHref={pageHref}
-              ariaLabel={text('listing.pagination')}
-              previousLabel={text('listing.previous')}
-              nextLabel={text('listing.next')}
-            />
+            <div className={styles.pager}>
+              <Pagination
+                currentPage={listing.page}
+                totalPages={listing.pages}
+                getHref={pageHref}
+                ariaLabel={text('listing.pagination')}
+                previousLabel={text('listing.previous')}
+                nextLabel={text('listing.next')}
+              />
+            </div>
           )}
           <p className={styles.count}>{text('browse.results', { count: listing.total })}</p>
         </>
