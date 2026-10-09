@@ -19,6 +19,7 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.signalBali': 'Printed in Bali',
   'home.shop.signalShops': 'Stocked in 100+ shops',
   'home.shop.featuredEyebrow': 'Best sellers',
+  'home.shop.featuredTitle': 'Begin with these',
   'home.shop.pricePrefix': 'From',
   'home.shop.shopAll': 'Shop all prints',
   'home.shop.emptyTitle': 'The shop is being stocked',
@@ -41,6 +42,9 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.tradeBody':
     'More than 100 shops across Indonesia already stock Old East Indies. We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.',
   'home.shop.tradeCta': 'See partnership options',
+  'home.shop.tradeFact1': '100+ shops supplied',
+  'home.shop.tradeFact2': 'Printed in our own workshop',
+  'home.shop.tradeFact3': 'Custom gifts for hotels and companies',
   'home.shop.originalsEyebrow': 'The originals',
   'home.shop.originalsTitle': 'Every print begins with a map we hold',
   'home.shop.originalsBody':

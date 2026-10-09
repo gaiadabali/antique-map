@@ -1,17 +1,17 @@
 /**
- * The shop's home (ticket 4.3.b), from the design team's drawing: the hero (`./hero`), the
- * streamed best sellers, the process, the trade band linking the partnership page and the
- * originals band bridging to the gallery. Sections are compositions of the shared UI components
- * and the tokens in `home.module.css`; every word comes from the shop's lexicon.
+ * The shop's home (ticket 4.3.b, luxury pass 12.3): the hero (`./hero`), the "shop by" links, the
+ * streamed best sellers, the sets, the process, the trade band and the originals band. A thin
+ * composition: the sections below the best sellers live in `./sections`, and every word comes
+ * from the shop's lexicon.
  */
-import { Button, Eyebrow } from '../../../shared/ui'
+import { Button, Eyebrow, SectionHead } from '../../../shared/ui'
 
 import { FeaturedProducts } from './featured-products'
 import { Hero } from './hero'
 import styles from './home.module.css'
-import type { HomeText } from './home-messages'
+import { Originals, Process, Sets, Trade, type SectionProps } from './sections'
 
-/** Browse has no island or room facet yet (qa 4.qa, finding F4); every chip links to the shop
+/** Browse has no island or room facet yet (qa 4.qa, finding F4); every link goes to the shop
  * until one does — placeholder until the owner's content. */
 const ISLAND_CHIPS = [
   'home.shop.chipIslandBali',
@@ -26,24 +26,9 @@ const ROOM_CHIPS = [
   'home.shop.chipRoomEntryway',
 ] as const
 
-/** "Sets that hang together" needs the collections surface (TASKS.md, phase 6); these three
- * stand in until it ships, placeholder until the owner's content. */
-const SETS = [
-  { title: 'home.shop.set1Title', body: 'home.shop.set1Body' },
-  { title: 'home.shop.set2Title', body: 'home.shop.set2Body' },
-  { title: 'home.shop.set3Title', body: 'home.shop.set3Body' },
-] as const
-
-type Props = {
-  readonly locale: 'en' | 'id'
-  readonly href: (
-    surface: 'browse' | 'partnership' | 'collection',
-    params: Record<string, never>,
-    locale: 'en' | 'id',
-  ) => string
+type Props = SectionProps & {
   /** The gallery's home on its own host — the sister-site bridge is absolute (site-shell's rule). */
   readonly sisterHref: string
-  readonly t: HomeText
 }
 
 export function ShopHome({ locale, href, sisterHref, t }: Props) {
@@ -52,20 +37,16 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
       <Hero locale={locale} shopHref={href('browse', {}, locale)} t={t} />
       <Chips href={href} locale={locale} t={t} />
       <section className={styles.section}>
-        <div className={styles.rail}>
-          {/* The section's heading, so the product cards' h3 follow an h2 (axe heading-order). */}
-          <h2 className={styles.railHeading}>
-            <Eyebrow>{t('home.shop.featuredEyebrow')}</Eyebrow>
-          </h2>
-          <div>
-            <FeaturedProducts locale={locale} t={t} />
-            <div className={styles.actions}>
-              <Button variant="quiet" href={href('browse', {}, locale)}>
-                {t('home.shop.shopAll')}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <SectionHead
+          eyebrow={t('home.shop.featuredEyebrow')}
+          title={t('home.shop.featuredTitle')}
+          action={
+            <Button variant="quiet" href={href('browse', {}, locale)}>
+              {t('home.shop.shopAll')}
+            </Button>
+          }
+        />
+        <FeaturedProducts locale={locale} t={t} />
       </section>
       <Sets href={href} locale={locale} t={t} />
       <Process t={t} />
@@ -75,130 +56,24 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
   )
 }
 
-function Chips({ locale, href, t }: Pick<Props, 'locale' | 'href' | 't'>) {
+function Chips({ locale, href, t }: SectionProps) {
+  const target = href('browse', {}, locale)
   return (
-    <section className={styles.section}>
+    <section className={styles.chips}>
       <h2 className={styles.railHeading}>
         <Eyebrow>{t('home.shop.chipsEyebrow')}</Eyebrow>
       </h2>
-      <div className={styles.chipsRow}>
-        {ISLAND_CHIPS.map((key) => (
-          <a key={key} className={styles.chip} href={href('browse', {}, locale)}>
-            {t(key)}
-          </a>
-        ))}
-      </div>
-      <div className={styles.chipsRow}>
-        {ROOM_CHIPS.map((key) => (
-          <a key={key} className={styles.chip} href={href('browse', {}, locale)}>
-            {t(key)}
-          </a>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function Sets({ locale, href, t }: Pick<Props, 'locale' | 'href' | 't'>) {
-  return (
-    <section className={styles.section}>
-      <Eyebrow>{t('home.shop.setsEyebrow')}</Eyebrow>
-      <h2>{t('home.shop.setsTitle')}</h2>
-      <p className={styles.cardBody}>{t('home.shop.setsBody')}</p>
-      <div className={styles.four}>
-        {SETS.map((set) => (
-          <div key={set.title} className={styles.setCard}>
-            <div className={styles.plate} style={{ aspectRatio: '4 / 5' }}>
-              <span className={styles.plateInner}>{t(set.title)}</span>
-            </div>
-            <p className={styles.cardTitle}>{t(set.title)}</p>
-            <p className={styles.cardBody}>{t(set.body)}</p>
-          </div>
-        ))}
-      </div>
-      <div className={styles.actions}>
-        <Button variant="quiet" href={href('collection', {}, locale)}>
-          {t('home.shop.setsCta')}
-        </Button>
-      </div>
-    </section>
-  )
-}
-
-function Process({ t }: Pick<Props, 't'>) {
-  return (
-    <section className={styles.section} id="process">
-      <div className={styles.process}>
-        <div className={styles.plate} style={{ aspectRatio: '5 / 4' }}>
-          <span className={styles.plateInner}>{t('home.shop.posterWorkshop')}</span>
-        </div>
-        <div>
-          <Eyebrow>{t('home.shop.processEyebrow')}</Eyebrow>
-          <h2>{t('home.shop.processTitle')}</h2>
-          <div className={styles.processStep}>
-            <span className={styles.num}>{'01/'}</span>
-            <p className={styles.stepTitle}>{t('home.shop.processStep1Title')}</p>
-            <p className={styles.cardBody}>{t('home.shop.processStep1Body')}</p>
-          </div>
-          <div className={styles.processStep}>
-            <span className={styles.num}>{'02/'}</span>
-            <p className={styles.stepTitle}>{t('home.shop.processStep2Title')}</p>
-            <p className={styles.cardBody}>{t('home.shop.processStep2Body')}</p>
-          </div>
-          <div className={styles.processStep}>
-            <span className={styles.num}>{'03/'}</span>
-            <p className={styles.stepTitle}>{t('home.shop.processStep3Title')}</p>
-            <p className={styles.cardBody}>{t('home.shop.processStep3Body')}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Trade({ locale, href, t }: Pick<Props, 'locale' | 'href' | 't'>) {
-  return (
-    <section className={`${styles.band} ${styles.bandDark}`}>
-      <div className={styles.wrap}>
-        <div className={styles.trade}>
-          <div>
-            <Eyebrow>{t('home.shop.tradeEyebrow')}</Eyebrow>
-            <h2>{t('home.shop.tradeTitle')}</h2>
-            <p className={styles.cardBody}>{t('home.shop.tradeBody')}</p>
-            <div className={styles.actions}>
-              <Button variant="secondary" href={href('partnership', {}, locale)}>
-                {t('home.shop.tradeCta')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Originals({ sisterHref, t }: Pick<Props, 'sisterHref' | 't'>) {
-  return (
-    <section className={`${styles.band} ${styles.bandTint}`}>
-      <div className={styles.wrap}>
-        <div className={styles.originals}>
-          <div>
-            <Eyebrow>{t('home.shop.originalsEyebrow')}</Eyebrow>
-            <h2>{t('home.shop.originalsTitle')}</h2>
-            <p className={styles.cardBody}>{t('home.shop.originalsBody')}</p>
-            <div className={styles.actions}>
-              {/* The bridge to the gallery, which lives on its own host — so absolute, and in
-                  the visitor's locale, never hardcoded. */}
-              <Button variant="quiet" href={sisterHref}>
-                {t('home.shop.originalsCta')}
-              </Button>
-            </div>
-          </div>
-          <div className={styles.plate} style={{ aspectRatio: '5 / 4' }}>
-            <span className={styles.plateInner}>{t('home.shop.posterOriginal')}</span>
-          </div>
-        </div>
-      </div>
+      {[ISLAND_CHIPS, ROOM_CHIPS].map((group, at) => (
+        <ul key={at} className={styles.chipsRow}>
+          {group.map((key) => (
+            <li key={key}>
+              <a className={styles.chip} href={target}>
+                {t(key)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ))}
     </section>
   )
 }
