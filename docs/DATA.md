@@ -90,7 +90,8 @@ Import screen. A developer runs the same code from the command line for the seed
 (`pnpm data:import --kind <kind> --file <path> [--apply]`). Each run is a Payload job kept after it completes, with
 its file and report in the private bucket under `imports/<job>/`; there is no import collection.
 
-**The file**: `.csv` (UTF-8, a byte-order mark allowed, `,` or `;` sniffed from the header) or `.xlsx` (the first
+**The file**: `.csv` (UTF-8, a byte-order mark allowed, `,` or `;` sniffed from the header). **`.xlsx` is not read yet** (no
+spreadsheet library is a dependency; 10.8, 2026-10-09): when it is, `.xlsx` means the first
 sheet, cell values only — a formula counts by its stored result; macros and links to other workbooks are refused),
 at most 10 MB and 20,000 rows, the header in row 1 spelled as the template. A file that is not UTF-8 is refused
 with its fix ("Save as CSV UTF-8"), never read in a guessed encoding.
