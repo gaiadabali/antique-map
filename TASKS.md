@@ -81,6 +81,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 14·W3 | 14.8 The pass on staging | qa | `main` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -1010,7 +1011,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 14.7.a each page opens on a `SectionHead`; how selling works as numbered steps; WhatsApp first and email beside the reply promise (G9); the form in a raised panel in the partnership page's hand; words under `sellToUs.*`, `contact.*`, `contactPage.*`, `contactForm.*`, both languages
   - [x] 14.7.b **Check:** both pages at 390 and 1280 in both languages, axe clean; an empty Send is refused with its messages; the form's tests pass.
 
-- [ ] **14.8 The pass on staging** · needs: 14.3, 14.4, 14.5, 14.6, 14.7
+- [ ] **14.8 The pass on staging** · needs: 14.3, 14.4, 14.5, 14.6, 14.7 — 🔄 14·W3
   - **Lane** QA · **Agent** qa (Sonnet), orchestrator for staging · **Wave** W3
   - **Owns** `docs/gates/gallery-luxury.md`
   - **Read** this phase's **Done when**
