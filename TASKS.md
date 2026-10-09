@@ -30,8 +30,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
-| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 4/13 | 0 | `███░░░░░░░`  31% |
-| **All** | 15 phases | | | **68/77** | **247/273** | **8** | `█████████░`  90% |
+| **15** The optimisation pass | Launch | 7, 8, 9 | 🔄 in progress | 0/4 | 6/13 | 0 | `█████░░░░░`  46% |
+| **All** | 15 phases | | | **68/77** | **249/273** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1051,8 +1051,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** CMS · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/{groups.ts,nav/*,orders/nav-link.jsx}`, `engine/packages/cms/src/collections/*/{index,fields}.ts`, `engine/packages/cms/src/collections/works/fields-*.ts`, `engine/packages/cms/src/globals/*/*`, `engine/packages/cms/src/fields/*` — admin config only, no schema change; `docs/gates/cms-clarity.md`, `docs/gates/cms-clarity/*`
   - **Read** CONTENT-OPERATIONS.md; `docs/gates/admin-usability.md`
-  - [ ] 15.3.a the sidebar's groups name their site; the Order panel, Leads inbox and Import stock first under Daily work; the system's logs last under Technical records
-  - [ ] 15.3.b the Antiques list without doubled columns; Availability and Cataloguing progress apart; each record says which site shows it; Site settings a tab per site; developer words and task numbers out of every description; the stock and order forms ordered for a person
+  - [x] 15.3.a the sidebar's groups name their site; the Order panel, Leads inbox and Import stock first under Daily work; the system's logs last under Technical records
+  - [x] 15.3.b the Antiques list without doubled columns; Availability and Cataloguing progress apart; each record says which site shows it; Site settings a tab per site; developer words and task numbers out of every description; the stock and order forms ordered for a person
   - [ ] 15.3.c **Check:** `docs/gates/cms-clarity.md` — owner and store user at 390 and 1280 on a production build, both languages of each changed label, `payload-types.ts` unchanged and no migration.
 
 - [ ] **15.4 The gallery's search answers fast** · needs: — — 🔄 15·W1
