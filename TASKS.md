@@ -85,6 +85,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 14·W2 | 14.3 The home below the hero | medior | `feat/p14-home` | 2026-10-09 | |
 | 14·W2 | 14.5 The item page | medior | `feat/p14-item` | 2026-10-09 | |
 | 14·W2 | 14.7 Sell to us and contact | medior | `feat/p14-contact` | 2026-10-09 | |
+| 14·W2 | 14.6 Makers, places, pages and not-found | medior | `feat/p14-index` | 2026-10-09 | |
 
 ## Decisions for the owner
 
@@ -998,7 +999,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 14.5.a two columns on a desktop: the sheet whole in a `Mat`, other images as compact-mat thumbnails, Zoom a quiet button under the mat; beside it the marked eyebrow (type · place), the balanced serif title, the original title in italic, the maker line and the `StockTag`; the Ask panel raised — the status line, WhatsApp first, email, the reply promise (G9); the record under a section head in hairline rows; proof points (a certificate, originals only, the lifetime guarantee); one column on a phone; words under `item.*`, both languages
   - [ ] 14.5.b **Check:** an available work, a sold one and one with several images at 390 and 1280 in both languages, axe clean; zoom opens and draws tiles; Ask carries the stock number; no price in the HTML.
 
-- [ ] **14.6 Makers, places, pages and not-found** · needs: 14.1
+- [ ] **14.6 Makers, places, pages and not-found** · needs: 14.1 — 🔄 14·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
   - **Read** EXPERIENCE-GALLERY.md §7, §9
