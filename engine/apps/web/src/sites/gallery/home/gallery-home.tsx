@@ -1,51 +1,45 @@
 /**
- * The gallery's home (ticket 4.3.b, 14.2), from the design team's drawing: the hero with the lead
- * sheet on its mat (`./hero`), the about band with its three signals, the streamed featured works, the
- * curator, the makers-and-places entry points and the enquiry band. Sections are plain
- * compositions of the shared UI components and the tokens in `home.module.css`; every word comes
- * from the gallery's lexicon. No price appears anywhere on this page.
+ * The gallery's home (ticket 4.3.b, 14.2, 14.3): the hero with the lead sheet on its mat
+ * (`./hero`), then bands that each open on a `SectionHead` — about, the collection, the curator,
+ * recently placed, the bridge to the sister shop, makers and places, and the enquiry. The two
+ * bands that show works live in `./works-bands`. Every word comes from the gallery's lexicon; no
+ * price and no institution appear anywhere on this page.
  */
+import type { SiteLocale } from '@engine/config/sites'
 import { siteOrigin } from '@engine/config/sites'
 
-import { Button, Eyebrow, TextLink } from '../../../shared/ui'
+import { Button, Mat, MatNote, SectionHead, TextLink } from '../../../shared/ui'
 import { siteHref } from '../../../shell/site'
 
-import { FeaturedWorks } from './featured-works'
 import { Hero } from './hero'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
-
-/** The sold archive is phase 5 (TASKS.md); these stand in until it ships (qa 4.qa, finding F4).
- * Never a price — the gallery never shows one, sold or not. */
-const RECENTLY_PLACED = [
-  { title: 'home.gallery.recentlyItem1Title', note: 'home.gallery.recentlyItem1Note' },
-  { title: 'home.gallery.recentlyItem2Title', note: 'home.gallery.recentlyItem2Note' },
-  { title: 'home.gallery.recentlyItem3Title', note: 'home.gallery.recentlyItem3Note' },
-] as const
+import { CollectionBand, RecentlyPlacedBand } from './works-bands'
 
 type Props = {
-  readonly locale: 'en' | 'id'
+  readonly locale: SiteLocale
   readonly href: (
     surface: 'browse' | 'maker' | 'place' | 'sellToUs',
     params: Record<string, never>,
-    locale: 'en' | 'id',
+    locale: SiteLocale,
   ) => string
   readonly t: HomeText
 }
 
 export function GalleryHome({ locale, href, t }: Props) {
+  const browseHref = href('browse', {}, locale)
   return (
     <div className={styles.wrap}>
       <Hero
         locale={locale}
-        browseHref={href('browse', {}, locale)}
+        browseHref={browseHref}
         sellToUsHref={href('sellToUs', {}, locale)}
         t={t}
       />
       <About t={t} />
-      <FeaturedWorks locale={locale} t={t} />
+      <CollectionBand locale={locale} browseHref={browseHref} t={t} />
       <Curator t={t} />
-      <RecentlyPlaced t={t} />
+      <RecentlyPlacedBand locale={locale} t={t} />
       <LiveWithCollection locale={locale} t={t} />
       <EntryPoints locale={locale} href={href} t={t} />
       <Enquire locale={locale} href={href} t={t} />
@@ -56,63 +50,30 @@ export function GalleryHome({ locale, href, t }: Props) {
 function About({ t }: Pick<Props, 't'>) {
   return (
     <section className={styles.section}>
-      <h2>{t('home.gallery.aboutEyebrow')}</h2>
-      <div className={styles.aboutGrid}>
-        <p className="site-lede">{t('home.gallery.aboutLead')}</p>
-        <p className={styles.cardBody}>{t('home.gallery.aboutBody')}</p>
-      </div>
-      <div className={styles.signals}>
-        <Signal label={t('home.gallery.signalTrade')} note={t('home.gallery.signalTradeNote')} />
-        <Signal
-          label={t('home.gallery.signalHandled')}
-          note={t('home.gallery.signalHandledNote')}
-        />
-        <Signal label={t('home.gallery.signalHeld')} note={t('home.gallery.signalHeldNote')} />
-      </div>
+      <SectionHead
+        eyebrow={t('home.gallery.aboutEyebrow')}
+        title={t('home.gallery.aboutTitle')}
+        lede={t('home.gallery.aboutLead')}
+      />
+      <p className={styles.body}>{t('home.gallery.aboutBody')}</p>
     </section>
-  )
-}
-
-function Signal({ label, note }: { label: string; note: string }) {
-  return (
-    <div className={styles.signal}>
-      <Eyebrow>{label}</Eyebrow>
-      <p className={styles.signalNote}>{note}</p>
-    </div>
   )
 }
 
 function Curator({ t }: Pick<Props, 't'>) {
   return (
-    <section className={styles.section}>
-      <div className={styles.curator}>
-        <div className={styles.plate} style={{ aspectRatio: '5 / 4' }}>
-          <span className={styles.plateInner}>{t('home.gallery.curatorPoster')}</span>
-        </div>
-        <div>
-          <Eyebrow>{t('home.gallery.curatorEyebrow')}</Eyebrow>
-          <h2>{t('home.gallery.curatorTitle')}</h2>
-          <p className={styles.cardBody}>{t('home.gallery.curatorBody')}</p>
-          <p className={styles.cardBody}>{t('home.gallery.curatorBody2')}</p>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function RecentlyPlaced({ t }: Pick<Props, 't'>) {
-  return (
-    <section className={styles.section}>
-      <Eyebrow>{t('home.gallery.recentlyEyebrow')}</Eyebrow>
-      <h2>{t('home.gallery.recentlyTitle')}</h2>
-      <p className={styles.cardBody}>{t('home.gallery.recentlyBody')}</p>
-      <div className={styles.three}>
-        {RECENTLY_PLACED.map((item) => (
-          <div key={item.title} className={styles.trustCard}>
-            <p className={styles.cardTitle}>{t(item.title)}</p>
-            <p className={styles.cardBody}>{t(item.note)}</p>
-          </div>
-        ))}
+    <section className={`${styles.section} ${styles.curator}`}>
+      {/* The portrait is not yet supplied: an empty window that says so. */}
+      <Mat ratio={5 / 4} fit="contain">
+        <MatNote>{t('home.gallery.curatorPoster')}</MatNote>
+      </Mat>
+      <div>
+        <SectionHead
+          eyebrow={t('home.gallery.curatorEyebrow')}
+          title={t('home.gallery.curatorTitle')}
+        />
+        <p className={styles.body}>{t('home.gallery.curatorBody')}</p>
+        <p className={styles.body}>{t('home.gallery.curatorBody2')}</p>
       </div>
     </section>
   )
@@ -124,9 +85,11 @@ function LiveWithCollection({ locale, t }: Pick<Props, 'locale' | 't'>) {
   const sisterUrl = origin === null ? sister : `${origin}${sister}`
   return (
     <section className={styles.section}>
-      <Eyebrow>{t('home.gallery.liveEyebrow')}</Eyebrow>
-      <h2>{t('home.gallery.liveTitle')}</h2>
-      <p className={styles.cardBody}>{t('home.gallery.liveBody')}</p>
+      <SectionHead
+        eyebrow={t('home.gallery.liveEyebrow')}
+        title={t('home.gallery.liveTitle')}
+        lede={t('home.gallery.liveBody')}
+      />
       <div className={styles.actions}>
         {/* The bridge to the shop, which lives on its own host — so absolute (site-shell's rule). */}
         <Button variant="quiet" href={sisterUrl}>
@@ -140,14 +103,15 @@ function LiveWithCollection({ locale, t }: Pick<Props, 'locale' | 't'>) {
 function EntryPoints({ locale, href, t }: Props) {
   return (
     <section className={styles.section}>
-      <h2>{t('home.gallery.makersTitle')}</h2>
-      <p className={styles.cardBody}>{t('home.gallery.makersBody')}</p>
-      <div className={styles.entry}>
-        <a className={styles.entryCard} href={href('maker', {}, locale)}>
-          <h3 className={styles.cardTitle}>{t('home.gallery.makersCta')}</h3>
+      <SectionHead title={t('home.gallery.makersTitle')} lede={t('home.gallery.makersBody')} />
+      <div className={styles.panels}>
+        <a className={styles.panel} href={href('maker', {}, locale)}>
+          <span className={styles.panelTitle}>{t('home.gallery.makersCta')}</span>
+          <span className={styles.panelLine}>{t('home.gallery.makersLine')}</span>
         </a>
-        <a className={styles.entryCard} href={href('place', {}, locale)}>
-          <h3 className={styles.cardTitle}>{t('home.gallery.placesCta')}</h3>
+        <a className={styles.panel} href={href('place', {}, locale)}>
+          <span className={styles.panelTitle}>{t('home.gallery.placesCta')}</span>
+          <span className={styles.panelLine}>{t('home.gallery.placesLine')}</span>
         </a>
       </div>
     </section>
@@ -157,16 +121,16 @@ function EntryPoints({ locale, href, t }: Props) {
 function Enquire({ locale, href, t }: Props) {
   return (
     <section className={styles.section}>
-      <Eyebrow>{t('home.gallery.enquireEyebrow')}</Eyebrow>
-      <h2>{t('home.gallery.enquireTitle')}</h2>
-      <p className={styles.cardBody}>{t('home.gallery.enquireBody')}</p>
+      <SectionHead
+        eyebrow={t('home.gallery.enquireEyebrow')}
+        title={t('home.gallery.enquireTitle')}
+        lede={t('home.gallery.enquireBody')}
+      />
       <div className={styles.actions}>
         <Button variant="primary" href={href('browse', {}, locale)}>
           {t('home.gallery.enquireCta')}
         </Button>
-        <span className={styles.cardBody}>
-          <TextLink href={href('sellToUs', {}, locale)}>{t('home.gallery.sellToUsCta')}</TextLink>
-        </span>
+        <TextLink href={href('sellToUs', {}, locale)}>{t('home.gallery.sellToUsCta')}</TextLink>
       </div>
     </section>
   )

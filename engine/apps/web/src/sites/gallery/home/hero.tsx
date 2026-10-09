@@ -86,7 +86,7 @@ export function sheetRatio(image: Pick<NonNullable<WorkCardVM['image']>, 'width'
   return 4 / 5
 }
 
-async function leadWork(locale: SiteLocale): Promise<WorkCardVM | null> {
+export async function leadWork(locale: SiteLocale): Promise<WorkCardVM | null> {
   const ready = (work: WorkCardVM) => work.status === 'available' && work.image !== null
   try {
     const maps = await listing({ ...EMPTY_STATE, objectType: ['map'] }, locale)
