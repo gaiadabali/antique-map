@@ -150,7 +150,8 @@ const hosts: Project = {
 const admin: Project = {
   name: 'admin',
   testDir: './tests/e2e/admin',
-  metadata: metadataOf(ADMIN_SITE),
+  // `port` and `gallery`: roles.spec's "/admin is a 404 on the gallery's host" names the other host.
+  metadata: { ...metadataOf(ADMIN_SITE), port: localPort(), gallery: galleryHost },
   use: {
     ...desktop,
     baseURL: `http://${SITES[ADMIN_SITE].hostnames.local[0]}:${localPort()}`,
