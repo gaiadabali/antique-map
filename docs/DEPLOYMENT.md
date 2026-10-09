@@ -86,11 +86,12 @@ env        HOSTNAME=localhost  PORT=4030
 max_memory_restart 1536M   exp_backoff_restart_delay 200   kill_timeout 10000
 ```
 
-- **Memory.** A healthy process sits around 250–300 MB after a deploy and levels off near 650 MB once its caches
-  fill (a 2026-10-10 soak on staging: 3,500 distinct search pages and 1,500 fixed ones, no restart). A restart
-  logged as anything but `exited with code [130] via signal [SIGINT]` (a reload) is worth reading. Changing
-  `node_args` or `env` needs `pm2 delete uindies && pm2 start ~/ecosystem.config.cjs && pm2 save` as the site
-  user — `pm2 reload` keeps the old ones.
+- **Memory.** A healthy process starts near 200 MB, peaks around 650 MB under load once its caches fill, and gives
+  memory back when idle (about 440 MB). Soak on staging, 2026-10-10, with these settings: 5,000 requests, 3,000 of
+  them distinct search pages — flat at 645–652 MB across the last 2,000, 440 MB after 90 s idle, no restart; before
+  them the same soak held 648 MB idle. A restart logged as anything but `exited with code [130] via signal
+  [SIGINT]` (a reload) is worth reading. Changing `node_args` or `env` needs `pm2 delete uindies && pm2 start
+  ~/ecosystem.config.cjs && pm2 save` as the site user — `pm2 reload` keeps the old ones.
 
 - **One process, in fork mode.** The jobs run's single-flight, the in-process rate limits and the health check's
   memo are exact only with one process; a template running cluster mode or `-i max` breaks all three silently.

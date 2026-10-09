@@ -122,6 +122,7 @@ shop 200`. A 502 while it runs is the reload, not a failure. `BUILD FAILED` depl
 | `production-20261009T113943Z-fb7ef553` | fb7ef553 (the shop home's gallery-wall hero: the lead print in a mat, caption, proof points)          | none new (0 changed since live)  | healthy, try 1; smoke passed; hero photo loads at 390/1280/1995, axe 0                            |
 | `production-20261009T133403Z-aa7469b1` | aa7469b1 (phase 12: every shop page in the luxury language, the shared header and footer)             | none new (0 changed since live)  | healthy, try 1; smoke passed; every shop page axe 0 at 390/1280 (`luxury-pass.md`)                |
 | `production-20261009T142432Z-c25f6af4` | c25f6af4 (phase 13: the Collections index and the Stores page)                                        | none new (0 changed since live)  | healthy, try 1; both pages axe 0 at 390/1280; stores HTML free of codes, WhatsApp and coordinates |
+| `production-20261009T185720Z-1f9e709e` | 1f9e709e (phase 15: limiters swept and capped, capped bodies, S3 timeouts, CMS clarity, db tests split) | none new (6 = 6)                 | healthy, try 1; smoke passed; then the 15.2.c provisioning (RustFS MemoryMax 2G→6G, role idle-tx 5min, ecosystem) and one pm2 restart; soak flat at ~650 MB |
 
 On `e8597fd7` the shop listing and the gallery home and browse serve `<source type="image/avif">`; 24 sampled AVIF rungs 200 (`image/avif`).
 
