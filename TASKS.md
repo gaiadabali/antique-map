@@ -29,8 +29,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
-| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 3/8 | 7/17 | 0 | `████░░░░░░`  41% |
-| **All** | 14 phases | | | **63/73** | **233/260** | **8** | `█████████░`  90% |
+| **14** The gallery's luxury pass | UI | 12 | 🔄 in progress | 3/8 | 8/17 | 0 | `█████░░░░░`  47% |
+| **All** | 14 phases | | | **63/73** | **234/260** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1011,7 +1011,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/contact/**` (markup and CSS only), `engine/apps/web/src/app/(gallery)/gallery/[locale]/{sell-to-us,contact}/**`
   - **Read** EXPERIENCE-GALLERY.md §8, 12.7's partnership page
   - _Requirements: 12.1_
-  - [ ] 14.7.a each page opens on a `SectionHead`; how selling works as numbered steps; WhatsApp first and email beside the reply promise (G9); the form in a raised panel in the partnership page's hand; words under `sellToUs.*`, `contact.*`, `contactPage.*`, `contactForm.*`, both languages
+  - [x] 14.7.a each page opens on a `SectionHead`; how selling works as numbered steps; WhatsApp first and email beside the reply promise (G9); the form in a raised panel in the partnership page's hand; words under `sellToUs.*`, `contact.*`, `contactPage.*`, `contactForm.*`, both languages
   - [ ] 14.7.b **Check:** both pages at 390 and 1280 in both languages, axe clean; an empty Send is refused with its messages; the form's tests pass.
 
 - [ ] **14.8 The pass on staging** · needs: 14.3, 14.4, 14.5, 14.6, 14.7
