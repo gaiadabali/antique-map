@@ -13,6 +13,10 @@
  * own hand), the two upload collections straight through the adapter (their files and buckets are
  * 8.3's, proven there).
  */
+import {
+  createTestDatabase,
+  pushEnv,
+} from '../../../engine/packages/cms/src/db/test-database.test-support'
 import { realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
@@ -65,12 +69,12 @@ async function createDatabase(serverUrl: string, prefix: string) {
   const env = {
     DATABASE_URL: url.toString(),
     PAYLOAD_SECRET: 'v'.repeat(48),
-    PAYLOAD_DEV_PUSH: '1',
+    ...pushEnv(),
     ...SITE_ENV,
   }
   const config = await buildConfig(engineConfig(env))
   const admin = pgPool(serverUrl)
-  await admin.query(`CREATE DATABASE "${database}"`)
+  await createTestDatabase(admin, database, 'pushed')
   await admin.end()
   const drop = async () => {
     const dropper = pgPool(serverUrl)

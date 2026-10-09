@@ -6,6 +6,7 @@
  * drops the database afterwards. Without that variable it skips — a setup state; a server that
  * is named and refuses is a failure (CONVENTIONS.md §8).
  */
+import { createTestDatabase } from '../../db/test-database.test-support'
 import {
   buildConfig,
   commitTransaction,
@@ -65,7 +66,7 @@ describe.skipIf(!server)('the owner guards on a migrated database', () => {
       Pool: new (o: object) => Pool
     }
     const admin = new pg.Pool({ connectionString: server })
-    await admin.query(`CREATE DATABASE "${database}"`)
+    await createTestDatabase(admin, database, 'migrated')
     await admin.end()
     payload = await getPayload({ config, key: database, disableOnInit: true })
     await payload.db.migrate({ migrations: [...migrations] } as never)

@@ -5,6 +5,7 @@
  * names and dropped afterwards. The test itself calls `getPayload()` with the config this builds:
  * only `instance.ts`, the CLI and test files open Payload (`instance.test.ts`).
  */
+import { createTestDatabase, pushEnv } from '../../db/test-database.test-support'
 import { invalidationBatch } from '@engine/cache'
 import { buildConfig, ValidationError, type Payload, type SanitizedConfig } from 'payload'
 import { realpathSync } from 'node:fs'
@@ -41,11 +42,11 @@ export async function createPushedDatabase(
   const env = {
     DATABASE_URL: url.toString(),
     PAYLOAD_SECRET: 'v'.repeat(48),
-    PAYLOAD_DEV_PUSH: '1',
+    ...pushEnv(),
   }
   const config = await buildConfig(engineConfig(env))
   const admin = pgPool(server)
-  await admin.query(`CREATE DATABASE "${database}"`)
+  await createTestDatabase(admin, database, 'pushed')
   await admin.end()
   const drop = async () => {
     const dropper = pgPool(server)
