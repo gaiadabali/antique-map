@@ -8,9 +8,9 @@
 import { hasRole } from '../../collections/users/roles'
 import { L } from './shared'
 
-export async function OrdersNavLink({ req }) {
-  if (!hasRole(req?.user, 'owner', 'editor', 'store')) return null
-  const language = req?.i18n?.language === 'id' ? 'id' : 'en'
+export async function OrdersNavLink({ user, i18n }) {
+  if (!hasRole(user, 'owner', 'editor', 'store')) return null
+  const language = i18n?.language === 'id' ? 'id' : 'en'
   return (
     <a className="nav__link" href="/admin/orders">
       {L('navLink', language)}
