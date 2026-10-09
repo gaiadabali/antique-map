@@ -160,26 +160,31 @@ Put the key back to re-enable. Other limits are in the same group: `dailyBudgetU
 ## 7. Handle a late payment
 
 A late payment is a Midtrans "settlement" that arrives after the order **expired** (the 60 minute window passed, or
-staff held 2 hours) or was cancelled. Money has moved and the stock may be sold again, so the system will not
-decide: it **records the payment, leaves the order `expired`, and flags it for staff** (`needsAttention`;
-`decide.ts` outcome `late-payment`). Nothing is re-sold and nothing is shipped by itself. On staging, with
-`MIDTRANS_MODE=simulate`, no real money moves; the steps are the same.
+staff held 2 hours) or was **cancelled** (COMMERCE.md §13; built in 10.7). The money is in, so:
+
+- **Expired, and its store still holds every unit:** the units are re-taken there and the order becomes `paid`,
+  flagged **"Paid after expiry …: stock re-taken at its store, send it."** It is in the store's **New** list.
+- **Expired, and the store no longer holds every unit:** nothing is taken; the order becomes `paid`, flagged
+  **"…: stock gone at its store — reassign, or cancel and return the money in the Midtrans dashboard."**
+- **Cancelled:** it stays cancelled, flagged **"…it stays cancelled. Return the money in the Midtrans dashboard."**
+
+On staging, with `MIDTRANS_MODE=simulate`, no real money moves; the steps are the same.
 
 1. **See it.** Sign in at the admin host. The dashboard's payments panel counts **Paid after expiry or
-   cancellation** (counts only, no buyer data). **Orders**: open the one marked **Needs you**; its history names
-   the attempt, the amount and the time.
-2. **Check the shelf.** Open the order's store and its line items: **Stock levels** for that store and product.
-3. **Choose, within the buyer's business day:**
-   - **The units are still there:** **not possible in this build** (checked on staging 2026-10-09): the expired
-     order's page has no action, and **Replace damaged item** (CONTENT-OPERATIONS.md §5.5) was never built
-     (`docs/gates/rehearsal.md` R-1, R-2). Until it is, refund as below and tell the buyer on WhatsApp.
-   - **They are gone:** return the money in the **Midtrans dashboard** (find the transaction by order number,
-     then Refund) and tell the buyer on WhatsApp. An expired order cannot be cancelled or moved forward.
-4. **Record it** in the order's note (who decided, and what).
-5. **Worked:** the replacement order is in the store's _Being prepared_ list, or the refund shows in Midtrans; the
-   buyer has been answered. I found no control that clears the flag; if the screen has one, use it, else say so in the note.
+   cancellation**. **Order panel**: the order shows **Needs you** and the reason; its history names the attempt,
+   the amount and the time.
+2. **Act, within the buyer's business day:**
+   - **Stock re-taken:** let the store send it as any paid order (§5.1 of CONTENT-OPERATIONS.md).
+   - **Stock gone:** **Reassign** to a store that holds it (the units are taken there only), or **Cancel order** and
+     refund in the **Midtrans dashboard** (find the transaction by order number, then Refund).
+   - **Cancelled:** refund in the Midtrans dashboard.
+     Tell the buyer on WhatsApp.
+3. **Clear the flag** on the order: a note is required ("Sent from Ubud", "Refunded in Midtrans"); the history keeps
+   it with the reason it cleared.
+4. **Worked:** the order is no longer marked **Needs you**; it is moving through the store's statuses, or the refund
+   shows in Midtrans; the buyer has been answered.
 
 - **A second settled payment on a paid order** is a different flag (**Paid twice**): refund the extra one the same way.
 - **A payment of the wrong amount** is not applied at all (**Amount mismatch**): look in the Midtrans dashboard.
-- **Check:** COMMERCE.md §13 says the units are re-taken automatically when the store still holds them; the code
-  does not do that today (it flags and waits for staff). Treat the code as true until the two agree.
+- **A damaged delivered item** is a different job: **Replace damaged item** on the delivered order (CONTENT-OPERATIONS.md
+  §5.5) makes a Rp 0 replacement at the same store.

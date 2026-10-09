@@ -180,11 +180,12 @@ first-party analytics summary (DR-13, [ANALYTICS.md](ANALYTICS.md)).
 ### 5.5 Replace a damaged item · owner, editor · **target: under 2 minutes**
 
 Handled off the site (S12): the buyer sends a photo of the damage on WhatsApp, and the photo stays in that chat.
-Open the original order → **Replace damaged item** → tick the damaged lines and quantities → a one-line note ("Frame
+Open the delivered order in the **Order panel** → **Replace damaged item** → tick the damaged lines and quantities → a one-line note ("Frame
 cracked, photo on WhatsApp") → **Confirm**. This creates a new order flagged **replacement**, linked to the
 original, with a total of Rp 0 (no fee, no payment), at the original's store; the stock comes off that store at
-once, and if it no longer has the item, pick another store as in §5.2. The order then appears in that store's
-_Being prepared_ list and runs through the same steps as any other (§5.1); the buyer is emailed its tracking link.
+once. If that store no longer has the item, nothing is created and the screen says so: restock it first, or
+create the replacement once it holds the item and reassign it (§5.2). The order then appears in that store's
+_In progress_ list with a **Replacement — Rp 0** badge (the store gets no email for it: tell them) and runs through the same steps as any other (§5.1); the buyer is emailed its tracking link.
 Nothing is refunded (COMMERCE.md §12).
 
 ## 6. Recipes — settings and stores
