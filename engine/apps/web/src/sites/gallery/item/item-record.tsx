@@ -12,7 +12,7 @@ import { SectionHead } from '../../../shared/ui'
 import { creditLine, itemText, type ItemText } from './copy'
 import styles from './item.module.css'
 
-/** A `wide` row is prose (condition, references, provenance): full width, its value held to the text measure. */
+/** A `wide` row is prose (references, provenance): full width, its value held to the text measure. */
 function Row({
   term,
   children,
@@ -51,7 +51,7 @@ function ConditionRow({ work, t }: { readonly work: ItemView; readonly t: ItemTe
   ].filter((line): line is string => line !== null && line !== '')
   if (notes.length === 0) return null
   return (
-    <Row term={t('record.condition')} wide>
+    <Row term={t('record.condition')}>
       <Lines lines={notes} />
     </Row>
   )

@@ -1,8 +1,8 @@
 /**
  * The gallery's home (4.3.b, 14.2, 14.3; Outline Colour 17.2). The hero lays the lead sheet across
  * a verdigris field (`./hero`); below it the bands follow the gallery's pigment order on full-width
- * fields — the newest works on the paper, the house and its curator on gamboge, the recently
- * placed on the paper, the bridge to the sister shop on madder, makers and places as an index, and
+ * fields — the newest works on the paper, the house and its curator on the verdigris tint, the
+ * recently placed on the paper, the bridge to the sister shop in the shop's gamboge, makers and places as an index, and
  * the enquiry set large to close. No band shows an empty picture window: the curator's portrait is
  * not supplied yet, so his band is type. Every word comes from the gallery's lexicon; no price and
  * no institution appear anywhere on this page.
@@ -48,10 +48,10 @@ export function GalleryHome({ locale, href, t }: Props) {
   )
 }
 
-/** About the house and its curator, side by side on a gamboge field: a letter, not a card. */
+/** About the house and its curator, side by side on the verdigris tint: a letter, not a card. */
 function House({ t }: Pick<Props, 't'>) {
   return (
-    <Band pigment={2} strength="wash" aria-labelledby="home-about">
+    <Band pigment={1} strength="tint" aria-labelledby="home-about">
       <div className={styles.house}>
         <div>
           <SectionHead
@@ -77,7 +77,8 @@ function LiveWithCollection({ locale, t }: Pick<Props, 'locale' | 't'>) {
   const origin = siteOrigin('shop')
   const sisterUrl = origin === null ? sister : `${origin}${sister}`
   return (
-    <Band pigment={3} strength="wash" aria-labelledby="home-live">
+    // The bridge to the sister shop wears the shop's own colour (gamboge): colour names the site.
+    <Band pigment={2} strength="wash" aria-labelledby="home-live">
       <div className={styles.bridge}>
         <SectionHead
           id="home-live"

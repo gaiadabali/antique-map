@@ -238,7 +238,7 @@
 
 .browseMore {
   margin: 0;
-  padding-block-start: var(--space-5);
+  padding-block: var(--space-7) 0;
 }
 
 @media (min-width: 64rem) {

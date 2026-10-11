@@ -1,21 +1,18 @@
-/* A work's window (Outline Colour, phase 17): no frame, no line, no shadow. The work lies on a
-   neutral deeper paper (`--color-field`); inside a link the window takes the site's pigment on
-   hover or focus (`--color-field-active`), and as the work enters the view its colour washes in
-   over the engraved line. Inside a coloured Band the window is clear. Every value is a token — no
-   raw colour, no font-family. */
+/* A work's window (Outline Colour, phase 17): no frame, no mat, no line, no shadow. At rest the
+   window is clear and the work's own paper meets the page's paper, every sheet standing on one
+   baseline; inside a link the window takes the site's pigment on hover or focus
+   (`--color-field-active`), and as the work enters the view its colour washes in over the
+   engraved line. A window with no picture keeps a field, so its words have somewhere to stand.
+   Every value is a token — no raw colour, no font-family. */
 
 .mat {
   display: block;
-  background: var(--color-field);
+  background: transparent;
   transition: background-color var(--dur-in) var(--ease-out);
 }
 
-.default {
-  padding: clamp(1.25rem, 0.4rem + 3.2vw, 4.5rem);
-}
-
-.compact {
-  padding: clamp(0.75rem, 0.35rem + 1.1vw, 1.75rem);
+.mat:has(.note) {
+  background: var(--color-field);
 }
 
 .window {
@@ -32,14 +29,16 @@
   object-fit: cover;
 }
 
-/* An original lies whole in its window, never cropped (DESIGN-SYSTEM.md §7), on the field itself:
-   the picture's own box is clear, so a sheet of any shape sits on the colour. */
+/* An original lies whole in its window, never cropped (DESIGN-SYSTEM.md §7), on the page's own
+   paper: the picture's box is clear, and the sheet stands on the window's foot like a print on a
+   rail, so a row of sheets of any shape shares one baseline. */
 .contain .window > div {
   background: transparent;
 }
 
 .contain .window img {
   object-fit: contain;
+  object-position: center bottom;
 }
 
 .window img {
@@ -55,14 +54,15 @@
   transform: scale(1.02);
 }
 
-/* The signature: the colourist's pass. Scroll-linked where the browser has view timelines; a work
-   already in view on load is already in colour, and without support it is simply in colour. */
+/* The signature: the colourist's pass. Scroll-linked where the browser has view timelines: the
+   colour is complete once the work has wholly entered the view, so a work already in view on load
+   is already in colour; without support it is simply in colour. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .window img {
       animation: wash-in var(--ease-out) both;
       animation-timeline: view();
-      animation-range: entry 0% cover 38%;
+      animation-range: entry 0% entry 100%;
     }
   }
 }

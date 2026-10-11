@@ -16,6 +16,16 @@ export function leadRatio(image: Pick<ItemImage, 'width' | 'height'>): number {
   return 4 / 3
 }
 
+/**
+ * The sheet's true shape for the page's crossing: the window hugs the sheet, so the sheet is as
+ * large as the screen allows and the controls under it align with its edge. Only an extreme strip
+ * is held (between 2:5 and 5:2), and an unknown size reads as a portrait sheet.
+ */
+export function sheetShape(image: Pick<ItemImage, 'width' | 'height'>): number {
+  if (image.width && image.height) return Math.min(2.5, Math.max(0.4, image.width / image.height))
+  return 4 / 5
+}
+
 /** The viewer's words, said on the server so no lexicon ships to the browser. */
 export function zoomLabels(t: ItemText, images: readonly ItemImage[]): ZoomLabels {
   return {

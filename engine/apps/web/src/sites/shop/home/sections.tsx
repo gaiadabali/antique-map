@@ -34,10 +34,10 @@ const STEPS = [
 
 const FACTS = ['home.shop.tradeFact1', 'home.shop.tradeFact2', 'home.shop.tradeFact3'] as const
 
-/** The sets on a madder field, each one a title and its line: three walls in words. */
+/** The sets on the gamboge tint, each one a title and its line: three walls in words. */
 export function Sets({ locale, href, t }: SectionProps) {
   return (
-    <Band pigment={2} strength="wash" aria-labelledby="home-sets">
+    <Band pigment={1} strength="tint" aria-labelledby="home-sets">
       <SectionHead
         id="home-sets"
         title={t('home.shop.setsTitle')}
@@ -81,10 +81,10 @@ export function Process({ t }: Pick<SectionProps, 't'>) {
   )
 }
 
-/** Trade and gifting on deep verdigris: the offer, its facts, and the way in. */
+/** Trade and gifting on the full gamboge: the offer, its facts, and the way in. */
 export function Trade({ locale, href, t }: SectionProps) {
   return (
-    <Band pigment={3} strength="full" aria-labelledby="home-trade">
+    <Band pigment={1} strength="full" aria-labelledby="home-trade">
       <div className={styles.split}>
         <div>
           <SectionHead
@@ -102,10 +102,11 @@ export function Trade({ locale, href, t }: SectionProps) {
   )
 }
 
-/** The bridge to the gallery's originals, on the paper under a strong rule. */
+/** The bridge to the gallery's originals wears the gallery's own colour (verdigris): colour names
+ * the site. */
 export function Originals({ sisterHref, t }: { sisterHref: string; t: HomeText }) {
   return (
-    <section className={styles.originals} aria-labelledby="home-originals">
+    <Band pigment={3} strength="wash" aria-labelledby="home-originals">
       <SectionHead
         id="home-originals"
         title={t('home.shop.originalsTitle')}
@@ -118,6 +119,6 @@ export function Originals({ sisterHref, t }: { sisterHref: string; t: HomeText }
           </Button>
         }
       />
-    </section>
+    </Band>
   )
 }

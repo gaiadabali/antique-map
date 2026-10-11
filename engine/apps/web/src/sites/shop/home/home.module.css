@@ -22,9 +22,11 @@
   padding-block: var(--space-8) 0;
 }
 
+/* "Shop by" at the size of the words it opens, in the muted ink: the start of a sentence, not a
+   label over it. */
 .shopBy .shopByLabel {
   margin: 0;
-  font: var(--text-label);
+  font: var(--text-h2);
   color: var(--color-text-muted);
 }
 
@@ -54,11 +56,16 @@
   text-decoration-color: currentColor;
 }
 
-/* Best sellers: prints on their gamboge fields, a museum caption under each. */
+/* Best sellers: six prints, a museum caption under each — four on a phone, six on a tablet, four at
+   laptop widths, six in one row on a wide screen, never a row with an empty slot. */
 .four {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-7) var(--grid-gap);
+}
+
+.four > :nth-child(n + 5) {
+  display: none;
 }
 
 .productCard {
@@ -185,18 +192,35 @@
   flex-direction: column;
 }
 
-.originals {
-  padding-block: var(--section-space);
+@media (min-width: 48rem) {
+  .four,
+  .three,
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .four > :nth-child(n + 5) {
+    display: flex;
+  }
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 75rem) {
   .four {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .three,
-  .steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .four > :nth-child(n + 5) {
+    display: none;
+  }
+}
+
+@media (min-width: 110rem) {
+  .four {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .four > :nth-child(n + 5) {
+    display: flex;
   }
 }
 

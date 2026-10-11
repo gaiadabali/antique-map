@@ -13,7 +13,7 @@ import { Breadcrumbs, Crossing, StockTag, TextLink } from '../../../shared/ui'
 import { ChatPageContext } from '../../../shared/chat/chat-page-context'
 import { AskPanel, ItemProof } from './ask-panel'
 import { creditLine, itemText } from './copy'
-import { LeadPicture, MediaCaption, leadImage, leadRatio } from './item-media'
+import { LeadPicture, MediaCaption, leadImage, sheetShape } from './item-media'
 import { ItemRecord } from './item-record'
 import styles from './item.module.css'
 
@@ -54,7 +54,7 @@ export function ItemViewComposition({
     .filter(Boolean)
     .join(' · ')
   const lead = leadImage(work.images, work.primaryIndex)
-  const ratio = lead === null ? 4 / 5 : leadRatio(lead)
+  const ratio = lead === null ? 4 / 5 : sheetShape(lead)
 
   return (
     <article className={styles.page}>

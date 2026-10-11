@@ -52,10 +52,12 @@
   --color-field-active: var(--band-wash);
 }
 
-/* A wash keeps ink type; its muted type takes the pigment's own deep hue (AA on the wash). */
+/* A wash keeps ink type; its muted type takes the pigment's own deep hue (AA on the wash). It
+   carries its outline: the pigment at full strength along its lower edge. */
 .wash {
   --band-bg: var(--band-wash);
   --color-text-muted: var(--band-on-wash);
+  border-block-end: var(--space-2) solid var(--band-full);
   --color-border: color-mix(in srgb, var(--band-on-wash) 32%, transparent);
   --color-border-strong: var(--band-on-wash);
   --color-field: transparent;
@@ -89,7 +91,11 @@
   --band-bg: var(--primitive-copperplate);
   --band-full: var(--primitive-copperplate);
   --band-on-full: var(--primitive-mineral);
-  --band-on-full-muted: color-mix(in srgb, var(--primitive-mineral) 74%, var(--primitive-copperplate));
+  --band-on-full-muted: color-mix(
+    in srgb,
+    var(--primitive-mineral) 74%,
+    var(--primitive-copperplate)
+  );
 }
 
 .edge-top {

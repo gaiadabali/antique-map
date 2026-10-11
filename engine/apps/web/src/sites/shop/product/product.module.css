@@ -74,12 +74,22 @@
 }
 
 /* The story and the specs sit on the paper at a reading measure. */
+/* The story across the width: its head at left, the words at right on a desktop. */
 .story {
+  display: grid;
+  gap: var(--space-5) var(--grid-gap);
   margin-block-start: var(--section-space);
 }
 
+@media (min-width: 64rem) {
+  .story {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+  }
+}
+
 .story .storyHead {
-  margin-block-end: var(--space-5);
+  margin-block-end: 0;
 }
 
 .storyText {

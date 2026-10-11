@@ -41,7 +41,7 @@ export type FeaturedProduct = {
   readonly image: CatalogueImage | null
 }
 
-const LIMIT = 4
+const LIMIT = 6
 
 export async function loadFeaturedProducts(
   _locale: SiteLocale,

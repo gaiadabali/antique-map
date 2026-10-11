@@ -32,7 +32,9 @@
   outline-offset: 3px;
 }
 
+/* The word carries the button; no glyph stands in for an icon. */
 .dot {
+  display: none;
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 0;

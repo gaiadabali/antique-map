@@ -4,7 +4,7 @@
 .crossing {
   --top: clamp(2.5rem, 1rem + 5vw, 7rem);
   --overhang: clamp(5rem, 3rem + 10vw, 9rem);
-  --picture-max-h: 80svh;
+  --picture-max-h: 86svh;
   position: relative;
   isolation: isolate;
   display: grid;
@@ -16,16 +16,19 @@
 }
 
 .p1 {
+  --crossing-edge: var(--pigment-1-full);
   --crossing-field: var(--pigment-1-wash);
   --crossing-on-field-muted: var(--pigment-1-on-wash);
 }
 
 .p2 {
+  --crossing-edge: var(--pigment-2-full);
   --crossing-field: var(--pigment-2-wash);
   --crossing-on-field-muted: var(--pigment-2-on-wash);
 }
 
 .p3 {
+  --crossing-edge: var(--pigment-3-full);
   --crossing-field: var(--pigment-3-wash);
   --crossing-on-field-muted: var(--pigment-3-on-wash);
 }
@@ -40,6 +43,9 @@
   z-index: -1;
   margin-inline: calc(50% - 50vw);
   background: var(--crossing-field);
+  /* the outline: the pigment at full strength along the edge the picture crosses, as a colourist's
+     wash pools at a map's border */
+  border-block-end: var(--space-2) solid var(--crossing-edge);
 }
 
 /* Type on the wash: muted words take the pigment's own deep hue (AA on every wash). */

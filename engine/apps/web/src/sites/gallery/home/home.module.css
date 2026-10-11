@@ -22,8 +22,16 @@
   text-wrap: pretty;
 }
 
-.grid > ul {
+/* The newest six: four on a phone (two rows of two), six on a tablet (two rows of three), four at
+   laptop widths, all six in one row on a wide screen — never a row with an empty slot. */
+.grid > ul,
+.trio > ul {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid > ul > li:nth-child(n + 5),
+.trio > ul > li:nth-child(n + 3) {
+  display: none;
 }
 
 .skeletons {
@@ -135,6 +143,15 @@
 
 @media (min-width: 48rem) {
   .grid > ul,
+  .trio > ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid > ul > li:nth-child(n + 5),
+  .trio > ul > li:nth-child(n + 3) {
+    display: block;
+  }
+
   .skeletons {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -145,6 +162,26 @@
 
   .bridge {
     grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+@media (min-width: 75rem) {
+  .grid > ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid > ul > li:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+@media (min-width: 110rem) {
+  .grid > ul {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .grid > ul > li:nth-child(n + 5) {
+    display: block;
   }
 }
 

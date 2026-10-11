@@ -20,7 +20,9 @@ import { leadWork } from './hero'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
 
-const SHOWN = 4
+/** Six: four show on a phone and at laptop widths, six in two rows on a tablet and in one row on
+ * a wide screen (home.module.css). */
+const SHOWN = 6
 
 type Props = {
   readonly locale: SiteLocale
@@ -124,7 +126,7 @@ function RecentlyFrame({ t, body }: { readonly t: HomeText; readonly body: React
   return (
     <section className={styles.section}>
       <SectionHead title={t('home.gallery.recentlyTitle')} lede={t('home.gallery.recentlyBody')} />
-      <div className={styles.grid}>{body}</div>
+      <div className={styles.trio}>{body}</div>
     </section>
   )
 }
