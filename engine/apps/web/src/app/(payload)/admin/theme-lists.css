@@ -168,12 +168,12 @@
   .table th#heading-title,
   .table td.cell-name,
   .table td.cell-email {
-    min-inline-size: 13rem;
+    min-inline-size: 12rem;
   }
 
   .table th,
   .table td {
-    padding-inline: calc(var(--base) * 0.55);
+    padding-inline: calc(var(--base) * 0.45);
   }
 
   /* A long column label wraps under its sort arrows instead of widening the column. */

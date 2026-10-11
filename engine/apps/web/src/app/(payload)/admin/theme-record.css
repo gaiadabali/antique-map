@@ -36,6 +36,14 @@
   color: var(--admin-ink);
 }
 
+/* The account page's settings rules span the gutters exactly: Payload sizes them 5 units wider
+   than the column but pulls them back one gutter, so on a phone they ran 75 px off the screen. */
+.payload-settings::before,
+.payload-settings::after {
+  inline-size: calc(100% + var(--gutter-h) * 2);
+  background: var(--admin-hairline);
+}
+
 /* ---- the form: main column and side panel ---------------------------------------------------- */
 
 .document-fields__sidebar-wrap,
