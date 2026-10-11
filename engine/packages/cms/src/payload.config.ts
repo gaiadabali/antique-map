@@ -95,6 +95,9 @@ export function engineConfig(env: Env = process.env): Config {
       // admin on a phone set to dark mode. The look itself is the Indies world (TASKS.md 16).
       theme: 'light',
       meta: { titleSuffix: ' · Indies' },
+      // Short dates in lists and on a record's status line: "9 Oct 2026, 22:34" fits a column and a
+      // phone, where "October 9th 2026, 10:34 PM" did not (TASKS.md 16, the finish review).
+      dateFormat: 'd MMM yyyy, HH:mm',
       components: {
         graphics: {
           Logo: '@engine/cms/admin/views#AdminLogo',

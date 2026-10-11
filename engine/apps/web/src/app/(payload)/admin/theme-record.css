@@ -184,6 +184,16 @@
     border-inline-start: 0;
     border-top: 1px solid var(--admin-hairline);
   }
+
+  /* The status line wraps instead of running off the screen; Created gives way to Last modified. */
+  .doc-controls__meta {
+    flex-wrap: wrap;
+    row-gap: calc(var(--base) * 0.25);
+  }
+
+  .doc-controls__value-wrap + .doc-controls__value-wrap {
+    display: none;
+  }
 }
 
 /* ---- the AI drafting panel (`@engine/cms/ai/admin/draft-button-client.jsx`) ------------------- */

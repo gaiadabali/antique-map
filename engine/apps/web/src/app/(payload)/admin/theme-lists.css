@@ -149,6 +149,45 @@
   min-inline-size: 0;
 }
 
+/* The tick column takes only its box (Payload gives every cell a 7-unit minimum). */
+.table th#heading-_select,
+.table td.cell-_select {
+  inline-size: 1%;
+  min-inline-size: 0;
+  padding-inline-end: 0;
+}
+
+.table .select-all {
+  inline-size: auto;
+}
+
+/* Beside the open sidebar on a laptop, the default columns fit the panel: the title still
+   wraps in two or three lines, the rest stay on one. */
+@media (max-width: 1440px) {
+  .table td.cell-title,
+  .table th#heading-title,
+  .table td.cell-name,
+  .table td.cell-email {
+    min-inline-size: 13rem;
+  }
+
+  .table th,
+  .table td {
+    padding-inline: calc(var(--base) * 0.55);
+  }
+
+  /* A long column label wraps under its sort arrows instead of widening the column. */
+  .table th,
+  .table th .sort-column,
+  .table th .sort-column__label {
+    white-space: normal;
+  }
+
+  .table th .sort-column__label {
+    min-inline-size: 0;
+  }
+}
+
 .sort-column__label {
   color: var(--admin-muted);
 }

@@ -185,6 +185,8 @@ export const PRODUCT_FIELDS: Field[] = [
         en: 'Whole rupiah: 95000 for Rp 95.000. The checkout always prices from here, never from the page.',
         id: 'Rupiah bulat: 95000 untuk Rp 95.000. Checkout selalu menghitung harga dari sini, bukan dari halaman.',
       },
+      // The list column reads "Rp 95.000", not a bare 95000 (TASKS.md 16).
+      components: { Cell: '@engine/cms/admin/views#RupiahCell' },
     },
   },
   variants,

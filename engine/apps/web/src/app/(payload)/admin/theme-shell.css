@@ -112,6 +112,13 @@
     text-overflow: ellipsis;
   }
 
+  /* The last crumb is the page's own title, set large just below: a phone drops it and its
+     separator, so no clipped fragment is left ("Indies / Antiques", the way back). */
+  .step-nav > .step-nav__last,
+  .step-nav > :nth-last-child(2):not(:first-child) {
+    display: none;
+  }
+
   .app-header__actions-wrapper {
     margin-inline-end: 0;
     flex: none;

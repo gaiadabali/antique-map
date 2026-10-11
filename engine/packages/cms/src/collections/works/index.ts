@@ -36,11 +36,18 @@ import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'
 import { holdWorkReferences } from '../../hooks/work-references'
 import { assignWorkUid } from '../../hooks/work-uid'
+import { foldSections } from '../../fields/fold'
 import { WORKS_ACCESS, WORKS_VERSIONS } from './access'
 import { OBJECT_FIELDS } from './fields-object'
 import { RECORD_FIELDS } from './fields-record'
 import { STAFF_FIELDS } from './fields-staff'
 import { assignPublicId } from './public-id'
+
+/**
+ * The record's rarely-filled dating and publication sections open folded, so a long antique record
+ * opens on what is catalogued every time (TASKS.md 16, the finish review: "forms feel long").
+ */
+const RARELY_FILLED = new Set(['firstEdition', 'dateOnPlate', 'publication'])
 
 export const Works: CollectionConfig = {
   slug: 'works',
@@ -73,5 +80,10 @@ export const Works: CollectionConfig = {
     afterChange: [invalidateWorkOnChange],
     afterDelete: [invalidateWorkOnDelete],
   },
-  fields: [draftFromPhotosField, ...RECORD_FIELDS, ...OBJECT_FIELDS, ...STAFF_FIELDS],
+  fields: [
+    draftFromPhotosField,
+    ...foldSections(RECORD_FIELDS, RARELY_FILLED),
+    ...OBJECT_FIELDS,
+    ...STAFF_FIELDS,
+  ],
 }
