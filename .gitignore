@@ -55,6 +55,9 @@ TASKS.md.lock
 
 # The impeccable skill's engine binary: its launcher downloads and verifies it.
 .claude/skills/impeccable/scripts/bin/
+# Its working files (question pages, review screens); the surface briefs are kept.
+.impeccable/questions/
+.impeccable/review/
 
 # Editors and operating systems
 .DS_Store

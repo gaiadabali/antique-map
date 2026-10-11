@@ -80,3 +80,43 @@ The owner's later look-and-feel pass changes only these:
 | Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                       |
 
 No dark mode. No raw colour or `font-family` is allowed outside the token files.
+
+## The admin (phase 16, 2026-10-11)
+
+The Payload admin at `/admin` wears the Indies world built for work: light only (`admin.theme: 'light'`, DR-14), linen ground, white paper panels with one hairline, ink type, bronze for the one primary action, the current selection and focus. Recorded from the shipped CSS and components, not the brief.
+
+**Where it lives.** Tokens: `engine/apps/web/src/shared/styles/tokens/admin.css` (raw values live here alone; the token lint covers it). Mount order in `app/(payload)/layout.tsx`: `@payloadcms/next/css`, `primitives.css`, `admin.css`, then `app/(payload)/admin/` `theme-base`, `theme-shell`, `theme-signin`, `theme-forms`, `theme-record`, `theme-lists`, `wall` (imports `wall-cards`), `panels` (imports `panels-controls`, `panels-analytics`). The brand faces come from `fontVariables` on `<html>`. **Rule: admin feature CSS reads only `--admin-*` tokens (and `--primitive-space-*`, `--base`); no raw colour or `font-family` outside the token files; a lint enforces it.**
+
+**How it is themed.** Payload's CSS sits in `@layer payload-default`; the admin's CSS is unlayered, so it wins without `!important`. Theming retunes Payload's own scales in `admin.css` (`--color-base-*`, `-success-*`, `-warning-*`, `-error-*`, and `-blue-*`, its accent, now bronze-brown) and its `--theme-*`, `--font-*`, `--style-radius-*` and `--accessibility-outline` variables, so unstyled Payload screens still speak the palette. Buttons are driven through Payload's own `--bg-color`, `--color`, `--hover-bg`, `--hover-color`, `--btn-border`, `--hover-btn-border` per `.btn--style-*`; do not restyle `.btn` per screen.
+
+**Palette (roles in `admin.css`).**
+
+| Role | Value |
+| --- | --- |
+| `--admin-ground` / `-paper` | `--primitive-linen` `#f4f1ea` / `--primitive-paper` `#ffffff` |
+| `--admin-sidebar` / `-wash` | `#efebe2` / `#f7f5f0` |
+| `--admin-ink` / `-ink-strong` | `#26231e` / `--primitive-off-black` |
+| `--admin-muted` | `#675f52` (base-500) |
+| `--admin-hairline` / `-rule` | `#e3ddd1` / `#d5cec0` |
+| `--admin-input-border` | `#8f8674` |
+| `--admin-accent` / `-accent-strong` / `-accent-tint` / `-accent-on` | bronze `#6e5a43` / `#5a4936` / `#f6f2ec` / paper |
+| `--admin-focus` | bronze; `2px solid`, offset 2px |
+| success, warning, danger (+ `-tint`) | `--primitive-positive`, `-caution`, `-critical`; tints `#eef4ef`, `#faf3e6`, `#fbefee` |
+| `--admin-mat` / `-mat-edge` / `-selection` | `#f4f1ea` / `#d9d2c3` / `#e4d9ca` |
+| shadows | `--admin-shadow-popup`, `--admin-shadow-lift`, for popups and lifts only; panels have none |
+
+Contrast as the file records it (checked 2026-10-11): ink on linen 13.9:1; muted on linen 5.6:1, on the sidebar 5.3:1; paper on bronze 6.6:1; input boundary on paper 3.6:1; base-400 (Payload's quieter labels) on linen 5.0:1; every status tone on its tint 5.4:1 or more.
+
+**Type.** Karla (`--admin-font-body`) for everything read or clicked; Cormorant Garamond (`--admin-font-display`) only for page and record titles. Root is 14 px (15 px under 768 px, with `--base-body-size: 15`). The admin sets a face only through the shorthand roles (weight size/line family): `--admin-text-title` 500 32 px/1.15 display, `-record` 500 24 px/1.2 display, `-heading` 700 16 px/1.35, `-body` 400 14 px/1.5, `-strong` 700 14 px/1.5, `-small` and `-data` 400 13 px/1.45, `-label` 700 11 px/1.3 (with `--admin-tracking-label: 0.08em`, uppercase where used). Numerals are tabular.
+
+**Shape, size, motion.** Panels and cards are square (`--admin-radius: 0`) on paper with a 1 px hairline; controls take `--admin-radius-control` (2 px). Control height `--admin-control-height` 40 px; touch targets `--admin-target` 44 px (chips, strip items, pager links, buttons on a phone). Pills become square tags in words, tone supporting; notices are a tinted ground and its own ink, no side stripe. Motion is `--admin-dur` 180 ms on `--admin-ease` (`cubic-bezier(0.22, 0.61, 0.36, 1)`) for colour, border and a 2 % picture ease; no page-load choreography; under `prefers-reduced-motion` transitions drop to 0.01 ms and the card's picture does not move.
+
+**Shell.** The sidebar is the second neutral (`--admin-sidebar`) parted by one hairline; its current link is paper with a hairline, in strong ink, marked by a 6 px bronze square (`.nav__link-indicator`). Group labels are `--admin-text-label` uppercase muted. The wordmark is type, no image (`packages/cms/src/admin/brand/marks.jsx`, wired as `admin.components.graphics`): "Indies" in Cormorant over a rule and "Indies Gallery · Old East Indies" on sign-in; "Indies" alone in the sidebar and breadcrumbs. Sign-in is a 26 rem paper card on linen.
+
+**The Catalogue Wall** (the dashboard view, `views.dashboard` to `CatalogueWall`; code in `packages/cms/src/admin/wall/`, CSS in `wall.css`, `wall-cards.css`). Top to bottom: the `.wall__title` "Catalogue" in `--admin-text-title`; one paper strip of today's counts, each a link (Orders to act on, New leads, AI drafts to check, Drafts) with a quiet link at its end; filter rows (site chips, state chips, search); the wall of cards; the pager. A card is paper with a hairline holding a square matted picture (`.wall-mat`, `aspect-ratio: 1 / 1`), a title clamped to two lines, site and reference, and exactly one state tag. `PAGE_SIZE = 24`. Columns: 4 above 1100 px, 3 at 1100 px and under, 2 at 760 px and under. Hover or focus darkens the hairline to ink and scales the picture 1.02. The state tag (`wall-tag`) is derived in `state.ts`, most urgent first: `needsPhoto`, `aiDraft`, `draft`, then `outOfStock` (products) or `sold` (works), else `published`. Square, uppercase label type, hairline; tone: published success, aiDraft warning, needsPhoto and outOfStock danger, others neutral wash.
+
+**The custom views' shared pieces** (`panels.css`, `panels-controls.css`, `panels-analytics.css`; used by Order panel, Leads inbox, Import stock, the analytics dashboard). `ix-page` (60 rem measure, `--wide` 80 rem), `ix-title` (title role), `ix-record` (record role), `ix-card` (paper, hairline, square; `ix-cardlink` darkens its border to ink on hover or focus), `ix-muted`, `ix-empty`, `ix-tag` (square, hairline, label role; `--success`, `--warning`, `--danger` tones). One `ix-btn--primary` (bronze) per screen; the other buttons are paper with a hairline. `ix-actions--bar` is a plain row on desktop and, under 768 px, sticks to the screen's foot on the ground colour with a top hairline, its buttons full width and the primary first.
+
+**Phone rules (390 px, fixed in review).** Nothing may be wider than the screen. The wall's filter row is `position: relative` (its visually hidden search label is absolute and had widened the page to 898 px); the strip and chip rows scroll sideways inside themselves. Header breadcrumbs give way with an ellipsis, the actions keep their room and the locale button shows its value alone. The list selection bar is pinned to the screen's edges (`inset-inline: 0; inline-size: auto`). List tables scroll inside their panel; title cells keep 12 rem so the next column shows.
+
+**How to change it.** The owner's later UI/UX pass edits `engine/apps/web/src/shared/styles/tokens/admin.css` (roles, type shorthands, radii, control height, durations, and the Payload scales), and the shared pieces (`wall-*`, `ix-*`, the marks). Do not add colours, faces or one-off values to feature CSS or to a single view.
