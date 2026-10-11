@@ -215,6 +215,12 @@
     padding: calc(var(--base) * 0.6);
   }
 
+  /* Payload sizes the fixed selection bar from its container; pin it to the screen's edges. */
+  .collection-list__list-selection {
+    inset-inline: 0;
+    inline-size: auto;
+  }
+
   /* On a phone the title narrows so the next column shows: the panel scrolls for the rest. */
   .table td.cell-title,
   .table th#heading-title,

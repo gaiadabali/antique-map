@@ -1,0 +1,93 @@
+/* The admin's sign-in page and its marks (TASKS.md 16): a paper card on the linen ground, the
+   Indies wordmark, and the small mark in the sidebar and breadcrumbs. Tokens only. */
+
+/* ---- sign-in -------------------------------------------------------------------------------- */
+
+.template-minimal {
+  background: var(--admin-ground);
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--base);
+}
+
+.template-minimal__wrap {
+  inline-size: min(100%, 26rem);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  padding: calc(var(--base) * 2) calc(var(--base) * 1.75) calc(var(--base) * 1.75);
+}
+
+.login__brand {
+  margin-block-end: calc(var(--base) * 1.5);
+}
+
+.login__form .form-submit .btn {
+  inline-size: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .template-minimal {
+    place-items: start stretch;
+    padding: calc(var(--base) * 2) var(--base);
+  }
+
+  .template-minimal__wrap {
+    inline-size: 100%;
+    padding: calc(var(--base) * 1.5) var(--base);
+  }
+}
+
+/* ---- the marks (`@engine/cms/admin/brand/marks.jsx`) ----------------------------------------- */
+
+.ix-mark {
+  color: var(--admin-ink-strong);
+}
+
+.ix-mark--logo {
+  display: grid;
+  justify-items: start;
+  gap: calc(var(--base) * 0.4);
+}
+
+h1.ix-mark__name,
+.ix-mark__name {
+  margin: 0;
+  font: var(--admin-text-title);
+  font-size: 2.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.ix-mark__rule {
+  inline-size: 3rem;
+  block-size: 1px;
+  background: var(--admin-accent);
+}
+
+p.ix-mark__sites,
+.ix-mark__sites {
+  margin: 0;
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.ix-mark--icon {
+  font: var(--admin-text-record);
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* Payload sizes its icon slot for an 18 px glyph; the wordmark needs its own width. */
+.step-nav__home,
+.step-nav__home .graphic-icon,
+.nav__header .graphic-icon {
+  inline-size: auto;
+  max-inline-size: none;
+  block-size: auto;
+  overflow: visible;
+}

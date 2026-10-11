@@ -98,7 +98,10 @@
 
 /* ---- the filter row ------------------------------------------------------------------------- */
 
+/* A positioning context: the search's visually hidden label is absolute, and without one it
+   escapes the row's own scroll on a phone and widens the page (898 px at 390, 2026-10-11). */
 .wall-filters {
+  position: relative;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -140,6 +143,7 @@
 }
 
 .wall-search {
+  position: relative;
   display: flex;
   gap: var(--primitive-space-1);
   margin-inline-start: auto;
