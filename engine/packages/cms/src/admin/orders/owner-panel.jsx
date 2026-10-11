@@ -5,20 +5,26 @@
  * and forms, as `store-panel.jsx`. `.jsx`: see `shared.jsx`'s header.
  */
 import { ORDER_STATUS_OPTIONS, ORDER_STATUS_LABELS } from '../../collections/orders/statuses'
-import { BigButton, Card, L, Notice, QuietLink, SubmitButton, refusalCopy, rupiah } from './shared'
+import {
+  BigButton,
+  Card,
+  L,
+  Notice,
+  QuietLink,
+  StatusTag,
+  SubmitButton,
+  refusalCopy,
+  rupiah,
+} from './shared'
 import { QuotePanel } from './quote-panel'
 import { ClearFlagSheet, LinesCard, ReplaceSheet, ReplacementLinks } from './replace-panel'
 
 export function OwnerFilterBar({ stores, filter, language }) {
   return (
-    <form
-      method="get"
-      action="/admin/orders"
-      style={{ display: 'flex', gap: 12, marginBottom: 16 }}
-    >
-      <label>
+    <form method="get" action="/admin/orders" className="ix-filter">
+      <label className="ix-label">
         {L('filterStatus', language)}
-        <select name="status" defaultValue={filter.status} style={{ display: 'block' }}>
+        <select name="status" defaultValue={filter.status} className="ix-input">
           <option value="">{L('filterAll', language)}</option>
           {ORDER_STATUS_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>
@@ -27,9 +33,9 @@ export function OwnerFilterBar({ stores, filter, language }) {
           ))}
         </select>
       </label>
-      <label>
+      <label className="ix-label">
         {L('filterStore', language)}
-        <select name="store" defaultValue={filter.store} style={{ display: 'block' }}>
+        <select name="store" defaultValue={filter.store} className="ix-input">
           <option value="">{L('filterAll', language)}</option>
           {stores.map((s) => (
             <option key={s.id} value={s.id}>
@@ -44,27 +50,23 @@ export function OwnerFilterBar({ stores, filter, language }) {
 }
 
 export function OwnerList({ orders, language }) {
-  if (orders.length === 0) return <p>{L('emptyList', language)}</p>
+  if (orders.length === 0) return <p className="ix-empty">{L('emptyList', language)}</p>
   return (
     <div>
       {orders.map((order) => (
-        <a
-          key={order.id}
-          href={`/admin/orders/${order.id}`}
-          style={{ textDecoration: 'none', color: 'inherit' }}
-        >
+        <a key={order.id} href={`/admin/orders/${order.id}`} className="ix-cardlink">
           <Card>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <strong>#{order.number}</strong>
-              <span>{ORDER_STATUS_LABELS[order.status]?.[language]}</span>
+            <div className="ix-row">
+              <strong className="ix-order-no">#{order.number}</strong>
+              <StatusTag status={order.status}>
+                {ORDER_STATUS_LABELS[order.status]?.[language]}
+              </StatusTag>
             </div>
-            <div style={{ fontSize: 14, color: 'var(--theme-elevation-600)' }}>
+            <div className="ix-muted">
               {order.storeSnapshot?.name ?? '—'} · {order.contact.name} ·{' '}
-              {rupiah(order.totals.total)}
+              <span className="ix-num">{rupiah(order.totals.total)}</span>
               {order.needsAttention?.flag && (
-                <strong style={{ color: 'var(--theme-error-500)', marginLeft: 8 }}>
-                  {L('needsAttention', language)}
-                </strong>
+                <span className="ix-tag ix-tag--danger">{L('needsAttention', language)}</span>
               )}
             </div>
           </Card>
@@ -80,11 +82,12 @@ export function OwnerDetail({ order, stores, step, language, payLink, linked, er
     ? refusalCopy(error, language).replace('{store}', order.storeSnapshot?.name ?? '—')
     : null
   return (
-    <div>
+    <div className="ix-page">
       <QuietLink href="/admin/orders">← {L('back', language)}</QuietLink>
-      <h2 style={{ marginTop: 8 }}>
-        #{order.number} — {ORDER_STATUS_LABELS[order.status]?.[language]}
-      </h2>
+      <div className="ix-order-head">
+        <h2 className="ix-record">#{order.number}</h2>
+        <StatusTag status={order.status}>{ORDER_STATUS_LABELS[order.status]?.[language]}</StatusTag>
+      </div>
       <Notice tone="error">{refused}</Notice>
       {order.needsAttention?.flag && (
         <Notice tone="error">
@@ -99,15 +102,17 @@ export function OwnerDetail({ order, stores, step, language, payLink, linked, er
 
       <Card>
         <p>
-          {order.storeSnapshot?.name ?? '—'} · {order.contact.name} · {rupiah(order.totals.total)}
+          {order.storeSnapshot?.name ?? '—'} · {order.contact.name} ·{' '}
+          <span className="ix-num">{rupiah(order.totals.total)}</span>
           {order.totals.deliveryFee != null && (
             <>
               {' '}
-              · {L('deliveryFee', language)}: {rupiah(order.totals.deliveryFee)}
+              · {L('deliveryFee', language)}:{' '}
+              <span className="ix-num">{rupiah(order.totals.deliveryFee)}</span>
             </>
           )}
         </p>
-        <p style={{ whiteSpace: 'pre-wrap' }}>{order.delivery.address}</p>
+        <p className="ix-pre">{order.delivery.address}</p>
       </Card>
       <LinesCard order={order} language={language} />
 
@@ -116,15 +121,12 @@ export function OwnerDetail({ order, stores, step, language, payLink, linked, er
       ) : clearingFlag ? (
         <ClearFlagSheet order={order} language={language} />
       ) : reassigning ? (
-        <Card>
+        <Card className="ix-card--step">
           <form method="post" action={`/api/x/orders/${order.id}/reassign`}>
-            <label htmlFor="reassign-store">{L('reassignToStore', language)}</label>
-            <select
-              id="reassign-store"
-              name="toStoreId"
-              required
-              style={{ display: 'block', margin: '8px 0' }}
-            >
+            <label htmlFor="reassign-store" className="ix-label">
+              {L('reassignToStore', language)}
+            </label>
+            <select id="reassign-store" name="toStoreId" required className="ix-input">
               {stores
                 .filter((s) => s.id !== order.store)
                 .map((s) => (
@@ -133,32 +135,34 @@ export function OwnerDetail({ order, stores, step, language, payLink, linked, er
                   </option>
                 ))}
             </select>
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="ix-actions">
               <SubmitButton>{L('reassignSubmit', language)}</SubmitButton>
               <QuietLink href={`/admin/orders/${order.id}`}>{L('cancelSheet', language)}</QuietLink>
             </div>
           </form>
         </Card>
       ) : cancelling ? (
-        <Card>
+        <Card className="ix-card--step">
           <form method="post" action={`/api/x/orders/${order.id}/move`}>
             <input type="hidden" name="to" value="cancelled" />
-            <label htmlFor="cancel-reason">{L('cancelReasonLabel', language)}</label>
+            <label htmlFor="cancel-reason" className="ix-label">
+              {L('cancelReasonLabel', language)}
+            </label>
             <textarea
               id="cancel-reason"
               name="reason"
               required
               maxLength={500}
-              style={{ width: '100%', minHeight: 80, display: 'block', margin: '8px 0' }}
+              className="ix-input ix-input--area"
             />
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="ix-actions">
               <SubmitButton variant="danger">{L('cancelSubmit', language)}</SubmitButton>
               <QuietLink href={`/admin/orders/${order.id}`}>{L('cancelSheet', language)}</QuietLink>
             </div>
           </form>
         </Card>
       ) : (
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div className="ix-actions ix-actions--bar">
           {step.forward && (
             <form method="post" action={`/api/x/orders/${order.id}/move`}>
               <input type="hidden" name="to" value={step.forward.to} />

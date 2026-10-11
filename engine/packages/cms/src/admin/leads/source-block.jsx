@@ -30,24 +30,22 @@ export async function LeadSourceBlock({ data, payload, req, i18n }) {
 
   if (items.length === 0 && !chatSessionId) {
     return (
-      <div>
-        <h4>{L('sourceTitle', language)}</h4>
-        <p style={{ fontSize: 13, color: 'var(--theme-elevation-500)' }}>{L('sourceNone', language)}</p>
+      <div className="ix-block">
+        <h4 className="ix-block__title">{L('sourceTitle', language)}</h4>
+        <p className="ix-muted">{L('sourceNone', language)}</p>
       </div>
     )
   }
 
   return (
-    <div>
-      <h4>{L('sourceTitle', language)}</h4>
+    <div className="ix-block">
+      <h4 className="ix-block__title">{L('sourceTitle', language)}</h4>
       {items.length > 0 && (
-        <div style={{ marginBottom: 8 }}>
-          <div style={{ fontSize: 12, color: 'var(--theme-elevation-500)' }}>
-            {L('sourceItemsLabel', language)}
-          </div>
+        <div className="ix-block__group">
+          <div className="ix-label">{L('sourceItemsLabel', language)}</div>
           {items.map((item) => (
             <div key={item.id}>
-              <a href={`/admin/collections/works/${item.id}`} style={{ fontSize: 13 }}>
+              <a href={`/admin/collections/works/${item.id}`} className="ix-link ix-link--inline">
                 {item.stockNumber ? `${item.stockNumber} — ` : ''}
                 {item.title ?? L('sourceAdminPage', language)}
               </a>
@@ -57,7 +55,10 @@ export async function LeadSourceBlock({ data, payload, req, i18n }) {
       )}
       {chatSessionId && (
         <div>
-          <a href={`/admin/collections/chat-sessions/${chatSessionId}`} style={{ fontSize: 13 }}>
+          <a
+            href={`/admin/collections/chat-sessions/${chatSessionId}`}
+            className="ix-link ix-link--inline"
+          >
             {L('sourceChatLabel', language)}
           </a>
         </div>

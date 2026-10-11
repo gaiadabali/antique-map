@@ -13,7 +13,7 @@ export function CreatePartnerButton({ data, id, i18n }) {
   if (data?.kind !== 'partnership' || hasPartner) return null
 
   return (
-    <form method="post" action={`/api/leads/${id}/create-partner`}>
+    <form method="post" action={`/api/leads/${id}/create-partner`} className="ix-block">
       <SubmitButton>{L('createPartner', language)}</SubmitButton>
     </form>
   )
