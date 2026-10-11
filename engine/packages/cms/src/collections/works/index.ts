@@ -44,10 +44,20 @@ import { STAFF_FIELDS } from './fields-staff'
 import { assignPublicId } from './public-id'
 
 /**
- * The record's rarely-filled dating and publication sections open folded, so a long antique record
- * opens on what is catalogued every time (TASKS.md 16, the finish review: "forms feel long").
+ * The record's rarely-filled sections open folded, so a long antique record opens on what is
+ * catalogued every time (TASKS.md 16, the finish review: "forms feel long"): the extra dates and
+ * the publication, the staff-only physical record, rights, what came from the old site, and SEO.
+ * Condition and Cataloguing stay open (a grade and the AI-draft checks are read on every work).
  */
-const RARELY_FILLED = new Set(['firstEdition', 'dateOnPlate', 'publication'])
+const RARELY_FILLED = new Set([
+  'firstEdition',
+  'dateOnPlate',
+  'publication',
+  'physical',
+  'rights',
+  'legacy',
+  'seo',
+])
 
 export const Works: CollectionConfig = {
   slug: 'works',
@@ -84,6 +94,6 @@ export const Works: CollectionConfig = {
     draftFromPhotosField,
     ...foldSections(RECORD_FIELDS, RARELY_FILLED),
     ...OBJECT_FIELDS,
-    ...STAFF_FIELDS,
+    ...foldSections(STAFF_FIELDS, RARELY_FILLED),
   ],
 }

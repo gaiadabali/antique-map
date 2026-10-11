@@ -13,7 +13,7 @@ import { Card, L, QuietLink, SubmitButton, rupiah } from './shared'
 export function LinesCard({ order, language }) {
   return (
     <Card>
-      <h3 className="ix-card__title">{L('items', language)}</h3>
+      <h2 className="ix-card__title">{L('items', language)}</h2>
       {order.lines.map((line, i) => (
         <div key={line.id ?? i} className="ix-line">
           <span>
@@ -32,7 +32,7 @@ export function ReplaceSheet({ order, language }) {
   const store = order.storeSnapshot?.name ?? '—'
   return (
     <Card className="ix-card--step">
-      <h3 className="ix-card__title">{L('replaceDamaged', language)}</h3>
+      <h2 className="ix-card__title">{L('replaceDamaged', language)}</h2>
       <p className="ix-muted">{L('replaceHint', language).replace('{store}', store)}</p>
       <form method="post" action={`/api/orders/${order.id}/replace`}>
         {order.lines.map((line) => (

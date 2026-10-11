@@ -9,16 +9,19 @@
 @import './panels-lists.css';
 @import './panels-native.css';
 
+/* On the shell's gutter, left-aligned like Payload's own lists and records, so a page's title
+   lines up with the breadcrumbs above it at any width. */
 .ix-page {
-  max-inline-size: 60rem;
-  margin-inline: auto;
-  padding: calc(var(--base) * 0.5) calc(var(--base) * 0.75) calc(var(--base) * 2);
+  --ix-gutter: var(--gutter-h, calc(var(--base) * 0.75));
+  max-inline-size: calc(60rem + var(--ix-gutter) * 2);
+  margin-inline: 0;
+  padding: calc(var(--base) * 0.5) var(--ix-gutter) calc(var(--base) * 2);
   color: var(--admin-ink);
   font: var(--admin-text-body);
 }
 
 .ix-page--wide {
-  max-inline-size: 80rem;
+  max-inline-size: calc(80rem + var(--ix-gutter) * 2);
 }
 
 .ix-title {

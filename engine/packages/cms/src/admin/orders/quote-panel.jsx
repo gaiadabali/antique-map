@@ -34,7 +34,7 @@ export function QuotePanel({ order, language, payLink }) {
 
   return (
     <Card className="ix-card--step">
-      <h3 className="ix-card__title">{L('sendPriceTitle', language)}</h3>
+      <h2 className="ix-card__title">{L('sendPriceTitle', language)}</h2>
       {deadline && (
         <p className="ix-muted">
           {L('quoteByPrefix', language)} {deadline}

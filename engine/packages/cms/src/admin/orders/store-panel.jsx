@@ -138,7 +138,7 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, l
       )}
 
       <Card>
-        <h3 className="ix-card__title">{L('items', language)}</h3>
+        <h2 className="ix-card__title">{L('items', language)}</h2>
         {order.lines.map((line, i) => (
           <LineItem key={line.id ?? i} line={line} />
         ))}
@@ -155,7 +155,7 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, l
       </Card>
 
       <Card>
-        <h3 className="ix-card__title">{L('address', language)}</h3>
+        <h2 className="ix-card__title">{L('address', language)}</h2>
         <p className="ix-pre">{order.delivery.address}</p>
         {order.delivery.notes && <p>{order.delivery.notes}</p>}
         <div className="ix-links">
@@ -184,7 +184,7 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, l
       </Card>
 
       <Card>
-        <h3 className="ix-card__title">{L('driverImageTitle', language)}</h3>
+        <h2 className="ix-card__title">{L('driverImageTitle', language)}</h2>
         {imagePreviewUrl ? (
           <p>{L('driverImageAttached', language)}</p>
         ) : (

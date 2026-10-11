@@ -7,15 +7,27 @@
   appearance: none;
   padding-inline-end: calc(var(--base) * 2);
   background-color: var(--admin-paper);
+  /* A line chevron like Payload's own (react-select, Columns, the locale button): two thin
+     strokes meeting in a V, drawn in the text colour. */
   background-image:
-    linear-gradient(45deg, transparent 50%, currentColor 50%),
-    linear-gradient(135deg, currentColor 50%, transparent 50%);
+    linear-gradient(
+      to top right,
+      transparent calc(50% - 0.6px),
+      currentColor calc(50% - 0.6px) calc(50% + 0.6px),
+      transparent calc(50% + 0.6px)
+    ),
+    linear-gradient(
+      to top left,
+      transparent calc(50% - 0.6px),
+      currentColor calc(50% - 0.6px) calc(50% + 0.6px),
+      transparent calc(50% + 0.6px)
+    );
   background-position:
-    calc(100% - 1.25rem) 50%,
-    calc(100% - 0.85rem) 50%;
+    right 1.1rem center,
+    right calc(1.1rem - 0.375rem) center;
   background-size:
-    0.4rem 0.4rem,
-    0.4rem 0.4rem;
+    0.375rem 0.375rem,
+    0.375rem 0.375rem;
   background-repeat: no-repeat;
   color: var(--admin-ink);
   cursor: pointer;
@@ -72,5 +84,12 @@
   .ix-page select.ix-input,
   .ix-page input[type='date'].ix-input {
     min-block-size: var(--admin-control-height);
+  }
+}
+
+/* On a phone the filter selects run the full width, one under the other, as the button does. */
+@media (max-width: 768px) {
+  .ix-page select.ix-input {
+    inline-size: 100%;
   }
 }
