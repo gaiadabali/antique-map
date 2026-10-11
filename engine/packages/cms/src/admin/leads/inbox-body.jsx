@@ -132,7 +132,7 @@ export async function LeadsInboxViewBody(props) {
   ])
 
   return (
-    <div className="ix-page">
+    <main className="ix-page">
       <h1 className="ix-title">{L('inboxTitle', language)}</h1>
       <FilterBar filter={filter} counts={counts} language={language} />
       {docs.length === 0 ? (
@@ -145,6 +145,6 @@ export async function LeadsInboxViewBody(props) {
         </div>
       )}
       <Pager page={page} totalPages={totalPages} searchParams={searchParams} language={language} />
-    </div>
+    </main>
   )
 }

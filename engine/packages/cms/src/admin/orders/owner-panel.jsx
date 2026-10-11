@@ -82,7 +82,7 @@ export function OwnerDetail({ order, stores, step, language, payLink, linked, er
     ? refusalCopy(error, language).replace('{store}', order.storeSnapshot?.name ?? '—')
     : null
   return (
-    <div className="ix-page">
+    <main className="ix-page">
       <QuietLink href="/admin/orders">← {L('back', language)}</QuietLink>
       <div className="ix-order-head">
         <h2 className="ix-record">#{order.number}</h2>
@@ -199,6 +199,6 @@ export function OwnerDetail({ order, stores, step, language, payLink, linked, er
           )}
         </div>
       )}
-    </div>
+    </main>
   )
 }

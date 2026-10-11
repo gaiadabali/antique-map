@@ -120,7 +120,7 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, l
   const confirmTo = step.confirmTo
   const handback = step.handback
   return (
-    <div className="ix-page">
+    <main className="ix-page">
       <QuietLink href="/admin/orders">← {L('back', language)}</QuietLink>
       <div className="ix-order-head">
         <h2 className="ix-record">#{order.number}</h2>
@@ -257,6 +257,6 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, l
           )}
         </div>
       )}
-    </div>
+    </main>
   )
 }

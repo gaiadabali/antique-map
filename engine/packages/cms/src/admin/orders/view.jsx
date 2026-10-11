@@ -111,10 +111,10 @@ async function OrdersPanelViewBody(props) {
     if (!id) {
       const orders = await loadStoreQueue(payload, req)
       return (
-        <div className="ix-page">
+        <main className="ix-page">
           <h1 className="ix-title">{L('queueTitle', language)}</h1>
           <StoreQueue orders={orders} language={language} />
-        </div>
+        </main>
       )
     }
     const orderId = Number(id)
@@ -150,7 +150,7 @@ async function OrdersPanelViewBody(props) {
       loadActiveStores(payload, req),
     ])
     return (
-      <div className="ix-page">
+      <main className="ix-page">
         <h1 className="ix-title">{L('ordersTitle', language)}</h1>
         <OwnerFilterBar
           stores={stores}
@@ -158,7 +158,7 @@ async function OrdersPanelViewBody(props) {
           language={language}
         />
         <OwnerList orders={orders} language={language} />
-      </div>
+      </main>
     )
   }
 
