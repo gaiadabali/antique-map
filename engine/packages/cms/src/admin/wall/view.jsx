@@ -15,7 +15,7 @@ import { countNewLeads, countOrders } from '../widgets/dashboard'
 import { languageOf, t } from './copy'
 import { loadCatalogueCounts, loadWall } from './data'
 import { parseFilter, wallHref } from './filter'
-import { Card, Empty, Filters, Pager, Strip } from './parts'
+import { Card, Empty, Filters, Pager, Search, Strip } from './parts'
 
 /** Store staff's home: their order panel (TASKS.md 10.8.c). */
 const STORE_HOME = '/admin/orders'
@@ -43,7 +43,10 @@ export async function CatalogueWall(props) {
 
   return (
     <main className="wall">
-      <h1 className="wall__title">{t('title', language)}</h1>
+      <div className="wall__head">
+        <h1 className="wall__title">{t('title', language)}</h1>
+        <Search filter={filter} language={language} />
+      </div>
       <Strip counts={counts} filter={filter} isOwner={isOwner} language={language} />
       <Filters filter={filter} language={language} />
       {filter.state === 'ai' ? (

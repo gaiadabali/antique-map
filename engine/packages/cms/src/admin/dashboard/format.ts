@@ -11,8 +11,12 @@ export function formatNumber(value: number, language?: string, digits = 0): stri
   return new Intl.NumberFormat(locale(language), { maximumFractionDigits: digits }).format(value)
 }
 
-export function formatRupiah(value: number, language?: string): string {
-  return `Rp ${formatNumber(value, language)}`
+/**
+ * Rupiah is written one way in either admin language, as the shop and the Order panel write it:
+ * "Rp 95.000" (Indonesian grouping). `_language` is kept so callers need not change.
+ */
+export function formatRupiah(value: number, _language?: string): string {
+  return `Rp ${formatNumber(value, 'id')}`
 }
 
 export function formatRate(value: number | null, language?: string): string {

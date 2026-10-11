@@ -13,8 +13,17 @@
   min-inline-size: 0;
 }
 
-.wall__title {
+.wall__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--primitive-space-3) var(--primitive-space-5);
   margin: 0 0 var(--primitive-space-4);
+}
+
+.wall__title {
+  margin: 0;
   font: var(--admin-text-title);
   color: var(--admin-ink-strong);
   text-wrap: balance;
@@ -207,16 +216,19 @@
     padding-inline: var(--primitive-space-4);
   }
 
-  .wall-chips,
-  .wall-search {
+  .wall-chips {
     flex: none;
   }
 
+  /* Under the title, the search takes the full width. */
   .wall-search {
+    flex: 1 1 100%;
     margin-inline-start: 0;
   }
 
   .wall-search__input {
-    inline-size: 14rem;
+    flex: 1;
+    inline-size: auto;
+    min-inline-size: 0;
   }
 }

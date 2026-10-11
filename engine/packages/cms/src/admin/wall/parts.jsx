@@ -87,27 +87,33 @@ export function Filters({ filter, language }) {
         label={t('state', language)}
         language={language}
       />
-      <form className="wall-search" method="get" action="/admin" role="search">
-        {filter.site !== 'all' ? <input type="hidden" name="site" value={filter.site} /> : null}
-        {filter.state !== 'all' ? <input type="hidden" name="state" value={filter.state} /> : null}
-        <label className="wall-search__label" htmlFor="wall-q">
-          {t('searchLabel', language)}
-        </label>
-        <input
-          id="wall-q"
-          className="wall-search__input"
-          type="search"
-          name="q"
-          defaultValue={filter.q}
-          placeholder={t('searchHint', language)}
-          maxLength={80}
-          autoComplete="off"
-        />
-        <button className="wall-search__button" type="submit">
-          {t('search', language)}
-        </button>
-      </form>
     </div>
+  )
+}
+
+/** The search, beside the title: a filter row of chips alone fits beside the open sidebar. */
+export function Search({ filter, language }) {
+  return (
+    <form className="wall-search" method="get" action="/admin" role="search">
+      {filter.site !== 'all' ? <input type="hidden" name="site" value={filter.site} /> : null}
+      {filter.state !== 'all' ? <input type="hidden" name="state" value={filter.state} /> : null}
+      <label className="wall-search__label" htmlFor="wall-q">
+        {t('searchLabel', language)}
+      </label>
+      <input
+        id="wall-q"
+        className="wall-search__input"
+        type="search"
+        name="q"
+        defaultValue={filter.q}
+        placeholder={t('searchHint', language)}
+        maxLength={80}
+        autoComplete="off"
+      />
+      <button className="wall-search__button" type="submit">
+        {t('search', language)}
+      </button>
+    </form>
   )
 }
 
