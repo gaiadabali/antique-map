@@ -32,8 +32,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 0/19 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 17 phases | | | **76/89** | **266/302** | **8** | `█████████░`  88% |
+| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 4/19 | 0 | `██░░░░░░░░`  21% |
+| **All** | 17 phases | | | **76/89** | **270/302** | **8** | `█████████░`  89% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1111,8 +1111,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** the token files (`shared/styles/tokens/{primitives,semantic}.css`, `sites/{gallery,shop}/tokens/brand.css`), `engine/apps/web/src/styles/site.css`, `engine/apps/web/src/shared/ui/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/shared/style-guide/**`, `engine/apps/web/src/shared/chat/chat-launcher.module.css`
   - **Read** the surface brief; DESIGN.md; DESIGN-SYSTEM.md §1, §7
   - _Requirements: 12.1_
-  - [ ] 17.1.a the pigment palette in three locked strengths, the type scale, the full-width page frame and fluid gutters as tokens; selection, caret, focus and scrollbars themed; contrast checked
-  - [ ] 17.1.b the shared pieces in the world: the mat becomes a colour field holding the work uncropped (no frame lines), the colour wash-in and hover deepening; section heads without eyebrows; proof points, buttons, stock tag, pagination, chips, inputs, breadcrumbs square and flat; the header and footer full width, the doubled wordmark gone
+  - [x] 17.1.a the pigment palette in three locked strengths, the type scale, the full-width page frame and fluid gutters as tokens; selection, caret, focus and scrollbars themed; contrast checked
+  - [x] 17.1.b the shared pieces in the world: the mat becomes a colour field holding the work uncropped (no frame lines), the colour wash-in and hover deepening; section heads without eyebrows; proof points, buttons, stock tag, pagination, chips, inputs, breadcrumbs square and flat; the header and footer full width, the doubled wordmark gone
   - [ ] 17.1.c **Check:** the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
 
 - [ ] **17.2 The two homes** · needs: phase 14 — 🔄 17·W1
@@ -1120,8 +1120,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/{gallery,shop}/home/**`, `engine/apps/web/src/server/{gallery,shop}/home/**`
   - **Read** the surface brief's FIRST VIEWPORT; EXPERIENCE-GALLERY.md §3; EXPERIENCE-SHOP.md §3
   - _Requirements: 12.1_
-  - [ ] 17.2.a the gallery home: the newest original across the verdigris field's edge, the headline at display scale, the bands below in the pigment order, no empty placeholder frames
-  - [ ] 17.2.b the shop home in gamboge in the same structure
+  - [x] 17.2.a the gallery home: the newest original across the verdigris field's edge, the headline at display scale, the bands below in the pigment order, no empty placeholder frames
+  - [x] 17.2.b the shop home in gamboge in the same structure
   - [ ] 17.2.c **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll.
 
 - [ ] **17.3 The gallery's listings** · needs: 17.1
