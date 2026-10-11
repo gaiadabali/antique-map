@@ -31,8 +31,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **16** The CMS redesign | UI | 15 | 🔄 in progress | 0/4 | 3/10 | 0 | `███░░░░░░░`  30% |
-| **All** | 16 phases | | | **72/81** | **259/283** | **8** | `█████████░`  92% |
+| **16** The CMS redesign | UI | 15 | 🔄 in progress | 0/4 | 6/10 | 0 | `██████░░░░`  60% |
+| **All** | 16 phases | | | **72/81** | **262/283** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1081,7 +1081,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** ADM · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/wall/**`, `engine/apps/web/src/app/(payload)/admin/wall.css`, the dashboard view in `engine/packages/cms/src/payload.config.ts`
   - **Read** the surface brief's FIRST VIEWPORT
-  - [ ] 16.2.a the admin's home is the wall: today's work in one strip (orders to act on, new leads, AI drafts to check, drafts), filters by site and state and a search, the archive as matted cards with one state tag each; store staff redirected to their orders on the server
+  - [x] 16.2.a the admin's home is the wall: today's work in one strip (orders to act on, new leads, AI drafts to check, drafts), filters by site and state and a search, the archive as matted cards with one state tag each; store staff redirected to their orders on the server
   - [ ] 16.2.b **Check:** the owner and an editor at 390 and 1280 (unfiltered, Needs attention, each site, a search, an empty result), the store user's redirect, the access tests.
 
 - [ ] **16.3 The admin's own views in the world** · needs: — — 🔄 16·W1
@@ -1095,8 +1095,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** ADM · **Agent** orchestrator, the finish reviewer, the documenter · **Wave** W2
   - **Owns** `DESIGN.md`, `docs/gates/admin-redesign.md`, `docs/gates/admin-redesign/*`
   - **Read** the surface brief
-  - [ ] 16.4.a released to staging; the admin captured at 390 and 1280 as owner, editor and store user
-  - [ ] 16.4.b the finish review against the direction contract, its fixes applied; DESIGN.md records the admin's world
+  - [x] 16.4.a released to staging; the admin captured at 390 and 1280 as owner, editor and store user
+  - [x] 16.4.b the finish review against the direction contract, its fixes applied; DESIGN.md records the admin's world
   - [ ] 16.4.c **Check:** `docs/gates/admin-redesign.md` — the verdict, the screens, axe clean, the timed admin recipes (`tests/e2e/admin-usability/`) still pass.
 
 ---
