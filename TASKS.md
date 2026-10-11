@@ -91,6 +91,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 17·W2 | 17.3 The gallery's listings | medior | `main` | 2026-10-12 | |
 | 17·W2 | 17.4 The gallery's item page | medior | `main` | 2026-10-12 | |
 | 17·W2 | 17.6 The shop's listings and product | medior | `main` | 2026-10-12 | |
+| 17·W2 | 17.7 The shop's purchase path and partnership | medior | `main` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1160,7 +1161,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 17.6.a browse, search, collections, a collection, stores and the product page full width in the world, prints on gamboge fields, Add to bag in rose
   - [ ] 17.6.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort, paging and Add to bag still work.
 
-- [ ] **17.7 The shop's purchase path and partnership** · needs: 17.1
+- [ ] **17.7 The shop's purchase path and partnership** · needs: 17.1 — 🔄 17·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{bag,checkout,tracking,payment,partnership}/**` (markup and CSS only), `engine/apps/web/src/app/(shop)/shop/[locale]/{cart,checkout,track,order,partnership,not-found,[...missing]}/**`
   - **Read** the surface brief; COMMERCE.md (no behaviour change)
