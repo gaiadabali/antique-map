@@ -121,7 +121,7 @@ a {
   width: 100%;
   max-width: calc(var(--measure, 66ch) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: var(--space-7) var(--gutter) var(--section-space);
+  padding: var(--space-7) var(--gutter) var(--space-8);
 }
 
 :where(.site-main) h1 {

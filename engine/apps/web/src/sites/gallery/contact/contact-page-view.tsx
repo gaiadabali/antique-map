@@ -99,9 +99,14 @@ export function ContactPageView({
           </ol>
         </section>
       )}
-      <Band pigment={1} strength="tint" className={styles.formBand}>
-        <div className={styles.panel}>
-          <LeadForm kind={kind} text={formText} locale={locale} siteKey={siteKey} />
+      <Band pigment={1} strength="tint" className={styles.formBand} aria-labelledby="lead-form">
+        <div className={styles.formGrid}>
+          <h2 id="lead-form" className={styles.formTitle}>
+            {formText['contactForm.eyebrow']}
+          </h2>
+          <div className={styles.panel}>
+            <LeadForm kind={kind} text={formText} locale={locale} siteKey={siteKey} />
+          </div>
         </div>
       </Band>
     </div>

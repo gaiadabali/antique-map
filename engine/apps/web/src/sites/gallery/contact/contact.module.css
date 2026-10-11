@@ -114,8 +114,26 @@
   padding-block: var(--section-space);
 }
 
+/* The heading at left, the form at right on a desktop, as on the shop's partnership page. */
+.formGrid {
+  display: grid;
+  gap: var(--space-6) var(--grid-gap);
+}
+
+.formTitle {
+  margin: 0;
+  font: var(--text-h2);
+  letter-spacing: var(--tracking-h1);
+}
+
 .panel {
   max-inline-size: 44rem;
+}
+
+@media (min-width: 64rem) {
+  .formGrid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
 }
 
 @media (min-width: 48rem) {

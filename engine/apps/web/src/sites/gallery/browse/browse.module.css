@@ -206,7 +206,8 @@
   flex: 2;
 }
 
-/* Desktop: the facets a quiet left column beside the grid, sticky under the header. */
+/* Desktop: the facets a quiet left column beside the grid. It flows with the page: a column that
+   scrolled inside itself hid the long lists below its fold. */
 @media (min-width: 768px) {
   .phoneFacets {
     display: none;
@@ -216,10 +217,6 @@
     display: block;
     flex: none;
     width: clamp(14rem, 18vw, 18rem);
-    position: sticky;
-    top: 6.5rem;
-    max-block-size: calc(100svh - 7.5rem);
-    overflow-y: auto;
   }
 
   .columns {
