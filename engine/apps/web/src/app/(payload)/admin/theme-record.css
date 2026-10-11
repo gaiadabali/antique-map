@@ -93,6 +93,22 @@
   border-radius: var(--admin-radius-control);
 }
 
+/* An array's rows inside a paper panel are ruled, not boxed: no panel in a panel. */
+.group-field--top-level .array-field__row {
+  border: 0;
+  border-block-start: 1px solid var(--admin-hairline);
+  border-radius: 0;
+}
+
+.group-field--top-level .array-field__row .collapsible__toggle-wrap,
+.group-field--top-level .array-field__row .collapsible__content {
+  padding-inline: 0;
+}
+
+.group-field--top-level .array-field__row .collapsible__content {
+  padding-block: 0 calc(var(--base) * 0.25);
+}
+
 .collapsible__toggle-wrap {
   border-radius: var(--admin-radius-control);
   background: var(--admin-paper);
