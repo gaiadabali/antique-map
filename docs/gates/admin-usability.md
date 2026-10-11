@@ -2,6 +2,61 @@
 
 > **How 10.4.a is run (prepared 2026-10-11):** the session pack is the page <https://claude.ai/artifact/9rqGwrffHAbLCkoPNGaonR> (private to its owner until shared). It holds the organizer's checklist (accounts on staging, Draft from photographs switched on, the orders for T9 and T12, what to put back after T10 and T11), the twelve tasks of CONTENT-OPERATIONS.md §7 with **only their recipe** in English or Indonesian for the participant, a stopwatch sheet for the observer, and the results against each target with a summary to paste back here. T6's sheet is `admin-usability/stock-sheet-500.csv`: 500 rows of staging's store codes and variant SKUs, with three planted mistakes — row 15 `quantity` = `lima` (rejected), row 213 `quantity` = `-2` (rejected), row 378 store `AMD-079`, which no store carries (held). The recipes were refreshed to the redesigned admin first (CONTENT-OPERATIONS.md).
 
+## The twelve tasks at a person's pace — a simulation (2026-10-11, staging `3be3e903`)
+
+**What this is and is not.** The user asked for the §7 timed test "throttled to simulate a human". A script did
+each task through the admin UI only, following its recipe, at a modelled first-timer's pace
+(`tests/e2e/admin-usability/human/pace.ts`): **6 s** to hear the task and read the recipe, **2.5 s** to read a step
+and find its control before each click (**1.5 s** per tap on the phone), **2 s** to glance at each new page, **4
+characters a second** typing, **6 s** per file chooser, every pause varied ±35 % from a seed; time spent outside
+the browser (WhatsApp, the spreadsheet) is modelled and named. The clock runs from the prompt to the done state,
+the server's own time included. **It is not 10.4.a** — no real person, so no hesitation, no misreading and no
+wrong path beyond what the script was told to try; 10.4.a and 10.4.c stay open. Repeat with
+`bash tests/e2e/admin-usability/human/run.sh`; rows in `human-results.ndjson`, screens `shots/human-*`.
+
+| Task                                    | Recipe | Target                | Simulated   | Clicks · keys | Verdict                                            |
+| --------------------------------------- | ------ | --------------------- | ----------- | ------------- | -------------------------------------------------- |
+| T1 Add an antique with the AI draft     | 3.1    | 5:00                  | **6:05**    | 90 · 130      | **over** — published on the third attempt (below)  |
+| T2 Mark an antique sold                 | 3.2    | 0:30                  | 0:28        | 6 · 6         | within                                             |
+| T3 Add a product, stock at three stores | 3.3    | 3:00                  | **4:16**    | 44 · 304      | **over**                                           |
+| T4 Add a product with six variants      | 3.3    | 5:00                  | 4:12        | 44 · 416      | within                                             |
+| T5 Update your store's count (phone)    | 3.4    | 0:30                  | **0:36**    | 7 · 18        | **over**                                           |
+| T6 Import the 500-row sheet, fix 3 rows | 3.5    | 10:00                 | 2:42        | 7 · 0         | within (95 s of it the modelled spreadsheet fix)   |
+| T7 Answer a new lead                    | 4.1    | 1:00                  | 0:45        | 6 · 0         | within (the lead had no number: answered by email) |
+| T8 An order to Delivered (phone)        | 5.1    | 2 taps, < 10 s a step | 0:47 in all | 11 taps       | within — every step ≤ 2 taps, slowest 8.5 s        |
+| T9 Reassign an order                    | 5.2    | 1:00                  | 0:37        | 5 · 0         | within                                             |
+| T10 Change the shop's WhatsApp number   | 6.1    | 1:00                  | 0:24        | 4 · 15        | within                                             |
+| T11 Every delivery band                 | 6.3    | 2:00                  | 0:37        | 6 · 18        | within                                             |
+| T12 Replace a damaged item              | 5.5    | 2:00                  | 0:44        | 6 · 32        | within                                             |
+
+**What a first-timer would trip on** (each seen in the run):
+
+1. **T1 — Draft from photographs is not on a new antique.** It appears only after **Save Draft**; the recipe and
+   the side panel say nothing until then.
+2. **T1 — the AI draft does not fill the maker** (it filled title, object type, date and places — well: it read
+   the cartouche of an Ortelius-type sheet, "Indiae Orientalis, Insularumque Adiacientium Typus", circa 1570),
+   though recipe 3.1 says it does; and a maker credit needs a **Certainty** as well as a role, which no recipe
+   mentions. Attempt 2 was refused for that one empty field ("This field is required").
+3. **T1 — six images are six drawers**, each asking alt text, Subject, Role and Provenance: most of the 90 clicks.
+4. **T1 — the Verified boxes sit far down, in Cataloguing**; Payload draws them only once scrolled to.
+5. **T3 — the stock row's Product field finds nothing by SKU** ("No options"); only the name works. Three stock
+   rows, three times.
+6. **T5 — the Stock list's search is "Search by ID"**: a store user searching a product by name finds nothing and
+   pages through.
+7. **T6 — the rows to fix are listed last**: the preview (182 New · 292 Changed · 23 Unchanged · 2 Rejected · 1
+   Held) puts the three rejected and held rows below about 480 changing ones, at the foot of a 9,750 px page. And
+   one message reads "quantity is -2, but The count on the shelf is 0 or more".
+8. **T9 — the reassign list is alphabetical** with no "has every item" or "missing" marks and no reason field,
+   though recipe 5.2 promises all three.
+9. **The antique form's add-maker and add-place buttons are labelled "Add new [object Object]"** (Payload with
+   bilingual collection labels; D7).
+
+Cheap to fix now (10.4.b): 5 (products searchable by SKU), 6 (Stock searchable by SKU), 7 (the not-accepted rows
+first; the capital "The"), 1 (a line on a new antique: "Save Draft, then Draft from photographs"), and the recipe
+text for 2, 3 and 8. A fuller fix for 3 (many images at once) and 8 (sorting by distance, the stock marks) are
+features. Staging was left as found: drafting back off, the WhatsApp number, the fees and the T5 count put back,
+the T2 antique Available again, the REHEARSAL products and the three T1 antiques unpublished.
+
 > **Re-run on the CMS redesign (phase 16, orchestrator, 2026-10-11, staging `01b5055a`; runs `202610110900`, `202610110905`): every recipe passes.** R1 11.7 s · R2 5.6 s · R3 5.6 s · R4 9.0 s at 1280 and 8.5 s at 390, landing straight on the Order panel (a 307 from the proxy now) · R5 2.3 s, the fees put back · R5b 3.4 s / 4.2 s · R6 4.1 s. The recipes followed the redesign: the Wall replaced the dashboard cards they clicked, so they open the sidebar's link (open on a laptop now); Site settings is a tab per site (15.3); R1 starts in the default content locale. Screens in `shots/` are the redesigned admin; see `admin-redesign.md`.
 
 > **Orchestrator review, 2026-10-09.** (1) **Recipe 5 is not broken, and passes with a stumble:** the shop's Distance bands and Social links rows were _collapsed_ (Payload keeps each user's collapsed rows), and a collapsed row shows only its header, so it looked empty. **Show All** opens them: bands 5 km Rp 10,000 / 15 km Rp 15,000 / 30 km Rp 20,000, editable; the shop's AI group and Free delivery over render on every load. (2) Fixed: **F1** and **F2** (the dashboard's Orders to act on and New leads open the panel and the inbox), **F3** ("Rentang jarak"), and a new **Order panel** link in the sidebar for owner, editor and store staff (`admin/orders/nav-link.jsx`) — the cause of recipe 4's "not unaided". (3) The gaps that are features, not fixes, are tasks **10.7** and **10.8** in TASKS.md.

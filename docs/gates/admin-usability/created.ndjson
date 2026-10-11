@@ -146,3 +146,11 @@
 {"run":"202610110905","kind":"stock-level","id":null,"store":"Denpasar 008","product":265}
 {"run":"202610110905","kind":"stock-level","id":null,"store":"Canggu 001","product":265}
 {"run":"202610110905","kind":"product-unpublished","id":265,"slug":"rehearsal-10-4-product-202610110905-mv3llyyw","goneAfterSeconds":3}
+{"run":"202610111225","kind":"human-t2-sold","id":1762,"stockNumber":"P.2362"}
+{"run":"202610111236","kind":"human-product","id":267,"sku":"REH-H-202610111236-4v9o"}
+{"run":"202610111236","kind":"human-product","id":268,"sku":"REH-V-202610111236-ajz2"}
+{"run":"202610111300","kind":"human-delivered","number":"100073","id":73}
+{"run":"202610111300","kind":"human-reassigned","number":"100074"}
+{"run":"202610111300","kind":"human-antique","id":1993,"stockNumber":"M.H11130082","published":true}
+{"run":"202610111300","kind":"human-antique","id":1994,"stockNumber":"M.H11130092","published":false}
+{"run":"202610111300","kind":"human-antique","id":1995,"stockNumber":"M.H11130013","published":true}
