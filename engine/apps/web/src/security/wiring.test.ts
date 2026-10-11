@@ -53,6 +53,17 @@ describe('the proxy', () => {
     expect(statuses.slice(0, 10)).not.toContain(429)
     expect(statuses[10]).toBe(429)
   })
+
+  it('sends a store session opening the admin home to its Order panel with a 307 (16.2)', () => {
+    const claims = btoa(JSON.stringify({ role: 'store' })).replace(/=+$/, '')
+    const home = proxy(
+      request('http://shop.localhost/admin', {
+        headers: { cookie: `payload-token=h.${claims}.s` },
+      }),
+    )
+    expect(home.status).toBe(307)
+    expect(home.headers.get('location')).toBe('/admin/orders')
+  })
 })
 
 describe('next.config headers()', () => {
