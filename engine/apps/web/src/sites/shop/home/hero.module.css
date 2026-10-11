@@ -37,6 +37,7 @@
 }
 
 .captionTitle {
+  max-inline-size: 34ch;
   font: var(--text-card-title);
   color: var(--color-text);
   text-wrap: balance;

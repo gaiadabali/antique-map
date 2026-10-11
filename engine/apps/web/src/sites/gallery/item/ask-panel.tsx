@@ -41,24 +41,15 @@ export function AskPanel({
   const c = contactText(locale)
 
   const promise = <p className={styles.panelFine}>{t('item.replyPromise')}</p>
-  const proof = (
-    <ProofPoints
-      className={styles.proof}
-      items={[t('item.proofCertificate'), t('item.proofOriginals'), t('item.proofGuarantee')]}
-    />
-  )
 
   if (work.status === 'sold') {
     return (
-      <>
-        <div className={styles.panel} data-status="sold">
-          <span className={styles.statusLine}>{t('status.sold')}</span>
-          <Button href={askHref}>{c('item.askAnother')}</Button>
-          {missing && <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>}
-          {promise}
-        </div>
-        {proof}
-      </>
+      <div className={styles.panel} data-status="sold">
+        <span className={styles.statusLine}>{t('status.sold')}</span>
+        <Button href={askHref}>{c('item.askAnother')}</Button>
+        {missing && <p className={styles.panelFine}>{c('contactPage.placeholder')}</p>}
+        {promise}
+      </div>
     )
   }
 
@@ -68,32 +59,37 @@ export function AskPanel({
 
   if (work.status === 'on-hold') {
     return (
-      <>
-        <div className={styles.panel} data-status="on-hold">
-          <span className={styles.statusLine}>{t('status.onHold')}</span>
-          <p className={styles.panelNote}>{t('item.onHoldExplain')}</p>
-          <Button href={askHref}>{t('item.askOnHold')}</Button>
-          {contact}
-          {promise}
-          <p className={styles.panelFine}>{t('item.shipping')}</p>
-        </div>
-        {proof}
-      </>
-    )
-  }
-
-  return (
-    <>
-      <div className={styles.panel} data-status="available">
-        <span className={styles.statusLine}>{t('price.onRequest')}</span>
-        <p className={styles.panelNote}>{t('item.heldIn')}</p>
-        <Button href={askHref}>{t('item.ask')}</Button>
+      <div className={styles.panel} data-status="on-hold">
+        <span className={styles.statusLine}>{t('status.onHold')}</span>
+        <p className={styles.panelNote}>{t('item.onHoldExplain')}</p>
+        <Button href={askHref}>{t('item.askOnHold')}</Button>
         {contact}
         {promise}
         <p className={styles.panelFine}>{t('item.shipping')}</p>
       </div>
-      {proof}
-    </>
+    )
+  }
+
+  return (
+    <div className={styles.panel} data-status="available">
+      <span className={styles.statusLine}>{t('price.onRequest')}</span>
+      <p className={styles.panelNote}>{t('item.heldIn')}</p>
+      <Button href={askHref}>{t('item.ask')}</Button>
+      {contact}
+      {promise}
+      <p className={styles.panelFine}>{t('item.shipping')}</p>
+    </div>
+  )
+}
+
+/** The three facts a collector asks first, on the paper under the sheet. */
+export function ItemProof({ locale }: { readonly locale: SiteLocale }): React.ReactElement {
+  const t = itemText(locale)
+  return (
+    <ProofPoints
+      className={styles.proof}
+      items={[t('item.proofCertificate'), t('item.proofOriginals'), t('item.proofGuarantee')]}
+    />
   )
 }
 

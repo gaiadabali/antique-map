@@ -63,7 +63,10 @@ export function FacetSheet({
         {label}
       </Button>
       <dialog ref={sheet} className={styles.sheet} aria-label={label}>
-        <div className={styles.sheetBody}>{children}</div>
+        <div className={styles.sheetBody}>
+          <h2 className={styles.sheetTitle}>{label}</h2>
+          {children}
+        </div>
         <div className={styles.sheetFooter}>
           <Button href={clearHref} variant="secondary" className={styles.sheetClear}>
             {clearLabel}

@@ -15,7 +15,6 @@ import { search } from '../../../../../server/gallery/catalogue'
 import { isStockNumber } from '../../../../../server/gallery/catalogue/search'
 import { pageMetadata } from '../../../../../server/seo'
 import { loadSiteSettings } from '../../../../../server/site-settings'
-import { SectionHead } from '../../../../../shared/ui'
 import { siteLocale } from '../../../../../shell/messages'
 import { currentSite } from '../../../../../shell/site'
 import browse from '../../../../../sites/gallery/browse/browse.module.css'
@@ -23,7 +22,7 @@ import { browseText } from '../../../../../sites/gallery/browse/copy'
 import { itemHref, searchHref } from '../../../../../sites/gallery/browse/state-links'
 import { SearchBeacon } from '../../../../../sites/gallery/search/search-beacon'
 import { SearchForm } from '../../../../../sites/gallery/search/search-form'
-import styles from '../../../../../sites/gallery/search/search.module.css'
+import { SearchHead } from '../../../../../sites/gallery/search/search-head'
 import { SearchView } from '../../../../../sites/gallery/search/search-view'
 
 type Props = PageProps<'/gallery/[locale]/search'>
@@ -73,15 +72,16 @@ export default async function GallerySearch(props: Props) {
     if (answer.jumpTo !== null) redirect(itemHref(answer.jumpTo.publicId, locale))
   }
 
+  const form = <SearchForm query={query} includeSold={includeSold} locale={locale} />
   return (
     <div className={browse.page}>
-      <SectionHead level={1} className={browse.head} title={text('search.title')} />
-      <SearchForm query={query} includeSold={includeSold} locale={locale} />
       {query === '' ? (
-        <p className={styles.prompt}>{text('search.prompt')}</p>
+        <SearchHead title={text('search.title')} lede={text('search.prompt')}>
+          {form}
+        </SearchHead>
       ) : (
-        <Suspense fallback={null}>
-          <Results query={query} includeSold={includeSold} locale={locale} />
+        <Suspense fallback={<SearchHead title={text('search.title')}>{form}</SearchHead>}>
+          <Results query={query} includeSold={includeSold} locale={locale} form={form} />
         </Suspense>
       )}
     </div>
@@ -92,10 +92,12 @@ async function Results({
   query,
   includeSold,
   locale,
+  form,
 }: {
   readonly query: string
   readonly includeSold: boolean
   readonly locale: SiteLocale
+  readonly form: React.ReactNode
 }): Promise<React.ReactElement> {
   const [result, settings] = await Promise.all([
     search({ query, locale, includeSold }),
@@ -109,6 +111,7 @@ async function Results({
         includeSold={includeSold}
         result={result}
         locale={locale}
+        form={form}
         contact={{ whatsapp: settings.contact.whatsapp, email: settings.contact.email }}
       />
     </>

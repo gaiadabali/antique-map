@@ -7,7 +7,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ProductCardVM } from '../../../server/shop/catalogue/view-models'
-import { Mat, Price, ResponsiveImage } from '../../../shared/ui'
+import { Mat, MatNote, Price, ResponsiveImage } from '../../../shared/ui'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'
@@ -34,20 +34,21 @@ export function ProductCard({
     : null
   return (
     <a href={href} className={styles.card}>
-      <Mat size="compact" ratio={product.image ? undefined : 1}>
+      <Mat size="compact" ratio={product.image ? undefined : 4 / 5}>
         {product.image ? (
           <ResponsiveImage
             variant="fill"
-            aspectRatio="1 / 1"
+            aspectRatio="4 / 5"
             src={product.image.url}
             srcSet={product.image.srcSet}
             alt={imageAlt(words, product.image)}
-            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            sizes="(min-width: 110rem) 18vw, (min-width: 75rem) 23vw, (min-width: 48rem) 31vw, 47vw"
             priority={lead}
             unoptimized
           />
-        ) : // No picture yet: the window stays empty — the caption below already names it.
-        null}
+        ) : (
+          <MatNote>{product.name}</MatNote>
+        )}
       </Mat>
       <span className={styles.cardBody}>
         <span className={styles.cardTitle}>{product.name}</span>

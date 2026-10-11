@@ -1,20 +1,28 @@
-/* The gallery's browse and search layout (5.1.b, 14.4): 390 px first, tokens only
-   (DESIGN-SYSTEM.md). The cards are `card.module.css`; the facets and chips `facets.module.css`. */
+/* The gallery's browse and search layout (5.1.b, 14.4; Outline Colour 17.3): 390 px first, tokens
+   only (DESIGN-SYSTEM.md). A verdigris wash opens the page; the facets, sorts and cards lie on
+   the paper with nothing drawn around them. The cards are `card.module.css`; the facets and chips
+   `facets.module.css`. */
 
 /* The shell's main is a reading measure; a listing needs the page's width. It centres itself
-   on the main column and spans the viewport less the shell's gutters — never wider. */
+   on the main column and spans the viewport, padded by the gutter. */
 .page {
   display: flex;
   flex-direction: column;
   width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding-bottom: var(--space-7);
+  padding-inline: var(--gutter);
+  padding-bottom: var(--space-9);
 }
 
-/* The head sits closer to its toolbar than a section's does. */
+/* The wash starts right under the header (the shell's main pads its top) and stays compact. */
+.band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-8) var(--space-7);
+}
+
 .page .head {
-  margin-block-end: var(--space-5);
+  margin-block-end: 0;
 }
 
 .toolbar {
@@ -23,7 +31,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0 var(--space-6);
-  border-block-start: var(--rule-hair) solid var(--color-border);
+  padding-block-start: var(--space-5);
 }
 
 .sortRow {
@@ -41,7 +49,7 @@
 
 .sortLabel {
   flex: none;
-  font: var(--text-tagline);
+  font: var(--text-label);
   color: var(--color-text-muted);
 }
 
@@ -54,7 +62,7 @@
   list-style: none;
 }
 
-/* Quiet underlined text tabs, as on the shop: the current one in full ink and underlined. */
+/* Underlined text links: the current one in ink, the rest muted, the underline on hover. */
 .sortLink {
   display: inline-flex;
   align-items: center;
@@ -95,36 +103,59 @@
 .columns {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  padding-block-start: var(--space-5);
-  border-block-start: var(--rule-hair) solid var(--color-border);
+  gap: var(--space-6);
+  padding-block-start: var(--space-4);
 }
 
+/* The results column is a size container: the grid's columns follow its width, so the facet
+   column's share never crowds the cards. The selector `.results ul` outranks the card module's
+   own `.grid` (and its viewport queries), which this page overrides. */
 .results {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
   min-width: 0;
+  container-type: inline-size;
 }
 
-.count {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-  margin: 0;
+.results > ul {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-8) var(--grid-gap);
 }
 
+@container (min-width: 36rem) {
+  .results > ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 58rem) {
+  .results > ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 84rem) {
+  .results > ul {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* An empty selection: type only, a serif line. */
 .empty {
-  font: var(--text-body);
-  color: var(--color-text);
   margin: 0;
+  max-inline-size: var(--measure-text);
+  font: var(--text-h3);
+  color: var(--color-text);
 }
 
 .pager {
-  padding-block-start: var(--space-5);
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--space-8);
 }
 
-/* The bottom sheet: full width, docked to the bottom, its footer sticky. */
+/* The bottom sheet, in the page's own hand: the paper surface, square, no shadow. */
 .sheet {
   width: 100%;
   max-width: 100%;
@@ -135,6 +166,7 @@
   background: var(--color-surface);
   border: none;
   border-radius: var(--radius-none);
+  box-shadow: none;
 }
 
 .sheet::backdrop {
@@ -147,6 +179,12 @@
   padding: var(--space-5) var(--gutter);
 }
 
+.sheetTitle {
+  margin: 0 0 var(--space-5);
+  font: var(--text-h3);
+  color: var(--color-text);
+}
+
 .sheetFooter {
   position: sticky;
   bottom: 0;
@@ -154,7 +192,6 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--gutter);
   background: var(--color-surface);
-  border-top: var(--rule-hair) solid var(--color-border);
 }
 
 .sheetFooter > * {
@@ -169,12 +206,8 @@
   flex: 2;
 }
 
-/* Desktop: the facets a quiet left column beside the grid (EXPERIENCE-GALLERY.md §4). */
+/* Desktop: the facets a quiet left column beside the grid, sticky under the header. */
 @media (min-width: 768px) {
-  .page {
-    padding-bottom: var(--space-9);
-  }
-
   .phoneFacets {
     display: none;
   }
@@ -182,14 +215,18 @@
   .desktopFacets {
     display: block;
     flex: none;
-    width: 15rem;
+    width: clamp(14rem, 18vw, 18rem);
+    position: sticky;
+    top: 6.5rem;
+    max-block-size: calc(100svh - 7.5rem);
+    overflow-y: auto;
   }
 
   .columns {
     flex-direction: row;
     align-items: flex-start;
-    gap: var(--space-8);
-    padding-block-start: var(--space-7);
+    gap: var(--grid-gap);
+    padding-block-start: var(--space-6);
   }
 
   .results {

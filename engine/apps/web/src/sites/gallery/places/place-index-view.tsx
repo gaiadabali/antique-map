@@ -1,10 +1,11 @@
-/** The places index (5.4.a, 14.6; EXPERIENCE-GALLERY.md §2, §7): the gazetteer's top-level branches
- * — the island groups and "Beyond Indonesia" — as headed columns, each listing its places on
- * hairline rows; the drill-down links stay (a group's name links to its own page). */
+/** The places index (5.4.a, 14.6; Outline Colour 17.5; EXPERIENCE-GALLERY.md §2, §7): the page opens
+ * on a verdigris field, then the gazetteer's top-level branches — the island groups and "Beyond
+ * Indonesia" — as headed columns, each listing its places as rows with the count muted at the
+ * right; the drill-down links stay (a group's name links to its own page). */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { PlaceChildVM, PlaceIndexNodeVM } from '../../../server/gallery/places/view-models'
-import { SectionHead } from '../../../shared/ui'
+import { Band, SectionHead } from '../../../shared/ui'
 import type { PlaceText } from './copy'
 import { placeHref } from './links'
 import styles from './places.module.css'
@@ -23,12 +24,14 @@ type Props = {
 export function PlaceIndexView({ groups, locale, t }: Props) {
   return (
     <div className={styles.wrap}>
-      <section className={styles.opening}>
+      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
         <SectionHead
           level={1}
           title={t('placePage.indexTitle')}
           lede={t('placePage.indexDescription')}
         />
+      </Band>
+      <div className={styles.opening}>
         <div className={styles.groups}>
           {groups.map(({ root, children }) => (
             <section key={root.slug} className={styles.group}>
@@ -52,7 +55,7 @@ export function PlaceIndexView({ groups, locale, t }: Props) {
             </section>
           ))}
         </div>
-      </section>
+      </div>
     </div>
   )
 }

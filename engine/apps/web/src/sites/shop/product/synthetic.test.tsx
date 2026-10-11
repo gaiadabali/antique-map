@@ -40,7 +40,7 @@ describe('the product page labels a synthetic image', () => {
   it('shows the label and prefixes the alt for a mock-up', () => {
     const markup = view([image({ syntheticLabel: 'digital-mockup' })])
     expect(markup).toContain('<figcaption')
-    expect(markup).toContain('>Digital mockup</figcaption>')
+    expect(markup).toContain('>Digital mockup</span>')
     expect(markup).toContain('alt="Digital mockup: A framed map"')
   })
 
@@ -49,7 +49,7 @@ describe('the product page labels a synthetic image', () => {
       image(),
       image({ url: 'https://media.example.test/b/640.webp', syntheticLabel: 'ai-generated' }),
     ])
-    expect(markup).toContain('>AI-generated image</figcaption>')
+    expect(markup).toContain('>AI-generated image</span>')
     expect(markup).toContain('alt="AI-generated image: A framed map"')
     expect(markup).toContain('alt="A framed map"')
   })
@@ -108,7 +108,9 @@ describe('the listing card labels a synthetic lead image', () => {
       }),
     )
     expect(markup).toContain('srcSet="https://m/320.webp 320w, https://m/640.webp 640w"')
-    expect(markup).toContain('sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"')
+    expect(markup).toContain(
+      'sizes="(min-width: 110rem) 18vw, (min-width: 75rem) 23vw, (min-width: 48rem) 31vw, 47vw"',
+    )
   })
 
   it('adds nothing for a photograph', () => {

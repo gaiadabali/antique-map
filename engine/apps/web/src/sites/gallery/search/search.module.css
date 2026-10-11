@@ -1,23 +1,56 @@
-/* The gallery search (5.1.b, 14.4): a square form, quiet lines and a designed no-result state;
-   the page and the cards share the browse styles. Tokens only (DESIGN-SYSTEM.md). */
+/* The gallery search (5.1.b, 14.4; Outline Colour 17.3): the form and the answer's lede on the
+   verdigris wash, the cards on the paper, a no-result state of type alone. The page and the
+   cards share the browse styles. Tokens only (DESIGN-SYSTEM.md). */
+
+/* The wash starts right under the header (the shell's main pads its top) and stays compact. */
+.band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-8) var(--space-7);
+}
+
+.head {
+  margin-block-end: var(--space-6);
+}
+
+.ledeLine {
+  display: block;
+}
+
+.ledeLine + .ledeLine {
+  margin-block-start: var(--space-2);
+}
+
+.count {
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+/* The sold toggle and the suggestion sit in the lede, ink and underlined. */
+.ledeLink {
+  margin-inline-start: var(--space-4);
+}
 
 .form {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: var(--space-2);
-  padding-block-end: var(--space-6);
+  gap: var(--space-3);
+  max-inline-size: 48rem;
 }
 
 .form > div:first-of-type {
-  flex: 1 1 14rem;
+  flex: 1 1 16rem;
 }
 
-/* Square: the input and its button take the gallery's zero radius. */
+/* A large input on the wash; square. */
 .form .input,
-.form .input input,
 .form .submit {
   border-radius: var(--radius-none);
+}
+
+.form .input {
+  height: auto;
+  min-block-size: 3.5rem;
+  font: var(--text-body-large);
 }
 
 .input {
@@ -28,44 +61,34 @@
   flex: none;
 }
 
-.heading {
-  font: var(--text-h3);
-  color: var(--color-text);
-  margin: 0;
-}
-
-.line {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-2) var(--space-4);
-  margin: 0;
-}
-
-/* “Did you mean …”: one quiet line, not a box. */
-.didYouMean {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-  margin: 0;
+.results {
+  padding-block-start: var(--space-7);
 }
 
 .prompt {
   font: var(--text-body);
-  color: var(--color-text-muted);
   margin: 0;
 }
 
-/* No result: an opening line on a hairline, then the channels. No raised box. */
+/* No result: a serif line, then the lede's links and the channels; no box, no rule. */
 .ask {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  padding-block: var(--space-6) var(--space-3);
-  border-block-start: var(--rule-hair) solid var(--color-border);
+  max-inline-size: var(--measure-text);
 }
 
-.ask > :first-child {
-  margin-block-end: 0;
+.askLine {
+  margin: 0;
+  font: var(--text-h3);
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+.askText {
+  margin: 0;
+  font: var(--text-body);
+  color: var(--color-text-muted);
 }
 
 .askActions {

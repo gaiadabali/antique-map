@@ -1,18 +1,19 @@
 /**
- * The gallery item page's composition (5.2.b, luxury pass 14.5). On a phone it stacks: the title
- * block, the media, the Ask panel, the record. On a desktop the media sit left, the title block
- * and the Ask panel right (the panel sticky), and the record runs beneath on hairline rows
- * (EXPERIENCE-GALLERY.md §5). The gallery never names a price: the panel says *Price on request*,
- * and no number that looks like a price appears anywhere.
+ * The gallery item page's composition (5.2.b; Outline Colour 17.4). The page leads with the shared
+ * `Crossing`: on the verdigris field the breadcrumbs, the title block and the Ask block (no panel
+ * box), the lead sheet lying whole across the field's lower edge, then on the paper the Zoom door
+ * and the other images, and the three proof points. The record runs beneath as a ruled running
+ * list, and Browse closes the page. The gallery never names a price: the Ask block says *Price on
+ * request*, and no number that looks like a price appears anywhere.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
-import { Breadcrumbs, Eyebrow, StockTag, TextLink } from '../../../shared/ui'
+import { Breadcrumbs, Crossing, StockTag, TextLink } from '../../../shared/ui'
 import { ChatPageContext } from '../../../shared/chat/chat-page-context'
-import { AskPanel } from './ask-panel'
+import { AskPanel, ItemProof } from './ask-panel'
 import { creditLine, itemText } from './copy'
-import { ItemMedia } from './item-media'
+import { LeadPicture, MediaCaption, leadImage, leadRatio } from './item-media'
 import { ItemRecord } from './item-record'
 import styles from './item.module.css'
 
@@ -45,50 +46,61 @@ export function ItemViewComposition({
   const makerLine = work.maker !== null ? creditLine(t, work.maker) : null
   const byline = [makerLine, work.date].filter(Boolean).join(', ')
   const place = work.places.find((p) => p.primary) ?? work.places[0] ?? null
-  const eyebrow = [
+  // The type and place, a muted line under the byline: never a label above the heading.
+  const facts = [
     work.objectType !== null ? t.code('objectType', work.objectType) : null,
     place?.name,
   ]
     .filter(Boolean)
     .join(' · ')
+  const lead = leadImage(work.images, work.primaryIndex)
+  const ratio = lead === null ? 4 / 5 : leadRatio(lead)
 
   return (
     <article className={styles.page}>
       <ChatPageContext title={h1} />
-      <Breadcrumbs items={[{ label: t('item.browse'), href: browseHref }, { label: h1 }]} />
-
-      <div className={styles.layout}>
-        <header className={styles.head}>
-          {eyebrow !== '' && <Eyebrow mark>{eyebrow}</Eyebrow>}
-          <h1 className={styles.title}>{h1}</h1>
-          {hasHook && work.originalTitle !== null && (
-            <p className={styles.originalTitle} lang={work.originalTitleLanguage ?? undefined}>
-              <em>{work.originalTitle}</em>
-            </p>
-          )}
-          {byline !== '' && <p className={styles.byline}>{byline}</p>}
-          {work.stockNumber !== null && work.stockNumber !== '' && (
-            <p className={styles.stock}>
-              <StockTag label={t('label.stockNumber', { stockNumber: work.stockNumber })}>
-                {work.stockNumber}
-              </StockTag>
-            </p>
-          )}
-        </header>
-
-        <ItemMedia images={work.images} leadIndex={work.primaryIndex} locale={locale} />
-
-        <div className={styles.side}>
-          <AskPanel
-            work={work}
-            locale={locale}
-            askHref={askHref}
-            emailHref={emailHref ?? null}
-            emailAddress={emailAddress ?? null}
-            contactMissing={contactMissing ?? false}
-          />
-        </div>
-      </div>
+      <Crossing
+        lead
+        pigment={1}
+        fit="contain"
+        ratio={ratio}
+        aria-labelledby="item-title"
+        copy={
+          <div className={styles.head}>
+            <Breadcrumbs items={[{ label: t('item.browse'), href: browseHref }, { label: h1 }]} />
+            <h1 id="item-title" className={styles.title}>
+              {h1}
+            </h1>
+            {hasHook && work.originalTitle !== null && (
+              <p className={styles.originalTitle} lang={work.originalTitleLanguage ?? undefined}>
+                <em>{work.originalTitle}</em>
+              </p>
+            )}
+            {byline !== '' && <p className={styles.byline}>{byline}</p>}
+            {facts !== '' && <p className={styles.facts}>{facts}</p>}
+            {work.stockNumber !== null && work.stockNumber !== '' && (
+              <p className={styles.stock}>
+                <StockTag label={t('label.stockNumber', { stockNumber: work.stockNumber })}>
+                  {work.stockNumber}
+                </StockTag>
+              </p>
+            )}
+            <AskPanel
+              work={work}
+              locale={locale}
+              askHref={askHref}
+              emailHref={emailHref ?? null}
+              emailAddress={emailAddress ?? null}
+              contactMissing={contactMissing ?? false}
+            />
+          </div>
+        }
+        aside={<ItemProof locale={locale} />}
+        picture={<LeadPicture lead={lead} ratio={ratio} />}
+        caption={
+          <MediaCaption images={work.images} leadIndex={work.primaryIndex} locale={locale} />
+        }
+      />
 
       <ItemRecord work={work} locale={locale} />
       <p className={styles.browseMore}>

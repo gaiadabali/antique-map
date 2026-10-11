@@ -81,10 +81,11 @@
   object-fit: cover;
 }
 
+/* As wide as the picture above it (the figure is sized to the picture), so whatever opens here —
+   the item page's deep-zoom viewer — opens at the sheet's own width. */
 .caption {
   display: grid;
   gap: var(--space-1);
-  max-inline-size: 36rem;
   margin-block-start: var(--space-5);
 }
 

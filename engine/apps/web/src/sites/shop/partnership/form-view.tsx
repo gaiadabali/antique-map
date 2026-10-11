@@ -5,7 +5,7 @@
  * not a field's (the security check, the rate limit) shows above the button. Tokens and shared
  * components only.
  */
-import { Button, Checkbox, Eyebrow, FormMessage, Input, Textarea } from '../../../shared/ui'
+import { Button, Checkbox, FormMessage, Input, Textarea } from '../../../shared/ui'
 
 import type { FormText } from './form-text'
 import styles from './partnership-form.module.css'
@@ -51,7 +51,6 @@ export function PartnershipFormView({
 
   return (
     <form className={styles.form} action={action} noValidate>
-      <Eyebrow>{text['partnership.formEyebrow']}</Eyebrow>
       <input type="hidden" name="locale" value={locale} />
       <Input
         label={text['partnership.formName']}

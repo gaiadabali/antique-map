@@ -6,7 +6,7 @@ import type { SiteLocale } from '@engine/config/sites'
 import { createHref, SITES } from '@engine/config/sites'
 
 import type { CollectionVM } from '../../../server/shop/catalogue/collections-of'
-import { Mat, MatNote, ResponsiveImage, SectionHead } from '../../../shared/ui'
+import { Band, Mat, MatNote, ResponsiveImage, SectionHead } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { collectionsText } from './copy'
@@ -24,13 +24,14 @@ export function CollectionsView({
   const href = createHref(SITES.shop)
   return (
     <section className={styles.page} aria-labelledby="collections-title">
-      <SectionHead
-        level={1}
-        id="collections-title"
-        eyebrow={text('collections.eyebrow')}
-        title={text('collections.title')}
-        lede={text('collections.lede')}
-      />
+      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
+        <SectionHead
+          level={1}
+          id="collections-title"
+          title={text('collections.title')}
+          lede={text('collections.lede')}
+        />
+      </Band>
       {collections.length === 0 ? (
         <p className={styles.empty}>{text('collections.empty')}</p>
       ) : (
@@ -42,21 +43,21 @@ export function CollectionsView({
                 className={styles.card}
               >
                 {collection.image ? (
-                  <Mat>
+                  <Mat size="compact">
                     <ResponsiveImage
                       variant="fill"
                       aspectRatio="4 / 5"
                       src={collection.image.url}
                       srcSet={collection.image.srcSet}
                       alt={imageAlt(words, collection.image)}
-                      sizes="(min-width: 1024px) 26vw, (min-width: 768px) 45vw, 90vw"
+                      sizes="(min-width: 75rem) 23vw, (min-width: 48rem) 31vw, 47vw"
                       priority={index === 0}
                       unoptimized
                     />
                   </Mat>
                 ) : (
-                  <Mat ratio={4 / 5}>
-                    <MatNote>{text('collections.noPicture')}</MatNote>
+                  <Mat size="compact" ratio={4 / 5}>
+                    <MatNote>{collection.label}</MatNote>
                   </Mat>
                 )}
                 <span className={styles.caption}>

@@ -1,6 +1,6 @@
-/* The places index (14.6) and the place page: headed columns and hairline rows, no boxed cards.
-   Every value is a token from shared/styles/tokens or the gallery brand file — no raw colour,
-   no font-family. */
+/* The places index (14.6) and the place page (Outline Colour 17.5): a verdigris field opens each
+   page; island groups are headed columns of plain rows, no boxes. Every value is a token from
+   shared/styles/tokens or the gallery brand file — no raw colour, no font-family. */
 
 .wrap {
   width: var(--page-wrap);
@@ -9,27 +9,43 @@
   padding-inline: var(--gutter);
 }
 
-.opening,
+/* The field starts right under the header: the shell's top padding is cancelled. */
+.band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-9) var(--space-8);
+}
+
+.band > :last-child {
+  margin-block-end: 0;
+}
+
+.opening {
+  padding-block: var(--space-8) var(--section-space);
+}
+
 .page {
-  padding-block: var(--space-7) var(--space-9);
+  padding-block: var(--space-8) var(--space-9);
 }
 
 .section {
   padding-block-start: var(--space-9);
 }
 
+/* Island groups in columns that gain with the width; a group is never split across columns. */
 .groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: var(--space-8) var(--space-7);
-  align-items: start;
+  columns: 1;
+  column-gap: var(--grid-gap);
+}
+
+.group {
+  break-inside: avoid;
+  padding-block-end: var(--space-8);
 }
 
 .groupName {
   margin: 0;
-  font: var(--text-h3);
-  padding-block-end: var(--space-3);
-  border-bottom: var(--rule-hair) solid var(--color-border-strong);
+  font: var(--text-h2);
+  letter-spacing: var(--tracking-h1);
 }
 
 .groupName a,
@@ -47,34 +63,57 @@
 }
 
 .meta {
-  margin: var(--space-3) 0 0;
+  margin: var(--space-2) 0 0;
   font: var(--text-small);
+  font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text-muted);
 }
 
 .rows {
   list-style: none;
-  margin: var(--space-3) 0 0;
+  margin: var(--space-4) 0 0;
   padding: 0;
 }
 
 .row {
   padding-block: var(--space-2);
-  border-bottom: var(--rule-hair) solid var(--color-border);
+  font: var(--text-body);
 }
 
 .within {
-  margin-block-start: calc(-1 * var(--space-3));
-  max-inline-size: 36rem;
+  margin-block-end: var(--space-7);
+  max-inline-size: var(--measure-text);
 }
 
 .empty {
   margin: 0;
-  max-inline-size: 36rem;
+  max-inline-size: var(--measure-text);
   color: var(--color-text-muted);
 }
 
+@media (min-width: 48rem) {
+  .groups {
+    columns: 2;
+  }
+}
+
+@media (min-width: 75rem) {
+  .groups {
+    columns: 3;
+  }
+}
+
+@media (min-width: 110rem) {
+  .groups {
+    columns: 4;
+  }
+}
+
 @media (max-width: 47.5rem) {
+  .band {
+    padding-block: var(--space-7) var(--space-6);
+  }
+
   .opening,
   .page {
     padding-block: var(--space-6) var(--space-7);
@@ -82,10 +121,5 @@
 
   .section {
     padding-block-start: var(--space-7);
-  }
-
-  .groups {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-7);
   }
 }

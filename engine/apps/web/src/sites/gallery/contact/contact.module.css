@@ -1,111 +1,143 @@
-/* The gallery's Sell-to-us and Contact pages' layout, in the partnership page's hand: the full
-   breakout width, the opening, then the explanation beside the form in a raised panel.
-   Tokens only. */
+/* The gallery's Sell-to-us and Contact pages (Outline Colour 17.5): a verdigris field opens the
+   page, the channels are large type, the steps stand in order, and the form sits on a tint field
+   with no box. Tokens only. */
 
 .wrap {
   width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
   padding-inline: var(--gutter);
-  padding-block-end: var(--space-7);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--space-8);
-  align-items: start;
-  margin-block-start: var(--space-7);
-  padding-block-start: var(--space-7);
-  border-top: var(--rule-hair) solid var(--color-border);
+/* The field starts right under the header: the shell's top padding is cancelled. */
+.band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-9) var(--space-8);
 }
 
-.side {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-7);
-  max-inline-size: 36rem;
+.band > :last-child {
+  margin-block-end: 0;
 }
 
+/* WhatsApp first, the email beside the reply promise. */
 .talk {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+  display: grid;
+  gap: var(--space-8) var(--grid-gap);
+  padding-block: var(--space-8) var(--section-space);
 }
 
-.actions {
+.channel {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-4);
+  min-inline-size: 0;
+}
+
+.big {
+  min-block-size: 2.75rem;
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.14em;
+  overflow-wrap: anywhere;
+}
+
+.big:hover,
+.big:focus-visible {
+  text-decoration-thickness: var(--rule-strong);
+}
+
+.line {
+  margin: 0;
+  max-inline-size: var(--measure-text);
+  font: var(--text-body-large);
+  text-wrap: pretty;
 }
 
 .promise {
-  font: var(--text-body);
   margin: 0;
+  max-inline-size: var(--measure-text);
+  font: var(--text-body-large);
+  text-wrap: pretty;
 }
 
 .note {
-  font: var(--text-caption);
-  color: var(--color-text-muted);
   margin: 0;
+  max-inline-size: var(--measure-text);
+  font: var(--text-body);
+  color: var(--color-text-muted);
 }
 
+/* How selling works: three steps in order, their numbers large because the order is the point. */
 .steps {
-  border-top: var(--rule-hair) solid var(--color-border);
-  padding-block-start: var(--space-6);
+  padding-block-end: var(--section-space);
 }
 
 .stepList {
-  list-style: none;
-  margin: var(--space-5) 0 0;
+  display: grid;
+  gap: var(--space-8) var(--grid-gap);
+  margin: 0;
   padding: 0;
+  list-style: none;
 }
 
 .step {
   display: grid;
-  grid-template-columns: var(--space-8) minmax(0, 1fr);
-  gap: var(--space-4);
-  align-items: baseline;
-  padding-block: var(--space-4);
-  border-top: var(--rule-hair) solid var(--color-border);
-}
-
-.step:last-child {
-  border-bottom: var(--rule-hair) solid var(--color-border);
+  align-content: start;
+  gap: var(--space-3);
 }
 
 .number {
-  font: var(--text-number);
-  color: var(--color-text-muted);
+  font: var(--text-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--pigment-1-on-wash);
 }
 
 .stepTitle {
+  margin: var(--space-2) 0 0;
   font: var(--text-h3);
-  margin: 0;
 }
 
 .stepBody {
+  margin: 0;
+  max-inline-size: var(--measure-text);
   font: var(--text-body);
   color: var(--color-text-muted);
-  margin: var(--space-1) 0 0;
+  text-wrap: pretty;
+}
+
+/* The form's field: a tint across the page, the form on it at a comfortable measure. */
+.formBand {
+  padding-block: var(--section-space);
 }
 
 .panel {
-  padding: var(--space-7);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
+  max-inline-size: 44rem;
+}
+
+@media (min-width: 48rem) {
+  .talk {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stepList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 47.5rem) {
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-7);
-    margin-block-start: var(--space-5);
-    padding-block-start: var(--space-5);
+  .band {
+    padding-block: var(--space-7) var(--space-6);
   }
 
-  .panel {
-    padding: var(--space-5);
+  .talk {
+    padding-block-start: var(--space-7);
+  }
+
+  .big {
+    font: var(--text-h2);
   }
 }

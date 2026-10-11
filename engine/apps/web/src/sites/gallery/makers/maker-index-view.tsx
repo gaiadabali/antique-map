@@ -1,9 +1,10 @@
-/** The makers index (5.4.a, 14.6; EXPERIENCE-GALLERY.md §7): every published maker as an A–Z
- * index — a row of letters, then a section per initial with the makers in hairline rows. */
+/** The makers index (5.4.a, 14.6; Outline Colour 17.5; EXPERIENCE-GALLERY.md §7): the page opens on
+ * a verdigris field, then every published maker as an A–Z index — a row of ink letters, then each
+ * initial set large over its names, the whole index in columns that gain with the width. */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { MakerIndexItemVM } from '../../../server/gallery/makers/view-models'
-import { SectionHead } from '../../../shared/ui'
+import { Band, SectionHead } from '../../../shared/ui'
 import type { MakerText } from './copy'
 import { ALPHABET, groupByLetter, letterId } from './letters'
 import { makerHref } from './links'
@@ -20,12 +21,14 @@ export function MakerIndexView({ items, locale, t }: Props) {
   const present = new Set(groups.map((group) => group.letter))
   return (
     <div className={styles.wrap}>
-      <section className={styles.opening}>
+      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
         <SectionHead
           level={1}
           title={t('makerPage.indexTitle')}
           lede={t('makerPage.indexDescription')}
         />
+      </Band>
+      <div className={styles.index}>
         <nav aria-label={t('makerPage.lettersLabel')}>
           <ul className={styles.letters}>
             {ALPHABET.map((letter) => (
@@ -41,40 +44,44 @@ export function MakerIndexView({ items, locale, t }: Props) {
             ))}
           </ul>
         </nav>
-      </section>
-      {groups.map((group) => (
-        <section
-          key={group.letter}
-          id={letterId(group.letter)}
-          className={styles.group}
-          aria-label={group.letter}
-        >
-          <p className={styles.initial} aria-hidden="true">
-            {group.letter}
-          </p>
-          <ul className={styles.names}>
-            {group.items.map((item) => {
-              const lifeDates = [item.bornText, item.diedText].filter(Boolean).join('–')
-              return (
-                <li key={item.slug} className={styles.row}>
-                  <a className={styles.name} href={makerHref(item.slug, locale)}>
-                    {item.name}
-                  </a>
-                  <span className={styles.meta}>
-                    {[
-                      lifeDates,
-                      // A maker with no work on show yet carries no "0 works" beside the name.
-                      item.workCount > 0 ? t('makerPage.workCount', { count: item.workCount }) : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-      ))}
+        <div className={styles.columns}>
+          {groups.map((group) => (
+            <section
+              key={group.letter}
+              id={letterId(group.letter)}
+              className={styles.group}
+              aria-label={group.letter}
+            >
+              <p className={styles.initial} aria-hidden="true">
+                {group.letter}
+              </p>
+              <ul className={styles.names}>
+                {group.items.map((item) => {
+                  const lifeDates = [item.bornText, item.diedText].filter(Boolean).join('–')
+                  return (
+                    <li key={item.slug} className={styles.row}>
+                      <a className={styles.name} href={makerHref(item.slug, locale)}>
+                        {item.name}
+                      </a>
+                      <span className={styles.meta}>
+                        {[
+                          lifeDates,
+                          // A maker with no work on show yet carries no "0 works" beside the name.
+                          item.workCount > 0
+                            ? t('makerPage.workCount', { count: item.workCount })
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

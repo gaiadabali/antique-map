@@ -1,12 +1,12 @@
 /**
  * The stores page (13.2): the shop's listed stores by area. An area row of anchors jumps to each
- * section; each store is a square card on the raised surface with its name, address, hours and a
+ * section; each store is a ruled row with its name, address, hours and a
  * map link built from name and address only.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { AreaGroup, StoreVM } from '../../../server/shop/stores'
-import { SectionHead, TextLink } from '../../../shared/ui'
+import { Band, SectionHead, TextLink } from '../../../shared/ui'
 import { storesText, type StoresText } from './copy'
 import styles from './stores.module.css'
 
@@ -44,12 +44,13 @@ export function StoresView({ groups, locale }: Props): React.ReactElement {
   const label = (group: AreaGroup) => group.area ?? t('stores.otherAreas')
   return (
     <div className={styles.page}>
-      <SectionHead
-        level={1}
-        eyebrow={t('stores.eyebrow')}
-        title={t('stores.title')}
-        lede={total > 0 ? t('stores.lede', { count: total }) : undefined}
-      />
+      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
+        <SectionHead
+          level={1}
+          title={t('stores.title')}
+          lede={total > 0 ? t('stores.lede', { count: total }) : undefined}
+        />
+      </Band>
       {total === 0 ? (
         <p className={styles.empty}>{t('stores.empty')}</p>
       ) : (
