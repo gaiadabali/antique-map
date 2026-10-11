@@ -146,7 +146,7 @@ async function OrdersPanelViewBody(props) {
       loadOwnerOrders(payload, req, {
         status: status || undefined,
         store: storeFilter ? Number(storeFilter) : undefined,
-        page: Number(str(searchParams.page)) || 1,
+        page: Math.floor(Number(str(searchParams.page))) || 1,
       }),
       loadActiveStores(payload, req),
     ])
