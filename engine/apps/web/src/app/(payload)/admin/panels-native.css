@@ -1,0 +1,76 @@
+/* The browser's own controls inside the custom views, themed from tokens: selects with a drawn
+   chevron, the file input's button, date inputs. Split from panels-controls.css for the 300-line
+   limit; imported by panels.css. Phone first: the 44 px target holds at 390 px, the control height
+   (40 px) applies from a desktop up. */
+
+.ix-page select.ix-input {
+  appearance: none;
+  padding-inline-end: calc(var(--base) * 2);
+  background-color: var(--admin-paper);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.25rem) 50%,
+    calc(100% - 0.85rem) 50%;
+  background-size:
+    0.4rem 0.4rem,
+    0.4rem 0.4rem;
+  background-repeat: no-repeat;
+  color: var(--admin-ink);
+  cursor: pointer;
+}
+
+.ix-page .ix-input:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.ix-page .ix-input--file {
+  padding-block: calc(var(--base) * 0.3);
+  padding-inline: calc(var(--base) * 0.3);
+  cursor: pointer;
+}
+
+.ix-page .ix-input--file::file-selector-button {
+  box-sizing: border-box;
+  min-block-size: calc(var(--admin-target) - 0.75rem);
+  margin-inline-end: calc(var(--base) * 0.75);
+  padding: 0 calc(var(--base) * 1.1);
+  border: 0;
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+  color: var(--admin-ink-strong);
+  box-shadow: inset 0 0 0 1px var(--admin-ink);
+  font: var(--admin-text-strong);
+  cursor: pointer;
+}
+
+.ix-page .ix-input--file::file-selector-button:hover {
+  background: var(--admin-wash);
+}
+
+.ix-page input[type='date'].ix-input {
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  background-color: var(--admin-paper);
+}
+
+.ix-page input[type='date'].ix-input::-webkit-calendar-picker-indicator {
+  inline-size: 1rem;
+  block-size: 1rem;
+  padding: calc(var(--base) * 0.2);
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.ix-page input[type='date'].ix-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+@media (min-width: 769px) {
+  .ix-page select.ix-input,
+  .ix-page input[type='date'].ix-input {
+    min-block-size: var(--admin-control-height);
+  }
+}
