@@ -1,7 +1,8 @@
-/* A work's window of colour (Outline Colour, phase 17): no frame, no line, no shadow. The work
-   lies on a field of the site's pigment; inside a link the field deepens from tint to wash on
-   hover or focus, and as the work enters the view its colour washes in over the engraved line.
-   Every value is a token — no raw colour, no font-family. */
+/* A work's window (Outline Colour, phase 17): no frame, no line, no shadow. The work lies on a
+   neutral deeper paper (`--color-field`); inside a link the window takes the site's pigment on
+   hover or focus (`--color-field-active`), and as the work enters the view its colour washes in
+   over the engraved line. Inside a coloured Band the window is clear. Every value is a token — no
+   raw colour, no font-family. */
 
 .mat {
   display: block;

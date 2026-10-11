@@ -92,7 +92,7 @@ function Frame({ browseHref, sellToUsHref, t, ratio, picture, caption }: FramePr
           </div>
         </>
       }
-      aside={<ProofPoints items={FACTS.map((key) => t(key))} />}
+      aside={<ProofPoints className={styles.facts} items={FACTS.map((key) => t(key))} />}
       picture={picture}
       caption={caption}
     />
