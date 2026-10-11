@@ -46,9 +46,11 @@ catalogue it reads only products and media.
 
 ### 3.1 Add an antique, with photos and the AI draft · owner, editor · **target: under 5 minutes**
 
-1. **Antiques → New.** Drop the photos (from the computer or the phone's camera). The first is the **recto**; give
+1. **Antiques → Create New** (in the sidebar, under Gallery — antiques). Add the photos (from the computer or the
+   phone's camera). The first is the **recto**; give
    the others a role from a short list — verso, detail, raking light, transmitted light, framed.
-2. **Draft from photos.** The tool fills a suggested original-title transcription, maker, place, date, technique
+2. **Draft from photographs** (the side panel; shown when drafting is switched on in Site settings). The tool
+   fills a suggested original-title transcription, maker, place, date, technique
    and a first description in English and Indonesian. Each suggested field is marked **AI suggestion**.
 3. **Check every suggestion against the object.** Accept, edit or clear each one. Publishing stays blocked while any
    suggestion is unaccepted.
@@ -56,7 +58,8 @@ catalogue it reads only products and media.
    (`45 x 38 cm`, `450 × 380 mm`) and show the reading before saving. **Condition grade** from a picker that shows
    each grade's definition, plus notes. **Location:** Singapore or Jakarta. **Asking price** (owner only, never
    public).
-5. Status **Available** → **Preview** → **Publish**.
+5. **Availability**: Available → **Publish changes**. First edition, Date on the plate, Publication, Physical
+   record, Rights, From the old site and SEO open folded: open one only when it applies.
 
 **Save and add another** keeps the maker, source work, date range, type and location, and clears the rest — for a
 drawer of related sheets. Makers and places are created inline, with "Valentyn — did you mean Valentijn?".
@@ -64,28 +67,32 @@ _Without the AI draft_ the target is **under 8 minutes**.
 
 ### 3.2 Mark an antique on hold or sold · owner, editor · **target: under 30 seconds**
 
-Open it (search by stock number) → **Status** → On hold / Sold → **Save**. It changes on the site within a minute. A
+Open it (search by stock number on the admin home or in **Antiques**) → **Availability** → On hold / Sold →
+**Publish changes**. It changes on the site within a minute. A
 sold antique stays published as "Sold" — never unpublish it.
 
 ### 3.3 Add a product with stock per store · owner, editor · **target: under 3 minutes** (no variants, stock at three stores); **under 5 minutes** with up to six variants
 
-1. **Products → New.** Photos first (in a room or in use, then flat, details, packaging); **Draft from photos**
-   suggests the name and description in both languages, marked as in 3.1. Each new image asks four things, never
-   pre-filled on purpose: **alt text**, **Subject** = Product, **Role** = Flat (or In a room), **Provenance** =
-   Photograph of the real thing (a made-up picture must never pass as a photograph).
+1. **Products → Create New** (under Shop — products). Photos first (in a room or in use, then flat, details,
+   packaging): **Add Image → Create New**, choose the file, and answer the four questions each new image asks,
+   never pre-filled on purpose: **alt text**, **Subject** = Product, **Role** = Flat (or In a room), **Provenance** =
+   Photograph of the real thing (a made-up picture must never pass as a photograph) → **Save**. (Draft from
+   photographs is for antiques only.)
 2. **SKU** (unique; a clash names the product that has it), **category** (the list shows categories only),
    **price in rupiah** (type `185000` or `185.000`; it shows as Rp 185.000), and
    the **original at Indies Gallery** if it is made from one (`relatedWork`, searched by stock number).
-3. **Variants** (optional): add an option — Size: A4, A3 — and the admin makes one row per combination, each with
-   its SKU suffix and price. Delete any combination that is not stocked.
-4. **Stock:** for now one **Stock levels** entry per store (store, product, variant, the count on the shelf, §3.4),
+3. **Variants** (optional): **Add Variant** once per variant — its **Label** (A3, Indigo), **SKU**, **Price (Rp)**
+   and **On sale**. (A size × colour grid that makes the rows for you is not built.)
+4. **Stock:** for now one **Stock** entry per store (**Stock → Create New**: store, product, variant, the count on
+   the shelf, §3.4 → **Save**),
    or many at once by **Import stock** (§3.5); a stores × variants tab on the product is not built yet. A product
    with no stock anywhere shows "Sold out" on the site.
-5. **Preview** → **Publish.**
+5. **Publish changes.**
 
 ### 3.4 Update stock at a store · store staff (own store), owner, editor · **target: under 30 seconds per product**
 
-**Stock** → search by name or SKU → tap the count → type **what is on the shelf**, units packed for an online order
+**Stock** (under Stores and stock) → search by name or SKU → open the row → **Count on the shelf** → type **what is
+on the shelf**, units packed for an online order
 but not yet collected by a driver included → **Save**. The system stores `quantity` as that count less the units
 the store's orders in `pending_payment`, `paid`, `processing` or `waiting_driver` hold, so a recount never re-sells
 a held unit; a count below them stores 0 and flags those orders for reassignment (COMMERCE.md §4). Each change is
@@ -93,17 +100,18 @@ recorded with who, when, and the count before and after. Staff never adjust stoc
 
 ### 3.5 Import a spreadsheet · owner (editor for antiques and products) · **target: a 500-row stock sheet with three errors fixed and applied in under 10 minutes**
 
-1. **Import stock** in the sidebar (owner; `/admin/stock-import`). In the admin today it imports **stock** only
+1. **Import stock** in the sidebar, under Daily work (owner; `/admin/stock-import`). In the admin today it imports
+   **stock** only
    (store code × SKU → the count on the shelf, stored as §3.4 says): columns `store_code`, `sku`, `variant_sku`,
    `quantity`. Antiques, products and stores are imported by the team from the same templates (DATA.md §3) until
    their screens exist.
-2. **Download the template** if needed — every column explained in English and Indonesian.
-3. **Upload** a **CSV UTF-8** file (in Excel: _Save as → CSV UTF-8_; `.xlsx` is not read yet), at most 10 MB and
-   20,000 rows. **Preview** writes nothing and shows: new · updated · unchanged · rejected · held — each row with its
-   column and reason ("Row 14, Price: 'Rp 1,5jt' is not a number"), and the old and new value of every change; an
+2. **Choose the file**: a **CSV UTF-8** file (in Excel: _Save as → CSV UTF-8_; `.xlsx` is not read yet), at most 10 MB and
+   20,000 rows. **Preview** writes nothing ("Preview: nothing is saved yet") and shows: New · Changed · Unchanged · Rejected
+   · Held — each row with its column and reason ("Row 14, Price: 'Rp 1,5jt' is not a number"), and the old and new value of every change; an
    unknown SKU is _held_.
-4. Fix the file and preview again, or **Apply** the valid rows and upload the fixed rows later.
-5. **Apply** appears only when something would change. Only now is anything written. New antiques and products arrive as **drafts**, and **Publish these
+3. Fix the file and preview again, or **Apply** the valid rows (rejected and held rows are skipped) and upload
+   the fixed rows later.
+4. **Apply** appears only when something would change. Only now is anything written. New antiques and products arrive as **drafts**, and **Publish these
    records** publishes those that pass their checks; a change to an existing record applies to it as it stands, so
    a published price changes on the site at once. A result report is kept with the import (DATA.md §3–§4).
 
@@ -123,8 +131,8 @@ The import is **idempotent** (DR-11): the same sheet twice changes nothing the s
 2. Open it: the message, the contact, or the chat summary with a link to its transcript.
 3. The **Reply** card at the top of the lead: **Reply on WhatsApp** opens WhatsApp with the lead's number and an
    opening line in the lead's language naming the item; **Reply by email** opens a draft the same way. Edit, send,
-   then set **In progress**.
-4. When it ends, **Close** with a one-line outcome ("Sold M.0500 by phone", "Not buying", "Partner created").
+   then set **Status** to Contacted or In progress → **Save**.
+4. When it ends, **Status** → Closed with a one-line outcome in **Notes** → **Save** ("Sold M.0500 by phone", "Not buying", "Partner created").
 
 The owner gets an email for each new lead.
 
@@ -139,30 +147,29 @@ in (DR-8); all contact is WhatsApp or email.
 
 ### 5.1 Process an order · store staff · **target: each step in two taps and under 10 seconds; a first-timer completes the flow unaided**
 
-Signing in, the store user lands straight on **their store's orders** (the **Order panel**, also in the sidebar),
-grouped: _To accept_ · _Being prepared_ · _Waiting for
-driver_ · _On the way_ · _Delivered today_. A new paid order also arrives as an email with a link to it. The order
-screen shows the items with photos, variants and quantities; the gift note; the buyer's name and WhatsApp; the
-address, the driver notes, and **Open in Maps** (the pin) and **Copy address**; and **one large button for the next
-step**:
+Signing in, the store user lands straight on **their store's orders** ("Your orders", the **Order panel**, also
+in the sidebar), grouped: _New_ (paid, to accept) · _In progress_ · _Delivered today_. A new paid order also arrives
+as an email with a link to it. The order screen shows the items with variants and quantities; the gift note; the
+address with **Open in Maps** (the pin) and **Message the buyer**; and **one large button for the next step**,
+named after the status it moves the order to:
 
-| Tap                        | Status                          | When                                                                          |
-| -------------------------- | ------------------------------- | ----------------------------------------------------------------------------- |
-| **Accept**                 | `paid` → `processing`           | the items are found and being packed                                          |
-| **Driver booked**          | `processing` → `waiting_driver` | the driver is booked in the Gojek or Grab app, using the pin                  |
-| **Add driver details**     | —                               | take a photo or pick the screenshot of the driver's card (name, photo, plate) |
-| **Picked up — on the way** | `waiting_driver` → `on_the_way` | enabled only once the driver image is attached                                |
-| **Delivered**              | `on_the_way` → `delivered`      | the driver has handed it over                                                 |
+| Tap                    | Status                          | When                                                                       |
+| ---------------------- | ------------------------------- | -------------------------------------------------------------------------- |
+| **Processing**         | `paid` → `processing`           | the items are found and being packed                                       |
+| **Waiting for driver** | `processing` → `waiting_driver` | the driver is booked in the Gojek or Grab app, using the pin               |
+| **Add driver details** | —                               | choose a photo or the screenshot of the driver's card (name, photo, plate) |
+| **On the way**         | `waiting_driver` → `on_the_way` | enabled only once the driver image is attached                             |
+| **Delivered**          | `on_the_way` → `delivered`      | the driver has handed it over                                              |
 
-Each tap opens a small confirm sheet naming the next status; each change is recorded with who and when, and the
-buyer's tracking page updates. A step taken by mistake: **Undo** for ten seconds, then only the owner or an editor
-moves a status back. **Can't send this** (an item missing or damaged, the store closing) asks a reason and hands the
+Each tap opens a small confirm sheet ("Mark this order "…"?") → **Confirm**; each change is recorded with who and
+when, and the buyer's tracking page updates. A step taken by mistake: only the owner or an editor moves a status
+back. **Can't send this** (an item missing or damaged, the store closing) asks a reason and hands the
 order back to the owner and editors for reassignment.
 
 ### 5.2 Reassign an order · owner, editor · **target: under 1 minute**
 
-Order → **Reassign** → active stores sorted by distance from the pin, each marked "has every item" or "missing
-{item}" → pick one → reason → **Confirm**. In one step the stock goes back to the first store and comes off the new
+The order in the **Order panel** → **Reassign** → **Send to store**: active stores sorted by distance from the
+pin, each marked "has every item" or "missing {item}" → pick one → reason → **Confirm reassignment**. In one step the stock goes back to the first store and comes off the new
 one; the buyer's fee is unchanged; the history records it; the first store's staff no longer see the order and the
 new store's staff are emailed. The buyer simply sees the new store's name.
 
@@ -173,9 +180,10 @@ refunds flow (DR-5): any money owed is settled in the Midtrans dashboard and not
 
 ### 5.4 Watch the day · owner
 
-The admin home shows: new leads; paid orders not accepted within 30 minutes of the store opening; orders waiting
-for a driver for over 30 minutes; products sold out everywhere; drafts with unaccepted AI suggestions; and the
-first-party analytics summary (DR-13, [ANALYTICS.md](ANALYTICS.md)).
+The admin home is the **Catalogue Wall**: one strip of today's work — **Orders to act on**, **New leads**, **AI
+drafts to check**, **Drafts**, each a link — then every antique and product as a card with its state (Draft, Needs
+photo, AI draft to check, Out of stock, Sold, Published), filtered by site and state, with a search by title, stock
+number or SKU. **See the numbers** opens the first-party analytics (DR-13, [ANALYTICS.md](ANALYTICS.md)).
 
 ### 5.5 Replace a damaged item · owner, editor · **target: under 2 minutes**
 
@@ -192,7 +200,8 @@ Nothing is refunded (COMMERCE.md §12).
 
 ### 6.1 Edit site settings · owner · **target: under 1 minute per change**
 
-**Settings → Gallery** or **Shop** (`site-settings`, one per site): WhatsApp number, email, phone, the reply-hours
+**Site settings** (under Settings) → the **Indies Gallery** or **Old East Indies** tab (`site-settings`, one tab per
+site; the shop's are split into Contact and notices, Chat and AI, Checkout and delivery, Alerts): WhatsApp number, email, phone, the reply-hours
 line, opening hours, the shop's **delivery fees** (§6.3), the chat on or off, an announcement line. **Save** — live
 on the site within a minute. Numbers are checked in international form (`+62…`, `+65…`). The welcome code is a
 **Discounts** record (code, value, minimum, dates).
@@ -200,12 +209,12 @@ on the site within a minute. Numbers are checked in international form (`+62…`
 ### 6.2 Add, change or close a store · owner · **target: under 3 minutes**
 
 **Stores → New**: code, name, address, **pin on the map**, WhatsApp, hours, active. An inactive store gets no orders
-and is hidden from the site. **Users → New** → role `store` → the store, for each member of its staff.
+and is hidden from the site. **Staff → Create New** → role Store staff → the store, for each member of its staff.
 
 ### 6.3 Update the delivery fees · owner · **target: every band in under 2 minutes**
 
 The shop's delivery fee is a small table the owner keeps from the local courier price (Q3). **Site settings → Old East
-Indies → Delivery** (the band rows may open collapsed: **Show All**): one row per band — up to {km} → Rp {fee} — and the **free-delivery threshold** under it. When the
+Indies → Checkout and delivery → Distance bands** (the band rows may open collapsed: **Show All**): one row per band — up to {km} → Rp {fee} — and the **free-delivery threshold** under it. When the
 Gojek or Grab price changes, check the courier's fare for a trip of each band's distance from a typical store, type
 the new fees → **Save**. Bands must rise in distance and fee; the last band is the delivery reach, so lengthening
 it widens the area the shop delivers to. New quotes use the table within a minute; an order already placed keeps
@@ -217,26 +226,29 @@ Run on staging with seed data, by people who have never used the admin — the c
 each given **only the recipe** from the staff manual, in the language they choose; store tasks on their own phone.
 Time runs from the prompt to the done state.
 
-| #   | Task                                                                                        | Recipe | Target                       |
-| --- | ------------------------------------------------------------------------------------------- | ------ | ---------------------------- |
-| T1  | Add an antique from six photos with the AI draft, check it and publish                      | 3.1    | < 5 min                      |
-| T2  | Mark an antique sold                                                                        | 3.2    | < 30 s                       |
-| T3  | Add a product with no variants, stock at three stores, publish                              | 3.3    | < 3 min                      |
-| T4  | Add a product with six variants                                                             | 3.3    | < 5 min                      |
-| T5  | Update a store's count for one product (store user, phone)                                  | 3.4    | < 30 s                       |
-| T6  | Import a 500-row stock sheet with three planted errors; fix and apply                       | 3.5    | < 10 min                     |
-| T7  | Answer a new lead on WhatsApp and set it in progress                                        | 4.1    | < 1 min                      |
-| T8  | Take an order from _To accept_ to _Delivered_, attaching a driver image (store user, phone) | 5.1    | ≤ 2 taps and < 10 s per step |
-| T9  | Reassign an order to the next store that has every item                                     | 5.2    | < 1 min                      |
-| T10 | Change the shop's WhatsApp number                                                           | 6.1    | < 1 min                      |
-| T11 | Update every delivery band after a courier price change                                     | 6.3    | < 2 min                      |
-| T12 | Replace a damaged item from its order                                                       | 5.5    | < 2 min                      |
+| #   | Task                                                                                  | Recipe | Target                       |
+| --- | ------------------------------------------------------------------------------------- | ------ | ---------------------------- |
+| T1  | Add an antique from six photos with the AI draft, check it and publish                | 3.1    | < 5 min                      |
+| T2  | Mark an antique sold                                                                  | 3.2    | < 30 s                       |
+| T3  | Add a product with no variants, stock at three stores, publish                        | 3.3    | < 3 min                      |
+| T4  | Add a product with six variants                                                       | 3.3    | < 5 min                      |
+| T5  | Update a store's count for one product (store user, phone)                            | 3.4    | < 30 s                       |
+| T6  | Import a 500-row stock sheet with three planted errors; fix and apply                 | 3.5    | < 10 min                     |
+| T7  | Answer a new lead on WhatsApp and set it in progress                                  | 4.1    | < 1 min                      |
+| T8  | Take an order from _New_ to _Delivered_, attaching a driver image (store user, phone) | 5.1    | ≤ 2 taps and < 10 s per step |
+| T9  | Reassign an order to the next store that has every item                               | 5.2    | < 1 min                      |
+| T10 | Change the shop's WhatsApp number                                                     | 6.1    | < 1 min                      |
+| T11 | Update every delivery band after a courier price change                               | 6.3    | < 2 min                      |
+| T12 | Replace a damaged item from its order                                                 | 5.5    | < 2 min                      |
 
 **Pass:** every participant completes every task unaided, with no wrong record left behind, and the median time is
 within the target. A failure is fixed and the task re-tested. The recipes, in English and Indonesian, become the
 staff manual handed over in phase 11.
 
 ## Open
+
+- **Not built yet, promised by older drafts of 5.1** — an Undo for a mistaken step and a Copy address button on the
+  store's order screen; until then the owner or an editor moves a status back, and the address is selectable text.
 
 - **New-order notice for store staff** — default: an email to the store's users; WhatsApp alerts need a provider
   the plan does not include. Owner.
