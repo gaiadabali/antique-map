@@ -6,6 +6,7 @@
 
 @import './panels-controls.css';
 @import './panels-analytics.css';
+@import './panels-lists.css';
 
 .ix-page {
   max-inline-size: 60rem;
@@ -89,22 +90,6 @@
   border-color: var(--admin-rule);
 }
 
-.ix-cardlink {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
-.ix-cardlink .ix-card {
-  transition: border-color var(--admin-dur) var(--admin-ease);
-}
-
-.ix-cardlink:hover .ix-card,
-.ix-cardlink:focus-visible .ix-card {
-  border-color: var(--admin-ink);
-}
-
-.ix-row,
 .ix-line {
   display: flex;
   justify-content: space-between;
@@ -183,17 +168,6 @@
   background: var(--admin-danger-tint);
   border-color: var(--admin-danger-tint);
   color: var(--admin-danger);
-}
-
-.ix-excerpt {
-  margin-block-start: calc(var(--base) * 0.3);
-  font: var(--admin-text-body);
-  overflow-wrap: anywhere;
-}
-
-.ix-excerpt--none {
-  font-style: italic;
-  color: var(--admin-muted);
 }
 
 .ix-notice {

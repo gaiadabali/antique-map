@@ -13,7 +13,7 @@ import {
 } from '../../collections/leads/kinds'
 import { roleOf } from '../../collections/users/roles'
 import { firstLine, loadInboxLeads, loadStatusCounts, timeAgo } from './data'
-import { Card, L, Notice, QuietLink, str } from './shared'
+import { L, Notice, QuietLink, str } from './shared'
 
 function FilterBar({ filter, counts, language }) {
   return (
@@ -61,23 +61,27 @@ function Row({ lead, language }) {
   const channel = lead.payload?.preferredChannel || '—'
   const message = firstLine(lead.payload?.message)
   return (
-    <a href={`/admin/collections/leads/${lead.id}`} className="ix-cardlink">
-      <Card>
-        <div className="ix-row">
-          <strong className="ix-order-no">
-            {LEAD_KIND_LABELS[lead.kind]?.[language] ?? lead.kind} · {lead.site}
-          </strong>
+    <li>
+      <a href={`/admin/collections/leads/${lead.id}`} className="ix-item">
+        <span className="ix-item__head">
+          <strong className="ix-order-no">{name}</strong>
           <span className={`ix-tag ix-tag--${STATUS_TONE[lead.status] ?? 'neutral'}`}>
             {LEAD_STATUS_LABELS[lead.status]?.[language] ?? lead.status}
           </span>
-        </div>
-        <div className="ix-muted">
-          {name} · {channel} · {timeAgo(lead.createdAt, language)}
-        </div>
-        {message && <div className="ix-excerpt">{message}</div>}
-        {!message && <div className="ix-excerpt ix-excerpt--none">{L('noMessage', language)}</div>}
-      </Card>
-    </a>
+        </span>
+        <span className="ix-item__sub">
+          {LEAD_KIND_LABELS[lead.kind]?.[language] ?? lead.kind} · {lead.site} · {channel} ·{' '}
+          {timeAgo(lead.createdAt, language)}
+        </span>
+        {message ? (
+          <span className="ix-item__excerpt">{message}</span>
+        ) : (
+          <span className="ix-item__excerpt ix-item__excerpt--none">
+            {L('noMessage', language)}
+          </span>
+        )}
+      </a>
+    </li>
   )
 }
 
@@ -138,11 +142,11 @@ export async function LeadsInboxViewBody(props) {
       {docs.length === 0 ? (
         <p className="ix-empty">{L('emptyList', language)}</p>
       ) : (
-        <div>
+        <ul className="ix-list">
           {docs.map((lead) => (
             <Row key={lead.id} lead={lead} language={language} />
           ))}
-        </div>
+        </ul>
       )}
       <Pager page={page} totalPages={totalPages} searchParams={searchParams} language={language} />
     </main>

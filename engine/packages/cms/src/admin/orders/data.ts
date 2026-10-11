@@ -97,18 +97,25 @@ export async function loadStoreQueue(
   return result.docs as unknown as OrderRow[]
 }
 
+export const OWNER_ORDERS_PAGE_SIZE = 50
+
 export async function loadOwnerOrders(
   payload: Payload,
   req: PayloadRequest,
-  filter: { readonly status?: OrderStatus | ''; readonly store?: number | '' },
-): Promise<readonly OrderRow[]> {
+  filter: {
+    readonly status?: OrderStatus | ''
+    readonly store?: number | ''
+    readonly page?: number
+  },
+): Promise<{ docs: readonly OrderRow[]; totalPages: number; page: number }> {
   const and: Where[] = []
   if (filter.status) and.push({ status: { equals: filter.status } })
   if (filter.store) and.push({ store: { equals: filter.store } })
   const result = await payload.find({
     collection: 'orders',
     depth: 0,
-    limit: 100,
+    limit: OWNER_ORDERS_PAGE_SIZE,
+    page: filter.page && filter.page > 0 ? filter.page : 1,
     overrideAccess: false,
     user: req.user,
     req,
@@ -116,7 +123,11 @@ export async function loadOwnerOrders(
     sort: '-updatedAt',
     ...(and.length ? { where: { and } } : {}),
   })
-  return result.docs as unknown as OrderRow[]
+  return {
+    docs: result.docs as unknown as OrderRow[],
+    totalPages: result.totalPages,
+    page: result.page ?? 1,
+  }
 }
 
 export async function loadOrder(

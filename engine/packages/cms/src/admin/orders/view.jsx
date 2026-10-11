@@ -16,7 +16,7 @@ import {
   loadOwnerOrders,
   loadStoreQueue,
 } from './data'
-import { OwnerDetail, OwnerFilterBar, OwnerList } from './owner-panel'
+import { OwnerDetail, OwnerFilterBar, OwnerList, OwnerPager } from './owner-panel'
 import { L, Notice, str } from './shared'
 import { nextBackward, nextForward, nextStep } from './status-help'
 import { StoreDetail, StoreQueue } from './store-panel'
@@ -142,15 +142,16 @@ async function OrdersPanelViewBody(props) {
   if (!id) {
     const status = str(searchParams.status)
     const storeFilter = str(searchParams.store)
-    const [orders, stores] = await Promise.all([
+    const [{ docs: orders, totalPages, page }, stores] = await Promise.all([
       loadOwnerOrders(payload, req, {
         status: status || undefined,
         store: storeFilter ? Number(storeFilter) : undefined,
+        page: Number(str(searchParams.page)) || 1,
       }),
       loadActiveStores(payload, req),
     ])
     return (
-      <main className="ix-page">
+      <main className="ix-page ix-page--wide">
         <h1 className="ix-title">{L('ordersTitle', language)}</h1>
         <OwnerFilterBar
           stores={stores}
@@ -158,6 +159,12 @@ async function OrdersPanelViewBody(props) {
           language={language}
         />
         <OwnerList orders={orders} language={language} />
+        <OwnerPager
+          page={page}
+          totalPages={totalPages}
+          filter={{ status, store: storeFilter }}
+          language={language}
+        />
       </main>
     )
   }
