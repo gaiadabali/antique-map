@@ -32,8 +32,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 7/19 | 0 | `████░░░░░░`  37% |
-| **All** | 17 phases | | | **76/89** | **273/302** | **8** | `█████████░`  90% |
+| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 8/19 | 0 | `████░░░░░░`  42% |
+| **All** | 17 phases | | | **76/89** | **274/302** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1158,7 +1158,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores,product}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores,product}/**`
   - **Read** the surface brief; EXPERIENCE-SHOP.md §4–§5
   - _Requirements: 12.1_
-  - [ ] 17.6.a browse, search, collections, a collection, stores and the product page full width in the world, prints on gamboge fields, Add to bag in rose
+  - [x] 17.6.a browse, search, collections, a collection, stores and the product page full width in the world, prints on gamboge fields, Add to bag in rose
   - [ ] 17.6.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort, paging and Add to bag still work.
 
 - [ ] **17.7 The shop's purchase path and partnership** · needs: 17.1 — 🔄 17·W2
