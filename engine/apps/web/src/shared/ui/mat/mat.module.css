@@ -1,29 +1,25 @@
-/* A framer's mat. Every value is a token — no raw colour, no font-family. */
+/* A work's window of colour (Outline Colour, phase 17): no frame, no line, no shadow. The work
+   lies on a field of the site's pigment; inside a link the field deepens from tint to wash on
+   hover or focus, and as the work enters the view its colour washes in over the engraved line.
+   Every value is a token — no raw colour, no font-family. */
 
 .mat {
   display: block;
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
+  background: var(--color-field);
+  transition: background-color var(--dur-in) var(--ease-out);
 }
 
 .default {
-  padding: var(--space-6) var(--space-6) var(--space-8);
+  padding: clamp(1.25rem, 0.4rem + 3.2vw, 4.5rem);
 }
 
 .compact {
-  padding: var(--space-3) var(--space-3) var(--space-5);
+  padding: clamp(0.75rem, 0.35rem + 1.1vw, 1.75rem);
 }
 
 .window {
   position: relative;
   overflow: hidden;
-  background: var(--color-surface-deep);
-  outline: var(--rule-hair) solid var(--color-border);
-  outline-offset: var(--space-2);
-}
-
-.compact .window {
-  outline-offset: var(--space-1);
 }
 
 .window > img,
@@ -35,17 +31,8 @@
   object-fit: cover;
 }
 
-/* An original floats whole in its window, on the mat's own paper, a little in from the bevel:
-   never cropped, never on a toned box of its own (DESIGN-SYSTEM.md §7). */
-.contain .window {
-  padding: var(--space-3);
-  background: var(--color-surface-raised);
-}
-
-.contain.compact .window {
-  padding: var(--space-2);
-}
-
+/* An original lies whole in its window, never cropped (DESIGN-SYSTEM.md §7), on the field itself:
+   the picture's own box is clear, so a sheet of any shape sits on the colour. */
 .contain .window > div {
   background: transparent;
 }
@@ -55,14 +42,42 @@
 }
 
 .window img {
-  transition: transform var(--dur-loop) var(--ease);
+  transition: transform var(--dur-loop) var(--ease-out);
+}
+
+:global(a):hover .mat,
+:global(a):focus-visible .mat {
+  background: var(--color-field-active);
 }
 
 :global(a):hover .window img {
-  transform: scale(1.03);
+  transform: scale(1.02);
+}
+
+/* The signature: the colourist's pass. Scroll-linked where the browser has view timelines; a work
+   already in view on load is already in colour, and without support it is simply in colour. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .window img {
+      animation: wash-in var(--ease-out) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 38%;
+    }
+  }
+}
+
+@keyframes wash-in {
+  from {
+    filter: grayscale(1) contrast(1.04);
+  }
+
+  to {
+    filter: grayscale(0) contrast(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mat,
   .window img {
     transition: none;
   }
@@ -81,14 +96,4 @@
   text-align: center;
   font: var(--text-small);
   color: var(--color-mat-note);
-}
-
-@media (max-width: 47.5rem) {
-  .default {
-    padding: var(--space-4) var(--space-4) var(--space-6);
-  }
-
-  .default .window {
-    outline-offset: var(--space-1);
-  }
 }

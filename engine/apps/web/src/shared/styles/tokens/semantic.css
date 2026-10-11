@@ -6,34 +6,65 @@
    tier-1 primitives. The gallery is the default palette (set on :root in
    sites/gallery/tokens/brand.css); the shop overrides through
    [data-site="shop"] in sites/shop/tokens/brand.css.
+   A band (shared/ui/band) re-points the ink roles for a deep field, so a
+   component never asks which ground it stands on.
    ===================================================================== */
 
 :root,
 [data-site] {
   /* surface roles */
-  --color-surface: var(--brand-surface, var(--primitive-linen));
-  --color-surface-raised: var(--brand-surface-raised, var(--primitive-paper));
-  --color-surface-deep: var(--brand-surface-deep, var(--primitive-cream));
-  --color-surface-dark: var(--brand-surface-dark, var(--primitive-off-black));
-  --color-surface-dark-ink: var(--brand-surface-dark-ink, var(--primitive-paper));
+  --color-surface: var(--brand-surface, var(--primitive-mineral));
+  --color-surface-raised: var(--brand-surface-raised, var(--primitive-mineral-raised));
+  --color-surface-deep: var(--brand-surface-deep, var(--primitive-verdigris-tint));
+  --color-surface-dark: var(--brand-surface-dark, var(--primitive-copperplate));
+  --color-surface-dark-ink: var(--brand-surface-dark-ink, var(--primitive-mineral));
 
   /* ink roles */
-  --color-text: var(--brand-text, var(--primitive-off-black));
-  --color-text-strong: var(--brand-text-strong, var(--primitive-off-black));
-  --color-text-muted: var(--brand-text-muted, var(--primitive-ink-soft));
-  --color-text-on-dark: var(--brand-text-on-dark, var(--primitive-paper));
+  --color-text: var(--brand-text, var(--primitive-copperplate));
+  --color-text-strong: var(--brand-text-strong, var(--primitive-copperplate));
+  --color-text-muted: var(--brand-text-muted, var(--primitive-copperplate-soft));
+  --color-text-on-dark: var(--brand-text-on-dark, var(--primitive-mineral));
 
-  /* accent / status roles */
-  --color-accent: var(--brand-accent, var(--primitive-bronze));
-  --color-accent-contrast: var(--brand-accent-contrast, var(--primitive-paper));
-  --color-accent-secondary: var(--brand-accent-secondary, var(--primitive-champagne));
-  --color-border: var(--brand-border, var(--primitive-champagne));
-  --color-border-strong: var(--brand-border-strong, var(--primitive-warm-grey));
-  --color-focus: var(--brand-focus, var(--primitive-bronze));
+  /* accent / status roles. The accent is the ink of a selection, a current page, a checked box;
+     the action is the one pigment a view spends on what matters (a primary button). */
+  --color-accent: var(--brand-accent, var(--primitive-copperplate));
+  --color-accent-contrast: var(--brand-accent-contrast, var(--primitive-mineral));
+  --color-accent-secondary: var(--brand-accent-secondary, var(--primitive-gamboge-tint));
+  --color-action: var(--brand-action, var(--primitive-madder-full));
+  --color-action-hover: var(--brand-action-hover, var(--primitive-madder-deep));
+  --color-action-contrast: var(--brand-action-contrast, var(--primitive-mineral));
+  --color-border: var(--brand-border, var(--primitive-rule));
+  --color-border-strong: var(--brand-border-strong, var(--primitive-rule-strong));
+  --color-focus: var(--brand-focus, var(--primitive-copperplate));
   --color-danger: var(--brand-danger, var(--primitive-critical));
   --color-success: var(--brand-success, var(--primitive-positive));
   --color-caution: var(--brand-caution, var(--primitive-caution));
   --color-scrim: var(--brand-scrim, var(--primitive-scrim));
+
+  /* The site's pigments in its order (the lead first): tint behind a work, wash for a field, full
+     for a deep field, and the type that stands on the wash and on the full. */
+  --pigment-1-tint: var(--brand-pigment-1-tint);
+  --pigment-1-wash: var(--brand-pigment-1-wash);
+  --pigment-1-full: var(--brand-pigment-1-full);
+  --pigment-1-on-wash: var(--brand-pigment-1-on-wash);
+  --pigment-1-on-full: var(--brand-pigment-1-on-full);
+  --pigment-1-on-full-muted: var(--brand-pigment-1-on-full-muted);
+  --pigment-2-tint: var(--brand-pigment-2-tint);
+  --pigment-2-wash: var(--brand-pigment-2-wash);
+  --pigment-2-full: var(--brand-pigment-2-full);
+  --pigment-2-on-wash: var(--brand-pigment-2-on-wash);
+  --pigment-2-on-full: var(--brand-pigment-2-on-full);
+  --pigment-2-on-full-muted: var(--brand-pigment-2-on-full-muted);
+  --pigment-3-tint: var(--brand-pigment-3-tint);
+  --pigment-3-wash: var(--brand-pigment-3-wash);
+  --pigment-3-full: var(--brand-pigment-3-full);
+  --pigment-3-on-wash: var(--brand-pigment-3-on-wash);
+  --pigment-3-on-full: var(--brand-pigment-3-on-full);
+  --pigment-3-on-full-muted: var(--brand-pigment-3-on-full-muted);
+
+  /* A work's window: its field at rest, and deepened on hover or focus. */
+  --color-field: var(--brand-field, var(--pigment-1-tint));
+  --color-field-active: var(--brand-field-active, var(--pigment-1-wash));
 
   /* font family roles */
   --font-display: var(--font-display-face, 'Cormorant Garamond'), Georgia, 'Times New Roman', serif;
@@ -41,10 +72,12 @@
     var(--font-body-face, 'Karla'), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   /* typography roles (font shorthand: weight size/line family) */
+  --text-display: 400 var(--primitive-size-display) / var(--primitive-line-display)
+    var(--font-display);
   --text-h1: 400 var(--primitive-size-h1) / var(--primitive-line-h1) var(--font-display);
   --text-h2: 400 var(--primitive-size-h2) / var(--primitive-line-h2) var(--font-display);
   --text-h3: 500 var(--primitive-size-h3) / var(--primitive-line-h3) var(--font-display);
-  --text-card-title: 500 var(--primitive-size-card-title) / var(--primitive-line-h2)
+  --text-card-title: 500 var(--primitive-size-card-title) / var(--primitive-line-h3)
     var(--font-display);
   --text-number: 400 var(--primitive-size-number) / 1 var(--font-display);
   --text-body-large: 400 var(--primitive-size-body-large) / var(--primitive-line-body)
@@ -53,12 +86,14 @@
   --text-small: 400 var(--primitive-size-small) / var(--primitive-line-small) var(--font-body);
   --text-micro: 400 var(--primitive-size-micro) / var(--primitive-line-small) var(--font-body);
   --text-caption: 400 var(--primitive-size-caption) / var(--primitive-line-small) var(--font-body);
-  --text-price: 700 var(--primitive-size-body) / var(--primitive-line-body) var(--font-body);
+  --text-label: 500 var(--primitive-size-small) / var(--primitive-line-small) var(--font-body);
+  --text-price: 500 var(--primitive-size-body) / var(--primitive-line-body) var(--font-body);
   --text-tagline: 500 var(--primitive-size-small) / 1 var(--font-body);
   --text-announcement: 400 var(--primitive-size-micro) / var(--primitive-line-small)
     var(--font-body);
 
   /* tracking tokens */
+  --tracking-display: var(--primitive-tracking-display);
   --tracking-h1: var(--primitive-tracking-h1);
   --tracking-tagline: var(--primitive-tracking-tagline);
   --tracking-eyebrow: var(--primitive-tracking-eyebrow);
@@ -77,42 +112,47 @@
   --space-8: var(--brand-space-8, var(--primitive-space-8));
   --space-9: var(--brand-space-9, var(--primitive-space-9));
   --space-10: var(--brand-space-10, var(--primitive-space-10));
+  --space-11: var(--primitive-space-11);
 
-  --gutter: var(
-    --brand-gutter,
-    clamp(1.25rem, 0.5rem + 3.5vw, 3.125rem)
-  ); /* 20 → 50 by design system §3 */
+  /* The page frame. Full width at every desktop size: a page's wrap spans the viewport
+     (`--page-wrap`, centred by the breakout in each page module) and pads itself by the gutter,
+     which grows with the screen; grids gain columns rather than stretching cards. */
+  --gutter: var(--brand-gutter, var(--primitive-gutter-fluid));
+  --page-wrap: 100vw;
+  --grid-gap: var(--primitive-grid-gap);
+  --section-space: var(--primitive-section-space);
+  --measure-text: 38rem;
 
   /* shape / motion roles */
   --radius-none: var(--primitive-radius-none);
   --radius-card: var(--brand-radius-card, var(--primitive-radius-none));
-  --radius-control: var(--brand-radius-control, var(--primitive-radius-control));
-  --radius-pill: var(--brand-radius-pill, var(--primitive-radius-pill));
-  --radius-panel: var(--brand-radius-panel, var(--primitive-radius-panel));
-  --radius-bubble: var(--brand-radius-bubble, var(--primitive-radius-bubble));
+  --radius-control: var(--brand-radius-control, var(--primitive-radius-none));
+  --radius-pill: var(--brand-radius-pill, var(--primitive-radius-none));
+  --radius-panel: var(--brand-radius-panel, var(--primitive-radius-none));
+  --radius-bubble: var(--brand-radius-bubble, var(--primitive-radius-none));
   --rule-hair: var(--brand-rule-hair, var(--primitive-rule-hair));
   --rule-strong: var(--brand-rule-strong, var(--primitive-rule-strong));
   --focus-width: var(--brand-focus-width, var(--primitive-focus-width));
-  --shadow-header: var(--brand-shadow-header, var(--primitive-shadow-header));
-  --shadow-panel: var(--brand-shadow-panel, var(--primitive-shadow-panel));
+  --shadow-header: var(--brand-shadow-header, none);
+  --shadow-panel: var(--brand-shadow-panel, none);
   --dur-in: var(--brand-dur-in, var(--primitive-dur-in));
   --dur-out: var(--brand-dur-out, var(--primitive-dur-out));
   --ease: var(--brand-ease, var(--primitive-ease));
+  --ease-out: var(--primitive-ease-out);
   --dur-loop: var(--brand-dur-loop, var(--primitive-dur-loop));
 
-  /* the eyebrow's mark, a site's signature (DESIGN-SYSTEM.md §1); each site's brand file sets it */
-  --mark-inline-size: var(--brand-mark-inline-size, var(--primitive-space-8));
-  --mark-block-size: var(--brand-mark-block-size, var(--primitive-rule-hair));
+  /* The eyebrow's mark is retired in Outline Colour (a heading carries its own weight): the
+     tokens stay so an old caller still resolves, drawing nothing. */
+  --mark-inline-size: var(--brand-mark-inline-size, 0);
+  --mark-block-size: var(--brand-mark-block-size, 0);
   --mark-border-width: var(--brand-mark-border-width, 0);
-  /* The stripes' dash and period: the colour is the accent where the mark is drawn (a band that
-     re-points --color-accent re-colours it), so no colour is resolved here. */
   --mark-dash: var(--brand-mark-dash, 100%);
   --mark-period: var(--brand-mark-period, 100%);
 
-  /* the words in an empty mat window, on the window's deep ground (AA on each palette) */
+  /* the words in an empty work window, on the window's field (AA on each palette) */
   --color-mat-note: var(--brand-mat-note, var(--color-text-muted));
 
-  /* chat roles � the messenger's surfaces, aliases of the roles above so a site restyles them once */
+  /* chat roles — the messenger's surfaces, aliases of the roles above so a site restyles them once */
   --color-chat-ground: var(--color-surface);
   --color-chat-agent: var(--color-surface-raised);
   --color-chat-agent-ink: var(--color-text);

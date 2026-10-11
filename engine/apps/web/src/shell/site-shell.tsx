@@ -86,7 +86,10 @@ export async function SiteShell({ shell, t, children }: Props) {
   )
 }
 
-/** The logo and name link home; the name is the image's text alternative, so the image is decorative. */
+/**
+ * The logo links home. The logo already carries the site's name, so no wordmark is set beside it
+ * (the user, 2026-10-11); the link's own label names it, so the image is decorative.
+ */
 function BrandLink({ shell, t }: { shell: ShellPart; t: ShellText }) {
   return (
     <a
@@ -95,7 +98,6 @@ function BrandLink({ shell, t }: { shell: ShellPart; t: ShellText }) {
       aria-label={t('shell.homeLink', { brand: shell.site.name })}
     >
       <img className="site-logo" src={shell.logo} alt="" />
-      <span className="site-name">{shell.site.name}</span>
     </a>
   )
 }
