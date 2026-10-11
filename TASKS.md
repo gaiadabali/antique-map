@@ -87,6 +87,10 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
 | 17·W1 | 17.1 The world's foundation | orchestrator | `feat/p17-dsg` | 2026-10-12 | |
 | 17·W1 | 17.2 The two homes | orchestrator | `feat/p17-dsg` | 2026-10-12 | |
+| 17·W2 | 17.5 The gallery's other pages | medior | `main` | 2026-10-12 | |
+| 17·W2 | 17.3 The gallery's listings | medior | `main` | 2026-10-12 | |
+| 17·W2 | 17.4 The gallery's item page | medior | `main` | 2026-10-12 | |
+| 17·W2 | 17.6 The shop's listings and product | medior | `main` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1124,7 +1128,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 17.2.b the shop home in gamboge in the same structure
   - [ ] 17.2.c **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll.
 
-- [ ] **17.3 The gallery's listings** · needs: 17.1
+- [ ] **17.3 The gallery's listings** · needs: 17.1 — 🔄 17·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §4
@@ -1132,7 +1136,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 17.3.a browse, the type pages and search full width in the world: the grid gains columns with the width, the facets quiet, the work cards on their fields
   - [ ] 17.3.b **Check:** browse, `/antique-maps`, a filtered page, a search and an empty search at 390, 1280 and 1920 in both languages, axe clean; facets, sort, paging and "Include sold" still work.
 
-- [ ] **17.4 The gallery's item page** · needs: 17.1
+- [ ] **17.4 The gallery's item page** · needs: 17.1 — 🔄 17·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §5–§6, §8
@@ -1140,7 +1144,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 17.4.a the sheet large and uncropped across a field's edge, the title block, Ask in rose, the record as a ruled running list
   - [ ] 17.4.b **Check:** an available work, a sold one and one with several images at 390, 1280 and 1920 in both languages, axe clean; zoom and Ask still work; no price in the HTML.
 
-- [ ] **17.5 The gallery's other pages** · needs: 17.1
+- [ ] **17.5 The gallery's other pages** · needs: 17.1 — 🔄 17·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages,contact}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,sell-to-us,contact,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §7–§9
@@ -1148,7 +1152,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 17.5.a makers, a maker, places, a place, a story, sell to us, contact and not-found full width in the world
   - [ ] 17.5.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; both forms still refuse an empty Send.
 
-- [ ] **17.6 The shop's listings and product** · needs: 17.1
+- [ ] **17.6 The shop's listings and product** · needs: 17.1 — 🔄 17·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores,product}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores,product}/**`
   - **Read** the surface brief; EXPERIENCE-SHOP.md §4–§5
