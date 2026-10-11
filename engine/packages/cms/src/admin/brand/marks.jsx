@@ -5,13 +5,13 @@
  * no image, so it is sharp at every size and needs no asset. `.jsx`: see `../leads/shared.jsx`.
  */
 
-/** The sign-in wordmark: the house name over the two sites it keeps. */
+/** The sign-in wordmark: the house name over the two sites it keeps — the page's one heading. */
 export function AdminLogo() {
   return (
     <div className="ix-mark ix-mark--logo">
-      <span className="ix-mark__name">Indies</span>
+      <h1 className="ix-mark__name">Indies</h1>
       <span className="ix-mark__rule" aria-hidden="true" />
-      <span className="ix-mark__sites">Indies Gallery · Old East Indies</span>
+      <p className="ix-mark__sites">Indies Gallery · Old East Indies</p>
     </div>
   )
 }

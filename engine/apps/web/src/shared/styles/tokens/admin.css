@@ -12,7 +12,7 @@
 
    Raw values live here alone (engine/tooling/token-lint). Contrast, checked 2026-10-11: ink on
    linen 13.9:1; muted (base-500) on linen 5.6:1, on the sidebar 5.3:1; paper on bronze 6.6:1;
-   input boundary on paper 3.6:1; every status tone on its tint 5.4:1 or more.
+   input boundary on paper 3.6:1; base-400 (Payload's quieter labels) on linen 4.6:1; every status tone on its tint 5.4:1 or more.
    ===================================================================== */
 
 :root {
@@ -99,9 +99,9 @@
   --color-base-200: #d4ccbd;
   --color-base-250: #c4bba9;
   --color-base-300: #a89f8c;
-  --color-base-350: #918877;
-  --color-base-400: #7a7162;
-  --color-base-450: #71685a;
+  --color-base-350: #8c8373;
+  --color-base-400: #6f665a;
+  --color-base-450: #6b6356;
   --color-base-500: #675f52;
   --color-base-550: #5f584c;
   --color-base-600: #575046;

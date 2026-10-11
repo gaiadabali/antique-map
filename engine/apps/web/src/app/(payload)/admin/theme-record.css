@@ -112,6 +112,7 @@
 }
 
 .tabs-field__tab-button {
+  opacity: 1;
   font: var(--admin-text-body);
   font-weight: 600;
   letter-spacing: 0;
