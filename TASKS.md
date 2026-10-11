@@ -31,8 +31,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **16** The CMS redesign | UI | 15 | 🔄 in progress | 0/4 | 0/10 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 16 phases | | | **72/81** | **256/283** | **8** | `█████████░`  90% |
+| **16** The CMS redesign | UI | 15 | 🔄 in progress | 0/4 | 2/10 | 0 | `██░░░░░░░░`  20% |
+| **All** | 16 phases | | | **72/81** | **258/283** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1073,8 +1073,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** ADM · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/shared/styles/tokens/admin.css`, `engine/apps/web/src/app/(payload)/layout.tsx`, `engine/apps/web/src/app/(payload)/admin/theme-{base,shell,forms,record,lists}.css`, `engine/packages/cms/src/admin/brand/*`, `engine/packages/cms/src/ai/admin/draft-button-client.jsx`
   - **Read** the surface brief; DESIGN.md; DESIGN-SYSTEM.md §1
-  - [ ] 16.1.a the admin's tokens: Payload's scales retuned warm from the brand's anchors, contrast checked; light only; Karla and Cormorant from our own origin on `<html>`; the Indies wordmark on sign-in and in the sidebar
-  - [ ] 16.1.b the shell, record pages and lists in the world: the sidebar a second neutral with the current page marked, paper inputs at one height, groups as paper panels, tables as paper panels with small-caps heads, sign-in a paper card; a phone's sidebar clear of the header
+  - [x] 16.1.a the admin's tokens: Payload's scales retuned warm from the brand's anchors, contrast checked; light only; Karla and Cormorant from our own origin on `<html>`; the Indies wordmark on sign-in and in the sidebar
+  - [x] 16.1.b the shell, record pages and lists in the world: the sidebar a second neutral with the current page marked, paper inputs at one height, groups as paper panels, tables as paper panels with small-caps heads, sign-in a paper card; a phone's sidebar clear of the header
   - [ ] 16.1.c **Check:** every Payload screen of the owner and a store user at 390 and 1280 in both languages, axe clean, no raw colour (token lint).
 
 - [ ] **16.2 The Catalogue Wall** · needs: — — 🔄 16·W1
