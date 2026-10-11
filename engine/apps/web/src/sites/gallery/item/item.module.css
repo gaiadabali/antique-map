@@ -11,7 +11,7 @@
   margin-inline-start: 50%;
   translate: -50% 0;
   padding-inline: var(--gutter);
-  padding-block-end: var(--section-space);
+  padding-block-end: var(--space-8);
 }
 
 /* On the field: breadcrumbs, title block, then the Ask block. */
@@ -236,9 +236,10 @@
   text-underline-offset: 0.2em;
 }
 
+/* The way back belongs to the record above it, not a band of its own: it cancels most of the
+   page's band gap. */
 .browseMore {
-  margin: 0;
-  padding-block: var(--space-7) 0;
+  margin: calc(var(--space-6) - var(--section-space)) 0 0;
 }
 
 @media (min-width: 64rem) {
