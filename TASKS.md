@@ -85,6 +85,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 16·W1 | 16.1 The admin's world | orchestrator | `main` | 2026-10-11 | |
 | 16·W1 | 16.2 The Catalogue Wall | orchestrator | `main` | 2026-10-11 | |
+| 16·W1 | 16.3 The admin's own views in the world | orchestrator | `main` | 2026-10-11 | |
 
 ## Decisions for the owner
 
@@ -1083,7 +1084,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 16.2.a the admin's home is the wall: today's work in one strip (orders to act on, new leads, AI drafts to check, drafts), filters by site and state and a search, the archive as matted cards with one state tag each; store staff redirected to their orders on the server
   - [ ] 16.2.b **Check:** the owner and an editor at 390 and 1280 (unfiltered, Needs attention, each site, a search, an empty result), the store user's redirect, the access tests.
 
-- [ ] **16.3 The admin's own views in the world** · needs: —
+- [ ] **16.3 The admin's own views in the world** · needs: — — 🔄 16·W1
   - **Lane** ADM · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/{orders,leads,stock-import,dashboard}/**`, `engine/apps/web/src/app/(payload)/admin/panels.css`
   - **Read** CONTENT-OPERATIONS.md
