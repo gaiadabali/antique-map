@@ -8,12 +8,12 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
 import { COPY } from '../../../../../../../packages/cms/src/admin/dashboard/copy'
-import { DashboardView } from '../../../../../../../packages/cms/src/admin/dashboard/view'
+import { DashboardViewBody } from '../../../../../../../packages/cms/src/admin/dashboard/view-body'
 
 const view = async (user: object | null, language = 'en') => {
   // No `payload` on the request: a view that reached for data here would throw.
   const req = { user, i18n: { language } } as never
-  return renderToStaticMarkup((await DashboardView({ initPageResult: { req } })) as never)
+  return renderToStaticMarkup((await DashboardViewBody({ initPageResult: { req } })) as never)
 }
 
 describe('the dashboard view', () => {

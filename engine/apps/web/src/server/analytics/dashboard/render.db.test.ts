@@ -6,7 +6,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { DashboardView } from '../../../../../../packages/cms/src/admin/dashboard/view'
+import { DashboardViewBody } from '../../../../../../packages/cms/src/admin/dashboard/view-body'
 
 import { server, startDashboardStack, type Dashboardish } from './dashboard.test-support'
 
@@ -33,7 +33,7 @@ describe.skipIf(!server)('the dashboard view, on a real database', () => {
   ) => {
     const req = { user: t.as(role), payload: t.payload, i18n: { language } } as never
     return renderToStaticMarkup(
-      (await DashboardView({ initPageResult: { req }, searchParams: query })) as never,
+      (await DashboardViewBody({ initPageResult: { req }, searchParams: query })) as never,
     )
   }
 
