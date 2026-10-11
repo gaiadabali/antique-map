@@ -6,7 +6,7 @@
  */
 import { expect, test } from '@playwright/test'
 
-import { choose, Meter, need, record, RUN, SHOP, signIn } from './support'
+import { choose, Meter, need, record, RUN, SHOP, sidebarLink, signIn } from './support'
 
 const LEAD = process.env.USABILITY_LEAD ?? '58'
 
@@ -22,9 +22,7 @@ test('R3 owner: work a lead through its statuses and add a note', async ({ page 
   m.stumble(
     `the sidebar has ${inbox} link(s) to the leads inbox (/admin/leads), ${named} named "Leads inbox"; the "Leads" entry opens the plain list`,
   )
-  await m.click(
-    page.locator('.template-default__wrap a.card__click[href="/admin/collections/leads"]'),
-  )
+  await m.click(await sidebarLink(page, '/admin/collections/leads'))
   await page.waitForLoadState('networkidle')
   await m.shot('r3-1-leads-list')
   const rows = await page.locator('a[href*="/collections/leads/"]').count()

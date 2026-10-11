@@ -58,7 +58,8 @@ test.describe.serial('R4 store user moves an order to delivered', () => {
     token = decodeURIComponent(new URL(page.url()).pathname.split('/').pop() ?? '')
     itemsTotal = rupiah(await page.locator('dl').locator('dd').last().innerText())
     const heading = await page.getByText(/^Order [\d,]+$/).innerText()
-    number = /Order ([\d,]+)/.exec(heading)![1]!.replace(/,/g, '')
+    // Case-blind: the order page sets its heading in capitals (phase 12), which innerText reports.
+    number = /Order ([\d,]+)/i.exec(heading)![1]!.replace(/,/g, '')
     record({ kind: 'order-placed', width, number, slug: BUY_SLUG })
 
     const owner = need('E2E_OWNER_EMAIL', 'E2E_OWNER_PASSWORD')

@@ -5,7 +5,19 @@
  */
 import { expect, test, type Page } from '@playwright/test'
 
-import { choose, MARK, Meter, need, record, RUN, SHOP, signIn, unpublish, widthOf } from './support'
+import {
+  choose,
+  MARK,
+  Meter,
+  need,
+  record,
+  RUN,
+  SHOP,
+  sidebarLink,
+  signIn,
+  unpublish,
+  widthOf,
+} from './support'
 
 const SKU = `REH-10-4-${RUN}-${Date.now().toString(36)}`
 const NAME = `${MARK} product ${SKU.slice(9)}`
@@ -34,9 +46,7 @@ test('R1 owner: add and publish a product, then stock at three stores', async ({
 
   m.start()
   await page.goto(`${SHOP}/admin`)
-  await m.click(
-    page.locator('.template-default__wrap a.card__click[href="/admin/collections/products"]'),
-  )
+  await m.click(await sidebarLink(page, '/admin/collections/products'))
   await expect(page).toHaveURL(/\/collections\/products\?/)
   await m.click(page.getByRole('link', { name: 'Create New' }).first())
   await page.locator('#field-sku').fill(SKU)

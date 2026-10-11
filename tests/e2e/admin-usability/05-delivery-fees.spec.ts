@@ -8,7 +8,7 @@
  */
 import { expect, test, type Page } from '@playwright/test'
 
-import { Meter, need, record, SHOP, signIn } from './support'
+import { Meter, need, record, SHOP, sidebarLink, signIn } from './support'
 
 const FEE = 'input[id^="field-shop__delivery__bands__"][id$="__feeIdr"]'
 
@@ -45,7 +45,7 @@ test('R5 owner: edit the delivery fees (the distance bands)', async ({ page }, i
 
   m.start()
   await page.goto(`${SHOP}/admin`)
-  await m.click(page.locator('.template-default__wrap a[href="/admin/globals/site-settings"]'))
+  await m.click(await sidebarLink(page, '/admin/globals/site-settings'))
   await expect(page).toHaveURL(/\/admin\/globals\/site-settings/)
   await page.waitForLoadState('networkidle')
   await openBands(page, m)

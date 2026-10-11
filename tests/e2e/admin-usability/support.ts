@@ -76,6 +76,17 @@ export function need(...names: string[]): Record<string, string> {
  * per account in the OS temp folder (never in the repo) and reused for up to 90 minutes; a 429 is waited out.
  * Sign-in time is not part of any recipe's stopwatch.
  */
+/**
+ * A sidebar entry, the sidebar opened first if it is closed (Payload keeps the choice per person).
+ * Since 16.2 the admin's home is the Catalogue Wall, which never repeats the sidebar's entries as
+ * cards: a person reaches a collection or a global from the sidebar.
+ */
+export async function sidebarLink(page: Page, href: string): Promise<Locator> {
+  const open = page.getByRole('button', { name: /^(Open Menu|Buka Menu)$/ }).first()
+  if (await open.isVisible().catch(() => false)) await open.click()
+  return page.locator(`nav a.nav__link[href="${href}"]`).first()
+}
+
 export async function signIn(page: Page, email: string, password: string): Promise<void> {
   const file = join(
     tmpdir(),
