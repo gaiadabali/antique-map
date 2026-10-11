@@ -153,3 +153,20 @@
 .radio-input--is-selected .radio-input__styled-radio::before {
   background: var(--admin-accent);
 }
+
+/* The browser's own file picker, in the palette: a paper button with an ink hairline. */
+input[type='file']::file-selector-button {
+  margin-inline-end: calc(var(--base) * 0.5);
+  min-block-size: 2.25rem;
+  padding: 0 calc(var(--base) * 0.6);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  font: var(--admin-text-strong);
+  cursor: pointer;
+}
+
+input[type='file']::file-selector-button:hover {
+  border-color: var(--admin-ink);
+}
