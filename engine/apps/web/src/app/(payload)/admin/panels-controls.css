@@ -3,7 +3,7 @@
 
 /* ---- links and buttons -------------------------------------------------------------------- */
 
-.ix-page a:not(.ix-btn):not(.ix-cardlink):not(.ix-tab) {
+.ix-page a:not(.ix-btn):not(.ix-item):not(.ix-tab) {
   color: var(--admin-ink-strong);
   text-decoration: underline;
   text-underline-offset: 0.2em;
@@ -79,7 +79,6 @@
 .ix-btn:focus-visible,
 .ix-input:focus-visible,
 .ix-tab:focus-visible,
-.ix-cardlink:focus-visible,
 .ix-link:focus-visible {
   outline: 2px solid var(--admin-focus);
   outline-offset: 2px;
@@ -273,7 +272,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ix-btn,
-  .ix-cardlink .ix-card {
+  .ix-item {
     transition: none;
   }
 }

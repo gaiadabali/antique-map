@@ -82,33 +82,37 @@ export function StoreQueue({ orders, language }) {
       {groups.map(([titleKey, rows]) =>
         rows.length === 0 ? null : (
           <section key={titleKey} className="ix-group">
-            <h3 className="ix-group__title">
+            <h2 className="ix-group__title">
               {L(titleKey, language)} ({rows.length})
-            </h3>
-            {rows.map((order) => (
-              <a key={order.id} href={`/admin/orders/${order.id}`} className="ix-cardlink">
-                <Card>
-                  <div className="ix-row">
-                    <strong className="ix-order-no">#{order.number}</strong>
-                    <StatusTag status={order.status}>
-                      {ORDER_STATUS_LABELS[order.status]?.[language]}
-                    </StatusTag>
-                  </div>
-                  <div className="ix-muted">
-                    {order.contact.name} ·{' '}
-                    <span className="ix-num">{rupiah(order.totals.total)}</span>
-                  </div>
-                  {order.channel === 'replacement' && (
-                    <div className="ix-strong">{L('replacementBadge', language)}</div>
-                  )}
-                  {order.status === 'awaiting_quote' && order.expiresAt && (
-                    <div className="ix-muted">
-                      {L('quoteByPrefix', language)} {baliClock(order.expiresAt)}
-                    </div>
-                  )}
-                </Card>
-              </a>
-            ))}
+            </h2>
+            <ul className="ix-list">
+              {rows.map((order) => (
+                <li key={order.id}>
+                  <a href={`/admin/orders/${order.id}`} className="ix-item">
+                    <span className="ix-item__head">
+                      <strong className="ix-order-no">#{order.number}</strong>
+                      <StatusTag status={order.status}>
+                        {ORDER_STATUS_LABELS[order.status]?.[language]}
+                      </StatusTag>
+                    </span>
+                    <span className="ix-item__sub">
+                      {order.contact.name} ·{' '}
+                      <span className="ix-item__total">{rupiah(order.totals.total)}</span>
+                    </span>
+                    {order.channel === 'replacement' && (
+                      <span className="ix-item__sub ix-strong">
+                        {L('replacementBadge', language)}
+                      </span>
+                    )}
+                    {order.status === 'awaiting_quote' && order.expiresAt && (
+                      <span className="ix-item__sub">
+                        {L('quoteByPrefix', language)} {baliClock(order.expiresAt)}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </section>
         ),
       )}
@@ -123,7 +127,7 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, l
     <main className="ix-page">
       <QuietLink href="/admin/orders">← {L('back', language)}</QuietLink>
       <div className="ix-order-head">
-        <h2 className="ix-record">#{order.number}</h2>
+        <h1 className="ix-record">#{order.number}</h1>
         <StatusTag status={order.status}>{ORDER_STATUS_LABELS[order.status]?.[language]}</StatusTag>
       </div>
       <Notice tone="error">{error ? refusalCopy(error, language) : null}</Notice>
@@ -195,6 +199,7 @@ export function StoreDetail({ order, step, language, imagePreviewUrl, payLink, l
           <input
             type="file"
             name="file"
+            aria-label={L('driverImageFileLabel', language)}
             accept="image/*"
             capture="environment"
             required

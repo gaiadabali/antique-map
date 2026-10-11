@@ -44,7 +44,7 @@ export function OwnerFilterBar({ stores, filter, language }) {
           ))}
         </select>
       </label>
-      <SubmitButton variant="quiet">{L('filterAll', language)}</SubmitButton>
+      <SubmitButton variant="quiet">{L('filterSubmit', language)}</SubmitButton>
     </form>
   )
 }
@@ -52,26 +52,53 @@ export function OwnerFilterBar({ stores, filter, language }) {
 export function OwnerList({ orders, language }) {
   if (orders.length === 0) return <p className="ix-empty">{L('emptyList', language)}</p>
   return (
-    <div>
+    <ul className="ix-list">
       {orders.map((order) => (
-        <a key={order.id} href={`/admin/orders/${order.id}`} className="ix-cardlink">
-          <Card>
-            <div className="ix-row">
-              <strong className="ix-order-no">#{order.number}</strong>
-              <StatusTag status={order.status}>
-                {ORDER_STATUS_LABELS[order.status]?.[language]}
-              </StatusTag>
-            </div>
-            <div className="ix-muted">
-              {order.storeSnapshot?.name ?? '—'} · {order.contact.name} ·{' '}
-              <span className="ix-num">{rupiah(order.totals.total)}</span>
+        <li key={order.id}>
+          <a href={`/admin/orders/${order.id}`} className="ix-item ix-item--cols">
+            <strong className="ix-order-no ix-item__no">#{order.number}</strong>
+            <span className="ix-item__tag">
               {order.needsAttention?.flag && (
                 <span className="ix-tag ix-tag--danger">{L('needsAttention', language)}</span>
               )}
-            </div>
-          </Card>
-        </a>
+              <StatusTag status={order.status}>
+                {ORDER_STATUS_LABELS[order.status]?.[language]}
+              </StatusTag>
+            </span>
+            <span className="ix-item__meta">
+              <span className="ix-item__store">{order.storeSnapshot?.name ?? '—'}</span>
+              <span className="ix-item__who">{order.contact.name}</span>
+              <span className="ix-item__total">{rupiah(order.totals.total)}</span>
+            </span>
+          </a>
+        </li>
       ))}
+    </ul>
+  )
+}
+
+/** "Page n of m", with newer and older links that keep the status and store filters. */
+export function OwnerPager({ page, totalPages, filter, language }) {
+  if (totalPages <= 1) return null
+  const href = (p) => {
+    const pairs = [
+      ['status', filter.status],
+      ['store', filter.store],
+      ['page', String(p)],
+    ].filter(([, value]) => value)
+    const qs = pairs.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&')
+    return `/admin/orders?${qs}`
+  }
+  const label = L('pageOf', language).replace('{page}', page).replace('{total}', totalPages)
+  return (
+    <div className="ix-pager">
+      {page > 1 ? <QuietLink href={href(page - 1)}>{L('pagePrev', language)}</QuietLink> : <span />}
+      <span className="ix-muted">{label}</span>
+      {page < totalPages ? (
+        <QuietLink href={href(page + 1)}>{L('pageNext', language)}</QuietLink>
+      ) : (
+        <span />
+      )}
     </div>
   )
 }
@@ -85,7 +112,7 @@ export function OwnerDetail({ order, stores, step, language, payLink, linked, er
     <main className="ix-page">
       <QuietLink href="/admin/orders">← {L('back', language)}</QuietLink>
       <div className="ix-order-head">
-        <h2 className="ix-record">#{order.number}</h2>
+        <h1 className="ix-record">#{order.number}</h1>
         <StatusTag status={order.status}>{ORDER_STATUS_LABELS[order.status]?.[language]}</StatusTag>
       </div>
       <Notice tone="error">{refused}</Notice>

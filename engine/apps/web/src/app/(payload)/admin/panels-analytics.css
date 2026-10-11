@@ -52,6 +52,7 @@
 .ix-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  align-items: start;
   gap: calc(var(--base) * 0.75);
   margin-block-start: calc(var(--base) * 0.75);
 }
@@ -74,8 +75,8 @@
 }
 
 .ix-stat__big {
-  font: var(--admin-text-record);
-  font-variant-numeric: tabular-nums;
+  font: var(--admin-text-figure);
+  font-variant-numeric: lining-nums tabular-nums;
   color: var(--admin-ink-strong);
 }
 
