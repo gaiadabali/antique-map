@@ -32,8 +32,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 4/19 | 0 | `██░░░░░░░░`  21% |
-| **All** | 17 phases | | | **76/89** | **270/302** | **8** | `█████████░`  89% |
+| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 5/19 | 0 | `███░░░░░░░`  26% |
+| **All** | 17 phases | | | **76/89** | **271/302** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1150,7 +1150,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages,contact}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,sell-to-us,contact,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §7–§9
   - _Requirements: 12.1_
-  - [ ] 17.5.a makers, a maker, places, a place, a story, sell to us, contact and not-found full width in the world
+  - [x] 17.5.a makers, a maker, places, a place, a story, sell to us, contact and not-found full width in the world
   - [ ] 17.5.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; both forms still refuse an empty Send.
 
 - [ ] **17.6 The shop's listings and product** · needs: 17.1 — 🔄 17·W2
