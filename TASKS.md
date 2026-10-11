@@ -31,7 +31,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **All** | 15 phases | | | **72/77** | **256/273** | **8** | `█████████░`  94% |
+| **16** The CMS redesign | UI | 15 | 🔄 in progress | 0/4 | 0/10 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 16 phases | | | **72/81** | **256/283** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -82,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 16·W1 | 16.1 The admin's world | orchestrator | `main` | 2026-10-11 | |
 
 ## Decisions for the owner
 
@@ -1057,6 +1059,43 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** EXPERIENCE-GALLERY.md §4, §9
   - [x] 15.4.a measured where the time goes and cut what costs: the cards' load is already batched (5 queries at any count; 200 cards 58 ms, `populate` no gain, so unchanged); the 3.4 s was a cold route after a release; a test now proves a draft maker or place never reaches a card (`projection.db.test.ts`)
   - [x] 15.4.b **Check:** on warm staging an uncached 200-result search (`the`, `of`, `de`, `and`) answers under 1 s compressed (3.4 s once on 2026-10-10, the SQL 0.1 s of it).
+
+
+## Phase 16 — The CMS redesign · UI · needs 15 · ~3d
+
+**Goal:** the admin wears the Indies world and works for its people (user request, 2026-10-11: "cms ui need to be completely redesigned, and it should be light mode"). The user named the four pains — generic and unbranded, hard to find things, long cluttered forms, poor on a phone — chose the brand's own world built for work, every screen in scope, and **The Catalogue Wall** from a structure round. The direction contract is the surface brief `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-app-payload.md`.
+**Done when:** on staging, light only, the sign-in, the home (the Catalogue Wall: today's work above the archive as matted cards with their state), the sidebar, every list and record page, the Order panel, the Leads inbox, Import stock and the analytics view are in the Indies world at 390 and 1280, axe clean, with no flow, field, label or access rule changed; store staff land on their orders; the finish review's verdict is ship; DESIGN.md records the admin's world.
+**Waves:** W1 — 16.1, 16.2, 16.3 · W2 — 16.4
+
+- [ ] **16.1 The admin's world** · needs: — — 🔄 16·W1
+  - **Lane** ADM · **Agent** orchestrator · **Wave** W1
+  - **Owns** `engine/apps/web/src/shared/styles/tokens/admin.css`, `engine/apps/web/src/app/(payload)/layout.tsx`, `engine/apps/web/src/app/(payload)/admin/theme-{base,shell,forms,record,lists}.css`, `engine/packages/cms/src/admin/brand/*`, `engine/packages/cms/src/ai/admin/draft-button-client.jsx`
+  - **Read** the surface brief; DESIGN.md; DESIGN-SYSTEM.md §1
+  - [ ] 16.1.a the admin's tokens: Payload's scales retuned warm from the brand's anchors, contrast checked; light only; Karla and Cormorant from our own origin on `<html>`; the Indies wordmark on sign-in and in the sidebar
+  - [ ] 16.1.b the shell, record pages and lists in the world: the sidebar a second neutral with the current page marked, paper inputs at one height, groups as paper panels, tables as paper panels with small-caps heads, sign-in a paper card; a phone's sidebar clear of the header
+  - [ ] 16.1.c **Check:** every Payload screen of the owner and a store user at 390 and 1280 in both languages, axe clean, no raw colour (token lint).
+
+- [ ] **16.2 The Catalogue Wall** · needs: —
+  - **Lane** ADM · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
+  - **Owns** `engine/packages/cms/src/admin/wall/**`, `engine/apps/web/src/app/(payload)/admin/wall.css`, the dashboard view in `engine/packages/cms/src/payload.config.ts`
+  - **Read** the surface brief's FIRST VIEWPORT
+  - [ ] 16.2.a the admin's home is the wall: today's work in one strip (orders to act on, new leads, AI drafts to check, drafts), filters by site and state and a search, the archive as matted cards with one state tag each; store staff redirected to their orders on the server
+  - [ ] 16.2.b **Check:** the owner and an editor at 390 and 1280 (unfiltered, Needs attention, each site, a search, an empty result), the store user's redirect, the access tests.
+
+- [ ] **16.3 The admin's own views in the world** · needs: —
+  - **Lane** ADM · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
+  - **Owns** `engine/packages/cms/src/admin/{orders,leads,stock-import,dashboard}/**`, `engine/apps/web/src/app/(payload)/admin/panels.css`
+  - **Read** CONTENT-OPERATIONS.md
+  - [ ] 16.3.a the Order panel (store staff on a phone first), the Leads inbox, Import stock and the analytics view restyled from tokens, behaviour unchanged
+  - [ ] 16.3.b **Check:** each view before and after at 390 and 1280 as owner and store user; the views' tests pass unchanged or minimally.
+
+- [ ] **16.4 Staging, the finish review and the record** · needs: 16.1, 16.2, 16.3
+  - **Lane** ADM · **Agent** orchestrator, the finish reviewer, the documenter · **Wave** W2
+  - **Owns** `DESIGN.md`, `docs/gates/admin-redesign.md`, `docs/gates/admin-redesign/*`
+  - **Read** the surface brief
+  - [ ] 16.4.a released to staging; the admin captured at 390 and 1280 as owner, editor and store user
+  - [ ] 16.4.b the finish review against the direction contract, its fixes applied; DESIGN.md records the admin's world
+  - [ ] 16.4.c **Check:** `docs/gates/admin-redesign.md` — the verdict, the screens, axe clean, the timed admin recipes (`tests/e2e/admin-usability/`) still pass.
 
 ---
 
