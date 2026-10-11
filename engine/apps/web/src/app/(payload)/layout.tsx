@@ -14,6 +14,8 @@ import './admin/theme-base.css'
 import './admin/theme-shell.css'
 import './admin/theme-forms.css'
 import './admin/theme-lists.css'
+import './admin/wall.css'
+import './admin/panels.css'
 
 import config from '@engine/cms/payload.config'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
