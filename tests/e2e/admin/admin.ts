@@ -55,9 +55,11 @@ export async function sidebar(page: Page): Promise<Record<string, string[]>> {
   await expect(page.getByRole('button', { name: /^(Close Menu|Tutup Menu)$/ })).toBeVisible()
   const groups: Record<string, string[]> = {}
   const titled = nav.locator(':scope > div').filter({ has: page.getByRole('button') })
+  // The words themselves (textContent), not their rendering: the theme sets group titles in small
+  // capitals (16.1), which innerText would report in upper case.
   for (const group of await titled.all()) {
-    const title = (await group.getByRole('button').first().innerText()).trim()
-    groups[title] = (await group.getByRole('link').allInnerTexts()).map((text) => text.trim())
+    const title = ((await group.getByRole('button').first().textContent()) ?? '').trim()
+    groups[title] = (await group.getByRole('link').allTextContents()).map((text) => text.trim())
   }
   return groups
 }
@@ -122,10 +124,12 @@ export async function rest(page: Page, path: string): Promise<{ status: number; 
   }, path)
 }
 
-/** The number a dashboard widget shows, read from its "label: n" link. */
+/**
+ * The number the home's strip of today's work shows for a link (`@engine/cms/admin/wall`, 16.2),
+ * or null when the strip has no such link. The count is its own element, before the label.
+ */
 export async function widgetCount(page: Page, href: string): Promise<number | null> {
-  const link = page.locator(`a[href="${href}"]`).filter({ hasText: /:\s*\d+$/ })
+  const link = page.locator(`a.wall-strip__item[href="${href}"]`)
   if ((await link.count()) === 0) return null
-  const text = await link.first().innerText()
-  return Number(text.split(':').pop())
+  return Number((await link.first().locator('.wall-strip__count').innerText()).trim())
 }
