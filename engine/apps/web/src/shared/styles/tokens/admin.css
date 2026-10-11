@@ -1,0 +1,196 @@
+/* =====================================================================
+   The admin's tokens (TASKS.md 16; surface brief engine/apps/web/.impeccable/surfaces): the
+   Indies world at work. Linen ground, white paper panels, ink, and bronze for the one primary
+   action, the current selection and focus. Square corners; Karla for everything read or
+   clicked, Cormorant only for page and record titles. Light only (DR-14).
+
+   Two layers, loaded by the admin mount alone (`app/(payload)/layout.tsx`):
+   1. `--admin-*` roles, which the admin's own stylesheets read (`app/(payload)/admin/*.css`);
+   2. Payload's own scales (`--color-base-*`, success, warning, error and blue, its accent)
+      retuned to warm steps, so every Payload screen not restyled by hand still speaks the
+      palette. Payload declares them inside `@layer payload-default`; these are unlayered and win.
+
+   Raw values live here alone (engine/tooling/token-lint). Contrast, checked 2026-10-11: ink on
+   linen 13.9:1; muted (base-500) on linen 5.6:1, on the sidebar 5.3:1; paper on bronze 6.6:1;
+   input boundary on paper 3.6:1; every status tone on its tint 5.4:1 or more.
+   ===================================================================== */
+
+:root {
+  /* roles */
+  --admin-ground: var(--primitive-linen);
+  --admin-paper: var(--primitive-paper);
+  --admin-sidebar: #efebe2;
+  --admin-wash: #f7f5f0;
+  --admin-ink: #26231e;
+  --admin-ink-strong: var(--primitive-off-black);
+  --admin-muted: #675f52;
+  --admin-hairline: #e3ddd1;
+  --admin-rule: #d5cec0;
+  --admin-input-border: #8f8674;
+  --admin-accent: var(--primitive-bronze);
+  --admin-accent-strong: #5a4936;
+  --admin-accent-tint: #f6f2ec;
+  --admin-accent-on: var(--primitive-paper);
+  --admin-focus: var(--primitive-bronze);
+  --admin-success: var(--primitive-positive);
+  --admin-success-tint: #eef4ef;
+  --admin-warning: var(--primitive-caution);
+  --admin-warning-tint: #faf3e6;
+  --admin-danger: var(--primitive-critical);
+  --admin-danger-tint: #fbefee;
+  --admin-mat: #f4f1ea;
+  --admin-mat-edge: #d9d2c3;
+  --admin-selection: #e4d9ca;
+  --admin-scrim: #1a191673;
+  --admin-shadow-popup: 0 12px 32px #1a19161f, 0 2px 6px #1a191614;
+  --admin-shadow-lift: 0 6px 18px #1a191614;
+
+  /* type: the faces come from next/font on <html> (fontVariables); the names after are fallbacks */
+  --admin-font-body: var(--font-body-face, 'Karla'), ui-sans-serif, system-ui, sans-serif;
+  --admin-font-display: var(--font-display-face, 'Cormorant Garamond'), Georgia, serif;
+  --admin-font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --admin-size-title: 2.2857rem; /* 32 px on the 14 px root */
+  --admin-size-record: 1.7143rem; /* 24 */
+  --admin-size-heading: 1.1429rem; /* 16 */
+  --admin-size-body: 1rem; /* 14 */
+  --admin-size-small: 0.9286rem; /* 13 */
+  --admin-size-label: 0.7857rem; /* 11 */
+  --admin-tracking-label: 0.08em;
+  /* type roles (font shorthand: weight size/line family), the only way the admin's CSS sets a face */
+  --admin-text-title: 500 var(--admin-size-title) / 1.15 var(--admin-font-display);
+  --admin-text-record: 500 var(--admin-size-record) / 1.2 var(--admin-font-display);
+  --admin-text-heading: 700 var(--admin-size-heading) / 1.35 var(--admin-font-body);
+  --admin-text-body: 400 var(--admin-size-body) / 1.5 var(--admin-font-body);
+  --admin-text-strong: 700 var(--admin-size-body) / 1.5 var(--admin-font-body);
+  --admin-text-small: 400 var(--admin-size-small) / 1.45 var(--admin-font-body);
+  --admin-text-label: 700 var(--admin-size-label) / 1.3 var(--admin-font-body);
+  --admin-text-data: 400 var(--admin-size-small) / 1.45 var(--admin-font-body);
+
+  /* shape and motion */
+  --admin-radius: 0;
+  --admin-radius-control: var(--primitive-radius-control);
+  --admin-control-height: 2.8571rem; /* 40 px */
+  --admin-target: 44px;
+  --admin-ease: var(--primitive-ease);
+  --admin-dur: 180ms;
+
+  /* Payload's own variables, pointed at the roles */
+  --theme-bg: var(--admin-ground);
+  --theme-input-bg: var(--admin-paper);
+  --theme-text: var(--admin-ink);
+  --theme-border-color: var(--admin-hairline);
+  --theme-overlay: var(--admin-scrim);
+  --font-body: var(--admin-font-body);
+  --font-serif: var(--admin-font-display);
+  --font-mono: var(--admin-font-mono);
+  --style-radius-s: var(--admin-radius-control);
+  --style-radius-m: var(--admin-radius-control);
+  --style-radius-l: var(--admin-radius-control);
+  --accessibility-outline: 2px solid var(--admin-focus);
+  --accessibility-outline-offset: 2px;
+  --base-body-size: 14;
+
+  /* Payload's scales, warm (generated between brand anchors; base-500 and up carry text) */
+  /* base */
+  --color-base-0: #ffffff;
+  --color-base-50: #f7f5f0;
+  --color-base-100: #efebe2;
+  --color-base-150: #e3ddd1;
+  --color-base-200: #d4ccbd;
+  --color-base-250: #c4bba9;
+  --color-base-300: #a89f8c;
+  --color-base-350: #918877;
+  --color-base-400: #7a7162;
+  --color-base-450: #71685a;
+  --color-base-500: #675f52;
+  --color-base-550: #5f584c;
+  --color-base-600: #575046;
+  --color-base-650: #4a443c;
+  --color-base-700: #3d3831;
+  --color-base-750: #322e28;
+  --color-base-800: #26231e;
+  --color-base-850: #201e1a;
+  --color-base-900: #1a1916;
+  --color-base-950: #131210;
+  --color-base-1000: #0b0a09;
+  /* success */
+  --color-success-50: #eef4ef;
+  --color-success-100: #dceadf;
+  --color-success-150: #c9dfce;
+  --color-success-200: #b0cfb7;
+  --color-success-250: #96be9f;
+  --color-success-300: #7dae88;
+  --color-success-350: #6a9e76;
+  --color-success-400: #568e64;
+  --color-success-450: #437e52;
+  --color-success-500: #2f6e40;
+  --color-success-550: #276538;
+  --color-success-600: #1f5c30;
+  --color-success-650: #1d552d;
+  --color-success-700: #1b4e29;
+  --color-success-750: #184626;
+  --color-success-800: #163f22;
+  --color-success-850: #13371e;
+  --color-success-900: #112f1a;
+  --color-success-950: #0e2715;
+  /* warning */
+  --color-warning-50: #faf3e6;
+  --color-warning-100: #f5e8ce;
+  --color-warning-150: #f0ddb5;
+  --color-warning-200: #e8cd96;
+  --color-warning-250: #e1be76;
+  --color-warning-300: #d9ae57;
+  --color-warning-350: #cb9e44;
+  --color-warning-400: #bd8d31;
+  --color-warning-450: #ae7d1d;
+  --color-warning-500: #a06c0a;
+  --color-warning-550: #956305;
+  --color-warning-600: #8a5a00;
+  --color-warning-650: #7f5300;
+  --color-warning-700: #734b00;
+  --color-warning-750: #684400;
+  --color-warning-800: #5c3c00;
+  --color-warning-850: #503400;
+  --color-warning-900: #432c00;
+  --color-warning-950: #372400;
+  /* error */
+  --color-error-50: #fbefee;
+  --color-error-100: #f7dfdd;
+  --color-error-150: #f2cfcb;
+  --color-error-200: #ebb9b3;
+  --color-error-250: #e4a29c;
+  --color-error-300: #dd8c84;
+  --color-error-350: #d4786f;
+  --color-error-400: #cb635b;
+  --color-error-450: #c14f46;
+  --color-error-500: #b83a31;
+  --color-error-550: #ae3028;
+  --color-error-600: #a3261f;
+  --color-error-650: #96231d;
+  --color-error-700: #89201a;
+  --color-error-750: #7b1d18;
+  --color-error-800: #6e1a15;
+  --color-error-850: #5f1712;
+  --color-error-900: #511310;
+  --color-error-950: #42100d;
+  /* blue */
+  --color-blue-50: #f6f2ec;
+  --color-blue-100: #ede6db;
+  --color-blue-150: #e4d9ca;
+  --color-blue-200: #d7c9b6;
+  --color-blue-250: #c9b8a1;
+  --color-blue-300: #bca88d;
+  --color-blue-350: #ae9a7f;
+  --color-blue-400: #a18c71;
+  --color-blue-450: #937e63;
+  --color-blue-500: #857055;
+  --color-blue-550: #7a654c;
+  --color-blue-600: #6e5a43;
+  --color-blue-650: #64523d;
+  --color-blue-700: #5b4a37;
+  --color-blue-750: #514130;
+  --color-blue-800: #47392a;
+  --color-blue-850: #3e3124;
+  --color-blue-900: #342a1f;
+  --color-blue-950: #2b2219;
+}

@@ -91,7 +91,15 @@ export function engineConfig(env: Env = process.env): Config {
       user: USERS_SLUG,
       // Gravatar would send a hash of each editor's email to a third party on every page.
       avatar: 'default',
+      // Light only, as both sites (DR-14): no theme switch in the account settings, and no dark
+      // admin on a phone set to dark mode. The look itself is the Indies world (TASKS.md 16).
+      theme: 'light',
+      meta: { titleSuffix: ' · Indies' },
       components: {
+        graphics: {
+          Logo: '@engine/cms/admin/views#AdminLogo',
+          Icon: '@engine/cms/admin/views#AdminIcon',
+        },
         views: adminViews(),
         // Store staff's admin home is the order panel (10.8.c): this redirects them there and
         // renders nothing for the owner and editors.

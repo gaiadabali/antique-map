@@ -3,6 +3,8 @@ import { LeadReplyBlock as LeadReplyBlock_4013f4520eeb415b79ebee39fbe1d6a0 } fro
 import { LeadSourceBlock as LeadSourceBlock_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { CreatePartnerButton as CreatePartnerButton_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { PartnerLeadsList as PartnerLeadsList_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { AdminIcon as AdminIcon_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { AdminLogo as AdminLogo_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { LanguageLink as LanguageLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { StoreHomeRedirect as StoreHomeRedirect_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
 import { DailyWorkHeading as DailyWorkHeading_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
@@ -26,6 +28,8 @@ export const importMap = {
   "@engine/cms/admin/views#LeadSourceBlock": LeadSourceBlock_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#CreatePartnerButton": CreatePartnerButton_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#PartnerLeadsList": PartnerLeadsList_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#AdminIcon": AdminIcon_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#AdminLogo": AdminLogo_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#LanguageLink": LanguageLink_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#StoreHomeRedirect": StoreHomeRedirect_4013f4520eeb415b79ebee39fbe1d6a0,
   "@engine/cms/admin/views#DailyWorkHeading": DailyWorkHeading_4013f4520eeb415b79ebee39fbe1d6a0,
