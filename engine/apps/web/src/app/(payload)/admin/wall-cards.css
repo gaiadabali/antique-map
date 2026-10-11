@@ -73,7 +73,10 @@
 .wall-card__meta {
   font: var(--admin-text-small);
   color: var(--admin-muted);
-  overflow-wrap: anywhere;
+  /* One line: a long SKU or stock number ends in an ellipsis, never three rows. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* The signature interaction: the hairline darkens to ink and the picture eases 2 % closer. */
