@@ -1,4 +1,4 @@
-/* The admin's record pages (TASKS.md 16): white paper inputs on the linen ground, labels in ink,
+/* The admin's record fields (TASKS.md 16): white paper inputs on the linen ground, labels in ink,
    help in the muted tone, one bronze primary in the save bar. Sections (collapsibles, rows of an
    array) are paper panels with a hairline; nothing rounds past 2 px. Tokens only. */
 
@@ -91,6 +91,21 @@
   background: var(--admin-paper);
 }
 
+/* One control height for every input in a row: the select's own typing box is 40 px, so the
+   control takes no vertical padding of its own (Payload's 7 px pushed it to 60). */
+.react-select .rs__control {
+  padding-block: 0;
+  min-block-size: var(--admin-control-height);
+}
+
+.react-select .rs__value-container {
+  padding-block: 0;
+}
+
+.react-select .rs__input-container {
+  block-size: calc(var(--admin-control-height) - 2px);
+}
+
 .react-select .rs__menu {
   background: var(--admin-paper);
   border: 1px solid var(--admin-hairline);
@@ -137,151 +152,4 @@
 
 .radio-input--is-selected .radio-input__styled-radio::before {
   background: var(--admin-accent);
-}
-
-/* ---- the record's header and save bar -------------------------------------------------------- */
-
-.doc-header,
-.collection-edit .doc-header {
-  border-bottom: 0;
-}
-
-.doc-tabs__tabs .doc-tab,
-.doc-tab {
-  border-radius: var(--admin-radius-control);
-  font: var(--admin-text-small);
-  font-weight: 600;
-  color: var(--admin-muted);
-}
-
-.doc-tab--active,
-.doc-tab.btn--style-tab-active {
-  background: var(--admin-paper);
-  color: var(--admin-ink-strong);
-  box-shadow: inset 0 0 0 1px var(--admin-hairline);
-}
-
-.doc-controls {
-  background: var(--admin-ground);
-  border-block: 1px solid var(--admin-hairline);
-}
-
-.doc-controls__label {
-  color: var(--admin-muted);
-}
-
-.doc-controls__value {
-  color: var(--admin-ink);
-}
-
-/* ---- the form: main column and side panel ---------------------------------------------------- */
-
-.document-fields__sidebar-wrap,
-.document-fields__sidebar {
-  background: var(--admin-wash);
-  border-inline-start: 1px solid var(--admin-hairline);
-}
-
-.render-fields > .field-type:not(:last-child),
-.render-fields > div:not(:last-child) {
-  margin-block-end: calc(var(--base) * 1.1);
-}
-
-/* Sections: a paper panel with a hairline, its title in Karla, closed sections quiet. */
-.collapsible,
-.array-field__row,
-.blocks-field__row {
-  background: var(--admin-paper);
-  border: 1px solid var(--admin-hairline);
-  border-radius: var(--admin-radius-control);
-}
-
-.collapsible__toggle-wrap {
-  border-radius: var(--admin-radius-control);
-  background: var(--admin-paper);
-}
-
-.collapsible__toggle-wrap:hover {
-  background: var(--admin-wash);
-}
-
-.collapsible--collapsed .collapsible__toggle-wrap {
-  border-bottom: 0;
-}
-
-.collapsible-field__label,
-.array-field__title,
-.blocks-field__title,
-.group-field__title {
-  font: var(--admin-text-heading);
-  color: var(--admin-ink-strong);
-}
-
-.tabs-field__tabs {
-  border-bottom: 1px solid var(--admin-hairline);
-  gap: calc(var(--base) * 1.2);
-}
-
-.tabs-field__tab-button {
-  font: var(--admin-text-body);
-  font-weight: 600;
-  letter-spacing: 0;
-  color: var(--admin-muted);
-  padding-block: calc(var(--base) * 0.5);
-  border-bottom: 2px solid transparent;
-  margin-block-end: -1px;
-}
-
-.tabs-field__tab-button:hover {
-  color: var(--admin-ink-strong);
-}
-
-.tabs-field__tab-button--active {
-  color: var(--admin-ink-strong);
-  border-bottom-color: var(--admin-accent);
-}
-
-.tabs-field__tab-button--active::after {
-  display: none;
-}
-
-/* Uploads: the picture in a mat, as on the sites. */
-.thumbnail,
-.file-field__thumbnail-wrap,
-.upload-relationship-details .thumbnail {
-  background: var(--admin-mat);
-  border: 1px solid var(--admin-mat-edge);
-  border-radius: 0;
-}
-
-.thumbnail img {
-  object-fit: contain;
-}
-
-.upload,
-.dropzone {
-  border: 1px dashed var(--admin-input-border);
-  border-radius: var(--admin-radius-control);
-  background: var(--admin-paper);
-}
-
-.relationship-add-new__add-button {
-  border: 1px solid var(--admin-input-border);
-  border-radius: var(--admin-radius-control);
-  background: var(--admin-paper);
-}
-
-@media (max-width: 768px) {
-  .field-type input:not([type='checkbox']):not([type='radio']),
-  .react-select .rs__control,
-  .btn--size-medium,
-  .btn--size-large {
-    min-height: var(--admin-target);
-  }
-
-  .document-fields__sidebar-wrap,
-  .document-fields__sidebar {
-    border-inline-start: 0;
-    border-top: 1px solid var(--admin-hairline);
-  }
 }

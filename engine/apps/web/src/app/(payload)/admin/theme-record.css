@@ -1,0 +1,251 @@
+/* The admin's record pages, their frame (TASKS.md 16): the header and save bar, the side panel,
+   the form's groups and sections as paper panels, tabs, and uploads in a mat. Tokens only. */
+
+/* ---- the record's header and save bar -------------------------------------------------------- */
+
+.doc-header,
+.collection-edit .doc-header {
+  border-bottom: 0;
+}
+
+.doc-tabs__tabs .doc-tab,
+.doc-tab {
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-small);
+  font-weight: 600;
+  color: var(--admin-muted);
+}
+
+.doc-tab--active,
+.doc-tab.btn--style-tab-active {
+  background: var(--admin-paper);
+  color: var(--admin-ink-strong);
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+}
+
+.doc-controls {
+  background: var(--admin-ground);
+  border-block: 1px solid var(--admin-hairline);
+}
+
+.doc-controls__label {
+  color: var(--admin-muted);
+}
+
+.doc-controls__value {
+  color: var(--admin-ink);
+}
+
+/* ---- the form: main column and side panel ---------------------------------------------------- */
+
+.document-fields__sidebar-wrap,
+.document-fields__sidebar {
+  background: transparent;
+  border-inline-start: 1px solid var(--admin-hairline);
+}
+
+.render-fields > .field-type:not(:last-child),
+.render-fields > div:not(:last-child) {
+  margin-block-end: calc(var(--base) * 1.1);
+}
+
+/* A top-level group (Date, Publication, Dimensions…) is a paper panel, so a long record reads
+   in chunks; a group inside a group keeps one hairline above it. */
+.group-field--top-level {
+  margin-inline: 0;
+  padding: calc(var(--base) * 0.9) var(--base) var(--base);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+.group-field--top-level + .group-field--top-level {
+  margin-block-start: calc(var(--base) * 0.75);
+  padding-block-start: calc(var(--base) * 0.9);
+  border-top: 1px solid var(--admin-hairline);
+}
+
+.group-field--within-group {
+  margin-inline: 0;
+  border: 0;
+  border-top: 1px solid var(--admin-hairline);
+  padding-block-start: calc(var(--base) * 0.75);
+}
+
+.group-field__header {
+  margin-block-end: calc(var(--base) * 0.6);
+}
+
+/* Sections: a paper panel with a hairline, its title in Karla, closed sections quiet. */
+.collapsible,
+.array-field__row,
+.blocks-field__row {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+.collapsible__toggle-wrap {
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+}
+
+.collapsible__toggle-wrap:hover {
+  background: var(--admin-wash);
+}
+
+.collapsible--collapsed .collapsible__toggle-wrap {
+  border-bottom: 0;
+}
+
+.collapsible-field__label,
+.array-field__title,
+.blocks-field__title,
+.group-field__title {
+  font: var(--admin-text-heading);
+  color: var(--admin-ink-strong);
+}
+
+.tabs-field__tabs {
+  border-bottom: 1px solid var(--admin-hairline);
+  gap: calc(var(--base) * 1.2);
+}
+
+.tabs-field__tab-button {
+  font: var(--admin-text-body);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--admin-muted);
+  padding-block: calc(var(--base) * 0.5);
+  border-bottom: 2px solid transparent;
+  margin-block-end: -1px;
+}
+
+.tabs-field__tab-button:hover {
+  color: var(--admin-ink-strong);
+}
+
+.tabs-field__tab-button--active {
+  color: var(--admin-ink-strong);
+  border-bottom-color: var(--admin-accent);
+}
+
+.tabs-field__tab-button--active::after {
+  display: none;
+}
+
+/* Uploads: the picture in a mat, as on the sites. */
+.thumbnail,
+.file-field__thumbnail-wrap,
+.upload-relationship-details .thumbnail {
+  background: var(--admin-mat);
+  border: 1px solid var(--admin-mat-edge);
+  border-radius: 0;
+}
+
+.thumbnail img {
+  object-fit: contain;
+}
+
+.upload,
+.dropzone {
+  border: 1px dashed var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+}
+
+.relationship-add-new__add-button {
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+}
+
+@media (max-width: 768px) {
+  /* A phone has no width to spare for a panel inside a panel. */
+  .group-field--top-level {
+    padding: calc(var(--base) * 0.75);
+  }
+
+  .group-field--within-group.group-field--gutter {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .field-type input:not([type='checkbox']):not([type='radio']),
+  .react-select .rs__control,
+  .btn--size-medium,
+  .btn--size-large {
+    min-height: var(--admin-target);
+  }
+
+  .document-fields__sidebar-wrap,
+  .document-fields__sidebar {
+    border-inline-start: 0;
+    border-top: 1px solid var(--admin-hairline);
+  }
+}
+
+/* ---- the AI drafting panel (`@engine/cms/ai/admin/draft-button-client.jsx`) ------------------- */
+
+.ix-ai {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  padding: calc(var(--base) * 0.75);
+  margin-block-end: var(--base);
+  font: var(--admin-text-small);
+  color: var(--admin-ink);
+}
+
+.ix-ai__intro {
+  margin: 0 0 calc(var(--base) * 0.5);
+}
+
+.ix-ai__button {
+  min-block-size: var(--admin-control-height);
+  padding: 0 calc(var(--base) * 0.75);
+  border: 0;
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-accent);
+  color: var(--admin-accent-on);
+  font: var(--admin-text-strong);
+  cursor: pointer;
+  transition: background-color var(--admin-dur) var(--admin-ease);
+}
+
+.ix-ai__button:hover {
+  background: var(--admin-accent-strong);
+}
+
+.ix-ai__button:disabled {
+  background: var(--admin-rule);
+  color: var(--admin-muted);
+  cursor: progress;
+}
+
+.ix-ai__quiet,
+.ix-ai__line {
+  margin: calc(var(--base) * 0.35) 0;
+  color: var(--admin-muted);
+}
+
+.ix-ai__done {
+  margin: calc(var(--base) * 0.4) 0;
+  font: var(--admin-text-strong);
+  color: var(--admin-success);
+}
+
+.ix-ai__error {
+  margin: calc(var(--base) * 0.4) 0;
+  color: var(--admin-danger);
+}
+
+.ix-ai__list {
+  margin: calc(var(--base) * 0.2) 0;
+  padding-inline-start: calc(var(--base) * 0.9);
+}
+
+.ix-ai__preview {
+  white-space: pre-wrap;
+  color: var(--admin-ink);
+}

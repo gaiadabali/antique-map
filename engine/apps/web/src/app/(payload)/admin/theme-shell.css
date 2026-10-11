@@ -9,10 +9,6 @@
   border-right: 1px solid var(--admin-hairline);
 }
 
-.nav__scroll {
-  padding-block: calc(var(--base) * 0.75) var(--base);
-}
-
 .nav__wrap {
   gap: 0;
 }
@@ -90,6 +86,16 @@
 @media (max-width: 768px) {
   .nav__link {
     min-height: var(--admin-target);
+  }
+
+  /* Open on a phone, the sidebar covers the header (Payload stacks the header above it). */
+  .nav {
+    z-index: calc(var(--z-modal) + 1);
+  }
+
+  .nav__header {
+    background: var(--admin-sidebar);
+    border-bottom: 1px solid var(--admin-hairline);
   }
 }
 

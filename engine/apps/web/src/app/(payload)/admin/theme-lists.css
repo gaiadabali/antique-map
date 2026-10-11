@@ -31,15 +31,15 @@
 /* ---- search, columns, filters --------------------------------------------------------------- */
 
 .list-controls__wrap {
-  background: var(--admin-paper);
-  border: 1px solid var(--admin-hairline);
-  border-radius: var(--admin-radius-control);
+  background: transparent;
+  border: 0;
   box-shadow: none;
 }
 
 .list-controls .search-filter {
-  background: transparent;
-  border: 0;
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
 }
 
 .list-controls .search-filter__input {
@@ -213,6 +213,14 @@
   .table th,
   .table td {
     padding: calc(var(--base) * 0.6);
+  }
+
+  /* On a phone the title narrows so the next column shows: the panel scrolls for the rest. */
+  .table td.cell-title,
+  .table th#heading-title,
+  .table td.cell-name,
+  .table td.cell-email {
+    min-inline-size: 12rem;
   }
 
   .paginator__page {
