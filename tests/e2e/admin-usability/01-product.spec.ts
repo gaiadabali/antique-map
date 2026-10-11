@@ -45,7 +45,9 @@ test('R1 owner: add and publish a product, then stock at three stores', async ({
   const m = new Meter(page, info, 'R1 add and publish a product', 180)
 
   m.start()
-  await page.goto(`${SHOP}/admin`)
+  // In the default content locale: Payload keeps each person's last one, and a product's English
+  // fields are the required ones.
+  await page.goto(`${SHOP}/admin?locale=en`)
   await m.click(await sidebarLink(page, '/admin/collections/products'))
   await expect(page).toHaveURL(/\/collections\/products\?/)
   await m.click(page.getByRole('link', { name: 'Create New' }).first())
@@ -94,11 +96,7 @@ test('R1 owner: add and publish a product, then stock at three stores', async ({
       await m.click(page.locator('a[href="/admin"]:visible').first())
       await expect(page).toHaveURL(/\/admin$/)
       await page.waitForLoadState('networkidle')
-      await m.click(
-        page.locator(
-          '.template-default__wrap a.card__click[href="/admin/collections/stock-levels"]',
-        ),
-      )
+      await m.click(await sidebarLink(page, '/admin/collections/stock-levels'))
     } else {
       // The saved record has no visible way to the next stock row (the sidebar is closed): back to the list by
       // address, counted as a page load, not a click.

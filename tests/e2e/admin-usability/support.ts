@@ -82,8 +82,16 @@ export function need(...names: string[]): Record<string, string> {
  * cards: a person reaches a collection or a global from the sidebar.
  */
 export async function sidebarLink(page: Page, href: string): Promise<Locator> {
-  const open = page.getByRole('button', { name: /^(Open Menu|Buka Menu)$/ }).first()
-  if (await open.isVisible().catch(() => false)) await open.click()
+  // A closed sidebar still has a box (it sits behind the page), so wait for Payload's own
+  // hydrated class before the menu button can answer, then open it once.
+  await page.locator('.template-default--nav-hydrated').waitFor()
+  if ((await page.locator('.template-default--nav-open').count()) === 0) {
+    await page
+      .getByRole('button', { name: /^(Open Menu|Buka Menu)$/ })
+      .first()
+      .click()
+    await page.locator('.template-default--nav-open').waitFor()
+  }
   return page.locator(`nav a.nav__link[href="${href}"]`).first()
 }
 

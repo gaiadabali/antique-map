@@ -7,7 +7,7 @@
  */
 import { expect, test } from '@playwright/test'
 
-import { Meter, need, recorded, SHOP, signIn } from './support'
+import { Meter, need, recorded, SHOP, sidebarLink, signIn } from './support'
 
 test('R2 owner: import a stock spreadsheet', async ({ page }, info) => {
   const creds = need('E2E_OWNER_EMAIL', 'E2E_OWNER_PASSWORD')
@@ -20,13 +20,8 @@ test('R2 owner: import a stock spreadsheet', async ({ page }, info) => {
   m.start()
   await page.goto(`${SHOP}/admin`)
   await page.waitForLoadState('networkidle')
-  // The sidebar opens closed (Payload keeps the choice per person): open it, then the link.
-  const menu = page.getByRole('button', { name: /^(Open Menu|Buka Menu)$/ })
-  if (await menu.isVisible()) {
-    m.stumble('the sidebar starts closed: one tap on the menu button opens it')
-    await m.click(menu)
-  }
-  await m.click(page.getByRole('link', { name: /import stock|impor stok/i }).first())
+  // The sidebar may open closed (Payload's choice under 1440 px): the helper opens it.
+  await m.click(await sidebarLink(page, '/admin/stock-import'))
   await page.waitForLoadState('networkidle')
   await expect(
     page.getByRole('heading', { name: /import stock from a spreadsheet/i }),

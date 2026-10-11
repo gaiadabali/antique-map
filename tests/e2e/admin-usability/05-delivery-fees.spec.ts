@@ -26,6 +26,12 @@ async function save(page: Page, m?: Meter): Promise<void> {
  * only its header (what read as "empty" in the first proxy run): Show All opens the bands.
  */
 async function openBands(page: Page, m?: Meter): Promise<void> {
+  // Site settings is a tab per site (15.3); the bands are under the shop's Checkout and delivery.
+  for (const name of ['Old East Indies', /^(Checkout and delivery|Checkout dan pengiriman)$/]) {
+    const tab = page.locator('.tabs-field__tab-button', { hasText: name }).first()
+    if (m) await m.click(tab)
+    else await tab.click()
+  }
   const bands = page.locator('#field-shop__delivery__bands')
   for (let n = 0; n < 20 && (await bands.count()) === 0; n += 1) {
     await page.mouse.wheel(0, 1200)

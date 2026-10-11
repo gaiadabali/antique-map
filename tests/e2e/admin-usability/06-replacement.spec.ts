@@ -6,7 +6,7 @@
  */
 import { expect, test } from '@playwright/test'
 
-import { Meter, need, record, recorded, SHOP, signIn } from './support'
+import { Meter, need, record, recorded, SHOP, sidebarLink, signIn } from './support'
 
 test('R6 owner: create a replacement order for the delivered rehearsal order', async ({
   page,
@@ -20,9 +20,7 @@ test('R6 owner: create a replacement order for the delivered rehearsal order', a
 
   m.start()
   await page.goto(`${SHOP}/admin`)
-  await m.click(
-    page.locator('.template-default__wrap a.card__click[href="/admin/collections/orders"]'),
-  )
+  await m.click(await sidebarLink(page, '/admin/collections/orders'))
   await m.click(page.getByRole('link', { name: new RegExp(`^#?${delivered!.number}$`) }).first())
   await expect(page).toHaveURL(new RegExp(`/orders/${id}`))
   await page.waitForLoadState('networkidle')
