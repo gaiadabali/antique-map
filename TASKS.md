@@ -86,6 +86,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
 | 17·W1 | 17.1 The world's foundation | orchestrator | `feat/p17-dsg` | 2026-10-12 | |
+| 17·W1 | 17.2 The two homes | orchestrator | `feat/p17-dsg` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1114,7 +1115,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 17.1.b the shared pieces in the world: the mat becomes a colour field holding the work uncropped (no frame lines), the colour wash-in and hover deepening; section heads without eyebrows; proof points, buttons, stock tag, pagination, chips, inputs, breadcrumbs square and flat; the header and footer full width, the doubled wordmark gone
   - [ ] 17.1.c **Check:** the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
 
-- [ ] **17.2 The two homes** · needs: 17.1
+- [ ] **17.2 The two homes** · needs: 17.1 — 🔄 17·W1
   - **Lane** WEB · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/{gallery,shop}/home/**`, `engine/apps/web/src/server/{gallery,shop}/home/**`
   - **Read** the surface brief's FIRST VIEWPORT; EXPERIENCE-GALLERY.md §3; EXPERIENCE-SHOP.md §3
