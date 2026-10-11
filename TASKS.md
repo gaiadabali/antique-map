@@ -32,7 +32,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **All** | 16 phases | | | **76/81** | **266/283** | **8** | `█████████░`  94% |
+| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 0/19 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 17 phases | | | **76/89** | **266/302** | **8** | `█████████░`  88% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -84,6 +85,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
+| 17·W1 | 17.1 The world's foundation | orchestrator | `feat/p17-dsg` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1096,6 +1098,79 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 16.4.a released to staging; the admin captured at 390 and 1280 as owner, editor and store user
   - [x] 16.4.b the finish review against the direction contract, its fixes applied; DESIGN.md records the admin's world
   - [x] 16.4.c **Check:** `docs/gates/admin-redesign.md` — the verdict, the screens, axe clean, the timed admin recipes (`tests/e2e/admin-usability/`) still pass.
+
+## Phase 17 — Both sites full width, in their own world · UI · needs 12, 14 · ~3d
+
+**Goal:** both public sites use the whole desktop and feel expensive, not like generic AI "luxury" (user request, 2026-10-11: "make all full width style for desktop, and ensure the luxury feels and not regular ai slop design; both websites still don't have that expensive feel"). The user kept Cormorant and Karla and the placeholder logos (the doubled wordmark beside them goes), freed the cream grounds, the mats and the eyebrow marks, ruled out dark and moody, stark white and vintage, and chose **Outline Colour** from a direction round: nothing framed, every work and region held by flat pigment (verdigris, gamboge, rose madder) on a mineral paper, the colour washing in as a work enters view. The direction contract is the surface brief `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md`.
+**Done when:** on a production build, every public page of both sites (gallery: home, browse, a type page, search, item, makers, a maker, places, a place, a story, sell to us, contact, not-found; shop: home, browse, search, collections, a collection, product, bag, checkout, tracking, an order, stores, partnership, not-found) is in the new world at 390, 1280 and 1920 px in both languages, full width on a desktop, axe clean, no sideways scroll; no behaviour, price, stock, access or copy change; the finish review's verdict is ship; DESIGN.md records the world.
+**Waves:** W1 — 17.1, 17.2 · W2 — 17.3, 17.4, 17.5, 17.6, 17.7 · W3 — 17.8
+
+- [ ] **17.1 The world's foundation** · needs: phase 14 — 🔄 17·W1
+  - **Lane** DSG · **Agent** orchestrator · **Wave** W1
+  - **Owns** the token files (`shared/styles/tokens/{primitives,semantic}.css`, `sites/{gallery,shop}/tokens/brand.css`), `engine/apps/web/src/styles/site.css`, `engine/apps/web/src/shared/ui/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/shared/style-guide/**`, `engine/apps/web/src/shared/chat/chat-launcher.module.css`
+  - **Read** the surface brief; DESIGN.md; DESIGN-SYSTEM.md §1, §7
+  - _Requirements: 12.1_
+  - [ ] 17.1.a the pigment palette in three locked strengths, the type scale, the full-width page frame and fluid gutters as tokens; selection, caret, focus and scrollbars themed; contrast checked
+  - [ ] 17.1.b the shared pieces in the world: the mat becomes a colour field holding the work uncropped (no frame lines), the colour wash-in and hover deepening; section heads without eyebrows; proof points, buttons, stock tag, pagination, chips, inputs, breadcrumbs square and flat; the header and footer full width, the doubled wordmark gone
+  - [ ] 17.1.c **Check:** the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
+
+- [ ] **17.2 The two homes** · needs: 17.1
+  - **Lane** WEB · **Agent** orchestrator · **Wave** W1
+  - **Owns** `engine/apps/web/src/sites/{gallery,shop}/home/**`, `engine/apps/web/src/server/{gallery,shop}/home/**`
+  - **Read** the surface brief's FIRST VIEWPORT; EXPERIENCE-GALLERY.md §3; EXPERIENCE-SHOP.md §3
+  - _Requirements: 12.1_
+  - [ ] 17.2.a the gallery home: the newest original across the verdigris field's edge, the headline at display scale, the bands below in the pigment order, no empty placeholder frames
+  - [ ] 17.2.b the shop home in gamboge in the same structure
+  - [ ] 17.2.c **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll.
+
+- [ ] **17.3 The gallery's listings** · needs: 17.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
+  - **Read** the surface brief; EXPERIENCE-GALLERY.md §4
+  - _Requirements: 12.1_
+  - [ ] 17.3.a browse, the type pages and search full width in the world: the grid gains columns with the width, the facets quiet, the work cards on their fields
+  - [ ] 17.3.b **Check:** browse, `/antique-maps`, a filtered page, a search and an empty search at 390, 1280 and 1920 in both languages, axe clean; facets, sort, paging and "Include sold" still work.
+
+- [ ] **17.4 The gallery's item page** · needs: 17.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
+  - **Read** the surface brief; EXPERIENCE-GALLERY.md §5–§6, §8
+  - _Requirements: 12.1_
+  - [ ] 17.4.a the sheet large and uncropped across a field's edge, the title block, Ask in rose, the record as a ruled running list
+  - [ ] 17.4.b **Check:** an available work, a sold one and one with several images at 390, 1280 and 1920 in both languages, axe clean; zoom and Ask still work; no price in the HTML.
+
+- [ ] **17.5 The gallery's other pages** · needs: 17.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages,contact}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,sell-to-us,contact,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
+  - **Read** the surface brief; EXPERIENCE-GALLERY.md §7–§9
+  - _Requirements: 12.1_
+  - [ ] 17.5.a makers, a maker, places, a place, a story, sell to us, contact and not-found full width in the world
+  - [ ] 17.5.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; both forms still refuse an empty Send.
+
+- [ ] **17.6 The shop's listings and product** · needs: 17.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores,product}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores,product}/**`
+  - **Read** the surface brief; EXPERIENCE-SHOP.md §4–§5
+  - _Requirements: 12.1_
+  - [ ] 17.6.a browse, search, collections, a collection, stores and the product page full width in the world, prints on gamboge fields, Add to bag in rose
+  - [ ] 17.6.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort, paging and Add to bag still work.
+
+- [ ] **17.7 The shop's purchase path and partnership** · needs: 17.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/{bag,checkout,tracking,payment,partnership}/**` (markup and CSS only), `engine/apps/web/src/app/(shop)/shop/[locale]/{cart,checkout,track,order,partnership,not-found,[...missing]}/**`
+  - **Read** the surface brief; COMMERCE.md (no behaviour change)
+  - _Requirements: 12.1_
+  - [ ] 17.7.a bag, checkout, tracking, an order, partnership and not-found in the world
+  - [ ] 17.7.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; a purchase still completes on the simulator; the enquiry still submits.
+
+- [ ] **17.8 The finish review and the record** · needs: 17.2, 17.3, 17.4, 17.5, 17.6, 17.7
+  - **Lane** DSG · **Agent** orchestrator, the finish reviewer, the documenter, qa (Sonnet) · **Wave** W3
+  - **Owns** `DESIGN.md`, `docs/DESIGN-SYSTEM.md`, `docs/gates/outline-colour.md`, `docs/gates/outline-colour/*`
+  - **Read** the surface brief
+  - _Requirements: 12.1_
+  - [ ] 17.8.a every public page of both sites captured at 390, 1280 and 1920 in both languages on a production build
+  - [ ] 17.8.b the finish review against the direction contract, its fixes applied; DESIGN.md and DESIGN-SYSTEM.md record the world
+  - [ ] 17.8.c **Check:** `docs/gates/outline-colour.md` — the verdict, the screens, axe clean, no sideways scroll; the e2e smoke of both sites passes.
 
 ---
 
