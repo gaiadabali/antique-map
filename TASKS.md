@@ -31,8 +31,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
-| **16** The CMS redesign | UI | 15 | 🔄 in progress | 0/4 | 2/10 | 0 | `██░░░░░░░░`  20% |
-| **All** | 16 phases | | | **72/81** | **258/283** | **8** | `█████████░`  91% |
+| **16** The CMS redesign | UI | 15 | 🔄 in progress | 0/4 | 3/10 | 0 | `███░░░░░░░`  30% |
+| **All** | 16 phases | | | **72/81** | **259/283** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1088,7 +1088,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Lane** ADM · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/{orders,leads,stock-import,dashboard}/**`, `engine/apps/web/src/app/(payload)/admin/panels.css`
   - **Read** CONTENT-OPERATIONS.md
-  - [ ] 16.3.a the Order panel (store staff on a phone first), the Leads inbox, Import stock and the analytics view restyled from tokens, behaviour unchanged
+  - [x] 16.3.a the Order panel (store staff on a phone first), the Leads inbox, Import stock and the analytics view restyled from tokens, behaviour unchanged
   - [ ] 16.3.b **Check:** each view before and after at 390 and 1280 as owner and store user; the views' tests pass unchanged or minimally.
 
 - [ ] **16.4 Staging, the finish review and the record** · needs: 16.1, 16.2, 16.3
