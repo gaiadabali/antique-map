@@ -10,6 +10,10 @@
  * - `draftFromPhotosField` — the sidebar's "Draft from photographs" button (`./admin`).
  *
  * The admin shows these read-only; a REST or GraphQL write cannot set them either (`./audit`).
+ * On a hand-catalogued work it shows none of them: an entry appears only once its field was
+ * drafted, the block only when one was, the run only once there was one (TASKS.md 16, the finish
+ * review: twenty unticked boxes made every record long). Display only — the publish guard and the
+ * audit read the data, not the form.
  */
 import type { Field, GroupField, UIField } from 'payload'
 
@@ -18,14 +22,24 @@ import { AI_DRAFTABLE_FIELDS, AI_DRAFTABLE_LABELS } from '../collections/works/v
 /** A duplicate is another object: what was drafted on the original was not drafted on it. */
 const cleared = () => ({})
 
+type Entries = Partial<Record<string, { drafted?: boolean | null } | null>> | null | undefined
+
+/** Whether the drafting tool filled any field of this work. */
+function anyDrafted(entries: Entries): boolean {
+  return AI_DRAFTABLE_FIELDS.some((field) => entries?.[field]?.drafted === true)
+}
+
 function entry(field: (typeof AI_DRAFTABLE_FIELDS)[number]): GroupField {
   return {
     name: field,
     type: 'group',
     label: AI_DRAFTABLE_LABELS[field],
     // Not a list column: a group named like the real field (`title`, `objectType`) made
-    // the Antiques list show that column twice.
-    admin: { disableListColumn: true },
+    // the Antiques list show that column twice. Shown only once the tool drafted this field.
+    admin: {
+      disableListColumn: true,
+      condition: (_data, siblingData) => (siblingData as Entries)?.[field]?.drafted === true,
+    },
     // Flat, not in rows: a row is a field without a name, and every entry reads the same four.
     fields: [
       {
@@ -70,6 +84,7 @@ export const aiDraftField: GroupField = {
   label: { en: 'Drafted by AI, not yet checked', id: 'Dibuat draf oleh AI, belum diperiksa' },
   admin: {
     disableListColumn: true,
+    condition: (_data, siblingData) => anyDrafted((siblingData as { aiDraft?: Entries })?.aiDraft),
     description: {
       en: 'One entry per field the drafting tool filled. The work cannot publish until each drafted field is ticked Verified; the server records who ticked it and when.',
       id: 'Satu entri per bidang yang diisi alat draf. Karya tidak dapat diterbitkan sampai setiap bidang yang didraf dicentang Diverifikasi; server mencatat siapa yang mencentang dan kapan.',
@@ -86,6 +101,8 @@ export const aiDraftRunField: GroupField = {
   admin: {
     disableListColumn: true,
     readOnly: true,
+    condition: (_data, siblingData) =>
+      Boolean((siblingData as { aiDraftRun?: { requestedAt?: unknown } })?.aiDraftRun?.requestedAt),
     description: {
       en: 'Who asked the drafting tool, when, and what it answered. Earlier runs are in the version history.',
       id: 'Siapa yang meminta alat draf, kapan, dan apa jawabannya. Pembuatan draf sebelumnya ada di riwayat versi.',
