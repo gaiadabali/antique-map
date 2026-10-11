@@ -32,8 +32,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 5/19 | 0 | `███░░░░░░░`  26% |
-| **All** | 17 phases | | | **76/89** | **271/302** | **8** | `█████████░`  90% |
+| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 6/19 | 0 | `███░░░░░░░`  32% |
+| **All** | 17 phases | | | **76/89** | **272/302** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1134,7 +1134,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §4
   - _Requirements: 12.1_
-  - [ ] 17.3.a browse, the type pages and search full width in the world: the grid gains columns with the width, the facets quiet, the work cards on their fields
+  - [x] 17.3.a browse, the type pages and search full width in the world: the grid gains columns with the width, the facets quiet, the work cards on their fields
   - [ ] 17.3.b **Check:** browse, `/antique-maps`, a filtered page, a search and an empty search at 390, 1280 and 1920 in both languages, axe clean; facets, sort, paging and "Include sold" still work.
 
 - [ ] **17.4 The gallery's item page** · needs: 17.1 — 🔄 17·W2
