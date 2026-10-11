@@ -83,6 +83,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
+| 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
 
 ## Decisions for the owner
 
@@ -745,7 +746,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 10.3.d write the runbook: deploy, roll back, restore, rotate a secret, kill the chat, handle a late payment
   - [x] 10.3.e **Check:** `docs/gates/rehearsal.md` records the run, the restore timing and verification, and the runbook has been followed by someone other than its author.
 
-- [ ] **10.4 👤 Timed admin tests with the owner's team** · needs: 10.3, 10.7, 10.8
+- [ ] **10.4 👤 Timed admin tests with the owner's team** · needs: 10.3, 10.7, 10.8 — 🔄 10·W3
   - **Lane** QA + DOC · **Agent** qa, senior-uiux · **Wave** W3
   - **Owns** `docs/gates/admin-usability.md`, `docs/CONTENT-OPERATIONS.md`
   - **Read** CONTENT-OPERATIONS.md §Targets, OA9
