@@ -136,8 +136,6 @@ export interface Config {
   }
   locale: 'en' | 'id'
   widgets: {
-    'orders-to-act-on': OrdersToActOnWidget
-    'new-leads': NewLeadsWidget
     collections: CollectionsWidget
   }
   strictDraftTypes: true
@@ -2877,26 +2875,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   updatedAt?: T
   createdAt?: T
   globalType?: T
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders-to-act-on_widget".
- */
-export interface OrdersToActOnWidget {
-  data?: {
-    [k: string]: unknown
-  }
-  width: 'medium' | 'large' | 'x-large' | 'full'
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "new-leads_widget".
- */
-export interface NewLeadsWidget {
-  data?: {
-    [k: string]: unknown
-  }
-  width: 'medium' | 'large' | 'x-large' | 'full'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

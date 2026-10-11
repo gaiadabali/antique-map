@@ -14,3 +14,8 @@ export type WidgetServerProps = {
 
 export function OrdersToActOnWidget(props: WidgetServerProps): Promise<unknown>
 export function NewLeadsWidget(props: WidgetServerProps): Promise<unknown>
+
+/** The orders the strip and the widget count: not delivered, cancelled or expired. */
+export const ACTING_STATUSES: readonly string[]
+export function countOrders(args: { req: PayloadRequest }): Promise<number>
+export function countNewLeads(args: { req: PayloadRequest }): Promise<number>

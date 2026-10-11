@@ -1,0 +1,222 @@
+/* The Catalogue Wall's cards, state tags, pager and empty state (TASKS.md 16.2), imported by
+   wall.css. Tokens only. Three columns under 1100 px, two on a phone. */
+
+/* ---- the wall of matted cards ---------------------------------------------------------------- */
+
+.wall__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--primitive-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wall-cell {
+  min-inline-size: 0;
+  margin: 0;
+}
+
+.wall-card {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  align-content: start;
+  gap: var(--primitive-space-1);
+  block-size: 100%;
+  padding: var(--primitive-space-3);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius);
+  transition: border-color var(--admin-dur) var(--admin-ease);
+}
+
+.wall-mat {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  margin-block-end: var(--primitive-space-2);
+  padding: var(--primitive-space-3);
+  overflow: hidden;
+  background: var(--admin-mat);
+  border: 1px solid var(--admin-mat-edge);
+}
+
+.wall-mat__img {
+  display: block;
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  inline-size: auto;
+  block-size: auto;
+  object-fit: contain;
+  transition: transform var(--admin-dur) var(--admin-ease);
+}
+
+.wall-mat__empty {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.wall-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-block-size: 2.4em;
+  font: var(--admin-text-record);
+  font-size: var(--admin-size-heading);
+  line-height: 1.2;
+  color: var(--admin-ink-strong);
+  overflow-wrap: anywhere;
+}
+
+.wall-card__meta {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+  overflow-wrap: anywhere;
+}
+
+/* The signature interaction: the hairline darkens to ink and the picture eases 2 % closer. */
+.wall-card:hover,
+.wall-card:focus-visible {
+  border-color: var(--admin-ink);
+}
+
+.wall-card:hover .wall-mat__img,
+.wall-card:focus-visible .wall-mat__img {
+  transform: scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wall-mat__img,
+  .wall-card,
+  .wall-chip,
+  .wall-strip__item {
+    transition: none;
+  }
+
+  .wall-card:hover .wall-mat__img,
+  .wall-card:focus-visible .wall-mat__img {
+    transform: none;
+  }
+}
+
+/* ---- the state tag: square, tinted, in words ------------------------------------------------- */
+
+.wall-tag {
+  justify-self: start;
+  margin-block-start: var(--primitive-space-1);
+  padding: var(--primitive-space-1) var(--primitive-space-2);
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  background: var(--admin-wash);
+  border: 1px solid var(--admin-hairline);
+  border-radius: 0;
+}
+
+.wall-tag--published {
+  color: var(--admin-success);
+  background: var(--admin-success-tint);
+  border-color: var(--admin-success-tint);
+}
+
+.wall-tag--aiDraft {
+  color: var(--admin-warning);
+  background: var(--admin-warning-tint);
+  border-color: var(--admin-warning-tint);
+}
+
+.wall-tag--needsPhoto,
+.wall-tag--outOfStock {
+  color: var(--admin-danger);
+  background: var(--admin-danger-tint);
+  border-color: var(--admin-danger-tint);
+}
+
+/* ---- pager and empty state ------------------------------------------------------------------- */
+
+.wall-pager {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--primitive-space-2) var(--primitive-space-4);
+  margin-block-start: var(--primitive-space-5);
+}
+
+.wall-pager__summary {
+  margin: 0 auto 0 0;
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.wall-pager__link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--admin-target);
+  padding-inline: var(--primitive-space-4);
+  font: var(--admin-text-strong);
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-rule);
+  border-radius: var(--admin-radius-control);
+}
+
+.wall-pager__link:hover {
+  border-color: var(--admin-ink);
+}
+
+.wall-empty {
+  max-inline-size: 44rem;
+  padding: var(--primitive-space-6) var(--primitive-space-5);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+}
+
+.wall-empty__text {
+  margin: 0 0 var(--primitive-space-3);
+  font: var(--admin-text-heading);
+  color: var(--admin-ink-strong);
+  text-wrap: balance;
+}
+
+.wall-empty__ways {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--primitive-space-2) var(--primitive-space-4);
+  margin: 0;
+}
+
+.wall-empty__link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--admin-target);
+  font: var(--admin-text-strong);
+  color: var(--admin-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---- narrower screens: the wall ---------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .wall__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .wall__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--primitive-space-3);
+  }
+
+  .wall-card {
+    padding: var(--primitive-space-2);
+  }
+
+  .wall-mat {
+    padding: var(--primitive-space-2);
+  }
+}
