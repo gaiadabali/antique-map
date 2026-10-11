@@ -65,7 +65,7 @@ async function ProductsGrid({ locale, t }: Props) {
   const words = productText(locale)
   return (
     <div className={styles.four}>
-      {products.map((product, at) => {
+      {products.map((product) => {
         const label = product.image ? syntheticLabelText(words, product.image) : null
         return (
           <a className={styles.productCard} key={product.slug} href={`/product/${product.slug}`}>
@@ -78,7 +78,7 @@ async function ProductsGrid({ locale, t }: Props) {
                   className={styles.productImage}
                   src={product.image.url}
                   srcSet={product.image.srcSet}
-                  sizes="(max-width: 47.5rem) 50vw, 25vw"
+                  sizes="(max-width: 47.5rem) 50vw, (max-width: 75rem) 33vw, 25vw"
                   loading="lazy"
                   decoding="async"
                   alt={imageAlt(words, product.image)}
@@ -87,12 +87,9 @@ async function ProductsGrid({ locale, t }: Props) {
                 <MatNote>{product.name}</MatNote>
               )}
             </Mat>
-            <span className={styles.num} style={{ marginTop: 'var(--space-4)', display: 'block' }}>
-              {`0${at + 1}/`}
-            </span>
             <h3 className={styles.cardTitle}>{product.name}</h3>
             {label !== null && <p className={styles.cardBody}>{label}</p>}
-            <p className={styles.cardBody}>
+            <p className={styles.cardPrice}>
               {t('home.shop.pricePrefix')} <Price amount={product.price} />
             </p>
           </a>

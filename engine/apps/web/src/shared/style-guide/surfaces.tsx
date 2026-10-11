@@ -1,5 +1,7 @@
 import {
   Badge,
+  Band,
+  Button,
   Card,
   Eyebrow,
   FormMessage,
@@ -40,17 +42,43 @@ export function Surfaces(): React.ReactElement {
       <Section id="sg-eyebrow" title="Eyebrow">
         <div className={styles.row}>
           <Eyebrow>Featured</Eyebrow>
-          <Eyebrow mark>Art souvenirs of the East Indies</Eyebrow>
         </div>
       </Section>
 
       <Section id="sg-section-head" title="Section head">
         <SectionHead
-          eyebrow="How we make them"
           title="From an original in our hands to a print on your wall"
           lede="300gsm cotton and archival pigment inks, printed in Bali."
           action={<a href="#sg-section-head">Shop all prints</a>}
         />
+      </Section>
+
+      <Section id="sg-band" title="Band">
+        <p className={styles.note}>
+          A full-bleed field of the site's pigments in its order; a deep field re-points every ink
+          role, the action included.
+        </p>
+        {([1, 2, 3] as const).map((pigment) =>
+          (['tint', 'wash', 'full'] as const).map((strength) => (
+            <Band key={`${pigment}-${strength}`} as="div" pigment={pigment} strength={strength}>
+              <p className={styles.bandLabel}>
+                Pigment {pigment}, {strength}
+              </p>
+              <div className={styles.row}>
+                <Button href="#sg-band">Ask about this work</Button>
+                <Button href="#sg-band" variant="secondary">
+                  Browse the collection
+                </Button>
+                <Button href="#sg-band" variant="quiet">
+                  Sell to us
+                </Button>
+              </div>
+            </Band>
+          )),
+        )}
+        <Band as="div" pigment="ink">
+          <p className={styles.bandLabel}>Ink</p>
+        </Band>
       </Section>
 
       <Section id="sg-mat" title="Mat">

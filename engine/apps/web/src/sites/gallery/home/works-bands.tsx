@@ -89,7 +89,6 @@ function CollectionFrame({
   return (
     <section className={styles.section}>
       <SectionHead
-        eyebrow={t('home.gallery.featuredEyebrow')}
         title={t('home.gallery.featuredTitle')}
         action={
           <Button variant="quiet" href={browseHref}>
@@ -124,11 +123,7 @@ async function RecentlyWorks({ locale, t }: Omit<Props, 'browseHref'>) {
 function RecentlyFrame({ t, body }: { readonly t: HomeText; readonly body: React.ReactNode }) {
   return (
     <section className={styles.section}>
-      <SectionHead
-        eyebrow={t('home.gallery.recentlyEyebrow')}
-        title={t('home.gallery.recentlyTitle')}
-        lede={t('home.gallery.recentlyBody')}
-      />
+      <SectionHead title={t('home.gallery.recentlyTitle')} lede={t('home.gallery.recentlyBody')} />
       <div className={styles.grid}>{body}</div>
     </section>
   )

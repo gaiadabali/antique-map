@@ -56,8 +56,8 @@
   --brand-pigment-3-on-full: var(--primitive-mineral);
   --brand-pigment-3-on-full-muted: var(--primitive-madder-mist);
 
-  --brand-field: var(--primitive-verdigris-tint);
-  --brand-field-active: var(--primitive-verdigris-wash);
+  --brand-field: var(--primitive-mineral-deep);
+  --brand-field-active: var(--primitive-verdigris-tint);
 
   --brand-space-1: var(--primitive-space-1);
   --brand-space-2: var(--primitive-space-2);

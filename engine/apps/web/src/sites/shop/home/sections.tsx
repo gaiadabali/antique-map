@@ -1,8 +1,9 @@
 /**
- * The shop home's sections below the best sellers: sets, process, trade and originals. Pictures
- * are placeholders in mats until the owner's content; every word comes from the lexicon.
+ * The shop home's sections below the best sellers (12.3; Outline Colour 17.2): sets, process, trade
+ * and originals. Their pictures are not supplied yet, so each is type on its field — never an
+ * empty window. Every word comes from the lexicon.
  */
-import { Button, Mat, MatNote, ProofPoints, SectionHead } from '../../../shared/ui'
+import { Band, Button, ProofPoints, SectionHead } from '../../../shared/ui'
 
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
@@ -17,8 +18,8 @@ export type SectionProps = {
   readonly t: HomeText
 }
 
-/** "Sets that hang together" needs the collections surface (TASKS.md, phase 6); these three
- * stand in until it ships, placeholder until the owner's content. */
+/** "Sets that hang together" stand in for the owner's gallery walls, placeholder until the owner's
+ * content. */
 const SETS = [
   { title: 'home.shop.set1Title', body: 'home.shop.set1Body' },
   { title: 'home.shop.set2Title', body: 'home.shop.set2Body' },
@@ -33,113 +34,90 @@ const STEPS = [
 
 const FACTS = ['home.shop.tradeFact1', 'home.shop.tradeFact2', 'home.shop.tradeFact3'] as const
 
+/** The sets on a madder field, each one a title and its line: three walls in words. */
 export function Sets({ locale, href, t }: SectionProps) {
   return (
-    <section className={styles.section}>
+    <Band pigment={2} strength="wash" aria-labelledby="home-sets">
       <SectionHead
-        eyebrow={t('home.shop.setsEyebrow')}
+        id="home-sets"
         title={t('home.shop.setsTitle')}
         lede={t('home.shop.setsBody')}
         action={
-          <Button variant="quiet" href={href('collection', {}, locale)}>
+          <Button variant="secondary" href={href('collection', {}, locale)}>
             {t('home.shop.setsCta')}
           </Button>
         }
       />
-      <div className={styles.three}>
+      <ul className={styles.three}>
         {SETS.map((set) => (
-          <figure key={set.title} className={styles.set}>
-            <Mat ratio={4 / 5}>
-              <MatNote>{t(set.title)}</MatNote>
-            </Mat>
-            <figcaption className={styles.caption}>
-              <span className={styles.captionTitle}>{t(set.title)}</span>
-              <span className={styles.captionBody}>{t(set.body)}</span>
-            </figcaption>
-          </figure>
+          <li key={set.title} className={styles.set}>
+            <h3 className={styles.setTitle}>{t(set.title)}</h3>
+            <p className={styles.setBody}>{t(set.body)}</p>
+          </li>
         ))}
-      </div>
-    </section>
+      </ul>
+    </Band>
   )
 }
 
+/** How a print is made: three steps in order, their numbers set large because the order is the
+ * point. */
 export function Process({ t }: Pick<SectionProps, 't'>) {
   return (
-    <section className={styles.section} id="process">
-      <div className={styles.split}>
-        <Mat ratio={5 / 4}>
-          <MatNote>{t('home.shop.posterWorkshop')}</MatNote>
-        </Mat>
-        <div>
-          <SectionHead
-            eyebrow={t('home.shop.processEyebrow')}
-            title={t('home.shop.processTitle')}
-          />
-          <ol className={styles.steps}>
-            {STEPS.map((step, at) => (
-              <li key={step.title} className={styles.step}>
-                <span className={styles.num}>{`0${at + 1}/`}</span>
-                <div>
-                  <p className={styles.stepTitle}>{t(step.title)}</p>
-                  <p className={styles.cardBody}>{t(step.body)}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
+    <section className={styles.section} id="process" aria-labelledby="home-process">
+      <SectionHead id="home-process" title={t('home.shop.processTitle')} />
+      <ol className={styles.steps}>
+        {STEPS.map((step, at) => (
+          <li key={step.title} className={styles.step}>
+            <span className={styles.num} aria-hidden="true">
+              {at + 1}
+            </span>
+            <h3 className={styles.stepTitle}>{t(step.title)}</h3>
+            <p className={styles.stepBody}>{t(step.body)}</p>
+          </li>
+        ))}
+      </ol>
     </section>
   )
 }
 
+/** Trade and gifting on deep verdigris: the offer, its facts, and the way in. */
 export function Trade({ locale, href, t }: SectionProps) {
   return (
-    <section className={`${styles.band} ${styles.bandDark}`}>
-      <div className={styles.bandWrap}>
-        <div className={styles.split}>
-          <div>
-            <SectionHead
-              eyebrow={t('home.shop.tradeEyebrow')}
-              title={t('home.shop.tradeTitle')}
-              lede={t('home.shop.tradeBody')}
-            />
-            <div className={styles.actions}>
-              <Button variant="secondary" href={href('partnership', {}, locale)}>
-                {t('home.shop.tradeCta')}
-              </Button>
-            </div>
-          </div>
-          <ProofPoints className={styles.facts} items={FACTS.map((key) => t(key))} />
+    <Band pigment={3} strength="full" aria-labelledby="home-trade">
+      <div className={styles.split}>
+        <div>
+          <SectionHead
+            id="home-trade"
+            title={t('home.shop.tradeTitle')}
+            lede={t('home.shop.tradeBody')}
+          />
+          <Button variant="secondary" href={href('partnership', {}, locale)}>
+            {t('home.shop.tradeCta')}
+          </Button>
         </div>
+        <ProofPoints className={styles.facts} items={FACTS.map((key) => t(key))} />
       </div>
-    </section>
+    </Band>
   )
 }
 
+/** The bridge to the gallery's originals, on the paper under a strong rule. */
 export function Originals({ sisterHref, t }: { sisterHref: string; t: HomeText }) {
   return (
-    <section className={`${styles.band} ${styles.bandTint}`}>
-      <div className={styles.bandWrap}>
-        <div className={styles.split}>
-          <div>
-            <SectionHead
-              eyebrow={t('home.shop.originalsEyebrow')}
-              title={t('home.shop.originalsTitle')}
-              lede={t('home.shop.originalsBody')}
-            />
-            <div className={styles.actions}>
-              {/* The bridge to the gallery, which lives on its own host — so absolute, and in
-                  the visitor's locale, never hardcoded. */}
-              <Button variant="quiet" href={sisterHref}>
-                {t('home.shop.originalsCta')}
-              </Button>
-            </div>
-          </div>
-          <Mat ratio={5 / 4}>
-            <MatNote>{t('home.shop.posterOriginal')}</MatNote>
-          </Mat>
-        </div>
-      </div>
+    <section className={styles.originals} aria-labelledby="home-originals">
+      <SectionHead
+        id="home-originals"
+        title={t('home.shop.originalsTitle')}
+        lede={t('home.shop.originalsBody')}
+        action={
+          // The bridge to the gallery, which lives on its own host — so absolute, and in the
+          // visitor's locale, never hardcoded.
+          <Button variant="secondary" href={sisterHref}>
+            {t('home.shop.originalsCta')}
+          </Button>
+        }
+      />
     </section>
   )
 }

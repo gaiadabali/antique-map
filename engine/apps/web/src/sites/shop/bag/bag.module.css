@@ -1,7 +1,7 @@
 /* The bag page (6.2; 12.6 luxury pass): 390 px first, tokens only (DESIGN-SYSTEM.md). The page
    breaks out of the reading column to the shop's full width, like the home. */
 .bag {
-  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
   padding-block: var(--space-6) var(--space-7);

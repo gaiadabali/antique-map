@@ -124,7 +124,7 @@ a {
   padding: var(--space-7) var(--gutter) var(--section-space);
 }
 
-.site-main h1 {
+:where(.site-main) h1 {
   font: var(--text-h1);
   letter-spacing: var(--tracking-h1);
   line-height: var(--primitive-line-h1);

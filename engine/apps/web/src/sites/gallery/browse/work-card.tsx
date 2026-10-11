@@ -23,9 +23,10 @@ export function statusLineOf(status: WorkCardVM['status'], locale: SiteLocale): 
 
 /**
  * The image's slot, for the browser's pick from the ladder: on the phone half the page less the
- * gutters, the column gap and the mat; on the desktop a quarter of the results column.
+ * gutters and the field; on wider screens a third, a quarter or a fifth of the full-width grid.
  */
-const CARD_IMAGE_SIZES = '(min-width: 768px) 15vw, calc(50vw - 3rem)'
+const CARD_IMAGE_SIZES =
+  '(min-width: 1760px) 18vw, (min-width: 1200px) 22vw, (min-width: 768px) 30vw, calc(50vw - 2rem)'
 
 export function WorkCard({
   work,

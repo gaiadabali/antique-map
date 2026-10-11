@@ -1,20 +1,32 @@
-.footer {
-  width: 100%;
-  padding: var(--space-9) var(--gutter) var(--space-6);
-  background: var(--color-surface-raised);
-  border-top: var(--rule-hair) solid var(--color-border);
-}
+/* The footer closes the page on a full field of the site's lead pigment (the gallery's verdigris,
+   the shop's gamboge), full width; every ink role inside is re-pointed to the type that stands on
+   that field, as a full Band does. Every value is a token — no raw colour, no font-family. */
 
-.inner {
-  max-width: 1340px;
-  margin: 0 auto;
+.footer {
+  --band-bg: var(--pigment-1-full);
+  --color-text: var(--pigment-1-on-full);
+  --color-text-strong: var(--pigment-1-on-full);
+  --color-text-muted: var(--pigment-1-on-full-muted);
+  --color-accent: var(--pigment-1-on-full);
+  --color-accent-contrast: var(--pigment-1-full);
+  --color-focus: var(--pigment-1-on-full);
+  --color-border: color-mix(in srgb, var(--pigment-1-on-full) 30%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--pigment-1-on-full) 70%, transparent);
+  --color-action: var(--pigment-1-on-full);
+  --color-action-hover: var(--pigment-1-on-full-muted);
+  --color-action-contrast: var(--pigment-1-full);
+
+  width: 100%;
+  padding: clamp(var(--space-8), 2rem + 5vw, var(--space-10)) var(--gutter) var(--space-6);
+  background: var(--band-bg);
+  color: var(--color-text);
 }
 
 .top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto minmax(14rem, auto);
   align-items: start;
-  gap: var(--space-8);
+  gap: var(--space-8) clamp(var(--space-7), 1rem + 5vw, var(--space-10));
 }
 
 .logo {
@@ -24,14 +36,14 @@
 }
 
 .logo > * {
-  max-height: 35px;
+  max-height: 44px;
   width: auto;
 }
 
 .nav {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-7);
+  gap: var(--space-7) clamp(var(--space-7), 1rem + 4vw, var(--space-10));
   font: var(--text-small);
 }
 
@@ -41,7 +53,7 @@
 }
 
 .legal {
-  margin-block-start: var(--space-8);
+  margin-block-start: clamp(var(--space-8), 2rem + 4vw, var(--space-10));
   padding-block-start: var(--space-5);
   border-top: var(--rule-hair) solid var(--color-border);
   font: var(--text-caption);
@@ -56,17 +68,9 @@
 }
 
 @media (max-width: 768px) {
-  .footer {
-    padding-block-start: var(--space-7);
-  }
-
   .nav {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--space-6) var(--space-5);
-  }
-
-  .legal {
-    margin-block-start: var(--space-6);
   }
 }

@@ -1,31 +1,18 @@
+/* A short label in the run of the text: sentence case, never tracked capitals, never above a
+   heading (Outline Colour retires the kicker). Every value is a token — no raw colour, no
+   font-family. */
+
 .eyebrow {
   display: inline;
-  font: var(--text-small);
-  font-weight: 700;
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
+  font: var(--text-label);
   color: var(--color-text-muted);
 }
 
-/* The site's mark beside the words; a line too long for both drops the words below the mark. */
 .marked {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3) var(--space-4);
+  display: inline;
 }
 
-/* Drawn from the site's mark tokens: the shop's scale bar (25% dashes), the gallery's hairline
-   rule (one solid dash). The accent is read here, on the mark, so a dark band that re-points
-   --color-accent re-colours the stripes with the border. */
+/* The site's mark is retired: the scale bar and the hairline are not drawn. */
 .scale {
-  flex: none;
-  inline-size: var(--mark-inline-size);
-  block-size: var(--mark-block-size);
-  border: var(--mark-border-width) solid var(--color-accent);
-  background: repeating-linear-gradient(
-    90deg,
-    var(--color-accent) 0 var(--mark-dash),
-    transparent var(--mark-dash) var(--mark-period)
-  );
+  display: none;
 }

@@ -1,11 +1,11 @@
-/* Every value is a token — no raw colour, no font-family. */
+/* A page's or a section's opening. Every value is a token — no raw colour, no font-family. */
 
 .head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  column-gap: var(--space-6);
-  margin-block-end: var(--space-7);
+  column-gap: var(--space-8);
+  margin-block-end: clamp(var(--space-6), 1rem + 2.4vw, var(--space-8));
 }
 
 .text {
@@ -15,30 +15,28 @@
 /* Two selectors deep: the shell's `.site-main h1` sets its own margin. */
 .head .titlePage,
 .head .titleSection {
-  margin: var(--space-5) 0 0;
+  margin: 0;
   text-wrap: balance;
 }
 
 .head .titlePage {
   font: var(--text-h1);
   letter-spacing: var(--tracking-h1);
-  max-inline-size: 18ch;
+  max-inline-size: 16ch;
 }
 
 .head .titleSection {
   font: var(--text-h2);
-  max-inline-size: 26ch;
-}
-
-.text > :first-child {
-  margin-block-start: 0;
+  letter-spacing: var(--tracking-h1);
+  max-inline-size: 22ch;
 }
 
 .lede {
-  margin: var(--space-4) 0 0;
-  max-inline-size: 36rem;
+  margin: var(--space-5) 0 0;
+  max-inline-size: var(--measure-text);
   font: var(--text-body-large);
   color: var(--color-text-muted);
+  text-wrap: pretty;
 }
 
 .action {
@@ -50,7 +48,6 @@
 @media (max-width: 47.5rem) {
   .head {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: var(--space-4);
-    margin-block-end: var(--space-6);
+    row-gap: var(--space-5);
   }
 }

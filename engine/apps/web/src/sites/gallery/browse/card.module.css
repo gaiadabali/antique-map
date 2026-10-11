@@ -1,11 +1,12 @@
-/* The gallery's work cards and their grid (5.1.b, 14.1): 390 px first, tokens only
-   (DESIGN-SYSTEM.md). The sheet sits on the shared `Mat`; this file sets the grid and the caption. */
+/* The gallery's work cards and their grid (5.1.b, 14.1; Outline Colour 17.1): 390 px first, tokens
+   only (DESIGN-SYSTEM.md). The sheet lies on a field of verdigris (the shared `Mat`, contained);
+   this file sets the grid and the museum caption. */
 
-/* Two columns on the phone, four on the desktop (EXPERIENCE-GALLERY.md §4). */
+/* Two columns on the phone; the grid gains columns with the width rather than stretching cards. */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-7) var(--space-4);
+  gap: var(--space-7) var(--grid-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -24,13 +25,13 @@
   outline-offset: var(--space-1);
 }
 
-/* The museum caption under the mat. */
+/* The museum caption under the field. */
 .body {
   display: flex;
   flex-direction: column;
   flex: 1;
   gap: var(--space-1);
-  padding: var(--space-4) var(--space-1) 0;
+  padding-block-start: var(--space-4);
 }
 
 /* An antique's title is often its long original one: three lines at most on the card (the item
@@ -38,18 +39,22 @@
 .title {
   display: -webkit-box;
   overflow: hidden;
-  font: var(--text-h3);
+  font: var(--text-card-title);
   color: var(--color-text);
   text-wrap: balance;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   line-clamp: 3;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
 }
 
-.card:hover .title {
-  text-decoration: underline;
-  text-decoration-thickness: var(--rule-hair);
-  text-underline-offset: 4px;
+.card:hover .title,
+.card:focus-visible .title {
+  text-decoration-color: currentColor;
 }
 
 .meta {
@@ -58,15 +63,15 @@
   font-variant-numeric: var(--numeric-tabular);
 }
 
-/* The status line and the stock tag, at the caption's foot. */
+/* The status line and the stock number, at the caption's foot. */
 .foot {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
   gap: var(--space-2) var(--space-3);
   margin-block-start: auto;
-  padding-block-start: var(--space-2);
+  padding-block-start: var(--space-3);
 }
 
 /* The ONE status line: availability said once, never a price. */
@@ -79,9 +84,21 @@
   color: var(--color-text-muted);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-8) var(--grid-gap);
+  }
+}
+
+@media (min-width: 75rem) {
   .grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-8) var(--space-6);
+  }
+}
+
+@media (min-width: 110rem) {
+  .grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }

@@ -3,7 +3,7 @@
    Tokens only. */
 
 .wrap {
-  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
   padding-inline: var(--gutter);

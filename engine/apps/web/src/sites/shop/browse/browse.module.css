@@ -5,7 +5,7 @@
 .browse {
   display: flex;
   flex-direction: column;
-  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
   padding: var(--space-4) var(--gutter) var(--space-7);
