@@ -1,0 +1,230 @@
+/* The admin's lists (TASKS.md 16): a title in Cormorant, the search and filters as one paper
+   bar, the table a paper panel with hairline rows and small-caps headers, the first column the
+   record's link. On a phone the panel scrolls sideways inside itself, never the page. */
+
+.list-header {
+  margin-block-end: calc(var(--base) * 0.8);
+}
+
+.list-header__title-and-actions {
+  align-items: baseline;
+  gap: calc(var(--base) * 0.75);
+}
+
+.list-header__title-actions .btn,
+.list-create-new-doc__create-new-button {
+  --bg-color: var(--admin-paper);
+  --color: var(--admin-accent);
+  --hover-bg: var(--admin-accent-tint);
+  --hover-color: var(--admin-accent-strong);
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+}
+
+.collection-list__wrap > p,
+.list-header + p,
+.collection-list .view-description {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+  max-inline-size: 72ch;
+}
+
+/* ---- search, columns, filters --------------------------------------------------------------- */
+
+.list-controls__wrap {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.list-controls .search-filter {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+.list-controls .search-filter__input {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.list-controls__buttons .btn,
+.list-controls .pill {
+  font: var(--admin-text-small);
+  font-weight: 600;
+}
+
+.column-selector,
+.where-builder,
+.list-controls__columns,
+.list-controls__where {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+/* ---- the table -------------------------------------------------------------------------------- */
+
+.table {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  overflow-x: auto;
+}
+
+.table table {
+  border-collapse: collapse;
+  inline-size: 100%;
+}
+
+.table thead {
+  color: var(--admin-muted);
+}
+
+.table th {
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  background: var(--admin-wash);
+  border-bottom: 1px solid var(--admin-hairline);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.table td {
+  font: var(--admin-text-data);
+  color: var(--admin-ink);
+  border-bottom: 1px solid var(--admin-hairline);
+  vertical-align: middle;
+}
+
+.table th,
+.table td {
+  padding: calc(var(--base) * 0.55) calc(var(--base) * 0.7);
+  min-inline-size: 7rem;
+}
+
+.table tbody tr {
+  background: var(--admin-paper);
+  transition: background-color var(--admin-dur) var(--admin-ease);
+}
+
+.table tbody tr:nth-child(odd),
+.table tbody tr:nth-child(even) {
+  background: var(--admin-paper);
+}
+
+.table tbody tr:hover {
+  background: var(--admin-wash);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table td:first-child a,
+.table td.cell-title a,
+.table td [class*='cell-'] a,
+.table tbody td a {
+  color: var(--admin-ink-strong);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.table tbody td a:hover {
+  text-decoration: underline;
+}
+
+/* The record's name gets room: a long antique title wraps in two lines, not five. */
+.table td.cell-title,
+.table th#heading-title,
+.table td.cell-name,
+.table td.cell-email {
+  min-inline-size: 18rem;
+}
+
+.cell-_select,
+.select-row {
+  min-inline-size: 0;
+}
+
+.sort-column__label {
+  color: var(--admin-muted);
+}
+
+.sort-column__button {
+  color: var(--admin-muted);
+}
+
+.sort-column__button--active,
+.sort-column__button:hover {
+  color: var(--admin-accent);
+}
+
+/* ---- paging ----------------------------------------------------------------------------------- */
+
+.paginator,
+.page-controls {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.paginator__page {
+  min-inline-size: 2.25rem;
+  min-block-size: 2.25rem;
+  border-radius: var(--admin-radius-control);
+  color: var(--admin-ink);
+}
+
+.paginator__page:hover {
+  background: var(--admin-paper);
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+}
+
+.paginator__page--is-current {
+  background: var(--admin-paper);
+  box-shadow: inset 0 0 0 1px var(--admin-ink);
+  font-weight: 700;
+}
+
+.per-page__button {
+  font: var(--admin-text-small);
+}
+
+/* ---- empty, selection ------------------------------------------------------------------------- */
+
+.no-results {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  padding: calc(var(--base) * 1.5);
+  font: var(--admin-text-body);
+  color: var(--admin-muted);
+}
+
+.list-selection {
+  background: var(--admin-ink-strong);
+  color: var(--admin-paper);
+  border-radius: var(--admin-radius-control);
+}
+
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding: calc(var(--base) * 0.6);
+  }
+
+  /* On a phone the title narrows so the next column shows: the panel scrolls for the rest. */
+  .table td.cell-title,
+  .table th#heading-title,
+  .table td.cell-name,
+  .table td.cell-email {
+    min-inline-size: 12rem;
+  }
+
+  .paginator__page {
+    min-inline-size: var(--admin-target);
+    min-block-size: var(--admin-target);
+  }
+}

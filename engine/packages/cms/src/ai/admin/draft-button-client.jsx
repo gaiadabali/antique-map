@@ -3,36 +3,19 @@
  * The button itself: posts `{ workId }` to `/api/x/draft` (same origin, the admin's own cookie),
  * shows that it is working, then what was filled and what was left — or the refusal in plain
  * words. The drafted values land in a new draft version, so the page reloads to show them. Styled
- * with Payload's own CSS custom properties, as `../../admin/leads/shared.jsx`.
+ * by the admin's stylesheets (TASKS.md 16): the `.ix-ai*` classes in `theme-record.css`.
  */
 import { useState } from 'react'
 
 import { DRAFT_COPY, fieldName, REFUSAL_COPY, SKIP_COPY } from '../copy'
 
-const box = {
-  border: '1px solid var(--theme-elevation-150)',
-  borderRadius: 8,
-  padding: 12,
-  marginBottom: 16,
-  fontSize: 13,
-  background: 'var(--theme-input-bg)',
-}
-const button = {
-  padding: '8px 14px',
-  borderRadius: 6,
-  border: '1px solid transparent',
-  background: 'var(--theme-elevation-800)',
-  color: 'var(--theme-elevation-0)',
-  fontWeight: 600,
-  cursor: 'pointer',
-  minHeight: 36,
-}
-const quiet = { color: 'var(--theme-elevation-600)', margin: '8px 0' }
+// The admin's panel classes (`app/(payload)/admin/theme-record.css`, `.ix-ai*`): paper with a
+// hairline, the one bronze action, muted status lines. Presentation only; the flow is unchanged.
 
 function Refusal({ code, language }) {
   const words = REFUSAL_COPY[code] ?? REFUSAL_COPY.unavailable
   return (
-    <p role="alert" style={{ color: 'var(--theme-error-750)', margin: '8px 0' }}>
+    <p role="alert" className="ix-ai__error">
       {words[language]}
     </p>
   )
@@ -46,14 +29,14 @@ function Result({ result, language }) {
   ]
   return (
     <div role="status">
-      <p style={{ margin: '8px 0', fontWeight: 600 }}>{DRAFT_COPY.done[language]}</p>
-      <p style={{ margin: '4px 0' }}>
+      <p className="ix-ai__done">{DRAFT_COPY.done[language]}</p>
+      <p className="ix-ai__line">
         {result.filled.length === 0
           ? DRAFT_COPY.none[language]
           : `${DRAFT_COPY.filled[language]}: ${result.filled.map((f) => fieldName(f, language)).join(', ')}`}
       </p>
       {result.skipped.length > 0 ? (
-        <ul style={{ margin: '4px 0', paddingLeft: 18 }}>
+        <ul className="ix-ai__list">
           {result.skipped.map(({ field, reason }) => (
             <li key={field}>
               {fieldName(field, language)} — {SKIP_COPY[reason]?.[language] ?? reason}
@@ -62,18 +45,22 @@ function Result({ result, language }) {
         </ul>
       ) : null}
       {description ? (
-        <div style={quiet}>
+        <div className="ix-ai__quiet">
           <strong>{DRAFT_COPY.description[language]}</strong>
-          <p style={{ whiteSpace: 'pre-wrap' }}>{description[language] ?? description.en}</p>
+          <p className="ix-ai__preview">{description[language] ?? description.en}</p>
         </div>
       ) : null}
       {unmatched.length > 0 ? (
-        <p style={quiet}>
+        <p className="ix-ai__quiet">
           {DRAFT_COPY.unmatched[language]}: {unmatched.join(', ')}
         </p>
       ) : null}
       {result.filled.length > 0 ? (
-        <button type="button" style={button} onClick={() => globalThis.location.reload()}>
+        <button
+          type="button"
+          className="ix-ai__button"
+          onClick={() => globalThis.location.reload()}
+        >
           {DRAFT_COPY.reload[language]}
         </button>
       ) : null}
@@ -103,12 +90,12 @@ export function DraftButtonClient({ workId, language }) {
 
   const working = state.phase === 'working'
   return (
-    <div style={box}>
-      <p style={{ margin: '0 0 8px' }}>{DRAFT_COPY.intro[language]}</p>
+    <div className="ix-ai">
+      <p className="ix-ai__intro">{DRAFT_COPY.intro[language]}</p>
       {state.phase === 'done' ? null : (
         <button
           type="button"
-          style={{ ...button, opacity: working ? 0.6 : 1 }}
+          className="ix-ai__button"
           disabled={working}
           aria-busy={working}
           onClick={draft}
@@ -117,7 +104,7 @@ export function DraftButtonClient({ workId, language }) {
         </button>
       )}
       {working ? (
-        <p role="status" style={quiet}>
+        <p role="status" className="ix-ai__quiet">
           {DRAFT_COPY.working[language]}
         </p>
       ) : null}

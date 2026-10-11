@@ -1,0 +1,291 @@
+/* The admin's shell (TASKS.md 16): the sidebar, the header and its breadcrumbs, and sign-in.
+   The sidebar is the second neutral layer, a shade under the linen ground, parted from the work
+   by one hairline; the current page is paper, marked by a bronze square. Tokens only. */
+
+/* ---- sidebar ------------------------------------------------------------------------------ */
+
+.nav {
+  background: var(--admin-sidebar);
+  border-right: 1px solid var(--admin-hairline);
+}
+
+.nav__wrap {
+  gap: 0;
+}
+
+.nav-group {
+  margin-block-end: calc(var(--base) * 0.6);
+}
+
+.nav-group__toggle {
+  padding-block: calc(var(--base) * 0.35);
+  color: var(--admin-muted);
+}
+
+.nav-group__label {
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.nav-group__indicator {
+  color: var(--admin-muted);
+}
+
+.nav__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  margin-inline: calc(var(--base) * -0.4);
+  padding: 0 calc(var(--base) * 0.4) 0 calc(var(--base) * 0.95);
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  text-decoration: none;
+  transition: background-color var(--admin-dur) var(--admin-ease);
+}
+
+.nav__link:hover {
+  background: var(--admin-wash);
+  color: var(--admin-ink-strong);
+}
+
+.nav__link:has(.nav__link-indicator) {
+  background: var(--admin-paper);
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+  font: var(--admin-text-strong);
+  color: var(--admin-ink-strong);
+}
+
+.nav__link-indicator {
+  position: absolute;
+  inset-inline-start: calc(var(--base) * 0.35);
+  inset-block-start: 50%;
+  inline-size: 6px;
+  block-size: 6px;
+  margin-block-start: -3px;
+  background: var(--admin-accent);
+  border-radius: 0;
+}
+
+.nav__controls {
+  border-top: 1px solid var(--admin-hairline);
+  padding-block-start: calc(var(--base) * 0.6);
+}
+
+.nav__log-out {
+  color: var(--admin-muted);
+}
+
+.nav__log-out:hover {
+  color: var(--admin-ink-strong);
+}
+
+@media (max-width: 768px) {
+  .nav__link {
+    min-height: var(--admin-target);
+  }
+
+  /* Open on a phone, the sidebar covers the header (Payload stacks the header above it). */
+  .nav {
+    z-index: calc(var(--z-modal) + 1);
+  }
+
+  .nav__header {
+    background: var(--admin-sidebar);
+    border-bottom: 1px solid var(--admin-hairline);
+  }
+}
+
+/* ---- header and breadcrumbs ---------------------------------------------------------------- */
+
+.app-header__bg,
+.app-header__gradient-placeholder {
+  background: var(--admin-ground);
+}
+
+.app-header {
+  border-bottom: 1px solid var(--admin-hairline);
+}
+
+.step-nav {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.step-nav a {
+  color: var(--admin-muted);
+  text-decoration: none;
+}
+
+.step-nav a:hover {
+  color: var(--admin-ink-strong);
+  text-decoration: underline;
+}
+
+.step-nav__last {
+  color: var(--admin-ink);
+  font-weight: 600;
+}
+
+.localizer-button {
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+  color: var(--admin-ink);
+  font: var(--admin-text-small);
+  min-height: 2rem;
+}
+
+.localizer-button__label {
+  color: var(--admin-muted);
+}
+
+.graphic-account__bg {
+  fill: var(--admin-paper);
+  stroke: var(--admin-hairline);
+}
+
+.graphic-account__head,
+.graphic-account__body {
+  fill: var(--admin-muted);
+}
+
+.hamburger,
+.nav-toggler {
+  color: var(--admin-ink);
+  border-radius: var(--admin-radius-control);
+}
+
+/* ---- popups, drawers, modals ---------------------------------------------------------------- */
+
+.popup__content,
+.popup-button-list {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  box-shadow: var(--admin-shadow-popup);
+}
+
+.popup-button-list__button {
+  font: var(--admin-text-body);
+  border-radius: var(--admin-radius-control);
+}
+
+.popup-button-list__button:hover {
+  background: var(--admin-accent-tint);
+}
+
+.drawer__content {
+  background: var(--admin-ground);
+}
+
+.drawer__header {
+  border-bottom: 1px solid var(--admin-hairline);
+}
+
+.drawer__header h2,
+.drawer__header h1 {
+  font: var(--admin-text-record);
+}
+
+.payload__modal-item,
+.confirmation-modal__wrapper {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  box-shadow: var(--admin-shadow-popup);
+}
+
+/* ---- sign-in -------------------------------------------------------------------------------- */
+
+.template-minimal {
+  background: var(--admin-ground);
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--base);
+}
+
+.template-minimal__wrap {
+  inline-size: min(100%, 26rem);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  padding: calc(var(--base) * 2) calc(var(--base) * 1.75) calc(var(--base) * 1.75);
+}
+
+.login__brand {
+  margin-block-end: calc(var(--base) * 1.5);
+}
+
+.login__form .form-submit .btn {
+  inline-size: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .template-minimal {
+    place-items: start stretch;
+    padding: calc(var(--base) * 2) var(--base);
+  }
+
+  .template-minimal__wrap {
+    inline-size: 100%;
+    padding: calc(var(--base) * 1.5) var(--base);
+  }
+}
+
+/* ---- the marks (`@engine/cms/admin/brand/marks.jsx`) ----------------------------------------- */
+
+.ix-mark {
+  color: var(--admin-ink-strong);
+}
+
+.ix-mark--logo {
+  display: grid;
+  justify-items: start;
+  gap: calc(var(--base) * 0.4);
+}
+
+h1.ix-mark__name,
+.ix-mark__name {
+  margin: 0;
+  font: var(--admin-text-title);
+  font-size: 2.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.ix-mark__rule {
+  inline-size: 3rem;
+  block-size: 1px;
+  background: var(--admin-accent);
+}
+
+p.ix-mark__sites,
+.ix-mark__sites {
+  margin: 0;
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.ix-mark--icon {
+  font: var(--admin-text-record);
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* Payload sizes its icon slot for an 18 px glyph; the wordmark needs its own width. */
+.step-nav__home,
+.step-nav__home .graphic-icon,
+.nav__header .graphic-icon {
+  inline-size: auto;
+  max-inline-size: none;
+  block-size: auto;
+  overflow: visible;
+}

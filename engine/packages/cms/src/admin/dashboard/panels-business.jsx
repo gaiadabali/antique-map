@@ -5,7 +5,7 @@
  */
 import { text, word } from './copy'
 import { formatNumber } from './format'
-import { Empty, Panel, Ranked, S, Stat } from './ui'
+import { Empty, Panel, Ranked, Stat } from './ui'
 
 export function AsksPanel({ data, language, title }) {
   const t = (key) => text(language, key)
@@ -21,15 +21,15 @@ export function AsksPanel({ data, language, title }) {
   const word_ = (key) => word(language, key)
   return (
     <Panel title={heading} note={t('tapsNote')}>
-      <div style={S.stats}>
+      <div className="ix-stats">
         <Stat label={t('taps')} value={data.taps} language={language} />
         <Stat label={t('leads')} value={data.leads} language={language} />
       </div>
-      <h3 style={S.h3}>{t('byChannel')}</h3>
+      <h3 className="ix-h3">{t('byChannel')}</h3>
       <Ranked rows={data.byChannel} language={language} label={word_} />
-      <h3 style={S.h3}>{t('byContext')}</h3>
+      <h3 className="ix-h3">{t('byContext')}</h3>
       <Ranked rows={data.byContext} language={language} label={word_} />
-      <h3 style={S.h3}>{t('leadsByKind')}</h3>
+      <h3 className="ix-h3">{t('leadsByKind')}</h3>
       <Ranked
         rows={data.leadsByKind.map((k) => ({
           key: k.kind,
@@ -39,36 +39,36 @@ export function AsksPanel({ data, language, title }) {
         language={language}
         label={word_}
       />
-      <h3 style={S.h3}>{t('replies')}</h3>
-      <p style={S.muted}>{t('repliesNote')}</p>
-      <table style={S.table}>
+      <h3 className="ix-h3">{t('replies')}</h3>
+      <p className="ix-muted">{t('repliesNote')}</p>
+      <table className="ix-table">
         <tbody>
           <tr>
-            <td style={S.cell}>{t('answeredInTime')}</td>
-            <td style={S.num}>{formatNumber(replies.inTime, language)}</td>
+            <td className="ix-cell">{t('answeredInTime')}</td>
+            <td className="ix-cell ix-cell--num">{formatNumber(replies.inTime, language)}</td>
           </tr>
           <tr>
-            <td style={S.cell}>{t('answeredLate')}</td>
-            <td style={S.num}>{formatNumber(replies.late, language)}</td>
+            <td className="ix-cell">{t('answeredLate')}</td>
+            <td className="ix-cell ix-cell--num">{formatNumber(replies.late, language)}</td>
           </tr>
           <tr>
-            <td style={S.cell}>{t('overdue')}</td>
-            <td style={S.num}>{formatNumber(replies.overdue, language)}</td>
+            <td className="ix-cell">{t('overdue')}</td>
+            <td className="ix-cell ix-cell--num">{formatNumber(replies.overdue, language)}</td>
           </tr>
           <tr>
-            <td style={S.cell}>{t('stillOpen')}</td>
-            <td style={S.num}>{formatNumber(replies.open, language)}</td>
+            <td className="ix-cell">{t('stillOpen')}</td>
+            <td className="ix-cell ix-cell--num">{formatNumber(replies.open, language)}</td>
           </tr>
           <tr>
-            <td style={S.cell}>{t('medianHours')}</td>
-            <td style={S.num}>
+            <td className="ix-cell">{t('medianHours')}</td>
+            <td className="ix-cell ix-cell--num">
               {replies.medianHours === null ? '—' : formatNumber(replies.medianHours, language, 1)}
             </td>
           </tr>
         </tbody>
       </table>
       {replies.inTimePct ? (
-        <div style={S.stats}>
+        <div className="ix-stats">
           <Stat label={t('inTimeShare')} value={replies.inTimePct} language={language} digits={1} />
         </div>
       ) : null}
@@ -87,7 +87,7 @@ export function ChatPanel({ data, language }) {
   }
   return (
     <Panel title={t('chatPanel')}>
-      <div style={S.stats}>
+      <div className="ix-stats">
         <Stat label={t('chatSessions')} value={data.sessions} language={language} />
         <Stat label={t('handoffs')} value={data.handoffs} language={language} />
         <Stat label={t('handoffRate')} value={data.handoffRate} language={language} digits={1} />
@@ -96,7 +96,7 @@ export function ChatPanel({ data, language }) {
         <Stat label={t('blocked')} value={data.blocked} language={language} />
         <Stat label={t('aiCost')} value={data.costUsd} language={language} digits={2} />
       </div>
-      <h3 style={S.h3}>{t('handoffChannels')}</h3>
+      <h3 className="ix-h3">{t('handoffChannels')}</h3>
       <Ranked
         rows={data.handoffsByChannel}
         language={language}

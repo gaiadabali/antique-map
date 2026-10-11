@@ -91,11 +91,21 @@ export function engineConfig(env: Env = process.env): Config {
       user: USERS_SLUG,
       // Gravatar would send a hash of each editor's email to a third party on every page.
       avatar: 'default',
+      // Light only, as both sites (DR-14): no theme switch in the account settings, and no dark
+      // admin on a phone set to dark mode. The look itself is the Indies world (TASKS.md 16).
+      theme: 'light',
+      meta: { titleSuffix: ' · Indies' },
       components: {
-        views: adminViews(),
-        // Store staff's admin home is the order panel (10.8.c): this redirects them there and
-        // renders nothing for the owner and editors.
-        beforeDashboard: ['@engine/cms/admin/views#StoreHomeRedirect'],
+        graphics: {
+          Logo: '@engine/cms/admin/views#AdminLogo',
+          Icon: '@engine/cms/admin/views#AdminIcon',
+        },
+        // The home is the Catalogue Wall (TASKS.md 16.2), which also sends store staff to their
+        // order panel (10.8.c) with a server redirect before anything renders.
+        views: {
+          ...adminViews(),
+          dashboard: { Component: '@engine/cms/admin/views#CatalogueWall' },
+        },
         // The order panel and the leads inbox are custom views no collection list leads to: the
         // Orders entry opens Payload's plain table, with no next-step button (10.4 proxy run).
         // Staff see the panel link; the inbox link is owner-only (`admin/*/nav-link.jsx`). They
@@ -109,27 +119,6 @@ export function engineConfig(env: Env = process.env): Config {
         ],
         // The language switch: a link to the account page, at the bottom of the sidebar.
         afterNavLinks: ['@engine/cms/admin/views#LanguageLink'],
-      },
-      dashboard: {
-        defaultLayout: [
-          { widgetSlug: 'orders-to-act-on', width: 'medium' },
-          { widgetSlug: 'new-leads', width: 'medium' },
-          { widgetSlug: 'collections', width: 'full' },
-        ],
-        widgets: [
-          {
-            slug: 'orders-to-act-on',
-            label: { en: 'Orders to act on', id: 'Pesanan perlu tindakan' },
-            Component: '@engine/cms/admin/widgets#OrdersToActOnWidget',
-            minWidth: 'medium',
-          },
-          {
-            slug: 'new-leads',
-            label: { en: 'New leads', id: 'Calon pembeli baru' },
-            Component: '@engine/cms/admin/widgets#NewLeadsWidget',
-            minWidth: 'medium',
-          },
-        ],
       },
     },
     collections: registeredCollections(),

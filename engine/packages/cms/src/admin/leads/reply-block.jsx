@@ -7,18 +7,6 @@
 import { buildReply } from './reply'
 import { Card, L } from './shared'
 
-const link = {
-  display: 'inline-block',
-  padding: '10px 16px',
-  borderRadius: 8,
-  fontSize: 15,
-  fontWeight: 600,
-  minHeight: 40,
-  textDecoration: 'none',
-  background: 'var(--theme-success-500)',
-  color: 'var(--theme-base-0)',
-}
-
 async function firstItemTitle(payload, req, data, locale) {
   const first = Array.isArray(data?.items) ? data.items[0] : undefined
   const id = typeof first === 'object' ? first?.id : first
@@ -50,27 +38,28 @@ export async function LeadReplyBlock({ data, id, payload, req, i18n }) {
   const reply = buildReply(data, title)
   return (
     <Card>
-      <h4 style={{ marginTop: 0 }}>{L('replyTitle', adminLanguage)}</h4>
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+      <h4 className="ix-card__title">{L('replyTitle', adminLanguage)}</h4>
+      <div className="ix-actions">
         {reply.whatsapp ? (
-          <a href={reply.whatsapp} target="_blank" rel="noopener noreferrer" style={link}>
+          <a
+            href={reply.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ix-btn ix-btn--primary"
+          >
             {L('replyWhatsapp', adminLanguage)}
           </a>
         ) : null}
         {reply.mailto ? (
-          <a href={reply.mailto} style={link}>
+          <a href={reply.mailto} className="ix-btn ix-btn--quiet">
             {L('replyEmail', adminLanguage)}
           </a>
         ) : null}
       </div>
       {!reply.whatsapp && !reply.mailto ? (
-        <p style={{ margin: 0, color: 'var(--theme-elevation-600)' }}>
-          {L('replyNoContact', adminLanguage)}
-        </p>
+        <p className="ix-muted">{L('replyNoContact', adminLanguage)}</p>
       ) : (
-        <p style={{ margin: '8px 0 0', fontSize: 13, color: 'var(--theme-elevation-600)' }}>
-          {L('replyHint', adminLanguage)}
-        </p>
+        <p className="ix-muted">{L('replyHint', adminLanguage)}</p>
       )}
     </Card>
   )

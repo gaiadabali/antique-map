@@ -22,9 +22,9 @@ async function StockImportViewBody(props) {
     return <Notice tone="error">{L('refusalNotOwner', language)}</Notice>
   }
   return (
-    <div>
-      <h1>{L('title', language)}</h1>
-      <p>{L('intro', language)}</p>
+    <div className="ix-page">
+      <h1 className="ix-title">{L('title', language)}</h1>
+      <p className="ix-muted ix-intro">{L('intro', language)}</p>
       <StockImportClient language={language} />
     </div>
   )

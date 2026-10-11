@@ -17,22 +17,18 @@ import { Card, L, Notice, QuietLink, str } from './shared'
 
 function FilterBar({ filter, counts, language }) {
   return (
-    <form
-      method="get"
-      action="/admin/leads"
-      style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}
-    >
-      <label>
+    <form method="get" action="/admin/leads" className="ix-filter">
+      <label className="ix-label">
         {L('filterSite', language)}
-        <select name="site" defaultValue={filter.site} style={{ display: 'block' }}>
+        <select name="site" defaultValue={filter.site} className="ix-input">
           <option value="">{L('filterAll', language)}</option>
           <option value="gallery">Gallery</option>
           <option value="shop">Shop</option>
         </select>
       </label>
-      <label>
+      <label className="ix-label">
         {L('filterKind', language)}
-        <select name="kind" defaultValue={filter.kind} style={{ display: 'block' }}>
+        <select name="kind" defaultValue={filter.kind} className="ix-input">
           <option value="">{L('filterAll', language)}</option>
           {LEAD_KINDS.map((kind) => (
             <option key={kind} value={kind}>
@@ -41,9 +37,9 @@ function FilterBar({ filter, counts, language }) {
           ))}
         </select>
       </label>
-      <label>
+      <label className="ix-label">
         {L('filterStatus', language)}
-        <select name="status" defaultValue={filter.status || 'new'} style={{ display: 'block' }}>
+        <select name="status" defaultValue={filter.status || 'new'} className="ix-input">
           {LEAD_STATUSES.map((status) => (
             <option key={status} value={status}>
               {LEAD_STATUS_LABELS[status][language]} ({counts[status] ?? 0})
@@ -51,38 +47,35 @@ function FilterBar({ filter, counts, language }) {
           ))}
         </select>
       </label>
-      <button type="submit" style={{ alignSelf: 'flex-end', minHeight: 36 }}>
+      <button type="submit" className="ix-btn ix-btn--quiet">
         {L('filterApply', language)}
       </button>
     </form>
   )
 }
 
+const STATUS_TONE = { new: 'warning', closed: 'success', spam: 'danger' }
+
 function Row({ lead, language }) {
   const name = lead.payload?.name || '—'
   const channel = lead.payload?.preferredChannel || '—'
   const message = firstLine(lead.payload?.message)
   return (
-    <a
-      href={`/admin/collections/leads/${lead.id}`}
-      style={{ textDecoration: 'none', color: 'inherit' }}
-    >
+    <a href={`/admin/collections/leads/${lead.id}`} className="ix-cardlink">
       <Card>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <strong>
+        <div className="ix-row">
+          <strong className="ix-order-no">
             {LEAD_KIND_LABELS[lead.kind]?.[language] ?? lead.kind} · {lead.site}
           </strong>
-          <span>{LEAD_STATUS_LABELS[lead.status]?.[language] ?? lead.status}</span>
+          <span className={`ix-tag ix-tag--${STATUS_TONE[lead.status] ?? 'neutral'}`}>
+            {LEAD_STATUS_LABELS[lead.status]?.[language] ?? lead.status}
+          </span>
         </div>
-        <div style={{ fontSize: 14, color: 'var(--theme-elevation-600)' }}>
+        <div className="ix-muted">
           {name} · {channel} · {timeAgo(lead.createdAt, language)}
         </div>
-        {message && <div style={{ fontSize: 14, marginTop: 4 }}>{message}</div>}
-        {!message && (
-          <div style={{ fontSize: 14, marginTop: 4, fontStyle: 'italic' }}>
-            {L('noMessage', language)}
-          </div>
-        )}
+        {message && <div className="ix-excerpt">{message}</div>}
+        {!message && <div className="ix-excerpt ix-excerpt--none">{L('noMessage', language)}</div>}
       </Card>
     </a>
   )
@@ -101,13 +94,13 @@ function Pager({ page, totalPages, searchParams, language }) {
     return `/admin/leads?${qs}`
   }
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+    <div className="ix-pager">
       {page > 1 ? (
         <QuietLink href={query(page - 1)}>{L('pagePrev', language)}</QuietLink>
       ) : (
         <span />
       )}
-      <span style={{ fontSize: 14 }}>
+      <span className="ix-muted">
         {L('pageOf', language)} {page} / {totalPages}
       </span>
       {page < totalPages ? (
@@ -139,11 +132,11 @@ export async function LeadsInboxViewBody(props) {
   ])
 
   return (
-    <div>
-      <h1>{L('inboxTitle', language)}</h1>
+    <div className="ix-page">
+      <h1 className="ix-title">{L('inboxTitle', language)}</h1>
       <FilterBar filter={filter} counts={counts} language={language} />
       {docs.length === 0 ? (
-        <p>{L('emptyList', language)}</p>
+        <p className="ix-empty">{L('emptyList', language)}</p>
       ) : (
         <div>
           {docs.map((lead) => (

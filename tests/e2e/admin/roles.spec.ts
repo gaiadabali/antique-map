@@ -95,7 +95,8 @@ for (const role of ROLES) {
         'Bahasa Indonesia / English',
       )
       // The Order panel link under the groups (owner, editor and store staff; 10.4 proxy run), and
-      // the dashboard's widgets open the panel (`/admin/orders`) and the inbox (`/admin/leads`).
+      // the home's strip of today's work opens the panel (`/admin/orders`) and the inbox
+      // (`/admin/leads`).
       await expect(page.locator('nav a.nav__link[href="/admin/orders"]')).toHaveText(
         language === 'en' ? 'Order panel' : 'Panel pesanan',
       )
@@ -103,7 +104,7 @@ for (const role of ROLES) {
 
       const store = role === 'storeA' ? fx.stores.a.id : null
       if (role === 'storeA') {
-        // Store staff land on their order panel, not the dashboard (10.8.c, `StoreHomeRedirect`),
+        // Store staff land on their order panel, never the Catalogue Wall (16.2, a server redirect),
         // inside Payload's frame (the sidebar above was read there).
         await page.goto('/admin')
         await expect(page).toHaveURL(/\/admin\/orders$/)
@@ -123,7 +124,7 @@ for (const role of ROLES) {
       // New leads are the owner's panel; nobody else is shown one.
       expect(leads).toBe(role === 'owner' ? leadsSql : null)
       const panel = language === 'en' ? 'Orders to act on' : 'Pesanan perlu tindakan'
-      const widget = page.locator('a[href="/admin/orders"]').filter({ hasText: /\d$/ })
+      const widget = page.locator('a.wall-strip__item[href="/admin/orders"]')
       await expect(widget).toContainText(panel)
       await record(`dashboard.${role}.${language}`, { orders, ordersSql, leads, leadsSql, groups })
     }

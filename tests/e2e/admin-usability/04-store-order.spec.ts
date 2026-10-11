@@ -129,8 +129,8 @@ test.describe.serial('R4 store user moves an order to delivered', () => {
     m.start()
     await page.goto(`${SHOP}/admin`)
     await page.waitForLoadState('networkidle')
-    // The store's redirect to its panel runs inside the streamed dashboard (`StoreHomeRedirect`), so
-    // it lands a moment after the network is idle: wait for it (on the stopwatch), up to 10 s.
+    // The store's redirect to its panel is the server's (16.2), so it has landed by now; the wait
+    // (on the stopwatch, up to 10 s) stays for a host still on a release before it.
     await page.waitForURL(/\/admin\/orders$/, { timeout: 10_000 }).catch(() => undefined)
     await page.waitForLoadState('networkidle')
     squeezed.push(`list ${await overflow(page)}`)

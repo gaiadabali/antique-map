@@ -1,0 +1,232 @@
+/* The admin's foundation (TASKS.md 16): type, the browser's own surfaces, buttons, tags and
+   notices in the Indies world. Tokens only (`shared/styles/tokens/admin.css`); unlayered, so it
+   wins over Payload's `@layer payload-default`. */
+
+html {
+  font-size: 14px;
+  background: var(--admin-ground);
+  color-scheme: light;
+  accent-color: var(--admin-accent);
+  caret-color: var(--admin-accent);
+  scrollbar-color: var(--admin-rule) transparent;
+}
+
+body {
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A phone reads 15 px, never Payload's 12; the spacing unit stays 20 px. */
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+    --base-body-size: 15;
+  }
+}
+
+::selection {
+  background: var(--admin-selection);
+  color: var(--admin-ink-strong);
+}
+
+:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+/* Headings: Cormorant for the page and the record, Karla for every section inside them. */
+h1,
+.list-header__title,
+.doc-header__title,
+.render-title {
+  font: var(--admin-text-title);
+  letter-spacing: -0.01em;
+  color: var(--admin-ink-strong);
+  text-wrap: balance;
+}
+
+h2,
+h3 {
+  font: var(--admin-text-heading);
+  letter-spacing: 0;
+  color: var(--admin-ink-strong);
+}
+
+h4,
+h5,
+h6 {
+  font: var(--admin-text-strong);
+  color: var(--admin-ink);
+}
+
+/* Buttons: one primary per screen in bronze; the rest paper with an ink hairline. */
+.btn {
+  font: var(--admin-text-strong);
+  border-radius: var(--admin-radius-control);
+  transition:
+    background-color var(--admin-dur) var(--admin-ease),
+    border-color var(--admin-dur) var(--admin-ease),
+    color var(--admin-dur) var(--admin-ease);
+}
+
+.btn--size-medium,
+.btn--size-large {
+  min-height: var(--admin-control-height);
+}
+
+.btn--style-primary {
+  --bg-color: var(--admin-accent);
+  --color: var(--admin-accent-on);
+  --hover-bg: var(--admin-accent-strong);
+  --hover-color: var(--admin-accent-on);
+}
+
+.btn--style-primary.btn--disabled {
+  --bg-color: var(--admin-rule);
+  --color: var(--admin-muted);
+  --hover-bg: var(--admin-rule);
+  --hover-color: var(--admin-muted);
+}
+
+.btn--style-secondary {
+  --bg-color: var(--admin-paper);
+  --color: var(--admin-ink);
+  --btn-border: 1px solid var(--admin-input-border);
+  --hover-bg: var(--admin-paper);
+  --hover-color: var(--admin-ink-strong);
+  --hover-btn-border: 1px solid var(--admin-ink);
+}
+
+.btn--style-secondary.btn--disabled {
+  --bg-color: var(--admin-wash);
+  --color: var(--admin-muted);
+  --btn-border: 1px solid var(--admin-hairline);
+  --hover-btn-border: 1px solid var(--admin-hairline);
+}
+
+.btn--style-pill {
+  --bg-color: var(--admin-paper);
+  --color: var(--admin-ink);
+  --hover-bg: var(--admin-accent-tint);
+  --hover-color: var(--admin-ink-strong);
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+}
+
+.btn--style-icon-label {
+  --color: var(--admin-accent);
+  --hover-color: var(--admin-accent-strong);
+}
+
+.btn--style-icon-label .btn__icon {
+  border-color: currentColor;
+}
+
+/* Pills become square tags: the state reads in words, tone only supports it. */
+.pill {
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-small);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+}
+
+.pill--style-light,
+.pill--style-light-gray,
+.pill--style-white,
+.pill--style-always-white {
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+}
+
+.pill--style-dark {
+  background: var(--admin-ink);
+  color: var(--admin-paper);
+  box-shadow: none;
+}
+
+.pill--style-success {
+  background: var(--admin-success-tint);
+  color: var(--admin-success);
+}
+
+.pill--style-warning {
+  background: var(--admin-warning-tint);
+  color: var(--admin-warning);
+}
+
+.pill--style-error {
+  background: var(--admin-danger-tint);
+  color: var(--admin-danger);
+}
+
+.tooltip {
+  background: var(--admin-ink-strong);
+  color: var(--admin-paper);
+  font: var(--admin-text-small);
+  border-radius: var(--admin-radius-control);
+}
+
+/* Notices: a tinted ground and its own ink; no coloured side stripe. */
+.banner {
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-small);
+  box-shadow: inset 0 0 0 1px var(--admin-hairline);
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+}
+
+.banner--type-success {
+  background: var(--admin-success-tint);
+  color: var(--admin-success);
+}
+
+.banner--type-error {
+  background: var(--admin-danger-tint);
+  color: var(--admin-danger);
+}
+
+.banner--type-warning {
+  background: var(--admin-warning-tint);
+  color: var(--admin-warning);
+}
+
+/* Toasts: paper notes with the status as their first word's colour. */
+.payload-toast-container .payload-toast-item,
+[data-sonner-toast] {
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  box-shadow: var(--admin-shadow-popup);
+  font: var(--admin-text-small);
+}
+
+[data-sonner-toast][data-type='success'] {
+  background: var(--admin-success-tint);
+  color: var(--admin-success);
+}
+
+[data-sonner-toast][data-type='error'] {
+  background: var(--admin-danger-tint);
+  color: var(--admin-danger);
+}
+
+[data-sonner-toast][data-type='warning'] {
+  background: var(--admin-warning-tint);
+  color: var(--admin-warning);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

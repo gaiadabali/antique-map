@@ -18,16 +18,10 @@ import { fill, text } from './copy'
 import { DashboardForbidden, isSite } from './context'
 import { loadDashboard } from './loaders'
 import { AsksPanel, ChatPanel } from './panels-business'
-import {
-  FulfilmentPanel,
-  FunnelPanel,
-  PaymentsPanel,
-  SalesPanel,
-  VitalsPanel,
-} from './panels-shop'
+import { FulfilmentPanel, FunnelPanel, PaymentsPanel, SalesPanel, VitalsPanel } from './panels-shop'
 import { AntiquesPanel, SearchPanel, VisitorsPanel } from './panels-traffic'
 import { resolvePeriod } from './period'
-import { Empty, S } from './ui'
+import { Empty } from './ui'
 
 const first = (value) => (Array.isArray(value) ? value[0] : value)
 
@@ -41,11 +35,13 @@ function href(site, query) {
 
 function Frame({ language, adminRoute, children }) {
   return (
-    <main style={S.page}>
-      <p style={S.muted}>
-        <a href={adminRoute}>← {text(language, 'back')}</a>
+    <main className="ix-page ix-page--wide">
+      <p className="ix-muted">
+        <a href={adminRoute} className="ix-link">
+          ← {text(language, 'back')}
+        </a>
       </p>
-      <h1 style={{ margin: 0 }}>{text(language, 'title')}</h1>
+      <h1 className="ix-title">{text(language, 'title')}</h1>
       {children}
     </main>
   )
@@ -60,8 +56,8 @@ function Controls({ language, site, period, query }) {
     [90, 'last90'],
   ]
   return (
-    <nav aria-label={t('periodLabel')} style={{ marginBlockStart: 'var(--base)' }}>
-      <div style={S.row}>
+    <nav aria-label={t('periodLabel')} className="ix-controls">
+      <div className="ix-tabs">
         {[
           ['gallery', 'siteGallery'],
           ['shop', 'siteShop'],
@@ -70,38 +66,45 @@ function Controls({ language, site, period, query }) {
             key={value}
             href={href(value, query)}
             aria-current={value === site ? 'page' : undefined}
-            style={{ ...S.tab, ...(value === site ? S.tabOn : {}) }}
+            className="ix-tab"
           >
             {t(key)}
           </a>
         ))}
       </div>
-      <div style={{ ...S.row, marginBlockStart: 'calc(var(--base) / 2)' }}>
+      <div className="ix-tabs">
         {presets.map(([days, key]) => (
           <a
             key={days}
             href={`?site=${site}&period=${days}`}
             aria-current={period.preset === days ? 'true' : undefined}
-            style={{ ...S.tab, ...(period.preset === days ? S.tabOn : {}) }}
+            className="ix-tab"
           >
             {t(key)}
           </a>
         ))}
-        <form method="get" style={S.row}>
+        <form method="get" className="ix-tabs ix-range">
           <input type="hidden" name="site" value={site} />
-          <label>
+          <label className="ix-label">
             {t('rangeFrom')}{' '}
-            <input type="date" name="from" defaultValue={period.from} max={period.to} />
+            <input
+              className="ix-input"
+              type="date"
+              name="from"
+              defaultValue={period.from}
+              max={period.to}
+            />
           </label>
-          <label>
-            {t('rangeTo')} <input type="date" name="to" defaultValue={period.to} />
+          <label className="ix-label">
+            {t('rangeTo')}{' '}
+            <input className="ix-input" type="date" name="to" defaultValue={period.to} />
           </label>
-          <button type="submit" className="btn btn--style-secondary btn--size-small">
+          <button type="submit" className="ix-btn ix-btn--quiet">
             {t('rangeApply')}
           </button>
         </form>
       </div>
-      <p style={S.muted}>
+      <p className="ix-muted">
         {period.from} → {period.to}.{' '}
         {fill(language, 'comparing', {
           days: period.days,
@@ -116,7 +119,7 @@ function Controls({ language, site, period, query }) {
 function Panels({ data, language }) {
   const gallery = data.site === 'gallery'
   return (
-    <div style={S.grid}>
+    <div className="ix-grid">
       <VisitorsPanel data={data.visitors} language={language} />
       {gallery ? <SearchPanel data={data.search} language={language} /> : null}
       {gallery ? <AntiquesPanel data={data.antiques} language={language} /> : null}
@@ -175,7 +178,7 @@ export async function DashboardView({ initPageResult, searchParams }) {
   }
   return (
     <Frame language={language} adminRoute={adminRoute}>
-      <p style={S.muted}>{text(language, 'intro')}</p>
+      <p className="ix-muted">{text(language, 'intro')}</p>
       <Controls language={language} site={site} period={period} query={query} />
       {failed ? (
         <Empty message={text(language, 'loadFailed')} />

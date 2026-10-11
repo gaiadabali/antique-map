@@ -27,9 +27,9 @@ const COPY = {
 
 /** Delivered, cancelled and expired orders need nobody's action any more. */
 const TERMINAL_STATUSES = ['delivered', 'cancelled', 'expired']
-const ACTING_STATUSES = ORDER_STATUSES.filter((s) => !TERMINAL_STATUSES.includes(s))
+export const ACTING_STATUSES = ORDER_STATUSES.filter((s) => !TERMINAL_STATUSES.includes(s))
 
-async function countOrders({ req }) {
+export async function countOrders({ req }) {
   try {
     const result = await req.payload.find({
       collection: 'orders',
@@ -45,7 +45,7 @@ async function countOrders({ req }) {
   }
 }
 
-async function countNewLeads({ req }) {
+export async function countNewLeads({ req }) {
   if (!hasRole(req.user, 'owner')) return 0
   try {
     const result = await req.payload.find({

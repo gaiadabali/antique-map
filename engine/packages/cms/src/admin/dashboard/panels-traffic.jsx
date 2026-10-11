@@ -5,7 +5,7 @@
  */
 import { text, word } from './copy'
 import { formatNumber, formatRate } from './format'
-import { Empty, Panel, Ranked, S, Stat } from './ui'
+import { Empty, Panel, Ranked, Stat } from './ui'
 
 export function VisitorsPanel({ data, language }) {
   const t = (key) => text(language, key)
@@ -19,45 +19,42 @@ export function VisitorsPanel({ data, language }) {
   const top = Math.max(...data.daily.map((d) => d.pageViews), 1)
   return (
     <Panel title={t('visitors')}>
-      <div style={S.stats}>
+      <div className="ix-stats">
         <Stat label={t('sessions')} value={data.sessions} language={language} />
         <Stat label={t('pageViews')} value={data.pageViews} language={language} />
       </div>
-      <h3 style={S.h3}>
+      <h3 className="ix-h3">
         {t('perDay')}: {t('sessions')} / {t('pageViews')}
       </h3>
-      <table style={S.table}>
+      <table className="ix-table">
         <tbody>
           {data.daily.map((d) => (
             <tr key={d.day}>
-              <td style={S.cell}>
+              <td className="ix-cell">
                 {d.day}
-                <div style={S.track} aria-hidden="true">
+                <div className="ix-track" aria-hidden="true">
                   <div
-                    style={{
-                      height: '100%',
-                      width: `${(d.pageViews / top) * 100}%`,
-                      background: 'var(--theme-elevation-500)',
-                    }}
+                    className="ix-track__fill"
+                    style={{ width: `${(d.pageViews / top) * 100}%` }}
                   />
                 </div>
               </td>
-              <td style={S.num}>
+              <td className="ix-cell ix-cell--num">
                 {formatNumber(d.sessions, language)} / {formatNumber(d.pageViews, language)}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <h3 style={S.h3}>{t('topPages')}</h3>
+      <h3 className="ix-h3">{t('topPages')}</h3>
       <Ranked rows={data.topPaths} language={language} />
-      <h3 style={S.h3}>{t('referrers')}</h3>
+      <h3 className="ix-h3">{t('referrers')}</h3>
       <Ranked rows={data.referrers} language={language} />
-      <h3 style={S.h3}>{t('utmSources')}</h3>
+      <h3 className="ix-h3">{t('utmSources')}</h3>
       <Ranked rows={data.utmSources} language={language} />
-      <h3 style={S.h3}>{t('devices')}</h3>
+      <h3 className="ix-h3">{t('devices')}</h3>
       <Ranked rows={data.devices} language={language} label={(key) => word(language, key)} />
-      <h3 style={S.h3}>{t('languages')}</h3>
+      <h3 className="ix-h3">{t('languages')}</h3>
       <Ranked rows={data.locales} language={language} label={(key) => word(language, key)} />
     </Panel>
   )
@@ -74,13 +71,13 @@ export function SearchPanel({ data, language }) {
   }
   return (
     <Panel title={t('search')}>
-      <div style={S.stats}>
+      <div className="ix-stats">
         <Stat label={t('searches')} value={data.searches} language={language} />
         <Stat label={t('zeroResultsCount')} value={data.zeroResults} language={language} />
       </div>
-      <h3 style={S.h3}>{t('zeroQueries')}</h3>
+      <h3 className="ix-h3">{t('zeroQueries')}</h3>
       <Ranked rows={data.zeroResultQueries} language={language} />
-      <h3 style={S.h3}>{t('topQueries')}</h3>
+      <h3 className="ix-h3">{t('topQueries')}</h3>
       <Ranked rows={data.topQueries} language={language} />
     </Panel>
   )
@@ -89,12 +86,12 @@ export function SearchPanel({ data, language }) {
 function AntiqueTable({ rows, language, columns }) {
   if (rows.length === 0) return <Empty message={text(language, 'noList')} />
   return (
-    <table style={S.table}>
+    <table className="ix-table">
       <thead>
         <tr>
-          <th style={S.cell} />
+          <th className="ix-cell" />
           {columns.map((c) => (
-            <th key={c.key} style={S.num}>
+            <th key={c.key} className="ix-cell ix-cell--num">
               {text(language, c.label)}
             </th>
           ))}
@@ -103,14 +100,14 @@ function AntiqueTable({ rows, language, columns }) {
       <tbody>
         {rows.map((row) => (
           <tr key={row.workId}>
-            <td style={S.cell}>
+            <td className="ix-cell">
               <a href={`/admin/collections/works/${row.workId}`}>
                 {row.title ?? text(language, 'untitled')}
               </a>
-              {row.stockNumber ? <span style={S.muted}> {row.stockNumber}</span> : null}
+              {row.stockNumber ? <span className="ix-muted"> {row.stockNumber}</span> : null}
             </td>
             {columns.map((c) => (
-              <td key={c.key} style={S.num}>
+              <td key={c.key} className="ix-cell ix-cell--num">
                 {c.value(row, language)}
               </td>
             ))}
@@ -134,22 +131,22 @@ const ZOOM_COLUMNS = [
 function Dimension({ rows, language }) {
   if (rows.length === 0) return <Empty message={text(language, 'noList')} />
   return (
-    <table style={S.table}>
+    <table className="ix-table">
       <thead>
         <tr>
-          <th style={S.cell} />
-          <th style={S.num}>{text(language, 'views')}</th>
-          <th style={S.num}>{text(language, 'asks')}</th>
-          <th style={S.num}>{text(language, 'askRate')}</th>
+          <th className="ix-cell" />
+          <th className="ix-cell ix-cell--num">{text(language, 'views')}</th>
+          <th className="ix-cell ix-cell--num">{text(language, 'asks')}</th>
+          <th className="ix-cell ix-cell--num">{text(language, 'askRate')}</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((row) => (
           <tr key={row.key}>
-            <td style={S.cell}>{row.key}</td>
-            <td style={S.num}>{formatNumber(row.views.current, language)}</td>
-            <td style={S.num}>{formatNumber(row.asks, language)}</td>
-            <td style={S.num}>{formatRate(row.askRate)}</td>
+            <td className="ix-cell">{row.key}</td>
+            <td className="ix-cell ix-cell--num">{formatNumber(row.views.current, language)}</td>
+            <td className="ix-cell ix-cell--num">{formatNumber(row.asks, language)}</td>
+            <td className="ix-cell ix-cell--num">{formatRate(row.askRate)}</td>
           </tr>
         ))}
       </tbody>
@@ -168,19 +165,19 @@ export function AntiquesPanel({ data, language }) {
   }
   return (
     <Panel title={t('antiques')}>
-      <div style={S.stats}>
+      <div className="ix-stats">
         <Stat label={t('views')} value={data.views} language={language} />
         <Stat label={t('asks')} value={data.asks} language={language} />
       </div>
-      <h3 style={S.h3}>{t('mostViewed')}</h3>
+      <h3 className="ix-h3">{t('mostViewed')}</h3>
       <AntiqueTable rows={data.mostViewed} language={language} columns={VIEW_COLUMNS} />
-      <h3 style={S.h3}>{t('mostZoomed')}</h3>
+      <h3 className="ix-h3">{t('mostZoomed')}</h3>
       <AntiqueTable rows={data.mostZoomed} language={language} columns={ZOOM_COLUMNS} />
-      <h3 style={S.h3}>{t('byType')}</h3>
+      <h3 className="ix-h3">{t('byType')}</h3>
       <Dimension rows={data.byType} language={language} />
-      <h3 style={S.h3}>{t('byMaker')}</h3>
+      <h3 className="ix-h3">{t('byMaker')}</h3>
       <Dimension rows={data.byMaker} language={language} />
-      <h3 style={S.h3}>{t('byPlace')}</h3>
+      <h3 className="ix-h3">{t('byPlace')}</h3>
       <Dimension rows={data.byPlace} language={language} />
     </Panel>
   )

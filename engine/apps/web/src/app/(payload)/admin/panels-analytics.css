@@ -1,0 +1,147 @@
+/* The analytics dashboard and the stock import report (split from panels.css; imported there).
+   Tokens only. */
+
+/* ---- analytics ------------------------------------------------------------------------------ */
+
+.ix-controls {
+  margin-block: calc(var(--base) * 0.75);
+}
+
+.ix-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.5);
+  margin-block-end: calc(var(--base) * 0.5);
+}
+
+.ix-tab {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: var(--admin-target);
+  padding: 0 calc(var(--base) * 0.9);
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-small);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ix-tab:hover {
+  border-color: var(--admin-ink);
+}
+
+.ix-tab[aria-current] {
+  border-color: var(--admin-accent);
+  box-shadow: inset 0 0 0 1px var(--admin-accent);
+  color: var(--admin-accent-strong);
+}
+
+.ix-range {
+  align-items: flex-end;
+}
+
+.ix-range .ix-input {
+  inline-size: auto;
+  margin-block-end: 0;
+}
+
+.ix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: calc(var(--base) * 0.75);
+  margin-block-start: calc(var(--base) * 0.75);
+}
+
+.ix-grid > .ix-card {
+  margin: 0;
+}
+
+.ix-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base) * 1);
+  margin: calc(var(--base) * 0.75) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ix-stat {
+  min-inline-size: 7rem;
+}
+
+.ix-stat__big {
+  font: var(--admin-text-record);
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-ink-strong);
+}
+
+.ix-h3 {
+  margin: calc(var(--base) * 1) 0 calc(var(--base) * 0.3);
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.ix-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font: var(--admin-text-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.ix-table th {
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  background: var(--admin-wash);
+  border-block-end: 1px solid var(--admin-hairline);
+  text-align: start;
+  white-space: nowrap;
+}
+
+.ix-table tr + tr td {
+  border-block-start: 1px solid var(--admin-hairline);
+}
+
+.ix-cell {
+  padding: calc(var(--base) * 0.35) calc(var(--base) * 0.5) calc(var(--base) * 0.35) 0;
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.ix-cell--num {
+  padding-inline: 0;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.ix-track {
+  block-size: 0.35rem;
+  margin-block-start: calc(var(--base) * 0.2);
+  background: var(--admin-hairline);
+}
+
+.ix-track__fill {
+  block-size: 100%;
+  background: var(--admin-ink);
+}
+
+/* ---- import report -------------------------------------------------------------------------- */
+
+.ix-rows {
+  margin: calc(var(--base) * 0.5) 0 calc(var(--base) * 1);
+  padding-inline-start: calc(var(--base) * 1.25);
+  font: var(--admin-text-data);
+  overflow-wrap: anywhere;
+}
+
+.ix-rows--problem {
+  color: var(--admin-danger);
+}

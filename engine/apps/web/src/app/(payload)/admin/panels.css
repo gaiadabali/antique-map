@@ -1,0 +1,221 @@
+/* The admin's own views in the Indies world (TASKS.md 16.3): the Order panel, the Leads inbox,
+   Import stock and the analytics dashboard. Tokens only (shared/styles/tokens/admin.css): linen
+   ground, white paper panels with one hairline, ink type, bronze for the one primary action, the
+   current selection and focus, square corners, Karla throughout, Cormorant for the page title.
+   Phone first: at 390 px every target is 44 px and nothing is wider than the screen. */
+
+@import './panels-controls.css';
+@import './panels-analytics.css';
+
+.ix-page {
+  max-inline-size: 60rem;
+  margin-inline: auto;
+  padding: calc(var(--base) * 0.5) calc(var(--base) * 0.75) calc(var(--base) * 2);
+  color: var(--admin-ink);
+  font: var(--admin-text-body);
+}
+
+.ix-page--wide {
+  max-inline-size: 80rem;
+}
+
+.ix-title {
+  margin: 0 0 calc(var(--base) * 0.75);
+  font: var(--admin-text-title);
+  color: var(--admin-ink-strong);
+}
+
+.ix-record {
+  margin: 0;
+  font: var(--admin-text-record);
+  color: var(--admin-ink-strong);
+}
+
+.ix-intro {
+  max-inline-size: 72ch;
+}
+
+.ix-muted {
+  margin: calc(var(--base) * 0.25) 0;
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.ix-strong {
+  font: var(--admin-text-strong);
+}
+
+.ix-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ix-pre {
+  white-space: pre-wrap;
+}
+
+.ix-empty {
+  padding: calc(var(--base) * 1.25);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-body);
+  color: var(--admin-muted);
+}
+
+/* ---- cards, rows, tags -------------------------------------------------------------------- */
+
+.ix-card {
+  box-sizing: border-box;
+  margin-block-end: calc(var(--base) * 0.75);
+  padding: calc(var(--base) * 1);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius);
+  min-inline-size: 0;
+}
+
+.ix-card p {
+  margin: calc(var(--base) * 0.4) 0;
+}
+
+.ix-card__title,
+.ix-panel__title {
+  margin: 0 0 calc(var(--base) * 0.5);
+  font: var(--admin-text-heading);
+  color: var(--admin-ink-strong);
+}
+
+.ix-card--step {
+  border-color: var(--admin-rule);
+}
+
+.ix-cardlink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ix-cardlink .ix-card {
+  transition: border-color var(--admin-dur) var(--admin-ease);
+}
+
+.ix-cardlink:hover .ix-card,
+.ix-cardlink:focus-visible .ix-card {
+  border-color: var(--admin-ink);
+}
+
+.ix-row,
+.ix-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: calc(var(--base) * 0.75);
+}
+
+.ix-line {
+  padding-block: calc(var(--base) * 0.3);
+  border-block-end: 1px solid var(--admin-hairline);
+  font: var(--admin-text-body);
+}
+
+.ix-line:last-child {
+  border-block-end: 0;
+}
+
+.ix-line--total {
+  font: var(--admin-text-strong);
+  border-block-start: 1px solid var(--admin-rule);
+}
+
+.ix-order-no {
+  font: var(--admin-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.ix-order-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.75);
+  margin-block: calc(var(--base) * 0.25) calc(var(--base) * 0.75);
+}
+
+.ix-group {
+  margin-block-end: calc(var(--base) * 1.25);
+}
+
+.ix-group__title {
+  margin: 0 0 calc(var(--base) * 0.5);
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.ix-tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius);
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  font: var(--admin-text-label);
+  white-space: nowrap;
+}
+
+.ix-muted .ix-tag {
+  margin-inline-start: calc(var(--base) * 0.5);
+}
+
+.ix-tag--success {
+  background: var(--admin-success-tint);
+  border-color: var(--admin-success-tint);
+  color: var(--admin-success);
+}
+
+.ix-tag--warning {
+  background: var(--admin-warning-tint);
+  border-color: var(--admin-warning-tint);
+  color: var(--admin-warning);
+}
+
+.ix-tag--danger {
+  background: var(--admin-danger-tint);
+  border-color: var(--admin-danger-tint);
+  color: var(--admin-danger);
+}
+
+.ix-excerpt {
+  margin-block-start: calc(var(--base) * 0.3);
+  font: var(--admin-text-body);
+  overflow-wrap: anywhere;
+}
+
+.ix-excerpt--none {
+  font-style: italic;
+  color: var(--admin-muted);
+}
+
+.ix-notice {
+  box-sizing: border-box;
+  margin-block-end: calc(var(--base) * 0.75);
+  padding: calc(var(--base) * 0.6) calc(var(--base) * 0.85);
+  border-radius: var(--admin-radius);
+  font: var(--admin-text-body);
+}
+
+.ix-notice--ok {
+  background: var(--admin-success-tint);
+  color: var(--admin-success);
+}
+
+.ix-notice--error {
+  background: var(--admin-danger-tint);
+  color: var(--admin-danger);
+}
+
+@media (max-width: 768px) {
+  .ix-title {
+    font-size: var(--admin-size-record);
+  }
+}
