@@ -62,7 +62,7 @@ describe('the proxy', () => {
       }),
     )
     expect(home.status).toBe(307)
-    expect(home.headers.get('location')).toBe('/admin/orders')
+    expect(home.headers.get('location')).toBe('http://shop.localhost/admin/orders')
   })
 })
 

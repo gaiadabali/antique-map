@@ -45,7 +45,11 @@ function claimsOf(token: string): Record<string, unknown> | null {
   }
 }
 
-/** The 307 to the Order panel for a store user opening the admin's home, else null. */
+/**
+ * The 307 to the Order panel for a store user opening the admin's home, else null. Next's adapter
+ * parses a proxy's `Location` as an absolute URL (a bare path is a 500) and, on the request's own
+ * origin — Next's, from the address it binds — sends it on as the relative `/admin/orders`.
+ */
 export function storeLandingRedirect(request: Request): Response | null {
   if (request.method !== 'GET') return null
   if (!ADMIN_HOME.has(new URL(request.url).pathname)) return null
@@ -53,7 +57,7 @@ export function storeLandingRedirect(request: Request): Response | null {
   if (token === null || claimsOf(token)?.role !== 'store') return null
   return new Response(null, {
     status: 307,
-    headers: { Location: STORE_HOME, 'Cache-Control': 'no-store' },
+    headers: { Location: new URL(STORE_HOME, request.url).toString(), 'Cache-Control': 'no-store' },
   })
 }
 

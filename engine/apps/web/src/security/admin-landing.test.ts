@@ -1,3 +1,5 @@
+import { createRequire } from 'node:module'
+
 import { describe, expect, it } from 'vitest'
 
 import { SESSION_COOKIE, STORE_HOME, storeLandingRedirect, withStoreLanding } from './admin-landing'
@@ -24,7 +26,7 @@ describe('a store user opening the admin lands on the Order panel (16.2)', () =>
       get('/admin', `${SESSION_COOKIE}=${token({ role: 'store' })}`),
     )
     expect(answer?.status).toBe(307)
-    expect(answer?.headers.get('location')).toBe(STORE_HOME)
+    expect(answer?.headers.get('location')).toBe(`https://old-east-indies.gaiada.com${STORE_HOME}`)
     expect(answer?.headers.get('cache-control')).toBe('no-store')
   })
 
@@ -57,5 +59,41 @@ describe('a store user opening the admin lands on the Order panel (16.2)', () =>
     const proxy = withStoreLanding(inner)
     expect(proxy(get('/admin', `${SESSION_COOKIE}=${token({ role: 'owner' })}`)).status).toBe(200)
     expect(proxy(get('/admin', `${SESSION_COOKIE}=${token({ role: 'store' })}`)).status).toBe(307)
+  })
+})
+
+type Adapter = {
+  adapter(params: {
+    page: string
+    handler: (request: Request) => Response
+    request: { url: string; headers: Record<string, string>; method: string; nextConfig: object }
+  }): Promise<{ response: Response }>
+}
+
+describe('the landing under the adapter Next runs the proxy in', () => {
+  // Before any other module of Next's: its server sets the AsyncLocalStorage global first.
+  const load = createRequire(import.meta.url)
+  load('next/dist/server/node-environment-baseline')
+  const { adapter } = load('next/dist/server/web/adapter') as Adapter
+
+  it('goes out as a relative 307 to the Order panel, not a 500 (staging, 2026-10-11)', async () => {
+    const { response } = await adapter({
+      page: '/src/proxy',
+      handler: withStoreLanding(
+        () => new Response(null, { headers: { 'x-middleware-next': '1' } }),
+      ),
+      request: {
+        // Next's own address, as it binds; the site's host is the header.
+        url: 'http://localhost:4230/admin',
+        headers: {
+          host: 'old-east-indies.gaiada.com',
+          cookie: `${SESSION_COOKIE}=${token({ role: 'store' })}`,
+        },
+        method: 'GET',
+        nextConfig: {},
+      },
+    })
+    expect(response.status).toBe(307)
+    expect(response.headers.get('location')).toBe(STORE_HOME)
   })
 })
