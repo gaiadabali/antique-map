@@ -14,7 +14,7 @@ export async function LanguageLink({ user, i18n }) {
   if (!user) return null
   const language = i18n?.language === 'id' ? 'id' : 'en'
   return (
-    <a className="nav__link" href="/admin/account#language-select" title={HINT[language]}>
+    <a className="nav__link ix-lang" href="/admin/account#language-select" title={HINT[language]}>
       Bahasa Indonesia / English
     </a>
   )

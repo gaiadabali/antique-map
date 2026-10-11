@@ -1,8 +1,7 @@
 /**
  * Small, shared pieces for the store panel and the owner/editor view (TASKS.md 7.2). Plain
- * elements styled with Payload's own CSS custom properties (`--theme-*`), never a raw colour or
- * font — the admin is excluded from the sites' design system (DESIGN-SYSTEM.md §5) but still
- * borrows Payload's own tokens rather than inventing new ones. `.jsx`, not `.tsx`: see
+ * elements with semantic `ix-*` class names, styled from the admin's tokens in
+ * `app/(payload)/admin/panels.css` — never a raw colour or font here. `.jsx`, not `.tsx`: see
  * `../widgets/dashboard.jsx`'s header — the cms package does not type-check React.
  */
 import { ORDERS_PANEL_COPY } from '../../i18n/orders-panel'
@@ -20,64 +19,34 @@ export function Notice({ tone, children }) {
   return (
     <div
       role={good ? 'status' : 'alert'}
-      style={{
-        padding: '10px 14px',
-        borderRadius: 8,
-        marginBottom: 16,
-        background: good ? 'var(--theme-success-100)' : 'var(--theme-error-100)',
-        color: good ? 'var(--theme-success-750)' : 'var(--theme-error-750)',
-        fontSize: 14,
-      }}
+      className={`ix-notice ix-notice--${good ? 'ok' : 'error'}`}
     >
       {children}
     </div>
   )
 }
 
-const buttonBase = {
-  display: 'inline-block',
-  padding: '12px 20px',
-  borderRadius: 8,
-  fontSize: 16,
-  fontWeight: 600,
-  textDecoration: 'none',
-  textAlign: 'center',
-  minHeight: 44,
-  lineHeight: '20px',
-  cursor: 'pointer',
-  border: '1px solid transparent',
+const VARIANT_CLASS = {
+  primary: 'ix-btn--primary',
+  danger: 'ix-btn--danger',
+  quiet: 'ix-btn--quiet',
 }
 
-const VARIANTS = {
-  primary: { background: 'var(--theme-success-500)', color: 'var(--theme-base-0)' },
-  danger: {
-    background: 'var(--theme-base-0)',
-    color: 'var(--theme-error-500)',
-    borderColor: 'var(--theme-error-500)',
-  },
-  quiet: {
-    background: 'var(--theme-base-0)',
-    color: 'var(--theme-elevation-800)',
-    borderColor: 'var(--theme-elevation-250)',
-  },
-}
-
-function buttonStyle(variant) {
-  return { ...buttonBase, ...VARIANTS[variant] }
+function buttonClass(variant) {
+  return `ix-btn ${VARIANT_CLASS[variant] ?? ''}`.trim()
 }
 
 /** A link styled as a button — every action here is a plain navigation or form, no client JS. */
 export function BigButton({ href, children, variant = 'primary', disabled = false, title }) {
-  const style = buttonStyle(variant)
   if (disabled) {
     return (
-      <span style={{ ...style, opacity: 0.5, cursor: 'not-allowed' }} title={title}>
+      <span className={`${buttonClass(variant)} ix-btn--disabled`} title={title}>
         {children}
       </span>
     )
   }
   return (
-    <a href={href} style={style} title={title}>
+    <a href={href} className={buttonClass(variant)} title={title}>
       {children}
     </a>
   )
@@ -86,7 +55,7 @@ export function BigButton({ href, children, variant = 'primary', disabled = fals
 /** The same look as `BigButton`, as a form's submit button. */
 export function SubmitButton({ children, variant = 'primary' }) {
   return (
-    <button type="submit" style={buttonStyle(variant)}>
+    <button type="submit" className={buttonClass(variant)}>
       {children}
     </button>
   )
@@ -94,27 +63,28 @@ export function SubmitButton({ children, variant = 'primary' }) {
 
 export function QuietLink({ href, children }) {
   return (
-    <a href={href} style={{ color: 'var(--theme-elevation-600)', fontSize: 14 }}>
+    <a href={href} className="ix-link">
       {children}
     </a>
   )
 }
 
-export function Card({ children, style }) {
-  return (
-    <div
-      style={{
-        border: '1px solid var(--theme-elevation-150)',
-        borderRadius: 10,
-        padding: 16,
-        marginBottom: 12,
-        background: 'var(--theme-input-bg)',
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  )
+export function Card({ children, className = '' }) {
+  return <div className={`ix-card ${className}`.trim()}>{children}</div>
+}
+
+const TONES = {
+  delivered: 'success',
+  awaiting_quote: 'warning',
+  pending_payment: 'warning',
+  waiting_driver: 'warning',
+  cancelled: 'danger',
+  expired: 'danger',
+}
+
+/** A status as a small square tag, always in words: the tone is never the only signal. */
+export function StatusTag({ status, children }) {
+  return <span className={`ix-tag ix-tag--${TONES[status] ?? 'neutral'}`}>{children}</span>
 }
 
 export function rupiah(amount) {

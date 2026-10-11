@@ -2,31 +2,13 @@
 /**
  * The upload form (TASKS.md 10.8.a): choose a CSV, Preview (`mode=preview`, a dry run: nothing is
  * written), read the report, then Apply (`mode=apply`, the same file again). The file stays in the
- * browser between the two; the server keeps nothing. Styled with Payload's own CSS custom
- * properties, as `../leads/shared.jsx`.
+ * browser between the two; the server keeps nothing. Styled by `ix-*` classes in
+ * `app/(payload)/admin/panels.css`.
  */
 import { useRef, useState } from 'react'
 
 import { L, STOCK_IMPORT_COPY } from './copy'
 import { Report } from './report'
-
-const button = {
-  padding: '10px 16px',
-  borderRadius: 8,
-  border: '1px solid transparent',
-  background: 'var(--theme-success-500)',
-  color: 'var(--theme-base-0)',
-  fontSize: 15,
-  fontWeight: 600,
-  cursor: 'pointer',
-  minHeight: 40,
-}
-const quietButton = {
-  ...button,
-  background: 'var(--theme-base-0)',
-  color: 'var(--theme-elevation-800)',
-  border: '1px solid var(--theme-elevation-300)',
-}
 
 async function post(file, mode) {
   const body = new globalThis.FormData()
@@ -85,14 +67,15 @@ export function StockImportClient({ language }) {
   return (
     <div>
       {phase === 'applied' ? null : (
-        <div style={{ margin: '16px 0' }}>
-          <label htmlFor="stock-import-file" style={{ display: 'block', marginBottom: 6 }}>
+        <div className="ix-card">
+          <label htmlFor="stock-import-file" className="ix-label">
             {L('fileLabel', language)}
           </label>
           <input
             id="stock-import-file"
             ref={input}
             type="file"
+            className="ix-input ix-input--file"
             accept=".csv,text/csv"
             disabled={working}
             onChange={(event) => {
@@ -105,21 +88,18 @@ export function StockImportClient({ language }) {
         </div>
       )}
       {error ? (
-        <p role="alert" style={{ color: 'var(--theme-error-750)' }}>
+        <p role="alert" className="ix-notice ix-notice--error">
           {STOCK_IMPORT_COPY[error.code] ? L(error.code, language) : L('errorFailed', language)}
           {STOCK_IMPORT_COPY[error.fixCode] ? ` ${L(error.fixCode, language)}` : ''}
           {error.message ? ` ${error.message}` : ''}
           {error.fix ? ` ${error.fix}` : ''}
         </p>
       ) : null}
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', margin: '12px 0' }}>
+      <div className="ix-actions">
         {phase === 'applied' ? null : (
           <button
             type="button"
-            style={{
-              ...(phase === 'previewed' ? quietButton : button),
-              opacity: working ? 0.6 : 1,
-            }}
+            className={`ix-btn ${phase === 'previewed' ? 'ix-btn--quiet' : 'ix-btn--primary'}`}
             disabled={working}
             onClick={() => run('preview')}
           >
@@ -127,18 +107,18 @@ export function StockImportClient({ language }) {
           </button>
         )}
         {phase === 'previewed' && changes > 0 ? (
-          <button type="button" style={button} onClick={() => run('apply')}>
+          <button type="button" className="ix-btn ix-btn--primary" onClick={() => run('apply')}>
             {L('apply', language)}
           </button>
         ) : null}
         {phase === 'previewed' || phase === 'applied' ? (
-          <button type="button" style={quietButton} onClick={reset}>
+          <button type="button" className="ix-btn ix-btn--quiet" onClick={reset}>
             {L('reset', language)}
           </button>
         ) : null}
       </div>
       {working ? (
-        <p role="status" aria-busy="true">
+        <p role="status" aria-busy="true" className="ix-muted">
           {L('working', language)}
         </p>
       ) : null}

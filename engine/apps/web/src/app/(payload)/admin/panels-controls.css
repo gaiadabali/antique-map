@@ -1,0 +1,279 @@
+/* The panels' controls: links, buttons, forms, the order screen's action bar and the phone rules
+   (split from panels.css for the 300-line limit; imported there). Tokens only. */
+
+/* ---- links and buttons -------------------------------------------------------------------- */
+
+.ix-page a:not(.ix-btn):not(.ix-cardlink):not(.ix-tab) {
+  color: var(--admin-ink-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.ix-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--admin-target);
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.ix-link--inline {
+  min-block-size: 0;
+  font: var(--admin-text-small);
+  margin-inline-end: calc(var(--base) * 0.75);
+}
+
+.ix-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-block-size: var(--admin-target);
+  padding: 0 calc(var(--base) * 1.1);
+  border: 0;
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+  color: var(--admin-ink-strong);
+  box-shadow: inset 0 0 0 1px var(--admin-ink);
+  font: var(--admin-text-strong);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--admin-dur) var(--admin-ease);
+}
+
+.ix-page a.ix-btn {
+  text-decoration: none;
+}
+
+.ix-btn:hover {
+  background: var(--admin-wash);
+}
+
+.ix-btn--primary,
+.ix-page a.ix-btn--primary {
+  background: var(--admin-accent);
+  color: var(--admin-accent-on);
+  box-shadow: none;
+}
+
+.ix-btn--primary:hover {
+  background: var(--admin-accent-strong);
+}
+
+.ix-btn--danger,
+.ix-page a.ix-btn--danger {
+  color: var(--admin-danger);
+  box-shadow: inset 0 0 0 1px var(--admin-danger);
+}
+
+.ix-btn--danger:hover {
+  background: var(--admin-danger-tint);
+}
+
+.ix-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ix-btn:focus-visible,
+.ix-input:focus-visible,
+.ix-tab:focus-visible,
+.ix-cardlink:focus-visible,
+.ix-link:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+/* ---- forms ---------------------------------------------------------------------------------- */
+
+.ix-label {
+  display: block;
+  margin-block-start: calc(var(--base) * 0.4);
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.ix-input {
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: var(--admin-target);
+  margin-block: calc(var(--base) * 0.3) calc(var(--base) * 0.6);
+  padding: calc(var(--base) * 0.4) calc(var(--base) * 0.6);
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-body);
+}
+
+.ix-input--area {
+  min-block-size: 6rem;
+}
+
+.ix-input--fee {
+  inline-size: 11rem;
+  max-inline-size: 100%;
+  margin-block-end: 0;
+}
+
+.ix-input--file {
+  inline-size: auto;
+  max-inline-size: 100%;
+  padding-block: calc(var(--base) * 0.55);
+}
+
+.ix-check {
+  inline-size: 1.7rem;
+  block-size: 1.7rem;
+  accent-color: var(--admin-accent);
+}
+
+.ix-filter,
+.ix-inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: calc(var(--base) * 0.75);
+  margin-block-end: calc(var(--base) * 0.75);
+}
+
+.ix-filter {
+  padding: calc(var(--base) * 0.75);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+.ix-filter .ix-input,
+.ix-inline-form .ix-input {
+  margin-block-end: 0;
+}
+
+.ix-filter .ix-input {
+  min-inline-size: 11rem;
+}
+
+.ix-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.75);
+  padding-block: calc(var(--base) * 0.3);
+  border-block-end: 1px solid var(--admin-hairline);
+}
+
+.ix-pick__line {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--base) * 0.5);
+  flex: 1 1 14rem;
+  min-block-size: var(--admin-target);
+}
+
+.ix-pick__qty {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--base) * 0.5);
+}
+
+.ix-pick__qty .ix-input {
+  inline-size: auto;
+  margin: 0;
+}
+
+.ix-actions,
+.ix-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.6);
+  margin-block: calc(var(--base) * 0.6) 0;
+}
+
+.ix-actions > form {
+  display: contents;
+}
+
+.ix-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-start: calc(var(--base) * 1);
+}
+
+/* ---- sidebar blocks on the lead and partner screens ---------------------------------------- */
+
+.ix-block {
+  margin-block-end: calc(var(--base) * 0.75);
+}
+
+.ix-block__title {
+  margin: 0 0 calc(var(--base) * 0.4);
+  font: var(--admin-text-heading);
+}
+
+.ix-block__group {
+  margin-block-end: calc(var(--base) * 0.5);
+}
+
+.ix-nav-gap {
+  margin-block-end: calc(var(--base) * 0.75);
+}
+
+.ix-lang {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+/* ---- phone ---------------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .ix-filter .ix-input,
+  .ix-filter {
+    inline-size: 100%;
+  }
+
+  .ix-filter .ix-btn,
+  .ix-inline-form .ix-btn {
+    flex: 1 1 100%;
+  }
+
+  .ix-actions--bar {
+    position: sticky;
+    inset-block-end: 0;
+    z-index: 2;
+    margin-inline: calc(var(--base) * -0.75);
+    padding: calc(var(--base) * 0.6) calc(var(--base) * 0.5);
+    background: var(--admin-ground);
+    border-block-start: 1px solid var(--admin-hairline);
+  }
+
+  .ix-actions--bar .ix-btn {
+    flex: 1 1 100%;
+  }
+
+  .ix-actions--bar .ix-btn--primary {
+    order: -1;
+  }
+
+  .ix-actions .ix-btn,
+  .ix-links .ix-btn {
+    flex: 1 1 auto;
+  }
+
+  .ix-tab {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-btn,
+  .ix-cardlink .ix-card {
+    transition: none;
+  }
+}

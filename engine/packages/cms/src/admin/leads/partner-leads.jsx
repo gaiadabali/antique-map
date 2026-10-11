@@ -27,16 +27,14 @@ export async function PartnerLeadsList({ id, payload, req, i18n }) {
   const leads = await loadPartnerLeads(payload, req, id)
 
   return (
-    <div>
-      <h4>{L('partnerLeadsTitle', language)}</h4>
+    <div className="ix-block">
+      <h4 className="ix-block__title">{L('partnerLeadsTitle', language)}</h4>
       {leads.length === 0 ? (
-        <p style={{ fontSize: 13, color: 'var(--theme-elevation-500)' }}>
-          {L('partnerLeadsEmpty', language)}
-        </p>
+        <p className="ix-muted">{L('partnerLeadsEmpty', language)}</p>
       ) : (
         leads.map((lead) => (
           <div key={lead.id}>
-            <a href={`/admin/collections/leads/${lead.id}`} style={{ fontSize: 13 }}>
+            <a href={`/admin/collections/leads/${lead.id}`} className="ix-link ix-link--inline">
               {LEAD_KIND_LABELS[lead.kind]?.[language] ?? lead.kind} ·{' '}
               {LEAD_STATUS_LABELS[lead.status]?.[language] ?? lead.status}
             </a>

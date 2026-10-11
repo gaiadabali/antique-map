@@ -33,20 +33,16 @@ export function QuotePanel({ order, language, payLink }) {
     .join(' — ')
 
   return (
-    <Card>
-      <h3 style={{ marginTop: 0 }}>{L('sendPriceTitle', language)}</h3>
+    <Card className="ix-card--step">
+      <h3 className="ix-card__title">{L('sendPriceTitle', language)}</h3>
       {deadline && (
-        <p style={{ fontSize: 14, color: 'var(--theme-elevation-600)' }}>
+        <p className="ix-muted">
           {L('quoteByPrefix', language)} {deadline}
         </p>
       )}
-      <form
-        method="post"
-        action="/api/x/orders/quote"
-        style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}
-      >
+      <form method="post" action="/api/x/orders/quote" className="ix-inline-form">
         <input type="hidden" name="orderId" value={order.id} />
-        <label htmlFor={`fee-${order.id}`} style={{ fontSize: 14 }}>
+        <label htmlFor={`fee-${order.id}`} className="ix-label">
           {L('sendPriceLabel', language)}
           <input
             id={`fee-${order.id}`}
@@ -55,20 +51,19 @@ export function QuotePanel({ order, language, payLink }) {
             min="0"
             step="1"
             required
-            style={{ display: 'block', marginTop: 4, minHeight: 36, minWidth: 140 }}
+            inputMode="numeric"
+            className="ix-input ix-input--fee"
           />
         </label>
         <SubmitButton>{L('sendPriceSubmit', language)}</SubmitButton>
       </form>
-      <p style={{ fontSize: 13, color: 'var(--theme-elevation-600)', marginTop: 8 }}>
-        {L('sendPriceHint', language)}
-      </p>
+      <p className="ix-muted">{L('sendPriceHint', language)}</p>
       {whatsapp && (
         <a
           href={whatsappLink(whatsapp, message)}
           target="_blank"
           rel="noreferrer"
-          style={{ display: 'inline-block', marginTop: 8 }}
+          className="ix-btn ix-btn--quiet"
         >
           {L('whatsappOrderLink', language)}
         </a>
