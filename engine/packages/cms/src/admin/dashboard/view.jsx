@@ -21,6 +21,7 @@ import { AsksPanel, ChatPanel } from './panels-business'
 import { FulfilmentPanel, FunnelPanel, PaymentsPanel, SalesPanel, VitalsPanel } from './panels-shop'
 import { AntiquesPanel, SearchPanel, VisitorsPanel } from './panels-traffic'
 import { resolvePeriod } from './period'
+import { AdminPage } from '../page'
 import { Empty } from './ui'
 
 const first = (value) => (Array.isArray(value) ? value[0] : value)
@@ -33,14 +34,9 @@ function href(site, query) {
   return `?${parts.join('&')}`
 }
 
-function Frame({ language, adminRoute, children }) {
+function Frame({ language, children }) {
   return (
     <main className="ix-page ix-page--wide">
-      <p className="ix-muted">
-        <a href={adminRoute} className="ix-link">
-          ← {text(language, 'back')}
-        </a>
-      </p>
       <h1 className="ix-title">{text(language, 'title')}</h1>
       {children}
     </main>
@@ -138,7 +134,12 @@ function Panels({ data, language }) {
   )
 }
 
-export async function DashboardView({ initPageResult, searchParams }) {
+/** The view inside Payload's page frame (`../page.jsx`): the sidebar and header stay on screen. */
+export async function DashboardView(props) {
+  return <AdminPage view={props}>{await DashboardViewBody(props)}</AdminPage>
+}
+
+async function DashboardViewBody({ initPageResult, searchParams }) {
   const req = initPageResult?.req
   const language = req?.i18n?.language
   const adminRoute = req?.payload?.config?.routes?.admin ?? '/admin'
@@ -147,7 +148,7 @@ export async function DashboardView({ initPageResult, searchParams }) {
   }
   if (!hasRole(req.user, 'owner')) {
     return (
-      <Frame language={language} adminRoute={adminRoute}>
+      <Frame language={language}>
         <Empty message={text(language, 'panelLess')} />
       </Frame>
     )
@@ -168,7 +169,7 @@ export async function DashboardView({ initPageResult, searchParams }) {
   } catch (error) {
     if (error instanceof DashboardForbidden) {
       return (
-        <Frame language={language} adminRoute={adminRoute}>
+        <Frame language={language}>
           <Empty message={text(language, 'panelLess')} />
         </Frame>
       )
@@ -177,7 +178,7 @@ export async function DashboardView({ initPageResult, searchParams }) {
     req.payload.logger?.error?.({ err: error }, 'the dashboard could not be loaded')
   }
   return (
-    <Frame language={language} adminRoute={adminRoute}>
+    <Frame language={language}>
       <p className="ix-muted">{text(language, 'intro')}</p>
       <Controls language={language} site={site} period={period} query={query} />
       {failed ? (

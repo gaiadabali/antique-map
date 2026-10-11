@@ -12,7 +12,6 @@ export const COPY = {
     en: 'First-party analytics, counted on our own servers. Days are Bali time (UTC+8).',
     id: 'Analitik pihak pertama, dihitung di server kami sendiri. Hari mengikuti waktu Bali (UTC+8).',
   },
-  back: { en: 'Back to the admin', id: 'Kembali ke admin' },
   panelLess: {
     en: 'The dashboard is the owner’s. Your account has no panels here.',
     id: 'Dasbor ini milik pemilik. Akun Anda tidak memiliki panel di sini.',
