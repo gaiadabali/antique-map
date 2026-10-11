@@ -25,14 +25,14 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **7** Shop: fulfilment and tracking | Shop | 6 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **8** AI | AI | 3, 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
 | **9** Partners, leads, analytics and SEO | Growth | 5, 6 | ✅ done | 4/4 | 16/16 | 0 | `██████████` 100% |
-| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 30/32 | 1 | `█████████░`  94% |
+| **10** Hardening and the staging rehearsal 👤 | Launch | 7, 8, 9 | 🔄 in progress | 7/8 | 29/32 | 1 | `█████████░`  91% |
 | **11** Launch 👤 | Launch | 10 | · not started | 0/4 | 0/14 | 7 | `░░░░░░░░░░`   0% |
 | **12** The shop's luxury pass | UI | 4, 6 | ✅ done | 8/8 | 16/16 | 0 | `██████████` 100% |
 | **13** The shop's Collections and Stores pages | UI | 12 | ✅ done | 3/3 | 6/6 | 0 | `██████████` 100% |
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **All** | 16 phases | | | **76/81** | **267/283** | **8** | `█████████░`  94% |
+| **All** | 16 phases | | | **76/81** | **266/283** | **8** | `█████████░`  94% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -752,7 +752,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Read** CONTENT-OPERATIONS.md §Targets, OA9
   - _Requirements: 10.4_
   - [ ] 10.4.a 👤 two or three of the owner's people, one from a store, each do their recipes unaided: add and publish a product (target under 3 minutes), import a stock spreadsheet, work a lead, move an order through its statuses, edit the delivery fees (under 2 minutes) and create a replacement order
-  - [x] 10.4.b record times, stumbles and wording that confused; fix what is cheap now, list the rest as follow-ups
+  - [ ] 10.4.b record times, stumbles and wording that confused; fix what is cheap now, list the rest as follow-ups
   - [ ] 10.4.c **Check:** `docs/gates/admin-usability.md` shows each person's times against the targets and what was fixed; a store user completes the status steps without help.
 
 - [x] **10.5 Under lock contention, refuse plainly — never a 500 or a thrown error** · needs: phase 6 — ✅ 2026-10-08 4a83afec
