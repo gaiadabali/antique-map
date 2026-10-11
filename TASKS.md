@@ -32,8 +32,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 6/19 | 0 | `███░░░░░░░`  32% |
-| **All** | 17 phases | | | **76/89** | **272/302** | **8** | `█████████░`  90% |
+| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 7/19 | 0 | `████░░░░░░`  37% |
+| **All** | 17 phases | | | **76/89** | **273/302** | **8** | `█████████░`  90% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1142,7 +1142,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §5–§6, §8
   - _Requirements: 12.1_
-  - [ ] 17.4.a the sheet large and uncropped across a field's edge, the title block, Ask in rose, the record as a ruled running list
+  - [x] 17.4.a the sheet large and uncropped across a field's edge, the title block, Ask in rose, the record as a ruled running list
   - [ ] 17.4.b **Check:** an available work, a sold one and one with several images at 390, 1280 and 1920 in both languages, axe clean; zoom and Ask still work; no price in the HTML.
 
 - [ ] **17.5 The gallery's other pages** · needs: 17.1 — 🔄 17·W2
