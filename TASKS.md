@@ -84,6 +84,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 16·W1 | 16.1 The admin's world | orchestrator | `main` | 2026-10-11 | |
+| 16·W1 | 16.2 The Catalogue Wall | orchestrator | `main` | 2026-10-11 | |
 
 ## Decisions for the owner
 
@@ -1075,7 +1076,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 16.1.b the shell, record pages and lists in the world: the sidebar a second neutral with the current page marked, paper inputs at one height, groups as paper panels, tables as paper panels with small-caps heads, sign-in a paper card; a phone's sidebar clear of the header
   - [ ] 16.1.c **Check:** every Payload screen of the owner and a store user at 390 and 1280 in both languages, axe clean, no raw colour (token lint).
 
-- [ ] **16.2 The Catalogue Wall** · needs: —
+- [ ] **16.2 The Catalogue Wall** · needs: — — 🔄 16·W1
   - **Lane** ADM · **Agent** medior (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/packages/cms/src/admin/wall/**`, `engine/apps/web/src/app/(payload)/admin/wall.css`, the dashboard view in `engine/packages/cms/src/payload.config.ts`
   - **Read** the surface brief's FIRST VIEWPORT
