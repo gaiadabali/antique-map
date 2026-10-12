@@ -1,11 +1,11 @@
 /**
- * The gallery's home (4.3.b, 14.2, 14.3; Outline Colour 17.2). The hero lays the lead sheet across
- * a verdigris field (`./hero`); below it the bands follow the gallery's pigment order on full-width
- * fields — the newest works on the paper, the house and its curator on the verdigris tint, the
- * recently placed on the paper, the bridge to the sister shop in the shop's gamboge, makers and places as an index, and
- * the enquiry set large to close. No band shows an empty picture window: the curator's portrait is
- * not supplied yet, so his band is type. Every word comes from the gallery's lexicon; no price and
- * no institution appear anywhere on this page.
+ * The gallery's home (4.3.b, 14.2, 14.3; Ivory and ink 18). The hero lays the lead sheet across
+ * the page's paper (`./hero`); below it the bands follow the gallery's pigment order on full-width
+ * fields — the newest works on the paper, the house and its curator on the stone, the recently
+ * placed on the paper, the bridge to the sister shop in the shop's warm stone, makers and places as
+ * an index, and the enquiry set large to close. No band shows an empty picture window: the
+ * curator's portrait is not supplied yet, so his band is type. Every word comes from the gallery's
+ * lexicon; no price and no institution appear anywhere on this page.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import { siteOrigin } from '@engine/config/sites'
@@ -48,7 +48,7 @@ export function GalleryHome({ locale, href, t }: Props) {
   )
 }
 
-/** About the house and its curator, side by side on the verdigris tint: a letter, not a card. */
+/** About the house and its curator, side by side on the stone: a letter, not a card. */
 function House({ t }: Pick<Props, 't'>) {
   return (
     <Band pigment={1} strength="tint" aria-labelledby="home-about">
@@ -77,7 +77,8 @@ function LiveWithCollection({ locale, t }: Pick<Props, 'locale' | 't'>) {
   const origin = siteOrigin('shop')
   const sisterUrl = origin === null ? sister : `${origin}${sister}`
   return (
-    // The bridge to the sister shop wears the shop's own colour (gamboge): colour names the site.
+    // The bridge to the sister shop wears the shop's own colour (warm stone): colour names
+    // the site.
     <Band pigment={2} strength="wash" aria-labelledby="home-live">
       <div className={styles.bridge}>
         <SectionHead
@@ -121,7 +122,7 @@ function EntryPoints({ locale, href, t }: Props) {
   )
 }
 
-/** The close: the gallery's one promise set at display size, Enquire in madder. */
+/** The close: the gallery's one promise set at display size, Enquire in the gallery's green. */
 function Enquire({ locale, href, t }: Props) {
   return (
     <section className={styles.close} aria-labelledby="home-enquire">

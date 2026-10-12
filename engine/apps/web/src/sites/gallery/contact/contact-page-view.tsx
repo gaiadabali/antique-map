@@ -1,8 +1,9 @@
 /**
- * The Sell-to-us and Contact pages' composition (5.3.b; Outline Colour 17.5): a verdigris field
- * opens the page; WhatsApp and email follow as large type links with their prepared message (§8),
+ * The Sell-to-us and Contact pages' composition (5.3.b; Ivory and ink 18): the page opens on its
+ * paper; WhatsApp and email follow as large type links with their prepared message (§8),
  * the address and the reply promise beside them; on Sell-to-us the three steps stand in order in
- * three columns; and — the last section, on a tint field with no box — the optional form, which posts `kind: 'sell'` or `kind: 'contact'`. The form takes
+ * three columns; and — the last section, on the stone with no box — the optional form, which
+ * posts `kind: 'sell'` or `kind: 'contact'`. The form takes
  * no photos: the Sell-to-us page says photos travel on WhatsApp or email. The contact values come
  * from `loadSiteSettings()`; when neither has arrived yet (OA2) the buttons give way to the
  * placeholder notice and the button links the Contact page — never a fake number.

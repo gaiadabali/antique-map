@@ -1,6 +1,6 @@
-/* The partnership page's layout (Outline Colour 17.7): the shop's full breakout width, a gamboge
-   field to open, the offers as typographic columns under a strong ink rule, the enquiry on a pale
-   field. No box anywhere. Every value is a token. */
+/* The partnership page's layout (Ivory and ink 18): the shop's full breakout width, the page's
+   head sits on the paper, the offers as typographic columns under a strong ink rule, the enquiry
+   on the stone. No box anywhere. Every value is a token. */
 
 .wrap {
   width: var(--page-wrap);
@@ -90,7 +90,7 @@
   margin-block-start: var(--space-4);
 }
 
-/* The enquiry lies on a pale gamboge field; the form sits on it with no frame. */
+/* The enquiry lies on the stone; the form sits on it with no frame. */
 .enquire {
   margin-block-end: var(--section-space);
 }

@@ -1,6 +1,6 @@
 /**
- * The gallery item page's composition (5.2.b; Outline Colour 17.4). The page leads with the shared
- * `Crossing`: on the verdigris field the breadcrumbs, the title block and the Ask block (no panel
+ * The gallery item page's composition (5.2.b; Ivory and ink 18). The page leads with the shared
+ * `Crossing`: on the paper the breadcrumbs, the title block and the Ask block (no panel
  * box), the lead sheet lying whole across the field's lower edge, then on the paper the Zoom door
  * and the other images, and the three proof points. The record runs beneath as a ruled running
  * list, and Browse closes the page. The gallery never names a price: the Ask block says *Price on

@@ -1,11 +1,11 @@
 /**
- * The gallery home's hero (14.2; Outline Colour 17.2): the headline on a field of verdigris, and
+ * The gallery home's hero (14.2; Ivory and ink 18): the headline on the paper, and
  * the lead sheet lying whole across the field's lower edge onto the paper (the shared `Crossing`),
  * captioned the way a print room labels a wall — title, maker and date, the status line and the
  * stock number. No frame and no mat: the sheet lies on the colour. The sheet is the newest
  * available map with a published image (the headline is "The islands, first drawn."), else the
  * newest available work: the same cached, public, price-free listing read the browse page makes,
- * so no new query. Until it lands, or while the gallery holds no work, a window of the field's tint
+ * so no new query. Until it lands, or while the gallery holds no work, a window of the stone
  * keeps its place. No price and no institution appear; every word comes from the gallery's lexicon.
  */
 import { Suspense, type ReactNode } from 'react'

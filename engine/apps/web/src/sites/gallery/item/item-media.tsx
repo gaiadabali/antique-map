@@ -1,5 +1,5 @@
 /**
- * The item page's media, in pieces for the shared `Crossing` (Outline Colour 17.4): the lead
+ * The item page's media, in pieces for the shared `Crossing` (Ivory and ink 18): the lead
  * sheet whole on the field's edge (`LeadPicture`: no mat, no frame), then, on the paper under it,
  * the Zoom door and the other images as small contained windows (`MediaCaption`). An original is
  * never cropped (DESIGN-SYSTEM.md §7).

@@ -1,5 +1,6 @@
 /**
- * The search page's opening (Outline Colour 17.3): a verdigris wash holding the page title, the
+ * The search page's opening (Ivory and ink 18): the page opens on its paper, holding the page
+ * title, the
  * answer's lede (the count, the sold toggle, the suggestion) and the search form under it.
  */
 import { Band, SectionHead } from '../../../shared/ui'

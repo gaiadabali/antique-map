@@ -1,5 +1,5 @@
-/** The makers index (5.4.a, 14.6; Outline Colour 17.5; EXPERIENCE-GALLERY.md §7): the page opens on
- * a verdigris field, then every published maker as an A–Z index — a row of ink letters, then each
+/** The makers index (5.4.a, 14.6; Ivory and ink 18; EXPERIENCE-GALLERY.md §7): the page opens on
+ * its paper, then every published maker as an A–Z index — a row of ink letters, then each
  * initial set large over its names, the whole index in columns that gain with the width. */
 import type { SiteLocale } from '@engine/config/sites'
 

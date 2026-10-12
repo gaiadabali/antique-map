@@ -1,4 +1,4 @@
-/* The gallery's item page (5.2.b; Outline Colour 17.4): 390 px first, tokens only. The shared
+/* The gallery's item page (5.2.b; Ivory and ink 18): 390 px first, tokens only. The shared
    `Crossing` lays the field and the sheet; this file sets the type on the field, the caption on
    the paper, and the record as a ruled running list. No box, no shadow, no radius. */
 
@@ -135,7 +135,7 @@
   list-style: none;
 }
 
-/* No sheet yet: a window of the field's tint keeps its place. */
+/* No sheet yet: a window of the stone keeps its place. */
 .empty {
   background: var(--pigment-1-tint);
 }

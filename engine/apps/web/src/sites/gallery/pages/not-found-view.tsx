@@ -1,6 +1,7 @@
 /**
- * The gallery's designed not-found page (14.6), in the same hand as every other opening (Outline Colour
- * 17.5): a verdigris field holding the level-1 `SectionHead`, one or two sentences, the search form and a way into the collection. It reads the
+ * The gallery's designed not-found page (14.6), in the same hand as every other opening (Ivory and
+ * ink 18): the page opens on its paper, holding the level-1 `SectionHead`, one or two
+ * sentences, the search form and a way into the collection. It reads the
  * locale the proxy passed on (`x-locale`), as the shell's placeholder did, and answers 404 through
  * the route that renders it (`not-found/page.tsx`, the proxy's rewrite status). Words are the
  * gallery lexicon's `notFound.*`.
