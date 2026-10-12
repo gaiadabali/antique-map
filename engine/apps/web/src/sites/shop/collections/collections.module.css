@@ -1,5 +1,5 @@
-/* The collections index, Outline Colour: a field of gamboge, then each collection's lead print in
-   a window on the neutral field. 390 px first; tokens only. */
+/* The collections index, Ivory and ink: a calm head on the paper, then each collection's lead print
+   on its tile, in fewer, larger cells. 390 px first; tokens only. */
 
 .page {
   display: flex;
@@ -10,17 +10,17 @@
   padding: 0 var(--gutter) var(--section-space);
 }
 
-.page .band {
-  margin-block-start: calc(-1 * var(--space-7));
-  padding-block: var(--space-9) var(--space-8);
+/* SectionHead sets its own bottom margin; two classes deep so this one wins. */
+.page .head {
+  margin-block-end: var(--space-7);
 }
 
-/* 2 columns on a phone, 3 at 48rem, 4 at 75rem. */
+/* 2 columns on a phone and at 48rem, 3 at 75rem: fewer collections, so larger tiles. */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-8) var(--grid-gap);
-  margin: var(--space-7) 0 0;
+  gap: var(--space-7) var(--grid-gap);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -46,7 +46,7 @@
 }
 
 .name {
-  font: var(--text-card-title);
+  font: var(--text-h3);
   text-wrap: balance;
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -66,19 +66,19 @@
 
 .empty {
   max-inline-size: var(--measure-text);
-  margin: var(--space-7) 0 0;
+  margin: 0;
   font: var(--text-body);
   color: var(--color-text-muted);
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 64rem) {
   .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: var(--space-8);
   }
 }
 
 @media (min-width: 75rem) {
   .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

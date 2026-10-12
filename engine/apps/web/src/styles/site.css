@@ -2,7 +2,7 @@
    Site-wide shell styles. No raw colours, no font-family declarations,
    no ad-hoc lengths — every value is a token from shared/styles/tokens/
    or the site brand files. Components use the semantic aliases only.
-   Outline Colour (phase 17): copperplate ink on mineral paper, and the
+   Ivory and ink (phase 18): near-black ink on a warm paper, and the
    parts of the browser nobody draws (selection, caret, scrollbar,
    underlines, numerals) carry the palette too.
    ===================================================================== */
@@ -24,7 +24,7 @@ html {
   font-kerning: normal;
   caret-color: var(--color-text);
   accent-color: var(--color-accent);
-  scrollbar-color: var(--pigment-1-wash) var(--color-surface);
+  scrollbar-color: var(--color-border-strong) var(--color-surface);
   /* A focused control scrolls clear of the sticky header and the floating chat button (WCAG
      2.4.11): the header is 5.5rem tall, the chat button sits 1.5rem above the foot and is 3rem tall. */
   scroll-padding-block: 6.5rem 6rem;
@@ -42,7 +42,7 @@ body {
 }
 
 ::selection {
-  background: var(--pigment-1-wash);
+  background: color-mix(in srgb, var(--color-action) 18%, var(--color-surface));
   color: var(--color-text);
 }
 

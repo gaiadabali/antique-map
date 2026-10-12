@@ -135,6 +135,9 @@
   --focus-width: var(--brand-focus-width, var(--primitive-focus-width));
   --shadow-header: var(--brand-shadow-header, none);
   --shadow-panel: var(--brand-shadow-panel, none);
+  /* a print hung on its tile (PrintTile), and lifted under the pointer */
+  --shadow-print: var(--brand-shadow-print, var(--primitive-shadow-print));
+  --shadow-print-lift: var(--brand-shadow-print-lift, var(--primitive-shadow-print-lift));
   --dur-in: var(--brand-dur-in, var(--primitive-dur-in));
   --dur-out: var(--brand-dur-out, var(--primitive-dur-out));
   --ease: var(--brand-ease, var(--primitive-ease));

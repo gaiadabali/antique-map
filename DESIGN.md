@@ -25,7 +25,7 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 
 ## Added or changed
 
-- **A palette per site** (phase 4) — **superseded by Outline Colour (phase 17, below)** for both public sites.
+- **A palette per site** (phase 4) — **superseded by Ivory and ink (phase 18, below)** for both public sites.
   The design team's linen, off-black, bronze and champagne survive as primitives only because the admin reads
   them (`tokens/admin.css`).
 - **Accessibility overrides to the kit.** Hairlines and focus are at least 1 px / 2 px and pass 3:1;
@@ -36,79 +36,101 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 - **Lint gate.** `engine/tooling/token-lint/cli.mjs` fails the build on any raw hex, `rgb()/rgba()/hsl()/hsla()`,
   or `font-family` outside the token files.
 
-## Outline Colour — both public sites (phase 17, 2026-10-12)
+## Ivory and ink — both public sites (phase 18, 2026-10-12)
 
-The user asked for both sites to use the full desktop width and to feel expensive rather than like generic AI
-"luxury" (2026-10-11). They kept Cormorant Garamond and Karla and the placeholder logos, ruled out dark and moody,
-stark white and vintage, and chose **Outline Colour** in a direction round: nothing is framed; every work and
-region is held by flat colour, the map colourist's wash. The direction contract is the surface brief
-`engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md`. Recorded here from the shipped CSS and
-components (worktree `feat/p17-dsg`), not from the brief.
+The client asked, through the user, for a colour that is "clean, exclusive and premium" and for the shop's pages to
+be tidied: "a 1 man shop with 2 storefronts to sell different type of products". From a palette board of four the
+client chose **Ivory and ink**, as **two distinct shops** on one clean base, with the shop's prints **on even tiles
+with a soft shadow**. The structure of phase 17 (full width, the `Crossing` opening, ruled records, no eyebrows)
+stayed; its colour world, Outline Colour, was replaced. The direction contract is the surface brief
+`engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md` (version 2). Recorded here from the shipped CSS
+and components (worktree `feat/p18-dsg`).
 
-**Palette (`shared/styles/tokens/primitives.css`; contrast checked 2026-10-12).** Copperplate ink `#1f2a30` for all
-type on a mineral paper `#f3f4ef` (13.3:1); soft ink `#4b565c` for muted words (6.8:1); input boundary
-`#7d878b` (3.3:1); rule `#cfd5d1` for list rows only. Three pigments, each in three locked strengths, plus the type
-that stands on them:
+**Palette (`shared/styles/tokens/primitives.css`; contrast checked 2026-10-12, every text pair AA, input boundaries
+3.6:1).**
 
-| Pigment   | tint (window on hover, panels) | wash (fields, ink type) | full (deep fields)            | muted type on the wash |
-| --------- | ------------------------------ | ----------------------- | ----------------------------- | ---------------------- |
-| verdigris | `#dde8e2`                      | `#8fb3a7` (ink 6.4:1)   | `#2d695e` (mineral 5.8:1)     | `#203b36` (5.3:1)      |
-| gamboge   | `#eedcb0` straw                | `#d1a752` ochre (6.5:1) | `#c9963a` saffron (ink 5.5:1) | `#45340d` (5.4:1)      |
-| madder    | `#f5e4e6`                      | `#cf9a96` (6.1:1)       | `#8c3249` (mineral 7.1:1)     | `#52242d` (5.3:1)      |
+| Role                      | Indies Gallery                | Old East Indies                         |
+| ------------------------- | ----------------------------- | --------------------------------------- |
+| Paper (`--color-surface`) | ivory `#f7f5f0`               | a warmer white `#faf8f4`                |
+| Raised (inputs)           | `#fdfcfa`                     | `#fffefc`                               |
+| Stone (`--surface-deep`)  | cool stone `#eeebe4`          | warm stone `#efeae1` — every print tile |
+| Panel                     | —                             | `#e9e1d4`, the home's hero only         |
+| Ink (`--color-text`)      | `#1b1c1a` (15.7:1)            | `#221e1a` (15.6:1)                      |
+| Muted ink                 | `#5c5b56` (6.3:1)             | `#675f56` (5.9:1)                       |
+| Rule / input boundary     | `#e2ded6` / `#858179` (3.6:1) | `#e6dfd3` / `#8b8274` (3.6:1)           |
+| The action                | deep green `#2d5b52`          | bronze `#8a5a2b`                        |
+| Footer                    | ink `#1b1c1a`                 | espresso `#2a211b`                      |
 
-**How colour is spent.** The gallery lives in verdigris, the shop in gamboge, each in its own pigment's strengths
-(`--pigment-1-*` in each `brand.css`). **Madder is the action** (`--color-action`): the one primary button a view
-asks for (Explore the collection, Ask about this, Add to bag, Checkout) and nothing else. The band that bridges to
-the sister site wears the sister's pigment — colour names the site. The accent (`--color-accent`) is ink: a current
-page, a checked option, the current pager number. The footer is the site's pigment at full strength. Square and
-flat everywhere: every radius and shadow token resolves to none.
+**How colour is spent.** Ink for all type; muted ink for the second voice. The site's accent is the **one action**
+a view asks for (Explore the collection, Ask about this, Shop prints, Add to bag, Checkout) and nothing else; the
+current page, a chosen option and the current pager number are ink. A page's head sits **on its paper** on both
+sites: no colour band behind a heading. Stone is spent sparingly: the gallery's house-and-curator band; the shop's
+hero panel and its tiles. The band that bridges to the sister site wears the sister's own ground (the gallery's
+bridge on the shop's warm panel, the shop's on the gallery's cool stone). The footer closes each page in its dark
+ground. Square and flat everywhere; the one shadow is a print's on its tile.
 
-**Type.** Cormorant for display: `--text-display` 48–96 px (homes' headlines, the closing line), `--text-h1`
-40–72 px, `--text-h2` 30–48 px, `--text-card-title` 22 px. Karla 16 px body, `--text-label` 500 14 px sentence case
-for labels. No eyebrow or kicker above any heading, no tracked capitals anywhere; the old `eyebrow` prop on
-`SectionHead` is accepted and draws nothing.
+**The roles behind it (`sites/{gallery,shop}/tokens/brand.css`).** The phase 17 pigment roles stay as names:
+`--pigment-1-wash` is each site's paper (so a `Band pigment={1}` head is simply on the paper), `-tint` its stone,
+`-full` its footer; the shop's `--pigment-2-wash` is the warm panel its hero asks for; the bridges use the sister's
+role (gallery `2`, shop `3`). The Outline Colour ramps remain in the primitives only as the semantic fallbacks.
 
-**The frame.** Full width at every desktop size: a page's wrap is `--page-wrap` (100vw, the scrollbar's overhang
-clipped at the root) padded by a gutter of 20–96 px (`--gutter`); text keeps `--measure-text` (38rem); bands are
-parted by `--section-space` (64–160 px). Card grids gain columns — 2, 3 at 48rem, 4 at 75rem, 5 at 110rem — and the
-homes' rows of six never leave an empty slot.
+**The print tile (`shared/ui/print-tile`, the shop).** An even 4 : 5 tile (or `tile="square"`) of the site's stone;
+the print laid in it whole **at its own shape** (`printRatioOf()` from the image's pixels, 0.4–2.5), set a little
+above centre, with one soft, low shadow (`--shadow-print`) that falls from the print's own edges. Inside a link the
+print lifts a few pixels and its shadow deepens; reduced motion: no lift. `size="large"` (a product's lead: a
+narrower margin), `size="small"` (thumbnails). Every shop print uses it: the grids, the best sellers, collections, a
+product's views. The gallery's antiques never do: a sheet lies uncropped on the paper with no frame, tile or shadow,
+its window taking the stone on hover (`Mat`).
 
-**The shared pieces.**
+**The shop's pages.**
 
-| Piece                             | What it is                                                                                                                                                                                                                                                                                                                                                                                                         |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Band` (`shared/ui/band`)         | a full-bleed field of one pigment (`pigment` 1–3, `ink`, `paper`; `strength` tint, wash, full) that bleeds to the viewport from any centred column. A wash carries its outline: the full pigment as a stripe along its lower edge. A full field re-points every ink role (type, muted, rules, focus, accent, action)                                                                                               |
-| `Crossing` (`shared/ui/crossing`) | the signature composition: copy on a field, a picture lying across the field's lower edge onto the paper, the field as deep as 62% of the picture (or the copy, whichever is more), the outline stripe where it crosses. The homes' heroes, the gallery item page, the shop product page and a story with a hero use it                                                                                            |
-| `Mat` (`shared/ui/mat`)           | a work's window: clear at rest (the work's own paper meets the page's), no padding, an original contained and standing on the window's foot so a row shares one baseline; on hover the window takes the site's tint; a window with no picture keeps a field. The colour washes in (grayscale to colour) as the work enters the view, scroll-linked where `animation-timeline: view()` exists; reduced motion: none |
-| `SectionHead`                     | a page's (`level={1}`) or section's opening: a balanced serif title, a muted lede at the measure, an optional action                                                                                                                                                                                                                                                                                               |
-| `ProofPoints`                     | the owner's facts as plain lines of Karla, no rules, no capitals                                                                                                                                                                                                                                                                                                                                                   |
-| `Button`                          | 52 px, square: `primary` madder (the one action), `secondary` an ink outline that inverts on hover, `quiet` an underlined ink link                                                                                                                                                                                                                                                                                 |
-| `StockTag`                        | the stock number in spaced tabular figures, no box; it still reads "Stock no." aloud                                                                                                                                                                                                                                                                                                                               |
-| Header and footer                 | full width; the header on the paper with no rule, the logo alone (the doubled wordmark removed); the phone's menu a tinted drawer with the links in Cormorant; the footer on the site's full pigment                                                                                                                                                                                                               |
+- **Grids** (browse, a collection, search): the head on the paper; one bar, the categories at left and sort at
+  right, over a hairline; prints on tiles, two across on a phone, three at 48rem, four from 75rem and never more;
+  under each tile the name in Cormorant, one muted line, and the price in tabular figures at the card's foot, so a
+  row's prices share a line.
+- **Product:** two columns from 64rem (7 : 5). At left a wall of stone the width of its column, never taller than
+  84 % of the screen, the print hung large in it, the other views as small square tiles under it; at right the
+  details held to 32rem and kept in view as the page scrolls: category, name, Reproduction and SKU, the price,
+  options as square chips (chosen in ink), Add to bag in bronze (sold out a quiet outline), delivery, the original,
+  then the proof points under a hairline. The story follows on the same two columns.
+- **Home:** the headline, the actions and the owner's facts on the warm panel, the lead print hung across its
+  lower edge with the print shadow; "Shop by" as an index; the best sellers on tiles; the sets, the process and the
+  trade offer on the paper, each under a hairline; the bridge to the gallery on its cool stone, flush on the footer.
+- **Collections:** three large tiles across. **Stores:** the areas as an even grid of names over a hairline; each
+  area's stores a ruled running list in three columns.
 
-**Page language.** Every page opens on its site's wash: a page title in a compact `Band` (listings, makers,
-places, sell to us, contact, bag, checkout, tracking, partnership, not-found), or a `Crossing` where one picture
-leads (homes, an antique, a product, a story with a hero). Records — an antique's details, a product's specs, an
-order's lines, the stores — are ruled running lists: the label left in muted small type, the value right in
-tabular figures. Steps whose order is information (how a print is made, how selling works) carry large Cormorant
-numerals. The browser surfaces carry the palette: selection in the lead wash, caret and focus in ink, the
-scrollbar in the lead wash.
+**Type, frame and records (unchanged from phase 17).** Cormorant for display (`--text-display` 48–96 px, `--text-h1`
+40–72, `--text-h2` 30–48, `--text-card-title` 22), Karla 16 px body, `--text-label` 500 14 px sentence case; no
+eyebrow or kicker, no tracked capitals. Full width at every desktop size: the page wrap is the viewport less a fluid
+gutter (20–96 px); text keeps `--measure-text` (38rem); sections parted by `--section-space` (64–160 px) or a
+hairline. Records are ruled running lists, the label left in muted small type, the value right in tabular figures.
+The browser's own surfaces carry the palette: selection a tint of the action, caret and focus in ink, the scrollbar
+in the input-boundary grey. The chat launcher is a quiet paper button with a hairline.
 
 **Known gaps.** The condition grade shows the dealer's code ("VG") although the home promises plain words — the
-grade wording is the owner's to give (PRODUCT.md). Some product photographs carry a grey scan margin and an edge
-line inside the image. The `.impeccable/design.json` sidecar has not been written.
+grade wording is the owner's to give (PRODUCT.md). Some product photographs carry a grey scan margin inside the
+image. The placeholder logos stay until the real ones arrive. The `.impeccable/design.json` sidecar has not been
+written.
+
+## Outline Colour (phase 17, 2026-10-12) — superseded by Ivory and ink
+
+Both sites full width, every region held by flat colour: copperplate ink on a mineral paper, three map-colourists'
+pigments (verdigris, gamboge, madder) in three strengths, one pigment per site, the full pigment drawn as an outline
+stripe along a field's edge. The structure it introduced (`Band`, `Crossing`, the clear `Mat` window, ruled records,
+no eyebrows, grids that gain columns) is what phase 18 kept; its colour and stripes are retired. The gate record is
+`docs/gates/outline-colour.md`.
 
 ## Swap points
 
 The owner's later look-and-feel pass changes only these:
 
-| What to change                    | File(s)                                                                                                                    |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Final colours (Q16)               | the pigment values in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` |
-| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                               |
-| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                         |
-| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                         |
-| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                        |
+| What to change                    | File(s)                                                                                                                           |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Final colours (Q16)               | the ivory and shell ramps in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` |
+| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                                      |
+| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                                |
+| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                                |
+| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                               |
 
 No dark mode. No raw colour or `font-family` is allowed outside the token files.
 

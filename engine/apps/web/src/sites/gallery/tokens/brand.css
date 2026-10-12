@@ -1,63 +1,69 @@
 @import '../../../shared/styles/tokens/primitives.css';
 
 /* =====================================================================
-   Tier 2 brand variables — Indies Gallery, in Outline Colour (phase 17).
-   Copperplate ink on mineral paper; verdigris leads, then gamboge, then
-   madder. Madder is spent on the one action a view asks for (Ask).
+   Tier 2 brand variables — Indies Gallery, in Ivory and ink (phase 18,
+   the client's choice). Ivory paper, near-black ink, colour only as a
+   small accent: a deep green on the one action a view asks for. The
+   field the copy stands on is the paper itself, so no colour band runs
+   across a page; the footer closes it in ink. The shop is the sibling
+   in its own ground and mood (sites/shop/tokens/brand.css).
    The client's final colours (TASKS.md Q16) are an edit to this file.
    ===================================================================== */
 
 :root,
 [data-site='gallery'] {
-  --brand-surface: var(--primitive-mineral);
-  --brand-surface-raised: var(--primitive-mineral-raised);
-  --brand-surface-deep: var(--primitive-verdigris-tint);
-  --brand-surface-dark: var(--primitive-verdigris-full);
-  --brand-surface-dark-ink: var(--primitive-mineral);
+  --brand-surface: var(--primitive-ivory);
+  --brand-surface-raised: var(--primitive-ivory-raised);
+  --brand-surface-deep: var(--primitive-ivory-stone);
+  --brand-surface-dark: var(--primitive-ivory-ink);
+  --brand-surface-dark-ink: var(--primitive-ivory-foot-ink);
 
-  --brand-text: var(--primitive-copperplate);
-  --brand-text-strong: var(--primitive-copperplate);
-  --brand-text-muted: var(--primitive-copperplate-soft);
-  --brand-text-on-dark: var(--primitive-mineral);
+  --brand-text: var(--primitive-ivory-ink);
+  --brand-text-strong: var(--primitive-ivory-ink);
+  --brand-text-muted: var(--primitive-ivory-muted);
+  --brand-text-on-dark: var(--primitive-ivory-foot-ink);
 
-  --brand-accent: var(--primitive-copperplate);
-  --brand-accent-contrast: var(--primitive-mineral);
-  --brand-accent-secondary: var(--primitive-verdigris-ink);
-  --brand-action: var(--primitive-madder-full);
-  --brand-action-hover: var(--primitive-madder-deep);
-  --brand-action-contrast: var(--primitive-mineral);
+  --brand-accent: var(--primitive-ivory-ink);
+  --brand-accent-contrast: var(--primitive-ivory);
+  --brand-accent-secondary: var(--primitive-ivory-green);
+  --brand-action: var(--primitive-ivory-green);
+  --brand-action-hover: var(--primitive-ivory-green-deep);
+  --brand-action-contrast: var(--primitive-ivory);
 
-  --brand-border: var(--primitive-rule);
-  --brand-border-strong: var(--primitive-rule-strong);
-  --brand-focus: var(--primitive-copperplate);
+  --brand-border: var(--primitive-ivory-rule);
+  --brand-border-strong: var(--primitive-ivory-rule-strong);
+  --brand-focus: var(--primitive-ivory-ink);
   --brand-scrim: var(--primitive-scrim);
 
   --brand-danger: var(--primitive-critical);
   --brand-success: var(--primitive-positive);
   --brand-caution: var(--primitive-caution);
 
-  /* the pigment order: verdigris, gamboge, madder */
-  --brand-pigment-1-tint: var(--primitive-verdigris-tint);
-  --brand-pigment-1-wash: var(--primitive-verdigris-wash);
-  --brand-pigment-1-full: var(--primitive-verdigris-full);
-  --brand-pigment-1-on-wash: var(--primitive-verdigris-ink);
-  --brand-pigment-1-on-full: var(--primitive-mineral);
-  --brand-pigment-1-on-full-muted: var(--primitive-verdigris-mist);
-  --brand-pigment-2-tint: var(--primitive-gamboge-tint);
-  --brand-pigment-2-wash: var(--primitive-gamboge-wash);
-  --brand-pigment-2-full: var(--primitive-gamboge-full);
-  --brand-pigment-2-on-wash: var(--primitive-gamboge-ink);
-  --brand-pigment-2-on-full: var(--primitive-copperplate);
-  --brand-pigment-2-on-full-muted: var(--primitive-gamboge-mist);
-  --brand-pigment-3-tint: var(--primitive-madder-tint);
-  --brand-pigment-3-wash: var(--primitive-madder-wash);
-  --brand-pigment-3-full: var(--primitive-madder-full);
-  --brand-pigment-3-on-wash: var(--primitive-madder-ink);
-  --brand-pigment-3-on-full: var(--primitive-mineral);
-  --brand-pigment-3-on-full-muted: var(--primitive-madder-mist);
+  /* The roles a band or a crossing asks for: 1 is the gallery's own (the field is its paper, the
+     tint its stone, the full its ink footer), 2 the sister shop's warm panel for the bridge band
+     (muted ink 4.8:1 on it), 3 the gallery's own again. */
+  --brand-pigment-1-tint: var(--primitive-ivory-stone);
+  --brand-pigment-1-wash: var(--primitive-ivory);
+  --brand-pigment-1-full: var(--primitive-ivory-ink);
+  --brand-pigment-1-on-wash: var(--primitive-ivory-muted);
+  --brand-pigment-1-on-full: var(--primitive-ivory-foot-ink);
+  --brand-pigment-1-on-full-muted: var(--primitive-ivory-foot-muted);
+  --brand-pigment-2-tint: var(--primitive-shell-stone);
+  --brand-pigment-2-wash: var(--primitive-shell-panel);
+  --brand-pigment-2-full: var(--primitive-shell-espresso);
+  --brand-pigment-2-on-wash: var(--primitive-shell-muted);
+  --brand-pigment-2-on-full: var(--primitive-shell-foot-ink);
+  --brand-pigment-2-on-full-muted: var(--primitive-shell-foot-muted);
+  --brand-pigment-3-tint: var(--primitive-ivory-stone);
+  --brand-pigment-3-wash: var(--primitive-ivory);
+  --brand-pigment-3-full: var(--primitive-ivory-ink);
+  --brand-pigment-3-on-wash: var(--primitive-ivory-muted);
+  --brand-pigment-3-on-full: var(--primitive-ivory-foot-ink);
+  --brand-pigment-3-on-full-muted: var(--primitive-ivory-foot-muted);
 
-  --brand-field: var(--primitive-mineral-deep);
-  --brand-field-active: var(--primitive-verdigris-tint);
+  /* An antique's window: clear on the paper at rest, the stone on hover. */
+  --brand-field: transparent;
+  --brand-field-active: var(--primitive-ivory-stone);
 
   --brand-space-1: var(--primitive-space-1);
   --brand-space-2: var(--primitive-space-2);
@@ -71,7 +77,7 @@
   --brand-space-10: var(--primitive-space-10);
   --brand-gutter: var(--primitive-gutter-fluid);
 
-  /* square and flat: no radius, no shadow, anywhere on the public site */
+  /* square and flat; a print on a tile carries the one soft shadow */
   --brand-radius-card: var(--primitive-radius-none);
   --brand-radius-control: var(--primitive-radius-none);
   --brand-radius-pill: var(--primitive-radius-none);
@@ -87,6 +93,6 @@
   --brand-ease: var(--primitive-ease);
   --brand-dur-loop: var(--primitive-dur-loop);
 
-  /* An empty window's words on the verdigris tint: soft ink is 6.0:1 there. */
-  --brand-mat-note: var(--primitive-copperplate-soft);
+  /* An empty window's words on the stone: muted ink is 5.7:1 there. */
+  --brand-mat-note: var(--primitive-ivory-muted);
 }

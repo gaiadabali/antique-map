@@ -1,13 +1,13 @@
 /**
- * The shop home's best sellers (ticket 4.3.b): a streamed grid of published products, each print
- * in a compact mat with a museum caption. The read is `loadFeaturedProducts()`
+ * The shop home's best sellers (ticket 4.3.b; Ivory and ink 18.4): a streamed grid of published
+ * products, each print hung on an even stone tile (the shared `PrintTile`) with a museum caption. The read is `loadFeaturedProducts()`
  * (`server/shop/home`), public-only, with prices formatted through `formatRupiah`; inside
  * `<Suspense>` with a skeleton, and an empty state when the database holds no published product
  * yet — never a crash.
  */
 import { Suspense } from 'react'
 
-import { Mat, MatNote, Price, Skeleton } from '../../../shared/ui'
+import { Price, PrintTile, PrintTileNote, Skeleton, printRatioOf } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'
 
@@ -36,9 +36,9 @@ function ProductsSkeleton() {
     <div className={styles.four} aria-hidden="true">
       {[0, 1, 2, 3].map((at) => (
         <div key={at}>
-          <Mat size="compact" ratio={4 / 5}>
+          <PrintTile>
             <Skeleton width="100%" height="100%" />
-          </Mat>
+          </PrintTile>
           <Skeleton width="70%" height="1.25rem" />
           <Skeleton width="45%" height="1rem" />
         </div>
@@ -69,24 +69,23 @@ async function ProductsGrid({ locale, t }: Props) {
         const label = product.image ? syntheticLabelText(words, product.image) : null
         return (
           <a className={styles.productCard} key={product.slug} href={`/product/${product.slug}`}>
-            <Mat size="compact" ratio={4 / 5}>
+            <PrintTile ratio={printRatioOf(product.image)}>
               {product.image ? (
                 // The public derivative (`server/media/public-image`), a plain `<img>` since it
                 // never goes through `next/image`'s optimizer or its remote-pattern allowlist; its
                 // srcSet is the derivative ladder, so a phone fetches a small width (10.6).
                 <img
-                  className={styles.productImage}
                   src={product.image.url}
                   srcSet={product.image.srcSet}
-                  sizes="(max-width: 47.5rem) 50vw, (max-width: 75rem) 33vw, 25vw"
+                  sizes="(max-width: 47.5rem) 40vw, (max-width: 75rem) 26vw, 20vw"
                   loading="lazy"
                   decoding="async"
                   alt={imageAlt(words, product.image)}
                 />
               ) : (
-                <MatNote>{product.name}</MatNote>
+                <PrintTileNote>{product.name}</PrintTileNote>
               )}
-            </Mat>
+            </PrintTile>
             <h3 className={styles.cardTitle}>{product.name}</h3>
             {label !== null && <p className={styles.cardBody}>{label}</p>}
             <p className={styles.cardPrice}>

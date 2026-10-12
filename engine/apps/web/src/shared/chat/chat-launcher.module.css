@@ -15,16 +15,18 @@
   min-height: 3rem;
   padding: var(--space-3) var(--space-5);
   font: var(--text-label);
-  color: var(--color-accent-contrast);
-  background: var(--color-accent);
-  border: var(--rule-hair) solid var(--color-accent-contrast);
+  /* a quiet paper button with a hairline (Ivory and ink): it floats over any print or footer and
+     reads without covering it in a slab of ink */
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border-strong);
   border-radius: var(--radius-pill);
   cursor: pointer;
   transition: background-color var(--dur-out) var(--ease);
 }
 
 .launcher:hover {
-  background: var(--color-text-muted);
+  background: var(--color-surface-deep);
 }
 
 .launcher:focus-visible {

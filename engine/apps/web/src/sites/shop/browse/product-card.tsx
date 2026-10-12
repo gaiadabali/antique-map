@@ -1,13 +1,21 @@
 /**
- * A listing tile (EXPERIENCE-SHOP.md §4): image, name, price ("From Rp …" when variants are
- * priced apart), Reproduction, and "Sold out" when no active store holds a unit. Everything it
- * says comes from the loader's view model and the lexicon; a storefront link is a plain `<a>` —
- * prefetching a listing page costs a database read (ARCHITECTURE.md §6).
+ * A listing card (EXPERIENCE-SHOP.md §4; Ivory and ink): the print on its even tile, then the name,
+ * one muted line (Reproduction, the synthetic label, Sold out) and the price ("From Rp …" when
+ * variants are priced apart). Everything it says comes from the loader view model and the lexicon;
+ * a storefront link is a plain <a>, because prefetching a listing page costs a database read
+ * (ARCHITECTURE.md §6).
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ProductCardVM } from '../../../server/shop/catalogue/view-models'
-import { Mat, MatNote, Price, ResponsiveImage } from '../../../shared/ui'
+import {
+  Price,
+  PrintTile,
+  PrintTileNote,
+  ResponsiveImage,
+  printAspectOf,
+  printRatioOf,
+} from '../../../shared/ui'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'
@@ -32,13 +40,14 @@ export function ProductCard({
   const priceText = from
     ? text.shared('price.from', { price: formatRupiah(product.fromPrice) })
     : null
+  const ratio = printRatioOf(product.image)
   return (
     <a href={href} className={styles.card}>
-      <Mat size="compact" ratio={product.image ? undefined : 4 / 5}>
+      <PrintTile ratio={ratio}>
         {product.image ? (
           <ResponsiveImage
             variant="fill"
-            aspectRatio="4 / 5"
+            aspectRatio={printAspectOf(ratio)}
             src={product.image.url}
             srcSet={product.image.srcSet}
             alt={imageAlt(words, product.image)}
@@ -47,9 +56,9 @@ export function ProductCard({
             unoptimized
           />
         ) : (
-          <MatNote>{product.name}</MatNote>
+          <PrintTileNote>{product.name}</PrintTileNote>
         )}
-      </Mat>
+      </PrintTile>
       <span className={styles.cardBody}>
         <span className={styles.cardTitle}>{product.name}</span>
         <span className={styles.cardMeta}>

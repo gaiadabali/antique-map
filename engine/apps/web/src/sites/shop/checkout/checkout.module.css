@@ -1,5 +1,5 @@
-/* The checkout page (6.3.a; Outline Colour 17.7): a gamboge field opens the page, the form runs on the
-   paper in sections, the order summary lies on a pale field. 390 px first, tokens only
+/* The checkout page (6.3.a; Ivory and ink 18): the page's head sits on the paper, the form runs
+   on the paper in sections, the order summary lies on the stone. 390 px first, tokens only
    (DESIGN-SYSTEM.md). The page breaks out of the reading column to the shop's full width. */
 .checkout {
   width: var(--page-wrap);
@@ -56,7 +56,7 @@
   }
 }
 
-/* The order summary lies on a pale gamboge field: no border, no raised panel. */
+/* The order summary lies on the stone: no border, no raised panel. */
 .review {
   display: flex;
   flex-direction: column;

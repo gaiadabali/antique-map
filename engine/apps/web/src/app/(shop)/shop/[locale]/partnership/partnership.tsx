@@ -1,7 +1,8 @@
 /**
- * The shop's partnership page (Outline Colour 17.7): a gamboge field opens it, a strip of four
- * facts, the three offers (resellers, company gifting, hotels and villas) as typographic columns
- * under a strong ink rule and — as the final section — the enquiry call to action on a pale field:
+ * The shop's partnership page (Ivory and ink 18): the page's head sits on the paper, a strip of
+ * four facts, the three offers (resellers, company gifting, hotels and villas) as typographic
+ * columns under a strong ink rule and — as the final section — the enquiry call to action
+ * on the stone:
  * WhatsApp and email buttons with a prepared message, and a short form that creates a
  * `partnership` lead (9.1.c, `sites/shop/partnership`). No sign-up and no sign-in anywhere.
  */
@@ -74,7 +75,7 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
   )
 }
 
-/** The page opens on a gamboge field, right under the header: the title, its lede, the way in. */
+/** The page opens on its paper, right under the header: the title, its lede, the way in. */
 function Hero({ t }: Pick<Props, 't'>) {
   return (
     <Band
@@ -146,13 +147,7 @@ function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
       )}&body=${encodeURIComponent(t('partnership.emailBody'))}`
     : null
   return (
-    <Band
-      pigment={1}
-      strength="tint"
-      className={styles.enquire}
-      id="enquire"
-      aria-labelledby="partnership-enquire"
-    >
+    <Band pigment={1} strength="tint" id="enquire" aria-labelledby="partnership-enquire">
       <div className={styles.enquireGrid}>
         <div className={styles.enquireText}>
           <SectionHead

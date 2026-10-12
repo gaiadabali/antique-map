@@ -1,0 +1,99 @@
+/* A print hung on its tile (Ivory and ink, phase 18). The tile is an even 4 : 5 of the site's
+   stone; the stage is the tile less its margin (a little deeper at the foot, so the print sits at
+   the optical centre) and a size container, so the print can take its own shape and still fit it
+   whole. The shadow falls from the print's own edges, never from an empty letterbox.
+   Every value is a token — no raw colour, no font-family. */
+
+.tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  background: var(--color-surface-deep);
+}
+
+.square {
+  aspect-ratio: 1;
+}
+
+.stage {
+  position: absolute;
+  inset: 10% 12% 13%;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+
+.small .stage {
+  inset: 9% 10% 11%;
+}
+
+.large .stage {
+  inset: 6% 8% 8%;
+}
+
+.print {
+  position: relative;
+  inline-size: min(100cqi, 100cqb * var(--print-ratio));
+  aspect-ratio: var(--print-ratio);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-print);
+  transition:
+    box-shadow var(--dur-in) var(--ease-out),
+    translate var(--dur-in) var(--ease-out);
+}
+
+/* The picture fills the print's frame: it is the print's own shape, so nothing is cropped. */
+.print > div,
+.print > img,
+.print > picture,
+.print > picture > img,
+.print > div img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  background: transparent;
+}
+
+/* No print yet: the bare stone and its words, no frame and no shadow. */
+.print:has(.note) {
+  inline-size: 100%;
+  block-size: 100%;
+  aspect-ratio: auto;
+  background: transparent;
+  box-shadow: none;
+}
+
+:global(a):hover .print,
+:global(a):focus-visible .print {
+  translate: 0 calc(-1 * var(--space-1));
+  box-shadow: var(--shadow-print-lift);
+}
+
+:global(a):hover .print:has(.note),
+:global(a):focus-visible .print:has(.note) {
+  translate: none;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .print {
+    transition: none;
+  }
+
+  :global(a):hover .print,
+  :global(a):focus-visible .print {
+    translate: none;
+  }
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  padding: var(--space-3);
+  text-align: center;
+  font: var(--text-small);
+  color: var(--color-mat-note);
+}

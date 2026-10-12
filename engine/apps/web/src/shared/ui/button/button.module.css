@@ -1,5 +1,5 @@
-/* Buttons in Outline Colour: square, flat, one pigment (madder) for the one action a view asks
-   for; everything else in ink. Every value is a token — no raw colour, no font-family. */
+/* Buttons in Ivory and ink: square, flat, the site's accent (the gallery's green, the shop's
+   bronze) for the one action a view asks for; everything else in ink. Every value is a token — no raw colour, no font-family. */
 
 .button {
   display: inline-flex;

@@ -1,12 +1,12 @@
 /**
- * The stores page (13.2): the shop's listed stores by area. An area row of anchors jumps to each
- * section; each store is a ruled row with its name, address, hours and a
- * map link built from name and address only.
+ * The stores page (13.2; Ivory and ink): a head on the paper, one quiet row of area links, then
+ * each area's stores as a ruled running list. Each store is a row with its name, address, hours
+ * and a map link built from name and address only.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { AreaGroup, StoreVM } from '../../../server/shop/stores'
-import { Band, SectionHead, TextLink } from '../../../shared/ui'
+import { SectionHead, TextLink } from '../../../shared/ui'
 import { storesText, type StoresText } from './copy'
 import styles from './stores.module.css'
 
@@ -21,8 +21,7 @@ function StoreCard({ store, t }: { store: StoreVM; t: StoresText }) {
       {store.address !== null && <p className={styles.address}>{store.address}</p>}
       {store.hours !== null && (
         <p className={styles.hours}>
-          <span className={styles.hoursLabel}>{t('stores.hours')}</span>
-          {store.hours}
+          <span className={styles.hoursLabel}>{t('stores.hours')}</span> {store.hours}
         </p>
       )}
       <TextLink
@@ -44,13 +43,12 @@ export function StoresView({ groups, locale }: Props): React.ReactElement {
   const label = (group: AreaGroup) => group.area ?? t('stores.otherAreas')
   return (
     <div className={styles.page}>
-      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
-        <SectionHead
-          level={1}
-          title={t('stores.title')}
-          lede={total > 0 ? t('stores.lede', { count: total }) : undefined}
-        />
-      </Band>
+      <SectionHead
+        level={1}
+        className={styles.head}
+        title={t('stores.title')}
+        lede={total > 0 ? t('stores.lede', { count: total }) : undefined}
+      />
       {total === 0 ? (
         <p className={styles.empty}>{t('stores.empty')}</p>
       ) : (
@@ -71,6 +69,7 @@ export function StoresView({ groups, locale }: Props): React.ReactElement {
             >
               <SectionHead
                 id={`${anchor(index)}-title`}
+                className={styles.areaHead}
                 title={label(group)}
                 lede={t('stores.count', { count: group.stores.length })}
               />

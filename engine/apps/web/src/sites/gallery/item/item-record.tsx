@@ -1,5 +1,5 @@
 /**
- * The item page's record (5.2.b; EXPERIENCE-GALLERY.md §5): a ruled running list (Outline Colour 17.4) in the order
+ * The item page's record (5.2.b; EXPERIENCE-GALLERY.md §5): a ruled running list in the order
  * collectors expect — type, maker, place, date, technique, colouring, dimensions, condition,
  * references, provenance, subjects, stock number. A field with no value is left out, never
  * shown as "—". The labels are the app lexicon's `record.*`; a vocabulary value is said in the

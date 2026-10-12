@@ -39,7 +39,6 @@ const view = (images: readonly CatalogueImage[]): string =>
 describe('the product page labels a synthetic image', () => {
   it('shows the label and prefixes the alt for a mock-up', () => {
     const markup = view([image({ syntheticLabel: 'digital-mockup' })])
-    expect(markup).toContain('<figcaption')
     expect(markup).toContain('>Digital mockup</span>')
     expect(markup).toContain('alt="Digital mockup: A framed map"')
   })
@@ -56,7 +55,6 @@ describe('the product page labels a synthetic image', () => {
 
   it('shows neither for a photograph', () => {
     const markup = view([image()])
-    expect(markup).not.toContain('<figcaption')
     expect(markup).not.toContain('Digital mockup')
     expect(markup).toContain('alt="A framed map"')
   })

@@ -1,5 +1,6 @@
-/* The stores page, Outline Colour: a field of gamboge, quiet area links, each area's stores as a
-   ruled running list in columns that gain with width. 390 px first; tokens only. */
+/* The stores page, Ivory and ink: a calm head on the paper, one quiet row of area links over a
+   hairline, each area's stores as a ruled running list in columns that gain with width. 390 px
+   first; tokens only. */
 
 .page {
   display: flex;
@@ -10,9 +11,20 @@
   padding: 0 var(--gutter) var(--section-space);
 }
 
-.page .band {
-  margin-block-start: calc(-1 * var(--space-7));
-  padding-block: var(--space-9) var(--space-8);
+/* SectionHead sets its own bottom margin; two classes deep so these win. */
+.page .head {
+  margin-block-end: var(--space-6);
+}
+
+.page .areaHead {
+  margin-block-end: var(--space-5);
+}
+
+/* An area's count is a note under its name, not a lede. */
+.page .areaHead p {
+  margin-block-start: var(--space-1);
+  font: var(--text-small);
+  color: var(--color-text-muted);
 }
 
 /* On a phone one row that scrolls inside itself, never the page; it wraps from 48rem up. */
@@ -20,7 +32,9 @@
   display: flex;
   flex-wrap: nowrap;
   gap: var(--space-6);
-  margin-block: var(--space-6) var(--space-7);
+  margin-block-end: var(--space-8);
+  padding-block-end: var(--space-2);
+  border-block-end: var(--rule-hair) solid var(--color-border);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -55,10 +69,6 @@
 .area {
   scroll-margin-block-start: var(--space-7);
   margin-block-end: var(--space-8);
-}
-
-.area > div:first-child {
-  margin-block-end: var(--space-5);
 }
 
 /* 1 column on a phone, 2 at 48rem, 3 at 75rem; each store a row parted by a hairline. */
@@ -97,7 +107,7 @@
 }
 
 .hoursLabel {
-  display: block;
+  color: var(--color-text-muted);
 }
 
 .map {
@@ -117,15 +127,12 @@
 }
 
 @media (min-width: 48rem) {
-  /* Room enough to show every area: the row wraps rather than hiding the last ones. */
+  /* Room enough to show every area: an even grid of names, so no name is left alone on a row. */
   .areas {
-    flex-wrap: wrap;
-    row-gap: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    column-gap: var(--space-5);
     overflow-x: visible;
-  }
-
-  .area {
-    margin-block-end: var(--space-9);
   }
 
   .grid {

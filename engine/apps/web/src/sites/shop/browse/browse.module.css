@@ -1,7 +1,7 @@
-/* The shop listing, Outline Colour: opens on a field of gamboge, quiet text tabs on the paper,
-   prints in compact windows on the neutral field. 390 px first; tokens only. */
+/* The shop listing, Ivory and ink: a calm head on the paper, one bar (category tabs and sort) over
+   a hairline, then prints on even tiles. 390 px first; tokens only. */
 
-/* Breaks out of the shell's reading column; the band starts right under the header. */
+/* Breaks out of the shell's reading column; the shell's main already pads the top. */
 .browse {
   display: flex;
   flex-direction: column;
@@ -11,21 +11,19 @@
   padding: 0 var(--gutter) var(--section-space);
 }
 
-.browse .band {
-  margin-block-start: calc(-1 * var(--space-7));
-  padding-block: var(--space-9) var(--space-8);
+/* SectionHead sets its own bottom margin; two classes deep so this one wins. */
+.browse .head {
+  margin-block-end: var(--space-6);
 }
 
-.browse .band + .grid,
-.browse .band + .empty {
-  margin-block-start: var(--space-7);
-}
-
+/* One bar: tabs, then sort; on a phone sort sits on its own line. A hairline closes it. */
 .toolbar {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin-block: var(--space-6) var(--space-7);
+  gap: var(--space-1);
+  padding-block-end: var(--space-2);
+  border-block-end: var(--rule-hair) solid var(--color-border);
+  margin-block-end: var(--space-7);
 }
 
 /* One row; on a phone it scrolls sideways inside itself, never the page. */
@@ -102,33 +100,36 @@
   list-style: none;
 }
 
-/* 2 columns on a phone, 3 at 48rem, 4 at 75rem, 5 at 110rem. */
+/* 2 columns on a phone, 3 at 48rem, 4 at 75rem; never more. */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-8) var(--grid-gap);
+  gap: var(--space-7) var(--grid-gap);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* A card is one link: an even tile, then a caption that starts at the same height in every card. */
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
   height: 100%;
   color: var(--color-text);
   text-decoration: none;
 }
 
+/* The caption fills the rest of the card, so every price in a row stands on one line at its foot
+   however the titles above it wrap. */
 .cardBody {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  margin-block-start: var(--space-4);
 }
 
 .cardTitle {
-  margin-block-start: var(--space-4);
   font: var(--text-card-title);
   text-wrap: balance;
   text-decoration: underline;
@@ -150,19 +151,23 @@
   color: var(--color-text-muted);
 }
 
-.cardMeta > span + span::before {
+/* The dot ends an item, so a wrapped line never starts with one. */
+.cardMeta > span:not(:last-child)::after {
   content: '·';
-  margin-inline-end: var(--space-2);
+  margin-inline-start: var(--space-2);
 }
 
+/* Sold out is plain muted text, never red. */
 .soldOut {
-  color: var(--color-text);
+  color: var(--color-text-muted);
 }
 
-.price,
-.priceFrom {
-  margin-block-start: var(--space-2);
-  font: var(--text-small);
+.cardBody .price,
+.cardBody .priceFrom {
+  margin-block-start: auto;
+  padding-block-start: var(--space-2);
+  font: var(--text-body);
+  font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text);
 }
 
@@ -185,11 +190,24 @@
 }
 
 @media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* On a desktop the tabs sit at the left and sort at the right, on one line. */
+@media (min-width: 64rem) {
+  .browse .head {
+    margin-block-end: var(--space-7);
+  }
+
   .toolbar {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-7);
+    padding-block-end: 0;
+    margin-block-end: var(--space-8);
   }
 
   .tabs {
@@ -199,20 +217,11 @@
   .sortRow {
     flex: none;
   }
-
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 @media (min-width: 75rem) {
   .grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 110rem) {
-  .grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    row-gap: var(--space-8);
   }
 }

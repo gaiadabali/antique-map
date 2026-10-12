@@ -1,6 +1,6 @@
-/* The bag summary (6.2; Outline Colour 17.7): the code form, the ruled totals and the one primary
-   action, on a pale gamboge field. Tokens only. */
-/* The summary lies on a pale gamboge field: no border, no raised panel. */
+/* The bag summary (6.2; Ivory and ink 18): the code form, the ruled totals and the one primary
+   action, on the stone. Tokens only. */
+/* The summary lies on the stone: no border, no raised panel. */
 .summary {
   display: flex;
   flex-direction: column;

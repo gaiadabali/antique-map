@@ -1,5 +1,5 @@
-/** The places index (5.4.a, 14.6; Outline Colour 17.5; EXPERIENCE-GALLERY.md §2, §7): the page opens
- * on a verdigris field, then the gazetteer's top-level branches — the island groups and "Beyond
+/** The places index (5.4.a, 14.6; Ivory and ink 18; EXPERIENCE-GALLERY.md §2, §7): the page opens
+ * on its paper, then the gazetteer's top-level branches — the island groups and "Beyond
  * Indonesia" — as headed columns, each listing its places as rows with the count muted at the
  * right; the drill-down links stay (a group's name links to its own page). */
 import type { SiteLocale } from '@engine/config/sites'

@@ -1,4 +1,4 @@
-/* The gallery's item page (5.2.b; Outline Colour 17.4): 390 px first, tokens only. The shared
+/* The gallery's item page (5.2.b; Ivory and ink 18): 390 px first, tokens only. The shared
    `Crossing` lays the field and the sheet; this file sets the type on the field, the caption on
    the paper, and the record as a ruled running list. No box, no shadow, no radius. */
 
@@ -12,27 +12,6 @@
   translate: -50% 0;
   padding-inline: var(--gutter);
   padding-block-end: var(--space-8);
-}
-
-/* The crossing and, under it, the sheet's own controls (Zoom, the other views), aligned with the
-   sheet: the same width and centring the crossing gives its picture (86svh, the picture column). */
-.lead {
-  display: grid;
-  gap: var(--space-5);
-}
-
-.mediaBelow {
-  inline-size: min(100%, calc(86svh * var(--picture-ratio, 0.8)));
-  margin-inline: auto;
-}
-
-@media (min-width: 64rem) {
-  .mediaBelow {
-    --col-w: calc((100% - var(--grid-gap)) * 7 / 12);
-    --fig-w: min(var(--col-w), calc(86svh * var(--picture-ratio, 0.8)));
-    inline-size: var(--fig-w);
-    margin-inline: calc(100% - var(--col-w) + (var(--col-w) - var(--fig-w)) / 2) 0;
-  }
 }
 
 /* On the field: breadcrumbs, title block, then the Ask block. */
@@ -135,7 +114,7 @@
   list-style: none;
 }
 
-/* No sheet yet: a window of the field's tint keeps its place. */
+/* No sheet yet: a window of the stone keeps its place. */
 .empty {
   background: var(--pigment-1-tint);
 }

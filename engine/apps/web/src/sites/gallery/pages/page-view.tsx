@@ -1,9 +1,10 @@
 /**
- * One editorial or information page (5.4.b, 14.6; Outline Colour 17.5; EXPERIENCE-GALLERY.md §7):
- * it opens on a verdigris field holding the level-1 `SectionHead` (title, the intro as its lede) —
+ * One editorial or information page (5.4.b, 14.6; Ivory and ink 18; EXPERIENCE-GALLERY.md §7):
+ * it opens on its paper, holding the level-1 `SectionHead` (title, the intro as its lede) —
  * or, with a hero sheet, leads with the shared `Crossing`, the sheet lying whole across the field
- * onto the paper — then the body's paragraphs at the reading measure, and any works rail through the shared `WorkGrid` under its own
- * head. "Prose" and "work rail" are the two block kinds the `pages` collection offers today
+ * onto the paper — then the body's paragraphs at the reading measure, and any works rail through
+ * the shared `WorkGrid` under its own head. "Prose" and "work rail" are the two block kinds the
+ * `pages` collection offers today
  * (`intro`/`body` plain text, `works` a relationship); "figure", "FAQ" and "call to action" blocks
  * wait on rich-text blocks (TASKS.md 9.3) — a gap named in the ticket's report, not built here.
  */

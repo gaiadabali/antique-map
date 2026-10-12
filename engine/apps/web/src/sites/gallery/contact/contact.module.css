@@ -1,5 +1,5 @@
-/* The gallery's Sell-to-us and Contact pages (Outline Colour 17.5): a verdigris field opens the
-   page, the channels are large type, the steps stand in order, and the form sits on a tint field
+/* The gallery's Sell-to-us and Contact pages (Ivory and ink 18): the page opens on its paper,
+   the channels are large type, the steps stand in order, and the form sits on the stone
    with no box. Tokens only. */
 
 .wrap {
@@ -109,7 +109,7 @@
   text-wrap: pretty;
 }
 
-/* The form's field: a tint across the page, the form on it at a comfortable measure. */
+/* The form's field: the stone across the page, the form on it at a comfortable measure. */
 .formBand {
   padding-block: var(--section-space);
 }

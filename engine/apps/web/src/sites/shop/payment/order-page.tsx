@@ -1,6 +1,6 @@
 /**
- * The frame every order and simulator state shares (Outline Colour 17.7): a gamboge field opens
- * the page with its title (and a lede where a fact belongs under it), then the order's own content
+ * The frame every order and simulator state shares (Ivory and ink 18): the page's head sits on
+ * the paper with its title (and a lede where a fact belongs under it), then the order's own content
  * runs on the paper in a reading measure. Markup only; the states decide what goes inside.
  */
 import type { ReactNode } from 'react'

@@ -26,10 +26,11 @@ type Props = {
 }
 
 /**
- * Outline Colour's signature composition (phase 17): a full-bleed field of flat pigment holds the
+ * A page's opening (phase 17, re-toned Ivory and ink in phase 18): a full-bleed field holds the
  * copy, and the picture lies across the field's lower edge onto the paper — on a desktop as deep as
  * 62% of the picture (or the copy, whichever is more), on a phone overlapping the field's foot. No
- * frame and no shadow: the only depth is the picture crossing the boundary of two colours.
+ * frame and no shadow. On the gallery the field is its own paper, so the sheet simply lies beside
+ * the words; on the shop it is the warm-stone panel the print crosses.
  */
 export function Crossing({
   ratio,

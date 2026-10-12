@@ -1,5 +1,5 @@
-/* The bag page (6.2; Outline Colour 17.7): a gamboge field opens the page, the lines run ruled at
-   the left, the summary lies on a pale field at the right. 390 px first, tokens only
+/* The bag page (6.2; Ivory and ink 18): the page's head sits on the paper, the lines run ruled at
+   the left, the summary lies on the stone at the right. 390 px first, tokens only
    (DESIGN-SYSTEM.md). The page breaks out of the reading column to the shop's full width. */
 .bag {
   width: var(--page-wrap);

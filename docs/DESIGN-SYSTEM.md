@@ -49,11 +49,13 @@ first-run UI is the real UI, made so that a redesign is a token and component ch
 
 ## 1. The two sites, one family
 
-> **Since phase 17 (2026-10-12) both sites wear Outline Colour** — the user's choice in a direction round; DESIGN.md
-> "Outline Colour — both public sites (phase 17)" records it and supersedes this section's palettes and signature
-> details: one mineral paper and one copperplate ink for both, each site living in its own pigment (the gallery
-> verdigris, the shop gamboge), madder for the one action, works in clear windows (no mats), no eyebrows or marks,
-> full width on a desktop. What still holds: one family, components shared, no component branching on the site.
+> **Since phase 18 (2026-10-12) both sites wear Ivory and ink** — the client's palette, chosen from a board of four;
+> DESIGN.md "Ivory and ink — both public sites (phase 18)" records it and supersedes this section's palettes and
+> signature details (and phase 17's Outline Colour): two distinct shops on one clean base — the gallery on ivory with
+> a deep green action and an ink footer, its antiques uncropped on the paper; the shop on a warmer white with a
+> warm-stone hero panel, bronze on its action, an espresso footer and every print hung on an even stone tile — no
+> eyebrows or marks, full width on a desktop. What still holds: one family, components shared, no component
+> branching on the site.
 
 | | Indies Gallery | Old East Indies |
 | --- | --- | --- |
@@ -122,8 +124,8 @@ shift. Weights loaded: Cormorant 400, 500, 600 and italic 400; Karla 400, 500, 7
 
 ## 4. Colour
 
-> **Superseded in its values by Outline Colour (phase 17):** the roles and the three tiers stand; the pigments, their
-> strengths and their contrast are in DESIGN.md and `shared/styles/tokens/primitives.css`, mapped per site in
+> **Superseded in its values by Ivory and ink (phase 18):** the roles and the three tiers stand; the ramps and their
+> contrast are in DESIGN.md and `shared/styles/tokens/primitives.css`, mapped per site in
 > `sites/{gallery,shop}/tokens/brand.css`. The client's final colours (Q16) remain an edit to those files.
 
 Components use **roles** (tier 3), never raw values. **Each site's palette is tier 2** — its brand variables, in one

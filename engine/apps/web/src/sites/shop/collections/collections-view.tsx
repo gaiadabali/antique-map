@@ -1,12 +1,20 @@
 /**
- * The collections index (13.1): a grid of matted lead pictures, one per category, each a plain
- * link (a storefront link never prefetches) to the category's listing.
+ * The collections index (13.1; Ivory and ink): a head on the paper, then one portrait tile per
+ * category with its lead print, its name and its count. Each is a plain link (a storefront link
+ * never prefetches) to the category's listing.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import { createHref, SITES } from '@engine/config/sites'
 
 import type { CollectionVM } from '../../../server/shop/catalogue/collections-of'
-import { Band, Mat, MatNote, ResponsiveImage, SectionHead } from '../../../shared/ui'
+import {
+  PrintTile,
+  PrintTileNote,
+  ResponsiveImage,
+  SectionHead,
+  printAspectOf,
+  printRatioOf,
+} from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { collectionsText } from './copy'
@@ -24,14 +32,13 @@ export function CollectionsView({
   const href = createHref(SITES.shop)
   return (
     <section className={styles.page} aria-labelledby="collections-title">
-      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
-        <SectionHead
-          level={1}
-          id="collections-title"
-          title={text('collections.title')}
-          lede={text('collections.lede')}
-        />
-      </Band>
+      <SectionHead
+        level={1}
+        id="collections-title"
+        className={styles.head}
+        title={text('collections.title')}
+        lede={text('collections.lede')}
+      />
       {collections.length === 0 ? (
         <p className={styles.empty}>{text('collections.empty')}</p>
       ) : (
@@ -43,22 +50,22 @@ export function CollectionsView({
                 className={styles.card}
               >
                 {collection.image ? (
-                  <Mat size="compact">
+                  <PrintTile ratio={printRatioOf(collection.image)}>
                     <ResponsiveImage
                       variant="fill"
-                      aspectRatio="4 / 5"
+                      aspectRatio={printAspectOf(printRatioOf(collection.image))}
                       src={collection.image.url}
                       srcSet={collection.image.srcSet}
                       alt={imageAlt(words, collection.image)}
-                      sizes="(min-width: 75rem) 23vw, (min-width: 48rem) 31vw, 47vw"
+                      sizes="(min-width: 75rem) 30vw, 47vw"
                       priority={index === 0}
                       unoptimized
                     />
-                  </Mat>
+                  </PrintTile>
                 ) : (
-                  <Mat size="compact" ratio={4 / 5}>
-                    <MatNote>{collection.label}</MatNote>
-                  </Mat>
+                  <PrintTile>
+                    <PrintTileNote>{collection.label}</PrintTileNote>
+                  </PrintTile>
                 )}
                 <span className={styles.caption}>
                   <span className={styles.name}>{collection.label}</span>

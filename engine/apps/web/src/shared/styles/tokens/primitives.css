@@ -1,9 +1,9 @@
 /* =====================================================================
    Tier 1 primitives — raw scales shared by both sites and the admin.
-   The public sites wear Outline Colour (phase 17, the surface brief
-   engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md):
-   copperplate ink on a mineral paper, and three historic map-colourists'
-   pigments in three locked strengths. The brand files map them to roles.
+   The public sites wear Ivory and ink (phase 18, the client's choice):
+   the ivory and shell ramps below, one per site. The Outline Colour ramps
+   (phase 17) stay as the semantic fallbacks; nothing else reads them.
+   The brand files map the ramps to roles.
    The admin reads only the linen-to-bronze ramp, the space scale and the
    status colours below; keep those values as they are.
    ===================================================================== */
@@ -56,6 +56,38 @@
   --primitive-madder-ink: #52242d; /* 5.3:1 on the wash */
   --primitive-madder-mist: #f6dfe4; /* on the full */
   --primitive-madder-deep: #74283b; /* the action pressed */
+
+  /* Ivory and ink (phase 18, the client's choice 2026-10-12): two distinct shops on one clean
+     base. Contrast checked 2026-10-12 — every text pair AA, input boundaries ≥ 3.5:1. */
+  /* the gallery: ivory, ink, a deep green accent, an ink footer */
+  --primitive-ivory: #f7f5f0;
+  --primitive-ivory-raised: #fdfcfa;
+  --primitive-ivory-stone: #eeebe4; /* tiles and panels; muted 5.7:1 on it */
+  --primitive-ivory-ink: #1b1c1a; /* 15.7:1 on ivory */
+  --primitive-ivory-muted: #5c5b56; /* 6.3:1 on ivory */
+  --primitive-ivory-rule: #e2ded6;
+  --primitive-ivory-rule-strong: #858179; /* 3.6:1 */
+  --primitive-ivory-green: #2d5b52; /* the gallery's action; ivory on it 7.1:1 */
+  --primitive-ivory-green-deep: #234840;
+  --primitive-ivory-foot-ink: #efece6; /* 14.5:1 on the ink footer */
+  --primitive-ivory-foot-muted: #b9b5ac; /* 8.4:1 */
+  /* the shop: a warmer white, a warm-stone panel, a bronze accent, an espresso footer */
+  --primitive-shell: #faf8f4;
+  --primitive-shell-raised: #fffefc;
+  --primitive-shell-stone: #efeae1; /* print tiles; muted 5.2:1 on it */
+  --primitive-shell-panel: #e9e1d4; /* the hero and page-head panel; muted 4.8:1 */
+  --primitive-shell-ink: #221e1a; /* 15.6:1 */
+  --primitive-shell-muted: #675f56; /* 5.9:1 */
+  --primitive-shell-rule: #e6dfd3;
+  --primitive-shell-rule-strong: #8b8274; /* 3.6:1 */
+  --primitive-shell-bronze: #8a5a2b; /* the shop's action; ivory on it 5.5:1 */
+  --primitive-shell-bronze-deep: #6f4720;
+  --primitive-shell-espresso: #2a211b; /* the footer */
+  --primitive-shell-foot-ink: #efe7dc; /* 12.9:1 */
+  --primitive-shell-foot-muted: #bfb3a3; /* 7.7:1 */
+  /* a print hung on its tile: a soft, low shadow */
+  --primitive-shadow-print: 0 1px 2px #0000001f, 0 10px 22px -6px #00000026;
+  --primitive-shadow-print-lift: 0 2px 4px #00000024, 0 18px 32px -8px #0000002e;
 
   /* typography sizes (px values in comments are the 16px-rem baseline) */
   --primitive-size-display: clamp(3rem, 1.5rem + 4.4vw, 6rem); /* 48–96 */
