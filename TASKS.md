@@ -87,6 +87,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
 | 18·W1 | 18.1 The palette | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
+| 18·W2 | 18.4 The shop's home | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1204,7 +1205,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 18.3.a the print large on its tile beside the details (name, price, options, Add to bag, stock, delivery), the other views as small tiles, the story below
   - [ ] 18.3.b **Check:** a product with variants and one without at 390, 1280 and 1920 in both languages, axe clean; Add to bag still works.
 
-- [ ] **18.4 The shop's home** · needs: 18.1
+- [ ] **18.4 The shop's home** · needs: 18.1 — 🔄 18·W2
   - **Lane** WEB · **Agent** orchestrator · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/home/**`, `engine/apps/web/src/sites/gallery/home/**`
   - **Read** this phase's goal
