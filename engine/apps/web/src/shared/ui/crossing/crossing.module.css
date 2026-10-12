@@ -80,6 +80,8 @@
 }
 
 .picture img {
+  display: block;
+  max-inline-size: 100%;
   object-fit: contain;
 }
 
