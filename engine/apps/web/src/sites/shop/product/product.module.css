@@ -30,20 +30,19 @@
   min-width: 0;
 }
 
-/* The lead tile, held so a portrait tile never runs taller than the screen. */
+/* The lead: a wall of stone the width of its column, 4 : 5 on a phone and never taller than the
+   screen, the print hung in it at its own shape. */
 .lead {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   inline-size: 100%;
-  max-inline-size: calc(84svh * 0.8);
-  margin-inline: auto;
+  container-type: inline-size;
 }
 
-@media (min-width: 64rem) {
-  .lead {
-    margin-inline: 0;
-  }
+.lead .leadTile {
+  aspect-ratio: auto;
+  block-size: min(84svh, 125cqi);
 }
 
 /* The details: held clear of the sticky header (5.5rem) while the gallery scrolls past. */
@@ -276,4 +275,15 @@
 
 .optionSoldOut:hover {
   background: var(--color-field);
+}
+
+/* A sold-out option still chosen reads in the ink chip's own type (AA), its state included. */
+.optionChosen.optionSoldOut,
+.optionChosen.optionSoldOut:hover,
+.optionChosen .optionState {
+  color: var(--color-accent-contrast);
+}
+
+.optionChosen.optionSoldOut:hover {
+  background: var(--color-accent);
 }
