@@ -49,6 +49,12 @@ first-run UI is the real UI, made so that a redesign is a token and component ch
 
 ## 1. The two sites, one family
 
+> **Since phase 17 (2026-10-12) both sites wear Outline Colour** — the user's choice in a direction round; DESIGN.md
+> "Outline Colour — both public sites (phase 17)" records it and supersedes this section's palettes and signature
+> details: one mineral paper and one copperplate ink for both, each site living in its own pigment (the gallery
+> verdigris, the shop gamboge), madder for the one action, works in clear windows (no mats), no eyebrows or marks,
+> full width on a desktop. What still holds: one family, components shared, no component branching on the site.
+
 | | Indies Gallery | Old East Indies |
 | --- | --- | --- |
 | Sells | one-of-one originals, by conversation | merchandise, through a checkout |
@@ -115,6 +121,10 @@ shift. Weights loaded: Cormorant 400, 500, 600 and italic 400; Karla 400, 500, 7
   sideways scrolling, and 768 is checked once per component.
 
 ## 4. Colour
+
+> **Superseded in its values by Outline Colour (phase 17):** the roles and the three tiers stand; the pigments, their
+> strengths and their contrast are in DESIGN.md and `shared/styles/tokens/primitives.css`, mapped per site in
+> `sites/{gallery,shop}/tokens/brand.css`. The client's final colours (Q16) remain an edit to those files.
 
 Components use **roles** (tier 3), never raw values. **Each site's palette is tier 2** — its brand variables, in one
 file per site: `sites/gallery/tokens` and `sites/shop/tokens` — and both define every role. The gallery is quiet and

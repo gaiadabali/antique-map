@@ -32,8 +32,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **14** The gallery's luxury pass | UI | 12 | ✅ done | 8/8 | 17/17 | 0 | `██████████` 100% |
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
-| **17** Both sites full width, in their own world | UI | 12, 14 | 🔄 in progress | 0/8 | 9/19 | 0 | `█████░░░░░`  47% |
-| **All** | 17 phases | | | **76/89** | **275/302** | **8** | `█████████░`  91% |
+| **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
+| **All** | 17 phases | | | **84/89** | **285/302** | **8** | `█████████░`  94% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -85,13 +85,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
-| 17·W1 | 17.1 The world's foundation | orchestrator | `feat/p17-dsg` | 2026-10-12 | |
-| 17·W1 | 17.2 The two homes | orchestrator | `feat/p17-dsg` | 2026-10-12 | |
-| 17·W2 | 17.5 The gallery's other pages | medior | `main` | 2026-10-12 | |
-| 17·W2 | 17.3 The gallery's listings | medior | `main` | 2026-10-12 | |
-| 17·W2 | 17.4 The gallery's item page | medior | `main` | 2026-10-12 | |
-| 17·W2 | 17.6 The shop's listings and product | medior | `main` | 2026-10-12 | |
-| 17·W2 | 17.7 The shop's purchase path and partnership | medior | `main` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1111,72 +1104,72 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on a production build, every public page of both sites (gallery: home, browse, a type page, search, item, makers, a maker, places, a place, a story, sell to us, contact, not-found; shop: home, browse, search, collections, a collection, product, bag, checkout, tracking, an order, stores, partnership, not-found) is in the new world at 390, 1280 and 1920 px in both languages, full width on a desktop, axe clean, no sideways scroll; no behaviour, price, stock, access or copy change; the finish review's verdict is ship; DESIGN.md records the world.
 **Waves:** W1 — 17.1, 17.2 · W2 — 17.3, 17.4, 17.5, 17.6, 17.7 · W3 — 17.8
 
-- [ ] **17.1 The world's foundation** · needs: phase 14 — 🔄 17·W1
+- [x] **17.1 The world's foundation** · needs: phase 14 — ✅ 2026-10-12 1c0deda9
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** the token files (`shared/styles/tokens/{primitives,semantic}.css`, `sites/{gallery,shop}/tokens/brand.css`), `engine/apps/web/src/styles/site.css`, `engine/apps/web/src/shared/ui/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/shared/style-guide/**`, `engine/apps/web/src/shared/chat/chat-launcher.module.css`
   - **Read** the surface brief; DESIGN.md; DESIGN-SYSTEM.md §1, §7
   - _Requirements: 12.1_
   - [x] 17.1.a the pigment palette in three locked strengths, the type scale, the full-width page frame and fluid gutters as tokens; selection, caret, focus and scrollbars themed; contrast checked
   - [x] 17.1.b the shared pieces in the world: the mat becomes a colour field holding the work uncropped (no frame lines), the colour wash-in and hover deepening; section heads without eyebrows; proof points, buttons, stock tag, pagination, chips, inputs, breadcrumbs square and flat; the header and footer full width, the doubled wordmark gone
-  - [ ] 17.1.c **Check:** the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
+  - [x] 17.1.c **Check:** the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
 
-- [ ] **17.2 The two homes** · needs: phase 14 — 🔄 17·W1
+- [x] **17.2 The two homes** · needs: phase 14 — ✅ 2026-10-12 1c0deda9
   - **Lane** WEB · **Agent** orchestrator · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/{gallery,shop}/home/**`, `engine/apps/web/src/server/{gallery,shop}/home/**`
   - **Read** the surface brief's FIRST VIEWPORT; EXPERIENCE-GALLERY.md §3; EXPERIENCE-SHOP.md §3
   - _Requirements: 12.1_
   - [x] 17.2.a the gallery home: the newest original across the verdigris field's edge, the headline at display scale, the bands below in the pigment order, no empty placeholder frames
   - [x] 17.2.b the shop home in gamboge in the same structure
-  - [ ] 17.2.c **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll.
+  - [x] 17.2.c **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll.
 
-- [ ] **17.3 The gallery's listings** · needs: 17.1 — 🔄 17·W2
+- [x] **17.3 The gallery's listings** · needs: 17.1 — ✅ 2026-10-12 1c0deda9
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/{browse,search}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{browse,search}/**`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §4
   - _Requirements: 12.1_
   - [x] 17.3.a browse, the type pages and search full width in the world: the grid gains columns with the width, the facets quiet, the work cards on their fields
-  - [ ] 17.3.b **Check:** browse, `/antique-maps`, a filtered page, a search and an empty search at 390, 1280 and 1920 in both languages, axe clean; facets, sort, paging and "Include sold" still work.
+  - [x] 17.3.b **Check:** browse, `/antique-maps`, a filtered page, a search and an empty search at 390, 1280 and 1920 in both languages, axe clean; facets, sort, paging and "Include sold" still work.
 
-- [ ] **17.4 The gallery's item page** · needs: 17.1 — 🔄 17·W2
+- [x] **17.4 The gallery's item page** · needs: 17.1 — ✅ 2026-10-12 1c0deda9
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/item/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/item/**`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §5–§6, §8
   - _Requirements: 12.1_
   - [x] 17.4.a the sheet large and uncropped across a field's edge, the title block, Ask in rose, the record as a ruled running list
-  - [ ] 17.4.b **Check:** an available work, a sold one and one with several images at 390, 1280 and 1920 in both languages, axe clean; zoom and Ask still work; no price in the HTML.
+  - [x] 17.4.b **Check:** an available work, a sold one and one with several images at 390, 1280 and 1920 in both languages, axe clean; zoom and Ask still work; no price in the HTML.
 
-- [ ] **17.5 The gallery's other pages** · needs: 17.1 — 🔄 17·W2
+- [x] **17.5 The gallery's other pages** · needs: 17.1 — ✅ 2026-10-12 1c0deda9
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/gallery/{makers,places,pages,contact}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/{maker,place,page,story,sell-to-us,contact,not-found,[...missing]}/**`, `engine/apps/web/src/app/(gallery)/gallery/[locale]/not-found.tsx`
   - **Read** the surface brief; EXPERIENCE-GALLERY.md §7–§9
   - _Requirements: 12.1_
   - [x] 17.5.a makers, a maker, places, a place, a story, sell to us, contact and not-found full width in the world
-  - [ ] 17.5.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; both forms still refuse an empty Send.
+  - [x] 17.5.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; both forms still refuse an empty Send.
 
-- [ ] **17.6 The shop's listings and product** · needs: 17.1 — 🔄 17·W2
+- [x] **17.6 The shop's listings and product** · needs: 17.1 — ✅ 2026-10-12 1c0deda9
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores,product}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores,product}/**`
   - **Read** the surface brief; EXPERIENCE-SHOP.md §4–§5
   - _Requirements: 12.1_
   - [x] 17.6.a browse, search, collections, a collection, stores and the product page full width in the world, prints on gamboge fields, Add to bag in rose
-  - [ ] 17.6.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort, paging and Add to bag still work.
+  - [x] 17.6.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort, paging and Add to bag still work.
 
-- [ ] **17.7 The shop's purchase path and partnership** · needs: 17.1 — 🔄 17·W2
+- [x] **17.7 The shop's purchase path and partnership** · needs: 17.1 — ✅ 2026-10-12 1c0deda9
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{bag,checkout,tracking,payment,partnership}/**` (markup and CSS only), `engine/apps/web/src/app/(shop)/shop/[locale]/{cart,checkout,track,order,partnership,not-found,[...missing]}/**`
   - **Read** the surface brief; COMMERCE.md (no behaviour change)
   - _Requirements: 12.1_
   - [x] 17.7.a bag, checkout, tracking, an order, partnership and not-found in the world
-  - [ ] 17.7.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; a purchase still completes on the simulator; the enquiry still submits.
+  - [x] 17.7.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; a purchase still completes on the simulator; the enquiry still submits.
 
-- [ ] **17.8 The finish review and the record** · needs: 17.2, 17.3, 17.4, 17.5, 17.6, 17.7
+- [x] **17.8 The finish review and the record** · needs: 17.2, 17.3, 17.4, 17.5, 17.6, 17.7 — ✅ 2026-10-12 1c0deda9
   - **Lane** DSG · **Agent** orchestrator, the finish reviewer, the documenter, qa (Sonnet) · **Wave** W3
   - **Owns** `DESIGN.md`, `docs/DESIGN-SYSTEM.md`, `docs/gates/outline-colour.md`, `docs/gates/outline-colour/*`
   - **Read** the surface brief
   - _Requirements: 12.1_
-  - [ ] 17.8.a every public page of both sites captured at 390, 1280 and 1920 in both languages on a production build
-  - [ ] 17.8.b the finish review against the direction contract, its fixes applied; DESIGN.md and DESIGN-SYSTEM.md record the world
-  - [ ] 17.8.c **Check:** `docs/gates/outline-colour.md` — the verdict, the screens, axe clean, no sideways scroll; the e2e smoke of both sites passes.
+  - [x] 17.8.a every public page of both sites captured at 390, 1280 and 1920 in both languages on a production build
+  - [x] 17.8.b the finish review against the direction contract, its fixes applied; DESIGN.md and DESIGN-SYSTEM.md record the world
+  - [x] 17.8.c **Check:** `docs/gates/outline-colour.md` — the verdict, the screens, axe clean, no sideways scroll; the e2e smoke of both sites passes.
 
 ---
 
@@ -1199,6 +1192,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-12 — ✅ **phase 17 — both sites full width, in Outline Colour** (8/8 tasks; the user's request "make all full width style for desktop, and ensure the luxury feels and not regular ai slop design"). The user kept Cormorant and Karla and the placeholder logos (the doubled wordmark gone), freed the cream grounds, mats and eyebrow marks, ruled out dark, stark white and vintage, and chose **Outline Colour** in a direction round (seed `dbb8b833`, code-led): copperplate ink on a mineral paper; verdigris, gamboge and madder in three locked strengths, contrast checked; each site in its own pigment (the gallery verdigris, the shop gamboge), the bridge band in the sister's colour, madder only on the one action; nothing framed — works in clear windows on one baseline, the colour washing in as a work enters the view; the `Crossing` (copy on a field, the picture across its edge, the pigment's outline drawn there) on the homes, the antique, the product and a story; full width at every desktop size with grids that gain columns; no eyebrows, boxes, shadows or radii. The orchestrator built the foundation and both homes; Sonnet agents built the pages (17.3–17.7); the finish reviewer ran two rounds (six of eight fixes resolved; the two left are the owner's content: condition grades read "VG" against the home's promise of plain words, and grey scan margins inside some product photos). **Staging:** `production-20261012T032523Z-2bf9df3f`, `-040708Z-5ac2195b`, `-041540Z-1c0deda9`. **Evidence** (`docs/gates/outline-colour.md`): axe 0 on every page of both sites at 1280 and 390 in en and id, locally and on staging; no sideways scroll at 390, 1440 and 1920; CI on `1c0deda9` green (the purchase on the simulator, Sell-to-us sending a lead, Add to bag, tracking among 167 e2e; one admin roles flake passed on re-run). Found on the way: staging's public shop shows 26 published "REHEARSAL 10.4" test products; Docker Desktop is stopped on this laptop by the owner's order, so local review ran on the native Postgres (port 5433) with a catalogue copy of staging (no people tables) and staging's public media.
 
 - 2026-10-11 — ✅ **phase 16 — the CMS redesign closed** (4/4 tasks; the user's request "cms ui need to be completely redesigned, and it should be light mode"). The admin wears the Indies world built for work, light only: linen ground, white paper panels, ink type, bronze for the one primary action, Karla to read and click, Cormorant for titles, the wordmark on sign-in and in the sidebar (Payload's own scales retuned in `tokens/admin.css`). The home is **the Catalogue Wall** — today's work in one strip, chips by site and state, the search beside the title, the archive as matted cards with one state tag. The Order panel, store queue and Leads inbox are one ruled panel of rows (orders 50 a page); analytics inside the frame with Karla figures; native controls themed. **Store staff get a 307 to their Order panel from the proxy** (`security/admin-landing.ts`; it was a 200 with a one-second refresh — a blank page on a phone, the 10.8 follow-up; a first attempt with a relative `Location` answered 500 on staging, caught there and pinned by a test through Next's adapter). From the finish review's five rounds: the sidebar open on a laptop (Payload closed it on every load at ≤1440 px; `admin/nav-open.jsx`, `@payloadcms/ui` now a cms dependency); short dates; `Rp 95.000` in either language; list columns that fit at 1280; the antique record opens with seven rarely-filled sections folded and the AI-draft checks only for what was drafted (5,313 px from 7,375; the publish guard and audit untouched, their db tests 10/10); a phone's record header whole; the account page no longer 75 px too wide. **Done when** met on staging `production-20261011T094100Z-f23ab4d1` (`docs/gates/admin-redesign.md`): the finish review's verdict **ship**; every screen 0 px sideways at 390 and 1280; axe 0 on every screen the redesign owns in both languages (the owner, an editor locally, the store user); the timed admin recipes all pass (`admin-usability.md`); DESIGN.md records the admin's world. **Recorded exception:** Payload's own list, record and settings markup keeps the structural axe findings filed as F6 in phase 4 (unnamed popup buttons, unlabelled react-select inputs and row checkboxes); the redesign is CSS there and removed F6's one contrast finding. Sonnet built the custom views' round, the orchestrator the rest and reviewed it. **Follow-ups:** staging's first Wall pages are REHEARSAL 10.4 drafts whose pictures are admin screenshots (the timed recipes upload them); the cms `instance.test.ts` times out once in a while under the full parallel unit run.
 - 2026-10-10 — ✅ **phase 15 — the optimisation pass closed** (4/4 tasks; user request). **15.1:** CI on main green in **5m00s** (run 37991263216; it was 12m20s green, run 37902899675, and red since phase 12). The unit tests, the real-database tests (now 83 files: the app's 20 had never run in CI), e2e and Lighthouse are jobs side by side; the static checks run side by side in one job; e2e restores a cached snapshot of the seeded database (2 s instead of 1m40s), builds, restores it and installs Chromium at once, and runs Playwright on 4 workers; Turbopack's build cache is saved by main; Chromium is cached and apt runs only for a missing library; service images come from AWS's mirror and GHCR (Docker Hub's anonymous limit failed one run); `codeql.yml` dropped (the default setup scans, the user's go-ahead). The red tests on the way: the inbox db test's `.css` import; six e2e specs that drifted under phases 12–15 or hid an order dependence (sell-to-us step 3 now says "We come back to you" — no offer, no price, EXPERIENCE-GALLERY.md §12). Staging carries it all on `production-20261009T204006Z-97420ac6`. **Follow-ups:** `tests/security` is not in CI and has two stale cases (W4 predates 10.7's late payments; the stock-import client's fetch has no timeout); the database job (4–5 min) can be sharded if it ever becomes the long pole.
