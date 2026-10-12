@@ -1,4 +1,4 @@
-/* The shop home below the hero (4.3.b, 12.3; Outline Colour 17.2). The hero's own styles are in
+/* The shop home below the hero (4.3.b, 12.3; Ivory and ink 18.4). The hero's own styles are in
    hero.module.css. Every value is a token from shared/styles/tokens or the shop brand file — no
    raw colour, no font-family. */
 
@@ -12,9 +12,14 @@
   margin-block-end: calc(-1 * var(--space-8));
 }
 
-/* A band on the paper: the rhythm alone parts it from its neighbours, no rule. */
+/* A section on the paper: the rhythm parts it from a band; a hairline from the next paper section. */
 .section {
-  padding-block: var(--section-space);
+  padding-block: var(--section-space) var(--space-9);
+}
+
+.trade {
+  padding-block: var(--space-9) var(--section-space);
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
 /* "Shop by": a small label, then two lines of words set at section-title size. */
@@ -58,8 +63,8 @@
   text-decoration-color: currentColor;
 }
 
-/* Best sellers: six prints, a museum caption under each — four on a phone, six on a tablet, four at
-   laptop widths, six in one row on a wide screen, never a row with an empty slot. */
+/* Best sellers: prints on even tiles, a museum caption under each — four on a phone, six on a
+   tablet, four in one row from a laptop up (never more: fewer, larger prints), never an empty slot. */
 .four {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -81,13 +86,6 @@
 .productCard:focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--space-1);
-}
-
-.productImage {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .productCard .cardTitle {
@@ -112,7 +110,8 @@
 
 .cardPrice {
   margin: var(--space-2) 0 0;
-  font: var(--text-small);
+  font: var(--text-body);
+  font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text);
 }
 
@@ -125,7 +124,7 @@
   font: var(--text-h3);
 }
 
-/* The sets: three walls in words on the madder field. */
+/* The sets: three walls in words on the stone, each opened by an ink rule. */
 .three {
   display: grid;
   gap: var(--space-7) var(--grid-gap);
@@ -168,8 +167,8 @@
 .num {
   font: var(--text-display);
   letter-spacing: var(--tracking-display);
-  /* the pigment's own deep hue: large type, well over 3:1 on the paper */
-  color: var(--pigment-1-on-wash);
+  /* the muted ink: large type, well over 3:1 on the paper */
+  color: var(--color-text-muted);
 }
 
 .step .stepTitle {
@@ -183,11 +182,11 @@
   color: var(--color-text-muted);
 }
 
-/* Trade: the offer at left, its facts at right, on deep verdigris. */
+/* Trade: the offer at left, its facts at right, both from the top. */
 .split {
   display: grid;
   gap: var(--space-8) var(--grid-gap);
-  align-items: end;
+  align-items: start;
 }
 
 .facts {
@@ -213,16 +212,6 @@
 
   .four > :nth-child(n + 5) {
     display: none;
-  }
-}
-
-@media (min-width: 110rem) {
-  .four {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-
-  .four > :nth-child(n + 5) {
-    display: flex;
   }
 }
 

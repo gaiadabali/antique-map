@@ -1,5 +1,5 @@
 /**
- * The shop home's sections below the best sellers (12.3; Outline Colour 17.2): sets, process, trade
+ * The shop home's sections below the best sellers (12.3; Ivory and ink 18.4): sets, process, trade
  * and originals. Their pictures are not supplied yet, so each is type on its field — never an
  * empty window. Every word comes from the lexicon.
  */
@@ -34,7 +34,7 @@ const STEPS = [
 
 const FACTS = ['home.shop.tradeFact1', 'home.shop.tradeFact2', 'home.shop.tradeFact3'] as const
 
-/** The sets on the gamboge tint, each one a title and its line: three walls in words. */
+/** The sets on the stone, each one a title and its line: three walls in words. */
 export function Sets({ locale, href, t }: SectionProps) {
   return (
     <Band pigment={1} strength="tint" aria-labelledby="home-sets">
@@ -81,11 +81,11 @@ export function Process({ t }: Pick<SectionProps, 't'>) {
   )
 }
 
-/** Trade and gifting on the paper: the offer, its facts, and the way in (the page's colour is spent
- * on the hero, the sets and the bridge to the originals). */
+/** Trade and gifting on the paper, a hairline under the process: the offer, its facts, and the way
+ * in (the page's colour is spent on the hero, the sets and the bridge to the originals). */
 export function Trade({ locale, href, t }: SectionProps) {
   return (
-    <Band pigment="paper" aria-labelledby="home-trade">
+    <section className={styles.trade} aria-labelledby="home-trade">
       <div className={styles.split}>
         <div>
           <SectionHead
@@ -99,12 +99,12 @@ export function Trade({ locale, href, t }: SectionProps) {
         </div>
         <ProofPoints className={styles.facts} items={FACTS.map((key) => t(key))} />
       </div>
-    </Band>
+    </section>
   )
 }
 
-/** The bridge to the gallery's originals wears the gallery's own colour (verdigris): colour names
- * the site. */
+/** The bridge to the gallery's originals wears the gallery's own cool stone: the ground names the
+ * site. */
 export function Originals({ sisterHref, t }: { sisterHref: string; t: HomeText }) {
   return (
     <Band pigment={3} strength="wash" aria-labelledby="home-originals">

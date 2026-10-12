@@ -1,5 +1,6 @@
-/* The shop home's hero in Outline Colour (17.2): the shared `Crossing` lays the gamboge field and
-   the print; this file sets the type on the field and the caption on the paper. Every value is a
+/* The shop home's hero in Ivory and ink (18.4): the shared `Crossing` lays the warm-stone panel
+   and the print; this file sets the type on the panel, hangs the print with the one soft shadow,
+   and sets the caption on the paper. Every value is a
    token from shared/styles/tokens or the shop brand file — no raw colour, no font-family. */
 
 .title {
@@ -29,6 +30,7 @@ p.lede {
 
 .printLink {
   display: block;
+  box-shadow: var(--shadow-print);
 }
 
 .empty {

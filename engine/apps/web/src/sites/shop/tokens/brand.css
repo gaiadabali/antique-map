@@ -37,11 +37,11 @@
   --brand-success: var(--primitive-positive);
   --brand-caution: var(--primitive-caution);
 
-  /* The roles a band or a crossing asks for: 1 is the shop's own (the warm-stone panel as its
-     field, the stone tile as its tint, the espresso footer as its full), 2 the shop's own again,
-     3 the sister gallery's cool stone for the bridge to the originals. */
+  /* The roles a band or a crossing asks for: 1 is the shop's everyday ground (a page's head on its
+     paper, the stone as its tint, the espresso footer as its full); 2 the warm-stone panel the
+     home's hero alone stands on; 3 the sister gallery's cool stone for the bridge to the originals. */
   --brand-pigment-1-tint: var(--primitive-shell-stone);
-  --brand-pigment-1-wash: var(--primitive-shell-panel);
+  --brand-pigment-1-wash: var(--primitive-shell);
   --brand-pigment-1-full: var(--primitive-shell-espresso);
   --brand-pigment-1-on-wash: var(--primitive-shell-muted);
   --brand-pigment-1-on-full: var(--primitive-shell-foot-ink);
