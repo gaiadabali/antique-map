@@ -7,6 +7,8 @@
   margin-inline-start: 50%;
   translate: -50% 0;
   padding-inline: var(--gutter);
+  /* the page ends on the enquiry band: it meets the footer without a strip of paper between */
+  margin-block-end: calc(-1 * var(--space-8));
 }
 
 /* The page's opening field starts right under the header (the shell's main pads its top). */
@@ -91,10 +93,6 @@
 }
 
 /* The enquiry lies on the stone; the form sits on it with no frame. */
-.enquire {
-  margin-block-end: var(--section-space);
-}
-
 .enquireGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

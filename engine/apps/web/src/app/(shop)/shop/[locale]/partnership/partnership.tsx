@@ -147,13 +147,7 @@ function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
       )}&body=${encodeURIComponent(t('partnership.emailBody'))}`
     : null
   return (
-    <Band
-      pigment={1}
-      strength="tint"
-      className={styles.enquire}
-      id="enquire"
-      aria-labelledby="partnership-enquire"
-    >
+    <Band pigment={1} strength="tint" id="enquire" aria-labelledby="partnership-enquire">
       <div className={styles.enquireGrid}>
         <div className={styles.enquireText}>
           <SectionHead
