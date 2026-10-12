@@ -1,7 +1,8 @@
 /**
- * The browse listing (6.1.b; EXPERIENCE-SHOP.md §4): the category chips, the sort links, the
- * tiles and the pages. Every control is a link, so browsing works without JavaScript and never
- * prefetches; the state in each URL is `canonicalListing()`'s, so one state has one address.
+ * The browse listing (6.1.b; EXPERIENCE-SHOP.md §4; Ivory and ink): a calm head on the paper, one
+ * bar with the category tabs and the sort links, then the prints on even tiles and the pages. Every
+ * control is a link, so browsing works without JavaScript and never prefetches; the state in each
+ * URL is canonicalListing()'s, so one state has one address.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import { canonicalListing, createHref, listingSearch, SITES } from '@engine/config/sites'
@@ -11,7 +12,7 @@ import type {
   ListingVM,
   ProductCardVM,
 } from '../../../server/shop/catalogue/view-models'
-import { Band, Pagination, SectionHead } from '../../../shared/ui'
+import { Pagination, SectionHead } from '../../../shared/ui'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -52,20 +53,19 @@ export function BrowseView({
   const pageHref = (page: number): string => listingHref(listing.sort, page)
   return (
     <section className={styles.browse} aria-labelledby="browse-title">
-      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
-        <SectionHead
-          level={1}
-          id="browse-title"
-          title={title}
-          lede={
-            categorySlug === undefined
-              ? text('browse.description')
-              : listing.items.length > 0
-                ? text('browse.results', { count: listing.total })
-                : undefined
-          }
-        />
-      </Band>
+      <SectionHead
+        level={1}
+        id="browse-title"
+        className={styles.head}
+        title={title}
+        lede={
+          categorySlug === undefined
+            ? text('browse.description')
+            : listing.items.length > 0
+              ? text('browse.results', { count: listing.total })
+              : undefined
+        }
+      />
 
       <div className={styles.toolbar}>
         <nav className={styles.tabs} aria-label={text('listing.category')}>

@@ -1,12 +1,13 @@
 /**
- * The search page's results (6.1.b; EXPERIENCE-SHOP.md §4): the words as the heading, then the
- * same tiles as the listing. No category chips here — the search is over the whole shop. It
- * renders inside the page's `<Suspense>`, so the shell answers while the query runs.
+ * The search page's results (6.1.b; EXPERIENCE-SHOP.md §4; Ivory and ink): the words as the
+ * heading on the paper, then the same cards and grid as the listing. No category tabs here: the
+ * search is over the whole shop. It renders inside the page's <Suspense>, so the shell answers while
+ * the query runs.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ListingVM, ProductCardVM } from '../../../server/shop/catalogue/view-models'
-import { Band, SectionHead } from '../../../shared/ui'
+import { SectionHead } from '../../../shared/ui'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -29,16 +30,15 @@ export function SearchView({
   const text = browseText(locale)
   return (
     <section className={styles.browse} aria-labelledby="search-title">
-      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
-        <SectionHead
-          level={1}
-          id="search-title"
-          title={<>“{query}”</>}
-          lede={
-            listing.items.length > 0 ? text('browse.results', { count: listing.total }) : undefined
-          }
-        />
-      </Band>
+      <SectionHead
+        level={1}
+        id="search-title"
+        className={styles.head}
+        title={<>“{query}”</>}
+        lede={
+          listing.items.length > 0 ? text('browse.results', { count: listing.total }) : undefined
+        }
+      />
       {listing.items.length === 0 ? (
         <p className={styles.empty}>{text('search.empty', { query })}</p>
       ) : (
