@@ -137,6 +137,15 @@ async function statusOf(request: APIRequestContext, path: string): Promise<numbe
 type Violation = { readonly page: string; readonly term: string; readonly snippet: string }
 
 /** Replaces the allowed price wording with a neutral token, so only other price uses fail. */
+/**
+ * The page's CSP nonce is random base64 and can start with "Rp" and a digit (CI 38226921598): it is
+ * no price, so its value is taken out wherever it appears (the attributes and the RSC payload).
+ */
+function maskNonce(html: string): string {
+  const nonce = /nonce="([^"]+)"/.exec(html)?.[1]
+  return nonce === undefined ? html : html.replaceAll(nonce, '')
+}
+
 function maskAllowed(text: string): string {
   let out = text
   for (const phrase of ALLOWED_PRICE_PHRASES) {
@@ -216,7 +225,7 @@ test.describe('Gallery: no commerce anywhere (5.5.b)', () => {
 
       // Raw server HTML: the internal price field and any currency figure never reach a visitor.
       const raw = await request.get(`${BASE_URL}${path}`, { headers: HOST_HEADER })
-      const html = maskAllowed(await raw.text())
+      const html = maskAllowed(maskNonce(await raw.text()))
       if (html.includes(BANNED_INTERNAL)) {
         violations.push({
           page: `${path} [raw]`,

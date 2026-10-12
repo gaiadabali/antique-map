@@ -107,7 +107,8 @@ export function VariantPicker({
         <Button
           type="submit"
           variant="primary"
-          className={[styles.addButton, canAdd ? '' : styles.addSoldOut].filter(Boolean).join(' ')}
+          // `addButton` last: the e2e suite finds a sold-out product by its class ending the list.
+          className={[canAdd ? '' : styles.addSoldOut, styles.addButton].filter(Boolean).join(' ')}
           disabled={!canAdd}
           loading={pending}
         >
