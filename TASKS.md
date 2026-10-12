@@ -33,8 +33,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
-| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 6/11 | 0 | `██████░░░░`  55% |
-| **All** | 18 phases | | | **84/94** | **291/313** | **8** | `█████████░`  93% |
+| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 4/5 | 10/11 | 0 | `█████████░`  91% |
+| **All** | 18 phases | | | **88/94** | **295/313** | **8** | `█████████░`  94% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -86,10 +86,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
-| 18·W1 | 18.1 The palette | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
-| 18·W2 | 18.4 The shop's home | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
-| 18·W2 | 18.2 The shop's grids | medior | `feat/p18-dsg` | 2026-10-12 | |
-| 18·W2 | 18.3 The shop's product page | medior | `feat/p18-dsg` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1182,38 +1178,38 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every public page of both sites wears the new palette at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll; the shop's grids, product page, home, collections and stores show prints on even tiles with tidy, aligned captions; CI green; DESIGN.md records the palette.
 **Waves:** W1 — 18.1 · W2 — 18.2, 18.3, 18.4 · W3 — 18.5
 
-- [ ] **18.1 The palette** · needs: phase 17 — 🔄 18·W1
+- [x] **18.1 The palette** · needs: phase 17 — ✅ 2026-10-12 88d951d4
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** the token files, `engine/apps/web/src/styles/site.css`, `engine/apps/web/src/shared/ui/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/shared/chat/chat-launcher.module.css`
   - **Read** the palette board's option A; DESIGN.md "Outline Colour"
   - _Requirements: 12.1_
   - [x] 18.1.a Ivory and ink as tokens, a distinct ground, accent and footer per site, contrast checked; the colour bands and outline stripes retired; the action in each site's accent
   - [x] 18.1.b a shared print tile: a print centred on an even tile with a soft shadow, for the shop's grids and product page
-  - [ ] 18.1.c **Check:** both homes and the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
+  - [x] 18.1.c **Check:** both homes and the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
 
-- [ ] **18.2 The shop's grids** · needs: 18.1 — 🔄 18·W2
+- [x] **18.2 The shop's grids** · needs: 18.1 — ✅ 2026-10-12 88d951d4
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores}/**`
   - **Read** this phase's goal; 18.1's print tile
   - _Requirements: 12.1_
   - [x] 18.2.a browse, search, collections and a collection tidied: a calm head, one filter and sort bar, prints on even tiles, captions aligned; stores a tidy list
-  - [ ] 18.2.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort and paging still work.
+  - [x] 18.2.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort and paging still work.
 
-- [ ] **18.3 The shop's product page** · needs: 18.1 — 🔄 18·W2
+- [x] **18.3 The shop's product page** · needs: 18.1 — ✅ 2026-10-12 88d951d4
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/product/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
   - **Read** this phase's goal; 18.1's print tile; EXPERIENCE-SHOP.md §5
   - _Requirements: 12.1_
   - [x] 18.3.a the print large on its tile beside the details (name, price, options, Add to bag, stock, delivery), the other views as small tiles, the story below
-  - [ ] 18.3.b **Check:** a product with variants and one without at 390, 1280 and 1920 in both languages, axe clean; Add to bag still works.
+  - [x] 18.3.b **Check:** a product with variants and one without at 390, 1280 and 1920 in both languages, axe clean; Add to bag still works.
 
-- [ ] **18.4 The shop's home** · needs: 18.1 — 🔄 18·W2
+- [x] **18.4 The shop's home** · needs: 18.1 — ✅ 2026-10-12 88d951d4
   - **Lane** WEB · **Agent** orchestrator · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/home/**`, `engine/apps/web/src/sites/gallery/home/**`
   - **Read** this phase's goal
   - _Requirements: 12.1_
   - [x] 18.4.a the shop home tidied in the new palette (the hero on its stone panel, best sellers on tiles, calm sections); the gallery home checked in its own
-  - [ ] 18.4.b **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean.
+  - [x] 18.4.b **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean.
 
 - [ ] **18.5 On staging** · needs: 18.2, 18.3, 18.4
   - **Lane** DSG · **Agent** orchestrator · **Wave** W3
@@ -1245,6 +1241,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-12 — 🔄 **phase 18 — the client's palette, Ivory and ink, on staging** (4/5 tasks; the user's request, as the owner's proxy: "change the color theme … clean, exclusive and premium … tidy up … especially the ecommerce page … a 1 man shop with 2 storefronts"). From a palette board the client chose **Ivory and ink** as two distinct shops: the gallery on ivory with a deep green action and an ink footer, its antiques uncropped on the paper; the shop on a warmer white with a warm-stone hero panel, bronze on its action, an espresso footer and every print hung at its own shape on an even stone tile with one soft shadow (the new shared `PrintTile`). A page's head sits on its paper; Outline Colour's bands and stripes are retired; each bridge wears the sister's ground. The shop's grids (Sonnet), product page (Sonnet), home (orchestrator), collections and stores tidied; the finish review's eight material fixes applied in one round (`14ae321b`). Merged `efc859c1`, live on staging `production-20261012T083302Z-efc859c1`; axe 0 on 56 pages × 390/1280/1920 locally and 54 × 3 on staging; 723 unit tests; sort, paging, tabs and Add to bag checked. Record: `docs/gates/ivory-and-ink.md`, DESIGN.md "Ivory and ink". **Open:** 18.5.b's CI run waits for the push of `main` (the user's OK); the owner's VG grades, scan margins, logos and the 26 rehearsal products published on staging.
 - 2026-10-12 — ✅ **phase 17 — both sites full width, in Outline Colour** (8/8 tasks; the user's request "make all full width style for desktop, and ensure the luxury feels and not regular ai slop design"). The user kept Cormorant and Karla and the placeholder logos (the doubled wordmark gone), freed the cream grounds, mats and eyebrow marks, ruled out dark, stark white and vintage, and chose **Outline Colour** in a direction round (seed `dbb8b833`, code-led): copperplate ink on a mineral paper; verdigris, gamboge and madder in three locked strengths, contrast checked; each site in its own pigment (the gallery verdigris, the shop gamboge), the bridge band in the sister's colour, madder only on the one action; nothing framed — works in clear windows on one baseline, the colour washing in as a work enters the view; the `Crossing` (copy on a field, the picture across its edge, the pigment's outline drawn there) on the homes, the antique, the product and a story; full width at every desktop size with grids that gain columns; no eyebrows, boxes, shadows or radii. The orchestrator built the foundation and both homes; Sonnet agents built the pages (17.3–17.7); the finish reviewer ran two rounds (six of eight fixes resolved; the two left are the owner's content: condition grades read "VG" against the home's promise of plain words, and grey scan margins inside some product photos). **Staging:** `production-20261012T032523Z-2bf9df3f`, `-040708Z-5ac2195b`, `-041540Z-1c0deda9`. **Evidence** (`docs/gates/outline-colour.md`): axe 0 on every page of both sites at 1280 and 390 in en and id, locally and on staging; no sideways scroll at 390, 1440 and 1920; CI on `1c0deda9` green (the purchase on the simulator, Sell-to-us sending a lead, Add to bag, tracking among 167 e2e; one admin roles flake passed on re-run). Found on the way: staging's public shop shows 26 published "REHEARSAL 10.4" test products; Docker Desktop is stopped on this laptop by the owner's order, so local review ran on the native Postgres (port 5433) with a catalogue copy of staging (no people tables) and staging's public media.
 
 - 2026-10-11 — ✅ **phase 16 — the CMS redesign closed** (4/4 tasks; the user's request "cms ui need to be completely redesigned, and it should be light mode"). The admin wears the Indies world built for work, light only: linen ground, white paper panels, ink type, bronze for the one primary action, Karla to read and click, Cormorant for titles, the wordmark on sign-in and in the sidebar (Payload's own scales retuned in `tokens/admin.css`). The home is **the Catalogue Wall** — today's work in one strip, chips by site and state, the search beside the title, the archive as matted cards with one state tag. The Order panel, store queue and Leads inbox are one ruled panel of rows (orders 50 a page); analytics inside the frame with Karla figures; native controls themed. **Store staff get a 307 to their Order panel from the proxy** (`security/admin-landing.ts`; it was a 200 with a one-second refresh — a blank page on a phone, the 10.8 follow-up; a first attempt with a relative `Location` answered 500 on staging, caught there and pinned by a test through Next's adapter). From the finish review's five rounds: the sidebar open on a laptop (Payload closed it on every load at ≤1440 px; `admin/nav-open.jsx`, `@payloadcms/ui` now a cms dependency); short dates; `Rp 95.000` in either language; list columns that fit at 1280; the antique record opens with seven rarely-filled sections folded and the AI-draft checks only for what was drafted (5,313 px from 7,375; the publish guard and audit untouched, their db tests 10/10); a phone's record header whole; the account page no longer 75 px too wide. **Done when** met on staging `production-20261011T094100Z-f23ab4d1` (`docs/gates/admin-redesign.md`): the finish review's verdict **ship**; every screen 0 px sideways at 390 and 1280; axe 0 on every screen the redesign owns in both languages (the owner, an editor locally, the store user); the timed admin recipes all pass (`admin-usability.md`); DESIGN.md records the admin's world. **Recorded exception:** Payload's own list, record and settings markup keeps the structural axe findings filed as F6 in phase 4 (unnamed popup buttons, unlabelled react-select inputs and row checkboxes); the redesign is CSS there and removed F6's one contrast finding. Sonnet built the custom views' round, the orchestrator the rest and reviewed it. **Follow-ups:** staging's first Wall pages are REHEARSAL 10.4 drafts whose pictures are admin screenshots (the timed recipes upload them); the cms `instance.test.ts` times out once in a while under the full parallel unit run.
