@@ -88,6 +88,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
 | 18·W1 | 18.1 The palette | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
 | 18·W2 | 18.4 The shop's home | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
+| 18·W2 | 18.2 The shop's grids | medior | `feat/p18-dsg` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1189,7 +1190,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 18.1.b a shared print tile: a print centred on an even tile with a soft shadow, for the shop's grids and product page
   - [ ] 18.1.c **Check:** both homes and the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
 
-- [ ] **18.2 The shop's grids** · needs: 18.1
+- [ ] **18.2 The shop's grids** · needs: 18.1 — 🔄 18·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores}/**`
   - **Read** this phase's goal; 18.1's print tile
