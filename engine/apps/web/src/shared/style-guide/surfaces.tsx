@@ -9,6 +9,8 @@ import {
   Hairline,
   Mat,
   MatNote,
+  PrintTile,
+  PrintTileNote,
   ProofPoints,
   SectionHead,
   Skeleton,
@@ -118,6 +120,35 @@ export function Surfaces(): React.ReactElement {
             <Mat ratio={1} size="compact" fit="contain">
               <img src={samplePlate(30, 100)} alt="A 0.3 : 1 sheet, whole" />
             </Mat>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="sg-print-tile" title="Print tile">
+        <p className={styles.note}>
+          A print hung on an even tile of the site&apos;s stone, at its own shape, with one soft
+          shadow.
+        </p>
+        <div className={styles.row}>
+          <div className={styles.matSample}>
+            <PrintTile>
+              <img src={samplePlate(400, 500)} alt="A 4 : 5 print" />
+            </PrintTile>
+          </div>
+          <div className={styles.matSample}>
+            <PrintTile ratio={3 / 2}>
+              <img src={samplePlate(300, 200)} alt="A 3 : 2 print" />
+            </PrintTile>
+          </div>
+          <div className={styles.matSample}>
+            <PrintTile ratio={1} size="small">
+              <img src={samplePlate(100, 100)} alt="A square print, small" />
+            </PrintTile>
+          </div>
+          <div className={styles.matSample}>
+            <PrintTile>
+              <PrintTileNote>No photograph yet</PrintTileNote>
+            </PrintTile>
           </div>
         </div>
       </Section>

@@ -52,12 +52,10 @@
   --color-field-active: var(--band-wash);
 }
 
-/* A wash keeps ink type; its muted type takes the pigment's own deep hue (AA on the wash). It
-   carries its outline: the pigment at full strength along its lower edge. */
+/* A wash keeps ink type; its muted type takes the field's own muted ink (AA on the wash). */
 .wash {
   --band-bg: var(--band-wash);
   --color-text-muted: var(--band-on-wash);
-  border-block-end: var(--space-2) solid var(--band-full);
   --color-border: color-mix(in srgb, var(--band-on-wash) 32%, transparent);
   --color-border-strong: var(--band-on-wash);
   --color-field: transparent;
@@ -88,20 +86,21 @@
 }
 
 .ink {
-  --band-bg: var(--primitive-copperplate);
-  --band-full: var(--primitive-copperplate);
-  --band-on-full: var(--primitive-mineral);
+  --band-bg: var(--color-surface-dark);
+  --band-full: var(--color-surface-dark);
+  --band-on-full: var(--color-text-on-dark);
   --band-on-full-muted: color-mix(
     in srgb,
-    var(--primitive-mineral) 74%,
-    var(--primitive-copperplate)
+    var(--color-text-on-dark) 74%,
+    var(--color-surface-dark)
   );
 }
 
+/* A hairline along one edge, where a band meets the paper without a change of ground. */
 .edge-top {
-  border-block-start: var(--space-2) solid var(--band-full, var(--color-text));
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
 .edge-bottom {
-  border-block-end: var(--space-2) solid var(--band-full, var(--color-text));
+  border-block-end: var(--rule-hair) solid var(--color-border);
 }
