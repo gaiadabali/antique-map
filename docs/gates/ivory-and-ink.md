@@ -15,7 +15,8 @@ old bands, the gallery's makers-and-places entries with their ink rules, the bri
 stone, the stores' area row, a faded bronze slab for sold out — all applied in one round (`14ae321b`) and checked on
 the rebuilt pages.
 
-**Staging:** `production-20261012T083302Z-efc859c1` — healthy at try 1 (app, database, storage, queue), migrations
+**Staging:** `production-20261012T091240Z-0aefa272` (the CI fixes below), after `production-20261012T083302Z-efc859c1`
+(the redesign) — each healthy at try 1 (app, database, storage, queue), migrations
 unchanged (6 = 6); smoke passed: both homes, the shop's grid, collections, stores, a product and partnership 200,
 `/sell-to-us` and `/contact` 200, `/api/health` 200, `/admin/login` 200 on the shop host and 404 on the gallery's, an
 antique's short address 308 to its full one, a derivative 200 with the gallery's `access-control-allow-origin`,
@@ -54,6 +55,11 @@ antique's short address 308 to its full one, a derivative 200 with the gallery's
 - **Behaviour** (local production build, the staging catalogue copy): sort by price ascends; page 2 shows other
   prints; the Botanicals tab narrows the grid and marks itself current; Add to bag puts _Arja Dancer with
   Headdress, 1940_ in the bag; a sold-out choice disables the button and says so.
+- **CI** on `0aefa272` (run 38228030820): green — static checks, unit and database tests, Lighthouse, and e2e 167
+  passed (1 flaky, passed on retry). The run before it on `30c8f430` (38226921598) failed three shop product tests:
+  the suite finds a sold-out product by the add button's class ending its list, and the new sold-out class had been
+  put after it (the order restored, the look unchanged); the same run's gallery scan once read a random CSP nonce
+  beginning "Rp5" as a rupiah figure (the scan now ignores the nonce).
 - **Screens** (staging): `ivory-and-ink/*.png`.
 
 ## Open — the owner's
