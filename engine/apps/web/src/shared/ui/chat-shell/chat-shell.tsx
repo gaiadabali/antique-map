@@ -49,7 +49,16 @@ export function ChatShell({
         </div>
       )}
 
-      <div ref={logRef} role="log" aria-live="polite" aria-label={logLabel} className={styles.log}>
+      {/* Focusable, so a keyboard can scroll the conversation once it outgrows the panel
+          (axe scrollable-region-focusable). */}
+      <div
+        ref={logRef}
+        role="log"
+        aria-live="polite"
+        aria-label={logLabel}
+        tabIndex={0}
+        className={styles.log}
+      >
         {children}
       </div>
 
