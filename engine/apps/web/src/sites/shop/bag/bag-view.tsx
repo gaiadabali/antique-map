@@ -10,11 +10,12 @@ import type { SiteLocale } from '@engine/config/sites'
 
 import type { BagVM } from '../../../server/shop/bag'
 import { createHref, SITES } from '@engine/config/sites'
-import { Button, Mat, MatNote, SectionHead } from '../../../shared/ui'
+import { Band, Button, Mat, MatNote, SectionHead } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { bagText } from './copy'
 import styles from './bag.module.css'
+import summary from './bag-summary.module.css'
 import { CodeForm } from './code-form'
 import { QtyForm } from './qty-form'
 
@@ -48,14 +49,27 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
     ]),
   )
   return (
-    <section className={styles.bag} aria-labelledby="bag-title">
-      <SectionHead level={1} id="bag-title" title={text.shared('cart.title')} />
+    <div className={styles.bag}>
+      <Band
+        pigment={1}
+        strength="wash"
+        pad={false}
+        className={styles.lead}
+        aria-labelledby="bag-title"
+      >
+        <SectionHead
+          level={1}
+          id="bag-title"
+          className={styles.leadHead}
+          title={text.shared('cart.title')}
+        />
+      </Band>
 
       {bag.lines.length === 0 ? (
         <div className={styles.empty}>
           <p className={styles.emptyText}>{text.shared('cart.empty')}</p>
           <div>
-            <Button variant="primary" href={href('browse', {}, locale)}>
+            <Button variant="quiet" href={href('browse', {}, locale)}>
               {text.shared('cart.emptyAction')}
             </Button>
           </div>
@@ -144,7 +158,7 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
           </ul>
 
           {/* The bag's summary, not a landmark: it sits inside the bag's own named region. */}
-          <div className={styles.summary}>
+          <div className={summary.summary}>
             <CodeForm
               label={text.shared('cart.codeLabel')}
               applyLabel={text.shared('cart.codeApply')}
@@ -162,25 +176,25 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
               clearMessage={text('bag.codeCleared')}
             />
 
-            <dl className={styles.totals}>
-              <div className={styles.totalRow}>
+            <dl className={summary.totals}>
+              <div className={summary.totalRow}>
                 <dt>{text('bag.subtotal')}</dt>
                 <dd>{bag.subtotalText}</dd>
               </div>
               {codeVM?.discountText != null && (
-                <div className={styles.totalRow}>
+                <div className={summary.totalRow}>
                   <dt>{text('bag.discount', { code: codeVM.code })}</dt>
                   <dd>−{codeVM.discountText}</dd>
                 </div>
               )}
-              <div className={[styles.totalRow, styles.grand].filter(Boolean).join(' ')}>
+              <div className={[summary.totalRow, summary.grand].filter(Boolean).join(' ')}>
                 <dt>{text('bag.total')}</dt>
                 <dd>{bag.totalText}</dd>
               </div>
             </dl>
 
             {bag.refusal !== null && (
-              <p className={styles.refusal} role="status">
+              <p className={summary.refusal} role="status">
                 {bag.refusal.key === 'cart.empty'
                   ? text.shared('cart.empty')
                   : bag.refusal.key === 'bag.bagProblem'
@@ -191,7 +205,7 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
               </p>
             )}
 
-            <div className={styles.checkout}>
+            <div className={summary.checkout}>
               {bag.canCheckout ? (
                 // An <a>, so the checkout address is a real link (and nothing prefetches it).
                 <Button variant="primary" href={href('checkout', {}, locale)}>
@@ -206,6 +220,6 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
           </div>
         </div>
       )}
-    </section>
+    </div>
   )
 }

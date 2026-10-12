@@ -9,7 +9,7 @@ import { useActionState } from 'react'
 
 import type { CodeActionState } from '../../../server/shop/bag/actions'
 import { applyCodeAction } from '../../../server/shop/bag/actions'
-import styles from './bag.module.css'
+import styles from './bag-summary.module.css'
 
 export type CodeFormProps = {
   readonly label: string

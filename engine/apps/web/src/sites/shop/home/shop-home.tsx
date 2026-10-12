@@ -1,10 +1,12 @@
 /**
- * The shop's home (ticket 4.3.b, luxury pass 12.3): the hero (`./hero`), the "shop by" links, the
- * streamed best sellers, the sets, the process, the trade band and the originals band. A thin
+ * The shop's home (4.3.b, 12.3; Outline Colour 17.2): the hero lays the lead print across a
+ * gamboge field (`./hero`); below it the "shop by" index, the streamed best sellers, then the
+ * bands in the shop's own pigment — the sets on its tint, the process on the paper, the trade on
+ * its full strength — and the bridge to the originals in the gallery's verdigris. A thin
  * composition: the sections below the best sellers live in `./sections`, and every word comes
  * from the shop's lexicon.
  */
-import { Button, Eyebrow, SectionHead } from '../../../shared/ui'
+import { Button, SectionHead } from '../../../shared/ui'
 
 import { FeaturedProducts } from './featured-products'
 import { Hero } from './hero'
@@ -35,10 +37,10 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
   return (
     <div className={styles.wrap}>
       <Hero locale={locale} shopHref={href('browse', {}, locale)} t={t} />
-      <Chips href={href} locale={locale} t={t} />
-      <section className={styles.section}>
+      <ShopBy href={href} locale={locale} t={t} />
+      <section className={styles.section} aria-labelledby="home-featured">
         <SectionHead
-          eyebrow={t('home.shop.featuredEyebrow')}
+          id="home-featured"
           title={t('home.shop.featuredTitle')}
           action={
             <Button variant="quiet" href={href('browse', {}, locale)}>
@@ -56,18 +58,19 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
   )
 }
 
-function Chips({ locale, href, t }: SectionProps) {
+/** "Shop by" island and room: two lines of words set large, each a link. */
+function ShopBy({ locale, href, t }: SectionProps) {
   const target = href('browse', {}, locale)
   return (
-    <section className={styles.chips}>
-      <h2 className={styles.railHeading}>
-        <Eyebrow>{t('home.shop.chipsEyebrow')}</Eyebrow>
+    <section className={styles.shopBy} aria-labelledby="home-shop-by">
+      <h2 id="home-shop-by" className={styles.shopByLabel}>
+        {t('home.shop.chipsEyebrow')}
       </h2>
       {[ISLAND_CHIPS, ROOM_CHIPS].map((group, at) => (
-        <ul key={at} className={styles.chipsRow}>
+        <ul key={at} className={styles.shopByRow}>
           {group.map((key) => (
             <li key={key}>
-              <a className={styles.chip} href={target}>
+              <a className={styles.shopByLink} href={target}>
                 {t(key)}
               </a>
             </li>

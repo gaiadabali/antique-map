@@ -55,7 +55,6 @@ export default async function ContactPage(props: Props) {
       locale={locale}
       t={t}
       head={{
-        eyebrow: t('contact.eyebrow'),
         title: t('contact.title'),
         // The reply promise is the owner's own sentence when one has arrived; the lexicon's
         // lede carries it otherwise.

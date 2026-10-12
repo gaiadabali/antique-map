@@ -8,7 +8,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { CheckoutRead } from '../../../server/shop/checkout'
-import { Button, SectionHead } from '../../../shared/ui'
+import { Band, Button, SectionHead } from '../../../shared/ui'
 import { createHref, SITES } from '@engine/config/sites'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { checkoutText } from './copy'
@@ -50,11 +50,24 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
   }
 
   return (
-    <section className={styles.checkout} aria-labelledby="checkout-title">
-      <SectionHead level={1} id="checkout-title" title={text('checkout.reviewTitle')} />
+    <div className={styles.checkout}>
+      <Band
+        pigment={1}
+        strength="wash"
+        pad={false}
+        className={styles.lead}
+        aria-labelledby="checkout-title"
+      >
+        <SectionHead
+          level={1}
+          id="checkout-title"
+          className={styles.leadHead}
+          title={text('checkout.reviewTitle')}
+        />
+      </Band>
 
       {read.refusal !== null && (
-        <p role="status">
+        <p role="status" className={styles.refusal}>
           {read.refusal.key === 'bag.beyondReach'
             ? text('bag.beyondReach')
             : read.refusal.key === 'bag.deliveryUnavailable'
@@ -113,6 +126,6 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
           expectedTotalIdr={read.totalIdr}
         />
       </div>
-    </section>
+    </div>
   )
 }

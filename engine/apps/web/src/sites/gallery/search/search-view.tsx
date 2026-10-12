@@ -7,12 +7,13 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { SearchResultVM } from '../../../server/gallery/catalogue/view-models'
-import { Button, SectionHead, TextLink } from '../../../shared/ui'
+import { Button, TextLink } from '../../../shared/ui'
 import browse from '../browse/browse.module.css'
 import { browseText } from '../browse/copy'
 import { searchHref } from '../browse/state-links'
 import { WorkGrid } from '../browse/work-grid'
 import styles from './search.module.css'
+import { SearchHead } from './search-head'
 
 export type SearchContact = { readonly whatsapp: string | null; readonly email: string | null }
 
@@ -22,43 +23,59 @@ export function SearchView({
   result,
   locale,
   contact,
+  form,
 }: {
   readonly query: string
   readonly includeSold: boolean
   readonly result: SearchResultVM
   readonly locale: SiteLocale
   readonly contact: SearchContact
+  /** The search form, set in the wash under the title. */
+  readonly form?: React.ReactNode
 }): React.ReactElement {
   const t = browseText(locale)
   const suggestion =
     result.suggestion === null ? null : (result.suggestion.historical ?? result.suggestion.label)
-  return (
-    <section className={browse.results} aria-labelledby="search-results">
-      <h2 id="search-results" className={styles.heading}>
-        {t('search.resultsFor', { query })}
-      </h2>
-      <p className={styles.line}>
-        <span className={browse.count}>{t('message.works', { count: result.total })}</span>
+  const lede = (
+    <>
+      <span className={styles.ledeLine}>{t('search.resultsFor', { query })}</span>
+      <span className={styles.ledeLine}>
+        <span className={styles.count} aria-live="polite">
+          {t('message.works', { count: result.total })}
+        </span>
         <TextLink
+          className={styles.ledeLink}
           href={searchHref(query, !includeSold, locale)}
           aria-current={includeSold ? 'true' : undefined}
         >
           {t(includeSold ? 'search.withoutSold' : 'browse.includeSold')}
         </TextLink>
-      </p>
+      </span>
       {suggestion !== null && (
-        <p className={styles.didYouMean}>
+        <span className={styles.ledeLine}>
           <TextLink href={searchHref(suggestion, includeSold, locale)}>
             {t('empty.didYouMean', { suggestion })}
           </TextLink>
-        </p>
+        </span>
       )}
-      {result.items.length > 0 ? (
-        <WorkGrid works={result.items} locale={locale} />
-      ) : (
-        <AskUs query={query} locale={locale} contact={contact} />
-      )}
-    </section>
+    </>
+  )
+  return (
+    <>
+      <SearchHead title={t('search.title')} lede={lede}>
+        {form}
+      </SearchHead>
+      <section
+        className={[browse.results, styles.results].join(' ')}
+        aria-label={t('search.resultsFor', { query })}
+      >
+        {result.items.length > 0 ? (
+          <WorkGrid works={result.items} locale={locale} />
+        ) : (
+          <AskUs query={query} locale={locale} contact={contact} />
+        )}
+      </section>
+    </>
   )
 }
 
@@ -76,10 +93,14 @@ function AskUs({
   const digits = contact.whatsapp?.replace(/\D/g, '') ?? ''
   return (
     <div className={styles.ask}>
-      <SectionHead title={t('empty.search', { query })} lede={t('empty.askUs', { query })} />
+      <p className={styles.askLine}>{t('empty.search', { query })}</p>
+      <p className={styles.askText}>{t('empty.askUs', { query })}</p>
       <div className={styles.askActions}>
         {digits !== '' && (
-          <Button href={`https://wa.me/${digits}?text=${encodeURIComponent(query)}`}>
+          <Button
+            href={`https://wa.me/${digits}?text=${encodeURIComponent(query)}`}
+            variant="secondary"
+          >
             {t('action.whatsapp')}
           </Button>
         )}

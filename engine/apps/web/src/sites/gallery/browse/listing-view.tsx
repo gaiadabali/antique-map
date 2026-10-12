@@ -10,7 +10,7 @@ import type { FacetState } from '../../../server/gallery/catalogue/state'
 import { WORK_SORTS } from '../../../server/gallery/catalogue/state'
 import { clearedState } from '../../../server/gallery/catalogue/url-state'
 import type { FacetSetVM, WorkListingVM } from '../../../server/gallery/catalogue/view-models'
-import { Pagination, SectionHead } from '../../../shared/ui'
+import { Band, Pagination, SectionHead } from '../../../shared/ui'
 import { AppliedFilters } from './applied-filters'
 import styles from './browse.module.css'
 import { browseText, type BrowseKey } from './copy'
@@ -44,7 +44,14 @@ export function ListingView({
   return (
     // A plain block, not a labelled section: the facet column stays a top-level landmark.
     <div className={styles.page}>
-      <SectionHead level={1} className={styles.head} title={title} />
+      <Band pigment={1} strength="wash" as="div" pad={false} className={styles.band}>
+        <SectionHead
+          level={1}
+          className={styles.head}
+          title={title}
+          lede={t('message.works', { count: listing.total })}
+        />
+      </Band>
 
       <div className={styles.toolbar}>
         <div className={styles.phoneFacets}>
@@ -85,11 +92,10 @@ export function ListingView({
 
         <div className={styles.results}>
           <AppliedFilters {...panel} />
-          <p className={styles.count} aria-live="polite">
-            {t('message.works', { count: listing.total })}
-          </p>
           {listing.items.length === 0 ? (
-            <p className={styles.empty}>{t('empty.filters')}</p>
+            <p className={styles.empty} aria-live="polite">
+              {t('empty.filters')}
+            </p>
           ) : (
             <WorkGrid works={listing.items} locale={locale} />
           )}

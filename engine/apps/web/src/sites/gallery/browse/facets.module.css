@@ -1,5 +1,5 @@
-/* The gallery's facets, year pair and applied chips (5.1.b, 14.4): quiet groups on hairlines, no
-   boxes, square corners. Tokens only (DESIGN-SYSTEM.md). */
+/* The gallery's facets, year pair and applied chips (5.1.b, 14.4): quiet groups parted by space, no
+   rules or boxes, square corners (Outline Colour 17.3). Tokens only (DESIGN-SYSTEM.md). */
 
 .facets {
   display: flex;
@@ -7,21 +7,12 @@
 }
 
 .facet {
-  padding-block: var(--space-5);
-  border-top: var(--rule-hair) solid var(--color-border);
-}
-
-.facet:first-child {
-  padding-block-start: 0;
-  border-top: none;
+  padding-block: 0 var(--space-7);
 }
 
 .facetName {
-  font: var(--text-small);
-  font-weight: 700;
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+  font: var(--text-label);
+  color: var(--color-text);
   margin: 0 0 var(--space-2);
 }
 
@@ -76,7 +67,7 @@
 .optionCount {
   font: var(--text-caption);
   color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: var(--numeric-tabular);
 }
 
 /* "All 128 makers": a native disclosure, quiet and square, the rest opening in place. */
@@ -153,17 +144,18 @@
   align-items: center;
   gap: var(--space-2);
   min-height: 44px;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-4);
   font: var(--text-small);
   color: var(--color-text);
-  background: transparent;
-  border: var(--rule-hair) solid var(--color-text);
+  background: var(--color-field);
+  border: none;
   border-radius: var(--radius-none);
   text-decoration: none;
+  transition: background-color var(--dur-out) var(--ease);
 }
 
 .appliedChip:hover {
-  background: var(--color-surface-raised);
+  background: var(--color-field-active);
 }
 
 .clearAll {

@@ -56,7 +56,6 @@ export default async function SellToUsPage(props: Props) {
       locale={locale}
       t={t}
       head={{
-        eyebrow: t('sellToUs.eyebrow'),
         title: t('sellToUs.title'),
         lede: t('sellToUs.lede'),
       }}

@@ -2,6 +2,9 @@
    Site-wide shell styles. No raw colours, no font-family declarations,
    no ad-hoc lengths — every value is a token from shared/styles/tokens/
    or the site brand files. Components use the semantic aliases only.
+   Outline Colour (phase 17): copperplate ink on mineral paper, and the
+   parts of the browser nobody draws (selection, caret, scrollbar,
+   underlines, numerals) carry the palette too.
    ===================================================================== */
 
 *,
@@ -15,6 +18,19 @@ html {
   color: var(--color-text);
   font: var(--text-body);
   -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  caret-color: var(--color-text);
+  accent-color: var(--color-accent);
+  scrollbar-color: var(--pigment-1-wash) var(--color-surface);
+  /* A focused control scrolls clear of the sticky header and the floating chat button (WCAG
+     2.4.11): the header is 5.5rem tall, the chat button sits 1.5rem above the foot and is 3rem tall. */
+  scroll-padding-block: 6.5rem 6rem;
+  /* A page's wrap spans 100vw, which counts the scrollbar: the few pixels it overhangs are
+     clipped here rather than scrolled to (clip, not hidden, keeps the sticky header working). */
+  overflow-x: clip;
 }
 
 body {
@@ -22,10 +38,18 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--color-surface);
+}
+
+::selection {
+  background: var(--pigment-1-wash);
+  color: var(--color-text);
 }
 
 a {
-  color: var(--color-accent);
+  color: inherit;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.24em;
 }
 
 :focus-visible {
@@ -39,6 +63,7 @@ a {
   top: calc(-1 * var(--space-9));
   padding: var(--space-2) var(--space-4);
   background: var(--color-surface-raised);
+  color: var(--color-text);
   font: var(--text-small);
   /* Above the sticky header (100) and the menu sheet (9999): a skip link focused behind the logo
      is a focus nobody can see (WCAG 2.4.7; 10.2 keyboard pass). */
@@ -49,28 +74,21 @@ a {
   top: var(--space-4);
 }
 
-.site-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--gutter);
-  background: var(--color-surface-raised);
-  border-bottom: var(--rule-hair) solid var(--color-border);
-}
-
 .site-brand {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
   color: var(--color-text);
   text-decoration: none;
-  font: var(--text-h2);
   min-height: 44px;
 }
 
+/* The site's name beside its logo, said but not shown: the logo already carries it. */
 .site-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 
@@ -83,7 +101,7 @@ a {
 
 .site-locales ul {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -94,10 +112,9 @@ a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding-inline: var(--space-1);
+  padding-inline: var(--space-2);
   color: var(--color-text-muted);
   text-decoration: none;
-  text-underline-offset: 0.3em;
 }
 
 .site-locales a:hover {
@@ -107,26 +124,25 @@ a {
 
 .site-locales a[aria-current='true'] {
   color: var(--color-text);
-  font-weight: 700;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
-/* The 66ch cap is the default reading measure for long-form pages (product, bag, search,
-   not-found). The homes break out of it in their own `.wrap` (qa 4.qa, finding F1), the way
-   `browse.module.css`'s `.page` already breaks out for a listing's own width. */
+/* The reading measure is the default for long-form pages (an order, tracking, a not-found). Every
+   listing and landing page breaks out of it in its own wrap, to the full `--page-wrap` width. */
 .site-main {
   flex: 1;
   width: 100%;
   max-width: calc(var(--measure, 66ch) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: var(--space-7) var(--gutter);
+  padding: var(--space-7) var(--gutter) var(--space-8);
 }
 
-.site-main h1 {
+:where(.site-main) h1 {
   font: var(--text-h1);
   letter-spacing: var(--tracking-h1);
   line-height: var(--primitive-line-h1);
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-5);
+  text-wrap: balance;
 }
 
 /* `:where()` carries no specificity, so a section's own heading class (a card title, a rail
@@ -134,11 +150,16 @@ a {
 :where(.site-main) h2 {
   font: var(--text-h2);
   margin: 0 0 var(--space-4);
+  text-wrap: balance;
 }
 
 :where(.site-main) h3 {
   font: var(--text-h3);
   margin: 0 0 var(--space-3);
+}
+
+:where(.site-main) p {
+  text-wrap: pretty;
 }
 
 .site-lede {
@@ -147,24 +168,9 @@ a {
   margin: 0;
 }
 
-.site-footer {
-  padding: var(--space-5) var(--gutter);
-  border-top: var(--rule-hair) solid var(--color-border);
-  color: var(--color-text-muted);
-  font: var(--text-small);
-}
-
-.site-footer p {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-
-/* On a phone the logo stands alone: it already carries the name, and the wordmark would wrap.
-   The brand link keeps its accessible name (its aria-label). */
-@media (max-width: 40rem) {
-  .site-name {
-    display: none;
-  }
+/* Figures read in columns line up: prices, dimensions, counts, stock numbers. */
+:where(table, data, time) {
+  font-variant-numeric: var(--numeric-tabular);
 }
 
 @media (prefers-reduced-motion: reduce) {

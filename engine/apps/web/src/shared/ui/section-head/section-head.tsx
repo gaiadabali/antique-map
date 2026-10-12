@@ -1,10 +1,13 @@
 import type { ReactNode } from 'react'
 
-import { Eyebrow } from '../eyebrow'
 import styles from './section-head.module.css'
 
 type Props = {
-  /** The opening line, set on the scale bar. */
+  /**
+   * Retired in Outline Colour (phase 17): a heading carries its own weight, so no label sits above
+   * it. Accepted so an old caller still compiles; nothing is drawn. Fold any fact it carried into
+   * the lede.
+   */
   eyebrow?: ReactNode
   title: ReactNode
   lede?: ReactNode
@@ -17,13 +20,12 @@ type Props = {
   className?: string
 }
 
-/** A page's or a section's opening: the marked eyebrow, a balanced serif title and its lede. */
-export function SectionHead({ eyebrow, title, lede, level = 2, action, id, className }: Props) {
+/** A page's or a section's opening: a balanced serif title, its lede, and an optional action. */
+export function SectionHead({ title, lede, level = 2, action, id, className }: Props) {
   const Title = level === 1 ? 'h1' : 'h2'
   return (
     <div className={[styles.head, className ?? ''].filter(Boolean).join(' ')}>
       <div className={styles.text}>
-        {eyebrow !== undefined && <Eyebrow mark>{eyebrow}</Eyebrow>}
         <Title id={id} className={level === 1 ? styles.titlePage : styles.titleSection}>
           {title}
         </Title>

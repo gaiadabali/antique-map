@@ -3,7 +3,9 @@
  * by each host's a11y project:
  *
  * - 4.2.c: `/style-guide` holds a section for every component folder under `shared/ui`;
- * - 4.1.e: this host renders its own palette from the same component classes as the other host;
+ * - 4.1.e: this host renders its own palette from the same component classes as the other host —
+ *   since Outline Colour (phase 17) the two share the mineral paper and the copperplate ink and differ
+ *   by their pigment, so the deep surfaces (tint and full) are compared;
  *   no request leaves for Google Fonts and the first paint stays inside DESIGN-SYSTEM §9's font
  *   budget (≤ 3 files, < 150 KB);
  * - 4.2.d: every tabbable control on `/style-guide` is reached by Tab with a visible focus ring;
@@ -153,8 +155,8 @@ test.describe('4.1.e / 4.2.d the palette', () => {
     const other = await palette(page)
     const otherButton = await page.locator('button:has-text("Open dialog")').getAttribute('class')
     expect(ownSite).toBe(m.site)
-    expect(own.surface).not.toBe(other.surface)
-    expect(own.text).not.toBe(other.text)
+    expect(own['surface-deep']).not.toBe(other['surface-deep'])
+    expect(own['surface-dark']).not.toBe(other['surface-dark'])
     expect(ownButton).toBe(otherButton)
     await testInfo.attach('palette', { body: JSON.stringify({ own, other }, null, 2) })
   })

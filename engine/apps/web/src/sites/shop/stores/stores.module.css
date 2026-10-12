@@ -1,16 +1,21 @@
-/* The stores page in the hero's hand: full breakout width, quiet area links, square raised cards.
-   390 px first; tokens only (DESIGN-SYSTEM.md). */
+/* The stores page, Outline Colour: a field of gamboge, quiet area links, each area's stores as a
+   ruled running list in columns that gain with width. 390 px first; tokens only. */
 
 .page {
   display: flex;
   flex-direction: column;
-  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding: var(--space-4) var(--gutter) var(--space-7);
+  padding: 0 var(--gutter) var(--section-space);
 }
 
-/* On a phone one row that scrolls inside itself, never the page; it wraps from 768 px up. */
+.page .band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-9) var(--space-8);
+}
+
+/* On a phone one row that scrolls inside itself, never the page; it wraps from 48rem up. */
 .areas {
   display: flex;
   flex-wrap: nowrap;
@@ -18,7 +23,6 @@
   margin-block: var(--space-6) var(--space-7);
   overflow-x: auto;
   scrollbar-width: none;
-  border-block: var(--rule-hair) solid var(--color-border);
 }
 
 .areas::-webkit-scrollbar {
@@ -43,19 +47,25 @@
   text-decoration: underline;
 }
 
+.areaLink:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--space-1);
+}
+
 .area {
   scroll-margin-block-start: var(--space-7);
-  margin-block-end: var(--space-7);
+  margin-block-end: var(--space-8);
 }
 
 .area > div:first-child {
   margin-block-end: var(--space-5);
 }
 
+/* 1 column on a phone, 2 at 48rem, 3 at 75rem; each store a row parted by a hairline. */
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-4);
+  column-gap: var(--grid-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -64,12 +74,9 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-5);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
-  border-radius: 0;
-  box-shadow: none;
+  gap: var(--space-1);
+  padding-block: var(--space-5);
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
 .name {
@@ -91,7 +98,6 @@
 
 .hoursLabel {
   display: block;
-  color: var(--color-text);
 }
 
 .map {
@@ -100,19 +106,17 @@
   align-items: center;
   min-height: 44px;
   margin-block-start: auto;
+  font: var(--text-small);
 }
 
 .empty {
+  max-inline-size: var(--measure-text);
   margin-block: var(--space-7);
   font: var(--text-body);
   color: var(--color-text-muted);
 }
 
-@media (min-width: 768px) {
-  .page {
-    padding-block-end: var(--space-9);
-  }
-
+@media (min-width: 48rem) {
   /* Room enough to show every area: the row wraps rather than hiding the last ones. */
   .areas {
     flex-wrap: wrap;
@@ -126,11 +130,10 @@
 
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-5);
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 75rem) {
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

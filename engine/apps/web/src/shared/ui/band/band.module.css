@@ -1,0 +1,107 @@
+/* A full-bleed field of flat colour. Every value is a token — no raw colour, no font-family.
+   `margin-inline: calc(50% - 50vw)` bleeds to the viewport from any centred column; the few
+   pixels a scrollbar adds are clipped by the root (site.css). */
+
+.band {
+  position: relative;
+  margin-inline: calc(50% - 50vw);
+  padding-inline: var(--gutter);
+  background: var(--band-bg);
+  color: var(--color-text);
+}
+
+.pad {
+  padding-block: var(--section-space);
+}
+
+.paper {
+  --band-bg: var(--color-surface);
+}
+
+/* Each pigment names its own grounds and the type that stands on them. */
+.p1 {
+  --band-tint: var(--pigment-1-tint);
+  --band-wash: var(--pigment-1-wash);
+  --band-full: var(--pigment-1-full);
+  --band-on-wash: var(--pigment-1-on-wash);
+  --band-on-full: var(--pigment-1-on-full);
+  --band-on-full-muted: var(--pigment-1-on-full-muted);
+}
+
+.p2 {
+  --band-tint: var(--pigment-2-tint);
+  --band-wash: var(--pigment-2-wash);
+  --band-full: var(--pigment-2-full);
+  --band-on-wash: var(--pigment-2-on-wash);
+  --band-on-full: var(--pigment-2-on-full);
+  --band-on-full-muted: var(--pigment-2-on-full-muted);
+}
+
+.p3 {
+  --band-tint: var(--pigment-3-tint);
+  --band-wash: var(--pigment-3-wash);
+  --band-full: var(--pigment-3-full);
+  --band-on-wash: var(--pigment-3-on-wash);
+  --band-on-full: var(--pigment-3-on-full);
+  --band-on-full-muted: var(--pigment-3-on-full-muted);
+}
+
+.tint {
+  --band-bg: var(--band-tint);
+  --color-field: transparent;
+  --color-field-active: var(--band-wash);
+}
+
+/* A wash keeps ink type; its muted type takes the pigment's own deep hue (AA on the wash). It
+   carries its outline: the pigment at full strength along its lower edge. */
+.wash {
+  --band-bg: var(--band-wash);
+  --color-text-muted: var(--band-on-wash);
+  border-block-end: var(--space-2) solid var(--band-full);
+  --color-border: color-mix(in srgb, var(--band-on-wash) 32%, transparent);
+  --color-border-strong: var(--band-on-wash);
+  --color-field: transparent;
+  --color-field-active: transparent;
+  --color-surface-raised: var(--band-tint);
+}
+
+/* A deep field speaks in its own type: every ink role is re-pointed, the action included. */
+.full,
+.ink {
+  --color-text: var(--band-on-full);
+  --color-text-strong: var(--band-on-full);
+  --color-text-muted: var(--band-on-full-muted);
+  --color-accent: var(--band-on-full);
+  --color-accent-contrast: var(--band-bg);
+  --color-focus: var(--band-on-full);
+  --color-border: color-mix(in srgb, var(--band-on-full) 30%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--band-on-full) 70%, transparent);
+  --color-action: var(--band-on-full);
+  --color-action-hover: var(--band-on-full-muted);
+  --color-action-contrast: var(--band-bg);
+  --color-field: transparent;
+  --color-field-active: transparent;
+}
+
+.full {
+  --band-bg: var(--band-full);
+}
+
+.ink {
+  --band-bg: var(--primitive-copperplate);
+  --band-full: var(--primitive-copperplate);
+  --band-on-full: var(--primitive-mineral);
+  --band-on-full-muted: color-mix(
+    in srgb,
+    var(--primitive-mineral) 74%,
+    var(--primitive-copperplate)
+  );
+}
+
+.edge-top {
+  border-block-start: var(--space-2) solid var(--band-full, var(--color-text));
+}
+
+.edge-bottom {
+  border-block-end: var(--space-2) solid var(--band-full, var(--color-text));
+}

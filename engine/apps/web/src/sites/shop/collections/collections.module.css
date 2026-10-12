@@ -1,39 +1,28 @@
-/* The collections index in the hero's hand: full breakout width, matted lead pictures, museum
-   captions. 390 px first; tokens only (DESIGN-SYSTEM.md). */
+/* The collections index, Outline Colour: a field of gamboge, then each collection's lead print in
+   a window on the neutral field. 390 px first; tokens only. */
 
 .page {
   display: flex;
   flex-direction: column;
-  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding: var(--space-4) var(--gutter) var(--space-7);
+  padding: 0 var(--gutter) var(--section-space);
 }
 
+.page .band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-9) var(--space-8);
+}
+
+/* 2 columns on a phone, 3 at 48rem, 4 at 75rem. */
 .grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-7) var(--space-6);
-  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-8) var(--grid-gap);
+  margin: var(--space-7) 0 0;
   padding: 0;
   list-style: none;
-}
-
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .page {
-    padding-block-end: var(--space-9);
-  }
-
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-8) var(--space-7);
-  }
 }
 
 .card {
@@ -44,22 +33,30 @@
   text-decoration: none;
 }
 
+.card:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--space-1);
+}
+
 .caption {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-4) var(--space-1) 0;
+  margin-block-start: var(--space-4);
 }
 
 .name {
-  font: var(--text-h3);
+  font: var(--text-card-title);
   text-wrap: balance;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
 }
 
 .card:hover .name {
-  text-decoration: underline;
-  text-decoration-thickness: var(--rule-hair);
-  text-underline-offset: 4px;
+  text-decoration-color: currentColor;
 }
 
 .count {
@@ -68,7 +65,20 @@
 }
 
 .empty {
-  margin: 0;
+  max-inline-size: var(--measure-text);
+  margin: var(--space-7) 0 0;
   font: var(--text-body);
   color: var(--color-text-muted);
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 75rem) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

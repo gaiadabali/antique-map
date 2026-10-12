@@ -5,8 +5,9 @@
  */
 
 .page {
-  max-width: 1340px;
-  margin: 0 auto;
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
   padding: var(--space-7) var(--gutter);
 }
 
@@ -77,4 +78,9 @@
 
 .matSample {
   inline-size: min(100%, 16rem);
+}
+
+.bandLabel {
+  margin: 0 0 var(--space-4);
+  font: var(--text-h3);
 }

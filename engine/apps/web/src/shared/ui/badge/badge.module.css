@@ -5,15 +5,13 @@
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-control);
   font: var(--text-caption);
-  font-weight: 700;
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
+  font-weight: 500;
   white-space: nowrap;
 }
 
 .default {
   background: var(--color-accent-secondary);
-  color: var(--color-text-strong);
+  color: var(--color-accent-contrast);
 }
 
 .success {

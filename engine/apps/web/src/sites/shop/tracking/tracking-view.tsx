@@ -5,7 +5,14 @@
  */
 import type { SiteLocale } from '@engine/config/sites'
 
-import { Price, ResponsiveImage, SectionHead, StatusTimeline, TextLink } from '../../../shared/ui'
+import {
+  Band,
+  Price,
+  ResponsiveImage,
+  SectionHead,
+  StatusTimeline,
+  TextLink,
+} from '../../../shared/ui'
 import type { TrackingView } from '../../../server/shop/tracking/load-tracking'
 import { baliDateTime } from './bali-datetime'
 import { trackingText } from './copy'
@@ -37,104 +44,114 @@ export function TrackingPage({
   }))
 
   return (
-    <section className={styles.tracking} aria-labelledby="tracking-title">
-      <SectionHead
-        level={1}
-        id="tracking-title"
-        title={text('tracking.title', { number: String(view.orderNumber) })}
-      />
+    <div className={styles.tracking}>
+      <Band
+        pigment={1}
+        strength="wash"
+        pad={false}
+        className={styles.lead}
+        aria-labelledby="tracking-title"
+      >
+        <SectionHead
+          level={1}
+          id="tracking-title"
+          className={styles.leadHead}
+          title={text('tracking.title', { number: String(view.orderNumber) })}
+        />
+      </Band>
+      <div className={styles.content}>
+        {view.status === 'pending_payment' && <p role="status">{text('tracking.pendingNote')}</p>}
+        {view.status === 'cancelled' && <p role="status">{text('tracking.cancelledNote')}</p>}
+        {view.status === 'expired' && <p role="status">{text('tracking.expiredNote')}</p>}
 
-      {view.status === 'pending_payment' && <p role="status">{text('tracking.pendingNote')}</p>}
-      {view.status === 'cancelled' && <p role="status">{text('tracking.cancelledNote')}</p>}
-      {view.status === 'expired' && <p role="status">{text('tracking.expiredNote')}</p>}
+        {view.status !== 'pending_payment' &&
+          view.status !== 'cancelled' &&
+          view.status !== 'expired' && (
+            <StatusTimeline
+              steps={steps}
+              current={view.status}
+              ariaLabel={text('tracking.title', { number: String(view.orderNumber) })}
+            />
+          )}
 
-      {view.status !== 'pending_payment' &&
-        view.status !== 'cancelled' &&
-        view.status !== 'expired' && (
-          <StatusTimeline
-            steps={steps}
-            current={view.status}
-            ariaLabel={text('tracking.title', { number: String(view.orderNumber) })}
-          />
+        {view.driverImageUrl && (
+          <div className={styles.driver}>
+            <h2 className={styles.sectionTitle}>{text('tracking.driverTitle')}</h2>
+            <ResponsiveImage
+              variant="fixed"
+              width={320}
+              height={320}
+              src={view.driverImageUrl}
+              alt={text('tracking.driverTitle')}
+              sizes="320px"
+              unoptimized
+            />
+          </div>
         )}
 
-      {view.driverImageUrl && (
-        <div className={styles.driver}>
-          <h2 className={styles.sectionTitle}>{text('tracking.driverTitle')}</h2>
-          <ResponsiveImage
-            variant="fixed"
-            width={320}
-            height={320}
-            src={view.driverImageUrl}
-            alt={text('tracking.driverTitle')}
-            sizes="320px"
-            unoptimized
-          />
-        </div>
-      )}
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>{text('tracking.itemsTitle')}</h2>
-        <ul className={styles.items}>
-          {view.items.map((item, index) => (
-            <li key={index} className={styles.item}>
-              <span>
-                {item.qty}× {item.name}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <dl className={styles.totals}>
-          <div className={styles.totalRow}>
-            <dt>{text('tracking.totalsSubtotal')}</dt>
-            <dd>
-              <Price amount={view.totals.subtotal} />
-            </dd>
-          </div>
-          {view.totals.discount > 0 && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>{text('tracking.itemsTitle')}</h2>
+          <ul className={styles.items}>
+            {view.items.map((item, index) => (
+              <li key={index} className={styles.item}>
+                <span>
+                  {item.qty}× {item.name}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <dl className={styles.totals}>
             <div className={styles.totalRow}>
-              <dt>{text('tracking.totalsDiscount')}</dt>
+              <dt>{text('tracking.totalsSubtotal')}</dt>
               <dd>
-                -<Price amount={view.totals.discount} />
+                <Price amount={view.totals.subtotal} />
               </dd>
             </div>
-          )}
-          <div className={styles.totalRow}>
-            <dt>{text('tracking.totalsDelivery')}</dt>
-            <dd>
-              <Price amount={view.totals.deliveryFee} />
-            </dd>
-          </div>
-          <div className={styles.totalRow}>
-            <dt>{text('tracking.totalsTotal')}</dt>
-            <dd>
-              <Price amount={view.totals.total} />
-            </dd>
-          </div>
-        </dl>
-      </div>
+            {view.totals.discount > 0 && (
+              <div className={styles.totalRow}>
+                <dt>{text('tracking.totalsDiscount')}</dt>
+                <dd>
+                  -<Price amount={view.totals.discount} />
+                </dd>
+              </div>
+            )}
+            <div className={styles.totalRow}>
+              <dt>{text('tracking.totalsDelivery')}</dt>
+              <dd>
+                <Price amount={view.totals.deliveryFee} />
+              </dd>
+            </div>
+            <div className={styles.totalRow}>
+              <dt>{text('tracking.totalsTotal')}</dt>
+              <dd>
+                <Price amount={view.totals.total} />
+              </dd>
+            </div>
+          </dl>
+        </div>
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>{text('tracking.deliveryTitle')}</h2>
-        <p>{view.deliveryAddress}</p>
-        <p>
-          {view.contact.nameMasked} · {view.contact.emailMasked}
-        </p>
-      </div>
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>{text('tracking.deliveryTitle')}</h2>
+          <p>{view.deliveryAddress}</p>
+          <p>
+            {view.contact.nameMasked} · {view.contact.emailMasked}
+          </p>
+        </div>
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>{text('tracking.storeTitle')}</h2>
-        <p>
-          {view.store.name}
-          {view.store.area ? ` · ${view.store.area}` : ''}
-        </p>
-      </div>
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>{text('tracking.storeTitle')}</h2>
+          <p>
+            {view.store.name}
+            {view.store.area ? ` · ${view.store.area}` : ''}
+          </p>
+        </div>
 
-      {wa && (
-        <TextLink href={wa} className={styles.whatsapp}>
-          {text('tracking.whatsapp')}
-        </TextLink>
-      )}
-    </section>
+        {wa && (
+          <TextLink href={wa} className={styles.whatsapp}>
+            {text('tracking.whatsapp')}
+          </TextLink>
+        )}
+      </div>
+    </div>
   )
 }

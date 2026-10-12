@@ -1,20 +1,23 @@
 /**
- * The product page (6.1.b; EXPERIENCE-SHOP.md §4), in the luxury pass (12.5): the matted pictures
- * on the left, the details (category, name, price, options, add to bag, delivery, proof points)
- * sticky on the right, the story below; one column on a phone. The words come from the lexicon; the prices are whole rupiah the server formats.
+ * The product page (6.1.b; EXPERIENCE-SHOP.md §4), in Outline Colour (17.6): it leads with the
+ * shared `Crossing` — the copy (category, name, price, options, add to bag, delivery) on a field of
+ * gamboge, the lead print lying across its edge, the thumbnails under it, the proof points after
+ * the copy — then the story on the paper. The words come from the lexicon; the prices are whole
+ * rupiah the server formats.
  */
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
 import type { ProductVM } from '../../../server/shop/catalogue/view-models'
 import {
-  Breadcrumbs,
-  Eyebrow,
+  Crossing,
   Mat,
+  MatNote,
   ProofPoints,
   ResponsiveImage,
   SectionHead,
   TextLink,
 } from '../../../shared/ui'
+import { windowRatio } from '../home/frame-ratio'
 import { ChatPageContext } from '../../../shared/chat/chat-page-context'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { productText, variantPickerText } from './copy'
@@ -25,12 +28,11 @@ import { VariantPicker, type PickerVariant } from './variant-picker'
 export function ProductView({
   product,
   locale,
-  shopHref,
   categoryHref,
 }: {
   readonly product: ProductVM
   readonly locale: SiteLocale
-  /** The shop-all address, for the breadcrumb. */
+  /** The shop-all address; the page draws no breadcrumb now (the category is a link in the copy). */
   readonly shopHref: string
   /** The product's category page, when it has one. */
   readonly categoryHref: string | null
@@ -58,95 +60,105 @@ export function ProductView({
       : product.price !== null
         ? formatRupiah(product.price)
         : null
+  const ratio = windowRatio(lead ?? null)
   return (
     <article className={styles.page}>
       <ChatPageContext title={product.name} />
-      <div className={styles.crumbs}>
-        <Breadcrumbs
-          items={[
-            { label: text('product.breadcrumbShop'), href: shopHref },
-            ...(categoryHref && product.category
-              ? [{ label: product.category.label, href: categoryHref }]
-              : []),
-            { label: product.name },
-          ]}
-        />
-      </div>
-
-      <div className={styles.layout}>
-        <div className={styles.gallery}>
-          {lead && (
-            <figure className={styles.figure}>
-              <Mat>
-                <ResponsiveImage
-                  variant="fill"
-                  aspectRatio="1 / 1"
-                  src={lead.url}
-                  srcSet={lead.srcSet}
-                  alt={imageAlt(text, lead)}
-                  sizes="(max-width: 767px) 100vw, 58vw"
-                  priority
-                  unoptimized
-                />
-              </Mat>
-              <Label text={syntheticLabelText(text, lead)} />
-            </figure>
-          )}
-          {rest.length > 0 && (
-            <div className={styles.thumbs}>
-              {rest.map((image) => (
-                <figure key={image.url} className={styles.figure}>
-                  <Mat size="compact">
-                    <ResponsiveImage
-                      variant="fill"
-                      aspectRatio="1 / 1"
-                      src={image.url}
-                      srcSet={image.srcSet}
-                      alt={imageAlt(text, image)}
-                      sizes="(max-width: 767px) 33vw, 160px"
-                      unoptimized
-                    />
-                  </Mat>
-                  <Label text={syntheticLabelText(text, image)} />
-                </figure>
+      <Crossing
+        lead
+        pigment={1}
+        fit="cover"
+        ratio={ratio}
+        aria-labelledby="product-title"
+        copy={
+          <div className={styles.copy}>
+            {product.category &&
+              (categoryHref ? (
+                <a className={styles.category} href={categoryHref}>
+                  {product.category.label}
+                </a>
+              ) : (
+                <span className={styles.category}>{product.category.label}</span>
               ))}
-            </div>
-          )}
-        </div>
-
-        <div className={styles.details}>
-          <header className={styles.header}>
-            {product.category && <Eyebrow mark>{product.category.label}</Eyebrow>}
-            <h1 className={styles.name}>{product.name}</h1>
+            <h1 id="product-title" className={styles.name}>
+              {product.name}
+            </h1>
             <p className={styles.meta}>
               {text.shared('label.reproduction')} · {text('product.sku', { sku: product.sku })}
             </p>
-          </header>
 
-          <VariantPicker
-            productId={product.id}
-            sku={product.sku}
-            text={variantPickerText(text)}
-            variants={variants}
-            productPriceText={priceText}
-            available={product.available}
-            bagHref={bagHref}
-          />
+            <VariantPicker
+              productId={product.id}
+              sku={product.sku}
+              text={variantPickerText(text)}
+              variants={variants}
+              productPriceText={priceText}
+              available={product.available}
+              bagHref={bagHref}
+            />
 
-          <p className={styles.delivery}>{text('product.delivery')}</p>
+            <p className={styles.delivery}>{text('product.delivery')}</p>
 
-          {product.relatedWork && (
-            <p className={styles.original}>
-              {text('product.original', { title: product.relatedWork.title })}{' '}
-              <TextLink href={product.relatedWork.href} rel="noopener">
-                {product.relatedWork.href.replace(/^https?:\/\/[^/]+/, '') || 'Indies Gallery'}
-              </TextLink>
-            </p>
-          )}
-
+            {product.relatedWork && (
+              <p className={styles.original}>
+                {text('product.original', { title: product.relatedWork.title })}{' '}
+                <TextLink href={product.relatedWork.href} rel="noopener">
+                  {product.relatedWork.href.replace(/^https?:\/\/[^/]+/, '') || 'Indies Gallery'}
+                </TextLink>
+              </p>
+            )}
+          </div>
+        }
+        aside={
           <ProofPoints items={[text('product.signalPaper'), text('product.signalWorkshop')]} />
-        </div>
-      </div>
+        }
+        picture={
+          lead ? (
+            <ResponsiveImage
+              variant="fill"
+              aspectRatio={`${ratio} / 1`}
+              src={lead.url}
+              srcSet={lead.srcSet}
+              alt={imageAlt(text, lead)}
+              sizes="(max-width: 63.99rem) 100vw, 58vw"
+              priority
+              unoptimized
+            />
+          ) : (
+            // No picture yet: the name stands in the window as type.
+            <div className={styles.empty} style={{ aspectRatio: 1 }}>
+              <MatNote>{product.name}</MatNote>
+            </div>
+          )
+        }
+        caption={
+          lead && (syntheticLabelText(text, lead) !== null || rest.length > 0) ? (
+            <>
+              <Label text={syntheticLabelText(text, lead)} />
+              {rest.length > 0 && (
+                <ul className={styles.thumbs}>
+                  {rest.map((image) => (
+                    <li key={image.url} className={styles.thumb}>
+                      <Mat size="compact">
+                        <ResponsiveImage
+                          variant="fill"
+                          aspectRatio="1 / 1"
+                          src={image.url}
+                          srcSet={image.srcSet}
+                          alt={imageAlt(text, image)}
+                          sizes="(max-width: 47.99rem) 22vw, 120px"
+                          unoptimized
+                        />
+                      </Mat>
+                      <Label text={syntheticLabelText(text, image)} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : undefined
+        }
+      />
 
       {product.description !== '' && (
         <section className={styles.story} aria-labelledby="product-story">
@@ -164,7 +176,7 @@ export function ProductView({
 
 /** A synthetic image's visible label, under the image; nothing for a photograph. */
 function Label({ text }: { readonly text: string | null }): React.ReactElement | null {
-  return text === null ? null : <figcaption className={styles.mockupNote}>{text}</figcaption>
+  return text === null ? null : <span className={styles.mockupNote}>{text}</span>
 }
 
 /** The lowest price on offer: a variant's, when any is priced away from the product's own. */

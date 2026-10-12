@@ -1,36 +1,63 @@
 @import '../../../shared/styles/tokens/primitives.css';
 
 /* =====================================================================
-   Tier 2 brand variables — Indies Gallery.
-   Quiet luxury: linen ground, off-black ink, bronze accent, champagne rule.
-   These values are the design team's starting point; the client's final
-   colours (TASKS.md Q16) are an edit to this file only.
+   Tier 2 brand variables — Indies Gallery, in Outline Colour (phase 17).
+   Copperplate ink on mineral paper; verdigris leads, then gamboge, then
+   madder. Madder is spent on the one action a view asks for (Ask).
+   The client's final colours (TASKS.md Q16) are an edit to this file.
    ===================================================================== */
 
 :root,
 [data-site='gallery'] {
-  --brand-surface: var(--primitive-linen);
-  --brand-surface-raised: var(--primitive-paper);
-  --brand-surface-deep: var(--primitive-cream);
-  --brand-surface-dark: var(--primitive-off-black);
-  --brand-surface-dark-ink: var(--primitive-paper);
+  --brand-surface: var(--primitive-mineral);
+  --brand-surface-raised: var(--primitive-mineral-raised);
+  --brand-surface-deep: var(--primitive-verdigris-tint);
+  --brand-surface-dark: var(--primitive-verdigris-full);
+  --brand-surface-dark-ink: var(--primitive-mineral);
 
-  --brand-text: var(--primitive-off-black);
-  --brand-text-muted: var(--primitive-warm-grey-deep);
-  --brand-text-on-dark: var(--primitive-paper);
+  --brand-text: var(--primitive-copperplate);
+  --brand-text-strong: var(--primitive-copperplate);
+  --brand-text-muted: var(--primitive-copperplate-soft);
+  --brand-text-on-dark: var(--primitive-mineral);
 
-  --brand-accent: var(--primitive-bronze);
-  --brand-accent-contrast: var(--primitive-paper);
-  --brand-accent-secondary: var(--primitive-champagne);
+  --brand-accent: var(--primitive-copperplate);
+  --brand-accent-contrast: var(--primitive-mineral);
+  --brand-accent-secondary: var(--primitive-verdigris-ink);
+  --brand-action: var(--primitive-madder-full);
+  --brand-action-hover: var(--primitive-madder-deep);
+  --brand-action-contrast: var(--primitive-mineral);
 
-  --brand-border: var(--primitive-champagne);
-  --brand-border-strong: color-mix(in srgb, var(--primitive-off-black) 18%, transparent);
-  --brand-focus: var(--primitive-bronze);
+  --brand-border: var(--primitive-rule);
+  --brand-border-strong: var(--primitive-rule-strong);
+  --brand-focus: var(--primitive-copperplate);
   --brand-scrim: var(--primitive-scrim);
 
   --brand-danger: var(--primitive-critical);
   --brand-success: var(--primitive-positive);
   --brand-caution: var(--primitive-caution);
+
+  /* the pigment order: verdigris, gamboge, madder */
+  --brand-pigment-1-tint: var(--primitive-verdigris-tint);
+  --brand-pigment-1-wash: var(--primitive-verdigris-wash);
+  --brand-pigment-1-full: var(--primitive-verdigris-full);
+  --brand-pigment-1-on-wash: var(--primitive-verdigris-ink);
+  --brand-pigment-1-on-full: var(--primitive-mineral);
+  --brand-pigment-1-on-full-muted: var(--primitive-verdigris-mist);
+  --brand-pigment-2-tint: var(--primitive-gamboge-tint);
+  --brand-pigment-2-wash: var(--primitive-gamboge-wash);
+  --brand-pigment-2-full: var(--primitive-gamboge-full);
+  --brand-pigment-2-on-wash: var(--primitive-gamboge-ink);
+  --brand-pigment-2-on-full: var(--primitive-copperplate);
+  --brand-pigment-2-on-full-muted: var(--primitive-gamboge-mist);
+  --brand-pigment-3-tint: var(--primitive-madder-tint);
+  --brand-pigment-3-wash: var(--primitive-madder-wash);
+  --brand-pigment-3-full: var(--primitive-madder-full);
+  --brand-pigment-3-on-wash: var(--primitive-madder-ink);
+  --brand-pigment-3-on-full: var(--primitive-mineral);
+  --brand-pigment-3-on-full-muted: var(--primitive-madder-mist);
+
+  --brand-field: var(--primitive-mineral-deep);
+  --brand-field-active: var(--primitive-verdigris-tint);
 
   --brand-space-1: var(--primitive-space-1);
   --brand-space-2: var(--primitive-space-2);
@@ -42,30 +69,24 @@
   --brand-space-8: var(--primitive-space-8);
   --brand-space-9: var(--primitive-space-9);
   --brand-space-10: var(--primitive-space-10);
-  --brand-gutter: clamp(1.25rem, 0.5rem + 3.5vw, 3.125rem);
+  --brand-gutter: var(--primitive-gutter-fluid);
 
+  /* square and flat: no radius, no shadow, anywhere on the public site */
   --brand-radius-card: var(--primitive-radius-none);
-  --brand-radius-control: var(--primitive-radius-control);
+  --brand-radius-control: var(--primitive-radius-none);
+  --brand-radius-pill: var(--primitive-radius-none);
+  --brand-radius-panel: var(--primitive-radius-none);
+  --brand-radius-bubble: var(--primitive-radius-none);
   --brand-rule-hair: var(--primitive-rule-hair);
   --brand-rule-strong: var(--primitive-rule-strong);
   --brand-focus-width: var(--primitive-focus-width);
-  --brand-radius-pill: var(--primitive-radius-pill);
-  --brand-radius-panel: var(--primitive-radius-panel);
-  --brand-radius-bubble: var(--primitive-radius-bubble);
-  --brand-shadow-header: var(--primitive-shadow-header);
-  --brand-shadow-panel: var(--primitive-shadow-panel);
+  --brand-shadow-header: none;
+  --brand-shadow-panel: none;
   --brand-dur-in: var(--primitive-dur-in);
   --brand-dur-out: var(--primitive-dur-out);
   --brand-ease: var(--primitive-ease);
   --brand-dur-loop: var(--primitive-dur-loop);
 
-  /* The eyebrow's mark: one hairline rule, as on a museum label (the shop's is a scale bar). */
-  --brand-mark-inline-size: var(--primitive-space-7);
-  --brand-mark-block-size: var(--primitive-rule-hair);
-  --brand-mark-border-width: 0;
-  --brand-mark-dash: 100%;
-  --brand-mark-period: 100%;
-
-  /* Muted ink on the cream window is 4.46:1, under AA: an empty mat's words take full ink. */
-  --brand-mat-note: var(--brand-text);
+  /* An empty window's words on the verdigris tint: soft ink is 6.0:1 there. */
+  --brand-mat-note: var(--primitive-copperplate-soft);
 }

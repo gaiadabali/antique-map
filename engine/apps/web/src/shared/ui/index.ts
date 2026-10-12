@@ -1,10 +1,12 @@
 // Shared UI barrel. Components live in kebab-case folders and export PascalCase names.
 export * from './badge'
+export * from './band'
 export * from './breadcrumbs'
 export * from './button'
 export * from './card'
 export * from './chat-shell'
 export * from './checkbox'
+export * from './crossing'
 export * from './dialog'
 export * from './eyebrow'
 export * from './facet-chip'

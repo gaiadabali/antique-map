@@ -1,5 +1,5 @@
 /**
- * The item page's record (5.2.b; EXPERIENCE-GALLERY.md §5): a definition list in the order
+ * The item page's record (5.2.b; EXPERIENCE-GALLERY.md §5): a ruled running list (Outline Colour 17.4) in the order
  * collectors expect — type, maker, place, date, technique, colouring, dimensions, condition,
  * references, provenance, subjects, stock number. A field with no value is left out, never
  * shown as "—". The labels are the app lexicon's `record.*`; a vocabulary value is said in the
@@ -12,9 +12,18 @@ import { SectionHead } from '../../../shared/ui'
 import { creditLine, itemText, type ItemText } from './copy'
 import styles from './item.module.css'
 
-function Row({ term, children }: { readonly term: string; readonly children: React.ReactNode }) {
+/** A `wide` row is prose (references, provenance): full width, its value held to the text measure. */
+function Row({
+  term,
+  children,
+  wide = false,
+}: {
+  readonly term: string
+  readonly children: React.ReactNode
+  readonly wide?: boolean
+}) {
   return (
-    <div className={styles.row}>
+    <div className={wide ? `${styles.row} ${styles.rowWide}` : styles.row}>
       <dt className={styles.term}>{term}</dt>
       <dd className={styles.detail}>{children}</dd>
     </div>
@@ -84,12 +93,12 @@ export function ItemRecord({
         {work.dimensions !== null && <Row term={t('record.dimensions')}>{work.dimensions}</Row>}
         <ConditionRow work={work} t={t} />
         {references.length > 0 && (
-          <Row term={t('record.references')}>
+          <Row term={t('record.references')} wide>
             <Lines lines={references} />
           </Row>
         )}
         {provenance.length > 0 && (
-          <Row term={t('record.provenance')}>
+          <Row term={t('record.provenance')} wide>
             <Lines lines={provenance} />
           </Row>
         )}

@@ -20,7 +20,9 @@ import { leadWork } from './hero'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
 
-const SHOWN = 4
+/** Six: four show on a phone and at laptop widths, six in two rows on a tablet and in one row on
+ * a wide screen (home.module.css). */
+const SHOWN = 6
 
 type Props = {
   readonly locale: SiteLocale
@@ -89,7 +91,6 @@ function CollectionFrame({
   return (
     <section className={styles.section}>
       <SectionHead
-        eyebrow={t('home.gallery.featuredEyebrow')}
         title={t('home.gallery.featuredTitle')}
         action={
           <Button variant="quiet" href={browseHref}>
@@ -124,12 +125,8 @@ async function RecentlyWorks({ locale, t }: Omit<Props, 'browseHref'>) {
 function RecentlyFrame({ t, body }: { readonly t: HomeText; readonly body: React.ReactNode }) {
   return (
     <section className={styles.section}>
-      <SectionHead
-        eyebrow={t('home.gallery.recentlyEyebrow')}
-        title={t('home.gallery.recentlyTitle')}
-        lede={t('home.gallery.recentlyBody')}
-      />
-      <div className={styles.grid}>{body}</div>
+      <SectionHead title={t('home.gallery.recentlyTitle')} lede={t('home.gallery.recentlyBody')} />
+      <div className={styles.trio}>{body}</div>
     </section>
   )
 }

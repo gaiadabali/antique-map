@@ -5,7 +5,7 @@
  * refusal that is not a field's (the security check, the rate limit) shows above the button.
  * Tokens and shared components only. The form posts no photos — the page says where photos go.
  */
-import { Button, Checkbox, Eyebrow, FormMessage, Input, Textarea } from '../../../shared/ui'
+import { Button, Checkbox, FormMessage, Input, Textarea } from '../../../shared/ui'
 
 import type { FormText } from './form-text'
 import styles from './contact-form.module.css'
@@ -55,7 +55,6 @@ export function LeadFormView({
 
   return (
     <form className={styles.form} onSubmit={submit} noValidate>
-      <Eyebrow>{text['contactForm.eyebrow']}</Eyebrow>
       <Input
         label={text['contactForm.name']}
         id="lead-name"

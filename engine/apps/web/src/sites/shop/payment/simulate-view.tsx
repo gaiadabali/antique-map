@@ -11,6 +11,7 @@ import {
   type SimulatorAction,
 } from '../../../server/shop/payment'
 import { paymentText } from './copy'
+import { OrderPage } from './order-page'
 import styles from './order-view.module.css'
 
 export type SimulateViewProps = {
@@ -37,19 +38,13 @@ export function SimulateView({
   const t = paymentText(locale)
   if (attempt === null) {
     return (
-      <section className={styles.page}>
-        <p className={styles.banner} role="status">
-          {t('order.testPayment')}
-        </p>
+      <OrderPage title={t('order.testPayment')}>
         <TextLink href={orderHref}>{t('order.checkAgain')}</TextLink>
-      </section>
+      </OrderPage>
     )
   }
   return (
-    <section className={styles.page}>
-      <p className={styles.banner} role="status">
-        {t('order.testPayment')}
-      </p>
+    <OrderPage title={t('order.testPayment')}>
       <div className={styles.actions}>
         {SIMULATOR_ACTIONS.map((action) => (
           <form action={simulateAction} key={action}>
@@ -62,6 +57,6 @@ export function SimulateView({
           </form>
         ))}
       </div>
-    </section>
+    </OrderPage>
   )
 }

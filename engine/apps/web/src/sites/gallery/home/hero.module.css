@@ -1,72 +1,51 @@
-/* The gallery home's hero (14.2): copy and the owner's facts on the left, the lead sheet whole on
-   a paper mat (shared `Mat`, contained) on the right. Every value is a token from
-   shared/styles/tokens or the gallery brand file — no raw colour, no font-family. */
+/* The gallery home's hero in Outline Colour (17.2): the shared `Crossing` lays the field and the
+   sheet; this file sets the type on the field and the caption on the paper. Every value is a token
+   from shared/styles/tokens or the gallery brand file — no raw colour, no font-family. */
 
-.hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: 1fr auto;
-  grid-template-areas:
-    'copy frame'
-    'facts frame';
-  column-gap: var(--space-9);
-  padding-block: var(--space-7) var(--space-9);
-}
-
-.copy {
-  grid-area: copy;
-  align-self: center;
-}
-
-/* Two selectors deep: the shell's `.site-main h1` and `.site-lede` set their own margins. */
-.copy .title {
-  margin: var(--space-6) 0 0;
+.title {
+  margin: 0;
+  max-inline-size: 11ch;
+  font: var(--text-display);
+  letter-spacing: var(--tracking-display);
   text-wrap: balance;
 }
 
-.copy .lede {
+/* `p.lede` outranks the shell's global `.site-lede`, which the element also wears. */
+p.lede {
   margin: var(--space-6) 0 0;
-  max-inline-size: 32rem;
+  max-inline-size: 30rem;
+  font: var(--text-body-large);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-4) var(--space-5);
   margin-block-start: var(--space-7);
 }
 
-.hero .facts {
-  grid-area: facts;
-  align-self: end;
-  margin: var(--space-7) 0 0;
+/* The owner's three facts read down, one to a line. */
+.facts {
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.frame {
-  grid-area: frame;
-  align-self: center;
-  margin: 0;
+.sheetLink {
+  display: block;
 }
 
-/* The museum caption under the mat: the work on the left, its status and tag on the right. */
-.caption {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-3) var(--space-5);
-  margin-block-start: var(--space-4);
-}
-
-.captionText {
+.empty {
   display: grid;
-  gap: var(--space-1);
-  min-inline-size: 0;
+  place-items: center;
+  background: var(--pigment-1-tint);
 }
 
 .captionTitle {
-  font: var(--text-h3);
+  max-inline-size: 34ch;
+  font: var(--text-card-title);
   color: var(--color-text);
   text-wrap: balance;
   text-decoration: underline;
@@ -80,11 +59,6 @@
   text-decoration-color: currentColor;
 }
 
-.captionTitle:focus-visible {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: 2px;
-}
-
 .captionMeta {
   font: var(--text-small);
   color: var(--color-text-muted);
@@ -92,24 +66,10 @@
 
 .captionFoot {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  white-space: nowrap;
-}
-
-@media (max-width: 47.5rem) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: none;
-    grid-template-areas:
-      'copy'
-      'frame'
-      'facts';
-    row-gap: var(--space-7);
-    padding-block: var(--space-4) var(--space-7);
-  }
-
-  .hero .facts {
-    margin: 0;
-  }
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  margin-block-start: var(--space-2);
+  font: var(--text-small);
+  color: var(--color-text);
 }

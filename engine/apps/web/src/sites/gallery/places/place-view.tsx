@@ -1,6 +1,6 @@
 /**
  * One place page (5.4.a, 14.6; EXPERIENCE-GALLERY.md §7): the modern name under a level-1
- * `SectionHead` with its historical names as the lede ("Batavia · Djakarta"), the places within it
+ * `SectionHead` on a verdigris field (Outline Colour 17.5) with its historical names as the lede ("Batavia · Djakarta"), the places within it
  * as quiet links, then available works and sold works through the shared `WorkGrid`. A place with
  * no available works still shows the sold ones, with the shared lexicon's empty state in their
  * place (EXPERIENCE-GALLERY.md §9) — never a dead end.
@@ -8,7 +8,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { PlaceVM } from '../../../server/gallery/places/view-models'
-import { SectionHead } from '../../../shared/ui'
+import { Band, SectionHead } from '../../../shared/ui'
 import { lexiconMessages } from '../../../messages/keys'
 import { WorkGrid } from '../browse/work-grid'
 import type { PlaceText } from './copy'
@@ -25,12 +25,14 @@ export function PlaceView({ place, locale, t }: Props) {
   const historical = place.historicalNames.map((each) => each.name).join(' · ')
   return (
     <div className={styles.wrap}>
-      <section className={styles.page}>
+      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
         <SectionHead
           level={1}
           title={place.name}
           lede={historical !== '' ? historical : undefined}
         />
+      </Band>
+      <section className={styles.page}>
         {place.children.length > 0 && (
           <nav
             className={styles.within}

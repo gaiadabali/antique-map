@@ -9,7 +9,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { MakerVM } from '../../../server/gallery/makers/view-models'
-import { ResponsiveImage, SectionHead } from '../../../shared/ui'
+import { Band, ResponsiveImage, SectionHead } from '../../../shared/ui'
 import { lexiconMessages, type LexiconMessageKey } from '../../../messages/keys'
 import { WorkGrid } from '../browse/work-grid'
 import type { MakerText } from './copy'
@@ -30,8 +30,8 @@ export function MakerView({ maker, locale, t }: Props) {
   const lede = [lifeDates, roles].filter(Boolean).join(' · ')
   return (
     <div className={styles.wrap}>
-      <section className={styles.page}>
-        {/* No portrait, no empty frame: the name leads (a blank 4:5 box filled a phone's first screen). */}
+      {/* No portrait, no empty frame: the name leads on its field. */}
+      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
         <div className={maker.portrait !== null ? styles.header : undefined}>
           {maker.portrait !== null && (
             <ResponsiveImage
@@ -45,6 +45,8 @@ export function MakerView({ maker, locale, t }: Props) {
           )}
           <SectionHead level={1} title={maker.name} lede={lede !== '' ? lede : undefined} />
         </div>
+      </Band>
+      <section className={styles.page}>
         <div className={styles.section}>
           <SectionHead level={2} title={t('makerPage.availableHeading')} />
           {maker.available.length > 0 ? (

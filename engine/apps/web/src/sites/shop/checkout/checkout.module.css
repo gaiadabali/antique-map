@@ -1,52 +1,68 @@
-/* The checkout page (6.3.a; 12.6 luxury pass): 390 px first, tokens only (DESIGN-SYSTEM.md). The
-   page breaks out of the reading column to the shop's full width, like the home. */
+/* The checkout page (6.3.a; Outline Colour 17.7): a gamboge field opens the page, the form runs on the
+   paper in sections, the order summary lies on a pale field. 390 px first, tokens only
+   (DESIGN-SYSTEM.md). The page breaks out of the reading column to the shop's full width. */
 .checkout {
-  width: min(calc(100vw - 2 * var(--gutter)), 80rem);
+  width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding-block: var(--space-6) var(--space-7);
+  padding-inline: var(--gutter);
+  padding-block-end: var(--section-space);
+}
+
+/* The page's opening field starts right under the header (the shell's main pads its top). */
+.lead {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-9) var(--space-8);
+}
+
+.lead .leadHead {
+  margin-block-end: 0;
+}
+
+.refusal {
+  margin: var(--space-6) 0 0;
+  font: var(--text-body);
+  color: var(--color-text);
 }
 
 .columns {
   display: flex;
   flex-direction: column;
   gap: var(--space-7);
+  padding-block-start: var(--space-7);
 }
 
 /* The summary comes first in the source, as on a phone it reads: the order you see is the order a
    keyboard and a screen reader follow. On a desktop the grid sets it in the right-hand column. */
 @media (min-width: 768px) {
-  .checkout {
-    padding-block: var(--space-7) var(--space-9);
-  }
-
   .columns {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 24rem;
-    gap: var(--space-8);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: start;
+    padding-block-start: var(--space-8);
   }
 
   .columns > .form {
-    grid-column: 1;
+    grid-column: 1 / span 7;
     grid-row: 1;
   }
 
   .review {
-    grid-column: 2;
+    grid-column: 8 / span 5;
     grid-row: 1;
     position: sticky;
     top: var(--space-6);
   }
 }
 
+/* The order summary lies on a pale gamboge field: no border, no raised panel. */
 .review {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
   padding: var(--space-6);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border);
+  background: var(--pigment-1-tint);
   font: var(--text-body);
   color: var(--color-text);
   min-width: 0;
@@ -66,7 +82,7 @@
   align-items: baseline;
   justify-content: space-between;
   padding-block: var(--space-3);
-  border-bottom: var(--rule-hair) solid var(--color-border);
+  border-top: var(--rule-hair) solid var(--color-border);
 }
 
 .lineName {
@@ -78,31 +94,35 @@
 .lineTotal {
   margin: 0;
   white-space: nowrap;
+  font-variant-numeric: var(--numeric-tabular);
 }
 
 .totals {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
   margin: 0;
 }
 
 .totalRow {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
 }
 
 .totalRow dt {
+  font: var(--text-small);
   color: var(--color-text-muted);
 }
 
 .totalRow dd {
   margin: 0;
+  font-variant-numeric: var(--numeric-tabular);
 }
 
-.grand dt,
-.grand dd {
+.grand dt {
   font: var(--text-h3);
   color: var(--color-text);
 }
@@ -110,12 +130,9 @@
 /* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
 .grand dd {
   font: var(--text-price);
+  font-size: var(--primitive-size-h3);
   font-variant-numeric: var(--numeric-tabular);
-}
-
-.grand {
-  padding-top: var(--space-3);
-  border-top: var(--rule-hair) solid var(--color-border);
+  color: var(--color-text);
 }
 
 .form {
@@ -132,13 +149,12 @@
   max-inline-size: 40rem;
 }
 
-/* A fieldset's title: the serif over a hairline, as a section of a catalogue. */
+/* A section's head: the serif on the paper, no rule. */
 .sectionTitle {
-  font: var(--text-h3);
+  font: var(--text-h2);
+  letter-spacing: var(--tracking-h1);
   color: var(--color-text);
   margin: 0;
-  padding-block-end: var(--space-3);
-  border-bottom: var(--rule-hair) solid var(--color-border);
 }
 
 .pinGroup .sectionTitle {

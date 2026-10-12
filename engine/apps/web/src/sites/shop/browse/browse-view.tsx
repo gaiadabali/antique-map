@@ -11,7 +11,7 @@ import type {
   ListingVM,
   ProductCardVM,
 } from '../../../server/shop/catalogue/view-models'
-import { Pagination, SectionHead } from '../../../shared/ui'
+import { Band, Pagination, SectionHead } from '../../../shared/ui'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -52,13 +52,20 @@ export function BrowseView({
   const pageHref = (page: number): string => listingHref(listing.sort, page)
   return (
     <section className={styles.browse} aria-labelledby="browse-title">
-      <SectionHead
-        level={1}
-        id="browse-title"
-        eyebrow={text('browse.eyebrow')}
-        title={title}
-        lede={categorySlug === undefined ? text('browse.description') : undefined}
-      />
+      <Band pigment={1} strength="wash" pad={false} className={styles.band}>
+        <SectionHead
+          level={1}
+          id="browse-title"
+          title={title}
+          lede={
+            categorySlug === undefined
+              ? text('browse.description')
+              : listing.items.length > 0
+                ? text('browse.results', { count: listing.total })
+                : undefined
+          }
+        />
+      </Band>
 
       <div className={styles.toolbar}>
         <nav className={styles.tabs} aria-label={text('listing.category')}>
@@ -124,10 +131,13 @@ export function BrowseView({
                 ariaLabel={text('listing.pagination')}
                 previousLabel={text('listing.previous')}
                 nextLabel={text('listing.next')}
+                variant="quiet"
               />
             </div>
           )}
-          <p className={styles.count}>{text('browse.results', { count: listing.total })}</p>
+          {categorySlug === undefined && (
+            <p className={styles.count}>{text('browse.results', { count: listing.total })}</p>
+          )}
         </>
       )}
     </section>
