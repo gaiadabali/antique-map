@@ -33,7 +33,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
-| **18** The client's palette, and the shop tidied | UI | 17 | · not started | 0/5 | 0/11 | 0 | `░░░░░░░░░░`   0% |
+| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 0/11 | 0 | `░░░░░░░░░░`   0% |
 | **All** | 18 phases | | | **84/94** | **285/313** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
@@ -86,6 +86,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
+| 18·W1 | 18.1 The palette | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1178,7 +1179,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every public page of both sites wears the new palette at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll; the shop's grids, product page, home, collections and stores show prints on even tiles with tidy, aligned captions; CI green; DESIGN.md records the palette.
 **Waves:** W1 — 18.1 · W2 — 18.2, 18.3, 18.4 · W3 — 18.5
 
-- [ ] **18.1 The palette** · needs: phase 17
+- [ ] **18.1 The palette** · needs: phase 17 — 🔄 18·W1
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** the token files, `engine/apps/web/src/styles/site.css`, `engine/apps/web/src/shared/ui/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/shared/chat/chat-launcher.module.css`
   - **Read** the palette board's option A; DESIGN.md "Outline Colour"
