@@ -89,6 +89,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 18·W1 | 18.1 The palette | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
 | 18·W2 | 18.4 The shop's home | orchestrator | `feat/p18-dsg` | 2026-10-12 | |
 | 18·W2 | 18.2 The shop's grids | medior | `feat/p18-dsg` | 2026-10-12 | |
+| 18·W2 | 18.3 The shop's product page | medior | `feat/p18-dsg` | 2026-10-12 | |
 
 ## Decisions for the owner
 
@@ -1198,7 +1199,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 18.2.a browse, search, collections and a collection tidied: a calm head, one filter and sort bar, prints on even tiles, captions aligned; stores a tidy list
   - [ ] 18.2.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort and paging still work.
 
-- [ ] **18.3 The shop's product page** · needs: 18.1
+- [ ] **18.3 The shop's product page** · needs: 18.1 — 🔄 18·W2
   - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
   - **Owns** `engine/apps/web/src/sites/shop/product/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
   - **Read** this phase's goal; 18.1's print tile; EXPERIENCE-SHOP.md §5
