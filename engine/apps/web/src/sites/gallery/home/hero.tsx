@@ -52,6 +52,7 @@ export function Hero(props: Props) {
       fallback={
         <Frame
           {...props}
+          pending
           ratio={EMPTY_RATIO}
           picture={empty}
           caption={<Skeleton width="60%" height="1.5rem" />}
@@ -67,20 +68,34 @@ type FrameProps = Props & {
   readonly ratio: number
   readonly picture: ReactNode
   readonly caption?: ReactNode
+  /**
+   * The placeholder while the read streams: its title is plain text, not the page's heading, so the
+   * page never holds two h1s (or two ids) in the moment the finished hero replaces it.
+   */
+  readonly pending?: boolean
 }
 
 /** The hero around whatever sheet it holds: the copy and facts never wait on the read. */
-function Frame({ browseHref, sellToUsHref, t, ratio, picture, caption }: FrameProps) {
+function Frame({
+  browseHref,
+  sellToUsHref,
+  t,
+  ratio,
+  picture,
+  caption,
+  pending = false,
+}: FrameProps) {
+  const Title = pending ? 'p' : 'h1'
   return (
     <Crossing
       lead
       ratio={ratio}
-      aria-labelledby="home-title"
+      aria-labelledby={pending ? undefined : 'home-title'}
       copy={
         <>
-          <h1 id="home-title" className={styles.title}>
+          <Title id={pending ? undefined : 'home-title'} className={styles.title}>
             {t('home.gallery.title')}
-          </h1>
+          </Title>
           <p className={`site-lede ${styles.lede}`}>{t('home.gallery.lede')}</p>
           <div className={styles.actions}>
             <Button variant="primary" href={browseHref}>
