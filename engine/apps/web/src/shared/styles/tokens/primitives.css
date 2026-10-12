@@ -1,9 +1,9 @@
 /* =====================================================================
    Tier 1 primitives — raw scales shared by both sites and the admin.
-   The public sites wear Outline Colour (phase 17, the surface brief
-   engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md):
-   copperplate ink on a mineral paper, and three historic map-colourists'
-   pigments in three locked strengths. The brand files map them to roles.
+   The public sites wear Ivory and ink (phase 18, the client's choice):
+   the ivory and shell ramps below, one per site. The Outline Colour ramps
+   (phase 17) stay as the semantic fallbacks; nothing else reads them.
+   The brand files map the ramps to roles.
    The admin reads only the linen-to-bronze ramp, the space scale and the
    status colours below; keep those values as they are.
    ===================================================================== */

@@ -2,7 +2,7 @@
    Site-wide shell styles. No raw colours, no font-family declarations,
    no ad-hoc lengths — every value is a token from shared/styles/tokens/
    or the site brand files. Components use the semantic aliases only.
-   Outline Colour (phase 17): copperplate ink on mineral paper, and the
+   Ivory and ink (phase 18): near-black ink on a warm paper, and the
    parts of the browser nobody draws (selection, caret, scrollbar,
    underlines, numerals) carry the palette too.
    ===================================================================== */
