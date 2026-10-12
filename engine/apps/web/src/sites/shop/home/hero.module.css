@@ -10,7 +10,8 @@
   text-wrap: balance;
 }
 
-.lede {
+/* `p.lede` outranks the shell's global `.site-lede`, which the element also wears. */
+p.lede {
   margin: var(--space-6) 0 0;
   max-inline-size: 30rem;
   font: var(--text-body-large);

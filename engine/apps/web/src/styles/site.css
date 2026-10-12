@@ -25,6 +25,9 @@ html {
   caret-color: var(--color-text);
   accent-color: var(--color-accent);
   scrollbar-color: var(--pigment-1-wash) var(--color-surface);
+  /* A focused control scrolls clear of the sticky header and the floating chat button (WCAG
+     2.4.11): the header is 5.5rem tall, the chat button sits 1.5rem above the foot and is 3rem tall. */
+  scroll-padding-block: 6.5rem 6rem;
   /* A page's wrap spans 100vw, which counts the scrollbar: the few pixels it overhangs are
      clipped here rather than scrolled to (clip, not hidden, keeps the sticky header working). */
   overflow-x: clip;
@@ -77,6 +80,16 @@ a {
   color: var(--color-text);
   text-decoration: none;
   min-height: 44px;
+}
+
+/* The site's name beside its logo, said but not shown: the logo already carries it. */
+.site-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .site-logo {

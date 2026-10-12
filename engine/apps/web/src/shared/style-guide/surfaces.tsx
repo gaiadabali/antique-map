@@ -3,6 +3,7 @@ import {
   Band,
   Button,
   Card,
+  Crossing,
   Eyebrow,
   FormMessage,
   Hairline,
@@ -79,6 +80,21 @@ export function Surfaces(): React.ReactElement {
         <Band as="div" pigment="ink">
           <p className={styles.bandLabel}>Ink</p>
         </Band>
+      </Section>
+
+      <Section id="sg-crossing" title="Crossing">
+        <p className={styles.note}>
+          Copy on a field of the site&apos;s pigment; the picture lies across the field&apos;s lower
+          edge onto the paper.
+        </p>
+        <Crossing
+          as="div"
+          ratio={4 / 3}
+          copy={<p className={styles.bandLabel}>The islands, first drawn.</p>}
+          aside={<ProofPoints items={['Since 2001', 'A certificate with every original']} />}
+          picture={<img src={samplePlate(400, 300)} alt="A 4 : 3 sheet, whole" />}
+          caption={<span>Caption under the picture, on the paper</span>}
+        />
       </Section>
 
       <Section id="sg-mat" title="Mat">

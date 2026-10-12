@@ -77,7 +77,7 @@ function Frame({ shopHref, t, ratio, picture, caption }: FrameProps) {
           <h1 id="home-title" className={styles.title}>
             {t('home.shop.title')}
           </h1>
-          <p className={styles.lede}>{t('home.shop.lede')}</p>
+          <p className={`site-lede ${styles.lede}`}>{t('home.shop.lede')}</p>
           <div className={styles.actions}>
             <Button variant="primary" href={shopHref}>
               {t('home.shop.ctaShop')}

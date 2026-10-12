@@ -11,7 +11,7 @@
 
 .default {
   background: var(--color-accent-secondary);
-  color: var(--color-text-strong);
+  color: var(--color-accent-contrast);
 }
 
 .success {

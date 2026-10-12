@@ -81,7 +81,7 @@ function Frame({ browseHref, sellToUsHref, t, ratio, picture, caption }: FramePr
           <h1 id="home-title" className={styles.title}>
             {t('home.gallery.title')}
           </h1>
-          <p className={styles.lede}>{t('home.gallery.lede')}</p>
+          <p className={`site-lede ${styles.lede}`}>{t('home.gallery.lede')}</p>
           <div className={styles.actions}>
             <Button variant="primary" href={browseHref}>
               {t('home.gallery.heroCtaBrowse')}

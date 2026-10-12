@@ -98,6 +98,8 @@ function BrandLink({ shell, t }: { shell: ShellPart; t: ShellText }) {
       aria-label={t('shell.homeLink', { brand: shell.site.name })}
     >
       <img className="site-logo" src={shell.logo} alt="" />
+      {/* The name is in the header for every reader and tool, but not drawn twice beside the logo. */}
+      <span className="site-name">{shell.site.name}</span>
     </a>
   )
 }

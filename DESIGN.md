@@ -25,10 +25,9 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 
 ## Added or changed
 
-- **A palette per site.** The design team's single palette (linen `#F4F1EA`, off-black `#1A1916`, bronze
-  `#6E5A43`, champagne `#A39174`) becomes the **gallery** default on `:root`. The **shop** overrides it
-  inside `[data-site="shop"]` with a warmer cream ground (`#F1E5D3`) and brown ink (`#593D21`) while
-  keeping the same bronze accent and square editorial feel — visibly a sibling.
+- **A palette per site** (phase 4) — **superseded by Outline Colour (phase 17, below)** for both public sites.
+  The design team's linen, off-black, bronze and champagne survive as primitives only because the admin reads
+  them (`tokens/admin.css`).
 - **Accessibility overrides to the kit.** Hairlines and focus are at least 1 px / 2 px and pass 3:1;
   input boundaries are darker than the decorative 0.5 px rule.
 - **Font variable names.** The semantic tokens `--font-display` and `--font-body` fall back to the
@@ -37,47 +36,79 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 - **Lint gate.** `engine/tooling/token-lint/cli.mjs` fails the build on any raw hex, `rgb()/rgba()/hsl()/hsla()`,
   or `font-family` outside the token files.
 
-## The luxury pass (phase 12, 2026-10-09)
+## Outline Colour — both public sites (phase 17, 2026-10-12)
 
-The user asked for the shop to feel luxury and premium; the home's hero was redesigned first, approved, and its
-language carried to every shop page. Four shared pieces carry it, so a later change is still a component edit:
+The user asked for both sites to use the full desktop width and to feel expensive rather than like generic AI
+"luxury" (2026-10-11). They kept Cormorant Garamond and Karla and the placeholder logos, ruled out dark and moody,
+stark white and vintage, and chose **Outline Colour** in a direction round: nothing is framed; every work and
+region is held by flat colour, the map colourist's wash. The direction contract is the surface brief
+`engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md`. Recorded here from the shipped CSS and
+components (worktree `feat/p17-dsg`), not from the brief.
 
-| Piece                   | What it is                                                                                                                                                                                                                                                                 |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Mat` (`shared/ui/mat`) | a framer's mat: paper ground, hairline edge, weighted at the foot, a hairline bevel just outside the window; `default` for a lead image, `compact` in a grid; `MatNote` for a window with no picture; a picture inside a link eases closer on hover (reduced motion: none) |
-| `Eyebrow mark`          | the eyebrow opened by a map's scale bar — the shop's cartographic signature (DESIGN-SYSTEM.md §1)                                                                                                                                                                          |
-| `SectionHead`           | a page's (`level={1}`) or a section's opening: marked eyebrow, balanced serif title, muted lede, an optional action                                                                                                                                                        |
-| `ProofPoints`           | a row of short facts under a hairline, parted by hairlines; a stack on a phone                                                                                                                                                                                             |
+**Palette (`shared/styles/tokens/primitives.css`; contrast checked 2026-10-12).** Copperplate ink `#1f2a30` for all
+type on a mineral paper `#f3f4ef` (13.3:1); soft ink `#4b565c` for muted words (6.8:1); input boundary
+`#7d878b` (3.3:1); rule `#cfd5d1` for list rows only. Three pigments, each in three locked strengths, plus the type
+that stands on them:
 
-The rules of the language: prints always sit in mats; museum captions under them (serif name, muted meta, price);
-hairlines and square corners only (no pills, no new shadows); full breakout width for listing and landing pages,
-the reading measure for long text; generous space. The shared header and footer were quietened for both sites.
+| Pigment   | tint (window on hover, panels) | wash (fields, ink type) | full (deep fields)            | muted type on the wash |
+| --------- | ------------------------------ | ----------------------- | ----------------------------- | ---------------------- |
+| verdigris | `#dde8e2`                      | `#8fb3a7` (ink 6.4:1)   | `#2d695e` (mineral 5.8:1)     | `#203b36` (5.3:1)      |
+| gamboge   | `#eedcb0` straw                | `#d1a752` ochre (6.5:1) | `#c9963a` saffron (ink 5.5:1) | `#45340d` (5.4:1)      |
+| madder    | `#f5e4e6`                      | `#cf9a96` (6.1:1)       | `#8c3249` (mineral 7.1:1)     | `#52242d` (5.3:1)      |
 
-**The gallery's hand (phase 14).** The same pieces carry Indies Gallery, with its own signatures (DESIGN-SYSTEM.md
-§1) set by tokens, never by a component branching on the site:
+**How colour is spent.** The gallery lives in verdigris, the shop in gamboge, each in its own pigment's strengths
+(`--pigment-1-*` in each `brand.css`). **Madder is the action** (`--color-action`): the one primary button a view
+asks for (Explore the collection, Ask about this, Add to bag, Checkout) and nothing else. The band that bridges to
+the sister site wears the sister's pigment — colour names the site. The accent (`--color-accent`) is ink: a current
+page, a checked option, the current pager number. The footer is the site's pigment at full strength. Square and
+flat everywhere: every radius and shadow token resolves to none.
 
-| Piece                      | On the gallery                                                                                                                                                                           |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The eyebrow's mark         | one hairline rule, as on a museum label (`--brand-mark-*` in each site's brand file; the shop keeps its scale bar)                                                                       |
-| `Mat fit="contain"`        | an original floats whole in its window on the mat's paper, a little in from the bevel — never cropped (§7). Every antique's picture uses it; a print or mockup on the shop keeps `cover` |
-| `StockTag`                 | the stock number in spaced capitals in a hairline box, the reference a buyer quotes on WhatsApp; the label reads "Stock no." aloud                                                       |
-| The work card              | a compact contained mat, then a museum caption: title (three lines at most), maker and date, dimensions, one status line (never a price) and the stock tag                               |
-| `Pagination variant=quiet` | square, unfilled, 44 px targets; the numbers on their own row on a phone                                                                                                                 |
+**Type.** Cormorant for display: `--text-display` 48–96 px (homes' headlines, the closing line), `--text-h1`
+40–72 px, `--text-h2` 30–48 px, `--text-card-title` 22 px. Karla 16 px body, `--text-label` 500 14 px sentence case
+for labels. No eyebrow or kicker above any heading, no tracked capitals anywhere; the old `eyebrow` prop on
+`SectionHead` is accepted and draws nothing.
 
-An empty mat's words take full ink on the gallery (`--brand-mat-note`): muted ink is 4.46:1 on its cream window.
-The home leads with the newest available map whole on its mat, captioned, in place of the hero film's poster.
+**The frame.** Full width at every desktop size: a page's wrap is `--page-wrap` (100vw, the scrollbar's overhang
+clipped at the root) padded by a gutter of 20–96 px (`--gutter`); text keeps `--measure-text` (38rem); bands are
+parted by `--section-space` (64–160 px). Card grids gain columns — 2, 3 at 48rem, 4 at 75rem, 5 at 110rem — and the
+homes' rows of six never leave an empty slot.
+
+**The shared pieces.**
+
+| Piece                             | What it is                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Band` (`shared/ui/band`)         | a full-bleed field of one pigment (`pigment` 1–3, `ink`, `paper`; `strength` tint, wash, full) that bleeds to the viewport from any centred column. A wash carries its outline: the full pigment as a stripe along its lower edge. A full field re-points every ink role (type, muted, rules, focus, accent, action)                                                                                               |
+| `Crossing` (`shared/ui/crossing`) | the signature composition: copy on a field, a picture lying across the field's lower edge onto the paper, the field as deep as 62% of the picture (or the copy, whichever is more), the outline stripe where it crosses. The homes' heroes, the gallery item page, the shop product page and a story with a hero use it                                                                                            |
+| `Mat` (`shared/ui/mat`)           | a work's window: clear at rest (the work's own paper meets the page's), no padding, an original contained and standing on the window's foot so a row shares one baseline; on hover the window takes the site's tint; a window with no picture keeps a field. The colour washes in (grayscale to colour) as the work enters the view, scroll-linked where `animation-timeline: view()` exists; reduced motion: none |
+| `SectionHead`                     | a page's (`level={1}`) or section's opening: a balanced serif title, a muted lede at the measure, an optional action                                                                                                                                                                                                                                                                                               |
+| `ProofPoints`                     | the owner's facts as plain lines of Karla, no rules, no capitals                                                                                                                                                                                                                                                                                                                                                   |
+| `Button`                          | 52 px, square: `primary` madder (the one action), `secondary` an ink outline that inverts on hover, `quiet` an underlined ink link                                                                                                                                                                                                                                                                                 |
+| `StockTag`                        | the stock number in spaced tabular figures, no box; it still reads "Stock no." aloud                                                                                                                                                                                                                                                                                                                               |
+| Header and footer                 | full width; the header on the paper with no rule, the logo alone (the doubled wordmark removed); the phone's menu a tinted drawer with the links in Cormorant; the footer on the site's full pigment                                                                                                                                                                                                               |
+
+**Page language.** Every page opens on its site's wash: a page title in a compact `Band` (listings, makers,
+places, sell to us, contact, bag, checkout, tracking, partnership, not-found), or a `Crossing` where one picture
+leads (homes, an antique, a product, a story with a hero). Records — an antique's details, a product's specs, an
+order's lines, the stores — are ruled running lists: the label left in muted small type, the value right in
+tabular figures. Steps whose order is information (how a print is made, how selling works) carry large Cormorant
+numerals. The browser surfaces carry the palette: selection in the lead wash, caret and focus in ink, the
+scrollbar in the lead wash.
+
+**Known gaps.** The condition grade shows the dealer's code ("VG") although the home promises plain words — the
+grade wording is the owner's to give (PRODUCT.md). Some product photographs carry a grey scan margin and an edge
+line inside the image. The `.impeccable/design.json` sidecar has not been written.
 
 ## Swap points
 
 The owner's later look-and-feel pass changes only these:
 
-| What to change                    | File(s)                                                                                                   |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Final colours (Q16)               | `engine/apps/web/src/sites/gallery/tokens/brand.css`<br>`engine/apps/web/src/sites/shop/tokens/brand.css` |
-| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                              |
-| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                        |
-| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                        |
-| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                       |
+| What to change                    | File(s)                                                                                                                    |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Final colours (Q16)               | the pigment values in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` |
+| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                               |
+| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                         |
+| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                         |
+| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                        |
 
 No dark mode. No raw colour or `font-family` is allowed outside the token files.
 
@@ -91,19 +122,19 @@ The Payload admin at `/admin` wears the Indies world built for work: light only 
 
 **Palette (roles in `admin.css`).**
 
-| Role | Value |
-| --- | --- |
-| `--admin-ground` / `-paper` | `--primitive-linen` `#f4f1ea` / `--primitive-paper` `#ffffff` |
-| `--admin-sidebar` / `-wash` | `#efebe2` / `#f7f5f0` |
-| `--admin-ink` / `-ink-strong` | `#26231e` / `--primitive-off-black` |
-| `--admin-muted` | `#675f52` (base-500) |
-| `--admin-hairline` / `-rule` | `#e3ddd1` / `#d5cec0` |
-| `--admin-input-border` | `#8f8674` |
-| `--admin-accent` / `-accent-strong` / `-accent-tint` / `-accent-on` | bronze `#6e5a43` / `#5a4936` / `#f6f2ec` / paper |
-| `--admin-focus` | bronze; `2px solid`, offset 2px |
-| success, warning, danger (+ `-tint`) | `--primitive-positive`, `-caution`, `-critical`; tints `#eef4ef`, `#faf3e6`, `#fbefee` |
-| `--admin-mat` / `-mat-edge` / `-selection` | `#f4f1ea` / `#d9d2c3` / `#e4d9ca` |
-| shadows | `--admin-shadow-popup`, `--admin-shadow-lift`, for popups and lifts only; panels have none |
+| Role                                                                | Value                                                                                      |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `--admin-ground` / `-paper`                                         | `--primitive-linen` `#f4f1ea` / `--primitive-paper` `#ffffff`                              |
+| `--admin-sidebar` / `-wash`                                         | `#efebe2` / `#f7f5f0`                                                                      |
+| `--admin-ink` / `-ink-strong`                                       | `#26231e` / `--primitive-off-black`                                                        |
+| `--admin-muted`                                                     | `#675f52` (base-500)                                                                       |
+| `--admin-hairline` / `-rule`                                        | `#e3ddd1` / `#d5cec0`                                                                      |
+| `--admin-input-border`                                              | `#8f8674`                                                                                  |
+| `--admin-accent` / `-accent-strong` / `-accent-tint` / `-accent-on` | bronze `#6e5a43` / `#5a4936` / `#f6f2ec` / paper                                           |
+| `--admin-focus`                                                     | bronze; `2px solid`, offset 2px                                                            |
+| success, warning, danger (+ `-tint`)                                | `--primitive-positive`, `-caution`, `-critical`; tints `#eef4ef`, `#faf3e6`, `#fbefee`     |
+| `--admin-mat` / `-mat-edge` / `-selection`                          | `#f4f1ea` / `#d9d2c3` / `#e4d9ca`                                                          |
+| shadows                                                             | `--admin-shadow-popup`, `--admin-shadow-lift`, for popups and lifts only; panels have none |
 
 Contrast as the file records it (checked 2026-10-11): ink on linen 13.9:1; muted on linen 5.6:1, on the sidebar 5.3:1; paper on bronze 6.6:1; input boundary on paper 3.6:1; base-400 (Payload's quieter labels) on linen 5.0:1; every status tone on its tint 5.4:1 or more.
 
