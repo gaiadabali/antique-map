@@ -33,8 +33,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
-| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 5/11 | 0 | `█████░░░░░`  45% |
-| **All** | 18 phases | | | **84/94** | **290/313** | **8** | `█████████░`  93% |
+| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 6/11 | 0 | `██████░░░░`  55% |
+| **All** | 18 phases | | | **84/94** | **291/313** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1220,7 +1220,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `DESIGN.md`, `docs/gates/ivory-and-ink.md`, `docs/gates/ivory-and-ink/*`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
-  - [ ] 18.5.a released to staging; every public page of both sites captured and axe-checked there
+  - [x] 18.5.a released to staging; every public page of both sites captured and axe-checked there
   - [ ] 18.5.b **Check:** `docs/gates/ivory-and-ink.md` — the screens, axe clean, CI green; DESIGN.md records the palette.
 
 ---
