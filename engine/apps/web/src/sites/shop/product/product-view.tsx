@@ -68,7 +68,7 @@ export function ProductView({
       <div className={styles.layout}>
         <div className={styles.gallery}>
           <div className={styles.lead}>
-            <PrintTile ratio={ratio} className={styles.leadTile}>
+            <PrintTile ratio={ratio} size="large" className={styles.leadTile}>
               {lead ? (
                 <ResponsiveImage
                   variant="fill"

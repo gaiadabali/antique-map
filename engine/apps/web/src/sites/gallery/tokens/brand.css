@@ -40,8 +40,8 @@
   --brand-caution: var(--primitive-caution);
 
   /* The roles a band or a crossing asks for: 1 is the gallery's own (the field is its paper, the
-     tint its stone, the full its ink footer), 2 the sister shop's warm stone for the bridge band,
-     3 the gallery's own again. */
+     tint its stone, the full its ink footer), 2 the sister shop's warm panel for the bridge band
+     (muted ink 4.8:1 on it), 3 the gallery's own again. */
   --brand-pigment-1-tint: var(--primitive-ivory-stone);
   --brand-pigment-1-wash: var(--primitive-ivory);
   --brand-pigment-1-full: var(--primitive-ivory-ink);
@@ -49,7 +49,7 @@
   --brand-pigment-1-on-full: var(--primitive-ivory-foot-ink);
   --brand-pigment-1-on-full-muted: var(--primitive-ivory-foot-muted);
   --brand-pigment-2-tint: var(--primitive-shell-stone);
-  --brand-pigment-2-wash: var(--primitive-shell-stone);
+  --brand-pigment-2-wash: var(--primitive-shell-panel);
   --brand-pigment-2-full: var(--primitive-shell-espresso);
   --brand-pigment-2-on-wash: var(--primitive-shell-muted);
   --brand-pigment-2-on-full: var(--primitive-shell-foot-ink);

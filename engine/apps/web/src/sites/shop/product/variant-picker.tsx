@@ -107,7 +107,7 @@ export function VariantPicker({
         <Button
           type="submit"
           variant="primary"
-          className={styles.addButton}
+          className={[styles.addButton, canAdd ? '' : styles.addSoldOut].filter(Boolean).join(' ')}
           disabled={!canAdd}
           loading={pending}
         >

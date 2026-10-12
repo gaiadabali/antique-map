@@ -58,6 +58,7 @@
     position: sticky;
     top: calc(5.5rem + var(--space-6));
     align-self: start;
+    max-inline-size: 32rem;
   }
 }
 
@@ -127,9 +128,11 @@
   border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
+/* On the page's own two columns: the story's words start under the details. */
 @media (min-width: 64rem) {
   .story {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: calc(var(--grid-gap) * 1.5);
     align-items: start;
   }
 }
@@ -242,6 +245,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+/* Sold out: no faded bronze slab, a quiet outline that says so (muted ink 5.9:1 on the paper). */
+.buyRow .addSoldOut {
+  opacity: 1;
+  background: transparent;
+  border-color: var(--color-border-strong);
+  color: var(--color-text-muted);
 }
 
 .buyRow .addButton {

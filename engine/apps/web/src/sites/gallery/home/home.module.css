@@ -89,15 +89,14 @@
 .entry {
   display: grid;
   gap: var(--space-3);
-  padding-block: var(--space-6) var(--space-2);
-  border-top: var(--rule-strong) solid var(--color-text);
+  padding-block: var(--space-5) 0;
+  border-top: var(--rule-hair) solid var(--color-border-strong);
   color: var(--color-text);
   text-decoration: none;
 }
 
 .entryTitle {
-  font: var(--text-h1);
-  letter-spacing: var(--tracking-h1);
+  font: var(--text-h2);
   text-decoration: underline;
   text-decoration-color: transparent;
   text-decoration-thickness: var(--rule-hair);
@@ -119,6 +118,11 @@
   display: grid;
   gap: var(--space-7) var(--grid-gap);
   padding-block: var(--section-space);
+}
+
+/* After the index the close follows at one section's space, not two. */
+.section + .close {
+  padding-block-start: 0;
 }
 
 .close .closeTitle {

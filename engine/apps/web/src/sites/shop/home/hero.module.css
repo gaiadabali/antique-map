@@ -28,6 +28,18 @@ p.lede {
   margin-block-start: var(--space-7);
 }
 
+/* The owner's facts close the copy on the panel, one row on a desktop. */
+.signals {
+  margin-block-start: var(--space-7);
+  column-gap: var(--space-6);
+}
+
+@media (min-width: 48rem) {
+  .signals li {
+    white-space: nowrap;
+  }
+}
+
 .printLink {
   display: block;
   box-shadow: var(--shadow-print);

@@ -119,7 +119,10 @@
   text-decoration: none;
 }
 
+/* The caption fills the rest of the card, so every price in a row stands on one line at its foot
+   however the titles above it wrap. */
 .cardBody {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -148,9 +151,10 @@
   color: var(--color-text-muted);
 }
 
-.cardMeta > span + span::before {
+/* The dot ends an item, so a wrapped line never starts with one. */
+.cardMeta > span:not(:last-child)::after {
   content: '·';
-  margin-inline-end: var(--space-2);
+  margin-inline-start: var(--space-2);
 }
 
 /* Sold out is plain muted text, never red. */
@@ -160,6 +164,8 @@
 
 .cardBody .price,
 .cardBody .priceFrom {
+  margin-block-start: auto;
+  padding-block-start: var(--space-2);
   font: var(--text-body);
   font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text);

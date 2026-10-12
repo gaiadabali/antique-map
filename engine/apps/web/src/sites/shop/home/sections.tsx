@@ -34,10 +34,10 @@ const STEPS = [
 
 const FACTS = ['home.shop.tradeFact1', 'home.shop.tradeFact2', 'home.shop.tradeFact3'] as const
 
-/** The sets on the stone, each one a title and its line: three walls in words. */
+/** The sets on the paper, a hairline above, each one a title and its line: three walls in words. */
 export function Sets({ locale, href, t }: SectionProps) {
   return (
-    <Band pigment={1} strength="tint" aria-labelledby="home-sets">
+    <section className={styles.ruled} aria-labelledby="home-sets">
       <SectionHead
         id="home-sets"
         title={t('home.shop.setsTitle')}
@@ -56,7 +56,7 @@ export function Sets({ locale, href, t }: SectionProps) {
           </li>
         ))}
       </ul>
-    </Band>
+    </section>
   )
 }
 
@@ -64,7 +64,7 @@ export function Sets({ locale, href, t }: SectionProps) {
  * point. */
 export function Process({ t }: Pick<SectionProps, 't'>) {
   return (
-    <section className={styles.section} id="process" aria-labelledby="home-process">
+    <section className={styles.ruled} id="process" aria-labelledby="home-process">
       <SectionHead id="home-process" title={t('home.shop.processTitle')} />
       <ol className={styles.steps}>
         {STEPS.map((step, at) => (
@@ -85,7 +85,7 @@ export function Process({ t }: Pick<SectionProps, 't'>) {
  * in (the page's colour is spent on the hero, the sets and the bridge to the originals). */
 export function Trade({ locale, href, t }: SectionProps) {
   return (
-    <section className={styles.trade} aria-labelledby="home-trade">
+    <section className={styles.ruled} aria-labelledby="home-trade">
       <div className={styles.split}>
         <div>
           <SectionHead

@@ -13,8 +13,11 @@ type Props = {
    * edges. Leave it out for a 4 : 5 print.
    */
   ratio?: number
-  /** `default` for a grid or a lead; `small` for a thumbnail or a bag line (a narrower margin). */
-  size?: 'default' | 'small'
+  /**
+   * `default` for a grid; `large` for a product's lead print (a narrower margin, the print larger
+   * on its wall); `small` for a thumbnail or a bag line.
+   */
+  size?: 'default' | 'large' | 'small'
   /** The tile's own shape: `portrait` (4 : 5, every grid) or `square` (thumbnails, a bag line). */
   tile?: 'portrait' | 'square'
   className?: string

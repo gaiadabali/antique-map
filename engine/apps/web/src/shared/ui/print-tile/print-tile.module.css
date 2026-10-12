@@ -27,6 +27,10 @@
   inset: 9% 10% 11%;
 }
 
+.large .stage {
+  inset: 6% 8% 8%;
+}
+
 .print {
   position: relative;
   inline-size: min(100cqi, 100cqb * var(--print-ratio));

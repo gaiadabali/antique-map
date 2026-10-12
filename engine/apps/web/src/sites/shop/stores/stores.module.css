@@ -20,6 +20,13 @@
   margin-block-end: var(--space-5);
 }
 
+/* An area's count is a note under its name, not a lede. */
+.page .areaHead p {
+  margin-block-start: var(--space-1);
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
 /* On a phone one row that scrolls inside itself, never the page; it wraps from 48rem up. */
 .areas {
   display: flex;
@@ -120,15 +127,12 @@
 }
 
 @media (min-width: 48rem) {
-  /* Room enough to show every area: the row wraps rather than hiding the last ones. */
+  /* Room enough to show every area: an even grid of names, so no name is left alone on a row. */
   .areas {
-    flex-wrap: wrap;
-    row-gap: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    column-gap: var(--space-5);
     overflow-x: visible;
-  }
-
-  .area {
-    margin-block-end: var(--space-9);
   }
 
   .grid {

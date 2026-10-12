@@ -94,9 +94,9 @@ function Frame({ shopHref, t, ratio, picture, caption, pending = false }: FrameP
               {t('home.shop.ctaProcess')}
             </Button>
           </div>
+          <ProofPoints className={styles.signals} items={SIGNALS.map((key) => t(key))} />
         </>
       }
-      aside={<ProofPoints items={SIGNALS.map((key) => t(key))} />}
       picture={picture}
       caption={caption}
     />
