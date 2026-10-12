@@ -81,10 +81,11 @@ export function Process({ t }: Pick<SectionProps, 't'>) {
   )
 }
 
-/** Trade and gifting on the full gamboge: the offer, its facts, and the way in. */
+/** Trade and gifting on the paper: the offer, its facts, and the way in (the page's colour is spent
+ * on the hero, the sets and the bridge to the originals). */
 export function Trade({ locale, href, t }: SectionProps) {
   return (
-    <Band pigment={1} strength="full" aria-labelledby="home-trade">
+    <Band pigment="paper" aria-labelledby="home-trade">
       <div className={styles.split}>
         <div>
           <SectionHead

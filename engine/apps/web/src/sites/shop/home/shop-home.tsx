@@ -1,8 +1,8 @@
 /**
  * The shop's home (4.3.b, 12.3; Outline Colour 17.2): the hero lays the lead print across a
  * gamboge field (`./hero`); below it the "shop by" index, the streamed best sellers, then the
- * bands in the shop's own pigment — the sets on its tint, the process on the paper, the trade on
- * its full strength — and the bridge to the originals in the gallery's verdigris. A thin
+ * bands in the shop's own pigment — the sets on its tint, the process and the trade on the paper —
+ * and the bridge to the originals in the gallery's verdigris, flush on the footer. A thin
  * composition: the sections below the best sellers live in `./sections`, and every word comes
  * from the shop's lexicon.
  */

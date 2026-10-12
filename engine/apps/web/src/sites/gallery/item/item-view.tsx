@@ -6,6 +6,8 @@
  * list, and Browse closes the page. The gallery never names a price: the Ask block says *Price on
  * request*, and no number that looks like a price appears anywhere.
  */
+import type { CSSProperties } from 'react'
+
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
@@ -59,48 +61,52 @@ export function ItemViewComposition({
   return (
     <article className={styles.page}>
       <ChatPageContext title={h1} />
-      <Crossing
-        lead
-        pigment={1}
-        fit="contain"
-        ratio={ratio}
-        aria-labelledby="item-title"
-        copy={
-          <div className={styles.head}>
-            <Breadcrumbs items={[{ label: t('item.browse'), href: browseHref }, { label: h1 }]} />
-            <h1 id="item-title" className={styles.title}>
-              {h1}
-            </h1>
-            {hasHook && work.originalTitle !== null && (
-              <p className={styles.originalTitle} lang={work.originalTitleLanguage ?? undefined}>
-                <em>{work.originalTitle}</em>
-              </p>
-            )}
-            {byline !== '' && <p className={styles.byline}>{byline}</p>}
-            {facts !== '' && <p className={styles.facts}>{facts}</p>}
-            {work.stockNumber !== null && work.stockNumber !== '' && (
-              <p className={styles.stock}>
-                <StockTag label={t('label.stockNumber', { stockNumber: work.stockNumber })}>
-                  {work.stockNumber}
-                </StockTag>
-              </p>
-            )}
-            <AskPanel
-              work={work}
-              locale={locale}
-              askHref={askHref}
-              emailHref={emailHref ?? null}
-              emailAddress={emailAddress ?? null}
-              contactMissing={contactMissing ?? false}
-            />
-          </div>
-        }
-        aside={<ItemProof locale={locale} />}
-        picture={<LeadPicture lead={lead} ratio={ratio} />}
-        caption={
+      {/* The Zoom control and the other views stand under the sheet, outside the crossing, so the
+          field's edge can fall wherever the copy needs without ever cutting through a control. */}
+      <div className={styles.lead}>
+        <Crossing
+          lead
+          pigment={1}
+          fit="contain"
+          ratio={ratio}
+          aria-labelledby="item-title"
+          copy={
+            <div className={styles.head}>
+              <Breadcrumbs items={[{ label: t('item.browse'), href: browseHref }, { label: h1 }]} />
+              <h1 id="item-title" className={styles.title}>
+                {h1}
+              </h1>
+              {hasHook && work.originalTitle !== null && (
+                <p className={styles.originalTitle} lang={work.originalTitleLanguage ?? undefined}>
+                  <em>{work.originalTitle}</em>
+                </p>
+              )}
+              {byline !== '' && <p className={styles.byline}>{byline}</p>}
+              {facts !== '' && <p className={styles.facts}>{facts}</p>}
+              {work.stockNumber !== null && work.stockNumber !== '' && (
+                <p className={styles.stock}>
+                  <StockTag label={t('label.stockNumber', { stockNumber: work.stockNumber })}>
+                    {work.stockNumber}
+                  </StockTag>
+                </p>
+              )}
+              <AskPanel
+                work={work}
+                locale={locale}
+                askHref={askHref}
+                emailHref={emailHref ?? null}
+                emailAddress={emailAddress ?? null}
+                contactMissing={contactMissing ?? false}
+              />
+            </div>
+          }
+          aside={<ItemProof locale={locale} />}
+          picture={<LeadPicture lead={lead} ratio={ratio} />}
+        />
+        <div className={styles.mediaBelow} style={{ '--picture-ratio': ratio } as CSSProperties}>
           <MediaCaption images={work.images} leadIndex={work.primaryIndex} locale={locale} />
-        }
-      />
+        </div>
+      </div>
 
       <ItemRecord work={work} locale={locale} />
       <p className={styles.browseMore}>
