@@ -33,8 +33,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
-| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 0/11 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 18 phases | | | **84/94** | **285/313** | **8** | `█████████░`  91% |
+| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 2/11 | 0 | `██░░░░░░░░`  18% |
+| **All** | 18 phases | | | **84/94** | **287/313** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1187,8 +1187,8 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** the token files, `engine/apps/web/src/styles/site.css`, `engine/apps/web/src/shared/ui/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/shared/chat/chat-launcher.module.css`
   - **Read** the palette board's option A; DESIGN.md "Outline Colour"
   - _Requirements: 12.1_
-  - [ ] 18.1.a Ivory and ink as tokens, a distinct ground, accent and footer per site, contrast checked; the colour bands and outline stripes retired; the action in each site's accent
-  - [ ] 18.1.b a shared print tile: a print centred on an even tile with a soft shadow, for the shop's grids and product page
+  - [x] 18.1.a Ivory and ink as tokens, a distinct ground, accent and footer per site, contrast checked; the colour bands and outline stripes retired; the action in each site's accent
+  - [x] 18.1.b a shared print tile: a print centred on an even tile with a soft shadow, for the shop's grids and product page
   - [ ] 18.1.c **Check:** both homes and the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
 
 - [ ] **18.2 The shop's grids** · needs: 18.1 — 🔄 18·W2
