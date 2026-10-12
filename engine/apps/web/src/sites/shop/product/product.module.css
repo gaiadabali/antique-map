@@ -1,26 +1,76 @@
-/* The shop product page, Outline Colour: the shared crossing leads (copy on a field of gamboge,
-   the print across its edge), the story follows on the paper. 390 px first; tokens only. */
+/* The shop product page, Ivory and ink: on the warm paper, the print large on its tile beside
+   the details on a desktop, the story below. 390 px first; tokens only. */
 
-/* The full breakout width, as the home's wrap; the crossing starts right under the header. */
+/* The full breakout width, as the home's wrap. */
 .page {
   width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding: 0 var(--gutter) var(--section-space);
+  padding: var(--space-6) var(--gutter) var(--section-space);
 }
 
+/* One column on a phone; the gallery and the details side by side from 64rem. */
+.layout {
+  display: grid;
+  gap: var(--space-7);
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: calc(var(--grid-gap) * 1.5);
+    align-items: start;
+  }
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* The lead tile, held so a portrait tile never runs taller than the screen. */
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  inline-size: 100%;
+  max-inline-size: calc(84svh * 0.8);
+  margin-inline: auto;
+}
+
+@media (min-width: 64rem) {
+  .lead {
+    margin-inline: 0;
+  }
+}
+
+/* The details: held clear of the sticky header (5.5rem) while the gallery scrolls past. */
 .copy {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  max-inline-size: 36rem;
+  gap: var(--space-5);
   min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .copy {
+    position: sticky;
+    top: calc(5.5rem + var(--space-6));
+    align-self: start;
+  }
+}
+
+.proof {
+  padding-block-start: var(--space-5);
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
 .category {
   align-self: flex-start;
   font: var(--text-label);
-  color: var(--color-text);
+  color: var(--color-text-muted);
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-thickness: var(--rule-hair);
@@ -46,22 +96,18 @@
   margin: 0;
 }
 
-/* A synthetic image's label and the lead's empty window. */
+/* A synthetic image's label, under its tile. */
 .mockupNote {
   font: var(--text-caption);
   color: var(--color-text-muted);
 }
 
-.empty {
-  background: var(--color-field);
-}
-
-/* The thumbnails: small windows in a row under the lead print. */
+/* The other views: small square tiles in a row under the lead print. */
 .thumbs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
-  margin: var(--space-4) 0 0;
+  gap: var(--space-4);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -70,15 +116,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  inline-size: clamp(4.5rem, 22%, 7.5rem);
+  inline-size: clamp(5.5rem, 22%, 7rem);
 }
 
-/* The story and the specs sit on the paper at a reading measure. */
-/* The story across the width: its head at left, the words at right on a desktop. */
+/* The story across the width: a hairline above, its head at left, the words at right on a desktop. */
 .story {
   display: grid;
   gap: var(--space-5) var(--grid-gap);
   margin-block-start: var(--section-space);
+  padding-block-start: var(--space-7);
+  border-block-start: var(--rule-hair) solid var(--color-border);
 }
 
 @media (min-width: 64rem) {
@@ -225,4 +272,8 @@
   font: var(--text-small);
   color: var(--color-text-muted);
   margin: 0;
+}
+
+.optionSoldOut:hover {
+  background: var(--color-field);
 }
