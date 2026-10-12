@@ -33,7 +33,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
-| **All** | 17 phases | | | **84/89** | **285/302** | **8** | `█████████░`  94% |
+| **18** The client's palette, and the shop tidied | UI | 17 | · not started | 0/5 | 0/11 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 18 phases | | | **84/94** | **285/313** | **8** | `█████████░`  91% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1170,6 +1171,53 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 17.8.a every public page of both sites captured at 390, 1280 and 1920 in both languages on a production build
   - [x] 17.8.b the finish review against the direction contract, its fixes applied; DESIGN.md and DESIGN-SYSTEM.md record the world
   - [x] 17.8.c **Check:** `docs/gates/outline-colour.md` — the verdict, the screens, axe clean, no sideways scroll; the e2e smoke of both sites passes.
+
+## Phase 18 — The client's palette, and the shop tidied · UI · needs 17 · ~2d
+
+**Goal:** both sites move to the client's taste — "clean, exclusive and premium" (user, 2026-10-12, as the owner's proxy: "kinda personal preference from the client") — and the shop's pages are tidied. From a palette board of four directions the client chose **Ivory and ink**: warm ivory paper, near-black type, colour only as a small accent, a dark footer; **two distinct shops** on that base (the gallery ivory with a deep green accent and an ink footer; the shop a warmer white, a warm-stone hero panel, bronze accent and an espresso footer); the shop's prints **centred on even tiles with a soft shadow**; and every shop page tidied (the grid, the product page, the home, collections and stores). Behaviour, prices and copy unchanged.
+**Done when:** on staging, every public page of both sites wears the new palette at 390, 1280 and 1920 in both languages, axe clean, no sideways scroll; the shop's grids, product page, home, collections and stores show prints on even tiles with tidy, aligned captions; CI green; DESIGN.md records the palette.
+**Waves:** W1 — 18.1 · W2 — 18.2, 18.3, 18.4 · W3 — 18.5
+
+- [ ] **18.1 The palette** · needs: phase 17
+  - **Lane** DSG · **Agent** orchestrator · **Wave** W1
+  - **Owns** the token files, `engine/apps/web/src/styles/site.css`, `engine/apps/web/src/shared/ui/**`, `engine/apps/web/src/shell/**`, `engine/apps/web/src/shared/chat/chat-launcher.module.css`
+  - **Read** the palette board's option A; DESIGN.md "Outline Colour"
+  - _Requirements: 12.1_
+  - [ ] 18.1.a Ivory and ink as tokens, a distinct ground, accent and footer per site, contrast checked; the colour bands and outline stripes retired; the action in each site's accent
+  - [ ] 18.1.b a shared print tile: a print centred on an even tile with a soft shadow, for the shop's grids and product page
+  - [ ] 18.1.c **Check:** both homes and the style guide at 390, 1280 and 1920; lint, tokens, file size and the shared tests pass.
+
+- [ ] **18.2 The shop's grids** · needs: 18.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores}/**`
+  - **Read** this phase's goal; 18.1's print tile
+  - _Requirements: 12.1_
+  - [ ] 18.2.a browse, search, collections and a collection tidied: a calm head, one filter and sort bar, prints on even tiles, captions aligned; stores a tidy list
+  - [ ] 18.2.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort and paging still work.
+
+- [ ] **18.3 The shop's product page** · needs: 18.1
+  - **Lane** WEB · **Agent** medior (Sonnet), orchestrator review · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/product/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
+  - **Read** this phase's goal; 18.1's print tile; EXPERIENCE-SHOP.md §5
+  - _Requirements: 12.1_
+  - [ ] 18.3.a the print large on its tile beside the details (name, price, options, Add to bag, stock, delivery), the other views as small tiles, the story below
+  - [ ] 18.3.b **Check:** a product with variants and one without at 390, 1280 and 1920 in both languages, axe clean; Add to bag still works.
+
+- [ ] **18.4 The shop's home** · needs: 18.1
+  - **Lane** WEB · **Agent** orchestrator · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/home/**`, `engine/apps/web/src/sites/gallery/home/**`
+  - **Read** this phase's goal
+  - _Requirements: 12.1_
+  - [ ] 18.4.a the shop home tidied in the new palette (the hero on its stone panel, best sellers on tiles, calm sections); the gallery home checked in its own
+  - [ ] 18.4.b **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean.
+
+- [ ] **18.5 On staging** · needs: 18.2, 18.3, 18.4
+  - **Lane** DSG · **Agent** orchestrator · **Wave** W3
+  - **Owns** `DESIGN.md`, `docs/gates/ivory-and-ink.md`, `docs/gates/ivory-and-ink/*`
+  - **Read** this phase's **Done when**
+  - _Requirements: 12.1_
+  - [ ] 18.5.a released to staging; every public page of both sites captured and axe-checked there
+  - [ ] 18.5.b **Check:** `docs/gates/ivory-and-ink.md` — the screens, axe clean, CI green; DESIGN.md records the palette.
 
 ---
 
