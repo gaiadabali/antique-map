@@ -33,8 +33,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **15** The optimisation pass | Launch | 7, 8, 9 | ✅ done | 4/4 | 13/13 | 0 | `██████████` 100% |
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
-| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 2/11 | 0 | `██░░░░░░░░`  18% |
-| **All** | 18 phases | | | **84/94** | **287/313** | **8** | `█████████░`  92% |
+| **18** The client's palette, and the shop tidied | UI | 17 | 🔄 in progress | 0/5 | 5/11 | 0 | `█████░░░░░`  45% |
+| **All** | 18 phases | | | **84/94** | **290/313** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1196,7 +1196,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/{browse,collections,stores}/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/{browse,search,collection,stores}/**`
   - **Read** this phase's goal; 18.1's print tile
   - _Requirements: 12.1_
-  - [ ] 18.2.a browse, search, collections and a collection tidied: a calm head, one filter and sort bar, prints on even tiles, captions aligned; stores a tidy list
+  - [x] 18.2.a browse, search, collections and a collection tidied: a calm head, one filter and sort bar, prints on even tiles, captions aligned; stores a tidy list
   - [ ] 18.2.b **Check:** each at 390, 1280 and 1920 in both languages, axe clean; filters, sort and paging still work.
 
 - [ ] **18.3 The shop's product page** · needs: 18.1 — 🔄 18·W2
@@ -1204,7 +1204,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/product/**`, `engine/apps/web/src/app/(shop)/shop/[locale]/product/**`
   - **Read** this phase's goal; 18.1's print tile; EXPERIENCE-SHOP.md §5
   - _Requirements: 12.1_
-  - [ ] 18.3.a the print large on its tile beside the details (name, price, options, Add to bag, stock, delivery), the other views as small tiles, the story below
+  - [x] 18.3.a the print large on its tile beside the details (name, price, options, Add to bag, stock, delivery), the other views as small tiles, the story below
   - [ ] 18.3.b **Check:** a product with variants and one without at 390, 1280 and 1920 in both languages, axe clean; Add to bag still works.
 
 - [ ] **18.4 The shop's home** · needs: 18.1 — 🔄 18·W2
@@ -1212,7 +1212,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/home/**`, `engine/apps/web/src/sites/gallery/home/**`
   - **Read** this phase's goal
   - _Requirements: 12.1_
-  - [ ] 18.4.a the shop home tidied in the new palette (the hero on its stone panel, best sellers on tiles, calm sections); the gallery home checked in its own
+  - [x] 18.4.a the shop home tidied in the new palette (the hero on its stone panel, best sellers on tiles, calm sections); the gallery home checked in its own
   - [ ] 18.4.b **Check:** both homes at 390, 1280 and 1920 in both languages, axe clean.
 
 - [ ] **18.5 On staging** · needs: 18.2, 18.3, 18.4
