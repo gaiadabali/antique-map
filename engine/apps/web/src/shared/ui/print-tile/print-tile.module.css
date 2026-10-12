@@ -11,6 +11,10 @@
   background: var(--color-surface-deep);
 }
 
+.square {
+  aspect-ratio: 1;
+}
+
 .stage {
   position: absolute;
   inset: 10% 12% 13%;

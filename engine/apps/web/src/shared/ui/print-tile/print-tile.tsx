@@ -15,6 +15,8 @@ type Props = {
   ratio?: number
   /** `default` for a grid or a lead; `small` for a thumbnail or a bag line (a narrower margin). */
   size?: 'default' | 'small'
+  /** The tile's own shape: `portrait` (4 : 5, every grid) or `square` (thumbnails, a bag line). */
+  tile?: 'portrait' | 'square'
   className?: string
 }
 
@@ -38,16 +40,22 @@ export function printAspectOf(ratio: number): string {
 }
 
 /**
- * A print hung on its tile (Ivory and ink, phase 18): an even 4 : 5 tile of the site's stone, the
+ * A print hung on its tile (Ivory and ink, phase 18): an even tile of the site's stone, the
  * print laid in it whole at its own shape, set a little above centre as a framer would, with one
  * soft, low shadow. Every tile in a grid is the same size whatever the print's shape, so a row
  * reads as one hang. Inside a link the print lifts a little under the pointer.
  */
-export function PrintTile({ children, ratio, size = 'default', className }: Props) {
+export function PrintTile({
+  children,
+  ratio,
+  size = 'default',
+  tile = 'portrait',
+  className,
+}: Props) {
   const shape = ratio ?? FALLBACK_RATIO
   return (
     <div
-      className={[styles.tile, styles[size], className].filter(Boolean).join(' ')}
+      className={[styles.tile, styles[size], styles[tile], className].filter(Boolean).join(' ')}
       style={{ '--print-ratio': shape } as CSSProperties}
     >
       <div className={styles.stage}>
