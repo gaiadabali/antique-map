@@ -2,7 +2,8 @@
 
 /**
  * The floating chat entry point (8.2.a): a button at the bottom right of every page until the
- * visitor opens it — the panel's JavaScript, Turnstile's script and every chat-only string load
+ * visitor opens it (a 48 px icon square on a phone, its words kept as the accessible name; the labelled
+ * button from 48rem) — the panel's JavaScript, Turnstile's script and every chat-only string load
  * only then (`next/dynamic`, `ssr: false`), the same lazy-door pattern as
  * `sites/gallery/item/zoom-lazy.tsx`. Open, the panel is fixed to the viewport: a full-height sheet
  * on a phone, a side panel from tablet up (DESIGN-SYSTEM.md §5). Every word arrives as a prop,
@@ -11,6 +12,7 @@
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
 
+import { ChatIcon } from './chat-icons'
 import type { ChatPanelProps } from './chat-panel'
 import styles from './chat-launcher.module.css'
 
@@ -39,8 +41,10 @@ export function ChatLauncher({ label, ...panelProps }: ChatLauncherProps): React
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
-        <span className={styles.dot} aria-hidden="true" />
-        {label}
+        <span className={styles.icon} aria-hidden="true">
+          <ChatIcon />
+        </span>
+        <span className={styles.text}>{label}</span>
       </button>
     )
   }

@@ -3,20 +3,27 @@
  * at 1280). The launcher floats at the bottom right of every page; open, the panel is fixed to the
  * viewport, never laid out inside the header. Layering: above the sticky header (100), below the
  * mobile menu sheet (9999) and toasts (1000).
+ *
+ * On a phone the launcher is a 48 px square holding the drawn chat icon, so it covers as little of
+ * the page as a one-tap door can; its words stay in the button as visually hidden text, which is
+ * its accessible name. From 48rem up it is the labelled text button. The foot of the page keeps
+ * clear of it (the footer rule below), so the last line is never under the button.
  */
 .launcher {
   position: fixed;
-  right: calc(var(--space-5) + env(safe-area-inset-right, 0px));
-  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   z-index: 900;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  min-height: 3rem;
-  padding: var(--space-3) var(--space-5);
+  justify-content: center;
+  box-sizing: border-box;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
   font: var(--text-label);
-  /* a quiet paper button with a hairline (Ivory and ink): it floats over any print or footer and
-     reads without covering it in a slab of ink */
+  /* a quiet paper button with a hairline: it floats over any print or footer and reads without
+     covering it in a slab of ink. Chat is never the page's one action, so no accent colour. */
   color: var(--color-text);
   background: var(--color-surface-raised);
   border: var(--rule-hair) solid var(--color-border-strong);
@@ -34,13 +41,58 @@
   outline-offset: 3px;
 }
 
-/* The word carries the button; no glyph stands in for an icon. */
-.dot {
-  display: none;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 0;
-  background: currentColor;
+.icon {
+  display: inline-flex;
+}
+
+/* The words as the accessible name: out of sight on a phone, never display:none. */
+.text {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The foot of the page keeps clear of the 48 px button (16 px off the edge) on a phone: the
+   footer's own bottom padding grows to hold it, on the footer's ground, so the last line and the
+   last card stand fully above it at the end of the scroll. It targets the site footer, the one
+   that precedes the launcher, and lapses when the panel replaces the launcher. */
+@media (max-width: 47.999rem) {
+  :global(footer):has(~ .launcher) {
+    padding-block-end: calc(var(--space-8) + var(--space-4) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* From 48rem up the launcher is the labelled text button, unchanged: icon out, words in. */
+@media (min-width: 48rem) {
+  .launcher {
+    right: calc(var(--space-5) + env(safe-area-inset-right, 0px));
+    bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+    gap: var(--space-2);
+    inline-size: auto;
+    block-size: auto;
+    min-block-size: 3rem;
+    padding: var(--space-3) var(--space-5);
+  }
+
+  .icon {
+    display: none;
+  }
+
+  .text {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
 }
 
 /*
@@ -96,11 +148,13 @@
   .panel {
     animation: none;
   }
-}
 
-/* On a phone, never cover the shop's sticky add-to-cart row (AI.md §2.2). */
-@media (max-width: 1024px) {
-  :global(body:has([data-chat-clear])) .launcher {
-    bottom: calc(var(--space-5) + 4.5rem + env(safe-area-inset-bottom, 0px));
+  .launcher {
+    transition: none;
   }
 }
+
+/*
+ * The shop's buy row (data-chat-clear) is no longer sticky on a phone — it scrolls with the page —
+ * so the launcher no longer lifts above it; a lift would only float it over the thumbnails.
+ */

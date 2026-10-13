@@ -65,3 +65,12 @@ export function CheckIcon({ className }: IconProps): React.ReactElement {
     </svg>
   )
 }
+
+/** The chat door: a square-cornered speech bubble with its tail at the lower left. */
+export function ChatIcon({ className }: IconProps): React.ReactElement {
+  return (
+    <svg {...BASE} className={className}>
+      <path d="M4 5h16v11H11l-4.5 3.5V16H4z" />
+    </svg>
+  )
+}
