@@ -34,8 +34,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
-| **19** The shop in Cobalt | UI | 18 | 🔄 in progress | 0/3 | 0/8 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 19 phases | | | **89/97** | **296/321** | **8** | `█████████░`  92% |
+| **19** The shop in Cobalt | UI | 18 | 🔄 in progress | 0/3 | 3/8 | 0 | `████░░░░░░`  38% |
+| **All** | 19 phases | | | **89/97** | **299/321** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1233,9 +1233,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** the token files, `engine/apps/web/src/shared/ui/crossing/**`, `engine/apps/web/src/sites/shop/home/hero.tsx`, `engine/apps/web/public/shop/**`
   - **Read** this phase's goal; DESIGN.md "Ivory and ink"
   - _Requirements: 12.1_
-  - [ ] 19.1.a the shop's roles on a new cobalt ramp, contrast checked; the gallery's own ramp and its bridge band untouched
-  - [ ] 19.1.b the home's hero on the full cobalt field with white type and a white action (`Crossing strength="full"`, opt-in)
-  - [ ] 19.1.c the logo, favicon, home-screen icon, social image (no "placeholder" text) and manifest in cobalt
+  - [x] 19.1.a the shop's roles on a new cobalt ramp, contrast checked; the gallery's own ramp and its bridge band untouched
+  - [x] 19.1.b the home's hero on the full cobalt field with white type and a white action (`Crossing strength="full"`, opt-in)
+  - [x] 19.1.c the logo, favicon, home-screen icon, social image (no "placeholder" text) and manifest in cobalt
   - [ ] 19.1.d **Check:** the shop's home, grid and product on staging at 390 and 1280; tokens, lint, types and the shared tests pass.
 
 - [ ] **19.2 The shop's premium layout** · needs: phase 18 — 🔄 19·W1
