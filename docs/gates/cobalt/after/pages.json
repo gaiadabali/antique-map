@@ -1,0 +1,84 @@
+{
+  "shop": [
+    {
+      "page": "home",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/"
+    },
+    {
+      "page": "shop",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/shop"
+    },
+    {
+      "page": "product",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/product/balinese-dancer-photograph-c-1927"
+    },
+    {
+      "page": "collections",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/collections"
+    },
+    {
+      "page": "stores",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/stores"
+    },
+    {
+      "page": "partnership",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/partnership"
+    },
+    {
+      "page": "bag",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/bag"
+    },
+    {
+      "page": "id-home",
+      "width": 390,
+      "url": "https://old-east-indies.gaiada.com/id"
+    },
+    {
+      "page": "home",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/"
+    },
+    {
+      "page": "shop",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/shop"
+    },
+    {
+      "page": "product",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/product/balinese-dancer-photograph-c-1927"
+    },
+    {
+      "page": "collections",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/collections"
+    },
+    {
+      "page": "stores",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/stores"
+    },
+    {
+      "page": "partnership",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/partnership"
+    },
+    {
+      "page": "bag",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/bag"
+    },
+    {
+      "page": "id-home",
+      "width": 1280,
+      "url": "https://old-east-indies.gaiada.com/id"
+    }
+  ]
+}

@@ -34,8 +34,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
-| **19** The shop in Cobalt | UI | 18 | 🔄 in progress | 0/3 | 5/8 | 0 | `██████░░░░`  63% |
-| **All** | 19 phases | | | **89/97** | **301/321** | **8** | `█████████░`  94% |
+| **19** The shop in Cobalt | UI | 18 | ✅ done | 3/3 | 8/8 | 0 | `██████████` 100% |
+| **All** | 19 phases | | | **92/97** | **304/321** | **8** | `██████████`  95% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -87,9 +87,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
-| 19·W1 | 19.1 Cobalt | orchestrator | `main` | 2026-10-13 | |
-| 19·W1 | 19.2 The shop's premium layout | senior-uiux | `main` | 2026-10-13 | |
-| 19·W2 | 19.3 On staging | orchestrator | `main` | 2026-10-13 | |
 
 ## Decisions for the owner
 
@@ -1229,7 +1226,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every shop page wears Cobalt at 390 and 1280 in both languages, axe clean, no sideways scroll; the gallery's pages match their before-shots; CI green; DESIGN.md records the palette.
 **Waves:** W1 — 19.1, 19.2 · W2 — 19.3
 
-- [ ] **19.1 Cobalt** · needs: phase 18 — 🔄 19·W1
+- [x] **19.1 Cobalt** · needs: phase 18 — ✅ 2026-10-13 ba8b12f8
   - **Lane** DSG · **Agent** orchestrator; the brand files general-purpose (Sonnet) · **Wave** W1
   - **Owns** the token files, `engine/apps/web/src/shared/ui/crossing/**`, `engine/apps/web/src/sites/shop/home/hero.tsx`, `engine/apps/web/public/shop/**`
   - **Read** this phase's goal; DESIGN.md "Ivory and ink"
@@ -1237,23 +1234,23 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 19.1.a the shop's roles on a new cobalt ramp, contrast checked; the gallery's own ramp and its bridge band untouched
   - [x] 19.1.b the home's hero on the full cobalt field with white type and a white action (`Crossing strength="full"`, opt-in)
   - [x] 19.1.c the logo, favicon, home-screen icon, social image (no "placeholder" text) and manifest in cobalt
-  - [ ] 19.1.d **Check:** the shop's home, grid and product on staging at 390 and 1280; tokens, lint, types and the shared tests pass.
+  - [x] 19.1.d **Check:** the shop's home, grid and product on staging at 390 and 1280; tokens, lint, types and the shared tests pass.
 
-- [ ] **19.2 The shop's premium layout** · needs: phase 18 — 🔄 19·W1
+- [x] **19.2 The shop's premium layout** · needs: phase 18 — ✅ 2026-10-13 ba8b12f8
   - **Lane** WEB · **Agent** senior-uiux (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/shop/{bag,browse,checkout,collections,partnership,payment,product,stores,tracking}/**`, `engine/apps/web/src/sites/shop/home/*.module.css`, `engine/apps/web/src/sites/shop/home/{sections,shop-home,featured-products}.tsx`, `engine/apps/web/src/app/(shop)/**`
   - **Read** this phase's goal; DESIGN.md "The shop's pages"
   - _Requirements: 12.1_
   - [x] 19.2.a a premium layout pass on phone and desktop: space, type scale, grid and product composition; no copy or behaviour change
-  - [ ] 19.2.b **Check:** each shop page at 390 and 1280 on staging, axe clean; filters, sort, paging and Add to bag still work.
+  - [x] 19.2.b **Check:** each shop page at 390 and 1280 on staging, axe clean; filters, sort, paging and Add to bag still work.
 
-- [ ] **19.3 On staging** · needs: 19.1, 19.2 — 🔄 19·W2
+- [x] **19.3 On staging** · needs: 19.1, 19.2 — ✅ 2026-10-13 ba8b12f8
   - **Lane** DSG · **Agent** orchestrator, qa (Sonnet) · **Wave** W2
   - **Owns** `DESIGN.md`, `docs/gates/cobalt.md`, `docs/gates/cobalt/**`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
   - [x] 19.3.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
-  - [ ] 19.3.b **Check:** `docs/gates/cobalt.md` — the screens, axe clean, CI green; DESIGN.md records Cobalt.
+  - [x] 19.3.b **Check:** `docs/gates/cobalt.md` — the screens, axe clean, CI green; DESIGN.md records Cobalt.
 
 ---
 
@@ -1277,6 +1274,7 @@ Each line is a thing we chose not to build now; design it against the real need 
 
 ## Log
 
+- 2026-10-13 — ✅ **phase 19 — the shop in Cobalt, closed** (3/3 tasks; the user, as the owner's proxy: "fully upgrade the UI … brighter, and better theme color, so it feels like exclusive merchandize store … premium … the fastest and quickest UI update"; the name sounds historical, but the store has nothing to do with the old East Indies). The client chose **Cobalt** from three palettes: a bright white page, prints on pale cool tiles, the home's hero a full cobalt field with white type (the shared `Crossing` gained an opt-in `strength="full"`), cobalt on the one action, a navy footer; logo, icons, manifest and the social image (no longer "placeholder") in cobalt. A premium layout pass for phone and desktop (Sonnet), then, from the user's review of staging, the home's "Shop by" as the real collections in picture tiles, the placeholder sets retired and the numbered process a ruled list (two Sonnet agents in parallel, orchestrator review and wiring). Checked on staging only, at the user's word. **The gallery did not change:** 20 before/after shots, 0 pixels differ. **Evidence** (`docs/gates/cobalt.md`): axe 0 and no sideways scroll on 18 shop pages × 390/1280 in en and id on `production-20261013T133020Z-ed3bbb15`; CI green on `ed3bbb15` (run 38404810061, e2e 168 passed) after one fix (the cobalt hero's copy wears the field's colour so axe reads white on cobalt). **Open:** staging's placeholder seed picture and the REHEARSAL 10.4 products undercut the look (content, not code); Helios builds fetch fonts from Google and failed twice (self-host them); the finish review was skipped for speed.
 - 2026-10-12 — ✅ **phase 18 — the client's palette, Ivory and ink, closed** (5/5 tasks; the user's request, as the owner's proxy: "change the color theme … clean, exclusive and premium … tidy up … especially the ecommerce page … a 1 man shop with 2 storefronts"). From a palette board the client chose **Ivory and ink** as two distinct shops: the gallery on ivory with a deep green action and an ink footer, its antiques uncropped on the paper; the shop on a warmer white with a warm-stone hero panel, bronze on its action, an espresso footer and every print hung at its own shape on an even stone tile with one soft shadow (the new shared `PrintTile`). A page's head sits on its paper; Outline Colour's bands and stripes are retired; each bridge wears the sister's ground. The shop's grids (Sonnet), product page (Sonnet), home (orchestrator), collections and stores tidied; the finish review's eight material fixes applied in one round (`14ae321b`). Merged `efc859c1`; axe 0 on 56 pages × 390/1280/1920 locally and 54 × 3 on staging; 723 unit tests; sort, paging, tabs and Add to bag checked. Record: `docs/gates/ivory-and-ink.md`, DESIGN.md "Ivory and ink". Pushed on the user's OK; CI green on `0aefa272` (run 38228030820, e2e 167 passed) after one fix (the add button's class order the e2e reads; the gallery scan ignores the CSP nonce); live on staging `production-20261012T091240Z-0aefa272`. **Open, the owner's:** VG grades, scan margins, logos, and the 26 rehearsal products published on staging.
 - 2026-10-12 — ✅ **phase 17 — both sites full width, in Outline Colour** (8/8 tasks; the user's request "make all full width style for desktop, and ensure the luxury feels and not regular ai slop design"). The user kept Cormorant and Karla and the placeholder logos (the doubled wordmark gone), freed the cream grounds, mats and eyebrow marks, ruled out dark, stark white and vintage, and chose **Outline Colour** in a direction round (seed `dbb8b833`, code-led): copperplate ink on a mineral paper; verdigris, gamboge and madder in three locked strengths, contrast checked; each site in its own pigment (the gallery verdigris, the shop gamboge), the bridge band in the sister's colour, madder only on the one action; nothing framed — works in clear windows on one baseline, the colour washing in as a work enters the view; the `Crossing` (copy on a field, the picture across its edge, the pigment's outline drawn there) on the homes, the antique, the product and a story; full width at every desktop size with grids that gain columns; no eyebrows, boxes, shadows or radii. The orchestrator built the foundation and both homes; Sonnet agents built the pages (17.3–17.7); the finish reviewer ran two rounds (six of eight fixes resolved; the two left are the owner's content: condition grades read "VG" against the home's promise of plain words, and grey scan margins inside some product photos). **Staging:** `production-20261012T032523Z-2bf9df3f`, `-040708Z-5ac2195b`, `-041540Z-1c0deda9`. **Evidence** (`docs/gates/outline-colour.md`): axe 0 on every page of both sites at 1280 and 390 in en and id, locally and on staging; no sideways scroll at 390, 1440 and 1920; CI on `1c0deda9` green (the purchase on the simulator, Sell-to-us sending a lead, Add to bag, tracking among 167 e2e; one admin roles flake passed on re-run). Found on the way: staging's public shop shows 26 published "REHEARSAL 10.4" test products; Docker Desktop is stopped on this laptop by the owner's order, so local review ran on the native Postgres (port 5433) with a catalogue copy of staging (no people tables) and staging's public media.
 
