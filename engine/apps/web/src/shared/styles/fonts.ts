@@ -12,21 +12,14 @@ import localFont from 'next/font/local'
  *
  * All three files are Google's variable fonts, each used once for the weight range we use.
  * Cormorant Garamond: 400-600 (normal, italic). Karla: 400-700 (normal).
- * `unicode-range` is Google's Latin range, kept so the browser behaves as it did before.
+ * `unicode-range` is Google's Latin range, kept so the browser behaves as it did before. Every
+ * option is written out in each call: the font loader accepts only literal values.
  *
  * The returned `variable` CSS classes set `--font-display-face` and `--font-body-face`.
  * Apply `fontVariables` to the <html> element so the semantic tokens resolve to the
  * loaded faces. The layout edit that applies the class is task 4.3, so this module only
  * exports the ready-made string.
  */
-
-const LATIN_RANGE =
-  'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
-
-const latin = [{ prop: 'unicode-range', value: LATIN_RANGE }]
-
-const DISPLAY_FALLBACK = ['Georgia', 'Times New Roman', 'serif']
-const BODY_FALLBACK = ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif']
 
 export const display = localFont({
   src: [
@@ -36,10 +29,16 @@ export const display = localFont({
       style: 'normal',
     },
   ],
-  declarations: latin,
+  declarations: [
+    {
+      prop: 'unicode-range',
+      value:
+        'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
+    },
+  ],
   variable: '--font-display-face',
   display: 'swap',
-  fallback: DISPLAY_FALLBACK,
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
   adjustFontFallback: 'Times New Roman',
 })
 
@@ -57,11 +56,17 @@ export const displayItalic = localFont({
       style: 'italic',
     },
   ],
-  declarations: latin,
+  declarations: [
+    {
+      prop: 'unicode-range',
+      value:
+        'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
+    },
+  ],
   variable: '--font-display-italic-face',
   display: 'swap',
   preload: false,
-  fallback: DISPLAY_FALLBACK,
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
   adjustFontFallback: 'Times New Roman',
 })
 
@@ -73,10 +78,16 @@ export const body = localFont({
       style: 'normal',
     },
   ],
-  declarations: latin,
+  declarations: [
+    {
+      prop: 'unicode-range',
+      value:
+        'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
+    },
+  ],
   variable: '--font-body-face',
   display: 'swap',
-  fallback: BODY_FALLBACK,
+  fallback: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
   adjustFontFallback: 'Arial',
 })
 
