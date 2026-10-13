@@ -58,14 +58,27 @@ retry in that run, as it has before.
   tests; the layout split checked so every class a component uses is defined in its own module and no module styles
   another's elements.
 
+## Follow-ups closed the same day (`d6a0bd10`, `91594a0b`, the release after)
+
+- **Fonts from the repository** (`next/font/local`, Google's Latin variable woff2, OFL): release 6 built at the first try
+  with no Google request; both sites load the faces from `/_next/static/media`. CI caught that the font loader takes
+  only literal options (`91594a0b`). The antique's Latin title then rendered as a slanted roman (the italic is its
+  own family now): `--text-h3-italic` names it, proved on staging before the release (9 and 22 px from the before-shots
+  at 390 and 1280, against 24,896 without it).
+- **The chat launcher on a phone** is a 48 px square with the drawn icon, its words the accessible name; the footer
+  ends above it; the stale lift over the product thumbnails is gone. From 48rem it is unchanged. Both sites.
+- **The shop home's h1 while the hero streams:** the placeholder's title is the h1 too (without the id), so axe never
+  reads the page as headless (the flaky `page-has-heading-one` in CI run 38410874277).
+- **Staging's rehearsal product** (id 266, the placeholder picture behind the hero and the one-print Antique Prints)
+  waits for the owner to unpublish it in the admin: the session's tools may not use the staging admin's credentials.
+
 ## Not done, and why
 
 - **The finish review** (Impeccable's fresh-context reviewer) did not run: the user asked for the fastest route. It
   can run on the live shop at any time.
-- **Staging's content undercuts the look**, not the design: the hero's lead print and the Antique Prints collection
-  show the seed's "Greeting card set — frangipani · staging placeholder" picture, and two of the best sellers are the
-  "REHEARSAL 10.4" products the timed admin tests published. The owner's real photographs, or unpublishing the
-  rehearsal products, fix it; neither is a code change.
-- **Follow-ups:** serve Cormorant and Karla from the repository (`next/font/local`) so a Helios build never depends on
-  Google Fonts; the chat launcher overlaps the last card and the buy row on a phone (a shared offset); the shared
-  quiet button's inline padding (three per-link workarounds now pull it back).
+- **Staging's content undercuts the look**, not the design: one "REHEARSAL 10.4" product the timed admin tests
+  published (id 266) carries the seed's "Greeting card set — frangipani · staging placeholder" picture, and it leads
+  the hero, sits in the best sellers and is the only print in Antique Prints. Unpublishing it in the admin fixes all
+  three; the owner's real photographs fix the rest.
+- **Follow-up:** the shared quiet button's inline padding (three per-link workarounds pull it back to the grid's
+  edge); the fonts and the chat launcher are closed above.

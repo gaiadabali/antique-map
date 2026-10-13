@@ -64,15 +64,16 @@ type FrameProps = Props & {
   readonly picture: ReactNode
   readonly caption?: ReactNode
   /**
-   * The placeholder while the read streams: its title is plain text, not the page's heading, so the
-   * page never holds two h1s (or two ids) in the moment the finished hero replaces it.
+   * The placeholder while the read streams. Its title is the page's h1 too, so the page is never
+   * without one (axe's page-has-heading-one read a streaming page as headless, a flaky CI case), but
+   * without the id: the finished hero streams in hidden until it replaces this one, so one h1 is
+   * ever exposed and no id is ever doubled.
    */
   readonly pending?: boolean
 }
 
 /** The hero around whatever print it holds: the copy and signals never wait on the read. */
 function Frame({ shopHref, t, ratio, picture, caption, pending = false }: FrameProps) {
-  const Title = pending ? 'p' : 'h1'
   return (
     <Crossing
       lead
@@ -83,9 +84,9 @@ function Frame({ shopHref, t, ratio, picture, caption, pending = false }: FrameP
       aria-labelledby={pending ? undefined : 'home-title'}
       copy={
         <>
-          <Title id={pending ? undefined : 'home-title'} className={styles.title}>
+          <h1 id={pending ? undefined : 'home-title'} className={styles.title}>
             {t('home.shop.title')}
-          </Title>
+          </h1>
           <p className={`site-lede ${styles.lede}`}>{t('home.shop.lede')}</p>
           <div className={styles.actions}>
             <Button variant="primary" href={shopHref}>

@@ -78,6 +78,8 @@ warm panel, which keeps the gallery unchanged.
 field and re-points every ink role on the copy to the field's own type, the action included: a white button with the
 field's colour as its words, a white focus ring, hairlines mixed from white. Only the shop's home hero uses it.
 
+**Fonts (phase 19).** Cormorant Garamond and Karla are served from the repository (`shared/styles/fonts/`, Google's Latin variable woff2, OFL), so no build fetches Google. The display italic is its own family, never preloaded (10.2): italic display type uses `--font-display-italic` (`--text-h3-italic` for the antique's original title), never `font-style: italic` on the roman.
+
 **Brand files (`public/shop/`).** The placeholder logo, the favicon (32 and 16 px), the 180 px home-screen icon and the
 manifest's theme colour are cobalt; the 1200 × 630 social image is cobalt with "Old East Indies" in Cormorant and
 "Printed in Bali · Stocked in 100+ shops" in Karla (it no longer says "placeholder"). Rendered from HTML with
@@ -174,7 +176,7 @@ eyebrow or kicker, no tracked capitals. Full width at every desktop size: the pa
 gutter (20–96 px); text keeps `--measure-text` (38rem); sections parted by `--section-space` (64–160 px) or a
 hairline. Records are ruled running lists, the label left in muted small type, the value right in tabular figures.
 The browser's own surfaces carry the palette: selection a tint of the action, caret and focus in ink, the scrollbar
-in the input-boundary grey. The chat launcher is a quiet paper button with a hairline.
+in the input-boundary grey. The chat launcher is a quiet paper button with a hairline: on a phone (under 48rem) a 48 px square with the drawn chat icon, its words kept as the accessible name, the footer padded so the page's last line ends above it (phase 19).
 
 **Known gaps.** The condition grade shows the dealer's code ("VG") although the home promises plain words — the
 grade wording is the owner's to give (PRODUCT.md). Some product photographs carry a grey scan margin inside the

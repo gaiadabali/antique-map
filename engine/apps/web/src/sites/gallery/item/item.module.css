@@ -34,8 +34,7 @@
 
 .originalTitle {
   margin: 0;
-  font: var(--text-h3);
-  font-style: italic;
+  font: var(--text-h3-italic);
   color: var(--color-text-muted);
 }
 

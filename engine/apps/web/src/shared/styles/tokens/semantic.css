@@ -68,6 +68,10 @@
 
   /* font family roles */
   --font-display: var(--font-display-face, 'Cormorant Garamond'), Georgia, 'Times New Roman', serif;
+  /* The display italic is its own family (fonts.ts: its own loader, never preloaded), so italic
+     display type names it; `font-style: italic` on --font-display would slant the roman. */
+  --font-display-italic:
+    var(--font-display-italic-face, 'Cormorant Garamond'), Georgia, 'Times New Roman', serif;
   --font-body:
     var(--font-body-face, 'Karla'), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
@@ -77,6 +81,8 @@
   --text-h1: 400 var(--primitive-size-h1) / var(--primitive-line-h1) var(--font-display);
   --text-h2: 400 var(--primitive-size-h2) / var(--primitive-line-h2) var(--font-display);
   --text-h3: 500 var(--primitive-size-h3) / var(--primitive-line-h3) var(--font-display);
+  --text-h3-italic: italic 500 var(--primitive-size-h3) / var(--primitive-line-h3)
+    var(--font-display-italic);
   --text-card-title: 500 var(--primitive-size-card-title) / var(--primitive-line-h3)
     var(--font-display);
   --text-number: 400 var(--primitive-size-number) / 1 var(--font-display);
