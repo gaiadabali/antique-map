@@ -1,0 +1,77 @@
+/* How a print is made (shop home): the title, then three steps as a ruled running list on the pale
+   tile ground. No numerals — the list and the layout carry the order. Every value is a token. */
+
+.process {
+  padding-block: var(--space-8);
+}
+
+.layout {
+  display: grid;
+  gap: var(--space-6);
+}
+
+/* On a phone the head sits a little closer to the first step than a page-level head would. */
+.layout .lead {
+  margin-block-end: 0;
+}
+
+.steps {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A hairline opens each step; on the tile the strong rule is the one that shows. */
+.step {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  padding-block-start: var(--space-4);
+  border-block-start: var(--rule-hair) solid var(--color-border-strong);
+}
+
+.step .stepTitle {
+  margin: 0;
+  font: var(--text-h3);
+  text-wrap: balance;
+}
+
+.stepBody {
+  margin: 0;
+  max-inline-size: var(--measure-text);
+  font: var(--text-body);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+@media (min-width: 48rem) {
+  .process {
+    padding-block: var(--space-9);
+  }
+
+  .step {
+    padding-block-start: var(--space-5);
+    gap: var(--space-3);
+  }
+}
+
+/* A desktop: the title alone at the left (5/12), held in view while the steps pass; the steps at
+   the right (7/12), parted by a wider rhythm. */
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: var(--grid-gap);
+    align-items: start;
+  }
+
+  .layout .lead {
+    position: sticky;
+    top: var(--space-8);
+  }
+
+  .steps {
+    gap: var(--space-6);
+  }
+}

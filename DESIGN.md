@@ -93,6 +93,13 @@ Playwright's Chromium; the real logos replace them later.
 - **Product:** the name at section-title size (`--text-h2`), so the print leads; the details grouped tight, the buy
   block after a clear gap, the price larger, Add to bag 56 px high; below 64rem the lead print's wall runs edge to
   edge. The picker's and buy block's rules live in `product/picker.module.css` (the product file was near 300 lines).
+- **Home, below the hero (the user's review of 19.2):** "Shop by" is the shop's real collections as picture tiles
+  on `PrintTile`s, each one link to its collection (`home/shop-by.tsx`, the `collections()` read streamed in
+  `<Suspense>`): a rail that bleeds to both edges and snaps tile by tile on a phone, one whole row on a desktop (4,
+  6 from 90rem) with "See the gallery walls" reaching the rest. The island and room words that all opened `/shop`
+  are gone, and so are the placeholder "sets" (walls in words, no picture, no link). How a print is made
+  (`home/process.tsx`) is a ruled list of three steps on the pale tile band, the title held at the left on a
+  desktop; no numerals.
 - **Collections:** one large tile across on a phone, two from 36rem, three from 75rem.
 - **Quiet links** at a grid's edge (Shop all prints, Start browsing) are pulled out by the button's own padding so
   their words sit on the edge.

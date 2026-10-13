@@ -1,0 +1,138 @@
+/* The shop home's "Shop by" (Cobalt): the collections as picture tiles under the hero. A phone
+   scrolls one rail that bleeds to both edges; a desktop sets one whole row. Tokens only — no raw
+   colour, no font-family. */
+
+.section {
+  padding-block: var(--space-8) 0;
+}
+
+/* SectionHead sets its own bottom margin; two classes deep so this one wins. */
+.section .head {
+  margin-block-end: var(--space-6);
+}
+
+/* The head's quiet link: its own padding would hang the words inside the edge, so it is pulled out
+   by that padding — at the left under a phone's title, at the right beside it. */
+.headLink {
+  margin-inline-start: calc(-1 * var(--space-2));
+}
+
+/* Phone: one rail from edge to edge. Only it scrolls; the next tile peeks (44% each). The block
+   padding keeps a focus ring or a lifted print from being clipped by the scroll box. */
+.rail {
+  display: flex;
+  gap: var(--space-4);
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--gutter));
+  padding: var(--space-2) var(--gutter);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scroll-behavior: auto;
+  scrollbar-width: none;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  flex: 0 0 44%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.link:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--space-1);
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-block-start: var(--space-3);
+}
+
+.name {
+  font: var(--text-card-title);
+  text-wrap: balance;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
+}
+
+.link:hover .name,
+.link:focus-visible .name {
+  text-decoration-color: currentColor;
+}
+
+.count {
+  font: var(--text-small);
+  font-variant-numeric: var(--numeric-tabular);
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name {
+    transition: none;
+  }
+}
+
+/* Desktop: a grid of whole rows — one row of 4, of 6 on a wide screen — so a row never ends on a
+   lone tile; the head's link reaches every collection. */
+@media (min-width: 48rem) {
+  .section {
+    padding-block: var(--section-space) 0;
+  }
+
+  .headLink {
+    margin-inline: 0 calc(-1 * var(--space-2));
+  }
+
+  .rail {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-6) var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .item {
+    flex: none;
+  }
+
+  .item:nth-child(n + 5) {
+    display: none;
+  }
+
+  .caption {
+    margin-block-start: var(--space-4);
+  }
+}
+
+@media (min-width: 90rem) {
+  .rail {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .item:nth-child(n + 5) {
+    display: block;
+  }
+
+  .item:nth-child(n + 7) {
+    display: none;
+  }
+}

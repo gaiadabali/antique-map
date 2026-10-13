@@ -1,32 +1,18 @@
 /**
- * The shop's home (4.3.b, 12.3; Outline Colour 17.2): the hero lays the lead print across a
- * gamboge field (`./hero`); below it the "shop by" index, the streamed best sellers, then the
- * bands in the shop's own pigment — the sets on its tint, the process and the trade on the paper —
- * and the bridge to the originals in the gallery's verdigris, flush on the footer. A thin
- * composition: the sections below the best sellers live in `./sections`, and every word comes
- * from the shop's lexicon.
+ * The shop's home (4.3.b, 12.3; Cobalt 19): the hero lays the lead print across the cobalt field
+ * (`./hero`); below it "Shop by", the shop's real collections as picture tiles (`./shop-by`), the
+ * streamed best sellers, how a print is made (`./process`), the trade offer and the bridge to the
+ * originals in the gallery's stone, flush on the footer (`./sections`). A thin composition: every
+ * word comes from the shop's lexicon.
  */
 import { Button, SectionHead } from '../../../shared/ui'
 
 import { FeaturedProducts } from './featured-products'
 import { Hero } from './hero'
 import styles from './home.module.css'
-import { Originals, Process, Sets, Trade, type SectionProps } from './sections'
-
-/** Browse has no island or room facet yet (qa 4.qa, finding F4); every link goes to the shop
- * until one does — placeholder until the owner's content. */
-const ISLAND_CHIPS = [
-  'home.shop.chipIslandBali',
-  'home.shop.chipIslandJava',
-  'home.shop.chipIslandSumatra',
-  'home.shop.chipIslandLombok',
-] as const
-const ROOM_CHIPS = [
-  'home.shop.chipRoomLivingRoom',
-  'home.shop.chipRoomBedroom',
-  'home.shop.chipRoomOffice',
-  'home.shop.chipRoomEntryway',
-] as const
+import { Process } from './process'
+import { Originals, Trade, type SectionProps } from './sections'
+import { ShopBy } from './shop-by'
 
 type Props = SectionProps & {
   /** The gallery's home on its own host — the sister-site bridge is absolute (site-shell's rule). */
@@ -37,7 +23,7 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
   return (
     <div className={styles.wrap}>
       <Hero locale={locale} shopHref={href('browse', {}, locale)} t={t} />
-      <ShopBy href={href} locale={locale} t={t} />
+      <ShopBy locale={locale} t={t} allHref={href('collection', {}, locale)} />
       <section className={styles.section} aria-labelledby="home-featured">
         <SectionHead
           id="home-featured"
@@ -50,33 +36,9 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
         />
         <FeaturedProducts locale={locale} t={t} />
       </section>
-      <Sets href={href} locale={locale} t={t} />
       <Process t={t} />
       <Trade locale={locale} href={href} t={t} />
       <Originals sisterHref={sisterHref} t={t} />
     </div>
-  )
-}
-
-/** "Shop by" island and room: two lines of words set large, each a link. */
-function ShopBy({ locale, href, t }: SectionProps) {
-  const target = href('browse', {}, locale)
-  return (
-    <section className={styles.shopBy} aria-labelledby="home-shop-by">
-      <h2 id="home-shop-by" className={styles.shopByLabel}>
-        {t('home.shop.chipsEyebrow')}
-      </h2>
-      {[ISLAND_CHIPS, ROOM_CHIPS].map((group, at) => (
-        <ul key={at} className={styles.shopByRow}>
-          {group.map((key) => (
-            <li key={key}>
-              <a className={styles.shopByLink} href={target}>
-                {t(key)}
-              </a>
-            </li>
-          ))}
-        </ul>
-      ))}
-    </section>
   )
 }
