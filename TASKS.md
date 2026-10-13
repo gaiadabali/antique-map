@@ -34,8 +34,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
-| **19** The shop in Cobalt | UI | 18 | 🔄 in progress | 0/3 | 3/8 | 0 | `████░░░░░░`  38% |
-| **All** | 19 phases | | | **89/97** | **299/321** | **8** | `█████████░`  93% |
+| **19** The shop in Cobalt | UI | 18 | 🔄 in progress | 0/3 | 5/8 | 0 | `██████░░░░`  63% |
+| **All** | 19 phases | | | **89/97** | **301/321** | **8** | `█████████░`  94% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1243,7 +1243,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `engine/apps/web/src/sites/shop/{bag,browse,checkout,collections,partnership,payment,product,stores,tracking}/**`, `engine/apps/web/src/sites/shop/home/*.module.css`, `engine/apps/web/src/sites/shop/home/{sections,shop-home,featured-products}.tsx`, `engine/apps/web/src/app/(shop)/**`
   - **Read** this phase's goal; DESIGN.md "The shop's pages"
   - _Requirements: 12.1_
-  - [ ] 19.2.a a premium layout pass on phone and desktop: space, type scale, grid and product composition; no copy or behaviour change
+  - [x] 19.2.a a premium layout pass on phone and desktop: space, type scale, grid and product composition; no copy or behaviour change
   - [ ] 19.2.b **Check:** each shop page at 390 and 1280 on staging, axe clean; filters, sort, paging and Add to bag still work.
 
 - [ ] **19.3 On staging** · needs: 19.1, 19.2
@@ -1251,7 +1251,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `DESIGN.md`, `docs/gates/cobalt.md`, `docs/gates/cobalt/**`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
-  - [ ] 19.3.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
+  - [x] 19.3.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
   - [ ] 19.3.b **Check:** `docs/gates/cobalt.md` — the screens, axe clean, CI green; DESIGN.md records Cobalt.
 
 ---
