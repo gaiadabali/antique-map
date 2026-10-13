@@ -18,16 +18,47 @@
 .p1 {
   --crossing-field: var(--pigment-1-wash);
   --crossing-on-field-muted: var(--pigment-1-on-wash);
+  --crossing-full: var(--pigment-1-full);
+  --crossing-on-full: var(--pigment-1-on-full);
+  --crossing-on-full-muted: var(--pigment-1-on-full-muted);
 }
 
 .p2 {
   --crossing-field: var(--pigment-2-wash);
   --crossing-on-field-muted: var(--pigment-2-on-wash);
+  --crossing-full: var(--pigment-2-full);
+  --crossing-on-full: var(--pigment-2-on-full);
+  --crossing-on-full-muted: var(--pigment-2-on-full-muted);
 }
 
 .p3 {
   --crossing-field: var(--pigment-3-wash);
   --crossing-on-field-muted: var(--pigment-3-on-wash);
+  --crossing-full: var(--pigment-3-full);
+  --crossing-on-full: var(--pigment-3-on-full);
+  --crossing-on-full-muted: var(--pigment-3-on-full-muted);
+}
+
+/* A field at full strength speaks in its own type: every ink role on it is re-pointed, the action
+   included — a white button on the field, its words in the field's colour. */
+.full {
+  --crossing-field: var(--crossing-full);
+}
+
+.full .copy {
+  --color-surface: var(--crossing-full);
+  --color-text: var(--crossing-on-full);
+  --color-text-strong: var(--crossing-on-full);
+  --color-text-muted: var(--crossing-on-full-muted);
+  --color-accent: var(--crossing-on-full);
+  --color-accent-contrast: var(--crossing-full);
+  --color-focus: var(--crossing-on-full);
+  --color-border: color-mix(in srgb, var(--crossing-on-full) 30%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--crossing-on-full) 70%, transparent);
+  --color-action: var(--crossing-on-full);
+  --color-action-hover: var(--crossing-on-full-muted);
+  --color-action-contrast: var(--crossing-full);
+  color: var(--color-text);
 }
 
 /* A page's first block: the field starts right under the header (the shell's main pads its top). */

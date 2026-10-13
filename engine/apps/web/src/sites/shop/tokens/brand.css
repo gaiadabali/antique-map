@@ -1,57 +1,58 @@
 @import '../../../shared/styles/tokens/primitives.css';
 
 /* =====================================================================
-   Tier 2 brand variables — Old East Indies, in Ivory and ink (phase 18,
-   the client's choice). The gallery's sibling in its own ground and
-   mood: a warmer white, a warm-stone panel behind the hero and a page's
-   head, prints on stone tiles, bronze on the one action a view asks
-   for, an espresso footer.
+   Tier 2 brand variables — Old East Indies in Cobalt (phase 19, the
+   client's choice 2026-10-13): an exclusive store, bright and premium.
+   A bright white page, prints on pale cool tiles, one saturated cobalt
+   for the home's hero field and the one action a view asks for, a navy
+   footer. The gallery keeps Ivory and ink.
    The client's final colours (TASKS.md Q16) are an edit to this file.
    ===================================================================== */
 
 [data-site='shop'] {
-  --brand-surface: var(--primitive-shell);
-  --brand-surface-raised: var(--primitive-shell-raised);
-  --brand-surface-deep: var(--primitive-shell-stone);
-  --brand-surface-dark: var(--primitive-shell-espresso);
-  --brand-surface-dark-ink: var(--primitive-shell-foot-ink);
+  --brand-surface: var(--primitive-cobalt-paper);
+  --brand-surface-raised: var(--primitive-cobalt-raised);
+  --brand-surface-deep: var(--primitive-cobalt-tile);
+  --brand-surface-dark: var(--primitive-cobalt-navy);
+  --brand-surface-dark-ink: var(--primitive-cobalt-foot-ink);
 
-  --brand-text: var(--primitive-shell-ink);
-  --brand-text-strong: var(--primitive-shell-ink);
-  --brand-text-muted: var(--primitive-shell-muted);
-  --brand-text-on-dark: var(--primitive-shell-foot-ink);
+  --brand-text: var(--primitive-cobalt-ink);
+  --brand-text-strong: var(--primitive-cobalt-ink);
+  --brand-text-muted: var(--primitive-cobalt-muted);
+  --brand-text-on-dark: var(--primitive-cobalt-foot-ink);
 
-  --brand-accent: var(--primitive-shell-ink);
-  --brand-accent-contrast: var(--primitive-shell);
-  --brand-accent-secondary: var(--primitive-shell-bronze);
-  --brand-action: var(--primitive-shell-bronze);
-  --brand-action-hover: var(--primitive-shell-bronze-deep);
-  --brand-action-contrast: var(--primitive-shell);
+  --brand-accent: var(--primitive-cobalt-ink);
+  --brand-accent-contrast: var(--primitive-cobalt-paper);
+  --brand-accent-secondary: var(--primitive-cobalt);
+  --brand-action: var(--primitive-cobalt);
+  --brand-action-hover: var(--primitive-cobalt-deep);
+  --brand-action-contrast: var(--primitive-cobalt-paper);
 
-  --brand-border: var(--primitive-shell-rule);
-  --brand-border-strong: var(--primitive-shell-rule-strong);
-  --brand-focus: var(--primitive-shell-ink);
-  --brand-scrim: #1a191699;
+  --brand-border: var(--primitive-cobalt-rule);
+  --brand-border-strong: var(--primitive-cobalt-rule-strong);
+  --brand-focus: var(--primitive-cobalt-ink);
+  --brand-scrim: #0f153099;
 
   --brand-danger: var(--primitive-critical);
   --brand-success: var(--primitive-positive);
   --brand-caution: var(--primitive-caution);
 
   /* The roles a band or a crossing asks for: 1 is the shop's everyday ground (a page's head on its
-     paper, the stone as its tint, the espresso footer as its full); 2 the warm-stone panel the
-     home's hero alone stands on; 3 the sister gallery's cool stone for the bridge to the originals. */
-  --brand-pigment-1-tint: var(--primitive-shell-stone);
-  --brand-pigment-1-wash: var(--primitive-shell);
-  --brand-pigment-1-full: var(--primitive-shell-espresso);
-  --brand-pigment-1-on-wash: var(--primitive-shell-muted);
-  --brand-pigment-1-on-full: var(--primitive-shell-foot-ink);
-  --brand-pigment-1-on-full-muted: var(--primitive-shell-foot-muted);
-  --brand-pigment-2-tint: var(--primitive-shell-stone);
-  --brand-pigment-2-wash: var(--primitive-shell-panel);
-  --brand-pigment-2-full: var(--primitive-shell-espresso);
-  --brand-pigment-2-on-wash: var(--primitive-shell-muted);
-  --brand-pigment-2-on-full: var(--primitive-shell-foot-ink);
-  --brand-pigment-2-on-full-muted: var(--primitive-shell-foot-muted);
+     paper, the pale tile as its tint, the navy footer as its full); 2 the cobalt the home's hero
+     alone stands on, at full strength with white type (its wash a pale cobalt mist); 3 the sister
+     gallery's cool stone for the bridge to the originals. */
+  --brand-pigment-1-tint: var(--primitive-cobalt-tile);
+  --brand-pigment-1-wash: var(--primitive-cobalt-paper);
+  --brand-pigment-1-full: var(--primitive-cobalt-navy);
+  --brand-pigment-1-on-wash: var(--primitive-cobalt-muted);
+  --brand-pigment-1-on-full: var(--primitive-cobalt-foot-ink);
+  --brand-pigment-1-on-full-muted: var(--primitive-cobalt-foot-muted);
+  --brand-pigment-2-tint: var(--primitive-cobalt-tile);
+  --brand-pigment-2-wash: var(--primitive-cobalt-mist);
+  --brand-pigment-2-full: var(--primitive-cobalt);
+  --brand-pigment-2-on-wash: var(--primitive-cobalt-muted);
+  --brand-pigment-2-on-full: var(--primitive-cobalt-on);
+  --brand-pigment-2-on-full-muted: var(--primitive-cobalt-on-muted);
   --brand-pigment-3-tint: var(--primitive-ivory-stone);
   --brand-pigment-3-wash: var(--primitive-ivory-stone);
   --brand-pigment-3-full: var(--primitive-ivory-ink);
@@ -59,9 +60,9 @@
   --brand-pigment-3-on-full: var(--primitive-ivory-foot-ink);
   --brand-pigment-3-on-full-muted: var(--primitive-ivory-foot-muted);
 
-  /* A print's window: the stone tile at rest (a print hangs on it), a shade deeper on hover. */
-  --brand-field: var(--primitive-shell-stone);
-  --brand-field-active: var(--primitive-shell-panel);
+  /* A print's window: the pale tile at rest (a print hangs on it), a cobalt mist on hover. */
+  --brand-field: var(--primitive-cobalt-tile);
+  --brand-field-active: var(--primitive-cobalt-mist);
 
   --brand-space-1: var(--primitive-space-1);
   --brand-space-2: var(--primitive-space-2);
@@ -91,6 +92,6 @@
   --brand-ease: var(--primitive-ease);
   --brand-dur-loop: var(--primitive-dur-loop);
 
-  /* An empty window's words on the stone tile: muted ink is 5.2:1 there. */
-  --brand-mat-note: var(--primitive-shell-muted);
+  /* An empty window's words on the pale tile: muted ink is 5.7:1 there. */
+  --brand-mat-note: var(--primitive-cobalt-muted);
 }

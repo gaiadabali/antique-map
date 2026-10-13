@@ -1,6 +1,6 @@
 /**
- * The shop home's hero (12.1; Ivory and ink 18.4): the headline on the warm-stone panel, and the
- * lead print hung across the panel's lower edge onto the paper (the shared `Crossing`), captioned
+ * The shop home's hero (12.1; Cobalt 19.1): the headline in white on the cobalt field, and the
+ * lead print hung across the field's lower edge onto the paper (the shared `Crossing`), captioned
  * the way a gallery labels a wall — its name, its label and its price. The print is the first of
  * the home's featured products with a published image — the same cached read as the best-seller
  * rail, so no second query. Until that read lands, or while the shop holds no product, a window of
@@ -77,6 +77,7 @@ function Frame({ shopHref, t, ratio, picture, caption, pending = false }: FrameP
     <Crossing
       lead
       pigment={2}
+      strength="full"
       fit="cover"
       ratio={ratio}
       aria-labelledby={pending ? undefined : 'home-title'}

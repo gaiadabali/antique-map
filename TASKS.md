@@ -1240,7 +1240,7 @@ Paste this into a Claude Code session opened at the repo root:
 
 - [ ] **19.2 The shop's premium layout** · needs: phase 18 — 🔄 19·W1
   - **Lane** WEB · **Agent** senior-uiux (Sonnet), orchestrator review · **Wave** W1
-  - **Owns** `engine/apps/web/src/sites/shop/**` except `tokens/brand.css` and `home/hero.tsx`; `engine/apps/web/src/app/(shop)/**`
+  - **Owns** `engine/apps/web/src/sites/shop/{bag,browse,checkout,collections,partnership,payment,product,stores,tracking}/**`, `engine/apps/web/src/sites/shop/home/*.module.css`, `engine/apps/web/src/sites/shop/home/{sections,shop-home,featured-products}.tsx`, `engine/apps/web/src/app/(shop)/**`
   - **Read** this phase's goal; DESIGN.md "The shop's pages"
   - _Requirements: 12.1_
   - [ ] 19.2.a a premium layout pass on phone and desktop: space, type scale, grid and product composition; no copy or behaviour change
