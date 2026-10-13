@@ -45,11 +45,24 @@
   block-size: min(84svh, 125cqi);
 }
 
+/* On a phone the wall runs edge to edge (the print is the page's first word); the thumbnails and
+   the details stay inside the gutter. */
+@media (max-width: 63.99rem) {
+  .lead {
+    inline-size: calc(100% + 2 * var(--gutter));
+    margin-inline: calc(-1 * var(--gutter));
+  }
+
+  .lead .mockupNote {
+    padding-inline: var(--gutter);
+  }
+}
+
 /* The details: held clear of the sticky header (5.5rem) while the gallery scrolls past. */
 .copy {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
   min-width: 0;
 }
 
@@ -63,6 +76,7 @@
 }
 
 .proof {
+  margin-block-start: var(--space-4);
   padding-block-start: var(--space-5);
   border-block-start: var(--rule-hair) solid var(--color-border);
 }
@@ -83,10 +97,11 @@
 
 /* Two selectors deep: the shell's `.site-main h1` sets its own font and margin. */
 .copy .name {
-  font: var(--text-h1);
+  /* the print is the page's hero: its name is set at section-title size, not display size */
+  font: var(--text-h2);
   letter-spacing: var(--tracking-h1);
   color: var(--color-text);
-  margin: 0;
+  margin: var(--space-1) 0 0;
   text-wrap: balance;
 }
 
@@ -148,130 +163,6 @@
   max-inline-size: var(--measure-text);
 }
 
-.picker {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-
-.optionsLegend {
-  font: var(--text-label);
-  color: var(--color-text-muted);
-  padding: 0;
-  margin-bottom: var(--space-1);
-}
-
-.optionList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-/* A square chip on the field's colour; chosen, it turns to ink (the shared FacetChip look). */
-.option {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  font: var(--text-small);
-  color: var(--color-text);
-  background: var(--color-field);
-  border: 0;
-  border-radius: 0;
-  min-height: 44px;
-  min-width: 44px;
-  cursor: pointer;
-  transition: background-color var(--dur-out) var(--ease);
-}
-
-.option:hover {
-  background: var(--color-field-active);
-}
-
-.optionInput {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-}
-
-.optionChosen,
-.optionChosen:hover {
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
-}
-
-.option:has(.optionInput:focus-visible) {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--space-1);
-}
-
-.optionSoldOut {
-  color: var(--color-text-muted);
-  cursor: not-allowed;
-}
-
-.optionLabel {
-  display: inline-flex;
-  align-items: center;
-}
-
-.optionState {
-  font: var(--text-caption);
-  color: var(--color-text-muted);
-}
-
-/* The price leads the picker; figures in the display face at h3 (the chosen variant's, from the server). */
-.price {
-  order: -1;
-  font: var(--text-h3);
-  font-variant-numeric: var(--numeric-tabular);
-  color: var(--color-text);
-  margin: 0;
-}
-
-.buyRow {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-/* Sold out: no faded bronze slab, a quiet outline that says so (muted ink 5.9:1 on the paper). */
-.buyRow .addSoldOut {
-  opacity: 1;
-  background: transparent;
-  border-color: var(--color-border-strong);
-  color: var(--color-text-muted);
-}
-
-.buyRow .addButton {
-  width: 100%;
-  min-height: 52px;
-  height: auto;
-}
-
-.stock {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-}
-
-.failed {
-  font: var(--text-small);
-  color: var(--color-text);
-  margin: 0;
-}
-
 .delivery {
   font: var(--text-small);
   color: var(--color-text-muted);
@@ -282,19 +173,4 @@
   font: var(--text-small);
   color: var(--color-text-muted);
   margin: 0;
-}
-
-.optionSoldOut:hover {
-  background: var(--color-field);
-}
-
-/* A sold-out option still chosen reads in the ink chip's own type (AA), its state included. */
-.optionChosen.optionSoldOut,
-.optionChosen.optionSoldOut:hover,
-.optionChosen .optionState {
-  color: var(--color-accent-contrast);
-}
-
-.optionChosen.optionSoldOut:hover {
-  background: var(--color-accent);
 }

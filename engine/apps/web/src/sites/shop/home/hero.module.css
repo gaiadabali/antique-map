@@ -5,8 +5,10 @@
 
 .title {
   margin: 0;
-  max-inline-size: 10ch;
+  max-inline-size: 12ch;
   font: var(--text-display);
+  /* a confident scale: 56 px on a phone, growing to the display ceiling (96 px) on a wide screen */
+  font-size: clamp(3.5rem, 1rem + 5.6vw, 6rem);
   letter-spacing: var(--tracking-display);
   text-wrap: balance;
 }
@@ -28,14 +30,27 @@ p.lede {
   margin-block-start: var(--space-7);
 }
 
-/* The owner's facts close the copy on the panel, one row on a desktop. */
-.signals {
+/* The owner's facts close the copy on the field: one hairline-topped row that wraps, never a tall
+   stack on a phone (the element selector outranks the shared list's phone rule). */
+ul.signals {
+  flex-direction: row;
   margin-block-start: var(--space-7);
-  column-gap: var(--space-6);
+  padding-block-start: var(--space-5);
+  border-block-start: var(--rule-hair) solid var(--color-border);
+  gap: var(--space-2) var(--space-6);
+}
+
+ul.signals li {
+  max-inline-size: none;
+  font: var(--text-small);
 }
 
 @media (min-width: 48rem) {
-  .signals li {
+  ul.signals {
+    column-gap: var(--space-7);
+  }
+
+  ul.signals li {
     white-space: nowrap;
   }
 }

@@ -57,7 +57,7 @@ export function CollectionsView({
                       src={collection.image.url}
                       srcSet={collection.image.srcSet}
                       alt={imageAlt(words, collection.image)}
-                      sizes="(min-width: 75rem) 30vw, 47vw"
+                      sizes="(min-width: 75rem) 30vw, (min-width: 36rem) 47vw, 100vw"
                       priority={index === 0}
                       unoptimized
                     />

@@ -15,10 +15,10 @@
   margin-block-end: var(--space-7);
 }
 
-/* 2 columns on a phone and at 48rem, 3 at 75rem: fewer collections, so larger tiles. */
+/* One large tile across on a phone, 2 from 36rem, 3 at 75rem: fewer collections, so larger tiles. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-7) var(--grid-gap);
   margin: 0;
   padding: 0;
@@ -69,6 +69,12 @@
   margin: 0;
   font: var(--text-body);
   color: var(--color-text-muted);
+}
+
+@media (min-width: 36rem) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 64rem) {

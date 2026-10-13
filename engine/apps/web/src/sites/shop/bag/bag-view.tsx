@@ -69,7 +69,7 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
         <div className={styles.empty}>
           <p className={styles.emptyText}>{text.shared('cart.empty')}</p>
           <div>
-            <Button variant="quiet" href={href('browse', {}, locale)}>
+            <Button variant="quiet" className={styles.emptyLink} href={href('browse', {}, locale)}>
               {text.shared('cart.emptyAction')}
             </Button>
           </div>

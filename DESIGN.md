@@ -25,7 +25,8 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 
 ## Added or changed
 
-- **A palette per site** (phase 4) — **superseded by Ivory and ink (phase 18, below)** for both public sites.
+- **A palette per site** (phase 4) — **superseded by Ivory and ink (phase 18, below)** for the gallery and by
+  **Cobalt (phase 19, below)** for the shop.
   The design team's linen, off-black, bronze and champagne survive as primitives only because the admin reads
   them (`tokens/admin.css`).
 - **Accessibility overrides to the kit.** Hairlines and focus are at least 1 px / 2 px and pass 3:1;
@@ -36,7 +37,68 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 - **Lint gate.** `engine/tooling/token-lint/cli.mjs` fails the build on any raw hex, `rgb()/rgba()/hsl()/hsla()`,
   or `font-family` outside the token files.
 
-## Ivory and ink — both public sites (phase 18, 2026-10-12)
+## Cobalt — the shop (phase 19, 2026-10-13)
+
+The user, as the owner's proxy: "fully upgrade the UI … brighter, and better theme color, so it feels like exclusive
+merchandize store … it has to be premium feels". The name sounds historical, but the store has nothing to do with the
+old East Indies: the client loves collecting things and buying and selling. From three palettes (cobalt, vermilion,
+marigold) the client chose **Cobalt**. The gallery keeps Ivory and ink, unchanged to the pixel. The structure of
+phases 17–18 stays (full width, the `Crossing` opening, prints on even tiles, ruled records, no eyebrows). The
+direction contract is the surface brief `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md`
+(version 3).
+
+**Palette (`shared/styles/tokens/primitives.css`, the `--primitive-cobalt-*` ramp; contrast checked 2026-10-13, every
+text pair AA).**
+
+| Role                                 | Old East Indies (Cobalt)                         |
+| ------------------------------------ | ------------------------------------------------ |
+| Paper (`--color-surface`)            | a bright white `#fbfbf9`                         |
+| Raised (inputs)                      | `#ffffff`                                        |
+| Tile (`--surface-deep`, `--field`)   | pale cool `#eef1f7`; under the pointer `#e4e9f4` |
+| Ink / muted ink                      | `#14161c` (17.5:1) / `#5a5f6b` (6.2:1)           |
+| Rule / input boundary                | `#e3e6ee` / `#7f8594` (3.6:1)                    |
+| The action and the hero field        | cobalt `#1f3fae` (the paper on it 8.5:1)         |
+| The action pressed                   | `#18318a`                                        |
+| Type on the field / its second voice | `#ffffff` (8.8:1) / `#cdd6f5` (6.1:1)            |
+| Footer / its type / its muted        | navy `#0f1530` / `#e9ecf6` (15.2:1) / `#aab3d0`  |
+
+**How colour is spent.** Cobalt is the shop's signature, like a house's box colour: the home's hero is a full cobalt
+field with white type, the lede in pale cobalt, Shop prints a white button with cobalt words; everywhere else
+cobalt is only the **one action** a view asks for (Add to bag, Checkout). Ink for all other type; the current page,
+a chosen option and the pager's current number stay ink. Prints hang on pale cool tiles with the one soft shadow.
+The footer closes each page in navy.
+
+**The roles (`sites/shop/tokens/brand.css`).** Pigment 1 is the shop's everyday ground (paper, the tile as its tint,
+navy as its full). Pigment 2 is the hero: its `full` is cobalt with white type (`-on-full` white, `-on-full-muted`
+pale cobalt), its `wash` a pale cobalt mist. Pigment 3 is the gallery's cool stone, for the bridge to the originals.
+The old shell ramp (`--primitive-shell-*`) stays only because the gallery's bridge band to the shop still wears its
+warm panel, which keeps the gallery unchanged.
+
+**The `Crossing` at full strength.** `strength="full"` (opt-in; default `wash`) lays the pigment's `full` as the
+field and re-points every ink role on the copy to the field's own type, the action included: a white button with the
+field's colour as its words, a white focus ring, hairlines mixed from white. Only the shop's home hero uses it.
+
+**Brand files (`public/shop/`).** The placeholder logo, the favicon (32 and 16 px), the 180 px home-screen icon and the
+manifest's theme colour are cobalt; the 1200 × 630 social image is cobalt with "Old East Indies" in Cormorant and
+"Printed in Bali · Stocked in 100+ shops" in Karla (it no longer says "placeholder"). Rendered from HTML with
+Playwright's Chromium; the real logos replace them later.
+
+**The shop's premium layout (19.2).** Fewer, larger things, calmer on a phone:
+
+- **Home hero:** the headline 56 px on a phone, up to the 96 px display ceiling on a wide screen (12ch); the owner's
+  three facts are one wrapping row in small type under a white hairline on the field, never a tall stack.
+- **Rhythm on a phone:** sections part by 64 px (96 px from 48rem); a two-up grid keeps at least 24 px between its
+  prints; card names scale 18–22 px so a long name does not run to four lines in a half column; grid rows part by
+  4rem from 48rem.
+- **Product:** the name at section-title size (`--text-h2`), so the print leads; the details grouped tight, the buy
+  block after a clear gap, the price larger, Add to bag 56 px high; below 64rem the lead print's wall runs edge to
+  edge. The picker's and buy block's rules live in `product/picker.module.css` (the product file was near 300 lines).
+- **Collections:** one large tile across on a phone, two from 36rem, three from 75rem.
+- **Quiet links** at a grid's edge (Shop all prints, Start browsing) are pulled out by the button's own padding so
+  their words sit on the edge.
+- **Stores:** the area names are body-size ink, an index that reads as navigation.
+
+## Ivory and ink — the gallery (phase 18, 2026-10-12; the shop until phase 19)
 
 The client asked, through the user, for a colour that is "clean, exclusive and premium" and for the shop's pages to
 be tidied: "a 1 man shop with 2 storefronts to sell different type of products". From a palette board of four the
@@ -124,13 +186,13 @@ no eyebrows, grids that gain columns) is what phase 18 kept; its colour and stri
 
 The owner's later look-and-feel pass changes only these:
 
-| What to change                    | File(s)                                                                                                                           |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Final colours (Q16)               | the ivory and shell ramps in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` |
-| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                                      |
-| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                                |
-| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                                |
-| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                               |
+| What to change                    | File(s)                                                                                                                            |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Final colours (Q16)               | the ivory and cobalt ramps in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` |
+| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                                       |
+| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                                 |
+| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                                 |
+| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                                |
 
 No dark mode. No raw colour or `font-family` is allowed outside the token files.
 

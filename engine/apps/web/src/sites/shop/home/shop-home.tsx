@@ -43,7 +43,7 @@ export function ShopHome({ locale, href, sisterHref, t }: Props) {
           id="home-featured"
           title={t('home.shop.featuredTitle')}
           action={
-            <Button variant="quiet" href={href('browse', {}, locale)}>
+            <Button variant="quiet" className={styles.headLink} href={href('browse', {}, locale)}>
               {t('home.shop.shopAll')}
             </Button>
           }

@@ -104,7 +104,8 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-7) var(--grid-gap);
+  /* a phone's two prints keep a little more air between them than the fluid gap gives */
+  gap: var(--space-7) max(var(--grid-gap), var(--space-5));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -131,6 +132,8 @@
 
 .cardTitle {
   font: var(--text-card-title);
+  /* a name of two or three lines in a phone's half-width column, 22 px from a tablet up */
+  font-size: clamp(1.125rem, 0.9rem + 0.9vw, 1.375rem);
   text-wrap: balance;
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -192,6 +195,7 @@
 @media (min-width: 48rem) {
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: var(--space-8);
   }
 }
 

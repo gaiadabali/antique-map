@@ -12,7 +12,7 @@ import { useActionState, useState } from 'react'
 import { Button, TextLink } from '../../../shared/ui'
 import { addToBagAction } from '../../../server/shop/bag/actions'
 import type { VariantPickerText } from './copy'
-import styles from './product.module.css'
+import styles from './picker.module.css'
 
 export type PickerVariant = {
   readonly sku: string
