@@ -88,6 +88,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
 | 19·W1 | 19.1 Cobalt | orchestrator | `main` | 2026-10-13 | |
+| 19·W1 | 19.2 The shop's premium layout | senior-uiux | `main` | 2026-10-13 | |
 
 ## Decisions for the owner
 
@@ -1237,7 +1238,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [ ] 19.1.c the logo, favicon, home-screen icon, social image (no "placeholder" text) and manifest in cobalt
   - [ ] 19.1.d **Check:** the shop's home, grid and product on staging at 390 and 1280; tokens, lint, types and the shared tests pass.
 
-- [ ] **19.2 The shop's premium layout** · needs: phase 18
+- [ ] **19.2 The shop's premium layout** · needs: phase 18 — 🔄 19·W1
   - **Lane** WEB · **Agent** senior-uiux (Sonnet), orchestrator review · **Wave** W1
   - **Owns** `engine/apps/web/src/sites/shop/**` except `tokens/brand.css` and `home/hero.tsx`; `engine/apps/web/src/app/(shop)/**`
   - **Read** this phase's goal; DESIGN.md "The shop's pages"
