@@ -45,7 +45,10 @@
   --crossing-field: var(--crossing-full);
 }
 
+/* The copy wears the field's colour itself (it lies wholly on the field, so nothing changes to the
+   eye): a contrast check reads an element's own ground, not a layer drawn behind it. */
 .full .copy {
+  background: var(--crossing-full);
   --color-surface: var(--crossing-full);
   --color-text: var(--crossing-on-full);
   --color-text-strong: var(--crossing-on-full);
