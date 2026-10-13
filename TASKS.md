@@ -89,6 +89,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
 | 19·W1 | 19.1 Cobalt | orchestrator | `main` | 2026-10-13 | |
 | 19·W1 | 19.2 The shop's premium layout | senior-uiux | `main` | 2026-10-13 | |
+| 19·W2 | 19.3 On staging | orchestrator | `main` | 2026-10-13 | |
 
 ## Decisions for the owner
 
@@ -1246,7 +1247,7 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 19.2.a a premium layout pass on phone and desktop: space, type scale, grid and product composition; no copy or behaviour change
   - [ ] 19.2.b **Check:** each shop page at 390 and 1280 on staging, axe clean; filters, sort, paging and Add to bag still work.
 
-- [ ] **19.3 On staging** · needs: 19.1, 19.2
+- [ ] **19.3 On staging** · needs: 19.1, 19.2 — 🔄 19·W2
   - **Lane** DSG · **Agent** orchestrator, qa (Sonnet) · **Wave** W2
   - **Owns** `DESIGN.md`, `docs/gates/cobalt.md`, `docs/gates/cobalt/**`
   - **Read** this phase's **Done when**
