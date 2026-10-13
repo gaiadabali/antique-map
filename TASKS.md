@@ -34,7 +34,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **16** The CMS redesign | UI | 15 | ✅ done | 4/4 | 10/10 | 0 | `██████████` 100% |
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
-| **All** | 18 phases | | | **89/94** | **296/313** | **8** | `██████████`  95% |
+| **19** The shop in Cobalt | UI | 18 | 🔄 in progress | 0/3 | 0/8 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 19 phases | | | **89/97** | **296/321** | **8** | `█████████░`  92% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -86,6 +87,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
+| 19·W1 | 19.1 Cobalt | orchestrator | `main` | 2026-10-13 | |
 
 ## Decisions for the owner
 
@@ -1218,6 +1220,38 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 12.1_
   - [x] 18.5.a released to staging; every public page of both sites captured and axe-checked there
   - [x] 18.5.b **Check:** `docs/gates/ivory-and-ink.md` — the screens, axe clean, CI green; DESIGN.md records the palette.
+
+## Phase 19 — The shop in Cobalt · UI · needs 18 · ~1d
+
+**Goal:** the shop reads as an exclusive, premium store, brighter (the user, 2026-10-13, as the owner's proxy: "fully upgrade the UI … brighter, and better theme color, so it feels like exclusive merchandize store … it has to be premium feels"; the name sounds historical, but the store has nothing to do with the old East Indies: the client loves collecting things and buying and selling). The client chose **Cobalt** from three palettes: a bright white page, prints on pale cool tiles, one saturated cobalt for the home's hero field (white type) and the action, a navy footer; the logo, icons, social image and manifest in cobalt; then a premium layout pass for phone and desktop. The fastest route: tokens and the shop's own CSS, checked on staging (no local build, the user's call). **The gallery does not change.** Behaviour, prices and copy unchanged.
+**Done when:** on staging, every shop page wears Cobalt at 390 and 1280 in both languages, axe clean, no sideways scroll; the gallery's pages match their before-shots; CI green; DESIGN.md records the palette.
+**Waves:** W1 — 19.1, 19.2 · W2 — 19.3
+
+- [ ] **19.1 Cobalt** · needs: phase 18 — 🔄 19·W1
+  - **Lane** DSG · **Agent** orchestrator; the brand files general-purpose (Sonnet) · **Wave** W1
+  - **Owns** the token files, `engine/apps/web/src/shared/ui/crossing/**`, `engine/apps/web/src/sites/shop/home/hero.tsx`, `engine/apps/web/public/shop/**`
+  - **Read** this phase's goal; DESIGN.md "Ivory and ink"
+  - _Requirements: 12.1_
+  - [ ] 19.1.a the shop's roles on a new cobalt ramp, contrast checked; the gallery's own ramp and its bridge band untouched
+  - [ ] 19.1.b the home's hero on the full cobalt field with white type and a white action (`Crossing strength="full"`, opt-in)
+  - [ ] 19.1.c the logo, favicon, home-screen icon, social image (no "placeholder" text) and manifest in cobalt
+  - [ ] 19.1.d **Check:** the shop's home, grid and product on staging at 390 and 1280; tokens, lint, types and the shared tests pass.
+
+- [ ] **19.2 The shop's premium layout** · needs: phase 18
+  - **Lane** WEB · **Agent** senior-uiux (Sonnet), orchestrator review · **Wave** W1
+  - **Owns** `engine/apps/web/src/sites/shop/**` except `tokens/brand.css` and `home/hero.tsx`; `engine/apps/web/src/app/(shop)/**`
+  - **Read** this phase's goal; DESIGN.md "The shop's pages"
+  - _Requirements: 12.1_
+  - [ ] 19.2.a a premium layout pass on phone and desktop: space, type scale, grid and product composition; no copy or behaviour change
+  - [ ] 19.2.b **Check:** each shop page at 390 and 1280 on staging, axe clean; filters, sort, paging and Add to bag still work.
+
+- [ ] **19.3 On staging** · needs: 19.1, 19.2
+  - **Lane** DSG · **Agent** orchestrator, qa (Sonnet) · **Wave** W2
+  - **Owns** `DESIGN.md`, `docs/gates/cobalt.md`, `docs/gates/cobalt/**`
+  - **Read** this phase's **Done when**
+  - _Requirements: 12.1_
+  - [ ] 19.3.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
+  - [ ] 19.3.b **Check:** `docs/gates/cobalt.md` — the screens, axe clean, CI green; DESIGN.md records Cobalt.
 
 ---
 
