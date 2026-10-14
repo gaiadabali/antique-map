@@ -45,7 +45,11 @@ for (const locale of ['en', 'id']) {
     await expect(page.locator('html')).toHaveAttribute('data-site', site.site)
     await expect(page).toHaveTitle(new RegExp(escape(site.name)))
     await expect(page.locator('header')).toContainText(site.name)
-    await expect(page.locator('h1')).toHaveText(homeCopy(site, locale, 'title'))
+    // By role, not `h1`: while the shop's hero streams in, React parks the streamed `<h1>` in a
+    // hidden node beside the placeholder's, and a bare `h1` locator then matches both (CI 38521749344).
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      homeCopy(site, locale, 'title'),
+    )
     await expect(page.locator('.site-lede').first()).toHaveText(homeCopy(site, locale, 'lede'))
   })
 }

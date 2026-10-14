@@ -272,10 +272,14 @@ test.describe('4.3.a the header on a phone', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('/')
     const burger = page.locator('header button[aria-expanded]')
-    await burger.focus()
-    await page.keyboard.press('Enter')
     const sheet = page.locator('header [role="dialog"]')
-    await expect(sheet).toBeVisible()
+    // An Enter before the header hydrates does nothing (CI 38521749344), so press again until
+    // the menu answers; once it is open the check passes and no second press closes it.
+    await expect(async () => {
+      await burger.focus()
+      await page.keyboard.press('Enter')
+      await expect(sheet).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 15_000 })
     await expect(sheet.locator('a[hreflang]')).toHaveCount(2)
     await expect(sheet.locator('nav a').first()).toBeVisible()
   })

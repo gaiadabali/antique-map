@@ -10,7 +10,7 @@ cream mat on a walnut wall; covers under a cream "Heritage Art Collection" band)
 Cobalt, chosen the day before, and the phase 17 note "ruled out vintage" made the palette the owner's decision, so a
 board of three was built on the real staging pages (CSS injected into the live page, the traced logo swapped in,
 nothing released): **A Heritage**, **B Umber on white**, **C Cobalt kept**
-(https://claude.ai/artifact/MDqJQsH74ZGBxkw3TBpMgz). The user, as the owner's proxy, chose **A Heritage**. The
+(its screens are in `heritage/board/`). The user, as the owner's proxy, chose **A Heritage**. The
 direction contract is `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md` (version 4); DESIGN.md's
 "Heritage — the shop (phase 20)" records what shipped.
 
@@ -48,8 +48,12 @@ direction contract is `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-
   `84aefe3b`, compared pixel by pixel: home, browse, an antique (`/product/2049`), contact and the Indonesian home,
   at 390 and 1280, full page — **0 pixels differ in all 10**. The gallery's manifest keeps `#1d3557`.
 - **Screens:** `heritage/after/` — the shop on `84aefe3b`: home, shop, product, collections, stores, partnership,
-  bag and track at 390 and 1280, full page and first screen; the URLs in `pages.json`. The palette board's screens
-  (before the choice) are in the artifact above.
+  bag and track at 390 and 1280, full page and first screen; the URLs in `pages.json`.
+- **The palette board** (`heritage/board/`): the three options as shown before the choice — `A-heritage-*`,
+  `B-umber-on-white-*`, `C-cobalt-kept-*`, each the home at 1280 and 390, the product and the footer — plus the
+  sources (`logo-source`, `catalogue-page`, `catalogue-cover`). They are staging pages with each option's brand
+  variables and the traced logo injected, not releases; on the homes the hero print is a real one (Bali Island Dutch
+  Map, 1849) standing in for staging's REHEARSAL product. The board was first a private page, deleted the same day.
 
 ## Checks before the release
 
@@ -68,3 +72,6 @@ files, 2,750 tests passed).
   Two are new to this run and worth hardening: the Indonesian home's smoke saw two `h1`s for a moment (the hero's
   streaming placeholder from `8064261d` and the streamed hero, a strict-mode locator), and the phone header's menu
   did not open on the first Enter (pressed before the page was interactive). Neither touches the palette or the logo.
+  Both hardened the same day: the smoke reads the `h1` by role (the parked copy is hidden), and the phone menu test
+  presses Enter until the menu answers (`toPass`). Checked against staging's shop first: one `h1` by role in en and
+  id with the lexicon's title; the menu opens from the keyboard with both language links.
