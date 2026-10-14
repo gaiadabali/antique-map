@@ -35,8 +35,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
 | **19** The shop in Cobalt | UI | 18 | ✅ done | 3/3 | 8/8 | 0 | `██████████` 100% |
-| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | 🔄 in progress | 0/2 | 0/6 | 0 | `░░░░░░░░░░`   0% |
-| **All** | 20 phases | | | **92/99** | **304/327** | **8** | `█████████░`  93% |
+| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | 🔄 in progress | 0/2 | 3/6 | 0 | `█████░░░░░`  50% |
+| **All** | 20 phases | | | **92/99** | **307/327** | **8** | `█████████░`  94% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1267,9 +1267,9 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** the token files, `engine/apps/web/public/{shop,gallery}/**`, `engine/packages/http/src/manifest.ts`, `engine/apps/web/src/shell/{site,site-footer}.ts*`, the shop home's and the `Crossing`'s comments
   - **Read** this phase's goal; DESIGN.md "Cobalt"
   - _Requirements: 12.1_
-  - [ ] 20.1.a the shop's roles on a new Heritage ramp from the logo and the catalogues, contrast checked; Cobalt retired; the gallery's ramps untouched
-  - [ ] 20.1.b the real logo traced: the one-line lockup in umber in the header, in cream on the footer's espresso (a `logo-on-dark` site file; the gallery's is its current logo)
-  - [ ] 20.1.c the favicon, home-screen icon, social image and manifest from the stacked logo on its cream paper
+  - [x] 20.1.a the shop's roles on a new Heritage ramp from the logo and the catalogues, contrast checked; Cobalt retired; the gallery's ramps untouched
+  - [x] 20.1.b the real logo traced: the one-line lockup in umber in the header, in cream on the footer's espresso (a `logo-on-dark` site file; the gallery's is its current logo)
+  - [x] 20.1.c the favicon, home-screen icon, social image and manifest from the stacked logo on its cream paper
   - [ ] 20.1.d **Check:** tokens, lint, types and the shared tests pass; the shop's home and product on staging at 390 and 1280.
 
 - [ ] **20.2 On staging** · needs: 20.1
