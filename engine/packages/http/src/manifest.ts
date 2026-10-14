@@ -128,7 +128,8 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
 
 /**
  * Each site's own files, by the name both sites give them, in `public/<site>/`: the favicon, the
- * home-screen icon (a 180 × 180 PNG), the web manifest, the logo and the Open Graph base. A page
+ * home-screen icon (a 180 × 180 PNG), the web manifest, the logo, the logo for a dark ground (the
+ * footer) and the Open Graph base. A page
  * links them at `/<site>/<file>` — the one path under a site's internal prefix the proxy passes
  * through, and only on that site's own host — and the root URLs below answer from them. No page
  * links one through Next's file conventions (`app/icon.*`, `app/manifest.ts`), which one build
@@ -139,6 +140,7 @@ export const SITE_ASSETS = {
   touchIcon: 'apple-touch-icon.png',
   manifest: 'site.webmanifest',
   logo: 'logo.svg',
+  logoOnDark: 'logo-on-dark.svg',
   ogImage: 'og.png',
 } as const
 

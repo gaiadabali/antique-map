@@ -15,7 +15,7 @@ type Props = {
   caption?: ReactNode
   /** The field's pigment in the site's order (1 leads). */
   pigment?: 1 | 2 | 3
-  /** `wash` keeps ink type on a light field; `full` lays the deep field with its own type (the shop's cobalt). */
+  /** `wash` keeps ink type on a light field; `full` lays the deep field with its own type (the shop's walnut). */
   strength?: 'wash' | 'full'
   /** Starts right under the header, cancelling the shell's top padding: a page's first block. */
   lead?: boolean
@@ -32,7 +32,7 @@ type Props = {
  * copy, and the picture lies across the field's lower edge onto the paper — on a desktop as deep as
  * 62% of the picture (or the copy, whichever is more), on a phone overlapping the field's foot. No
  * frame and no shadow. On the gallery the field is its own paper, so the sheet simply lies beside
- * the words; on the shop it is the cobalt field (`strength="full"`, white type) the print crosses.
+ * the words; on the shop it is the walnut field (`strength="full"`, cream type) the print crosses.
  */
 export function Crossing({
   ratio,

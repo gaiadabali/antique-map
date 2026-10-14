@@ -1,5 +1,5 @@
 /**
- * The shop home's hero (12.1; Cobalt 19.1): the headline in white on the cobalt field, and the
+ * The shop home's hero (12.1; 19.1; Heritage 20.1): the headline in cream on the walnut field, and the
  * lead print hung across the field's lower edge onto the paper (the shared `Crossing`), captioned
  * the way a gallery labels a wall — its name, its label and its price. The print is the first of
  * the home's featured products with a published image — the same cached read as the best-seller

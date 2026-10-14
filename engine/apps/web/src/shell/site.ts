@@ -56,6 +56,7 @@ export function shellOf(site: CurrentSite, locale: SiteLocale): SiteShellVM {
       current: each === locale,
     })),
     logo: siteAsset(site.key, SITE_ASSETS.logo),
+    logoOnDark: siteAsset(site.key, SITE_ASSETS.logoOnDark),
   }
 }
 

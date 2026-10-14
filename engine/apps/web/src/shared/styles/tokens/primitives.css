@@ -1,7 +1,7 @@
 /* =====================================================================
    Tier 1 primitives — raw scales shared by both sites and the admin.
    The gallery wears Ivory and ink (phase 18, the client's choice), the
-   shop Cobalt (phase 19): the ivory and cobalt ramps below. The Outline Colour ramps
+   shop Heritage (phase 20): the ivory and heritage ramps below. The Outline Colour ramps
    (phase 17) stay as the semantic fallbacks; nothing else reads them.
    The brand files map the ramps to roles.
    The admin reads only the linen-to-bronze ramp, the space scale and the
@@ -88,24 +88,26 @@
   /* The shell ramp above no longer dresses the shop (phase 19): the gallery's bridge band to the
      shop still wears its warm panel, so the gallery stays exactly as the client chose it. */
 
-  /* Cobalt (phase 19, the client's choice 2026-10-13): the shop as an exclusive store — a bright
-     white, pale cool tiles, one saturated cobalt for the hero field and the action, a navy footer.
-     Contrast checked 2026-10-13 — every text pair AA, input boundaries ≥ 3.5:1. */
-  --primitive-cobalt-paper: #fbfbf9;
-  --primitive-cobalt-raised: #ffffff;
-  --primitive-cobalt-tile: #eef1f7; /* print tiles; muted 5.7:1, cobalt 7.8:1 on it */
-  --primitive-cobalt-mist: #e4e9f4; /* a tile under the pointer; muted 5.3:1 */
-  --primitive-cobalt-ink: #14161c; /* 17.5:1 on the paper */
-  --primitive-cobalt-muted: #5a5f6b; /* 6.2:1 */
-  --primitive-cobalt-rule: #e3e6ee;
-  --primitive-cobalt-rule-strong: #7f8594; /* 3.6:1 on the paper, 3.7:1 on white */
-  --primitive-cobalt: #1f3fae; /* the hero field and the action; the paper on it 8.5:1 */
-  --primitive-cobalt-deep: #18318a; /* the action pressed; white on it 11.4:1 */
-  --primitive-cobalt-on: #ffffff; /* type on the cobalt field, 8.8:1 */
-  --primitive-cobalt-on-muted: #cdd6f5; /* the second voice on the field, 6.1:1 */
-  --primitive-cobalt-navy: #0f1530; /* the footer */
-  --primitive-cobalt-foot-ink: #e9ecf6; /* 15.2:1 */
-  --primitive-cobalt-foot-muted: #aab3d0; /* 8.6:1 */
+  /* Heritage (phase 20, the user's choice 2026-10-14, replacing Cobalt): the shop in the colours
+     of the owner's real logo and catalogues — the logo's cream paper as the page, the catalogues'
+     walnut wall as the hero field, the logo's own umber ink on the action, an espresso footer.
+     Contrast checked 2026-10-14 — every text pair AA, input boundaries ≥ 3.5:1 on the page. */
+  --primitive-heritage-paper: #f6f1e7;
+  --primitive-heritage-raised: #fcfaf5;
+  --primitive-heritage-tile: #ece3d4; /* print tiles; muted 5.4:1, umber 7.8:1 on it */
+  --primitive-heritage-mist: #e4d8c5; /* a tile under the pointer; muted 4.9:1 */
+  --primitive-heritage-ink: #22180f; /* 15.5:1 on the paper */
+  --primitive-heritage-muted: #67574a; /* 6.1:1 */
+  --primitive-heritage-rule: #e2d8c8;
+  --primitive-heritage-rule-strong: #8e7c67; /* 3.6:1 on the paper, 3.9:1 on raised */
+  --primitive-heritage-umber: #5d3c1d; /* the logo's ink and the action; the paper on it 8.8:1 */
+  --primitive-heritage-umber-deep: #472c14; /* the action pressed; the paper on it 11.4:1 */
+  --primitive-heritage-walnut: #2e1f16; /* the hero field, the catalogues' wood wall */
+  --primitive-heritage-on: #f3e9d8; /* type on the walnut field, 13.2:1 */
+  --primitive-heritage-on-muted: #cdb99d; /* the second voice on the field, 8.3:1 */
+  --primitive-heritage-espresso: #1e1510; /* the footer */
+  --primitive-heritage-foot-ink: #efe6d6; /* 14.5:1 */
+  --primitive-heritage-foot-muted: #b8a58b; /* 7.5:1 */
 
   /* a print hung on its tile: a soft, low shadow */
   --primitive-shadow-print: 0 1px 2px #0000001f, 0 10px 22px -6px #00000026;

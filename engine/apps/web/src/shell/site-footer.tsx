@@ -13,7 +13,8 @@ import styles from './shell.module.css'
 type ShellPart = {
   readonly site: { key: SiteKey; name: string }
   readonly locale: LocaleCode
-  readonly logo: string
+  /** The logo for the footer's dark ground. */
+  readonly logoOnDark: string
 }
 
 /** The sister site's home on its own host: an absolute URL, or the path when no origin is known. */
@@ -86,7 +87,7 @@ export function SiteFooter({
   const page = (slug: string) => siteHref(site)('page', { slug }, locale)
   return (
     <Footer
-      logo={<img className="site-logo" src={shell.logo} alt="" />}
+      logo={<img className="site-logo" src={shell.logoOnDark} alt="" />}
       nav={columnsOf(site, locale, t).map((column) => (
         <div className={styles.footerGroup} key={column.title}>
           <h2 className={styles.footerTitle}>{column.title}</h2>
