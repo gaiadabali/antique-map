@@ -26,7 +26,7 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 ## Added or changed
 
 - **A palette per site** (phase 4) — **superseded by Ivory and ink (phase 18, below)** for the gallery and by
-  **Cobalt (phase 19, below)** for the shop.
+  **Heritage (phase 20, below)** for the shop, which replaced Cobalt (phase 19).
   The design team's linen, off-black, bronze and champagne survive as primitives only because the admin reads
   them (`tokens/admin.css`).
 - **Accessibility overrides to the kit.** Hairlines and focus are at least 1 px / 2 px and pass 3:1;
@@ -37,7 +37,51 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 - **Lint gate.** `engine/tooling/token-lint/cli.mjs` fails the build on any raw hex, `rgb()/rgba()/hsl()/hsla()`,
   or `font-family` outside the token files.
 
-## Cobalt — the shop (phase 19, 2026-10-13)
+## Heritage — the shop (phase 20, 2026-10-14)
+
+The owner's real logo arrived: "old east indies" in brown hand lettering on cream paper, with his six catalogue PDFs
+(each print in a cream mat on a walnut wall; covers under a cream "Heritage Art Collection" band). The user asked
+that the site suit them. The PDFs match, byte for byte, the files imported on 2026-10-08, so the 152 designs were
+already on the shop and no data changed. From a palette board on the real staging pages (Heritage, Umber on white,
+Cobalt kept) the user, as the owner's proxy, chose **Heritage**. It replaces Cobalt; the structure of phases 17–19
+stays, and the gallery keeps Ivory and ink. The direction contract is the surface brief
+`engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md` (version 4).
+
+**Palette (`shared/styles/tokens/primitives.css`, the `--primitive-heritage-*` ramp; contrast checked 2026-10-14,
+every text pair AA).** Sampled from the logo (ink `#5d3c1d`, paper `#f1e6d3`) and the catalogues (walnut
+`#1d1311`–`#301e1c`, mats `#f0e8dd`).
+
+| Role                               | Old East Indies (Heritage)                          |
+| ---------------------------------- | --------------------------------------------------- |
+| Paper (`--color-surface`)          | the logo's cream `#f6f1e7`                          |
+| Raised (inputs)                    | `#fcfaf5`                                           |
+| Tile (`--surface-deep`, `--field`) | linen `#ece3d4`; under the pointer `#e4d8c5`        |
+| Ink / muted ink                    | `#22180f` (15.5:1) / `#67574a` (6.1:1; 4.9:1 min)   |
+| Rule / input boundary              | `#e2d8c8` / `#8e7c67` (3.6:1)                       |
+| The action                         | the logo's umber `#5d3c1d` (the paper on it 8.8:1)  |
+| The action pressed                 | `#472c14`                                           |
+| The hero field / its type / second | walnut `#2e1f16` / `#f3e9d8` (13.2:1) / `#cdb99d`   |
+| Footer / its type / its muted      | espresso `#1e1510` / `#efe6d6` (14.5:1) / `#b8a58b` |
+
+**How colour is spent.** The page is the logo's paper; prints hang on linen tiles with the one soft shadow, their
+own white mounts (baked into the catalogue images) standing off the linen. The home's hero is the catalogues' walnut
+wall at full strength (`Crossing strength="full"`): cream type, a cream button with walnut words, the lead print
+across its lower edge. Elsewhere the logo's umber is only the **one action** a view asks for (Add to bag, Checkout).
+The footer closes each page in espresso with the logo in cream.
+
+**The logo (`public/shop/logo.svg`, `logo-on-dark.svg`).** The supplied 476 px PNG traced to vectors (potrace, per
+word, at 4×, lightly smoothed to drop the raster's pixel steps; the source has no descenders, so the words share one
+baseline). Stacked, three lines at 40 px would set its letters near 11 px, so the header and footer use **one line
+from the same letters** (678 × 133): umber on the paper, cream on the espresso. `logo-on-dark` is a new site file
+(`SITE_ASSETS.logoOnDark`, `SiteShellVM.logoOnDark`) the footer reads; the gallery's is a copy of its current logo,
+so the gallery does not change. The stacked original is kept for the icons and the social image.
+
+**Brand files (`public/shop/`).** Favicon (16 and 32 px PNG entries) and the 180 px home-screen icon: the stacked
+logo on its cream paper. The 1200 × 630 social image: the stacked logo, a umber rule, "Heritage Art Collection" (the
+catalogues' own line) and "Printed in Bali · Stocked in 100+ shops" in Karla. Manifest theme and background: the
+paper. Rendered with sharp and Playwright's Chromium from the traced vector.
+
+## Cobalt — the shop (phase 19, 2026-10-13; superseded by Heritage in phase 20)
 
 The user, as the owner's proxy: "fully upgrade the UI … brighter, and better theme color, so it feels like exclusive
 merchandize store … it has to be premium feels". The name sounds historical, but the store has nothing to do with the
