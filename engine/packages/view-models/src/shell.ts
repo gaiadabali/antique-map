@@ -32,6 +32,8 @@ export type SiteShellVM = {
   locales: readonly { locale: LocaleCode; href: string; current: boolean }[]
   /** The site's logo, at `/<site>/logo.svg` (`@engine/http/manifest` `SITE_ASSETS`). */
   logo: string
+  /** The same logo for a dark ground (the footer), at `/<site>/logo-on-dark.svg`. */
+  logoOnDark: string
 }
 
 export type NavItemVM = LinkVM & {

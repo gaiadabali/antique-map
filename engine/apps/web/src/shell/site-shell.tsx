@@ -42,6 +42,7 @@ type ShellPart = {
   readonly homeHref: string
   readonly locales: readonly { locale: LocaleCode; href: string; current: boolean }[]
   readonly logo: string
+  readonly logoOnDark: string
 }
 
 type Props = {

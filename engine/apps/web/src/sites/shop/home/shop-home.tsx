@@ -1,5 +1,5 @@
 /**
- * The shop's home (4.3.b, 12.3; Cobalt 19): the hero lays the lead print across the cobalt field
+ * The shop's home (4.3.b, 12.3; 19; Heritage 20): the hero lays the lead print across the walnut field
  * (`./hero`); below it "Shop by", the shop's real collections as picture tiles (`./shop-by`), the
  * streamed best sellers, how a print is made (`./process`), the trade offer and the bridge to the
  * originals in the gallery's stone, flush on the footer (`./sections`). A thin composition: every
