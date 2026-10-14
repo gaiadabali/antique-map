@@ -35,7 +35,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
 | **19** The shop in Cobalt | UI | 18 | ✅ done | 3/3 | 8/8 | 0 | `██████████` 100% |
-| **All** | 19 phases | | | **92/97** | **304/321** | **8** | `██████████`  95% |
+| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | · not started | 0/2 | 0/6 | 0 | `░░░░░░░░░░`   0% |
+| **All** | 20 phases | | | **92/99** | **304/327** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -87,6 +88,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
+| 20·W1 | 20.1 Heritage and the real logo | orchestrator | `feat/p20-dsg` | 2026-10-14 | |
 
 ## Decisions for the owner
 
@@ -130,6 +132,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **Q1** | The admin is on the shop's host (`ADMIN_HOST`); the gallery's host answers 404 for `/admin` | 2026-10-02 |
 | **Q2** | Google Maps for the delivery pin and address search (browser key restricted by referrer, server key for `/api/x/geocode`) | 2026-10-02 |
 | **Q7** | The chat runs on **GLM 5.3 Flash on the company OpenRouter key** (`z-ai/glm-5.3-flash`, answers and classifier; the Anthropic adapter via `ANTHROPIC_BASE_URL=https://openrouter.ai/api`), not Claude Sonnet; the daily cap stays USD 5 per site with the kill switch. So 8.4.d's gate is run on GLM, and OA8 no longer needs an Anthropic key for the chat (the 8.3 drafting tool still needs a vision model) | 2026-10-08 |
+| **Q16** (shop) | The shop wears **Heritage** with the owner's real logo: cream paper, a walnut hero field, umber on the action, an espresso footer (the user, as the owner's proxy, from a palette board of three on staging; it replaces Cobalt of 2026-10-13). The gallery keeps Ivory and ink | 2026-10-14 |
 | **Q3** | The delivery fee is an admin-maintained table of distance bands, filled in from the local courier price; free over the threshold | 2026-10-02 |
 | **Q4** | An order no single store can fill: the buyer is asked to remove an item or message the owner; no split orders | 2026-10-01 |
 | **Q8** | No two-factor sign-in at launch (backlog v2.8) | 2026-10-02 |
@@ -1251,6 +1254,30 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 12.1_
   - [x] 19.3.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
   - [x] 19.3.b **Check:** `docs/gates/cobalt.md` — the screens, axe clean, CI green; DESIGN.md records Cobalt.
+
+## Phase 20 — The shop in its own brand: the real logo, in Heritage · UI · needs 19 · ~1d
+
+**Goal:** the shop wears the owner's real Old East Indies logo and the colours it comes from. On 2026-10-14 the user handed over the logo (brown hand lettering on cream paper) and the six catalogue PDFs, asking that the site "see the ui design and make it suitable to it". The PDFs match, byte for byte, the files imported on 2026-10-08, so their 152 designs are already on the shop and no data changes. From a palette board on the real staging pages (A Heritage, B Umber on white, C Cobalt kept) the user chose **Heritage**: the logo's cream paper as the page, the catalogues' walnut wall as the home's hero field, the logo's umber on the one action, an espresso footer. The logo is traced to vectors: a one-line lockup from its own letters for the header and footer, the stacked original for the icons and the social image. Tokens, brand files and the footer's logo only. **The gallery does not change.** Layout, behaviour, prices and copy unchanged.
+**Done when:** on staging, every shop page wears Heritage and the real logo at 390 and 1280 in both languages, axe clean, no sideways scroll; the gallery's pages match their before-shots; DESIGN.md records Heritage.
+**Waves:** W1 — 20.1 · W2 — 20.2
+
+- [ ] **20.1 Heritage and the real logo** · needs: phase 19
+  - **Lane** DSG · **Agent** orchestrator · **Wave** W1
+  - **Owns** the token files, `engine/apps/web/public/{shop,gallery}/**`, `engine/packages/http/src/manifest.ts`, `engine/apps/web/src/shell/{site,site-footer}.ts*`, the shop home's and the `Crossing`'s comments
+  - **Read** this phase's goal; DESIGN.md "Cobalt"
+  - _Requirements: 12.1_
+  - [ ] 20.1.a the shop's roles on a new Heritage ramp from the logo and the catalogues, contrast checked; Cobalt retired; the gallery's ramps untouched
+  - [ ] 20.1.b the real logo traced: the one-line lockup in umber in the header, in cream on the footer's espresso (a `logo-on-dark` site file; the gallery's is its current logo)
+  - [ ] 20.1.c the favicon, home-screen icon, social image and manifest from the stacked logo on its cream paper
+  - [ ] 20.1.d **Check:** tokens, lint, types and the shared tests pass; the shop's home and product on staging at 390 and 1280.
+
+- [ ] **20.2 On staging** · needs: 20.1
+  - **Lane** DSG · **Agent** orchestrator · **Wave** W2
+  - **Owns** `DESIGN.md`, `docs/gates/heritage.md`, `docs/gates/heritage/**`
+  - **Read** this phase's **Done when**
+  - _Requirements: 12.1_
+  - [ ] 20.2.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
+  - [ ] 20.2.b **Check:** `docs/gates/heritage.md` — the screens, axe clean; DESIGN.md records Heritage.
 
 ---
 
